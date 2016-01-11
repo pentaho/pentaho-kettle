@@ -280,7 +280,7 @@ public class SortRows extends BaseStep implements StepInterface {
           }
         }
 
-        // Sort the data row buffer
+         // Sort the data row buffer
         Collections.sort( data.tempRows, data.comparator );
       } catch ( Exception e ) {
         logError( BaseMessages.getString( PKG, "SortRows.Error.ErrorReadingBackTempFiles" ), e );

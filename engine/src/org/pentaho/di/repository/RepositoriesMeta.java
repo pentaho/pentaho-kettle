@@ -377,7 +377,7 @@ public class RepositoriesMeta {
       retval += ri.getXML();
     }
 
-    retval += "  </repositories>" + Const.CR;
+    retval += " </repositories>" + Const.CR;
     return retval;
   }
 

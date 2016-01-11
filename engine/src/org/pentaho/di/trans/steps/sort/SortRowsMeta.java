@@ -71,6 +71,12 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface {
   @Injection( name = "IGNORE_CASE", group = "FIELDS" )
   private boolean[] caseSensitive;
 
+    /** false : collator disabeld, true=collator enabled */
+  private boolean[] collatorEnabled;
+
+  //collator strength, 0,1,2,3
+  private int[] collatorStrength;
+
   /** false : not a presorted field, true=presorted field */
   @Injection( name = "PRESORTED", group = "FIELDS" )
   private boolean[] preSortedField;
@@ -178,6 +184,8 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface {
     fieldName = new String[nrfields]; // order by
     ascending = new boolean[nrfields];
     caseSensitive = new boolean[nrfields];
+    collatorEnabled = new boolean[nrfields];
+    collatorStrength = new int[nrfields];
     preSortedField = new boolean[nrfields];
     groupFields = null;
   }
@@ -193,6 +201,8 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface {
       retval.fieldName[i] = fieldName[i];
       retval.ascending[i] = ascending[i];
       retval.caseSensitive[i] = caseSensitive[i];
+      retval.collatorEnabled[i] = collatorEnabled[i];
+      retval.collatorStrength[i] = collatorStrength[i];
       retval.preSortedField[i] = preSortedField[i];
     }
 
@@ -221,7 +231,10 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface {
         String asc = XMLHandler.getTagValue( fnode, "ascending" );
         ascending[i] = "Y".equalsIgnoreCase( asc );
         String sens = XMLHandler.getTagValue( fnode, "case_sensitive" );
+        String coll = XMLHandler.getTagValue( fnode, "collator_enabled" );
         caseSensitive[i] = Const.isEmpty( sens ) || "Y".equalsIgnoreCase( sens );
+        collatorEnabled[i] = Const.isEmpty( coll ) || "Y".equalsIgnoreCase( coll );
+        collatorStrength[i] = Integer.parseInt( XMLHandler.getTagValue( fnode, "collator_strength" ) );
         String presorted = XMLHandler.getTagValue( fnode, "presorted" );
         preSortedField[i] = "Y".equalsIgnoreCase( presorted );
       }
@@ -246,6 +259,8 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface {
     for ( int i = 0; i < nrfields; i++ ) {
       fieldName[i] = "field" + i;
       caseSensitive[i] = true;
+      collatorEnabled[i] = false;
+      collatorStrength[i] = 0;
       preSortedField[i] = false;
     }
   }
@@ -267,6 +282,8 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface {
       retval.append( "        " ).append( XMLHandler.addTagValue( "name", fieldName[i] ) );
       retval.append( "        " ).append( XMLHandler.addTagValue( "ascending", ascending[i] ) );
       retval.append( "        " ).append( XMLHandler.addTagValue( "case_sensitive", caseSensitive[i] ) );
+      retval.append( "        " ).append( XMLHandler.addTagValue( "collator_enabled", collatorEnabled[i] ) );
+      retval.append( "        " ).append( XMLHandler.addTagValue( "collator_strength", collatorStrength[i] ) );
       retval.append( "        " ).append( XMLHandler.addTagValue( "presorted", preSortedField[i] ) );
       retval.append( "      </field>" ).append( Const.CR );
     }
@@ -295,6 +312,8 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface {
         fieldName[i] = rep.getStepAttributeString( id_step, i, "field_name" );
         ascending[i] = rep.getStepAttributeBoolean( id_step, i, "field_ascending" );
         caseSensitive[i] = rep.getStepAttributeBoolean( id_step, i, "field_case_sensitive", true );
+        collatorEnabled[i] = rep.getStepAttributeBoolean( id_step, i, "field_collator_enabled", false );
+        collatorStrength[i] = Integer.parseInt( rep.getStepAttributeString( id_step, i, "field_collator_strength" ) );
         preSortedField[i] = rep.getStepAttributeBoolean( id_step, i, "field_presorted", false );
       }
     } catch ( Exception e ) {
@@ -316,6 +335,8 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface {
         rep.saveStepAttribute( id_transformation, id_step, i, "field_name", fieldName[i] );
         rep.saveStepAttribute( id_transformation, id_step, i, "field_ascending", ascending[i] );
         rep.saveStepAttribute( id_transformation, id_step, i, "field_case_sensitive", caseSensitive[i] );
+        rep.saveStepAttribute( id_transformation, id_step, i, "field_collator_enabled", collatorEnabled[i] );
+        rep.saveStepAttribute( id_transformation, id_step, i, "field_collator_strength", collatorStrength[i] );
         rep.saveStepAttribute( id_transformation, id_step, i, "field_presorted", preSortedField[i] );
       }
     } catch ( Exception e ) {
@@ -332,7 +353,8 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface {
         ValueMetaInterface valueMeta = inputRowMeta.getValueMeta( idx );
         valueMeta.setSortedDescending( !ascending[i] );
         valueMeta.setCaseInsensitive( !caseSensitive[i] );
-
+        valueMeta.setCollatorDisabled( !collatorEnabled[i] );
+        valueMeta.setCollatorStrength( collatorStrength[i] );
         // Also see if lazy conversion is active on these key fields.
         // If so we want to automatically convert them to the normal storage type.
         // This will improve performance, see also: PDI-346
@@ -511,6 +533,36 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface {
    */
   public void setCaseSensitive( boolean[] caseSensitive ) {
     this.caseSensitive = caseSensitive;
+  }
+
+  /**
+   * @return the collatorEnabled
+   */
+  public boolean[] getCollatorEnabled() {
+    return collatorEnabled;
+  }
+
+  /**
+   * @param collatorEnabled
+   *          the collatorEnabled to set
+   */
+  public void setCollatorEnabled( boolean[] collatorEnabled ) {
+    this.collatorEnabled = collatorEnabled;
+  }
+
+  /**
+   * @return the collatorStrength
+   */
+  public int[] getCollatorStrength() {
+    return collatorStrength;
+  }
+
+  /**
+   * @param collatorStrength
+   *          the collatorStrength to set
+   */
+  public void setCollatorStrength( int[] collatorStrength ) {
+    this.collatorStrength = collatorStrength;
   }
 
   /**

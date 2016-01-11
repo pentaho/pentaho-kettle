@@ -88,7 +88,7 @@ public class SortRowsMetaUnit {
   @Test
   public void testRoundTrips() throws KettleException {
     List<String> attributes = Arrays.asList( "directory", "prefix", "sort_size", "free_memory", "compress",
-      "compress_variable", "unique_rows", "name", "ascending", "case_sensitive", "presorted" );
+      "compress_variable", "unique_rows", "name", "ascending", "case_sensitive","collator_enabled","collator_strength", "presorted" );
 
     Map<String, String> getterMap = new HashMap<String, String>();
     getterMap.put( "sort_size", "getSortSize" );
@@ -98,6 +98,8 @@ public class SortRowsMetaUnit {
     getterMap.put( "unique_rows", "isOnlyPassingUniqueRows" );
     getterMap.put( "name", "getFieldName" );
     getterMap.put( "case_sensitive", "getCaseSensitive" );
+	getterMap.put( "collator_enabled", "getCollatorEnabled" );
+	getterMap.put( "collator_strength", "getCollatorStrength" );
     getterMap.put( "presorted", "getPreSortedField" );
 
     Map<String, String> setterMap = new HashMap<String, String>();
@@ -107,6 +109,8 @@ public class SortRowsMetaUnit {
     setterMap.put( "compress_variable", "setCompressFilesVariable" );
     setterMap.put( "name", "setFieldName" );
     setterMap.put( "case_sensitive", "setCaseSensitive" );
+	setterMap.put( "collator_enabled", "setCollatorEnable" );
+	setterMap.put( "collator_strength", "setCollatorStrength" );
     setterMap.put( "presorted", "setPreSortedField" );
 
     Map<String, FieldLoadSaveValidator<?>> fieldLoadSaveValidatorAttributeMap =
@@ -119,6 +123,8 @@ public class SortRowsMetaUnit {
     fieldLoadSaveValidatorAttributeMap.put( "name", stringArrayLoadSaveValidator );
     fieldLoadSaveValidatorAttributeMap.put( "ascending", booleanArrayLoadSaveValidator );
     fieldLoadSaveValidatorAttributeMap.put( "case_sensitive", booleanArrayLoadSaveValidator );
+	fieldLoadSaveValidatorAttributeMap.put( "collator_enabled", booleanArrayLoadSaveValidator );
+	fieldLoadSaveValidatorAttributeMap.put( "collator_strength", stringArrayLoadSaveValidator );
     fieldLoadSaveValidatorAttributeMap.put( "presorted", booleanArrayLoadSaveValidator );
 
     LoadSaveTester loadSaveTester =

@@ -333,6 +333,18 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
             BaseMessages.getString( PKG, "System.Combo.Yes" ),
             BaseMessages.getString( PKG, "System.Combo.No" ) } ),
         new ColumnInfo(
+          BaseMessages.getString( PKG, "SortRowsDialog.CollatorDisabled.Column" ),
+          ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] {
+            BaseMessages.getString( PKG, "System.Combo.Yes" ),
+            BaseMessages.getString( PKG, "System.Combo.No" ) } ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "SortRowsDialog.CollatorStrength.Column" ),
+          ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] {
+            BaseMessages.getString( PKG, "System.Combo.Primary" ),
+            BaseMessages.getString( PKG, "System.Combo.Secondary" ),
+            BaseMessages.getString( PKG, "System.Combo.Tertiary" ),
+            BaseMessages.getString( PKG, "System.Combo.Identical" ) }, true ),
+        new ColumnInfo(
           BaseMessages.getString( PKG, "SortRowsDialog.PreSortedField.Column" ),
           ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] {
             BaseMessages.getString( PKG, "System.Combo.Yes" ),
@@ -482,7 +494,11 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
         .getString( PKG, "System.Combo.No" ) );
       ti.setText( 3, input.getCaseSensitive()[i]
         ? BaseMessages.getString( PKG, "System.Combo.Yes" ) : BaseMessages.getString( PKG, "System.Combo.No" ) );
-      ti.setText( 4, input.getPreSortedField()[i]
+      ti.setText( 4, input.getCollatorEnabled()[i]
+        ? BaseMessages.getString( PKG, "System.Combo.Yes" ) : BaseMessages.getString( PKG, "System.Combo.No" ) );
+      ti.setText( 5, input.getCollatorStrength()[i] == 0
+        ? BaseMessages.getString( PKG, "System.Combo.Primary" ) : Integer.toString( input.getCollatorStrength()[i] ) );
+      ti.setText( 6, input.getPreSortedField()[i]
         ? BaseMessages.getString( PKG, "System.Combo.Yes" ) : BaseMessages.getString( PKG, "System.Combo.No" ) );
     }
 
@@ -528,7 +544,13 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
       input.getFieldName()[i] = ti.getText( 1 );
       input.getAscending()[i] = Const.isEmpty( ti.getText( 2 ) ) || BaseMessages.getString( PKG, "System.Combo.Yes" ).equalsIgnoreCase( ti.getText( 2 ) );
       input.getCaseSensitive()[i] = BaseMessages.getString( PKG, "System.Combo.Yes" ).equalsIgnoreCase( ti.getText( 3 ) );
-      input.getPreSortedField()[i] = BaseMessages.getString( PKG, "System.Combo.Yes" ).equalsIgnoreCase( ti.getText( 4 ) );
+      input.getCollatorEnabled()[i] = BaseMessages.getString( PKG, "System.Combo.Yes" ).equalsIgnoreCase( ti.getText( 4 ) );
+      if (ti.getText( 5 ) == "" ){
+        input.getCollatorStrength()[i] = Integer.parseInt( BaseMessages.getString( PKG, "System.Combo.Primary" ) );
+	  } else{
+		  input.getCollatorStrength()[i] = Integer.parseInt( ti.getText( 5 ) );
+	  }
+      input.getPreSortedField()[i] = BaseMessages.getString( PKG, "System.Combo.Yes" ).equalsIgnoreCase( ti.getText( 6 ) );
     }
 
     dispose();

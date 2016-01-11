@@ -91,6 +91,8 @@ public class ValueMetaFactory {
     target.setLargeTextField( source.isLargeTextField() );
     target.setComments( source.getComments() );
     target.setCaseInsensitive( source.isCaseInsensitive() );
+    target.setCollatorDisabled( source.isCollatorDisabled() );
+    target.setCollatorStrength( source.getCollatorStrength() );
     target.setIndex( source.getIndex() );
 
     target.setOrigin( source.getOrigin() );
