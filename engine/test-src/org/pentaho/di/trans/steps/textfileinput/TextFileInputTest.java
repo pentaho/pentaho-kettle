@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -129,20 +129,7 @@ public class TextFileInputTest {
     meta.setFooter( false );
     meta.setNrFooterLines( -1 );
 
-    TextFileInputData data = new TextFileInputData();
-    data.setFiles( new FileInputList() );
-    data.getFiles().addFile( KettleVFS.getFileObject( virtualFile ) );
-
-    data.outputRowMeta = new RowMeta();
-    data.outputRowMeta.addValueMeta( new ValueMetaString( "col1" ) );
-    data.outputRowMeta.addValueMeta( new ValueMetaString( "col2" ) );
-
-    data.dataErrorLineHandler = Mockito.mock( FileErrorHandler.class );
-    data.fileFormatType = TextFileInputMeta.FILE_FORMAT_UNIX;
-    data.separator = ";";
-    data.filterProcessor = new TextFileFilterProcessor( new TextFileFilter[ 0 ] );
-    data.filePlayList = new FilePlayListAll();
-
+    TextFileInputData data = createDataObject( virtualFile, ";", "col1", "col2" );
 
     RowSet output = new BlockingRowSet( 5 );
     executeStep( meta, data, output, 2 );
@@ -174,21 +161,7 @@ public class TextFileInputTest {
     meta.setFooter( false );
     meta.setNrFooterLines( -1 );
 
-    TextFileInputData data = new TextFileInputData();
-    data.setFiles( new FileInputList() );
-    data.getFiles().addFile( KettleVFS.getFileObject( virtualFile ) );
-
-    data.outputRowMeta = new RowMeta();
-    data.outputRowMeta.addValueMeta( new ValueMetaString( "col1" ) );
-    data.outputRowMeta.addValueMeta( new ValueMetaString( "col2" ) );
-    data.outputRowMeta.addValueMeta( new ValueMetaString( "col3" ) );
-
-    data.dataErrorLineHandler = Mockito.mock( FileErrorHandler.class );
-    data.fileFormatType = TextFileInputMeta.FILE_FORMAT_UNIX;
-    data.separator = ",";
-    data.filterProcessor = new TextFileFilterProcessor( new TextFileFilter[ 0 ] );
-    data.filePlayList = new FilePlayListAll();
-
+    TextFileInputData data = createDataObject( virtualFile, ",", "col1", "col2", "col3" );
 
     RowSet output = new BlockingRowSet( 5 );
     executeStep( meta, data, output, 2 );
@@ -201,6 +174,58 @@ public class TextFileInputTest {
 
 
     deleteVfsFile( virtualFile );
+  }
+
+  @Test
+  public void readInputWithNonEmptyNullif() throws Exception {
+    final String virtualFile = createVirtualFile( "pdi-14358.txt", "-,-\n" );
+
+    TextFileInputMeta meta = new TextFileInputMeta();
+
+    TextFileInputField col2 = field( "col2" );
+    col2.setNullString( "-" );
+    meta.setInputFields( new TextFileInputField[] { field( "col1" ), col2 } );
+
+    meta.setFileCompression( "None" );
+    meta.setFileType( "CSV" );
+    meta.setHeader( false );
+    meta.setNrHeaderLines( -1 );
+    meta.setFooter( false );
+    meta.setNrFooterLines( -1 );
+
+    TextFileInputData data = createDataObject( virtualFile, ",", "col1", "col2" );
+
+    RowSet output = new BlockingRowSet( 5 );
+    executeStep( meta, data, output, 1 );
+
+    Object[] row = output.getRowImmediate();
+    assertRow( row, "-", null );
+
+
+    deleteVfsFile( virtualFile );
+  }
+
+  private TextFileInputData createDataObject( String file,
+                                              String separator,
+                                              String... outputFields ) throws Exception {
+    TextFileInputData data = new TextFileInputData();
+    data.setFiles( new FileInputList() );
+    data.getFiles().addFile( KettleVFS.getFileObject( file ) );
+
+    data.separator = separator;
+
+    data.outputRowMeta = new RowMeta();
+    if ( outputFields != null ) {
+      for ( String field : outputFields ) {
+        data.outputRowMeta.addValueMeta( new ValueMetaString( field ) );
+      }
+    }
+
+    data.dataErrorLineHandler = Mockito.mock( FileErrorHandler.class );
+    data.fileFormatType = TextFileInputMeta.FILE_FORMAT_UNIX;
+    data.filterProcessor = new TextFileFilterProcessor( new TextFileFilter[ 0 ] );
+    data.filePlayList = new FilePlayListAll();
+    return data;
   }
 
   private void executeStep( TextFileInputMeta meta, TextFileInputData data, RowSet output, int expectedRounds )
