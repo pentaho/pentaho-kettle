@@ -22,6 +22,7 @@
 
 package org.pentaho.di.trans.steps.metainject;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.refEq;
 import static org.mockito.Mockito.atLeastOnce;
@@ -54,6 +55,12 @@ import org.pentaho.di.trans.steps.StepMockUtil;
 public class MetaInjectTest {
 
   private static final String INJECTOR_STEP_NAME = "TEST_STEP_FOR_INJECTION";
+
+  private static final String TEST_VALUE = "TEST_VALUE";
+
+  private static final String TEST_VARIABLE = "TEST_VARIABLE";
+
+  private static final String TEST_PARAMETER = "TEST_PARAMETER";
 
   private MetaInject metaInject;
 
@@ -138,6 +145,34 @@ public class MetaInjectTest {
         any( RowMetaAndData.class ), any( SourceStepField.class ) );
     verify( metaInject, atLeastOnce() ).setEntryValueIfFieldExists( refEq( expectedDataEntry ),
         any( RowMetaAndData.class ), any( SourceStepField.class ) );
+  }
+
+  @Test
+  public void transVariablesPassedToChildTransformation() throws KettleException {
+    doReturn( new String[] { TEST_VARIABLE } ).when( metaInject ).listVariables();
+    doReturn( TEST_VALUE ).when( metaInject ).getVariable( TEST_VARIABLE );
+
+    TransMeta internalTransMeta = new TransMeta();
+    doReturn( internalTransMeta ).when( metaInject ).loadTransformationMeta();
+
+    metaInject.init( meta, data );
+
+    assertEquals( TEST_VALUE, internalTransMeta.getVariable( TEST_VARIABLE ) );
+  }
+
+  @Test
+  public void transParametersPassedToChildTransformation() throws KettleException {
+    TransMeta transMeta = new TransMeta();
+    transMeta.addParameterDefinition( TEST_PARAMETER, "TEST_DEF_VALUE", "" );
+    transMeta.setParameterValue( TEST_PARAMETER, TEST_VALUE );
+
+    doReturn( transMeta ).when( metaInject ).getTransMeta();
+    TransMeta internalTransMeta = new TransMeta();
+    doReturn( internalTransMeta ).when( metaInject ).loadTransformationMeta();
+
+    metaInject.init( meta, data );
+
+    assertEquals( TEST_VALUE, internalTransMeta.getParameterValue( TEST_PARAMETER ) );
   }
 
 }
