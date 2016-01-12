@@ -1689,6 +1689,33 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
       ToolBar swtToolbar = (ToolBar) toolbar.getManagedObject();
       swtToolbar.setBackground( GUIResource.getInstance().getColorDemoGray() );
       swtToolbar.pack();
+      
+      // Added 1/11/2016 to implement dropdown option for "Run"
+      ToolItem runItem = new ToolItem( swtToolbar, SWT.DROP_DOWN, 0 );
+
+      runItem.setImage( GUIResource.getInstance().getImage( "ui/images/run.svg" ) );
+      runItem.setToolTipText( BaseMessages.getString( PKG, "Spoon.Tooltip.RunTranformation" ) );
+      runItem.addSelectionListener( new SelectionAdapter() {
+
+        @Override
+        public void widgetSelected( SelectionEvent e ) {
+          if ( e.detail == SWT.DROP_DOWN ) {
+            Menu menu = new Menu( shell, SWT.POP_UP );
+
+            MenuItem item1 = new MenuItem( menu, SWT.PUSH );
+            item1.setText( BaseMessages.getString( PKG, "Spoon.Run.Run" ) );
+            item1.setAccelerator( SWT.F9 );
+            MenuItem item2 = new MenuItem( menu, SWT.PUSH );
+            item2.setText( BaseMessages.getString( PKG, "Spoon.Run.RunOptions" ) );
+            item2.setAccelerator( SWT.F8 );
+
+            menu.setLocation( shell.getDisplay().map( mainComposite.getParent(), null, mainComposite.getLocation() ) );
+            menu.setVisible( true );
+          } else {
+            runTransformation();
+          }
+        }
+      } );
 
       // Hack alert : more XUL limitations...
       // TODO: no longer a limitation use toolbaritem
