@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -208,17 +208,17 @@ public class TextFileInput extends BaseStep implements StepInterface {
           if ( len_encl > 0 && line.substring( from, from + len_encl ).equalsIgnoreCase( enclosure ) ) {
             if ( log.isRowLevel() ) {
               log.logRowlevel( BaseMessages.getString( PKG, "TextFileInput.Log.ConvertLineToRowTitle" ), BaseMessages
-                  .getString( PKG, "TextFileInput.Log.ConvertLineToRow", line.substring( from, from + len_encl ) ) );
+                .getString( PKG, "TextFileInput.Log.ConvertLineToRow", line.substring( from, from + len_encl ) ) );
             }
             encl_found = true;
             int p = from + len_encl;
 
             boolean is_enclosure =
-                len_encl > 0 && p + len_encl < length && line.substring( p, p + len_encl )
-                  .equalsIgnoreCase( enclosure );
+              len_encl > 0 && p + len_encl < length && line.substring( p, p + len_encl )
+                .equalsIgnoreCase( enclosure );
             boolean is_escape =
-                len_esc > 0 && p + len_esc < length
-                    && line.substring( p, p + len_esc ).equalsIgnoreCase( escapeCharacter );
+              len_esc > 0 && p + len_esc < length
+                && line.substring( p, p + len_esc ).equalsIgnoreCase( escapeCharacter );
 
             boolean enclosure_after = false;
 
@@ -242,9 +242,9 @@ public class TextFileInput extends BaseStep implements StepInterface {
               p++;
               enclosure_after = false;
               is_enclosure =
-                  len_encl > 0 && p + len_encl < length && line.substring( p, p + len_encl ).equals( enclosure );
+                len_encl > 0 && p + len_encl < length && line.substring( p, p + len_encl ).equals( enclosure );
               is_escape =
-                  len_esc > 0 && p + len_esc < length && line.substring( p, p + len_esc ).equals( escapeCharacter );
+                len_esc > 0 && p + len_esc < length && line.substring( p, p + len_esc ).equals( escapeCharacter );
 
               // Is it really an enclosure? See if it's not repeated twice or escaped!
               if ( ( is_enclosure || is_escape ) && p < length - 1 ) {
@@ -271,7 +271,7 @@ public class TextFileInput extends BaseStep implements StepInterface {
 
             if ( log.isRowLevel() ) {
               log.logRowlevel( BaseMessages.getString( PKG, "TextFileInput.Log.ConvertLineToRowTitle" ), BaseMessages
-                  .getString( PKG, "TextFileInput.Log.EndOfEnclosure", "" + p ) );
+                .getString( PKG, "TextFileInput.Log.EndOfEnclosure", "" + p ) );
             }
           } else {
             encl_found = false;
@@ -638,7 +638,7 @@ public class TextFileInput extends BaseStep implements StepInterface {
     }
 
     Object[] r = RowDataUtil.allocateRowData( outputRowMeta.size() ); // over-allocate a bit in the row producing
-                                                                      // steps...
+    // steps...
 
     int nrfields = info.getInputFields().length;
     int fieldnr;
@@ -661,7 +661,7 @@ public class TextFileInput extends BaseStep implements StepInterface {
       String[] strings = convertLineToStrings( log, textFileLine.line, info, delimiter, enclosure, escapeCharacter );
       int shiftFields = ( passThruFields == null ? 0 : nrPassThruFields );
       for ( fieldnr = 0; fieldnr < nrfields; fieldnr++ ) {
-        TextFileInputField f = info.getInputFields()[fieldnr];
+        TextFileInputField f = info.getInputFields()[ fieldnr ];
         int valuenr = shiftFields + fieldnr;
         ValueMetaInterface valueMeta = outputRowMeta.getValueMeta( valuenr );
         ValueMetaInterface convertMeta = convertRowMeta.getValueMeta( valuenr );
@@ -675,7 +675,7 @@ public class TextFileInput extends BaseStep implements StepInterface {
         if ( fieldnr < strings.length ) {
           String pol = strings[ fieldnr ];
           try {
-            if ( valueMeta.isNull( pol ) ) {
+            if ( valueMeta.isNull( pol ) || !Const.isEmpty( nullif ) && nullif.equals( pol ) ) {
               value = null;
             } else {
               value = valueMeta.convertDataFromString( pol, convertMeta, nullif, ifnull, trim_type );
@@ -683,12 +683,12 @@ public class TextFileInput extends BaseStep implements StepInterface {
           } catch ( Exception e ) {
             // OK, give some feedback!
             String message =
-                BaseMessages.getString( PKG, "TextFileInput.Log.CoundNotParseField", valueMeta.toStringMeta(),
-                    "" + pol, valueMeta.getConversionMask(), "" + rowNr );
+              BaseMessages.getString( PKG, "TextFileInput.Log.CoundNotParseField", valueMeta.toStringMeta(),
+                "" + pol, valueMeta.getConversionMask(), "" + rowNr );
 
             if ( info.isErrorIgnored() ) {
               log.logDetailed( fname, BaseMessages.getString( PKG, "TextFileInput.Log.Warning" ) + ": " + message
-                  + " : " + e.getMessage() );
+                + " : " + e.getMessage() );
 
               value = null;
 
@@ -729,7 +729,7 @@ public class TextFileInput extends BaseStep implements StepInterface {
 
         // Now add value to the row (if we're not skipping the row)
         if ( r != null ) {
-          r[valuenr] = value;
+          r[ valuenr ] = value;
         }
       }
 
@@ -739,75 +739,75 @@ public class TextFileInput extends BaseStep implements StepInterface {
         // Should be OK at allocation time, but it doesn't hurt :-)
         if ( fieldnr < nrfields ) {
           for ( int i = fieldnr; i < info.getInputFields().length; i++ ) {
-            r[shiftFields + i] = null;
+            r[ shiftFields + i ] = null;
           }
         }
 
         // Add the error handling fields...
         int index = shiftFields + nrfields;
         if ( errorCount != null ) {
-          r[index] = errorCount;
+          r[ index ] = errorCount;
           index++;
         }
         if ( errorFields != null ) {
-          r[index] = errorFields;
+          r[ index ] = errorFields;
           index++;
         }
         if ( errorText != null ) {
-          r[index] = errorText;
+          r[ index ] = errorText;
           index++;
         }
 
         // Possibly add a filename...
         if ( info.includeFilename() ) {
-          r[index] = fname;
+          r[ index ] = fname;
           index++;
         }
 
         // Possibly add a row number...
         if ( info.includeRowNumber() ) {
-          r[index] = new Long( rowNr );
+          r[ index ] = new Long( rowNr );
           index++;
         }
 
         // Possibly add short filename...
         if ( addShortFilename ) {
-          r[index] = shortFilename;
+          r[ index ] = shortFilename;
           index++;
         }
         // Add Extension
         if ( addExtension ) {
-          r[index] = extension;
+          r[ index ] = extension;
           index++;
         }
         // add path
         if ( addPath ) {
-          r[index] = path;
+          r[ index ] = path;
           index++;
         }
         // Add Size
         if ( addSize ) {
-          r[index] = new Long( size );
+          r[ index ] = new Long( size );
           index++;
         }
         // add Hidden
         if ( addIsHidden ) {
-          r[index] = hidden;
+          r[ index ] = hidden;
           index++;
         }
         // Add modification date
         if ( addLastModificationDate ) {
-          r[index] = modificationDateTime;
+          r[ index ] = modificationDateTime;
           index++;
         }
         // Add Uri
         if ( addUri ) {
-          r[index] = uri;
+          r[ index ] = uri;
           index++;
         }
         // Add RootUri
         if ( addRootUri ) {
-          r[index] = rooturi;
+          r[ index ] = rooturi;
           index++;
         }
       } // End if r != null
@@ -818,7 +818,7 @@ public class TextFileInput extends BaseStep implements StepInterface {
     if ( passThruFields != null ) {
       // Simply add all fields from source files step
       for ( int i = 0; i < nrPassThruFields; i++ ) {
-        r[i] = passThruFields[i];
+        r[ i ] = passThruFields[ i ];
       }
     }
 
@@ -861,7 +861,7 @@ public class TextFileInput extends BaseStep implements StepInterface {
             idx = prevInfoFields.indexOfValue( meta.getAcceptingField() );
             if ( idx < 0 ) {
               logError( BaseMessages.getString( PKG, "TextFileInput.Log.Error.UnableToFindFilenameField", meta
-                  .getAcceptingField() ) );
+                .getAcceptingField() ) );
               setErrors( getErrors() + 1 );
               stopAll();
               return false;
@@ -911,7 +911,7 @@ public class TextFileInput extends BaseStep implements StepInterface {
 
       // Count the number of repeat fields...
       for ( int i = 0; i < meta.getInputFields().length; i++ ) {
-        if ( meta.getInputFields()[i].isRepeated() ) {
+        if ( meta.getInputFields()[ i ].isRepeated() ) {
           data.nr_repeats++;
         }
       }
@@ -994,12 +994,12 @@ public class TextFileInput extends BaseStep implements StepInterface {
           data.lineInFile++;
           long useNumber = meta.isRowNumberByFile() ? data.lineInFile : getLinesWritten() + 1;
           r =
-              convertLineToRow( log, textLine, meta, data.currentPassThruFieldsRow, data.nrPassThruFields,
-                  data.outputRowMeta, data.convertRowMeta, data.filename, useNumber, data.separator, data.enclosure,
-                  data.escapeCharacter, data.dataErrorLineHandler, data.addShortFilename, data.addExtension,
-                  data.addPath, data.addSize, data.addIsHidden, data.addLastModificationDate, data.addUri,
-                  data.addRootUri, data.shortFilename, data.path, data.hidden, data.lastModificationDateTime,
-                  data.uriName, data.rootUriName, data.extension, data.size );
+            convertLineToRow( log, textLine, meta, data.currentPassThruFieldsRow, data.nrPassThruFields,
+              data.outputRowMeta, data.convertRowMeta, data.filename, useNumber, data.separator, data.enclosure,
+              data.escapeCharacter, data.dataErrorLineHandler, data.addShortFilename, data.addExtension,
+              data.addPath, data.addSize, data.addIsHidden, data.addLastModificationDate, data.addUri,
+              data.addRootUri, data.shortFilename, data.path, data.hidden, data.lastModificationDateTime,
+              data.uriName, data.rootUriName, data.extension, data.size );
           if ( r != null ) {
             putrow = true;
           }
@@ -1080,16 +1080,16 @@ public class TextFileInput extends BaseStep implements StepInterface {
             }
           }
           if ( data.filePlayList.isProcessingNeeded( textLine.file, textLine.lineNumber,
-              AbstractFileErrorHandler.NO_PARTS ) ) {
+            AbstractFileErrorHandler.NO_PARTS ) ) {
             data.lineInFile++;
             long useNumber = meta.isRowNumberByFile() ? data.lineInFile : getLinesWritten() + 1;
             r =
-                convertLineToRow( log, textLine, meta, data.currentPassThruFieldsRow, data.nrPassThruFields,
-                    data.outputRowMeta, data.convertRowMeta, data.filename, useNumber, data.separator, data.enclosure,
-                    data.escapeCharacter, data.dataErrorLineHandler, data.addShortFilename, data.addExtension,
-                    data.addPath, data.addSize, data.addIsHidden, data.addLastModificationDate, data.addUri,
-                    data.addRootUri, data.shortFilename, data.path, data.hidden, data.lastModificationDateTime,
-                    data.uriName, data.rootUriName, data.extension, data.size );
+              convertLineToRow( log, textLine, meta, data.currentPassThruFieldsRow, data.nrPassThruFields,
+                data.outputRowMeta, data.convertRowMeta, data.filename, useNumber, data.separator, data.enclosure,
+                data.escapeCharacter, data.dataErrorLineHandler, data.addShortFilename, data.addExtension,
+                data.addPath, data.addSize, data.addIsHidden, data.addLastModificationDate, data.addUri,
+                data.addRootUri, data.shortFilename, data.path, data.hidden, data.lastModificationDateTime,
+                data.uriName, data.rootUriName, data.extension, data.size );
             if ( r != null ) {
               if ( log.isRowLevel() ) {
                 logRowlevel( "Found data row: " + data.outputRowMeta.getString( r ) );
@@ -1112,15 +1112,15 @@ public class TextFileInput extends BaseStep implements StepInterface {
         } else {
           // int repnr = 0;
           for ( int i = 0; i < meta.getInputFields().length; i++ ) {
-            if ( meta.getInputFields()[i].isRepeated() ) {
-              if ( r[i] == null ) {
+            if ( meta.getInputFields()[ i ].isRepeated() ) {
+              if ( r[ i ] == null ) {
                 // if it is empty: take the previous value!
 
-                r[i] = data.previous_row[i];
+                r[ i ] = data.previous_row[ i ];
               } else {
                 // not empty: change the previous_row entry!
 
-                data.previous_row[i] = r[i];
+                data.previous_row[ i ] = r[ i ];
               }
               // repnr++;
             }
@@ -1158,7 +1158,7 @@ public class TextFileInput extends BaseStep implements StepInterface {
   private boolean failAfterBadFile( String errorMsg ) {
 
     if ( getStepMeta().isDoingErrorHandling() && data.filename != null
-        && !data.rejectedFiles.containsKey( data.filename ) ) {
+      && !data.rejectedFiles.containsKey( data.filename ) ) {
       data.rejectedFiles.put( data.filename, true );
       rejectCurrentFile( errorMsg );
     }
@@ -1180,13 +1180,14 @@ public class TextFileInput extends BaseStep implements StepInterface {
         rowMeta = new RowMeta();
       }
 
-      int errorFileIndex =
-          ( StringUtils.isBlank( meta.getFileErrorField() ) ) ? -1 : addValueMeta( rowMeta, this
-              .environmentSubstitute( meta.getFileErrorField() ) );
+      int errorFileIndex = ( StringUtils.isBlank( meta.getFileErrorField() ) )
+        ? -1
+        : addValueMeta( rowMeta, this.environmentSubstitute( meta.getFileErrorField() ) );
 
       int errorMessageIndex =
-          StringUtils.isBlank( meta.getFileErrorMessageField() ) ? -1 : addValueMeta( rowMeta, this
-              .environmentSubstitute( meta.getFileErrorMessageField() ) );
+        StringUtils.isBlank( meta.getFileErrorMessageField() )
+          ? -1
+          : addValueMeta( rowMeta, this.environmentSubstitute( meta.getFileErrorMessageField() ) );
 
       try {
         Object[] rowData = getRow();
@@ -1195,10 +1196,10 @@ public class TextFileInput extends BaseStep implements StepInterface {
         }
 
         if ( errorFileIndex >= 0 ) {
-          rowData[errorFileIndex] = data.filename;
+          rowData[ errorFileIndex ] = data.filename;
         }
         if ( errorMessageIndex >= 0 ) {
-          rowData[errorMessageIndex] = errorMsg;
+          rowData[ errorMessageIndex ] = errorMsg;
         }
 
         putError( rowMeta, rowData, getErrors(), data.filename, null, "ERROR_CODE" );
@@ -1318,12 +1319,12 @@ public class TextFileInput extends BaseStep implements StepInterface {
       setErrors( getErrors() + 1 );
       return false;
     } // finally {
-      // This is for bug #5797 : it tries to assure that the file handle
-      // is actually freed/garbarge collected.
-      // XXX deinspanjer 2009-07-07: I'm stubbing this out. The bug was ancient and it is worth reevaluating
-      // to avoid the performance hit of a System GC on every file close
-      // System.gc();
-      // }
+    // This is for bug #5797 : it tries to assure that the file handle
+    // is actually freed/garbarge collected.
+    // XXX deinspanjer 2009-07-07: I'm stubbing this out. The bug was ancient and it is worth reevaluating
+    // to avoid the performance hit of a System GC on every file close
+    // System.gc();
+    // }
 
     return !data.isLastFile;
   }
@@ -1382,7 +1383,7 @@ public class TextFileInput extends BaseStep implements StepInterface {
       //
       if ( meta.isAddResultFile() ) {
         ResultFile resultFile =
-            new ResultFile( ResultFile.FILE_TYPE_GENERAL, data.file, getTransMeta().getName(), toString() );
+          new ResultFile( ResultFile.FILE_TYPE_GENERAL, data.file, getTransMeta().getName(), toString() );
         resultFile.setComment( "File was read by an Text File input step" );
         addResultFile( resultFile );
       }
@@ -1391,7 +1392,7 @@ public class TextFileInput extends BaseStep implements StepInterface {
       }
 
       CompressionProvider provider =
-          CompressionProviderFactory.getInstance().getCompressionProviderByName( meta.getFileCompression() );
+        CompressionProviderFactory.getInstance().getCompressionProviderByName( meta.getFileCompression() );
 
       data.in = provider.createInputStream( KettleVFS.getInputStream( data.file ) );
       data.dataErrorLineHandler.handleFile( data.file );
@@ -1403,7 +1404,7 @@ public class TextFileInput extends BaseStep implements StepInterface {
 
       if ( meta.getEncoding() != null && meta.getEncoding().length() > 0 ) {
         data.isr =
-            new InputStreamReader( new BufferedInputStream( data.in, BUFFER_SIZE_INPUT_STREAM ), meta.getEncoding() );
+          new InputStreamReader( new BufferedInputStream( data.in, BUFFER_SIZE_INPUT_STREAM ), meta.getEncoding() );
       } else {
         data.isr = new InputStreamReader( new BufferedInputStream( data.in, BUFFER_SIZE_INPUT_STREAM ) );
       }
@@ -1434,9 +1435,8 @@ public class TextFileInput extends BaseStep implements StepInterface {
       if ( meta.isLayoutPaged() ) {
         for ( int i = 0; i < meta.getNrLinesDocHeader(); i++ ) {
           // Just skip these...
-          getLine( log, data.isr, data.encodingType, data.fileFormatType, data.lineStringBuilder ); // header and
-                                                                                                    // footer: not
-                                                                                                    // wrapped
+          getLine( log, data.isr, data.encodingType, data.fileFormatType, data.lineStringBuilder );
+          // header and footer: not wrapped
           lineNumberInFile++;
         }
       }
@@ -1458,7 +1458,7 @@ public class TextFileInput extends BaseStep implements StepInterface {
       data.doneWithHeader = !meta.hasHeader();
     } catch ( Exception e ) {
       String errorMsg =
-          "Couldn't open file #" + data.filenr + " : " + data.file.getName().getFriendlyURI() + " --> " + e.toString();
+        "Couldn't open file #" + data.filenr + " : " + data.file.getName().getFriendlyURI() + " --> " + e.toString();
       logError( errorMsg );
       if ( failAfterBadFile( errorMsg ) ) { // !meta.isSkipBadFiles()) stopAll();
         stopAll();
