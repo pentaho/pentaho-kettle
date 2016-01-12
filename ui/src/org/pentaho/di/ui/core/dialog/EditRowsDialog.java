@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,6 +25,7 @@ package org.pentaho.di.ui.core.dialog;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
@@ -324,7 +325,8 @@ public class EditRowsDialog {
 
   }
 
-  private Object[] getRowForData( TableItem item, int rowNr ) throws KettleException {
+  @VisibleForTesting
+  Object[] getRowForData( TableItem item, int rowNr ) throws KettleException {
     try {
       Object[] row = RowDataUtil.allocateRowData( rowMeta.size() );
       for ( int i = 0; i < rowMeta.size(); i++ ) {
@@ -332,10 +334,13 @@ public class EditRowsDialog {
         ValueMetaInterface stringValueMeta = stringRowMeta.getValueMeta( i );
 
         int colnr = i + 1;
-        if ( GUIResource.getInstance().getColorBlue().equals( item.getForeground( colnr ) ) ) {
+        if ( isDisplayingNullValue( item, colnr ) ) {
           row[i] = null; // <null> value
         } else {
           String string = item.getText( colnr );
+          if ( stringValueMeta.isNull( string ) ) {
+            string = null;
+          }
           row[i] = valueMeta.convertDataFromString( string, stringValueMeta,
             null, null, ValueMetaInterface.TRIM_TYPE_NONE );
         }
@@ -345,6 +350,11 @@ public class EditRowsDialog {
       throw new KettleException( BaseMessages.getString( PKG, "EditRowsDialog.Error.ErrorGettingRowForData",
         Integer.toString( rowNr ) ), e );
     }
+  }
+
+  @VisibleForTesting
+  boolean isDisplayingNullValue( TableItem item, int column ) throws KettleException {
+    return GUIResource.getInstance().getColorBlue().equals( item.getForeground( column ) );
   }
 
   private void ok() {
@@ -418,5 +428,16 @@ public class EditRowsDialog {
 
   public void setVMax( int m ) {
     vmax = m;
+  }
+
+
+  @VisibleForTesting
+  void setRowMeta( RowMetaInterface rowMeta ) {
+    this.rowMeta = rowMeta;
+  }
+
+  @VisibleForTesting
+  void setStringRowMeta( RowMetaInterface stringRowMeta ) {
+    this.stringRowMeta = stringRowMeta;
   }
 }
