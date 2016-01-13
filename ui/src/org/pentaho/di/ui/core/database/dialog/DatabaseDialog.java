@@ -129,14 +129,14 @@ public class DatabaseDialog extends XulDatabaseDialog {
       mb.open();
     }
   }
-  
-  public static void showDatabaseExistsDialog(Shell parent, DatabaseMeta databaseMeta) {
+
+  public static void showDatabaseExistsDialog( Shell parent, DatabaseMeta databaseMeta ) {
     String title = BaseMessages.getString( PKG, "DatabaseDialog.DatabaseNameExists.Title" );
     String message = BaseMessages.getString( PKG, "DatabaseDialog.DatabaseNameExists", databaseMeta.getName() );
     String okButton = BaseMessages.getString( PKG, "System.Button.OK" );
     MessageDialog dialog =
-        new MessageDialog( parent, title, null, message, MessageDialog.ERROR, new String[] { okButton }, 0 );
+      new MessageDialog( parent, title, null, message, MessageDialog.ERROR, new String[] { okButton }, 0 );
     dialog.open();
   }
-  
+
 }
