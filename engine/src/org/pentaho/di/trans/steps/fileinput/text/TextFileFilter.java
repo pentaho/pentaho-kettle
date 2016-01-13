@@ -22,17 +22,23 @@
 
 package org.pentaho.di.trans.steps.fileinput.text;
 
+import org.pentaho.di.core.injection.Injection;
+
 public class TextFileFilter implements Cloneable {
   /** The position of the occurrence of the filter string to check at */
+  @Injection( name = "FILTER_POSITION", group = "FILTERS" )
   private int filterPosition;
 
   /** The string to filter on */
+  @Injection( name = "FILTER_STRING", group = "FILTERS" )
   private String filterString;
 
   /** True if we want to stop when we reach a filter line */
+  @Injection( name = "FILTER_LAST_LINE", group = "FILTERS" )
   private boolean filterLastLine;
 
   /** True if we want to match only this lines */
+  @Injection( name = "FILTER_POSITIVE", group = "FILTERS" )
   private boolean filterPositive;
 
   /**

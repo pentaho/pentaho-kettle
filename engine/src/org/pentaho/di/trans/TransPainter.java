@@ -41,6 +41,7 @@ import org.pentaho.di.core.gui.PrimitiveGCInterface.EImage;
 import org.pentaho.di.core.gui.PrimitiveGCInterface.ELineStyle;
 import org.pentaho.di.core.gui.Rectangle;
 import org.pentaho.di.core.gui.ScrollBarInterface;
+import org.pentaho.di.core.injection.bean.BeanInjectionInfo;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.partition.PartitionSchema;
@@ -48,7 +49,7 @@ import org.pentaho.di.trans.step.BaseStepData.StepExecutionStatus;
 import org.pentaho.di.trans.step.StepIOMetaInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.step.StepMetaInjectionInterface;
+import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.step.StepPartitioningMeta;
 import org.pentaho.di.trans.step.StepStatus;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface;
@@ -759,11 +760,13 @@ public class TransPainter extends BasePainter {
     if ( mouseOverSteps.contains( stepMeta ) ) {
       gc.setTransform( translationX, translationY, 0, BasePainter.FACTOR_1_TO_1 );
 
-      StepMetaInjectionInterface injectionInterface =
-        stepMeta.getStepMetaInterface().getStepMetaInjectionInterface();
+      StepMetaInterface stepMetaInterface = stepMeta.getStepMetaInterface();
+      boolean mdiSupport =
+          stepMetaInterface.getStepMetaInjectionInterface() != null || BeanInjectionInfo.isInjectionSupported(
+              stepMetaInterface.getClass() );
 
       EImage[] miniIcons;
-      if ( injectionInterface != null ) {
+      if ( mdiSupport ) {
         miniIcons = new EImage[] { EImage.INPUT, EImage.EDIT, EImage.CONTEXT_MENU, EImage.OUTPUT, EImage.INJECT, };
       } else {
         miniIcons = new EImage[] { EImage.INPUT, EImage.EDIT, EImage.CONTEXT_MENU, EImage.OUTPUT, };
@@ -860,10 +863,11 @@ public class TransPainter extends BasePainter {
                 ioMeta ) );
             break;
           case 4: // INJECT
-            enabled = injectionInterface != null;
+            enabled = mdiSupport;
+            StepMetaInterface mdiObject = mdiSupport ? stepMetaInterface : null;
             areaOwners.add( new AreaOwner( AreaType.STEP_INJECT_ICON, translateTo1To1( xIcon ),
                 translateTo1To1( yIcon ), translateTo1To1( bounds.x ), translateTo1To1( bounds.y ), offset, stepMeta,
-                injectionInterface ) );
+                mdiObject ) );
             break;
           default:
             break;
