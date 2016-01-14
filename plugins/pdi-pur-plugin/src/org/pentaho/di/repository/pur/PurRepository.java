@@ -103,7 +103,7 @@ import static org.pentaho.di.repository.RepositoryObjectType.TRANSFORMATION;
 /**
  * Implementation of {@link Repository} that delegates to the Pentaho unified repository (PUR), an instance of
  * {@link IUnifiedRepository}.
- *
+ * 
  * @author Matt
  * @author mlowery
  */
@@ -380,7 +380,7 @@ public class PurRepository extends AbstractRepository implements Repository, jav
 
   /**
    * Determine if "baseFolder" is the same as "folder" or if "folder" is a descendant of "baseFolder"
-   *
+   * 
    * @param folder
    *          Folder to test for similarity / ancestory; Must not be null
    * @param baseFolder
@@ -407,7 +407,7 @@ public class PurRepository extends AbstractRepository implements Repository, jav
   /**
    * Test to see if the folder is a user's home directory If it is an ancestor to a user's home directory, false will be
    * returned. (It is not actually a user's home directory)
-   *
+   * 
    * @param folder
    *          The folder to test; Must not be null
    * @return True if the directory is a users home directory and False if it is not; False if folder is null
@@ -535,12 +535,66 @@ public class PurRepository extends AbstractRepository implements Repository, jav
 
   @Override
   public RepositoryDirectoryInterface loadRepositoryDirectoryTree() throws KettleException {
-
-    RepositoryFile root = pur.getFile( "/" );
-
-    LazyUnifiedRepositoryDirectory rootDir = new LazyUnifiedRepositoryDirectory( root, null, pur, purRepositoryServiceRegistry );
+    // this method forces a reload of the repository directory tree structure
+    // a new rootRef will be obtained - this is a SoftReference which will be used
+    // by any calls to getRootDir()
+    RepositoryFileTree rootFileTree = loadRepositoryFileTree( ClientRepositoryPaths.getRootFolderPath() );
+    RepositoryDirectoryInterface rootDir = initRepositoryDirectoryTree( rootFileTree );
     rootRef.setRef( rootDir );
     return rootDir;
+  }
+
+  private RepositoryDirectoryInterface initRepositoryDirectoryTree( RepositoryFileTree repoTree )
+    throws KettleException {
+    RepositoryFile rootFolder = repoTree.getFile();
+    RepositoryDirectory rootDir = new RepositoryDirectory();
+    rootDir.setObjectId( new StringObjectId( rootFolder.getId().toString() ) );
+    loadRepositoryDirectory( rootDir, rootFolder, repoTree );
+
+    // Example: /etc
+    RepositoryDirectory etcDir = rootDir.findDirectory( ClientRepositoryPaths.getEtcFolderPath() );
+
+    RepositoryDirectory newRoot = new RepositoryDirectory();
+    newRoot.setObjectId( rootDir.getObjectId() );
+    newRoot.setVisible( false );
+
+    for ( int i = 0; i < rootDir.getNrSubdirectories(); i++ ) {
+      RepositoryDirectory childDir = rootDir.getSubdirectory( i );
+      // Don't show /etc
+      boolean isEtcChild = childDir.equals( etcDir );
+      if ( isEtcChild ) {
+        continue;
+      }
+      newRoot.addSubdirectory( childDir );
+    }
+    return newRoot;
+  }
+
+  private void loadRepositoryDirectory( final RepositoryDirectoryInterface parentDir, final RepositoryFile folder,
+      final RepositoryFileTree treeNode ) throws KettleException {
+    try {
+      List<RepositoryElementMetaInterface> fileChildren = new ArrayList<RepositoryElementMetaInterface>();
+      List<RepositoryFileTree> children = treeNode.getChildren();
+      if ( children != null ) {
+        for ( RepositoryFileTree child : children ) {
+          if ( child.getFile().isFolder() ) {
+            RepositoryDirectory dir = new RepositoryDirectory( parentDir, child.getFile().getName() );
+            dir.setObjectId( new StringObjectId( child.getFile().getId().toString() ) );
+            parentDir.addSubdirectory( dir );
+            loadRepositoryDirectory( dir, child.getFile(), child );
+          } else {
+            // a real file, like a Transformation or Job
+            RepositoryLock lock = unifiedRepositoryLockService.getLock( child.getFile() );
+            RepositoryObjectType objectType = getObjectType( child.getFile().getName() );
+
+            fileChildren.add( new EERepositoryObject( child, parentDir, null, objectType, null, lock, false ) );
+          }
+        }
+        parentDir.setRepositoryObjects( fileChildren );
+      }
+    } catch ( Exception e ) {
+      throw new KettleException( "Unable to load directory structure from repository", e );
+    }
   }
 
   @Override
@@ -1028,7 +1082,7 @@ public class PurRepository extends AbstractRepository implements Repository, jav
    * This method was introduced to reduce the number of server calls for loading shared objects to a constant number:
    * {@code 2 + n, where n is the number of types requested}.
    * </p>
-   *
+   * 
    * @param sharedObjectsByType
    *          Map of type to shared objects. Each map entry will contain a non-null {@link List} of
    *          {@link RepositoryObjectType}s for every type provided. Only entries for types provided will be altered.
@@ -1093,7 +1147,7 @@ public class PurRepository extends AbstractRepository implements Repository, jav
 
   /**
    * Fetch {@link RepositoryFile}s by {@code RepositoryObjectType}.
-   *
+   * 
    * @param allFiles
    *          List to add files into.
    * @param types
@@ -1391,7 +1445,7 @@ public class PurRepository extends AbstractRepository implements Repository, jav
     }
   }
 
-  static RepositoryObjectType getObjectType( final String filename ) throws KettleException {
+  protected RepositoryObjectType getObjectType( final String filename ) throws KettleException {
     if ( filename.endsWith( TRANSFORMATION.getExtension() ) ) {
       return TRANSFORMATION;
     } else if ( filename.endsWith( JOB.getExtension() ) ) {
@@ -1614,7 +1668,7 @@ public class PurRepository extends AbstractRepository implements Repository, jav
    * file is just renamed. If {@code newTitle} is <tt>null</tt>, then the file should keep its name.
    * <p/>
    * Note, it is expected that the file exists
-   *
+   * 
    * @param idObject
    *          file's id
    * @param versionComment
@@ -1962,7 +2016,7 @@ public class PurRepository extends AbstractRepository implements Repository, jav
 
   /**
    * Load all transformations referenced by {@code files}.
-   *
+   * 
    * @param monitor
    * @param log
    * @param files
@@ -2053,7 +2107,7 @@ public class PurRepository extends AbstractRepository implements Repository, jav
 
   /**
    * Load all jobs referenced by {@code files}.
-   *
+   * 
    * @param monitor
    * @param log
    * @param files
@@ -2681,7 +2735,7 @@ public class PurRepository extends AbstractRepository implements Repository, jav
    * <li>{@code checkDeleted == true} and the file was removed</li>
    * <li>{@code checkRename == true} and the file was renamed and renaming failed</li>
    * </ul>
-   *
+   * 
    * @param element
    *          job or transformation
    * @param versionComment
