@@ -67,12 +67,15 @@ public class PurRepositoryUnitTest {
     // purRepository.setTest( mockRepo );
     ObjectId objectId = mock( ObjectId.class );
     RepositoryFile mockFile = mock( RepositoryFile.class );
+    RepositoryFile mockRoot = mock( RepositoryFile.class );
     RepositoryFile mockRootFolder = mock( RepositoryFile.class );
     RepositoryObjectType repositoryObjectType = RepositoryObjectType.TRANSFORMATION;
     RepositoryFileTree mockRepositoryTree = mock( RepositoryFileTree.class );
     String testId = "TEST_ID";
     String testFileId = "TEST_FILE_ID";
     when( objectId.getId() ).thenReturn( testId );
+    when( mockRepo.getFile( "/" ) ).thenReturn( mockRoot );
+    when( mockRoot.getPath() ).thenReturn( "/" );
     when( mockRepo.getFileById( testId ) ).thenReturn( mockFile );
     when( mockFile.getPath() ).thenReturn( "/home/testuser/path.ktr" );
     when( mockFile.getId() ).thenReturn( testFileId );
