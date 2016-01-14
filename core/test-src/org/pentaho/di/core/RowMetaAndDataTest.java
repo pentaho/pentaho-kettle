@@ -36,6 +36,10 @@ public class RowMetaAndDataTest {
   RowMeta rowsMeta;
   RowMetaAndData row;
 
+  enum TestEnum {
+    ONE, Two, three
+  }
+
   @Before
   public void prepare() throws Exception {
     rowsMeta = new RowMeta();
@@ -94,6 +98,13 @@ public class RowMetaAndDataTest {
     row = new RowMetaAndData( rowsMeta, "other", null, null );
     assertEquals( false, row.getAsJavaType( "str", boolean.class ) );
     assertEquals( false, row.getAsJavaType( "str", Boolean.class ) );
+
+    row = new RowMetaAndData( rowsMeta, TestEnum.ONE.name(), null, null );
+    assertEquals( TestEnum.ONE, row.getAsJavaType( "str", TestEnum.class ) );
+    row = new RowMetaAndData( rowsMeta, TestEnum.Two.name(), null, null );
+    assertEquals( TestEnum.Two, row.getAsJavaType( "str", TestEnum.class ) );
+    row = new RowMetaAndData( rowsMeta, TestEnum.three.name(), null, null );
+    assertEquals( TestEnum.three, row.getAsJavaType( "str", TestEnum.class ) );
 
     row = new RowMetaAndData( rowsMeta, null, null, null );
     assertEquals( null, row.getAsJavaType( "str", String.class ) );

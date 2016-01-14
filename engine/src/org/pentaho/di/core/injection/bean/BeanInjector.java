@@ -23,6 +23,7 @@
 package org.pentaho.di.core.injection.bean;
 
 import java.lang.reflect.Array;
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -111,7 +112,19 @@ public class BeanInjector {
           Object existArray = extendArray( s, obj, index + 1 );
           Object next = Array.get( existArray, index ); // get specific element
           if ( next == null ) {
-            next = s.leafClass.newInstance();
+            // Object can be inner of metadata class. In this case constructor will require parameter
+            for ( Constructor<?> c : s.leafClass.getConstructors() ) {
+              if ( c.getParameterTypes().length == 0 ) {
+                next = s.leafClass.newInstance();
+                break;
+              } else if ( c.getParameterTypes().length == 1 && c.getParameterTypes()[0] == info.clazz ) {
+                next = c.newInstance( root );
+                break;
+              }
+            }
+            if ( next == null ) {
+              throw new KettleException( "Empty constructor not found for " + s.leafClass );
+            }
             Array.set( existArray, index, next );
           }
           obj = next;

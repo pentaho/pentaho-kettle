@@ -42,7 +42,7 @@ public class BeanInjectionInfo {
   private static LogChannelInterface LOG =
       KettleLogStore.getLogChannelInterfaceFactory().create( BeanInjectionInfo.class );
 
-  private final Class<?> clazz;
+  protected final Class<?> clazz;
   private final InjectionSupported clazzAnnotation;
   private Map<String, Property> properties = new HashMap<>();
   private List<Group> groupsList = new ArrayList<>();
