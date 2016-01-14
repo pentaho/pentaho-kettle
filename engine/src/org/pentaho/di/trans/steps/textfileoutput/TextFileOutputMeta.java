@@ -35,6 +35,9 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.injection.Injection;
+import org.pentaho.di.core.injection.InjectionDeep;
+import org.pentaho.di.core.injection.InjectionSupported;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
@@ -53,7 +56,6 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInjectionMetaEntry;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.step.StepMetaInjectionInterface;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
@@ -62,6 +64,7 @@ import org.w3c.dom.Node;
  * Created on 4-apr-2003
  *
  */
+@InjectionSupported( localizationPrefix = "TextFileOutput.Injection.", groups = { "OUTPUT_FIELDS" } )
 public class TextFileOutputMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = TextFileOutputMeta.class; // for i18n purposes, needed by Translator2!!
 
@@ -74,99 +77,130 @@ public class TextFileOutputMeta extends BaseStepMeta implements StepMetaInterfac
   public static final String[] formatMapperLineTerminator = new String[] { "DOS", "UNIX", "CR", "None" };
 
   /** The base name of the output file */
+  @Injection( name = "FILENAME" )
   private String fileName;
 
   /** Whether to treat this as a command to be executed and piped into */
+  @Injection( name = "RUN_AS_COMMAND" )
   private boolean fileAsCommand;
 
   /** Whether to push the output into the output of a servlet with the executeTrans Carte/DI-Server servlet */
+  @Injection( name = "PASS_TO_SERVLET" )
   private boolean servletOutput;
 
   /** Flag: create parent folder, default to true */
+  @Injection( name = "CREATE_PARENT_FOLDER" )
   private boolean createparentfolder = true;
 
   /** The file extention in case of a generated filename */
+  @Injection( name = "EXTENSION" )
   private String extension;
 
   /** The separator to choose for the CSV file */
+  @Injection( name = "SEPARATOR" )
   private String separator;
 
   /** The enclosure to use in case the separator is part of a field's value */
+  @Injection( name = "ENCLOSURE" )
   private String enclosure;
 
   /** Setting to allow the enclosure to be always surrounding a String value, even when there is no separator inside */
+  @Injection( name = "FORCE_ENCLOSURE" )
   private boolean enclosureForced;
 
   /**
    * Setting to allow for backwards compatibility where the enclosure did not show up at all if Force Enclosure was not
    * checked
    */
+  @Injection( name = "DISABLE_ENCLOSURE_FIX" )
   private boolean disableEnclosureFix;
 
   /** Add a header at the top of the file? */
+  @Injection( name = "HEADER" )
   private boolean headerEnabled;
 
   /** Add a footer at the bottom of the file? */
+  @Injection( name = "FOOTER" )
   private boolean footerEnabled;
 
   /** The file format: DOS or Unix */
+  @Injection( name = "FORMAT" )
   private String fileFormat;
 
   /** The file compression: None, Zip or Gzip */
+  @Injection( name = "COMPRESSION" )
   private String fileCompression;
 
   /** if this value is larger then 0, the text file is split up into parts of this number of lines */
+  @Injection( name = "SPLIT_EVERY" )
   private int splitEvery;
 
   /** Flag to indicate the we want to append to the end of an existing file (if it exists) */
+  @Injection( name = "APPEND" )
   private boolean fileAppended;
 
   /** Flag: add the stepnr in the filename */
+  @Injection( name = "INC_STEPNR_IN_FILENAME" )
   private boolean stepNrInFilename;
 
   /** Flag: add the partition number in the filename */
+  @Injection( name = "INC_PARTNR_IN_FILENAME" )
   private boolean partNrInFilename;
 
   /** Flag: add the date in the filename */
+  @Injection( name = "INC_DATE_IN_FILENAME" )
   private boolean dateInFilename;
 
   /** Flag: add the time in the filename */
+  @Injection( name = "INC_TIME_IN_FILENAME" )
   private boolean timeInFilename;
 
   /** Flag: pad fields to their specified length */
+  @Injection( name = "RIGHT_PAD_FIELDS" )
   private boolean padded;
 
   /** Flag: Fast dump data without field formatting */
+  @Injection( name = "FAST_DATA_DUMP" )
   private boolean fastDump;
 
   /* THE FIELD SPECIFICATIONS ... */
 
   /** The output fields */
+  @InjectionDeep
   private TextFileField[] outputFields;
 
   /** The encoding to use for reading: null or empty string means system default encoding */
+  @Injection( name = "ENCODING" )
   private String encoding;
 
   /** The string to use for append to end line of the whole file: null or empty string means no line needed */
+  @Injection( name = "ADD_ENDING_LINE" )
   private String endedLine;
 
   /* Specification if file name is in field */
 
+  @Injection( name = "FILENAME_IN_FIELD" )
   private boolean fileNameInField;
 
+  @Injection( name = "FILENAME_FIELD" )
   private String fileNameField;
 
   /** Calculated value ... */
+  @Injection( name = "NEW_LINE" )
   private String newline;
 
   /** Flag: add the filenames to result filenames */
+  @Injection( name = "ADD_TO_RESULT" )
   private boolean addToResultFilenames;
 
   /** Flag : Do not open new file when transformation start */
+  @Injection( name = "DO_NOT_CREATE_FILE_AT_STARTUP" )
   private boolean doNotOpenNewFileInit;
 
+  @Injection( name = "SPECIFY_DATE_FORMAT" )
   private boolean specifyingFormat;
 
+  @Injection( name = "DATE_FORMAT" )
   private String dateTimeFormat;
 
   public TextFileOutputMeta() {
@@ -1244,11 +1278,6 @@ public class TextFileOutputMeta extends BaseStepMeta implements StepMetaInterfac
 
   public void setFilename( String fileName ) {
     this.fileName = fileName;
-  }
-
-  @Override
-  public StepMetaInjectionInterface getStepMetaInjectionInterface() {
-    return new TextFileOutputMetaInjection( this );
   }
 
   public List<StepInjectionMetaEntry> extractStepMetadataEntries() throws KettleException {
