@@ -2486,17 +2486,18 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
    */
   protected void writeStepLogInformation() throws KettleException {
     Database db = null;
-    StepLogTable stepLogTable = transMeta.getStepLogTable();
+    StepLogTable stepLogTable = getTransMeta().getStepLogTable();
     try {
-      db = new Database( this, stepLogTable.getDatabaseMeta() );
+      db = createDataBase( stepLogTable.getDatabaseMeta() );
       db.shareVariablesWith( this );
       db.connect();
       db.setCommit( logCommitSize );
 
-      for ( StepMetaDataCombi combi : steps ) {
+      for ( StepMetaDataCombi combi : getSteps() ) {
         db.writeLogRecord( stepLogTable, LogStatus.START, combi, null );
       }
 
+      db.cleanupLogRecords( stepLogTable );
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString(
         PKG, "Trans.Exception.UnableToWriteStepInformationToLogTable" ), e );
@@ -2507,6 +2508,10 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
       db.disconnect();
     }
 
+  }
+
+  protected Database createDataBase( DatabaseMeta databaseMeta ) {
+    return new Database( this, databaseMeta );
   }
 
   protected synchronized void writeMetricsInformation() throws KettleException {

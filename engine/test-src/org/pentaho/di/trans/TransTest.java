@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -46,15 +47,19 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.ProgressMonitorListener;
+import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.core.logging.StepLogTable;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaChangeListenerInterface;
+import org.pentaho.di.trans.step.StepMetaDataCombi;
 import org.pentaho.di.trans.steps.metainject.MetaInjectMeta;
 import org.pentaho.di.trans.steps.metainject.SourceStepField;
 import org.pentaho.di.trans.steps.metainject.TargetStepAttribute;
@@ -258,6 +263,28 @@ public class TransTest {
     assertEquals( TransMeta.nrSteps(), 2 );
 
   }
+
+  @Test
+  public void testRecordsCleanUpMethodIsCalled() throws Exception {
+    Database mockedDataBase = mock( Database.class );
+    Trans trans = mock( Trans.class );
+
+    StepLogTable stepLogTable = StepLogTable.getDefault( mock( VariableSpace.class ), mock( HasDatabasesInterface.class )  );
+    stepLogTable.setConnectionName( "connection" );
+
+    TransMeta transMeta = new TransMeta(  );
+    transMeta.setStepLogTable( stepLogTable );
+
+    when( trans.getTransMeta() ).thenReturn( transMeta );
+    when( trans.createDataBase( Mockito.any( DatabaseMeta.class ) ) ).thenReturn( mockedDataBase );
+    when( trans.getSteps() ).thenReturn( new ArrayList<StepMetaDataCombi>() );
+
+    Mockito.doCallRealMethod().when( trans ).writeStepLogInformation();
+    trans.writeStepLogInformation();
+
+    Mockito.verify( mockedDataBase ).cleanupLogRecords( stepLogTable );
+  }
+
 
   private void startThreads( Runnable one, Runnable two, CountDownLatch start ) throws InterruptedException {
     Thread th = new Thread( one );
