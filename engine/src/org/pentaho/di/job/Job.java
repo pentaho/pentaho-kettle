@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -1536,8 +1536,8 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
    *          the new internal kettle variables.
    */
   public void setInternalKettleVariables( VariableSpace var ) {
-    if ( jobMeta != null && jobMeta.getFilename() != null ) // we have a finename that's defined.
-    {
+    if ( jobMeta != null && jobMeta.getFilename() != null ) {
+      // we have a finename that's defined.
       try {
         FileObject fileObject = KettleVFS.getFileObject( jobMeta.getFilename(), this );
         FileName fileName = fileObject.getName();

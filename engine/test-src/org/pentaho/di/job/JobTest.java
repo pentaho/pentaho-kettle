@@ -40,7 +40,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
 public class JobTest {
-  private final static String STRING_DEFAULT = "<def>";
+  private static final String STRING_DEFAULT = "<def>";
   private Job mockedJob;
   private Database mockedDataBase;
   private VariableSpace mockedVariableSpace;
