@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -126,7 +126,7 @@ public class XMLHandlerUnitTest {
   public void addTagValueDate() {
     String result = "2014&#x2f;12&#x2f;29 15&#x3a;59&#x3a;45.789";
     Calendar aDate = new GregorianCalendar();
-    aDate.set( 2014, ( 12 - 1 ) , 29, 15, 59, 45 );
+    aDate.set( 2014, ( 12 - 1 ), 29, 15, 59, 45 );
     aDate.set( Calendar.MILLISECOND, 789 );
 
     assertEquals( "<adate>" + result + "</adate>" + cr, addTagValue( "adate", aDate.getTime() ) );
