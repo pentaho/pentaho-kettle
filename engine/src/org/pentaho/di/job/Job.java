@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -1551,8 +1551,8 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
    *          the new internal kettle variables.
    */
   public void setInternalKettleVariables( VariableSpace var ) {
-    if ( jobMeta != null && jobMeta.getFilename() != null ) // we have a finename that's defined.
-    {
+    if ( jobMeta != null && jobMeta.getFilename() != null ) {
+      // we have a finename that's defined.
       try {
         FileObject fileObject = KettleVFS.getFileObject( jobMeta.getFilename(), this );
         FileName fileName = fileObject.getName();
@@ -1573,32 +1573,32 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
     }
 
     boolean hasRepoDir = jobMeta.getRepositoryDirectory() != null && jobMeta.getRepository() != null;
-    
+
     // The name of the job
     variables.setVariable( Const.INTERNAL_VARIABLE_JOB_NAME, Const.NVL( jobMeta.getName(), "" ) );
 
     // The name of the directory in the repository
-    variables.setVariable( Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY, 
-        hasRepoDir ? jobMeta.getRepositoryDirectory().getPath() : "" );
+    variables.setVariable( Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY,
+      hasRepoDir ? jobMeta.getRepositoryDirectory().getPath() : "" );
 
     // setup fallbacks
     if ( hasRepoDir ) {
-      variables.setVariable( Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY, 
-          variables.getVariable( Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY ) );
+      variables.setVariable( Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY,
+        variables.getVariable( Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY ) );
     } else {
-      variables.setVariable( Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY, 
-          variables.getVariable( Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY ) );
+      variables.setVariable( Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY,
+        variables.getVariable( Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY ) );
     }
-    
+
     if ( hasRepoDir ) {
-      variables.setVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY, 
-          variables.getVariable( Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY ) );
-      if ( "/".equals(variables.getVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY ) ) ) {
+      variables.setVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY,
+        variables.getVariable( Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY ) );
+      if ( "/".equals( variables.getVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY ) ) ) {
         variables.setVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY, "" );
       }
     } else {
-      variables.setVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY, 
-          variables.getVariable( Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY ) );
+      variables.setVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY,
+        variables.getVariable( Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY ) );
     }
   }
 
@@ -2444,12 +2444,12 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
         thread.setDaemon( true );
         return thread;
       }
-     } );
+    } );
 
     heartbeat.scheduleAtFixedRate( new Runnable() {
       public void run() {
 
-        if( Job.this.isFinished() ){
+        if ( Job.this.isFinished() ) {
           log.logBasic( "Shutting down heartbeat signal for " + jobMeta.getName() );
           shutdownHeartbeat( heartbeat );
           return;
@@ -2461,7 +2461,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
           ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.JobHeartbeat.id, Job.this );
 
         } catch ( KettleException e ) {
-           log.logError( e.getMessage(), e );
+          log.logError( e.getMessage(), e );
         }
       }
     }, intervalInSeconds /* initial delay */, intervalInSeconds /* interval delay */, TimeUnit.SECONDS );
@@ -2469,14 +2469,14 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
     return heartbeat;
   }
 
-  protected void shutdownHeartbeat( ExecutorService heartbeat ){
+  protected void shutdownHeartbeat( ExecutorService heartbeat ) {
 
-    if( heartbeat != null ) {
+    if ( heartbeat != null ) {
 
       try {
         heartbeat.shutdownNow(); // prevents waiting tasks from starting and attempts to stop currently executing ones
 
-      } catch( Throwable t ) {
+      } catch ( Throwable t ) {
         /* do nothing */
       }
     }
@@ -2495,11 +2495,11 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
       if ( meta != null ) {
 
         return Const.toInt( meta.getParameterValue( Const.VARIABLE_HEARTBEAT_PERIODIC_INTERVAL_SECS ),
-            Const.toInt(  meta.getParameterDefault( Const.VARIABLE_HEARTBEAT_PERIODIC_INTERVAL_SECS ),
-                Const.HEARTBEAT_PERIODIC_INTERVAL_IN_SECS ) );
+          Const.toInt( meta.getParameterDefault( Const.VARIABLE_HEARTBEAT_PERIODIC_INTERVAL_SECS ),
+            Const.HEARTBEAT_PERIODIC_INTERVAL_IN_SECS ) );
       }
 
-    } catch( Exception e ){
+    } catch ( Exception e ) {
       /* do nothing, return Const.HEARTBEAT_PERIODIC_INTERVAL_IN_SECS */
     }
 

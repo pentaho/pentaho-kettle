@@ -24,6 +24,8 @@ package org.pentaho.di.job;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Matchers;
+import org.mockito.Mockito;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.logging.BaseLogTable;
@@ -36,25 +38,21 @@ import org.pentaho.di.trans.HasDatabasesInterface;
 
 import java.util.ArrayList;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.*;
-
 public class JobTest {
-  private final static String STRING_DEFAULT = "<def>";
+  private static final String STRING_DEFAULT = "<def>";
   private Job mockedJob;
   private Database mockedDataBase;
   private VariableSpace mockedVariableSpace;
   private HasDatabasesInterface hasDatabasesInterface;
 
-
   @Before
   public void init() {
-    mockedDataBase = mock( Database.class );
-    mockedJob = mock( Job.class );
-    mockedVariableSpace = mock( VariableSpace.class );
-    hasDatabasesInterface = mock( HasDatabasesInterface.class );
+    mockedDataBase = Mockito.mock( Database.class );
+    mockedJob = Mockito.mock( Job.class );
+    mockedVariableSpace = Mockito.mock( VariableSpace.class );
+    hasDatabasesInterface = Mockito.mock( HasDatabasesInterface.class );
 
-    when( mockedJob.createDatabase( any( DatabaseMeta.class ) ) ).thenReturn( mockedDataBase );
+    Mockito.when( mockedJob.createDatabase( Matchers.any( DatabaseMeta.class ) ) ).thenReturn( mockedDataBase );
   }
 
   @Test
@@ -66,12 +64,12 @@ public class JobTest {
     JobMeta jobMeta = new JobMeta(  );
     jobMeta.setJobEntryLogTable( jobEntryLogTable );
 
-    when( mockedJob.getJobMeta() ).thenReturn( jobMeta );
-    doCallRealMethod().when( mockedJob ).writeJobEntryLogInformation();
+    Mockito.when( mockedJob.getJobMeta() ).thenReturn( jobMeta );
+    Mockito.doCallRealMethod().when( mockedJob ).writeJobEntryLogInformation();
 
     mockedJob.writeJobEntryLogInformation();
 
-    verify( mockedDataBase ).cleanupLogRecords( jobEntryLogTable );
+    Mockito.verify( mockedDataBase ).cleanupLogRecords( jobEntryLogTable );
   }
 
   @Test
@@ -79,11 +77,11 @@ public class JobTest {
     JobLogTable jobLogTable = JobLogTable.getDefault( mockedVariableSpace, hasDatabasesInterface );
     setAllTableParamsDefault( jobLogTable );
 
-    doCallRealMethod().when( mockedJob ).writeLogTableInformation( jobLogTable, LogStatus.END );
+    Mockito.doCallRealMethod().when( mockedJob ).writeLogTableInformation( jobLogTable, LogStatus.END );
 
     mockedJob.writeLogTableInformation( jobLogTable, LogStatus.END );
 
-    verify( mockedDataBase ).cleanupLogRecords( jobLogTable );
+    Mockito.verify( mockedDataBase ).cleanupLogRecords( jobLogTable );
   }
 
   public void setAllTableParamsDefault( BaseLogTable table ) {
