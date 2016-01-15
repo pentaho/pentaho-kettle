@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -1187,31 +1187,45 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
       JobLogTable jobLogTable = jobMeta.getJobLogTable();
       if ( jobLogTable.isDefined() ) {
-
-        String tableName = jobMeta.getJobLogTable().getActualTableName();
-        DatabaseMeta logcon = jobMeta.getJobLogTable().getDatabaseMeta();
-
-        Database ldb = new Database( this, logcon );
-        ldb.shareVariablesWith( this );
-        try {
-          ldb.connect();
-          ldb.setCommit( logCommitSize );
-          ldb.writeLogRecord( jobMeta.getJobLogTable(), status, this, null );
-        } catch ( KettleDatabaseException dbe ) {
-          addErrors( 1 );
-          throw new KettleJobException(
-            "Unable to end processing by writing log record to table " + tableName, dbe );
-        } finally {
-          if ( !ldb.isAutoCommit() ) {
-            ldb.commitLog( true, jobMeta.getJobLogTable() );
-          }
-          ldb.disconnect();
-        }
+        writeLogTableInformation( jobLogTable, status );
       }
 
       return true;
     } catch ( Exception e ) {
       throw new KettleJobException( e ); // In case something else goes wrong.
+    }
+  }
+
+  /**
+   *  Writes information to Job Log table.
+   *  Cleans old records, in case job is finished.
+   *
+   */
+  protected void writeLogTableInformation( JobLogTable jobLogTable, LogStatus status )
+    throws KettleJobException, KettleDatabaseException {
+    boolean cleanLogRecords = status.equals( LogStatus.END );
+    String tableName = jobLogTable.getActualTableName();
+    DatabaseMeta logcon = jobLogTable.getDatabaseMeta();
+
+    Database ldb = createDatabase( logcon );
+    ldb.shareVariablesWith( this );
+    try {
+      ldb.connect();
+      ldb.setCommit( logCommitSize );
+      ldb.writeLogRecord( jobLogTable, status, this, null );
+
+      if ( cleanLogRecords ) {
+        ldb.cleanupLogRecords( jobLogTable );
+      }
+
+    } catch ( KettleDatabaseException dbe ) {
+      addErrors( 1 );
+      throw new KettleJobException( "Unable to end processing by writing log record to table " + tableName, dbe );
+    } finally {
+      if ( !ldb.isAutoCommit() ) {
+        ldb.commitLog( true, jobLogTable );
+      }
+      ldb.disconnect();
     }
   }
 
@@ -1269,16 +1283,18 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
    */
   protected void writeJobEntryLogInformation() throws KettleException {
     Database db = null;
-    JobEntryLogTable jobEntryLogTable = jobMeta.getJobEntryLogTable();
+    JobEntryLogTable jobEntryLogTable = getJobMeta().getJobEntryLogTable();
     try {
-      db = new Database( this, jobEntryLogTable.getDatabaseMeta() );
+      db = createDatabase( jobEntryLogTable.getDatabaseMeta() );
       db.shareVariablesWith( this );
       db.connect();
       db.setCommit( logCommitSize );
 
-      for ( JobEntryCopy copy : jobMeta.getJobCopies() ) {
+      for ( JobEntryCopy copy : getJobMeta().getJobCopies() ) {
         db.writeLogRecord( jobEntryLogTable, LogStatus.START, copy, this );
       }
+
+      db.cleanupLogRecords( jobEntryLogTable );
 
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString(
@@ -1289,6 +1305,10 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
       }
       db.disconnect();
     }
+  }
+
+  protected Database createDatabase( DatabaseMeta databaseMeta ) {
+    return new Database( this, databaseMeta );
   }
 
   /**
@@ -1531,8 +1551,8 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
    *          the new internal kettle variables.
    */
   public void setInternalKettleVariables( VariableSpace var ) {
-    if ( jobMeta != null && jobMeta.getFilename() != null ) // we have a finename that's defined.
-    {
+    if ( jobMeta != null && jobMeta.getFilename() != null ) {
+      // we have a finename that's defined.
       try {
         FileObject fileObject = KettleVFS.getFileObject( jobMeta.getFilename(), this );
         FileName fileName = fileObject.getName();
@@ -1553,32 +1573,32 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
     }
 
     boolean hasRepoDir = jobMeta.getRepositoryDirectory() != null && jobMeta.getRepository() != null;
-    
+
     // The name of the job
     variables.setVariable( Const.INTERNAL_VARIABLE_JOB_NAME, Const.NVL( jobMeta.getName(), "" ) );
 
     // The name of the directory in the repository
-    variables.setVariable( Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY, 
-        hasRepoDir ? jobMeta.getRepositoryDirectory().getPath() : "" );
+    variables.setVariable( Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY,
+      hasRepoDir ? jobMeta.getRepositoryDirectory().getPath() : "" );
 
     // setup fallbacks
     if ( hasRepoDir ) {
-      variables.setVariable( Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY, 
-          variables.getVariable( Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY ) );
+      variables.setVariable( Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY,
+        variables.getVariable( Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY ) );
     } else {
-      variables.setVariable( Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY, 
-          variables.getVariable( Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY ) );
+      variables.setVariable( Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY,
+        variables.getVariable( Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY ) );
     }
-    
+
     if ( hasRepoDir ) {
-      variables.setVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY, 
-          variables.getVariable( Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY ) );
-      if ( "/".equals(variables.getVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY ) ) ) {
+      variables.setVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY,
+        variables.getVariable( Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY ) );
+      if ( "/".equals( variables.getVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY ) ) ) {
         variables.setVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY, "" );
       }
     } else {
-      variables.setVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY, 
-          variables.getVariable( Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY ) );
+      variables.setVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY,
+        variables.getVariable( Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY ) );
     }
   }
 
@@ -2424,12 +2444,12 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
         thread.setDaemon( true );
         return thread;
       }
-     } );
+    } );
 
     heartbeat.scheduleAtFixedRate( new Runnable() {
       public void run() {
 
-        if( Job.this.isFinished() ){
+        if ( Job.this.isFinished() ) {
           log.logBasic( "Shutting down heartbeat signal for " + jobMeta.getName() );
           shutdownHeartbeat( heartbeat );
           return;
@@ -2441,7 +2461,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
           ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.JobHeartbeat.id, Job.this );
 
         } catch ( KettleException e ) {
-           log.logError( e.getMessage(), e );
+          log.logError( e.getMessage(), e );
         }
       }
     }, intervalInSeconds /* initial delay */, intervalInSeconds /* interval delay */, TimeUnit.SECONDS );
@@ -2449,14 +2469,14 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
     return heartbeat;
   }
 
-  protected void shutdownHeartbeat( ExecutorService heartbeat ){
+  protected void shutdownHeartbeat( ExecutorService heartbeat ) {
 
-    if( heartbeat != null ) {
+    if ( heartbeat != null ) {
 
       try {
         heartbeat.shutdownNow(); // prevents waiting tasks from starting and attempts to stop currently executing ones
 
-      } catch( Throwable t ) {
+      } catch ( Throwable t ) {
         /* do nothing */
       }
     }
@@ -2475,11 +2495,11 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
       if ( meta != null ) {
 
         return Const.toInt( meta.getParameterValue( Const.VARIABLE_HEARTBEAT_PERIODIC_INTERVAL_SECS ),
-            Const.toInt(  meta.getParameterDefault( Const.VARIABLE_HEARTBEAT_PERIODIC_INTERVAL_SECS ),
-                Const.HEARTBEAT_PERIODIC_INTERVAL_IN_SECS ) );
+          Const.toInt( meta.getParameterDefault( Const.VARIABLE_HEARTBEAT_PERIODIC_INTERVAL_SECS ),
+            Const.HEARTBEAT_PERIODIC_INTERVAL_IN_SECS ) );
       }
 
-    } catch( Exception e ){
+    } catch ( Exception e ) {
       /* do nothing, return Const.HEARTBEAT_PERIODIC_INTERVAL_IN_SECS */
     }
 
