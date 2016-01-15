@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-201 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
