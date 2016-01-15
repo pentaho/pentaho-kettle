@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -309,7 +309,7 @@ public class TransDialog extends Dialog {
           throw krle;
         }
         new ErrorDialog( shell, "Error", "Error loading transformation dialog plugin with id "
-          + transDialogPlugin.getIds()[0], e );
+          + transDialogPlugin.getIds()[ 0 ], e );
       }
     }
 
@@ -703,16 +703,16 @@ public class TransDialog extends Dialog {
     final int FieldsCols = 3;
     final int FieldsRows = transMeta.listParameters().length;
 
-    ColumnInfo[] colinf = new ColumnInfo[FieldsCols];
-    colinf[0] =
+    ColumnInfo[] colinf = new ColumnInfo[ FieldsCols ];
+    colinf[ 0 ] =
       new ColumnInfo(
         BaseMessages.getString( PKG, "TransDialog.ColumnInfo.Parameter.Label" ), ColumnInfo.COLUMN_TYPE_TEXT,
         false );
-    colinf[1] =
+    colinf[ 1 ] =
       new ColumnInfo(
         BaseMessages.getString( PKG, "TransDialog.ColumnInfo.Default.Label" ), ColumnInfo.COLUMN_TYPE_TEXT,
         false );
-    colinf[2] =
+    colinf[ 2 ] =
       new ColumnInfo(
         BaseMessages.getString( PKG, "TransDialog.ColumnInfo.Description.Label" ),
         ColumnInfo.COLUMN_TYPE_TEXT, false );
@@ -1094,7 +1094,7 @@ public class TransDialog extends Dialog {
       }
     };
 
-    colinf[1].setDisabledListener( disabledListener );
+    colinf[ 1 ].setDisabledListener( disabledListener );
 
     wOptionFields =
       new TableView( transMeta, wLogOptionsComposite, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.CHECK,
@@ -1239,7 +1239,7 @@ public class TransDialog extends Dialog {
       }
     };
 
-    colinf[1].setDisabledListener( disabledListener );
+    colinf[ 1 ].setDisabledListener( disabledListener );
 
     wOptionFields =
       new TableView( transMeta, wLogOptionsComposite, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.CHECK,
@@ -1375,7 +1375,7 @@ public class TransDialog extends Dialog {
       }
     };
 
-    colinf[1].setDisabledListener( disabledListener );
+    colinf[ 1 ].setDisabledListener( disabledListener );
 
     wOptionFields =
       new TableView( transMeta, wLogOptionsComposite, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.CHECK,
@@ -1470,7 +1470,7 @@ public class TransDialog extends Dialog {
       }
     };
 
-    colinf[1].setDisabledListener( disabledListener );
+    colinf[ 1 ].setDisabledListener( disabledListener );
 
     wOptionFields =
       new TableView( transMeta, wLogOptionsComposite, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.CHECK,
@@ -1585,7 +1585,7 @@ public class TransDialog extends Dialog {
       }
     };
 
-    colinf[1].setDisabledListener( disabledListener );
+    colinf[ 1 ].setDisabledListener( disabledListener );
 
     wOptionFields =
       new TableView( transMeta, wLogOptionsComposite, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.CHECK,
@@ -1723,11 +1723,11 @@ public class TransDialog extends Dialog {
     fdMaxdatediff.right = new FormAttachment( 100, 0 );
     wMaxdatediff.setLayoutData( fdMaxdatediff );
 
-    connectionNames = new String[transMeta.nrDatabases()];
+    connectionNames = new String[ transMeta.nrDatabases() ];
     for ( int i = 0; i < transMeta.nrDatabases(); i++ ) {
       DatabaseMeta ci = transMeta.getDatabase( i );
       wMaxdateconnection.add( ci.getName() );
-      connectionNames[i] = ci.getName();
+      connectionNames[ i ] = ci.getName();
     }
 
     FormData fdDateComp = new FormData();
@@ -1771,16 +1771,16 @@ public class TransDialog extends Dialog {
     final int FieldsCols = 3;
     final int FieldsRows = transMeta.nrDependencies();
 
-    ColumnInfo[] colinf = new ColumnInfo[FieldsCols];
-    colinf[0] =
+    ColumnInfo[] colinf = new ColumnInfo[ FieldsCols ];
+    colinf[ 0 ] =
       new ColumnInfo(
         BaseMessages.getString( PKG, "TransDialog.ColumnInfo.Connection.Label" ),
         ColumnInfo.COLUMN_TYPE_CCOMBO, connectionNames );
-    colinf[1] =
+    colinf[ 1 ] =
       new ColumnInfo(
         BaseMessages.getString( PKG, "TransDialog.ColumnInfo.Table.Label" ), ColumnInfo.COLUMN_TYPE_TEXT,
         false );
-    colinf[2] =
+    colinf[ 2 ] =
       new ColumnInfo(
         BaseMessages.getString( PKG, "TransDialog.ColumnInfo.Field.Label" ), ColumnInfo.COLUMN_TYPE_TEXT,
         false );
@@ -2154,18 +2154,18 @@ public class TransDialog extends Dialog {
 
       String defValue;
       try {
-        defValue = transMeta.getParameterDefault( parameters[idx] );
+        defValue = transMeta.getParameterDefault( parameters[ idx ] );
       } catch ( UnknownParamException e ) {
         defValue = "";
       }
       String description;
       try {
-        description = transMeta.getParameterDescription( parameters[idx] );
+        description = transMeta.getParameterDescription( parameters[ idx ] );
       } catch ( UnknownParamException e ) {
         description = "";
       }
 
-      item.setText( 1, parameters[idx] );
+      item.setText( 1, parameters[ idx ] );
       item.setText( 2, Const.NVL( defValue, "" ) );
       item.setText( 3, Const.NVL( description, "" ) );
     }
@@ -2312,8 +2312,8 @@ public class TransDialog extends Dialog {
     transMeta.setFeedbackSize( Const.toInt( wFeedbackSize.getText(), Const.ROWS_UPDATE ) );
     transMeta.setSharedObjectsFile( wSharedObjectsFile.getText() );
     transMeta.setUsingThreadPriorityManagment( wManageThreads.getSelection() );
-    transMeta.setTransformationType( TransformationType.values()[Const.indexOfString( wTransformationType
-      .getText(), TransformationType.getTransformationTypesDescriptions() )] );
+    transMeta.setTransformationType( TransformationType.values()[ Const.indexOfString( wTransformationType
+      .getText(), TransformationType.getTransformationTypesDescriptions() ) ] );
 
     if ( directoryChangeAllowed && transMeta.getObjectId() != null ) {
       if ( newDirectory != null ) {
@@ -2497,7 +2497,7 @@ public class TransDialog extends Dialog {
               SQLEditor sqledit =
                 new SQLEditor(
                   transMeta, shell, SWT.NONE, logTable.getDatabaseMeta(), transMeta.getDbCache(), ddl
-                    .toString() );
+                  .toString() );
               sqledit.open();
             }
           } finally {
