@@ -34,6 +34,9 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.injection.Injection;
+import org.pentaho.di.core.injection.InjectionDeep;
+import org.pentaho.di.core.injection.InjectionSupported;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -46,7 +49,6 @@ import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.step.StepMetaInjectionInterface;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
@@ -55,6 +57,7 @@ import org.w3c.dom.Node;
  * Created on 4-apr-2003
  *
  */
+@InjectionSupported( localizationPrefix = "PentahoReportingOutputMeta.Injection.", groups = { "PARAMETERS" } )
 public class PentahoReportingOutputMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = PentahoReportingOutput.class; // for i18n purposes, needed by Translator2!!
 
@@ -100,11 +103,17 @@ public class PentahoReportingOutputMeta extends BaseStepMeta implements StepMeta
   public static final String XML_TAG_PARAMETERS = "parameters";
   public static final String XML_TAG_PARAMETER = "parameter";
 
+  @Injection( name = "INPUT_FILE_FIELD" )
   private String inputFileField;
+  @Injection( name = "OUTPUT_FILE_FIELD" )
   private String outputFileField;
   private Map<String, String> parameterFieldMap;
 
+  @Injection( name = "OUTPUT_PROCESSOR_TYPE" )
   private ProcessorType outputProcessorType;
+
+  @InjectionDeep
+  private Param[] params;
 
   public PentahoReportingOutputMeta() {
     super(); // allocate BaseStepMeta
@@ -308,8 +317,33 @@ public class PentahoReportingOutputMeta extends BaseStepMeta implements StepMeta
     this.outputProcessorType = outputProcessorType;
   }
 
-  @Override
-  public StepMetaInjectionInterface getStepMetaInjectionInterface() {
-    return new PentahoReportingOutputMetaInjection( this );
+  /**
+   * Initializer for one parameter.
+   */
+  public class Param {
+
+    private String parameter;
+
+    private String field;
+
+    @Injection( name = "PARAMETER_NAME", group = "PARAMETERS" )
+    public void setParameter( String value ) {
+      parameter = value;
+      if ( parameter != null && field != null ) {
+        setup();
+      }
+    }
+
+    @Injection( name = "FIELDNAME", group = "PARAMETERS" )
+    public void setField( String value ) {
+      field = value;
+      if ( parameter != null && field != null ) {
+        setup();
+      }
+    }
+
+    private void setup() {
+      parameterFieldMap.put( parameter, field );
+    }
   }
 }

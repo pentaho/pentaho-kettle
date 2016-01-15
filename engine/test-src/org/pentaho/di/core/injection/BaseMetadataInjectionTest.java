@@ -24,6 +24,7 @@ package org.pentaho.di.core.injection;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -64,11 +65,13 @@ public abstract class BaseMetadataInjectionTest<T> {
     assertTrue( "Some properties where not tested: " + nonTestedProperties, nonTestedProperties.isEmpty() );
   }
 
-  protected List<RowMetaAndData> setValue( ValueMetaInterface valueMeta, Object value ) {
+  protected List<RowMetaAndData> setValue( ValueMetaInterface valueMeta, Object... values ) {
     RowMeta rowsMeta = new RowMeta();
     rowsMeta.addValueMeta( valueMeta );
     List<RowMetaAndData> rows = new ArrayList<>();
-    rows.add( new RowMetaAndData( rowsMeta, value ) );
+    for ( Object v : values ) {
+      rows.add( new RowMetaAndData( rowsMeta, v ) );
+    }
     return rows;
   }
 
@@ -123,6 +126,28 @@ public abstract class BaseMetadataInjectionTest<T> {
   }
 
   /**
+   * Check enum property.
+   */
+  protected void check( String propertyName, EnumGetter getter, Class<?> enumType ) throws KettleException {
+    ValueMetaInterface valueMeta = new ValueMetaString( "f" );
+
+    Object[] values = enumType.getEnumConstants();
+
+    for ( Object v : values ) {
+      injector.setProperty( meta, propertyName, setValue( valueMeta, v ), "f" );
+      assertEquals( v, getter.get() );
+    }
+
+    try {
+      injector.setProperty( meta, propertyName, setValue( valueMeta, "###" ), "f" );
+      fail( "Should be passed to enum" );
+    } catch ( KettleException ex ) {
+    }
+
+    skipPropertyTest( propertyName );
+  }
+
+  /**
    * Check int property.
    */
   protected void check( String propertyName, IntGetter getter ) throws KettleException {
@@ -168,12 +193,16 @@ public abstract class BaseMetadataInjectionTest<T> {
     skipPropertyTest( propertyName );
   }
 
-  protected interface BooleanGetter {
+  public interface BooleanGetter {
     boolean get();
   }
 
-  protected interface StringGetter {
+  public interface StringGetter {
     String get();
+  }
+
+  public interface EnumGetter {
+    Enum<?> get();
   }
 
   public interface IntGetter {

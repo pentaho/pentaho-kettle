@@ -22,6 +22,7 @@
 
 package org.pentaho.di.trans.steps.textfileoutput;
 
+import org.pentaho.di.core.injection.Injection;
 import org.pentaho.di.core.row.ValueMeta;
 
 /**
@@ -32,22 +33,30 @@ import org.pentaho.di.core.row.ValueMeta;
  *
  */
 public class TextFileField implements Cloneable {
+  @Injection( name = "OUTPUT_FIELDNAME", group = "OUTPUT_FIELDS" )
   private String name;
 
   private int type;
 
+  @Injection( name = "OUTPUT_FORMAT", group = "OUTPUT_FIELDS" )
   private String format;
 
-  private int length;
+  @Injection( name = "OUTPUT_LENGTH", group = "OUTPUT_FIELDS" )
+  private int length = -1;
 
-  private int precision;
+  @Injection( name = "OUTPUT_PRECISION", group = "OUTPUT_FIELDS" )
+  private int precision = -1;
 
+  @Injection( name = "OUTPUT_CURRENCY", group = "OUTPUT_FIELDS" )
   private String currencySymbol;
 
+  @Injection( name = "OUTPUT_DECIMAL", group = "OUTPUT_FIELDS" )
   private String decimalSymbol;
 
+  @Injection( name = "OUTPUT_GROUP", group = "OUTPUT_FIELDS" )
   private String groupingSymbol;
 
+  @Injection( name = "OUTPUT_NULL", group = "OUTPUT_FIELDS" )
   private String nullString;
 
   private int trimType;
@@ -117,6 +126,7 @@ public class TextFileField implements Cloneable {
     this.type = type;
   }
 
+  @Injection( name = "OUTPUT_TYPE", group = "OUTPUT_FIELDS" )
   public void setType( String typeDesc ) {
     this.type = ValueMeta.getType( typeDesc );
   }
@@ -179,6 +189,11 @@ public class TextFileField implements Cloneable {
 
   public void setTrimType( int trimType ) {
     this.trimType = trimType;
+  }
+
+  @Injection( name = "OUTPUT_TRIM", group = "OUTPUT_FIELDS" )
+  public void setTrimTypeByDesc( String value ) {
+    this.trimType = ValueMeta.getTrimTypeByDesc( value );
   }
 
   public String getTrimTypeCode() {

@@ -308,6 +308,14 @@ public class RowMetaAndData implements Cloneable {
         } else if ( boolean.class.isAssignableFrom( destinationType ) || Boolean.class.isAssignableFrom(
             destinationType ) ) {
           return "Y".equalsIgnoreCase( vs ) || "Yes".equalsIgnoreCase( vs ) || "true".equalsIgnoreCase( vs );
+        } else if ( destinationType.isEnum() ) {
+          for ( Object eo : destinationType.getEnumConstants() ) {
+            Enum<?> e = (Enum<?>) eo;
+            if ( e.name().equals( vs ) ) {
+              return e;
+            }
+          }
+          throw new KettleValueException( "Unknown value " + vs + " for enum " + destinationType );
         }
         break;
       case ValueMetaInterface.TYPE_BOOLEAN:
