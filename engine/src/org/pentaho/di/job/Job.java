@@ -1187,31 +1187,45 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
       JobLogTable jobLogTable = jobMeta.getJobLogTable();
       if ( jobLogTable.isDefined() ) {
-
-        String tableName = jobMeta.getJobLogTable().getActualTableName();
-        DatabaseMeta logcon = jobMeta.getJobLogTable().getDatabaseMeta();
-
-        Database ldb = new Database( this, logcon );
-        ldb.shareVariablesWith( this );
-        try {
-          ldb.connect();
-          ldb.setCommit( logCommitSize );
-          ldb.writeLogRecord( jobMeta.getJobLogTable(), status, this, null );
-        } catch ( KettleDatabaseException dbe ) {
-          addErrors( 1 );
-          throw new KettleJobException(
-            "Unable to end processing by writing log record to table " + tableName, dbe );
-        } finally {
-          if ( !ldb.isAutoCommit() ) {
-            ldb.commitLog( true, jobMeta.getJobLogTable() );
-          }
-          ldb.disconnect();
-        }
+        writeLogTableInformation( jobLogTable, status );
       }
 
       return true;
     } catch ( Exception e ) {
       throw new KettleJobException( e ); // In case something else goes wrong.
+    }
+  }
+
+  /**
+   *  Writes information to Job Log table.
+   *  Cleans old records, in case job is finished.
+   *
+   */
+  protected void writeLogTableInformation( JobLogTable jobLogTable, LogStatus status )
+    throws KettleJobException, KettleDatabaseException {
+    boolean cleanLogRecords = status.equals( LogStatus.END );
+    String tableName = jobLogTable.getActualTableName();
+    DatabaseMeta logcon = jobLogTable.getDatabaseMeta();
+
+    Database ldb = createDatabase( logcon );
+    ldb.shareVariablesWith( this );
+    try {
+      ldb.connect();
+      ldb.setCommit( logCommitSize );
+      ldb.writeLogRecord( jobLogTable, status, this, null );
+
+      if ( cleanLogRecords ) {
+        ldb.cleanupLogRecords( jobLogTable );
+      }
+
+    } catch ( KettleDatabaseException dbe ) {
+      addErrors( 1 );
+      throw new KettleJobException( "Unable to end processing by writing log record to table " + tableName, dbe );
+    } finally {
+      if ( !ldb.isAutoCommit() ) {
+        ldb.commitLog( true, jobLogTable );
+      }
+      ldb.disconnect();
     }
   }
 
@@ -1269,16 +1283,18 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
    */
   protected void writeJobEntryLogInformation() throws KettleException {
     Database db = null;
-    JobEntryLogTable jobEntryLogTable = jobMeta.getJobEntryLogTable();
+    JobEntryLogTable jobEntryLogTable = getJobMeta().getJobEntryLogTable();
     try {
-      db = new Database( this, jobEntryLogTable.getDatabaseMeta() );
+      db = createDatabase( jobEntryLogTable.getDatabaseMeta() );
       db.shareVariablesWith( this );
       db.connect();
       db.setCommit( logCommitSize );
 
-      for ( JobEntryCopy copy : jobMeta.getJobCopies() ) {
+      for ( JobEntryCopy copy : getJobMeta().getJobCopies() ) {
         db.writeLogRecord( jobEntryLogTable, LogStatus.START, copy, this );
       }
+
+      db.cleanupLogRecords( jobEntryLogTable );
 
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString(
@@ -1289,6 +1305,10 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
       }
       db.disconnect();
     }
+  }
+
+  protected Database createDatabase( DatabaseMeta databaseMeta ) {
+    return new Database( this, databaseMeta );
   }
 
   /**
