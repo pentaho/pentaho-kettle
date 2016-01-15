@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -2486,17 +2486,18 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
    */
   protected void writeStepLogInformation() throws KettleException {
     Database db = null;
-    StepLogTable stepLogTable = transMeta.getStepLogTable();
+    StepLogTable stepLogTable = getTransMeta().getStepLogTable();
     try {
-      db = new Database( this, stepLogTable.getDatabaseMeta() );
+      db = createDataBase( stepLogTable.getDatabaseMeta() );
       db.shareVariablesWith( this );
       db.connect();
       db.setCommit( logCommitSize );
 
-      for ( StepMetaDataCombi combi : steps ) {
+      for ( StepMetaDataCombi combi : getSteps() ) {
         db.writeLogRecord( stepLogTable, LogStatus.START, combi, null );
       }
 
+      db.cleanupLogRecords( stepLogTable );
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString(
         PKG, "Trans.Exception.UnableToWriteStepInformationToLogTable" ), e );
@@ -2507,6 +2508,10 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
       db.disconnect();
     }
 
+  }
+
+  protected Database createDataBase( DatabaseMeta databaseMeta ) {
+    return new Database( this, databaseMeta );
   }
 
   protected synchronized void writeMetricsInformation() throws KettleException {
@@ -3631,8 +3636,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
       //
       SlaveServer masterServer = null;
       List<StepMeta> masterSteps = master.getTransHopSteps( false );
-      if ( masterSteps.size() > 0 ) // If there is something that needs to be done on the master...
-      {
+      if ( masterSteps.size() > 0 ) {
+        // If there is something that needs to be done on the master...
         masterServer = transSplitter.getMasterServer();
         if ( executionConfiguration.isClusterPosting() ) {
           TransConfiguration transConfiguration = new TransConfiguration( master, executionConfiguration );
@@ -3738,8 +3743,9 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
       if ( executionConfiguration.isClusterPosting() ) {
         if ( executionConfiguration.isClusterPreparing() ) {
           // Prepare the master...
-          if ( masterSteps.size() > 0 ) // If there is something that needs to be done on the master...
-          {
+
+          // If there is something that needs to be done on the master...
+          if ( masterSteps.size() > 0 ) {
             String carteObjectId = carteObjectMap.get( master );
             String masterReply =
               masterServer.execService( PrepareExecutionTransServlet.CONTEXT_PATH
@@ -3773,8 +3779,9 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 
         if ( executionConfiguration.isClusterStarting() ) {
           // Start the master...
-          if ( masterSteps.size() > 0 ) // If there is something that needs to be done on the master...
-          {
+
+          // If there is something that needs to be done on the master...
+          if ( masterSteps.size() > 0 ) {
             String carteObjectId = carteObjectMap.get( master );
             String masterReply =
               masterServer.execService( StartExecutionTransServlet.CONTEXT_PATH
@@ -4316,8 +4323,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
    *          the new internal kettle variables
    */
   public void setInternalKettleVariables( VariableSpace var ) {
-    if ( transMeta != null && !Const.isEmpty( transMeta.getFilename() ) ) // we have a finename that's defined.
-    {
+    if ( transMeta != null && !Const.isEmpty( transMeta.getFilename() ) ) {
+      // we have a finename that's defined.
       try {
         FileObject fileObject = KettleVFS.getFileObject( transMeta.getFilename(), var );
         FileName fileName = fileObject.getName();
@@ -4338,19 +4345,19 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
     }
 
     boolean hasRepoDir = transMeta.getRepositoryDirectory() != null && transMeta.getRepository() != null;
-    
+
     // The name of the transformation
     variables.setVariable( Const.INTERNAL_VARIABLE_TRANSFORMATION_NAME, Const.NVL( transMeta.getName(), "" ) );
 
     // setup fallbacks
     if ( hasRepoDir ) {
-      variables.setVariable( Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY, 
-          variables.getVariable( Const.INTERNAL_VARIABLE_TRANSFORMATION_REPOSITORY_DIRECTORY ) );
+      variables.setVariable( Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY,
+        variables.getVariable( Const.INTERNAL_VARIABLE_TRANSFORMATION_REPOSITORY_DIRECTORY ) );
     } else {
-      variables.setVariable( Const.INTERNAL_VARIABLE_TRANSFORMATION_REPOSITORY_DIRECTORY, 
-          variables.getVariable( Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY ) );
+      variables.setVariable( Const.INTERNAL_VARIABLE_TRANSFORMATION_REPOSITORY_DIRECTORY,
+        variables.getVariable( Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY ) );
     }
-    
+
     // TODO PUT THIS INSIDE OF THE "IF"
     // The name of the directory in the repository
     variables.setVariable( Const.INTERNAL_VARIABLE_TRANSFORMATION_REPOSITORY_DIRECTORY, transMeta
@@ -4361,14 +4368,14 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
     // but the other around is not possible.
 
     if ( hasRepoDir ) {
-      variables.setVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY,  
-          variables.getVariable( Const.INTERNAL_VARIABLE_TRANSFORMATION_REPOSITORY_DIRECTORY ) );
-      if ( "/".equals(variables.getVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY ) ) ) {
+      variables.setVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY,
+        variables.getVariable( Const.INTERNAL_VARIABLE_TRANSFORMATION_REPOSITORY_DIRECTORY ) );
+      if ( "/".equals( variables.getVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY ) ) ) {
         variables.setVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY, "" );
       }
     } else {
-      variables.setVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY, 
-          variables.getVariable( Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY ) );
+      variables.setVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY,
+        variables.getVariable( Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY ) );
     }
   }
 
@@ -5602,13 +5609,14 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
       public void run() {
         try {
 
-          if( Trans.this.isFinished() ){
+          if ( Trans.this.isFinished() ) {
             log.logBasic( "Shutting down heartbeat signal for " + getName() );
             shutdownHeartbeat( Trans.this.heartbeat );
             return;
           }
 
-          log.logDebug( "Triggering heartbeat signal for " + getName() + " at every " + intervalInSeconds + " seconds" );
+          log
+            .logDebug( "Triggering heartbeat signal for " + getName() + " at every " + intervalInSeconds + " seconds" );
           ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.TransformationHeartbeat.id, Trans.this );
 
         } catch ( KettleException e ) {
@@ -5620,14 +5628,14 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
     return heartbeat;
   }
 
-  protected void shutdownHeartbeat( ExecutorService heartbeat ){
+  protected void shutdownHeartbeat( ExecutorService heartbeat ) {
 
-    if( heartbeat != null ) {
+    if ( heartbeat != null ) {
 
       try {
         heartbeat.shutdownNow(); // prevents waiting tasks from starting and attempts to stop currently executing ones
 
-      } catch( Throwable t ) {
+      } catch ( Throwable t ) {
         /* do nothing */
       }
     }
@@ -5646,11 +5654,11 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
       if ( meta != null ) {
 
         return Const.toInt( meta.getParameterValue( Const.VARIABLE_HEARTBEAT_PERIODIC_INTERVAL_SECS ),
-            Const.toInt(  meta.getParameterDefault( Const.VARIABLE_HEARTBEAT_PERIODIC_INTERVAL_SECS ),
-                Const.HEARTBEAT_PERIODIC_INTERVAL_IN_SECS ) );
+          Const.toInt( meta.getParameterDefault( Const.VARIABLE_HEARTBEAT_PERIODIC_INTERVAL_SECS ),
+            Const.HEARTBEAT_PERIODIC_INTERVAL_IN_SECS ) );
       }
 
-    } catch( Exception e ){
+    } catch ( Exception e ) {
       /* do nothing, return Const.HEARTBEAT_PERIODIC_INTERVAL_IN_SECS */
     }
 
