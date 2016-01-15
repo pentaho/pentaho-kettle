@@ -210,7 +210,7 @@ public abstract class PurRepositoryTestBase implements ApplicationContextAware {
     }
   }
 
-  private void createPurRepository() throws KettleException {
+  protected void createPurRepository() throws KettleException {
     PurRepositoryMeta purMeta = new PurRepositoryMeta();
     purMeta.setName( "JackRabbit" );
     purMeta.setDescription( "Jackrabbit test repository" );
