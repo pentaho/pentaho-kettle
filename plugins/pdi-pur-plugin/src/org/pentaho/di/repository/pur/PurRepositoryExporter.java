@@ -29,7 +29,9 @@ import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ProgressMonitorListener;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.logging.BaseLogTable;
 import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.core.logging.LogTableInterface;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -218,6 +220,7 @@ public class PurRepositoryExporter implements IRepositoryExporter, java.io.Seria
       Iterator<RepositoryFile> filesIter = files.iterator();
       while ( ( monitor == null || !monitor.isCanceled() ) && transMetasIter.hasNext() ) {
         TransMeta trans = transMetasIter.next();
+        setGlobalVariablesOfLogTablesNull( trans.getLogTables() );
         RepositoryFile file = filesIter.next();
         try {
           // Validate against the import rules first!
@@ -250,6 +253,14 @@ public class PurRepositoryExporter implements IRepositoryExporter, java.io.Seria
     return shouldExport;
   }
 
+  protected void setGlobalVariablesOfLogTablesNull( List<LogTableInterface> logTables ) {
+    for ( LogTableInterface logTable : logTables ) {
+      if ( logTable instanceof BaseLogTable ) {
+        ( (BaseLogTable) logTable ).setAllGlobalParametersToNull();
+      }
+    }
+  }
+
   private class JobBatchExporter implements RepositoryFileBatchExporter {
     public String getFriendlyTypeName() {
       return "jobs"; //$NON-NLS-1$
@@ -266,6 +277,7 @@ public class PurRepositoryExporter implements IRepositoryExporter, java.io.Seria
       Iterator<RepositoryFile> filesIter = files.iterator();
       while ( ( monitor == null || !monitor.isCanceled() ) && jobsMeta.hasNext() ) {
         JobMeta meta = jobsMeta.next();
+        setGlobalVariablesOfLogTablesNull( meta.getLogTables() );
         RepositoryFile file = filesIter.next();
         try {
           // Validate against the import rules first!
