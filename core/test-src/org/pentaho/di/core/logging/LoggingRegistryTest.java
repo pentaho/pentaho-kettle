@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,9 +22,8 @@
 
 package org.pentaho.di.core.logging;
 
+import org.junit.Assert;
 import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
 
 public class LoggingRegistryTest {
   public static final String LOG_CHANEL_ID_PARENT = "parent-chanel-id";
@@ -45,7 +44,7 @@ public class LoggingRegistryTest {
 
     String logChanelId = loggingRegistry.registerLoggingSource( child );
 
-    assertEquals( logChanelId, LOG_CHANEL_ID_CHILD );
+    Assert.assertEquals( logChanelId, LOG_CHANEL_ID_CHILD );
   }
 
 }
