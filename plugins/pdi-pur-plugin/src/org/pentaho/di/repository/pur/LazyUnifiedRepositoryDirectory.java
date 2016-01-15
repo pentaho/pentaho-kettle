@@ -30,6 +30,7 @@ import org.pentaho.di.ui.repository.pur.services.ILockService;
 import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
 import org.pentaho.platform.api.repository2.unified.RepositoryFile;
 import org.pentaho.platform.api.repository2.unified.RepositoryRequest;
+import org.pentaho.platform.repository2.ClientRepositoryPaths;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -163,7 +164,7 @@ public class LazyUnifiedRepositoryDirectory extends RepositoryDirectory {
   }
 
   @Override public boolean isVisible() {
-    return !self.isHidden();
+    return !isRoot() && !self.isHidden();
   }
 
 
@@ -201,11 +202,24 @@ public class LazyUnifiedRepositoryDirectory extends RepositoryDirectory {
     repositoryRequest.setTypes( RepositoryRequest.FILES_TYPE_FILTER.FOLDERS );
     repositoryRequest.setPath( this.self.getId().toString() );
     List<RepositoryFile> children = repository.getChildren( repositoryRequest );
+
+
+    // Special case: /etc should not be returned from a directory listing.
+    RepositoryFile etcFile = null;
+    if ( this.isRoot() ) {
+      etcFile = repository.getFile( ClientRepositoryPaths.getEtcFolderPath() );
+    }
+
     // Filter for Folders only doesn't appear to work
     Iterator<RepositoryFile> iterator = children.iterator();
     while ( iterator.hasNext() ) {
       RepositoryFile next = iterator.next();
       if ( !next.isFolder() ) {
+        iterator.remove();
+      }
+
+      // Special case: /etc should not be returned from a directory listing.
+      if ( this.isRoot() && next.equals( etcFile ) ) {
         iterator.remove();
       }
     }

@@ -16,14 +16,7 @@
  */
 package org.pentaho.di.repository.pur;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.anyBoolean;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
+import org.hamcrest.core.IsInstanceOf;
 import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.di.core.Const;
@@ -33,14 +26,27 @@ import org.pentaho.di.core.logging.LogTableInterface;
 import org.pentaho.di.core.logging.StepLogTable;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.repository.ObjectId;
+import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.trans.HasDatabasesInterface;
 import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
 import org.pentaho.platform.api.repository2.unified.RepositoryFile;
 import org.pentaho.platform.api.repository2.unified.RepositoryFileTree;
+import org.pentaho.platform.api.repository2.unified.RepositoryRequest;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.collection.IsEmptyCollection.empty;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.mockito.Matchers.anyBoolean;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.argThat;
+import static org.mockito.Mockito.*;
 
 public class PurRepositoryUnitTest {
   private VariableSpace mockedVariableSpace;
@@ -85,6 +91,69 @@ public class PurRepositoryUnitTest {
     purRepository.getObjectInformation( objectId, repositoryObjectType );
     verify( mockRepo ).getAcl( testFileId );
   }
+
+
+  @Test
+  public void testRootIsNotVisible() throws KettleException {
+    PurRepository purRepository = new PurRepository();
+    IUnifiedRepository mockRepo = mock( IUnifiedRepository.class );
+    RepositoryConnectResult result = mock( RepositoryConnectResult.class );
+    when( result.getUnifiedRepository() ).thenReturn( mockRepo );
+    IRepositoryConnector connector = mock( IRepositoryConnector.class );
+    when( connector.connect( anyString(), anyString() ) ).thenReturn( result );
+    PurRepositoryMeta mockMeta = mock( PurRepositoryMeta.class );
+    purRepository.init( mockMeta );
+    purRepository.setPurRepositoryConnector( connector );
+
+    RepositoryFile mockRootFolder = mock( RepositoryFile.class );
+
+    when( mockRootFolder.getId() ).thenReturn( "/" );
+    when( mockRootFolder.getPath() ).thenReturn( "/" );
+    when( mockRepo.getFile( "/" ) ).thenReturn( mockRootFolder );
+    purRepository.connect( "TEST_USER", "TEST_PASSWORD" );
+
+    RepositoryDirectoryInterface rootDir = purRepository.getRootDir();
+    assertFalse( rootDir.isVisible() );
+  }
+
+
+  @Test
+  public void testEtcIsNotThere() throws KettleException {
+    PurRepository purRepository = new PurRepository();
+    IUnifiedRepository mockRepo = mock( IUnifiedRepository.class );
+    RepositoryConnectResult result = mock( RepositoryConnectResult.class );
+    when( result.getUnifiedRepository() ).thenReturn( mockRepo );
+    IRepositoryConnector connector = mock( IRepositoryConnector.class );
+    when( connector.connect( anyString(), anyString() ) ).thenReturn( result );
+    PurRepositoryMeta mockMeta = mock( PurRepositoryMeta.class );
+    purRepository.init( mockMeta );
+    purRepository.setPurRepositoryConnector( connector );
+    // purRepository.setTest( mockRepo );
+    ObjectId objectId = mock( ObjectId.class );
+    RepositoryFile mockFile = mock( RepositoryFile.class );
+    RepositoryFile mockRootFolder = mock( RepositoryFile.class );
+    RepositoryObjectType repositoryObjectType = RepositoryObjectType.TRANSFORMATION;
+    RepositoryFileTree mockRepositoryTree = mock( RepositoryFileTree.class );
+    String testId = "TEST_ID";
+    String testFileId = "TEST_FILE_ID";
+    when( objectId.getId() ).thenReturn( testId );
+    when( mockRepo.getFileById( testId ) ).thenReturn( mockFile );
+    when( mockFile.getPath() ).thenReturn( "/etc" );
+    when( mockFile.getId() ).thenReturn( testFileId );
+
+    when( mockRepositoryTree.getFile() ).thenReturn( mockRootFolder );
+    when( mockRootFolder.getId() ).thenReturn( "/" );
+    when( mockRootFolder.getPath() ).thenReturn( "/" );
+
+    List<RepositoryFile> rootChildren = new ArrayList<>( Collections.singletonList( mockFile ) );
+    when( mockRepo.getChildren( argThat( IsInstanceOf.<RepositoryRequest>instanceOf( RepositoryRequest.class ) ) ) )
+        .thenReturn( rootChildren );
+    when( mockRepo.getFile( "/" ) ).thenReturn( mockRootFolder );
+    purRepository.connect( "TEST_USER", "TEST_PASSWORD" );
+    List<RepositoryDirectoryInterface> children = purRepository.getRootDir().getChildren();
+    assertThat( children, empty() );
+  }
+
 
   @Test
   public void onlyGlobalVariablesOfLogTablesSetToNull() {
