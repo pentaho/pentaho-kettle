@@ -79,6 +79,8 @@ public class PurRepositoryUnitTest {
     when( mockRepo.getTree( anyString(), anyInt(), anyString(), anyBoolean() ) ).thenReturn( mockRepositoryTree );
     when( mockRepositoryTree.getFile() ).thenReturn( mockRootFolder );
     when( mockRootFolder.getId() ).thenReturn( "/" );
+    when( mockRootFolder.getPath() ).thenReturn( "/" );
+    when( mockRepo.getFile( "/" ) ).thenReturn( mockRootFolder );
     purRepository.connect( "TEST_USER", "TEST_PASSWORD" );
     purRepository.getObjectInformation( objectId, repositoryObjectType );
     verify( mockRepo ).getAcl( testFileId );
