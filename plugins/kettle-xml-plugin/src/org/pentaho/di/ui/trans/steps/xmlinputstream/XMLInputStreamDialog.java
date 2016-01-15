@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,7 +22,10 @@
 
 package org.pentaho.di.ui.trans.steps.xmlinputstream;
 
+import java.util.Arrays;
+
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -42,6 +45,9 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.exception.KettleStepException;
+import org.pentaho.di.core.row.RowMeta;
+import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -51,6 +57,7 @@ import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.steps.xmlinputstream.XMLInputStreamMeta;
 import org.pentaho.di.ui.core.dialog.EnterNumberDialog;
 import org.pentaho.di.ui.core.dialog.EnterTextDialog;
+import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.dialog.PreviewRowsDialog;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
@@ -69,6 +76,8 @@ public class XMLInputStreamDialog extends BaseStepDialog implements StepDialogIn
   // private CTabItem wFieldsTab;
 
   private TextVar wFilename;
+
+  private CCombo wFilenameCombo;
 
   private Button wbbFilename; // Browse for a file
 
@@ -127,11 +136,14 @@ public class XMLInputStreamDialog extends BaseStepDialog implements StepDialogIn
 
   private XMLInputStreamMeta inputMeta;
 
+  private boolean isReceivingInput;
+
   public XMLInputStreamDialog( Shell parent, Object in, TransMeta tr, String sname ) {
     super( parent, (BaseStepMeta) in, tr, sname );
     inputMeta = (XMLInputStreamMeta) in;
   }
 
+  @Override
   public String open() {
     Shell parent = getParent();
     Display display = parent.getDisplay();
@@ -141,6 +153,7 @@ public class XMLInputStreamDialog extends BaseStepDialog implements StepDialogIn
     setShellImage( shell, inputMeta );
 
     ModifyListener lsMod = new ModifyListener() {
+      @Override
       public void modifyText( ModifyEvent e ) {
         inputMeta.setChanged();
       }
@@ -193,38 +206,76 @@ public class XMLInputStreamDialog extends BaseStepDialog implements StepDialogIn
     // fdTabFolder.bottom= new FormAttachment(100, -50);
     // wTabFolder.setLayoutData(fdTabFolder);
 
-    // Filename...
+    // See if the step receives input. If so, we don't ask for the filename, but
+    // for the filename field.
     //
-    // The filename browse button
-    //
-    wbbFilename = new Button( shell, SWT.PUSH | SWT.CENTER );
-    props.setLook( wbbFilename );
-    wbbFilename.setText( BaseMessages.getString( PKG, "System.Button.Browse" ) );
-    wbbFilename.setToolTipText( BaseMessages.getString( PKG, "System.Tooltip.BrowseForFileOrDirAndAdd" ) );
-    FormData fdbFilename = new FormData();
-    fdbFilename.top = new FormAttachment( lastControl, margin );
-    fdbFilename.right = new FormAttachment( 100, 0 );
-    wbbFilename.setLayoutData( fdbFilename );
+    isReceivingInput = transMeta.findNrPrevSteps( stepMeta ) > 0;
+    if ( isReceivingInput ) {
 
-    // The field itself...
-    //
-    Label wlFilename = new Label( shell, SWT.RIGHT );
-    wlFilename.setText( BaseMessages.getString( PKG, "XMLInputStreamDialog.Filename.Label" ) );
-    props.setLook( wlFilename );
-    FormData fdlFilename = new FormData();
-    fdlFilename.top = new FormAttachment( lastControl, margin );
-    fdlFilename.left = new FormAttachment( 0, 0 );
-    fdlFilename.right = new FormAttachment( middle, -margin );
-    wlFilename.setLayoutData( fdlFilename );
-    wFilename = new TextVar( transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-    props.setLook( wFilename );
-    wFilename.addModifyListener( lsMod );
-    FormData fdFilename = new FormData();
-    fdFilename.top = new FormAttachment( lastControl, margin );
-    fdFilename.left = new FormAttachment( middle, 0 );
-    fdFilename.right = new FormAttachment( wbbFilename, -margin );
-    wFilename.setLayoutData( fdFilename );
-    lastControl = wFilename;
+      RowMetaInterface previousFields;
+      try {
+        previousFields = transMeta.getPrevStepFields( stepMeta );
+      } catch ( KettleStepException e ) {
+        new ErrorDialog( shell,
+          BaseMessages.getString( PKG, "XMLInputStreamDialog.ErrorDialog.UnableToGetInputFields.Title" ),
+          BaseMessages.getString( PKG, "XMLInputStreamDialog.ErrorDialog.UnableToGetInputFields.Message" ), e );
+        previousFields = new RowMeta();
+      }
+
+      // The field itself...
+      //
+      Label wlFilename = new Label( shell, SWT.RIGHT );
+      wlFilename.setText( BaseMessages.getString( PKG, "XMLInputStreamDialog.Filename.Label" ) );
+      props.setLook( wlFilename );
+      FormData fdlFilename = new FormData();
+      fdlFilename.top = new FormAttachment( lastControl, margin );
+      fdlFilename.left = new FormAttachment( 0, 0 );
+      fdlFilename.right = new FormAttachment( middle, -margin );
+      wlFilename.setLayoutData( fdlFilename );
+      wFilenameCombo = new CCombo( shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+      wFilenameCombo.setItems( previousFields.getFieldNames() );
+      props.setLook( wFilenameCombo );
+      wFilenameCombo.addModifyListener( lsMod );
+      FormData fdFilename = new FormData();
+      fdFilename.top = new FormAttachment( lastControl, margin );
+      fdFilename.left = new FormAttachment( middle, 0 );
+      fdFilename.right = new FormAttachment( 100, -margin );
+      wFilenameCombo.setLayoutData( fdFilename );
+      lastControl = wFilenameCombo;
+    } else {
+      // Filename...
+      //
+      // The filename browse button
+      //
+      wbbFilename = new Button( shell, SWT.PUSH | SWT.CENTER );
+      props.setLook( wbbFilename );
+      wbbFilename.setText( BaseMessages.getString( PKG, "System.Button.Browse" ) );
+      wbbFilename.setToolTipText( BaseMessages.getString( PKG, "System.Tooltip.BrowseForFileOrDirAndAdd" ) );
+      FormData fdbFilename = new FormData();
+      fdbFilename.top = new FormAttachment( lastControl, margin );
+      fdbFilename.right = new FormAttachment( 100, 0 );
+      wbbFilename.setLayoutData( fdbFilename );
+
+      // The field itself...
+      //
+      Label wlFilename = new Label( shell, SWT.RIGHT );
+      wlFilename.setText( BaseMessages.getString( PKG, "XMLInputStreamDialog.Filename.Label" ) );
+      props.setLook( wlFilename );
+      FormData fdlFilename = new FormData();
+      fdlFilename.top = new FormAttachment( lastControl, margin );
+      fdlFilename.left = new FormAttachment( 0, 0 );
+      fdlFilename.right = new FormAttachment( middle, -margin );
+      wlFilename.setLayoutData( fdlFilename );
+      wFilename = new TextVar( transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+      props.setLook( wFilename );
+      wFilename.addModifyListener( lsMod );
+      FormData fdFilename = new FormData();
+      fdFilename.top = new FormAttachment( lastControl, margin );
+      fdFilename.left = new FormAttachment( middle, 0 );
+      fdFilename.right = new FormAttachment( wbbFilename, -margin );
+      wFilename.setLayoutData( fdFilename );
+      lastControl = wFilename;
+    }
 
     // add filename to result?
     //
@@ -884,16 +935,19 @@ public class XMLInputStreamDialog extends BaseStepDialog implements StepDialogIn
 
     // Add listeners
     lsCancel = new Listener() {
+      @Override
       public void handleEvent( Event e ) {
         cancel();
       }
     };
     lsOK = new Listener() {
+      @Override
       public void handleEvent( Event e ) {
         ok();
       }
     };
     lsPreview = new Listener() {
+      @Override
       public void handleEvent( Event e ) {
         preview();
       }
@@ -904,37 +958,43 @@ public class XMLInputStreamDialog extends BaseStepDialog implements StepDialogIn
     wPreview.addListener( SWT.Selection, lsPreview );
 
     lsDef = new SelectionAdapter() {
+      @Override
       public void widgetDefaultSelected( SelectionEvent e ) {
         ok();
       }
     };
 
     wStepname.addSelectionListener( lsDef );
-    wFilename.addSelectionListener( lsDef );
-    // TODO others
+    if ( isReceivingInput ) {
+      wFilenameCombo.addSelectionListener( lsDef );
+    } else {
+      wFilename.addSelectionListener( lsDef );
+      // Listen to the browse button next to the file name
+      wbbFilename.addSelectionListener( new SelectionAdapter() {
+        @Override
+        public void widgetSelected( SelectionEvent e ) {
+          FileDialog dialog = new FileDialog( shell, SWT.OPEN );
+          dialog.setFilterExtensions( new String[] { "*.xml;*.XML", "*" } );
+          if ( wFilename.getText() != null ) {
+            String fname = transMeta.environmentSubstitute( wFilename.getText() );
+            dialog.setFileName( fname );
+          }
 
-    // Listen to the browse button next to the file name
-    wbbFilename.addSelectionListener( new SelectionAdapter() {
-      public void widgetSelected( SelectionEvent e ) {
-        FileDialog dialog = new FileDialog( shell, SWT.OPEN );
-        dialog.setFilterExtensions( new String[] { "*.xml;*.XML", "*" } );
-        if ( wFilename.getText() != null ) {
-          String fname = transMeta.environmentSubstitute( wFilename.getText() );
-          dialog.setFileName( fname );
+          dialog.setFilterNames( new String[] {
+            BaseMessages.getString( PKG, "System.FileType.XMLFiles" ),
+            BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
+
+          if ( dialog.open() != null ) {
+            String str = dialog.getFilterPath() + System.getProperty( "file.separator" ) + dialog.getFileName();
+            wFilename.setText( str );
+          }
         }
-
-        dialog.setFilterNames( new String[] { BaseMessages.getString( PKG, "System.FileType.XMLFiles" ),
-          BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
-
-        if ( dialog.open() != null ) {
-          String str = dialog.getFilterPath() + System.getProperty( "file.separator" ) + dialog.getFileName();
-          wFilename.setText( str );
-        }
-      }
-    } );
+      } );
+    }
 
     // Detect X or ALT-F4 or something that kills this window...
     shell.addShellListener( new ShellAdapter() {
+      @Override
       public void shellClosed( ShellEvent e ) {
         cancel();
       }
@@ -1024,7 +1084,22 @@ public class XMLInputStreamDialog extends BaseStepDialog implements StepDialogIn
    */
   public void getData() {
     wStepname.setText( stepname );
-    wFilename.setText( Const.NVL( inputMeta.getFilename(), "" ) );
+    if ( isReceivingInput ) {
+      RowMetaInterface previousFields = null;
+      try {
+        previousFields = transMeta.getPrevStepFields( stepMeta );
+      } catch ( KettleStepException e ) {
+        //Ignore
+      }
+      if ( previousFields != null
+          && Arrays.asList( previousFields.getFieldNames() ).contains( inputMeta.getFilename() ) ) {
+        wFilenameCombo.setText( Const.NVL( inputMeta.getFilename(), "" ) );
+      } else {
+        wFilenameCombo.setText( "" );
+      }
+    } else {
+      wFilename.setText( Const.NVL( inputMeta.getFilename(), "" ) );
+    }
     wAddResult.setSelection( inputMeta.isAddResultFile() );
     wRowsToSkip.setText( Const.NVL( inputMeta.getNrRowsToSkip(), "0" ) );
     wLimit.setText( Const.NVL( inputMeta.getRowLimit(), "0" ) );
@@ -1096,7 +1171,11 @@ public class XMLInputStreamDialog extends BaseStepDialog implements StepDialogIn
 
   private void getInfo( XMLInputStreamMeta xmlInputMeta ) {
 
-    xmlInputMeta.setFilename( wFilename.getText() );
+    if ( isReceivingInput ) {
+      xmlInputMeta.setFilename( wFilenameCombo.getText() );
+    } else {
+      xmlInputMeta.setFilename( wFilename.getText() );
+    }
     xmlInputMeta.setAddResultFile( wAddResult.getSelection() );
     xmlInputMeta.setNrRowsToSkip( Const.NVL( wRowsToSkip.getText(), "0" ) );
     xmlInputMeta.setRowLimit( Const.NVL( wLimit.getText(), "0" ) );
