@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -136,6 +136,7 @@ import org.pentaho.di.core.ObjectUsageCount;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.SourceToTargetMapping;
+import org.pentaho.di.core.XmlExportHelper;
 import org.pentaho.di.core.changed.ChangedFlagInterface;
 import org.pentaho.di.core.changed.PDIObserver;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -158,15 +159,23 @@ import org.pentaho.di.core.lifecycle.LifeEventHandler;
 import org.pentaho.di.core.lifecycle.LifeEventInfo;
 import org.pentaho.di.core.lifecycle.LifecycleException;
 import org.pentaho.di.core.lifecycle.LifecycleSupport;
+import org.pentaho.di.core.logging.ChannelLogTable;
 import org.pentaho.di.core.logging.DefaultLogLevel;
 import org.pentaho.di.core.logging.FileLoggingEventListener;
+import org.pentaho.di.core.logging.JobEntryLogTable;
+import org.pentaho.di.core.logging.JobLogTable;
 import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LogLevel;
+import org.pentaho.di.core.logging.LogTableInterface;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.logging.LoggingObjectType;
+import org.pentaho.di.core.logging.MetricsLogTable;
+import org.pentaho.di.core.logging.PerformanceLogTable;
 import org.pentaho.di.core.logging.SimpleLoggingObject;
+import org.pentaho.di.core.logging.StepLogTable;
+import org.pentaho.di.core.logging.TransLogTable;
 import org.pentaho.di.core.parameters.NamedParams;
 import org.pentaho.di.core.plugins.JobEntryPluginType;
 import org.pentaho.di.core.plugins.LifecyclePluginType;
@@ -4235,7 +4244,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
           if ( RepositoryObjectType.TRANSFORMATION.equals( type ) ) {
             TransLoadProgressDialog tlpd = null;
             // prioritize loading file by id
-            if( objId != null && !Const.isEmpty( objId.getId() ) ) {
+            if ( objId != null && !Const.isEmpty( objId.getId() ) ) {
               tlpd = new TransLoadProgressDialog( shell, rep, objId, null ); // Load by id
             } else {
               tlpd = new TransLoadProgressDialog( shell, rep, name, repDir, null ); // Load by name/path
@@ -4264,7 +4273,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
             // Load a job
             JobLoadProgressDialog jlpd = null;
             // prioritize loading file by id
-            if( objId != null && !Const.isEmpty( objId.getId() ) ) {
+            if ( objId != null && !Const.isEmpty( objId.getId() ) ) {
               jlpd = new JobLoadProgressDialog( shell, rep, objId, null ); // Loads
             } else {
               jlpd = new JobLoadProgressDialog( shell, rep, name, repDir, null ); // Loads
@@ -5605,15 +5614,52 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   public boolean saveXMLFile( boolean export ) {
     TransMeta transMeta = getActiveTransformation();
     if ( transMeta != null ) {
-      return saveXMLFile( transMeta, export );
+      return saveTransAsXmlFile( transMeta, export );
     }
 
     JobMeta jobMeta = getActiveJob();
     if ( jobMeta != null ) {
-      return saveXMLFile( jobMeta, export );
+      return saveJobAsXmlFile( jobMeta, export );
     }
 
     return false;
+  }
+
+  private boolean saveTransAsXmlFile( TransMeta transMeta, boolean export ) {
+    TransLogTable origTransLogTable = transMeta.getTransLogTable();
+    StepLogTable origStepLogTable = transMeta.getStepLogTable();
+    PerformanceLogTable origPerformanceLogTable = transMeta.getPerformanceLogTable();
+    ChannelLogTable origChannelLogTable = transMeta.getChannelLogTable();
+    MetricsLogTable origMetricsLogTable = transMeta.getMetricsLogTable();
+
+    try {
+      XmlExportHelper.swapTables( transMeta );
+      return saveXMLFile( transMeta, export );
+    } finally {
+      transMeta.setTransLogTable( origTransLogTable );
+      transMeta.setStepLogTable( origStepLogTable );
+      transMeta.setPerformanceLogTable( origPerformanceLogTable );
+      transMeta.setChannelLogTable( origChannelLogTable );
+      transMeta.setMetricsLogTable( origMetricsLogTable );
+    }
+  }
+
+
+  private boolean saveJobAsXmlFile( JobMeta jobMeta, boolean export ) {
+    JobLogTable origJobLogTable = jobMeta.getJobLogTable();
+    JobEntryLogTable originEntryLogTable = jobMeta.getJobEntryLogTable();
+    ChannelLogTable originChannelLogTable = jobMeta.getChannelLogTable();
+    List<LogTableInterface> originExtraLogTables = jobMeta.getExtraLogTables();
+
+    try {
+      XmlExportHelper.swapTables( jobMeta );
+      return saveXMLFile( jobMeta, export );
+    } finally {
+      jobMeta.setJobLogTable( origJobLogTable );
+      jobMeta.setJobEntryLogTable( originEntryLogTable );
+      jobMeta.setChannelLogTable( originChannelLogTable );
+      jobMeta.setExtraLogTables( originExtraLogTables );
+    }
   }
 
   public boolean saveXMLFile( EngineMetaInterface meta, boolean export ) {

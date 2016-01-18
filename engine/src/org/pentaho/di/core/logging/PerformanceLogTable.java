@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -293,6 +293,13 @@ public class PerformanceLogTable extends BaseLogTable implements Cloneable, LogT
   public List<RowMetaInterface> getRecommendedIndexes() {
     List<RowMetaInterface> indexes = new ArrayList<RowMetaInterface>();
     return indexes;
+  }
+
+  @Override
+  public void setAllGlobalParametersToNull()  {
+    super.setAllGlobalParametersToNull();
+
+    logInterval = isGlobalParameter( logInterval ) ? null : logInterval;
   }
 
 }
