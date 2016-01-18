@@ -122,6 +122,7 @@ import org.pentaho.di.job.JobExecutionConfiguration;
 import org.pentaho.di.job.JobHopMeta;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.JobPainter;
+import org.pentaho.di.job.entries.abort.JobEntryAbort;
 import org.pentaho.di.job.entries.job.JobEntryJob;
 import org.pentaho.di.job.entries.trans.JobEntryTrans;
 import org.pentaho.di.job.entry.JobEntryCopy;
@@ -1943,6 +1944,7 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
           XulMenuitem miPopEvalTrue = (XulMenuitem) doc.getElementById( "job-graph-hop-evaluation-true" );
           XulMenuitem miPopEvalFalse = (XulMenuitem) doc.getElementById( "job-graph-hop-evaluation-false" );
           XulMenuitem miDisHop = (XulMenuitem) doc.getElementById( "job-graph-hop-enabled" );
+          XulMenuitem miFlipHop = (XulMenuitem) doc.getElementById( "job-graph-hop-flip" );
 
           // Set the checkboxes in the right places...
           //
@@ -1973,6 +1975,12 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
               miPopEvalUncond.setDisabled( true );
             } else {
               miPopEvalUncond.setDisabled( false );
+            }
+            if ( hi.getFromEntry().isStart() ||
+                hi.getToEntry().getEntry() instanceof JobEntryAbort ) {
+              miFlipHop.setDisabled( true );
+            } else {
+              miFlipHop.setDisabled( false );
             }
           }
 
