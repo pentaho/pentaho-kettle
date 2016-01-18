@@ -971,7 +971,10 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 
   public void mouseUp( MouseEvent e ) {
     boolean control = ( e.stateMask & SWT.MOD1 ) != 0;
-
+    
+    TransHopMeta selectedHop = findHop( e.x, e.y );
+    updateErrorMetaForHop( selectedHop );
+    
     if ( iconoffset == null ) {
       iconoffset = new Point( 0, 0 );
     }
@@ -1542,6 +1545,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     switch ( stream.getStreamType() ) {
       case ERROR:
         addErrorHop();
+        candidate.setErrorHop( true );
         spoon.newHop( transMeta, candidate );
         break;
       case INPUT:
@@ -2011,7 +2015,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
    * @param y
    * @return the transformation hop on the specified location, otherwise: null
    */
-  private TransHopMeta findHop( int x, int y ) {
+  protected TransHopMeta findHop( int x, int y ) {
     return findHop( x, y, null );
   }
 
@@ -2276,6 +2280,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     TransHopMeta hi = getCurrentHop();
     TransHopMeta before = (TransHopMeta) hi.clone();
     hi.setEnabled( !hi.isEnabled() );
+    
     if ( transMeta.hasLoop( hi.getToStep() ) ) {
       hi.setEnabled( !hi.isEnabled() );
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
@@ -2289,6 +2294,8 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
       spoon.refreshGraph();
       spoon.refreshTree();
     }
+    
+    updateErrorMetaForHop( hi );
   }
 
   public void deleteHop() {
@@ -4043,6 +4050,15 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     thread.start();
   }
 
+  private void updateErrorMetaForHop( TransHopMeta hop ) {
+    if ( hop != null && hop.isErrorHop() ) {
+      StepErrorMeta errorMeta = hop.getFromStep().getStepErrorMeta();
+      if ( errorMeta != null ) {
+        errorMeta.setEnabled( hop.isEnabled() );
+      }
+    }
+  }
+  
   private void checkStartThreads() {
     if ( initialized && !running && trans != null ) {
       startThreads();
