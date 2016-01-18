@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -40,6 +40,9 @@ import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.injection.Injection;
+import org.pentaho.di.core.injection.InjectionDeep;
+import org.pentaho.di.core.injection.InjectionSupported;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
@@ -71,32 +74,49 @@ import org.w3c.dom.Node;
 
 @Step( id = "S3CSVINPUT", image = "S3I.svg", i18nPackageName = "org.pentaho.di.trans.steps.s3csvinput",
     name = "S3CsvInput.Step.Name", description = "S3CsvInput.Step.Description", categoryDescription = "Input" )
+@InjectionSupported( localizationPrefix = "S3CsvInput.Injection.", groups = { "INPUT_FIELDS" } )
 public class S3CsvInputMeta extends BaseStepMeta implements StepMetaInterface, InputFileMetaInterface {
+
+  @Injection( name = "BUCKET" )
   private String bucket;
 
+  @Injection( name = "FILENAME" )
   private String filename;
 
+  @Injection( name = "FILENAME_FIELD" )
   private String filenameField;
 
+  @Injection( name = "INCLUDE_FILENAME" )
   private boolean includingFilename;
 
+  @Injection( name = "ROW_NUMBER_FIELD" )
   private String rowNumField;
 
+  @Injection( name = "HEADER_PRESENT" )
   private boolean headerPresent;
 
+  @Injection( name = "SEPARATOR" )
   private String delimiter;
+
+  @Injection( name = "ENCLOSURE" )
   private String enclosure;
 
+  @Injection( name = "MAX_LINE_SIZE" )
   private String maxLineSize;
 
+  @Injection( name = "LAZY_CONVERSION_ACTIVE" )
   private boolean lazyConversionActive;
 
+  @InjectionDeep
   private TextFileInputField[] inputFields;
 
+  @Injection( name = "RUNNING_IN_PARALLEL" )
   private boolean runningInParallel;
 
+  @Injection( name = "AWS_ACCESS_KEY" )
   private String awsAccessKey;
 
+  @Injection( name = "AWS_SECRET_KEY" )
   private String awsSecretKey;
 
   public S3CsvInputMeta() {
@@ -287,7 +307,7 @@ public class S3CsvInputMeta extends BaseStepMeta implements StepMetaInterface, I
 
   @Override
   public void getFields( RowMetaInterface rowMeta, String origin, RowMetaInterface[] info, StepMeta nextStep,
-                         VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+      VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     rowMeta.clear(); // Start with a clean slate, eats the input
 
     for ( int i = 0; i < inputFields.length; i++ ) {
