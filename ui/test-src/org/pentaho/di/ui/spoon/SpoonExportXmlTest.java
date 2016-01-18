@@ -177,5 +177,4 @@ public class SpoonExportXmlTest {
     table.setConnectionName( HARDCODED_VALUE );
     table.setTimeoutInDays( USER_PARAM );
   }
-
 }

@@ -117,7 +117,7 @@ public class XmlExportHelper {
 
     List<LogTableInterface> extraLogTables = jobMeta.getExtraLogTables();
     if ( extraLogTables != null ) {
-      List<LogTableInterface> cloneExtraLogTables = new ArrayList<>();
+      List<LogTableInterface> cloneExtraLogTables = new ArrayList<LogTableInterface>();
       for ( LogTableInterface logTable : extraLogTables ) {
         if ( logTable instanceof BaseLogTable ) {
           if ( logTable instanceof Cloneable ) {
