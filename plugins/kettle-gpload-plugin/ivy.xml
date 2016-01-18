@@ -21,13 +21,15 @@
     <dependency org="pentaho-kettle" name="kettle-engine" rev="${dependency.kettle.revision}" transitive="true" changing="true"/>
     <dependency org="pentaho-kettle" name="kettle-core" rev="${dependency.kettle.revision}" transitive="true" changing="true"/>
     <dependency org="pentaho-kettle" name="kettle-ui-swt" rev="${dependency.kettle.revision}" transitive="false" changing="true"/>
-      
+
     <dependency org="org.apache.commons" name="commons-vfs2" rev="2.1-20150824" transitive="false"/>
     <!-- SWT it required to compile any version of any architecture will work -->
     <dependency org="org.eclipse.swt" name="swt-linux-x86_64" rev="4.3.2" transitive="false"/>
     <dependency org="org.eclipse" name="jface" rev="3.3.0-I20070606-0010" transitive="false"/>
-    
-    <dependency org="junit" name="junit" rev="4.7" transitive="false" conf="test->default"/>            
-    
+
+    <!-- test dependencies -->
+    <dependency org="junit" name="junit" rev="4.11" conf="test->default"/>
+    <dependency org="pentaho-kettle" name="kettle-engine-test" rev="${dependency.kettle.revision}" changing="true" transitive="false" conf="test->default"/>
+
   </dependencies>
 </ivy-module>
