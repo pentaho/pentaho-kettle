@@ -528,4 +528,22 @@ public abstract class BaseLogTable {
       && ( tName == null ? blt.getActualTableName() == null : tName.equals( blt.getActualTableName() ) ) );
   }
 
+  public void setAllGlobalParametersToNull() {
+    schemaName = isGlobalParameter( schemaName ) ? null : schemaName;
+    connectionName = isGlobalParameter( connectionName ) ? null : connectionName;
+    tableName = isGlobalParameter( tableName ) ? null : tableName;
+    timeoutInDays = isGlobalParameter( timeoutInDays ) ? null : timeoutInDays;
+  }
+
+  protected boolean isGlobalParameter( String parameter ) {
+    if ( parameter == null ) {
+      return false;
+    }
+
+    if ( parameter.startsWith( "${" ) && parameter.endsWith( "}" ) ) {
+      return System.getProperty( parameter.substring( 2, parameter.length() - 1 ) ) != null;
+    }
+
+    return false;
+  }
 }

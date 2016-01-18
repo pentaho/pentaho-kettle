@@ -295,4 +295,11 @@ public class PerformanceLogTable extends BaseLogTable implements Cloneable, LogT
     return indexes;
   }
 
+  @Override
+  public void setAllGlobalParametersToNull()  {
+    super.setAllGlobalParametersToNull();
+
+    logInterval = isGlobalParameter( logInterval ) ? null : logInterval;
+  }
+
 }
