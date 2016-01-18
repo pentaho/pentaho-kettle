@@ -137,6 +137,10 @@
     <copy todir="${approot.stage.dir}">
       <fileset file="${dist.dir}/${ivy.artifact.id}-${project.revision}.jar"/>
     </copy>
+    <!-- also copy the jar to lib [BACKLOG-6131] -->
+    <copy todir="${approot.stage.dir}/lib">
+      <fileset file="${dist.dir}/${ivy.artifact.id}-${project.revision}.jar"/>
+    </copy>
     <copy todir="${approot.stage.dir}/lib">
       <fileset dir="${lib.dir}" excludes="${assemble.copy-libs.excludes}"/>
     </copy>
