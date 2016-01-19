@@ -102,6 +102,11 @@ public class OracleRDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseI
     return true;
   }
 
+  @Override
+  public String getSQLListOfSequences() {
+    return "SELECT SEQUENCE_NAME FROM USER_SEQUENCES";
+  }
+
   /**
    * Check if a sequence exists.
    *

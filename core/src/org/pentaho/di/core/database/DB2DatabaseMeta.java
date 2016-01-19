@@ -357,6 +357,11 @@ public class DB2DatabaseMeta extends BaseDatabaseMeta implements DatabaseInterfa
     return true;
   }
 
+  @Override
+  public String getSQLListOfSequences() {
+    return "SELECT SEQNAME FROM SYSCAT.SEQUENCES";
+  }
+
   /**
    * Check if a sequence exists.
    *
