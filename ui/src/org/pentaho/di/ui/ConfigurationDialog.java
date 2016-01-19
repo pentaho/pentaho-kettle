@@ -22,73 +22,102 @@
 
 package org.pentaho.di.ui;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.custom.CTabFolder;
+import org.eclipse.swt.custom.CTabItem;
+import org.eclipse.swt.custom.StackLayout;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.layout.FormAttachment;
+import org.eclipse.swt.layout.FormData;
+import org.eclipse.swt.layout.FormLayout;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Dialog;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.TableItem;
 import org.pentaho.di.ExecutionConfiguration;
 import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.Props;
 import org.pentaho.di.core.parameters.UnknownParamException;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.PropsUI;
+import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
+import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
-
-import java.text.SimpleDateFormat;
-import java.util.*;
+import org.pentaho.di.ui.util.HelpUtils;
 
 public abstract class ConfigurationDialog extends Dialog {
 
   protected AbstractMeta abstractMeta;
   protected ExecutionConfiguration configuration;
-  protected TableView wArguments;
   protected TableView wVariables;
-  protected TableView wParams;
   protected boolean retval;
   protected Shell shell;
   protected PropsUI props;
-  protected Display display;
-  protected Shell parent;
-  protected Button wOK;
-  protected Button wCancel;
-  protected Group gLocal;
   protected Button wExecLocal;
   protected Button wExecRemote;
   protected Button wGatherMetrics;
-  protected Label wlReplayDate;
   protected Label wlLogLevel;
   protected Group gDetails;
   protected CCombo wLogLevel;
   protected Button wSafeMode;
   protected Button wClearLog;
-  protected Text wReplayDate;
   protected Label wlRemoteHost;
   protected CCombo wRemoteHost;
   protected Button wPassExport;
-  protected Label wlArguments;
-  protected Label wlParams;
-  protected Label wlVariables;
-  protected SimpleDateFormat simpleDateFormat = new SimpleDateFormat( "yyyy/MM/dd HH:mm:ss" );
+  protected Button wExecCluster;
+  protected Composite localOptionsComposite;
+  protected Composite serverOptionsComposite;
+  protected Composite clusteredOptionsComposite;
+  protected Label environmentSeparator;
+  protected Button showTransformationsCheckbox;
+  protected StackLayout stackedLayout;
+  protected int margin = Const.MARGIN;
+
+  private TableView wParams;
+  private Display display;
+  private Shell parent;
+  private Button wOK;
+  private Button wCancel;
+  private Group gLocal;
+  private FormData fdLocal;
+  private FormData fdDetails;
+  private FormData fd_tabFolder;
+  private FormData fdExecLocal;
+  private FormData fdExecRemote;
+  private CTabFolder tabFolder;
+  private Composite stackedLayoutComposite;
+  private FormData fdExecCluster;
 
   public ConfigurationDialog( Shell parent, ExecutionConfiguration configuration, AbstractMeta meta ) {
     super( parent );
     this.parent = parent;
     this.configuration = configuration;
     this.abstractMeta = meta;
-  }
 
-  protected void getInfoArguments() {
-    Map<String, String> map = new HashMap<String, String>();
-    int nrNonEmptyArguments = wArguments.nrNonEmpty();
-    for ( int i = 0; i < nrNonEmptyArguments; i++ ) {
-      TableItem tableItem = wArguments.getNonEmpty( i );
-      String varName = tableItem.getText( 1 );
-      String varValue = tableItem.getText( 2 );
-
-      if ( !Const.isEmpty( varName ) ) {
-        map.put( varName, varValue );
-      }
+    // Fill the parameters, maybe do this in another place?
+    Map<String, String> params = configuration.getParams();
+    params.clear();
+    String[] paramNames = meta.listParameters();
+    for ( String name : paramNames ) {
+      params.put( name, "" );
     }
-    configuration.setArguments( map );
+
+    props = PropsUI.getInstance();
   }
 
   protected void getInfoVariables() {
@@ -130,10 +159,8 @@ public abstract class ConfigurationDialog extends Dialog {
   protected void ok() {
     if ( Const.isOSX() ) {
       // OSX bug workaround.
-      //
       wVariables.applyOSXChanges();
       wParams.applyOSXChanges();
-      wArguments.applyOSXChanges();
     }
     getInfo();
     retval = true;
@@ -177,9 +204,325 @@ public abstract class ConfigurationDialog extends Dialog {
   }
 
   /**
-   * @param configuration the configuration to set
+   * @param configuration
+   *          the configuration to set
    */
   public void setConfiguration( ExecutionConfiguration configuration ) {
     this.configuration = configuration;
   }
+
+  protected void mainLayout( Class<?> PKG, String prefix ) {
+    display = parent.getDisplay();
+    shell = new Shell( parent, SWT.DIALOG_TRIM | SWT.MIN | SWT.APPLICATION_MODAL );
+    props.setLook( shell );
+    shell.setImage( GUIResource.getInstance().getImageTransGraph() );
+    shell.setLayout( new FormLayout() );
+    shell.setText( BaseMessages.getString( PKG, prefix + ".Shell.Title" ) );
+  }
+
+  protected void optionsSectionLayout() {
+    gDetails = new Group( shell, SWT.SHADOW_ETCHED_IN );
+    fdLocal.bottom = new FormAttachment( 100, -510 );
+    gDetails.setText( "Options" ); // BaseMessages.getString( PKG, prefix + ".DetailsGroup.Label" ) ); TODO Localization
+                                   // pending
+    // The layout
+    gDetails.setLayout( new FormLayout() );
+    fdDetails = new FormData();
+    fdDetails.top = new FormAttachment( gLocal, 15 );
+    fdDetails.right = new FormAttachment( 100, -15 );
+    fdDetails.left = new FormAttachment( 0, 15 );
+    gDetails.setBackground( shell.getBackground() ); // the default looks ugly
+    gDetails.setLayoutData( fdDetails );
+
+    optionsSectionControls();
+  }
+
+  protected void parametersSectionLayout( Class<?> PKG, String prefix ) {
+
+    tabFolder = new CTabFolder( shell, SWT.BORDER );
+    props.setLook( tabFolder, Props.WIDGET_STYLE_TAB );
+    fdDetails.bottom = new FormAttachment( tabFolder, -16 );
+    fd_tabFolder = new FormData();
+    fd_tabFolder.right = new FormAttachment( 100, -15 );
+    fd_tabFolder.left = new FormAttachment( 0, 15 );
+    fd_tabFolder.top = new FormAttachment( 0, 276 );
+    tabFolder.setLayoutData( fd_tabFolder );
+
+    // Parameters
+    CTabItem tbtmParameters = new CTabItem( tabFolder, SWT.NONE );
+    tbtmParameters.setText( "Parameters" ); // TODO Localize property
+    Composite parametersComposite = new Composite( tabFolder, SWT.NONE );
+    props.setLook( parametersComposite );
+
+    parametersComposite.setLayout( new FormLayout() );
+    tbtmParameters.setControl( parametersComposite );
+
+    ColumnInfo[] cParams =
+        { new ColumnInfo( BaseMessages.getString( PKG, "TransExecutionConfigurationDialog.ParamsColumn.Argument" ),
+            ColumnInfo.COLUMN_TYPE_TEXT, false, true ), // Stepname
+          new ColumnInfo( BaseMessages.getString( PKG, "TransExecutionConfigurationDialog.ParamsColumn.Value" ),
+              ColumnInfo.COLUMN_TYPE_TEXT, false, false ), // Preview size
+          new ColumnInfo( BaseMessages.getString( PKG, "TransExecutionConfigurationDialog.ParamsColumn.Default" ),
+              ColumnInfo.COLUMN_TYPE_TEXT, false, true ), // Preview size
+    };
+
+    String[] namedParams = abstractMeta.listParameters();
+    int nrParams = namedParams.length;
+    wParams =
+        new TableView( abstractMeta, parametersComposite, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, cParams,
+            nrParams, false, null, props );
+    FormData fdParams = new FormData();
+    fdParams.top = new FormAttachment( 0, 10 );
+    fdParams.left = new FormAttachment( 0, 10 );
+    wParams.setLayoutData( fdParams );
+
+    tabFolder.setSelection( 0 );
+
+    Button argsButton = new Button( parametersComposite, SWT.NONE );
+    fdParams.right = new FormAttachment( argsButton, 0, SWT.RIGHT );
+    fdParams.bottom = new FormAttachment( argsButton, -6 );
+    FormData fd_argsButton = new FormData();
+    fd_argsButton.right = new FormAttachment( 100, -10 );
+    fd_argsButton.bottom = new FormAttachment( 100, -10 );
+    argsButton.setLayoutData( fd_argsButton );
+    argsButton.setText( "Arguments (legacy)" ); // TODO Localize property
+
+    argsButton.addSelectionListener( new SelectionAdapter() {
+      public void widgetSelected( SelectionEvent e ) {
+        new ArgumentsDialog( shell, configuration, abstractMeta );
+      }
+    } );
+
+    // Variables
+    CTabItem tbtmVariables = new CTabItem( tabFolder, SWT.NONE );
+    tbtmVariables.setText( "Variables" ); // TODO Localize property
+    Composite variablesComposite = new Composite( tabFolder, SWT.NONE );
+    props.setLook( variablesComposite );
+    variablesComposite.setLayout( new FormLayout() );
+    tbtmVariables.setControl( variablesComposite );
+
+    ColumnInfo[] cVariables =
+        { new ColumnInfo( BaseMessages.getString( PKG, prefix + ".VariablesColumn.Argument" ),
+            ColumnInfo.COLUMN_TYPE_TEXT, false, false ), // Stepname
+          new ColumnInfo( BaseMessages.getString( PKG, prefix + ".VariablesColumn.Value" ), ColumnInfo.COLUMN_TYPE_TEXT,
+              false, false ), // Preview size
+    };
+
+    int nrVariables = configuration.getVariables() != null ? configuration.getVariables().size() : 0;
+    wVariables =
+        new TableView( abstractMeta, variablesComposite, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, cVariables,
+            nrVariables, false, null, props );
+
+    FormData fdVariables = new FormData();
+    fdVariables.top = new FormAttachment( 0, 10 );
+    fdVariables.left = new FormAttachment( 0, 10 );
+    fdVariables.bottom = new FormAttachment( 0, 221 );
+    fdVariables.right = new FormAttachment( 0, 598 );
+
+    wVariables.setLayoutData( fdVariables );
+  }
+
+  protected void buttonsSectionLayout( Class<?> PKG, String prefix ) {
+
+    // Bottom buttons and separator
+
+    Button alwaysShowOption = new Button( shell, SWT.CHECK );
+    props.setLook( alwaysShowOption );
+    fd_tabFolder.bottom = new FormAttachment( 100, -106 );
+    alwaysShowOption.addSelectionListener( new SelectionAdapter() {
+      @Override
+      public void widgetSelected( SelectionEvent arg0 ) {
+      }
+    } );
+    FormData fd_alwaysShowOption = new FormData();
+    fd_alwaysShowOption.left = new FormAttachment( 0, 15 );
+    fd_alwaysShowOption.top = new FormAttachment( tabFolder, 15 );
+    alwaysShowOption.setLayoutData( fd_alwaysShowOption );
+    alwaysShowOption.setText( "Always show dialog run" ); // TODO Localize property
+
+    wCancel = new Button( shell, SWT.PUSH );
+    FormData fd_wCancel = new FormData();
+    wCancel.setLayoutData( fd_wCancel );
+    wCancel.setText( BaseMessages.getString( PKG, "System.Button.Cancel" ) );
+    wCancel.addSelectionListener( new SelectionAdapter() {
+      public void widgetSelected( SelectionEvent e ) {
+        cancel();
+      }
+    } );
+
+    wOK = new Button( shell, SWT.PUSH );
+    FormData fd_wOK = new FormData();
+    fd_wOK.top = new FormAttachment( wCancel, 0, SWT.TOP );
+    fd_wOK.right = new FormAttachment( wCancel, -5 );
+    wOK.setLayoutData( fd_wOK );
+    wOK.setText( "Run" ); // BaseMessages.getString( PKG, prefix + ".Button.Launch" ) ); TODO Localize property
+    wOK.addSelectionListener( new SelectionAdapter() {
+      public void widgetSelected( SelectionEvent e ) {
+        ok();
+      }
+    } );
+
+    Button btnHelp = new Button( shell, SWT.NONE );
+    btnHelp.setImage( GUIResource.getInstance().getImageHelpWeb() );
+    btnHelp.setText( BaseMessages.getString( PKG, "System.Button.Help" ) );
+    btnHelp.setToolTipText( BaseMessages.getString( PKG, "System.Tooltip.Help" ) );
+    fd_wOK.left = new FormAttachment( btnHelp, 442 );
+    FormData fd_btnHelp = new FormData();
+    fd_btnHelp.right = new FormAttachment( 100, -572 );
+    fd_btnHelp.left = new FormAttachment( 0, 15 );
+    btnHelp.setLayoutData( fd_btnHelp );
+    btnHelp.addSelectionListener( new SelectionAdapter() {
+      @Override
+      public void widgetSelected( SelectionEvent arg0 ) {
+        HelpUtils.openHelpDialog( parent.getShell(), "title", "url", "header" ); // TODO pending params
+      }
+    } );
+
+    Label separator = new Label( shell, SWT.SEPARATOR | SWT.HORIZONTAL );
+    fd_wCancel.top = new FormAttachment( separator, 15 );
+    fd_btnHelp.top = new FormAttachment( separator, 15 );
+    fd_wCancel.right = new FormAttachment( separator, 0, SWT.RIGHT );
+    FormData fd_separator = new FormData();
+    fd_separator.right = new FormAttachment( 100, -15 );
+    fd_separator.left = new FormAttachment( 0, 15 );
+    fd_separator.top = new FormAttachment( alwaysShowOption, 15 );
+    fd_separator.bottom = new FormAttachment( alwaysShowOption, 17, SWT.BOTTOM );
+    separator.setLayoutData( fd_separator );
+  }
+
+  protected void openDialog() {
+
+    shell.setSize( 653, 671 );
+
+    // Set the focus on the OK button
+    wOK.setFocus();
+
+    shell.open();
+
+    Rectangle shellBounds = getParent().getBounds();
+    Point dialogSize = shell.getSize();
+
+    shell.setLocation( shellBounds.x + ( shellBounds.width - dialogSize.x ) / 2, shellBounds.y + ( shellBounds.height
+        - dialogSize.y ) / 2 );
+
+    while ( !shell.isDisposed() ) {
+      if ( !display.readAndDispatch() ) {
+        display.sleep();
+      }
+    }
+  }
+
+  protected void environmentTypeSectionLayout( Class<?> PKG, String prefix ) {
+
+    gLocal = new Group( shell, SWT.SHADOW_ETCHED_IN );
+    gLocal.setText( "Environment Type" ); // BaseMessages.getString( PKG, prefix + ".LocalGroup.Label" ) ); TODO
+                                          // Localization pending
+    gLocal.setLayout( new FormLayout() );
+    fdLocal = new FormData();
+    fdLocal.top = new FormAttachment( 0, 15 );
+    fdLocal.right = new FormAttachment( 100, -15 );
+    fdLocal.left = new FormAttachment( 0, 15 );
+
+    gLocal.setBackground( shell.getBackground() ); // the default looks ugly
+    gLocal.setLayoutData( fdLocal );
+
+    wExecLocal = new Button( gLocal, SWT.RADIO );
+    wExecLocal.setText( "Local" ); // BaseMessages.getString( PKG, prefix + ".ExecLocal.Label" ) ); TODO Localization
+                                   // pending
+    wExecLocal.setToolTipText( BaseMessages.getString( PKG, prefix + ".ExecLocal.Tooltip" ) );
+    props.setLook( wExecLocal );
+    fdExecLocal = new FormData();
+    fdExecLocal.top = new FormAttachment( 15 );
+    fdExecLocal.right = new FormAttachment( 100, -506 );
+    wExecLocal.setLayoutData( fdExecLocal );
+    wExecLocal.addSelectionListener( new SelectionAdapter() {
+      public void widgetSelected( SelectionEvent e ) {
+        stackedLayout.topControl = localOptionsComposite;
+        stackedLayoutComposite.layout();
+      }
+    } );
+
+    wExecRemote = new Button( gLocal, SWT.RADIO );
+    wExecRemote.setText( "Server" ); // BaseMessages.getString( PKG, prefix + ".ExecRemote.Label" ) ); TODO Localization
+                                     // pending
+    wExecRemote.setToolTipText( BaseMessages.getString( PKG, prefix + ".ExecRemote.Tooltip" ) );
+    props.setLook( wExecRemote );
+    fdExecLocal.left = new FormAttachment( wExecRemote, 0, SWT.LEFT );
+    fdExecRemote = new FormData();
+    fdExecRemote.left = new FormAttachment( 0, 10 );
+    fdExecRemote.top = new FormAttachment( wExecLocal, 11 );
+    wExecRemote.setLayoutData( fdExecRemote );
+    wExecRemote.addSelectionListener( new SelectionAdapter() {
+      public void widgetSelected( SelectionEvent e ) {
+        stackedLayout.topControl = serverOptionsComposite;
+        stackedLayoutComposite.layout();
+      }
+    } );
+
+    wExecCluster = new Button( gLocal, SWT.RADIO );
+    wExecCluster.setText( "Clustered" ); // BaseMessages.getString( PKG,
+                                         // "TransExecutionConfigurationDialog.ExecCluster.Label" ) ); TODO Localization
+                                         // pending
+    wExecCluster.setToolTipText( BaseMessages.getString( PKG,
+        "TransExecutionConfigurationDialog.ExecCluster.Tooltip" ) );
+    props.setLook( wExecCluster );
+    fdExecCluster = new FormData();
+    fdExecCluster.left = new FormAttachment( 0, 10 );
+    fdExecCluster.top = new FormAttachment( wExecRemote, 11 );
+    wExecCluster.setLayoutData( fdExecCluster );
+    wExecCluster.addSelectionListener( new SelectionAdapter() {
+      public void widgetSelected( SelectionEvent e ) {
+        stackedLayout.topControl = clusteredOptionsComposite;
+        stackedLayoutComposite.layout();
+      }
+    } );
+
+    // separator
+    environmentSeparator = new Label( gLocal, SWT.SEPARATOR | SWT.VERTICAL );
+    fdExecCluster.right = new FormAttachment( environmentSeparator, -23 );
+    fdExecRemote.right = new FormAttachment( environmentSeparator, -23 );
+    FormData fd_environmentSeparator = new FormData();
+    fd_environmentSeparator.height = 69;
+    fd_environmentSeparator.top = new FormAttachment( wExecLocal, 0, SWT.TOP );
+    fd_environmentSeparator.left = new FormAttachment( 0, 113 );
+    environmentSeparator.setLayoutData( fd_environmentSeparator );
+
+    // stacked layout composite
+    stackedLayoutComposite = new Composite( gLocal, SWT.NONE );
+    props.setLook( stackedLayoutComposite );
+    stackedLayout = new StackLayout();
+    stackedLayoutComposite.setLayout( stackedLayout );
+    FormData fd_stackedLayoutComposite = new FormData();
+    fd_stackedLayoutComposite.top = new FormAttachment( 0 );
+    fd_stackedLayoutComposite.left = new FormAttachment( environmentSeparator, 7 );
+    fd_stackedLayoutComposite.bottom = new FormAttachment( 100, -5 );
+    fd_stackedLayoutComposite.right = new FormAttachment( 100, -7 );
+    stackedLayoutComposite.setLayoutData( fd_stackedLayoutComposite );
+
+    localOptionsComposite = new Composite( stackedLayoutComposite, SWT.NONE );
+    localOptionsComposite.setLayout( new FormLayout() );
+    props.setLook( localOptionsComposite );
+
+    serverOptionsComposite = new Composite( stackedLayoutComposite, SWT.NONE );
+    serverOptionsComposite.setLayout( new FormLayout() );
+    props.setLook( serverOptionsComposite );
+
+    clusteredOptionsComposite = new Composite( stackedLayoutComposite, SWT.NONE );
+    clusteredOptionsComposite.setLayout( new FormLayout() );
+    props.setLook( clusteredOptionsComposite );
+
+    stackedLayout.topControl = localOptionsComposite;
+
+    localOptionsComposite( PKG, prefix );
+    serverOptionsComposite( PKG, prefix );
+    clusteredOptionsComposite( PKG, prefix );
+  }
+
+  protected abstract void localOptionsComposite( Class<?> PKG, String prefix );
+
+  protected abstract void serverOptionsComposite( Class<?> PKG, String prefix );
+
+  protected abstract void clusteredOptionsComposite( Class<?> PKG, String prefix );
+
+  protected abstract void optionsSectionControls();
 }
