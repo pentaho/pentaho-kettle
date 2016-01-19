@@ -169,18 +169,8 @@ public class LazyUnifiedRepositoryDirectory extends RepositoryDirectory {
 
 
   @Override public int getNrSubdirectories() {
-    RepositoryRequest repositoryRequest = new RepositoryRequest();
-    repositoryRequest.setTypes( RepositoryRequest.FILES_TYPE_FILTER.FOLDERS );
-    repositoryRequest.setPath( this.self.getId().toString() );
-    List<RepositoryFile> children = repository.getChildren( repositoryRequest );
-    Iterator<RepositoryFile> iterator = children.iterator();
-    while ( iterator.hasNext() ) {
-      RepositoryFile next = iterator.next();
-      if ( !next.isFolder() ) {
-        iterator.remove();
-      }
-    }
-    return children.size();
+    List<RepositoryFile> childrenFiles = getAllURChildrenFiles();
+    return childrenFiles.size();
   }
 
   @Override public RepositoryDirectory getSubdirectory( int i ) {
