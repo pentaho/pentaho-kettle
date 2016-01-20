@@ -168,7 +168,13 @@ public class BeanInjector {
           } else if ( s.setter != null ) {
             Object value = data.getAsJavaType( dataName, s.leafClass );
             if ( value != null ) {
-              s.setter.invoke( obj, value );
+              if ( s.setter.getParameterTypes().length == 2 ) {
+                // setter with index
+                s.setter.invoke( obj, index, value );
+              } else {
+                // usual setter
+                s.setter.invoke( obj, value );
+              }
             }
           } else {
             throw new KettleException( "No field or setter defined for " + root.getClass() );

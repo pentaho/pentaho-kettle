@@ -102,13 +102,17 @@ class BeanLevelInfo {
         // fill info
         BeanLevelInfo leaf = new BeanLevelInfo();
         leaf.parent = this;
-        if ( isGetter( m ) ) {
+        Class<?> getterClass = isGetter( m );
+        if ( getterClass != null ) {
           leaf.getter = m;
-          leaf.leafClass = m.getReturnType();
-        } else if ( isSetter( m ) ) {
+          leaf.leafClass = getterClass;
+        }
+        Class<?> setterClass = isSetter( m );
+        if ( setterClass != null ) {
           leaf.setter = m;
-          leaf.leafClass = m.getParameterTypes()[0];
-        } else {
+          leaf.leafClass = setterClass;
+        }
+        if ( leaf.leafClass == null ) {
           continue;
         }
         leaf.array = false;
@@ -122,12 +126,40 @@ class BeanLevelInfo {
     }
   }
 
-  private boolean isGetter( Method m ) {
-    return m.getReturnType() != void.class && m.getParameterTypes().length == 0;
+  private Class<?> isGetter( Method m ) {
+    if ( m.getReturnType() == void.class ) {
+      return null;
+    }
+    switch ( m.getParameterTypes().length ) {
+      case 0:
+        // getter without parameters
+        return m.getReturnType();
+      case 1:
+        if ( m.getParameterTypes()[0] == int.class ) {
+          // getter with one parameter: index
+          return m.getReturnType();
+        }
+        break;
+    }
+    return null;
   }
 
-  private boolean isSetter( Method m ) {
-    return m.getReturnType() == void.class && m.getParameterTypes().length == 1;
+  private Class<?> isSetter( Method m ) {
+    if ( m.getReturnType() != void.class ) {
+      return null;
+    }
+    switch ( m.getParameterTypes().length ) {
+      case 1:
+        // setter with one parameter
+        return m.getParameterTypes()[0];
+      case 2:
+        if ( m.getParameterTypes()[0] == int.class ) {
+          // setter with two parameters: index and value
+          return m.getParameterTypes()[1];
+        }
+        break;
+    }
+    return null;
   }
 
   protected List<BeanLevelInfo> createCallStack() {
