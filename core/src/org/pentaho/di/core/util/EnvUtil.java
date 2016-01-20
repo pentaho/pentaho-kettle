@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -287,7 +287,7 @@ public class EnvUtil {
    */
   public static Locale createLocale( String localeCode ) {
     Locale resultLocale = null;
-    if ( localeCode != null ) {
+    if ( !Const.isEmpty( localeCode ) ) {
       StringTokenizer parser = new StringTokenizer( localeCode, "_" );
       if ( parser.countTokens() == 2 ) {
         resultLocale = new Locale( parser.nextToken(), parser.nextToken() );
