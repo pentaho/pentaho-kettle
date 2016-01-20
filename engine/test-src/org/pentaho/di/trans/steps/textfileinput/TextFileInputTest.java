@@ -195,6 +195,42 @@ public class TextFileInputTest {
     deleteVfsFile( virtualFile );
   }
 
+  @Test
+  public void readInputWithDefaultValues() throws Exception {
+    final String virtualFile = createVirtualFile( "pdi-14832.txt", "1,\n" );
+
+    TextFileInputMeta meta = new TextFileInputMeta();
+    TextFileInputField field2 = field( "col2" );
+    field2.setIfNullValue( "DEFAULT" );
+    meta.setInputFields( new TextFileInputField[] { field( "col1" ), field2 } );
+    meta.setFileCompression( "None" );
+    meta.setFileType( "CSV" );
+    meta.setHeader( false );
+    meta.setNrHeaderLines( -1 );
+    meta.setFooter( false );
+    meta.setNrFooterLines( -1 );
+
+    TextFileInputData data = new TextFileInputData();
+    data.setFiles( new FileInputList() );
+    data.getFiles().addFile( KettleVFS.getFileObject( virtualFile ) );
+
+    data.outputRowMeta = new RowMeta();
+    data.outputRowMeta.addValueMeta( new ValueMetaString( "col1" ) );
+    data.outputRowMeta.addValueMeta( new ValueMetaString( "col2" ) );
+
+    data.dataErrorLineHandler = Mockito.mock( FileErrorHandler.class );
+    data.fileFormatType = TextFileInputMeta.FILE_FORMAT_UNIX;
+    data.separator = ",";
+    data.filterProcessor = new TextFileFilterProcessor( new TextFileFilter[ 0 ] );
+    data.filePlayList = new FilePlayListAll();
+
+    TextFileInput input = StepMockUtil.getStep( TextFileInput.class, TextFileInputMeta.class, "test" );
+    List<Object[]> output = TransTestingUtil.execute( input, meta, data, 1, false );
+    TransTestingUtil.assertResult( new Object[] { "1", "DEFAULT" }, output.get( 0 ) );
+
+    deleteVfsFile( virtualFile );
+  }
+
   private static String createVirtualFile( String filename, String... rows ) throws Exception {
     String virtualFile = TestUtils.createRamFile( filename );
 

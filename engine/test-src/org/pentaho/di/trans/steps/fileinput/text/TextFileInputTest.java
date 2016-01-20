@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -124,17 +124,9 @@ public class TextFileInputTest {
       .toString();
     final String virtualFile = createVirtualFile( "pdi-2607.txt", content );
 
-    TextFileInputMeta meta = new TextFileInputMeta();
+    TextFileInputMeta meta = createMetaObject( field( "col1" ), field( "col2" ) );
     meta.content.lineWrapped = true;
     meta.content.nrWraps = 1;
-    meta.inputFiles.inputFields =
-      new BaseFileInputField[] { field( "col1" ), field( "col2" ) };
-    meta.content.fileCompression = "None";
-    meta.content.fileType = "CSV";
-    meta.content.header = false;
-    meta.content.nrHeaderLines = -1;
-    meta.content.footer = false;
-    meta.content.nrFooterLines = -1;
 
     TextFileInputData data = createDataObject( virtualFile, ";", "col1", "col2" );
 
@@ -150,18 +142,10 @@ public class TextFileInputTest {
   public void readInputWithMissedValues() throws Exception {
     final String virtualFile = createVirtualFile( "pdi-14172.txt", "1,1,1\n", "2,,2\n" );
 
-    TextFileInputMeta meta = new TextFileInputMeta();
     BaseFileInputField field2 = field( "col2" );
     field2.setRepeated( true );
-    meta.inputFiles.inputFields =
-      new BaseFileInputField[] { field( "col1" ), field2, field( "col3" ) };
-    meta.content.fileCompression = "None";
-    meta.content.fileType = "CSV";
-    meta.content.header = false;
-    meta.content.nrHeaderLines = -1;
-    meta.content.footer = false;
-    meta.content.nrFooterLines = -1;
 
+    TextFileInputMeta meta = createMetaObject( field( "col1" ), field2, field( "col3" ) );
     TextFileInputData data = createDataObject( virtualFile, ",", "col1", "col2", "col3" );
 
     TextFileInput input = StepMockUtil.getStep( TextFileInput.class, TextFileInputMeta.class, "test" );
@@ -176,19 +160,10 @@ public class TextFileInputTest {
   public void readInputWithNonEmptyNullif() throws Exception {
     final String virtualFile = createVirtualFile( "pdi-14358.txt", "-,-\n" );
 
-    TextFileInputMeta meta = new TextFileInputMeta();
-
     BaseFileInputField col2 = field( "col2" );
     col2.setNullString( "-" );
-    meta.inputFiles.inputFields = new BaseFileInputField[] { field( "col1" ), col2 };
 
-    meta.content.fileCompression = "None";
-    meta.content.fileType = "CSV";
-    meta.content.header = false;
-    meta.content.nrHeaderLines = -1;
-    meta.content.footer = false;
-    meta.content.nrFooterLines = -1;
-
+    TextFileInputMeta meta = createMetaObject( field( "col1" ), col2 );
     TextFileInputData data = createDataObject( virtualFile, ",", "col1", "col2" );
 
     TextFileInput input = StepMockUtil.getStep( TextFileInput.class, TextFileInputMeta.class, "test" );
@@ -196,6 +171,36 @@ public class TextFileInputTest {
     assertResult( new Object[] { "-" }, output.get( 0 ) );
 
     deleteVfsFile( virtualFile );
+  }
+
+  @Test
+  public void readInputWithDefaultValues() throws Exception {
+    final String virtualFile = createVirtualFile( "pdi-14832.txt", "1,\n" );
+
+    BaseFileInputField col2 = field( "col2" );
+    col2.setIfNullValue( "DEFAULT" );
+
+    TextFileInputMeta meta = createMetaObject( field( "col1" ), col2 );
+    TextFileInputData data = createDataObject( virtualFile, ",", "col1", "col2" );
+
+    TextFileInput input = StepMockUtil.getStep( TextFileInput.class, TextFileInputMeta.class, "test" );
+    List<Object[]> output = TransTestingUtil.execute( input, meta, data, 1, false );
+    TransTestingUtil.assertResult( new Object[] { "1", "DEFAULT" }, output.get( 0 ) );
+
+    deleteVfsFile( virtualFile );
+  }
+
+  private TextFileInputMeta createMetaObject( BaseFileInputField... fields ) {
+    TextFileInputMeta meta = new TextFileInputMeta();
+    meta.content.fileCompression = "None";
+    meta.content.fileType = "CSV";
+    meta.content.header = false;
+    meta.content.nrHeaderLines = -1;
+    meta.content.footer = false;
+    meta.content.nrFooterLines = -1;
+
+    meta.inputFiles.inputFields = fields;
+    return meta;
   }
 
   private TextFileInputData createDataObject( String file,
