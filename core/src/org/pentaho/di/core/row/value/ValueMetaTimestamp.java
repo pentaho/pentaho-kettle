@@ -191,20 +191,23 @@ public class ValueMetaTimestamp extends ValueMetaDate {
   public int compare( Object data1, Object data2 ) throws KettleValueException {
     Timestamp timestamp1 = getTimestamp( data1 );
     Timestamp timestamp2 = getTimestamp( data2 );
+    int cmp = 0;
     if ( timestamp1 == null ) {
       if ( timestamp2 == null ) {
-        return 0;
+        cmp = 0;
       } else {
-        return -1;
+        cmp = -1;
       }
+    } else if ( timestamp2 == null ) {
+      cmp = 1;
     } else {
-      if ( timestamp2 == null ) {
-        return 1;
-      } else {
-        return timestamp1.compareTo( timestamp2 );
-      }
+      cmp = timestamp1.compareTo( timestamp2 );
     }
-
+    if ( isSortedDescending() ) {
+      return -cmp;
+    } else {
+      return cmp;
+    }
   }
 
   protected Timestamp convertBigNumberToTimestamp( BigDecimal bd ) {
