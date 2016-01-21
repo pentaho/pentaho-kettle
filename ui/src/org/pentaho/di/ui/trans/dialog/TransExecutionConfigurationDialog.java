@@ -40,7 +40,7 @@ import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.ui.ConfigurationDialog;
+import org.pentaho.di.ui.core.dialog.ConfigurationDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 
 public class TransExecutionConfigurationDialog extends ConfigurationDialog {
@@ -53,11 +53,11 @@ public class TransExecutionConfigurationDialog extends ConfigurationDialog {
 
   protected void localOptionsComposite( Class<?> PKG, String prefix ) {
 
-    Label localDescriptionLabel = new Label( localOptionsComposite, SWT.NONE ); // TODO localize
+    Label localDescriptionLabel = new Label( localOptionsComposite, SWT.NONE );
     props.setLook( localDescriptionLabel );
-    localDescriptionLabel.setText( "The transformation will run on the machine you are using." );
+    localDescriptionLabel.setText( BaseMessages.getString( PKG, prefix + ".LocalHost.Label" ) );
     FormData fd_localDescriptionLabel = new FormData();
-    fd_localDescriptionLabel.left = new FormAttachment( environmentSeparator, 15 );
+    fd_localDescriptionLabel.left = new FormAttachment( environmentSeparator, 5 );
     fd_localDescriptionLabel.top = new FormAttachment( 0, 12 );
     localDescriptionLabel.setLayoutData( fd_localDescriptionLabel );
   }
@@ -66,22 +66,20 @@ public class TransExecutionConfigurationDialog extends ConfigurationDialog {
 
     wlRemoteHost = new Label( serverOptionsComposite, SWT.NONE );
     props.setLook( wlRemoteHost );
-    wlRemoteHost.setText( "Server" ); // BaseMessages.getString( PKG, prefix + ".RemoteHost.Label" ) ); TODO LOCALIZE
-    // wlRemoteHost.setToolTipText( BaseMessages.getString( TODO LOCALIZE
-    // PKG, prefix + ".RemoteHost.Tooltip" ) );
+    wlRemoteHost.setText( BaseMessages.getString( PKG, prefix + ".RemoteHost.Label" ) );
+    wlRemoteHost.setToolTipText( BaseMessages.getString( PKG, prefix + ".RemoteHost.Tooltip" ) );
     FormData fdlRemoteHost = new FormData();
     fdlRemoteHost.top = new FormAttachment( 0, 12 );
-    fdlRemoteHost.left = new FormAttachment( environmentSeparator, 15 );
+    fdlRemoteHost.left = new FormAttachment( environmentSeparator, 5 );
     wlRemoteHost.setLayoutData( fdlRemoteHost );
 
     wRemoteHost = new CCombo( serverOptionsComposite, SWT.BORDER );
-    // wRemoteHost.setToolTipText( BaseMessages.getString( TODO LOCALIZE
-    // PKG, prefix + ".RemoteHost.Tooltip" ) );
+    wRemoteHost.setToolTipText( BaseMessages.getString( PKG, prefix + ".RemoteHost.Tooltip" ) );
     props.setLook( wRemoteHost );
     FormData fdRemoteHost = new FormData();
     fdRemoteHost.left = new FormAttachment( wlRemoteHost, 0, SWT.LEFT );
     fdRemoteHost.right = new FormAttachment( 100, -293 );
-    fdRemoteHost.top = new FormAttachment( wlRemoteHost, 6 );
+    fdRemoteHost.top = new FormAttachment( wlRemoteHost, 10 );
     wRemoteHost.setLayoutData( fdRemoteHost );
     for ( int i = 0; i < abstractMeta.getSlaveServers().size(); i++ ) {
       SlaveServer slaveServer = abstractMeta.getSlaveServers().get( i );
@@ -89,14 +87,12 @@ public class TransExecutionConfigurationDialog extends ConfigurationDialog {
     }
 
     wPassExport = new Button( serverOptionsComposite, SWT.CHECK );
-    wPassExport.setText( "Send resources to this server" ); // BaseMessages.getString( PKG, prefix + ".PassExport.Label"
-                                                            // ) ); TODO LOCALIZE
-    // wPassExport.setToolTipText( BaseMessages.getString( TODO LOCALIZE
-    // PKG, prefix + ".PassExport.Tooltip" ) );
+    wPassExport.setText( BaseMessages.getString( PKG, prefix + ".PassExport.Label" ) );
+    wPassExport.setToolTipText( BaseMessages.getString( PKG, prefix + ".PassExport.Tooltip" ) );
     props.setLook( wPassExport );
     FormData fdPassExport = new FormData();
     fdPassExport.left = new FormAttachment( wRemoteHost, 0, SWT.LEFT );
-    fdPassExport.top = new FormAttachment( wRemoteHost, 6 );
+    fdPassExport.top = new FormAttachment( wRemoteHost, 10 );
     wPassExport.setLayoutData( fdPassExport );
 
   }
@@ -105,11 +101,10 @@ public class TransExecutionConfigurationDialog extends ConfigurationDialog {
 
     Label clusterDescriptionLabel = new Label( clusteredOptionsComposite, SWT.NONE );
     props.setLook( clusterDescriptionLabel );
-    clusterDescriptionLabel.setText(
-        "This option is available because you have clusters set on steps in this transformation." ); // TODO LOCALIZE
+    clusterDescriptionLabel.setText( BaseMessages.getString( PKG, prefix + ".ClusterDescription.Label" ) );
     FormData fd_clusterDescriptionLabel = new FormData();
     fd_clusterDescriptionLabel.top = new FormAttachment( 0, 12 );
-    fd_clusterDescriptionLabel.left = new FormAttachment( environmentSeparator, 15 );
+    fd_clusterDescriptionLabel.left = new FormAttachment( environmentSeparator, 5 );
     clusterDescriptionLabel.setLayoutData( fd_clusterDescriptionLabel );
 
     showTransformationsCheckbox = new Button( clusteredOptionsComposite, SWT.CHECK );
@@ -118,7 +113,7 @@ public class TransExecutionConfigurationDialog extends ConfigurationDialog {
     fd_resroucesCheckBox.top = new FormAttachment( clusterDescriptionLabel, 10 );
     fd_resroucesCheckBox.left = new FormAttachment( clusterDescriptionLabel, 0, SWT.LEFT );
     showTransformationsCheckbox.setLayoutData( fd_resroucesCheckBox );
-    showTransformationsCheckbox.setText( "Show transformations" ); // TODO LOCALIZE
+    showTransformationsCheckbox.setText( BaseMessages.getString( PKG, prefix + ".ShowTransformations.Label" ) );
   }
 
   protected void optionsSectionControls() {
@@ -145,8 +140,7 @@ public class TransExecutionConfigurationDialog extends ConfigurationDialog {
     wGatherMetrics.setLayoutData( fdGatherMetrics );
 
     wClearLog = new Button( gDetails, SWT.CHECK );
-    wClearLog.setText( "Clear log before running" ); // TODO Localize BaseMessages.getString( PKG,
-                                                     // "TransExecutionConfigurationDialog.ClearLog.Label" ) );
+    wClearLog.setText( BaseMessages.getString( PKG, "TransExecutionConfigurationDialog.ClearLog.Label" ) );
     wClearLog.setToolTipText( BaseMessages.getString( PKG, "TransExecutionConfigurationDialog.ClearLog.Tooltip" ) );
     props.setLook( wClearLog );
     FormData fdClearLog = new FormData();
@@ -182,7 +176,7 @@ public class TransExecutionConfigurationDialog extends ConfigurationDialog {
     mainLayout( PKG, "TransExecutionConfigurationDialog" );
 
     environmentTypeSectionLayout( PKG, "TransExecutionConfigurationDialog" );
-    optionsSectionLayout();
+    optionsSectionLayout( PKG, "TransExecutionConfigurationDialog" );
     parametersSectionLayout( PKG, "TransExecutionConfigurationDialog" );
     buttonsSectionLayout( PKG, "TransExecutionConfigurationDialog" );
 
@@ -241,7 +235,7 @@ public class TransExecutionConfigurationDialog extends ConfigurationDialog {
 
   public void getInfo() {
     try {
-      configuration.setReplayDate( null );
+      configuration.setReplayDate( null ); // removed from new execution dialog.
       configuration.setExecutingLocally( wExecLocal.getSelection() );
       configuration.setExecutingRemotely( wExecRemote.getSelection() );
       getConfiguration().setExecutingClustered( wExecCluster.getSelection() );

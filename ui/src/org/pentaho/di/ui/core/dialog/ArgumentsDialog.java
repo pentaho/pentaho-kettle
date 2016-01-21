@@ -20,7 +20,7 @@
  *
  ******************************************************************************/
 
-package org.pentaho.di.ui;
+package org.pentaho.di.ui.core.dialog;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -50,11 +50,10 @@ import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
-import org.pentaho.di.ui.trans.dialog.TransDialog;
 
 public class ArgumentsDialog extends Dialog {
 
-  private static Class<?> PKG = TransDialog.class; // for i18n purposes, needed by Translator2!!
+  private static Class<?> PKG = ArgumentsDialog.class; // for i18n purposes, needed by Translator2!!
   private TableView wArguments;
   private ExecutionConfiguration configuration;
   private Shell shell;
@@ -76,7 +75,7 @@ public class ArgumentsDialog extends Dialog {
     props = PropsUI.getInstance();
     props.setLook( shell );
     shell.setLayout( new FormLayout() );
-    shell.setText( "Arguments" );
+    shell.setText( BaseMessages.getString( PKG, "ArgumentsDialog.Arguments.Label" ) ); 
 
     Label argumentsLabel = new Label( shell, SWT.NONE );
     props.setLook( argumentsLabel );
@@ -85,12 +84,12 @@ public class ArgumentsDialog extends Dialog {
     fd_argumentsLabel.top = new FormAttachment( 0, 15 );
     fd_argumentsLabel.left = new FormAttachment( 0, 15 );
     argumentsLabel.setLayoutData( fd_argumentsLabel );
-    argumentsLabel.setText( "This is where the new text will go." );
+    argumentsLabel.setText( BaseMessages.getString( PKG, "ArgumentsDialog.Description.Label" ) );
 
     ColumnInfo[] cArguments =
-        { new ColumnInfo( BaseMessages.getString( PKG, "TransExecutionConfigurationDialog.ArgumentsColumn.Argument" ),
+        { new ColumnInfo( BaseMessages.getString( PKG, "ArgumentsDialog.ArgumentsColumn.Argument" ),
             ColumnInfo.COLUMN_TYPE_TEXT, false, true ), // Argument name
-          new ColumnInfo( BaseMessages.getString( PKG, "TransExecutionConfigurationDialog.ArgumentsColumn.Value" ),
+          new ColumnInfo( BaseMessages.getString( PKG, "ArgumentsDialog.ArgumentsColumn.Value" ),
               ColumnInfo.COLUMN_TYPE_TEXT, false, false ), // Actual value
     };
 
@@ -140,7 +139,7 @@ public class ArgumentsDialog extends Dialog {
       }
     } );
 
-    shell.setSize( 401, 329 );
+    shell.setSize( 394, 319 );
     getArgumentsData();
     shell.open();
 

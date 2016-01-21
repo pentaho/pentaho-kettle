@@ -20,7 +20,7 @@
  *
  ******************************************************************************/
 
-package org.pentaho.di.ui;
+package org.pentaho.di.ui.core.dialog;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -220,11 +220,11 @@ public abstract class ConfigurationDialog extends Dialog {
     shell.setText( BaseMessages.getString( PKG, prefix + ".Shell.Title" ) );
   }
 
-  protected void optionsSectionLayout() {
+  protected void optionsSectionLayout( Class<?> PKG, String prefix ) {
     gDetails = new Group( shell, SWT.SHADOW_ETCHED_IN );
     fdLocal.bottom = new FormAttachment( 100, -510 );
-    gDetails.setText( "Options" ); // BaseMessages.getString( PKG, prefix + ".DetailsGroup.Label" ) ); TODO Localization
-                                   // pending
+    gDetails.setText( BaseMessages.getString( PKG, prefix + ".DetailsGroup.Label" ) );
+    
     // The layout
     gDetails.setLayout( new FormLayout() );
     fdDetails = new FormData();
@@ -250,7 +250,7 @@ public abstract class ConfigurationDialog extends Dialog {
 
     // Parameters
     CTabItem tbtmParameters = new CTabItem( tabFolder, SWT.NONE );
-    tbtmParameters.setText( "Parameters" ); // TODO Localize property
+    tbtmParameters.setText( BaseMessages.getString( PKG, prefix + ".Params.Label" ) );
     Composite parametersComposite = new Composite( tabFolder, SWT.NONE );
     props.setLook( parametersComposite );
 
@@ -285,7 +285,7 @@ public abstract class ConfigurationDialog extends Dialog {
     fd_argsButton.right = new FormAttachment( 100, -10 );
     fd_argsButton.bottom = new FormAttachment( 100, -10 );
     argsButton.setLayoutData( fd_argsButton );
-    argsButton.setText( "Arguments (legacy)" ); // TODO Localize property
+    argsButton.setText( BaseMessages.getString( PKG, prefix + ".Arguments.Label" ) );
 
     argsButton.addSelectionListener( new SelectionAdapter() {
       public void widgetSelected( SelectionEvent e ) {
@@ -295,7 +295,8 @@ public abstract class ConfigurationDialog extends Dialog {
 
     // Variables
     CTabItem tbtmVariables = new CTabItem( tabFolder, SWT.NONE );
-    tbtmVariables.setText( "Variables" ); // TODO Localize property
+    tbtmVariables.setText( BaseMessages.getString( PKG, prefix + ".Variables.Label" ) ); 
+    
     Composite variablesComposite = new Composite( tabFolder, SWT.NONE );
     props.setLook( variablesComposite );
     variablesComposite.setLayout( new FormLayout() );
@@ -338,8 +339,8 @@ public abstract class ConfigurationDialog extends Dialog {
     fd_alwaysShowOption.left = new FormAttachment( 0, 15 );
     fd_alwaysShowOption.top = new FormAttachment( tabFolder, 15 );
     alwaysShowOption.setLayoutData( fd_alwaysShowOption );
-    alwaysShowOption.setText( "Always show dialog run" ); // TODO Localize property
-
+    alwaysShowOption.setText( BaseMessages.getString( PKG, prefix + ".AlwaysOption.Value" ) );
+    
     wCancel = new Button( shell, SWT.PUSH );
     FormData fd_wCancel = new FormData();
     wCancel.setLayoutData( fd_wCancel );
@@ -355,7 +356,7 @@ public abstract class ConfigurationDialog extends Dialog {
     fd_wOK.top = new FormAttachment( wCancel, 0, SWT.TOP );
     fd_wOK.right = new FormAttachment( wCancel, -5 );
     wOK.setLayoutData( fd_wOK );
-    wOK.setText( "Run" ); // BaseMessages.getString( PKG, prefix + ".Button.Launch" ) ); TODO Localize property
+    wOK.setText( BaseMessages.getString( PKG, prefix + ".Button.Launch" ) ); 
     wOK.addSelectionListener( new SelectionAdapter() {
       public void widgetSelected( SelectionEvent e ) {
         ok();
@@ -374,7 +375,7 @@ public abstract class ConfigurationDialog extends Dialog {
     btnHelp.addSelectionListener( new SelectionAdapter() {
       @Override
       public void widgetSelected( SelectionEvent arg0 ) {
-        HelpUtils.openHelpDialog( parent.getShell(), "title", "url", "header" ); // TODO pending params
+        HelpUtils.openHelpDialog( parent.getShell(), "title", "url", "header" ); // TODO documentation params
       }
     } );
 
@@ -415,8 +416,7 @@ public abstract class ConfigurationDialog extends Dialog {
   protected void environmentTypeSectionLayout( Class<?> PKG, String prefix ) {
 
     gLocal = new Group( shell, SWT.SHADOW_ETCHED_IN );
-    gLocal.setText( "Environment Type" ); // BaseMessages.getString( PKG, prefix + ".LocalGroup.Label" ) ); TODO
-                                          // Localization pending
+    gLocal.setText( BaseMessages.getString( PKG, prefix + ".LocalGroup.Label" ) ); 
     gLocal.setLayout( new FormLayout() );
     fdLocal = new FormData();
     fdLocal.top = new FormAttachment( 0, 15 );
@@ -427,8 +427,7 @@ public abstract class ConfigurationDialog extends Dialog {
     gLocal.setLayoutData( fdLocal );
 
     wExecLocal = new Button( gLocal, SWT.RADIO );
-    wExecLocal.setText( "Local" ); // BaseMessages.getString( PKG, prefix + ".ExecLocal.Label" ) ); TODO Localization
-                                   // pending
+    wExecLocal.setText( BaseMessages.getString( PKG, prefix + ".ExecLocal.Label" ) );
     wExecLocal.setToolTipText( BaseMessages.getString( PKG, prefix + ".ExecLocal.Tooltip" ) );
     props.setLook( wExecLocal );
     fdExecLocal = new FormData();
@@ -443,8 +442,7 @@ public abstract class ConfigurationDialog extends Dialog {
     } );
 
     wExecRemote = new Button( gLocal, SWT.RADIO );
-    wExecRemote.setText( "Server" ); // BaseMessages.getString( PKG, prefix + ".ExecRemote.Label" ) ); TODO Localization
-                                     // pending
+    wExecRemote.setText( BaseMessages.getString( PKG, prefix + ".ExecRemote.Label" ) ); 
     wExecRemote.setToolTipText( BaseMessages.getString( PKG, prefix + ".ExecRemote.Tooltip" ) );
     props.setLook( wExecRemote );
     fdExecLocal.left = new FormAttachment( wExecRemote, 0, SWT.LEFT );
@@ -460,9 +458,7 @@ public abstract class ConfigurationDialog extends Dialog {
     } );
 
     wExecCluster = new Button( gLocal, SWT.RADIO );
-    wExecCluster.setText( "Clustered" ); // BaseMessages.getString( PKG,
-                                         // "TransExecutionConfigurationDialog.ExecCluster.Label" ) ); TODO Localization
-                                         // pending
+    wExecCluster.setText( BaseMessages.getString( PKG, prefix + ".ExecCluster.Label" ) );
     wExecCluster.setToolTipText( BaseMessages.getString( PKG,
         "TransExecutionConfigurationDialog.ExecCluster.Tooltip" ) );
     props.setLook( wExecCluster );
