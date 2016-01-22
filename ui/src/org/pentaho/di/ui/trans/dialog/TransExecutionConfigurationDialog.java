@@ -28,9 +28,13 @@ import java.util.List;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
+import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
@@ -44,7 +48,11 @@ import org.pentaho.di.ui.core.dialog.ConfigurationDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 
 public class TransExecutionConfigurationDialog extends ConfigurationDialog {
-  private static Class<?> PKG = TransDialog.class; // for i18n purposes, needed by Translator2!!
+  private static Class<?> PKG = TransExecutionConfigurationDialog.class; // for i18n purposes, needed by Translator2!!
+
+  private Button wExecCluster;
+  private FormData fdExecCluster;
+  private Composite clusteredOptionsComposite;
 
   public TransExecutionConfigurationDialog( Shell parent, TransExecutionConfiguration configuration,
       TransMeta transMeta ) {
@@ -97,23 +105,25 @@ public class TransExecutionConfigurationDialog extends ConfigurationDialog {
 
   }
 
-  protected void clusteredOptionsComposite( Class<?> PKG, String prefix ) {
+  protected void clusteredOptionsComposite() {
 
     Label clusterDescriptionLabel = new Label( clusteredOptionsComposite, SWT.NONE );
     props.setLook( clusterDescriptionLabel );
-    clusterDescriptionLabel.setText( BaseMessages.getString( PKG, prefix + ".ClusterDescription.Label" ) );
+    clusterDescriptionLabel.setText( BaseMessages.getString( PKG,
+        "TransExecutionConfigurationDialog.ClusterDescription.Label" ) );
     FormData fd_clusterDescriptionLabel = new FormData();
     fd_clusterDescriptionLabel.top = new FormAttachment( 0, 12 );
     fd_clusterDescriptionLabel.left = new FormAttachment( environmentSeparator, 5 );
     clusterDescriptionLabel.setLayoutData( fd_clusterDescriptionLabel );
 
-    showTransformationsCheckbox = new Button( clusteredOptionsComposite, SWT.CHECK );
-    props.setLook( showTransformationsCheckbox );
+    showDialogRunCheckbox = new Button( clusteredOptionsComposite, SWT.CHECK );
+    props.setLook( showDialogRunCheckbox );
     FormData fd_resroucesCheckBox = new FormData();
     fd_resroucesCheckBox.top = new FormAttachment( clusterDescriptionLabel, 10 );
     fd_resroucesCheckBox.left = new FormAttachment( clusterDescriptionLabel, 0, SWT.LEFT );
-    showTransformationsCheckbox.setLayoutData( fd_resroucesCheckBox );
-    showTransformationsCheckbox.setText( BaseMessages.getString( PKG, prefix + ".ShowTransformations.Label" ) );
+    showDialogRunCheckbox.setLayoutData( fd_resroucesCheckBox );
+    showDialogRunCheckbox.setText( BaseMessages.getString( PKG,
+        "TransExecutionConfigurationDialog.ShowTransformations.Label" ) );
   }
 
   protected void optionsSectionControls() {
@@ -174,8 +184,32 @@ public class TransExecutionConfigurationDialog extends ConfigurationDialog {
   public boolean open() {
 
     mainLayout( PKG, "TransExecutionConfigurationDialog" );
-
     environmentTypeSectionLayout( PKG, "TransExecutionConfigurationDialog" );
+
+    wExecCluster = new Button( gLocal, SWT.RADIO );
+    wExecCluster.setText( BaseMessages.getString( PKG, "TransExecutionConfigurationDialog.ExecCluster.Label" ) );
+    wExecCluster.setToolTipText( BaseMessages.getString( PKG,
+        "TransExecutionConfigurationDialog.ExecCluster.Tooltip" ) );
+    props.setLook( wExecCluster );
+    fdExecCluster = new FormData();
+    fdExecCluster.left = new FormAttachment( 0, 10 );
+    fdExecCluster.top = new FormAttachment( wExecRemote, 11 );
+    wExecCluster.setLayoutData( fdExecCluster );
+    wExecCluster.addSelectionListener( new SelectionAdapter() {
+      public void widgetSelected( SelectionEvent e ) {
+        stackedLayout.topControl = clusteredOptionsComposite;
+        stackedLayoutComposite.layout();
+      }
+    } );
+
+    fdExecCluster.right = new FormAttachment( environmentSeparator, -23 );
+
+    clusteredOptionsComposite = new Composite( stackedLayoutComposite, SWT.NONE );
+    clusteredOptionsComposite.setLayout( new FormLayout() );
+    props.setLook( clusteredOptionsComposite );
+
+    clusteredOptionsComposite();
+
     optionsSectionLayout( PKG, "TransExecutionConfigurationDialog" );
     parametersSectionLayout( PKG, "TransExecutionConfigurationDialog" );
     buttonsSectionLayout( PKG, "TransExecutionConfigurationDialog" );
@@ -226,7 +260,7 @@ public class TransExecutionConfigurationDialog extends ConfigurationDialog {
     wRemoteHost.setText( configuration.getRemoteServer() == null ? "" : configuration.getRemoteServer().toString() );
     wPassExport.setSelection( configuration.isPassingExport() );
     wGatherMetrics.setSelection( configuration.isGatheringMetrics() );
-    showTransformationsCheckbox.setSelection( getConfiguration().isClusterShowingTransformation() );
+    showDialogRunCheckbox.setSelection( getConfiguration().isClusterShowingTransformation() );
 
     wLogLevel.select( configuration.getLogLevel().getLevel() );
     getParamsData();
@@ -250,7 +284,7 @@ public class TransExecutionConfigurationDialog extends ConfigurationDialog {
         configuration.setPassingExport( wPassExport.getSelection() );
       }
       if ( wExecCluster.getSelection() ) {
-        getConfiguration().setClusterShowingTransformation( showTransformationsCheckbox.getSelection() );
+        getConfiguration().setClusterShowingTransformation( showDialogRunCheckbox.getSelection() );
       }
 
       // Clustering data

@@ -79,29 +79,26 @@ public abstract class ConfigurationDialog extends Dialog {
   protected Label wlRemoteHost;
   protected CCombo wRemoteHost;
   protected Button wPassExport;
-  protected Button wExecCluster;
   protected Composite localOptionsComposite;
   protected Composite serverOptionsComposite;
-  protected Composite clusteredOptionsComposite;
   protected Label environmentSeparator;
-  protected Button showTransformationsCheckbox;
+  protected Button showDialogRunCheckbox;
   protected StackLayout stackedLayout;
   protected int margin = Const.MARGIN;
+  protected Group gLocal;
+  protected Composite stackedLayoutComposite;
 
   private TableView wParams;
   private Display display;
   private Shell parent;
   private Button wOK;
   private Button wCancel;
-  private Group gLocal;
   private FormData fdLocal;
   private FormData fdDetails;
   private FormData fd_tabFolder;
   private FormData fdExecLocal;
   private FormData fdExecRemote;
   private CTabFolder tabFolder;
-  private Composite stackedLayoutComposite;
-  private FormData fdExecCluster;
 
   public ConfigurationDialog( Shell parent, ExecutionConfiguration configuration, AbstractMeta meta ) {
     super( parent );
@@ -224,7 +221,7 @@ public abstract class ConfigurationDialog extends Dialog {
     gDetails = new Group( shell, SWT.SHADOW_ETCHED_IN );
     fdLocal.bottom = new FormAttachment( 100, -510 );
     gDetails.setText( BaseMessages.getString( PKG, prefix + ".DetailsGroup.Label" ) );
-    
+
     // The layout
     gDetails.setLayout( new FormLayout() );
     fdDetails = new FormData();
@@ -258,11 +255,11 @@ public abstract class ConfigurationDialog extends Dialog {
     tbtmParameters.setControl( parametersComposite );
 
     ColumnInfo[] cParams =
-        { new ColumnInfo( BaseMessages.getString( PKG, "TransExecutionConfigurationDialog.ParamsColumn.Argument" ),
+        { new ColumnInfo( BaseMessages.getString( PKG, prefix + ".ParamsColumn.Argument" ),
             ColumnInfo.COLUMN_TYPE_TEXT, false, true ), // Stepname
-          new ColumnInfo( BaseMessages.getString( PKG, "TransExecutionConfigurationDialog.ParamsColumn.Value" ),
+          new ColumnInfo( BaseMessages.getString( PKG, prefix + ".ParamsColumn.Value" ),
               ColumnInfo.COLUMN_TYPE_TEXT, false, false ), // Preview size
-          new ColumnInfo( BaseMessages.getString( PKG, "TransExecutionConfigurationDialog.ParamsColumn.Default" ),
+          new ColumnInfo( BaseMessages.getString( PKG, prefix + ".ParamsColumn.Default" ),
               ColumnInfo.COLUMN_TYPE_TEXT, false, true ), // Preview size
     };
 
@@ -295,8 +292,8 @@ public abstract class ConfigurationDialog extends Dialog {
 
     // Variables
     CTabItem tbtmVariables = new CTabItem( tabFolder, SWT.NONE );
-    tbtmVariables.setText( BaseMessages.getString( PKG, prefix + ".Variables.Label" ) ); 
-    
+    tbtmVariables.setText( BaseMessages.getString( PKG, prefix + ".Variables.Label" ) );
+
     Composite variablesComposite = new Composite( tabFolder, SWT.NONE );
     props.setLook( variablesComposite );
     variablesComposite.setLayout( new FormLayout() );
@@ -340,7 +337,7 @@ public abstract class ConfigurationDialog extends Dialog {
     fd_alwaysShowOption.top = new FormAttachment( tabFolder, 15 );
     alwaysShowOption.setLayoutData( fd_alwaysShowOption );
     alwaysShowOption.setText( BaseMessages.getString( PKG, prefix + ".AlwaysOption.Value" ) );
-    
+
     wCancel = new Button( shell, SWT.PUSH );
     FormData fd_wCancel = new FormData();
     wCancel.setLayoutData( fd_wCancel );
@@ -356,7 +353,7 @@ public abstract class ConfigurationDialog extends Dialog {
     fd_wOK.top = new FormAttachment( wCancel, 0, SWT.TOP );
     fd_wOK.right = new FormAttachment( wCancel, -5 );
     wOK.setLayoutData( fd_wOK );
-    wOK.setText( BaseMessages.getString( PKG, prefix + ".Button.Launch" ) ); 
+    wOK.setText( BaseMessages.getString( PKG, prefix + ".Button.Launch" ) );
     wOK.addSelectionListener( new SelectionAdapter() {
       public void widgetSelected( SelectionEvent e ) {
         ok();
@@ -416,7 +413,7 @@ public abstract class ConfigurationDialog extends Dialog {
   protected void environmentTypeSectionLayout( Class<?> PKG, String prefix ) {
 
     gLocal = new Group( shell, SWT.SHADOW_ETCHED_IN );
-    gLocal.setText( BaseMessages.getString( PKG, prefix + ".LocalGroup.Label" ) ); 
+    gLocal.setText( BaseMessages.getString( PKG, prefix + ".LocalGroup.Label" ) );
     gLocal.setLayout( new FormLayout() );
     fdLocal = new FormData();
     fdLocal.top = new FormAttachment( 0, 15 );
@@ -442,7 +439,7 @@ public abstract class ConfigurationDialog extends Dialog {
     } );
 
     wExecRemote = new Button( gLocal, SWT.RADIO );
-    wExecRemote.setText( BaseMessages.getString( PKG, prefix + ".ExecRemote.Label" ) ); 
+    wExecRemote.setText( BaseMessages.getString( PKG, prefix + ".ExecRemote.Label" ) );
     wExecRemote.setToolTipText( BaseMessages.getString( PKG, prefix + ".ExecRemote.Tooltip" ) );
     props.setLook( wExecRemote );
     fdExecLocal.left = new FormAttachment( wExecRemote, 0, SWT.LEFT );
@@ -457,25 +454,8 @@ public abstract class ConfigurationDialog extends Dialog {
       }
     } );
 
-    wExecCluster = new Button( gLocal, SWT.RADIO );
-    wExecCluster.setText( BaseMessages.getString( PKG, prefix + ".ExecCluster.Label" ) );
-    wExecCluster.setToolTipText( BaseMessages.getString( PKG,
-        "TransExecutionConfigurationDialog.ExecCluster.Tooltip" ) );
-    props.setLook( wExecCluster );
-    fdExecCluster = new FormData();
-    fdExecCluster.left = new FormAttachment( 0, 10 );
-    fdExecCluster.top = new FormAttachment( wExecRemote, 11 );
-    wExecCluster.setLayoutData( fdExecCluster );
-    wExecCluster.addSelectionListener( new SelectionAdapter() {
-      public void widgetSelected( SelectionEvent e ) {
-        stackedLayout.topControl = clusteredOptionsComposite;
-        stackedLayoutComposite.layout();
-      }
-    } );
-
     // separator
     environmentSeparator = new Label( gLocal, SWT.SEPARATOR | SWT.VERTICAL );
-    fdExecCluster.right = new FormAttachment( environmentSeparator, -23 );
     fdExecRemote.right = new FormAttachment( environmentSeparator, -23 );
     FormData fd_environmentSeparator = new FormData();
     fd_environmentSeparator.height = 69;
@@ -503,22 +483,15 @@ public abstract class ConfigurationDialog extends Dialog {
     serverOptionsComposite.setLayout( new FormLayout() );
     props.setLook( serverOptionsComposite );
 
-    clusteredOptionsComposite = new Composite( stackedLayoutComposite, SWT.NONE );
-    clusteredOptionsComposite.setLayout( new FormLayout() );
-    props.setLook( clusteredOptionsComposite );
-
     stackedLayout.topControl = localOptionsComposite;
 
     localOptionsComposite( PKG, prefix );
     serverOptionsComposite( PKG, prefix );
-    clusteredOptionsComposite( PKG, prefix );
   }
 
   protected abstract void localOptionsComposite( Class<?> PKG, String prefix );
 
   protected abstract void serverOptionsComposite( Class<?> PKG, String prefix );
-
-  protected abstract void clusteredOptionsComposite( Class<?> PKG, String prefix );
 
   protected abstract void optionsSectionControls();
 }
