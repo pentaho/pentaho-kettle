@@ -327,11 +327,20 @@ public abstract class ConfigurationDialog extends Dialog {
     Button alwaysShowOption = new Button( shell, SWT.CHECK );
     props.setLook( alwaysShowOption );
     fd_tabFolder.bottom = new FormAttachment( 100, -106 );
+    alwaysShowOption.setSelection( abstractMeta.isAlwaysShowTransCheckbox() );
     alwaysShowOption.addSelectionListener( new SelectionAdapter() {
-      @Override
-      public void widgetSelected( SelectionEvent arg0 ) {
+      public void widgetSelected( SelectionEvent e ) {
+        Button btn = (Button) e.getSource();
+        if ( btn.getSelection() ) {
+          abstractMeta.setAlwaysShowTransCheckbox( true );
+          abstractMeta.setShowTransDialog( true );
+        } else {
+          abstractMeta.setAlwaysShowTransCheckbox( false );
+          abstractMeta.setShowTransDialog( false );
+        }
       }
     } );
+
     FormData fd_alwaysShowOption = new FormData();
     fd_alwaysShowOption.left = new FormAttachment( 0, 15 );
     fd_alwaysShowOption.top = new FormAttachment( tabFolder, 15 );

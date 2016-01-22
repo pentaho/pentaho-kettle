@@ -3378,7 +3378,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
   public void runTransformation() {
     spoon.runFile();
   }
-  
+
   public void runOptionsTransformation() {
     spoon.runOptionsFile();
   }

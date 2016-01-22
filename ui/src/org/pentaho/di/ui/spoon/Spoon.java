@@ -8492,7 +8492,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
     TransMeta transMeta = getActiveTransformation();
     if ( transMeta != null ) {
-      if( show ){
+      if( show ) {
         transMeta.setShowTransDialog( show );
       }
       executeTransformation(
@@ -8502,7 +8502,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
     JobMeta jobMeta = getActiveJob();
     if ( jobMeta != null ) {
-      if( show ){
+      if( show ) {
         jobMeta.setShowJobDialog( show );
       }
       executeJob( jobMeta, local, remote, replayDate, safe, null, 0 );

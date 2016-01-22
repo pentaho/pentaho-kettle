@@ -175,6 +175,45 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
   protected int max_undo;
 
   protected int undo_position;
+  
+  private boolean showTransDialog = true;
+  private boolean showJobDialog = true;
+  private boolean alwaysShowTransCheckbox = true;
+  private boolean alwaysShowJobCheckbox = true;
+
+  
+
+  public boolean isShowTransDialog() {
+    return showTransDialog;
+  }
+
+  public void setShowTransDialog( boolean showTransDialog ) {
+    this.showTransDialog = showTransDialog;
+  }
+
+  public boolean isShowJobDialog() {
+    return showJobDialog;
+  }
+
+  public void setShowJobDialog( boolean showJobDialog ) {
+    this.showJobDialog = showJobDialog;
+  }
+
+  public boolean isAlwaysShowTransCheckbox() {
+    return alwaysShowTransCheckbox;
+  }
+
+  public void setAlwaysShowTransCheckbox( boolean alwaysShowTransCheckbox ) {
+    this.alwaysShowTransCheckbox = alwaysShowTransCheckbox;
+  }
+
+  public boolean isAlwaysShowJobCheckbox() {
+    return alwaysShowJobCheckbox;
+  }
+
+  public void setAlwaysShowJobCheckbox( boolean alwaysShowJobCheckbox ) {
+    this.alwaysShowJobCheckbox = alwaysShowJobCheckbox;
+  }
 
   /**
    * The set of names of databases available only for this meta. The list is needed to distinguish connections when we
