@@ -8465,29 +8465,36 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   }
 
   public void runFile() {
-    executeFile( true, false, false, false, false, null, false );
+    executeFile( true, false, false, false, false, null, false, false );
+  }
+  
+  public void runOptionsFile() {
+    executeFile( true, false, false, false, false, null, false, true );
   }
 
   public void replayTransformation() {
     TransExecutionConfiguration tc = this.getTransExecutionConfiguration();
     executeFile(
       tc.isExecutingLocally(), tc.isExecutingRemotely(), tc.isExecutingClustered(), false, false, new Date(),
-      false );
+      false, false );
   }
 
   public void previewFile() {
-    executeFile( true, false, false, true, false, null, true );
+    executeFile( true, false, false, true, false, null, true, false );
   }
 
   public void debugFile() {
-    executeFile( true, false, false, false, true, null, true );
+    executeFile( true, false, false, false, true, null, true, false );
   }
 
   public void executeFile( boolean local, boolean remote, boolean cluster, boolean preview, boolean debug,
-    Date replayDate, boolean safe ) {
+    Date replayDate, boolean safe, boolean show ) {
 
     TransMeta transMeta = getActiveTransformation();
     if ( transMeta != null ) {
+      if( show ){
+        transMeta.setShowTransDialog( show );
+      }
       executeTransformation(
         transMeta, local, remote, cluster, preview, debug, replayDate, safe, transExecutionConfiguration
           .getLogLevel() );
@@ -8495,6 +8502,9 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
     JobMeta jobMeta = getActiveJob();
     if ( jobMeta != null ) {
+      if( show ){
+        jobMeta.setShowJobDialog( show );
+      }
       executeJob( jobMeta, local, remote, replayDate, safe, null, 0 );
     }
 
