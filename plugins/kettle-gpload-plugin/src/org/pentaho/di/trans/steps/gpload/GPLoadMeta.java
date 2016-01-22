@@ -87,6 +87,9 @@ public class GPLoadMeta extends BaseStepMeta implements StepMetaInterface {
   /** Path to the log file */
   private String logFile;
 
+  /** NULL_AS parameter for gpload - gpload treats values matching this string as null */
+  private String nullAs;
+
   /** database connection */
   private DatabaseMeta databaseMeta;
 
@@ -304,6 +307,7 @@ public class GPLoadMeta extends BaseStepMeta implements StepMetaInterface {
       dataFile = XMLHandler.getTagValue( stepnode, "data_file" );
       delimiter = XMLHandler.getTagValue( stepnode, "delimiter" );
       logFile = XMLHandler.getTagValue( stepnode, "log_file" );
+      nullAs = XMLHandler.getTagValue( stepnode, "null_as" );
       eraseFiles = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "erase_files" ) );
       encoding = XMLHandler.getTagValue( stepnode, "encoding" );
       updateCondition = XMLHandler.getTagValue( stepnode, "update_condition" );
@@ -316,6 +320,8 @@ public class GPLoadMeta extends BaseStepMeta implements StepMetaInterface {
         localHosts[i] = XMLHandler.getNodeValue( localHostNode );
       }
       localhostPort = XMLHandler.getTagValue( stepnode, "localhost_port" );
+
+      encloseNumbers = XMLHandler.getTagValue( stepnode, "enclose_numbers" ).equalsIgnoreCase( "Y" );
 
       int nrvalues = XMLHandler.countNodes( stepnode, "mapping" );
       allocate( nrvalues );
@@ -365,6 +371,7 @@ public class GPLoadMeta extends BaseStepMeta implements StepMetaInterface {
     controlFile = "control${Internal.Step.CopyNr}.cfg";
     dataFile = "load${Internal.Step.CopyNr}.dat";
     logFile = "";
+    nullAs = "";
     encoding = "";
     delimiter = ",";
     encloseNumbers = false;
@@ -391,6 +398,7 @@ public class GPLoadMeta extends BaseStepMeta implements StepMetaInterface {
     retval.append( "    " ).append( XMLHandler.addTagValue( "data_file", dataFile ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "delimiter", delimiter ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "log_file", logFile ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "null_as", nullAs ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "erase_files", eraseFiles ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "encoding", encoding ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "enclose_numbers", ( encloseNumbers ? "Y" : "N" ) ) );
@@ -431,6 +439,7 @@ public class GPLoadMeta extends BaseStepMeta implements StepMetaInterface {
       dataFile = rep.getStepAttributeString( id_step, "data_file" );
       delimiter = rep.getStepAttributeString( id_step, "delimiter" );
       logFile = rep.getStepAttributeString( id_step, "log_file" );
+      nullAs = rep.getStepAttributeString( id_step, "null_as" );
       eraseFiles = rep.getStepAttributeBoolean( id_step, "erase_files" );
       encoding = rep.getStepAttributeString( id_step, "encoding" );
       localhostPort = rep.getStepAttributeString( id_step, "localhost_port" );
@@ -475,6 +484,7 @@ public class GPLoadMeta extends BaseStepMeta implements StepMetaInterface {
       rep.saveStepAttribute( id_transformation, id_step, "data_file", dataFile );
       rep.saveStepAttribute( id_transformation, id_step, "delimiter", delimiter );
       rep.saveStepAttribute( id_transformation, id_step, "log_file", logFile );
+      rep.saveStepAttribute( id_transformation, id_step, "null_as", nullAs );
       rep.saveStepAttribute( id_transformation, id_step, "erase_files", eraseFiles );
       rep.saveStepAttribute( id_transformation, id_step, "encoding", encoding );
       rep.saveStepAttribute( id_transformation, id_step, "enclose_numbers", ( encloseNumbers ? "Y" : "N" ) );
@@ -795,6 +805,14 @@ public class GPLoadMeta extends BaseStepMeta implements StepMetaInterface {
 
   public void setLogFile( String logFile ) {
     this.logFile = logFile;
+  }
+
+  public String getNullAs() {
+    return nullAs;
+  }
+
+  public void setNullAs( String nullAs ) {
+    this.nullAs = nullAs;
   }
 
   public void setLoadAction( String action ) {
