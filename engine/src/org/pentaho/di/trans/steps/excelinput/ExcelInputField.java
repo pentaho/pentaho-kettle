@@ -22,6 +22,7 @@
 
 package org.pentaho.di.trans.steps.excelinput;
 
+import org.pentaho.di.core.injection.Injection;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 
@@ -33,15 +34,24 @@ import org.pentaho.di.core.row.ValueMetaInterface;
  *
  */
 public class ExcelInputField implements Cloneable {
+  @Injection( name = "NAME", group = "FIELDS" )
   private String name;
   private int type;
-  private int length;
-  private int precision;
+  @Injection( name = "LENGTH", group = "FIELDS" )
+  private int length = -1;
+  @Injection( name = "PRECISION", group = "FIELDS" )
+  private int precision = -1;
+  @Injection( name = "TRIM_TYPE", group = "FIELDS" )
   private int trimtype;
+  @Injection( name = "FORMAT", group = "FIELDS" )
   private String format;
+  @Injection( name = "CURRENCY", group = "FIELDS" )
   private String currencySymbol;
+  @Injection( name = "DECIMAL", group = "FIELDS" )
   private String decimalSymbol;
+  @Injection( name = "GROUP", group = "FIELDS" )
   private String groupSymbol;
+  @Injection( name = "REPEAT", group = "FIELDS" )
   private boolean repeat;
 
   public ExcelInputField( String fieldname, int position, int length ) {
@@ -96,6 +106,11 @@ public class ExcelInputField implements Cloneable {
 
   public void setType( int type ) {
     this.type = type;
+  }
+
+  @Injection( name = "TYPE", group = "FIELDS" )
+  public void setType( String typeDesc ) {
+    this.type = ValueMeta.getType( typeDesc );
   }
 
   public String getFormat() {

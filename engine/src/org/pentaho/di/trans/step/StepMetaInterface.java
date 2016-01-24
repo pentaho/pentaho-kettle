@@ -645,6 +645,7 @@ public interface StepMetaInterface {
   /**
    * @return Optional interface that allows an external program to inject step metadata in a standardized fasion. This
    *         method will return null if the interface is not available for this step.
+   * @deprecated Use annotation-based injection instead
    */
   public StepMetaInjectionInterface getStepMetaInjectionInterface();
 

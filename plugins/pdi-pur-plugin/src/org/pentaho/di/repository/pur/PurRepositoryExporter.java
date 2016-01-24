@@ -1,20 +1,19 @@
 /*!
-* Copyright 2010 - 2015 Pentaho Corporation.  All rights reserved.
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-*/
-
+ * Copyright 2010 - 2015 Pentaho Corporation.  All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
 package org.pentaho.di.repository.pur;
 
 import java.io.BufferedOutputStream;
@@ -47,7 +46,7 @@ import org.pentaho.platform.api.repository2.unified.RepositoryFileTree;
 
 /**
  * Optimized exporter designed to keep the server calls to a minimum.
- *
+ * 
  * @author jganoff
  */
 public class PurRepositoryExporter implements IRepositoryExporter, java.io.Serializable {
@@ -102,7 +101,7 @@ public class PurRepositoryExporter implements IRepositoryExporter, java.io.Seria
       if ( exportType.equals( "all" ) || exportType.equals( "trans" ) ) { //$NON-NLS-1$ //$NON-NLS-2$
         // Dump the transformations...
         writer.write( "<transformations>" + Const.CR ); //$NON-NLS-1$
-        //        exportAllTransformations(monitor, repoTree, repoDirTree, writer);
+        // exportAllTransformations(monitor, repoTree, repoDirTree, writer);
         export( monitor, repoTree, writer, new TransformationBatchExporter() );
         writer.write( "</transformations>" + Const.CR ); //$NON-NLS-1$
       }
@@ -122,8 +121,7 @@ public class PurRepositoryExporter implements IRepositoryExporter, java.io.Seria
         monitor.worked( 1 );
       }
     } catch ( IOException e ) {
-      log.logError( BaseMessages.getString( PKG, "PurRepositoryExporter.ERROR_CREATE_FILE", xmlFilename ),
-          e ); //$NON-NLS-1$
+      log.logError( BaseMessages.getString( PKG, "PurRepositoryExporter.ERROR_CREATE_FILE", xmlFilename ), e ); //$NON-NLS-1$
     } finally {
       try {
         if ( writer != null ) {
@@ -133,8 +131,7 @@ public class PurRepositoryExporter implements IRepositoryExporter, java.io.Seria
           os.close();
         }
       } catch ( Exception e ) {
-        log.logError( BaseMessages.getString( PKG, "PurRepositoryExporter.ERROR_CLOSE_FILE", xmlFilename ),
-            e ); //$NON-NLS-1$
+        log.logError( BaseMessages.getString( PKG, "PurRepositoryExporter.ERROR_CLOSE_FILE", xmlFilename ), e ); //$NON-NLS-1$
       }
     }
 
@@ -162,12 +159,10 @@ public class PurRepositoryExporter implements IRepositoryExporter, java.io.Seria
     }
     if ( err ) {
       batchSize = DEFAULT_BATCH_SIZE;
-      log.logError( BaseMessages
-          .getString( PKG, "PurRepositoryExporter.ERROR_INVALID_BATCH_SIZE", REPOSITORY_BATCH_SIZE_PROPERTY, batchProp,
-              batchSize ), err ); //$NON-NLS-1$
+      log.logError( BaseMessages.getString( PKG, "PurRepositoryExporter.ERROR_INVALID_BATCH_SIZE",
+          REPOSITORY_BATCH_SIZE_PROPERTY, batchProp, batchSize ), err ); //$NON-NLS-1$
     }
-    log.logDetailed(
-        BaseMessages.getString( PKG, "PurRepositoryExporter.DETAILED_USED_BATCH_SIZE", batchSize ) ); //$NON-NLS-1$
+    log.logDetailed( BaseMessages.getString( PKG, "PurRepositoryExporter.DETAILED_USED_BATCH_SIZE", batchSize ) ); //$NON-NLS-1$
   }
 
   /**
@@ -175,26 +170,32 @@ public class PurRepositoryExporter implements IRepositoryExporter, java.io.Seria
    */
   private interface RepositoryFileBatchExporter {
     /**
-     * Friendly name for the types this exporter exports.  (Used for logging)
+     * Friendly name for the types this exporter exports. (Used for logging)
      */
     String getFriendlyTypeName();
 
     /**
      * Can this file be exported by this batch exporter?
-     *
-     * @param file File in question
+     * 
+     * @param file
+     *          File in question
      * @return true if this batch exporter can handle this type
-     * @throws KettleException error determining object type of {@code file}
+     * @throws KettleException
+     *           error determining object type of {@code file}
      */
     boolean canExport( final RepositoryFile file ) throws KettleException;
 
     /**
      * Export the files.
-     *
-     * @param monitor Progress should be provided using this monitor.
-     * @param files   Repository files to export
-     * @param writer  Writer to serialize files to
-     * @throws KettleException error exporting files
+     * 
+     * @param monitor
+     *          Progress should be provided using this monitor.
+     * @param files
+     *          Repository files to export
+     * @param writer
+     *          Writer to serialize files to
+     * @throws KettleException
+     *           error exporting files
      */
     void export( final ProgressMonitorListener monitor, final List<RepositoryFile> files,
         final OutputStreamWriter writer ) throws KettleException;
@@ -214,7 +215,7 @@ public class PurRepositoryExporter implements IRepositoryExporter, java.io.Seria
     }
 
     public void export( ProgressMonitorListener monitor, List<RepositoryFile> files, OutputStreamWriter writer )
-        throws KettleException {
+      throws KettleException {
       List<TransMeta> transformations = repository.loadTransformations( monitor, log, files, true );
       Iterator<TransMeta> transMetasIter = transformations.iterator();
       Iterator<RepositoryFile> filesIter = files.iterator();
@@ -228,10 +229,9 @@ public class PurRepositoryExporter implements IRepositoryExporter, java.io.Seria
             writer.write( trans.getXML() + Const.CR );
           }
         } catch ( Exception ex ) {
-          //if exception while writing one item is occurred logging it and continue looping
-          log.logError( BaseMessages
-                  .getString( PKG, "PurRepositoryExporter.ERROR_SAVE_TRANSFORMATION", trans.getName(), file.getPath() ),
-              ex ); //$NON-NLS-1$
+          // if exception while writing one item is occurred logging it and continue looping
+          log.logError( BaseMessages.getString( PKG, "PurRepositoryExporter.ERROR_SAVE_TRANSFORMATION",
+              trans.getName(), file.getPath() ), ex ); //$NON-NLS-1$
         }
       }
     }
@@ -243,11 +243,9 @@ public class PurRepositoryExporter implements IRepositoryExporter, java.io.Seria
     List<ImportValidationFeedback> errors = ImportValidationFeedback.getErrors( feedback );
     if ( !errors.isEmpty() ) {
       shouldExport = false;
-      log.logError(
-          BaseMessages.getString( PKG, "PurRepositoryExporter.ERROR_EXPORT_ITEM", meta.getName() ) ); //$NON-NLS-1$
+      log.logError( BaseMessages.getString( PKG, "PurRepositoryExporter.ERROR_EXPORT_ITEM", meta.getName() ) ); //$NON-NLS-1$
       for ( ImportValidationFeedback error : errors ) {
-        log.logError( BaseMessages
-            .getString( PKG, "PurRepositoryExporter.ERROR_EXPORT_ITEM_RULE", error.toString() ) ); //$NON-NLS-1$
+        log.logError( BaseMessages.getString( PKG, "PurRepositoryExporter.ERROR_EXPORT_ITEM_RULE", error.toString() ) ); //$NON-NLS-1$
       }
     }
     return shouldExport;
@@ -271,7 +269,7 @@ public class PurRepositoryExporter implements IRepositoryExporter, java.io.Seria
     }
 
     public void export( ProgressMonitorListener monitor, List<RepositoryFile> files, OutputStreamWriter writer )
-        throws KettleException {
+      throws KettleException {
       List<JobMeta> jobs = repository.loadJobs( monitor, log, files, true );
       Iterator<JobMeta> jobsMeta = jobs.iterator();
       Iterator<RepositoryFile> filesIter = files.iterator();
@@ -285,10 +283,9 @@ public class PurRepositoryExporter implements IRepositoryExporter, java.io.Seria
             writer.write( meta.getXML() + Const.CR );
           }
         } catch ( Exception ex ) {
-          //if exception while writing one item is occurred logging it and continue looping
-          log.logError(
-              BaseMessages.getString( PKG, "PurRepositoryExporter.ERROR_SAVE_JOB", meta.getName(), file.getPath() ),
-              ex ); //$NON-NLS-1$
+          // if exception while writing one item is occurred logging it and continue looping
+          log.logError( BaseMessages.getString( PKG, "PurRepositoryExporter.ERROR_SAVE_JOB", meta.getName(), file
+              .getPath() ), ex ); //$NON-NLS-1$
         }
       }
     }
@@ -296,17 +293,22 @@ public class PurRepositoryExporter implements IRepositoryExporter, java.io.Seria
 
   /**
    * Export objects by directory, breadth first.
-   *
-   * @param monitor  Feedback handler
-   * @param root     Root of repository to export from
-   * @param writer   Output stream the exporter uses to serialize repository objects
-   * @param exporter Processes groups of nodes per directory
-   * @throws KettleException error performing export
+   * 
+   * @param monitor
+   *          Feedback handler
+   * @param root
+   *          Root of repository to export from
+   * @param writer
+   *          Output stream the exporter uses to serialize repository objects
+   * @param exporter
+   *          Processes groups of nodes per directory
+   * @throws KettleException
+   *           error performing export
    */
   private void export( final ProgressMonitorListener monitor, final RepositoryFileTree root,
       final OutputStreamWriter writer, final RepositoryFileBatchExporter exporter ) throws KettleException {
     List<RepositoryFileTree> subdirectories = new ArrayList<RepositoryFileTree>();
-    // Assume the repository objects are loaded.  If they're null then there are no repository objects in this directory
+    // Assume the repository objects are loaded. If they're null then there are no repository objects in this directory
     if ( root.getChildren() != null && !root.getChildren().isEmpty() ) {
       Iterator<RepositoryFileTree> repObjIter = root.getChildren().iterator();
       List<RepositoryFile> files = new ArrayList<RepositoryFile>();
@@ -324,25 +326,22 @@ public class PurRepositoryExporter implements IRepositoryExporter, java.io.Seria
         files.add( repObj.getFile() );
       }
       if ( !files.isEmpty() ) {
-        log.logBasic( BaseMessages
-            .getString( PKG, "PurRepositoryExporter.BASIC_EXPORT_FROM", files.size(), exporter.getFriendlyTypeName(),
-                root.getFile().getPath() ) ); //$NON-NLS-1$
+        log.logBasic( BaseMessages.getString( PKG, "PurRepositoryExporter.BASIC_EXPORT_FROM", files.size(), exporter
+            .getFriendlyTypeName(), root.getFile().getPath() ) ); //$NON-NLS-1$
         // Only fetch batchSize transformations at a time
         for ( int i = 0; ( monitor == null || !monitor.isCanceled() ) && i < files.size(); i += batchSize ) {
           int start = i;
           int end = Math.min( i + batchSize, files.size() );
           List<RepositoryFile> group = files.subList( start, end );
           if ( monitor != null ) {
-            monitor.subTask(
-                "Loading " + group.size() + " " + exporter.getFriendlyTypeName() + " from " + root.getFile()
-                    .getPath() ); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            monitor.subTask( "Loading " + group.size() + " " + exporter.getFriendlyTypeName() + " from "
+                + root.getFile().getPath() ); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
           }
           try {
             exporter.export( monitor, group, writer );
           } catch ( KettleException ex ) {
-            log.logError( BaseMessages
-                .getString( PKG, "PurRepositoryExporter.ERROR_EXPORT", exporter.getFriendlyTypeName(),
-                    root.getFile().getPath() ), ex ); //$NON-NLS-1$
+            log.logError( BaseMessages.getString( PKG, "PurRepositoryExporter.ERROR_EXPORT", exporter
+                .getFriendlyTypeName(), root.getFile().getPath() ), ex ); //$NON-NLS-1$
           }
         }
       }

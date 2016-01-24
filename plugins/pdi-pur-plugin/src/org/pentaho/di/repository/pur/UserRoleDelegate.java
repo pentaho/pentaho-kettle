@@ -1,20 +1,19 @@
 /*!
-* Copyright 2010 - 2015 Pentaho Corporation.  All rights reserved.
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-*/
-
+ * Copyright 2010 - 2015 Pentaho Corporation.  All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
 package org.pentaho.di.repository.pur;
 
 import com.sun.jersey.api.client.Client;
@@ -64,28 +63,27 @@ public class UserRoleDelegate implements java.io.Serializable {
   boolean managed = true;
 
   public UserRoleDelegate( IRoleSupportSecurityManager rsm, PurRepositoryMeta repositoryMeta, IUser userInfo,
-                           Log logger, ServiceManager serviceManager ) {
+      Log logger, ServiceManager serviceManager ) {
     this.logger = logger;
 
     String login = userInfo.getLogin();
     String password = userInfo.getPassword();
     try {
       this.userDetailsRoleListWebService =
-        serviceManager.createService( login, password, IUserRoleListWebService.class );
-      this.userRoleWebService =
-        serviceManager.createService( login, password, IUserRoleWebService.class );
+          serviceManager.createService( login, password, IUserRoleListWebService.class );
+      this.userRoleWebService = serviceManager.createService( login, password, IUserRoleWebService.class );
       this.rsm = rsm;
       initManaged( repositoryMeta, userInfo );
       updateUserRoleInfo();
     } catch ( Exception e ) {
       this.logger.error( BaseMessages.getString( UserRoleDelegate.class,
-        "UserRoleDelegate.ERROR_0001_UNABLE_TO_INITIALIZE_USER_ROLE_WEBSVC" ), e ); //$NON-NLS-1$
+          "UserRoleDelegate.ERROR_0001_UNABLE_TO_INITIALIZE_USER_ROLE_WEBSVC" ), e ); //$NON-NLS-1$
     }
   }
 
   // package-local constructor for testing purposes
   UserRoleDelegate( Log logger, IUserRoleListWebService userDetailsRoleListWebService,
-                    IUserRoleWebService userRoleWebService ) {
+      IUserRoleWebService userRoleWebService ) {
     this.logger = logger;
     this.userDetailsRoleListWebService = userDetailsRoleListWebService;
     this.userRoleWebService = userRoleWebService;
@@ -121,7 +119,7 @@ public class UserRoleDelegate implements java.io.Serializable {
   private void ensureHasPermissions() throws KettleException {
     if ( !hasNecessaryPermissions ) {
       throw new KettleException( BaseMessages.getString( UserRoleDelegate.class,
-        "UserRoleDelegate.ERROR_0014_INSUFFICIENT_PRIVILEGES" ) ); //$NON-NLS-1$
+          "UserRoleDelegate.ERROR_0014_INSUFFICIENT_PRIVILEGES" ) ); //$NON-NLS-1$
     }
   }
 
@@ -142,13 +140,13 @@ public class UserRoleDelegate implements java.io.Serializable {
       userRoleWebService.createUser( user );
       if ( newUser instanceof IEEUser ) {
         userRoleWebService
-          .setRoles( user, UserRoleHelper.convertToPentahoProxyRoles( ( (IEEUser) newUser ).getRoles() ) );
+            .setRoles( user, UserRoleHelper.convertToPentahoProxyRoles( ( (IEEUser) newUser ).getRoles() ) );
       }
       lookupCache.insertUserToLookupSet( newUser );
       fireUserRoleListChange();
     } catch ( Exception e ) { // it is the only way to determine AlreadyExistsException
-      if ( e.getCause().toString()
-        .contains( "org.pentaho.platform.api.engine.security.userroledao.AlreadyExistsException" ) ) {
+      if ( e.getCause().toString().contains(
+          "org.pentaho.platform.api.engine.security.userroledao.AlreadyExistsException" ) ) {
         throw userExistsException();
       }
       throw cannotCreateUserException( newUser, e );
@@ -169,14 +167,13 @@ public class UserRoleDelegate implements java.io.Serializable {
 
   private KettleException userExistsException() {
     return new KettleException( BaseMessages.getString( UserRoleDelegate.class,
-      "UserRoleDelegate.ERROR_0015_USER_NAME_ALREADY_EXISTS" ) );
+        "UserRoleDelegate.ERROR_0015_USER_NAME_ALREADY_EXISTS" ) );
   }
 
   private KettleException cannotCreateUserException( IUser user, Exception e ) {
     return new KettleException( BaseMessages.getString( UserRoleDelegate.class,
-      "UserRoleDelegate.ERROR_0002_UNABLE_TO_CREATE_USER", user.getName() ), e );
+        "UserRoleDelegate.ERROR_0002_UNABLE_TO_CREATE_USER", user.getName() ), e );
   }
-
 
   public void deleteUsers( List<IUser> users ) throws KettleException {
     ensureHasPermissions();
@@ -187,7 +184,7 @@ public class UserRoleDelegate implements java.io.Serializable {
       fireUserRoleListChange();
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString( UserRoleDelegate.class,
-        "UserRoleDelegate.ERROR_0003_UNABLE_TO_DELETE_USERS", e.getLocalizedMessage() ), e ); //$NON-NLS-1$
+          "UserRoleDelegate.ERROR_0003_UNABLE_TO_DELETE_USERS", e.getLocalizedMessage() ), e ); //$NON-NLS-1$
     }
   }
 
@@ -197,17 +194,17 @@ public class UserRoleDelegate implements java.io.Serializable {
     try {
       ProxyPentahoUser user = userRoleWebService.getUser( name );
       if ( user != null ) {
-        ProxyPentahoUser[] users = new ProxyPentahoUser[ 1 ];
-        users[ 0 ] = user;
+        ProxyPentahoUser[] users = new ProxyPentahoUser[1];
+        users[0] = user;
         userRoleWebService.deleteUsers( users );
         fireUserRoleListChange();
       } else {
         throw new KettleException( BaseMessages.getString( UserRoleDelegate.class,
-          "UserRoleDelegate.ERROR_0004_UNABLE_TO_DELETE_USER", name ) ); //$NON-NLS-1$
+            "UserRoleDelegate.ERROR_0004_UNABLE_TO_DELETE_USER", name ) ); //$NON-NLS-1$
       }
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString( UserRoleDelegate.class,
-        "UserRoleDelegate.ERROR_0004_UNABLE_TO_DELETE_USER", name ), e ); //$NON-NLS-1$
+          "UserRoleDelegate.ERROR_0004_UNABLE_TO_DELETE_USER", name ), e ); //$NON-NLS-1$
     }
   }
 
@@ -226,7 +223,7 @@ public class UserRoleDelegate implements java.io.Serializable {
       }
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString( UserRoleDelegate.class,
-        "UserRoleDelegate.ERROR_0005_UNABLE_TO_GET_USER", name ), e ); //$NON-NLS-1$
+          "UserRoleDelegate.ERROR_0005_UNABLE_TO_GET_USER", name ), e ); //$NON-NLS-1$
     }
     return userInfo;
   }
@@ -242,7 +239,7 @@ public class UserRoleDelegate implements java.io.Serializable {
       }
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString( UserRoleDelegate.class,
-        "UserRoleDelegate.ERROR_0005_UNABLE_TO_GET_USER", name ), e ); //$NON-NLS-1$
+          "UserRoleDelegate.ERROR_0005_UNABLE_TO_GET_USER", name ), e ); //$NON-NLS-1$
     }
     return userInfo;
   }
@@ -256,7 +253,7 @@ public class UserRoleDelegate implements java.io.Serializable {
       }
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString( UserRoleDelegate.class,
-        "UserRoleDelegate.ERROR_0006_UNABLE_TO_GET_USERS" ), e ); //$NON-NLS-1$
+          "UserRoleDelegate.ERROR_0006_UNABLE_TO_GET_USERS" ), e ); //$NON-NLS-1$
     }
   }
 
@@ -267,14 +264,14 @@ public class UserRoleDelegate implements java.io.Serializable {
       ProxyPentahoUser proxyUser = UserRoleHelper.convertToPentahoProxyUser( user );
       userRoleWebService.updateUser( proxyUser );
       if ( user instanceof IEEUser ) {
-        userRoleWebService
-          .setRoles( proxyUser, UserRoleHelper.convertToPentahoProxyRoles( ( (IEEUser) user ).getRoles() ) );
+        userRoleWebService.setRoles( proxyUser, UserRoleHelper.convertToPentahoProxyRoles( ( (IEEUser) user )
+            .getRoles() ) );
       }
       lookupCache.updateUserInLookupSet( user );
       fireUserRoleListChange();
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString( UserRoleDelegate.class,
-        "UserRoleDelegate.ERROR_0007_UNABLE_TO_UPDATE_USER", user.getLogin() ), e ); //$NON-NLS-1$
+          "UserRoleDelegate.ERROR_0007_UNABLE_TO_UPDATE_USER", user.getLogin() ), e ); //$NON-NLS-1$
     }
   }
 
@@ -299,8 +296,8 @@ public class UserRoleDelegate implements java.io.Serializable {
     } catch ( UserRoleException e ) {
       throw cannotCreateRoleException( newRole, e );
     } catch ( Exception e ) { // it is the only way to determine AlreadyExistsException
-      if ( e.getCause().toString()
-        .contains( "org.pentaho.platform.api.engine.security.userroledao.AlreadyExistsException" ) ) {
+      if ( e.getCause().toString().contains(
+          "org.pentaho.platform.api.engine.security.userroledao.AlreadyExistsException" ) ) {
         throw roleExistsException();
       }
     }
@@ -320,12 +317,12 @@ public class UserRoleDelegate implements java.io.Serializable {
 
   private KettleException roleExistsException() {
     return new KettleException( BaseMessages.getString( UserRoleDelegate.class,
-      "UserRoleDelegate.ERROR_0016_ROLE_NAME_ALREADY_EXISTS" ) );
+        "UserRoleDelegate.ERROR_0016_ROLE_NAME_ALREADY_EXISTS" ) );
   }
 
   private KettleException cannotCreateRoleException( IRole role, Exception e ) {
     return new KettleException( BaseMessages.getString( UserRoleDelegate.class,
-      "UserRoleDelegate.ERROR_0008_UNABLE_TO_CREATE_ROLE", role.getName() ), e );
+        "UserRoleDelegate.ERROR_0008_UNABLE_TO_CREATE_ROLE", role.getName() ), e );
   }
 
   public void deleteRoles( List<IRole> roles ) throws KettleException {
@@ -337,7 +334,7 @@ public class UserRoleDelegate implements java.io.Serializable {
       fireUserRoleListChange();
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString( UserRoleDelegate.class,
-        "UserRoleDelegate.ERROR_0009_UNABLE_TO_DELETE_ROLES" ), e ); //$NON-NLS-1$
+          "UserRoleDelegate.ERROR_0009_UNABLE_TO_DELETE_ROLES" ), e ); //$NON-NLS-1$
     }
   }
 
@@ -346,10 +343,10 @@ public class UserRoleDelegate implements java.io.Serializable {
 
     try {
       return UserRoleHelper.convertFromProxyPentahoRole( userRoleWebService, UserRoleHelper.getProxyPentahoRole(
-        userRoleWebService, name ), lookupCache, rsm );
+          userRoleWebService, name ), lookupCache, rsm );
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString( UserRoleDelegate.class,
-        "UserRoleDelegate.ERROR_0010_UNABLE_TO_GET_ROLE", name ), e ); //$NON-NLS-1$
+          "UserRoleDelegate.ERROR_0010_UNABLE_TO_GET_ROLE", name ), e ); //$NON-NLS-1$
     }
   }
 
@@ -362,7 +359,7 @@ public class UserRoleDelegate implements java.io.Serializable {
       }
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString( UserRoleDelegate.class,
-        "UserRoleDelegate.ERROR_0011_UNABLE_TO_GET_ROLES" ), e ); //$NON-NLS-1$
+          "UserRoleDelegate.ERROR_0011_UNABLE_TO_GET_ROLES" ), e ); //$NON-NLS-1$
     }
   }
 
@@ -373,7 +370,7 @@ public class UserRoleDelegate implements java.io.Serializable {
       return UserRoleHelper.convertToListFromProxyPentahoDefaultRoles( userRoleSecurityInfo, rsm );
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString( UserRoleDelegate.class,
-        "UserRoleDelegate.ERROR_0011_UNABLE_TO_GET_ROLES" ), e ); //$NON-NLS-1$
+          "UserRoleDelegate.ERROR_0011_UNABLE_TO_GET_ROLES" ), e ); //$NON-NLS-1$
     }
   }
 
@@ -390,7 +387,7 @@ public class UserRoleDelegate implements java.io.Serializable {
       fireUserRoleListChange();
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString( UserRoleDelegate.class,
-        "UserRoleDelegate.ERROR_0012_UNABLE_TO_UPDATE_ROLE", role.getName() ), e ); //$NON-NLS-1$
+          "UserRoleDelegate.ERROR_0012_UNABLE_TO_UPDATE_ROLE", role.getName() ), e ); //$NON-NLS-1$
     }
   }
 
@@ -400,17 +397,17 @@ public class UserRoleDelegate implements java.io.Serializable {
     try {
       ProxyPentahoRole roleToDelete = UserRoleHelper.getProxyPentahoRole( userRoleWebService, name );
       if ( roleToDelete != null ) {
-        ProxyPentahoRole[] roleArray = new ProxyPentahoRole[ 1 ];
-        roleArray[ 0 ] = roleToDelete;
+        ProxyPentahoRole[] roleArray = new ProxyPentahoRole[1];
+        roleArray[0] = roleToDelete;
         userRoleWebService.deleteRoles( roleArray );
         fireUserRoleListChange();
       } else {
         throw new KettleException( BaseMessages.getString( UserRoleDelegate.class,
-          "UserRoleDelegate.ERROR_0013_UNABLE_TO_DELETE_ROLE", name ) ); //$NON-NLS-1$
+            "UserRoleDelegate.ERROR_0013_UNABLE_TO_DELETE_ROLE", name ) ); //$NON-NLS-1$
       }
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString( UserRoleDelegate.class,
-        "UserRoleDelegate.ERROR_0013_UNABLE_TO_DELETE_ROLE", name ), e ); //$NON-NLS-1$
+          "UserRoleDelegate.ERROR_0013_UNABLE_TO_DELETE_ROLE", name ), e ); //$NON-NLS-1$
     }
   }
 

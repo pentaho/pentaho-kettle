@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -249,9 +249,7 @@ public class AddJobServlet extends BaseHttpServlet implements CartePluginInterfa
         job.addDelegationListener( new CarteDelegationHandler( getTransformationMap(), getJobMap() ) );
       }
 
-      synchronized ( getJobMap() ) {
-        getJobMap().addJob( job.getJobname(), carteObjectId, job, jobConfiguration );
-      }
+      getJobMap().addJob( job.getJobname(), carteObjectId, job, jobConfiguration );
 
       // Make sure to disconnect from the repository when the job finishes.
       //

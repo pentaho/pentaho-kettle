@@ -1,20 +1,19 @@
 /*!
-* Copyright 2010 - 2015 Pentaho Corporation.  All rights reserved.
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-*/
-
+ * Copyright 2010 - 2015 Pentaho Corporation.  All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
 package org.pentaho.di.repository.pur;
 
 import com.google.common.collect.Iterables;
@@ -46,7 +45,6 @@ public class DelegatesPrivateDatabasesTest {
 
   private static final String DB_NAME = "privateDatabase";
 
-
   @Parameterized.Parameters
   public static List<Object[]> getData() {
     Repository repository = mock( Repository.class );
@@ -57,7 +55,6 @@ public class DelegatesPrivateDatabasesTest {
     return Arrays.asList( trans, job );
   }
 
-
   private final ITransformer delegate;
   private final AbstractMeta meta;
   private final String privateDbsNodeName;
@@ -67,7 +64,6 @@ public class DelegatesPrivateDatabasesTest {
     this.meta = meta;
     this.privateDbsNodeName = privateDbsNodeName;
   }
-
 
   @Test
   public void savesNode_IfSetIsNotEmpty() throws Exception {
@@ -95,7 +91,7 @@ public class DelegatesPrivateDatabasesTest {
 
   @Test
   public void savesNode_IfSetIsEmpty() throws Exception {
-    meta.setPrivateDatabases( Collections.<String>emptySet() );
+    meta.setPrivateDatabases( Collections.<String> emptySet() );
 
     DataNode dataNode = element2node();
 
@@ -112,23 +108,20 @@ public class DelegatesPrivateDatabasesTest {
     return dataNode;
   }
 
-
   @Test
   public void saveAndLoad_SetIsNotEmpty() throws Exception {
     meta.setPrivateDatabases( Collections.singleton( DB_NAME ) );
 
-    AbstractMeta restored =
-      (AbstractMeta) delegate.dataNodeToElement( delegate.elementToDataNode( meta ) );
+    AbstractMeta restored = (AbstractMeta) delegate.dataNodeToElement( delegate.elementToDataNode( meta ) );
 
     assertEquals( meta.getPrivateDatabases(), restored.getPrivateDatabases() );
   }
 
   @Test
   public void saveAndLoad_SetIsEmpty() throws Exception {
-    meta.setPrivateDatabases( Collections.<String>emptySet() );
+    meta.setPrivateDatabases( Collections.<String> emptySet() );
 
-    AbstractMeta restored =
-      (AbstractMeta) delegate.dataNodeToElement( delegate.elementToDataNode( meta ) );
+    AbstractMeta restored = (AbstractMeta) delegate.dataNodeToElement( delegate.elementToDataNode( meta ) );
 
     assertNotNull( restored.getPrivateDatabases() );
     assertTrue( restored.getPrivateDatabases().isEmpty() );
@@ -138,8 +131,7 @@ public class DelegatesPrivateDatabasesTest {
   public void saveAndLoad_SetIsNull() throws Exception {
     meta.setPrivateDatabases( null );
 
-    AbstractMeta restored =
-      (AbstractMeta) delegate.dataNodeToElement( delegate.elementToDataNode( meta ) );
+    AbstractMeta restored = (AbstractMeta) delegate.dataNodeToElement( delegate.elementToDataNode( meta ) );
 
     assertNull( restored.getPrivateDatabases() );
   }

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -253,10 +253,8 @@ public class AddExportServlet extends BaseHttpServlet implements CartePluginInte
 
           // store it all in the map...
           //
-          synchronized ( getJobMap() ) {
-            getJobMap().addJob(
-              job.getJobname(), carteObjectId, job, new JobConfiguration( jobMeta, jobExecutionConfiguration ) );
-          }
+          getJobMap().addJob(
+            job.getJobname(), carteObjectId, job, new JobConfiguration( jobMeta, jobExecutionConfiguration ) );
 
           // Apply the execution configuration...
           //

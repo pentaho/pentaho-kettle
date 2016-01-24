@@ -281,6 +281,81 @@ public class RowMetaAndData implements Cloneable {
     return rowMeta.getValueMeta( index );
   }
 
+  /**
+   * Returns value as specified java type. Used for metadata injection.
+   */
+  public Object getAsJavaType( String valueName, Class<?> destinationType ) throws KettleValueException {
+    int idx = rowMeta.indexOfValue( valueName );
+    if ( idx < 0 ) {
+      throw new KettleValueException( "Unknown column '" + valueName + "'" );
+    }
+
+    ValueMetaInterface metaType = rowMeta.getValueMeta( idx );
+    // find by source value type
+    switch ( metaType.getType() ) {
+      case ValueMetaInterface.TYPE_STRING:
+        String vs = rowMeta.getString( data, idx );
+        if ( vs == null ) {
+          return null;
+        }
+        if ( String.class.isAssignableFrom( destinationType ) ) {
+          return vs;
+        } else if ( int.class.isAssignableFrom( destinationType ) || Integer.class.isAssignableFrom(
+            destinationType ) ) {
+          return Integer.parseInt( vs );
+        } else if ( long.class.isAssignableFrom( destinationType ) || Long.class.isAssignableFrom( destinationType ) ) {
+          return Long.parseLong( vs );
+        } else if ( boolean.class.isAssignableFrom( destinationType ) || Boolean.class.isAssignableFrom(
+            destinationType ) ) {
+          return "Y".equalsIgnoreCase( vs ) || "Yes".equalsIgnoreCase( vs ) || "true".equalsIgnoreCase( vs );
+        } else if ( destinationType.isEnum() ) {
+          for ( Object eo : destinationType.getEnumConstants() ) {
+            Enum<?> e = (Enum<?>) eo;
+            if ( e.name().equals( vs ) ) {
+              return e;
+            }
+          }
+          throw new KettleValueException( "Unknown value " + vs + " for enum " + destinationType );
+        }
+        break;
+      case ValueMetaInterface.TYPE_BOOLEAN:
+        Boolean vb = rowMeta.getBoolean( data, idx );
+        if ( vb == null ) {
+          return null;
+        }
+        if ( boolean.class.isAssignableFrom( destinationType ) || Boolean.class.isAssignableFrom( destinationType ) ) {
+          return vb;
+        } else if ( int.class.isAssignableFrom( destinationType ) || Integer.class.isAssignableFrom(
+            destinationType ) ) {
+          return vb ? 1 : 0;
+        } else if ( long.class.isAssignableFrom( destinationType ) || Long.class.isAssignableFrom( destinationType ) ) {
+          return vb ? 1L : 0L;
+        } else if ( String.class.isAssignableFrom( destinationType ) ) {
+          return vb ? "Y" : "N";
+        }
+        break;
+      case ValueMetaInterface.TYPE_INTEGER:
+        Long vi = rowMeta.getInteger( data, idx );
+        if ( vi == null ) {
+          return null;
+        }
+        if ( long.class.isAssignableFrom( destinationType ) || Long.class.isAssignableFrom( destinationType ) ) {
+          return vi;
+        } else if ( int.class.isAssignableFrom( destinationType ) || Integer.class.isAssignableFrom(
+            destinationType ) ) {
+          return vi.intValue();
+        } else if ( String.class.isAssignableFrom( destinationType ) ) {
+          return vi.toString();
+        } else if ( boolean.class.isAssignableFrom( destinationType ) || Boolean.class.isAssignableFrom(
+            destinationType ) ) {
+          return vi.longValue() != 0;
+        }
+        break;
+    }
+
+    throw new KettleValueException( "Unknown conversion from " + metaType.getTypeDesc() + " into " + destinationType );
+  }
+
   public void removeValue( String valueName ) throws KettleValueException {
     int index = rowMeta.indexOfValue( valueName );
     if ( index < 0 ) {

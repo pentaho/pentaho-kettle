@@ -1,19 +1,19 @@
 /*!
-* Copyright 2010 - 2015 Pentaho Corporation.  All rights reserved.
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-*/
+ * Copyright 2010 - 2015 Pentaho Corporation.  All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
 
 package com.pentaho.pdi.ws;
 
@@ -51,7 +51,7 @@ import org.pentaho.platform.engine.core.system.PentahoSystem;
 import org.pentaho.test.platform.engine.core.SimpleObjectFactory;
 import org.w3c.dom.Node;
 
-@SuppressWarnings ( "nls" )
+@SuppressWarnings( "nls" )
 /**
  * This test case writes to the current user's home .kettleTest folder and then cleans it up afterwards  
  */
@@ -61,14 +61,13 @@ public class RepositorySyncWebServiceTest implements Serializable {
 
   final PropertyHandler handler = (PropertyHandler) LAFFactory.getHandler( PropertyHandler.class );
 
-
   public class TestAppContext implements IApplicationContext {
     public String getBaseUrl() {
       return "";
     }
 
     public File createTempFile( IPentahoSession session, String prefix, String extension, File parentDir,
-                                boolean trackFile ) throws IOException {
+        boolean trackFile ) throws IOException {
       return null;
     }
 
@@ -168,7 +167,8 @@ public class RepositorySyncWebServiceTest implements Serializable {
     }
   }
 
-  @RepositoryPlugin ( id = "PentahoEnterpriseRepository", name = "PentahoEnterpriseRepository", metaClass = "com.pentaho.pdi.ws.RepositorySyncWebServiceTest$TestRepositoryMeta" )
+  @RepositoryPlugin( id = "PentahoEnterpriseRepository", name = "PentahoEnterpriseRepository",
+      metaClass = "com.pentaho.pdi.ws.RepositorySyncWebServiceTest$TestRepositoryMeta" )
   public static class TestRepositoryMeta extends BaseRepositoryMeta implements RepositoryMeta {
     public TestRepositoryMeta() {
       super( "PentahoEnterpriseRepository" );
@@ -226,14 +226,14 @@ public class RepositorySyncWebServiceTest implements Serializable {
   @Test
   public void testSyncWebService() throws Exception {
 
-    // first init kettle 
+    // first init kettle
 
     KettleEnvironment.init( false );
     BasePropertyHandler.getInstance().notify( new TestPropertyHandler() );
     File f = new File( Const.getKettleDirectory() );
     f.mkdirs();
 
-    // second init platform 
+    // second init platform
     PentahoSystem.registerObjectFactory( new SimpleObjectFactory() );
     PentahoSystem.init( new TestAppContext(), null );
     PentahoSystem.setSystemSettingsService( new ISystemSettings() {
@@ -287,7 +287,8 @@ public class RepositorySyncWebServiceTest implements Serializable {
     // second with plugin but not registered
     RepositoryPluginType.getInstance().registerCustom( TestRepositoryMeta.class, "PentahoEnterpriseRepository",
         "PentahoEnterpriseRepository", "PentahoEnterpriseRepository", "PentahoEnterpriseRepository", "" );
-    PluginRegistry.getInstance().getPlugin( RepositoryPluginType.class, "PentahoEnterpriseRepository" ).getClassMap().put( RepositoryMeta.class, "com.pentaho.pdi.ws.RepositorySyncWebServiceTest$TestRepositoryMeta" );
+    PluginRegistry.getInstance().getPlugin( RepositoryPluginType.class, "PentahoEnterpriseRepository" ).getClassMap()
+        .put( RepositoryMeta.class, "com.pentaho.pdi.ws.RepositorySyncWebServiceTest$TestRepositoryMeta" );
 
     RepositorySyncStatus status = webservice.sync( "test id", "http://localhost:8080/pentaho-di" );
 

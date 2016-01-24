@@ -1,20 +1,19 @@
 /*!
-* Copyright 2010 - 2015 Pentaho Corporation.  All rights reserved.
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-*/
-
+ * Copyright 2010 - 2015 Pentaho Corporation.  All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
 package org.pentaho.di.repository.pur;
 
 import org.junit.Before;
@@ -47,14 +46,12 @@ public class PurRepository_DatabaseNames_Test {
   private PurRepository purRepository;
   private IUnifiedRepository unifiedRepository;
 
-
   @Before
   public void setUp() throws Exception {
     RepositoryFile dbFile = file( EXISTING_DB );
 
     unifiedRepository = mock( IUnifiedRepository.class );
-    when( unifiedRepository.getFile( EXISTING_DB_PATH ) )
-      .thenReturn( dbFile );
+    when( unifiedRepository.getFile( EXISTING_DB_PATH ) ).thenReturn( dbFile );
 
     PurRepositoryMeta mockMeta = mock( PurRepositoryMeta.class );
 
@@ -76,8 +73,7 @@ public class PurRepository_DatabaseNames_Test {
 
     List<RepositoryFile> files = asList( file( "a" ), file( EXISTING_DB ), file( "b" ) );
     purRepository = spy( purRepository );
-    doReturn( files ).when( purRepository )
-      .getAllFilesOfType( any( ObjectId.class ), eq( DATABASE ), anyBoolean() );
+    doReturn( files ).when( purRepository ).getAllFilesOfType( any( ObjectId.class ), eq( DATABASE ), anyBoolean() );
 
     ObjectId databaseID = purRepository.getDatabaseID( lookupName );
     assertEquals( EXISTING_DB, databaseID.getId() );
@@ -85,14 +81,11 @@ public class PurRepository_DatabaseNames_Test {
 
   @Test( expected = KettleException.class )
   public void getDatabaseId_FailsOnRepositoryException() throws Exception {
-    when( unifiedRepository.getFile( getPathForDb( "non-existing" ) ) )
-      .thenThrow( new RuntimeException() );
+    when( unifiedRepository.getFile( getPathForDb( "non-existing" ) ) ).thenThrow( new RuntimeException() );
     purRepository.getDatabaseID( "non-existing" );
   }
 
   private static RepositoryFile file( String name ) {
-    return new RepositoryFile.Builder( name + DATABASE.getExtension() )
-      .title( name ).id( name )
-      .build();
+    return new RepositoryFile.Builder( name + DATABASE.getExtension() ).title( name ).id( name ).build();
   }
 }

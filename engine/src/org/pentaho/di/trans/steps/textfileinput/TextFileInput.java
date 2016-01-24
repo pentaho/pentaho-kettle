@@ -678,10 +678,9 @@ public class TextFileInput extends BaseStep implements StepInterface {
           String pol = strings[ fieldnr ];
           try {
             if ( valueMeta.isNull( pol ) ) {
-              value = null;
-            } else {
-              value = valueMeta.convertDataFromString( pol, convertMeta, nullif, ifnull, trim_type );
+              pol = null;
             }
+            value = valueMeta.convertDataFromString( pol, convertMeta, nullif, ifnull, trim_type );
           } catch ( Exception e ) {
             // OK, give some feedback!
             String message =
@@ -942,8 +941,8 @@ public class TextFileInput extends BaseStep implements StepInterface {
      * If the buffer is empty: open the next file. (if nothing in there, open the next, etc.)
      */
     while ( data.lineBuffer.size() == 0 ) {
-      if ( !openNextFile() ) // Open fails: done processing unless set to skip bad files
-      {
+      if ( !openNextFile() ) {
+        // Open fails: done processing unless set to skip bad files
         if ( failAfterBadFile( null ) ) {
           closeLastFile();
           setOutputDone(); // signal end to receiver(s)
@@ -965,8 +964,8 @@ public class TextFileInput extends BaseStep implements StepInterface {
       /*
        * Different rules apply: on each page: a header a number of data lines a footer
        */
-      if ( !data.doneWithHeader && data.pageLinesRead == 0 ) // We are reading header lines
-      {
+      if ( !data.doneWithHeader && data.pageLinesRead == 0 ) {
+        // We are reading header lines
         if ( log.isRowLevel() ) {
           logRowlevel( "P-HEADER (" + data.headerLinesRead + ") : " + textLine.line );
         }

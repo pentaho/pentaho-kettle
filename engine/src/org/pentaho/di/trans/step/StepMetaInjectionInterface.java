@@ -30,7 +30,7 @@ import org.pentaho.di.core.exception.KettleException;
  * This interface allows an external program to inject metadata using a standard flat set of metadata attributes.
  *
  * @author matt
- *
+ * @deprecated Use annotation-based injection instead
  */
 public interface StepMetaInjectionInterface {
   /**

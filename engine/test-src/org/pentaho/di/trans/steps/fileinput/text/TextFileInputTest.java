@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,14 +27,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
-import java.util.Collections;
+import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.pentaho.di.core.BlockingRowSet;
 import org.pentaho.di.core.KettleEnvironment;
-import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.fileinput.FileInputList;
 import org.pentaho.di.core.playlist.FilePlayListAll;
@@ -42,6 +40,7 @@ import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.vfs.KettleVFS;
+import org.pentaho.di.trans.TransTestingUtil;
 import org.pentaho.di.trans.step.errorhandling.FileErrorHandler;
 import org.pentaho.di.trans.steps.StepMockUtil;
 import org.pentaho.di.trans.steps.fileinput.BaseFileInputField;
@@ -49,6 +48,7 @@ import org.pentaho.di.utils.TestUtils;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
+import static org.pentaho.di.trans.TransTestingUtil.assertResult;
 
 public class TextFileInputTest {
 
@@ -124,29 +124,16 @@ public class TextFileInputTest {
       .toString();
     final String virtualFile = createVirtualFile( "pdi-2607.txt", content );
 
-    TextFileInputMeta meta = new TextFileInputMeta();
+    TextFileInputMeta meta = createMetaObject( field( "col1" ), field( "col2" ) );
     meta.content.lineWrapped = true;
     meta.content.nrWraps = 1;
-    meta.inputFiles.inputFields =
-      new BaseFileInputField[] { field( "col1" ), field( "col2" ) };
-    meta.content.fileCompression = "None";
-    meta.content.fileType = "CSV";
-    meta.content.header = false;
-    meta.content.nrHeaderLines = -1;
-    meta.content.footer = false;
-    meta.content.nrFooterLines = -1;
 
     TextFileInputData data = createDataObject( virtualFile, ";", "col1", "col2" );
 
-    RowSet output = new BlockingRowSet( 5 );
-    executeStep( meta, data, output, 2 );
-
-    Object[] row1 = output.getRowImmediate();
-    assertRow( row1, "r1c1", "r1c2" );
-
-    Object[] row2 = output.getRowImmediate();
-    assertRow( row2, "r2c1", "r2c2" );
-
+    TextFileInput input = StepMockUtil.getStep( TextFileInput.class, TextFileInputMeta.class, "test" );
+    List<Object[]> output = TransTestingUtil.execute( input, meta, data, 2, false );
+    assertResult( new Object[] { "r1c1", "r1c2" }, output.get( 0 ) );
+    assertResult( new Object[] { "r2c1", "r2c2" }, output.get( 1 ) );
 
     deleteVfsFile( virtualFile );
   }
@@ -155,29 +142,16 @@ public class TextFileInputTest {
   public void readInputWithMissedValues() throws Exception {
     final String virtualFile = createVirtualFile( "pdi-14172.txt", "1,1,1\n", "2,,2\n" );
 
-    TextFileInputMeta meta = new TextFileInputMeta();
     BaseFileInputField field2 = field( "col2" );
     field2.setRepeated( true );
-    meta.inputFiles.inputFields =
-      new BaseFileInputField[] { field( "col1" ), field2, field( "col3" ) };
-    meta.content.fileCompression = "None";
-    meta.content.fileType = "CSV";
-    meta.content.header = false;
-    meta.content.nrHeaderLines = -1;
-    meta.content.footer = false;
-    meta.content.nrFooterLines = -1;
 
+    TextFileInputMeta meta = createMetaObject( field( "col1" ), field2, field( "col3" ) );
     TextFileInputData data = createDataObject( virtualFile, ",", "col1", "col2", "col3" );
 
-    RowSet output = new BlockingRowSet( 5 );
-    executeStep( meta, data, output, 2 );
-
-    Object[] row1 = output.getRowImmediate();
-    assertRow( row1, "1", "1", "1" );
-
-    Object[] row2 = output.getRowImmediate();
-    assertRow( row2, "2", "1", "2" );
-
+    TextFileInput input = StepMockUtil.getStep( TextFileInput.class, TextFileInputMeta.class, "test" );
+    List<Object[]> output = TransTestingUtil.execute( input, meta, data, 2, false );
+    assertResult( new Object[] { "1", "1", "1" }, output.get( 0 ) );
+    assertResult( new Object[] { "2", "1", "2" }, output.get( 1 ) );
 
     deleteVfsFile( virtualFile );
   }
@@ -186,12 +160,38 @@ public class TextFileInputTest {
   public void readInputWithNonEmptyNullif() throws Exception {
     final String virtualFile = createVirtualFile( "pdi-14358.txt", "-,-\n" );
 
-    TextFileInputMeta meta = new TextFileInputMeta();
-
     BaseFileInputField col2 = field( "col2" );
     col2.setNullString( "-" );
-    meta.inputFiles.inputFields = new BaseFileInputField[] { field( "col1" ), col2 };
 
+    TextFileInputMeta meta = createMetaObject( field( "col1" ), col2 );
+    TextFileInputData data = createDataObject( virtualFile, ",", "col1", "col2" );
+
+    TextFileInput input = StepMockUtil.getStep( TextFileInput.class, TextFileInputMeta.class, "test" );
+    List<Object[]> output = TransTestingUtil.execute( input, meta, data, 1, false );
+    assertResult( new Object[] { "-" }, output.get( 0 ) );
+
+    deleteVfsFile( virtualFile );
+  }
+
+  @Test
+  public void readInputWithDefaultValues() throws Exception {
+    final String virtualFile = createVirtualFile( "pdi-14832.txt", "1,\n" );
+
+    BaseFileInputField col2 = field( "col2" );
+    col2.setIfNullValue( "DEFAULT" );
+
+    TextFileInputMeta meta = createMetaObject( field( "col1" ), col2 );
+    TextFileInputData data = createDataObject( virtualFile, ",", "col1", "col2" );
+
+    TextFileInput input = StepMockUtil.getStep( TextFileInput.class, TextFileInputMeta.class, "test" );
+    List<Object[]> output = TransTestingUtil.execute( input, meta, data, 1, false );
+    TransTestingUtil.assertResult( new Object[] { "1", "DEFAULT" }, output.get( 0 ) );
+
+    deleteVfsFile( virtualFile );
+  }
+
+  private TextFileInputMeta createMetaObject( BaseFileInputField... fields ) {
+    TextFileInputMeta meta = new TextFileInputMeta();
     meta.content.fileCompression = "None";
     meta.content.fileType = "CSV";
     meta.content.header = false;
@@ -199,16 +199,8 @@ public class TextFileInputTest {
     meta.content.footer = false;
     meta.content.nrFooterLines = -1;
 
-    TextFileInputData data = createDataObject( virtualFile, ",", "col1", "col2" );
-
-    RowSet output = new BlockingRowSet( 5 );
-    executeStep( meta, data, output, 1 );
-
-    Object[] row = output.getRowImmediate();
-    assertRow( row, "-", null );
-
-
-    deleteVfsFile( virtualFile );
+    meta.inputFiles.inputFields = fields;
+    return meta;
   }
 
   private TextFileInputData createDataObject( String file,
@@ -232,18 +224,6 @@ public class TextFileInputTest {
     data.filterProcessor = new TextFileFilterProcessor( new TextFileFilter[ 0 ], new Variables() );
     data.filePlayList = new FilePlayListAll();
     return data;
-  }
-
-  private void executeStep( TextFileInputMeta meta, TextFileInputData data, RowSet output, int expectedRounds )
-    throws Exception {
-    TextFileInput input = StepMockUtil.getStep( TextFileInput.class, TextFileInputMeta.class, "test" );
-    input.setOutputRowSets( Collections.singletonList( output ) );
-    int i = 0;
-    while ( input.processRow( meta, data ) && i < expectedRounds ) {
-      i++;
-    }
-
-    assertEquals( "The amount of executions should be equal to expected", expectedRounds, i );
   }
 
   private static String createVirtualFile( String filename, String... rows ) throws Exception {
@@ -271,19 +251,5 @@ public class TextFileInputTest {
 
   private static BaseFileInputField field( String name ) {
     return new BaseFileInputField( name, -1, -1 );
-  }
-
-  private static void assertRow( Object[] row, Object... values ) {
-    assertNotNull( row );
-    assertTrue( String.format( "%d < %d", row.length, values.length ), row.length >= values.length );
-    int i = 0;
-    while ( i < values.length ) {
-      assertEquals( values[ i ], row[ i ] );
-      i++;
-    }
-    while ( i < row.length ) {
-      assertNull( row[ i ] );
-      i++;
-    }
   }
 }

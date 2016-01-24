@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,6 +23,7 @@
 package org.pentaho.di.core.row.value;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.net.InetAddress;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -40,6 +41,31 @@ import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.ValueMetaInterface;
 
 public class ValueMetaInternetAddress extends ValueMetaDate {
+
+  @Override
+  public int compare( Object data1, Object data2 ) throws KettleValueException {
+    InetAddress inet1 = getInternetAddress( data1 );
+    InetAddress inet2 = getInternetAddress( data2 );
+    int cmp = 0;
+    if ( inet1 == null ) {
+      if ( inet2 == null ) {
+        cmp = 0;
+      } else {
+        cmp = -1;
+      }
+    } else if ( inet2 == null ) {
+      cmp = 1;
+    } else {
+      BigInteger bigint1 = new BigInteger( inet1.getAddress() );
+      BigInteger bigint2 = new BigInteger( inet2.getAddress() );
+      cmp = bigint1.compareTo( bigint2 );
+    }
+    if ( isSortedDescending() ) {
+      return -cmp;
+    } else {
+      return cmp;
+    }
+  }
 
   public ValueMetaInternetAddress() {
     this( null );

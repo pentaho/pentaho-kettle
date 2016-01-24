@@ -1,20 +1,19 @@
 /*!
-* Copyright 2010 - 2015 Pentaho Corporation.  All rights reserved.
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-*/
-
+ * Copyright 2010 - 2015 Pentaho Corporation.  All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
 package com.pentaho.pdi.ws;
 
 import java.io.Serializable;
@@ -36,7 +35,8 @@ import org.w3c.dom.NodeList;
 import com.pentaho.di.messages.Messages;
 import com.sun.xml.bind.StringInputStream;
 
-@WebService ( endpointInterface = "com.pentaho.pdi.ws.IRepositorySyncWebService", serviceName = "repositorySync", portName = "repositorySyncPort", targetNamespace = "http://www.pentaho.org/ws/1.0" )
+@WebService( endpointInterface = "com.pentaho.pdi.ws.IRepositorySyncWebService", serviceName = "repositorySync",
+    portName = "repositorySyncPort", targetNamespace = "http://www.pentaho.org/ws/1.0" )
 public class RepositorySyncWebService implements IRepositorySyncWebService, Serializable {
 
   private static final long serialVersionUID = 743647084187858081L; /* EESOURCE: UPDATE SERIALVERUID */
@@ -45,7 +45,8 @@ public class RepositorySyncWebService implements IRepositorySyncWebService, Seri
   private static final String SINGLE_DI_SERVER_INSTANCE = "singleDiServerInstance";
 
   public RepositorySyncStatus sync( String repositoryId, String repositoryUrl ) throws RepositorySyncException {
-    boolean singleDiServerInstance = "true".equals( PentahoSystem.getSystemSetting( SINGLE_DI_SERVER_INSTANCE, "true" ) ); //$NON-NLS-1$ //$NON-NLS-2$
+    boolean singleDiServerInstance =
+        "true".equals( PentahoSystem.getSystemSetting( SINGLE_DI_SERVER_INSTANCE, "true" ) ); //$NON-NLS-1$ //$NON-NLS-2$
     if ( singleDiServerInstance ) {
       return RepositorySyncStatus.SINGLE_DI_SERVER_INSTANCE;
     }
@@ -55,7 +56,8 @@ public class RepositorySyncWebService implements IRepositorySyncWebService, Seri
       repositoriesMeta.readData();
     } catch ( Exception e ) {
       log.error( Messages.getInstance().getString( "RepositorySyncWebService.UNABLE_TO_READ_DATA" ), e ); //$NON-NLS-1$
-      throw new RepositorySyncException( Messages.getInstance().getString( "RepositorySyncWebService.UNABLE_TO_READ_DATA" ), e ); //$NON-NLS-1$
+      throw new RepositorySyncException( Messages.getInstance().getString(
+          "RepositorySyncWebService.UNABLE_TO_READ_DATA" ), e ); //$NON-NLS-1$
     }
     RepositoryMeta repositoryMeta = repositoriesMeta.findRepository( repositoryId );
     if ( repositoryMeta == null ) {
@@ -63,20 +65,25 @@ public class RepositorySyncWebService implements IRepositorySyncWebService, Seri
         repositoryMeta = getRepositoryMeta( repositoryId, repositoryUrl );
         if ( repositoryMeta == null ) {
           log.error( Messages.getInstance().getString( "RepositorySyncWebService.UNABLE_TO_LOAD_PLUGIN" ) ); //$NON-NLS-1$
-          throw new RepositorySyncException( Messages.getInstance().getString( "RepositorySyncWebService.UNABLE_TO_LOAD_PLUGIN" ) ); //$NON-NLS-1$
+          throw new RepositorySyncException( Messages.getInstance().getString(
+              "RepositorySyncWebService.UNABLE_TO_LOAD_PLUGIN" ) ); //$NON-NLS-1$
         }
         repositoriesMeta.addRepository( repositoryMeta );
         repositoriesMeta.writeData();
         return RepositorySyncStatus.REGISTERED;
       } catch ( KettleException e ) {
-        log.error( Messages.getInstance().getString( "RepositorySyncWebService.UNABLE_TO_REGISTER_REPOSITORY", repositoryId ), e ); //$NON-NLS-1$
-        throw new RepositorySyncException( Messages.getInstance().getString( "RepositorySyncWebService.UNABLE_TO_REGISTER_REPOSITORY", repositoryId ), e ); //$NON-NLS-1$
+        log.error( Messages.getInstance().getString(
+            "RepositorySyncWebService.UNABLE_TO_REGISTER_REPOSITORY", repositoryId ), e ); //$NON-NLS-1$
+        throw new RepositorySyncException( Messages.getInstance().getString(
+            "RepositorySyncWebService.UNABLE_TO_REGISTER_REPOSITORY", repositoryId ), e ); //$NON-NLS-1$
       }
     } else {
       String xml = repositoryMeta.getXML();
       Element node;
       try {
-        node = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse( new StringInputStream( xml ) ).getDocumentElement();
+        node =
+            DocumentBuilderFactory.newInstance().newDocumentBuilder().parse( new StringInputStream( xml ) )
+                .getDocumentElement();
       } catch ( Exception e ) {
         node = null;
       }
@@ -100,21 +107,29 @@ public class RepositorySyncWebService implements IRepositorySyncWebService, Seri
                 return RepositorySyncStatus.ALREADY_REGISTERED;
               }
             }
-            log.error( Messages.getInstance().getString( "RepositorySyncWebService.FULLY_QUALIFIED_SERVER_URL_SYNC_PROBLEM", fullyQualifiedServerUrl, url ) ); //$NON-NLS-1$
-            throw new RepositorySyncException( Messages.getInstance().getString( "RepositorySyncWebService.FULLY_QUALIFIED_SERVER_URL_SYNC_PROBLEM", fullyQualifiedServerUrl, url ) ); //$NON-NLS-1$
+            log.error( Messages.getInstance().getString(
+                "RepositorySyncWebService.FULLY_QUALIFIED_SERVER_URL_SYNC_PROBLEM", fullyQualifiedServerUrl, url ) ); //$NON-NLS-1$
+            throw new RepositorySyncException( Messages.getInstance().getString(
+                "RepositorySyncWebService.FULLY_QUALIFIED_SERVER_URL_SYNC_PROBLEM", fullyQualifiedServerUrl, url ) ); //$NON-NLS-1$
           } else {
-            log.error( Messages.getInstance().getString( "RepositorySyncWebService.REPOSITORY_URL_SYNC_PROBLEM", repositoryId, url, repositoryUrl ) ); //$NON-NLS-1$
-            throw new RepositorySyncException( Messages.getInstance().getString( "RepositorySyncWebService.REPOSITORY_URL_SYNC_PROBLEM", repositoryId, url, repositoryUrl ) ); //$NON-NLS-1$
+            log.error( Messages.getInstance().getString(
+                "RepositorySyncWebService.REPOSITORY_URL_SYNC_PROBLEM", repositoryId, url, repositoryUrl ) ); //$NON-NLS-1$
+            throw new RepositorySyncException( Messages.getInstance().getString(
+                "RepositorySyncWebService.REPOSITORY_URL_SYNC_PROBLEM", repositoryId, url, repositoryUrl ) ); //$NON-NLS-1$
           }
         }
       }
-      log.error( Messages.getInstance().getString( "RepositorySyncWebService.REPOSITORY_URL_XML_PARSING_PROBLEM", repositoryId, xml ) ); //$NON-NLS-1$
-      throw new RepositorySyncException( Messages.getInstance().getString( "RepositorySyncWebService.REPOSITORY_URL_XML_PARSING_PROBLEM_CLIENT_MESSAGE", repositoryId ) ); //$NON-NLS-1$
+      log.error( Messages.getInstance().getString(
+          "RepositorySyncWebService.REPOSITORY_URL_XML_PARSING_PROBLEM", repositoryId, xml ) ); //$NON-NLS-1$
+      throw new RepositorySyncException( Messages.getInstance().getString(
+          "RepositorySyncWebService.REPOSITORY_URL_XML_PARSING_PROBLEM_CLIENT_MESSAGE", repositoryId ) ); //$NON-NLS-1$
     }
   }
 
   private static RepositoryMeta getRepositoryMeta( String repositoryId, String repositoryUrl ) throws KettleException {
-    RepositoryMeta repMeta = PluginRegistry.getInstance().loadClass( RepositoryPluginType.class, "PentahoEnterpriseRepository", RepositoryMeta.class ); //$NON-NLS-1$
+    RepositoryMeta repMeta =
+        PluginRegistry.getInstance().loadClass( RepositoryPluginType.class,
+            "PentahoEnterpriseRepository", RepositoryMeta.class ); //$NON-NLS-1$
     // this repository is not available
     if ( repMeta == null ) {
       return null;
@@ -128,7 +143,9 @@ public class RepositorySyncWebService implements IRepositorySyncWebService, Seri
 
     Element node;
     try {
-      node = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse( new StringInputStream( xml ) ).getDocumentElement();
+      node =
+          DocumentBuilderFactory.newInstance().newDocumentBuilder().parse( new StringInputStream( xml ) )
+              .getDocumentElement();
     } catch ( Exception e ) {
       node = null;
     }

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,6 +23,7 @@
 package org.pentaho.di.ui.trans.step;
 
 import org.eclipse.swt.custom.CCombo;
+import org.eclipse.swt.widgets.Shell;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
@@ -30,11 +31,13 @@ import org.mockito.stubbing.Answer;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
 
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 /**
  * @author Andrey Khayrutdinov
@@ -74,7 +77,7 @@ public class BaseStepDialog_ConnectionLine_Test {
 
   private void invokeAddConnectionListener( TransMeta transMeta, String answeredName ) throws Exception {
     BaseStepDialog dialog = mock( BaseStepDialog.class );
-    when( dialog.showDbDialogUnlessCancelledOrValid( any( DatabaseMeta.class ), any( DatabaseMeta.class ) ) )
+    when( dialog.showDbDialogUnlessCancelledOrValid( anyDbMeta(), anyDbMeta() ) )
       .thenAnswer( new PropsSettingAnswer( answeredName, INPUT_HOST ) );
 
     dialog.transMeta = transMeta;
@@ -114,7 +117,7 @@ public class BaseStepDialog_ConnectionLine_Test {
 
   private void invokeEditConnectionListener( TransMeta transMeta, String answeredName ) throws Exception {
     BaseStepDialog dialog = mock( BaseStepDialog.class );
-    when( dialog.showDbDialogUnlessCancelledOrValid( any( DatabaseMeta.class ), any( DatabaseMeta.class ) ) )
+    when( dialog.showDbDialogUnlessCancelledOrValid( anyDbMeta(), anyDbMeta() ) )
       .thenAnswer( new PropsSettingAnswer( answeredName, INPUT_HOST ) );
 
     CCombo combo = mock( CCombo.class );
@@ -138,6 +141,10 @@ public class BaseStepDialog_ConnectionLine_Test {
     assertEquals( host, transMeta.getDatabase( 0 ).getHostname() );
   }
 
+  private static DatabaseMeta anyDbMeta() {
+    return any( DatabaseMeta.class );
+  }
+
 
   private static class PropsSettingAnswer implements Answer<String> {
     private final String name;
@@ -155,5 +162,92 @@ public class BaseStepDialog_ConnectionLine_Test {
       meta.setHostname( host );
       return name;
     }
+  }
+
+
+  @Test
+  public void showDbDialog_ReturnsNull_OnCancel() throws Exception {
+    // null as input emulates cancelling
+    test_showDbDialogUnlessCancelledOrValid_ShownOnce( null, null );
+  }
+
+  @Test
+  public void showDbDialog_ReturnsInputName_WhenItIsUnique() throws Exception {
+    test_showDbDialogUnlessCancelledOrValid_ShownOnce( INPUT_NAME, INPUT_NAME );
+  }
+
+  @Test
+  public void showDbDialog_ReturnsInputName_WhenItIsUnique_WithSpaces() throws Exception {
+    String input = " " + INPUT_NAME + " ";
+    test_showDbDialogUnlessCancelledOrValid_ShownOnce( input, INPUT_NAME );
+  }
+
+  @Test
+  public void showDbDialog_ReturnsExistingName_WhenNameWasNotChanged() throws Exception {
+    // this is the case of editing when name was not changed (e.g., host was updated)
+    test_showDbDialogUnlessCancelledOrValid_ShownOnce( INITIAL_NAME, INITIAL_NAME );
+  }
+
+  private void test_showDbDialogUnlessCancelledOrValid_ShownOnce( String inputName,
+                                                                  String expectedResult ) throws Exception {
+    DatabaseDialog databaseDialog = mock( DatabaseDialog.class );
+    when( databaseDialog.open() ).thenReturn( inputName );
+
+    TransMeta transMeta = new TransMeta();
+    DatabaseMeta db = createDefaultDatabase();
+    transMeta.addDatabase( db );
+
+    BaseStepDialog dialog = mock( BaseStepDialog.class );
+    dialog.databaseDialog = databaseDialog;
+    dialog.transMeta = transMeta;
+    when( dialog.showDbDialogUnlessCancelledOrValid( anyDbMeta(), anyDbMeta() ) ).thenCallRealMethod();
+    when( dialog.getDatabaseDialog( any( Shell.class ) ) ).thenCallRealMethod();
+
+    String result = dialog.showDbDialogUnlessCancelledOrValid( (DatabaseMeta) db.clone(), db );
+    assertEquals( expectedResult, result );
+
+    // database dialog should be shown only once
+    verify( databaseDialog, times( 1 ) ).open();
+  }
+
+  @Test
+  public void showDbDialog_LoopsUntilUniqueValueIsInput() throws Exception {
+    DatabaseMeta db1 = createDefaultDatabase();
+
+    DatabaseMeta db2 = createDefaultDatabase();
+    db2.setName( INPUT_NAME );
+
+    TransMeta transMeta = new TransMeta();
+    transMeta.addDatabase( db1 );
+    transMeta.addDatabase( db2 );
+
+    final String expectedResult = INPUT_NAME + "2";
+
+    DatabaseDialog databaseDialog = mock( DatabaseDialog.class );
+    when( databaseDialog.open() )
+      // duplicate
+      .thenReturn( INPUT_NAME )
+      // duplicate with spaces
+      .thenReturn( INPUT_NAME + " " )
+      // duplicate in other case
+      .thenReturn( INPUT_NAME.toUpperCase() )
+      // unique value
+      .thenReturn( expectedResult );
+
+
+    BaseStepDialog dialog = mock( BaseStepDialog.class );
+    dialog.databaseDialog = databaseDialog;
+    dialog.transMeta = transMeta;
+    when( dialog.showDbDialogUnlessCancelledOrValid( anyDbMeta(), anyDbMeta() ) ).thenCallRealMethod();
+    when( dialog.getDatabaseDialog( any( Shell.class ) ) ).thenCallRealMethod();
+
+    // try to rename db1 ("qwerty")
+    String result = dialog.showDbDialogUnlessCancelledOrValid( (DatabaseMeta) db1.clone(), db1 );
+    assertEquals( expectedResult, result );
+
+    // database dialog should be shown four times
+    verify( databaseDialog, times( 4 ) ).open();
+    // and the error message should be shown three times
+    verify( dialog, times( 3 ) ).showDbExistsDialog( anyDbMeta() );
   }
 }

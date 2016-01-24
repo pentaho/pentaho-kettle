@@ -31,11 +31,20 @@
       changing="true" transitive="false" />
     <dependency org="pentaho" name="pentaho-platform-extensions" rev="${dependency.bi-platform.revision}"
       changing="true" transitive="false" conf="compile->default"/>
+    <dependency org="pentaho" name="pentaho-xul-core" rev="${dependency.pentaho-xul.revision}"
+        changing="true" conf="compile->default" >
+        <!-- Xul dependency on jaxen->xom->icu4j-2.6.1 is breaking the build during obfuscation -->
+      <exclude org="com.ibm.icu" module="icu4j"/>
+    </dependency>
+    <dependency org="pentaho" name="pentaho-xul-swt" rev="${dependency.pentaho-xul.revision}"
+      changing="true" conf="compile->default" />
 
     <!-- kettle -->
     <dependency org="pentaho-kettle" name="kettle-core" rev="${dependency.kettle.revision}" transitive="false"
       changing="true" />
     <dependency org="pentaho-kettle" name="kettle-engine" rev="${dependency.kettle.revision}" transitive="false"
+      changing="true" />
+    <dependency org="pentaho-kettle" name="kettle-ui-swt" rev="${dependency.kettle.revision}" transitive="false"
       changing="true" />
 
     <!-- Metastore -->

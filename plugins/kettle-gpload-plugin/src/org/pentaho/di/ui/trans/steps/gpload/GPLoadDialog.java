@@ -106,6 +106,7 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface 
   private TextVar wControlFile;
   private TextVar wDataFile;
   private TextVar wLogFile;
+  private TextVar wNullAs;
   private Combo wEncoding;
   private Button wEraseFiles;
   private GPLoadMeta input;
@@ -380,6 +381,7 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface 
     wControlFile.addSelectionListener( lsDef );
     wDataFile.addSelectionListener( lsDef );
     wLogFile.addSelectionListener( lsDef );
+    wNullAs.addSelectionListener( lsDef );
 
     // Detect X or ALT-F4 or something that kills this window...
     shell.addShellListener( new ShellAdapter() {
@@ -667,6 +669,9 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface 
     if ( input.getLogFile() != null ) {
       wLogFile.setText( input.getLogFile() );
     }
+    if ( input.getNullAs() != null ) {
+      wNullAs.setText( input.getNullAs() );
+    }
     if ( input.getEncoding() != null ) {
       wEncoding.setText( input.getEncoding() );
     }
@@ -764,6 +769,7 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface 
     inf.setControlFile( wControlFile.getText() );
     inf.setDataFile( wDataFile.getText() );
     inf.setLogFile( wLogFile.getText() );
+    inf.setNullAs( wNullAs.getText() );
     inf.setEncoding( wEncoding.getText() );
     inf.setEraseFiles( wEraseFiles.getSelection() );
     inf.setLocalhostPort( wLocalhostPort.getText() );
@@ -1311,6 +1317,24 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface 
     fdDelimiter.right = new FormAttachment( 100, 0 );
     wDelimiter.setLayoutData( fdDelimiter );
 
+    // NULL_AS parameter
+    Label wlNullAs = new Label( wGPConfigTabComp, SWT.RIGHT );
+    wlNullAs.setText( BaseMessages.getString( PKG, "GPLoadDialog.NullAs.Label" ) );
+    props.setLook( wlNullAs );
+    FormData fdlNullAs = new FormData();
+    fdlNullAs.left = new FormAttachment( 0, 0 );
+    fdlNullAs.top = new FormAttachment( wDataFile, margin );
+    fdlNullAs.right = new FormAttachment( middle, -margin );
+    wlNullAs.setLayoutData( fdlNullAs );
+
+    wNullAs = new TextVar( transMeta, wGPConfigTabComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+    props.setLook( wNullAs );
+    wNullAs.addModifyListener( lsMod );
+    FormData fdNullAs = new FormData();
+    fdNullAs.left = new FormAttachment( middle, 0 );
+    fdNullAs.top = new FormAttachment( wDataFile, margin );
+    wNullAs.setLayoutData( fdNullAs );
+
     // Control encoding line
     //
     // The drop down is editable as it may happen an encoding may not be
@@ -1321,7 +1345,7 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface 
     props.setLook( wlEncoding );
     FormData fdlEncoding = new FormData();
     fdlEncoding.left = new FormAttachment( 0, 0 );
-    fdlEncoding.top = new FormAttachment( wDataFile, margin );
+    fdlEncoding.top = new FormAttachment( wNullAs, margin );
     fdlEncoding.right = new FormAttachment( middle, -margin );
     wlEncoding.setLayoutData( fdlEncoding );
 
@@ -1331,7 +1355,7 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface 
     props.setLook( wEncoding );
     FormData fdEncoding = new FormData();
     fdEncoding.left = new FormAttachment( middle, 0 );
-    fdEncoding.top = new FormAttachment( wDataFile, margin );
+    fdEncoding.top = new FormAttachment( wNullAs, margin );
     fdEncoding.right = new FormAttachment( 75, 0 );
     wEncoding.setLayoutData( fdEncoding );
     wEncoding.addModifyListener( lsMod );

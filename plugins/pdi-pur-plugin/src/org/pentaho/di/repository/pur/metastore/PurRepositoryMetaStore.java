@@ -1,20 +1,19 @@
 /*!
-* Copyright 2010 - 2015 Pentaho Corporation.  All rights reserved.
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-*/
-
+ * Copyright 2010 - 2015 Pentaho Corporation.  All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
 package org.pentaho.di.repository.pur.metastore;
 
 import org.apache.commons.lang.StringUtils;
@@ -47,7 +46,7 @@ import java.util.List;
 
 /**
  * Please note that for this class to work, the supplied PurRepository needs to be connected to the server.
- *
+ * 
  * @author matt
  */
 public class PurRepositoryMetaStore extends MemoryMetaStore implements IMetaStore {
@@ -96,7 +95,7 @@ public class PurRepositoryMetaStore extends MemoryMetaStore implements IMetaStor
   public void createNamespace( String namespace ) throws MetaStoreException {
     if ( namespaceExists( namespace ) ) {
       throw new MetaStoreNamespaceExistsException( "Namespace '" + namespace
-        + "' can not be created, it already exists" );
+          + "' can not be created, it already exists" );
     }
     RepositoryFile namespaceFolder = new RepositoryFile.Builder( namespace ).folder( true ).versioned( false ).build();
 
@@ -127,7 +126,7 @@ public class PurRepositoryMetaStore extends MemoryMetaStore implements IMetaStor
         elementTypeIds.add( child.getId().toString() );
       }
       throw new MetaStoreDependenciesExistsException( elementTypeIds, "Namespace '" + namespace
-        + " can not be deleted because it is not empty" );
+          + " can not be deleted because it is not empty" );
     }
   }
 
@@ -151,11 +150,11 @@ public class PurRepositoryMetaStore extends MemoryMetaStore implements IMetaStor
     IMetaStoreElementType existingType = getElementTypeByName( namespace, elementType.getName() );
     if ( existingType != null ) {
       throw new MetaStoreElementTypeExistsException( Collections.singletonList( existingType ),
-        "Can not create element type with id '" + elementType.getId() + "' because it already exists" );
+          "Can not create element type with id '" + elementType.getId() + "' because it already exists" );
     }
 
     RepositoryFile elementTypeFile =
-      new RepositoryFile.Builder( elementType.getName() ).folder( true ).versioned( false ).build();
+        new RepositoryFile.Builder( elementType.getName() ).folder( true ).versioned( false ).build();
 
     RepositoryFile folder = pur.createFolder( namespaceFile.getId(), elementTypeFile, null );
     elementType.setId( folder.getId().toString() );
@@ -164,8 +163,8 @@ public class PurRepositoryMetaStore extends MemoryMetaStore implements IMetaStor
     // and the other future properties of the element type
     //
     RepositoryFile detailsFile =
-      new RepositoryFile.Builder( ELEMENT_TYPE_DETAILS_FILENAME ).folder( false ).title(
-        ELEMENT_TYPE_DETAILS_FILENAME ).description( elementType.getDescription() ).hidden( true ).build();
+        new RepositoryFile.Builder( ELEMENT_TYPE_DETAILS_FILENAME ).folder( false ).title(
+            ELEMENT_TYPE_DETAILS_FILENAME ).description( elementType.getDescription() ).hidden( true ).build();
 
     DataNode dataNode = getElementTypeDataNode( elementType );
 
@@ -268,7 +267,7 @@ public class PurRepositoryMetaStore extends MemoryMetaStore implements IMetaStor
     } else {
       List<String> ids = getElementIds( namespace, elementType );
       throw new MetaStoreDependenciesExistsException( ids, "Can't delete element type with name '"
-        + elementType.getName() + "' because it is not empty" );
+          + elementType.getName() + "' because it is not empty" );
     }
   }
 
@@ -290,20 +289,20 @@ public class PurRepositoryMetaStore extends MemoryMetaStore implements IMetaStor
     RepositoryFile elementTypeFolder = validateElementTypeRepositoryFolder( namespace, elementType );
 
     RepositoryFile elementFile =
-      new RepositoryFile.Builder( checkAndSanitize( element.getName() ) ).title( element.getName() )
-        .versioned( false ).build();
+        new RepositoryFile.Builder( checkAndSanitize( element.getName() ) ).title( element.getName() )
+            .versioned( false ).build();
 
     DataNode elementDataNode = new DataNode( checkAndSanitize( element.getName() ) );
     elementToDataNode( element, elementDataNode );
 
     RepositoryFile createdFile =
-      pur.createFile( elementTypeFolder.getId(), elementFile, new NodeRepositoryFileData( elementDataNode ), null );
+        pur.createFile( elementTypeFolder.getId(), elementFile, new NodeRepositoryFileData( elementDataNode ), null );
     element.setId( createdFile.getId().toString() );
 
     // Verify existence.
     if ( pur.getFileById( createdFile.getId() ) == null ) {
       throw new RuntimeException( "Unable to verify creation of element '" + element.getName() + "' in folder: "
-        + elementTypeFolder.getPath() );
+          + elementTypeFolder.getPath() );
     }
   }
 
@@ -327,7 +326,7 @@ public class PurRepositoryMetaStore extends MemoryMetaStore implements IMetaStor
 
   @Override
   public synchronized void updateElement( String namespace, IMetaStoreElementType elementType, String elementId,
-                                          IMetaStoreElement element ) throws MetaStoreException {
+      IMetaStoreElement element ) throws MetaStoreException {
 
     // verify that the element type belongs to this meta store
     //
@@ -336,7 +335,7 @@ public class PurRepositoryMetaStore extends MemoryMetaStore implements IMetaStor
       elementType = getElementTypeByName( namespace, elementTypeName );
       if ( elementType == null ) {
         throw new MetaStoreException( "The element type '" + elementTypeName
-          + "' could not be found in the meta store in which you are updating." );
+            + "' could not be found in the meta store in which you are updating." );
       }
     }
 
@@ -492,7 +491,7 @@ public class PurRepositoryMetaStore extends MemoryMetaStore implements IMetaStor
       builder.append( namespacesFolder.getPath() ).append( Const.CR );
       String available = getMetaStoreFolders( builder, namespacesFolder, 0 );
       throw new MetaStoreException( "The element type with name '" + elementType.getName()
-        + " doesn't exist in namespace '" + namespace + "'." + Const.CR + "Available nodes:" + Const.CR + available );
+          + " doesn't exist in namespace '" + namespace + "'." + Const.CR + "Available nodes:" + Const.CR + available );
     }
     return elementTypeFolder;
   }

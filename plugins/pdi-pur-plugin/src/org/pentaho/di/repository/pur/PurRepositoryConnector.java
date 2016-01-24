@@ -1,20 +1,19 @@
 /*!
-* Copyright 2010 - 2015 Pentaho Corporation.  All rights reserved.
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-*/
-
+ * Copyright 2010 - 2015 Pentaho Corporation.  All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
 package org.pentaho.di.repository.pur;
 
 import java.util.List;
@@ -103,7 +102,7 @@ public class PurRepositoryConnector implements IRepositoryConnector {
       result.setUser( user1 );
 
       // We need to have the application context and the session available in order for us to skip authentication
-      if ( PentahoSystem.getApplicationContext() != null && PentahoSessionHolder.getSession() != null) {
+      if ( PentahoSystem.getApplicationContext() != null && PentahoSessionHolder.getSession() != null ) {
         if ( inProcess() ) {
           // connect to the IUnifiedRepository through PentahoSystem
           // this assumes we're running in a BI Platform
@@ -163,8 +162,8 @@ public class PurRepositoryConnector implements IRepositoryConnector {
           try {
             IUnifiedRepositoryJaxwsWebService repoWebService = null;
             LogChannel.GENERAL.logBasic( "Creating repository web service" ); //$NON-NLS-1$
-            repoWebService = serviceManager
-              .createService( username, decryptedPassword, IUnifiedRepositoryJaxwsWebService.class ); //$NON-NLS-1$
+            repoWebService =
+                serviceManager.createService( username, decryptedPassword, IUnifiedRepositoryJaxwsWebService.class ); //$NON-NLS-1$
             LogChannel.GENERAL.logBasic( "Repository web service created" ); //$NON-NLS-1$
             LogChannel.GENERAL.logBasic( "Creating unified repository to web service adapter" ); //$NON-NLS-1$
             result.setUnifiedRepository( new UnifiedRepositoryToWebServiceAdapter( repoWebService ) );
@@ -182,8 +181,7 @@ public class PurRepositoryConnector implements IRepositoryConnector {
           try {
             LogChannel.GENERAL.logBasic( "Creating repository sync web service" );
             IRepositorySyncWebService syncWebService =
-              serviceManager
-                .createService( username, decryptedPassword, IRepositorySyncWebService.class ); //$NON-NLS-1$
+                serviceManager.createService( username, decryptedPassword, IRepositorySyncWebService.class ); //$NON-NLS-1$
             LogChannel.GENERAL.logBasic( "Synchronizing repository web service" ); //$NON-NLS-1$
             syncWebService.sync( repositoryMeta.getName(), repositoryMeta.getRepositoryLocation().getUrl() );
           } catch ( RepositorySyncException e ) {

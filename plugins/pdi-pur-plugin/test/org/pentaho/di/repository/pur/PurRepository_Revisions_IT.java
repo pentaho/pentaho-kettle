@@ -1,20 +1,19 @@
 /*!
-* Copyright 2010 - 2015 Pentaho Corporation.  All rights reserved.
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-*/
-
+ * Copyright 2010 - 2015 Pentaho Corporation.  All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
 package org.pentaho.di.repository.pur;
 
 import org.junit.Test;
@@ -63,7 +62,6 @@ public class PurRepository_Revisions_IT extends PurRepositoryTestBase {
     assertCommentAndDate( versions.get( 0 ), date, comment );
   }
 
-
   @Test
   public void onlyRevision_DataAndCommentAreNull_Trans() throws Exception {
     testOnlyRevision_DateAndCommentAreNull( new TransMeta() );
@@ -87,18 +85,17 @@ public class PurRepository_Revisions_IT extends PurRepositoryTestBase {
     assertNull( transOrJob.getObjectRevision().getComment() );
 
     final long revisionDate = transOrJob.getObjectRevision().getCreationDate().getTime();
-    assertTrue( "Revision date should be inside 'before' and 'after' measurements",
-      before <= revisionDate && revisionDate <= after );
+    assertTrue( "Revision date should be inside 'before' and 'after' measurements", before <= revisionDate
+        && revisionDate <= after );
 
     List<VersionSummary> versions = assertExistsAndGetRevisions( transOrJob );
     assertEquals( 1, versions.size() );
     assertNull( versions.get( 0 ).getMessage() );
 
     final long versionSummaryDate = versions.get( 0 ).getDate().getTime();
-    assertTrue( "Revision date should be inside 'before' and 'after' measurements",
-      before <= versionSummaryDate && versionSummaryDate <= after );
+    assertTrue( "Revision date should be inside 'before' and 'after' measurements", before <= versionSummaryDate
+        && versionSummaryDate <= after );
   }
-
 
   @Test
   public void twoRevisions_DataAndCommentAreSaved_Trans() throws Exception {
@@ -135,7 +132,6 @@ public class PurRepository_Revisions_IT extends PurRepositoryTestBase {
     assertCommentAndDate( versions.get( 0 ), date1, comment1 );
     assertCommentAndDate( versions.get( 1 ), date2, comment2 );
   }
-
 
   private List<VersionSummary> assertExistsAndGetRevisions( RepositoryElementInterface transOrJob ) {
     ObjectId id = transOrJob.getObjectId();

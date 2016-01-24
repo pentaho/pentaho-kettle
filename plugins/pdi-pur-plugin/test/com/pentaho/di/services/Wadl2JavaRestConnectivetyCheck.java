@@ -1,20 +1,19 @@
 /*!
-* Copyright 2010 - 2015 Pentaho Corporation.  All rights reserved.
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-*/
-
+ * Copyright 2010 - 2015 Pentaho Corporation.  All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
 package com.pentaho.di.services;
 
 import java.net.MalformedURLException;
@@ -30,14 +29,14 @@ import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.config.ClientConfig;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
 import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
+
 /**
- * This class is an integrated test, not a unit test.  Assuming there is a running pdi/merges
- * server on localhost, this
- * class will test rest service connectivity.   The first test will see if the generated code from Wadl2java can
- * run a web service.  The second test will test if our WebServiceManager can do the same. 
+ * This class is an integrated test, not a unit test. Assuming there is a running pdi/merges server on localhost, this
+ * class will test rest service connectivity. The first test will see if the generated code from Wadl2java can run a web
+ * service. The second test will test if our WebServiceManager can do the same.
  * 
  * @author tkafalas
- *
+ * 
  */
 @Ignore
 public class Wadl2JavaRestConnectivetyCheck {
@@ -80,7 +79,8 @@ public class Wadl2JavaRestConnectivetyCheck {
 
     PentahoDiPlugin.PurRepositoryPluginApiRevision.PathIdVersioningConfiguration versioningConfigurationMethod =
         revisionService.pathIdVersioningConfiguration( "foo.ktr" );
-    FileVersioningConfiguration fileVersioningConfiguration = versioningConfigurationMethod.getAsXml( FileVersioningConfiguration.class );
+    FileVersioningConfiguration fileVersioningConfiguration =
+        versioningConfigurationMethod.getAsXml( FileVersioningConfiguration.class );
     System.out.println( "Test1: " + fileVersioningConfiguration.isVersioningEnabled() );
   }
 
@@ -94,22 +94,24 @@ public class Wadl2JavaRestConnectivetyCheck {
     String username = "admin";
     String password = "password";
     WebServiceManager webServiceManager = new WebServiceManager( uri, username );
-    
+
     // Now get a class representing the services in the class
-    //PentahoDiPlugin
+    // PentahoDiPlugin
     PurRepositoryRestService.PurRepositoryPluginApiRevision servicePort = null;
     try {
-      servicePort = webServiceManager.createService( username, password, PurRepositoryRestService.PurRepositoryPluginApiRevision.class );
+      servicePort =
+          webServiceManager.createService( username, password,
+              PurRepositoryRestService.PurRepositoryPluginApiRevision.class );
     } catch ( MalformedURLException e ) {
       // Should never happen
       e.printStackTrace();
     }
-    
-    //Call any of the web services here
+
+    // Call any of the web services here
     FileVersioningConfiguration fileVersioningConfiguration =
         servicePort.pathIdVersioningConfiguration( "foo.ktr" ).getAsFileVersioningConfigurationXml();
     System.out.println( "Test2: " + fileVersioningConfiguration.isVersioningEnabled() );
-    
+
     webServiceManager.close();
   }
 }

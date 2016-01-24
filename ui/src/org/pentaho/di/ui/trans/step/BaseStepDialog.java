@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,6 +25,7 @@ package org.pentaho.di.ui.trans.step;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
@@ -762,7 +763,7 @@ public class BaseStepDialog extends Dialog {
     return wConnection;
   }
 
-  // package-local visibility to testing purposes
+  @VisibleForTesting
   String showDbDialogUnlessCancelledOrValid( DatabaseMeta changing, DatabaseMeta origin ) {
     changing.shareVariablesWith( transMeta );
     DatabaseDialog cid = getDatabaseDialog( shell );
@@ -777,16 +778,22 @@ public class BaseStepDialog extends Dialog {
         // Cancel was pressed
         repeat = false;
       } else {
+        name = name.trim();
         DatabaseMeta same = transMeta.findDatabase( name );
         if ( same == null || same == origin ) {
           // OK was pressed and input is valid
           repeat = false;
         } else {
-          DatabaseDialog.showDatabaseExistsDialog( shell, changing );
+          showDbExistsDialog( changing );
         }
       }
     }
     return name;
+  }
+
+  @VisibleForTesting
+  void showDbExistsDialog( DatabaseMeta changing ) {
+    DatabaseDialog.showDatabaseExistsDialog( shell, changing );
   }
 
   private void reinitConnectionDropDown( CCombo dropDown, String selected ) {
@@ -1349,7 +1356,7 @@ public class BaseStepDialog extends Dialog {
   }
 
 
-  // package local visibility for testing purposes
+  @VisibleForTesting
   class AddConnectionListener extends SelectionAdapter {
 
     private final CCombo wConnection;
@@ -1369,7 +1376,7 @@ public class BaseStepDialog extends Dialog {
     }
   }
 
-  // package local visibility for testing purposes
+  @VisibleForTesting
   class EditConnectionListener extends SelectionAdapter {
 
     private final CCombo wConnection;

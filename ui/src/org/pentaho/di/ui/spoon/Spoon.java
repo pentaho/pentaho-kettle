@@ -6847,6 +6847,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
         // Transformations
         disableMenuItem( doc, "process-run", disableTransMenu && disablePreviewButton && disableJobMenu );
+        disableMenuItem( doc, "process-run-options", disableTransMenu && disablePreviewButton && disableJobMenu );
         disableMenuItem( doc, "trans-replay", disableTransMenu && disablePreviewButton );
         disableMenuItem( doc, "trans-preview", disableTransMenu && disablePreviewButton );
         disableMenuItem( doc, "trans-debug", disableTransMenu && disablePreviewButton );

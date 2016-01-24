@@ -22,17 +22,11 @@
 
 package org.pentaho.di.trans.steps.databaselookup;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.LinkedHashMap;
 import java.util.List;
 
 import com.google.common.annotations.VisibleForTesting;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.RowMetaAndData;
-import org.pentaho.di.core.TimedRow;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
@@ -52,6 +46,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.steps.databaselookup.readallcache.ReadAllCache;
 
 /**
  * Looks up values in a database using keys from input streams.
@@ -77,7 +72,8 @@ public class DatabaseLookup extends BaseStep implements StepInterface {
    * @return the resulting row after the lookup values where added
    * @throws KettleException In case something goes wrong.
    */
-  private synchronized Object[] lookupValues( RowMetaInterface inputRowMeta, Object[] row ) throws KettleException {
+  @VisibleForTesting
+  synchronized Object[] lookupValues( RowMetaInterface inputRowMeta, Object[] row ) throws KettleException {
     Object[] outputRow = RowDataUtil.resizeArray( row, data.outputRowMeta.size() );
 
     Object[] lookupRow = new Object[ data.lookupMeta.size() ];
@@ -118,7 +114,7 @@ public class DatabaseLookup extends BaseStep implements StepInterface {
 
     // First, check if we looked up before
     if ( meta.isCached() ) {
-      add = getRowFromCache( data.lookupMeta, lookupRow );
+      add = data.cache.getRowFromCache( data.lookupMeta, lookupRow );
       if ( add != null ) {
         cacheHit = true;
       }
@@ -205,7 +201,7 @@ public class DatabaseLookup extends BaseStep implements StepInterface {
     // If we already loaded all data into the cache, storing more makes no sense.
     //
     if ( meta.isCached() && cache_now && !meta.isLoadingAllDataInCache() && data.allEquals ) {
-      storeRowInCache( data.lookupMeta, lookupRow, add );
+      data.cache.storeRowInCache( meta, data.lookupMeta, lookupRow, add );
     }
 
     for ( int i = 0; i < data.returnMeta.size(); i++ ) {
@@ -215,143 +211,8 @@ public class DatabaseLookup extends BaseStep implements StepInterface {
     return outputRow;
   }
 
-  @VisibleForTesting
-  void storeRowInCache( RowMetaInterface lookupMeta, Object[] lookupRow, Object[] add ) {
-
-    RowMetaAndData rowMetaAndData = new RowMetaAndData( lookupMeta, lookupRow );
-    // DEinspanjer 2009-02-01 XXX: I want to write a test case to prove this point before checking in.
-    // /* Don't insert a row with a duplicate key into the cache. It doesn't seem
-    // * to serve a useful purpose and can potentially cause the step to return
-    // * different values over the life of the transformation (if the source DB rows change)
-    // * Additionally, if using the load all data feature, re-inserting would reverse the order
-    // * specified in the step.
-    // */
-    // if (!data.look.containsKey(rowMetaAndData)) {
-    // data.look.put(rowMetaAndData, new TimedRow(add));
-    // }
-    data.look.put( rowMetaAndData, new TimedRow( add ) );
-
-    // See if we have to limit the cache_size.
-    // Sample 10% of the rows in the cache.
-    // Remove everything below the second lowest date.
-    // That should on average remove more than 10% of the entries
-    // It's not exact science, but it will be faster than the old algorithm
-
-    // DEinspanjer 2009-02-01: If you had previously set a cache size and then turned on load all, this
-    // method would throw out entries if the previous cache size wasn't big enough.
-    if ( !meta.isLoadingAllDataInCache() && meta.getCacheSize() > 0 && data.look.size() > meta.getCacheSize() ) {
-      List<RowMetaAndData> keys = new ArrayList<RowMetaAndData>( data.look.keySet() );
-      List<Date> samples = new ArrayList<Date>();
-      int incr = keys.size() / 10;
-      if ( incr == 0 ) {
-        incr = 1;
-      }
-      for ( int k = 0; k < keys.size(); k += incr ) {
-        RowMetaAndData key = keys.get( k );
-        TimedRow timedRow = data.look.get( key );
-        samples.add( timedRow.getLogDate() );
-      }
-
-      Collections.sort( samples );
-
-      if ( samples.size() > 1 ) {
-        Date smallest = samples.get( 1 );
-
-        // Everything below the smallest date goes away...
-        for ( RowMetaAndData key : keys ) {
-          TimedRow timedRow = data.look.get( key );
-
-          if ( timedRow.getLogDate().compareTo( smallest ) < 0 ) {
-            data.look.remove( key );
-          }
-        }
-      }
-    }
-  }
-
-  @VisibleForTesting
-  Object[] getRowFromCache( RowMetaInterface lookupMeta, Object[] lookupRow ) throws KettleException {
-    if ( data.allEquals ) {
-      // only do the hashtable lookup when all equals otherwise conditions >, <, <> will give wrong results
-      TimedRow timedRow = data.look.get( new RowMetaAndData( data.lookupMeta, lookupRow ) );
-      if ( timedRow != null ) {
-        return timedRow.getRow();
-      }
-    } else { // special handling of conditions <,>, <> etc.
-      if ( !data.hasDBCondition ) { // e.g. LIKE not handled by this routine, yet
-        // TODO: find an alternative way to look up the data based on the condition.
-        // Not all conditions are "=" so we are going to have to evaluate row by row
-        // A sorted list or index might be a good solution here...
-        //
-        for ( RowMetaAndData key : data.look.keySet() ) {
-          // Now verify that the key is matching our conditions...
-          //
-          boolean match = true;
-          int lookupIndex = 0;
-          for ( int i = 0; i < data.conditions.length && match; i++ ) {
-            ValueMetaInterface cmpMeta = lookupMeta.getValueMeta( lookupIndex );
-            Object cmpData = lookupRow[ lookupIndex ];
-            ValueMetaInterface keyMeta = key.getValueMeta( i );
-            Object keyData = key.getData()[ i ];
-
-            switch( data.conditions[ i ] ) {
-              case DatabaseLookupMeta.CONDITION_EQ:
-                match = ( cmpMeta.compare( cmpData, keyMeta, keyData ) == 0 );
-                break;
-              case DatabaseLookupMeta.CONDITION_NE:
-                match = ( cmpMeta.compare( cmpData, keyMeta, keyData ) != 0 );
-                break;
-              case DatabaseLookupMeta.CONDITION_LT:
-                match = ( cmpMeta.compare( cmpData, keyMeta, keyData ) > 0 );
-                break;
-              case DatabaseLookupMeta.CONDITION_LE:
-                match = ( cmpMeta.compare( cmpData, keyMeta, keyData ) >= 0 );
-                break;
-              case DatabaseLookupMeta.CONDITION_GT:
-                match = ( cmpMeta.compare( cmpData, keyMeta, keyData ) < 0 );
-                break;
-              case DatabaseLookupMeta.CONDITION_GE:
-                match = ( cmpMeta.compare( cmpData, keyMeta, keyData ) <= 0 );
-                break;
-              case DatabaseLookupMeta.CONDITION_IS_NULL:
-                match = keyMeta.isNull( keyData );
-                break;
-              case DatabaseLookupMeta.CONDITION_IS_NOT_NULL:
-                match = !keyMeta.isNull( keyData );
-                break;
-              case DatabaseLookupMeta.CONDITION_BETWEEN:
-                // Between key >= cmp && key <= cmp2
-                ValueMetaInterface cmpMeta2 = lookupMeta.getValueMeta( lookupIndex + 1 );
-                Object cmpData2 = lookupRow[ lookupIndex + 1 ];
-                match = ( keyMeta.compare( keyData, cmpMeta, cmpData ) >= 0 );
-                if ( match ) {
-                  match = ( keyMeta.compare( keyData, cmpMeta2, cmpData2 ) <= 0 );
-                }
-                lookupIndex++;
-                break;
-              // TODO: add LIKE operator (think of changing the hasDBCondition logic then)
-              default:
-                match = false;
-                data.hasDBCondition = true; // avoid looping in here the next time, also safety when a new condition
-                // will be introduced
-                break;
-
-            }
-            lookupIndex++;
-          }
-          if ( match ) {
-            TimedRow timedRow = data.look.get( key );
-            if ( timedRow != null ) {
-              return timedRow.getRow();
-            }
-          }
-        }
-      }
-    }
-    return null;
-  }
-
-  private void determineFieldsTypesQueryingDb() throws KettleException {
+  // visible for testing purposes
+  void determineFieldsTypesQueryingDb() throws KettleException {
     final String[] keyFields = meta.getTableKeyField();
     data.keytypes = new int[ keyFields.length ];
 
@@ -466,14 +327,6 @@ public class DatabaseLookup extends BaseStep implements StepInterface {
       data.outputRowMeta = getInputRowMeta().clone();
       meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
 
-      if ( meta.isCached() ) {
-        if ( meta.getCacheSize() > 0 ) {
-          data.look = new LinkedHashMap<RowMetaAndData, TimedRow>( (int) ( meta.getCacheSize() * 1.5 ) );
-        } else {
-          data.look = new LinkedHashMap<RowMetaAndData, TimedRow>();
-        }
-      }
-
       data.db.setLookup(
         environmentSubstitute( meta.getSchemaName() ), environmentSubstitute( meta.getTablename() ),
         meta.getTableKeyField(), meta.getKeyCondition(), meta.getReturnValueField(),
@@ -514,6 +367,10 @@ public class DatabaseLookup extends BaseStep implements StepInterface {
             + meta.getStreamKeyField1()[ i ] + BaseMessages.getString( PKG, "DatabaseLookup.Log.FieldHasIndex2" )
             + data.keynrs[ i ] );
         }
+      }
+
+      if ( meta.isCached() ) {
+        data.cache = DefaultCache.newCache( data, meta.getCacheSize() );
       }
 
       determineFieldsTypesQueryingDb();
@@ -608,27 +465,10 @@ public class DatabaseLookup extends BaseStep implements StepInterface {
       //
       List<Object[]> rows = db.getRows( sql, 0 );
       if ( rows != null && rows.size() > 0 ) {
-        RowMetaInterface returnRowMeta = db.getReturnRowMeta();
-        // Copy the data into 2 parts: key and value...
-        //
-        for ( Object[] row : rows ) {
-          int index = 0;
-          RowMeta keyMeta = new RowMeta();
-          Object[] keyData = new Object[ meta.getStreamKeyField1().length ];
-          for ( int i = 0; i < meta.getStreamKeyField1().length; i++ ) {
-            keyData[ i ] = row[ index ];
-            keyMeta.addValueMeta( returnRowMeta.getValueMeta( index++ ) );
-          }
-          // RowMeta valueMeta = new RowMeta();
-          Object[] valueData = new Object[ data.returnMeta.size() ];
-          for ( int i = 0; i < data.returnMeta.size(); i++ ) {
-            valueData[ i ] = row[ index++ ];
-            // valueMeta.addValueMeta(returnRowMeta.getValueMeta(index++));
-          }
-          // Store the data...
-          //
-          storeRowInCache( keyMeta, keyData, valueData );
-          incrementLinesInput();
+        if ( data.allEquals ) {
+          putToDefaultCache( db, rows );
+        } else {
+          putToReadOnlyCache( db, rows );
         }
       }
     } catch ( Exception e ) {
@@ -638,6 +478,57 @@ public class DatabaseLookup extends BaseStep implements StepInterface {
         db.disconnect();
       }
     }
+  }
+
+  private void putToDefaultCache( Database db, List<Object[]> rows ) {
+    RowMetaInterface returnRowMeta = db.getReturnRowMeta();
+    // Copy the data into 2 parts: key and value...
+    //
+    for ( Object[] row : rows ) {
+      int index = 0;
+      // not sure it is efficient to re-create the same on every row,
+      // but this was done earlier, so I'm keeping this behaviour
+      RowMetaInterface keyMeta = returnRowMeta.clone();
+      Object[] keyData = new Object[ meta.getStreamKeyField1().length ];
+      for ( int i = 0; i < meta.getStreamKeyField1().length; i++ ) {
+        keyData[ i ] = row[ index++ ];
+      }
+      // RowMeta valueMeta = new RowMeta();
+      Object[] valueData = new Object[ data.returnMeta.size() ];
+      for ( int i = 0; i < data.returnMeta.size(); i++ ) {
+        valueData[ i ] = row[ index++ ];
+        // valueMeta.addValueMeta(returnRowMeta.getValueMeta(index++));
+      }
+      // Store the data...
+      //
+      data.cache.storeRowInCache( meta, keyMeta, keyData, valueData );
+      incrementLinesInput();
+    }
+  }
+
+  private void putToReadOnlyCache( Database db, List<Object[]> rows ) {
+    ReadAllCache.Builder cacheBuilder = new ReadAllCache.Builder( data, rows.size() );
+
+    // all keys have the same row meta,
+    // it is useless to re-create it each time
+    RowMetaInterface returnRowMeta = db.getReturnRowMeta();
+    cacheBuilder.setKeysMeta( returnRowMeta.clone() );
+
+    final int keysAmount = meta.getStreamKeyField1().length;
+    // Copy the data into 2 parts: key and value...
+    //
+    final int valuesAmount = data.returnMeta.size();
+    for ( Object[] row : rows ) {
+      Object[] keyData = new Object[ keysAmount ];
+      System.arraycopy( row, 0, keyData, 0, keysAmount );
+
+      Object[] valueData = new Object[ valuesAmount ];
+      System.arraycopy( row, keysAmount, valueData, 0, valuesAmount );
+
+      cacheBuilder.add( keyData, valueData );
+      incrementLinesInput();
+    }
+    data.cache = cacheBuilder.build();
   }
 
   /**
@@ -707,7 +598,7 @@ public class DatabaseLookup extends BaseStep implements StepInterface {
 
     // Recover memory immediately, allow in-memory data to be garbage collected
     //
-    data.look = null;
+    data.cache = null;
 
     super.dispose( smi, sdi );
   }

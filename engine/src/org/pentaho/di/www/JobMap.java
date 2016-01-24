@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,7 +23,7 @@
 package org.pentaho.di.www;
 
 import java.util.ArrayList;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -40,14 +40,14 @@ import org.pentaho.di.job.JobConfiguration;
  *
  */
 public class JobMap {
-  private Map<CarteObjectEntry, Job> jobMap;
-  private Map<CarteObjectEntry, JobConfiguration> configurationMap;
+  private final Map<CarteObjectEntry, Job> jobMap;
+  private final Map<CarteObjectEntry, JobConfiguration> configurationMap;
 
   private SlaveServerConfig slaveServerConfig;
 
   public JobMap() {
-    jobMap = new Hashtable<CarteObjectEntry, Job>();
-    configurationMap = new Hashtable<CarteObjectEntry, JobConfiguration>();
+    jobMap = new HashMap<>();
+    configurationMap = new HashMap<>();
   }
 
   public synchronized void addJob( String jobName, String carteObjectId, Job job, JobConfiguration jobConfiguration ) {
@@ -63,7 +63,7 @@ public class JobMap {
     configurationMap.put( entry, jobConfiguration );
   }
 
-  public void replaceJob( CarteObjectEntry entry, Job job, JobConfiguration jobConfiguration ) {
+  public synchronized void replaceJob( CarteObjectEntry entry, Job job, JobConfiguration jobConfiguration ) {
     jobMap.put( entry, job );
     configurationMap.put( entry, jobConfiguration );
   }
@@ -77,7 +77,7 @@ public class JobMap {
   public synchronized Job getJob( String jobName ) {
     for ( CarteObjectEntry entry : jobMap.keySet() ) {
       if ( entry.getName().equals( jobName ) ) {
-        return jobMap.get( entry );
+        return getJob( entry );
       }
     }
     return null;
@@ -95,7 +95,7 @@ public class JobMap {
   public synchronized JobConfiguration getConfiguration( String jobName ) {
     for ( CarteObjectEntry entry : configurationMap.keySet() ) {
       if ( entry.getName().equals( jobName ) ) {
-        return configurationMap.get( entry );
+        return getConfiguration( entry );
       }
     }
     return null;
@@ -115,26 +115,11 @@ public class JobMap {
     configurationMap.remove( entry );
   }
 
-  public List<CarteObjectEntry> getJobObjects() {
-    return new ArrayList<CarteObjectEntry>( jobMap.keySet() );
+  public synchronized List<CarteObjectEntry> getJobObjects() {
+    return new ArrayList<>( jobMap.keySet() );
   }
 
-  /**
-   * @return the configurationMap
-   */
-  public Map<CarteObjectEntry, JobConfiguration> getConfigurationMap() {
-    return configurationMap;
-  }
-
-  /**
-   * @param configurationMap
-   *          the configurationMap to set
-   */
-  public void setConfigurationMap( Map<CarteObjectEntry, JobConfiguration> configurationMap ) {
-    this.configurationMap = configurationMap;
-  }
-
-  public CarteObjectEntry getFirstCarteObjectEntry( String jobName ) {
+  public synchronized CarteObjectEntry getFirstCarteObjectEntry( String jobName ) {
     for ( CarteObjectEntry key : jobMap.keySet() ) {
       if ( key.getName().equals( jobName ) ) {
         return key;
@@ -165,7 +150,7 @@ public class JobMap {
    *          the container/carte object ID
    * @return The job if it's found, null if the ID couldn't be found in the job map.
    */
-  public Job findJob( String id ) {
+  public synchronized Job findJob( String id ) {
     for ( Job job : jobMap.values() ) {
       if ( job.getContainerObjectId().equals( id ) ) {
         return job;
