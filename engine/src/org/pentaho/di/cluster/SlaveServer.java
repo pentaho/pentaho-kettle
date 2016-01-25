@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -57,7 +57,7 @@ import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.vfs.KettleVFS;
@@ -985,7 +985,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
     if ( !Const.isEmpty( variableName ) ) {
       String value = environmentSubstitute( variableName );
       if ( !Const.isEmpty( value ) ) {
-        return ValueMeta.convertStringToBoolean( value );
+        return ValueMetaString.convertStringToBoolean( value );
       }
     }
     return defaultValue;

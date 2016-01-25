@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -40,6 +40,11 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaBoolean;
+import org.pentaho.di.core.row.value.ValueMetaDate;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
+import org.pentaho.di.core.row.value.ValueMetaNumber;
+import org.pentaho.di.core.row.value.ValueMetaString;
 
 /**
  * This class evaluates strings and extracts a data type. It allows you to criteria after which the analysis should be
@@ -97,7 +102,7 @@ public class StringEvaluator {
     evaluationResults = new ArrayList<StringEvaluationResult>();
     count = 0;
 
-    stringMeta = new ValueMeta( "string", ValueMetaInterface.TYPE_STRING );
+    stringMeta = new ValueMetaString( "string" );
     this.numberFormats = numberFormats;
     this.dateFormats = dateFormats;
 
@@ -286,7 +291,7 @@ public class StringEvaluator {
 
   public StringEvaluationResult getAdvicedResult() {
     if ( evaluationResults.isEmpty() ) {
-      ValueMetaInterface adviced = new ValueMeta( "adviced", ValueMetaInterface.TYPE_STRING );
+      ValueMetaInterface adviced = new ValueMetaString( "adviced" );
       adviced.setLength( maxLength );
       int nrNulls = 0;
       String min = null;
@@ -402,7 +407,7 @@ public class StringEvaluator {
 
     for ( int trimType : trimTypes ) {
       for ( String format : getDateFormats() ) {
-        ValueMetaInterface conversionMeta = new ValueMeta( "date", ValueMetaInterface.TYPE_DATE );
+        ValueMetaInterface conversionMeta = new ValueMetaDate( "date" );
         conversionMeta.setConversionMask( format );
         conversionMeta.setTrimType( trimType );
         conversionMeta.setDateFormatLenient( false );
@@ -427,7 +432,7 @@ public class StringEvaluator {
       // Try the locale's Currency
       DecimalFormat currencyFormat = ( (DecimalFormat) NumberFormat.getCurrencyInstance() );
 
-      ValueMetaInterface conversionMeta = new ValueMeta( "number-currency", ValueMetaInterface.TYPE_NUMBER );
+      ValueMetaInterface conversionMeta = new ValueMetaNumber( "number-currency" );
       // replace the universal currency symbol with the locale's currency symbol for user recognition
       String currencyMask = currencyFormat.toLocalizedPattern().replace( "\u00A4", currencyFormat.getCurrency().getSymbol() );
       conversionMeta.setConversionMask( currencyMask );
@@ -448,12 +453,12 @@ public class StringEvaluator {
 
       // Integer
       //
-      conversionMeta = new ValueMeta( "integer", ValueMetaInterface.TYPE_INTEGER );
+      conversionMeta = new ValueMetaInteger( "integer" );
       conversionMeta.setConversionMask( "#" );
       conversionMeta.setLength( 15 );
       evaluationResults.add( new StringEvaluationResult( conversionMeta ) );
 
-      conversionMeta = new ValueMeta( "integer", ValueMetaInterface.TYPE_INTEGER );
+      conversionMeta = new ValueMetaInteger( "integer" );
       conversionMeta.setConversionMask( " #" );
       conversionMeta.setLength( 15 );
       evaluationResults.add( new StringEvaluationResult( conversionMeta ) );
@@ -471,7 +476,7 @@ public class StringEvaluator {
           mask += "0";
         }
 
-        conversionMeta = new ValueMeta( "integer-zero-padded-" + i, ValueMetaInterface.TYPE_INTEGER );
+        conversionMeta = new ValueMetaInteger( "integer-zero-padded-" + i );
         conversionMeta.setConversionMask( mask );
         conversionMeta.setLength( i );
         evaluationResults.add( new StringEvaluationResult( conversionMeta ) );
@@ -479,7 +484,7 @@ public class StringEvaluator {
 
       // Boolean
       //
-      conversionMeta = new ValueMeta( "boolean", ValueMetaInterface.TYPE_BOOLEAN );
+      conversionMeta = new ValueMetaBoolean( "boolean" );
       evaluationResults.add( new StringEvaluationResult( conversionMeta ) );
     }
   }

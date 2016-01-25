@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -36,9 +36,9 @@ import org.pentaho.di.core.plugins.DatabasePluginType;
 import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaBase;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.util.ExecutorUtil;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
@@ -1964,7 +1964,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
     final String par = "Parameter";
     final String val = "Value";
 
-    ValueMetaInterface testValue = new ValueMeta( "FIELD", ValueMetaInterface.TYPE_STRING );
+    ValueMetaInterface testValue = new ValueMetaString( "FIELD" );
     testValue.setLength( 30 );
 
     if ( databaseInterface != null ) {

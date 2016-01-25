@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,6 +23,7 @@
 package org.pentaho.di.base;
 
 import com.google.common.collect.ImmutableList;
+
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.AttributesInterface;
 import org.pentaho.di.core.Const;
@@ -53,7 +54,7 @@ import org.pentaho.di.core.parameters.NamedParams;
 import org.pentaho.di.core.parameters.NamedParamsDefault;
 import org.pentaho.di.core.parameters.UnknownParamException;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.undo.TransAction;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
@@ -1292,7 +1293,7 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
     if ( !Const.isEmpty( variableName ) ) {
       String value = environmentSubstitute( variableName );
       if ( !Const.isEmpty( value ) ) {
-        return ValueMeta.convertStringToBoolean( value );
+        return ValueMetaString.convertStringToBoolean( value );
       }
     }
     return defaultValue;
