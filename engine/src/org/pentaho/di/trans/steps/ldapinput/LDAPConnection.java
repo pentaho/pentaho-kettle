@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -48,7 +48,6 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.row.RowMeta;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.variables.VariableSpace;
@@ -717,13 +716,13 @@ public class LDAPConnection {
             // Try to determine the data type
             //
             if ( IsDate( attributeValue ) ) {
-              valueType = ValueMeta.TYPE_DATE;
+              valueType = ValueMetaInterface.TYPE_DATE;
             } else if ( IsInteger( attributeValue ) ) {
-              valueType = ValueMeta.TYPE_INTEGER;
+              valueType = ValueMetaInterface.TYPE_INTEGER;
             } else if ( IsNumber( attributeValue ) ) {
-              valueType = ValueMeta.TYPE_NUMBER;
+              valueType = ValueMetaInterface.TYPE_NUMBER;
             } else {
-              valueType = ValueMeta.TYPE_STRING;
+              valueType = ValueMetaInterface.TYPE_STRING;
             }
 
             ValueMetaInterface value = ValueMetaFactory.createValueMeta( fieldName, valueType );

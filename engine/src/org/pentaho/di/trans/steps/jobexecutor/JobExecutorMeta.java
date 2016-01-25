@@ -38,6 +38,9 @@ import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaBoolean;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.util.CurrentDirectoryResolver;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -256,7 +259,7 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
       retval.append( "    " ).append( XMLHandler.openTag( "result_rows_field" ) ).append( Const.CR );
       retval.append( "      " ).append( XMLHandler.addTagValue( "name", resultRowsField[i] ) );
       retval.append( "      " ).append( XMLHandler.addTagValue( "type",
-              ValueMeta.getTypeDesc( resultRowsType[i] ) ) );
+        ValueMetaFactory.getValueMetaName( resultRowsType[i] ) ) );
       retval.append( "      " ).append( XMLHandler.addTagValue( "length", resultRowsLength[i] ) );
       retval.append( "      " ).append( XMLHandler.addTagValue( "precision", resultRowsPrecision[i] ) );
       retval.append( "    " ).append( XMLHandler.closeTag( "result_rows_field" ) ).append( Const.CR );
@@ -322,7 +325,7 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
         Node fieldNode = XMLHandler.getSubNodeByNr( stepnode, "result_rows_field", i );
 
         resultRowsField[i] = XMLHandler.getTagValue( fieldNode, "name" );
-        resultRowsType[i] = ValueMeta.getType( XMLHandler.getTagValue( fieldNode, "type" ) );
+        resultRowsType[i] = ValueMetaFactory.getIdForValueMeta( XMLHandler.getTagValue( fieldNode, "type" ) );
         resultRowsLength[i] = Const.toInt( XMLHandler.getTagValue( fieldNode, "length" ), -1 );
         resultRowsPrecision[i] = Const.toInt( XMLHandler.getTagValue( fieldNode, "precision" ), -1 );
       }
@@ -375,7 +378,8 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
 
     for ( int i = 0; i < nrFields; i++ ) {
       resultRowsField[i] = rep.getStepAttributeString( id_step, i, "result_rows_field_name" );
-      resultRowsType[i] = ValueMeta.getType( rep.getStepAttributeString( id_step, i, "result_rows_field_type" ) );
+      resultRowsType[i] = ValueMetaFactory.getIdForValueMeta(
+        rep.getStepAttributeString( id_step, i, "result_rows_field_type" ) );
       resultRowsLength[i] = (int) rep.getStepAttributeInteger( id_step, i, "result_rows_field_length" );
       resultRowsPrecision[i] = (int) rep.getStepAttributeInteger( id_step, i, "result_rows_field_precision" );
     }
@@ -436,8 +440,8 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
 
     for ( int i = 0; i < resultRowsField.length; i++ ) {
       rep.saveStepAttribute( id_transformation, id_step, i, "result_rows_field_name", resultRowsField[i] );
-      rep.saveStepAttribute( id_transformation, id_step, i, "result_rows_field_type", ValueMeta
-        .getTypeDesc( resultRowsType[i] ) );
+      rep.saveStepAttribute( id_transformation, id_step, i, "result_rows_field_type",
+        ValueMetaFactory.getValueMetaName( resultRowsType[i] ) );
       rep.saveStepAttribute( id_transformation, id_step, i, "result_rows_field_length", resultRowsLength[i] );
       rep.saveStepAttribute( id_transformation, id_step, i, "result_rows_field_precision", resultRowsPrecision[i] );
     }
@@ -499,7 +503,7 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
         row.addValueMeta( value );
       }
       if ( !Const.isEmpty( executionResultField ) ) {
-        ValueMetaInterface value = new ValueMeta( executionResultField, ValueMeta.TYPE_BOOLEAN );
+        ValueMetaInterface value = new ValueMetaBoolean( executionResultField );
         row.addValueMeta( value );
       }
       if ( !Const.isEmpty( executionNrErrorsField ) ) {
@@ -543,7 +547,7 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
         row.addValueMeta( value );
       }
       if ( !Const.isEmpty( executionLogTextField ) ) {
-        ValueMetaInterface value = new ValueMeta( executionLogTextField, ValueMeta.TYPE_STRING );
+        ValueMetaInterface value = new ValueMetaString( executionLogTextField );
         value.setLargeTextField( true );
         row.addValueMeta( value );
       }

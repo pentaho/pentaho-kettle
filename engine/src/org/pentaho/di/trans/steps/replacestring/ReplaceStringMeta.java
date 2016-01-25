@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -32,8 +32,8 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -357,7 +357,7 @@ public class ReplaceStringMeta extends BaseStepMeta implements StepMetaInterface
       ValueMetaInterface valueMeta;
       if ( !Const.isEmpty( fieldOutStream[i] ) ) {
         // We have a new field
-        valueMeta = new ValueMeta( fieldName, ValueMeta.TYPE_STRING );
+        valueMeta = new ValueMetaString( fieldName );
         valueMeta.setOrigin( name );
         //set encoding to new field from source field http://jira.pentaho.com/browse/PDI-11839
         ValueMetaInterface sourceField = inputRowMeta.searchValueMeta( fieldInStream[i] );
@@ -421,7 +421,7 @@ public class ReplaceStringMeta extends BaseStepMeta implements StepMetaInterface
 
         ValueMetaInterface v = prev.searchValueMeta( field );
         if ( v != null ) {
-          if ( v.getType() != ValueMeta.TYPE_STRING ) {
+          if ( v.getType() != ValueMetaInterface.TYPE_STRING ) {
             if ( first ) {
               first = false;
               error_message +=

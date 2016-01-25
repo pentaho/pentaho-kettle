@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -32,8 +32,10 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaBinary;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -264,22 +266,22 @@ public class SecretKeyGeneratorMeta extends BaseStepMeta implements StepMetaInte
 
     ValueMetaInterface v;
     if ( isOutputKeyInBinary() ) {
-      v = new ValueMeta( secretKeyFieldName, ValueMeta.TYPE_BINARY );
+      v = new ValueMetaBinary( secretKeyFieldName );
     } else {
-      v = new ValueMeta( secretKeyFieldName, ValueMeta.TYPE_STRING );
+      v = new ValueMetaString( secretKeyFieldName );
     }
     v.setOrigin( name );
     row.addValueMeta( v );
 
     if ( !Const.isEmpty( getAlgorithmFieldName() ) ) {
-      v = new ValueMeta( algorithmFieldName, ValueMeta.TYPE_STRING );
+      v = new ValueMetaString( algorithmFieldName );
       v.setOrigin( name );
       row.addValueMeta( v );
     }
 
     if ( !Const.isEmpty( getSecretKeyLengthFieldName() ) ) {
-      v = new ValueMeta( secretKeyLengthFieldName, ValueMeta.TYPE_INTEGER );
-      v.setLength( ValueMeta.DEFAULT_INTEGER_LENGTH, 0 );
+      v = new ValueMetaInteger( secretKeyLengthFieldName );
+      v.setLength( ValueMetaInterface.DEFAULT_INTEGER_LENGTH, 0 );
       v.setOrigin( name );
       row.addValueMeta( v );
     }

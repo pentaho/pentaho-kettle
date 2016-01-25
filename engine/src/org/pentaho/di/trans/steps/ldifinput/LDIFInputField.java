@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,7 +24,8 @@ package org.pentaho.di.trans.steps.ldifinput;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleValueException;
-import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.w3c.dom.Node;
@@ -75,7 +76,7 @@ public class LDIFInputField implements Cloneable {
     this.name = fieldname;
     this.attribut = "";
     this.length = -1;
-    this.type = ValueMeta.TYPE_STRING;
+    this.type = ValueMetaInterface.TYPE_STRING;
     this.format = "";
     this.trimtype = TYPE_TRIM_NONE;
     this.groupSymbol = "";
@@ -113,7 +114,7 @@ public class LDIFInputField implements Cloneable {
   public LDIFInputField( Node fnode ) throws KettleValueException {
     setName( XMLHandler.getTagValue( fnode, "name" ) );
     setAttribut( XMLHandler.getTagValue( fnode, "attribut" ) );
-    setType( ValueMeta.getType( XMLHandler.getTagValue( fnode, "type" ) ) );
+    setType( ValueMetaFactory.getIdForValueMeta( XMLHandler.getTagValue( fnode, "type" ) ) );
     setFormat( XMLHandler.getTagValue( fnode, "format" ) );
     setCurrencySymbol( XMLHandler.getTagValue( fnode, "currency" ) );
     setDecimalSymbol( XMLHandler.getTagValue( fnode, "decimal" ) );
@@ -204,7 +205,7 @@ public class LDIFInputField implements Cloneable {
   }
 
   public String getTypeDesc() {
-    return ValueMeta.getTypeDesc( type );
+    return ValueMetaFactory.getValueMetaName( type );
   }
 
   public void setType( int type ) {

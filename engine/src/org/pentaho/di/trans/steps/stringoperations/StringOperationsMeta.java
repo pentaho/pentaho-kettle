@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -32,8 +32,8 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -473,7 +473,7 @@ public class StringOperationsMeta extends BaseStepMeta implements StepMetaInterf
       String outputField = space.environmentSubstitute( fieldOutStream[i] );
       if ( !Const.isEmpty( outputField ) ) {
         // Add a new field
-        v = new ValueMeta( outputField, ValueMeta.TYPE_STRING );
+        v = new ValueMetaString( outputField );
         v.setLength( 100, -1 );
         v.setOrigin( name );
         inputRowMeta.addValueMeta( v );
@@ -543,7 +543,7 @@ public class StringOperationsMeta extends BaseStepMeta implements StepMetaInterf
 
         ValueMetaInterface v = prev.searchValueMeta( field );
         if ( v != null ) {
-          if ( v.getType() != ValueMeta.TYPE_STRING ) {
+          if ( v.getType() != ValueMetaInterface.TYPE_STRING ) {
             if ( first ) {
               first = false;
               error_message +=
