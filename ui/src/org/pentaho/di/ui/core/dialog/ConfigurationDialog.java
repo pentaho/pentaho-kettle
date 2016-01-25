@@ -53,6 +53,8 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.parameters.UnknownParamException;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.job.JobMeta;
+import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
@@ -327,16 +329,29 @@ public abstract class ConfigurationDialog extends Dialog {
     Button alwaysShowOption = new Button( shell, SWT.CHECK );
     props.setLook( alwaysShowOption );
     fd_tabFolder.bottom = new FormAttachment( 100, -106 );
-    alwaysShowOption.setSelection( abstractMeta.isAlwaysShowTransCheckbox() );
+    final boolean isTrans = abstractMeta instanceof TransMeta;
+    final boolean isJob = abstractMeta instanceof JobMeta;
+    alwaysShowOption.setSelection( isTrans ? abstractMeta.isAlwaysShowTransCheckbox() : isJob ? abstractMeta
+        .isAlwaysShowJobCheckbox() : true );
     alwaysShowOption.addSelectionListener( new SelectionAdapter() {
       public void widgetSelected( SelectionEvent e ) {
         Button btn = (Button) e.getSource();
         if ( btn.getSelection() ) {
-          abstractMeta.setAlwaysShowTransCheckbox( true );
-          abstractMeta.setShowTransDialog( true );
+          if ( isTrans ) {
+            abstractMeta.setAlwaysShowTransCheckbox( true );
+            abstractMeta.setShowTransDialog( true );
+          } else if ( isJob ) {
+            abstractMeta.setAlwaysShowJobCheckbox( true );
+            abstractMeta.setShowJobDialog( true );
+          }
         } else {
-          abstractMeta.setAlwaysShowTransCheckbox( false );
-          abstractMeta.setShowTransDialog( false );
+          if ( isTrans ) {
+            abstractMeta.setAlwaysShowTransCheckbox( false );
+            abstractMeta.setShowTransDialog( false );
+          } else if ( isJob ) {
+            abstractMeta.setAlwaysShowJobCheckbox( false );
+            abstractMeta.setShowJobDialog( false );
+          }
         }
       }
     } );

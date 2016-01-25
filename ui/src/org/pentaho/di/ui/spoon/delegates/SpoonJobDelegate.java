@@ -1348,7 +1348,7 @@ public class SpoonJobDelegate extends SpoonDelegate {
 
     JobExecutionConfigurationDialog dialog =
       new JobExecutionConfigurationDialog( spoon.getShell(), executionConfiguration, jobMeta );
-    if ( dialog.open() ) {
+    if ( jobMeta.isShowJobDialog() && dialog.open() ) {
 
       ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.SpoonJobMetaExecutionStart.id, jobMeta );
       ExtensionPointHandler.callExtensionPoint(

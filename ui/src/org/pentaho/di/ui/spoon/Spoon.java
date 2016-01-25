@@ -8488,21 +8488,20 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   }
 
   public void executeFile( boolean local, boolean remote, boolean cluster, boolean preview, boolean debug,
-    Date replayDate, boolean safe, boolean show ) {
+      Date replayDate, boolean safe, boolean show ) {
 
     TransMeta transMeta = getActiveTransformation();
     if ( transMeta != null ) {
-      if( show ) {
+      if ( show ) {
         transMeta.setShowTransDialog( show );
       }
-      executeTransformation(
-        transMeta, local, remote, cluster, preview, debug, replayDate, safe, transExecutionConfiguration
-          .getLogLevel() );
+      executeTransformation( transMeta, local, remote, cluster, preview, debug, replayDate, safe,
+          transExecutionConfiguration.getLogLevel() );
     }
 
     JobMeta jobMeta = getActiveJob();
     if ( jobMeta != null ) {
-      if( show ) {
+      if ( show ) {
         jobMeta.setShowJobDialog( show );
       }
       executeJob( jobMeta, local, remote, replayDate, safe, null, 0 );
