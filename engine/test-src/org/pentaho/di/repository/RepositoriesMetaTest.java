@@ -26,6 +26,7 @@ import org.apache.commons.io.IOUtils;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
@@ -61,39 +62,39 @@ public class RepositoriesMetaTest {
     when( spy.newLogChannel() ).thenReturn( log );
     spy.readData();
 
-    String repositoriesXml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-      + "<repositories>\n"
-      + "  <connection>\n"
-      + "    <name>local postgres</name>\n"
-      + "    <server>localhost</server>\n"
-      + "    <type>POSTGRESQL</type>\n"
-      + "    <access>Native</access>\n"
-      + "    <database>hibernate</database>\n"
-      + "    <port>5432</port>\n"
-      + "    <username>auser</username>\n"
-      + "    <password>Encrypted 2be98afc86aa7f285bb18bd63c99dbdde</password>\n"
-      + "    <servername/>\n"
-      + "    <data_tablespace/>\n"
-      + "    <index_tablespace/>\n"
-      + "    <attributes>\n"
-      + "      <attribute><code>FORCE_IDENTIFIERS_TO_LOWERCASE</code><attribute>N</attribute></attribute>\n"
-      + "      <attribute><code>FORCE_IDENTIFIERS_TO_UPPERCASE</code><attribute>N</attribute></attribute>\n"
-      + "      <attribute><code>IS_CLUSTERED</code><attribute>N</attribute></attribute>\n"
-      + "      <attribute><code>PORT_NUMBER</code><attribute>5432</attribute></attribute>\n"
-      + "      <attribute><code>PRESERVE_RESERVED_WORD_CASE</code><attribute>N</attribute></attribute>\n"
-      + "      <attribute><code>QUOTE_ALL_FIELDS</code><attribute>N</attribute></attribute>\n"
-      + "      <attribute><code>SUPPORTS_BOOLEAN_DATA_TYPE</code><attribute>Y</attribute></attribute>\n"
-      + "      <attribute><code>SUPPORTS_TIMESTAMP_DATA_TYPE</code><attribute>Y</attribute></attribute>\n"
-      + "      <attribute><code>USE_POOLING</code><attribute>N</attribute></attribute>\n"
-      + "    </attributes>\n"
-      + "  </connection>\n"
-      + "  <repository>    <id>KettleFileRepository</id>\n"
-      + "    <name>Test Repository</name>\n"
-      + "    <description>Test Repository Description</description>\n"
-      + "    <base_directory>test-repository</base_directory>\n"
-      + "    <read_only>N</read_only>\n"
-      + "    <hides_hidden_files>N</hides_hidden_files>\n"
-      + "  </repository>  </repositories>\n";
+    String repositoriesXml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + Const.CR
+      + "<repositories>" + Const.CR
+      + "  <connection>" + Const.CR
+      + "    <name>local postgres</name>" + Const.CR
+      + "    <server>localhost</server>" + Const.CR
+      + "    <type>POSTGRESQL</type>" + Const.CR
+      + "    <access>Native</access>" + Const.CR
+      + "    <database>hibernate</database>" + Const.CR
+      + "    <port>5432</port>" + Const.CR
+      + "    <username>auser</username>" + Const.CR
+      + "    <password>Encrypted 2be98afc86aa7f285bb18bd63c99dbdde</password>" + Const.CR
+      + "    <servername/>" + Const.CR
+      + "    <data_tablespace/>" + Const.CR
+      + "    <index_tablespace/>" + Const.CR
+      + "    <attributes>" + Const.CR
+      + "      <attribute><code>FORCE_IDENTIFIERS_TO_LOWERCASE</code><attribute>N</attribute></attribute>" + Const.CR
+      + "      <attribute><code>FORCE_IDENTIFIERS_TO_UPPERCASE</code><attribute>N</attribute></attribute>" + Const.CR
+      + "      <attribute><code>IS_CLUSTERED</code><attribute>N</attribute></attribute>" + Const.CR
+      + "      <attribute><code>PORT_NUMBER</code><attribute>5432</attribute></attribute>" + Const.CR
+      + "      <attribute><code>PRESERVE_RESERVED_WORD_CASE</code><attribute>N</attribute></attribute>" + Const.CR
+      + "      <attribute><code>QUOTE_ALL_FIELDS</code><attribute>N</attribute></attribute>" + Const.CR
+      + "      <attribute><code>SUPPORTS_BOOLEAN_DATA_TYPE</code><attribute>Y</attribute></attribute>" + Const.CR
+      + "      <attribute><code>SUPPORTS_TIMESTAMP_DATA_TYPE</code><attribute>Y</attribute></attribute>" + Const.CR
+      + "      <attribute><code>USE_POOLING</code><attribute>N</attribute></attribute>" + Const.CR
+      + "    </attributes>" + Const.CR
+      + "  </connection>" + Const.CR
+      + "  <repository>    <id>KettleFileRepository</id>" + Const.CR
+      + "    <name>Test Repository</name>" + Const.CR
+      + "    <description>Test Repository Description</description>" + Const.CR
+      + "    <base_directory>test-repository</base_directory>" + Const.CR
+      + "    <read_only>N</read_only>" + Const.CR
+      + "    <hides_hidden_files>N</hides_hidden_files>" + Const.CR
+      + "  </repository>  </repositories>" + Const.CR;
     assertEquals( repositoriesXml, spy.getXML() );
     RepositoriesMeta clone = spy.clone();
     assertEquals( repositoriesXml, spy.getXML() );
@@ -103,12 +104,12 @@ public class RepositoriesMetaTest {
     RepositoryMeta repository = spy.getRepository( 0 );
     assertEquals( "Test Repository", repository.getName() );
     assertEquals( "Test Repository Description", repository.getDescription() );
-    assertEquals( "  <repository>    <id>KettleFileRepository</id>\n"
-      + "    <name>Test Repository</name>\n"
-      + "    <description>Test Repository Description</description>\n"
-      + "    <base_directory>test-repository</base_directory>\n"
-      + "    <read_only>N</read_only>\n"
-      + "    <hides_hidden_files>N</hides_hidden_files>\n"
+    assertEquals( "  <repository>    <id>KettleFileRepository</id>" + Const.CR
+      + "    <name>Test Repository</name>" + Const.CR
+      + "    <description>Test Repository Description</description>" + Const.CR
+      + "    <base_directory>test-repository</base_directory>" + Const.CR
+      + "    <read_only>N</read_only>" + Const.CR
+      + "    <hides_hidden_files>N</hides_hidden_files>" + Const.CR
       + "  </repository>", repository.getXML() );
     assertSame( repository, spy.searchRepository( "Test Repository" ) );
     assertSame( repository, spy.findRepositoryById( "KettleFileRepository" ) );
@@ -174,9 +175,9 @@ public class RepositoriesMetaTest {
     try {
       spy.readDataFromInputStream(  getClass().getResourceAsStream( "filedoesnotexist.xml" ) );
     } catch ( KettleException e ) {
-      assertEquals( "\n"
-        + "Error reading information from file:\n"
-        + "InputStream cannot be null\n", e.getMessage() );
+      assertEquals( Const.CR
+        + "Error reading information from file:" + Const.CR
+        + "InputStream cannot be null" + Const.CR, e.getMessage() );
     }
   }
 
@@ -190,10 +191,10 @@ public class RepositoriesMetaTest {
     try {
       spy.readData();
     } catch ( KettleException e ) {
-      assertEquals( "\n"
-        + "Error reading information from file:\n"
-        + "The element type \"repositories\" must be terminated by the matching end-tag \"</repositories>\".\n",
-        e.getMessage() );
+      assertEquals( Const.CR
+        + "Error reading information from file:" + Const.CR
+        + "The element type \"repositories\" must be terminated by the matching end-tag \"</repositories>\"."
+        + Const.CR, e.getMessage() );
     }
   }
 
@@ -208,9 +209,9 @@ public class RepositoriesMetaTest {
     spy.writeData();
     InputStream resourceAsStream = getClass().getResourceAsStream( "new-repositories.xml" );
     assertEquals(
-      "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-        + "<repositories>\n"
-        + "  </repositories>\n", IOUtils.toString( resourceAsStream ) );
+      "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + Const.CR
+        + "<repositories>" + Const.CR
+        + "  </repositories>" + Const.CR, IOUtils.toString( resourceAsStream ) );
     new File( path ).delete();
   }
 
@@ -224,7 +225,7 @@ public class RepositoriesMetaTest {
     try {
       spy.writeData();
     } catch ( KettleException e ) {
-      assertTrue( e.getMessage().startsWith( "\nError writing repositories metadata" ) );
+      assertTrue( e.getMessage().startsWith( Const.CR + "Error writing repositories metadata" ) );
     }
   }
 }
