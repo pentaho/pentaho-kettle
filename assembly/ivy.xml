@@ -46,6 +46,9 @@
     <dependency org="${ivy.artifact.group}" name="pdi-google-analytics-plugin-ce" rev="${project.revision}" changing="true" conf="plugins->default">
         <artifact name="pdi-google-analytics-plugin-ce" type="zip"/>
     </dependency>
+    <dependency org="${ivy.artifact.group}" name="kettle-s3csvinput-plugin" rev="${project.revision}" changing="true" conf="plugins->default">
+        <artifact name="kettle-s3csvinput-plugin" type="zip"/>
+    </dependency>
 
     <!-- Pentaho dependencies (non-Kettle), launcher, shim, etc. -->
     <dependency org="pentaho"               name="pentaho-application-launcher"  rev="${dependency.launcher.revision}" conf="launcher->default"/>
