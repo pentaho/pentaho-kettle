@@ -1705,13 +1705,28 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
             MenuItem item1 = new MenuItem( menu, SWT.PUSH );
             item1.setText( BaseMessages.getString( PKG, "Spoon.Run.Run" ) );
             item1.setAccelerator( SWT.F9 );
+            item1.addSelectionListener( new SelectionAdapter() {
+              @Override
+              public void widgetSelected( SelectionEvent e1 ) {
+                transMeta.setShowTransDialog( transMeta.isAlwaysShowTransCheckbox() );
+                runTransformation();
+              }
+            } );
+
             MenuItem item2 = new MenuItem( menu, SWT.PUSH );
             item2.setText( BaseMessages.getString( PKG, "Spoon.Run.RunOptions" ) );
             item2.setAccelerator( SWT.F8 );
-
+            item2.addSelectionListener( new SelectionAdapter() {
+              @Override
+              public void widgetSelected( SelectionEvent e2 ) {
+                transMeta.setShowTransDialog( true );
+                runOptionsTransformation();
+              }
+            } );
             menu.setLocation( shell.getDisplay().map( mainComposite.getParent(), null, mainComposite.getLocation() ) );
             menu.setVisible( true );
           } else {
+            transMeta.setShowTransDialog( transMeta.isAlwaysShowTransCheckbox() );
             runTransformation();
           }
         }
@@ -3362,6 +3377,10 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 
   public void runTransformation() {
     spoon.runFile();
+  }
+
+  public void runOptionsTransformation() {
+    spoon.runOptionsFile();
   }
 
   public void pauseTransformation() {

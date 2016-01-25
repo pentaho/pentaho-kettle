@@ -1404,13 +1404,28 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
             MenuItem item1 = new MenuItem( menu, SWT.PUSH );
             item1.setText( BaseMessages.getString( PKG, "Spoon.Run.Run" ) );
             item1.setAccelerator( SWT.F9 );
+            item1.addSelectionListener( new SelectionAdapter() {
+              @Override
+              public void widgetSelected( SelectionEvent e1 ) {
+                jobMeta.setShowJobDialog( jobMeta.isAlwaysShowJobCheckbox() );
+                runJob();
+              }
+            } );
             MenuItem item2 = new MenuItem( menu, SWT.PUSH );
             item2.setText( BaseMessages.getString( PKG, "Spoon.Run.RunOptions" ) );
             item2.setAccelerator( SWT.F8 );
+            item2.addSelectionListener( new SelectionAdapter() {
+              @Override
+              public void widgetSelected( SelectionEvent e2 ) {
+                jobMeta.setShowJobDialog( true );
+                runOptionsJob();
+              }
+            } );
 
             menu.setLocation( shell.getDisplay().map( mainComposite.getParent(), null, mainComposite.getLocation() ) );
             menu.setVisible( true );
           } else {
+            jobMeta.setShowJobDialog( jobMeta.isAlwaysShowJobCheckbox() );
             runJob();
           }
         }
@@ -3378,6 +3393,10 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
 
   public void runJob() {
     spoon.runFile();
+  }
+
+  public void runOptionsJob() {
+    spoon.runOptionsFile();
   }
 
   public void getSQL() {
