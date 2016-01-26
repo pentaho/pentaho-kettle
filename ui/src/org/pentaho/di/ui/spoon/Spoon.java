@@ -3912,7 +3912,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
           // Try to find the same directory in the new repository...
           RepositoryDirectoryInterface rdi =
             repository.findDirectory( transMeta.getRepositoryDirectory().getPath() );
-          if ( rdi != null ) {
+          if ( rdi != null && !rdi.getPath().equals( "/" ) ) {
             transMeta.setRepositoryDirectory( rdi );
           } else {
             // the root is the default!
