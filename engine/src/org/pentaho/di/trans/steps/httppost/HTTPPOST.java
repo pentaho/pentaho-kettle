@@ -37,6 +37,7 @@ import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.InputStreamRequestEntity;
 import org.apache.commons.httpclient.methods.PostMethod;
+import org.json.simple.JSONObject;
 import org.pentaho.di.cluster.SlaveConnectionManager;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
@@ -217,7 +218,7 @@ public class HTTPPOST extends BaseStep implements StepInterface {
           logDebug( BaseMessages.getString( PKG, "HTTPPOST.Log.ResponseCode", String.valueOf( statusCode ) ) );
         }
         String body = null;
-        StringBuilder headerString = new StringBuilder();
+        String headerString = null;
         if ( statusCode != -1 ) {
           if ( statusCode == 204 ) {
             body = "";
@@ -239,16 +240,12 @@ public class HTTPPOST extends BaseStep implements StepInterface {
                 }
               }
               
-              headerString.append("{");
-              for (int i = 0; i < headers.length; i++) {
-            	  headerString.append("\"").append(headers[i].getName()).append("\"");
-            	  headerString.append(": ");
-            	  headerString.append("\"").append(headers[i].getValue()).append("\"");
-            	  if ( i < headers.length - 1 ) {
-            		  headerString.append(", ");
-            	  }
+              JSONObject json = new JSONObject();
+              for ( Header header : headers ) {
+            	  json.put( header.getName(), header.getValue() );
               }
-              headerString.append("}");
+              
+              headerString = json.toJSONString();
 
               // Get the response, but only specify encoding if we've got one
               // otherwise the default charset ISO-8859-1 is used by HttpClient

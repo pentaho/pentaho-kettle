@@ -43,6 +43,7 @@ import javax.ws.rs.core.UriBuilder;
 
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.auth.AuthScope;
+import org.json.simple.JSONObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
@@ -207,7 +208,7 @@ public class Rest extends BaseStep implements StepInterface {
 
       // Get Response
       String body;
-      StringBuilder headerString = new StringBuilder();
+      String headerString = null;
       try {
         body = response.getEntity( String.class );
       } catch ( UniformInterfaceException ex ) {
@@ -217,32 +218,19 @@ public class Rest extends BaseStep implements StepInterface {
       // get Header
       MultivaluedMap<String, String> headers = response.getHeaders();
       
-      headerString.append("{");
-      for ( Iterator<String> iterator = headers.keySet().iterator(); iterator.hasNext(); ) {
-    	  String name = iterator.next();
-    	  List<String> value = headers.get(name); 
-    	  headerString.append("\"").append(name).append("\"");
-    	  headerString.append(": ");
+      JSONObject json = new JSONObject();
+      for ( java.util.Map.Entry<String, List<String>> entry : headers.entrySet() ) {
+    	  String name = entry.getKey();
+    	  List<String> value = entry.getValue(); 
     	  
     	  if (value.size() > 1) {
-	    	  headerString.append("[");
-	    	  for (Iterator<String> iter = value.iterator(); iter.hasNext();) {
-	    		  String val = (String) iter.next();
-	    		  headerString.append("\"").append(val).append("\"");
-	    		  if ( iter.hasNext() ) {
-	    			  headerString.append(", ");
-	    		  }
-			  }
-	    	  headerString.append("]");
+    		  json.put( name, value );
     	  } else {
-    		  headerString.append("\"").append(value.get(0)).append("\"");
-    	  }
-    	  
-    	  if ( iterator.hasNext() ) {
-    		  headerString.append(", ");
+    		  json.put( name, value.get(0) );
     	  }
       }
-      headerString.append("}");
+      
+      headerString = json.toJSONString();
       
       // for output
       int returnFieldsOffset = data.inputRowMeta.size();

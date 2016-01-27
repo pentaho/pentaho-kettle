@@ -36,6 +36,7 @@ import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.util.URIUtil;
+import org.json.simple.JSONObject;
 import org.pentaho.di.cluster.SlaveConnectionManager;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
@@ -150,7 +151,7 @@ public class HTTP extends BaseStep implements StepInterface {
         }
 
         String body = null;
-        StringBuilder headerString = new StringBuilder();
+        String headerString = null;
         // The status code
         if ( isDebug() ) {
           logDebug( BaseMessages.getString( PKG, "HTTP.Log.ResponseStatusCode", "" + statusCode ) );
@@ -176,16 +177,12 @@ public class HTTP extends BaseStep implements StepInterface {
                 }
               }
               
-              headerString.append("{");
-              for (int i = 0; i < headers.length; i++) {
-            	  headerString.append("\"").append(headers[i].getName()).append("\"");
-            	  headerString.append(": ");
-            	  headerString.append("\"").append(headers[i].getValue()).append("\"");
-            	  if ( i < headers.length - 1 ) {
-            		  headerString.append(", ");
-            	  }
+              JSONObject json = new JSONObject();
+              for ( Header header : headers ) {
+            	  json.put( header.getName(), header.getValue() );
               }
-              headerString.append("}");
+              
+              headerString = json.toJSONString();
 
               if ( isDebug() ) {
                 log.logDebug( toString(), BaseMessages.getString( PKG, "HTTP.Log.ResponseHeaderEncoding", encoding ) );

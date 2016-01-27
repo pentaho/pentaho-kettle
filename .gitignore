@@ -24,5 +24,6 @@ build-res/module-scripts/
 *.ear
 *.iml
 *.db
+*.tmp
 *~
 /*.launch
