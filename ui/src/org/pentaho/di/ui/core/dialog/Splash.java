@@ -112,9 +112,6 @@ public class Splash {
 
     splash.addPaintListener( new PaintListener() {
       public void paintControl( PaintEvent e ) {
-        String fullVersionText =
-            BaseMessages.getString( PKG, "SplashDialog.Version" ) + " " + BuildVersion.getInstance().getVersion();
-
         StringBuilder sb = new StringBuilder();
         String line = null;
 
@@ -133,19 +130,14 @@ public class Splash {
         Calendar cal = Calendar.getInstance();
         String licenseText = String.format( sb.toString(), cal );
         e.gc.drawImage( kettle_image, 0, 0 );
-
-        // If this is a Milestone or RC release, warn the user
-        if ( Const.RELEASE.equals( Const.ReleaseType.MILESTONE ) ) {
-          fullVersionText = BaseMessages.getString( PKG, "SplashDialog.DeveloperRelease" ) + " - " + fullVersionText;
-          drawVersionWarning( e );
-        } else if ( Const.RELEASE.equals( Const.ReleaseType.RELEASE_CANDIDATE ) ) {
-          fullVersionText = BaseMessages.getString( PKG, "SplashDialog.ReleaseCandidate" ) + " - " + fullVersionText;
-        } else if ( Const.RELEASE.equals( Const.ReleaseType.PREVIEW ) ) {
-          fullVersionText = BaseMessages.getString( PKG, "SplashDialog.PreviewRelease" ) + " - " + fullVersionText;
-        } else if ( Const.RELEASE.equals( Const.ReleaseType.GA ) ) {
-          fullVersionText = BaseMessages.getString( PKG, "SplashDialog.GA" ) + " - " + fullVersionText;
+        
+        String fullVersionText =  BaseMessages.getString( PKG, "SplashDialog.Version" );
+        String buildVersion = BuildVersion.getInstance().getVersion();
+        if ( buildVersion.indexOf( "-" ) > -1 ) {
+          fullVersionText =  fullVersionText + " "  + buildVersion.substring( 0, buildVersion.indexOf( "-" ) );
+        } else {
+          fullVersionText =  fullVersionText + " "  + buildVersion;
         }
-
         e.gc.setFont( verFont );
         e.gc.drawText( fullVersionText, 290, 205, true );
 
@@ -191,11 +183,21 @@ public class Splash {
         }
 
         e.gc.drawText( licenseText, 290, 275, true );
-
-        // use the same font/size as the license text
-        String version = BaseMessages.getString( PKG, "SplashDialog.BuildVersion" ) + " " + 
-            BuildVersion.getInstance().getVersion();
+        
+        String version =  buildVersion;
+        // If this is a Milestone or RC release, warn the user
+        if ( Const.RELEASE.equals( Const.ReleaseType.MILESTONE ) ) {
+          version = BaseMessages.getString( PKG, "SplashDialog.DeveloperRelease" ) + " - " + version;
+          drawVersionWarning( e );
+        } else if ( Const.RELEASE.equals( Const.ReleaseType.RELEASE_CANDIDATE ) ) {
+          version = BaseMessages.getString( PKG, "SplashDialog.ReleaseCandidate" ) + " - " + version;
+        } else if ( Const.RELEASE.equals( Const.ReleaseType.PREVIEW ) ) {
+          version = BaseMessages.getString( PKG, "SplashDialog.PreviewRelease" ) + " - " + version;
+        } else if ( Const.RELEASE.equals( Const.ReleaseType.GA ) ) {
+          version = BaseMessages.getString( PKG, "SplashDialog.GA" ) + " - " + version;
+        }
         String buildDate = BaseMessages.getString( PKG, "SplashDialog.BuildDate" ) + " " + outputStringDate;
+        // use the same font/size as the license text
         e.gc.drawText( version, 290, 235, true );
         e.gc.drawText( buildDate, 290, 250, true );
       }
