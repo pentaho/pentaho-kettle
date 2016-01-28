@@ -676,10 +676,9 @@ public class TextFileInput extends BaseStep implements StepInterface {
           String pol = strings[ fieldnr ];
           try {
             if ( valueMeta.isNull( pol ) || !Const.isEmpty( nullif ) && nullif.equals( pol ) ) {
-              value = null;
-            } else {
-              value = valueMeta.convertDataFromString( pol, convertMeta, nullif, ifnull, trim_type );
+              pol = null;
             }
+            value = valueMeta.convertDataFromString( pol, convertMeta, nullif, ifnull, trim_type );
           } catch ( Exception e ) {
             // OK, give some feedback!
             String message =
