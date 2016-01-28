@@ -228,7 +228,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
               value="${inttestbin.dir}/classes"
               description="Classes compiled from project test code are placed here"/>
     <property name="inttestreports.dir"
-              value="${bin.dir}/reports/integration-test"
+              value="${testreports.dir}"
               description="Base directory that holds all integration test report files"/>
     <property name="inttestreports.xml.dir"
               value="${inttestreports.dir}/xml"
@@ -366,7 +366,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             value="6.12"
             description="The version of CheckStyle to use for coding standards"/>
   <property name="pentaho.coding.standards.version"
-			value="1.0.2"/>
+			value="1.0.3"/>
   <property name="checkstyle.dir"
             value="${basedir}/checkstyle"/>
   <property name="checkstyle.lib.dir"
@@ -1857,7 +1857,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
         Compiles and runs all the integration tests for the project
         ====================================================================-->
-    <target name="integration-test" depends="compile,compile-tests, init-integration-test-reports" description="Compiles and runs unit tests">
+    <target name="integration-test" depends="compile,compile-tests, init-test-reports" description="Compiles and runs unit tests">
         <junit maxmemory="${junit.maxmemory}"
                dir="${junit.base.dir}"
                fork="yes"
@@ -2189,7 +2189,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
       Compiles and runs all the tests for the project
       ====================================================================-->
-  <target name="jacoco-integration" depends="install-jacoco,compile,compile-tests,init-integration-test-reports"
+  <target name="jacoco-integration" depends="install-jacoco,compile,compile-tests,init-test-reports"
           description="Compiles and runs integration tests with Jacoco code coverage.">
 
     <mkdir dir = "${jacoco.integration.report.dir}" />
