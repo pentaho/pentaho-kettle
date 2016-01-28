@@ -23,6 +23,8 @@
 package org.pentaho.di.trans.steps.metainject;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.refEq;
 import static org.mockito.Mockito.atLeastOnce;
@@ -61,6 +63,14 @@ public class MetaInjectTest {
   private static final String TEST_VARIABLE = "TEST_VARIABLE";
 
   private static final String TEST_PARAMETER = "TEST_PARAMETER";
+
+  private static final String TEST_TARGET_STEP_NAME = "TEST_TARGET_STEP_NAME";
+
+  private static final String TEST_SOURCE_STEP_NAME = "TEST_SOURCE_STEP_NAME";
+
+  private static final String TEST_ATTR_VALUE = "TEST_ATTR_VALUE";
+
+  private static final String TEST_FIELD = "TEST_FIELD";
 
   private MetaInject metaInject;
 
@@ -134,7 +144,7 @@ public class MetaInjectTest {
     doReturn( injectionMetaEntryList ).when( metaInjectionInterface ).getStepInjectionMetadataEntries();
 
     meta.setNoExecution( true );
-    metaInject.init( meta, data );
+    assertTrue( metaInject.init( meta, data ) );
     metaInject.processRow( meta, data );
 
     StepInjectionMetaEntry expectedNameEntry =
@@ -152,10 +162,12 @@ public class MetaInjectTest {
     doReturn( new String[] { TEST_VARIABLE } ).when( metaInject ).listVariables();
     doReturn( TEST_VALUE ).when( metaInject ).getVariable( TEST_VARIABLE );
 
+    TransMeta transMeta = new TransMeta();
+    doReturn( transMeta ).when( metaInject ).getTransMeta();
     TransMeta internalTransMeta = new TransMeta();
     doReturn( internalTransMeta ).when( metaInject ).loadTransformationMeta();
 
-    metaInject.init( meta, data );
+    assertTrue( metaInject.init( meta, data ) );
 
     assertEquals( TEST_VALUE, internalTransMeta.getVariable( TEST_VARIABLE ) );
   }
@@ -170,9 +182,46 @@ public class MetaInjectTest {
     TransMeta internalTransMeta = new TransMeta();
     doReturn( internalTransMeta ).when( metaInject ).loadTransformationMeta();
 
-    metaInject.init( meta, data );
+    assertTrue( metaInject.init( meta, data ) );
 
     assertEquals( TEST_VALUE, internalTransMeta.getParameterValue( TEST_PARAMETER ) );
+  }
+
+  @Test
+  public void initReturnsFalseOnInaccessibleSourceStep() {
+    Map<TargetStepAttribute, SourceStepField> targetMap =
+        Collections.singletonMap( new TargetStepAttribute( INJECTOR_STEP_NAME, TEST_ATTR_VALUE, false ),
+            new SourceStepField( TEST_SOURCE_STEP_NAME, TEST_FIELD ) );
+    MetaInjectMeta spyMeta = spy( meta );
+    doReturn( targetMap ).when( spyMeta ).getTargetSourceMapping();
+
+    assertFalse( metaInject.init( spyMeta, data ) );
+  }
+
+  @Test
+  public void initReturnsFalseOnInaccessibleTargetStep() {
+    doReturn( new String[] { TEST_SOURCE_STEP_NAME } ).when( transMeta ).getPrevStepNames( any( StepMeta.class ) );
+
+    Map<TargetStepAttribute, SourceStepField> targetMap =
+        Collections.singletonMap( new TargetStepAttribute( TEST_TARGET_STEP_NAME, TEST_ATTR_VALUE, false ),
+            new SourceStepField( TEST_SOURCE_STEP_NAME, TEST_FIELD ) );
+    MetaInjectMeta spyMeta = spy( meta );
+    doReturn( targetMap ).when( spyMeta ).getTargetSourceMapping();
+
+    assertFalse( metaInject.init( spyMeta, data ) );
+  }
+
+  @Test
+  public void initReturnsTrueOnAccessibleSourceAndTargetSteps() {
+    doReturn( new String[] { TEST_SOURCE_STEP_NAME } ).when( transMeta ).getPrevStepNames( any( StepMeta.class ) );
+
+    Map<TargetStepAttribute, SourceStepField> targetMap =
+        Collections.singletonMap( new TargetStepAttribute( INJECTOR_STEP_NAME, TEST_ATTR_VALUE, false ),
+            new SourceStepField( TEST_SOURCE_STEP_NAME, TEST_FIELD ) );
+    MetaInjectMeta spyMeta = spy( meta );
+    doReturn( targetMap ).when( spyMeta ).getTargetSourceMapping();
+
+    assertTrue( metaInject.init( spyMeta, data ) );
   }
 
 }
