@@ -27,26 +27,26 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
-import java.util.Collections;
+import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
-import org.pentaho.di.core.BlockingRowSet;
 import org.pentaho.di.core.KettleEnvironment;
-import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.fileinput.FileInputList;
 import org.pentaho.di.core.playlist.FilePlayListAll;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.vfs.KettleVFS;
+import org.pentaho.di.trans.TransTestingUtil;
 import org.pentaho.di.trans.step.errorhandling.FileErrorHandler;
 import org.pentaho.di.trans.steps.StepMockUtil;
 import org.pentaho.di.utils.TestUtils;
 
 import static org.junit.Assert.*;
+import static org.pentaho.di.trans.TransTestingUtil.assertResult;
 
 /**
  * @deprecated replaced by implementation in the ...steps.fileinput.text package
@@ -146,16 +146,10 @@ public class TextFileInputTest {
     data.filterProcessor = new TextFileFilterProcessor( new TextFileFilter[ 0 ] );
     data.filePlayList = new FilePlayListAll();
 
-
-    RowSet output = new BlockingRowSet( 5 );
-    executeStep( meta, data, output, 2 );
-
-    Object[] row1 = output.getRowImmediate();
-    assertRow( row1, "r1c1", "r1c2" );
-
-    Object[] row2 = output.getRowImmediate();
-    assertRow( row2, "r2c1", "r2c2" );
-
+    TextFileInput input = StepMockUtil.getStep( TextFileInput.class, TextFileInputMeta.class, "test" );
+    List<Object[]> output = TransTestingUtil.execute( input, meta, data, 2, false );
+    assertResult( new Object[] { "r1c1", "r1c2" }, output.get( 0 ) );
+    assertResult( new Object[] { "r2c1", "r2c2" }, output.get( 1 ) );
 
     deleteVfsFile( virtualFile );
   }
@@ -193,29 +187,48 @@ public class TextFileInputTest {
     data.filePlayList = new FilePlayListAll();
 
 
-    RowSet output = new BlockingRowSet( 5 );
-    executeStep( meta, data, output, 2 );
-
-    Object[] row1 = output.getRowImmediate();
-    assertRow( row1, "1", "1", "1" );
-
-    Object[] row2 = output.getRowImmediate();
-    assertRow( row2, "2", "1", "2" );
-
+    TextFileInput input = StepMockUtil.getStep( TextFileInput.class, TextFileInputMeta.class, "test" );
+    List<Object[]> output = TransTestingUtil.execute( input, meta, data, 2, false );
+    assertResult( new Object[] { "1", "1", "1" }, output.get( 0 ) );
+    assertResult( new Object[] { "2", "1", "2" }, output.get( 1 ) );
 
     deleteVfsFile( virtualFile );
   }
 
-  private void executeStep( TextFileInputMeta meta, TextFileInputData data, RowSet output, int expectedRounds )
-    throws Exception {
-    TextFileInput input = StepMockUtil.getStep( TextFileInput.class, TextFileInputMeta.class, "test" );
-    input.setOutputRowSets( Collections.singletonList( output ) );
-    int i = 0;
-    while ( input.processRow( meta, data ) && i < expectedRounds ) {
-      i++;
-    }
+  @Test
+  public void readInputWithDefaultValues() throws Exception {
+    final String virtualFile = createVirtualFile( "pdi-14832.txt", "1,\n" );
 
-    assertEquals( "The amount of executions should be equal to expected", expectedRounds, i );
+    TextFileInputMeta meta = new TextFileInputMeta();
+    TextFileInputField field2 = field( "col2" );
+    field2.setIfNullValue( "DEFAULT" );
+    meta.setInputFields( new TextFileInputField[] { field( "col1" ), field2 } );
+    meta.setFileCompression( "None" );
+    meta.setFileType( "CSV" );
+    meta.setHeader( false );
+    meta.setNrHeaderLines( -1 );
+    meta.setFooter( false );
+    meta.setNrFooterLines( -1 );
+
+    TextFileInputData data = new TextFileInputData();
+    data.setFiles( new FileInputList() );
+    data.getFiles().addFile( KettleVFS.getFileObject( virtualFile ) );
+
+    data.outputRowMeta = new RowMeta();
+    data.outputRowMeta.addValueMeta( new ValueMetaString( "col1" ) );
+    data.outputRowMeta.addValueMeta( new ValueMetaString( "col2" ) );
+
+    data.dataErrorLineHandler = Mockito.mock( FileErrorHandler.class );
+    data.fileFormatType = TextFileInputMeta.FILE_FORMAT_UNIX;
+    data.separator = ",";
+    data.filterProcessor = new TextFileFilterProcessor( new TextFileFilter[ 0 ] );
+    data.filePlayList = new FilePlayListAll();
+
+    TextFileInput input = StepMockUtil.getStep( TextFileInput.class, TextFileInputMeta.class, "test" );
+    List<Object[]> output = TransTestingUtil.execute( input, meta, data, 1, false );
+    TransTestingUtil.assertResult( new Object[] { "1", "DEFAULT" }, output.get( 0 ) );
+
+    deleteVfsFile( virtualFile );
   }
 
   private static String createVirtualFile( String filename, String... rows ) throws Exception {
@@ -246,19 +259,5 @@ public class TextFileInputTest {
 
   private static TextFileInputField field( String name ) {
     return new TextFileInputField( name, -1, -1 );
-  }
-
-  private static void assertRow( Object[] row, Object... values ) {
-    assertNotNull( row );
-    assertTrue( String.format( "%d < %d", row.length, values.length ), row.length >= values.length );
-    int i = 0;
-    while ( i < values.length ) {
-      assertEquals( values[ i ], row[ i ] );
-      i++;
-    }
-    while ( i < row.length ) {
-      assertNull( row[ i ] );
-      i++;
-    }
   }
 }
