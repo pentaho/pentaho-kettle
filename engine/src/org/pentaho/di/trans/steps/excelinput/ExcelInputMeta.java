@@ -234,6 +234,7 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface {
   private String extensionFieldName;
   private String sizeFieldName;
 
+  @Injection( name = "SPREADSHEET_TYPE" )
   private SpreadSheetType spreadSheetType;
 
   public ExcelInputMeta() {

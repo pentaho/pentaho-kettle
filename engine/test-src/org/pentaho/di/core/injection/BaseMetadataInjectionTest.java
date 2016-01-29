@@ -171,6 +171,24 @@ public abstract class BaseMetadataInjectionTest<T> {
   }
 
   /**
+   * Check string-to-int property.
+   */
+  protected void checkStringToInt( String propertyName, IntGetter getter, String[] codes, int[] ids )
+    throws KettleException {
+    if ( codes.length != ids.length ) {
+      throw new RuntimeException( "Wrong codes/ids sizes" );
+    }
+    ValueMetaInterface valueMetaString = new ValueMetaString( "f" );
+
+    for ( int i = 0; i < codes.length; i++ ) {
+      injector.setProperty( meta, propertyName, setValue( valueMetaString, codes[i] ), "f" );
+      assertEquals( ids[i], getter.get() );
+    }
+
+    skipPropertyTest( propertyName );
+  }
+
+  /**
    * Check long property.
    */
   protected void check( String propertyName, LongGetter getter ) throws KettleException {

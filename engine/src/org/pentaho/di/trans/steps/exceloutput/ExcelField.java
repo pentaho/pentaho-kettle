@@ -22,6 +22,7 @@
 
 package org.pentaho.di.trans.steps.exceloutput;
 
+import org.pentaho.di.core.injection.Injection;
 import org.pentaho.di.core.row.ValueMeta;
 
 /**
@@ -35,8 +36,10 @@ import org.pentaho.di.core.row.ValueMeta;
  *
  */
 public class ExcelField implements Cloneable {
+  @Injection( name = "NAME", group = "FIELDS" )
   private String name;
   private int type;
+  @Injection( name = "FORMAT", group = "FIELDS" )
   private String format;
 
   public ExcelField( String name, int type, String format ) {
@@ -89,6 +92,7 @@ public class ExcelField implements Cloneable {
     this.type = type;
   }
 
+  @Injection( name = "TYPE", group = "FIELDS" )
   public void setType( String typeDesc ) {
     this.type = ValueMeta.getType( typeDesc );
   }

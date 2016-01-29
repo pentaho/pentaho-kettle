@@ -123,5 +123,10 @@ public class ExcelInputMetaInjectionTest extends BaseMetadataInjectionTest<Excel
         return meta.getIncludeSubFolders()[0];
       }
     } );
+    check( "SPREADSHEET_TYPE", new EnumGetter() {
+      public SpreadSheetType get() {
+        return meta.getSpreadSheetType();
+      }
+    }, SpreadSheetType.class );
   }
 }
