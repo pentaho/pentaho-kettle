@@ -112,7 +112,7 @@
         <menuitem id="process-run" acceltext="F9" accesskey="f9" label="${Spoon.Menu.Transformation.Run}"
           command="spoon.runFile()" />
         <menuitem id="process-run-options" acceltext="F8" accesskey="f8" label="${Spoon.Menu.Transformation.RunOptions}"
-          command="" /> <!-- must add command after implemented -->
+          command="spoon.runOptionsFile()" />
         <menuitem id="trans-preview" acceltext="F10" accesskey="f10" label="${Spoon.Menu.Transformation.Preview}"
           command="spoon.previewFile()" />
         <menuitem id="trans-debug" acceltext="SHIFT-F10" accesskey="shift-f10" label="${Spoon.Menu.Transformation.Debug}"
