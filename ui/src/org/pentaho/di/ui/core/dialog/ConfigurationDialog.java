@@ -346,6 +346,9 @@ public abstract class ConfigurationDialog extends Dialog {
     final boolean isJob = abstractMeta instanceof JobMeta;
     alwaysShowOption.setSelection( isTrans ? abstractMeta.isAlwaysShowTransCheckbox() : isJob ? abstractMeta
         .isAlwaysShowJobCheckbox() : true );
+    
+    alwaysShowOption.setToolTipText( BaseMessages.getString( PKG, prefix + ".alwaysShowOption" ) );
+    
     alwaysShowOption.addSelectionListener( new SelectionAdapter() {
       public void widgetSelected( SelectionEvent e ) {
         Button btn = (Button) e.getSource();
