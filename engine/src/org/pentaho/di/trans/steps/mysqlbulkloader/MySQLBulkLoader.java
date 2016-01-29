@@ -386,12 +386,12 @@ public class MySQLBulkLoader extends BaseStep implements StepInterface {
               } else {
                 /**
                  * If this is the first line, reset default conversion mask for Number type (#.#;-#.#).
-                 * This will make conversion mask calculated according to meta data (length, precision).
+                 * This will make conversion mask to be calculated according to meta data (length, precision).
                  *
                  * http://jira.pentaho.com/browse/PDI-11421
                  */
-                if(getLinesWritten() == 0){
-                  data.bulkFormatMeta[i].setConversionMask(null);
+                if( getLinesWritten() == 0 ) {
+                  data.bulkFormatMeta[i].setConversionMask( null );
                 }
 
                 Double d = valueMeta.getNumber( valueData );
