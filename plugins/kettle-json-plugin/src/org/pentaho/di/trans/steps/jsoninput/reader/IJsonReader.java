@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -20,46 +20,31 @@
  *
  ******************************************************************************/
 
-package org.pentaho.di.trans.steps.jsoninput;
+package org.pentaho.di.trans.steps.jsoninput.reader;
 
-import org.json.simple.JSONArray;
+import java.io.InputStream;
+
+import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.trans.steps.jsoninput.JsonInputField;
 
-@Deprecated
-public class NJSONArray {
+public interface IJsonReader {
 
-  private JSONArray a;
-  private boolean nullValue;
+  /**
+   * Store and compile fields.
+   * 
+   * @param fields
+   * @throws UnsupportedJsonPathException
+   */
+  void setFields( JsonInputField[] fields ) throws KettleException;
 
-  public NJSONArray() throws KettleException {
-    this.a = new JSONArray();
-    setNull( false );
-  }
+  boolean isIgnoreMissingPath();
 
-  public NJSONArray( JSONArray ja ) throws KettleException {
-    this.a = ja;
-    setNull( ja == null );
-  }
+  void setIgnoreMissingPath( boolean value );
 
-  public void setNull( boolean value ) {
-    this.nullValue = value;
-  }
-
-  public boolean isNull() {
-    return this.nullValue;
-  }
-
-  public JSONArray getJSONArray() {
-    return this.a;
-  }
-
-  @SuppressWarnings( "unchecked" )
-  public void add( Object value ) {
-    this.a.add( value );
-  }
-
-  public int size() {
-    return this.a.size();
-  }
+  /**
+   * parse compiled fields into a rowset
+   */
+  public RowSet parse( InputStream in ) throws KettleException;
 
 }
