@@ -27,7 +27,6 @@
     <dependency org="org.apache.commons"           name="commons-vfs2"        rev="2.1-20150824"    conf="dev->default" transitive="false"/>
     <dependency org="commons-io"                   name="commons-io"          rev="1.4"             conf="dev->default" transitive="false"/>
     <dependency org="com.googlecode.json-simple"   name="json-simple"         rev="1.1"             conf="dev->default" transitive="false"/>
-    <dependency org="jsonpath"                     name="jsonpath"            rev="1.0"             conf="dev->default" transitive="false"/>
     <dependency org="org.codehaus.jackson"         name="jackson-core-asl"    rev="1.9.2"           conf="dev->default" transitive="false"/>
     <dependency org="org.codehaus.jackson"         name="jackson-mapper-asl"  rev="1.9.2"           conf="dev->default" transitive="false"/>
     <dependency org="org.codehaus.jackson"         name="jackson-jaxrs"       rev="1.9.2"           conf="dev->default" transitive="false"/>
@@ -38,5 +37,11 @@
     <dependency org="junit"          name="junit"              rev="4.7"   conf="test->default"/>
     <dependency org="org.mockito"    name="mockito-all"        rev="1.9.5" conf="test->default" transitive="false" />
     <dependency org="pentaho-kettle" name="kettle-engine-test" rev="${dependency.kettle.revision}" changing="true" transitive="false" conf="test->default"/>
+
+    <dependency org="org.slf4j" name="slf4j-api" rev="1.7.5" transitive="false"/>
+    <dependency org="org.slf4j" name="slf4j-log4j12" rev="1.7.5" transitive="false"/>
+    <dependency org="com.jayway.jsonpath" name="json-path" rev="2.1.0" transitive="false"/>
+    <dependency org="net.minidev" name="json-smart" rev="2.2" transitive="false"/>
+
   </dependencies>
 </ivy-module>

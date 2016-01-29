@@ -26,6 +26,7 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.util.List;
 
 import javax.script.Invocable;
 import javax.script.ScriptEngine;
@@ -38,6 +39,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 
+@Deprecated
 public class JsonReader {
   private static Class<?> PKG = JsonInputMeta.class; // for i18n purposes, needed by Translator2!!
 
@@ -57,7 +59,15 @@ public class JsonReader {
     this.ignoreMissingPath = false;
   }
 
+  /**
+   * @deprecated use {@link#setIgnoreMissingPath(boolean)}
+   */
+  @Deprecated
   public void SetIgnoreMissingPath( boolean value ) {
+    setIgnoreMissingPath( value );
+  }
+
+  public void setIgnoreMissingPath( boolean value ) {
     this.ignoreMissingPath = value;
   }
 
@@ -171,33 +181,44 @@ public class JsonReader {
     }
   }
 
+  public void readInput( InputStream in ) throws KettleException {
+    try ( InputStreamReader is = new InputStreamReader( in ) ) {
+      Object o = JSONValue.parse( is );
+      if ( o == null ) {
+        throw new Exception( BaseMessages.getString( PKG, "JsonReader.Error.ReadUrl.Null" ) );
+      }
+      eval( o );
+    } catch ( Exception e ) {
+      throw new KettleException( BaseMessages.getString( PKG, "JsonReader.Error.ParsingUrl", e ) );
+    }
+  }
+
   private void eval( Object o ) throws Exception {
     getEngine().eval( EVAL + o.toString() );
   }
 
-  public NJSONArray getPath( String value ) throws KettleException {
+  public List<?> executePath( String value ) throws KettleException {
     try {
       String ro = getInvocable().invokeFunction( JSON_PATH, value ).toString();
       if ( !ro.equals( EVAL_FALSE ) ) {
-
-        NJSONArray ra = new NJSONArray( (JSONArray) JSONValue.parse( ro ) );
+        List<?> ra = (JSONArray) JSONValue.parse( ro );
         return ra;
       } else {
         if ( !isIgnoreMissingPath() ) {
           throw new KettleException( BaseMessages.getString( PKG, "JsonReader.Error.CanNotFindPath", value ) );
+        } else {
+          return null;
         }
       }
     } catch ( Exception e ) {
       throw new KettleException( e );
     }
+  }
 
-    // The Json Path is missing
-    // and user do not want to fail
-    // so we need to populate it with NULL values
-    NJSONArray ja = new NJSONArray();
-    ja.setNull( true );
 
-    return ja;
+  @Deprecated
+  public NJSONArray getPath( String value ) throws KettleException {
+    return new NJSONArray( (JSONArray) executePath( value ) );
   }
 
   public boolean isIgnoreMissingPath() {

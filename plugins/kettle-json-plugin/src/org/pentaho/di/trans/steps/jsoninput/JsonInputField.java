@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,60 +23,44 @@
 package org.pentaho.di.trans.steps.jsoninput;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.exception.KettleValueException;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaBase;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
-import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.trans.steps.fileinput.BaseFileInputField;
 import org.w3c.dom.Node;
 
 /**
- * Describes a Json field.
+ * Describes a JsonPath field.
  *
  * @author Samatar
  * @since 20-06-20010
  */
-public class JsonInputField implements Cloneable {
-  private static Class<?> PKG = JsonInputMeta.class; // for i18n purposes, needed by Translator2!!
+public class JsonInputField extends BaseFileInputField implements Cloneable {
 
-  public static final int TYPE_TRIM_NONE = 0;
-  public static final int TYPE_TRIM_LEFT = 1;
-  public static final int TYPE_TRIM_RIGHT = 2;
-  public static final int TYPE_TRIM_BOTH = 3;
+  @Deprecated
+  public static final int TYPE_TRIM_NONE = ValueMetaInterface.TRIM_TYPE_NONE;
+  @Deprecated
+  public static final int TYPE_TRIM_LEFT = ValueMetaInterface.TRIM_TYPE_LEFT;
+  @Deprecated
+  public static final int TYPE_TRIM_RIGHT = ValueMetaInterface.TRIM_TYPE_RIGHT;
+  @Deprecated
+  public static final int TYPE_TRIM_BOTH = ValueMetaInterface.TRIM_TYPE_BOTH;
 
-  public static final String[] trimTypeCode = { "none", "left", "right", "both" };
+  @Deprecated
+  public static final String[] trimTypeCode = ValueMetaBase.trimTypeCode;
 
-  public static final String[] trimTypeDesc = {
-    BaseMessages.getString( PKG, "JsonInputField.TrimType.None" ),
-    BaseMessages.getString( PKG, "JsonInputField.TrimType.Left" ),
-    BaseMessages.getString( PKG, "JsonInputField.TrimType.Right" ),
-    BaseMessages.getString( PKG, "JsonInputField.TrimType.Both" ) };
+  @Deprecated
+  public static final String[] trimTypeDesc = ValueMetaBase.trimTypeDesc;
 
-  private String name;
   private String path;
 
-  private int type;
-  private int length;
-  private String format;
-  private int trimtype;
-  private int precision;
-  private String currencySymbol;
-  private String decimalSymbol;
-  private String groupSymbol;
-  private boolean repeat;
-
   public JsonInputField( String fieldname ) {
-    this.name = fieldname;
-    this.path = "";
-    this.length = -1;
-    this.type = ValueMetaInterface.TYPE_STRING;
-    this.format = "";
-    this.trimtype = TYPE_TRIM_NONE;
-    this.groupSymbol = "";
-    this.decimalSymbol = "";
-    this.currencySymbol = "";
-    this.precision = -1;
-    this.repeat = false;
+    super();
+    setName( fieldname );
   }
 
   public JsonInputField() {
@@ -107,7 +91,7 @@ public class JsonInputField implements Cloneable {
   public JsonInputField( Node fnode ) throws KettleValueException {
     setName( XMLHandler.getTagValue( fnode, "name" ) );
     setPath( XMLHandler.getTagValue( fnode, "path" ) );
-    setType( ValueMeta.getType( XMLHandler.getTagValue( fnode, "type" ) ) );
+    setType( ValueMetaFactory.getIdForValueMeta( XMLHandler.getTagValue( fnode, "type" ) ) );
     setFormat( XMLHandler.getTagValue( fnode, "format" ) );
     setCurrencySymbol( XMLHandler.getTagValue( fnode, "currency" ) );
     setDecimalSymbol( XMLHandler.getTagValue( fnode, "decimal" ) );
@@ -118,66 +102,46 @@ public class JsonInputField implements Cloneable {
     setRepeated( !"N".equalsIgnoreCase( XMLHandler.getTagValue( fnode, "repeat" ) ) );
   }
 
+  public ValueMetaInterface toValueMeta( String fieldOriginStepName, VariableSpace vspace ) throws KettlePluginException {
+    int type = getType();
+    if ( type == ValueMetaInterface.TYPE_NONE ) {
+      type = ValueMetaInterface.TYPE_STRING;
+    }
+    ValueMetaInterface v =
+        ValueMetaFactory.createValueMeta( vspace != null ? vspace.environmentSubstitute( getName() ) : getName(), type );
+    v.setLength( getLength() );
+    v.setPrecision( getPrecision() );
+    v.setOrigin( fieldOriginStepName );
+    v.setConversionMask( getFormat() );
+    v.setDecimalSymbol( getDecimalSymbol() );
+    v.setGroupingSymbol( getGroupSymbol() );
+    v.setCurrencySymbol( getCurrencySymbol() );
+    return v;
+  }
+
+  @Deprecated
   public static final int getTrimTypeByCode( String tt ) {
-    if ( tt == null ) {
-      return 0;
-    }
-
-    for ( int i = 0; i < trimTypeCode.length; i++ ) {
-      if ( trimTypeCode[i].equalsIgnoreCase( tt ) ) {
-        return i;
-      }
-    }
-    return 0;
+    return ValueMetaBase.getTrimTypeByCode( tt );
   }
 
+  @Deprecated
   public static final int getTrimTypeByDesc( String tt ) {
-    if ( tt == null ) {
-      return 0;
-    }
-
-    for ( int i = 0; i < trimTypeDesc.length; i++ ) {
-      if ( trimTypeDesc[i].equalsIgnoreCase( tt ) ) {
-        return i;
-      }
-    }
-    return 0;
+    return ValueMetaBase.getTrimTypeByDesc( tt );
   }
 
+  @Deprecated
   public static final String getTrimTypeCode( int i ) {
-    if ( i < 0 || i >= trimTypeCode.length ) {
-      return trimTypeCode[0];
-    }
-    return trimTypeCode[i];
+    return ValueMetaBase.getTrimTypeCode( i );
   }
 
+  @Deprecated
   public static final String getTrimTypeDesc( int i ) {
-    if ( i < 0 || i >= trimTypeDesc.length ) {
-      return trimTypeDesc[0];
-    }
-    return trimTypeDesc[i];
+    return ValueMetaBase.getTrimTypeDesc( i );
   }
 
-  public Object clone() {
-    try {
-      JsonInputField retval = (JsonInputField) super.clone();
-
-      return retval;
-    } catch ( CloneNotSupportedException e ) {
-      return null;
-    }
-  }
-
-  public int getLength() {
-    return length;
-  }
-
-  public void setLength( int length ) {
-    this.length = length;
-  }
-
-  public String getName() {
-    return name;
+  public JsonInputField clone() {
+    JsonInputField retval = (JsonInputField) super.clone();
+    return retval;
   }
 
   public String getPath() {
@@ -188,87 +152,4 @@ public class JsonInputField implements Cloneable {
     this.path = value;
   }
 
-  public void setName( String fieldname ) {
-    this.name = fieldname;
-  }
-
-  public int getType() {
-    return type;
-  }
-
-  public String getTypeDesc() {
-    return ValueMeta.getTypeDesc( type );
-  }
-
-  public void setType( int type ) {
-    this.type = type;
-  }
-
-  public String getFormat() {
-    return format;
-  }
-
-  public void setFormat( String format ) {
-    this.format = format;
-  }
-
-  public int getTrimType() {
-    return trimtype;
-  }
-
-  public String getTrimTypeCode() {
-    return getTrimTypeCode( trimtype );
-  }
-
-  public String getTrimTypeDesc() {
-    return getTrimTypeDesc( trimtype );
-  }
-
-  public void setTrimType( int trimtype ) {
-    this.trimtype = trimtype;
-  }
-
-  public String getGroupSymbol() {
-    return groupSymbol;
-  }
-
-  public void setGroupSymbol( String group_symbol ) {
-    this.groupSymbol = group_symbol;
-  }
-
-  public String getDecimalSymbol() {
-    return decimalSymbol;
-  }
-
-  public void setDecimalSymbol( String decimal_symbol ) {
-    this.decimalSymbol = decimal_symbol;
-  }
-
-  public String getCurrencySymbol() {
-    return currencySymbol;
-  }
-
-  public void setCurrencySymbol( String currency_symbol ) {
-    this.currencySymbol = currency_symbol;
-  }
-
-  public int getPrecision() {
-    return precision;
-  }
-
-  public void setPrecision( int precision ) {
-    this.precision = precision;
-  }
-
-  public boolean isRepeated() {
-    return repeat;
-  }
-
-  public void setRepeated( boolean repeat ) {
-    this.repeat = repeat;
-  }
-
-  public void flipRepeated() {
-    repeat = !repeat;
-  }
 }

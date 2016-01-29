@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,6 +23,7 @@
 package org.pentaho.di.trans.steps.jsoninput;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -37,9 +38,13 @@ import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.fileinput.FileInputList;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaBase;
+import org.pentaho.di.core.row.value.ValueMetaBoolean;
+import org.pentaho.di.core.row.value.ValueMetaDate;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -49,11 +54,11 @@ import org.pentaho.di.resource.ResourceDefinition;
 import org.pentaho.di.resource.ResourceNamingInterface;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.steps.fileinput.BaseFileInputStepMeta;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
@@ -62,44 +67,130 @@ import org.w3c.dom.Node;
  */
 @Step( id = "JsonInput", image = "JSI.svg", i18nPackageName = "org.pentaho.di.trans.steps.jsoninput",
     name = "JsonInput.name", description = "JsonInput.description", categoryDescription = "JsonInput.category" )
-public class JsonInputMeta extends BaseStepMeta implements StepMetaInterface {
+public class JsonInputMeta extends BaseFileInputStepMeta implements StepMetaInterface {
   private static Class<?> PKG = JsonInputMeta.class; // for i18n purposes, needed by Translator2!!
 
-  private static final String YES = "Y";
+  public static final String[] RequiredFilesDesc = new String[] {
+    BaseMessages.getString( PKG, "System.Combo.No" ), BaseMessages.getString( PKG, "System.Combo.Yes" ) };
 
-  public static final String[] RequiredFilesDesc = new String[] { BaseMessages.getString( PKG, "System.Combo.No" ),
-    BaseMessages.getString( PKG, "System.Combo.Yes" ) };
-  public static final String[] RequiredFilesCode = new String[] { "N", "Y" };
-
-  /** Array of filenames */
-  private String[] fileName;
-
-  /** Wildcard or filemask (regular expression) */
-  private String[] fileMask;
-
-  /** Array of boolean values as string, indicating if a file is required. */
-  private String[] fileRequired;
-
-  /** Wildcard or filemask to exclude (regular expression) */
-  private String[] excludeFileMask;
-
+  // TextFileInputMeta.Content.includeFilename
   /** Flag indicating that we should include the filename in the output */
-  private boolean includeFilename;
+  private boolean includeFilename; //InputFiles.isaddresult?..
 
+  // TextFileInputMeta.Content.filenameField
   /** The name of the field in the output containing the filename */
   private String filenameField;
 
   /** Flag indicating that a row number field should be included in the output */
   private boolean includeRowNumber;
 
+  // TextFileInputMeta.Content.rowNumberField
   /** The name of the field in the output containing the row number */
   private String rowNumberField;
 
+  // TextFileInputMeta.Content.rowLimit
   /** The maximum number or lines to read */
   private long rowLimit;
 
-  /** The fields to import... */
-  private JsonInputField[] inputFields;
+  /** File info fields **/
+  protected AdditionalFileOutputFields additionalFileOutputFields = new AdditionalFileOutputFields();
+  private InputFiles jsonInputFiles;
+
+  protected void setInputFiles( InputFiles inputFiles ) {
+    jsonInputFiles = inputFiles;
+    super.inputFiles = inputFiles;
+  }
+
+  protected InputFiles getInputFiles() {
+    return jsonInputFiles;
+  }
+
+  public static class InputFiles extends BaseFileInputStepMeta.InputFiles {
+    public JsonInputField[] inputFields;
+    public void allocate( int nrFiles, int nrFields ) {
+      fileName = new String[nrFiles];
+      fileMask = new String[nrFiles];
+      excludeFileMask = new String[nrFiles];
+      fileRequired = new String[nrFiles];
+      includeSubFolders = new String[nrFiles];
+      inputFields = new JsonInputField[nrFields];
+      Arrays.fill( fileName, "" );
+      Arrays.fill( fileMask, "" );
+      Arrays.fill( excludeFileMask, "" );
+      Arrays.fill( fileRequired, NO );
+      Arrays.fill( includeSubFolders, NO );
+    }
+    @Override
+    public InputFiles clone() {
+      InputFiles clone = (InputFiles) super.clone();
+      clone.allocate( this.fileName.length, this.inputFields.length );
+      for ( int i = 0; i < inputFields.length; i++ ) {
+        clone.inputFields[i] = inputFields[i].clone();
+      }
+      return clone;
+    }
+  }
+
+  public static class AdditionalFileOutputFields extends BaseFileInputStepMeta.AdditionalOutputFields {
+
+    public void getFields( RowMetaInterface r, String name, RowMetaInterface[] info,
+        VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+      // TextFileInput is the same, this can be refactored further 
+      if ( shortFilenameField != null ) {
+        ValueMetaInterface v =
+          new ValueMetaString( space.environmentSubstitute( shortFilenameField ) );
+        v.setLength( 100, -1 );
+        v.setOrigin( name );
+        r.addValueMeta( v );
+      }
+      if ( extensionField != null ) {
+        ValueMetaInterface v =
+          new ValueMetaString( space.environmentSubstitute( extensionField ) );
+        v.setLength( 100, -1 );
+        v.setOrigin( name );
+        r.addValueMeta( v );
+      }
+      if ( pathField != null ) {
+        ValueMetaInterface v = new ValueMetaString( space.environmentSubstitute( pathField ) );
+        v.setLength( 100, -1 );
+        v.setOrigin( name );
+        r.addValueMeta( v );
+      }
+      if ( sizeField != null ) {
+        ValueMetaInterface v = new ValueMetaInteger( space.environmentSubstitute( sizeField ) );
+        v.setOrigin( name );
+        v.setLength( 9 );
+        r.addValueMeta( v );
+      }
+      if ( hiddenField != null ) {
+        ValueMetaInterface v =
+          new ValueMetaBoolean( space.environmentSubstitute( hiddenField ) );
+        v.setOrigin( name );
+        r.addValueMeta( v );
+      }
+
+      if ( lastModificationField != null ) {
+        ValueMetaInterface v =
+          new ValueMetaDate( space.environmentSubstitute( lastModificationField ) );
+        v.setOrigin( name );
+        r.addValueMeta( v );
+      }
+      if ( uriField != null ) {
+        ValueMetaInterface v = new ValueMetaString( space.environmentSubstitute( uriField ) );
+        v.setLength( 100, -1 );
+        v.setOrigin( name );
+        r.addValueMeta( v );
+      }
+
+      if ( rootUriField != null ) {
+        ValueMetaInterface v =
+          new ValueMetaString( space.environmentSubstitute( rootUriField ) );
+        v.setLength( 100, -1 );
+        v.setOrigin( name );
+        r.addValueMeta( v );
+      }
+    }
+  }
 
   /** Is In fields */
   private String valueField;
@@ -108,44 +199,36 @@ public class JsonInputMeta extends BaseStepMeta implements StepMetaInterface {
   private boolean inFields;
 
   /** Is a File */
-  private boolean IsAFile;
+  private boolean isAFile;
 
   /** Flag: add result filename **/
   private boolean addResultFile;
 
   /** Flag : do we ignore empty files */
-  private boolean IsIgnoreEmptyFile;
-
-  /** Array of boolean values as string, indicating if we need to fetch sub folders. */
-  private String[] includeSubFolders;
+  private boolean isIgnoreEmptyFile;
 
   /** Flag : do not fail if no file */
   private boolean doNotFailIfNoFile;
 
   private boolean ignoreMissingPath;
 
+  private boolean defaultPathLeafToNull;
+
   /** Flag : read url as source */
   private boolean readurl;
 
-  /** Additional fields **/
-  private String shortFileFieldName;
-  private String pathFieldName;
-  private String hiddenFieldName;
-  private String lastModificationTimeFieldName;
-  private String uriNameFieldName;
-  private String rootUriNameFieldName;
-  private String extensionFieldName;
-  private String sizeFieldName;
+  private boolean removeSourceField;
 
   public JsonInputMeta() {
     super(); // allocate BaseStepMeta
+    setInputFiles( new InputFiles() );
   }
 
   /**
    * @return Returns the shortFileFieldName.
    */
   public String getShortFileNameField() {
-    return shortFileFieldName;
+    return additionalFileOutputFields.shortFilenameField;
   }
 
   /**
@@ -153,14 +236,14 @@ public class JsonInputMeta extends BaseStepMeta implements StepMetaInterface {
    *          The shortFileFieldName to set.
    */
   public void setShortFileNameField( String field ) {
-    shortFileFieldName = field;
+    additionalFileOutputFields.shortFilenameField = field;
   }
 
   /**
    * @return Returns the pathFieldName.
    */
   public String getPathField() {
-    return pathFieldName;
+    return additionalFileOutputFields.pathField;
   }
 
   /**
@@ -168,29 +251,29 @@ public class JsonInputMeta extends BaseStepMeta implements StepMetaInterface {
    *          The pathFieldName to set.
    */
   public void setPathField( String field ) {
-    this.pathFieldName = field;
+    additionalFileOutputFields.pathField = field;
   }
 
   /**
    * @return Returns the hiddenFieldName.
    */
-  public String isHiddenField() {
-    return hiddenFieldName;
+  public String isHiddenField() { //name..
+    return additionalFileOutputFields.hiddenField;
   }
 
   /**
    * @param field
    *          The hiddenFieldName to set.
    */
-  public void setIsHiddenField( String field ) {
-    hiddenFieldName = field;
+  public void setIsHiddenField( String field ) { //name..
+    additionalFileOutputFields.hiddenField = field;
   }
 
   /**
    * @return Returns the lastModificationTimeFieldName.
    */
   public String getLastModificationDateField() {
-    return lastModificationTimeFieldName;
+    return additionalFileOutputFields.lastModificationField;
   }
 
   /**
@@ -198,14 +281,14 @@ public class JsonInputMeta extends BaseStepMeta implements StepMetaInterface {
    *          The lastModificationTimeFieldName to set.
    */
   public void setLastModificationDateField( String field ) {
-    lastModificationTimeFieldName = field;
+    additionalFileOutputFields.lastModificationField = field;
   }
 
   /**
    * @return Returns the uriNameFieldName.
    */
   public String getUriField() {
-    return uriNameFieldName;
+    return additionalFileOutputFields.uriField;
   }
 
   /**
@@ -213,14 +296,14 @@ public class JsonInputMeta extends BaseStepMeta implements StepMetaInterface {
    *          The uriNameFieldName to set.
    */
   public void setUriField( String field ) {
-    uriNameFieldName = field;
+    additionalFileOutputFields.uriField = field;
   }
 
   /**
    * @return Returns the uriNameFieldName.
    */
   public String getRootUriField() {
-    return rootUriNameFieldName;
+    return additionalFileOutputFields.rootUriField;
   }
 
   /**
@@ -228,14 +311,14 @@ public class JsonInputMeta extends BaseStepMeta implements StepMetaInterface {
    *          The rootUriNameFieldName to set.
    */
   public void setRootUriField( String field ) {
-    rootUriNameFieldName = field;
+    additionalFileOutputFields.rootUriField = field;
   }
 
   /**
    * @return Returns the extensionFieldName.
    */
   public String getExtensionField() {
-    return extensionFieldName;
+    return additionalFileOutputFields.extensionField;
   }
 
   /**
@@ -243,14 +326,14 @@ public class JsonInputMeta extends BaseStepMeta implements StepMetaInterface {
    *          The extensionFieldName to set.
    */
   public void setExtensionField( String field ) {
-    extensionFieldName = field;
+    additionalFileOutputFields.extensionField = field;
   }
 
   /**
    * @return Returns the sizeFieldName.
    */
   public String getSizeField() {
-    return sizeFieldName;
+    return additionalFileOutputFields.sizeField;
   }
 
   /**
@@ -258,7 +341,7 @@ public class JsonInputMeta extends BaseStepMeta implements StepMetaInterface {
    *          The sizeFieldName to set.
    */
   public void setSizeField( String field ) {
-    sizeFieldName = field;
+    additionalFileOutputFields.sizeField = field;
   }
 
   /**
@@ -268,19 +351,20 @@ public class JsonInputMeta extends BaseStepMeta implements StepMetaInterface {
     return addResultFile;
   }
 
-  /**
-   * @return the readurl flag
-   */
   public boolean isReadUrl() {
     return readurl;
   }
 
-  /**
-   * @param readurl
-   *          the readurl flag to set
-   */
   public void setReadUrl( boolean readurl ) {
     this.readurl = readurl;
+  }
+
+  public boolean isRemoveSourceField() {
+    return removeSourceField;
+  }
+
+  public void setRemoveSourceField( boolean removeSourceField ) {
+    this.removeSourceField = removeSourceField;
   }
 
   public void setAddResultFile( boolean addResultFile ) {
@@ -291,7 +375,7 @@ public class JsonInputMeta extends BaseStepMeta implements StepMetaInterface {
    * @return Returns the input fields.
    */
   public JsonInputField[] getInputFields() {
-    return inputFields;
+    return jsonInputFiles.inputFields;
   }
 
   /**
@@ -299,22 +383,22 @@ public class JsonInputMeta extends BaseStepMeta implements StepMetaInterface {
    *          The input fields to set.
    */
   public void setInputFields( JsonInputField[] inputFields ) {
-    this.inputFields = inputFields;
+    jsonInputFiles.inputFields = inputFields;
   }
 
   /**
-   * @return Returns the excludeFileMask.
+   * @deprecated use {@link#getExcludeFileMask()}
    */
   public String[] getExludeFileMask() {
-    return excludeFileMask;
+    return getExcludeFileMask();
   }
 
-  /**
-   * @param excludeFileMask
-   *          The excludeFileMask to set.
-   */
+  public String[] getExcludeFileMask() {
+    return inputFiles.excludeFileMask;
+  }
+
   public void setExcludeFileMask( String[] excludeFileMask ) {
-    this.excludeFileMask = excludeFileMask;
+    inputFiles.excludeFileMask = excludeFileMask;
   }
 
   /**
@@ -324,100 +408,64 @@ public class JsonInputMeta extends BaseStepMeta implements StepMetaInterface {
     return valueField;
   }
 
-  /**
-   * Set field field.
-   */
   public void setFieldValue( String value ) {
     this.valueField = value;
+    inputFiles.acceptingField = value; //TODO
   }
 
-  /**
-   * Get the IsInFields.
-   */
   public boolean isInFields() {
     return inFields;
   }
 
-  /**
-   * @param inFields
-   *          set the inFields.
-   */
   public void setInFields( boolean inFields ) {
     this.inFields = inFields;
+    inputFiles.acceptingFilenames = inFields;
   }
 
-  /**
-   * @return Returns the fileMask.
-   */
   public String[] getFileMask() {
-    return fileMask;
+    return inputFiles.fileMask;
   }
 
-  /**
-   * @param fileMask
-   *          The fileMask to set.
-   */
   public void setFileMask( String[] fileMask ) {
-    this.fileMask = fileMask;
+    inputFiles.fileMask = fileMask;
   }
 
   public String[] getFileRequired() {
-    return fileRequired;
+    return inputFiles.fileRequired;
   }
 
   public void setFileRequired( String[] fileRequiredin ) {
     for ( int i = 0; i < fileRequiredin.length; i++ ) {
-      this.fileRequired[i] = getRequiredFilesCode( fileRequiredin[i] );
+      this.inputFiles.fileRequired[i] = getRequiredFilesCode( fileRequiredin[i] );
     }
   }
 
   public void setIncludeSubFolders( String[] includeSubFoldersin ) {
     for ( int i = 0; i < includeSubFoldersin.length; i++ ) {
-      this.includeSubFolders[i] = getRequiredFilesCode( includeSubFoldersin[i] );
+      this.inputFiles.includeSubFolders[i] = getRequiredFilesCode( includeSubFoldersin[i] );
     }
   }
 
-  /**
-   * @return Returns the fileName.
-   */
   public String[] getFileName() {
-    return fileName;
+    return inputFiles.fileName;
   }
 
-  /**
-   * @param fileName
-   *          The fileName to set.
-   */
   public void setFileName( String[] fileName ) {
-    this.fileName = fileName;
+    this.inputFiles.fileName = fileName;
   }
 
-  /**
-   * @return Returns the filenameField.
-   */
   public String getFilenameField() {
     return filenameField;
   }
 
-  /**
-   * @param filenameField
-   *          The filenameField to set.
-   */
   public void setFilenameField( String filenameField ) {
     this.filenameField = filenameField;
   }
 
-  /**
-   * @return Returns the includeFilename.
-   */
   public boolean includeFilename() {
     return includeFilename;
   }
 
-  /**
-   * @param includeFilename
-   *          The includeFilename to set.
-   */
   public void setIncludeFilename( boolean includeFilename ) {
     this.includeFilename = includeFilename;
   }
@@ -456,100 +504,79 @@ public class JsonInputMeta extends BaseStepMeta implements StepMetaInterface {
    * @return the IsIgnoreEmptyFile flag
    */
   public boolean isIgnoreEmptyFile() {
-    return IsIgnoreEmptyFile;
+    return isIgnoreEmptyFile;
   }
 
   /**
-   * @param IsIgnoreEmptyFile
+   * @param isIgnoreEmptyFile
    *          the IsIgnoreEmptyFile to set
    */
-  public void setIgnoreEmptyFile( boolean IsIgnoreEmptyFile ) {
-    this.IsIgnoreEmptyFile = IsIgnoreEmptyFile;
+  public void setIgnoreEmptyFile( boolean isIgnoreEmptyFile ) {
+    this.isIgnoreEmptyFile = isIgnoreEmptyFile;
   }
 
-  /**
-   * @return the doNotFailIfNoFile flag
-   */
+  @Deprecated
   public boolean isdoNotFailIfNoFile() {
+    return isDoNotFailIfNoFile();
+  }
+  @Deprecated
+  public void setdoNotFailIfNoFile( boolean doNotFailIfNoFile ) {
+    setDoNotFailIfNoFile( doNotFailIfNoFile );
+  }
+
+  public boolean isDoNotFailIfNoFile() {
     return doNotFailIfNoFile;
   }
 
-  /**
-   * @param doNotFailIfNoFile
-   *          the doNotFailIfNoFile to set
-   */
-  public void setdoNotFailIfNoFile( boolean doNotFailIfNoFile ) {
+  public void setDoNotFailIfNoFile( boolean doNotFailIfNoFile ) {
     this.doNotFailIfNoFile = doNotFailIfNoFile;
   }
 
-  /**
-   * @return the ignoreMissingPath flag
-   */
   public boolean isIgnoreMissingPath() {
     return ignoreMissingPath;
   }
 
-  /**
-   * @param ignoreMissingPath
-   *          the ignoreMissingPath to set
-   */
+  public boolean isDefaultPathLeafToNull() {
+    return defaultPathLeafToNull;
+  }
+
   public void setIgnoreMissingPath( boolean ignoreMissingPath ) {
     this.ignoreMissingPath = ignoreMissingPath;
   }
 
-  /**
-   * @return Returns the rowNumberField.
-   */
+  public void setDefaultPathLeafToNull( boolean defaultPathLeafToNull ) {
+    this.defaultPathLeafToNull = defaultPathLeafToNull;
+  }
+
   public String getRowNumberField() {
     return rowNumberField;
   }
 
-  /**
-   * @param rowNumberField
-   *          The rowNumberField to set.
-   */
   public void setRowNumberField( String rowNumberField ) {
     this.rowNumberField = rowNumberField;
   }
 
   public boolean getIsAFile() {
-    return IsAFile;
+    return isAFile;
   }
 
-  public void setIsAFile( boolean IsAFile ) {
-    this.IsAFile = IsAFile;
+  public void setIsAFile( boolean isAFile ) {
+    this.isAFile = isAFile;
   }
 
   public String[] getIncludeSubFolders() {
-    return includeSubFolders;
+    return inputFiles.includeSubFolders;
   }
 
   public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     readData( stepnode );
   }
 
-  public Object clone() {
-    JsonInputMeta retval = (JsonInputMeta) super.clone();
-
-    int nrFiles = fileName.length;
-    int nrFields = inputFields.length;
-
-    retval.allocate( nrFiles, nrFields );
-
-    for ( int i = 0; i < nrFiles; i++ ) {
-      retval.fileName[i] = fileName[i];
-      retval.fileMask[i] = fileMask[i];
-      retval.excludeFileMask[i] = excludeFileMask[i];
-      retval.fileRequired[i] = fileRequired[i];
-      retval.includeSubFolders[i] = includeSubFolders[i];
-    }
-
-    for ( int i = 0; i < nrFields; i++ ) {
-      if ( inputFields[i] != null ) {
-        retval.inputFields[i] = (JsonInputField) inputFields[i].clone();
-      }
-    }
-    return retval;
+  @Override
+  public JsonInputMeta clone() {
+    JsonInputMeta clone = (JsonInputMeta) super.clone();
+    // comp classes handled by super
+    return clone;
   }
 
   public String getXML() {
@@ -562,26 +589,28 @@ public class JsonInputMeta extends BaseStepMeta implements StepMetaInterface {
 
     retval.append( "    " ).append( XMLHandler.addTagValue( "readurl", readurl ) );
 
-    retval.append( "    " + XMLHandler.addTagValue( "IsIgnoreEmptyFile", IsIgnoreEmptyFile ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "removeSourceField", removeSourceField ) );
+
+    retval.append( "    " + XMLHandler.addTagValue( "IsIgnoreEmptyFile", isIgnoreEmptyFile ) );
     retval.append( "    " + XMLHandler.addTagValue( "doNotFailIfNoFile", doNotFailIfNoFile ) );
     retval.append( "    " + XMLHandler.addTagValue( "ignoreMissingPath", ignoreMissingPath ) );
-
+    retval.append( "    " + XMLHandler.addTagValue( "defaultPathLeafToNull", defaultPathLeafToNull ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "rownum_field", rowNumberField ) );
 
     retval.append( "    <file>" ).append( Const.CR );
-    for ( int i = 0; i < fileName.length; i++ ) {
-      retval.append( "      " ).append( XMLHandler.addTagValue( "name", fileName[i] ) );
-      retval.append( "      " ).append( XMLHandler.addTagValue( "filemask", fileMask[i] ) );
-      retval.append( "      " ).append( XMLHandler.addTagValue( "exclude_filemask", excludeFileMask[i] ) );
-      retval.append( "      " ).append( XMLHandler.addTagValue( "file_required", fileRequired[i] ) );
-      retval.append( "      " ).append( XMLHandler.addTagValue( "include_subfolders", includeSubFolders[i] ) );
+    for ( int i = 0; i < getFileName().length; i++ ) {
+      retval.append( "      " ).append( XMLHandler.addTagValue( "name", getFileName()[i] ) );
+      retval.append( "      " ).append( XMLHandler.addTagValue( "filemask", getFileMask()[i] ) );
+      retval.append( "      " ).append( XMLHandler.addTagValue( "exclude_filemask", getExcludeFileMask()[i] ) );
+      retval.append( "      " ).append( XMLHandler.addTagValue( "file_required", getFileRequired()[i] ) );
+      retval.append( "      " ).append( XMLHandler.addTagValue( "include_subfolders", getIncludeSubFolders()[i] ) );
 
     }
     retval.append( "    </file>" ).append( Const.CR );
 
     retval.append( "    <fields>" ).append( Const.CR );
-    for ( int i = 0; i < inputFields.length; i++ ) {
-      JsonInputField field = inputFields[i];
+    for ( int i = 0; i < getInputFields().length; i++ ) {
+      JsonInputField field = getInputFields()[i];
       retval.append( field.getXML() );
     }
     retval.append( "    </fields>" ).append( Const.CR );
@@ -589,18 +618,18 @@ public class JsonInputMeta extends BaseStepMeta implements StepMetaInterface {
     retval.append( "    " ).append( XMLHandler.addTagValue( "limit", rowLimit ) );
 
     retval.append( "    " ).append( XMLHandler.addTagValue( "IsInFields", inFields ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "IsAFile", IsAFile ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "IsAFile", isAFile ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "valueField", valueField ) );
 
-    retval.append( "    " ).append( XMLHandler.addTagValue( "shortFileFieldName", shortFileFieldName ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "pathFieldName", pathFieldName ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "hiddenFieldName", hiddenFieldName ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "shortFileFieldName", getShortFileNameField() ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "pathFieldName", getPathField() ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "hiddenFieldName", isHiddenField() ) );
     retval.append( "    " ).append(
-        XMLHandler.addTagValue( "lastModificationTimeFieldName", lastModificationTimeFieldName ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "uriNameFieldName", uriNameFieldName ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "rootUriNameFieldName", rootUriNameFieldName ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "extensionFieldName", extensionFieldName ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "sizeFieldName", sizeFieldName ) );
+      XMLHandler.addTagValue( "lastModificationTimeFieldName", getLastModificationDateField() ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "uriNameFieldName", getUriField() ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "rootUriNameFieldName", getUriField() ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "extensionFieldName", getExtensionField() ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "sizeFieldName", getSizeField() ) );
     return retval.toString();
   }
 
@@ -632,8 +661,10 @@ public class JsonInputMeta extends BaseStepMeta implements StepMetaInterface {
       filenameField = XMLHandler.getTagValue( stepnode, "include_field" );
       addResultFile = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "addresultfile" ) );
       readurl = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "readurl" ) );
-      IsIgnoreEmptyFile = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "IsIgnoreEmptyFile" ) );
+      removeSourceField = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "removeSourceField" ) );
+      isIgnoreEmptyFile = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "IsIgnoreEmptyFile" ) );
       ignoreMissingPath = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "ignoreMissingPath" ) );
+      defaultPathLeafToNull = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "defaultPathLeafToNull" ) );
 
       doNotFailIfNoFile = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "doNotFailIfNoFile" ) );
       includeRowNumber = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "rownum" ) );
@@ -644,7 +675,7 @@ public class JsonInputMeta extends BaseStepMeta implements StepMetaInterface {
       int nrFiles = XMLHandler.countNodes( filenode, "name" );
       int nrFields = XMLHandler.countNodes( fields, "field" );
 
-      allocate( nrFiles, nrFields );
+      initArrayFields( nrFiles, nrFields );
 
       for ( int i = 0; i < nrFiles; i++ ) {
         Node filenamenode = XMLHandler.getSubNodeByNr( filenode, "name", i );
@@ -652,85 +683,74 @@ public class JsonInputMeta extends BaseStepMeta implements StepMetaInterface {
         Node excludefilemasknode = XMLHandler.getSubNodeByNr( filenode, "exclude_filemask", i );
         Node fileRequirednode = XMLHandler.getSubNodeByNr( filenode, "file_required", i );
         Node includeSubFoldersnode = XMLHandler.getSubNodeByNr( filenode, "include_subfolders", i );
-        fileName[i] = XMLHandler.getNodeValue( filenamenode );
-        fileMask[i] = XMLHandler.getNodeValue( filemasknode );
-        excludeFileMask[i] = XMLHandler.getNodeValue( excludefilemasknode );
-        fileRequired[i] = XMLHandler.getNodeValue( fileRequirednode );
-        includeSubFolders[i] = XMLHandler.getNodeValue( includeSubFoldersnode );
+        getFileName()[i] = XMLHandler.getNodeValue( filenamenode );
+        getFileMask()[i] = XMLHandler.getNodeValue( filemasknode );
+        getExcludeFileMask()[i] = XMLHandler.getNodeValue( excludefilemasknode );
+        getFileRequired()[i] = XMLHandler.getNodeValue( fileRequirednode );
+        getIncludeSubFolders()[i] = XMLHandler.getNodeValue( includeSubFoldersnode );
       }
 
       for ( int i = 0; i < nrFields; i++ ) {
         Node fnode = XMLHandler.getSubNodeByNr( fields, "field", i );
         JsonInputField field = new JsonInputField( fnode );
-        inputFields[i] = field;
+        getInputFields()[i] = field;
       }
 
       // Is there a limit on the number of rows we process?
       rowLimit = Const.toLong( XMLHandler.getTagValue( stepnode, "limit" ), 0L );
 
-      inFields = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "IsInFields" ) );
-      IsAFile = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "IsAFile" ) );
-      valueField = XMLHandler.getTagValue( stepnode, "valueField" );
-      shortFileFieldName = XMLHandler.getTagValue( stepnode, "shortFileFieldName" );
-      pathFieldName = XMLHandler.getTagValue( stepnode, "pathFieldName" );
-      hiddenFieldName = XMLHandler.getTagValue( stepnode, "hiddenFieldName" );
-      lastModificationTimeFieldName = XMLHandler.getTagValue( stepnode, "lastModificationTimeFieldName" );
-      uriNameFieldName = XMLHandler.getTagValue( stepnode, "uriNameFieldName" );
-      rootUriNameFieldName = XMLHandler.getTagValue( stepnode, "rootUriNameFieldName" );
-      extensionFieldName = XMLHandler.getTagValue( stepnode, "extensionFieldName" );
-      sizeFieldName = XMLHandler.getTagValue( stepnode, "sizeFieldName" );
+      setInFields( "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "IsInFields" ) ) );
+      isAFile = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "IsAFile" ) );
+      setFieldValue( XMLHandler.getTagValue( stepnode, "valueField" ) );
+      setShortFileNameField( XMLHandler.getTagValue( stepnode, "shortFileFieldName" ) );
+      setPathField( XMLHandler.getTagValue( stepnode, "pathFieldName" ) );
+      setIsHiddenField( XMLHandler.getTagValue( stepnode, "hiddenFieldName" ) );
+      setLastModificationDateField( XMLHandler.getTagValue( stepnode, "lastModificationTimeFieldName" ) );
+      setUriField( XMLHandler.getTagValue( stepnode, "uriNameFieldName" ) );
+      setRootUriField( XMLHandler.getTagValue( stepnode, "rootUriNameFieldName" ) );
+      setExtensionField( XMLHandler.getTagValue( stepnode, "extensionFieldName" ) );
+      setSizeField( XMLHandler.getTagValue( stepnode, "sizeFieldName" ) );
     } catch ( Exception e ) {
       throw new KettleXMLException( BaseMessages.getString( PKG, "JsonInputMeta.Exception.ErrorLoadingXML", e
           .toString() ) );
     }
   }
 
-  public void allocate( int nrfiles, int nrfields ) {
-    fileName = new String[nrfiles];
-    fileMask = new String[nrfiles];
-    excludeFileMask = new String[nrfiles];
-    fileRequired = new String[nrfiles];
-    includeSubFolders = new String[nrfiles];
-    inputFields = new JsonInputField[nrfields];
+  @Deprecated //?needs to be public?
+  public void allocate( int nrFiles, int nrFields ) {
+    initArrayFields( nrFiles, nrFields );
+  }
+
+  private void initArrayFields( int nrfiles, int nrfields ) {
+    setInputFields( new JsonInputField[nrfields] );
+    getInputFiles().allocate( nrfiles, nrfields );
   }
 
   public void setDefault() {
-    shortFileFieldName = null;
-    pathFieldName = null;
-    hiddenFieldName = null;
-    lastModificationTimeFieldName = null;
-    uriNameFieldName = null;
-    rootUriNameFieldName = null;
-    extensionFieldName = null;
-    sizeFieldName = null;
+    additionalFileOutputFields = new AdditionalFileOutputFields();
 
-    IsIgnoreEmptyFile = false;
+    isIgnoreEmptyFile = false;
     ignoreMissingPath = false;
+    defaultPathLeafToNull = false;
     doNotFailIfNoFile = true;
     includeFilename = false;
     filenameField = "";
     includeRowNumber = false;
     rowNumberField = "";
-    IsAFile = false;
+    isAFile = false;
     addResultFile = false;
 
     readurl = false;
 
+    removeSourceField = false;
+
     int nrFiles = 0;
     int nrFields = 0;
 
-    allocate( nrFiles, nrFields );
-
-    for ( int i = 0; i < nrFiles; i++ ) {
-      fileName[i] = "filename" + ( i + 1 );
-      fileMask[i] = "";
-      excludeFileMask[i] = "";
-      fileRequired[i] = RequiredFilesCode[0];
-      includeSubFolders[i] = RequiredFilesCode[0];
-    }
+    initArrayFields( nrFiles, nrFields );
 
     for ( int i = 0; i < nrFields; i++ ) {
-      inputFields[i] = new JsonInputField( "field" + ( i + 1 ) );
+      getInputFields()[i] = new JsonInputField( "field" + ( i + 1 ) );
     }
 
     rowLimit = 0;
@@ -740,97 +760,34 @@ public class JsonInputMeta extends BaseStepMeta implements StepMetaInterface {
 
   }
 
-  public void getFields( RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep,
+  @Override
+  public void getFields( RowMetaInterface rowMeta, String name, RowMetaInterface[] info, StepMeta nextStep,
       VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
-    int i;
-    for ( i = 0; i < inputFields.length; i++ ) {
-      JsonInputField field = inputFields[i];
-
-      int type = field.getType();
-      if ( type == ValueMeta.TYPE_NONE ) {
-        type = ValueMeta.TYPE_STRING;
-      }
+    for ( JsonInputField field : getInputFields() ) {
       try {
-        ValueMetaInterface v = ValueMetaFactory.createValueMeta( space.environmentSubstitute( field.getName() ), type );
-        v.setLength( field.getLength() );
-        v.setPrecision( field.getPrecision() );
-        v.setOrigin( name );
-        v.setConversionMask( field.getFormat() );
-        v.setDecimalSymbol( field.getDecimalSymbol() );
-        v.setGroupingSymbol( field.getGroupSymbol() );
-        v.setCurrencySymbol( field.getCurrencySymbol() );
-        r.addValueMeta( v );
+        rowMeta.addValueMeta( field.toValueMeta( name, space ) );
       } catch ( Exception e ) {
         throw new KettleStepException( e );
       }
     }
 
     if ( includeFilename ) {
-      ValueMetaInterface v = new ValueMeta( space.environmentSubstitute( filenameField ), ValueMeta.TYPE_STRING );
+      ValueMetaInterface v = new ValueMetaString( space.environmentSubstitute( filenameField ) );
       v.setLength( 250 );
       v.setPrecision( -1 );
       v.setOrigin( name );
-      r.addValueMeta( v );
+      rowMeta.addValueMeta( v );
     }
 
     if ( includeRowNumber ) {
-      ValueMetaInterface v = new ValueMeta( space.environmentSubstitute( rowNumberField ), ValueMeta.TYPE_INTEGER );
+      ValueMetaInterface v = new ValueMetaInteger( space.environmentSubstitute( rowNumberField ) );
       v.setLength( ValueMetaInterface.DEFAULT_INTEGER_LENGTH, 0 );
       v.setOrigin( name );
-      r.addValueMeta( v );
+      rowMeta.addValueMeta( v );
     }
     // Add additional fields
-
-    if ( getShortFileNameField() != null && getShortFileNameField().length() > 0 ) {
-      ValueMetaInterface v =
-          new ValueMeta( space.environmentSubstitute( getShortFileNameField() ), ValueMeta.TYPE_STRING );
-      v.setLength( 100, -1 );
-      v.setOrigin( name );
-      r.addValueMeta( v );
-    }
-    if ( getExtensionField() != null && getExtensionField().length() > 0 ) {
-      ValueMetaInterface v = new ValueMeta( space.environmentSubstitute( getExtensionField() ), ValueMeta.TYPE_STRING );
-      v.setLength( 100, -1 );
-      v.setOrigin( name );
-      r.addValueMeta( v );
-    }
-    if ( getPathField() != null && getPathField().length() > 0 ) {
-      ValueMetaInterface v = new ValueMeta( space.environmentSubstitute( getPathField() ), ValueMeta.TYPE_STRING );
-      v.setLength( 100, -1 );
-      v.setOrigin( name );
-      r.addValueMeta( v );
-    }
-    if ( getSizeField() != null && getSizeField().length() > 0 ) {
-      ValueMetaInterface v = new ValueMeta( space.environmentSubstitute( getSizeField() ), ValueMeta.TYPE_INTEGER );
-      v.setOrigin( name );
-      v.setLength( 9 );
-      r.addValueMeta( v );
-    }
-    if ( isHiddenField() != null && isHiddenField().length() > 0 ) {
-      ValueMetaInterface v = new ValueMeta( space.environmentSubstitute( isHiddenField() ), ValueMeta.TYPE_BOOLEAN );
-      v.setOrigin( name );
-      r.addValueMeta( v );
-    }
-
-    if ( getLastModificationDateField() != null && getLastModificationDateField().length() > 0 ) {
-      ValueMetaInterface v =
-          new ValueMeta( space.environmentSubstitute( getLastModificationDateField() ), ValueMeta.TYPE_DATE );
-      v.setOrigin( name );
-      r.addValueMeta( v );
-    }
-    if ( getUriField() != null && getUriField().length() > 0 ) {
-      ValueMetaInterface v = new ValueMeta( space.environmentSubstitute( getUriField() ), ValueMeta.TYPE_STRING );
-      v.setLength( 100, -1 );
-      v.setOrigin( name );
-      r.addValueMeta( v );
-    }
-
-    if ( getRootUriField() != null && getRootUriField().length() > 0 ) {
-      ValueMetaInterface v = new ValueMeta( space.environmentSubstitute( getRootUriField() ), ValueMeta.TYPE_STRING );
-      v.setLength( 100, -1 );
-      v.setOrigin( name );
-      r.addValueMeta( v );
-    }
+    additionalFileOutputFields.normalize();
+    additionalFileOutputFields.getFields( rowMeta, name, info, space, repository, metaStore );
   }
 
   public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
@@ -844,8 +801,11 @@ public class JsonInputMeta extends BaseStepMeta implements StepMetaInterface {
 
       readurl = rep.getStepAttributeBoolean( id_step, "readurl" );
 
-      IsIgnoreEmptyFile = rep.getStepAttributeBoolean( id_step, "IsIgnoreEmptyFile" );
+      removeSourceField = rep.getStepAttributeBoolean( id_step, "removeSourceField" );
+
+      isIgnoreEmptyFile = rep.getStepAttributeBoolean( id_step, "IsIgnoreEmptyFile" );
       ignoreMissingPath = rep.getStepAttributeBoolean( id_step, "ignoreMissingPath" );
+      defaultPathLeafToNull = rep.getStepAttributeBoolean( id_step, "defaultPathLeafToNull" );
 
       doNotFailIfNoFile = rep.getStepAttributeBoolean( id_step, "doNotFailIfNoFile" );
 
@@ -856,14 +816,14 @@ public class JsonInputMeta extends BaseStepMeta implements StepMetaInterface {
       int nrFiles = rep.countNrStepAttributes( id_step, "file_name" );
       int nrFields = rep.countNrStepAttributes( id_step, "field_name" );
 
-      allocate( nrFiles, nrFields );
+      initArrayFields( nrFiles, nrFields );
 
       for ( int i = 0; i < nrFiles; i++ ) {
-        fileName[i] = rep.getStepAttributeString( id_step, i, "file_name" );
-        fileMask[i] = rep.getStepAttributeString( id_step, i, "file_mask" );
-        excludeFileMask[i] = rep.getStepAttributeString( id_step, i, "exclude_file_mask" );
-        fileRequired[i] = rep.getStepAttributeString( id_step, i, "file_required" );
-        includeSubFolders[i] = rep.getStepAttributeString( id_step, i, "include_subfolders" );
+        getFileName()[i] = rep.getStepAttributeString( id_step, i, "file_name" );
+        getFileMask()[i] = rep.getStepAttributeString( id_step, i, "file_mask" );
+        getExcludeFileMask()[i] = rep.getStepAttributeString( id_step, i, "exclude_file_mask" );
+        getFileRequired()[i] = rep.getStepAttributeString( id_step, i, "file_required" );
+        getIncludeSubFolders()[i] = rep.getStepAttributeString( id_step, i, "include_subfolders" );
       }
 
       for ( int i = 0; i < nrFields; i++ ) {
@@ -871,33 +831,34 @@ public class JsonInputMeta extends BaseStepMeta implements StepMetaInterface {
 
         field.setName( rep.getStepAttributeString( id_step, i, "field_name" ) );
         field.setPath( rep.getStepAttributeString( id_step, i, "field_path" ) );
-        field.setType( ValueMeta.getType( rep.getStepAttributeString( id_step, i, "field_type" ) ) );
+        field.setType( ValueMetaFactory.getIdForValueMeta( rep.getStepAttributeString( id_step, i, "field_type" ) ) );
         field.setFormat( rep.getStepAttributeString( id_step, i, "field_format" ) );
         field.setCurrencySymbol( rep.getStepAttributeString( id_step, i, "field_currency" ) );
         field.setDecimalSymbol( rep.getStepAttributeString( id_step, i, "field_decimal" ) );
         field.setGroupSymbol( rep.getStepAttributeString( id_step, i, "field_group" ) );
         field.setLength( (int) rep.getStepAttributeInteger( id_step, i, "field_length" ) );
         field.setPrecision( (int) rep.getStepAttributeInteger( id_step, i, "field_precision" ) );
-        field.setTrimType( JsonInputField
-            .getTrimTypeByCode( rep.getStepAttributeString( id_step, i, "field_trim_type" ) ) );
+        field.setTrimType( ValueMetaBase.getTrimTypeByCode( rep.getStepAttributeString(
+          id_step, i, "field_trim_type" ) ) );
         field.setRepeated( rep.getStepAttributeBoolean( id_step, i, "field_repeat" ) );
 
-        inputFields[i] = field;
+        getInputFields()[i] = field;
       }
       inFields = rep.getStepAttributeBoolean( id_step, "IsInFields" );
-      IsAFile = rep.getStepAttributeBoolean( id_step, "IsAFile" );
+      isAFile = rep.getStepAttributeBoolean( id_step, "IsAFile" );
 
       valueField = rep.getStepAttributeString( id_step, "valueField" );
 
-      shortFileFieldName = rep.getStepAttributeString( id_step, "shortFileFieldName" );
-      pathFieldName = rep.getStepAttributeString( id_step, "pathFieldName" );
-      hiddenFieldName = rep.getStepAttributeString( id_step, "hiddenFieldName" );
-      lastModificationTimeFieldName = rep.getStepAttributeString( id_step, "lastModificationTimeFieldName" );
-      rootUriNameFieldName = rep.getStepAttributeString( id_step, "rootUriNameFieldName" );
-      extensionFieldName = rep.getStepAttributeString( id_step, "extensionFieldName" );
-      sizeFieldName = rep.getStepAttributeString( id_step, "sizeFieldName" );
+      setShortFileNameField( rep.getStepAttributeString( id_step, "shortFileFieldName" ) );
+      setPathField( rep.getStepAttributeString( id_step, "pathFieldName" ) );
+      setIsHiddenField( rep.getStepAttributeString( id_step, "hiddenFieldName" ) );
+      setLastModificationDateField( rep.getStepAttributeString( id_step, "lastModificationTimeFieldName" ) );
+      setRootUriField( rep.getStepAttributeString( id_step, "rootUriNameFieldName" ) );
+      setExtensionField( rep.getStepAttributeString( id_step, "extensionFieldName" ) );
+      setSizeField( rep.getStepAttributeString( id_step, "sizeFieldName" ) );
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG, "JsonInputMeta.Exception.ErrorReadingRepository" ), e );
+      throw new KettleException(
+        BaseMessages.getString( PKG, "JsonInputMeta.Exception.ErrorReadingRepository" ), e );
     }
   }
 
@@ -909,8 +870,11 @@ public class JsonInputMeta extends BaseStepMeta implements StepMetaInterface {
       rep.saveStepAttribute( id_transformation, id_step, "addresultfile", addResultFile );
       rep.saveStepAttribute( id_transformation, id_step, "readurl", readurl );
 
-      rep.saveStepAttribute( id_transformation, id_step, "IsIgnoreEmptyFile", IsIgnoreEmptyFile );
+      rep.saveStepAttribute( id_transformation, id_step, "removeSourceField", removeSourceField );
+
+      rep.saveStepAttribute( id_transformation, id_step, "IsIgnoreEmptyFile", isIgnoreEmptyFile );
       rep.saveStepAttribute( id_transformation, id_step, "ignoreMissingPath", ignoreMissingPath );
+      rep.saveStepAttribute( id_transformation, id_step, "defaultPathLeafToNull", defaultPathLeafToNull );
 
       rep.saveStepAttribute( id_transformation, id_step, "doNotFailIfNoFile", doNotFailIfNoFile );
 
@@ -918,16 +882,16 @@ public class JsonInputMeta extends BaseStepMeta implements StepMetaInterface {
       rep.saveStepAttribute( id_transformation, id_step, "rownum_field", rowNumberField );
       rep.saveStepAttribute( id_transformation, id_step, "limit", rowLimit );
 
-      for ( int i = 0; i < fileName.length; i++ ) {
-        rep.saveStepAttribute( id_transformation, id_step, i, "file_name", fileName[i] );
-        rep.saveStepAttribute( id_transformation, id_step, i, "file_mask", fileMask[i] );
-        rep.saveStepAttribute( id_transformation, id_step, i, "exclude_file_mask", excludeFileMask[i] );
-        rep.saveStepAttribute( id_transformation, id_step, i, "file_required", fileRequired[i] );
-        rep.saveStepAttribute( id_transformation, id_step, i, "include_subfolders", includeSubFolders[i] );
+      for ( int i = 0; i < getFileName().length; i++ ) {
+        rep.saveStepAttribute( id_transformation, id_step, i, "file_name", getFileName()[i] );
+        rep.saveStepAttribute( id_transformation, id_step, i, "file_mask", getFileMask()[i] );
+        rep.saveStepAttribute( id_transformation, id_step, i, "exclude_file_mask", getExcludeFileMask()[i] );
+        rep.saveStepAttribute( id_transformation, id_step, i, "file_required", getFileRequired()[i] );
+        rep.saveStepAttribute( id_transformation, id_step, i, "include_subfolders", getIncludeSubFolders()[i] );
       }
 
-      for ( int i = 0; i < inputFields.length; i++ ) {
-        JsonInputField field = inputFields[i];
+      for ( int i = 0; i < getInputFields().length; i++ ) {
+        JsonInputField field = getInputFields()[i];
 
         rep.saveStepAttribute( id_transformation, id_step, i, "field_name", field.getName() );
         rep.saveStepAttribute( id_transformation, id_step, i, "field_path", field.getPath() );
@@ -942,34 +906,26 @@ public class JsonInputMeta extends BaseStepMeta implements StepMetaInterface {
         rep.saveStepAttribute( id_transformation, id_step, i, "field_repeat", field.isRepeated() );
       }
       rep.saveStepAttribute( id_transformation, id_step, "IsInFields", inFields );
-      rep.saveStepAttribute( id_transformation, id_step, "IsAFile", IsAFile );
+      rep.saveStepAttribute( id_transformation, id_step, "IsAFile", isAFile );
 
       rep.saveStepAttribute( id_transformation, id_step, "valueField", valueField );
-      rep.saveStepAttribute( id_transformation, id_step, "shortFileFieldName", shortFileFieldName );
-      rep.saveStepAttribute( id_transformation, id_step, "pathFieldName", pathFieldName );
-      rep.saveStepAttribute( id_transformation, id_step, "hiddenFieldName", hiddenFieldName );
-      rep.saveStepAttribute( id_transformation, id_step, "lastModificationTimeFieldName", lastModificationTimeFieldName );
-      rep.saveStepAttribute( id_transformation, id_step, "uriNameFieldName", uriNameFieldName );
-      rep.saveStepAttribute( id_transformation, id_step, "rootUriNameFieldName", rootUriNameFieldName );
-      rep.saveStepAttribute( id_transformation, id_step, "extensionFieldName", extensionFieldName );
+      rep.saveStepAttribute( id_transformation, id_step, "shortFileFieldName", getShortFileNameField() );
+      rep.saveStepAttribute( id_transformation, id_step, "pathFieldName", getPathField() );
+      rep.saveStepAttribute( id_transformation, id_step, "hiddenFieldName", isHiddenField() );
+      rep.saveStepAttribute(
+        id_transformation, id_step, "lastModificationTimeFieldName", getLastModificationDateField() );
+      rep.saveStepAttribute( id_transformation, id_step, "uriNameFieldName", getUriField() );
+      rep.saveStepAttribute( id_transformation, id_step, "rootUriNameFieldName", getRootUriField() );
+      rep.saveStepAttribute( id_transformation, id_step, "extensionFieldName", getExtensionField() );
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG, "JsonInputMeta.Exception.ErrorSavingToRepository", ""
-          + id_step ), e );
+      throw new KettleException( BaseMessages.getString(
+        PKG, "JsonInputMeta.Exception.ErrorSavingToRepository", "" + id_step ), e );
     }
   }
 
   public FileInputList getFiles( VariableSpace space ) {
-    return FileInputList.createFileList( space, fileName, fileMask, excludeFileMask, fileRequired,
-        includeSubFolderBoolean() );
-  }
-
-  private boolean[] includeSubFolderBoolean() {
-    int len = fileName.length;
-    boolean[] includeSubFolderBoolean = new boolean[len];
-    for ( int i = 0; i < len; i++ ) {
-      includeSubFolderBoolean[i] = YES.equalsIgnoreCase( includeSubFolders[i] );
-    }
-    return includeSubFolderBoolean;
+    return FileInputList.createFileList(
+      space, getFileName(), getFileMask(), getExcludeFileMask(), getFileRequired(), includeSubFolderBoolean() );
   }
 
   public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
@@ -1046,7 +1002,7 @@ public class JsonInputMeta extends BaseStepMeta implements StepMetaInterface {
    * what this does is turn the name of files into absolute paths OR it simply includes the resource in the ZIP file.
    * For now, we'll simply turn it into an absolute path and pray that the file is on a shared drive or something like
    * that.
-   * 
+   *
    * @param space
    *          the variable space to use
    * @param definitions
@@ -1055,12 +1011,11 @@ public class JsonInputMeta extends BaseStepMeta implements StepMetaInterface {
    *          The repository to optionally load other resources from (to be converted to XML)
    * @param metaStore
    *          the metaStore in which non-kettle metadata could reside.
-   * 
+   *
    * @return the filename of the exported resource
    */
   public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
-      ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore )
-    throws KettleException {
+    ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore ) throws KettleException {
     try {
       // The object that we're modifying here is a copy of the original!
       // So let's change the filename from relative to absolute by grabbing the file object...
@@ -1086,18 +1041,21 @@ public class JsonInputMeta extends BaseStepMeta implements StepMetaInterface {
 
           // Still here: set a new list of absolute filenames!
           //
-          fileName = newFilenames.toArray( new String[newFilenames.size()] );
-          fileMask = new String[newFilenames.size()]; // all null since converted to absolute path.
-          fileRequired = new String[newFilenames.size()]; // all null, turn to "Y" :
-          for ( int i = 0; i < newFilenames.size(); i++ ) {
-            fileRequired[i] = "Y";
-          }
+          setFileName( newFilenames.toArray( new String[newFilenames.size()] ) );
+          setFileMask( new String[newFilenames.size()] ); // all null since converted to absolute path.
+          setFileRequired( new String[newFilenames.size()] ); // all null, turn to "Y" :
+          Arrays.fill( getFileRequired(), YES );
         }
       }
       return null;
     } catch ( Exception e ) {
       throw new KettleException( e );
     }
+  }
+
+  @Override
+  public String getEncoding() {
+    return "UTF-8";
   }
 
 }
