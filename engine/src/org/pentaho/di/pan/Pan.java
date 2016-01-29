@@ -268,6 +268,7 @@ public class Pan {
           }
 
           RepositoriesMeta repsinfo = new RepositoriesMeta();
+          repsinfo.getLog().setLogLevel( log.getLogLevel() );
 
           try {
             repsinfo.readData();
@@ -290,7 +291,7 @@ public class Pan {
               PluginRegistry.getInstance().loadClass(
                 RepositoryPluginType.class, repositoryMeta, Repository.class );
             rep.init( repositoryMeta );
-
+            rep.getLog().setLogLevel( log.getLogLevel() );
             rep.connect( optionUsername != null ? optionUsername.toString() : null, optionPassword != null
               ? optionPassword.toString() : null );
 

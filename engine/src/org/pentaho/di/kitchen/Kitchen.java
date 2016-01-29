@@ -288,6 +288,7 @@ public class Kitchen {
           }
 
           RepositoriesMeta repsinfo = new RepositoriesMeta();
+          repsinfo.getLog().setLogLevel( log.getLogLevel() );
           try {
             repsinfo.readData();
           } catch ( Exception e ) {
@@ -308,7 +309,7 @@ public class Kitchen {
               PluginRegistry.getInstance().loadClass(
                 RepositoryPluginType.class, repositoryMeta, Repository.class );
             repository.init( repositoryMeta );
-
+            repository.getLog().setLogLevel( log.getLogLevel() );
             repository.connect( optionUsername != null ? optionUsername.toString() : null, optionPassword != null
               ? optionPassword.toString() : null );
 
