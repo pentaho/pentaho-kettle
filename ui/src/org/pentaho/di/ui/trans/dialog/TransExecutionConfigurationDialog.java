@@ -167,7 +167,11 @@ public class TransExecutionConfigurationDialog extends ConfigurationDialog {
     FormData fdLogLevel = new FormData();
     fdLogLevel.left = new FormAttachment( wlLogLevel, 6 );
     fdLogLevel.width = 200;
-    fdLogLevel.top = new FormAttachment( wClearLog, -2, SWT.TOP );
+    if ( Const.isOSX() ) {
+      fdLogLevel.top = new FormAttachment( wClearLog, 2, SWT.TOP );
+    } else {
+      fdLogLevel.top = new FormAttachment( wClearLog, -2, SWT.TOP );
+    }
     fdLogLevel.right = new FormAttachment( 0, 500 );
     wLogLevel.setLayoutData( fdLogLevel );
     wLogLevel.setItems( LogLevel.getLogLevelDescriptions() );
