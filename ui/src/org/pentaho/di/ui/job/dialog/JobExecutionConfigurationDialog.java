@@ -150,7 +150,11 @@ public class JobExecutionConfigurationDialog extends ConfigurationDialog {
     FormData fdLogLevel = new FormData();
     fdLogLevel.left = new FormAttachment( wlLogLevel, 6 );
     fdLogLevel.width = 200;
-    fdLogLevel.top = new FormAttachment( wClearLog, -2, SWT.TOP );
+    if ( Const.isOSX() ) {
+      fdLogLevel.top = new FormAttachment( wClearLog, 2, SWT.TOP );
+    } else {
+      fdLogLevel.top = new FormAttachment( wClearLog, -2, SWT.TOP );
+    }
     fdLogLevel.right = new FormAttachment( 0, 500 );
     wLogLevel.setLayoutData( fdLogLevel );
     wLogLevel.setItems( LogLevel.getLogLevelDescriptions() );
@@ -160,7 +164,11 @@ public class JobExecutionConfigurationDialog extends ConfigurationDialog {
     wStartCopy.setToolTipText( BaseMessages.getString( PKG, "JobExecutionConfigurationDialog.StartCopy.Tooltip" ) );
     FormData fd_startJobCombo = new FormData();
     fd_startJobCombo.right = new FormAttachment( wLogLevel, 0, SWT.RIGHT );
-    fd_startJobCombo.top = new FormAttachment( wLogLevel, 10 );
+    if ( Const.isOSX() ) {
+      fd_startJobCombo.top = new FormAttachment( wLogLevel, 8 );
+    } else {
+      fd_startJobCombo.top = new FormAttachment( wLogLevel, 10 );
+    }
     wStartCopy.setLayoutData( fd_startJobCombo );
 
     JobMeta jobMeta = (JobMeta) super.abstractMeta;
@@ -176,7 +184,11 @@ public class JobExecutionConfigurationDialog extends ConfigurationDialog {
     props.setLook( lblStartJob );
     fd_startJobCombo.left = new FormAttachment( lblStartJob, 6 );
     FormData fd_lblStartJob = new FormData();
-    fd_lblStartJob.top = new FormAttachment( wlLogLevel, 18 );
+    if ( Const.isOSX() ) {
+      fd_lblStartJob.top = new FormAttachment( wlLogLevel, 8 );
+    } else {
+      fd_lblStartJob.top = new FormAttachment( wlLogLevel, 18 );
+    }
     fd_lblStartJob.right = new FormAttachment( wlLogLevel, 0, SWT.RIGHT );
     lblStartJob.setLayoutData( fd_lblStartJob );
     lblStartJob.setText( BaseMessages.getString( PKG, "JobExecutionConfigurationDialog.StartCopy.Label" ) );
