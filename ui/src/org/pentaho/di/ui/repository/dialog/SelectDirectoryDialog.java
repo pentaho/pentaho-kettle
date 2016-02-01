@@ -113,7 +113,7 @@ public class SelectDirectoryDialog extends Dialog {
     Shell parent = getParent();
     shell = new Shell( parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN );
     props.setLook( shell );
-    shell.setImage( GUIResource.getInstance().getImageConnection() );
+    shell.setImage( GUIResource.getInstance().getImageSpoon() );
     shell.setText( BaseMessages.getString( PKG, "SelectDirectoryDialog.Dialog.Main.Title" ) );
 
     FormLayout formLayout = new FormLayout();
@@ -250,7 +250,7 @@ public class SelectDirectoryDialog extends Dialog {
     }
 
     tiTree = new TreeItem( wTree, SWT.NONE );
-    tiTree.setImage( GUIResource.getInstance().getImageFolderConnections() );
+    tiTree.setImage( GUIResource.getInstance().getImageFolder() );
     RepositoryDirectoryUI.getDirectoryTree( tiTree, dircolor, repositoryTree );
     tiTree.setExpanded( true );
 
@@ -294,7 +294,7 @@ public class SelectDirectoryDialog extends Dialog {
                   dir.addSubdirectory( subdir );
                   TreeItem tiNew = new TreeItem( ti, SWT.NONE );
                   tiNew.setText( newdir );
-                  tiNew.setImage( GUIResource.getInstance().getImageArrow() );
+                  tiNew.setImage( GUIResource.getInstance().getImageFolder() );
                   wTree.setSelection( new TreeItem[] { tiNew } );
                 } catch ( Exception exception ) {
                   new ErrorDialog( shell, BaseMessages.getString(

@@ -160,7 +160,7 @@ public class SelectObjectDialog extends Dialog {
     shell =
       new Shell( parent, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL | SWT.SHEET | SWT.RESIZE | SWT.MIN | SWT.MAX );
     props.setLook( shell );
-    shell.setImage( GUIResource.getInstance().getImageFolderConnections() );
+    shell.setImage( GUIResource.getInstance().getImageSpoon() );
 
     FormLayout formLayout = new FormLayout();
     formLayout.marginWidth = Const.FORM_MARGIN;
@@ -438,7 +438,7 @@ public class SelectObjectDialog extends Dialog {
       // display that on the UI otherwise we will hide it
       if ( directoryTree.isRoot() && directoryTree.isVisible() ) {
         ti = new TreeItem( wTree, SWT.NONE );
-        ti.setImage( GUIResource.getInstance().getImageFolderConnections() );
+        ti.setImage( GUIResource.getInstance().getImageFolder() );
         ti.setExpanded( true );
         RepositoryDirectoryUI.getTreeWithNames(
           ti, rep, dircolor, sortColumn, includeDeleted, ascending, showTrans, showJobs, directoryTree,
@@ -447,7 +447,7 @@ public class SelectObjectDialog extends Dialog {
         for ( int i = 0; i < directoryTree.getNrSubdirectories(); i++ ) {
           RepositoryDirectory subdir = directoryTree.getSubdirectory( i );
           ti = new TreeItem( wTree, SWT.NONE );
-          ti.setImage( GUIResource.getInstance().getImageArrow() );
+          ti.setImage( GUIResource.getInstance().getImageFolder() );
           RepositoryDirectoryUI.getTreeWithNames(
             ti, rep, dircolor, sortColumn, includeDeleted, ascending, showTrans, showJobs, subdir, filterString,
             pattern );

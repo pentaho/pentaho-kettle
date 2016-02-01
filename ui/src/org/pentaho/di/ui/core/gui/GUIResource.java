@@ -23,6 +23,12 @@
 
 package org.pentaho.di.ui.core.gui;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
+
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.eclipse.swt.SWT;
@@ -56,12 +62,6 @@ import org.pentaho.di.ui.core.ConstUI;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.util.ImageUtil;
 import org.pentaho.di.ui.util.SwtSvgImageUtil;
-
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
 
 /*
  * colors etc. are allocated once and released once at the end of the program.
@@ -205,6 +205,10 @@ public class GUIResource {
 
   private SwtUniversalImage imageFolder;
 
+  private SwtUniversalImage imageTransRepo;
+  
+  private SwtUniversalImage imageJobRepo;
+  
   private Image imageWizard;
 
   private Image imageCredits;
@@ -563,6 +567,8 @@ public class GUIResource {
       imageSlave.dispose();
       imageArrow.dispose();
       imageFolder.dispose();
+      imageTransRepo.dispose();
+      imageJobRepo.dispose();
       imageWizard.dispose();
       imageCredits.dispose();
       imageStart.dispose();
@@ -1136,6 +1142,15 @@ public class GUIResource {
     imageFolder = SwtSvgImageUtil.getUniversalImage( display, getClass().getClassLoader(),
       BasePropertyHandler.getProperty( "Folder_image" ) );
 
+    // "ui/images/transrepo.png"
+    imageTransRepo = SwtSvgImageUtil.getUniversalImage( display, getClass().getClassLoader(),
+      BasePropertyHandler.getProperty( "TransRepo_image" ) );
+    
+    // "ui/images/jobrepo.png"
+    imageJobRepo = SwtSvgImageUtil.getUniversalImage( display, getClass().getClassLoader(),
+      BasePropertyHandler.getProperty( "JobRepo_image" ) );
+        
+    
     // Makes transparent images "on the fly"
     //
 
@@ -1802,6 +1817,28 @@ public class GUIResource {
     return imageFolder.getAsBitmapForSize( display, ConstUI.MEDIUM_ICON_SIZE, ConstUI.MEDIUM_ICON_SIZE );
   }
 
+  /**
+   * @return the imageJobRepo
+   */
+  public Image getImageJobRepo() {
+    return imageJobRepo.getAsBitmapForSize( display, ConstUI.MEDIUM_ICON_SIZE, ConstUI.MEDIUM_ICON_SIZE );
+  }
+
+  public SwtUniversalImage getSwtImageJobRepo() {
+    return imageJobRepo;
+  }
+  
+  /**
+   * @return the imageTransRepo
+   */
+  public Image getImageTransRepo() {
+    return imageTransRepo.getAsBitmapForSize( display, ConstUI.MEDIUM_ICON_SIZE, ConstUI.MEDIUM_ICON_SIZE );
+  }
+
+  public SwtUniversalImage getSwtImageTransRepo() {
+    return imageTransRepo;
+  }
+  
   /**
    * @return the imageDummySmall
    */
