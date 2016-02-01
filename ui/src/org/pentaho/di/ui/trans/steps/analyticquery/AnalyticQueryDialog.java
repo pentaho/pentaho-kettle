@@ -202,7 +202,6 @@ public class AnalyticQueryDialog extends BaseStepDialog implements StepDialogInt
         BaseMessages.getString( PKG, "AnalyticQueryDialog.ColumnInfo.Value" ), ColumnInfo.COLUMN_TYPE_TEXT,
         false );
     ciReturn[3].setToolTip( BaseMessages.getString( PKG, "AnalyticQueryDialog.ColumnInfo.Value.Tooltip" ) );
-    ciReturn[3].setUsingVariables( true );
 
     wAgg =
       new TableView(
