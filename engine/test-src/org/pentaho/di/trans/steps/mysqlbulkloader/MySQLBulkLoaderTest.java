@@ -60,7 +60,7 @@ public class MySQLBulkLoaderTest {
   MySQLBulkLoaderData ldata;
   MySQLBulkLoader     lder;
   StepMeta smeta;
-  
+
   @BeforeClass
   public static void initEnvironment() throws Exception {
     KettleEnvironment.init();
@@ -93,15 +93,13 @@ public class MySQLBulkLoaderTest {
     ldata = new MySQLBulkLoaderData();
     PluginRegistry plugReg = PluginRegistry.getInstance();
     String mblPid = plugReg.getPluginId( StepPluginType.class, lmeta );
-    smeta = new StepMeta( mblPid, "MySqlBulkLoader", lmeta);
-    Trans trans = new Trans ( transMeta );
+    smeta = new StepMeta( mblPid, "MySqlBulkLoader", lmeta );
+    Trans trans = new Trans( transMeta );
     transMeta.addStep( smeta );
     lder = new MySQLBulkLoader( smeta, ldata, 1, transMeta, trans );
     lder.copyVariablesFrom( transMeta );
-    
   }
-  
-  
+
   @Test
   public void testFieldFormatType() throws KettleXMLException {
     MySQLBulkLoaderMeta lm = new MySQLBulkLoaderMeta();
@@ -214,8 +212,8 @@ public class MySQLBulkLoaderTest {
     smi.setFieldFormatType( new int[] { MySQLBulkLoaderMeta.FIELD_FORMAT_TYPE_OK } );
     smi.setDatabaseMeta( Mockito.mock( DatabaseMeta.class ) );
 
-    ValueMetaNumber vmn = new ValueMetaNumber("Test");
-    vmn.setLength(6,3);
+    ValueMetaNumber vmn = new ValueMetaNumber( "Test" );
+    vmn.setLength( 6, 3 );
 
     MySQLBulkLoaderData sdi = new MySQLBulkLoaderData();
     sdi.keynrs = new int[1];
@@ -229,6 +227,6 @@ public class MySQLBulkLoaderTest {
     Mockito.when( loader.getRow() ).thenReturn( new Double[] { 1.023 } );
     loader.processRow( smi, sdi );
     Mockito.verify( sdi.fifoStream, Mockito.times( 1 ) ).write( " 001.023".getBytes() );
-    Assert.assertEquals(" #000.000;-#000.000", vmn.getDecimalFormat().toPattern());
+    Assert.assertEquals( " #000.000;-#000.000", vmn.getDecimalFormat().toPattern() );
   }
 }
