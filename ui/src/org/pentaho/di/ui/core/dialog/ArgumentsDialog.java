@@ -111,7 +111,11 @@ public class ArgumentsDialog extends Dialog {
     Button okButton = new Button( shell, SWT.NONE );
     okButton.setText( "OK" );
     FormData fd_okButton = new FormData();
-    fd_okButton.left = new FormAttachment( 0, 269 );
+    if ( Const.isOSX() ) {
+      fd_okButton.left = new FormAttachment( 0, 239 );
+    } else {
+      fd_okButton.left = new FormAttachment( 0, 269 );
+    }
     okButton.setLayoutData( fd_okButton );
     okButton.addSelectionListener( new SelectionAdapter() {
       public void widgetSelected( SelectionEvent e ) {
