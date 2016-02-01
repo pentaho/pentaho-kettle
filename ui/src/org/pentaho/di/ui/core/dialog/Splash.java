@@ -31,6 +31,7 @@ import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
@@ -133,8 +134,8 @@ public class Splash {
         
         String fullVersionText =  BaseMessages.getString( PKG, "SplashDialog.Version" );
         String buildVersion = BuildVersion.getInstance().getVersion();
-        if ( buildVersion.indexOf( "-" ) > -1 ) {
-          fullVersionText =  fullVersionText + " "  + buildVersion.substring( 0, buildVersion.indexOf( "-" ) );
+        if ( StringUtils.ordinalIndexOf( buildVersion,".", 2 ) > 0 ) {
+          fullVersionText =  fullVersionText + " "  + buildVersion.substring( 0, StringUtils.ordinalIndexOf( buildVersion,".", 2 ) );
         } else {
           fullVersionText =  fullVersionText + " "  + buildVersion;
         }
