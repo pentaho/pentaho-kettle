@@ -99,10 +99,11 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
         try {
           prepareNextOutputFile();
         } catch ( KettleException e ) {
-          e.printStackTrace();
-          logError( "Couldn't prepare output file " + environmentSubstitute( meta.getFileName() ) );
+          logError( BaseMessages.getString( PKG, "ExcelWriterStep.Exception.CouldNotPrepareFile",
+            environmentSubstitute( meta.getFileName() ) ) );
           setErrors( 1L );
           stopAll();
+          return false;
         }
       }
 
@@ -756,7 +757,9 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
           Sheet ts = data.wb.getSheet( data.realTemplateSheetName );
           // if template sheet is missing, break
           if ( ts == null ) {
-            throw new KettleException( "Tempate Sheet: " + data.realTemplateSheetName + " not found, aborting" );
+            throw new KettleException(
+              BaseMessages.getString( PKG, "ExcelWriterStep.Exception.TemplateNotFound",
+                data.realTemplateSheetName ) );
           }
           data.sheet = data.wb.cloneSheet( data.wb.getSheetIndex( ts ) );
           data.wb.setSheetName( data.wb.getSheetIndex( data.sheet ), data.realSheetname );
