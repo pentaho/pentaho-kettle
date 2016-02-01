@@ -83,7 +83,7 @@ public class RepositoryDirectoryUI {
     for ( int i = 0; i < dir.getNrSubdirectories(); i++ ) {
       RepositoryDirectory subdir = dir.getSubdirectory( i );
       TreeItem subti = new TreeItem( ti, SWT.NONE );
-      subti.setImage( GUIResource.getInstance().getImageArrow() );
+      subti.setImage( GUIResource.getInstance().getImageFolder() );
       subti.setData( "isFolder", true );
       getTreeWithNames(
         subti, rep, dircolor, sortPosition, includeDeleted, ascending, getTransformations, getJobs, subdir,
@@ -169,9 +169,9 @@ public class RepositoryDirectoryUI {
           TreeItem tiObject = new TreeItem( ti, SWT.NONE );
           tiObject.setData( repositoryObject );
           if ( repositoryObject.getObjectType() == RepositoryObjectType.TRANSFORMATION ) {
-            tiObject.setImage( GUIResource.getInstance().getImageTransGraph() );
+            tiObject.setImage( GUIResource.getInstance().getImageTransRepo() );
           } else if ( repositoryObject.getObjectType() == RepositoryObjectType.JOB ) {
-            tiObject.setImage( GUIResource.getInstance().getImageJobGraph() );
+            tiObject.setImage( GUIResource.getInstance().getImageJobRepo() );
           }
 
           SimpleDateFormat simpleDateFormat = new SimpleDateFormat( "yyyy/MM/dd HH:mm:ss" );
@@ -228,7 +228,7 @@ public class RepositoryDirectoryUI {
     for ( int i = 0; i < dir.getNrSubdirectories(); i++ ) {
       RepositoryDirectory subdir = dir.getSubdirectory( i );
       TreeItem subti = new TreeItem( ti, SWT.NONE );
-      subti.setImage( GUIResource.getInstance().getImageArrow() );
+      subti.setImage( GUIResource.getInstance().getImageFolder() );
       getDirectoryTree( subti, dircolor, subdir );
     }
   }
