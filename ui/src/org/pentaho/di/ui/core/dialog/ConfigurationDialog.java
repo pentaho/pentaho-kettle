@@ -330,7 +330,7 @@ public abstract class ConfigurationDialog extends Dialog {
     fdVariables.top = new FormAttachment( 0, 10 );
     fdVariables.left = new FormAttachment( 0, 10 );
     fdVariables.bottom = new FormAttachment( 0, 221 );
-    fdVariables.right = new FormAttachment( 0, 601 );
+    fdVariables.right = new FormAttachment( 100, -10 );
 
     wVariables.setLayoutData( fdVariables );
   }
@@ -432,7 +432,7 @@ public abstract class ConfigurationDialog extends Dialog {
       shell.setSize( 653, 671 );
     }
     if ( Const.isLinux() ) {
-      shell.setSize( 653, 678 );
+      shell.setSize( 740, 678 );
     }
     if ( Const.isOSX() ) {
       shell.setSize( 653, 678 );
