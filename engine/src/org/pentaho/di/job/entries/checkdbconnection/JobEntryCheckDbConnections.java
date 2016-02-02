@@ -259,6 +259,10 @@ public class JobEntryCheckDbConnections extends JobEntryBase implements Cloneabl
             int Multiple = 1;
             String waitTimeMessage = unitTimeDesc[0];
             switch ( waittimes[i] ) {
+              case JobEntryCheckDbConnections.UNIT_TIME_MILLI_SECOND:
+                Multiple = 1;
+                waitTimeMessage = unitTimeDesc[0];
+                break;
               case JobEntryCheckDbConnections.UNIT_TIME_SECOND:
                 Multiple = 1000; // Second
                 waitTimeMessage = unitTimeDesc[1];
