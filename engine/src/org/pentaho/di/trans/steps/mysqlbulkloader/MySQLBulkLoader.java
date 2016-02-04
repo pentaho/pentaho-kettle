@@ -384,16 +384,6 @@ public class MySQLBulkLoader extends BaseStep implements StepInterface {
               if ( valueMeta.isStorageBinaryString() && data.bulkFormatMeta[i] == null ) {
                 data.fifoStream.write( (byte[]) valueData );
               } else {
-                /**
-                 * If this is the first line, reset default conversion mask for Number type (#.#;-#.#).
-                 * This will make conversion mask calculated according to meta data (length, precision).
-                 *
-                 * http://jira.pentaho.com/browse/PDI-11421
-                 */
-                if(getLinesWritten() == 0){
-                  data.bulkFormatMeta[i].setConversionMask(null);
-                }
-
                 Double d = valueMeta.getNumber( valueData );
                 if ( d != null ) {
                   data.fifoStream.write( data.bulkFormatMeta[i].getString( d ).getBytes() );
