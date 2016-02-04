@@ -113,6 +113,7 @@ public class PurRepositoryConnector implements IRepositoryConnector {
           user1 = new EEUserInfo();
           user1.setLogin( name );
           user1.setName( name );
+          user1.setPassword( decryptedPassword );
           result.setUnifiedRepository( PentahoSystem.get( IUnifiedRepository.class ) );
           result.setUser( user1 );
           result.setSuccess( true );
