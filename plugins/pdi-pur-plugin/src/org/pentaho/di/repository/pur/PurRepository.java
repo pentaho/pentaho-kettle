@@ -1351,7 +1351,7 @@ public class PurRepository extends AbstractRepository implements Repository, jav
   @Override
   @SuppressWarnings( "unchecked" )
   public List<SlaveServer> getSlaveServers() throws KettleException {
-    return (List<SlaveServer>) loadAndCacheSharedObjects( false ).get( RepositoryObjectType.SLAVE_SERVER );
+    return (List<SlaveServer>) loadAndCacheSharedObjects( true ).get( RepositoryObjectType.SLAVE_SERVER );
   }
 
   public SlaveDelegate getSlaveTransformer() {
@@ -1629,12 +1629,12 @@ public class PurRepository extends AbstractRepository implements Repository, jav
 
   @Override
   public SharedObjects readJobMetaSharedObjects( final JobMeta jobMeta ) throws KettleException {
-    return jobDelegate.loadSharedObjects( jobMeta, loadAndCacheSharedObjects( false ) );
+    return jobDelegate.loadSharedObjects( jobMeta, loadAndCacheSharedObjects( true ) );
   }
 
   @Override
   public SharedObjects readTransSharedObjects( final TransMeta transMeta ) throws KettleException {
-    return transDelegate.loadSharedObjects( transMeta, loadAndCacheSharedObjects( false ) );
+    return transDelegate.loadSharedObjects( transMeta, loadAndCacheSharedObjects( true ) );
   }
 
   @Override
