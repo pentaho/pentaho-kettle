@@ -23,6 +23,7 @@
 package org.pentaho.di.trans.steps.googleanalytics;
 
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -34,6 +35,8 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.injection.Injection;
+import org.pentaho.di.core.injection.InjectionSupported;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
@@ -61,6 +64,7 @@ import org.w3c.dom.Node;
 
   documentationUrl = "http://wiki.pentaho.com/display/EAI/Google+Analytics"
 )
+@InjectionSupported( localizationPrefix = "GoogleAnalytics.Injection.", groups = { "OUTPUT_FIELDS" } )
 public class GaInputStepMeta extends BaseStepMeta implements StepMetaInterface {
 
   private static Class<?> PKG = GaInputStepMeta.class; // for i18n purposes
@@ -80,33 +84,56 @@ public class GaInputStepMeta extends BaseStepMeta implements StepMetaInterface {
   // successfully in Spoon.
   public static final String DEPRECATED_FIELD_TYPE_CONFIDENCE_INTERVAL = "Confidence Interval for Metric";
 
+  @Injection( name = "OAUTH_SERVICE_EMAIL" )
   private String oauthServiceAccount;
+  @Injection( name = "OAUTH_KEYFILE" )
   private String oauthKeyFile;
 
+  @Injection( name = "APPLICATION_NAME" )
   private String gaAppName;
+  @Injection( name = "PROFILE_TABLE" )
   private String gaProfileTableId;
+  @Injection( name = "PROFILE_NAME" )
   private String gaProfileName;
+  @Injection( name = "USE_CUSTOM_TABLE_ID" )
   private boolean useCustomTableId;
+  @Injection( name = "CUSTOM_TABLE_ID" )
   private String gaCustomTableId;
+  @Injection( name = "START_DATE" )
   private String startDate;
+  @Injection( name = "END_DATE" )
   private String endDate;
+  @Injection( name = "DIMENSIONS" )
   private String dimensions;
+  @Injection( name = "METRICS" )
   private String metrics;
+  @Injection( name = "FILTERS" )
   private String filters;
+  @Injection( name = "SORT" )
   private String sort;
+  @Injection( name = "USE_SEGMENT" )
   private boolean useSegment;
 
+  @Injection( name = "USE_CUSTOM_SEGMENT" )
   private boolean useCustomSegment;
+  @Injection( name = "ROW_LIMIT" )
   private int rowLimit;
 
+  @Injection( name = "CUSTOM_SEGMENT" )
   private String customSegment;
+  @Injection( name = "SEGMENT_NAME" )
   private String segmentName;
+  @Injection( name = "SEGMENT_ID" )
   private String segmentId;
 
+  @Injection( name = "FEED_FIELD", group = "OUTPUT_FIELDS" )
   private String[] feedField;
+  @Injection( name = "FEED_FIELD_TYPE", group = "OUTPUT_FIELDS" )
   private String[] feedFieldType;
+  @Injection( name = "OUTPUT_FIELD", group = "OUTPUT_FIELDS" )
   private String[] outputField;
   private int[] outputType;
+  @Injection( name = "CONVERSION_MASK", group = "OUTPUT_FIELDS" )
   private String[] conversionMask;
 
   public GaInputStepMeta() {
@@ -270,6 +297,16 @@ public class GaInputStepMeta extends BaseStepMeta implements StepMetaInterface {
 
   public int[] getOutputType() {
     return outputType;
+  }
+
+  @Injection( name = "OUTPUT_TYPE", group = "OUTPUT_FIELDS" )
+  public void setOutputType( int index, String value ) {
+    if ( outputType == null ) {
+      outputType = new int[index + 1];
+    } else if ( outputType.length <= index ) {
+      Arrays.copyOf( outputType, index + 1 );
+    }
+    outputType[index] = ValueMeta.getType( value );
   }
 
   // set sensible defaults for a new step
