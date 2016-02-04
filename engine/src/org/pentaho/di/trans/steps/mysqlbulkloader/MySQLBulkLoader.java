@@ -390,7 +390,7 @@ public class MySQLBulkLoader extends BaseStep implements StepInterface {
                  *
                  * http://jira.pentaho.com/browse/PDI-11421
                  */
-                if ( getLinesWritten() == 0 ) {
+                if( getLinesWritten() == 0 ) {
                   data.bulkFormatMeta[i].setConversionMask( null );
                 }
 
