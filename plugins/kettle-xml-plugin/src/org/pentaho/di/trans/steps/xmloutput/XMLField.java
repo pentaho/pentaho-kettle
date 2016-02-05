@@ -22,6 +22,7 @@
 
 package org.pentaho.di.trans.steps.xmloutput;
 
+import org.pentaho.di.core.injection.Injection;
 import org.pentaho.di.core.row.ValueMeta;
 
 /**
@@ -37,26 +38,36 @@ public class XMLField implements Cloneable {
     Element, Attribute,
   }
 
+  @Injection( name = "OUTPUT_FIELDNAME", group = "OUTPUT_FIELDS" )
   private String fieldName;
 
+  @Injection( name = "OUTPUT_ELEMENTNAME", group = "OUTPUT_FIELDS" )
   private String elementName;
 
   private int type;
 
+  @Injection( name = "OUTPUT_FORMAT", group = "OUTPUT_FIELDS" )
   private String format;
 
+  @Injection( name = "OUTPUT_LENGTH", group = "OUTPUT_FIELDS" )
   private int length;
 
+  @Injection( name = "OUTPUT_PRECISION", group = "OUTPUT_FIELDS" )
   private int precision;
 
+  @Injection( name = "OUTPUT_CURRENCY", group = "OUTPUT_FIELDS" )
   private String currencySymbol;
 
+  @Injection( name = "OUTPUT_DECIMAL", group = "OUTPUT_FIELDS" )
   private String decimalSymbol;
 
+  @Injection( name = "OUTPUT_GROUP", group = "OUTPUT_FIELDS" )
   private String groupingSymbol;
 
+  @Injection( name = "OUTPUT_NULL", group = "OUTPUT_FIELDS" )
   private String nullString;
 
+  @Injection( name = "OUTPUT_CONTENT_TYPE", group = "OUTPUT_FIELDS" )
   private ContentType contentType;
 
   public XMLField( ContentType contentType, String fieldName, String elementName, int type, String format, int length,
@@ -127,6 +138,7 @@ public class XMLField implements Cloneable {
     this.type = type;
   }
 
+  @Injection( name = "OUTPUT_TYPE", group = "OUTPUT_FIELDS" )
   public void setType( String typeDesc ) {
     this.type = ValueMeta.getType( typeDesc );
   }

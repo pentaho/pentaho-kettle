@@ -29,13 +29,16 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.vfs2.FileObject;
-import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.injection.Injection;
+import org.pentaho.di.core.injection.InjectionDeep;
+import org.pentaho.di.core.injection.InjectionSupported;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
@@ -68,67 +71,86 @@ import org.w3c.dom.Node;
 @Step( id = "XMLOutput", image = "XOU.svg", i18nPackageName = "org.pentaho.di.trans.steps.xmloutput",
     name = "XMLOutput.name", description = "XMLOutput.description", categoryDescription = "XMLOutput.category",
     documentationUrl = "http://wiki.pentaho.com/display/EAI/XML+Output" )
+@InjectionSupported( localizationPrefix = "XMLOutput.Injection.", groups = "OUTPUT_FIELDS" )
 public class XMLOutputMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = XMLOutputMeta.class; // for i18n purposes, needed by Translator2!!
 
   /** The base name of the output file */
+  @Injection( name = "FILENAME" )
   private String fileName;
 
   /** The file extention in case of a generated filename */
+  @Injection( name = "EXTENSION" )
   private String extension;
 
   /** Whether to push the output into the output of a servlet with the executeTrans Carte/DI-Server servlet */
+  @Injection( name = "PASS_TO_SERVLET" )
   private boolean servletOutput;
 
   /**
    * if this value is larger then 0, the text file is split up into parts of this number of lines
    */
+  @Injection( name = "SPLIT_EVERY" )
   private int splitEvery;
 
   /** Flag: add the stepnr in the filename */
+  @Injection( name = "INC_STEPNR_IN_FILENAME" )
   private boolean stepNrInFilename;
 
   /** Flag: add the date in the filename */
+  @Injection( name = "INC_DATE_IN_FILENAME" )
   private boolean dateInFilename;
 
   /** Flag: add the time in the filename */
+  @Injection( name = "INC_TIME_IN_FILENAME" )
   private boolean timeInFilename;
 
   /** Flag: put the destination file in a zip archive */
+  @Injection( name = "ZIPPED" )
   private boolean zipped;
 
   /**
    * The encoding to use for reading: null or empty string means system default encoding
    */
+  @Injection( name = "ENCODING" )
   private String encoding;
 
   /**
    * The name space for the XML document: null or empty string means no xmlns is written
    */
+  @Injection( name = "NAMESPACE" )
   private String nameSpace;
 
   /** The name of the parent XML element */
+  @Injection( name = "MAIN_ELEMENT" )
   private String mainElement;
 
   /** The name of the repeating row XML element */
+  @Injection( name = "REPEAT_ELEMENT" )
   private String repeatElement;
 
   /** Flag: add the filenames to result filenames */
+  @Injection( name = "ADD_TO_RESULT" )
   private boolean addToResultFilenames;
 
   /* THE FIELD SPECIFICATIONS ... */
 
   /** The output fields */
+  @InjectionDeep
   private XMLField[] outputFields;
 
   /** Flag : Do not open new file when transformation start */
+  @Injection( name = "DO_NOT_CREATE_FILE_AT_STARTUP" )
   private boolean doNotOpenNewFileInit;
 
   /** Omit null elements from xml output */
+  @Injection( name = "OMIT_NULL_VALUES" )
   private boolean omitNullValues;
 
+  @Injection( name = "SPEFICY_FORMAT" )
   private boolean SpecifyFormat;
 
+  @Injection( name = "DATE_FORMAT" )
   private String date_time_format;
 
   public XMLOutputMeta() {
