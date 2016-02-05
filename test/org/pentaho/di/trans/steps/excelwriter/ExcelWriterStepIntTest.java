@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,6 +24,7 @@ package org.pentaho.di.trans.steps.excelwriter;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.IOException;
@@ -142,5 +143,51 @@ public class ExcelWriterStepIntTest {
     assertEquals( "data3", result.get( 1 ).getString( 2, "default-value" ) );
     assertEquals( "data4", result.get( 1 ).getString( 3, "default-value" ) );
     assertEquals( "data5", result.get( 1 ).getString( 4, "default-value" ) );
+  }
+
+  @Test
+  public void testPDI14854() throws KettleException, IOException {
+    try {
+      testEmptyFileInit( true ); // An empty file should be created
+    } catch ( KettleException e ) {
+      fail();
+    }
+    try {
+      testEmptyFileInit( false ); // No file should be created, but the transformation should not fail
+    } catch ( KettleException e ) {
+      fail();
+    }
+  }
+
+  public void testEmptyFileInit( boolean createEmptyFile ) throws KettleException, IOException {
+    String stepName = "Excel Writer";
+    ExcelWriterStepMeta meta = new ExcelWriterStepMeta();
+    meta.setDefault();
+
+    File tempOutputFile = File.createTempFile( "testPDI14854", ".xlsx" );
+    tempOutputFile.delete();
+    meta.setFileName( tempOutputFile.getAbsolutePath().replace( ".xlsx", "" ) );
+    meta.setExtension( "xlsx" );
+    meta.setSheetname( "Sheet10" );
+    meta.setOutputFields( new ExcelWriterStepField[] {} );
+    meta.setHeaderEnabled( true );
+    meta.setDoNotOpenNewFileInit( !createEmptyFile );
+
+    TransMeta transMeta = TransTestFactory.generateTestTransformation( null, meta, stepName );
+
+    List<RowMetaAndData> inputList = new ArrayList<RowMetaAndData>();
+    TransTestFactory.executeTestTransformation( transMeta, TransTestFactory.INJECTOR_STEPNAME, stepName,
+      TransTestFactory.DUMMY_STEPNAME, inputList );
+
+    try {
+      Thread.sleep( 1000 );
+    } catch ( InterruptedException ignore ) {
+      // Wait a second to ensure that the output file is properly closed
+    }
+
+    assertEquals( createEmptyFile, tempOutputFile.exists() );
+    if ( tempOutputFile.exists() ) {
+      tempOutputFile.delete();
+    }
   }
 }
