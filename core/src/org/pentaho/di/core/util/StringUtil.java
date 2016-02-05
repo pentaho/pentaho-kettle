@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -28,11 +28,11 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleValueException;
@@ -231,17 +231,14 @@ public class StringUtil {
    *          the system properties to use
    * @return the string with the substitution applied.
    */
-  public static final synchronized String environmentSubstitute( String aString,
-    Map<String, String> systemProperties ) {
-    Map<String, String> sysMap = new HashMap<String, String>();
-    synchronized ( sysMap ) {
-      sysMap.putAll( Collections.synchronizedMap( systemProperties ) );
+  public static final String environmentSubstitute( String aString,
+    ConcurrentHashMap<String, String> systemProperties ) {
+    Map<String, String> sysMap = new HashMap<String, String>( systemProperties );
 
-      aString = substituteWindows( aString, sysMap );
-      aString = substituteUnix( aString, sysMap );
-      aString = substituteHex( aString );
-      return aString;
-    }
+    aString = substituteWindows( aString, sysMap );
+    aString = substituteUnix( aString, sysMap );
+    aString = substituteHex( aString );
+    return aString;
   }
 
   /**
