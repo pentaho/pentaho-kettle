@@ -33,19 +33,24 @@ import java.util.concurrent.TimeUnit;
 
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.junit.Test;
+import static org.junit.Assert.*;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
 import org.pentaho.di.trans.steps.loadsave.validator.ArrayLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.MapLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.StringLoadSaveValidator;
+import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.trans.step.StepDataInterface;
 
 public class ElasticSearchBulkMetaTest {
   @Test
   public void testRoundTrip() throws KettleException {
     List<String> attributes =
-      Arrays.asList( "index", "type", "batchSize", "timeout", "timeoutUnit", "isJson", "jsonField", "idOutputField",
-        "idField", "overwriteIfExists", "useOutput", "stopOnError", "fields", "servers", "settings" );
+        Arrays.asList( "index", "type", "batchSize", "timeout", "timeoutUnit", "isJson", "jsonField", "idOutputField",
+            "idField", "overwriteIfExists", "useOutput", "stopOnError", "fields", "servers", "settings" );
 
     Map<String, String> getterMap = new HashMap<String, String>();
     getterMap.put( "index", "getIndex" );
@@ -82,24 +87,130 @@ public class ElasticSearchBulkMetaTest {
     setterMap.put( "settings", "setSettings" );
 
     Map<String, FieldLoadSaveValidator<?>> fieldLoadSaveValidatorAttributeMap =
-      new HashMap<String, FieldLoadSaveValidator<?>>();
+        new HashMap<String, FieldLoadSaveValidator<?>>();
     Map<String, FieldLoadSaveValidator<?>> fieldLoadSaveValidatorTypeMap =
-      new HashMap<String, FieldLoadSaveValidator<?>>();
+        new HashMap<String, FieldLoadSaveValidator<?>>();
 
-    fieldLoadSaveValidatorAttributeMap.put( "fields",
-      new MapLoadSaveValidator<String, String>( new StringLoadSaveValidator(), new StringLoadSaveValidator() ) );
-    fieldLoadSaveValidatorAttributeMap.put( "settings",
-      new MapLoadSaveValidator<String, String>( new StringLoadSaveValidator(), new StringLoadSaveValidator() ) );
+    fieldLoadSaveValidatorAttributeMap.put( "fields", new MapLoadSaveValidator<String, String>(
+        new StringLoadSaveValidator(), new StringLoadSaveValidator() ) );
+    fieldLoadSaveValidatorAttributeMap.put( "settings", new MapLoadSaveValidator<String, String>(
+        new StringLoadSaveValidator(), new StringLoadSaveValidator() ) );
 
-    fieldLoadSaveValidatorTypeMap.put( InetSocketTransportAddress[].class.getCanonicalName(),
-      new ArrayLoadSaveValidator<InetSocketTransportAddress>( new InetSocketTransportAddressFieldLoadSaveValidator() ) );
+    fieldLoadSaveValidatorTypeMap
+        .put( InetSocketTransportAddress[].class.getCanonicalName(),
+            new ArrayLoadSaveValidator<InetSocketTransportAddress>(
+                new InetSocketTransportAddressFieldLoadSaveValidator() ) );
     fieldLoadSaveValidatorTypeMap.put( TimeUnit.class.getCanonicalName(), new TimeUnitFieldLoadSaveValidator() );
 
-    LoadSaveTester loadSaveTester = new LoadSaveTester( ElasticSearchBulkMeta.class, attributes, getterMap, setterMap,
-      fieldLoadSaveValidatorAttributeMap, fieldLoadSaveValidatorTypeMap );
+    LoadSaveTester loadSaveTester =
+        new LoadSaveTester( ElasticSearchBulkMeta.class, attributes, getterMap, setterMap,
+            fieldLoadSaveValidatorAttributeMap, fieldLoadSaveValidatorTypeMap );
 
     loadSaveTester.testRepoRoundTrip();
     loadSaveTester.testXmlRoundTrip();
+  }
+
+  @Test
+  public void testGetBatchSizeInt() {
+    ElasticSearchBulkMeta esbm = new ElasticSearchBulkMeta();
+    int batchSize = esbm.getBatchSizeInt( new VariableSpaceImpl() );
+    assertEquals( batchSize, ElasticSearchBulkMeta.DEFAULT_BATCH_SIZE );
+  }
+
+  @Test
+  public void testClone() {
+    ElasticSearchBulkMeta esbm = new ElasticSearchBulkMeta();
+    ElasticSearchBulkMeta esbmClone = (ElasticSearchBulkMeta) esbm.clone();
+    assertNotNull( esbmClone );
+  }
+
+  @Test
+  public void testDefault() {
+    ElasticSearchBulkMeta esbm = new ElasticSearchBulkMeta();
+    esbm.setDefault();
+    assertTrue( esbm.getBatchSize().equalsIgnoreCase( "" + ElasticSearchBulkMeta.DEFAULT_BATCH_SIZE ) );
+    assertEquals( esbm.getIndex(), "twitter" );
+  }
+
+  @Test
+  public void testSupportsErrorHandling() {
+    ElasticSearchBulkMeta esbm = new ElasticSearchBulkMeta();
+    boolean supportsError = esbm.supportsErrorHandling();
+    assertTrue( supportsError );
+  }
+
+  @Test
+  public void testGetStepData() {
+    ElasticSearchBulkMeta esbm = new ElasticSearchBulkMeta();
+    StepDataInterface sdi = esbm.getStepData();
+    assertTrue( sdi instanceof ElasticSearchBulkData );
+  }
+
+  public class VariableSpaceImpl implements VariableSpace {
+    @Override
+    public String environmentSubstitute( String aString ) {
+      return Integer.toString( ElasticSearchBulkMeta.DEFAULT_BATCH_SIZE );
+    }
+
+    @Override
+    public String fieldSubstitute( String aString, RowMetaInterface rowMeta, Object[] rowData )
+      throws KettleValueException {
+      return null;
+    }
+
+    @Override
+    public void injectVariables( Map<String, String> prop ) {
+    }
+
+    @Override
+    public String[] environmentSubstitute( String[] string ) {
+      return null;
+    }
+
+    @Override
+    public boolean getBooleanValueOfVariable( String variableName, boolean defaultValue ) {
+      return false;
+    }
+
+    @Override
+    public String getVariable( String variableName, String defaultValue ) {
+      return null;
+    }
+
+    @Override
+    public String getVariable( String variableName ) {
+      return null;
+    }
+
+    @Override
+    public void setVariable( String variableName, String variableValue ) {
+    }
+
+    @Override
+    public void setParentVariableSpace( VariableSpace parent ) {
+    }
+
+    @Override
+    public VariableSpace getParentVariableSpace() {
+      return null;
+    }
+
+    @Override
+    public void shareVariablesWith( VariableSpace space ) {
+    }
+
+    @Override
+    public void copyVariablesFrom( VariableSpace space ) {
+    }
+
+    @Override
+    public void initializeVariablesFrom( VariableSpace parent ) {
+    }
+
+    @Override
+    public String[] listVariables() {
+      return null;
+    }
   }
 
   public class InetSocketTransportAddressFieldLoadSaveValidator implements
