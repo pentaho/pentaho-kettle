@@ -127,6 +127,7 @@ public class LazyUnifiedRepositoryDirectory extends RepositoryDirectory {
             (UnifiedRepositoryLockService) registry.getService( ILockService.class );
 
         RepositoryRequest repositoryRequest = new RepositoryRequest();
+        repositoryRequest.setShowHidden( true );
         repositoryRequest.setTypes( RepositoryRequest.FILES_TYPE_FILTER.FILES );
         repositoryRequest.setPath( this.self.getId().toString() );
         List<RepositoryFile> children = repository.getChildren( repositoryRequest );
@@ -189,6 +190,7 @@ public class LazyUnifiedRepositoryDirectory extends RepositoryDirectory {
 
   private List<RepositoryFile> getAllURChildrenFiles() {
     RepositoryRequest repositoryRequest = new RepositoryRequest();
+    repositoryRequest.setShowHidden( true );
     repositoryRequest.setTypes( RepositoryRequest.FILES_TYPE_FILTER.FOLDERS );
     repositoryRequest.setPath( this.self.getId().toString() );
     List<RepositoryFile> children = repository.getChildren( repositoryRequest );
