@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -33,7 +33,6 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.variables.VariableSpace;
@@ -297,9 +296,9 @@ public class SymmetricCryptoTransMeta extends BaseStepMeta implements StepMetaIn
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
 
     if ( !Const.isEmpty( getResultfieldname() ) ) {
-      int type = ValueMeta.TYPE_STRING;
+      int type = ValueMetaInterface.TYPE_STRING;
       if ( isOutputResultAsBinary() ) {
-        type = ValueMeta.TYPE_BINARY;
+        type = ValueMetaInterface.TYPE_BINARY;
       }
       try {
         ValueMetaInterface v = ValueMetaFactory.createValueMeta( getResultfieldname(), type );

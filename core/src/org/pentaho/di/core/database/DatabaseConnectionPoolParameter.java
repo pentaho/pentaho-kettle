@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -28,8 +28,7 @@ import java.util.List;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
-import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaString;
 
 public class DatabaseConnectionPoolParameter {
   private String parameter;
@@ -118,9 +117,9 @@ public class DatabaseConnectionPoolParameter {
     String titleParameter, String titleDefaultValue, String titleDescription ) {
     RowMetaInterface rowMeta = new RowMeta();
 
-    rowMeta.addValueMeta( new ValueMeta( titleParameter, ValueMetaInterface.TYPE_STRING ) );
-    rowMeta.addValueMeta( new ValueMeta( titleDefaultValue, ValueMetaInterface.TYPE_STRING ) );
-    rowMeta.addValueMeta( new ValueMeta( titleDescription, ValueMetaInterface.TYPE_STRING ) );
+    rowMeta.addValueMeta( new ValueMetaString( titleParameter ) );
+    rowMeta.addValueMeta( new ValueMetaString( titleDefaultValue ) );
+    rowMeta.addValueMeta( new ValueMetaString( titleDescription ) );
 
     List<RowMetaAndData> list = new ArrayList<RowMetaAndData>();
 

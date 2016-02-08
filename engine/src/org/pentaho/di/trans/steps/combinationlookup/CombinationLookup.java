@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -43,8 +43,9 @@ import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaDate;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -243,7 +244,7 @@ public class CombinationLookup extends BaseStep implements StepInterface {
       lookupIndex++;
 
       if ( meta.getDatabaseMeta().requiresCastToVariousForIsNull()
-          && rowMeta.getValueMeta( rowIndex ).getType() == ValueMeta.TYPE_STRING ) {
+          && rowMeta.getValueMeta( rowIndex ).getType() == ValueMetaInterface.TYPE_STRING ) {
         lookupRow[lookupIndex] = rowMeta.getValueMeta( rowIndex ).isNull( row[rowIndex] ) ? null : "NotNull"; // KEYi IS
                                                                                                               // NULL or
                                                                                                               // ? IS
@@ -437,7 +438,7 @@ public class CombinationLookup extends BaseStep implements StepInterface {
     if ( meta.useHash() ) {
       sql += databaseMeta.quoteField( meta.getHashField() ) + " = ? " + Const.CR;
       comma = true;
-      data.lookupRowMeta.addValueMeta( new ValueMeta( meta.getHashField(), ValueMetaInterface.TYPE_INTEGER ) );
+      data.lookupRowMeta.addValueMeta( new ValueMetaInteger( meta.getHashField() ) );
     } else {
       sql += "( ( ";
     }
@@ -506,13 +507,11 @@ public class CombinationLookup extends BaseStep implements StepInterface {
         if ( !isAutoIncrement() ) {
           // NO AUTOINCREMENT
           sql += databaseMeta.quoteField( meta.getTechnicalKeyField() );
-          data.insertRowMeta.addValueMeta( new ValueMeta(
-              meta.getTechnicalKeyField(), ValueMetaInterface.TYPE_INTEGER ) );
+          data.insertRowMeta.addValueMeta( new ValueMetaInteger( meta.getTechnicalKeyField() ) );
           comma = true;
         } else if ( databaseMeta.needsPlaceHolder() ) {
           sql += "0"; // placeholder on informix! Will be replaced in table by real autoinc value.
-          data.insertRowMeta.addValueMeta( new ValueMeta(
-              meta.getTechnicalKeyField(), ValueMetaInterface.TYPE_INTEGER ) );
+          data.insertRowMeta.addValueMeta( new ValueMetaInteger( meta.getTechnicalKeyField() ) );
           comma = true;
         }
 
@@ -521,7 +520,7 @@ public class CombinationLookup extends BaseStep implements StepInterface {
             sql += ", ";
           }
           sql += databaseMeta.quoteField( meta.getHashField() );
-          data.insertRowMeta.addValueMeta( new ValueMeta( meta.getHashField(), ValueMetaInterface.TYPE_INTEGER ) );
+          data.insertRowMeta.addValueMeta( new ValueMetaInteger( meta.getHashField() ) );
           comma = true;
         }
 
@@ -531,7 +530,7 @@ public class CombinationLookup extends BaseStep implements StepInterface {
           }
           sql += databaseMeta.quoteField( meta.getLastUpdateField() );
           data.insertRowMeta
-            .addValueMeta( new ValueMeta( meta.getLastUpdateField(), ValueMetaInterface.TYPE_DATE ) );
+            .addValueMeta( new ValueMetaDate( meta.getLastUpdateField() ) );
           comma = true;
         }
 

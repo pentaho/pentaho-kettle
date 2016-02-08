@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -35,9 +35,12 @@ import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.fileinput.FileInputList;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaBoolean;
+import org.pentaho.di.core.row.value.ValueMetaDate;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -763,7 +766,7 @@ public class PropertyInputMeta extends BaseStepMeta implements StepMetaInterface
 
         inputFields[i].setName( XMLHandler.getTagValue( fnode, "name" ) );
         inputFields[i].setColumn( getColumnByCode( XMLHandler.getTagValue( fnode, "column" ) ) );
-        inputFields[i].setType( ValueMeta.getType( XMLHandler.getTagValue( fnode, "type" ) ) );
+        inputFields[i].setType( ValueMetaFactory.getIdForValueMeta( XMLHandler.getTagValue( fnode, "type" ) ) );
         inputFields[i].setLength( Const.toInt( XMLHandler.getTagValue( fnode, "length" ), -1 ) );
         inputFields[i].setPrecision( Const.toInt( XMLHandler.getTagValue( fnode, "precision" ), -1 ) );
         String srepeat = XMLHandler.getTagValue( fnode, "repeat" );
@@ -859,8 +862,8 @@ public class PropertyInputMeta extends BaseStepMeta implements StepMetaInterface
       PropertyInputField field = inputFields[i];
 
       int type = field.getType();
-      if ( type == ValueMeta.TYPE_NONE ) {
-        type = ValueMeta.TYPE_STRING;
+      if ( type == ValueMetaInterface.TYPE_NONE ) {
+        type = ValueMetaInterface.TYPE_STRING;
       }
       try {
         ValueMetaInterface v =
@@ -879,7 +882,7 @@ public class PropertyInputMeta extends BaseStepMeta implements StepMetaInterface
     }
     String realFilenameField = space.environmentSubstitute( filenameField );
     if ( includeFilename && !Const.isEmpty( realFilenameField ) ) {
-      ValueMetaInterface v = new ValueMeta( realFilenameField, ValueMeta.TYPE_STRING );
+      ValueMetaInterface v = new ValueMetaString( realFilenameField );
       v.setLength( 500 );
       v.setPrecision( -1 );
       v.setOrigin( name );
@@ -888,14 +891,14 @@ public class PropertyInputMeta extends BaseStepMeta implements StepMetaInterface
 
     String realRowNumberField = space.environmentSubstitute( rowNumberField );
     if ( includeRowNumber && !Const.isEmpty( realRowNumberField ) ) {
-      ValueMetaInterface v = new ValueMeta( realRowNumberField, ValueMeta.TYPE_INTEGER );
+      ValueMetaInterface v = new ValueMetaInteger( realRowNumberField );
       v.setLength( ValueMetaInterface.DEFAULT_INTEGER_LENGTH, 0 );
       v.setOrigin( name );
       r.addValueMeta( v );
     }
     String realSectionField = space.environmentSubstitute( iniSectionField );
     if ( includeIniSection && !Const.isEmpty( realSectionField ) ) {
-      ValueMetaInterface v = new ValueMeta( realSectionField, ValueMeta.TYPE_STRING );
+      ValueMetaInterface v = new ValueMetaString( realSectionField );
       v.setLength( 500 );
       v.setPrecision( -1 );
       v.setOrigin( name );
@@ -905,45 +908,45 @@ public class PropertyInputMeta extends BaseStepMeta implements StepMetaInterface
 
     if ( getShortFileNameField() != null && getShortFileNameField().length() > 0 ) {
       ValueMetaInterface v =
-        new ValueMeta( space.environmentSubstitute( getShortFileNameField() ), ValueMeta.TYPE_STRING );
+        new ValueMetaString( space.environmentSubstitute( getShortFileNameField() ) );
       v.setLength( 100, -1 );
       v.setOrigin( name );
       r.addValueMeta( v );
     }
     if ( getExtensionField() != null && getExtensionField().length() > 0 ) {
       ValueMetaInterface v =
-        new ValueMeta( space.environmentSubstitute( getExtensionField() ), ValueMeta.TYPE_STRING );
+        new ValueMetaString( space.environmentSubstitute( getExtensionField() ) );
       v.setLength( 100, -1 );
       v.setOrigin( name );
       r.addValueMeta( v );
     }
     if ( getPathField() != null && getPathField().length() > 0 ) {
-      ValueMetaInterface v = new ValueMeta( space.environmentSubstitute( getPathField() ), ValueMeta.TYPE_STRING );
+      ValueMetaInterface v = new ValueMetaString( space.environmentSubstitute( getPathField() ) );
       v.setLength( 100, -1 );
       v.setOrigin( name );
       r.addValueMeta( v );
     }
     if ( getSizeField() != null && getSizeField().length() > 0 ) {
-      ValueMetaInterface v = new ValueMeta( space.environmentSubstitute( getSizeField() ), ValueMeta.TYPE_INTEGER );
+      ValueMetaInterface v = new ValueMetaInteger( space.environmentSubstitute( getSizeField() ) );
       v.setOrigin( name );
       v.setLength( 9 );
       r.addValueMeta( v );
     }
     if ( isHiddenField() != null && isHiddenField().length() > 0 ) {
       ValueMetaInterface v =
-        new ValueMeta( space.environmentSubstitute( isHiddenField() ), ValueMeta.TYPE_BOOLEAN );
+        new ValueMetaBoolean( space.environmentSubstitute( isHiddenField() ) );
       v.setOrigin( name );
       r.addValueMeta( v );
     }
 
     if ( getLastModificationDateField() != null && getLastModificationDateField().length() > 0 ) {
       ValueMetaInterface v =
-        new ValueMeta( space.environmentSubstitute( getLastModificationDateField() ), ValueMeta.TYPE_DATE );
+        new ValueMetaDate( space.environmentSubstitute( getLastModificationDateField() ) );
       v.setOrigin( name );
       r.addValueMeta( v );
     }
     if ( getUriField() != null && getUriField().length() > 0 ) {
-      ValueMetaInterface v = new ValueMeta( space.environmentSubstitute( getUriField() ), ValueMeta.TYPE_STRING );
+      ValueMetaInterface v = new ValueMetaString( space.environmentSubstitute( getUriField() ) );
       v.setLength( 100, -1 );
       v.setOrigin( name );
       r.addValueMeta( v );
@@ -951,7 +954,7 @@ public class PropertyInputMeta extends BaseStepMeta implements StepMetaInterface
 
     if ( getRootUriField() != null && getRootUriField().length() > 0 ) {
       ValueMetaInterface v =
-        new ValueMeta( space.environmentSubstitute( getRootUriField() ), ValueMeta.TYPE_STRING );
+        new ValueMetaString( space.environmentSubstitute( getRootUriField() ) );
       v.setLength( 100, -1 );
       v.setOrigin( name );
       r.addValueMeta( v );
@@ -1030,7 +1033,7 @@ public class PropertyInputMeta extends BaseStepMeta implements StepMetaInterface
         field.setName( rep.getStepAttributeString( id_step, i, "field_name" ) );
         field.setColumn( PropertyInputField.getColumnByCode( rep.getStepAttributeString(
           id_step, i, "field_column" ) ) );
-        field.setType( ValueMeta.getType( rep.getStepAttributeString( id_step, i, "field_type" ) ) );
+        field.setType( ValueMetaFactory.getIdForValueMeta( rep.getStepAttributeString( id_step, i, "field_type" ) ) );
         field.setFormat( rep.getStepAttributeString( id_step, i, "field_format" ) );
         field.setCurrencySymbol( rep.getStepAttributeString( id_step, i, "field_currency" ) );
         field.setDecimalSymbol( rep.getStepAttributeString( id_step, i, "field_decimal" ) );

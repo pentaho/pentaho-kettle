@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -26,7 +26,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -141,7 +141,7 @@ public class StringCut extends BaseStep implements StepInterface {
         }
 
         // check field type
-        if ( getInputRowMeta().getValueMeta( data.inStreamNrs[i] ).getType() != ValueMeta.TYPE_STRING ) {
+        if ( getInputRowMeta().getValueMeta( data.inStreamNrs[i] ).getType() != ValueMetaInterface.TYPE_STRING ) {
           throw new KettleStepException( BaseMessages.getString(
             PKG, "StringCut.Exception.FieldTypeNotString", meta.getFieldInStream()[i] ) );
         }

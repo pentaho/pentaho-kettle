@@ -35,6 +35,7 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaAndData;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaString;
 
 public class SQLCondition {
 
@@ -203,7 +204,7 @@ public class SQLCondition {
     Condition
         subCondition =
         new Condition( parameterName, Condition.FUNC_TRUE, parameterName,
-            new ValueMetaAndData( new ValueMeta( "string", ValueMetaInterface.TYPE_STRING ),
+            new ValueMetaAndData( new ValueMetaString( "string" ),
                 Const.NVL( parameterValue, "" ) ) );
     subCondition.setOperator( orConditionOperator );
     return subCondition;
@@ -319,8 +320,7 @@ public class SQLCondition {
         valueString.append( part );
       }
       value =
-          new ValueMetaAndData( new ValueMeta( "constant-in-list", ValueMetaInterface.TYPE_STRING ),
-              valueString.toString() );
+          new ValueMetaAndData( new ValueMetaString( "constant-in-list" ), valueString.toString() );
     } else {
 
       // Mondrian, analyzer CONTAINS hack:

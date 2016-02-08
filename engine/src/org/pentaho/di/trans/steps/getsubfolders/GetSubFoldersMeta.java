@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -35,8 +35,11 @@ import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.fileinput.FileInputList;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaBoolean;
+import org.pentaho.di.core.row.value.ValueMetaDate;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -268,65 +271,65 @@ public class GetSubFoldersMeta extends BaseStepMeta implements StepMetaInterface
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
 
     // the folderName
-    ValueMetaInterface folderName = new ValueMeta( "folderName", ValueMeta.TYPE_STRING );
+    ValueMetaInterface folderName = new ValueMetaString( "folderName" );
     folderName.setLength( 500 );
     folderName.setPrecision( -1 );
     folderName.setOrigin( name );
     row.addValueMeta( folderName );
 
     // the short folderName
-    ValueMetaInterface short_folderName = new ValueMeta( "short_folderName", ValueMeta.TYPE_STRING );
+    ValueMetaInterface short_folderName = new ValueMetaString( "short_folderName" );
     short_folderName.setLength( 500 );
     short_folderName.setPrecision( -1 );
     short_folderName.setOrigin( name );
     row.addValueMeta( short_folderName );
 
     // the path
-    ValueMetaInterface path = new ValueMeta( "path", ValueMeta.TYPE_STRING );
+    ValueMetaInterface path = new ValueMetaString( "path" );
     path.setLength( 500 );
     path.setPrecision( -1 );
     path.setOrigin( name );
     row.addValueMeta( path );
 
     // the ishidden
-    ValueMetaInterface ishidden = new ValueMeta( "ishidden", ValueMeta.TYPE_BOOLEAN );
+    ValueMetaInterface ishidden = new ValueMetaBoolean( "ishidden" );
     ishidden.setOrigin( name );
     row.addValueMeta( ishidden );
 
     // the isreadable
-    ValueMetaInterface isreadable = new ValueMeta( "isreadable", ValueMeta.TYPE_BOOLEAN );
+    ValueMetaInterface isreadable = new ValueMetaBoolean( "isreadable" );
     isreadable.setOrigin( name );
     row.addValueMeta( isreadable );
 
     // the iswriteable
-    ValueMetaInterface iswriteable = new ValueMeta( "iswriteable", ValueMeta.TYPE_BOOLEAN );
+    ValueMetaInterface iswriteable = new ValueMetaBoolean( "iswriteable" );
     iswriteable.setOrigin( name );
     row.addValueMeta( iswriteable );
 
     // the lastmodifiedtime
-    ValueMetaInterface lastmodifiedtime = new ValueMeta( "lastmodifiedtime", ValueMeta.TYPE_DATE );
+    ValueMetaInterface lastmodifiedtime = new ValueMetaDate( "lastmodifiedtime" );
     lastmodifiedtime.setOrigin( name );
     row.addValueMeta( lastmodifiedtime );
 
     // the uri
-    ValueMetaInterface uri = new ValueMeta( "uri", ValueMeta.TYPE_STRING );
+    ValueMetaInterface uri = new ValueMetaString( "uri" );
     uri.setOrigin( name );
     row.addValueMeta( uri );
 
     // the rooturi
-    ValueMetaInterface rooturi = new ValueMeta( "rooturi", ValueMeta.TYPE_STRING );
+    ValueMetaInterface rooturi = new ValueMetaString( "rooturi" );
     rooturi.setOrigin( name );
     row.addValueMeta( rooturi );
 
     // childrens
     ValueMetaInterface childrens =
-      new ValueMeta( space.environmentSubstitute( "childrens" ), ValueMeta.TYPE_INTEGER );
+      new ValueMetaInteger( space.environmentSubstitute( "childrens" ) );
     childrens.setLength( ValueMetaInterface.DEFAULT_INTEGER_LENGTH, 0 );
     childrens.setOrigin( name );
     row.addValueMeta( childrens );
 
     if ( includeRowNumber ) {
-      ValueMetaInterface v = new ValueMeta( space.environmentSubstitute( rowNumberField ), ValueMeta.TYPE_INTEGER );
+      ValueMetaInterface v = new ValueMetaInteger( space.environmentSubstitute( rowNumberField ) );
       v.setLength( ValueMetaInterface.DEFAULT_INTEGER_LENGTH, 0 );
       v.setOrigin( name );
       row.addValueMeta( v );
