@@ -1860,6 +1860,39 @@ public class Const {
   }
 
   /**
+   * Provides the base documentation url (top-level help)
+   *
+   * @return the fully qualified base documentation URL
+   */
+  public static String getBaseDocUrl() {
+    return BaseMessages.getString( PKG, "Const.BaseDocUrl" );
+  }
+
+  /**
+   * Provides the documentation url with the configured base + the given URI.
+   *
+   * @param uri
+   *          the resource identifier for the documentation (eg. 0L0/0Y0/030/050/000)
+   *
+   * @return the fully qualified documentation URL for the given URI
+   */
+  public static String getDocUrl( final String uri ) {
+    // initialize the docUrl to point to the top-level doc page
+    String docUrl = getBaseDocUrl();
+    if ( !isEmpty( uri ) ) {
+      // if the uri is not empty, use it to build the URL
+      if ( uri.startsWith( "http" ) ) {
+        // use what is provided, it's already absolute
+        docUrl = uri;
+      } else {
+        // the uri provided needs to be assembled
+        docUrl = uri.startsWith( "/" ) ? docUrl + uri.substring( 1 ) : docUrl + uri;
+      }
+    }
+    return docUrl;
+  }
+
+  /**
    * Retrieves the content of an environment variable
    *
    * @param variable
