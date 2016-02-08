@@ -640,6 +640,7 @@ public class TransExecutionConfiguration implements ExecutionConfiguration {
       String password = Encr.decryptPassword( XMLHandler.getTagValue( repNode, "password" ) );
 
       RepositoriesMeta repositoriesMeta = new RepositoriesMeta();
+      repositoriesMeta.getLog().setLogLevel( log.getLogLevel() );
       try {
         repositoriesMeta.readData();
       } catch ( Exception e ) {

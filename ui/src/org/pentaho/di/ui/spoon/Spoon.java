@@ -7776,6 +7776,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       showSplash();
     } else if ( !Const.isEmpty( optionRepname ) && Const.isEmpty( optionFilename ) ) {
       RepositoriesMeta repsInfo = new RepositoriesMeta();
+      repsInfo.getLog().setLogLevel( log.getLogLevel() );
       try {
         repsInfo.readData();
         repositoryMeta = repsInfo.findRepository( optionRepname.toString() );
@@ -7785,6 +7786,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
             PluginRegistry
               .getInstance().loadClass( RepositoryPluginType.class, repositoryMeta, Repository.class );
           repo.init( repositoryMeta );
+          repo.getLog().setLogLevel( log.getLogLevel() );
           repo.connect( optionUsername != null ? optionUsername.toString() : null, optionPassword != null
             ? optionPassword.toString() : null );
           setRepository( repo );

@@ -291,6 +291,7 @@ public class Import {
     // Find the repository metadata...
     //
     RepositoriesMeta repsinfo = new RepositoriesMeta();
+    repsinfo.getLog().setLogLevel( log.getLogLevel() );
     try {
       repsinfo.readData();
     } catch ( Exception e ) {
@@ -317,6 +318,7 @@ public class Import {
       repository =
         PluginRegistry.getInstance().loadClass( RepositoryPluginType.class, repositoryMeta, Repository.class );
       repository.init( repositoryMeta );
+      repository.getLog().setLogLevel( log.getLogLevel() );
     } catch ( Exception e ) {
       log.logError( BaseMessages.getString( PKG, "Import.Error.UnableToLoadOrInitializeRepository" ) );
       exitJVM( 1 );

@@ -233,7 +233,7 @@ public class PurRepository extends AbstractRepository implements Repository, jav
 
   @Override
   public void init( final RepositoryMeta repositoryMeta ) {
-    this.log = new LogChannel( this );
+    this.log = new LogChannel( this.getClass().getSimpleName() );
     this.repositoryMeta = (PurRepositoryMeta) repositoryMeta;
     purRepositoryConnector = new PurRepositoryConnector( this, this.repositoryMeta, rootRef );
   }
@@ -258,7 +258,7 @@ public class PurRepository extends AbstractRepository implements Repository, jav
       try {
         metaStore.createNamespace( PentahoDefaults.NAMESPACE );
       } catch ( MetaStoreException e ) {
-        LogChannel.GENERAL.logError( BaseMessages
+        log.logError( BaseMessages
                 .getString( PKG, "PurRepositoryMetastore.NamespaceCreateException.Message", PentahoDefaults.NAMESPACE ),
             e );
       }
@@ -269,6 +269,9 @@ public class PurRepository extends AbstractRepository implements Repository, jav
       return;
     }
     try {
+      if ( log != null && purRepositoryConnector != null && purRepositoryConnector.getLog() != null ) {
+        purRepositoryConnector.getLog().setLogLevel( log.getLogLevel() );
+      }
       RepositoryConnectResult result = purRepositoryConnector.connect( username, password );
       this.user = result.getUser();
       this.connected = result.isSuccess();
@@ -293,24 +296,30 @@ public class PurRepository extends AbstractRepository implements Repository, jav
       this.jobDelegate = new JobDelegate( this, pur );
     } finally {
       if ( connected ) {
-        LogChannel.GENERAL.logBasic( BaseMessages.getString( PKG, "PurRepositoryMetastore.Create.Message" ) );
+        if ( log.isBasic() ) {
+          log.logBasic( BaseMessages.getString( PKG, "PurRepositoryMetastore.Create.Message" ) );
+        }
         metaStore = new PurRepositoryMetaStore( this );
         // Create the default Pentaho namespace if it does not exist
         try {
           metaStore.createNamespace( PentahoDefaults.NAMESPACE );
-          LogChannel.GENERAL.logBasic( BaseMessages
+          if ( log.isBasic() ) {
+            log.logBasic( BaseMessages
               .getString( PKG, "PurRepositoryMetastore.NamespaceCreateSuccess.Message", PentahoDefaults.NAMESPACE ) );
+          }
         } catch ( MetaStoreNamespaceExistsException e ) {
           // Ignore this exception, we only use it to save a call to check if the namespace exists, as the
           // createNamespace()
           // call will do the check for us and throw this exception.
         } catch ( MetaStoreException e ) {
-          LogChannel.GENERAL.logError( BaseMessages
+          log.logError( BaseMessages
                   .getString( PKG, "PurRepositoryMetastore.NamespaceCreateException.Message", PentahoDefaults.NAMESPACE ),
               e );
         }
 
-        LogChannel.GENERAL.logBasic( BaseMessages.getString( PKG, "PurRepository.ConnectSuccess.Message" ) );
+        if ( log.isBasic() ) {
+          log.logBasic( BaseMessages.getString( PKG, "PurRepository.ConnectSuccess.Message" ) );
+        }
       }
     }
   }

@@ -499,6 +499,7 @@ public class JobExecutionConfiguration implements ExecutionConfiguration {
     // Verify that the repository exists on the slave server...
     //
     RepositoriesMeta repositoriesMeta = new RepositoriesMeta();
+    repositoriesMeta.getLog().setLogLevel( log.getLogLevel() );
     try {
       repositoriesMeta.readData();
     } catch ( Exception e ) {
