@@ -101,12 +101,15 @@ public abstract class ConfigurationDialog extends Dialog {
   private FormData fdExecLocal;
   private FormData fdExecRemote;
   private CTabFolder tabFolder;
+  private boolean transCheckbox;
+  private boolean jobCheckbox;
 
   public ConfigurationDialog( Shell parent, ExecutionConfiguration configuration, AbstractMeta meta ) {
     super( parent );
     this.parent = parent;
     this.configuration = configuration;
     this.abstractMeta = meta;
+    initCheckboxFlag();
 
     // Fill the parameters, maybe do this in another place?
     Map<String, String> params = configuration.getParams();
@@ -117,6 +120,14 @@ public abstract class ConfigurationDialog extends Dialog {
     }
 
     props = PropsUI.getInstance();
+  }
+
+  private void initCheckboxFlag() {
+    if ( abstractMeta instanceof TransMeta ) {
+      transCheckbox = this.abstractMeta.isAlwaysShowTransCheckbox();
+    } else if ( abstractMeta instanceof JobMeta ) {
+      jobCheckbox = this.abstractMeta.isAlwaysShowJobCheckbox();
+    }
   }
 
   protected void getInfoVariables() {
@@ -156,6 +167,7 @@ public abstract class ConfigurationDialog extends Dialog {
   }
 
   protected void ok() {
+    setCheckboxFlag();
     if ( Const.isOSX() ) {
       // OSX bug workaround.
       wVariables.applyOSXChanges();
@@ -176,6 +188,16 @@ public abstract class ConfigurationDialog extends Dialog {
   }
 
   public abstract void getInfo();
+
+  private void setCheckboxFlag() {
+    if ( abstractMeta instanceof TransMeta ) {
+      abstractMeta.setAlwaysShowTransCheckbox( transCheckbox );
+      abstractMeta.setShowTransDialog( transCheckbox );
+    } else if ( abstractMeta instanceof JobMeta ) {
+      abstractMeta.setAlwaysShowJobCheckbox( jobCheckbox );
+      abstractMeta.setShowJobDialog( jobCheckbox );
+    }
+  }
 
   protected void getParamsData() {
     wParams.clearAll( false );
@@ -346,29 +368,17 @@ public abstract class ConfigurationDialog extends Dialog {
     final boolean isJob = abstractMeta instanceof JobMeta;
     alwaysShowOption.setSelection( isTrans ? abstractMeta.isAlwaysShowTransCheckbox() : isJob ? abstractMeta
         .isAlwaysShowJobCheckbox() : true );
-    
+
     alwaysShowOption.setToolTipText( BaseMessages.getString( PKG, prefix + ".alwaysShowOption" ) );
-    
+
     alwaysShowOption.addSelectionListener( new SelectionAdapter() {
       public void widgetSelected( SelectionEvent e ) {
         Button btn = (Button) e.getSource();
-        if ( btn.getSelection() ) {
           if ( isTrans ) {
-            abstractMeta.setAlwaysShowTransCheckbox( true );
-            abstractMeta.setShowTransDialog( true );
+            transCheckbox = btn.getSelection();
           } else if ( isJob ) {
-            abstractMeta.setAlwaysShowJobCheckbox( true );
-            abstractMeta.setShowJobDialog( true );
+            jobCheckbox = btn.getSelection();
           }
-        } else {
-          if ( isTrans ) {
-            abstractMeta.setAlwaysShowTransCheckbox( false );
-            abstractMeta.setShowTransDialog( false );
-          } else if ( isJob ) {
-            abstractMeta.setAlwaysShowJobCheckbox( false );
-            abstractMeta.setShowJobDialog( false );
-          }
-        }
       }
     } );
 
