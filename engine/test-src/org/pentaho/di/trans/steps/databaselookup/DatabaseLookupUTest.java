@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -52,13 +52,14 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 
-import static java.util.Collections.singletonList;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
@@ -112,9 +113,9 @@ public class DatabaseLookupUTest {
     when( mockHelper.trans.findRowSet( anyString(), anyInt(), anyString(), anyInt() ) ).thenReturn( rowSet );
 
     when( mockHelper.transMeta.findNextSteps( Matchers.any( StepMeta.class ) ) )
-      .thenReturn( singletonList( mock( StepMeta.class ) ) );
+      .thenReturn( Collections.singletonList( mock( StepMeta.class ) ) );
     when( mockHelper.transMeta.findPreviousSteps( any( StepMeta.class ), anyBoolean() ) )
-      .thenReturn( singletonList( mock( StepMeta.class ) ) );
+      .thenReturn( Collections.singletonList( mock( StepMeta.class ) ) );
 
     return mockHelper;
   }
@@ -276,27 +277,11 @@ public class DatabaseLookupUTest {
     returnRowMeta.addValueMeta( new ValueMetaInteger() );
     when( db.getReturnRowMeta() ).thenReturn( returnRowMeta );
 
-    DatabaseMeta dbMeta = mock( DatabaseMeta.class );
-
     StepMockHelper<DatabaseLookupMeta, DatabaseLookupData> mockHelper = createMockHelper();
-
-    DatabaseLookupMeta meta = new DatabaseLookupMeta();
-    meta.setCached( true );
-    meta.setLoadingAllDataInCache( true );
-    meta.setDatabaseMeta( dbMeta );
-    // it's ok here, we won't do actual work
-    meta.allocate( 1, 0 );
-    meta.setStreamKeyField1( new String[] { "Test" } );
-
+    DatabaseLookupMeta meta = createTestMeta();
     DatabaseLookupData data = new DatabaseLookupData();
 
-    DatabaseLookup step = spyLookup( mockHelper, db, meta.getDatabaseMeta() );
-    doNothing().when( step ).determineFieldsTypesQueryingDb();
-    doReturn( null ).when( step ).lookupValues( any( RowMetaInterface.class ), any( Object[].class ) );
-
-    RowMeta input = new RowMeta();
-    input.addValueMeta( new ValueMetaInteger( "Test" ) );
-    step.setInputRowMeta( input );
+    DatabaseLookup step = createSpiedStep( db, mockHelper, meta );
     step.init( meta, data );
 
 
@@ -312,5 +297,62 @@ public class DatabaseLookupUTest {
     step.processRow( meta, data );
 
     return data;
+  }
+
+  private DatabaseLookupMeta createTestMeta() {
+    DatabaseLookupMeta meta = new DatabaseLookupMeta();
+    meta.setCached( true );
+    meta.setLoadingAllDataInCache( true );
+    meta.setDatabaseMeta( mock( DatabaseMeta.class ) );
+    // it's ok here, we won't do actual work
+    meta.allocate( 1, 0 );
+    meta.setStreamKeyField1( new String[] { "Test" } );
+    return meta;
+  }
+
+  private DatabaseLookup createSpiedStep( Database db,
+                                          StepMockHelper<DatabaseLookupMeta, DatabaseLookupData> mockHelper,
+                                          DatabaseLookupMeta meta ) throws KettleException {
+    DatabaseLookup step = spyLookup( mockHelper, db, meta.getDatabaseMeta() );
+    doNothing().when( step ).determineFieldsTypesQueryingDb();
+    doReturn( null ).when( step ).lookupValues( any( RowMetaInterface.class ), any( Object[].class ) );
+
+    RowMeta input = new RowMeta();
+    input.addValueMeta( new ValueMetaInteger( "Test" ) );
+    step.setInputRowMeta( input );
+    return step;
+  }
+
+
+  @Test
+  public void createsReadDefaultCache_AndUsesOnlyNeededFieldsFromMeta() throws Exception {
+    Database db = mock( Database.class );
+    when( db.getRows( anyString(), anyInt() ) )
+      .thenReturn( Arrays.asList( new Object[] { 1L }, new Object[] { 2L } ) );
+
+    RowMeta returnRowMeta = new RowMeta();
+    returnRowMeta.addValueMeta( new ValueMetaInteger() );
+    returnRowMeta.addValueMeta( new ValueMetaInteger() );
+    when( db.getReturnRowMeta() ).thenReturn( returnRowMeta );
+
+    StepMockHelper<DatabaseLookupMeta, DatabaseLookupData> mockHelper = createMockHelper();
+    DatabaseLookupMeta meta = createTestMeta();
+    DatabaseLookupData data = new DatabaseLookupData();
+
+    DatabaseLookup step = createSpiedStep( db, mockHelper, meta );
+    step.init( meta, data );
+
+    data.db = db;
+    data.keytypes = new int[] { ValueMetaInterface.TYPE_INTEGER };
+    data.allEquals = true;
+    data.conditions = new int[] { DatabaseLookupMeta.CONDITION_EQ };
+
+    step.processRow( meta, data );
+
+    data.lookupMeta = new RowMeta();
+    data.lookupMeta.addValueMeta( new ValueMetaInteger() );
+
+    assertNotNull( data.cache.getRowFromCache( data.lookupMeta, new Object[] { 1L } ) );
+    assertNotNull( data.cache.getRowFromCache( data.lookupMeta, new Object[] { 2L } ) );
   }
 }

@@ -481,16 +481,18 @@ public class DatabaseLookup extends BaseStep implements StepInterface {
   }
 
   private void putToDefaultCache( Database db, List<Object[]> rows ) {
-    RowMetaInterface returnRowMeta = db.getReturnRowMeta();
+    final int keysAmount = meta.getStreamKeyField1().length;
+    RowMetaInterface prototype = copyValueMetasFrom( db.getReturnRowMeta(), keysAmount );
+
     // Copy the data into 2 parts: key and value...
     //
     for ( Object[] row : rows ) {
       int index = 0;
       // not sure it is efficient to re-create the same on every row,
       // but this was done earlier, so I'm keeping this behaviour
-      RowMetaInterface keyMeta = returnRowMeta.clone();
-      Object[] keyData = new Object[ meta.getStreamKeyField1().length ];
-      for ( int i = 0; i < meta.getStreamKeyField1().length; i++ ) {
+      RowMetaInterface keyMeta = prototype.clone();
+      Object[] keyData = new Object[ keysAmount ];
+      for ( int i = 0; i < keysAmount; i++ ) {
         keyData[ i ] = row[ index++ ];
       }
       // RowMeta valueMeta = new RowMeta();
@@ -504,6 +506,16 @@ public class DatabaseLookup extends BaseStep implements StepInterface {
       data.cache.storeRowInCache( meta, keyMeta, keyData, valueData );
       incrementLinesInput();
     }
+  }
+
+  private RowMetaInterface copyValueMetasFrom( RowMetaInterface source, int n ) {
+    RowMeta result = new RowMeta();
+    for ( int i = 0; i < n; i++ ) {
+      // don't need cloning here,
+      // because value metas will be cloned during iterating through rows
+      result.addValueMeta( source.getValueMeta( i ) );
+    }
+    return result;
   }
 
   private void putToReadOnlyCache( Database db, List<Object[]> rows ) {
