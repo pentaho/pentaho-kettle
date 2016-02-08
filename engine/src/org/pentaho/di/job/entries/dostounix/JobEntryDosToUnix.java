@@ -27,11 +27,14 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.google.common.annotations.VisibleForTesting;
+
 import org.apache.commons.vfs2.AllFileSelector;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSelectInfo;
@@ -501,13 +504,11 @@ public class JobEntryDosToUnix extends JobEntryBase implements Cloneable, JobEnt
       if ( isDebug() ) {
         logDebug( BaseMessages.getString( PKG, "JobDosToUnix.Log.DeletingSourceFile", localfilename ) );
       }
-      file.delete();
       if ( isDebug() ) {
         logDebug( BaseMessages.getString(
           PKG, "JobDosToUnix.Log.RenamingTempFile", tempFile.getAbsolutePath(), source.getAbsolutePath() ) );
       }
-      tempFile.renameTo( source );
-
+      Files.move( tempFile.toPath(), source.toPath(), StandardCopyOption.REPLACE_EXISTING );
       retval = true;
 
     } catch ( Exception e ) {
