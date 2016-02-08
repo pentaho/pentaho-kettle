@@ -1407,7 +1407,6 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
             item1.addSelectionListener( new SelectionAdapter() {
               @Override
               public void widgetSelected( SelectionEvent e1 ) {
-                jobMeta.setShowJobDialog( jobMeta.isAlwaysShowJobCheckbox() );
                 runJob();
               }
             } );
@@ -1417,7 +1416,6 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
             item2.addSelectionListener( new SelectionAdapter() {
               @Override
               public void widgetSelected( SelectionEvent e2 ) {
-                jobMeta.setShowJobDialog( true );
                 runOptionsJob();
               }
             } );
@@ -1425,7 +1423,6 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
             menu.setLocation( shell.getDisplay().map( mainComposite.getParent(), null, mainComposite.getLocation() ) );
             menu.setVisible( true );
           } else {
-            jobMeta.setShowJobDialog( jobMeta.isAlwaysShowJobCheckbox() );
             runJob();
           }
         }

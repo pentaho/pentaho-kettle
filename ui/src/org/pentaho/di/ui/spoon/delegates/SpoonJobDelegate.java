@@ -1348,8 +1348,53 @@ public class SpoonJobDelegate extends SpoonDelegate {
 
     JobExecutionConfigurationDialog dialog =
       new JobExecutionConfigurationDialog( spoon.getShell(), executionConfiguration, jobMeta );
-    if ( jobMeta.isShowJobDialog() && dialog.open() ) {
 
+    if ( !jobMeta.isShowDialog() ) {
+      ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.SpoonJobMetaExecutionStart.id, jobMeta );
+      ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.SpoonJobExecutionConfiguration.id,
+          executionConfiguration );
+
+      // addJobLog(jobMeta);
+      JobGraph jobGraph = spoon.getActiveJobGraph();
+
+      // Set the variables that where specified...
+      //
+      for ( String varName : executionConfiguration.getVariables().keySet() ) {
+        String varValue = executionConfiguration.getVariables().get( varName );
+        jobMeta.setVariable( varName, varValue );
+      }
+
+      // Set and activate the parameters...
+      //
+      for ( String paramName : executionConfiguration.getParams().keySet() ) {
+        String paramValue = executionConfiguration.getParams().get( paramName );
+        jobMeta.setParameterValue( paramName, paramValue );
+      }
+
+      // Is this a local execution?
+      //
+      if ( executionConfiguration.isExecutingLocally() ) {
+        jobGraph.startJob( executionConfiguration );
+      } else if ( executionConfiguration.isExecutingRemotely() ) {
+        // Executing remotely
+        // Check if jobMeta has changed
+        jobGraph.handleJobMetaChanges( jobMeta );
+
+        // Activate the parameters, turn them into variables...
+        // jobMeta.hasChanged()
+        jobMeta.activateParameters();
+
+        if ( executionConfiguration.getRemoteServer() != null ) {
+          Job.sendToSlaveServer( jobMeta, executionConfiguration, spoon.rep, spoon.metaStore );
+          spoon.delegates.slaves.addSpoonSlave( executionConfiguration.getRemoteServer() );
+        } else {
+          MessageBox mb = new MessageBox( spoon.getShell(), SWT.OK | SWT.ICON_ERROR );
+          mb.setMessage( BaseMessages.getString( PKG, "Spoon.Dialog.NoRemoteServerSpecified.Message" ) );
+          mb.setText( BaseMessages.getString( PKG, "Spoon.Dialog.NoRemoteServerSpecified.Title" ) );
+          mb.open();
+        }
+      }
+    } else if ( dialog.open() ) {
       ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.SpoonJobMetaExecutionStart.id, jobMeta );
       ExtensionPointHandler.callExtensionPoint(
         log, KettleExtensionPoint.SpoonJobExecutionConfiguration.id, executionConfiguration );

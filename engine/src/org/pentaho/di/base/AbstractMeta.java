@@ -176,41 +176,23 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   protected int undo_position;
 
-  private boolean showTransDialog = true;
-  private boolean showJobDialog = true;
-  private boolean alwaysShowTransCheckbox = true;
-  private boolean alwaysShowJobCheckbox = true;
+  private boolean showDialog = true;
+  private boolean alwaysShowRunOptions = true;
 
-  public boolean isShowTransDialog() {
-    return showTransDialog;
+  public boolean isShowDialog() {
+    return showDialog;
   }
 
-  public void setShowTransDialog( boolean showTransDialog ) {
-    this.showTransDialog = showTransDialog;
+  public void setShowDialog( boolean showDialog ) {
+    this.showDialog = showDialog;
   }
 
-  public boolean isShowJobDialog() {
-    return showJobDialog;
+  public boolean isAlwaysShowRunOptions() {
+    return alwaysShowRunOptions;
   }
 
-  public void setShowJobDialog( boolean showJobDialog ) {
-    this.showJobDialog = showJobDialog;
-  }
-
-  public boolean isAlwaysShowTransCheckbox() {
-    return alwaysShowTransCheckbox;
-  }
-
-  public void setAlwaysShowTransCheckbox( boolean alwaysShowTransCheckbox ) {
-    this.alwaysShowTransCheckbox = alwaysShowTransCheckbox;
-  }
-
-  public boolean isAlwaysShowJobCheckbox() {
-    return alwaysShowJobCheckbox;
-  }
-
-  public void setAlwaysShowJobCheckbox( boolean alwaysShowJobCheckbox ) {
-    this.alwaysShowJobCheckbox = alwaysShowJobCheckbox;
+  public void setAlwaysShowRunOptions( boolean alwaysShowRunOptions ) {
+    this.alwaysShowRunOptions = alwaysShowRunOptions;
   }
 
   /**

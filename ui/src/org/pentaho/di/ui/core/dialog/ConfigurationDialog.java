@@ -54,8 +54,6 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.parameters.UnknownParamException;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.job.JobMeta;
-import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
@@ -101,12 +99,14 @@ public abstract class ConfigurationDialog extends Dialog {
   private FormData fdExecLocal;
   private FormData fdExecRemote;
   private CTabFolder tabFolder;
+  private boolean alwaysShowRunOptions;
 
   public ConfigurationDialog( Shell parent, ExecutionConfiguration configuration, AbstractMeta meta ) {
     super( parent );
     this.parent = parent;
     this.configuration = configuration;
     this.abstractMeta = meta;
+    initCheckboxFlag();
 
     // Fill the parameters, maybe do this in another place?
     Map<String, String> params = configuration.getParams();
@@ -117,6 +117,10 @@ public abstract class ConfigurationDialog extends Dialog {
     }
 
     props = PropsUI.getInstance();
+  }
+
+  private void initCheckboxFlag() {
+    alwaysShowRunOptions = abstractMeta.isAlwaysShowRunOptions();
   }
 
   protected void getInfoVariables() {
@@ -156,6 +160,7 @@ public abstract class ConfigurationDialog extends Dialog {
   }
 
   protected void ok() {
+    setCheckboxFlag();
     if ( Const.isOSX() ) {
       // OSX bug workaround.
       wVariables.applyOSXChanges();
@@ -176,6 +181,11 @@ public abstract class ConfigurationDialog extends Dialog {
   }
 
   public abstract void getInfo();
+
+  private void setCheckboxFlag() {
+      abstractMeta.setAlwaysShowRunOptions( alwaysShowRunOptions );
+      abstractMeta.setShowDialog( alwaysShowRunOptions );
+  }
 
   protected void getParamsData() {
     wParams.clearAll( false );
@@ -342,33 +352,14 @@ public abstract class ConfigurationDialog extends Dialog {
     Button alwaysShowOption = new Button( shell, SWT.CHECK );
     props.setLook( alwaysShowOption );
     fd_tabFolder.bottom = new FormAttachment( 100, -106 );
-    final boolean isTrans = abstractMeta instanceof TransMeta;
-    final boolean isJob = abstractMeta instanceof JobMeta;
-    alwaysShowOption.setSelection( isTrans ? abstractMeta.isAlwaysShowTransCheckbox() : isJob ? abstractMeta
-        .isAlwaysShowJobCheckbox() : true );
-    
+    alwaysShowOption.setSelection( abstractMeta.isAlwaysShowRunOptions() );
+
     alwaysShowOption.setToolTipText( BaseMessages.getString( PKG, prefix + ".alwaysShowOption" ) );
-    
+
     alwaysShowOption.addSelectionListener( new SelectionAdapter() {
       public void widgetSelected( SelectionEvent e ) {
         Button btn = (Button) e.getSource();
-        if ( btn.getSelection() ) {
-          if ( isTrans ) {
-            abstractMeta.setAlwaysShowTransCheckbox( true );
-            abstractMeta.setShowTransDialog( true );
-          } else if ( isJob ) {
-            abstractMeta.setAlwaysShowJobCheckbox( true );
-            abstractMeta.setShowJobDialog( true );
-          }
-        } else {
-          if ( isTrans ) {
-            abstractMeta.setAlwaysShowTransCheckbox( false );
-            abstractMeta.setShowTransDialog( false );
-          } else if ( isJob ) {
-            abstractMeta.setAlwaysShowJobCheckbox( false );
-            abstractMeta.setShowJobDialog( false );
-          }
-        }
+        alwaysShowRunOptions = btn.getSelection();
       }
     } );
 
