@@ -615,6 +615,15 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
                 }
                 // ignore any errors here. drop downs will not be
                 // filled, but no problem for the user
+              } finally {
+                try {
+                  if ( db != null ) {
+                    db.disconnect();
+                  }
+                } catch ( Exception ignored ) {
+                  // ignore any errors here.
+                  db = null;
+                }
               }
             }
           }
