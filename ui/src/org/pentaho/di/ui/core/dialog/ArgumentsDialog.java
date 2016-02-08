@@ -148,7 +148,7 @@ public class ArgumentsDialog extends Dialog {
     btnHelp.addSelectionListener( new SelectionAdapter() {
       @Override
       public void widgetSelected( SelectionEvent evt ) {
-        String docUrl = BaseMessages.getString( Spoon.class, "Spoon.ArgumentsDialog.Help" );
+        String docUrl = Const.getDocUrl( BaseMessages.getString( Spoon.class, "Spoon.ArgumentsDialog.Help" ) );
         String docTitle = BaseMessages.getString( PKG, "ArgumentsDialog.docTitle" );
         String docHeader = BaseMessages.getString( PKG, "ArgumentsDialog.docHeader" );
         HelpUtils.openHelpDialog( parent.getShell(), docTitle, docUrl, docHeader );

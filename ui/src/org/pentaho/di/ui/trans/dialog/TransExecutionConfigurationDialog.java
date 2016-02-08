@@ -207,7 +207,8 @@ public class TransExecutionConfigurationDialog extends ConfigurationDialog {
     optionsSectionLayout( PKG, "TransExecutionConfigurationDialog" );
     parametersSectionLayout( PKG, "TransExecutionConfigurationDialog" );
 
-    String docUrl = BaseMessages.getString( Spoon.class, "Spoon.TransExecutionConfigurationDialog.Help" );
+    String docUrl =
+        Const.getDocUrl( BaseMessages.getString( Spoon.class, "Spoon.TransExecutionConfigurationDialog.Help" ) );
     String docTitle = BaseMessages.getString( PKG, "TransExecutionConfigurationDialog.docTitle" );
     String docHeader = BaseMessages.getString( PKG, "TransExecutionConfigurationDialog.docHeader" );
     buttonsSectionLayout( PKG, "TransExecutionConfigurationDialog", docTitle, docUrl, docHeader );
