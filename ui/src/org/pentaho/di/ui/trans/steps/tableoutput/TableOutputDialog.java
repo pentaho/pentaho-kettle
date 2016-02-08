@@ -1098,6 +1098,16 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
                 }
                 // ignore any errors here. drop downs will not be
                 // filled, but no problem for the user
+              } finally {
+                try {
+                  if ( db != null ) {
+                    db.disconnect();
+                  }
+                } catch ( Exception ignored ) {
+                  // ignore any errors here. Nothing we can do if
+                  // connection fails to close properly
+                  db = null;
+                }
               }
             }
           }
