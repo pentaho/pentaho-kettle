@@ -56,6 +56,7 @@ explicitly covering such access.
     <!-- test dependencies -->
     <dependency org="junit" name="junit" rev="4.11" conf="test->default"/>
     <dependency org="org.mockito" name="mockito-all" rev="1.9.5" conf="test->default" transitive="false" />
+    <dependency org="pentaho-kettle" name="kettle-engine-test" rev="${dependency.kettle.revision}" conf="test->default" transitive="true" changing="true"/>
 
   </dependencies>
 </ivy-module>
