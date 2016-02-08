@@ -32,6 +32,7 @@ import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -674,6 +675,28 @@ public class JsonInputTest {
     }
   }
 
+
+  @Test
+  public void testNoFilesInListError() throws Exception {
+    ByteArrayOutputStream err = new ByteArrayOutputStream();
+    helper.redirectLog( err, LogLevel.ERROR );
+
+    JsonInputMeta meta = createFileListMeta( Collections.<FileObject>emptyList() );
+    meta.setDoNotFailIfNoFile( false );
+    JsonInputField price = new JsonInputField();
+    price.setName( "price" );
+    price.setType( ValueMetaInterface.TYPE_NUMBER );
+    price.setPath( "$..book[*].price" );
+    meta.setInputFields( new JsonInputField[] { price } );
+
+    try ( LocaleChange enUS = new LocaleChange( Locale.US ) ) {
+      JsonInput jsonInput = createJsonInput( meta );
+      processRows( jsonInput, 1 );
+    }
+    String errMsgs = err.toString();
+    assertTrue( errMsgs, errMsgs.contains( "No file(s) specified!" ) );
+  }
+
   @Test
   public void testZipFileInput() throws Exception {
     ByteArrayOutputStream err = new ByteArrayOutputStream();
@@ -856,6 +879,8 @@ public class JsonInputTest {
     when( helper.stepMeta.isDoingErrorHandling() ).thenReturn( true );
     JsonInput jsonInput = createJsonInput( "json", meta, new Object[] { input1 }, new Object[] { input2 } );
     StepErrorMeta errMeta = new StepErrorMeta( jsonInput, helper.stepMeta );
+    errMeta.setEnabled( true );
+    errMeta.setErrorFieldsValuename( "err field" );
     when( helper.stepMeta.getStepErrorMeta() ).thenReturn( errMeta );
     final List<Object[]> errorLines = new ArrayList<>();
     jsonInput.addRowListener( new RowComparatorListener( new Object[] { "ok" } ) {
@@ -866,7 +891,7 @@ public class JsonInputTest {
     } );
     processRows( jsonInput, 3 );
     Assert.assertEquals( "fwd error", 1, errorLines.size() );
-    Assert.assertEquals( "input in err line", 1, errorLines.size() );
+    Assert.assertEquals( "input in err line", input1, errorLines.get( 0 )[0] );
     Assert.assertEquals( "rows written", 1, jsonInput.getLinesWritten() );
   }
 
@@ -877,7 +902,6 @@ public class JsonInputTest {
     jsonInputMeta.setFieldValue( inputColumn );
     jsonInputMeta.setInputFields( jsonPathFields );
     jsonInputMeta.setIgnoreMissingPath( false );
-    //    jsonInputMeta.setLegacyMode( false );
     return jsonInputMeta;
   }
 
