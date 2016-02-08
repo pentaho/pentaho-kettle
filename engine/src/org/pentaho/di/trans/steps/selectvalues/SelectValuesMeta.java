@@ -29,13 +29,15 @@ import java.util.List;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.KettleAttributeInterface;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.injection.Injection;
+import org.pentaho.di.core.injection.InjectionDeep;
+import org.pentaho.di.core.injection.InjectionSupported;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
@@ -52,10 +54,8 @@ import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
-import org.pentaho.di.trans.step.StepInjectionMetaEntry;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.step.StepMetaInjectionInterface;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
@@ -65,32 +65,40 @@ import org.w3c.dom.Node;
  *
  * Created on 02-jun-2003
  */
-public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface, StepMetaInjectionInterface {
+@InjectionSupported( localizationPrefix = "SelectValues.Injection.", groups = { "FIELDS", "REMOVES", "METAS" } )
+public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = SelectValuesMeta.class; // for i18n purposes, needed by Translator2!!
 
   // SELECT mode
   /** Select: Name of the selected field */
+  @Injection( name = "FIELD_NAME", group = "FIELDS" )
   private String[] selectName;
 
   /** Select: Rename to ... */
+  @Injection( name = "FIELD_RENAME", group = "FIELDS" )
   private String[] selectRename;
 
   /** Select: length of field */
+  @Injection( name = "FIELD_LENGTH", group = "FIELDS" )
   private int[] selectLength;
 
   /** Select: Precision of field (for numbers) */
+  @Injection( name = "FIELD_PRECISION", group = "FIELDS" )
   private int[] selectPrecision;
 
   /**
    * Select: flag to indicate that the non-selected fields should also be taken along, ordered by fieldname
    */
+  @Injection( name = "SELECT_UNSPECIFIED" )
   private boolean selectingAndSortingUnspecifiedFields;
 
   // DE-SELECT mode
   /** Names of the fields to be removed! */
+  @Injection( name = "REMOVE_NAME", group = "REMOVES" )
   private String[] deleteName;
 
   // META-DATA mode
+  @InjectionDeep
   private SelectMetadataChange[] meta;
 
   public SelectValuesMeta() {
@@ -824,140 +832,4 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface,
 
     return lineages;
   }
-
-  public StepMetaInjectionInterface getStepMetaInjectionInterface() {
-    return this;
-  }
-
-  /**
-   * Describe the metadata attributes that can be injected into this step metadata object.
-   */
-  public List<StepInjectionMetaEntry> getStepInjectionMetadataEntries() {
-    return getStepInjectionMetadataEntries( PKG );
-  }
-
-  public void injectStepMetadataEntries( List<StepInjectionMetaEntry> metadata ) {
-    for ( StepInjectionMetaEntry entry : metadata ) {
-      KettleAttributeInterface attr = findAttribute( entry.getKey() );
-
-      // Set top level attributes...
-      //
-      if ( entry.getValueType() != ValueMetaInterface.TYPE_NONE ) {
-        if ( entry.getKey().equals( "SELECT_UNSPECIFIED" ) ) {
-          selectingAndSortingUnspecifiedFields = (Boolean) entry.getValue();
-        } else {
-          throw new RuntimeException( "Unhandled metadata injection of attribute: "
-            + attr.toString() + " - " + attr.getDescription() );
-        }
-      } else {
-        // The data sets...
-        //
-        if ( attr.getKey().equals( "FIELDS" ) ) {
-          List<StepInjectionMetaEntry> selectFields = entry.getDetails();
-          allocateSelect( selectFields.size() );
-          for ( int row = 0; row < selectFields.size(); row++ ) {
-            StepInjectionMetaEntry selectField = selectFields.get( row );
-
-            List<StepInjectionMetaEntry> fieldAttributes = selectField.getDetails();
-            //CHECKSTYLE:Indentation:OFF
-            for ( int i = 0; i < fieldAttributes.size(); i++ ) {
-              StepInjectionMetaEntry fieldAttribute = fieldAttributes.get( i );
-              KettleAttributeInterface fieldAttr = findAttribute( fieldAttribute.getKey() );
-
-              String attributeValue = (String) fieldAttribute.getValue();
-              if ( fieldAttr.getKey().equals( "FIELD_NAME" ) ) {
-                getSelectName()[row] = attributeValue;
-              } else if ( fieldAttr.getKey().equals( "FIELD_RENAME" ) ) {
-                getSelectRename()[row] = attributeValue;
-              } else if ( fieldAttr.getKey().equals( "FIELD_LENGTH" ) ) {
-                getSelectLength()[row] = attributeValue == null ? -1 : Integer.parseInt( attributeValue );
-              } else if ( fieldAttr.getKey().equals( "FIELD_PRECISION" ) ) {
-                getSelectPrecision()[row] = attributeValue == null ? -1 : Integer.parseInt( attributeValue );
-              } else {
-                throw new RuntimeException( "Unhandled metadata injection of attribute: "
-                  + fieldAttr.toString() + " - " + fieldAttr.getDescription() );
-              }
-            }
-          }
-        } else if ( attr.getKey().equals( "REMOVES" ) ) {
-          List<StepInjectionMetaEntry> removeFields = entry.getDetails();
-          allocateRemove( removeFields.size() );
-          for ( int row = 0; row < removeFields.size(); row++ ) {
-            StepInjectionMetaEntry removeField = removeFields.get( row );
-
-            List<StepInjectionMetaEntry> fieldAttributes = removeField.getDetails();
-            for ( int i = 0; i < fieldAttributes.size(); i++ ) {
-              StepInjectionMetaEntry fieldAttribute = fieldAttributes.get( i );
-              KettleAttributeInterface fieldAttr = findAttribute( fieldAttribute.getKey() );
-              String attributeValue = (String) fieldAttribute.getValue();
-
-              if ( fieldAttr.getKey().equals( "REMOVE_NAME" ) ) {
-                getDeleteName()[row] = attributeValue;
-              } else {
-                throw new RuntimeException( "Unhandled metadata injection of attribute: "
-                  + fieldAttr.toString() + " - " + fieldAttr.getDescription() );
-              }
-            }
-          }
-        } else if ( attr.getKey().equals( "METAS" ) ) {
-          List<StepInjectionMetaEntry> metaFields = entry.getDetails();
-          allocateMeta( metaFields.size() );
-          for ( int row = 0; row < metaFields.size(); row++ ) {
-            StepInjectionMetaEntry metaField = metaFields.get( row );
-            SelectMetadataChange metaChange = new SelectMetadataChange( this );
-            List<StepInjectionMetaEntry> fieldAttributes = metaField.getDetails();
-            for ( int i = 0; i < fieldAttributes.size(); i++ ) {
-              StepInjectionMetaEntry fieldAttribute = fieldAttributes.get( i );
-              KettleAttributeInterface fieldAttr = findAttribute( fieldAttribute.getKey() );
-              String attributeValue = (String) fieldAttribute.getValue();
-
-              if ( fieldAttr.getKey().equals( "META_NAME" ) ) {
-                metaChange.setName( attributeValue );
-              } else if ( fieldAttr.getKey().equals( "META_RENAME" ) ) {
-                metaChange.setRename( attributeValue );
-              } else if ( fieldAttr.getKey().equals( "META_TYPE" ) ) {
-                metaChange.setType( ValueMeta.getType( attributeValue ) );
-              } else if ( fieldAttr.getKey().equals( "META_LENGTH" ) ) {
-                metaChange.setLength( attributeValue == null ? -1 : Integer.parseInt( attributeValue ) );
-              } else if ( fieldAttr.getKey().equals( "META_PRECISION" ) ) {
-                metaChange.setPrecision( attributeValue == null ? -1 : Integer.parseInt( attributeValue ) );
-              } else if ( fieldAttr.getKey().equals( "META_STORAGE_TYPE" ) ) {
-                metaChange.setStorageType( ValueMeta.getStorageType( attributeValue ) );
-              } else if ( fieldAttr.getKey().equals( "META_CONVERSION_MASK" ) ) {
-                metaChange.setConversionMask( attributeValue );
-              } else if ( fieldAttr.getKey().equals( "META_DATE_FORMAT_LENIENT" ) ) {
-                metaChange.setDateFormatLenient( ValueMeta.convertStringToBoolean( attributeValue ) == null
-                  ? false : true );
-              } else if ( fieldAttr.getKey().equals( "META_DATE_FORMAT_LOCALE" ) ) {
-                metaChange.setDateFormatLocale( attributeValue );
-              } else if ( fieldAttr.getKey().equals( "META_DATE_FORMAT_TIMEZONE" ) ) {
-                metaChange.setDateFormatTimeZone( attributeValue );
-              } else if ( fieldAttr.getKey().equals( "META_LENIENT_STRING_TO_NUMBER" ) ) {
-                metaChange.setLenientStringToNumber( ValueMeta.convertStringToBoolean( attributeValue ) == null
-                  ? false : true );
-              } else if ( fieldAttr.getKey().equals( "META_DECIMAL" ) ) {
-                metaChange.setDecimalSymbol( attributeValue );
-              } else if ( fieldAttr.getKey().equals( "META_GROUPING" ) ) {
-                metaChange.setGroupingSymbol( attributeValue );
-              } else if ( fieldAttr.getKey().equals( "META_CURRENCY" ) ) {
-                metaChange.setCurrencySymbol( attributeValue );
-              } else if ( fieldAttr.getKey().equals( "META_ENCODING" ) ) {
-                metaChange.setEncoding( attributeValue );
-              } else {
-                throw new RuntimeException( "Unhandled metadata injection of attribute: "
-                  + fieldAttr.getKey() + " - " + fieldAttr.getDescription() );
-              }
-            }
-            meta[row] = metaChange;
-          }
-          break;
-        }
-      }
-    }
-  }
-
-  public List<StepInjectionMetaEntry> extractStepMetadataEntries() throws KettleException {
-    return null;
-  }
-
 }
