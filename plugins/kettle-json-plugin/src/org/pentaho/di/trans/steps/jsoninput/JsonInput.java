@@ -39,9 +39,7 @@ import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
-import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
@@ -144,6 +142,11 @@ public class JsonInput extends BaseFileInputStep<JsonInputMeta, JsonInputData> i
   protected void prepareToRowProcessing() throws KettleException, KettleStepException, KettleValueException {
     if ( !meta.isInFields() ) {
       data.outputRowMeta = new RowMeta();
+      if ( !meta.isDoNotFailIfNoFile() && data.files.nrOfFiles() == 0 ) {
+        String errMsg = BaseMessages.getString( PKG, "JsonInput.Log.NoFiles" );
+        logError( errMsg );
+        inputError( errMsg );
+      }
     } else {
       data.readrow = getRow();
       data.inputRowMeta = getInputRowMeta();
@@ -274,7 +277,6 @@ public class JsonInput extends BaseFileInputStep<JsonInputMeta, JsonInputData> i
     }
   }
 
-
   private class InputErrorHandler implements InputsReader.ErrorHandler {
 
     @Override
@@ -330,12 +332,10 @@ public class JsonInput extends BaseFileInputStep<JsonInputMeta, JsonInputData> i
       // same error as before
       String defaultErrCode = "JsonInput001";
       if ( data.readrow != null ) {
-        putError( getInputRowMeta(), data.readrow, 1, errorMsg, null, defaultErrCode );
-      } else if ( data.file != null ) {
-        // undefined behaviour, just send the filename
-        RowMetaInterface errorMeta = new RowMeta();
-        errorMeta.addValueMeta( new ValueMetaString( "" ) );
-        putError( errorMeta, new Object[] { data.file.getName().getPath() }, 1, errorMsg, null, defaultErrCode );
+        putError( getInputRowMeta(), data.readrow, 1, errorMsg, meta.getFieldValue(), defaultErrCode );
+      } else {
+        // when no input only error fields are recognized
+        putError( new RowMeta(), new Object[0], 1, errorMsg, null, defaultErrCode );
       }
     } catch ( KettleStepException e ) {
       logError( e.getLocalizedMessage(), e );
