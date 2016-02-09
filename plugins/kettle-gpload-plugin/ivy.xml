@@ -28,7 +28,8 @@
     <dependency org="org.eclipse" name="jface" rev="3.3.0-I20070606-0010" transitive="false"/>
 
     <!-- test dependencies -->
-    <dependency org="junit" name="junit" rev="4.11" conf="test->default"/>
+    <dependency org="junit"          name="junit"              rev="4.11"                                                             conf="test->default"/>
+    <dependency org="org.mockito"    name="mockito-all"        rev="1.9.5"                                         transitive="false" conf="test->default"/>
     <dependency org="pentaho-kettle" name="kettle-engine-test" rev="${dependency.kettle.revision}" changing="true" transitive="false" conf="test->default"/>
 
   </dependencies>
