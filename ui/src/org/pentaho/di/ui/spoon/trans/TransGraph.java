@@ -1708,7 +1708,6 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
             item1.addSelectionListener( new SelectionAdapter() {
               @Override
               public void widgetSelected( SelectionEvent e1 ) {
-                transMeta.setShowTransDialog( transMeta.isAlwaysShowTransCheckbox() );
                 runTransformation();
               }
             } );
@@ -1719,14 +1718,12 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
             item2.addSelectionListener( new SelectionAdapter() {
               @Override
               public void widgetSelected( SelectionEvent e2 ) {
-                transMeta.setShowTransDialog( true );
                 runOptionsTransformation();
               }
             } );
             menu.setLocation( shell.getDisplay().map( mainComposite.getParent(), null, mainComposite.getLocation() ) );
             menu.setVisible( true );
           } else {
-            transMeta.setShowTransDialog( transMeta.isAlwaysShowTransCheckbox() );
             runTransformation();
           }
         }

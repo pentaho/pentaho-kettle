@@ -8494,14 +8494,14 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
     TransMeta transMeta = getActiveTransformation();
     if ( transMeta != null ) {
-      transMeta.setShowTransDialog( show || transMeta.isAlwaysShowTransCheckbox() );
+      transMeta.setShowDialog( show || transMeta.isAlwaysShowRunOptions() );
       executeTransformation( transMeta, local, remote, cluster, preview, debug, replayDate, safe,
           transExecutionConfiguration.getLogLevel() );
     }
 
     JobMeta jobMeta = getActiveJob();
     if ( jobMeta != null ) {
-      jobMeta.setShowJobDialog( show || jobMeta.isAlwaysShowJobCheckbox() );
+      jobMeta.setShowDialog( show || jobMeta.isAlwaysShowRunOptions() );
       executeJob( jobMeta, local, remote, replayDate, safe, null, 0 );
     }
 
