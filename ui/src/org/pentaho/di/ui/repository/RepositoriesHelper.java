@@ -108,7 +108,7 @@ public class RepositoriesHelper {
     EnterSelectionDialog selectRepositoryType = new EnterSelectionDialog( this.shell, names,
       BaseMessages.getString( PKG, "RepositoryLogin.SelectRepositoryType" ),
       BaseMessages.getString( PKG, "RepositoryLogin.SelectRepositoryTypeCreate" ) );
-    String choice = selectRepositoryType.open();
+    String choice = selectRepositoryType.openRepoDialog();
     if ( choice != null ) {
       int index = selectRepositoryType.getSelectionNr();
       PluginInterface plugin = plugins.get( index );
