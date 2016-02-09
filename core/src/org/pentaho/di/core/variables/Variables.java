@@ -40,7 +40,7 @@ import org.pentaho.di.version.BuildVersion;
  * @author Sven Boden
  */
 public class Variables implements VariableSpace {
-  private final ConcurrentHashMap<String, String> properties = new ConcurrentHashMap<String, String>();
+  private final Map<String, String> properties = new ConcurrentHashMap<>();
 
   private VariableSpace parent;
 
