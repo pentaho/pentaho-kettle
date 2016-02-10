@@ -405,6 +405,8 @@ public class EnterSelectionDialog extends Dialog {
       wSelection.select( 0 );
     }
 
+    int width = 75;
+
     Label separator = new Label( shell, SWT.SEPARATOR | SWT.HORIZONTAL );
     FormData fd_separator = new FormData();
     fd_separator.top = new FormAttachment( wSelection, 35 );
@@ -418,6 +420,7 @@ public class EnterSelectionDialog extends Dialog {
     fd_btnHelp.top = new FormAttachment( separator, 12 );
     fd_btnHelp.left = new FormAttachment( 0, 10 );
     fd_btnHelp.bottom = new FormAttachment( 100, -10 );
+    fd_btnHelp.width = width;
     btnHelp.setLayoutData( fd_btnHelp );
     btnHelp.setText( BaseMessages.getString( PKG, "System.Button.Help" ) );
     btnHelp.addSelectionListener( new SelectionAdapter() {
@@ -435,7 +438,7 @@ public class EnterSelectionDialog extends Dialog {
     fd_wCancel.top = new FormAttachment( separator, 12 );
     fd_wCancel.right = new FormAttachment( 100, -10 );
     fd_wCancel.bottom = new FormAttachment( 100, -10 );
-    fd_wCancel.width = 65;
+    fd_wCancel.width = width;
     wCancel.setLayoutData( fd_wCancel );
     wCancel.setText( BaseMessages.getString( PKG, "System.Button.Cancel" ).trim() );
 
@@ -452,7 +455,7 @@ public class EnterSelectionDialog extends Dialog {
     fd_wOK.top = new FormAttachment( separator, 12 );
     fd_wOK.right = new FormAttachment( wCancel, -5 );
     fd_wOK.bottom = new FormAttachment( 100, -10 );
-    fd_wOK.width = 65;
+    fd_wOK.width = width;
     wOK.setLayoutData( fd_wOK );
 
     lsOK = new Listener() {
