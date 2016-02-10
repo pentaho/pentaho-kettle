@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -86,7 +86,7 @@ public class JsonOutputMetaInjection implements StepMetaInjectionInterface {
     }
 
     public static Entry findEntry( String key ) {
-      return Entry.valueOf(key );
+      return Entry.valueOf( key );
     }
   }
 
@@ -141,7 +141,7 @@ public class JsonOutputMetaInjection implements StepMetaInjectionInterface {
     // Parse the fields, inject into the meta class..
     //
     for ( StepInjectionMetaEntry lookFields : all ) {
-      Entry fieldsEntry = Entry.findEntry(lookFields.getKey() );
+      Entry fieldsEntry = Entry.findEntry( lookFields.getKey() );
       if ( fieldsEntry == null ) {
         continue;
       }
@@ -150,7 +150,7 @@ public class JsonOutputMetaInjection implements StepMetaInjectionInterface {
       switch ( fieldsEntry ) {
         case JSON_FIELDS:
           for ( StepInjectionMetaEntry lookField : lookFields.getDetails() ) {
-            Entry fieldEntry = Entry.findEntry(lookField.getKey() );
+            Entry fieldEntry = Entry.findEntry( lookField.getKey() );
             if ( fieldEntry == Entry.JSON_FIELD ) {
 
               String jsonFieldname = null;
@@ -158,7 +158,7 @@ public class JsonOutputMetaInjection implements StepMetaInjectionInterface {
 
               List<StepInjectionMetaEntry> entries = lookField.getDetails();
               for ( StepInjectionMetaEntry entry : entries ) {
-                Entry metaEntry = Entry.findEntry(entry.getKey() );
+                Entry metaEntry = Entry.findEntry( entry.getKey() );
                 if ( metaEntry != null ) {
                   String value = (String) entry.getValue();
                   switch ( metaEntry ) {
@@ -180,7 +180,7 @@ public class JsonOutputMetaInjection implements StepMetaInjectionInterface {
           break;
 
         case OPERATION:
-          meta.setOperationType( meta.getOperationTypeByDesc( lookValue ) );
+          meta.setOperationType( JsonOutputMeta.getOperationTypeByDesc( lookValue ) );
           break;
         case JSON_BLOC_NAME:
           meta.setJsonBloc( lookValue );
@@ -244,7 +244,7 @@ public class JsonOutputMetaInjection implements StepMetaInjectionInterface {
         jof[i] = field;
         i++;
       }
-      meta.setOutputFields(jof );
+      meta.setOutputFields( jof );
     }
   }
 

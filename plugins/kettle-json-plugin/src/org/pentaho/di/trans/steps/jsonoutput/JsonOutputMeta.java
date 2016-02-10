@@ -35,8 +35,8 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -392,7 +392,7 @@ public class JsonOutputMeta extends BaseStepMeta implements StepMetaInterface {
 
     if ( getOperationType() != OPERATION_TYPE_WRITE_TO_FILE ) {
       ValueMetaInterface v =
-          new ValueMeta( space.environmentSubstitute( this.getOutputValue() ), ValueMetaInterface.TYPE_STRING );
+          new ValueMetaString( space.environmentSubstitute( this.getOutputValue() ) );
       v.setOrigin( name );
       row.addValueMeta( v );
     }
