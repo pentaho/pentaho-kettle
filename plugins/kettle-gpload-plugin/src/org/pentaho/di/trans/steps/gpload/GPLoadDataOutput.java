@@ -119,8 +119,8 @@ public class GPLoadDataOutput {
   PrintWriter getOutput() {
     return output;
   }
-  
-  protected void setOutput( PrintWriter output) {
+
+  protected void setOutput( PrintWriter output ) {
     this.output = output;
   }
 
