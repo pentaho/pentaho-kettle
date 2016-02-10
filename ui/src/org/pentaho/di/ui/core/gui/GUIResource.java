@@ -230,6 +230,8 @@ public class GUIResource {
   private SwtUniversalImage imageVariable;
 
   private SwtUniversalImage imageTransGraph;
+  
+  private SwtUniversalImage imagePartitionSchema;
 
   private SwtUniversalImage imageJobGraph;
 
@@ -580,6 +582,7 @@ public class GUIResource {
       imagePentahoSwirl.dispose();
       imageVariable.dispose();
       imageTransGraph.dispose();
+      imagePartitionSchema.dispose();
       imageJobGraph.dispose();
       imageTransTree.dispose();
       imageJobTree.dispose();
@@ -1122,6 +1125,10 @@ public class GUIResource {
 
     imageTransGraph = SwtSvgImageUtil.getUniversalImage( display, getClass().getClassLoader(),
       BasePropertyHandler.getProperty( "SpoonIcon_image" ) );
+        
+    imagePartitionSchema = SwtSvgImageUtil.getUniversalImage( display, getClass().getClassLoader(),
+        BasePropertyHandler.getProperty( "Image_Partition_Schema" ) );
+    
     imageJobGraph = SwtSvgImageUtil.getUniversalImage( display, getClass().getClassLoader(),
       BasePropertyHandler.getProperty( "ChefIcon_image" ) );
 
@@ -1773,6 +1780,10 @@ public class GUIResource {
 
   public Image getImageFolderConnectionsMedium() {
     return imageTransGraph.getAsBitmapForSize( display, ConstUI.MEDIUM_ICON_SIZE, ConstUI.MEDIUM_ICON_SIZE );
+  }
+  
+  public Image getImagePartitionSchema() {
+    return imagePartitionSchema.getAsBitmapForSize( display, ConstUI.MEDIUM_ICON_SIZE, ConstUI.MEDIUM_ICON_SIZE );    
   }
 
   public Image getImageJobGraph() {
