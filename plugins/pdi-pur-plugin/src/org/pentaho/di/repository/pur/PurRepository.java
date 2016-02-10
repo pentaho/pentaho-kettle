@@ -1,3 +1,4 @@
+//CHECKSTYLE:FileLength:OFF
 /*!
 * Copyright 2010 - 2015 Pentaho Corporation.  All rights reserved.
 *
