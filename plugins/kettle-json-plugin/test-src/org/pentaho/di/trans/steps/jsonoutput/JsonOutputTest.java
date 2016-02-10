@@ -211,7 +211,7 @@ public class JsonOutputTest extends TestCase {
     RowMetaInterface rowMetaInterface = new RowMeta();
 
     ValueMetaInterface[] valuesMeta =
-        { new ValueMetaInteger( "Id" ), new ValueMetaString( "State" ), new ValueMetaString( "City" ) };
+      { new ValueMetaInteger( "Id" ), new ValueMetaString( "State" ), new ValueMetaString( "City" ) };
 
     for ( int i = 0; i < valuesMeta.length; i++ ) {
       rowMetaInterface.addValueMeta( valuesMeta[i] );

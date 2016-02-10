@@ -23,10 +23,21 @@
 package org.pentaho.di.trans.steps.googleanalytics;
 
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
+import org.pentaho.di.core.KettleClientEnvironment;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.injection.BaseMetadataInjectionTest;
+import org.pentaho.di.core.row.ValueMetaInterface;
 
 public class GaInputStepMetaInjectionTest extends BaseMetadataInjectionTest<GaInputStepMeta> {
+
+  @BeforeClass
+  public static void init() throws KettleException {
+    // added for ValueMetaFactory.getIdForValueMeta to work for OUTPUT_TYPE
+    KettleClientEnvironment.init();
+  }
+
   @Before
   public void setup() {
     setup( new GaInputStepMeta() );
@@ -94,7 +105,7 @@ public class GaInputStepMetaInjectionTest extends BaseMetadataInjectionTest<GaIn
         return meta.getFilters();
       }
     } );
-    check( "SOR", new StringGetter() {
+    check( "SORT", new StringGetter() {
       public String get() {
         return meta.getSort();
       }
@@ -149,5 +160,15 @@ public class GaInputStepMetaInjectionTest extends BaseMetadataInjectionTest<GaIn
         return meta.getConversionMask()[0];
       }
     } );
+
+    int[] typeInts = new int[ ValueMetaInterface.typeCodes.length ];
+    for ( int i = 0; i < typeInts.length; i++ ) {
+      typeInts[i] = i;
+    }
+    checkStringToInt( "OUTPUT_TYPE", new IntGetter() {
+      public int get() {
+        return meta.getOutputType()[0];
+      }
+    }, ValueMetaInterface.typeCodes, typeInts );
   }
 }

@@ -75,7 +75,7 @@ public class RowOutputConverter {
     return nodevalue;
   }
 
-  public Object[] getRow(Object[] baseOutputRow, Object[] rawPartRow, JsonInputData data ) throws KettleException {
+  public Object[] getRow( Object[] baseOutputRow, Object[] rawPartRow, JsonInputData data ) throws KettleException {
     if ( rawPartRow == null ) {
       return null;
     }

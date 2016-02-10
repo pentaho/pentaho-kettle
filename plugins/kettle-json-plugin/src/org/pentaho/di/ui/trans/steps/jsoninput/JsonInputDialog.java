@@ -416,9 +416,8 @@ public class JsonInputDialog extends BaseStepDialog implements StepDialogInterfa
     // Listen to the Browse... button
     wbbFilename.addSelectionListener( new SelectionAdapter() {
       public void widgetSelected( SelectionEvent e ) {
-        if ( !Const.isEmpty( wFilemask.getText() ) || !Const.isEmpty( wExcludeFilemask.getText() ) ) // A mask: a
+        if ( !Const.isEmpty( wFilemask.getText() ) || !Const.isEmpty( wExcludeFilemask.getText() ) ) { // A mask: a
                                                                                                      // directory!
-        {
           DirectoryDialog dialog = new DirectoryDialog( shell, SWT.OPEN );
           if ( wFilename.getText() != null ) {
             String fpath = transMeta.environmentSubstitute( wFilename.getText() );
@@ -635,7 +634,7 @@ public class JsonInputDialog extends BaseStepDialog implements StepDialogInterfa
       public void widgetSelected( SelectionEvent e ) {
         input.setChanged();
       }
-    });
+    } );
     wIgnoreMissingPath.setToolTipText( BaseMessages.getString( PKG, "JsonInputDialog.IgnoreMissingPath.Tooltip" ) );
     fdIgnoreMissingPath = new FormData();
     fdIgnoreMissingPath.left = new FormAttachment( middle, 0 );
