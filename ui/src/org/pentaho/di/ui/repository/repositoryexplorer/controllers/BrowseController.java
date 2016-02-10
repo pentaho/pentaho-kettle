@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.i18n.BaseMessages;
@@ -440,7 +441,11 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
       XulPromptBox prompt = promptForName( null );
       prompt.addDialogCallback( new XulDialogCallback<String>() {
         public void onClose( XulComponent component, Status status, String value ) {
-          newName = value;
+          if ( status == Status.ACCEPT ) {
+            newName = value;
+          } else {
+            newName = null;
+          }
         }
 
         public void onError( XulComponent component, Throwable err ) {
@@ -936,4 +941,23 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
     return true;
   }
 
+  @VisibleForTesting
+  void setDirMap( Map<ObjectId, UIRepositoryDirectory> dirMap ) {
+    this.dirMap = dirMap;
+  }
+
+  @VisibleForTesting
+  void setFolderTree( XulTree folderTree ) {
+    this.folderTree = folderTree;
+  }
+
+  @VisibleForTesting
+  void setRepositoryDirectory( UIRepositoryDirectory repositoryDirectory ) {
+    this.repositoryDirectory = repositoryDirectory;
+  }
+
+  @VisibleForTesting
+  void setDirectoryBinding( Binding directoryBinding ) {
+    this.directoryBinding = directoryBinding;
+  }
 }
