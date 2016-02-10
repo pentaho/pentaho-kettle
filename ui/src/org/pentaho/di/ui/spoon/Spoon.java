@@ -6397,7 +6397,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         continue;
       }
       TreeItem tiPartition =
-        createTreeItem( tiPartitionTitle, partitionSchema.getName(), guiResource.getImageFolderConnectionsMedium() );
+        createTreeItem( tiPartitionTitle, partitionSchema.getName(), guiResource.getImagePartitionSchema() );
       if ( partitionSchema.isShared() ) {
         tiPartition.setFont( guiResource.getFontBold() );
       }
