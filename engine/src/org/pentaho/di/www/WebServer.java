@@ -22,6 +22,11 @@
 
 package org.pentaho.di.www;
 
+import com.sun.jersey.spi.container.servlet.ServletContainer;
+import org.eclipse.jetty.plus.jaas.JAASLoginService;
+import org.eclipse.jetty.security.ConstraintMapping;
+import org.eclipse.jetty.security.ConstraintSecurityHandler;
+import org.eclipse.jetty.security.HashLoginService;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
@@ -30,16 +35,12 @@ import org.eclipse.jetty.server.bio.SocketConnector;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;
-import org.eclipse.jetty.plus.jaas.JAASLoginService;
-import org.eclipse.jetty.util.security.Constraint;
-import org.eclipse.jetty.util.security.Credential;
-import org.eclipse.jetty.util.security.Password;
-import org.eclipse.jetty.security.ConstraintMapping;
-import org.eclipse.jetty.security.ConstraintSecurityHandler;
-import org.eclipse.jetty.security.HashLoginService;
 import org.eclipse.jetty.server.ssl.SslSocketConnector;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
+import org.eclipse.jetty.util.security.Constraint;
+import org.eclipse.jetty.util.security.Credential;
+import org.eclipse.jetty.util.security.Password;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.KettleEnvironment;
@@ -52,6 +53,7 @@ import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.i18n.BaseMessages;
 
+import javax.servlet.Servlet;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -59,10 +61,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
-
-import javax.servlet.Servlet;
-
-import com.sun.jersey.spi.container.servlet.ServletContainer;
 
 public class WebServer {
   private static Class<?> PKG = WebServer.class; // for i18n purposes, needed by Translator2!!
@@ -219,13 +217,12 @@ public class WebServer {
     List<PluginInterface> plugins = pluginRegistry.getPlugins( CartePluginType.class );
     for ( PluginInterface plugin : plugins ) {
 
-      CartePluginInterface servlet = (CartePluginInterface) pluginRegistry.loadClass( plugin );
+      CartePluginInterface servlet = pluginRegistry.loadClass( plugin, CartePluginInterface.class );
       servlet.setup( transformationMap, jobMap, socketRepository, detections );
       servlet.setJettyMode( true );
 
-      ServletContextHandler
-          servletContext =
-          new ServletContextHandler( contexts, servlet.getContextPath(), ServletContextHandler.SESSIONS );
+      ServletContextHandler servletContext =
+        new ServletContextHandler( contexts, getContextPath( servlet ), ServletContextHandler.SESSIONS );
       ServletHolder servletHolder = new ServletHolder( (Servlet) servlet );
       servletContext.addServlet( servletHolder, "/*" );
     }
@@ -261,6 +258,14 @@ public class WebServer {
     createListeners();
 
     server.start();
+  }
+
+  public String getContextPath( CartePluginInterface servlet ) {
+    String contextPath = servlet.getContextPath();
+    if ( !contextPath.startsWith( "/kettle" ) ) {
+      contextPath = "/kettle" + contextPath;
+    }
+    return contextPath;
   }
 
   public void join() throws InterruptedException {
