@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -132,7 +132,11 @@ public class ReadAllCache implements DatabaseLookupData.Cache {
 
     for ( Index index : indexes ) {
       int column = index.getColumn();
-      index.applyRestrictionsTo( context, lookupMeta.getValueMeta( column ), lookupRow[ column ] );
+      // IS (NOT) NULL operation does not require second argument
+      // hence, lookupValue can be absent
+      // basically, the index ignores both meta and value, so we can pass everything there
+      Object lookupValue = ( column < lookupRow.length ) ? lookupRow[ column ] : null;
+      index.applyRestrictionsTo( context, lookupMeta.getValueMeta( column ), lookupValue );
       if ( context.isEmpty() ) {
         // if nothing matches, break the search
         return null;

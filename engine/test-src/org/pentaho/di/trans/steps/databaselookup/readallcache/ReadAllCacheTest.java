@@ -157,7 +157,6 @@ public class ReadAllCacheTest {
     assertNull( "(1000 <= keys[2] <= 2000) --> none", found );
   }
 
-
   private ReadAllCache buildCache( String conditions ) throws Exception {
     StringTokenizer tokenizer = new StringTokenizer( conditions, "," );
     List<String> operators = Arrays.asList( DatabaseLookupMeta.conditionStrings );
@@ -180,5 +179,23 @@ public class ReadAllCacheTest {
       builder.add( keyTuple, dataTuple );
     }
     return builder.build();
+  }
+
+
+  @Test
+  public void lookup_HandlesAbsenceOfLookupValue() throws Exception {
+    stepData = new DatabaseLookupData();
+    stepData.conditions = new int[] { DatabaseLookupMeta.CONDITION_IS_NOT_NULL };
+
+    ReadAllCache.Builder builder = new ReadAllCache.Builder( stepData, 2 );
+    RowMeta keysMeta = new RowMeta();
+    keysMeta.addValueMeta( new ValueMetaInteger() );
+    builder.setKeysMeta( keysMeta );
+    builder.add( new Object[] { null }, new Object[] { "null" } );
+    builder.add( new Object[] { 1L }, new Object[] { "one" } );
+    ReadAllCache cache = builder.build();
+
+    Object[] found = cache.getRowFromCache( new RowMeta(), new Object[ 0 ] );
+    assertArrayEquals( "(keys[1] == 1L) --> row 2", new Object[] { "one" }, found );
   }
 }
