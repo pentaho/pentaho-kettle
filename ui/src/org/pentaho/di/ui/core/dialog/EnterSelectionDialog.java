@@ -405,7 +405,7 @@ public class EnterSelectionDialog extends Dialog {
       wSelection.select( 0 );
     }
 
-    int width = 75;
+    int width = ( Const.isOSX() ? 75 : 70 );
 
     Label separator = new Label( shell, SWT.SEPARATOR | SWT.HORIZONTAL );
     FormData fd_separator = new FormData();
@@ -420,7 +420,7 @@ public class EnterSelectionDialog extends Dialog {
     fd_btnHelp.top = new FormAttachment( separator, 12 );
     fd_btnHelp.left = new FormAttachment( 0, 10 );
     fd_btnHelp.bottom = new FormAttachment( 100, -10 );
-    fd_btnHelp.width = width;
+    fd_btnHelp.width = ( Const.isOSX() ? 85 : 75 );
     btnHelp.setLayoutData( fd_btnHelp );
     btnHelp.setText( BaseMessages.getString( PKG, "System.Button.Help" ) );
     btnHelp.addSelectionListener( new SelectionAdapter() {
