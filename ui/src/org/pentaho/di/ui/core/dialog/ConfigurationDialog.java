@@ -87,6 +87,7 @@ public abstract class ConfigurationDialog extends Dialog {
   protected int margin = Const.MARGIN;
   protected Group gLocal;
   protected Composite stackedLayoutComposite;
+  protected Composite composite;
 
   private TableView wParams;
   private Display display;
@@ -98,6 +99,7 @@ public abstract class ConfigurationDialog extends Dialog {
   private FormData fd_tabFolder;
   private FormData fdExecLocal;
   private FormData fdExecRemote;
+  private FormData fdComposite;
   private CTabFolder tabFolder;
   private Button alwaysShowOption;
 
@@ -458,21 +460,42 @@ public abstract class ConfigurationDialog extends Dialog {
       }
     } );
 
-    wExecRemote = new Button( gLocal, SWT.RADIO );
-    wExecRemote.setText( BaseMessages.getString( PKG, prefix + ".ExecRemote.Label" ) );
-    wExecRemote.setToolTipText( BaseMessages.getString( PKG, prefix + ".ExecRemote.Tooltip" ) );
-    props.setLook( wExecRemote );
-    fdExecLocal.left = new FormAttachment( wExecRemote, 0, SWT.LEFT );
-    fdExecRemote = new FormData();
-    fdExecRemote.left = new FormAttachment( 0, 10 );
-    fdExecRemote.top = new FormAttachment( wExecLocal, 7 );
-    wExecRemote.setLayoutData( fdExecRemote );
-    wExecRemote.addSelectionListener( new SelectionAdapter() {
-      public void widgetSelected( SelectionEvent e ) {
-        stackedLayout.topControl = serverOptionsComposite;
-        stackedLayoutComposite.layout();
-      }
-    } );
+    if ( abstractMeta.getSlaveServers() == null || abstractMeta.getSlaveServers().size() == 0 ) {
+      composite = new Composite( gLocal, SWT.NONE );
+      composite.setLayout( new FormLayout() );
+      props.setLook( composite );
+      composite.setToolTipText( BaseMessages.getString( PKG, prefix + ".ExecRemote.DisabledTooltip" ) );
+      fdExecLocal.left = new FormAttachment( composite, 0, SWT.LEFT );
+      fdComposite = new FormData();
+      fdComposite.left = new FormAttachment( wExecLocal, 10, SWT.LEFT );
+      fdComposite.top = new FormAttachment( wExecLocal, 7 );
+      fdComposite.bottom = new FormAttachment( wExecLocal, 23, SWT.BOTTOM );
+      composite.setLayoutData( fdComposite );
+
+      wExecRemote = new Button( composite, SWT.RADIO );
+      wExecRemote.setText( BaseMessages.getString( PKG, prefix + ".ExecRemote.Label" ) );
+      props.setLook( wExecRemote );
+      wExecRemote.setEnabled( false );
+      fdExecRemote = new FormData();
+      fdExecRemote.top = new FormAttachment( 0 );
+      wExecRemote.setLayoutData( fdExecRemote );
+    } else {
+      wExecRemote = new Button( gLocal, SWT.RADIO );
+      wExecRemote.setText( BaseMessages.getString( PKG, prefix + ".ExecRemote.Label" ) );
+      wExecRemote.setToolTipText( BaseMessages.getString( PKG, prefix + ".ExecRemote.Tooltip" ) );
+      props.setLook( wExecRemote );
+      fdExecLocal.left = new FormAttachment( wExecRemote, 0, SWT.LEFT );
+      fdExecRemote = new FormData();
+      fdExecRemote.left = new FormAttachment( 0, 10 );
+      fdExecRemote.top = new FormAttachment( wExecLocal, 7 );
+      wExecRemote.setLayoutData( fdExecRemote );
+      wExecRemote.addSelectionListener( new SelectionAdapter() {
+        public void widgetSelected( SelectionEvent e ) {
+          stackedLayout.topControl = serverOptionsComposite;
+          stackedLayoutComposite.layout();
+        }
+      } );
+    }
 
     // separator
     environmentSeparator = new Label( gLocal, SWT.SEPARATOR | SWT.VERTICAL );

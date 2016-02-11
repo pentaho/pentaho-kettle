@@ -189,7 +189,11 @@ public class TransExecutionConfigurationDialog extends ConfigurationDialog {
     props.setLook( wExecCluster );
     fdExecCluster = new FormData();
     fdExecCluster.left = new FormAttachment( 0, 10 );
-    fdExecCluster.top = new FormAttachment( wExecRemote, 7 );
+    if ( abstractMeta.getSlaveServers() == null || abstractMeta.getSlaveServers().size() == 0 ) {
+      fdExecCluster.top = new FormAttachment( composite, 7 );
+    } else {
+      fdExecCluster.top = new FormAttachment( wExecRemote, 7 );
+    }
     wExecCluster.setLayoutData( fdExecCluster );
     wExecCluster.addSelectionListener( new SelectionAdapter() {
       public void widgetSelected( SelectionEvent e ) {
