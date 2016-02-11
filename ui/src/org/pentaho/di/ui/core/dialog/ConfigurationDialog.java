@@ -99,14 +99,13 @@ public abstract class ConfigurationDialog extends Dialog {
   private FormData fdExecLocal;
   private FormData fdExecRemote;
   private CTabFolder tabFolder;
-  private boolean alwaysShowRunOptions;
+  private Button alwaysShowOption;
 
   public ConfigurationDialog( Shell parent, ExecutionConfiguration configuration, AbstractMeta meta ) {
     super( parent );
     this.parent = parent;
     this.configuration = configuration;
     this.abstractMeta = meta;
-    initCheckboxFlag();
 
     // Fill the parameters, maybe do this in another place?
     Map<String, String> params = configuration.getParams();
@@ -117,10 +116,6 @@ public abstract class ConfigurationDialog extends Dialog {
     }
 
     props = PropsUI.getInstance();
-  }
-
-  private void initCheckboxFlag() {
-    alwaysShowRunOptions = abstractMeta.isAlwaysShowRunOptions();
   }
 
   protected void getInfoVariables() {
@@ -160,7 +155,8 @@ public abstract class ConfigurationDialog extends Dialog {
   }
 
   protected void ok() {
-    setCheckboxFlag();
+    abstractMeta.setAlwaysShowRunOptions( alwaysShowOption.getSelection() );
+    abstractMeta.setShowDialog( alwaysShowOption.getSelection() );
     if ( Const.isOSX() ) {
       // OSX bug workaround.
       wVariables.applyOSXChanges();
@@ -181,11 +177,6 @@ public abstract class ConfigurationDialog extends Dialog {
   }
 
   public abstract void getInfo();
-
-  private void setCheckboxFlag() {
-      abstractMeta.setAlwaysShowRunOptions( alwaysShowRunOptions );
-      abstractMeta.setShowDialog( alwaysShowRunOptions );
-  }
 
   protected void getParamsData() {
     wParams.clearAll( false );
@@ -349,19 +340,12 @@ public abstract class ConfigurationDialog extends Dialog {
 
     // Bottom buttons and separator
 
-    Button alwaysShowOption = new Button( shell, SWT.CHECK );
+    alwaysShowOption = new Button( shell, SWT.CHECK );
     props.setLook( alwaysShowOption );
     fd_tabFolder.bottom = new FormAttachment( 100, -106 );
     alwaysShowOption.setSelection( abstractMeta.isAlwaysShowRunOptions() );
 
     alwaysShowOption.setToolTipText( BaseMessages.getString( PKG, prefix + ".alwaysShowOption" ) );
-
-    alwaysShowOption.addSelectionListener( new SelectionAdapter() {
-      public void widgetSelected( SelectionEvent e ) {
-        Button btn = (Button) e.getSource();
-        alwaysShowRunOptions = btn.getSelection();
-      }
-    } );
 
     FormData fd_alwaysShowOption = new FormData();
     fd_alwaysShowOption.left = new FormAttachment( 0, 15 );
