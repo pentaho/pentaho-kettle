@@ -499,6 +499,15 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler imple
       new ErrorDialog( shell, "Error", "Unexpected explorer error:", e );
       this.status = UiPostActionStatus.ERROR_DIALOG_SHOWN;
       return;
+    } finally {
+      if ( theDatabase != null ) {
+        try {
+          theDatabase.disconnect();
+        } catch ( Exception ignored ) {
+          // Can't do anything else here...
+        }
+        theDatabase = null;
+      }
     }
     this.status = UiPostActionStatus.OK;
   }
