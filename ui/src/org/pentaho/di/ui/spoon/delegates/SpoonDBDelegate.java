@@ -328,85 +328,88 @@ public class SpoonDBDelegate extends SpoonDelegate {
       Database sourceDB = new Database( loggingObject, sourceDBInfo );
       sourceDB.shareVariablesWith( meta );
       sourceDB.connect();
+      try {
+        // Get the fields for the input table...
+        RowMetaInterface fields = sourceDB.getTableFields( tablename );
 
-      // Get the fields for the input table...
-      RowMetaInterface fields = sourceDB.getTableFields( tablename );
-
-      // See if we need to deal with reserved words...
-      int nrReserved = targetDBInfo.getNrReservedWords( fields );
-      if ( nrReserved > 0 ) {
-        SelectValuesMeta svi = new SelectValuesMeta();
-        svi.allocate( 0, 0, nrReserved );
-        int nr = 0;
-        //CHECKSTYLE:Indentation:OFF
-        for ( int i = 0; i < fields.size(); i++ ) {
-          ValueMetaInterface v = fields.getValueMeta( i );
-          if ( targetDBInfo.isReservedWord( v.getName() ) ) {
-            if ( svi.getMeta()[nr] == null ) {
-              svi.getMeta()[nr] = new SelectMetadataChange( svi );
+        // See if we need to deal with reserved words...
+        int nrReserved = targetDBInfo.getNrReservedWords( fields );
+        if ( nrReserved > 0 ) {
+          SelectValuesMeta svi = new SelectValuesMeta();
+          svi.allocate( 0, 0, nrReserved );
+          int nr = 0;
+          //CHECKSTYLE:Indentation:OFF
+          for ( int i = 0; i < fields.size(); i++ ) {
+            ValueMetaInterface v = fields.getValueMeta( i );
+            if ( targetDBInfo.isReservedWord( v.getName() ) ) {
+              if ( svi.getMeta()[nr] == null ) {
+                svi.getMeta()[nr] = new SelectMetadataChange( svi );
+              }
+              svi.getMeta()[nr].setName( v.getName() );
+              svi.getMeta()[nr].setRename( targetDBInfo.quoteField( v.getName() ) );
+              nr++;
             }
-            svi.getMeta()[nr].setName( v.getName() );
-            svi.getMeta()[nr].setRename( targetDBInfo.quoteField( v.getName() ) );
-            nr++;
           }
+
+          String selstepname = BaseMessages.getString( PKG, "Spoon.Message.Note.HandleReservedWords" );
+          String selstepid = registry.getPluginId( StepPluginType.class, svi );
+          StepMeta selstep = new StepMeta( selstepid, selstepname, svi );
+          selstep.setLocation( 350, 100 );
+          selstep.setDraw( true );
+          selstep.setDescription( BaseMessages.getString(
+            PKG, "Spoon.Message.Note.RenamesReservedWords", targetDBInfo.getPluginId() ) ); //
+          meta.addStep( selstep );
+
+          TransHopMeta shi = new TransHopMeta( fromstep, selstep );
+          meta.addTransHop( shi );
+          fromstep = selstep;
         }
 
-        String selstepname = BaseMessages.getString( PKG, "Spoon.Message.Note.HandleReservedWords" );
-        String selstepid = registry.getPluginId( StepPluginType.class, svi );
-        StepMeta selstep = new StepMeta( selstepid, selstepname, svi );
-        selstep.setLocation( 350, 100 );
-        selstep.setDraw( true );
-        selstep.setDescription( BaseMessages.getString(
-          PKG, "Spoon.Message.Note.RenamesReservedWords", targetDBInfo.getPluginId() ) ); //
-        meta.addStep( selstep );
+        //
+        // Create the target step...
+        //
+        //
+        // Add the TableOutputMeta step...
+        //
+        String tostepname = BaseMessages.getString( PKG, "Spoon.Message.Note.WriteToTable", tablename );
+        TableOutputMeta toi = new TableOutputMeta();
+        toi.setDatabaseMeta( targetDBInfo );
+        toi.setTableName( tablename );
+        toi.setCommitSize( 200 );
+        toi.setTruncateTable( true );
 
-        TransHopMeta shi = new TransHopMeta( fromstep, selstep );
-        meta.addTransHop( shi );
-        fromstep = selstep;
+        String tostepid = registry.getPluginId( StepPluginType.class, toi );
+        StepMeta tostep = new StepMeta( tostepid, tostepname, toi );
+        tostep.setLocation( 550, 100 );
+        tostep.setDraw( true );
+        tostep.setDescription( BaseMessages.getString(
+          PKG, "Spoon.Message.Note.WriteInformationToTableOnDB2", tablename, targetDBInfo.getDatabaseName() ) );
+        meta.addStep( tostep );
+
+        //
+        // Add a hop between the two steps...
+        //
+        TransHopMeta hi = new TransHopMeta( fromstep, tostep );
+        meta.addTransHop( hi );
+
+        // OK, if we're still here: overwrite the current transformation...
+        // Set a name on this generated transformation
+        //
+        String name = "Copy table from [" + sourceDBInfo.getName() + "] to [" + targetDBInfo.getName() + "]";
+        String transName = name;
+        int nr = 1;
+        if ( spoon.delegates.trans.getTransformation( transName ) != null ) {
+          nr++;
+          transName = name + " " + nr;
+        }
+        meta.setName( transName );
+        spoon.delegates.trans.addTransGraph( meta );
+
+        spoon.refreshGraph();
+        spoon.refreshTree();
+      } finally {
+        sourceDB.disconnect();
       }
-
-      //
-      // Create the target step...
-      //
-      //
-      // Add the TableOutputMeta step...
-      //
-      String tostepname = BaseMessages.getString( PKG, "Spoon.Message.Note.WriteToTable", tablename );
-      TableOutputMeta toi = new TableOutputMeta();
-      toi.setDatabaseMeta( targetDBInfo );
-      toi.setTableName( tablename );
-      toi.setCommitSize( 200 );
-      toi.setTruncateTable( true );
-
-      String tostepid = registry.getPluginId( StepPluginType.class, toi );
-      StepMeta tostep = new StepMeta( tostepid, tostepname, toi );
-      tostep.setLocation( 550, 100 );
-      tostep.setDraw( true );
-      tostep.setDescription( BaseMessages.getString(
-        PKG, "Spoon.Message.Note.WriteInformationToTableOnDB2", tablename, targetDBInfo.getDatabaseName() ) );
-      meta.addStep( tostep );
-
-      //
-      // Add a hop between the two steps...
-      //
-      TransHopMeta hi = new TransHopMeta( fromstep, tostep );
-      meta.addTransHop( hi );
-
-      // OK, if we're still here: overwrite the current transformation...
-      // Set a name on this generated transformation
-      //
-      String name = "Copy table from [" + sourceDBInfo.getName() + "] to [" + targetDBInfo.getName() + "]";
-      String transName = name;
-      int nr = 1;
-      if ( spoon.delegates.trans.getTransformation( transName ) != null ) {
-        nr++;
-        transName = name + " " + nr;
-      }
-      meta.setName( transName );
-      spoon.delegates.trans.addTransGraph( meta );
-
-      spoon.refreshGraph();
-      spoon.refreshTree();
     } catch ( Exception e ) {
       new ErrorDialog(
         spoon.getShell(), BaseMessages.getString( PKG, "Spoon.Dialog.UnexpectedError.Title" ), BaseMessages
