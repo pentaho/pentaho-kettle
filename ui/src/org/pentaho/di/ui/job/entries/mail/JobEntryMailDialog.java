@@ -53,7 +53,6 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
-import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.ResultFile;
@@ -65,7 +64,6 @@ import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
-import org.pentaho.di.ui.core.widget.ControlSpaceKeyAdapter;
 import org.pentaho.di.ui.core.widget.LabelText;
 import org.pentaho.di.ui.core.widget.LabelTextVar;
 import org.pentaho.di.ui.core.widget.TableView;
@@ -905,8 +903,6 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
     fdlComment.right = new FormAttachment( middle, margin );
     wlComment.setLayoutData( fdlComment );
 
-    
-    //wComment = new Text( wMessageGroup, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL );
     wComment = new TextVar( jobMeta, wMessageGroup, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL );
     props.setLook( wComment );
     wComment.addModifyListener( lsMod );
@@ -916,8 +912,6 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
     fdComment.right = new FormAttachment( 100, 0 );
     fdComment.bottom = new FormAttachment( 100, -margin );
     wComment.setLayoutData( fdComment );
-    // SelectionAdapter lsVar = VariableButtonListenerFactory.getSelectionAdapter(shell, wComment, jobMeta);
-    wComment.addKeyListener( new ControlSpaceKeyAdapter( jobMeta, wComment ) );
 
     FormData fdMessageGroup = new FormData();
     fdMessageGroup.left = new FormAttachment( 0, margin );
