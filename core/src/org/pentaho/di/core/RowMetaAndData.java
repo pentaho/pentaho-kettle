@@ -351,6 +351,25 @@ public class RowMetaAndData implements Cloneable {
           return vi.longValue() != 0;
         }
         break;
+      case ValueMetaInterface.TYPE_NUMBER:
+        Double vn = rowMeta.getNumber( data, idx );
+        if ( vn == null ) {
+          return null;
+        }
+        if ( double.class.isAssignableFrom( destinationType ) || Double.class.isAssignableFrom( destinationType ) ) {
+          return vn.doubleValue();
+        } else if ( long.class.isAssignableFrom( destinationType ) || Long.class.isAssignableFrom( destinationType ) ) {
+          return vn;
+        } else if ( int.class.isAssignableFrom( destinationType ) || Integer.class.isAssignableFrom(
+            destinationType ) ) {
+          return vn.intValue();
+        } else if ( String.class.isAssignableFrom( destinationType ) ) {
+          return vn.toString();
+        } else if ( boolean.class.isAssignableFrom( destinationType ) || Boolean.class.isAssignableFrom(
+            destinationType ) ) {
+          return vn.longValue() != 0;
+        }
+        break;
     }
 
     throw new KettleValueException( "Unknown conversion from " + metaType.getTypeDesc() + " into " + destinationType );
