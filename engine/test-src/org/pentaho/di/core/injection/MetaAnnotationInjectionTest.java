@@ -22,20 +22,30 @@
 
 package org.pentaho.di.core.injection;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.junit.Test;
 import org.pentaho.di.core.RowMetaAndData;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.injection.bean.BeanInjectionInfo;
 import org.pentaho.di.core.injection.bean.BeanInjector;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.value.ValueMetaString;
 
 public class MetaAnnotationInjectionTest {
+
+  private static final String FIELD_ONE = "FIELD_ONE";
+
+  private static final String COMPLEX_NAME = "COMPLEX_NAME";
+
+  private static final String TEST_NAME = "TEST_NAME";
 
   @Test
   public void testInjectionDescription() throws Exception {
@@ -57,8 +67,6 @@ public class MetaAnnotationInjectionTest {
 
   @Test
   public void testInjectionSets() throws Exception {
-    BeanInjectionInfo ri = new BeanInjectionInfo( MetaBeanLevel1.class );
-
     MetaBeanLevel1 obj = new MetaBeanLevel1();
 
     RowMeta meta = new RowMeta();
@@ -71,7 +79,7 @@ public class MetaAnnotationInjectionTest {
     rows.add( new RowMetaAndData( meta, "<sep>", "/tmp/file.txt", "123", "1234567891213", "y" ) );
     rows.add( new RowMetaAndData( meta, "<sep>", "/tmp/file2.txt", "123", "1234567891213", "y" ) );
 
-    BeanInjector inj = new BeanInjector( ri );
+    BeanInjector inj = buildBeanInjectorFor( MetaBeanLevel1.class );
     inj.setProperty( obj, "SEPARATOR", rows, "f1" );
     inj.setProperty( obj, "FILENAME", rows, "f2" );
     inj.setProperty( obj, "FILENAME_ARRAY", rows, "f2" );
@@ -86,6 +94,121 @@ public class MetaAnnotationInjectionTest {
     assertEquals( 123, obj.fint );
     assertEquals( 1234567891213L, obj.flong );
     assertEquals( "123", obj.getSub().first() );
-    assertEquals( new String[] { "/tmp/file.txt", "/tmp/file2.txt" }, obj.getSub().getFilenames() );
+    assertArrayEquals( new String[] { "/tmp/file.txt", "/tmp/file2.txt" }, obj.getSub().getFilenames() );
   }
+
+  @Test
+  public void testInjectionForArrayPropertyWithoutDefaultConstructor_class_parameter() throws KettleException {
+    BeanInjector beanInjector = buildBeanInjectorFor( MetadataBean.class );
+    MetadataBean targetBean = new MetadataBean();
+    beanInjector.setProperty( targetBean, COMPLEX_NAME, createRowMetaAndData(), FIELD_ONE );
+
+    assertNotNull( targetBean.getComplexField() );
+    assertTrue( targetBean.getComplexField().length == 1 );
+    assertEquals( TEST_NAME, targetBean.getComplexField()[0].getFieldName() );
+  }
+
+  @Test
+  public void testInjectionForArrayPropertyWithoutDefaultConstructor_interface_parameter() throws KettleException {
+    BeanInjector beanInjector = buildBeanInjectorFor( MetadataBeanImplementsInterface.class );
+    MetadataBeanImplementsInterface targetBean = new MetadataBeanImplementsInterface();
+    beanInjector.setProperty( targetBean, COMPLEX_NAME, createRowMetaAndData(), FIELD_ONE );
+
+    assertNotNull( targetBean.getComplexField() );
+    assertTrue( targetBean.getComplexField().length == 1 );
+    assertEquals( TEST_NAME, targetBean.getComplexField()[0].getFieldName() );
+  }
+
+  private static BeanInjector buildBeanInjectorFor( Class<?> clazz ) {
+    BeanInjectionInfo metaBeanInfo = new BeanInjectionInfo( clazz );
+    return new BeanInjector( metaBeanInfo );
+  }
+
+  private static List<RowMetaAndData> createRowMetaAndData() {
+    RowMeta meta = new RowMeta();
+    meta.addValueMeta( new ValueMetaString( FIELD_ONE ) );
+    return Collections.singletonList( new RowMetaAndData( meta, TEST_NAME ) );
+  }
+
+  private static interface MetadataInterface {
+  }
+
+  @InjectionSupported( localizationPrefix = "", groups = "COMPLEX" )
+  public static class MetadataBean {
+
+    @InjectionDeep
+    private ComplexField[] complexField;
+
+    public ComplexField[] getComplexField() {
+      return complexField;
+    }
+
+    public void setComplexField( ComplexField[] complexField ) {
+      this.complexField = complexField;
+    }
+  }
+
+  public static class ComplexField {
+
+    @Injection( name = "COMPLEX_NAME", group = "COMPLEX" )
+    private String fieldName;
+
+    private final MetadataBean parentMeta;
+
+    public ComplexField( MetadataBean parentMeta ) {
+      this.parentMeta = parentMeta;
+    }
+
+    public String getFieldName() {
+      return fieldName;
+    }
+
+    public void setFieldName( String fieldName ) {
+      this.fieldName = fieldName;
+    }
+
+    public MetadataBean getParentMeta() {
+      return parentMeta;
+    }
+  }
+
+  @InjectionSupported( localizationPrefix = "", groups = "COMPLEX" )
+  public static class MetadataBeanImplementsInterface implements MetadataInterface {
+
+    @InjectionDeep
+    private ComplexFieldWithInterfaceArg[] complexField;
+
+    public ComplexFieldWithInterfaceArg[] getComplexField() {
+      return complexField;
+    }
+
+    public void setComplexField( ComplexFieldWithInterfaceArg[] complexField ) {
+      this.complexField = complexField;
+    }
+  }
+
+  public static class ComplexFieldWithInterfaceArg {
+
+    @Injection( name = "COMPLEX_NAME", group = "COMPLEX" )
+    private String fieldName;
+
+    private final MetadataInterface parentMeta;
+
+    public ComplexFieldWithInterfaceArg( MetadataInterface parentMeta ) {
+      this.parentMeta = parentMeta;
+    }
+
+    public String getFieldName() {
+      return fieldName;
+    }
+
+    public void setFieldName( String fieldName ) {
+      this.fieldName = fieldName;
+    }
+
+    public MetadataInterface getParentMeta() {
+      return parentMeta;
+    }
+  }
+
 }
