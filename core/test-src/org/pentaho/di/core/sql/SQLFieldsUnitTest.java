@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -51,6 +51,9 @@ public class SQLFieldsUnitTest {
   private static final String WITH_SPACES = "with spaces";
   private static final String SELECT_CLAUSE = String.format( "%s, \"%s\"", NO_SPACE, WITH_SPACES );
   private static final String TABLE = "table";
+  private static final String SELECT_CLAUSE_TABLE_QUALIFIER = String.format(
+    "%s.%s, \"%s\".\"%s\"", TABLE, NO_SPACE, TABLE, WITH_SPACES );
+
   private RowMetaInterface serviceFields;
 
   @Before
@@ -73,10 +76,20 @@ public class SQLFieldsUnitTest {
   @Test
   public void testParseFields() throws KettleSQLException {
     SQLFields sqlFields = new SQLFields( TABLE, serviceFields, SELECT_CLAUSE );
+    checkSqlFields( sqlFields, SELECT_CLAUSE );
+  }
 
+  @Test
+  public void testParseFieldsWithTableQualifier() throws KettleSQLException {
+    SQLFields sqlFields = new SQLFields( TABLE, serviceFields, SELECT_CLAUSE_TABLE_QUALIFIER );
+    // same test as the preceding but with fields referenced like "table"."with space".
+    checkSqlFields( sqlFields, SELECT_CLAUSE_TABLE_QUALIFIER );
+  }
+
+  private void checkSqlFields( SQLFields sqlFields, String selectClause ) {
     assertThat( sqlFields.getTableAlias(), sameInstance( TABLE ) );
     assertThat( sqlFields.getServiceFields(), sameInstance( serviceFields ) );
-    assertThat( sqlFields.getFieldsClause(), equalTo( SELECT_CLAUSE ) );
+    assertThat( sqlFields.getFieldsClause(), equalTo( selectClause ) );
 
     assertThat( sqlFields.getFields(), validSqlFields() );
     assertThat( sqlFields.findByName( NO_SPACE ), sqlField( NO_SPACE ) );
