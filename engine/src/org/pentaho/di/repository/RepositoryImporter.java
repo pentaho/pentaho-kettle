@@ -919,6 +919,9 @@ public class RepositoryImporter implements IRepositoryImporter, CanLimitDirs {
 
   private RepositoryDirectoryInterface getTargetDirectory( String directoryPath, String dirOverride,
       RepositoryImportFeedbackInterface feedback ) throws KettleException {
+    if ( directoryPath.isEmpty() ) {
+      return baseDirectory;
+    }
     RepositoryDirectoryInterface targetDirectory = null;
     if ( dirOverride != null ) {
       targetDirectory = rep.findDirectory( directoryPath );
