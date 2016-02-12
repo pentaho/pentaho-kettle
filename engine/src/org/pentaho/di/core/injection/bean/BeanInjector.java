@@ -117,7 +117,8 @@ public class BeanInjector {
               if ( c.getParameterTypes().length == 0 ) {
                 next = s.leafClass.newInstance();
                 break;
-              } else if ( c.getParameterTypes().length == 1 && c.getParameterTypes()[0] == info.clazz ) {
+              } else if ( c.getParameterTypes().length == 1 && c.getParameterTypes()[0].isAssignableFrom(
+                  info.clazz ) ) {
                 next = c.newInstance( root );
                 break;
               }
