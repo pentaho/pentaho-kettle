@@ -163,8 +163,7 @@ public class MemoryGroupBy extends BaseStep implements StepInterface {
 
     // Here is where we start to do the real work...
     //
-    if ( r == null ) // no more input to be expected... (or none received in the first place)
-    {
+    if ( r == null ) { // no more input to be expected... (or none received in the first place)
       handleLastOfGroup();
 
       setOutputDone();
@@ -197,10 +196,10 @@ public class MemoryGroupBy extends BaseStep implements StepInterface {
       Object[] outputRowData = RowDataUtil.allocateRowData( data.outputRowMeta.size() );
       int index = 0;
       for ( int i = 0; i < data.groupMeta.size(); i++ ) {
-        outputRowData[index++] = entry.getGroupData()[i];
+        outputRowData[index++] = data.groupMeta.getValueMeta( i ).convertToNormalStorageType( entry.getGroupData()[i] );
       }
       for ( int i = 0; i < data.aggMeta.size(); i++ ) {
-        outputRowData[index++] = aggregateResult[i];
+        outputRowData[index++] = data.aggMeta.getValueMeta( i ).convertToNormalStorageType( aggregateResult[i] );
       }
       putRow( data.outputRowMeta, outputRowData );
     }
@@ -234,14 +233,8 @@ public class MemoryGroupBy extends BaseStep implements StepInterface {
    */
   @SuppressWarnings( "unchecked" )
   void addToAggregate( Object[] r ) throws KettleException {
-    // First, look up the row in the map...
-    //
-    Object[] groupData = new Object[data.groupMeta.size()];
-    for ( int i = 0; i < data.groupnrs.length; i++ ) {
-      ValueMetaInterface valueMeta = data.groupMeta.getValueMeta( i );
-      groupData[i] = valueMeta.convertToNormalStorageType( r[data.groupnrs[i]] );
-    }
-    HashEntry entry = data.getHashEntry( groupData );
+
+    HashEntry entry = data.getHashEntry( r );
 
     Aggregate aggregate = data.map.get( entry );
     if ( aggregate == null ) {
