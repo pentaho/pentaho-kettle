@@ -442,10 +442,16 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface 
     for ( int i = 0; i < selectName.length; i++ ) {
       retval.append( "      <field>" );
       retval.append( "        " ).append( XMLHandler.addTagValue( getXmlCode( "FIELD_NAME" ), selectName[i] ) );
-      retval.append( "        " ).append( XMLHandler.addTagValue( getXmlCode( "FIELD_RENAME" ), selectRename[i] ) );
-      retval.append( "        " ).append( XMLHandler.addTagValue( getXmlCode( "FIELD_LENGTH" ), selectLength[i] ) );
-      retval.append( "        " ).append(
-        XMLHandler.addTagValue( getXmlCode( "FIELD_PRECISION" ), selectPrecision[i] ) );
+      if ( selectRename.length > 0 ) {
+        retval.append( "        " ).append( XMLHandler.addTagValue( getXmlCode( "FIELD_RENAME" ), selectRename[i] ) );
+      }
+      if ( selectLength.length > 0 ) {
+        retval.append( "        " ).append( XMLHandler.addTagValue( getXmlCode( "FIELD_LENGTH" ), selectLength[i] ) );
+      }
+      if ( selectPrecision.length > 0 ) {
+        retval.append( "        " ).append( XMLHandler.addTagValue( getXmlCode( "FIELD_PRECISION" ),
+            selectPrecision[i] ) );
+      }
       retval.append( "      </field>" );
     }
     retval.append( "        " ).append(

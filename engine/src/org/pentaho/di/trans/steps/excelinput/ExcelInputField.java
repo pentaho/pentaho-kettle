@@ -41,7 +41,6 @@ public class ExcelInputField implements Cloneable {
   private int length = -1;
   @Injection( name = "PRECISION", group = "FIELDS" )
   private int precision = -1;
-  @Injection( name = "TRIM_TYPE", group = "FIELDS" )
   private int trimtype;
   @Injection( name = "FORMAT", group = "FIELDS" )
   private String format;
@@ -135,6 +134,11 @@ public class ExcelInputField implements Cloneable {
 
   public void setTrimType( int trimtype ) {
     this.trimtype = trimtype;
+  }
+  
+  @Injection( name = "TRIM_TYPE", group = "FIELDS" )
+  public void setTrimType( String trimeType ) {
+    this.trimtype = ValueMeta.getType( trimeType );
   }
 
   public String getGroupSymbol() {
