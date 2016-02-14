@@ -29,6 +29,8 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.injection.Injection;
+import org.pentaho.di.core.injection.InjectionSupported;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
@@ -57,82 +59,105 @@ import org.w3c.dom.Node;
 @Step( id = "GPLoad", image = "BLKGP.svg", i18nPackageName = "org.pentaho.di.trans.steps.gpload",
     name = "GPLoad.TypeLongDesc", description = "GPLoad.TypeLongDesc",
     categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Bulk" )
+@InjectionSupported( localizationPrefix = "GPLoad.Injection.", groups = {"GPLOAD_SETTINGS", "FIELD_MAPPINGS"} )
 public class GPLoadMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = GPLoadMeta.class; // for i18n purposes, needed by Translator2!!
 
   /** Collection of Local hosts **/
+  @Injection( name = "LOCAL_HOSTS", group = "GPLOAD_SETTINGS" )
   private String[] localHosts;
 
   /** LocalHostPort **/
+  @Injection( name = "LOCAL_HOST_PORT", group = "GPLOAD_SETTINGS" )
   private String localhostPort;
 
   /** what's the schema for the target? */
+  @Injection( name = "SCHEMA_NAME", group = "GPLOAD_SETTINGS" )
   private String schemaName;
 
   /** what's the table for the target? */
+  @Injection( name = "TABLE_NAME", group = "GPLOAD_SETTINGS" )
   private String tableName;
 
   /** what's the target of the error table? */
+  @Injection( name = "ERROR_TABLE_NAME", group = "GPLOAD_SETTINGS" )
   private String errorTableName;
 
   /** Path to the gpload utility */
+  @Injection( name = "GPLOAD_PATH", group = "GPLOAD_SETTINGS" )
   private String gploadPath;
 
   /** Path to the control file */
+  @Injection( name = "CONTROL_FILE", group = "GPLOAD_SETTINGS" )
   private String controlFile;
 
   /** Path to the data file */
+  @Injection( name = "DATA_FILE", group = "GPLOAD_SETTINGS" )
   private String dataFile;
 
   /** Path to the log file */
+  @Injection( name = "LOG_FILE", group = "GPLOAD_SETTINGS" )
   private String logFile;
 
   /** NULL_AS parameter for gpload - gpload treats values matching this string as null */
+  @Injection( name = "NULL_AS", group = "GPLOAD_SETTINGS" )
   private String nullAs;
 
   /** database connection */
   private DatabaseMeta databaseMeta;
 
   /** Specified database field */
+  @Injection( name = "FIELD_TABLE", group = "FIELD_MAPPINGS" )
   private String[] fieldTable;
 
   /** Field name in the stream */
+  @Injection( name = "FIELD_STREAM", group = "FIELD_MAPPINGS" )
   private String[] fieldStream;
 
   /** Database column to match on for an update or merge operation */
+  @Injection( name = "MATCH_COLUMN", group = "FIELD_MAPPINGS" )
   private boolean[] matchColumn;
 
   /** Database columns to update */
+  @Injection( name = "UPDATE_COLUMN", group = "FIELD_MAPPINGS" )
   private boolean[] updateColumn;
 
   /** the date mask to use if the value is a date */
+  @Injection( name = "DATE_MASK", group = "FIELD_MAPPINGS" )
   private String[] dateMask;
 
   /** maximum errors */
+  @Injection( name = "MAX_ERRORS", group = "GPLOAD_SETTINGS" )
   private String maxErrors;
 
   /** Load method */
+  @Injection( name = "LOAD_METHOD", group = "GPLOAD_SETTINGS" )
   private String loadMethod;
 
   /** Load action */
+  @Injection( name = "LOAD_ACTION", group = "GPLOAD_SETTINGS" )
   private String loadAction;
 
   /** Encoding to use */
+  @Injection( name = "ENCODING", group = "GPLOAD_SETTINGS" )
   private String encoding;
 
   /** Erase files after use */
+  @Injection( name = "ERASE_FILES", group = "GPLOAD_SETTINGS" )
   private boolean eraseFiles;
 
   /** Boolean to indicate that numbers are to be enclosed */
   private boolean encloseNumbers;
 
   /** Data file delimiter */
+  @Injection( name = "DELIMITER", group = "GPLOAD_SETTINGS" )
   private String delimiter;
 
   /** Default number of maximum errors allowed on a load */
   public static String MAX_ERRORS_DEFAULT = "50";
 
   /** Update condition **/
+  @Injection( name = "UPDATE_CONDITION", group = "GPLOAD_SETTINGS" )
   private String updateCondition;
 
   /*
