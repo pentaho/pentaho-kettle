@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -346,9 +346,11 @@ public class ThinUtil {
 
   public static String stripTableAlias( String field, String tableAliasPrefix ) {
     if ( field.toUpperCase().startsWith( ( tableAliasPrefix + "." ).toUpperCase() ) ) {
-      return ThinUtil.stripQuotes( field.substring( tableAliasPrefix.length() + 1 ), '"' );
+      return ThinUtil.stripQuotesIfNoWhitespace(
+        field.substring( tableAliasPrefix.length() + 1 ), '"' );
     } else if ( field.toUpperCase().startsWith( ( "\"" + tableAliasPrefix + "\"." ).toUpperCase() ) ) {
-      return ThinUtil.stripQuotes( field.substring( tableAliasPrefix.length() + 3 ), '"' );
+      return ThinUtil.stripQuotesIfNoWhitespace(
+        field.substring( tableAliasPrefix.length() + 3 ), '"' );
     } else {
       return field;
     }
@@ -473,6 +475,19 @@ public class ThinUtil {
       }
     }
     return builder.toString();
+  }
+
+  /**
+   * Strips leading and trailing quotes if no whitespace present, and no
+   * additional quotes in the string.
+   */
+  public static String stripQuotesIfNoWhitespace(
+    String string, char... quoteChars ) {
+    if ( string.matches( ".*\\s.*" ) ) {
+      // whitespace present
+      return string;
+    }
+    return stripQuotes( string, quoteChars );
   }
 
   private static int countQuotes( String string, char quoteChar ) {
@@ -616,7 +631,7 @@ public class ThinUtil {
     }
 
     // Translate LIKE operators to REGEX
-    pattern = pattern.replace( "_", "." ).replace("%", ".*?" );
+    pattern = pattern.replace( "_", "." ).replace( "%", ".*?" );
 
     return Pattern.compile( pattern, Pattern.CASE_INSENSITIVE | Pattern.DOTALL );
   }

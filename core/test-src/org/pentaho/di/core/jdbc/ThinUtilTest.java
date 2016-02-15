@@ -22,22 +22,19 @@
 
 package org.pentaho.di.core.jdbc;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
-import java.math.BigDecimal;
-import java.sql.SQLException;
-import java.sql.Types;
-
+import com.google.common.collect.ImmutableMap;
 import org.junit.Test;
 import org.pentaho.di.core.exception.KettleSQLException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.ValueMetaAndData;
 import org.pentaho.di.core.row.ValueMetaInterface;
+
+import java.math.BigDecimal;
+import java.sql.SQLException;
+import java.sql.Types;
+import java.util.Map;
+
+import static org.junit.Assert.*;
 
 public class ThinUtilTest {
   @SuppressWarnings( "deprecation" )
@@ -209,7 +206,7 @@ public class ThinUtilTest {
     ValueMetaAndData result = ThinUtil.attemptNumberValueExtraction( "12345.678" );
     assertNotNull( result );
     assertEquals( ValueMetaInterface.TYPE_NUMBER, result.getValueMeta().getType() );
-    assertEquals( Double.valueOf( 12345.678 ), result.getValueData() );
+    assertEquals( 12345.678, result.getValueData() );
 
     //assertNull( ThinUtil.attemptNumberValueExtraction( null ) );
     assertNull( ThinUtil.attemptNumberValueExtraction( "" ) );
@@ -263,5 +260,27 @@ public class ThinUtilTest {
     assertNull( ThinUtil.attemptBooleanValueExtraction( null ) );
     assertNull( ThinUtil.attemptBooleanValueExtraction( "" ) );
     assertNull( ThinUtil.attemptBooleanValueExtraction( "abcde" ) );
+  }
+
+  @SuppressWarnings( "deprecation" )
+  @Test
+  public void testStripQuotesIfNoWhitespace() {
+    // map of tests to expected result
+    Map<String, String> testStrings = new ImmutableMap.Builder<String, String>()
+      .put( "\"quotedNospace\"",                   "quotedNospace" )
+      .put( "unquoted",                            "unquoted" )
+      .put( "\"quoted space\"",                    "\"quoted space\"" )
+      .put( "\"field\" \"fieldAlias\"",            "\"field\" \"fieldAlias\"" )
+      .put( "\"field with space\" \"fieldAlias\"", "\"field with space\" \"fieldAlias\"" )
+      .put( "\"field\" AS \"field Alias\"",        "\"field\" AS \"field Alias\"" )
+      .build();
+
+    for ( String test : testStrings.keySet() ) {
+      for ( char quote : new char[] { '\'', '"', '`' } ) {
+        assertEquals(
+          testStrings.get( test ).replace( '"', quote ),
+          ThinUtil.stripQuotesIfNoWhitespace( test.replace( '"', quote ), quote ) );
+      }
+    }
   }
 }
