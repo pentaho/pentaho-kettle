@@ -117,7 +117,7 @@ public class PurRepository extends AbstractRepository implements Repository, jav
   private static final long serialVersionUID = 7460109109707189479L; /* EESOURCE: UPDATE SERIALVERUID */
 
   // Kettle property that when set to false disabled the lazy repository access
-  public static final String LAZY_REPOSITORY = "org.pentaho.di.repository.Repository.LAZY_REPOSITORY";
+  public static final String LAZY_REPOSITORY = "KETTLE_LAZY_REPOSITORY";
 
   private static Class<?> PKG = PurRepository.class;
 
