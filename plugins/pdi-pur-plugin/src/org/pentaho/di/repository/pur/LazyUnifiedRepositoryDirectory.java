@@ -90,12 +90,15 @@ public class LazyUnifiedRepositoryDirectory extends RepositoryDirectory {
     if ( file == null || !file.isFolder() ) {
       return null;
     }
+    if ( isRoot() && RepositoryDirectory.DIRECTORY_SEPARATOR.equals( absolutePath ) ) {
+      return this;
+    }
     return new LazyUnifiedRepositoryDirectory( file, this, repository, registry );
 
   }
 
   @Override public RepositoryDirectory findChild( String name ) {
-    return findDirectory( getPath() + RepositoryDirectory.DIRECTORY_SEPARATOR + name );
+    return findDirectory( getPathObjectCombination( name ) );
   }
 
   @Override public RepositoryDirectory findDirectory( String[] path ) {

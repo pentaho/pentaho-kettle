@@ -1,5 +1,5 @@
 /*!
- * Copyright 2010 - 2015 Pentaho Corporation.  All rights reserved.
+ * Copyright 2010 - 2016 Pentaho Corporation.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -320,7 +320,7 @@ public class PurRepositoryIT extends RepositoryTestBase implements ApplicationCo
    * 
    * @param username
    *          username of user
-   * @param tenantId
+   * @param tenant
    *          tenant to which this user belongs
    * @tenantAdmin true to add the tenant admin authority to the user's roles
    */
@@ -1018,5 +1018,20 @@ public class PurRepositoryIT extends RepositoryTestBase implements ApplicationCo
     } finally {
       KettleVFS.getFileObject( exportFileName ).delete();
     }
+  }
+
+  @Test
+  public void testCreateRepositoryDirectory() throws KettleException {
+    System.setProperty( PurRepository.LAZY_REPOSITORY, "false" );
+    RepositoryDirectoryInterface tree = repository.loadRepositoryDirectoryTree();
+    assertNotEquals( LazyUnifiedRepositoryDirectory.class, tree.getClass() );
+    repository.createRepositoryDirectory( tree.findDirectory( "home" ), "/admin1" );
+    repository.createRepositoryDirectory( tree, "/home/admin2" );
+
+    System.setProperty( PurRepository.LAZY_REPOSITORY, "true" );
+    RepositoryDirectoryInterface treeLazy = repository.loadRepositoryDirectoryTree();
+    assertEquals( LazyUnifiedRepositoryDirectory.class, treeLazy.getClass() );
+    repository.createRepositoryDirectory( treeLazy.findDirectory( "home" ), "/admin1L" );
+    repository.createRepositoryDirectory( treeLazy, "/home/admin2L" );
   }
 }
