@@ -51,6 +51,7 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
+import org.pentaho.di.repository.RepositoryExtended;
 import org.pentaho.di.ui.core.ConstUI;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.dialog.EnterStringDialog;
@@ -127,7 +128,13 @@ public class SelectDirectoryDialog extends Dialog {
     props.setLook( wTree );
 
     try {
-      repositoryTree = rep.loadRepositoryDirectoryTree();
+      // We're terrible and load the entire repository, disable lazy loading if set
+      if( rep instanceof RepositoryExtended ){
+        RepositoryExtended repositoryExtended = (RepositoryExtended) this.rep;
+        repositoryTree = repositoryExtended.loadRepositoryDirectoryTree( true );
+      } else {
+        repositoryTree = this.rep.loadRepositoryDirectoryTree();
+      }
     } catch ( KettleException e ) {
       new ErrorDialog( shell,
         BaseMessages.getString( PKG, "SelectDirectoryDialog.Dialog.ErrorRefreshingDirectoryTree.Title" ),

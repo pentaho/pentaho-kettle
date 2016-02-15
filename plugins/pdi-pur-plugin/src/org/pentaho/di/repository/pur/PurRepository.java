@@ -69,6 +69,7 @@ import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryElementInterface;
 import org.pentaho.di.repository.RepositoryElementMetaInterface;
+import org.pentaho.di.repository.RepositoryExtended;
 import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.repository.RepositoryObject;
 import org.pentaho.di.repository.RepositoryObjectType;
@@ -112,7 +113,7 @@ import org.pentaho.platform.repository2.ClientRepositoryPaths;
 @RepositoryPlugin( id = "PentahoEnterpriseRepository", name = "RepositoryType.Name.EnterpriseRepository",
     description = "RepositoryType.Description.EnterpriseRepository",
     metaClass = "org.pentaho.di.repository.pur.PurRepositoryMeta", i18nPackageName = "org.pentaho.di.repository.pur" )
-public class PurRepository extends AbstractRepository implements Repository, java.io.Serializable {
+public class PurRepository extends AbstractRepository implements Repository, RepositoryExtended, java.io.Serializable {
 
   private static final long serialVersionUID = 7460109109707189479L; /* EESOURCE: UPDATE SERIALVERUID */
 
@@ -548,14 +549,14 @@ public class PurRepository extends AbstractRepository implements Repository, jav
     return pur.getTree( path, -1, null, true );
   }
 
-  @Override
-  public RepositoryDirectoryInterface loadRepositoryDirectoryTree() throws KettleException {
+  @Override public RepositoryDirectoryInterface loadRepositoryDirectoryTree( boolean eager ) throws KettleException {
+
     // this method forces a reload of the repository directory tree structure
     // a new rootRef will be obtained - this is a SoftReference which will be used
     // by any calls to getRootDir()
 
     RepositoryDirectoryInterface rootDir;
-    if ( "false".equals( System.getProperty( LAZY_REPOSITORY ) ) ) {
+    if ( eager ) {
       RepositoryFileTree rootFileTree = loadRepositoryFileTree( ClientRepositoryPaths.getRootFolderPath() );
       rootDir = initRepositoryDirectoryTree( rootFileTree );
     } else {
@@ -563,10 +564,20 @@ public class PurRepository extends AbstractRepository implements Repository, jav
 
       rootDir =
           new LazyUnifiedRepositoryDirectory( root, null, pur, purRepositoryServiceRegistry );
-      rootRef.setRef( rootDir );
     }
+    rootRef.setRef( rootDir );
     return rootDir;
   }
+
+  @Override
+  public RepositoryDirectoryInterface loadRepositoryDirectoryTree() throws KettleException {
+    return loadRepositoryDirectoryTree( isLoadingEager() );
+  }
+
+  private boolean isLoadingEager(){
+    return "false".equals( System.getProperty( LAZY_REPOSITORY ) );
+  }
+
 
   private RepositoryDirectoryInterface initRepositoryDirectoryTree( RepositoryFileTree repoTree )
     throws KettleException {
