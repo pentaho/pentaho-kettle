@@ -422,7 +422,7 @@
 
   <kettle-variable>
     <description>Set this variable to restore the directory loading behavior of the repository as it was before 6.1. Changing this to false will make repository loading more expensive</description>
-    <variable>org.pentaho.di.repository.Repository.LAZY_REPOSITORY</variable>
+    <variable>KETTLE_LAZY_REPOSITORY</variable>
     <default-value>true</default-value>
   </kettle-variable>
 
