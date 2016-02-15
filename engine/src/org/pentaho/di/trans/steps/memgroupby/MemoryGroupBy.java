@@ -234,7 +234,11 @@ public class MemoryGroupBy extends BaseStep implements StepInterface {
   @SuppressWarnings( "unchecked" )
   void addToAggregate( Object[] r ) throws KettleException {
 
-    HashEntry entry = data.getHashEntry( r );
+    Object[] groupData = new Object[data.groupMeta.size()];
+    for ( int i = 0; i < data.groupnrs.length; i++ ) {
+      groupData[i] = r[data.groupnrs[i]];
+    }
+    HashEntry entry = data.getHashEntry( groupData );
 
     Aggregate aggregate = data.map.get( entry );
     if ( aggregate == null ) {
