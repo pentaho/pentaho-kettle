@@ -429,9 +429,9 @@ public class CsvInput extends BaseStep implements StepInterface {
               //
               if ( meta.isIncludingFilename() && !Const.isEmpty( meta.getFilenameField() ) ) {
                 if ( meta.isLazyConversionActive() ) {
-                  outputRowData[data.filenameFieldIndex] = data.binaryFilename;
+                  outputRowData[ data.filenameFieldIndex ] = data.binaryFilename;
                 } else {
-                  outputRowData[data.filenameFieldIndex] = data.filenames[data.filenr - 1];
+                  outputRowData[ data.filenameFieldIndex ] = data.filenames[ data.filenr - 1 ];
                 }
               }
 
@@ -742,7 +742,7 @@ public class CsvInput extends BaseStep implements StepInterface {
         }
       }
 
-      switch( data.encodingType ) {
+      switch ( data.encodingType ) {
         case DOUBLE_BIG_ENDIAN:
           data.crLfMatcher = new MultiByteBigCrLfMatcher();
           break;
