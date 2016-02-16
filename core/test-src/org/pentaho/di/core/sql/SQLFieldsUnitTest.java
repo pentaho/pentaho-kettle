@@ -124,6 +124,7 @@ public class SQLFieldsUnitTest {
     }
   }
 
+
   public Matcher<Iterable<? extends SQLField>> validSqlFields() {
     return contains( sqlField( NO_SPACE ), sqlField( WITH_SPACES ) );
   }

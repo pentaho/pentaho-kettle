@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -32,6 +32,9 @@ import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 
 import junit.framework.TestCase;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class SQLTest extends TestCase {
 
@@ -533,6 +536,17 @@ public class SQLTest extends TestCase {
     rowMeta.addValueMeta( new ValueMeta( "MONTH_ID", ValueMetaInterface.TYPE_INTEGER, 4 ) );
     rowMeta.addValueMeta( new ValueMeta( "YEAR_ID", ValueMetaInterface.TYPE_INTEGER, 2 ) );
     rowMeta.addValueMeta( new ValueMeta( "STATE", ValueMetaInterface.TYPE_STRING, 30 ) );
+    return rowMeta;
+  }
+
+  public static RowMetaInterface mockRowMeta( String... fieldNames ) {
+    RowMetaInterface rowMeta = mock( RowMetaInterface.class );
+    for ( String field : fieldNames ) {
+      ValueMetaInterface valueMeta = mock( ValueMetaInterface.class );
+      when( valueMeta.getName() ).thenReturn( field );
+      when( rowMeta.searchValueMeta( field ) )
+        .thenReturn( valueMeta );
+    }
     return rowMeta;
   }
 }

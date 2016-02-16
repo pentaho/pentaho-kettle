@@ -34,6 +34,7 @@ import java.util.regex.Pattern;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleSQLException;
+import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaAndData;
 import org.pentaho.di.core.row.ValueMetaInterface;
@@ -634,5 +635,18 @@ public class ThinUtil {
     pattern = pattern.replace( "_", "." ).replace( "%", ".*?" );
 
     return Pattern.compile( pattern, Pattern.CASE_INSENSITIVE | Pattern.DOTALL );
+  }
+
+  /**
+   * Attempts to resolve the reference to field from the serviceFields value meta list.
+   * Will search with both the quoted and unquoted field.
+   */
+  public static String resolveFieldName( String field, RowMetaInterface serviceFields ) {
+    ValueMetaInterface valueMeta = serviceFields.searchValueMeta( field );
+    if ( valueMeta == null ) {
+      valueMeta = serviceFields.searchValueMeta(
+        ThinUtil.stripQuotes( field, '"' ) );
+    }
+    return valueMeta == null ? field : valueMeta.getName();
   }
 }
