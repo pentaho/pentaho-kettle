@@ -22,8 +22,6 @@
 
 package org.pentaho.di.ui.repository.dialog;
 
-import java.util.regex.Pattern;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
@@ -66,6 +64,8 @@ import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.repository.RepositoryDirectoryUI;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
+import java.util.regex.Pattern;
+
 /**
  * Allows the user to make a selection of an Object in the repository
  *
@@ -74,11 +74,11 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
  */
 public class SelectObjectDialog extends Dialog {
   private static Class<?> PKG = RepositoryDialogInterface.class; // for
-                                                                 // i18n
-                                                                 // purposes,
-                                                                 // needed
-                                                                 // by
-                                                                 // Translator2!!
+  // i18n
+  // purposes,
+  // needed
+  // by
+  // Translator2!!
 
   private Label wlTree;
   private Tree wTree;
@@ -159,7 +159,7 @@ public class SelectObjectDialog extends Dialog {
     dircolor = GUIResource.getInstance().getColorDirectory();
 
     shell =
-      new Shell( parent, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL | SWT.SHEET | SWT.RESIZE | SWT.MIN | SWT.MAX );
+        new Shell( parent, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL | SWT.SHEET | SWT.RESIZE | SWT.MIN | SWT.MAX );
     props.setLook( shell );
     shell.setImage( GUIResource.getInstance().getImageSpoon() );
 
@@ -178,7 +178,7 @@ public class SelectObjectDialog extends Dialog {
     wfilter = new ToolItem( treeTb, SWT.SEPARATOR );
     searchText = new Text( treeTb, SWT.SEARCH | SWT.CANCEL );
     searchText.setToolTipText( BaseMessages
-      .getString( PKG, "RepositoryExplorerDialog.Search.FilterString.ToolTip" ) );
+        .getString( PKG, "RepositoryExplorerDialog.Search.FilterString.ToolTip" ) );
     wfilter.setControl( searchText );
     wfilter.setWidth( 100 );
 
@@ -306,7 +306,7 @@ public class SelectObjectDialog extends Dialog {
 
     wTree.addSelectionListener( new SelectionAdapter() {
       public void widgetSelected( SelectionEvent e ) {
-        wOK.setEnabled( !Boolean.TRUE.equals( wTree.getSelection()[0].getData( "isFolder" ) ) );
+        wOK.setEnabled( !Boolean.TRUE.equals( wTree.getSelection()[ 0 ].getData( "isFolder" ) ) );
       }
     } );
 
@@ -342,7 +342,7 @@ public class SelectObjectDialog extends Dialog {
     try {
 
       // We're terrible and load the entire repository, disable lazy loading if set
-      if( rep instanceof RepositoryExtended ){
+      if ( rep instanceof RepositoryExtended ) {
         RepositoryExtended repositoryExtended = (RepositoryExtended) this.rep;
         directoryTree = repositoryExtended.loadRepositoryDirectoryTree( true );
       } else {
@@ -351,8 +351,8 @@ public class SelectObjectDialog extends Dialog {
 
     } catch ( KettleException e ) {
       new ErrorDialog( shell,
-        BaseMessages.getString( PKG, "SelectObjectDialog.Dialog.ErrorRefreshingDirectoryTree.Title" ),
-        BaseMessages.getString( PKG, "SelectObjectDialog.Dialog.ErrorRefreshingDirectoryTree.Message" ), e );
+          BaseMessages.getString( PKG, "SelectObjectDialog.Dialog.ErrorRefreshingDirectoryTree.Title" ),
+          BaseMessages.getString( PKG, "SelectObjectDialog.Dialog.ErrorRefreshingDirectoryTree.Message" ), e );
     } // catch()
 
     getData();
@@ -450,21 +450,21 @@ public class SelectObjectDialog extends Dialog {
         ti.setImage( GUIResource.getInstance().getImageFolder() );
         ti.setExpanded( true );
         RepositoryDirectoryUI.getTreeWithNames(
-          ti, rep, dircolor, sortColumn, includeDeleted, ascending, showTrans, showJobs, directoryTree,
-          filterString, pattern );
+            ti, rep, dircolor, sortColumn, includeDeleted, ascending, showTrans, showJobs, directoryTree,
+            filterString, pattern );
       } else {
         for ( int i = 0; i < directoryTree.getNrSubdirectories(); i++ ) {
           RepositoryDirectory subdir = directoryTree.getSubdirectory( i );
           ti = new TreeItem( wTree, SWT.NONE );
           ti.setImage( GUIResource.getInstance().getImageFolder() );
           RepositoryDirectoryUI.getTreeWithNames(
-            ti, rep, dircolor, sortColumn, includeDeleted, ascending, showTrans, showJobs, subdir, filterString,
-            pattern );
+              ti, rep, dircolor, sortColumn, includeDeleted, ascending, showTrans, showJobs, subdir, filterString,
+              pattern );
         }
       }
     } catch ( KettleException e ) {
       new ErrorDialog(
-        shell, BaseMessages.getString( PKG, "SelectObjectDialog.Dialog.UnexpectedError.Title" ), BaseMessages
+          shell, BaseMessages.getString( PKG, "SelectObjectDialog.Dialog.UnexpectedError.Title" ), BaseMessages
           .getString( PKG, "SelectObjectDialog.Dialog.UnexpectedError.Message" ), e );
     }
   }
@@ -486,10 +486,10 @@ public class SelectObjectDialog extends Dialog {
   private void ok() {
     // Something has to be selected!
     if ( wTree.getSelectionCount() > 0 ) {
-      TreeItem ti = wTree.getSelection()[0];
+      TreeItem ti = wTree.getSelection()[ 0 ];
 
       // No directory!
-      if ( !Boolean.TRUE.equals( wTree.getSelection()[0].getData( "isFolder" ) ) ) {
+      if ( !Boolean.TRUE.equals( wTree.getSelection()[ 0 ].getData( "isFolder" ) ) ) {
         int level = ConstUI.getTreeLevel( ti );
         if ( level > 0 ) {
           repositoryObject = (RepositoryElementMetaInterface) ti.getData();
@@ -552,8 +552,7 @@ public class SelectObjectDialog extends Dialog {
   }
 
   /**
-   * @param repositoryObject
-   *          the repositoryObject to set
+   * @param repositoryObject the repositoryObject to set
    */
   public void setRepositoryObject( RepositoryElementMetaInterface repositoryObject ) {
     this.repositoryObject = repositoryObject;
@@ -567,8 +566,7 @@ public class SelectObjectDialog extends Dialog {
   }
 
   /**
-   * @param objectId
-   *          the objectId to set
+   * @param objectId the objectId to set
    */
   public void setObjectId( ObjectId objectId ) {
     this.objectId = objectId;

@@ -187,7 +187,7 @@ public class LazyUnifiedRepositoryDirectory extends RepositoryDirectory {
     }
     RepositoryDirectoryInterface directoryInterface = subdirectories.get( i );
     // Have to cast due to bad interface
-    if( directoryInterface instanceof RepositoryDirectory ) {
+    if ( directoryInterface instanceof RepositoryDirectory ) {
       return (RepositoryDirectory) directoryInterface;
     }
     throw new IllegalStateException( "Bad Repository interface expects RepositoryDirectoryInterface to be an instance of"
