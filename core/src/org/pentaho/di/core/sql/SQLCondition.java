@@ -22,20 +22,18 @@
 
 package org.pentaho.di.core.sql;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import org.pentaho.di.core.Condition;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleSQLException;
 import org.pentaho.di.core.jdbc.ThinUtil;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaAndData;
-import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaString;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class SQLCondition {
 
@@ -277,14 +275,15 @@ public class SQLCondition {
 
     // Remove the optional table alias prefix from the left field
     //
-    left = ThinUtil.stripQuoteTableAlias( left, tableAlias );
-
+    left = ThinUtil.resolveFieldName( ThinUtil.stripQuoteTableAlias( left, tableAlias ),
+      getServiceFields() );
     String operatorString = strings.get( 1 );
     String right = strings.get( 2 );
 
     // If it's another column name, remove possible table alias prefix.
     //
-    right = ThinUtil.stripQuoteTableAlias( right, tableAlias );
+    right = ThinUtil.resolveFieldName( ThinUtil.stripQuoteTableAlias( right, tableAlias ),
+      getServiceFields() );
 
     ValueMetaAndData value = null;
 
@@ -353,6 +352,7 @@ public class SQLCondition {
     }
   }
 
+
   /**
    * We need to split conditions on a single operator (for now)
    *
@@ -364,15 +364,15 @@ public class SQLCondition {
     List<String> strings = new ArrayList<String>();
 
     String[]
-        operators =
-        new String[] { "<>", ">=", "=>", "<=", "=<", "<", ">", "=", " REGEX ", " IN ", " IS NOT NULL", " IS NULL",
-            " LIKE", "CONTAINS " };
+      operators =
+      new String[] { "<>", ">=", "=>", "<=", "=<", "<", ">", "=", " REGEX ", " IN ", " IS NOT NULL", " IS NULL",
+        " LIKE", "CONTAINS " };
     int[]
-        functions =
-        new int[] { Condition.FUNC_NOT_EQUAL, Condition.FUNC_LARGER_EQUAL, Condition.FUNC_LARGER_EQUAL,
-            Condition.FUNC_SMALLER_EQUAL, Condition.FUNC_SMALLER_EQUAL, Condition.FUNC_SMALLER, Condition.FUNC_LARGER,
-            Condition.FUNC_EQUAL, Condition.FUNC_REGEXP, Condition.FUNC_IN_LIST, Condition.FUNC_NOT_NULL,
-            Condition.FUNC_NULL, Condition.FUNC_LIKE, Condition.FUNC_CONTAINS, };
+      functions =
+      new int[] { Condition.FUNC_NOT_EQUAL, Condition.FUNC_LARGER_EQUAL, Condition.FUNC_LARGER_EQUAL,
+        Condition.FUNC_SMALLER_EQUAL, Condition.FUNC_SMALLER_EQUAL, Condition.FUNC_SMALLER, Condition.FUNC_LARGER,
+        Condition.FUNC_EQUAL, Condition.FUNC_REGEXP, Condition.FUNC_IN_LIST, Condition.FUNC_NOT_NULL,
+        Condition.FUNC_NULL, Condition.FUNC_LIKE, Condition.FUNC_CONTAINS, };
     int index = 0;
     while ( index < clause.length() ) {
       index = ThinUtil.skipChars( clause, index, '\'', '"' );

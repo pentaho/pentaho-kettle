@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,11 +23,16 @@
 package org.pentaho.di.core.sql;
 
 import junit.framework.TestCase;
-
+import org.junit.Test;
 import org.pentaho.di.core.Condition;
 import org.pentaho.di.core.exception.KettleSQLException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
+
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.*;
+import static org.pentaho.di.core.sql.SQLTest.mockRowMeta;
 
 public class SQLFieldTest extends TestCase {
 
@@ -439,5 +444,37 @@ public class SQLFieldTest extends TestCase {
     assertEquals( 1L, field.getIif().getTrueValue().getValueData() );
     assertEquals( 0L, field.getIif().getFalseValue().getValueData() );
   }
+
+  @Test
+  public void testAggFieldWithTableQualifier() throws KettleSQLException {
+    RowMetaInterface rowMeta = mockRowMeta( "noSpaceField" );
+    SQLField field = new SQLField( "noSpaceTableAlias", "sum(noSpaceField)",
+      rowMeta );
+    assertThat( field.getField(), is( "noSpaceField" ) );
+    assertThat( field.getAggregation().getKeyWord(), is( "SUM" ) );
+    verify( rowMeta, atLeastOnce() ).searchValueMeta( "noSpaceField" );
+  }
+
+  @Test
+  public void testAggFieldWithSpaceAndWithTableQualifier() throws KettleSQLException {
+    RowMetaInterface rowMeta = mockRowMeta( "Space Field", "otherField" );
+    SQLField field = new SQLField( "noSpaceTableAlias", "sum(\"noSpaceTableAlias\".\"Space Field\")",
+      rowMeta );
+    assertThat( field.getField(), is( "Space Field" ) );
+    assertThat( field.getAggregation().getKeyWord(), is( "SUM" ) );
+    verify( rowMeta, atLeastOnce() ).searchValueMeta( "Space Field" );
+  }
+
+  @Test
+  public void testAggFieldWithSpaceAndWithTableQualifierAndAlias() throws KettleSQLException {
+    RowMetaInterface rowMeta = mockRowMeta( "Space Field" );
+    SQLField field = new SQLField(
+      "noSpaceTableAlias", "max( \"noSpaceTableAlias\".\"Space Field\")  as \"c0\"",
+      rowMeta );
+    assertThat( field.getField(), is( "Space Field" ) );
+    assertThat( field.getAggregation().getKeyWord(), is( "MAX" ) );
+    verify( rowMeta, atLeastOnce() ).searchValueMeta( "Space Field" );
+  }
+
 
 }

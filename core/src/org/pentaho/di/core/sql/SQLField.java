@@ -228,6 +228,7 @@ public class SQLField {
 
       } else {
         if ( valueMeta == null ) {
+          field = ThinUtil.resolveFieldName( field, serviceFields );
           valueMeta = serviceFields.searchValueMeta( field );
           if ( orderField && selectFields != null ) {
             // See if this isn't an aliased select field that we're ordering on
