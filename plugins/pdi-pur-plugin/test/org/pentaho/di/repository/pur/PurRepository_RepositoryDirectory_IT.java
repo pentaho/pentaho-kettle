@@ -16,6 +16,7 @@
  */
 package org.pentaho.di.repository.pur;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryElementMetaInterface;
@@ -32,32 +33,52 @@ import static junit.framework.TestCase.assertEquals;
 public class PurRepository_RepositoryDirectory_IT extends PurRepositoryTestBase {
 
 
-  @Test
-  public void testGetRepositoryObjects() throws Exception {
+  private TransMeta transMeta;
+  private RepositoryDirectoryInterface defaultSaveDirectory;
 
+  @Before
+  public void setup() throws Exception{
 
-    TransMeta transMeta = new TransMeta();
+    transMeta = new TransMeta();
     transMeta.setName( "Test" );
     transMeta.setRepositoryDirectory( purRepository.getDefaultSaveDirectory( transMeta ) );
     final Calendar date = Calendar.getInstance();
     date.setTimeInMillis( 0 );
     purRepository.save( transMeta, "test", date, null, false );
-
-    // Try it accessing getRepositoryObjects() first
     createPurRepository();
-    RepositoryDirectoryInterface defaultSaveDirectory = purRepository.getDefaultSaveDirectory( transMeta );
+
+    defaultSaveDirectory = purRepository.getDefaultSaveDirectory( transMeta );
+    purRepository.createRepositoryDirectory( defaultSaveDirectory, "test dir" );
+    defaultSaveDirectory = purRepository.getDefaultSaveDirectory( transMeta );
+  }
+  @Test
+  public void testGetRepositoryObjectsFirst() throws Exception {
+    // Try it accessing getRepositoryObjects() first
     List<RepositoryElementMetaInterface> repositoryObjects = defaultSaveDirectory.getRepositoryObjects();
-    assertEquals( 1, repositoryObjects.size() );
+    assertEquals( 2, repositoryObjects.size() );
     assertEquals( "Test", repositoryObjects.get( 0 ).getName() );
+
+  }
+  @Test
+  public void testGetChildrenFirst() throws Exception {
+    // Try it again this time calling getChildren() then getRepositoryObjects()
+    defaultSaveDirectory.getChildren();
+    List<RepositoryElementMetaInterface> repositoryObjects = defaultSaveDirectory.getRepositoryObjects();
+    assertEquals( 2, repositoryObjects.size() );
+    assertEquals( "Test", repositoryObjects.get( 0 ).getName() );
+
+  }
+
+
+  @Test
+  public void testGetChildrenThenGetSubDirectory() throws Exception {
 
     // Try it again this time calling getChildren() then getRepositoryObjects()
-    createPurRepository();
-    defaultSaveDirectory = purRepository.getDefaultSaveDirectory( transMeta );
     defaultSaveDirectory.getChildren();
-    repositoryObjects = defaultSaveDirectory.getRepositoryObjects();
-    assertEquals( 1, repositoryObjects.size() );
-    assertEquals( "Test", repositoryObjects.get( 0 ).getName() );
+    defaultSaveDirectory.getSubdirectory( 0 );
+    List<RepositoryDirectoryInterface> children = defaultSaveDirectory.getChildren();
+    assertEquals( 1, children.size() );
+    assertEquals( "test dir", children.get( 0 ).getName() );
 
-    //    assertNull( "Should return null if file was not found", information );
   }
 }

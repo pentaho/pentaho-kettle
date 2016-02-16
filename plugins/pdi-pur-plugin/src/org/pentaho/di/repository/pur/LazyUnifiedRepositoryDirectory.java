@@ -178,17 +178,20 @@ public class LazyUnifiedRepositoryDirectory extends RepositoryDirectory {
   }
 
   @Override public RepositoryDirectory getSubdirectory( int i ) {
-    List<RepositoryFile> children = getAllURChildrenFiles();
-    if ( i > children.size() || i < 0 ) {
-      return null;
+    if ( subdirectories == null ) {
+      getChildren();
     }
 
-    RepositoryFile child = children.get( i );
-    LazyUnifiedRepositoryDirectory dir = new LazyUnifiedRepositoryDirectory( child, this, repository, registry );
-    dir.setObjectId( new StringObjectId( child.getId().toString() ) );
-    this.addSubdirectory( dir );
-    return dir;
-
+    if ( i > subdirectories.size() || i < 0 ) {
+      return null;
+    }
+    RepositoryDirectoryInterface directoryInterface = subdirectories.get( i );
+    // Have to cast due to bad interface
+    if( directoryInterface instanceof RepositoryDirectory ) {
+      return (RepositoryDirectory) directoryInterface;
+    }
+    throw new IllegalStateException( "Bad Repository interface expects RepositoryDirectoryInterface to be an instance of"
+        + " RepositoryDirectory. This class is not: " + directoryInterface.getClass().getName() );
   }
 
   private List<RepositoryFile> getAllURChildrenFiles() {
