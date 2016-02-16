@@ -574,7 +574,7 @@ public class PurRepository extends AbstractRepository implements Repository, Rep
     return loadRepositoryDirectoryTree( isLoadingEager() );
   }
 
-  private boolean isLoadingEager(){
+  private boolean isLoadingEager() {
     return "false".equals( System.getProperty( LAZY_REPOSITORY ) );
   }
 
