@@ -112,7 +112,7 @@ public class ArgumentsDialog extends Dialog {
     okButton.setText( "OK" );
     FormData fd_okButton = new FormData();
     if ( Const.isOSX() ) {
-      fd_okButton.left = new FormAttachment( 0, 239 );
+      fd_okButton.left = new FormAttachment( 0, 215 );
     } else {
       fd_okButton.left = new FormAttachment( 0, 269 );
     }
