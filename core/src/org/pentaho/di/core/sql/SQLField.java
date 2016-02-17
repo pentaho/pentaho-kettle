@@ -147,8 +147,8 @@ public class SQLField {
           // COUNT(DISTINCT foo)
           //
           if ( field.toUpperCase().startsWith( "DISTINCT " ) ) {
-            int lastSpaceIndex = field.lastIndexOf( ' ' );
-            field = field.substring( lastSpaceIndex + 1 );
+            int firstSpaceIndex = field.indexOf( ' ' );
+            field = field.substring( firstSpaceIndex + 1 );
             field = ThinUtil.stripQuoteTableAlias( field, tableAlias );
 
             countDistinct = true;

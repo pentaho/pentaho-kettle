@@ -476,5 +476,39 @@ public class SQLFieldTest extends TestCase {
     verify( rowMeta, atLeastOnce() ).searchValueMeta( "Space Field" );
   }
 
+  @Test
+  public void testAggFieldDistinctWithNoSpace() throws KettleSQLException {
+    RowMetaInterface rowMeta = mockRowMeta( "NoSpaceField" );
+    SQLField field = new SQLField(
+      "noSpaceTableAlias", "count( DISTINCT NoSpaceField) ",
+      rowMeta );
+    assertThat( field.getField(), is( "NoSpaceField" ) );
+    assertThat( field.getAggregation().getKeyWord(), is( "COUNT" ) );
+    assertThat( field.isCountDistinct(), is( true ) );
+    verify( rowMeta, atLeastOnce() ).searchValueMeta( "NoSpaceField" );
+  }
 
+  @Test
+  public void testAggFieldDistinctWithSpace() throws KettleSQLException {
+    RowMetaInterface rowMeta = mockRowMeta( "Space Field" );
+    SQLField field = new SQLField(
+      "noSpaceTableAlias", "count( DISTINCT \"Space Field\") ",
+      rowMeta );
+    assertThat( field.getField(), is( "Space Field" ) );
+    assertThat( field.getAggregation().getKeyWord(), is( "COUNT" ) );
+    assertThat( field.isCountDistinct(), is( true ) );
+    verify( rowMeta, atLeastOnce() ).searchValueMeta( "Space Field" );
+  }
+
+  @Test
+  public void testAggFieldDistinctWithSpaceAndWithTableQualifierAndAlias() throws KettleSQLException {
+    RowMetaInterface rowMeta = mockRowMeta( "Space Field" );
+    SQLField field = new SQLField(
+      "Space TableAlias", "count( DISTINCT \"Space TableAlias\".\"Space Field\")  as \"c0\"",
+      rowMeta );
+    assertThat( field.getField(), is( "Space Field" ) );
+    assertThat( field.getAggregation().getKeyWord(), is( "COUNT" ) );
+    assertThat( field.isCountDistinct(), is( true ) );
+    verify( rowMeta, atLeastOnce() ).searchValueMeta( "Space Field" );
+  }
 }
