@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,7 +24,6 @@ package org.pentaho.di.core.util;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import junit.framework.TestCase;
 
@@ -117,17 +116,17 @@ public class StringUtilTest extends TestCase {
     } catch ( RuntimeException rex ) {
     }
 
-    ConcurrentHashMap<String, String> chMap = new ConcurrentHashMap<String, String>( createVariables1( "${", "}" ) );
-    assertEquals( "||", StringUtil.environmentSubstitute( "|%%EMPTY%%|", chMap ) );
-    assertEquals( "|case1|", StringUtil.environmentSubstitute( "|%%checkcase%%|", chMap ) );
-    assertEquals( "|case2|", StringUtil.environmentSubstitute( "|%%CheckCase%%|", chMap ) );
-    assertEquals( "|case3|", StringUtil.environmentSubstitute( "|%%CHECKCASE%%|", chMap ) );
-    assertEquals( "|Arecurse|", StringUtil.environmentSubstitute( "|%%recursive1%%|", chMap ) );
-    assertEquals( "|recurseB|", StringUtil.environmentSubstitute( "|%%recursive3%%|", chMap ) );
-    assertEquals( "|ZfinalB|", StringUtil.environmentSubstitute( "|%%recursive5%%|", chMap ) );
+    map = createVariables1( "${", "}" );
+    assertEquals( "||", StringUtil.environmentSubstitute( "|%%EMPTY%%|", map ) );
+    assertEquals( "|case1|", StringUtil.environmentSubstitute( "|%%checkcase%%|", map ) );
+    assertEquals( "|case2|", StringUtil.environmentSubstitute( "|%%CheckCase%%|", map ) );
+    assertEquals( "|case3|", StringUtil.environmentSubstitute( "|%%CHECKCASE%%|", map ) );
+    assertEquals( "|Arecurse|", StringUtil.environmentSubstitute( "|%%recursive1%%|", map ) );
+    assertEquals( "|recurseB|", StringUtil.environmentSubstitute( "|%%recursive3%%|", map ) );
+    assertEquals( "|ZfinalB|", StringUtil.environmentSubstitute( "|%%recursive5%%|", map ) );
 
     try {
-      StringUtil.environmentSubstitute( "|%%recursive_all%%|", chMap );
+      StringUtil.environmentSubstitute( "|%%recursive_all%%|", map );
       fail( "recursive check is failing" );
     } catch ( RuntimeException rex ) {
     }
