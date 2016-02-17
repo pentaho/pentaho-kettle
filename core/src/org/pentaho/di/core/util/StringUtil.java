@@ -32,6 +32,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleValueException;
@@ -230,7 +231,8 @@ public class StringUtil {
    *          the system properties to use
    * @return the string with the substitution applied.
    */
-  public static final String environmentSubstitute( String aString, Map<String, String> systemProperties ) {
+  public static final String environmentSubstitute( String aString,
+    ConcurrentHashMap<String, String> systemProperties ) {
     Map<String, String> sysMap = new HashMap<String, String>( systemProperties );
 
     aString = substituteWindows( aString, sysMap );
