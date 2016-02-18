@@ -1027,11 +1027,15 @@ public class PurRepositoryIT extends RepositoryTestBase implements ApplicationCo
     assertNotEquals( LazyUnifiedRepositoryDirectory.class, tree.getClass() );
     repository.createRepositoryDirectory( tree.findDirectory( "home" ), "/admin1" );
     repository.createRepositoryDirectory( tree, "/home/admin2" );
+    repository.createRepositoryDirectory( tree, "/home/admin2/new1" );
+    repository.createRepositoryDirectory( tree, "/home/admin2/new1" );
 
     System.setProperty( PurRepository.LAZY_REPOSITORY, "true" );
     RepositoryDirectoryInterface treeLazy = repository.loadRepositoryDirectoryTree();
     assertEquals( LazyUnifiedRepositoryDirectory.class, treeLazy.getClass() );
     repository.createRepositoryDirectory( treeLazy.findDirectory( "home" ), "/admin1L" );
     repository.createRepositoryDirectory( treeLazy, "/home/admin2L" );
+    repository.createRepositoryDirectory( treeLazy, "/home/admin2L/new1" );
+    repository.createRepositoryDirectory( treeLazy, "/home/admin2L/new1" );
   }
 }

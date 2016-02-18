@@ -98,7 +98,7 @@ public class LazyUnifiedRepositoryDirectory extends RepositoryDirectory {
   }
 
   @Override public RepositoryDirectory findChild( String name ) {
-    return findDirectory( getPathObjectCombination( name ) );
+    return findDirectory( name );
   }
 
   @Override public RepositoryDirectory findDirectory( String[] path ) {
