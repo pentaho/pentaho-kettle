@@ -25,6 +25,7 @@ package org.pentaho.di.trans.steps.excelinput;
 import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.di.core.injection.BaseMetadataInjectionTest;
+import org.pentaho.di.core.row.value.ValueMetaBase;
 
 public class ExcelInputMetaInjectionTest extends BaseMetadataInjectionTest<ExcelInputMeta> {
   @Before
@@ -49,11 +50,15 @@ public class ExcelInputMetaInjectionTest extends BaseMetadataInjectionTest<Excel
         return meta.getField()[0].getPrecision();
       }
     } );
-    check( "TRIM_TYPE", new IntGetter() {
+    int[] trimInts = new int[ ValueMetaBase.trimTypeCode.length ];
+    for ( int i = 0; i < trimInts.length; i++ ) {
+      trimInts[i] = i;
+    }
+    checkStringToInt( "TRIM_TYPE", new IntGetter() {
       public int get() {
         return meta.getField()[0].getTrimType();
       }
-    } );
+    }, ValueMetaBase.trimTypeCode, trimInts );
     check( "FORMAT", new StringGetter() {
       public String get() {
         return meta.getField()[0].getFormat();
