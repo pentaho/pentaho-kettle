@@ -469,7 +469,6 @@ public abstract class ConfigurationDialog extends Dialog {
       fdComposite = new FormData();
       fdComposite.left = new FormAttachment( wExecLocal, 10, SWT.LEFT );
       fdComposite.top = new FormAttachment( wExecLocal, 7 );
-      fdComposite.bottom = new FormAttachment( wExecLocal, 23, SWT.BOTTOM );
       composite.setLayoutData( fdComposite );
 
       wExecRemote = new Button( composite, SWT.RADIO );
