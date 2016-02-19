@@ -29,6 +29,7 @@ import org.pentaho.di.repository.pur.model.RepositoryLock;
 import org.pentaho.di.ui.repository.pur.services.ILockService;
 import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
 import org.pentaho.platform.api.repository2.unified.RepositoryFile;
+import org.pentaho.platform.api.repository2.unified.RepositoryFileTree;
 import org.pentaho.platform.api.repository2.unified.RepositoryRequest;
 import org.pentaho.platform.repository2.ClientRepositoryPaths;
 import org.slf4j.Logger;
@@ -129,12 +130,10 @@ public class LazyUnifiedRepositoryDirectory extends RepositoryDirectory {
         UnifiedRepositoryLockService lockService =
             (UnifiedRepositoryLockService) registry.getService( ILockService.class );
 
-        RepositoryRequest repositoryRequest = new RepositoryRequest();
-        repositoryRequest.setShowHidden( true );
-        repositoryRequest.setTypes( RepositoryRequest.FILES_TYPE_FILTER.FILES );
-        repositoryRequest.setPath( this.self.getId().toString() );
-        List<RepositoryFile> children = repository.getChildren( repositoryRequest );
-        for ( RepositoryFile child : children ) {
+        RepositoryFileTree tree = repository.getTree( new RepositoryRequest( this.self.getPath(), true, 1, null ) );
+
+        for ( RepositoryFileTree tchild : tree.getChildren() ) {
+          RepositoryFile child = tchild.getFile();
 
           RepositoryLock lock = null;
           try {
@@ -143,11 +142,8 @@ public class LazyUnifiedRepositoryDirectory extends RepositoryDirectory {
             EERepositoryObject repositoryObject =
                 new EERepositoryObject( child, this, null, objectType, null, lock, false );
 
-            // TODO: We have no access to this information outside of RepositoryFileTree
-
-
-            repositoryObject.setVersioningEnabled( true );
-            repositoryObject.setVersionCommentEnabled( true );
+            repositoryObject.setVersioningEnabled( tchild.getVersioningEnabled() );
+            repositoryObject.setVersionCommentEnabled( tchild.getVersionCommentEnabled() );
             fileChildren.add( repositoryObject );
           } catch ( KettleException e ) {
             logger.error( "Error converting Unified Repository file to PDI RepositoryObject: " + child.getPath()
@@ -190,8 +186,9 @@ public class LazyUnifiedRepositoryDirectory extends RepositoryDirectory {
     if ( directoryInterface instanceof RepositoryDirectory ) {
       return (RepositoryDirectory) directoryInterface;
     }
-    throw new IllegalStateException( "Bad Repository interface expects RepositoryDirectoryInterface to be an instance of"
-        + " RepositoryDirectory. This class is not: " + directoryInterface.getClass().getName() );
+    throw new IllegalStateException(
+        "Bad Repository interface expects RepositoryDirectoryInterface to be an instance of"
+            + " RepositoryDirectory. This class is not: " + directoryInterface.getClass().getName() );
   }
 
   private List<RepositoryFile> getAllURChildrenFiles() {
