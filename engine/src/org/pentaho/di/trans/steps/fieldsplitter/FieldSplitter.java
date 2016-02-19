@@ -115,7 +115,7 @@ public class FieldSplitter extends BaseStep implements StepInterface {
     String valueToSplit = data.previousMeta.getString( r, data.fieldnr );
     String[] valueParts = Const.splitString( valueToSplit, data.delimiter, data.enclosure );
     int prev = 0;
-    for ( int i = 0; i < meta.getFieldName().length; i++ ) {
+    for ( int i = 0; i < meta.getFieldsCount(); i++ ) {
       String rawValue = null;
       if ( selectFieldById ) {
         for ( String part : valueParts ) {
