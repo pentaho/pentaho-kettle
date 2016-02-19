@@ -155,10 +155,23 @@ public class BeanInjector {
       } else {
         // set to latest field
         if ( s.array ) {
-          Object existArray = extendArray( s, obj, index + 1 );
-          Object value = data.getAsJavaType( dataName, s.leafClass );
-          if ( value != null ) {
-            Array.set( existArray, index, value );
+          if ( s.field != null ) {
+            Object existArray = extendArray( s, obj, index + 1 );
+            Object value = data.getAsJavaType( dataName, s.leafClass );
+            if ( value != null ) {
+              Array.set( existArray, index, value );
+            }
+          } else if ( s.setter != null ) {
+            Object value = data.getAsJavaType( dataName, s.leafClass );
+            if ( value != null ) {
+              if ( s.setter.getParameterTypes().length == 2 ) {
+                // setter with index
+                s.setter.invoke( obj, index, value );
+              } else {
+                // usual setter
+                s.setter.invoke( obj, value );
+              }
+            }
           }
         } else {
           if ( s.field != null ) {

@@ -304,9 +304,17 @@ public class GaInputStepMeta extends BaseStepMeta implements StepMetaInterface {
     if ( outputType == null ) {
       outputType = new int[index + 1];
     } else if ( outputType.length <= index ) {
-      Arrays.copyOf( outputType, index + 1 );
+      outputType = Arrays.copyOf( outputType, index + 1 );
     }
     outputType[index] = ValueMeta.getType( value );
+  }
+
+  public int getFieldsCount() {
+    int count = Math.min( getFeedField().length, getFeedFieldType().length );
+    count = Math.min( count, getOutputField().length );
+    count = Math.min( count, getOutputType().length );
+    count = Math.min( count, getConversionMask().length );
+    return count;
   }
 
   // set sensible defaults for a new step

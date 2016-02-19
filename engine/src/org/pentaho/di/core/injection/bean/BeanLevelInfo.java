@@ -116,6 +116,9 @@ class BeanLevelInfo {
           continue;
         }
         leaf.array = false;
+        if ( setterClass != null && leaf.setter.getParameterTypes().length == 2 ) {
+          leaf.array = true;
+        }
         if ( metaInj != null ) {
           info.addInjectionProperty( metaInj, leaf );
         } else if ( m.isAnnotationPresent( InjectionDeep.class ) ) {
