@@ -144,6 +144,9 @@
     <copy todir="${approot.stage.dir}/lib">
       <fileset dir="${lib.dir}" excludes="${assemble.copy-libs.excludes}"/>
     </copy>
+    <!-- Update the version.xml with the current version of this plugin -->
+    <copy file="res/version.xml" todir="${assemble.stage.dir}/${ivy.artifact.id}" />
+    <replace file="${assemble.stage.dir}/${ivy.artifact.id}/version.xml" token="@TRUNK@" value="${project.revision}" />
   </target>	
 	
   <!-- Wadl2Java logic -->
