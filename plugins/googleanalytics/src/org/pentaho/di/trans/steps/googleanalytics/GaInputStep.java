@@ -70,9 +70,9 @@ public class GaInputStep extends BaseStep implements StepInterface {
       meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
 
       // stores the indices where to look for the key fields in the input rows
-      data.conversionMeta = new ValueMetaInterface[ meta.getFeedField().length ];
+      data.conversionMeta = new ValueMetaInterface[ meta.getFieldsCount() ];
 
-      for ( int i = 0; i < meta.getFeedField().length; i++ ) {
+      for ( int i = 0; i < meta.getFieldsCount(); i++ ) {
 
         // get output and from-string conversion format for each field
         ValueMetaInterface returnMeta = data.outputRowMeta.getValueMeta( i );
@@ -95,7 +95,7 @@ public class GaInputStep extends BaseStep implements StepInterface {
 
     if ( entry != null && ( meta.getRowLimit() <= 0 || getLinesWritten() < meta.getRowLimit() ) ) { // another record to
       // fill the output fields with look up data
-      for ( int i = 0, j = 0; i < meta.getFeedField().length; i++ ) {
+      for ( int i = 0, j = 0; i < meta.getFieldsCount(); i++ ) {
         String fieldName = environmentSubstitute( meta.getFeedField()[ i ] );
         Object dataObject;
         String type = environmentSubstitute( meta.getFeedFieldType()[ i ] );
