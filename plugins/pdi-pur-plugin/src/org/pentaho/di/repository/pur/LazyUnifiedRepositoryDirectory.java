@@ -178,7 +178,7 @@ public class LazyUnifiedRepositoryDirectory extends RepositoryDirectory {
       getChildren();
     }
 
-    if ( i > subdirectories.size() || i < 0 ) {
+    if ( i >= subdirectories.size() || i < 0 ) {
       return null;
     }
     RepositoryDirectoryInterface directoryInterface = subdirectories.get( i );
