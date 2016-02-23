@@ -203,6 +203,10 @@ public class TransDelegate extends AbstractDelegate implements ITransformer, ISh
 
   static final String NODE_TRANS_PRIVATE_DATABASES = "transPrivateDatabases";
 
+  static final String PROP_TRANS_PRIVATE_DATABASE_NAMES = "PROP_TRANS_PRIVATE_DATABASE_NAMES";
+
+  static final String TRANS_PRIVATE_DATABASE_DELIMITER = "\t";
+
   private static final String EXT_STEP = ".kst";
 
   static final String NODE_STEPS = "steps";
@@ -247,17 +251,27 @@ public class TransDelegate extends AbstractDelegate implements ITransformer, ISh
     throws KettleException {
     TransMeta transMeta = (TransMeta) element;
 
-    Set<String> privateTransformationDatabases = null;
+    Set<String> privateDatabases = null;
     // read the private databases
-    DataNode privateDatabases = rootNode.getNode( NODE_TRANS_PRIVATE_DATABASES );
-    // if we have node than we use new format we could remove unexpected node
-    if ( privateDatabases != null ) {
-      privateTransformationDatabases = new HashSet<String>();
-      for ( DataNode privateDatabase : privateDatabases.getNodes() ) {
-        privateTransformationDatabases.add( privateDatabase.getName() );
+    DataNode privateDbsNode = rootNode.getNode( NODE_TRANS_PRIVATE_DATABASES );
+    // if we have node than we use one of two new formats. The older format that took
+    // too long to save, uses a separate node for each database name, the new format
+    // puts all the database names in the PROP_TRANS_PRIVATE_DATABASE_NAMES property.
+    // BACKLOG-6635
+    if ( privateDbsNode != null ) {
+      privateDatabases = new HashSet<String>();
+      if ( privateDbsNode.hasProperty( PROP_TRANS_PRIVATE_DATABASE_NAMES ) ) {
+        for ( String privateDatabaseName : getString( privateDbsNode, PROP_TRANS_PRIVATE_DATABASE_NAMES ).split(
+            TRANS_PRIVATE_DATABASE_DELIMITER ) ) {
+          privateDatabases.add( privateDatabaseName );
+        }
+      } else {
+        for ( DataNode privateDatabase : privateDbsNode.getNodes() ) {
+          privateDatabases.add( privateDatabase.getName() );
+        }
       }
     }
-    transMeta.setPrivateDatabases( privateTransformationDatabases );
+    transMeta.setPrivateDatabases( privateDatabases );
 
     // read the steps...
     //
@@ -586,10 +600,9 @@ public class TransDelegate extends AbstractDelegate implements ITransformer, ISh
 
     if ( transMeta.getPrivateDatabases() != null ) {
       // save all private transformations database name http://jira.pentaho.com/browse/PPP-3405
+      String privateDatabaseNames = StringUtils.join( transMeta.getPrivateDatabases(), TRANS_PRIVATE_DATABASE_DELIMITER );
       DataNode privateDatabaseNode = rootNode.addNode( NODE_TRANS_PRIVATE_DATABASES );
-      for ( String privateDatabase : transMeta.getPrivateDatabases() ) {
-        privateDatabaseNode.addNode( privateDatabase );
-      }
+      privateDatabaseNode.setProperty( PROP_TRANS_PRIVATE_DATABASE_NAMES, privateDatabaseNames );
     }
 
     DataNode stepsNode = rootNode.addNode( NODE_STEPS );
