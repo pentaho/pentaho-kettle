@@ -69,6 +69,11 @@ public class BeanInjector {
     return obj;
   }
 
+  public boolean hasProperty( Object root, String propName ) {
+    BeanInjectionInfo.Property prop = info.getProperties().get( propName );
+    return prop != null;
+  }
+
   public void setProperty( Object root, String propName, List<RowMetaAndData> data, String dataName )
     throws KettleException {
     BeanInjectionInfo.Property prop = info.getProperties().get( propName );
