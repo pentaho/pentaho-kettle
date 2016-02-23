@@ -203,7 +203,7 @@ public class UIRepositoryDirectory extends UIRepositoryObject {
     if ( uiParent.checkDirNameExistsInRepo( getName() ) != null ) {
       rep.deleteRepositoryDirectory( getDirectory() );
     }
-    uiParent.getChildren().remove( this );    
+    uiParent.getChildren().remove( this );
     if ( uiParent.getRepositoryObjects().contains( this ) ) {
       uiParent.getRepositoryObjects().remove( this );
     }
