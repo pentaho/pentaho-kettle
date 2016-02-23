@@ -50,6 +50,10 @@ import org.pentaho.di.core.NotePadMeta;
 import org.pentaho.di.core.ProgressMonitorListener;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.logging.KettleLogStore;
+import org.pentaho.di.core.logging.KettleLoggingEvent;
+import org.pentaho.di.core.logging.KettleLoggingEventListener;
+import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.plugins.JobEntryPluginType;
 import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.vfs.KettleVFS;
@@ -669,9 +673,13 @@ public class PurRepositoryIT extends RepositoryTestBase implements ApplicationCo
     assertTrue( hasVersionWithComment( jobMeta, VERSION_COMMENT_V1 ) );
     assertTrue( repository.exists( EXP_JOB_NAME, jobsDir, RepositoryObjectType.JOB ) );
 
+    LogListener errorLogListener = new LogListener( LogLevel.ERROR );
+    KettleLogStore.getAppender().addLoggingEventListener( errorLogListener );
+
     try {
       repository.getExporter().exportAllObjects( new MockProgressMonitorListener(), exportFileName, null, "all" ); //$NON-NLS-1$
       FileObject exportFile = KettleVFS.getFileObject( exportFileName );
+      assertFalse( "file left open", exportFile.getContent().isOpen() );
       assertNotNull( exportFile );
       MockRepositoryExportParser parser = new MockRepositoryExportParser();
       SAXParserFactory.newInstance().newSAXParser().parse( KettleVFS.getInputStream( exportFile ), parser );
@@ -683,8 +691,11 @@ public class PurRepositoryIT extends RepositoryTestBase implements ApplicationCo
       assertEquals( "Incorrect number of nodes", 5, parser.getNodeNames().size() ); //$NON-NLS-1$
       assertEquals( "Incorrect number of transformations", 1, parser.getNodesWithName( "transformation" ).size() ); //$NON-NLS-1$ //$NON-NLS-2$
       assertEquals( "Incorrect number of jobs", 1, parser.getNodesWithName( "job" ).size() ); //$NON-NLS-1$ //$NON-NLS-2$
+      assertTrue( "log error", errorLogListener.getEvents().isEmpty() );
+
     } finally {
       KettleVFS.getFileObject( exportFileName ).delete();
+      KettleLogStore.getAppender().removeLoggingEventListener( errorLogListener );
     }
   }
 
@@ -1037,5 +1048,24 @@ public class PurRepositoryIT extends RepositoryTestBase implements ApplicationCo
     repository.createRepositoryDirectory( treeLazy, "/home/admin2L" );
     repository.createRepositoryDirectory( treeLazy, "/home/admin2L/new1" );
     repository.createRepositoryDirectory( treeLazy, "/home/admin2L/new1" );
+  }
+
+  protected static class LogListener implements KettleLoggingEventListener {
+    private List<KettleLoggingEvent> events = new ArrayList<>();
+    private LogLevel logThreshold;
+
+    public LogListener( LogLevel logThreshold ) {
+      this.logThreshold = logThreshold;
+    }
+
+    public List<KettleLoggingEvent> getEvents() {
+      return events;
+    }
+
+    public void eventAdded( KettleLoggingEvent event ) {
+      if ( logThreshold.getLevel() >= event.getLevel().getLevel() ) {
+        events.add( event );
+      }
+    }
   }
 }

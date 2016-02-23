@@ -127,9 +127,6 @@ public class PurRepositoryExporter implements IRepositoryExporter, java.io.Seria
         if ( writer != null ) {
           writer.close();
         }
-        if ( os != null ) {
-          os.close();
-        }
       } catch ( Exception e ) {
         log.logError( BaseMessages.getString( PKG, "PurRepositoryExporter.ERROR_CLOSE_FILE", xmlFilename ), e ); //$NON-NLS-1$
       }
