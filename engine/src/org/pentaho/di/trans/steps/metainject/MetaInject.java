@@ -241,7 +241,26 @@ public class MetaInject extends BaseStep implements StepInterface {
         if ( rows != null && !rows.isEmpty() ) {
           // Which metadata key is this referencing? Find the attribute key in the metadata entries...
           //
-          injector.setProperty( targetStepMeta, target.getAttributeKey(), rows, source.getField() );
+          if ( injector.hasProperty( targetStepMeta, target.getAttributeKey() ) ) {
+            // target step has specified key
+            boolean skip = false;
+            for ( RowMetaAndData r : rows ) {
+              if ( r.getRowMeta().indexOfValue( source.getField() ) < 0 ) {
+                logError( BaseMessages.getString( PKG, "MetaInject.SourceFieldIsNotDefined.Message", source.getField(),
+                    getTransMeta().getName() ) );
+                // source step doesn't contain specified field
+                skip = true;
+              }
+            }
+            if ( !skip ) {
+              // specified field exist - need to inject
+              injector.setProperty( targetStepMeta, target.getAttributeKey(), rows, source.getField() );
+            }
+          } else {
+            // target step doesn't have specified key - just report but don't fail like in 6.0 (BACKLOG-6753)
+            logError( BaseMessages.getString( PKG, "MetaInject.TargetKeyIsNotDefined.Message", target.getAttributeKey(),
+                getTransMeta().getName() ) );
+          }
         }
       }
     }
@@ -521,7 +540,9 @@ public class MetaInject extends BaseStep implements StepInterface {
         }
       }
     }
-    return alreadyMarked.isEmpty();
+    // can return false for fail transformation, but it's disabled by BACKLOG-6753
+    // return alreadyMarked.isEmpty();
+    return true;
   }
 
   private Set<String> getUsedStepsForReferencendTransformation() {
@@ -545,7 +566,9 @@ public class MetaInject extends BaseStep implements StepInterface {
             .getStepname(), getTransMeta().getName() ) );
       }
     }
-    return alreadyMarked.isEmpty();
+    // can return false for fail transformation, but it's disabled by BACKLOG-6753
+    // return alreadyMarked.isEmpty();
+    return true;
   }
 
   private Set<String> convertToUpperCaseSet( String[] array ) {
