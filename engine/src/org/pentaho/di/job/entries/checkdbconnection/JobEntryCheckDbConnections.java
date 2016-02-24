@@ -21,9 +21,8 @@
  ******************************************************************************/
 package org.pentaho.di.job.entries.checkdbconnection;
 
-import static org.pentaho.di.job.entry.validator.AndValidator.putValidators;
-import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.andValidator;
-import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notBlankValidator;
+import org.pentaho.di.job.entry.validator.AndValidator;
+import org.pentaho.di.job.entry.validator.JobEntryValidatorUtils;
 
 import java.util.List;
 
@@ -137,7 +136,7 @@ public class JobEntryCheckDbConnections extends JobEntryBase implements Cloneabl
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer();
+    StringBuilder retval = new StringBuilder( 120 );
     retval.append( super.getXML() );
     retval.append( "      <connections>" ).append( Const.CR );
     if ( connections != null ) {
@@ -375,8 +374,8 @@ public class JobEntryCheckDbConnections extends JobEntryBase implements Cloneabl
   @Override
   public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
-    andValidator().validate( this, "tablename", remarks, putValidators( notBlankValidator() ) );
-    andValidator().validate( this, "columnname", remarks, putValidators( notBlankValidator() ) );
+    JobEntryValidatorUtils.andValidator().validate( this, "tablename", remarks, AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
+    JobEntryValidatorUtils.andValidator().validate( this, "columnname", remarks, AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
   }
 
 }

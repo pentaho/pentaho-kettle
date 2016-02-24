@@ -86,7 +86,7 @@ public class DeleteMessageBox extends MessageBox {
    * @return
    */
   protected String buildMessage() {
-    StringBuffer sb = new StringBuffer();
+    StringBuilder sb = new StringBuilder();
     sb.append( text ).append( Const.CR );
     if ( stepList != null ) {
       for ( Iterator<String> it = stepList.iterator(); it.hasNext(); ) {

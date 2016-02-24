@@ -30,7 +30,7 @@ import org.pentaho.metastore.api.exceptions.MetaStoreException;
 
 import java.io.IOException;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import com.google.common.base.Preconditions;
 
 /**
  * @author nhudak
@@ -66,7 +66,7 @@ public abstract class JsonElementType extends BaseElementType implements Attribu
   }
 
   @Override public String key() {
-    return checkNotNull( getId() );
+    return Preconditions.checkNotNull( getId() );
   }
 
   @Override public String jsonValue() throws IOException {

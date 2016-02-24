@@ -200,7 +200,7 @@ public class ProcessFilesMeta extends BaseStepMeta implements StepMetaInterface 
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer();
+    StringBuilder retval = new StringBuilder();
 
     retval.append( "    " + XMLHandler.addTagValue( "sourcefilenamefield", sourcefilenamefield ) );
     retval.append( "    " + XMLHandler.addTagValue( "targetfilenamefield", targetfilenamefield ) );

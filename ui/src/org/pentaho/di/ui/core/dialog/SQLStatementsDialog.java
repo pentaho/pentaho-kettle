@@ -265,7 +265,7 @@ public class SQLStatementsDialog extends Dialog {
   }
 
   private String getSQL() {
-    StringBuffer sql = new StringBuffer();
+    StringBuilder sql = new StringBuilder();
 
     int[] idx = wFields.table.getSelectionIndices();
 

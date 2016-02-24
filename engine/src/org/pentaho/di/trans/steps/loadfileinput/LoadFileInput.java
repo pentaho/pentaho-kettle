@@ -232,8 +232,7 @@ public class LoadFileInput extends BaseStep implements StepInterface {
 
       putRow( data.outputRowMeta, outputRowData );
 
-      if ( meta.getRowLimit() > 0 && data.rownr > meta.getRowLimit() ) // limit has been reached: stop now.
-      {
+      if ( meta.getRowLimit() > 0 && data.rownr > meta.getRowLimit() ) { // limit has been reached: stop now.
         setOutputDone();
         return false;
       }
@@ -285,12 +284,12 @@ public class LoadFileInput extends BaseStep implements StepInterface {
       }
 
       int c;
-      StringBuffer stringBuffer = new StringBuffer();
+      StringBuilder StringBuilder = new StringBuilder();
       while ( ( c = reader.read() ) != -1 ) {
-        stringBuffer.append( (char) c );
+        StringBuilder.append( (char) c );
       }
 
-      retval = stringBuffer.toString();
+      retval = StringBuilder.toString();
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString(
         PKG, "LoadFileInput.Error.GettingFileContent", vfsFilename, e.toString() ) );

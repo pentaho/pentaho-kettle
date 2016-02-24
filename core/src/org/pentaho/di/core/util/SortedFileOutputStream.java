@@ -33,7 +33,7 @@ import org.pentaho.di.core.logging.LogChannelInterface;
 
 public class SortedFileOutputStream extends FileOutputStream {
   /** Internal buffer to catch output. Before really writing output, the properties get sorted. */
-  private StringBuffer sb = null;
+  private StringBuilder sb = null;
 
   /** Logger, for the few errors that may occur. */
   private LogChannelInterface log = null;
@@ -58,34 +58,34 @@ public class SortedFileOutputStream extends FileOutputStream {
   }
 
   /**
-   * Appending to internal StringBuffer, instead of immediately writing to the file
+   * Appending to internal StringBuilder, instead of immediately writing to the file
    */
   @Override
   public void write( byte[] b, int off, int len ) throws IOException {
     if ( sb == null ) {
-      sb = new StringBuffer();
+      sb = new StringBuilder();
     }
     sb.append( new String( b, off, len ) );
   }
 
   /**
-   * Appending to internal StringBuffer, instead of immediately writing to the file
+   * Appending to internal StringBuilder, instead of immediately writing to the file
    */
   @Override
   public void write( byte[] b ) throws IOException {
     if ( sb == null ) {
-      sb = new StringBuffer();
+      sb = new StringBuilder();
     }
     sb.append( new String( b ) );
   }
 
   /**
-   * Appending to internal StringBuffer, instead of immediately writing to the file
+   * Appending to internal StringBuilder, instead of immediately writing to the file
    */
   @Override
   public void write( int b ) throws IOException {
     if ( sb == null ) {
-      sb = new StringBuffer();
+      sb = new StringBuilder();
     }
     sb.append( b );
   }
@@ -171,7 +171,7 @@ public class SortedFileOutputStream extends FileOutputStream {
    * @return
    */
   private String nextLine( int[] iPos ) {
-    // End of StringBuffer reached?
+    // End of StringBuilder reached?
     if ( iPos[0] >= sb.length() ) {
       return null;
     }

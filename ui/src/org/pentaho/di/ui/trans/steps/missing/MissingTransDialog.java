@@ -77,7 +77,7 @@ public class MissingTransDialog extends BaseStepDialog implements StepDialogInte
   private String getErrorMessage( List<MissingTrans> missingTrans, int mode ) {
     String message = "";
     if ( mode == MISSING_TRANS_STEPS ) {
-      StringBuffer entries = new StringBuffer();
+      StringBuilder entries = new StringBuilder();
       for ( MissingTrans entry : missingTrans ) {
         if ( missingTrans.indexOf( entry ) == missingTrans.size() - 1 ) {
           entries.append( "- " + entry.getStepName() + " - " + entry.getMissingPluginId() + "\n\n" );

@@ -81,7 +81,7 @@ public class YamlInputField implements Cloneable {
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 400 );
+    StringBuilder retval = new StringBuilder( 400 );
 
     retval.append( "      <field>" ).append( Const.CR );
     retval.append( "        " ).append( XMLHandler.addTagValue( "name", getName() ) );

@@ -64,7 +64,7 @@ public class SSHMetaTest {
     sshMeta.setPassphrase( plaintextPassphrase );
     sshMeta.setProxyPassword( plaintextProxyPassword );
 
-    StringBuffer xmlString = new StringBuffer();
+    StringBuilder xmlString = new StringBuilder( 50 );
     xmlString.append( XMLHandler.getXMLHeader() ).append( Const.CR );
     xmlString.append( XMLHandler.openTag( "step" ) ).append( Const.CR );
     xmlString.append( sshMeta.getXML() );

@@ -959,8 +959,7 @@ public class KettleDatabaseRepositoryTransDelegate extends KettleDatabaseReposit
 
         DatabaseMeta check = transMeta.findDatabase( databaseMeta.getName() ); // Check if there already is one in the
                                                                                // transformation
-        if ( check == null || overWriteShared ) // We only add, never overwrite database connections.
-        {
+        if ( check == null || overWriteShared ) { // We only add, never overwrite database connections.
           if ( databaseMeta.getName() != null ) {
             transMeta.addOrReplaceDatabase( databaseMeta );
             if ( !overWriteShared ) {

@@ -107,7 +107,7 @@ public class KettleDatabaseRepositoryJobEntryDelegate extends KettleDatabaseRepo
    *          A list with all defined databases
    */
   public JobEntryCopy loadJobEntryCopy( ObjectId jobId, ObjectId jobEntryCopyId,
-    List<JobEntryInterface> jobentries, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, String jobname ) 
+    List<JobEntryInterface> jobentries, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, String jobname )
         throws KettleException {
     JobEntryCopy jobEntryCopy = new JobEntryCopy();
 
@@ -147,7 +147,7 @@ public class KettleDatabaseRepositoryJobEntryDelegate extends KettleDatabaseRepo
             } else {
               jobEntry = (JobEntryInterface) registry.loadClass( jobPlugin );
             }
-            if( jobEntry != null ) {
+            if ( jobEntry != null ) {
               jobEntryCopy.setEntry( jobEntry );
               // Load the attributes for that jobentry
               //

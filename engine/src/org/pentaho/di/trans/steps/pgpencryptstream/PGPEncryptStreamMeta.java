@@ -194,7 +194,7 @@ public class PGPEncryptStreamMeta extends BaseStepMeta implements StepMetaInterf
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer();
+    StringBuilder retval = new StringBuilder();
     retval.append( "    " + XMLHandler.addTagValue( "gpglocation", gpglocation ) );
     retval.append( "    " + XMLHandler.addTagValue( "keyname", keyname ) );
     retval.append( "    " + XMLHandler.addTagValue( "keynameInField", keynameInField ) );

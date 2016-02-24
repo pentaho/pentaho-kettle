@@ -88,7 +88,7 @@ public class JavaFilterMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer();
+    StringBuilder retval = new StringBuilder();
 
     List<StreamInterface> targetStreams = getStepIOMeta().getTargetStreams();
     retval.append( XMLHandler.addTagValue( "send_true_to", targetStreams.get( 0 ).getStepname() ) );

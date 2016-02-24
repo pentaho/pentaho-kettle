@@ -925,7 +925,7 @@ public class MailConnection {
             // Create folder
             f.create( Folder.HOLDS_MESSAGES );
           } else {
-            throw new KettleException( BaseMessages.getString(PKG, "MailConnection.Error.FolderNotFound", foldername ) );
+            throw new KettleException( BaseMessages.getString( PKG, "MailConnection.Error.FolderNotFound", foldername ) );
           }
         }
       }

@@ -280,6 +280,18 @@ public class Value implements Cloneable, XMLInterface, Serializable {
    * @param str
    *          The text to store in this Value
    */
+  public Value( String name, StringBuilder str ) {
+    this( name, str.toString() );
+  }
+
+  /**
+   * Constructs a new Value of Type VALUE_TYPE_STRING, with a name, containing a String
+   *
+   * @param name
+   *          Sets the name of the Value
+   * @param str
+   *          The text to store in this Value
+   */
   public Value( String name, String str ) {
     // clearValue();
     setValue( str );
@@ -493,6 +505,21 @@ public class Value implements Cloneable, XMLInterface, Serializable {
    *          The StringBuffer to get the text from
    */
   public void setValue( StringBuffer str ) {
+    if ( value == null || value.getType() != VALUE_TYPE_STRING ) {
+      value = new ValueString( str.toString() );
+    } else {
+      value.setString( str.toString() );
+    }
+    setNull( str == null );
+  }
+
+  /**
+   * Sets the Value to a String text
+   *
+   * @param str
+   *          The StringBuilder to get the text from
+   */
+  public void setValue( StringBuilder str ) {
     if ( value == null || value.getType() != VALUE_TYPE_STRING ) {
       value = new ValueString( str.toString() );
     } else {
@@ -968,7 +995,9 @@ public class Value implements Cloneable, XMLInterface, Serializable {
     // performance between the 2 does not differ that much. A few milliseconds
     // on 100000 iterations in the advantage of StringBuffers. The
     // lessened creation of objects may be worth it in the long run.
-    StringBuffer retval = new StringBuffer( getTypeDesc() );
+    // Marc - StringBuffer was replaced with StringBuilder for performance reasons. 
+    // No need for a StringBuffer (which is synchronized ) 
+    StringBuilder retval = new StringBuilder( getTypeDesc() );
 
     switch ( getType() ) {
       case VALUE_TYPE_STRING:
@@ -1021,12 +1050,12 @@ public class Value implements Cloneable, XMLInterface, Serializable {
       }
     } else {
       if ( pad ) {
-        StringBuffer ret;
+        StringBuilder ret = null;
 
         if ( isNull() || value.getString() == null ) {
-          ret = new StringBuffer( Const.NULL_STRING );
+          ret = new StringBuilder( Const.NULL_STRING );
         } else {
-          ret = new StringBuffer( value.getString() );
+          ret = new StringBuilder( value.getString() );
         }
 
         int length = value.getLength();
@@ -1073,11 +1102,11 @@ public class Value implements Cloneable, XMLInterface, Serializable {
         }
       } else {
         if ( isNull() ) {
-          StringBuffer ret = new StringBuffer( Const.NULL_NUMBER );
+          StringBuilder ret = new StringBuilder( Const.NULL_NUMBER );
           Const.rightPad( ret, value.getLength() );
           retval = ret.toString();
         } else {
-          StringBuffer fmt = new StringBuffer();
+          StringBuilder fmt = new StringBuilder();
           int i;
           DecimalFormat form;
 
@@ -1191,12 +1220,12 @@ public class Value implements Cloneable, XMLInterface, Serializable {
       }
     } else {
       if ( isNull() ) {
-        StringBuffer ret = new StringBuffer( Const.NULL_INTEGER );
+        StringBuilder ret = new StringBuilder( Const.NULL_INTEGER );
         Const.rightPad( ret, getLength() );
         retval = ret.toString();
       } else {
         if ( pad ) {
-          StringBuffer fmt = new StringBuffer();
+          StringBuilder fmt = new StringBuilder();
           int i;
           DecimalFormat form;
 
@@ -1536,7 +1565,7 @@ public class Value implements Cloneable, XMLInterface, Serializable {
     int nameLength = dis.readInt();
 
     // name
-    StringBuffer nameBuffer = new StringBuffer();
+    StringBuilder nameBuffer = new StringBuilder();
     for ( int i = 0; i < nameLength; i++ ) {
       nameBuffer.append( dis.readChar() );
     }
@@ -1568,7 +1597,7 @@ public class Value implements Cloneable, XMLInterface, Serializable {
           if ( bnLength < 0 ) {
             setValue( (BigDecimal) null );
           } else {
-            StringBuffer buffer = new StringBuffer();
+            StringBuilder buffer = new StringBuilder();
             for ( int i = 0; i < bnLength; i++ ) {
               buffer.append( dis.readChar() );
             }
@@ -1717,7 +1746,7 @@ public class Value implements Cloneable, XMLInterface, Serializable {
             if ( bnLength < 0 ) {
               setValue( (BigDecimal) null );
             } else {
-              StringBuffer buffer = new StringBuffer();
+              StringBuilder buffer = new StringBuilder();
               for ( int i = 0; i < bnLength; i++ ) {
                 buffer.append( dis.readChar() );
               }
@@ -2291,15 +2320,15 @@ public class Value implements Cloneable, XMLInterface, Serializable {
     }
 
     if ( ( v.isString() && isNumeric() ) || ( v.isNumeric() && isString() ) ) {
-      StringBuffer s;
+      StringBuilder s;
       String append = "";
       int n;
       if ( v.isString() ) {
-        s = new StringBuffer( v.getString() );
+        s = new StringBuilder( v.getString() );
         append = v.getString();
         n = (int) getInteger();
       } else {
-        s = new StringBuffer( getString() );
+        s = new StringBuilder( getString() );
         append = getString();
         n = (int) v.getInteger();
       }
@@ -2543,7 +2572,7 @@ public class Value implements Cloneable, XMLInterface, Serializable {
       }
 
       if ( getString() != null ) {
-        StringBuffer result = new StringBuffer( getString() );
+        StringBuilder result = new StringBuilder( getString() );
 
         int pad = len;
         int l = ( pad - result.length() ) / padstr.length() + 1;
@@ -2749,7 +2778,7 @@ public class Value implements Cloneable, XMLInterface, Serializable {
         setValue( getString() );
       }
       if ( getString() != null ) {
-        StringBuffer result = new StringBuffer( getString() );
+        StringBuilder result = new StringBuilder( getString() );
 
         int pad = len;
         int l = ( pad - result.length() ) / padstr.length() + 1;
@@ -3528,7 +3557,7 @@ public class Value implements Cloneable, XMLInterface, Serializable {
     // see Checksum step and PDI-5190
     // "Add Checksum step gives incorrect results (MD5, CRC32, ADLER32, SHA-1 are affected)"
     char[] s = hex.toCharArray();
-    StringBuffer hexString = new StringBuffer( 2 * s.length );
+    StringBuilder hexString = new StringBuilder( 2 * s.length );
 
     for ( int i = 0; i < s.length; i++ ) {
       hexString.append( hexDigits[( s[i] & 0x00F0 ) >> 4] ); // hi nibble
@@ -3619,7 +3648,7 @@ public class Value implements Cloneable, XMLInterface, Serializable {
     String hex = getString();
 
     char[] s = hex.toCharArray();
-    StringBuffer hexString = new StringBuffer( 2 * s.length );
+    StringBuilder hexString = new StringBuilder( 2 * s.length );
 
     for ( int i = 0; i < s.length; i++ ) {
       hexString.append( hexDigits[( s[i] & 0xF000 ) >> 12] ); // hex 1
@@ -3730,7 +3759,7 @@ public class Value implements Cloneable, XMLInterface, Serializable {
    */
   @Override
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 128 );
+    StringBuilder retval = new StringBuilder( 128 );
     retval.append( "<" + XML_TAG + ">" );
     retval.append( XMLHandler.addTagValue( "name", getName(), false ) );
     retval.append( XMLHandler.addTagValue( "type", getTypeDesc(), false ) );

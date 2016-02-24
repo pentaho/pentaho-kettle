@@ -250,7 +250,7 @@ public class RandomCCNumberGeneratorMeta extends BaseStepMeta implements StepMet
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 200 );
+    StringBuilder retval = new StringBuilder( 200 );
 
     retval.append( "    <fields>" ).append( Const.CR );
 

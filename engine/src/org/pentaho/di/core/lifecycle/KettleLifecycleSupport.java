@@ -55,7 +55,7 @@ public class KettleLifecycleSupport {
       LifecycleSupport.loadPlugins( KettleLifecyclePluginType.class, KettleLifecycleListener.class );
     kettleLifecycleListeners = new ConcurrentHashMap<KettleLifecycleListener, Boolean>();
 
-    for( KettleLifecycleListener kll: listeners ) {
+    for ( KettleLifecycleListener kll: listeners ) {
       kettleLifecycleListeners.put( kll, false );
     }
 

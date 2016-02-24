@@ -330,7 +330,7 @@ public class TableOutput extends BaseStep implements StepInterface {
       } else {
         data.db.clearBatch( insertStatement );
         data.db.rollback();
-        StringBuffer msg = new StringBuffer( "Error batch inserting rows into table [" + tableName + "]." );
+        StringBuilder msg = new StringBuilder( "Error batch inserting rows into table [" + tableName + "]." );
         msg.append( Const.CR );
         msg.append( "Errors encountered (first 10):" ).append( Const.CR );
         for ( int x = 0; x < be.getExceptionsList().size() && x < 10; x++ ) {
@@ -401,8 +401,7 @@ public class TableOutput extends BaseStep implements StepInterface {
         data.batchBuffer.add( outputRowData );
         outputRowData = null;
 
-        if ( rowIsSafe ) // A commit was done and the rows are all safe (no error)
-        {
+        if ( rowIsSafe ) { // A commit was done and the rows are all safe (no error)
           for ( int i = 0; i < data.batchBuffer.size(); i++ ) {
             Object[] row = data.batchBuffer.get( i );
             putRow( data.outputRowMeta, row );

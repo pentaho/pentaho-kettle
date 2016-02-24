@@ -28,8 +28,7 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 
 import java.util.Comparator;
 
-import static java.util.Arrays.binarySearch;
-import static java.util.Arrays.sort;
+import java.util.Arrays;
 
 /**
  * @author Andrey Khayrutdinov
@@ -55,7 +54,7 @@ abstract class Index {
       values[ i ] = new IndexedValue( rows[ i ][ column ], i );
     }
     // sort values using meta to compare and row number as seconds dimension
-    sort( values, createComparator() );
+    Arrays.sort( values, createComparator() );
   }
 
   /**
@@ -65,7 +64,7 @@ abstract class Index {
    * @return decoded index
    */
   int findInsertionPointOf( IndexedValue value ) {
-    int index = binarySearch( values, value, createComparator() );
+    int index = Arrays.binarySearch( values, value, createComparator() );
     // index == ( -insertion_point - 1)
     return -( index + 1 );
   }

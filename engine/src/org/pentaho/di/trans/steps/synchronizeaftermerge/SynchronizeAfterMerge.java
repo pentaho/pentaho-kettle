@@ -424,8 +424,8 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface {
         data.db.commit( true );
       } else {
         data.db.rollback();
-        StringBuffer msg =
-          new StringBuffer( "Error batch inserting rows into table [" + data.realTableName + "]." );
+        StringBuilder msg =
+          new StringBuilder( "Error batch inserting rows into table [" + data.realTableName + "]." );
         msg.append( Const.CR );
         msg.append( "Errors encountered (first 10):" ).append( Const.CR );
         for ( int x = 0; x < be.getExceptionsList().size() && x < 10; x++ ) {
@@ -475,8 +475,7 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface {
           data.batchBuffer.add( row );
         }
 
-        if ( rowIsSafe ) // A commit was done and the rows are all safe (no error)
-        {
+        if ( rowIsSafe ) { // A commit was done and the rows are all safe (no error)
           for ( int i = 0; i < data.batchBuffer.size(); i++ ) {
             Object[] rowb = data.batchBuffer.get( i );
             putRow( data.outputRowMeta, rowb );

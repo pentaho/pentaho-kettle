@@ -268,7 +268,7 @@ public class SerializationHelper {
    * @param buffer
    */
   @SuppressWarnings( "unchecked" )
-  public static void write( Object object, int indentLevel, StringBuffer buffer ) {
+  public static void write( Object object, int indentLevel, StringBuilder buffer ) {
 
     // don't even attempt to persist
     if ( object == null ) {
@@ -406,7 +406,7 @@ public class SerializationHelper {
    * @throws KettleException
    */
   public static void saveJobRep( Object object, Repository rep, ObjectId id_job, ObjectId id_job_entry ) throws KettleException {
-    StringBuffer sb = new StringBuffer( 1024 );
+    StringBuilder sb = new StringBuilder( 1024 );
     write( object, 0, sb );
     rep.saveJobEntryAttribute( id_job, id_job_entry, "job-xml", sb.toString() );
   }
@@ -447,7 +447,7 @@ public class SerializationHelper {
    * @throws KettleException
    */
   public static void saveStepRep( Object object, Repository rep, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
-    StringBuffer sb = new StringBuffer( 1024 );
+    StringBuilder sb = new StringBuilder( 1024 );
     write( object, 0, sb );
     rep.saveStepAttribute( id_transformation, id_step, "step-xml", sb.toString() );
   }
@@ -478,7 +478,7 @@ public class SerializationHelper {
     }
   }
 
-  private static void indent( StringBuffer sb, int indentLevel ) {
+  private static void indent( StringBuilder sb, int indentLevel ) {
     for ( int i = 0; i < indentLevel; i++ ) {
       sb.append( INDENT_STRING );
     }

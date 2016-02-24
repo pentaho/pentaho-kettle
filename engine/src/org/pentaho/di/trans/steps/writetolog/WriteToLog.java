@@ -101,7 +101,7 @@ public class WriteToLog extends BaseStep implements StepInterface {
 
     } // end if first
 
-    StringBuffer out = new StringBuffer();
+    StringBuilder out = new StringBuilder();
     out.append( Const.CR
       + "------------> " + BaseMessages.getString( PKG, "WriteToLog.Log.NLigne", "" + getLinesRead() )
       + "------------------------------" + Const.CR );
@@ -133,7 +133,7 @@ public class WriteToLog extends BaseStep implements StepInterface {
     return true;
   }
 
-  private void setLog( LogLevel loglevel, StringBuffer msg ) {
+  private void setLog( LogLevel loglevel, StringBuilder msg ) {
     switch ( loglevel ) {
       case ERROR:
         // Output message to log

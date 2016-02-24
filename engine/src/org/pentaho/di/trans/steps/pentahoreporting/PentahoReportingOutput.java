@@ -43,7 +43,6 @@ import org.pentaho.di.trans.steps.pentahoreporting.PentahoReportingOutputMeta.Pr
 import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
 import org.pentaho.reporting.engine.classic.core.MasterReport;
 import org.pentaho.reporting.engine.classic.core.modules.gui.csv.CSVTableExportTask;
-import org.pentaho.reporting.engine.classic.core.modules.gui.html.HtmlDirExportTask;
 import org.pentaho.reporting.engine.classic.core.modules.gui.html.HtmlStreamExportTask;
 import org.pentaho.reporting.engine.classic.core.modules.gui.pdf.PdfExportTask;
 import org.pentaho.reporting.engine.classic.core.modules.gui.rtf.RTFExportTask;
@@ -228,7 +227,7 @@ public class PentahoReportingOutput extends BaseStep implements StepInterface {
       ModifiableConfiguration modifiableConfiguration = (ModifiableConfiguration) report.getConfiguration();
       String property;
       Runnable exportTask;
-      switch( outputProcessorType ) {
+      switch ( outputProcessorType ) {
         case PDF:
           property = "org.pentaho.reporting.engine.classic.core.modules.gui.pdf.TargetFileName";
           modifiableConfiguration.setConfigProperty( property, targetFilename );

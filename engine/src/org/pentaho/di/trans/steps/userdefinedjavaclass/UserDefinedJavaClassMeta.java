@@ -119,7 +119,7 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
   private Class<?> cookClass( UserDefinedJavaClassDef def ) throws CompileException, ParseException,
     ScanException, IOException, RuntimeException, KettleStepException {
 
-    if( Thread.currentThread().getContextClassLoader() == null ) {
+    if ( Thread.currentThread().getContextClassLoader() == null ) {
       Thread.currentThread().setContextClassLoader( this.getClass().getClassLoader() );
     }
 

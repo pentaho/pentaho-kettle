@@ -682,9 +682,9 @@ public class LDAPConnection {
    * @return the formatted GUID
    */
   private static String byteToHexEncode( byte[] inArr ) {
-    StringBuffer guid = new StringBuffer();
+    StringBuilder guid = new StringBuilder();
     for ( int i = 0; i < inArr.length; i++ ) {
-      StringBuffer dblByte = new StringBuffer( Integer.toHexString( inArr[i] & 0xff ) );
+      StringBuilder dblByte = new StringBuilder( Integer.toHexString( inArr[i] & 0xff ) );
       if ( dblByte.length() == 1 ) {
         guid.append( "0" );
       }

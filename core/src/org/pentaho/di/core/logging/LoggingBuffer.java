@@ -291,7 +291,7 @@ public class LoggingBuffer {
    */
   @Deprecated
   public String dump() {
-    StringBuffer buf = new StringBuffer( 50000 );
+    StringBuilder buf = new StringBuilder( 50000 );
     synchronized ( buffer ) {
       for ( BufferLine line : buffer ) {
         Object payload = line.getEvent().getMessage();

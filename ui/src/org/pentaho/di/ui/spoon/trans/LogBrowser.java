@@ -123,7 +123,7 @@ public class LogBrowser {
                 int maxSize = Props.getInstance().getMaxNrLinesInLog() * 150;
 
                 // int position = text.getSelection().x;
-                // StringBuffer buffer = new StringBuffer(text.getText());
+                // StringBuilder buffer = new StringBuilder(text.getText());
 
                 synchronized ( text ) {
 

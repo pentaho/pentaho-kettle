@@ -315,7 +315,7 @@ public class JobExecutionConfiguration implements ExecutionConfiguration {
   }
 
   public String getXML() throws IOException {
-    StringBuffer xml = new StringBuffer( 160 );
+    StringBuilder xml = new StringBuilder( 160 );
 
     xml.append( "  <" + XML_TAG + ">" ).append( Const.CR );
 

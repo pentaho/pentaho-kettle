@@ -142,7 +142,7 @@ public class SelectMetadataChange implements Cloneable, XMLInterface {
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer();
+    StringBuilder retval = new StringBuilder();
     retval.append( "      " ).append( XMLHandler.openTag( XML_TAG ) );
     retval.append( "        " ).append(
       XMLHandler.addTagValue( attributesInterface.getXmlCode( "META_NAME" ), name ) );

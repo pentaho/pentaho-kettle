@@ -2060,7 +2060,7 @@ public class TableView extends Composite {
       //
       InsertTextInterface insertTextInterface = new InsertTextInterface() {
         public void insertText( String string, int position ) {
-          StringBuffer buffer = new StringBuffer( table.getItem( rownr ).getText( colnr ) );
+          StringBuilder buffer = new StringBuilder( table.getItem( rownr ).getText( colnr ) );
           buffer.insert( position, string );
           table.getItem( rownr ).setText( colnr, buffer.toString() );
           int newPosition = position + string.length();

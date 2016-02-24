@@ -54,7 +54,7 @@ public class KettleLogLayout {
     // We need to split this up into different lines and all format these
     // lines...
     //
-    StringBuffer line = new StringBuffer();
+    StringBuilder line = new StringBuilder();
 
     String dateTimeString = "";
     if ( timeAdded ) {

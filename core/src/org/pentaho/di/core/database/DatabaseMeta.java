@@ -1027,7 +1027,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   @Override
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 250 );
+    StringBuilder retval = new StringBuilder( 250 );
 
     retval.append( "  <" ).append( XML_TAG ).append( '>' ).append( Const.CR );
     retval.append( "    " ).append( XMLHandler.addTagValue( "name", getName() ) );
@@ -1112,7 +1112,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
     }
     baseUrl = databaseInterface.getURL( environmentSubstitute( hostname ), environmentSubstitute( port ),
       environmentSubstitute( databaseName ) );
-    StringBuffer url = new StringBuffer( environmentSubstitute( baseUrl ) );
+    StringBuilder url = new StringBuilder( environmentSubstitute( baseUrl ) );
 
     if ( databaseInterface.supportsOptionsInURL() ) {
       // OK, now add all the options...
@@ -1451,10 +1451,24 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
     if ( sbsql == null ) {
       return null;
     }
-    return stripCR( new StringBuffer( sbsql ) );
+    return stripCR( new StringBuilder( sbsql ) );
   }
 
   public String stripCR( StringBuffer sbsql ) {
+    // DB2 Can't handle \n in SQL Statements...
+    if ( !supportsNewLinesInSQL() ) {
+      // Remove CR's
+      for ( int i = sbsql.length() - 1; i >= 0; i-- ) {
+        if ( sbsql.charAt( i ) == '\n' || sbsql.charAt( i ) == '\r' ) {
+          sbsql.setCharAt( i, ' ' );
+        }
+      }
+    }
+
+    return sbsql.toString();
+  }
+
+  public String stripCR( StringBuilder sbsql ) {
     // DB2 Can't handle \n in SQL Statements...
     if ( !supportsNewLinesInSQL() ) {
       // Remove CR's
@@ -2725,7 +2739,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   public String testConnection() {
 
-    StringBuffer report = new StringBuffer();
+    StringBuilder report = new StringBuilder();
 
     // If the plug-in needs to provide connection information, we ask the DatabaseInterface...
     //

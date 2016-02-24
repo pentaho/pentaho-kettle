@@ -90,7 +90,7 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface {
 
   protected String escapeOsPath( String path, boolean isWindows ) {
 
-    StringBuffer sb = new StringBuffer();
+    StringBuilder sb = new StringBuilder();
 
     // should be done with a regex
     for ( int i = 0; i < path.length(); i++ ) {
@@ -458,7 +458,7 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface {
     }
 
     try {
-      StringBuffer cmdBuff = new StringBuffer();
+      StringBuilder cmdBuff = new StringBuilder();
 
       // first write the COPY INTO command...
       //

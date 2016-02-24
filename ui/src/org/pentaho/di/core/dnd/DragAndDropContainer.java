@@ -113,7 +113,7 @@ public class DragAndDropContainer implements XMLInterface {
 
   public String getXML() {
     try {
-      StringBuffer xml = new StringBuffer( 100 );
+      StringBuilder xml = new StringBuilder( 100 );
 
       xml.append( XMLHandler.getXMLHeader() ); // UFT-8 XML header
 

@@ -155,8 +155,7 @@ public class VectorWiseDatabaseMeta extends IngresDatabaseMeta implements Databa
             if ( length > 9 ) {
               retval += "BIGINT";
             } else {
-              if ( length == -1 || length > 4 ) // If the length is undefined or greater than 4, use a standard INTEGER
-              {
+              if ( length == -1 || length > 4 ) { // If the length is undefined or greater than 4, use a standard INTEGER
                 retval += "INTEGER";
               } else {
                 if ( length > 2 ) {

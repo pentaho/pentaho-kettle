@@ -148,7 +148,7 @@ public class PartitionSchema extends ChangedFlag implements Cloneable, SharedObj
   }
 
   public String getXML() {
-    StringBuffer xml = new StringBuffer( 200 );
+    StringBuilder xml = new StringBuilder( 200 );
 
     xml.append( "        <" ).append( XML_TAG ).append( ">" ).append( Const.CR );
     xml.append( "          " ).append( XMLHandler.addTagValue( "name", name ) );

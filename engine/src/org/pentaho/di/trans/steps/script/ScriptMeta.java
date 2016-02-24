@@ -328,7 +328,7 @@ public class ScriptMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 300 );
+    StringBuilder retval = new StringBuilder( 300 );
 
     retval.append( "    <jsScripts>" );
     for ( int i = 0; i < jsScripts.length; i++ ) {
@@ -589,8 +589,8 @@ public class ScriptMeta extends BaseStepMeta implements StepMetaInterface {
           remarks.add( cr );
 
           if ( fieldname.length > 0 ) {
-            StringBuffer message =
-              new StringBuffer( BaseMessages.getString( PKG, "ScriptMeta.CheckResult.FailedToGetValues", String
+            StringBuilder message =
+              new StringBuilder( BaseMessages.getString( PKG, "ScriptMeta.CheckResult.FailedToGetValues", String
                 .valueOf( fieldname.length ) )
                 + Const.CR + Const.CR );
 
@@ -677,7 +677,7 @@ public class ScriptMeta extends BaseStepMeta implements StepMetaInterface {
     return sRC;
   }
 
-  public boolean getValue( Bindings scope, int i, Value res, StringBuffer message ) {
+  public boolean getValue( Bindings scope, int i, Value res, StringBuilder message ) {
     boolean error_found = false;
 
     if ( fieldname[i] != null && fieldname[i].length() > 0 ) {
@@ -881,7 +881,7 @@ public class ScriptMeta extends BaseStepMeta implements StepMetaInterface {
   public static ScriptEngine createNewScriptEngine( String stepName ) {
     System.setProperty( "org.jruby.embed.localvariable.behavior", "persistent" ); // required for JRuby, transparent for
                                                                                   // others
-    if( Thread.currentThread().getContextClassLoader() == null ) {
+    if ( Thread.currentThread().getContextClassLoader() == null ) {
       Thread.currentThread().setContextClassLoader( ScriptMeta.class.getClassLoader() );
     }
     ScriptEngineManager manager = new ScriptEngineManager();
