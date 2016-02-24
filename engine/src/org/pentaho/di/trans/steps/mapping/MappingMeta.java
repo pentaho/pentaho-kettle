@@ -236,7 +236,7 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface, HasR
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 300 );
+    StringBuilder retval = new StringBuilder( 300 );
 
     retval.append( "    " ).append(
       XMLHandler.addTagValue( "specification_method", specificationMethod == null ? null : specificationMethod

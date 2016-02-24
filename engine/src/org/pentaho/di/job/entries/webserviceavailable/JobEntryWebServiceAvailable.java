@@ -75,7 +75,7 @@ public class JobEntryWebServiceAvailable extends JobEntryBase implements Cloneab
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer();
+    StringBuilder retval = new StringBuilder( 50 );
 
     retval.append( super.getXML() );
     retval.append( "      " ).append( XMLHandler.addTagValue( "url", url ) );

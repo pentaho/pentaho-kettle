@@ -95,7 +95,7 @@ public class JobEntryWaitForFile extends JobEntryBase implements Cloneable, JobE
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 50 );
+    StringBuilder retval = new StringBuilder( 100 );
 
     retval.append( super.getXML() );
     retval.append( "      " ).append( XMLHandler.addTagValue( "filename", filename ) );

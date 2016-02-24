@@ -194,7 +194,7 @@ public class LoggingRegistry {
   }
 
   public String dump( boolean includeGeneral ) {
-    StringBuffer out = new StringBuffer( 50000 );
+    StringBuilder out = new StringBuilder( 50000 );
     for ( LoggingObjectInterface o : this.map.values() ) {
       if ( ( includeGeneral ) || ( !o.getObjectType().equals( LoggingObjectType.GENERAL ) ) ) {
         out.append( o.getContainerObjectId() );

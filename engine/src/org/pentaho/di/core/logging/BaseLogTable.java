@@ -412,7 +412,7 @@ public abstract class BaseLogTable {
   }
 
   protected String getFieldsXML() {
-    StringBuffer retval = new StringBuffer();
+    StringBuilder retval = new StringBuilder();
 
     for ( LogTableField field : fields ) {
       retval.append( XMLHandler.openTag( XML_TAG ) );

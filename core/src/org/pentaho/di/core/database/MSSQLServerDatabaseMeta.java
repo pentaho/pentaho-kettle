@@ -135,7 +135,7 @@ public class MSSQLServerDatabaseMeta extends BaseDatabaseMeta implements Databas
    */
   @Override
   public String getSQLLockTables( String[] tableNames ) {
-    StringBuffer sql = new StringBuffer( 128 );
+    StringBuilder sql = new StringBuilder( 128 );
     for ( int i = 0; i < tableNames.length; i++ ) {
       sql.append( "SELECT top 0 * FROM " ).append( tableNames[i] ).append( " WITH (UPDLOCK, HOLDLOCK);" ).append(
         Const.CR );
@@ -396,7 +396,7 @@ public class MSSQLServerDatabaseMeta extends BaseDatabaseMeta implements Databas
       //
       // Get the info from the data dictionary...
       //
-      StringBuffer sql = new StringBuffer( 128 );
+      StringBuilder sql = new StringBuilder( 128 );
       sql.append( "select i.name table_name, c.name column_name " );
       sql.append( "from     sysindexes i, sysindexkeys k, syscolumns c " );
       sql.append( "where    i.name = '" + tablename + "' " );

@@ -216,7 +216,7 @@ public class JobEntrySimpleEval extends JobEntryBase implements Cloneable, JobEn
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 300 );
+    StringBuilder retval = new StringBuilder( 300 );
 
     retval.append( super.getXML() );
     retval.append( "      " ).append( XMLHandler.addTagValue( "valuetype", getValueTypeCode( valuetype ) ) );

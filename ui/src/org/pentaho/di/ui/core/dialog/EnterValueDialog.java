@@ -460,7 +460,7 @@ public class EnterValueDialog extends Dialog {
       ValueMetaAndData v = getValue( valueMeta.getName() );
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_INFORMATION );
 
-      StringBuffer result = new StringBuffer();
+      StringBuilder result = new StringBuilder();
       result.append( Const.CR ).append( Const.CR ).append( "    " ).append( v.toString() );
       result.append( Const.CR ).append( "    " ).append( v.toStringMeta() );
 

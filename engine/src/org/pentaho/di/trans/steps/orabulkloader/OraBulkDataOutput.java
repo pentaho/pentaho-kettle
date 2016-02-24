@@ -101,7 +101,7 @@ public class OraBulkDataOutput {
   }
 
   private String createEscapedString( String orig, String enclosure ) {
-    StringBuffer buf = new StringBuffer( orig );
+    StringBuilder buf = new StringBuilder( orig );
 
     Const.repl( buf, enclosure, enclosure + enclosure );
     return buf.toString();

@@ -158,7 +158,7 @@ public class PentahoReportingOutputMeta extends BaseStepMeta implements StepMeta
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer();
+    StringBuilder retval = new StringBuilder();
 
     retval.append( "  " + XMLHandler.addTagValue( "input_file_field", inputFileField ) );
     retval.append( "  " + XMLHandler.addTagValue( "output_file_field", outputFileField ) );

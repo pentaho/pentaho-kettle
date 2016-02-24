@@ -532,7 +532,7 @@ public class KettleDatabaseRepositoryDialog implements RepositoryDialogInterface
             UpgradeRepositoryProgressDialog urpd = new UpgradeRepositoryProgressDialog( shell, rep, upgrade );
             if ( urpd.open() ) {
               if ( urpd.isDryRun() ) {
-                StringBuffer sql = new StringBuffer();
+                StringBuilder sql = new StringBuilder();
                 sql.append( "-- Repository creation/upgrade DDL: " ).append( Const.CR );
                 sql.append( "--" ).append( Const.CR );
                 sql.append( "-- Nothing was created nor modified in the target repository database." )

@@ -1704,7 +1704,7 @@ public class ScriptDialog extends BaseStepDialog implements StepDialogInterface 
   }
 
   private String buildAddClassFunctionName( Method metForParams ) {
-    StringBuffer sbRC = new StringBuffer();
+    StringBuilder sbRC = new StringBuilder();
     String strRC = "";
     Class<?>[] clsParamType = metForParams.getParameterTypes();
     String strParam;

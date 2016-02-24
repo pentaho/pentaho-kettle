@@ -146,7 +146,7 @@ public class WebServiceAvailableMeta extends BaseStepMeta implements StepMetaInt
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer();
+    StringBuilder retval = new StringBuilder();
 
     retval.append( "    " + XMLHandler.addTagValue( "urlField", urlField ) );
     retval.append( "    " + XMLHandler.addTagValue( "readTimeOut", readTimeOut ) );

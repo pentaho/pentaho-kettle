@@ -48,7 +48,7 @@ public class GetFilesRowsCountData extends BaseStepData implements StepDataInter
   public InputStream fr;
   public long rownr;
   public int fileFormatType;
-  public StringBuffer lineStringBuffer;
+  public StringBuilder lineStringBuilder;
   public int totalpreviousfields;
   public int indexOfFilenameField;
   public Object[] readrow;
@@ -67,7 +67,7 @@ public class GetFilesRowsCountData extends BaseStepData implements StepDataInter
     previousRow = null;
 
     fr = null;
-    lineStringBuffer = new StringBuffer( 256 );
+    lineStringBuilder = new StringBuilder( 256 );
     totalpreviousfields = 0;
     indexOfFilenameField = -1;
     readrow = null;

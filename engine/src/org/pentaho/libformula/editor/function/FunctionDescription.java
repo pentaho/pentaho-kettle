@@ -241,7 +241,7 @@ public class FunctionDescription {
    * @return
    */
   public String getHtmlReport() {
-    StringBuffer report = new StringBuffer();
+    StringBuilder report = new StringBuilder( 200 );
 
     // The function name on top
     //

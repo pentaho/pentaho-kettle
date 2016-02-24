@@ -208,7 +208,7 @@ public class JoinRowsMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public String getXML() throws KettleException {
-    StringBuffer retval = new StringBuffer( 300 );
+    StringBuilder retval = new StringBuilder( 300 );
 
     retval.append( "      " ).append( XMLHandler.addTagValue( "directory", directory ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "prefix", prefix ) );

@@ -77,7 +77,7 @@ public class JobEntryEval extends JobEntryBase implements Cloneable, JobEntryInt
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer();
+    StringBuilder retval = new StringBuilder( 50 );
 
     retval.append( super.getXML() );
     retval.append( "      " ).append( XMLHandler.addTagValue( "script", script ) );

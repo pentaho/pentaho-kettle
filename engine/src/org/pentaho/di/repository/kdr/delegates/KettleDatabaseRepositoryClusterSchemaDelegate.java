@@ -238,7 +238,7 @@ public class KettleDatabaseRepositoryClusterSchemaDelegate extends KettleDatabas
         + quoteTable( KettleDatabaseRepository.TABLE_R_CLUSTER ) + " WHERE "
         + quote( KettleDatabaseRepository.FIELD_CLUSTER_ID_CLUSTER ) + " = ? ", id_cluster );
     } else {
-      StringBuffer message = new StringBuffer();
+      StringBuilder message = new StringBuilder();
 
       message.append( "The cluster schema is used by the following transformations:" ).append( Const.CR );
       for ( int i = 0; i < transList.length; i++ ) {

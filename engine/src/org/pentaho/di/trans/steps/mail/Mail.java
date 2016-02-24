@@ -641,7 +641,7 @@ public class Mail extends BaseStep implements StepInterface {
     }
 
     msg.setSentDate( new Date() );
-    StringBuffer messageText = new StringBuffer();
+    StringBuilder messageText = new StringBuilder();
 
     if ( comment != null ) {
       messageText.append( comment ).append( Const.CR ).append( Const.CR );

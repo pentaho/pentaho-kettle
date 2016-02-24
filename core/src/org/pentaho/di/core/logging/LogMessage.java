@@ -118,7 +118,7 @@ public class LogMessage implements LogMessageInterface {
    */
   private String formatDetailedSubject( List<String> subjects ) {
 
-    StringBuffer string = new StringBuffer();
+    StringBuilder string = new StringBuilder();
 
     int currentStep = 0;
     int rootStep = subjects.size() - 1;

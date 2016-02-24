@@ -198,7 +198,7 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
   }
 
   public String getXML( boolean includeInterface ) throws KettleException {
-    StringBuffer retval = new StringBuffer( 200 );
+    StringBuilder retval = new StringBuilder( 200 );
 
     retval.append( "  <" ).append( XML_TAG ).append( '>' ).append( Const.CR );
     retval.append( "    " ).append( XMLHandler.addTagValue( "name", getName() ) );

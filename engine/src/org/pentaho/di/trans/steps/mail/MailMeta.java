@@ -238,7 +238,7 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public String getXML() throws KettleException {
-    StringBuffer retval = new StringBuffer( 300 );
+    StringBuilder retval = new StringBuilder( 300 );
 
     retval.append( super.getXML() );
 

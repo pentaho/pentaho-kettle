@@ -237,7 +237,7 @@ public class StringSearcher {
   }
 
   public static final String constructGetter( String name ) {
-    StringBuffer buf = new StringBuffer();
+    StringBuilder buf = new StringBuilder();
     buf.append( "get" );
     buf.append( name.substring( 0, 1 ).toUpperCase() );
     buf.append( name.substring( 1 ) );
@@ -246,7 +246,7 @@ public class StringSearcher {
   }
 
   public static final String constructIsGetter( String name ) {
-    StringBuffer buf = new StringBuffer();
+    StringBuilder buf = new StringBuilder();
     buf.append( "is" );
     buf.append( name.substring( 0, 1 ).toUpperCase() );
     buf.append( name.substring( 1 ) );

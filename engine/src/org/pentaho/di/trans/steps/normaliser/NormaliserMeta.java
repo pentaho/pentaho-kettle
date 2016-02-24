@@ -265,7 +265,7 @@ public class NormaliserMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer();
+    StringBuilder retval = new StringBuilder();
 
     retval.append( "   " + XMLHandler.addTagValue( "typefield", typeField ) );
 

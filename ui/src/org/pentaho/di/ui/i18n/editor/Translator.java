@@ -534,7 +534,7 @@ public class Translator {
 
     try {
       String filename = ROOT + "/" + javaFile;
-      StringBuffer content = new StringBuffer( 5000 );
+      StringBuilder content = new StringBuilder( 5000 );
       FileInputStream stream = new FileInputStream( filename );
 
       try {

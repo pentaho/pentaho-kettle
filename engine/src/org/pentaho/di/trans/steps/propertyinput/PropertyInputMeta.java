@@ -659,7 +659,7 @@ public class PropertyInputMeta extends BaseStepMeta implements StepMetaInterface
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 500 );
+    StringBuilder retval = new StringBuilder( 500 );
     retval.append( "    " ).append( XMLHandler.addTagValue( "file_type", fileType ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "encoding", encoding ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "include", includeFilename ) );

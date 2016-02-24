@@ -97,7 +97,7 @@ public class FixedFileInputField implements Cloneable, XMLInterface {
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 300 );
+    StringBuilder retval = new StringBuilder( 300 );
 
     retval.append( "      " ).append( XMLHandler.openTag( XML_TAG ) ).append( Const.CR );
     retval.append( "        " ).append( XMLHandler.addTagValue( "name", name ) );

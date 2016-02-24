@@ -152,7 +152,7 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 300 );
+    StringBuilder retval = new StringBuilder( 600 );
 
     retval.append( super.getXML() );
     retval.append( "      " ).append( XMLHandler.addTagValue( "move_empty_folders", move_empty_folders ) );

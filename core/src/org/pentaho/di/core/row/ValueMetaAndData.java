@@ -119,7 +119,7 @@ public class ValueMetaAndData {
     meta.setGroupingSymbol( null );
     meta.setCurrencySymbol( null );
 
-    StringBuffer retval = new StringBuffer( 128 );
+    StringBuilder retval = new StringBuilder( 128 );
     retval.append( "<" + XML_TAG + ">" );
     retval.append( XMLHandler.addTagValue( "name", meta.getName(), false ) );
     retval.append( XMLHandler.addTagValue( "type", meta.getTypeDesc(), false ) );

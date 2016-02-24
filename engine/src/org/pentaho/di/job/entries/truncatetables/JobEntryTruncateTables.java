@@ -95,7 +95,7 @@ public class JobEntryTruncateTables extends JobEntryBase implements Cloneable, J
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 200 );
+    StringBuilder retval = new StringBuilder( 200 );
 
     retval.append( super.getXML() );
     retval.append( "      " ).append(

@@ -2284,7 +2284,7 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
 
     // check the area owner list...
     //
-    StringBuffer tip = new StringBuffer();
+    StringBuilder tip = new StringBuilder();
     AreaOwner areaOwner = getVisibleAreaOwner( x, y );
     if ( areaOwner != null ) {
       JobEntryCopy jobEntryCopy;
