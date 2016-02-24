@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,35 +22,28 @@
 
 package org.pentaho.di.trans.steps.synchronizeaftermerge;
 
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
+import org.mockito.Mockito;
 import org.pentaho.di.core.KettleEnvironment;
-import org.pentaho.di.core.RowMetaAndData;
-import org.pentaho.di.core.database.DatabaseInterface;
 import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.di.core.plugins.DatabasePluginType;
-import org.pentaho.di.core.plugins.PluginInterface;
+import org.pentaho.di.core.exception.KettleDatabaseException;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.plugins.PluginRegistry;
-import org.pentaho.di.core.plugins.PluginTypeInterface;
 import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
-import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.job.entries.evaluatetablecontent.JobEntryEvalTableContentTest.DBMockIface;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.trans.RowProducer;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransHopMeta;
@@ -58,158 +51,178 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepErrorMeta;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.step.BaseStepData.StepExecutionStatus;
 import org.pentaho.di.trans.steps.dummytrans.DummyTransMeta;
 import org.pentaho.di.trans.steps.injector.InjectorMeta;
 
 public class SynchronizeAfterMergeTest {
 
+  private static final int COMMIT_SIZE = 10;
+
+  /**
+   * is used for check PDI-14413
+   * 
+   * set the commit size more than row size and then pass data betwen {@link #ROW_SIZE} and {@link #COMMIT_SIZE}
+   */
+  private static final int ROW_SIZE = 5;
+
+  private static final int ROW_FOR_UPDATE = 18;
+
+  private static final int ROW_FOR_DELETE = 18;
+
+  private static final int ROW_FOR_INSERT = 18;
+
+  private static final String DELETE_FLAG = "deleted";
+
+  private static final String INSERT_FLAG = "insert";
+
+  private static final String UPDATE_FLAG = "update";
+
+  private String injectorStepname = "injectorStepname";
+
+  private String synchronizeAfterMergeStepname = "SynchronizeAfterMerge";
+
   private TransMeta transMeta;
-  private StepMeta injectorStep;
-  private StepMeta synchStep;
-  private static List<RowMetaAndData> inputList;
 
-  public static class SynchDBMockIface extends DBMockIface {
-
-    @Override
-    public String getDriverClass() {
-      return "org.pentaho.di.trans.steps.synchronizeaftermerge.SynchMockDriver";
-    }
-
-  }
+  private Connection connection;
 
   @BeforeClass
-  public static void setUpBeforeClass() throws Exception {
+  public static void beforeClass() throws Exception {
     KettleEnvironment.init();
-    Map<Class<?>, String> dbMap = new HashMap<Class<?>, String>();
-    dbMap.put( DatabaseInterface.class, SynchDBMockIface.class.getName() );
+    DriverManager.registerDriver( new org.h2.Driver() );
+  }
 
-    PluginRegistry preg = PluginRegistry.getInstance();
-
-    PluginInterface mockDbPlugin = mock( PluginInterface.class );
-    when( mockDbPlugin.matches( anyString() ) ).thenReturn( true );
-    when( mockDbPlugin.isNativePlugin() ).thenReturn( true );
-    when( mockDbPlugin.getMainType() ).thenAnswer( new Answer<Class<?>>() {
-      @Override
-      public Class<?> answer( InvocationOnMock invocation ) throws Throwable {
-        return DatabaseInterface.class;
-      }
-    } );
-
-    when( mockDbPlugin.getPluginType() ).thenAnswer( new Answer<Class<? extends PluginTypeInterface>>() {
-      @Override
-      public Class<? extends PluginTypeInterface> answer( InvocationOnMock invocation ) throws Throwable {
-        return DatabasePluginType.class;
-      }
-    } );
-
-    when( mockDbPlugin.getIds() ).thenReturn( new String[] { "Oracle", "mock-db-id" } );
-    when( mockDbPlugin.getName() ).thenReturn( "mock-db-name" );
-    when( mockDbPlugin.getClassMap() ).thenReturn( dbMap );
-
-    preg.registerPlugin( DatabasePluginType.class, mockDbPlugin );
-
-    inputList = new ArrayList<RowMetaAndData>();
-
-    RowMetaInterface rm = new RowMeta();
-
-    ValueMetaInterface[] valuesMeta = {
-      new ValueMeta( "personName", ValueMeta.TYPE_STRING ),
-      new ValueMeta( "key", ValueMeta.TYPE_STRING ),
-      new ValueMeta( "flag", ValueMeta.TYPE_STRING ) };
-
-    for ( int i = 0; i < valuesMeta.length; i++ ) {
-      rm.addValueMeta( valuesMeta[i] );
+  @After
+  public void tearDown() throws SQLException {
+    if ( connection != null ) {
+      connection.close();
     }
-    Object[] r1 = new Object[] { "Ben", "123", "deleted" };
-
-    inputList.add( new RowMetaAndData( rm, r1 ) );
-
   }
 
   @Before
-  public void setUp() {
+  public void setUp() throws KettleDatabaseException, SQLException {
+    connection = DriverManager.getConnection( "jdbc:h2:mem:PERSON;" );
+    connection.setAutoCommit( false );
+    PreparedStatement stmt = connection.prepareStatement( "CREATE TABLE PERSON (ID INT PRIMARY KEY, personName VARCHAR(64) )" );
+    stmt.execute();
+    stmt.close();
+    stmt = connection.prepareStatement( "INSERT INTO PERSON (ID, personName) VALUES (?, ?)" );
+    for ( int i = 0; i < ROW_FOR_UPDATE + ROW_FOR_DELETE; i++ ) {
+      stmt.setInt( 1, i );
+      stmt.setString( 2, "personName" + i );
+      stmt.addBatch();
+    }
+    stmt.executeBatch();
+    stmt.close();
+    connection.commit();
+
+    PluginRegistry pluginRegistry = PluginRegistry.getInstance();
+
     transMeta = new TransMeta();
-    transMeta.setName( "synchronize" );
+    transMeta.setName( "SynchronizeAfterMerge" );
 
-    String injectorStepname = "injector step";
-    InjectorMeta im = new InjectorMeta();
-
-    PluginRegistry registry = PluginRegistry.getInstance();
-    // Set the information of the injector.
-    String injectorPid = registry.getPluginId( StepPluginType.class, im );
-    injectorStep = new StepMeta( injectorPid, injectorStepname, im );
+    InjectorMeta injectorMeta = new InjectorMeta();
+    String injectorPid = pluginRegistry.getPluginId( StepPluginType.class, injectorMeta );
+    StepMeta injectorStep = new StepMeta( injectorPid, injectorStepname, injectorMeta );
     transMeta.addStep( injectorStep );
 
-    DatabaseMeta dbMeta = new DatabaseMeta();
-    dbMeta.setDatabaseType( "mock-db" );
+    DatabaseMeta dbMeta = Mockito.spy( new DatabaseMeta() );
+    dbMeta.setDatabaseType( "H2" );
+    Mockito.when( dbMeta.getURL() ).thenReturn( "jdbc:h2:mem:PERSON;" );
+    Mockito.when( dbMeta.supportsErrorHandlingOnBatchUpdates() ).thenReturn( false );
 
-    SynchronizeAfterMergeMeta synchMeta = new SynchronizeAfterMergeMeta();
-    synchMeta.setCommitSize( 1 );
-    synchMeta.setDatabaseMeta( dbMeta );
-    synchMeta.setKeyCondition( new String[] { "=" } );
-    synchMeta.setKeyLookup( new String[] { "key" } );
-    synchMeta.setKeyStream( new String[] { "personName" } );
-    synchMeta.setKeyStream2( new String[] { null } );
-    synchMeta.setUpdate( new Boolean[] { Boolean.TRUE } );
-    synchMeta.setOperationOrderField( "flag" );
-    synchMeta.setOrderDelete( "deleted" );
-    synchMeta.setOrderInsert( "insert" );
-    synchMeta.setOrderUpdate( "update" );
-    synchMeta.setPerformLookup( true );
-    synchMeta.setSchemaName( "test" );
-    synchMeta.setTableName( "test" );
-    synchMeta.settablenameInField( false );
-    synchMeta.settablenameField( null );
-    synchMeta.setUseBatchUpdate( true );
-    synchMeta.setUpdateLookup( new String[] { "key" } );
-    synchMeta.setUpdateStream( new String[] { "personName" } );
+    SynchronizeAfterMergeMeta synchronizeAfterMergeMeta = new SynchronizeAfterMergeMeta();
+    //set commit size
+    synchronizeAfterMergeMeta.setCommitSize( COMMIT_SIZE );
+    synchronizeAfterMergeMeta.setDatabaseMeta( dbMeta );
+    synchronizeAfterMergeMeta.setKeyCondition( new String[] { "=" } );
+    synchronizeAfterMergeMeta.setKeyLookup( new String[] { "ID" } );
+    synchronizeAfterMergeMeta.setKeyStream( new String[] { "personName" } );
+    synchronizeAfterMergeMeta.setKeyStream2( new String[] { null } );
+    synchronizeAfterMergeMeta.setUpdate( new Boolean[] { Boolean.TRUE } );
+    synchronizeAfterMergeMeta.setOperationOrderField( "flag" );
+    synchronizeAfterMergeMeta.setOrderDelete( DELETE_FLAG );
+    synchronizeAfterMergeMeta.setOrderInsert( INSERT_FLAG );
+    synchronizeAfterMergeMeta.setOrderUpdate( UPDATE_FLAG );
+    synchronizeAfterMergeMeta.setPerformLookup( true );
 
-    String synchStepname = "synch step";
-    String synchPid = registry.getPluginId( StepPluginType.class, synchStepname );
-    synchStep = new StepMeta( synchPid, synchStepname, synchMeta );
-    transMeta.addStep( synchStep );
+    synchronizeAfterMergeMeta.setTableName( "PERSON" );
+    synchronizeAfterMergeMeta.settablenameInField( false );
+    synchronizeAfterMergeMeta.settablenameField( null );
+    synchronizeAfterMergeMeta.setUseBatchUpdate( true );
+    synchronizeAfterMergeMeta.setUpdateLookup( new String[] { "ID" } );
+    synchronizeAfterMergeMeta.setUpdateStream( new String[] { "personName" } );
 
-    String dummyStepname1 = "dummy step 1";
-    DummyTransMeta dm1 = new DummyTransMeta();
+    String synchronizeAfterMergePid = pluginRegistry.getPluginId( StepPluginType.class, synchronizeAfterMergeStepname );
+    StepMeta synchronizeAfterMerge = new StepMeta( synchronizeAfterMergePid, synchronizeAfterMergeStepname, synchronizeAfterMergeMeta );
+    transMeta.addStep( synchronizeAfterMerge );
 
-    String dummyPid1 = registry.getPluginId( StepPluginType.class, dm1 );
-    StepMeta dummyStep1 = new StepMeta( dummyPid1, dummyStepname1, dm1 );
-    transMeta.addStep( dummyStep1 );
-    StepErrorMeta sem = new StepErrorMeta( transMeta, synchStep, dummyStep1 );
-    synchStep.setStepErrorMeta( sem );
-    sem.setEnabled( true );
+    String dummyResultStepName = "dummyResultStepName";
+    DummyTransMeta dummyResultTransMeta = new DummyTransMeta();
+    String dummyResultPid = pluginRegistry.getPluginId( StepPluginType.class, dummyResultTransMeta );
+    StepMeta dummyResultStep = new StepMeta( dummyResultPid, dummyResultStepName, dummyResultTransMeta );
+    transMeta.addStep( dummyResultStep );
 
-    TransHopMeta hi = new TransHopMeta( injectorStep, synchStep );
-    transMeta.addTransHop( hi );
+    String dummyErrorStepName = "dummyErrorStepName";
+    DummyTransMeta dummyErrorTransMeta = new DummyTransMeta();
+    String dummyErrorPid = pluginRegistry.getPluginId( StepPluginType.class, dummyErrorTransMeta );
+    StepMeta dummyErrorStep = new StepMeta( dummyErrorPid, dummyErrorStepName, dummyErrorTransMeta );
+    transMeta.addStep( dummyErrorStep );
 
-    TransHopMeta hi1 = new TransHopMeta( synchStep, dummyStep1 );
-    transMeta.addTransHop( hi1 );
+    StepErrorMeta stepErrorMeta = new StepErrorMeta( transMeta, synchronizeAfterMerge, dummyErrorStep );
+    stepErrorMeta.setEnabled( true );
+    synchronizeAfterMerge.setStepErrorMeta( stepErrorMeta );
 
+    TransHopMeta injSynch = new TransHopMeta( injectorStep, synchronizeAfterMerge );
+    transMeta.addTransHop( injSynch );
+
+    TransHopMeta synchDummyResult = new TransHopMeta( synchronizeAfterMerge, dummyResultStep );
+    transMeta.addTransHop( synchDummyResult );
+
+    TransHopMeta synchDummyError = new TransHopMeta( synchronizeAfterMerge, dummyErrorStep );
+    transMeta.addTransHop( synchDummyError );
   }
 
   @Test
-  public void testNotSupport() {
+  public void testProcessRow_RowSizeEqualsCommitSize() throws KettleException {
+    transMeta.setSizeRowset( COMMIT_SIZE );
+    processRow();
+  }
+
+  @Test
+  public void testProcessRow_RowSizeLesserThanCommitSize() throws KettleException {
+    transMeta.setSizeRowset( ROW_SIZE );
+    processRow();
+  }
+
+  private void processRow() throws KettleException {
     Trans trans = new Trans( transMeta );
-    try {
-      trans.prepareExecution( null );
+    trans.prepareExecution( null );
 
-      RowProducer rp = trans.addRowProducer( injectorStep.getName(), 0 );
-      trans.startThreads();
+    RowProducer rp = trans.addRowProducer( injectorStepname, 0 );
+    trans.startThreads();
+    generateData( rp );
+    rp.finished();
 
-      Iterator<RowMetaAndData> it = inputList.iterator();
-      while ( it.hasNext() ) {
-        RowMetaAndData rm = it.next();
-        rp.putRow( rm.getRowMeta(), rm.getData() );
-      }
-      rp.finished();
+    trans.waitUntilFinished();
+    StepInterface si = trans.getStepInterface( synchronizeAfterMergeStepname, 0 );
+    Assert.assertEquals( "Unexpected error occurred",  0, si.getErrors() );
+    Assert.assertEquals( "Step still started", StepExecutionStatus.STATUS_FINISHED, si.getStatus() );
+  }
 
-      trans.waitUntilFinished();
-      StepInterface si = trans.getStepInterface( synchStep.getName(), 0 );
-      if ( si.getErrors() > 0 ) {
-        org.junit.Assert.fail( "Unexpected error occured" );
-      }
-    } catch ( Exception ex ) {
-      ex.printStackTrace();
+  private void generateData( RowProducer rp ) {
+    RowMetaInterface rm = new RowMeta();
+    rm.addValueMeta( new ValueMetaInteger( "ID" ) );
+    rm.addValueMeta( new ValueMetaString( "personName" ) );
+    rm.addValueMeta( new ValueMetaString( "flag" ) );
+    for ( int i = 0; i < ROW_FOR_UPDATE; i++ ) {
+      rp.putRow( rm.clone(), new Object[] { "personNameUpdated" + i, i, UPDATE_FLAG } );
+    }
+    for ( int i = ROW_FOR_UPDATE; i < ROW_FOR_UPDATE + ROW_FOR_DELETE; i++ ) {
+      rp.putRow( rm.clone(), new Object[] { "personName" + i, i, DELETE_FLAG } );
+    }
+    for ( int i = ROW_FOR_UPDATE + ROW_FOR_DELETE; i < ROW_FOR_UPDATE + ROW_FOR_DELETE + ROW_FOR_INSERT; i++ ) {
+      rp.putRow( rm.clone(), new Object[] { "personNameInserted" + i, i, INSERT_FLAG } );
     }
   }
 }

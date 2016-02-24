@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,6 +24,7 @@ package org.pentaho.di.trans.steps.synchronizeaftermerge;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.List;
 
 import org.pentaho.di.core.Const;
@@ -53,6 +54,7 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  * @since 13-10-2008
  */
 public class SynchronizeAfterMerge extends BaseStep implements StepInterface {
+
   private static Class<?> PKG = SynchronizeAfterMergeMeta.class; // for i18n purposes, needed by Translator2!!
 
   private SynchronizeAfterMergeMeta meta;
@@ -475,8 +477,8 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface {
           data.batchBuffer.add( row );
         }
 
-        if ( rowIsSafe ) // A commit was done and the rows are all safe (no error)
-        {
+        // A commit was done and the rows are all safe (no error)
+        if ( rowIsSafe ) {
           for ( int i = 0; i < data.batchBuffer.size(); i++ ) {
             Object[] rowb = data.batchBuffer.get( i );
             putRow( data.outputRowMeta, rowb );
@@ -660,9 +662,9 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface {
     meta = (SynchronizeAfterMergeMeta) smi;
     data = (SynchronizeAfterMergeData) sdi;
 
-    Object[] r = getRow(); // Get row from input rowset & set row busy!
-    if ( r == null ) { // no more input to be expected...
-      setOutputDone();
+    Object[] nextRow = getRow(); // Get row from input rowset & set row busy!
+    if ( nextRow == null ) { // no more input to be expected...
+      finishStep();
       return false;
     }
 
@@ -712,7 +714,7 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface {
 
       // lookup the values!
       if ( log.isDebug() ) {
-        logDebug( BaseMessages.getString( PKG, "SynchronizeAfterMerge.Log.CheckingRow" ) + r.toString() );
+        logDebug( BaseMessages.getString( PKG, "SynchronizeAfterMerge.Log.CheckingRow" ) + Arrays.toString( nextRow ) );
       }
 
       data.keynrs = new int[meta.getKeyStream().length];
@@ -828,9 +830,9 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface {
     } // end if first
 
     try {
-      lookupValues( r ); // add new values to the row in rowset[0].
+      lookupValues( nextRow ); // add new values to the row in rowset[0].
       if ( !data.batchMode ) {
-        putRow( data.outputRowMeta, r ); // copy row to output rowset(s);
+        putRow( data.outputRowMeta, nextRow ); // copy row to output rowset(s);
       }
 
       if ( checkFeedback( getLinesRead() ) ) {
@@ -910,10 +912,7 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface {
     return false;
   }
 
-  public void dispose( StepMetaInterface smi, StepDataInterface sdi ) {
-    meta = (SynchronizeAfterMergeMeta) smi;
-    data = (SynchronizeAfterMergeData) sdi;
-
+  private void finishStep() {
     if ( data.db != null ) {
       try {
         for ( String schemaTable : data.preparedStatements.keySet() ) {
@@ -971,7 +970,6 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface {
 
         data.db.disconnect();
       }
-      super.dispose( smi, sdi );
     }
   }
 }
