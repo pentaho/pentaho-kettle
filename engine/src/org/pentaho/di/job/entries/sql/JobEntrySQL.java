@@ -90,7 +90,7 @@ public class JobEntrySQL extends JobEntryBase implements Cloneable, JobEntryInte
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 200 );
+    StringBuilder retval = new StringBuilder( 200 );
 
     retval.append( super.getXML() );
 
@@ -262,8 +262,8 @@ public class JobEntrySQL extends JobEntryBase implements Cloneable, JobEntryInte
             InputStream IS = KettleVFS.getInputStream( SQLfile );
             try {
               InputStreamReader BIS = new InputStreamReader( new BufferedInputStream( IS, 500 ) );
-              StringBuffer lineStringBuffer = new StringBuffer( 256 );
-              lineStringBuffer.setLength( 0 );
+              StringBuilder lineSB = new StringBuilder( 256 );
+              lineSB.setLength( 0 );
 
               BufferedReader buff = new BufferedReader( BIS );
               String sLine = null;

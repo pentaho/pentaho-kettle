@@ -91,7 +91,7 @@ public class ResourceReference {
   }
 
   public String toXml( ResourceXmlPropertyEmitterInterface injector, int indentLevel ) {
-    StringBuffer buff = new StringBuffer();
+    StringBuilder buff = new StringBuilder();
     addXmlElementWithAttribute( buff, indentLevel, "ActionComponent", "type", resourceReferenceHolder
       .getHolderType() );
     indentLevel++;
@@ -116,7 +116,7 @@ public class ResourceReference {
     return buff.toString();
   }
 
-  public void addXmlElementWithAttribute( StringBuffer buff, int indentLevel, String elementName, String attrName,
+  public void addXmlElementWithAttribute( StringBuilder buff, int indentLevel, String elementName, String attrName,
     String attrValue ) {
     buff
       .append( StringUtil.getIndent( indentLevel ) )
@@ -124,17 +124,17 @@ public class ResourceReference {
     buff.append( attrValue ).append( "'>" ).append( StringUtil.CRLF );
   }
 
-  public void addXmlCloseElement( StringBuffer buff, int indentLevel, String elementName ) {
+  public void addXmlCloseElement( StringBuilder buff, int indentLevel, String elementName ) {
     buff.append( StringUtil.getIndent( indentLevel ) ).append( "</" ).append( elementName ).append( ">" ).append(
       StringUtil.CRLF );
   }
 
-  public void addXmlElement( StringBuffer buff, int indentLevel, String elementName ) {
+  public void addXmlElement( StringBuilder buff, int indentLevel, String elementName ) {
     buff.append( StringUtil.getIndent( indentLevel ) ).append( "<" ).append( elementName ).append( ">" ).append(
       StringUtil.CRLF );
   }
 
-  public void addXmlElement( StringBuffer buff, int indentLevel, String elementName, String elementValue ) {
+  public void addXmlElement( StringBuilder buff, int indentLevel, String elementName, String elementValue ) {
     buff
       .append( StringUtil.getIndent( indentLevel ) )
       .append( "<" ).append( elementName ).append( "><![CDATA[" ).append( elementValue ).append( "]]></" ).append(

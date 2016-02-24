@@ -54,7 +54,7 @@ public class ThinUtil {
       return null;
     }
 
-    StringBuffer sbsql = new StringBuffer( sql );
+    StringBuilder sbsql = new StringBuilder( sql );
 
     for ( int i = sbsql.length() - 1; i >= 0; i-- ) {
       if ( sbsql.charAt( i ) == '\n' || sbsql.charAt( i ) == '\r' ) {

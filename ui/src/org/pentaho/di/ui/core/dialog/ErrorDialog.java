@@ -141,8 +141,8 @@ public class ErrorDialog extends Dialog {
 
     wDesc = new Text( shell, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL );
 
-    final StringBuffer text = new StringBuffer();
-    final StringBuffer details = new StringBuffer();
+    final StringBuilder text = new StringBuilder();
+    final StringBuilder details = new StringBuilder();
 
     if ( exception != null ) {
       if ( exception instanceof KettleException ) {

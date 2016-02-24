@@ -82,7 +82,7 @@ public class PGBulkLoader extends BaseStep implements StepInterface {
 
     String loadAction = environmentSubstitute( meta.getLoadAction() );
 
-    StringBuffer contents = new StringBuffer( 500 );
+    StringBuilder contents = new StringBuilder( 500 );
 
     String tableName =
       dm.getQuotedSchemaTableCombination(
@@ -150,7 +150,7 @@ public class PGBulkLoader extends BaseStep implements StepInterface {
    *           Upon any exception
    */
   public String createCommandLine( PGBulkLoaderMeta meta, boolean password ) throws KettleException {
-    StringBuffer sb = new StringBuffer( 300 );
+    StringBuilder sb = new StringBuilder( 300 );
 
     if ( meta.getPsqlpath() != null ) {
       try {

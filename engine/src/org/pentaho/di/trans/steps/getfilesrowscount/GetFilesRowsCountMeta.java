@@ -353,7 +353,7 @@ public class GetFilesRowsCountMeta extends BaseStepMeta implements StepMetaInter
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 300 );
+    StringBuilder retval = new StringBuilder( 300 );
 
     retval.append( "    " ).append( XMLHandler.addTagValue( "files_count", includeFilesCount ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "files_count_fieldname", filesCountFieldName ) );

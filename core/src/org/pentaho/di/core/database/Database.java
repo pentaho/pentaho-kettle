@@ -1142,7 +1142,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   }
 
   public String getInsertStatement( String schemaName, String tableName, RowMetaInterface fields ) {
-    StringBuffer ins = new StringBuffer( 128 );
+    StringBuilder ins = new StringBuilder( 128 );
 
     String schemaTable = databaseMeta.getQuotedSchemaTableCombination( schemaName, tableName );
     ins.append( "INSERT INTO " ).append( schemaTable ).append( " (" );
@@ -2476,7 +2476,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
     try {
       log.snap( Metrics.METRIC_DATABASE_PREPARE_UPDATE_START, databaseMeta.getName() );
 
-      StringBuffer sql = new StringBuffer( 128 );
+      StringBuilder sql = new StringBuilder( 128 );
 
       String schemaTable = databaseMeta.getQuotedSchemaTableCombination( schemaName, tableName );
 
@@ -3165,7 +3165,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
         RowMetaInterface updateRowMeta = new RowMeta();
         Object[] updateRowData = new Object[ rowMeta.size() ];
         ValueMetaInterface keyValueMeta = rowMeta.getValueMeta( 0 );
-        StringBuffer sqlBuff = new StringBuffer( 250 );
+        StringBuilder sqlBuff = new StringBuilder( 250 );
         sqlBuff.append( "UPDATE " ).append( schemaTable ).append( " SET " );
 
         for ( int i = 1; i < rowMeta.size(); i++ ) // Without ID_JOB or ID_BATCH
@@ -4312,7 +4312,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
 
   public String getSQLOutput( String schemaName, String tableName, RowMetaInterface fields, Object[] r,
                               String dateFormat ) throws KettleDatabaseException {
-    StringBuffer ins = new StringBuffer( 128 );
+    StringBuilder ins = new StringBuilder( 128 );
 
     try {
       String schemaTable = databaseMeta.getQuotedSchemaTableCombination( schemaName, tableName );
@@ -4608,8 +4608,8 @@ public class Database implements VariableSpace, LoggingObjectInterface {
 
       is = KettleVFS.getInputStream( sqlFile );
       bis = new InputStreamReader( new BufferedInputStream( is, 500 ) );
-      StringBuffer lineStringBuffer = new StringBuffer( 256 );
-      lineStringBuffer.setLength( 0 );
+      StringBuilder lineStringBuilder = new StringBuilder( 256 );
+      lineStringBuilder.setLength( 0 );
 
       BufferedReader buff = new BufferedReader( bis );
       String sLine = null;

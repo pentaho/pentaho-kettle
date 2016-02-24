@@ -81,13 +81,13 @@ public class KettleMissingPluginsException extends KettleException {
 
   @Override
   public String getMessage() {
-    StringBuffer message = new StringBuffer( super.getMessage() );
+    StringBuilder message = new StringBuilder( super.getMessage() );
     message.append( getPluginsMessage() );
     return message.toString();
   }
 
   public String getPluginsMessage() {
-    StringBuffer message = new StringBuffer();
+    StringBuilder message = new StringBuilder();
     for ( PluginDetails details : missingPluginDetailsList ) {
       message.append( Const.CR );
       try {

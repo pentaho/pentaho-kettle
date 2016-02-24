@@ -63,7 +63,7 @@ public class JobEntrySuccess extends JobEntryBase implements Cloneable, JobEntry
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer();
+    StringBuilder retval = new StringBuilder();
 
     retval.append( super.getXML() );
 

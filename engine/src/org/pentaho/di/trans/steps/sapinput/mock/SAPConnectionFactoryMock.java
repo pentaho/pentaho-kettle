@@ -40,7 +40,7 @@ public class SAPConnectionFactoryMock implements DatabaseFactoryInterface {
    */
   public String getConnectionTestReport( DatabaseMeta databaseMeta ) throws KettleDatabaseException {
 
-    StringBuffer report = new StringBuffer();
+    StringBuilder report = new StringBuilder();
 
     SAPConnection sc = null;
 

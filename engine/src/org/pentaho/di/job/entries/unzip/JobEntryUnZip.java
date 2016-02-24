@@ -178,7 +178,7 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 50 );
+    StringBuilder retval = new StringBuilder( 550 ); // 450 chars in just spaces and tag names alone
 
     retval.append( super.getXML() );
     retval.append( "      " ).append( XMLHandler.addTagValue( "zipfilename", zipFilename ) );

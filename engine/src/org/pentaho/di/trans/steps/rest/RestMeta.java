@@ -449,7 +449,7 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer();
+    StringBuilder retval = new StringBuilder();
     retval.append( "    " ).append( XMLHandler.addTagValue( "applicationType", applicationType ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "method", method ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "url", url ) );

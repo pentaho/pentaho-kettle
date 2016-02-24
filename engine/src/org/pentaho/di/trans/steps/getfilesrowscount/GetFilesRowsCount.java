@@ -383,8 +383,8 @@ public class GetFilesRowsCount extends BaseStep implements StepInterface {
       BaseStep.closeQuietly( data.fr );
       data.fr = null;
     }
-    if ( data.lineStringBuffer != null ) {
-      data.lineStringBuffer = null;
+    if ( data.lineStringBuilder != null ) {
+      data.lineStringBuilder = null;
     }
 
     super.dispose( smi, sdi );

@@ -106,7 +106,7 @@ public class JobHopMeta implements Cloneable, XMLInterface {
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 200 );
+    StringBuilder retval = new StringBuilder( 200 );
     if ( ( null != from_entry ) && ( null != to_entry ) ) {
       retval.append( "    " ).append( XMLHandler.openTag( XML_TAG ) ).append( Const.CR );
       retval.append( "      " ).append( XMLHandler.addTagValue( "from", from_entry.getName() ) );

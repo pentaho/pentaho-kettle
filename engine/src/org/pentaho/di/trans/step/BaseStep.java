@@ -3139,7 +3139,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
    * @see java.lang.Object#toString()
    */
   public String toString() {
-    StringBuffer string = new StringBuffer();
+    StringBuilder string = new StringBuilder( 50 );
 
     // If the step runs in a mapping (and as such has a "parent transformation", we are going to print the name of the
     // transformation during logging

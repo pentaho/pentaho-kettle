@@ -89,7 +89,7 @@ public class SqlCommentScrubber {
       return null;
     }
 
-    StringBuffer queryWithoutComments = new StringBuffer();
+    StringBuilder queryWithoutComments = new StringBuilder();
     boolean blkComment = false;
     boolean lineComment = false;
     boolean inString = false;

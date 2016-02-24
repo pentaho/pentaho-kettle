@@ -545,7 +545,7 @@ public class LoadFileInputMeta extends BaseStepMeta implements StepMetaInterface
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer();
+    StringBuilder retval = new StringBuilder();
 
     retval.append( "    " + XMLHandler.addTagValue( INCLUDE, includeFilename ) );
     retval.append( "    " + XMLHandler.addTagValue( INCLUDE_FIELD, filenameField ) );

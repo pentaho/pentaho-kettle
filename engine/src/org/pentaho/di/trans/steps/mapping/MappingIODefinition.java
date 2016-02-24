@@ -121,7 +121,7 @@ public class MappingIODefinition implements Cloneable {
   }
 
   public String getXML() {
-    StringBuffer xml = new StringBuffer( 200 );
+    StringBuilder xml = new StringBuilder( 200 );
 
     xml.append( "    " ).append( XMLHandler.openTag( XML_TAG ) );
 

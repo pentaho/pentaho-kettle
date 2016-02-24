@@ -70,7 +70,7 @@ public class JobEntryAbort extends JobEntryBase implements Cloneable, JobEntryIn
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer();
+    StringBuilder retval = new StringBuilder();
 
     retval.append( super.getXML() );
     retval.append( "      " ).append( XMLHandler.addTagValue( "message", messageAbort ) );

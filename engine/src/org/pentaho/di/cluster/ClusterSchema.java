@@ -157,7 +157,7 @@ public class ClusterSchema extends ChangedFlag implements Cloneable, SharedObjec
   }
 
   public String getXML() {
-    StringBuffer xml = new StringBuffer( 500 );
+    StringBuilder xml = new StringBuilder( 500 );
 
     xml.append( "        <" ).append( XML_TAG ).append( ">" ).append( Const.CR );
 

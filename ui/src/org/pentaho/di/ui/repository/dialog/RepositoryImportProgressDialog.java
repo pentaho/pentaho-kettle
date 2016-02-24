@@ -267,7 +267,7 @@ public class RepositoryImportProgressDialog extends Dialog implements ProgressMo
   }
 
   public void addLog( String line ) {
-    StringBuffer rest = new StringBuffer( XMLHandler.date2string( new Date() ) );
+    StringBuilder rest = new StringBuilder( XMLHandler.date2string( new Date() ) );
     rest.append( " : " );
     rest.append( line ).append( Const.CR );
     wLogging.append( rest.toString() );

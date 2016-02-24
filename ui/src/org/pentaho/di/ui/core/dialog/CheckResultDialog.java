@@ -296,7 +296,7 @@ public class CheckResultDialog extends Dialog {
 
   // View message:
   private void view() {
-    StringBuffer message = new StringBuffer();
+    StringBuilder message = new StringBuilder();
     TableItem[] item = wFields.table.getSelection();
 
     // None selected: don't waste users time: select them all!

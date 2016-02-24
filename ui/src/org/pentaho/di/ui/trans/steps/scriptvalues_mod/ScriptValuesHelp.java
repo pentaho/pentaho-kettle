@@ -88,7 +88,7 @@ public class ScriptValuesHelp {
     try {
       InputStream is = ScriptValuesHelp.class.getResourceAsStream( strFileName );
       int c;
-      StringBuffer buffer = new StringBuffer();
+      StringBuilder buffer = new StringBuilder();
       while ( ( c = is.read() ) != -1 ) {
         buffer.append( (char) c );
       }

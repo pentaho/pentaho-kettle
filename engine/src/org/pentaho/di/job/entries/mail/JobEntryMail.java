@@ -173,7 +173,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 300 );
+    StringBuilder retval = new StringBuilder( 600 );
 
     retval.append( super.getXML() );
 
@@ -877,7 +877,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
       }
 
       msg.setSentDate( new Date() );
-      StringBuffer messageText = new StringBuffer();
+      StringBuilder messageText = new StringBuilder();
       String endRow = isUseHTML() ? "<br>" : Const.CR;
       String realComment = environmentSubstitute( comment );
       if ( !Const.isEmpty( realComment ) ) {
@@ -1233,11 +1233,11 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
     return result;
   }
 
-  private void addBacktracking( JobTracker jobTracker, StringBuffer messageText ) {
+  private void addBacktracking( JobTracker jobTracker, StringBuilder messageText ) {
     addBacktracking( jobTracker, messageText, 0 );
   }
 
-  private void addBacktracking( JobTracker jobTracker, StringBuffer messageText, int level ) {
+  private void addBacktracking( JobTracker jobTracker, StringBuilder messageText, int level ) {
     int nr = jobTracker.nrJobTrackers();
 
     messageText.append( Const.rightPad( " ", level * 2 ) );
