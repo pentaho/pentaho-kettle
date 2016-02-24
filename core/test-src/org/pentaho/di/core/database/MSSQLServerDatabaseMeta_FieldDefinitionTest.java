@@ -31,7 +31,6 @@ import org.pentaho.di.core.row.value.ValueMetaString;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
-import static org.pentaho.di.core.row.ValueMetaInterface.*;
 
 public class MSSQLServerDatabaseMeta_FieldDefinitionTest {
   private MSSQLServerDatabaseMeta dbMeta;
@@ -55,7 +54,7 @@ public class MSSQLServerDatabaseMeta_FieldDefinitionTest {
   @Test
   public void numberType_ZeroLength_ZeroPrecision() {
     ValueMetaInterface valueMeta =
-      new MetaInterfaceBuilder( TYPE_NUMBER )
+      new MetaInterfaceBuilder( ValueMetaInterface.TYPE_NUMBER )
         .length( 0 )
         .precision( 0 )
         .build();
@@ -66,7 +65,7 @@ public class MSSQLServerDatabaseMeta_FieldDefinitionTest {
   @Test
   public void numberType_LessThanNineLength_ZeroPrecision() {
     ValueMetaInterface valueMeta =
-      new MetaInterfaceBuilder( TYPE_NUMBER )
+      new MetaInterfaceBuilder( ValueMetaInterface.TYPE_NUMBER )
         .length( 5 )
         .precision( 0 )
         .build();
@@ -78,7 +77,7 @@ public class MSSQLServerDatabaseMeta_FieldDefinitionTest {
   @Test
   public void numberType_MoreThanNineLessThanEighteenLength_ZeroPrecision() {
     ValueMetaInterface valueMeta =
-      new MetaInterfaceBuilder( TYPE_NUMBER )
+      new MetaInterfaceBuilder( ValueMetaInterface.TYPE_NUMBER )
         .length( 17 )
         .precision( 0 )
         .build();
@@ -89,7 +88,7 @@ public class MSSQLServerDatabaseMeta_FieldDefinitionTest {
   @Test
   public void numberType_MoreThanEighteenLength_ZeroPrecision() {
     ValueMetaInterface valueMeta =
-      new MetaInterfaceBuilder( TYPE_NUMBER )
+      new MetaInterfaceBuilder( ValueMetaInterface.TYPE_NUMBER )
         .length( 19 )
         .precision( 0 )
         .build();
@@ -103,7 +102,7 @@ public class MSSQLServerDatabaseMeta_FieldDefinitionTest {
   @Test
   public void numberType_NonZeroLength_NonZeroPrecision() {
     ValueMetaInterface valueMeta =
-      new MetaInterfaceBuilder( TYPE_NUMBER )
+      new MetaInterfaceBuilder( ValueMetaInterface.TYPE_NUMBER )
         .length( 5 )
         .precision( 5 )
         .build();
@@ -115,7 +114,7 @@ public class MSSQLServerDatabaseMeta_FieldDefinitionTest {
 
   @Test
   public void numberType_ZeroLength_NonZeroPrecision() {
-    ValueMetaInterface valueMeta = new MetaInterfaceBuilder( TYPE_NUMBER )
+    ValueMetaInterface valueMeta = new MetaInterfaceBuilder( ValueMetaInterface.TYPE_NUMBER )
       .length( 0 )
       .precision( 5 )
       .build();
@@ -129,7 +128,7 @@ public class MSSQLServerDatabaseMeta_FieldDefinitionTest {
 
   @Test
   public void stringType_ZeroLength() {
-    ValueMetaInterface valueMeta = new MetaInterfaceBuilder( TYPE_STRING )
+    ValueMetaInterface valueMeta = new MetaInterfaceBuilder( ValueMetaInterface.TYPE_STRING )
       .length( 0 )
       .build();
 
@@ -142,7 +141,7 @@ public class MSSQLServerDatabaseMeta_FieldDefinitionTest {
 
   @Test
   public void stringType_NonZeroLength() {
-    ValueMetaInterface valueMeta = new MetaInterfaceBuilder( TYPE_STRING )
+    ValueMetaInterface valueMeta = new MetaInterfaceBuilder( ValueMetaInterface.TYPE_STRING )
       .length( 50 )
       .build();
 
@@ -154,7 +153,7 @@ public class MSSQLServerDatabaseMeta_FieldDefinitionTest {
 
   @Test
   public void stringType_TenThousandLength() {
-    ValueMetaInterface valueMeta = new MetaInterfaceBuilder( TYPE_STRING )
+    ValueMetaInterface valueMeta = new MetaInterfaceBuilder( ValueMetaInterface.TYPE_STRING )
       .length( 10_000 )
       .build();
 
@@ -171,11 +170,11 @@ public class MSSQLServerDatabaseMeta_FieldDefinitionTest {
     }
 
     public MetaInterfaceBuilder( Integer type, String name ) {
-      switch( type ) {
-        case TYPE_NUMBER:
+      switch ( type ) {
+        case ValueMetaInterface.TYPE_NUMBER:
           meta = new ValueMetaNumber( name );
           break;
-        case TYPE_STRING:
+        case ValueMetaInterface.TYPE_STRING:
           meta = new ValueMetaString( name );
           break;
         default:
