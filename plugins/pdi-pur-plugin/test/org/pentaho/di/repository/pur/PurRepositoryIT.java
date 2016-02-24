@@ -1039,7 +1039,9 @@ public class PurRepositoryIT extends RepositoryTestBase implements ApplicationCo
     repository.createRepositoryDirectory( tree.findDirectory( "home" ), "/admin1" );
     repository.createRepositoryDirectory( tree, "/home/admin2" );
     repository.createRepositoryDirectory( tree, "/home/admin2/new1" );
-    repository.createRepositoryDirectory( tree, "/home/admin2/new1" );
+    RepositoryDirectoryInterface repositoryDirectory =
+        repository.createRepositoryDirectory( tree, "/home/admin2/new1" );
+    repository.getJobAndTransformationObjects( repositoryDirectory.getObjectId(), false );
 
     System.setProperty( PurRepository.LAZY_REPOSITORY, "true" );
     RepositoryDirectoryInterface treeLazy = repository.loadRepositoryDirectoryTree();
@@ -1047,7 +1049,9 @@ public class PurRepositoryIT extends RepositoryTestBase implements ApplicationCo
     repository.createRepositoryDirectory( treeLazy.findDirectory( "home" ), "/admin1L" );
     repository.createRepositoryDirectory( treeLazy, "/home/admin2L" );
     repository.createRepositoryDirectory( treeLazy, "/home/admin2L/new1" );
-    repository.createRepositoryDirectory( treeLazy, "/home/admin2L/new1" );
+    repositoryDirectory = repository.createRepositoryDirectory( treeLazy, "/home/admin2L/new1" );
+
+    repository.getJobAndTransformationObjects( repositoryDirectory.getObjectId(), false );
   }
 
   protected static class LogListener implements KettleLoggingEventListener {
