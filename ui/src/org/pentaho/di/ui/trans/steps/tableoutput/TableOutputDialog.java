@@ -1202,8 +1202,8 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
 
     // If people specify the fields we don't want them to use the "store name
     // in table" button.
-    wlNameInTable.setEnabled( !specifyFields );
-    wNameInTable.setEnabled( !specifyFields );
+    wlNameInTable.setEnabled( isTableNameInField && !specifyFields );
+    wNameInTable.setEnabled( isTableNameInField && !specifyFields );
 
     DatabaseMeta databaseMeta = transMeta.findDatabase( wConnection.getText() );
     if ( databaseMeta != null ) {
