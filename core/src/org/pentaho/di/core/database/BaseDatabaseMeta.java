@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -52,7 +52,7 @@ import org.pentaho.di.repository.ObjectId;
  * @author Matt
  * @since 11-mrt-2005
  */
-public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface {
+public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterfaceExtended {
   /**
    * The port number of the database as string: allows for parameterization.
    */
@@ -2251,5 +2251,18 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface {
   @Override
   public String getCreateTableStatement() {
     return "CREATE TABLE ";
+  }
+
+  /**
+   * Forms drop table statement.
+   * This standard construct syntax is not legal for certain RDBMSs,
+   * and should be overridden according to their specifics.
+   *
+   * @param tableName Name of the table to drop
+   * @return Standard drop table statement
+   */
+  @Override
+  public String getDropTableIfExistsStatement( String tableName ) {
+    return "DROP TABLE IF EXISTS " + tableName;
   }
 }
