@@ -353,7 +353,7 @@ public class PurRepository extends AbstractRepository implements Repository, Rep
       parentDirectory.setChildren( refreshedParentDir.getChildren() );
       String[] path = Const.splitPath( directoryPath, RepositoryDirectory.DIRECTORY_SEPARATOR );
 
-      RepositoryDirectoryInterface follow = refreshedParentDir;
+      RepositoryDirectoryInterface follow = parentDirectory;
 
       for ( int level = 0; level < path.length; level++ ) {
         RepositoryDirectoryInterface child = follow.findChild( path[level] );

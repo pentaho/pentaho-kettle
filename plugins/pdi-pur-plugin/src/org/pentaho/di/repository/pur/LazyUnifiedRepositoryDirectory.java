@@ -259,9 +259,11 @@ public class LazyUnifiedRepositoryDirectory extends RepositoryDirectory {
     if ( subdirectories == null ) {
       subdirectories = new ArrayList<>();
     }
-    synchronized ( subdirectories ) {
-      subdirectories.clear();
-      subdirectories.addAll( list );
+    if ( !subdirectories.equals( list ) ) {
+      synchronized ( subdirectories ) {
+        subdirectories.clear();
+        subdirectories.addAll( list );
+      }
     }
   }
 
