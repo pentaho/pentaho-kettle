@@ -481,9 +481,8 @@ public class MetaInject extends BaseStep implements StepInterface {
         data.transMeta.copyVariablesFrom( this );
         data.transMeta.copyParametersFrom( this.getTransMeta() );
 
-        if ( !checkSoureStepsAvailability() || !checkTargetStepsAvailability() ) {
-          return false;
-        }
+        checkSoureStepsAvailability();
+        checkTargetStepsAvailability();
         // Get a mapping between the step name and the injection...
         //
         // Get new injection info
@@ -522,7 +521,7 @@ public class MetaInject extends BaseStep implements StepInterface {
     return false;
   }
 
-  private boolean checkTargetStepsAvailability() {
+  private void checkTargetStepsAvailability() {
     Set<String> existedStepNames = convertToUpperCaseSet( data.transMeta.getStepNames() );
     Set<String> usedStepNames = getUsedStepsForReferencendTransformation();
     Map<TargetStepAttribute, SourceStepField> targetMap = meta.getTargetSourceMapping();
@@ -540,9 +539,7 @@ public class MetaInject extends BaseStep implements StepInterface {
         }
       }
     }
-    // can return false for fail transformation, but it's disabled by BACKLOG-6753
-    // return alreadyMarked.isEmpty();
-    return true;
+    // alreadyMarked contains wrong steps. Spoon can report error if it will not fail transformation [BACKLOG-6753]
   }
 
   private Set<String> getUsedStepsForReferencendTransformation() {
@@ -553,7 +550,7 @@ public class MetaInject extends BaseStep implements StepInterface {
     return usedStepNames;
   }
 
-  private boolean checkSoureStepsAvailability() {
+  private void checkSoureStepsAvailability() {
     String[] stepNamesArray = getTransMeta().getPrevStepNames( getStepMeta() );
     Set<String> existedStepNames = convertToUpperCaseSet( stepNamesArray );
     Map<TargetStepAttribute, SourceStepField> targetMap = meta.getTargetSourceMapping();
@@ -566,9 +563,7 @@ public class MetaInject extends BaseStep implements StepInterface {
             .getStepname(), getTransMeta().getName() ) );
       }
     }
-    // can return false for fail transformation, but it's disabled by BACKLOG-6753
-    // return alreadyMarked.isEmpty();
-    return true;
+    // alreadyMarked contains wrong steps. Spoon can report error if it will not fail transformation [BACKLOG-6753]
   }
 
   private Set<String> convertToUpperCaseSet( String[] array ) {
