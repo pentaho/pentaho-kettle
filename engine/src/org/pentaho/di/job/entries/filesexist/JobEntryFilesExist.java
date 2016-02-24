@@ -76,7 +76,7 @@ public class JobEntryFilesExist extends JobEntryBase implements Cloneable, JobEn
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer();
+    StringBuilder retval = new StringBuilder( 30 );
 
     retval.append( super.getXML() );
     retval.append( "      " ).append( XMLHandler.addTagValue( "filename", filename ) );
@@ -182,8 +182,7 @@ public class JobEntryFilesExist extends JobEntryBase implements Cloneable, JobEn
           String realFilefoldername = environmentSubstitute( arguments[i] );
           file = KettleVFS.getFileObject( realFilefoldername, this );
 
-          if ( file.exists() && file.isReadable() ) // TODO: is it needed to check file for readability?
-          {
+          if ( file.exists() && file.isReadable() ) { // TODO: is it needed to check file for readability?
             if ( log.isDetailed() ) {
               logDetailed( BaseMessages.getString( PKG, "JobEntryFilesExist.File_Exists", realFilefoldername ) );
             }

@@ -32,7 +32,6 @@ import java.util.List;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.Database;
-import org.pentaho.di.core.database.DatabaseInterface;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.database.MySQLDatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
@@ -929,9 +928,7 @@ public class DimensionLookup extends BaseStep implements StepInterface {
     Long versionNr, Date dateFrom, Date dateTo ) throws KettleException {
     DatabaseMeta databaseMeta = meta.getDatabaseMeta();
 
-    if ( data.prepStatementInsert == null && data.prepStatementUpdate == null ) // first time: construct prepared
-                                                                                // statement
-    {
+    if ( data.prepStatementInsert == null && data.prepStatementUpdate == null ) { // first time: construct prepared statement
       RowMetaInterface insertRowMeta = new RowMeta();
 
       /*
@@ -1194,8 +1191,7 @@ public class DimensionLookup extends BaseStep implements StepInterface {
       }
     }
 
-    if ( !newEntry ) // we have to update the previous version in the dimension!
-    {
+    if ( !newEntry ) { // we have to update the previous version in the dimension!
       /*
        * UPDATE d_customer SET dateto = val_datfrom , last_updated = <now> , last_version = false WHERE keylookup[] =
        * keynrs[] AND versionfield = val_version - 1 ;
@@ -1373,8 +1369,7 @@ public class DimensionLookup extends BaseStep implements StepInterface {
   // This updates all versions of a dimension entry.
   //
   public void dimPunchThrough( RowMetaInterface rowMeta, Object[] row ) throws KettleDatabaseException {
-    if ( data.prepStatementPunchThrough == null ) // first time: construct prepared statement
-    {
+    if ( data.prepStatementPunchThrough == null ) { // first time: construct prepared statement
       DatabaseMeta databaseMeta = meta.getDatabaseMeta();
       data.punchThroughRowMeta = new RowMeta();
 
@@ -1632,8 +1627,7 @@ public class DimensionLookup extends BaseStep implements StepInterface {
       long time = dateValue.getTime();
       long from = ( (Date) row[row.length - 2] ).getTime();
       long to = ( (Date) row[row.length - 1] ).getTime();
-      if ( time >= from && time < to ) // sanity check to see if we have the right version
-      {
+      if ( time >= from && time < to ) { // sanity check to see if we have the right version
         if ( isRowLevel() ) {
           logRowlevel( "Cache hit: key="
             + data.cacheKeyRowMeta.getString( keyValues ) + "  values=" + data.cacheValueRowMeta.getString( row ) );

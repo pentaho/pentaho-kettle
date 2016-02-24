@@ -184,8 +184,7 @@ public class DB2DatabaseMeta extends BaseDatabaseMeta implements DatabaseInterfa
         break;
       case ValueMetaInterface.TYPE_NUMBER:
       case ValueMetaInterface.TYPE_BIGNUMBER:
-        if ( fieldname.equalsIgnoreCase( tk ) && use_autoinc ) // Technical key: auto increment field!
-        {
+        if ( fieldname.equalsIgnoreCase( tk ) && use_autoinc ) { // Technical key: auto increment field!
           retval += "BIGINT NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 0, INCREMENT BY 1, NOCACHE)";
         } else {
           if ( length > 0 ) {
@@ -200,8 +199,7 @@ public class DB2DatabaseMeta extends BaseDatabaseMeta implements DatabaseInterfa
         }
         break;
       case ValueMetaInterface.TYPE_INTEGER:
-        if ( fieldname.equalsIgnoreCase( tk ) && use_autoinc ) // Technical key: auto increment field!
-        {
+        if ( fieldname.equalsIgnoreCase( tk ) && use_autoinc ) { // Technical key: auto increment field!
           retval += "INTEGER NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 0, INCREMENT BY 1, NOCACHE)";
         } else {
           retval += "INTEGER";

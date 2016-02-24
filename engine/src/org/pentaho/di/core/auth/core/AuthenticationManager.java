@@ -74,7 +74,7 @@ public class AuthenticationManager {
   }
 
   public <ReturnType, CreateArgType, ConsumedType> List<AuthenticationPerformer<ReturnType, CreateArgType>>
-  getSupportedAuthenticationPerformers( Class<ReturnType> returnType, Class<CreateArgType> createArgType ) {
+    getSupportedAuthenticationPerformers( Class<ReturnType> returnType, Class<CreateArgType> createArgType ) {
     Map<Class<?>, AuthenticationConsumerFactory<?, ?, ?>> createTypeMap =
         getRelevantConsumerFactoryMap( returnType, createArgType );
     synchronized ( createTypeMap ) {
@@ -114,7 +114,7 @@ public class AuthenticationManager {
   }
 
   public <ReturnType, CreateArgType, ConsumedType> AuthenticationPerformer<ReturnType, CreateArgType>
-  getAuthenticationPerformer( Class<ReturnType> returnType, Class<CreateArgType> createArgType, String providerId ) {
+    getAuthenticationPerformer( Class<ReturnType> returnType, Class<CreateArgType> createArgType, String providerId ) {
     List<AuthenticationPerformer<ReturnType, CreateArgType>> performers =
         getSupportedAuthenticationPerformers( returnType, createArgType );
     for ( AuthenticationPerformer<ReturnType, CreateArgType> candidatePerformer : performers ) {
@@ -126,7 +126,7 @@ public class AuthenticationManager {
   }
 
   private <ReturnType, CreateArgType> Map<Class<?>, AuthenticationConsumerFactory<?, ?, ?>>
-  getRelevantConsumerFactoryMap( Class<ReturnType> returnType, Class<CreateArgType> createArgType ) {
+    getRelevantConsumerFactoryMap( Class<ReturnType> returnType, Class<CreateArgType> createArgType ) {
     synchronized ( factoryMap ) {
       Map<Class<?>, Map<Class<?>, AuthenticationConsumerFactory<?, ?, ?>>> returnTypeMap = factoryMap.get( returnType );
       if ( returnTypeMap == null ) {

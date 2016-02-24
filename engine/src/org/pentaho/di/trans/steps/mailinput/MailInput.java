@@ -86,8 +86,7 @@ public class MailInput extends BaseStep implements StepInterface {
     }
     putRow( data.outputRowMeta, outputRowData ); // copy row to output rowset(s);
 
-    if ( data.rowlimit > 0 && data.rownr >= data.rowlimit ) // limit has been reached: stop now.
-    {
+    if ( data.rowlimit > 0 && data.rownr >= data.rowlimit ) { // limit has been reached: stop now.
       setOutputDone();
       return false;
     }

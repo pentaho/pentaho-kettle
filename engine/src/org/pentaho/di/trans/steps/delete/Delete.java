@@ -236,7 +236,7 @@ public class Delete extends BaseStep implements StepInterface {
           logDetailed( BaseMessages.getString( PKG, "Delete.Log.ConnectedToDB" ) );
         }
 
-        data.db.setCommit(meta.getCommitSize( this ) );
+        data.db.setCommit( meta.getCommitSize( this ) );
 
         return true;
       } catch ( KettleException ke ) {

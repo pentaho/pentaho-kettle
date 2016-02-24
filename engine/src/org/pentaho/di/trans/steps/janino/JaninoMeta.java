@@ -88,7 +88,7 @@ public class JaninoMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer();
+    StringBuilder retval = new StringBuilder();
 
     if ( formula != null ) {
       for ( int i = 0; i < formula.length; i++ ) {

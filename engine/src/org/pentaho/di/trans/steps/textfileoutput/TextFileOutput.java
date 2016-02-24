@@ -123,9 +123,7 @@ public class TextFileOutput extends BaseStep implements StepInterface {
         initBinaryDataFields();
       }
 
-      if ( !meta.isFileAppended() && ( meta.isHeaderEnabled() || meta.isFooterEnabled() ) ) // See if we have to write a
-                                                                                            // header-line)
-      {
+      if ( !meta.isFileAppended() && ( meta.isHeaderEnabled() || meta.isFooterEnabled() ) ) { // See if we have to write a header-line)
         if ( !meta.isFileNameInField() && meta.isHeaderEnabled() && data.outputRowMeta != null ) {
           writeHeader();
         }
@@ -758,7 +756,7 @@ public class TextFileOutput extends BaseStep implements StepInterface {
           data.oneFileOpened = true;
         } catch ( Exception e ) {
           logError( "Couldn't open file "
-              + KettleVFS.getFriendlyURI(getParentVariableSpace().environmentSubstitute( meta.getFileName() ) )
+              + KettleVFS.getFriendlyURI( getParentVariableSpace().environmentSubstitute( meta.getFileName() ) )
               + "." + getParentVariableSpace().environmentSubstitute( meta.getExtension() ), e );
           setErrors( 1L );
           stopAll();

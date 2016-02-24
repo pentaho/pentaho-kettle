@@ -42,7 +42,7 @@ public class JavaScriptUtils {
 
   public static Object convertFromJs( Object value, int type, String fieldName ) throws KettleValueException {
     String classType = value.getClass().getName();
-    switch( type ) {
+    switch ( type ) {
       case ValueMetaInterface.TYPE_NUMBER:
         return jsToNumber( value, classType );
 

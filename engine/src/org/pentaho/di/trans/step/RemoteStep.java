@@ -172,7 +172,7 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
   }
 
   public String getXML() {
-    StringBuffer xml = new StringBuffer();
+    StringBuilder xml = new StringBuilder( 200 );
     xml.append( XMLHandler.openTag( XML_TAG ) );
 
     xml.append( XMLHandler.addTagValue( "hostname", hostname, false ) );

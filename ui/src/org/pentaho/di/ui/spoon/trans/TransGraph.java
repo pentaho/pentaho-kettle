@@ -2722,7 +2722,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     final TransHopMeta hi = findHop( x, y );
     // check the area owner list...
     //
-    StringBuffer tip = new StringBuffer();
+    StringBuilder tip = new StringBuilder();
     AreaOwner areaOwner = getVisibleAreaOwner( x, y );
     if ( areaOwner != null ) {
       switch ( areaOwner.getAreaType() ) {

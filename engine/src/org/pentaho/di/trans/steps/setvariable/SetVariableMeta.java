@@ -245,7 +245,7 @@ public class SetVariableMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 150 );
+    StringBuilder retval = new StringBuilder( 150 );
 
     retval.append( "    <fields>" ).append( Const.CR );
 

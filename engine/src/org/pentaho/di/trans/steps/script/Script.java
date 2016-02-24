@@ -359,7 +359,7 @@ public class Script extends BaseStep implements StepInterface {
 
         putRow( data.outputRowMeta, outputRow );
       } else {
-        switch( iTranStat ) {
+        switch ( iTranStat ) {
           case SKIP_TRANSFORMATION:
             // eat this row.
             bRC = true;
@@ -489,7 +489,7 @@ public class Script extends BaseStep implements StepInterface {
       // Get the actual Scripts from our MetaData
       jsScripts = meta.getJSScripts();
       for ( int j = 0; j < jsScripts.length; j++ ) {
-        switch( jsScripts[ j ].getScriptType() ) {
+        switch ( jsScripts[ j ].getScriptType() ) {
           case ScriptValuesScript.TRANSFORM_SCRIPT:
             strTransformScript = jsScripts[ j ].getScript();
             break;

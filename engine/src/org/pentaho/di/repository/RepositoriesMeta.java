@@ -300,7 +300,7 @@ public class RepositoriesMeta {
     if ( log.isDebug() ) {
       log.logDebug( BaseMessages.getString( PKG, "RepositoryMeta.Log.RepositoryNumber", nrreps ) );
     }
-    StringBuffer unableToReadIds = new StringBuffer();
+    StringBuilder unableToReadIds = new StringBuilder();
     KettleException kettleException = null;
     for ( int i = 0; i < nrreps; i++ ) {
       Node repnode = XMLHandler.getSubNodeByNr( repsnode, RepositoryMeta.XML_TAG, i );

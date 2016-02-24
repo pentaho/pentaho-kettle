@@ -39,7 +39,7 @@ import org.pentaho.metastore.stores.memory.MemoryMetaStoreElementOwner;
 
 import java.io.IOException;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import com.google.common.base.Preconditions;
 
 /**
  * @author nhudak
@@ -77,17 +77,17 @@ public class JsonElement extends MemoryMetaStoreElement implements AttributesInt
   public static String groupName( IMetaStoreElementType elementType ) {
     ObjectNode objectNode = JsonNodeFactory.instance.objectNode();
     objectNode.put( "_", "Embedded MetaStore Elements" );
-    objectNode.put( "namespace", checkNotNull( elementType.getNamespace() ) );
-    objectNode.put( "type", checkNotNull( elementType.getId() ) );
+    objectNode.put( "namespace", Preconditions.checkNotNull( elementType.getNamespace() ) );
+    objectNode.put( "type", Preconditions.checkNotNull( elementType.getId() ) );
     return objectNode.toString();
   }
 
   @Override public String groupName() {
-    return groupName( checkNotNull( getElementType() ) );
+    return groupName( Preconditions.checkNotNull( getElementType() ) );
   }
 
   @Override public String key() {
-    return checkNotNull( getId() );
+    return Preconditions.checkNotNull( getId() );
   }
 
   @Override public String jsonValue() throws IOException {

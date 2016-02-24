@@ -50,7 +50,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import static org.pentaho.metastore.util.MetaStoreUtil.executeLockedOperation;
+import org.pentaho.metastore.util.MetaStoreUtil;
 
 /**
  * @author nhudak
@@ -70,7 +70,7 @@ public class EmbeddedMetaStore extends BaseMetaStore implements ReadWriteLock {
 
   @Override public void createNamespace( final String namespace ) throws MetaStoreException {
     // Optional, namespace will be automatically created if not already existing
-    executeLockedOperation( writeLock(), new Callable<Void>() {
+    MetaStoreUtil.executeLockedOperation( writeLock(), new Callable<Void>() {
       @Override public Void call() throws Exception {
         String groupName = JsonElementType.groupName( namespace );
         if ( !attributesInterface.getAttributesMap().containsKey( groupName ) ) {
@@ -82,7 +82,7 @@ public class EmbeddedMetaStore extends BaseMetaStore implements ReadWriteLock {
   }
 
   @Override public List<String> getNamespaces() throws MetaStoreException {
-    return executeLockedOperation( readLock(), new Callable<List<String>>() {
+    return MetaStoreUtil.executeLockedOperation( readLock(), new Callable<List<String>>() {
       @Override public List<String> call() throws Exception {
         return FluentIterable.from( attributesInterface.getAttributesMap().keySet() )
           .filter( new Predicate<String>() {
@@ -101,7 +101,7 @@ public class EmbeddedMetaStore extends BaseMetaStore implements ReadWriteLock {
   }
 
   @Override public boolean namespaceExists( final String namespace ) throws MetaStoreException {
-    return executeLockedOperation( readLock(), new Callable<Boolean>() {
+    return MetaStoreUtil.executeLockedOperation( readLock(), new Callable<Boolean>() {
       @Override public Boolean call() throws Exception {
         return attributesInterface.getAttributesMap().containsKey( JsonElementType.groupName( namespace ) );
       }
@@ -109,7 +109,7 @@ public class EmbeddedMetaStore extends BaseMetaStore implements ReadWriteLock {
   }
 
   @Override public synchronized void deleteNamespace( final String namespace ) throws MetaStoreException {
-    executeLockedOperation( writeLock(), new Callable<Void>() {
+    MetaStoreUtil.executeLockedOperation( writeLock(), new Callable<Void>() {
       @Override public Void call() throws Exception {
         List<String> dependencies = getElementTypeIds( namespace );
         if ( !dependencies.isEmpty() ) {
@@ -147,7 +147,7 @@ public class EmbeddedMetaStore extends BaseMetaStore implements ReadWriteLock {
 
   @Override public JsonElementType getElementType( final String namespace, final String elementTypeId )
     throws MetaStoreException {
-    return executeLockedOperation( readLock(), new Callable<JsonElementType>() {
+    return MetaStoreUtil.executeLockedOperation( readLock(), new Callable<JsonElementType>() {
       @Override public JsonElementType call() throws Exception {
         JsonElementType type = newElementType( namespace );
         type.setId( elementTypeId );
@@ -158,7 +158,7 @@ public class EmbeddedMetaStore extends BaseMetaStore implements ReadWriteLock {
   }
 
   @Override public List<String> getElementTypeIds( final String namespace ) throws MetaStoreException {
-    return executeLockedOperation( readLock(), new Callable<List<String>>() {
+    return MetaStoreUtil.executeLockedOperation( readLock(), new Callable<List<String>>() {
       @Override public List<String> call() throws Exception {
         Map<String, String> attributes = attributesInterface.getAttributes( JsonElementType.groupName( namespace ) );
         return attributes == null ? ImmutableList.<String>of() : ImmutableList.copyOf( attributes.keySet() );
@@ -168,7 +168,7 @@ public class EmbeddedMetaStore extends BaseMetaStore implements ReadWriteLock {
 
   @Override public List<IMetaStoreElementType> getElementTypes( final String namespace )
     throws MetaStoreException {
-    return executeLockedOperation( readLock(), new Callable<List<IMetaStoreElementType>>() {
+    return MetaStoreUtil.executeLockedOperation( readLock(), new Callable<List<IMetaStoreElementType>>() {
       @Override public List<IMetaStoreElementType> call() throws Exception {
         List<String> ids = getElementTypeIds( namespace );
         List<IMetaStoreElementType> types = Lists.newArrayListWithExpectedSize( ids.size() );
@@ -182,7 +182,7 @@ public class EmbeddedMetaStore extends BaseMetaStore implements ReadWriteLock {
 
   @Override public IMetaStoreElementType getElementTypeByName( final String namespace, final String elementTypeName )
     throws MetaStoreException {
-    return executeLockedOperation( readLock(), new Callable<IMetaStoreElementType>() {
+    return MetaStoreUtil.executeLockedOperation( readLock(), new Callable<IMetaStoreElementType>() {
       @Override public IMetaStoreElementType call() throws Exception {
         List<IMetaStoreElementType> elementTypes = getElementTypes( namespace );
         for ( IMetaStoreElementType elementType : elementTypes ) {
@@ -204,7 +204,7 @@ public class EmbeddedMetaStore extends BaseMetaStore implements ReadWriteLock {
 
   @Override public void deleteElementType( final String namespace,
                                            final IMetaStoreElementType elementType ) throws MetaStoreException {
-    executeLockedOperation( writeLock(), new Callable<Void>() {
+    MetaStoreUtil.executeLockedOperation( writeLock(), new Callable<Void>() {
         @Override public Void call() throws Exception {
           List<String> dependencies = getElementIds( namespace, elementType );
           if ( dependencies.isEmpty() ) {
@@ -251,7 +251,7 @@ public class EmbeddedMetaStore extends BaseMetaStore implements ReadWriteLock {
   @Override
   public List<IMetaStoreElement> getElements( final String namespace,
                                               final IMetaStoreElementType elementType ) throws MetaStoreException {
-    return executeLockedOperation( readLock(), new Callable<List<IMetaStoreElement>>() {
+    return MetaStoreUtil.executeLockedOperation( readLock(), new Callable<List<IMetaStoreElement>>() {
       @Override public List<IMetaStoreElement> call() throws Exception {
         List<String> ids = getElementIds( namespace, elementType );
         List<IMetaStoreElement> types = Lists.newArrayListWithExpectedSize( ids.size() );
@@ -265,7 +265,7 @@ public class EmbeddedMetaStore extends BaseMetaStore implements ReadWriteLock {
 
   @Override public List<String> getElementIds( final String namespace,
                                                final IMetaStoreElementType elementType ) throws MetaStoreException {
-    return executeLockedOperation( readLock(), new Callable<List<String>>() {
+    return MetaStoreUtil.executeLockedOperation( readLock(), new Callable<List<String>>() {
         @Override public List<String> call() throws Exception {
           elementType.setNamespace( namespace );
           Map<String, String> attributes = attributesInterface.getAttributes( JsonElement.groupName( elementType ) );
@@ -277,7 +277,7 @@ public class EmbeddedMetaStore extends BaseMetaStore implements ReadWriteLock {
 
   @Override public JsonElement getElement( final String namespace, final IMetaStoreElementType elementType,
                                            final String elementId ) throws MetaStoreException {
-    return executeLockedOperation( readLock(), new Callable<JsonElement>() {
+    return MetaStoreUtil.executeLockedOperation( readLock(), new Callable<JsonElement>() {
       @Override public JsonElement call() throws Exception {
         JsonElement element = newElement();
         elementType.setNamespace( namespace );
@@ -312,7 +312,7 @@ public class EmbeddedMetaStore extends BaseMetaStore implements ReadWriteLock {
   @Override
   public void deleteElement( final String namespace, final IMetaStoreElementType elementType, final String elementId )
     throws MetaStoreException {
-    executeLockedOperation( writeLock(), new Callable<Boolean>() {
+    MetaStoreUtil.executeLockedOperation( writeLock(), new Callable<Boolean>() {
       @Override public Boolean call() throws Exception {
         elementType.setNamespace( namespace );
         Map<String, String> attributes = attributesInterface.getAttributes( JsonElement.groupName( elementType ) );
@@ -323,7 +323,7 @@ public class EmbeddedMetaStore extends BaseMetaStore implements ReadWriteLock {
   }
 
   private boolean create( final AttributesInterfaceEntry entry ) throws MetaStoreException {
-    return executeLockedOperation( writeLock(), new Callable<Boolean>() {
+    return MetaStoreUtil.executeLockedOperation( writeLock(), new Callable<Boolean>() {
       @Override public Boolean call() throws Exception {
         String groupName = entry.groupName();
         String key = entry.key();
@@ -340,7 +340,7 @@ public class EmbeddedMetaStore extends BaseMetaStore implements ReadWriteLock {
   }
 
   private void update( final AttributesInterfaceEntry entry ) throws MetaStoreException {
-    executeLockedOperation( writeLock(), new Callable<Void>() {
+    MetaStoreUtil.executeLockedOperation( writeLock(), new Callable<Void>() {
       @Override public Void call() throws Exception {
         attributesInterface.setAttribute( entry.groupName(), entry.key(), entry.jsonValue() );
         return null;

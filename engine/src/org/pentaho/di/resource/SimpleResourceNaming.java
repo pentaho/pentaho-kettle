@@ -236,7 +236,7 @@ public class SimpleResourceNaming implements ResourceNamingInterface {
       length -= extension.length();
     }
 
-    StringBuffer buff = new StringBuffer( length );
+    StringBuilder buff = new StringBuilder( length );
     char ch;
     for ( int i = 0; i < length; i++ ) {
       ch = name.charAt( i );

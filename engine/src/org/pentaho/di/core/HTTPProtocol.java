@@ -85,7 +85,7 @@ public class HTTPProtocol {
       httpClient.getState().setCredentials( AuthScope.ANY, defaultcreds );
     }
     int statusCode = httpClient.executeMethod( getMethod );
-    StringBuffer bodyBuffer = new StringBuffer();
+    StringBuilder bodyBuffer = new StringBuilder();
 
     if ( statusCode != -1 ) {
       if ( statusCode != 401 ) {

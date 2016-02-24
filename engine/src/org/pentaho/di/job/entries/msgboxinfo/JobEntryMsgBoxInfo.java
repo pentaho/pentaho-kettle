@@ -22,7 +22,7 @@
 
 package org.pentaho.di.job.entries.msgboxinfo;
 
-import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.addOkRemark;
+import org.pentaho.di.job.entry.validator.JobEntryValidatorUtils;
 
 import java.util.List;
 
@@ -73,7 +73,7 @@ public class JobEntryMsgBoxInfo extends JobEntryBase implements Cloneable, JobEn
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer();
+    StringBuilder retval = new StringBuilder( 50 );
 
     retval.append( super.getXML() );
     retval.append( "      " ).append( XMLHandler.addTagValue( "bodymessage", bodymessage ) );
@@ -208,8 +208,8 @@ public class JobEntryMsgBoxInfo extends JobEntryBase implements Cloneable, JobEn
   @Override
   public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
-    addOkRemark( this, "bodyMessage", remarks );
-    addOkRemark( this, "titleMessage", remarks );
+    JobEntryValidatorUtils.addOkRemark( this, "bodyMessage", remarks );
+    JobEntryValidatorUtils.addOkRemark( this, "titleMessage", remarks );
   }
 
 }

@@ -105,7 +105,7 @@ public class TransLogTable extends BaseLogTable implements Cloneable, LogTableIn
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer();
+    StringBuilder retval = new StringBuilder();
 
     retval.append( XMLHandler.openTag( XML_TAG ) );
     retval.append( XMLHandler.addTagValue( "connection", connectionName ) );

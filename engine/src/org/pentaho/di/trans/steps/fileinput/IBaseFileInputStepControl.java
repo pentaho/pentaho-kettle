@@ -29,7 +29,7 @@ import org.pentaho.di.core.row.RowMetaInterface;
  * Interface for some step operations required for parse input file.
  */
 public interface IBaseFileInputStepControl {
-    long incrementLinesInput();
+  long incrementLinesInput();
 
   long getLinesWritten();
 

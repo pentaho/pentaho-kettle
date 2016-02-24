@@ -141,7 +141,7 @@ public class MergeJoinMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer();
+    StringBuilder retval = new StringBuilder();
 
     List<StreamInterface> infoStreams = getStepIOMeta().getInfoStreams();
 

@@ -2570,7 +2570,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
       try {
 
         String ligne = "";
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         processrun = Runtime.getRuntime().exec( Context.toString( ArgList[0] ) );
 
         // Get process response

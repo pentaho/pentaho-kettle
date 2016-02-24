@@ -152,8 +152,7 @@ public class TableInput extends BaseStep implements StepInterface {
     if ( data.thisrow == null ) { // Finished reading?
 
       boolean done = false;
-      if ( meta.isExecuteEachInputRow() ) // Try to get another row from the input stream
-      {
+      if ( meta.isExecuteEachInputRow() ) { // Try to get another row from the input stream
         Object[] nextRow = getRowFrom( data.rowSet );
         if ( nextRow == null ) { // Nothing more to get!
 

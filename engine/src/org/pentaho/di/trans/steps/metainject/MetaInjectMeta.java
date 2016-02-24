@@ -141,7 +141,7 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface, S
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 500 );
+    StringBuilder retval = new StringBuilder( 500 );
 
     retval.append( "    " ).append(
       XMLHandler.addTagValue( SPECIFICATION_METHOD, specificationMethod == null ? null : specificationMethod
@@ -441,7 +441,7 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface, S
     VariableSpace tmpSpace =
         resolver.resolveCurrentDirectory( injectMeta.getSpecificationMethod(), space, rep, injectMeta.getParentStepMeta(),
             injectMeta.getFileName() );
-    
+
     switch ( injectMeta.getSpecificationMethod() ) {
       case FILENAME:
         String realFilename = tmpSpace.environmentSubstitute( injectMeta.getFileName() );
@@ -508,7 +508,7 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface, S
   /**
    * package-local visibility for testing purposes
    */
-    TransMeta loadTransformationMeta( Repository rep, VariableSpace space ) throws KettleException {
+  TransMeta loadTransformationMeta( Repository rep, VariableSpace space ) throws KettleException {
     return MetaInjectMeta.loadTransformationMeta( this, repository, null, space );
   }
 
@@ -533,7 +533,7 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface, S
     }
     return references;
   }
-  
+
   @Override
   public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
       ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore )

@@ -345,7 +345,7 @@ public class NotePadMeta implements Cloneable, XMLInterface, GUIPositionInterfac
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 100 );
+    StringBuilder retval = new StringBuilder( 100 );
 
     retval.append( "    <notepad>" ).append( Const.CR );
     retval.append( "      " ).append( XMLHandler.addTagValue( "note", note ) );

@@ -59,7 +59,7 @@ public class KettleDatabaseRepositoryJobDelegate extends KettleDatabaseRepositor
   private static Class<?> PKG = JobMeta.class; // for i18n purposes, needed by Translator2!!
 
   public static final String JOB_ATTRIBUTE_PREFIX = "_ATTR_" + '\t';
-  
+
   public KettleDatabaseRepositoryJobDelegate( KettleDatabaseRepository repository ) {
     super( repository );
   }
@@ -456,7 +456,7 @@ public class KettleDatabaseRepositoryJobDelegate extends KettleDatabaseRepositor
               repository.jobEntryDelegate.loadJobEntryCopy(
                 jobMeta.getObjectId(), jecids[i], jobentries, jobMeta.getDatabases(), jobMeta
                   .getSlaveServers(), jobname );
-            
+
             if ( jec.isMissing() ) {
               jobMeta.addMissingEntry( (MissingEntry) jec.getEntry() );
             }

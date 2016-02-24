@@ -989,7 +989,7 @@ public class TextFileOutputMeta extends BaseStepMeta implements StepMetaInterfac
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 800 );
+    StringBuilder retval = new StringBuilder( 800 );
 
     retval.append( "    " ).append( XMLHandler.addTagValue( "separator", separator ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "enclosure", enclosure ) );
@@ -1288,7 +1288,7 @@ public class TextFileOutputMeta extends BaseStepMeta implements StepMetaInterfac
     return XMLHandler.getTagValue( stepnode, "file", "name" );
   }
 
-  protected void saveSource( StringBuffer retVal, String value ) {
+  protected void saveSource( StringBuilder retVal, String value ) {
     retVal.append( "      " ).append( XMLHandler.addTagValue( "name", fileName ) );
   }
 

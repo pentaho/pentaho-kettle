@@ -80,7 +80,7 @@ public class CloneRowMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer();
+    StringBuilder retval = new StringBuilder();
     retval.append( "    " + XMLHandler.addTagValue( "nrclones", nrclones ) );
     retval.append( "    " + XMLHandler.addTagValue( "addcloneflag", addcloneflag ) );
     retval.append( "    " + XMLHandler.addTagValue( "cloneflagfield", cloneflagfield ) );

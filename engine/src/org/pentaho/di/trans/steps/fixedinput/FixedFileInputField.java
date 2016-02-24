@@ -97,7 +97,7 @@ public class FixedFileInputField implements Cloneable, XMLInterface {
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 300 );
+    StringBuilder retval = new StringBuilder( 300 );
 
     retval.append( "      " ).append( XMLHandler.openTag( XML_TAG ) ).append( Const.CR );
     retval.append( "        " ).append( XMLHandler.addTagValue( "name", name ) );
@@ -505,8 +505,7 @@ public class FixedFileInputField implements Cloneable, XMLInterface {
     // System.out.println("d="+d+", diff="+diff);
 
     // remainder: 12.345678 --> 0.345678
-    for ( int i = 1; i < maxprec; i++ ) // cap off precision at a reasonable maximum
-    {
+    for ( int i = 1; i < maxprec; i++ ) { // cap off precision at a reasonable maximum
       double factor = Math.pow( 10.0, i );
       diff = Math.abs( Math.floor( d * factor ) - ( d * factor ) );
       if ( diff < maxdiff ) {

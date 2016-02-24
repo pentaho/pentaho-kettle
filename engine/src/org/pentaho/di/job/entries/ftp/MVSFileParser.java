@@ -446,7 +446,7 @@ public class MVSFileParser extends FTPFileParser {
       }
     }
     if ( yrFmt != null ) {
-      StringBuffer fmt = new StringBuffer();
+      StringBuilder fmt = new StringBuilder();
       if ( dayPos >= 0 ) {
         // OK, we know everything.
         String[] tmp = new String[3];
@@ -464,7 +464,7 @@ public class MVSFileParser extends FTPFileParser {
         // tell month from day. So, we'll guess. If it doesn't work on a later
         // date, we'll flip it (the alternate).
 
-        StringBuffer altFmt = new StringBuffer();
+        StringBuilder altFmt = new StringBuilder();
         if ( yrPos == 0 ) {
           fmt.append( yrFmt ).append( "/MM/dd" );
           altFmt.append( yrFmt ).append( "/dd/MM" );

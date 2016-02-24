@@ -22,11 +22,9 @@
 
 package org.pentaho.di.job.entries.shell;
 
-import static org.pentaho.di.job.entry.validator.AbstractFileValidator.putVariableSpace;
-import static org.pentaho.di.job.entry.validator.AndValidator.putValidators;
-import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.andValidator;
-import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.fileExistsValidator;
-import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notBlankValidator;
+import org.pentaho.di.job.entry.validator.AbstractFileValidator;
+import org.pentaho.di.job.entry.validator.AndValidator;
+import org.pentaho.di.job.entry.validator.JobEntryValidatorUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -119,7 +117,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 300 );
+    StringBuilder retval = new StringBuilder( 300 );
 
     retval.append( super.getXML() );
 
@@ -490,7 +488,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
           // need to be
           // included in 1 argument to cmd/command.
 
-          StringBuffer cmdline = new StringBuffer( 300 );
+          StringBuilder cmdline = new StringBuilder( 300 );
 
           cmdline.append( '"' );
           cmdline.append( Const.optionallyQuoteStringByOS( KettleVFS.getFilename( fileObject ) ) );
@@ -528,7 +526,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
           // need to be
           // included in 1 argument to cmd/command.
 
-          StringBuffer cmdline = new StringBuffer( 300 );
+          StringBuilder cmdline = new StringBuilder( 300 );
 
           cmdline.append( '"' );
           cmdline.append( Const.optionallyQuoteStringByOS( KettleVFS.getFilename( fileObject ) ) );
@@ -546,7 +544,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
         }
       }
 
-      StringBuffer command = new StringBuffer();
+      StringBuilder command = new StringBuilder();
 
       Iterator<String> it = cmds.iterator();
       boolean first = true;
@@ -714,14 +712,17 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
   public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
     ValidatorContext ctx = new ValidatorContext();
-    putVariableSpace( ctx, getVariables() );
-    putValidators( ctx, notBlankValidator(), fileExistsValidator() );
+    AbstractFileValidator.putVariableSpace( ctx, getVariables() );
+    AndValidator.putValidators( ctx, JobEntryValidatorUtils.notBlankValidator(),
+        JobEntryValidatorUtils.fileExistsValidator() );
 
-    andValidator().validate( this, "workDirectory", remarks, ctx );
-    andValidator().validate( this, "filename", remarks, putValidators( notBlankValidator() ) );
+    JobEntryValidatorUtils.andValidator().validate( this, "workDirectory", remarks, ctx );
+    JobEntryValidatorUtils.andValidator().validate( this, "filename", remarks,
+        AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
 
     if ( setLogfile ) {
-      andValidator().validate( this, "logfile", remarks, putValidators( notBlankValidator() ) );
+      JobEntryValidatorUtils.andValidator().validate( this, "logfile", remarks,
+          AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
     }
   }
 

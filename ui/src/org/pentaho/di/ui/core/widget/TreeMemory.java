@@ -91,7 +91,7 @@ public class TreeMemory {
     }
 
     public String toString() {
-      StringBuffer string = new StringBuffer( 50 );
+      StringBuilder string = new StringBuilder( 50 );
       string.append( "{" );
       for ( int i = 0; i < path.length; i++ ) {
         if ( i > 0 ) {

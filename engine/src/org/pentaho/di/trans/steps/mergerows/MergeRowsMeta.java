@@ -134,7 +134,7 @@ public class MergeRowsMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer();
+    StringBuilder retval = new StringBuilder();
 
     retval.append( "    <keys>" + Const.CR );
     for ( int i = 0; i < keyFields.length; i++ ) {

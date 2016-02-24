@@ -22,11 +22,9 @@
 
 package org.pentaho.di.job.entries.setvariables;
 
-import static org.pentaho.di.job.entry.validator.AbstractFileValidator.putVariableSpace;
-import static org.pentaho.di.job.entry.validator.AndValidator.putValidators;
-import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.andValidator;
-import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.fileExistsValidator;
-import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notNullValidator;
+import org.pentaho.di.job.entry.validator.AbstractFileValidator;
+import org.pentaho.di.job.entry.validator.AndValidator;
+import org.pentaho.di.job.entry.validator.JobEntryValidatorUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -110,7 +108,7 @@ public class JobEntrySetVariables extends JobEntryBase implements Cloneable, Job
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 300 );
+    StringBuilder retval = new StringBuilder( 300 );
     retval.append( super.getXML() );
     retval.append( "      " ).append( XMLHandler.addTagValue( "replacevars", replaceVars ) );
 
@@ -229,8 +227,8 @@ public class JobEntrySetVariables extends JobEntryBase implements Cloneable, Job
           Properties properties = new Properties();
           InputStream is = KettleVFS.getInputStream( realFilename );
           // for UTF8 properties files
-          InputStreamReader isr = new InputStreamReader(is, "UTF-8");
-          BufferedReader reader = new BufferedReader(isr);
+          InputStreamReader isr = new InputStreamReader( is, "UTF-8" );
+          BufferedReader reader = new BufferedReader( isr );
           properties.load( reader );
           for ( Object key : properties.keySet() ) {
             variables.add( (String) key );
@@ -410,18 +408,19 @@ public class JobEntrySetVariables extends JobEntryBase implements Cloneable, Job
 
   public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
-    boolean res = andValidator().validate( this, "variableName", remarks, putValidators( notNullValidator() ) );
+    boolean res = JobEntryValidatorUtils.andValidator().validate( this, "variableName", remarks,
+        AndValidator.putValidators( JobEntryValidatorUtils.notNullValidator() ) );
 
     if ( res == false ) {
       return;
     }
 
     ValidatorContext ctx = new ValidatorContext();
-    putVariableSpace( ctx, getVariables() );
-    putValidators( ctx, notNullValidator(), fileExistsValidator() );
+    AbstractFileValidator.putVariableSpace( ctx, getVariables() );
+    AndValidator.putValidators( ctx, JobEntryValidatorUtils.notNullValidator(), JobEntryValidatorUtils.fileExistsValidator() );
 
     for ( int i = 0; i < variableName.length; i++ ) {
-      andValidator().validate( this, "variableName[" + i + "]", remarks, ctx );
+      JobEntryValidatorUtils.andValidator().validate( this, "variableName[" + i + "]", remarks, ctx );
     }
   }
 

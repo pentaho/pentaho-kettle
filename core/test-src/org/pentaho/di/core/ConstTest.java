@@ -130,6 +130,13 @@ public class ConstTest extends TestCase {
   }
 
   @Test
+  public void testIsEmptyStringBuilder() {
+    assertTrue( Const.isEmpty( (StringBuilder) null ) );
+    assertTrue( Const.isEmpty( new StringBuilder( "" ) ) );
+    assertFalse( Const.isEmpty( new StringBuilder( "test" ) ) );
+  }
+
+  @Test
   public void testNVL() {
     assertNull( Const.NVL( null, null ) );
     assertEquals( "test", Const.NVL( "test", "test1" ) );
@@ -1569,7 +1576,11 @@ public class ConstTest extends TestCase {
     final StringBuffer sb = new StringBuffer( s );
     assertEquals( s + "   ", Const.rightPad( sb, 28 ) );
     assertEquals( "Pad me baby", Const.rightPad( sb, 11 ) );
-  }
+
+    final StringBuilder sb2 = new StringBuilder( s );
+    assertEquals( s + "   ", Const.rightPad( sb2, 28 ) );
+    assertEquals( "Pad me baby", Const.rightPad( sb2, 11 ) );
+}
 
   @Test
   public void testReplace() {
@@ -1596,6 +1607,21 @@ public class ConstTest extends TestCase {
     sb = new StringBuffer( "" );
     Const.repl( sb, "anything", "something" );
     assertEquals( "", sb.toString() );
+
+    // StringBuilder version
+    StringBuilder sb2 = new StringBuilder( source );
+    Const.repl( sb2, "never begins", "begins with a single step" );
+    assertEquals( "A journey of a thousand miles begins with a single step", sb2.toString() );
+    sb2 = new StringBuilder( source );
+    Const.repl( sb2, "evil", "good" );
+    assertEquals( source, sb2.toString() );
+    sb2 = new StringBuilder( "short" );
+    Const.repl( sb2, "long pattern", "replacement" );
+    assertEquals( "short", sb2.toString() );
+    sb2 = new StringBuilder( "" );
+    Const.repl( sb2, "anything", "something" );
+    assertEquals( "", sb2.toString() );
+
   }
 
   @Test

@@ -84,7 +84,7 @@ public class StringSearchResult {
   }
 
   public String toString() {
-    StringBuffer sb = new StringBuffer();
+    StringBuilder sb = new StringBuilder();
     sb.append( parentObject.toString() ).append( " : " ).append( string );
     sb.append( " (" ).append( fieldName ).append( ")" );
     return sb.toString();

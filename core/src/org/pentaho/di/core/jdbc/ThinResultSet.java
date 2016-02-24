@@ -206,7 +206,7 @@ public class ThinResultSet implements ResultSet {
   }
 
   private String getErrorString( InputStream inputStream ) throws IOException {
-    StringBuffer bodyBuffer = new StringBuffer();
+    StringBuilder bodyBuffer = new StringBuilder();
     int c;
     while ( ( c = inputStream.read() ) != -1 ) {
       bodyBuffer.append( (char) c );
