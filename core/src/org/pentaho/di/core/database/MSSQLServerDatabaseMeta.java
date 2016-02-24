@@ -264,9 +264,9 @@ public class MSSQLServerDatabaseMeta extends BaseDatabaseMeta implements Databas
             if ( precision > 0 ) {
               if ( length > 0 ) {
                 retval += "DECIMAL(" + length + "," + precision + ")";
+              } else {
+                retval += "FLOAT(53)";
               }
-            } else {
-              retval += "FLOAT(53)";
             }
           }
         }
