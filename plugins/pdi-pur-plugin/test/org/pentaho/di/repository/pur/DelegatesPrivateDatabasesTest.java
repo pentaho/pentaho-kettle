@@ -17,6 +17,7 @@
 package org.pentaho.di.repository.pur;
 
 import com.google.common.collect.Iterables;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -33,9 +34,8 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.junit.Assert.*;
+
 import static org.mockito.Mockito.mock;
-import static org.pentaho.di.repository.pur.TransDelegate.NODE_TRANS_PRIVATE_DATABASES;
-import static org.pentaho.di.repository.pur.JobDelegate.NODE_JOB_PRIVATE_DATABASES;
 
 /**
  * @author Andrey Khayrutdinov
@@ -50,19 +50,26 @@ public class DelegatesPrivateDatabasesTest {
     Repository repository = mock( Repository.class );
     IUnifiedRepository pur = mock( IUnifiedRepository.class );
 
-    Object[] trans = { new TransDelegate( repository, pur ), new TransMeta(), NODE_TRANS_PRIVATE_DATABASES };
-    Object[] job = { new JobDelegate( repository, pur ), new JobMeta(), NODE_JOB_PRIVATE_DATABASES };
+    Object[] trans =
+        { new TransDelegate( repository, pur ), new TransMeta(), TransDelegate.NODE_TRANS_PRIVATE_DATABASES,
+          TransDelegate.PROP_TRANS_PRIVATE_DATABASE_NAMES };
+    Object[] job =
+        { new JobDelegate( repository, pur ), new JobMeta(), JobDelegate.NODE_JOB_PRIVATE_DATABASES,
+          JobDelegate.PROP_JOB_PRIVATE_DATABASE_NAMES };
     return Arrays.asList( trans, job );
   }
 
   private final ITransformer delegate;
   private final AbstractMeta meta;
   private final String privateDbsNodeName;
+  private final String privateDbsPropertyName;
 
-  public DelegatesPrivateDatabasesTest( ITransformer delegate, AbstractMeta meta, String privateDbsNodeName ) {
+  public DelegatesPrivateDatabasesTest( ITransformer delegate, AbstractMeta meta, String privateDbsNodeName,
+      String privateDbsPropertyName ) {
     this.delegate = delegate;
     this.meta = meta;
     this.privateDbsNodeName = privateDbsNodeName;
+    this.privateDbsPropertyName = privateDbsPropertyName;
   }
 
   @Test
@@ -74,9 +81,8 @@ public class DelegatesPrivateDatabasesTest {
     DataNode dbsNode = dataNode.getNode( privateDbsNodeName );
     assertNotNull( dbsNode );
 
-    DataNode databaseNode = Iterables.getFirst( dbsNode.getNodes(), null );
-    assertNotNull( databaseNode );
-    assertEquals( DB_NAME, databaseNode.getName() );
+    assertTrue( dbsNode.hasProperty( privateDbsPropertyName ) );
+    assertEquals( DB_NAME, dbsNode.getProperty( privateDbsPropertyName ).getString() );
   }
 
   @Test
@@ -91,7 +97,7 @@ public class DelegatesPrivateDatabasesTest {
 
   @Test
   public void savesNode_IfSetIsEmpty() throws Exception {
-    meta.setPrivateDatabases( Collections.<String> emptySet() );
+    meta.setPrivateDatabases( Collections.<String>emptySet() );
 
     DataNode dataNode = element2node();
 
@@ -119,7 +125,7 @@ public class DelegatesPrivateDatabasesTest {
 
   @Test
   public void saveAndLoad_SetIsEmpty() throws Exception {
-    meta.setPrivateDatabases( Collections.<String> emptySet() );
+    meta.setPrivateDatabases( Collections.<String>emptySet() );
 
     AbstractMeta restored = (AbstractMeta) delegate.dataNodeToElement( delegate.elementToDataNode( meta ) );
 

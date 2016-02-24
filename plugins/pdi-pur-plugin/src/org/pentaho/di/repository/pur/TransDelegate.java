@@ -263,7 +263,9 @@ public class TransDelegate extends AbstractDelegate implements ITransformer, ISh
       if ( privateDbsNode.hasProperty( PROP_TRANS_PRIVATE_DATABASE_NAMES ) ) {
         for ( String privateDatabaseName : getString( privateDbsNode, PROP_TRANS_PRIVATE_DATABASE_NAMES ).split(
             TRANS_PRIVATE_DATABASE_DELIMITER ) ) {
-          privateDatabases.add( privateDatabaseName );
+          if ( !privateDatabaseName.isEmpty() ) {
+            privateDatabases.add( privateDatabaseName );
+          }
         }
       } else {
         for ( DataNode privateDatabase : privateDbsNode.getNodes() ) {

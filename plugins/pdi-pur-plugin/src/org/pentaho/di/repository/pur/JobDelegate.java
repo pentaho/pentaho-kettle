@@ -242,7 +242,9 @@ public class JobDelegate extends AbstractDelegate implements ISharedObjectsTrans
       if ( privateDbsNode.hasProperty( PROP_JOB_PRIVATE_DATABASE_NAMES ) ) {
         for ( String privateDatabaseName : getString( privateDbsNode, PROP_JOB_PRIVATE_DATABASE_NAMES ).split(
             JOB_PRIVATE_DATABASE_DELIMITER ) ) {
-          privateDatabases.add( privateDatabaseName );
+          if ( !privateDatabaseName.isEmpty() ) {
+            privateDatabases.add( privateDatabaseName );
+          }
         }
       } else {
         for ( DataNode privateDatabase : privateDbsNode.getNodes() ) {
