@@ -392,7 +392,7 @@ public class MemoryGroupByMeta extends BaseStepMeta implements StepMetaInterface
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 500 );
+    StringBuilder retval = new StringBuilder( 500 );
 
     retval.append( "      " ).append( XMLHandler.addTagValue( "give_back_row", alwaysGivingBackOneRow ) );
 

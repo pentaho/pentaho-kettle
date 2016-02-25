@@ -169,7 +169,7 @@ public class JobEntryPGPEncryptFiles extends JobEntryBase implements Cloneable, 
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 300 );
+    StringBuilder retval = new StringBuilder( 450 );
 
     retval.append( super.getXML() );
     retval.append( "      " ).append( XMLHandler.addTagValue( "gpglocation", gpglocation ) );

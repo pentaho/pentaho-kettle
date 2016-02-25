@@ -231,9 +231,9 @@ abstract class BaseRowSet implements Comparable<RowSet>, RowSet {
 
   @Override
   public String toString() {
-    StringBuffer str;
+    StringBuilder str;
     synchronized ( originStepName ) {
-      str = new StringBuffer( originStepName );
+      str = new StringBuilder( originStepName );
     }
     str.append( "." );
     synchronized ( originStepCopy ) {

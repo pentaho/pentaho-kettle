@@ -66,7 +66,7 @@ public class UUID4Util {
    * @return
    */
   private String getUUIDString( byte[] raw ) {
-    StringBuffer buf = new StringBuffer( new String( encodeHex( raw ) ) );
+    StringBuilder buf = new StringBuilder( new String( encodeHex( raw ) ) );
     while ( buf.length() != 32 ) {
       buf.insert( 0, "0" );
     }

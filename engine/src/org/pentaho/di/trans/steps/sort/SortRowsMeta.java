@@ -251,7 +251,7 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 256 );
+    StringBuilder retval = new StringBuilder( 256 );
 
     retval.append( "      " ).append( XMLHandler.addTagValue( "directory", directory ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "prefix", prefix ) );

@@ -117,7 +117,7 @@ public class ClosureGeneratorMeta extends BaseStepMeta implements StepMetaInterf
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 300 );
+    StringBuilder retval = new StringBuilder( 300 );
 
     retval.append( "    " ).append( XMLHandler.addTagValue( "parent_id_field", parentIdFieldName ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "child_id_field", childIdFieldName ) );

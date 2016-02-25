@@ -142,7 +142,7 @@ public class AutoDocMeta extends BaseStepMeta implements StepMetaInterface, Auto
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 500 );
+    StringBuilder retval = new StringBuilder( 500 );
 
     retval.append( "    " ).append( XMLHandler.addTagValue( "filename_field", filenameField ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "file_type_field", fileTypeField ) );

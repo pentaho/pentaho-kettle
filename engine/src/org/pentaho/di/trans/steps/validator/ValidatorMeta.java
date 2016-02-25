@@ -100,7 +100,7 @@ public class ValidatorMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 300 );
+    StringBuilder retval = new StringBuilder( 300 );
 
     retval.append( XMLHandler.addTagValue( "validate_all", validatingAll ) );
     retval.append( XMLHandler.addTagValue( "concat_errors", concatenatingErrors ) );

@@ -114,7 +114,7 @@ public class JobEntryFoldersCompare extends JobEntryBase implements Cloneable, J
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 50 );
+    StringBuilder retval = new StringBuilder( 200 ); // 133 chars in just spaces and tag names alone
 
     retval.append( super.getXML() );
     retval.append( "      " ).append( XMLHandler.addTagValue( "include_subfolders", includesubfolders ) );

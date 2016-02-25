@@ -119,7 +119,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 300 );
+    StringBuilder retval = new StringBuilder( 300 );
 
     retval.append( super.getXML() );
 
@@ -490,7 +490,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
           // need to be
           // included in 1 argument to cmd/command.
 
-          StringBuffer cmdline = new StringBuffer( 300 );
+          StringBuilder cmdline = new StringBuilder( 300 );
 
           cmdline.append( '"' );
           cmdline.append( Const.optionallyQuoteStringByOS( KettleVFS.getFilename( fileObject ) ) );
@@ -528,7 +528,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
           // need to be
           // included in 1 argument to cmd/command.
 
-          StringBuffer cmdline = new StringBuffer( 300 );
+          StringBuilder cmdline = new StringBuilder( 300 );
 
           cmdline.append( '"' );
           cmdline.append( Const.optionallyQuoteStringByOS( KettleVFS.getFilename( fileObject ) ) );
@@ -546,7 +546,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
         }
       }
 
-      StringBuffer command = new StringBuffer();
+      StringBuilder command = new StringBuilder();
 
       Iterator<String> it = cmds.iterator();
       boolean first = true;

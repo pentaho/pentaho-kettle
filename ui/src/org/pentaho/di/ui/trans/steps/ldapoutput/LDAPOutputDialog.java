@@ -1538,8 +1538,8 @@ public class LDAPOutputDialog extends BaseStepDialog implements StepDialogInterf
     // Create the existing mapping list...
     //
     List<SourceToTargetMapping> mappings = new ArrayList<SourceToTargetMapping>();
-    StringBuffer missingSourceFields = new StringBuffer();
-    StringBuffer missingTargetFields = new StringBuffer();
+    StringBuilder missingSourceFields = new StringBuilder();
+    StringBuilder missingTargetFields = new StringBuilder();
 
     int nrFields = wReturn.nrNonEmpty();
     for ( int i = 0; i < nrFields; i++ ) {

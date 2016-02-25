@@ -77,7 +77,7 @@ public class Edi2XmlMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public String getXML() throws KettleValueException {
-    StringBuffer retval = new StringBuffer();
+    StringBuilder retval = new StringBuilder();
 
     retval.append( "   " + XMLHandler.addTagValue( "inputfield", inputField ) );
     retval.append( "   " + XMLHandler.addTagValue( "outputfield", outputField ) );

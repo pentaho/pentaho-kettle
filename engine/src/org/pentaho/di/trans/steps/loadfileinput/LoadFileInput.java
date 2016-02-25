@@ -285,12 +285,12 @@ public class LoadFileInput extends BaseStep implements StepInterface {
       }
 
       int c;
-      StringBuffer stringBuffer = new StringBuffer();
+      StringBuilder StringBuilder = new StringBuilder();
       while ( ( c = reader.read() ) != -1 ) {
-        stringBuffer.append( (char) c );
+        StringBuilder.append( (char) c );
       }
 
-      retval = stringBuffer.toString();
+      retval = StringBuilder.toString();
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString(
         PKG, "LoadFileInput.Error.GettingFileContent", vfsFilename, e.toString() ) );

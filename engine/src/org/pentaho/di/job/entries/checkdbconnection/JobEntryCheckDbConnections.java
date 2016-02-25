@@ -137,7 +137,7 @@ public class JobEntryCheckDbConnections extends JobEntryBase implements Cloneabl
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer();
+    StringBuilder retval = new StringBuilder( 120 );
     retval.append( super.getXML() );
     retval.append( "      <connections>" ).append( Const.CR );
     if ( connections != null ) {

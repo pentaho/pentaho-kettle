@@ -141,7 +141,7 @@ public class BlockUntilStepsFinishMeta extends BaseStepMeta implements StepMetaI
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer();
+    StringBuilder retval = new StringBuilder();
 
     retval.append( "    <steps>" + Const.CR );
     for ( int i = 0; i < stepName.length; i++ ) {

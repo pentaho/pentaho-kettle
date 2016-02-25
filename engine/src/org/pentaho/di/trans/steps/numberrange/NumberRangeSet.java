@@ -55,7 +55,7 @@ public class NumberRangeSet {
    * Evaluates a value against all rules
    */
   protected String evaluateDouble( double value ) {
-    StringBuffer result = new StringBuffer();
+    StringBuilder result = new StringBuilder();
 
     // Execute all rules
     for ( NumberRangeRule rule : rules ) {

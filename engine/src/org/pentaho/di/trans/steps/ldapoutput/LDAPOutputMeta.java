@@ -631,7 +631,7 @@ public class LDAPOutputMeta extends BaseStepMeta implements LdapMeta {
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 500 );
+    StringBuilder retval = new StringBuilder( 500 );
 
     retval.append( "    " ).append( XMLHandler.addTagValue( "useauthentication", useAuthentication ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "host", Host ) );

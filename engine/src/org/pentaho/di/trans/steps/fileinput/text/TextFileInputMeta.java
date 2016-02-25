@@ -674,7 +674,7 @@ public class TextFileInputMeta extends BaseFileInputStepMeta implements StepMeta
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 1500 );
+    StringBuilder retval = new StringBuilder( 1500 );
 
     retval.append( "    " ).append( XMLHandler.addTagValue( "accept_filenames", inputFiles.acceptingFilenames ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "passing_through_fields", inputFiles.passingThruFields ) );
@@ -1258,7 +1258,7 @@ public class TextFileInputMeta extends BaseFileInputStepMeta implements StepMeta
     return XMLHandler.getNodeValue( filenamenode );
   }
 
-  protected void saveSource( StringBuffer retVal, String source ) {
+  protected void saveSource( StringBuilder retVal, String source ) {
     retVal.append( "      " ).append( XMLHandler.addTagValue( "name", source ) );
   }
 

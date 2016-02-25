@@ -214,7 +214,7 @@ public class Exasol4DatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
   @Override
   public String getFieldDefinition( ValueMetaInterface v, String tk, String pk, boolean use_autoinc,
     boolean add_fieldname, boolean add_cr ) {
-    StringBuffer retval = new StringBuffer( 128 );
+    StringBuilder retval = new StringBuilder( 128 );
 
     String fieldname = v.getName();
     int length = v.getLength();

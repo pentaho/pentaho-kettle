@@ -373,7 +373,7 @@ public class SSHMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer();
+    StringBuilder retval = new StringBuilder();
 
     retval.append( "    " ).append( XMLHandler.addTagValue( "dynamicCommandField", dynamicCommandField ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "command", command ) );

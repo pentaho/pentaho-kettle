@@ -339,7 +339,7 @@ public class SQLEditor {
       return;
     }
 
-    StringBuffer message = new StringBuffer();
+    StringBuilder message = new StringBuilder();
 
     Database db = new Database( loggingObject, ci );
     boolean first = true;

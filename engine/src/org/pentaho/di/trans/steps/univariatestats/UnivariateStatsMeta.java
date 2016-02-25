@@ -135,7 +135,7 @@ public class UnivariateStatsMeta extends BaseStepMeta implements StepMetaInterfa
    */
   @Override
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 300 );
+    StringBuilder retval = new StringBuilder( 300 );
 
     if ( m_stats != null ) {
       for ( int i = 0; i < m_stats.length; i++ ) {

@@ -884,7 +884,7 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
     }
 
     List<SourceToTargetMapping> mappings = new ArrayList<SourceToTargetMapping>();
-    StringBuffer missingFields = new StringBuffer();
+    StringBuilder missingFields = new StringBuilder();
     for ( int i = 0; i < selectName.length; i++ ) {
       String valueName = selectName[i];
       String valueRename = selectRename[i];

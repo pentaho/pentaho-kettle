@@ -148,7 +148,7 @@ public class JobEntryEvalTableContent extends JobEntryBase implements Cloneable,
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 200 );
+    StringBuilder retval = new StringBuilder( 200 );
 
     retval.append( super.getXML() );
     retval.append( "      " ).append(

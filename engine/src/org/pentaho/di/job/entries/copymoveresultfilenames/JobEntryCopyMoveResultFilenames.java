@@ -136,7 +136,7 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 50 );
+    StringBuilder retval = new StringBuilder( 500 ); // 358 chars in just tags and spaces alone
 
     retval.append( super.getXML() );
     retval.append( "      " ).append( XMLHandler.addTagValue( "foldername", foldername ) );

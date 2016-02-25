@@ -578,7 +578,7 @@ public class AccessInputMeta extends BaseStepMeta implements StepMetaInterface {
 
   @Override
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 500 );
+    StringBuilder retval = new StringBuilder( 500 );
     retval.append( "    " ).append( XMLHandler.addTagValue( "include", includeFilename ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "include_field", filenameField ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "tablename", includeTablename ) );

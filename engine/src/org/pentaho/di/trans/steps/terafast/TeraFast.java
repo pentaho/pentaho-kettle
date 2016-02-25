@@ -281,7 +281,7 @@ public class TeraFast extends AbstractStep implements StepInterface {
   }
 
   private String pad( ValueMetaInterface valueMetaInterface, String data ) {
-    StringBuffer padding = new StringBuffer( data );
+    StringBuilder padding = new StringBuilder( data );
     int padLength = valueMetaInterface.getLength() - data.length();
     int currentPadLength = 0;
     while ( currentPadLength < padLength ) {

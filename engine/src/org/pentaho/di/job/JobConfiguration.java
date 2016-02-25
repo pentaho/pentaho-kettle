@@ -46,7 +46,7 @@ public class JobConfiguration {
   }
 
   public String getXML() throws IOException {
-    StringBuffer xml = new StringBuffer();
+    StringBuilder xml = new StringBuilder( 100 );
 
     xml.append( "<" + XML_TAG + ">" ).append( Const.CR );
 

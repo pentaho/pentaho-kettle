@@ -83,7 +83,7 @@ public class JobEntryFileExists extends JobEntryBase implements Cloneable, JobEn
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer();
+    StringBuilder retval = new StringBuilder( 20 );
 
     retval.append( super.getXML() );
     retval.append( "      " ).append( XMLHandler.addTagValue( "filename", filename ) );

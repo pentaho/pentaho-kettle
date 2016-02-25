@@ -578,7 +578,7 @@ public class LDIFInputMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer();
+    StringBuilder retval = new StringBuilder();
 
     retval.append( "    " ).append( XMLHandler.addTagValue( "filefield", filefield ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "dynamicFilenameField", dynamicFilenameField ) );

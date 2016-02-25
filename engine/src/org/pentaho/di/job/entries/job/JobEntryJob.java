@@ -211,7 +211,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 200 );
+    StringBuilder retval = new StringBuilder( 400 );
 
     retval.append( super.getXML() );
 
