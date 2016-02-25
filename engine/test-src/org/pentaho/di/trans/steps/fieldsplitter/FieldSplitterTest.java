@@ -90,6 +90,7 @@ public class FieldSplitterTest {
     doReturn( new String[] { null, null } ).when( processRowMeta ).getFieldNullIf();
     doReturn( new String[] { null, null } ).when( processRowMeta ).getFieldIfNull();
     doReturn( ";" ).when( processRowMeta ).getDelimiter();
+    doReturn( 2 ).when( processRowMeta ).getFieldsCount();
 
     return processRowMeta;
   }
