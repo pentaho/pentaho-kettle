@@ -67,6 +67,18 @@ public class LazyUnifiedRepositoryDirectory extends RepositoryDirectory {
     this.registry = registry;
   }
 
+  private String getParentPath( String absolutePath ) {
+    int parentEndIndex;
+    if ( absolutePath.endsWith( RepositoryDirectory.DIRECTORY_SEPARATOR ) ) {
+      parentEndIndex = absolutePath.lastIndexOf( RepositoryDirectory.DIRECTORY_SEPARATOR, absolutePath.length() - 2 );
+    } else {
+      parentEndIndex = absolutePath.lastIndexOf( RepositoryDirectory.DIRECTORY_SEPARATOR );
+    }
+    if ( parentEndIndex < 0 ) {
+      return null;
+    }
+    return absolutePath.substring( 0, parentEndIndex );
+  }
 
   @Override public RepositoryDirectory findDirectory( String path ) {
     if ( StringUtils.isEmpty( path ) ) {
@@ -94,7 +106,20 @@ public class LazyUnifiedRepositoryDirectory extends RepositoryDirectory {
     if ( isRoot() && RepositoryDirectory.DIRECTORY_SEPARATOR.equals( absolutePath ) ) {
       return this;
     }
-    return new LazyUnifiedRepositoryDirectory( file, this, repository, registry );
+
+    // Verifies if this is the parent directory of file and if so passes this as parent argument
+    String parentPath = getParentPath( absolutePath );
+    if ( self.getPath().endsWith( RepositoryDirectory.DIRECTORY_SEPARATOR ) ) {
+      if ( parentPath.equals( self.getPath().substring( 0, self.getPath().length() - 1 ) ) ) {
+        return new LazyUnifiedRepositoryDirectory( file, this, repository, registry );
+      }
+    } else {
+      if ( parentPath.equals( self.getPath() ) ) {
+        return new LazyUnifiedRepositoryDirectory( file, this, repository, registry );
+      }
+    }
+
+    return new LazyUnifiedRepositoryDirectory( file, findDirectory( parentPath ), repository, registry );
 
   }
 
