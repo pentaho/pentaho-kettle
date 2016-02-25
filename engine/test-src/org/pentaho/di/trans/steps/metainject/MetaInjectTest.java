@@ -23,7 +23,7 @@
 package org.pentaho.di.trans.steps.metainject;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.refEq;
@@ -33,19 +33,29 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaBigNumber;
+import org.pentaho.di.core.row.value.ValueMetaBoolean;
+import org.pentaho.di.core.row.value.ValueMetaDate;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
+import org.pentaho.di.core.row.value.ValueMetaNumber;
 import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepInjectionMetaEntry;
@@ -71,6 +81,13 @@ public class MetaInjectTest {
   private static final String TEST_ATTR_VALUE = "TEST_ATTR_VALUE";
 
   private static final String TEST_FIELD = "TEST_FIELD";
+
+  private static final String UNAVAILABLE_STEP = "UNAVAILABLE_STEP";
+
+  private static final TargetStepAttribute UNAVAILABLE_TARGET_STEP =
+      new TargetStepAttribute( UNAVAILABLE_STEP, TEST_ATTR_VALUE, false );
+
+  private static final SourceStepField UNAVAILABLE_SOURCE_STEP = new SourceStepField( UNAVAILABLE_STEP, TEST_FIELD );
 
   private MetaInject metaInject;
 
@@ -151,10 +168,10 @@ public class MetaInjectTest {
         new StepInjectionMetaEntry( "NAME", "FIRST_NAME", ValueMetaInterface.TYPE_STRING, "" );
     StepInjectionMetaEntry expectedDataEntry =
         new StepInjectionMetaEntry( "DATA_TYPE", "String", ValueMetaInterface.TYPE_STRING, "" );
-    verify( metaInject, atLeastOnce() ).setEntryValueIfFieldExists( refEq( expectedNameEntry ),
-        any( RowMetaAndData.class ), any( SourceStepField.class ) );
-    verify( metaInject, atLeastOnce() ).setEntryValueIfFieldExists( refEq( expectedDataEntry ),
-        any( RowMetaAndData.class ), any( SourceStepField.class ) );
+    verify( metaInject, atLeastOnce() ).setEntryValueIfFieldExists( refEq( expectedNameEntry ), any(
+        RowMetaAndData.class ), any( SourceStepField.class ) );
+    verify( metaInject, atLeastOnce() ).setEntryValueIfFieldExists( refEq( expectedDataEntry ), any(
+        RowMetaAndData.class ), any( SourceStepField.class ) );
   }
 
   @Test
@@ -188,40 +205,165 @@ public class MetaInjectTest {
   }
 
   @Test
-  public void initReturnsTrueOnInaccessibleSourceStep() {
-    Map<TargetStepAttribute, SourceStepField> targetMap =
-        Collections.singletonMap( new TargetStepAttribute( INJECTOR_STEP_NAME, TEST_ATTR_VALUE, false ),
-            new SourceStepField( TEST_SOURCE_STEP_NAME, TEST_FIELD ) );
-    MetaInjectMeta spyMeta = spy( meta );
-    doReturn( targetMap ).when( spyMeta ).getTargetSourceMapping();
+  public void getUnavailableSourceSteps() {
+    TargetStepAttribute targetStep = new TargetStepAttribute( TEST_TARGET_STEP_NAME, TEST_ATTR_VALUE, false );
+    SourceStepField unavailableSourceStep = new SourceStepField( UNAVAILABLE_STEP, TEST_FIELD );
+    Map<TargetStepAttribute, SourceStepField> targetMap = Collections.singletonMap( targetStep, unavailableSourceStep );
+    TransMeta sourceTransMeta = mock( TransMeta.class );
+    doReturn( new String[0] ).when( sourceTransMeta ).getPrevStepNames( any( StepMeta.class ) );
 
-    assertTrue( metaInject.init( spyMeta, data ) );
+    Set<SourceStepField> actualSet =
+        MetaInject.getUnavailableSourceSteps( targetMap, sourceTransMeta, mock( StepMeta.class ) );
+    assertTrue( actualSet.contains( unavailableSourceStep ) );
   }
 
   @Test
-  public void initReturnsTrueOnInaccessibleTargetStep() {
-    doReturn( new String[] { TEST_SOURCE_STEP_NAME } ).when( transMeta ).getPrevStepNames( any( StepMeta.class ) );
+  public void getUnavailableTargetSteps() {
+    TargetStepAttribute unavailableTargetStep = new TargetStepAttribute( UNAVAILABLE_STEP, TEST_ATTR_VALUE, false );
+    SourceStepField sourceStep = new SourceStepField( TEST_SOURCE_STEP_NAME, TEST_FIELD );
+    Map<TargetStepAttribute, SourceStepField> targetMap = Collections.singletonMap( unavailableTargetStep, sourceStep );
+    TransMeta injectedTransMeta = mock( TransMeta.class );
+    doReturn( Collections.emptyList() ).when( injectedTransMeta ).getUsedSteps();
 
-    Map<TargetStepAttribute, SourceStepField> targetMap =
-        Collections.singletonMap( new TargetStepAttribute( TEST_TARGET_STEP_NAME, TEST_ATTR_VALUE, false ),
-            new SourceStepField( TEST_SOURCE_STEP_NAME, TEST_FIELD ) );
-    MetaInjectMeta spyMeta = spy( meta );
-    doReturn( targetMap ).when( spyMeta ).getTargetSourceMapping();
-
-    assertTrue( metaInject.init( spyMeta, data ) );
+    Set<TargetStepAttribute> actualSet = MetaInject.getUnavailableTargetSteps( targetMap, injectedTransMeta );
+    assertTrue( actualSet.contains( unavailableTargetStep ) );
   }
 
   @Test
-  public void initReturnsTrueOnAccessibleSourceAndTargetSteps() {
-    doReturn( new String[] { TEST_SOURCE_STEP_NAME } ).when( transMeta ).getPrevStepNames( any( StepMeta.class ) );
+  public void removeUnavailableStepsFromMapping_unavailable_source_step() {
+    TargetStepAttribute unavailableTargetStep = new TargetStepAttribute( UNAVAILABLE_STEP, TEST_ATTR_VALUE, false );
+    SourceStepField unavailableSourceStep = new SourceStepField( UNAVAILABLE_STEP, TEST_FIELD );
+    Map<TargetStepAttribute, SourceStepField> targetMap = new HashMap<TargetStepAttribute, SourceStepField>();
+    targetMap.put( unavailableTargetStep, unavailableSourceStep );
 
-    Map<TargetStepAttribute, SourceStepField> targetMap =
-        Collections.singletonMap( new TargetStepAttribute( INJECTOR_STEP_NAME, TEST_ATTR_VALUE, false ),
-            new SourceStepField( TEST_SOURCE_STEP_NAME, TEST_FIELD ) );
-    MetaInjectMeta spyMeta = spy( meta );
-    doReturn( targetMap ).when( spyMeta ).getTargetSourceMapping();
+    Set<SourceStepField> unavailableSourceSteps = Collections.singleton( UNAVAILABLE_SOURCE_STEP );
+    MetaInject.removeUnavailableStepsFromMapping( targetMap, unavailableSourceSteps, Collections
+        .<TargetStepAttribute> emptySet() );
+    assertTrue( targetMap.isEmpty() );
+  }
 
-    assertTrue( metaInject.init( spyMeta, data ) );
+  @Test
+  public void removeUnavailableStepsFromMapping_unavailable_target_step() {
+    TargetStepAttribute unavailableTargetStep = new TargetStepAttribute( UNAVAILABLE_STEP, TEST_ATTR_VALUE, false );
+    SourceStepField unavailableSourceStep = new SourceStepField( UNAVAILABLE_STEP, TEST_FIELD );
+    Map<TargetStepAttribute, SourceStepField> targetMap = new HashMap<TargetStepAttribute, SourceStepField>();
+    targetMap.put( unavailableTargetStep, unavailableSourceStep );
+
+    Set<TargetStepAttribute> unavailableTargetSteps = Collections.singleton( UNAVAILABLE_TARGET_STEP );
+    MetaInject.removeUnavailableStepsFromMapping( targetMap, Collections.<SourceStepField> emptySet(),
+        unavailableTargetSteps );
+    assertTrue( targetMap.isEmpty() );
+  }
+
+  @Test
+  public void removeUnavailableStepsFromMapping_unavailable_source_target_step() {
+    TargetStepAttribute unavailableTargetStep = new TargetStepAttribute( UNAVAILABLE_STEP, TEST_ATTR_VALUE, false );
+    SourceStepField unavailableSourceStep = new SourceStepField( UNAVAILABLE_STEP, TEST_FIELD );
+    Map<TargetStepAttribute, SourceStepField> targetMap = new HashMap<TargetStepAttribute, SourceStepField>();
+    targetMap.put( unavailableTargetStep, unavailableSourceStep );
+
+    Set<TargetStepAttribute> unavailableTargetSteps = Collections.singleton( UNAVAILABLE_TARGET_STEP );
+    Set<SourceStepField> unavailableSourceSteps = Collections.singleton( UNAVAILABLE_SOURCE_STEP );
+    MetaInject.removeUnavailableStepsFromMapping( targetMap, unavailableSourceSteps, unavailableTargetSteps );
+    assertTrue( targetMap.isEmpty() );
+  }
+
+  @Test
+  public void setEntryValue_string() throws KettleValueException {
+    StepInjectionMetaEntry entry = mock( StepInjectionMetaEntry.class );
+    doReturn( ValueMetaInterface.TYPE_STRING ).when( entry ).getValueType();
+    RowMetaAndData row = createRowMetaAndData( new ValueMetaString( TEST_FIELD ), TEST_VALUE );
+    SourceStepField sourceField = new SourceStepField( TEST_SOURCE_STEP_NAME, TEST_FIELD );
+
+    MetaInject.setEntryValue( entry, row, sourceField );
+
+    verify( entry ).setValue( TEST_VALUE );
+  }
+
+  @Test
+  public void setEntryValue_boolean() throws KettleValueException {
+    StepInjectionMetaEntry entry = mock( StepInjectionMetaEntry.class );
+    doReturn( ValueMetaInterface.TYPE_BOOLEAN ).when( entry ).getValueType();
+    RowMetaAndData row = createRowMetaAndData( new ValueMetaBoolean( TEST_FIELD ), true );
+    SourceStepField sourceField = new SourceStepField( TEST_SOURCE_STEP_NAME, TEST_FIELD );
+
+    MetaInject.setEntryValue( entry, row, sourceField );
+
+    verify( entry ).setValue( true );
+  }
+
+  @Test
+  public void setEntryValue_integer() throws KettleValueException {
+    StepInjectionMetaEntry entry = mock( StepInjectionMetaEntry.class );
+    doReturn( ValueMetaInterface.TYPE_INTEGER ).when( entry ).getValueType();
+    RowMetaAndData row = createRowMetaAndData( new ValueMetaInteger( TEST_FIELD ), new Long( 1 ) );
+    SourceStepField sourceField = new SourceStepField( TEST_SOURCE_STEP_NAME, TEST_FIELD );
+
+    MetaInject.setEntryValue( entry, row, sourceField );
+
+    verify( entry ).setValue( 1L );
+  }
+
+  @Test
+  public void setEntryValue_number() throws KettleValueException {
+    StepInjectionMetaEntry entry = mock( StepInjectionMetaEntry.class );
+    doReturn( ValueMetaInterface.TYPE_NUMBER ).when( entry ).getValueType();
+    RowMetaAndData row = createRowMetaAndData( new ValueMetaNumber( TEST_FIELD ), new Double( 1 ) );
+    SourceStepField sourceField = new SourceStepField( TEST_SOURCE_STEP_NAME, TEST_FIELD );
+
+    MetaInject.setEntryValue( entry, row, sourceField );
+
+    verify( entry ).setValue( 1.0D );
+  }
+
+  @Test
+  public void setEntryValue_date() throws KettleValueException {
+    StepInjectionMetaEntry entry = mock( StepInjectionMetaEntry.class );
+    doReturn( ValueMetaInterface.TYPE_DATE ).when( entry ).getValueType();
+    RowMetaAndData row = createRowMetaAndData( new ValueMetaDate( TEST_FIELD ), null );
+    SourceStepField sourceField = new SourceStepField( TEST_SOURCE_STEP_NAME, TEST_FIELD );
+
+    MetaInject.setEntryValue( entry, row, sourceField );
+
+    verify( entry ).setValue( null );
+  }
+
+  @Test
+  public void setEntryValue_bignumber() throws KettleValueException {
+    StepInjectionMetaEntry entry = mock( StepInjectionMetaEntry.class );
+    doReturn( ValueMetaInterface.TYPE_BIGNUMBER ).when( entry ).getValueType();
+    RowMetaAndData row = createRowMetaAndData( new ValueMetaBigNumber( TEST_FIELD ), new BigDecimal( 1 ) );
+    SourceStepField sourceField = new SourceStepField( TEST_SOURCE_STEP_NAME, TEST_FIELD );
+
+    MetaInject.setEntryValue( entry, row, sourceField );
+
+    verify( entry ).setValue( new BigDecimal( 1 ) );
+  }
+
+  @Test
+  public void convertToUpperCaseSet_null_array() {
+    Set<String> actualResult = MetaInject.convertToUpperCaseSet( null );
+    assertNotNull( actualResult );
+    assertTrue( actualResult.isEmpty() );
+  }
+
+  @Test
+  public void convertToUpperCaseSet() {
+    String[] input = new String[] { "Test_Step", "test_step1" };
+    Set<String> actualResult = MetaInject.convertToUpperCaseSet( input );
+    Set<String> expectedResult = new HashSet<>();
+    expectedResult.add( "TEST_STEP" );
+    expectedResult.add( "TEST_STEP1" );
+    assertEquals( expectedResult, actualResult );
+  }
+
+  private static RowMetaAndData createRowMetaAndData( ValueMetaInterface valueMeta, Object data ) {
+    RowMetaAndData row = new RowMetaAndData();
+    RowMeta rowMeta = new RowMeta();
+    rowMeta.addValueMeta( valueMeta );
+    row.setRowMeta( rowMeta );
+    row.setData( new Object[] { data } );
+    return row;
   }
 
 }
