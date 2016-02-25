@@ -70,7 +70,7 @@ public class SequenceMetaTests {
       new InformixDatabaseMeta(),
       new IngresDatabaseMeta(),
       new InterbaseDatabaseMeta(),
-      new KettleDatabaseMeta(),
+      //new KettleDatabaseMeta(),
       new LucidDBDatabaseMeta(),
       new MondrianNativeDatabaseMeta(),
       new MonetDBDatabaseMeta(),
