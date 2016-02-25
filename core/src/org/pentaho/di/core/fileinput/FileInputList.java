@@ -188,8 +188,7 @@ public class FileInputList {
           // Find all file names that match the wildcard in this directory
           //
           if ( processFolder ) {
-            if ( directoryFileObject != null && directoryFileObject.getType() == FileType.FOLDER ) // it's a directory
-            {
+            if ( directoryFileObject != null && directoryFileObject.getType() == FileType.FOLDER ) { // it's a directory
               FileObject[] fileObjects = directoryFileObject.findFiles( new AllFileSelector() {
                 @Override
                 public boolean traverseDescendents( FileSelectInfo info ) {
@@ -316,9 +315,7 @@ public class FileInputList {
         // Find all folder names in this directory
         //
         directoryFileObject = KettleVFS.getFileObject( onefile, space );
-        if ( directoryFileObject != null && directoryFileObject.getType() == FileType.FOLDER ) // it's a directory
-        {
-
+        if ( directoryFileObject != null && directoryFileObject.getType() == FileType.FOLDER ) { // it's a directory
           FileObject[] fileObjects = directoryFileObject.findFiles( new AllFileSelector() {
             @Override
             public boolean traverseDescendents( FileSelectInfo info ) {

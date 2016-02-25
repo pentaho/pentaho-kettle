@@ -72,8 +72,7 @@ public class DBProc extends BaseStep implements StepInterface {
 
       data.argnrs = new int[meta.getArgument().length];
       for ( int i = 0; i < meta.getArgument().length; i++ ) {
-        if ( !meta.getArgumentDirection()[i].equalsIgnoreCase( "OUT" ) ) // IN or INOUT
-        {
+        if ( !meta.getArgumentDirection()[i].equalsIgnoreCase( "OUT" ) ) { // IN or INOUT
           data.argnrs[i] = rowMeta.indexOfValue( meta.getArgument()[i] );
           if ( data.argnrs[i] < 0 ) {
             logError( BaseMessages.getString( PKG, "DBProc.Log.ErrorFindingField" ) + meta.getArgument()[i] + "]" );

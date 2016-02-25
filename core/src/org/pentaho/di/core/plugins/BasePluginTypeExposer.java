@@ -22,10 +22,7 @@
 
 package org.pentaho.di.core.plugins;
 
-import org.pentaho.di.core.exception.KettlePluginException;
-
 import java.lang.annotation.Annotation;
-import java.util.Map;
 
 /**
  * This Class serves only one purpose, defeat the package protection modifiers on the BasePluginType. We normally would
@@ -44,7 +41,7 @@ public class BasePluginTypeExposer {
   private String packageName;
   private final String altPackageName;
 
-  public BasePluginTypeExposer(BasePluginType pluginType, Object target ) {
+  public BasePluginTypeExposer( BasePluginType pluginType, Object target ) {
     this.target = target;
     this.pluginType = pluginType;
 

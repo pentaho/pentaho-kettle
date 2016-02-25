@@ -26,7 +26,6 @@ import java.text.SimpleDateFormat;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -105,8 +104,7 @@ public class Kitchen {
                 return null;
               }
             } );
-          return new AbstractMap.SimpleImmutableEntry<KettlePluginException, Future<KettleException>>
-            ( null, kettleEnvironmentInitFuture );
+          return new AbstractMap.SimpleImmutableEntry<KettlePluginException, Future<KettleException>>( null, kettleEnvironmentInitFuture );
         }
       } );
 

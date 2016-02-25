@@ -556,8 +556,8 @@ public class WebService extends BaseStep implements StepInterface {
        * continues working as intended
        */
 
-        TransformerFactory transformerFactory = TransformerFactory.newInstance();
-        transformer = transformerFactory.newTransformer();
+      TransformerFactory transformerFactory = TransformerFactory.newInstance();
+      transformer = transformerFactory.newTransformer();
 
       transformer.setOutputProperty( OutputKeys.OMIT_XML_DECLARATION, "yes" );
       transformer.setOutputProperty( OutputKeys.INDENT, "yes" );

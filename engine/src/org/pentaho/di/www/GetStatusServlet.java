@@ -23,8 +23,7 @@
 package org.pentaho.di.www;
 
 import java.io.IOException;
-import java.io.PrintStream;
-import java.io.PrintWriter; 
+import java.io.PrintWriter;
 import java.lang.management.OperatingSystemMXBean;
 import java.lang.management.RuntimeMXBean;
 import java.lang.management.ThreadMXBean;

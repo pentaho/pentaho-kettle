@@ -2621,7 +2621,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
         cstmt = connection.prepareCall( sql );
         pos = 1;
         if ( !Const.isEmpty( returnvalue ) ) {
-          switch( returntype ) {
+          switch ( returntype ) {
             case ValueMetaInterface.TYPE_NUMBER:
               cstmt.registerOutParameter( pos, java.sql.Types.DOUBLE );
               break;
@@ -2647,7 +2647,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
         }
         for ( int i = 0; i < arg.length; i++ ) {
           if ( argdir[ i ].equalsIgnoreCase( "OUT" ) || argdir[ i ].equalsIgnoreCase( "INOUT" ) ) {
-            switch( argtype[ i ] ) {
+            switch ( argtype[ i ] ) {
               case ValueMetaInterface.TYPE_NUMBER:
                 cstmt.registerOutParameter( i + pos, java.sql.Types.DOUBLE );
                 break;
@@ -3044,7 +3044,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
         int precision = pmd.getScale( i );
         ValueMetaInterface val;
 
-        switch( sqltype ) {
+        switch ( sqltype ) {
           case java.sql.Types.CHAR:
           case java.sql.Types.VARCHAR:
             val = new ValueMetaString( name );
@@ -3102,7 +3102,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
     for ( int x = 0; x < sql.length(); x++ ) {
       char c = sql.charAt( x );
 
-      switch( c ) {
+      switch ( c ) {
         case '\'':
           quote_opened = !quote_opened;
           break;
@@ -3168,8 +3168,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
         StringBuilder sqlBuff = new StringBuilder( 250 );
         sqlBuff.append( "UPDATE " ).append( schemaTable ).append( " SET " );
 
-        for ( int i = 1; i < rowMeta.size(); i++ ) // Without ID_JOB or ID_BATCH
-        {
+        for ( int i = 1; i < rowMeta.size(); i++ ) { // Without ID_JOB or ID_BATCH 
           ValueMetaInterface valueMeta = rowMeta.getValueMeta( i );
           if ( i > 1 ) {
             sqlBuff.append( ", " );
@@ -4122,7 +4121,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
       if ( resultname != null && resultname.length() != 0 ) {
         ValueMeta vMeta = new ValueMeta( resultname, resulttype );
         Object v = null;
-        switch( resulttype ) {
+        switch ( resulttype ) {
           case ValueMetaInterface.TYPE_BOOLEAN:
             v = Boolean.valueOf( cstmt.getBoolean( pos ) );
             break;
@@ -4167,7 +4166,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
         if ( argdir[ i ].equalsIgnoreCase( "OUT" ) || argdir[ i ].equalsIgnoreCase( "INOUT" ) ) {
           ValueMetaInterface vMeta = ValueMetaFactory.createValueMeta( arg[ i ], argtype[ i ] );
           Object v = null;
-          switch( argtype[ i ] ) {
+          switch ( argtype[ i ] ) {
             case ValueMetaInterface.TYPE_BOOLEAN:
               v = Boolean.valueOf( cstmt.getBoolean( pos + i ) );
               break;
@@ -4347,7 +4346,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
         } else {
           // Normal cases...
           //
-          switch( valueMeta.getType() ) {
+          switch ( valueMeta.getType() ) {
             case ValueMetaInterface.TYPE_BOOLEAN:
             case ValueMetaInterface.TYPE_STRING:
               String string = valueMeta.getString( valueData );

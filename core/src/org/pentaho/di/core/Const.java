@@ -1379,7 +1379,7 @@ public class Const {
     }
     return ret.toString();
   }
-  
+
   /**
    * Replace values in a String with another.
    *
@@ -1451,7 +1451,7 @@ public class Const {
       i--;
     }
   }
-  
+
   /**
    * Count the number of spaces to the left of a text. (leading)
    *
@@ -2538,7 +2538,7 @@ public class Const {
   public static boolean isEmpty( StringBuilder string ) {
     return string == null || string.length() == 0;
   }
-  
+
   /**
    * Check if the string array supplied is empty. A String array is empty when it is null or when the number of elements
    * is 0

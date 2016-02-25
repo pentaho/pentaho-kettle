@@ -1665,7 +1665,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
     if ( maxPercentErrors > 0
       && getLinesRejected() > 0
       && ( minRowsForMaxErrorPercent <= 0 || getLinesRead() >= minRowsForMaxErrorPercent ) ) {
-      int pct = (int) Math.ceil(100 * (double)getLinesRejected() / getLinesRead()); // additional conversion for PDI-10210
+      int pct = (int) Math.ceil( 100 * (double) getLinesRejected() / getLinesRead() ); // additional conversion for PDI-10210
       if ( pct > maxPercentErrors ) {
         logError( BaseMessages.getString(
           PKG, "BaseStep.Log.MaxPercentageRejectedReached", Integer.toString( pct ), Long

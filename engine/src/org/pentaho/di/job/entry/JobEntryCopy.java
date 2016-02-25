@@ -353,7 +353,7 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
   public boolean isDummy() {
     return entry.isDummy();
   }
-  
+
   public boolean isMissing() {
     return entry instanceof MissingEntry;
   }

@@ -22,12 +22,8 @@
 
 package org.pentaho.di.job.entries.mail;
 
-import static org.pentaho.di.job.entry.validator.AndValidator.putValidators;
-import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.andValidator;
-import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.emailValidator;
-import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.integerValidator;
-import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notBlankValidator;
-import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notNullValidator;
+import org.pentaho.di.job.entry.validator.AndValidator;
+import org.pentaho.di.job.entry.validator.JobEntryValidatorUtils;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -1326,18 +1322,24 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
   public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
 
-    andValidator().validate( this, "server", remarks, putValidators( notBlankValidator() ) );
-    andValidator()
-      .validate( this, "replyAddress", remarks, putValidators( notBlankValidator(), emailValidator() ) );
+    JobEntryValidatorUtils.andValidator().validate( this, "server", remarks,
+        AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
+    JobEntryValidatorUtils.andValidator()
+      .validate( this, "replyAddress", remarks, AndValidator.putValidators(
+          JobEntryValidatorUtils.notBlankValidator(), JobEntryValidatorUtils.emailValidator() ) );
 
-    andValidator().validate( this, "destination", remarks, putValidators( notBlankValidator() ) );
+    JobEntryValidatorUtils.andValidator().validate( this, "destination", remarks,
+        AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
 
     if ( usingAuthentication ) {
-      andValidator().validate( this, "authenticationUser", remarks, putValidators( notBlankValidator() ) );
-      andValidator().validate( this, "authenticationPassword", remarks, putValidators( notNullValidator() ) );
+      JobEntryValidatorUtils.andValidator().validate( this, "authenticationUser", remarks,
+          AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
+      JobEntryValidatorUtils.andValidator().validate( this, "authenticationPassword", remarks,
+          AndValidator.putValidators( JobEntryValidatorUtils.notNullValidator() ) );
     }
 
-    andValidator().validate( this, "port", remarks, putValidators( integerValidator() ) );
+    JobEntryValidatorUtils.andValidator().validate( this, "port", remarks,
+        AndValidator.putValidators( JobEntryValidatorUtils.integerValidator() ) );
 
   }
 

@@ -30,5 +30,5 @@ import org.pentaho.di.core.exception.KettleException;
  * Content-based reader for file.
  */
 public interface IBaseFileInputReader extends Closeable {
-    boolean readRow() throws KettleException;
+  boolean readRow() throws KettleException;
 }

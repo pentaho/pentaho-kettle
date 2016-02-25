@@ -303,7 +303,7 @@ public class ConnectionPoolUtil {
       log.logBasic( BaseMessages.getString( PKG, "Database.CreatedConnectionPool", databaseMeta.getName() ) );
     }
   }
-  
+
   protected static String buildPoolName( DatabaseMeta dbMeta, String partitionId ) {
     return dbMeta.getName() + Const.NVL( dbMeta.getDatabaseName(), "" )
         + Const.NVL( dbMeta.getHostname(),  ""  ) + Const.NVL( dbMeta.getDatabasePortNumberString(),  ""  )

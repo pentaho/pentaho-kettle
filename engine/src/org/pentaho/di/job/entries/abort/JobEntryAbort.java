@@ -22,7 +22,7 @@
 
 package org.pentaho.di.job.entries.abort;
 
-import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.addOkRemark;
+import org.pentaho.di.job.entry.validator.JobEntryValidatorUtils;
 
 import java.util.List;
 
@@ -172,6 +172,6 @@ public class JobEntryAbort extends JobEntryBase implements Cloneable, JobEntryIn
 
   public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
-    addOkRemark( this, "messageabort", remarks );
+    JobEntryValidatorUtils.addOkRemark( this, "messageabort", remarks );
   }
 }

@@ -283,7 +283,7 @@ public class Value implements Cloneable, XMLInterface, Serializable {
   public Value( String name, StringBuilder str ) {
     this( name, str.toString() );
   }
-  
+
   /**
    * Constructs a new Value of Type VALUE_TYPE_STRING, with a name, containing a String
    *

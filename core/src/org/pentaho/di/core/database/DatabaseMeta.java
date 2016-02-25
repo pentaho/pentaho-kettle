@@ -1467,7 +1467,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
     return sbsql.toString();
   }
-  
+
   public String stripCR( StringBuilder sbsql ) {
     // DB2 Can't handle \n in SQL Statements...
     if ( !supportsNewLinesInSQL() ) {

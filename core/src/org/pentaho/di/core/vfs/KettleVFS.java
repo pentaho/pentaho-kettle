@@ -82,7 +82,7 @@ public class KettleVFS {
         if ( fsm != null ) {
           try {
             fsm.close();
-          } catch ( Exception ignored ){
+          } catch ( Exception ignored ) {
             // Exceptions can be thrown due to a closed classloader
           }
         }

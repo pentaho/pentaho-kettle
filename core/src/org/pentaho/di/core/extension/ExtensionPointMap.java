@@ -148,15 +148,15 @@ public class ExtensionPointMap {
       try {
         return registry.loadClass( extensionPointPlugin, ExtensionPointInterface.class );
       } catch ( Exception e ) {
-        getLog().logError( "Unable to load extension point for name = [" + ( extensionPointPlugin != null ?
-          extensionPointPlugin.getName() : "null" ) + "]", e );
+        getLog().logError( "Unable to load extension point for name = ["
+          + ( extensionPointPlugin != null ? extensionPointPlugin.getName() : "null" ) + "]", e );
         return null;
       }
     }
   }
 
-  public static LogChannelInterface getLog(){
-    if( log == null ) {
+  public static LogChannelInterface getLog() {
+    if ( log == null ) {
       log = new LogChannel( "ExtensionPointMap" );
     }
     return log;

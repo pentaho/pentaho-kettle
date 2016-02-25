@@ -53,7 +53,6 @@ import mondrian.olap.Result;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.DBCache;
 import org.pentaho.di.core.DBCacheEntry;
-import org.pentaho.di.core.database.DataSourceProviderFactory;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.database.util.DatabaseUtil;
 import org.pentaho.di.core.exception.KettleDatabaseException;

@@ -204,7 +204,7 @@ public class JaninoMetaInjection implements StepMetaInjectionInterface {
 
       while ( iFieldNames.hasNext() ) {
         fields[i] = new JaninoMetaFunction( iFieldNames.next(), iJavaExpressions.next(),
-          ValueMeta.getType( iValueTypes.next() ), Const.toInt( iLengths.next() , -1 ),
+          ValueMeta.getType( iValueTypes.next() ), Const.toInt( iLengths.next(), -1 ),
           Const.toInt( iPrecisions.next(), -1 ), iReplaceValues.next() );
 
         i++;
