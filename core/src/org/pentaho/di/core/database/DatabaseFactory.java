@@ -49,7 +49,7 @@ public class DatabaseFactory implements DatabaseFactoryInterface {
   public String getConnectionTestReport( DatabaseMeta databaseMeta ) throws KettleDatabaseException {
     if ( databaseMeta.getAccessType() != DatabaseMeta.TYPE_ACCESS_PLUGIN ) {
 
-      StringBuffer report = new StringBuffer();
+      StringBuilder report = new StringBuilder();
 
       Database db = new Database( loggingObject, databaseMeta );
       if ( databaseMeta.isPartitioned() ) {
@@ -102,13 +102,13 @@ public class DatabaseFactory implements DatabaseFactoryInterface {
 
   }
 
-  private StringBuffer appendJndiConnectionInfo( StringBuffer report, String jndiName ) {
+  private StringBuilder appendJndiConnectionInfo( StringBuilder report, String jndiName ) {
     report.append( BaseMessages.getString( PKG, "DatabaseMeta.report.JndiName" ) ).append( jndiName ).append(
       Const.CR );
     return report;
   }
 
-  private StringBuffer appendConnectionInfo( StringBuffer report, Database db, DatabaseMeta databaseMeta ) {
+  private StringBuilder appendConnectionInfo( StringBuilder report, Database db, DatabaseMeta databaseMeta ) {
 
     // Check to see if the interface is of a type GenericDatabaseMeta, since it does not have hostname and port fields
     if ( databaseMeta.getDatabaseInterface() instanceof GenericDatabaseMeta ) {
@@ -128,7 +128,7 @@ public class DatabaseFactory implements DatabaseFactoryInterface {
   }
 
   //CHECKSTYLE:LineLength:OFF
-  private StringBuffer appendConnectionInfo( StringBuffer report, String hostName, String portNumber, String dbName ) {
+  private StringBuilder appendConnectionInfo( StringBuilder report, String hostName, String portNumber, String dbName ) {
     report.append( BaseMessages.getString( PKG, "DatabaseMeta.report.Hostname" ) ).append( hostName ).append( Const.CR );
     report.append( BaseMessages.getString( PKG, "DatabaseMeta.report.Port" ) ).append( portNumber ).append( Const.CR );
     report.append( BaseMessages.getString( PKG, "DatabaseMeta.report.DatabaseName" ) ).append( dbName ).append( Const.CR );

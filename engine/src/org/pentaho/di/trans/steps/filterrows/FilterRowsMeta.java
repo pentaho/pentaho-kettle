@@ -113,7 +113,7 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public String getXML() throws KettleException {
-    StringBuffer retval = new StringBuffer( 200 );
+    StringBuilder retval = new StringBuilder( 200 );
 
     List<StreamInterface> targetStreams = getStepIOMeta().getTargetStreams();
     retval.append( XMLHandler.addTagValue( "send_true_to", targetStreams.get( 0 ).getStepname() ) );

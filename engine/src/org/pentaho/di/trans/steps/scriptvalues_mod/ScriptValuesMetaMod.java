@@ -360,7 +360,7 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 300 );
+    StringBuilder retval = new StringBuilder( 300 );
 
     retval.append( "    " ).append( XMLHandler.addTagValue( "compatible", compatible ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "optimizationLevel", optimizationLevel ) );
@@ -659,8 +659,8 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
           remarks.add( cr );
 
           if ( fieldname.length > 0 ) {
-            StringBuffer message =
-              new StringBuffer( BaseMessages.getString(
+            StringBuilder message =
+              new StringBuilder( BaseMessages.getString(
                 PKG, "ScriptValuesMetaMod.CheckResult.FailedToGetValues", String.valueOf( fieldname.length ) )
                 + Const.CR + Const.CR );
 
@@ -748,7 +748,7 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
     return sRC;
   }
 
-  public boolean getValue( Scriptable scope, int i, Value res, StringBuffer message ) {
+  public boolean getValue( Scriptable scope, int i, Value res, StringBuilder message ) {
     boolean error_found = false;
 
     if ( fieldname[i] != null && fieldname[i].length() > 0 ) {

@@ -89,7 +89,7 @@ public class JobEntryDeleteResultFilenames extends JobEntryBase implements Clone
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 50 );
+    StringBuilder retval = new StringBuilder( 100 ); // 75 chars in just tag names and spaces
 
     retval.append( super.getXML() );
     retval.append( "      " ).append( XMLHandler.addTagValue( "foldername", foldername ) );

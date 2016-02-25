@@ -359,7 +359,7 @@ public class MonetDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInjec
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 300 );
+    StringBuilder retval = new StringBuilder( 300 );
 
     // General Settings Tab
     retval.append( "    " ).append( XMLHandler.addTagValue( "connection", dbConnectionName ) );

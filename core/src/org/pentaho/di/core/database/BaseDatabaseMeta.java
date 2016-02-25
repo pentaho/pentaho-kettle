@@ -2171,7 +2171,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface {
    */
   @Override
   public String getSafeFieldname( String fieldname ) {
-    StringBuffer newName = new StringBuffer( fieldname.length() );
+    StringBuilder newName = new StringBuilder( fieldname.length() );
 
     char[] protectors = getFieldnameProtector().toCharArray();
 

@@ -576,7 +576,7 @@ public class JobMeta extends AbstractMeta
       props = Props.getInstance();
     }
 
-    StringBuffer retval = new StringBuffer( 500 );
+    StringBuilder retval = new StringBuilder( 500 );
 
     retval.append( "<" ).append( XML_TAG ).append( ">" ).append( Const.CR );
 

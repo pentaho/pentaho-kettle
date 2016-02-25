@@ -555,7 +555,7 @@ public class TableCompare extends BaseStep implements StepInterface {
   }
 
   private String getKeyDesc( RowMetaInterface keyRowMeta, int[] keyNrs, Object[] one ) throws KettleException {
-    StringBuffer keyDesc = new StringBuffer();
+    StringBuilder keyDesc = new StringBuilder();
     for ( int x = 0; x < keyNrs.length; x++ ) {
       ValueMetaInterface keyValueMeta = keyRowMeta.getValueMeta( x );
       Object keyValueData = one[keyNrs[x]];

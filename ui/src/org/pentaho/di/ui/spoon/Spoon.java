@@ -649,7 +649,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       staticSpoon.commandLineOptions = commandLineOptions;
       // pull the startup perspective id from the command line options and hand it to Spoon
       String pId;
-      StringBuffer perspectiveIdBuff = Spoon.getCommandLineOption( commandLineOptions, "perspective" ).getArgument();
+      StringBuilder perspectiveIdBuff = Spoon.getCommandLineOption( commandLineOptions, "perspective" ).getArgument();
       pId = perspectiveIdBuff.toString();
       if ( !Const.isEmpty( pId ) ) {
         Spoon.staticSpoon.startupPerspective = pId;
@@ -677,8 +677,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   }
 
   private static void initLogging( CommandLineOption[] options ) throws KettleException {
-    StringBuffer optionLogFile = getCommandLineOption( options, "logfile" ).getArgument();
-    StringBuffer optionLogLevel = getCommandLineOption( options, "level" ).getArgument();
+    StringBuilder optionLogFile = getCommandLineOption( options, "logfile" ).getArgument();
+    StringBuilder optionLogLevel = getCommandLineOption( options, "level" ).getArgument();
 
     // Set default Locale:
     Locale.setDefault( Const.DEFAULT_LOCALE );
@@ -7744,10 +7744,10 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   public void selectRep( CommandLineOption[] options ) {
     RepositoryMeta repositoryMeta;
 
-    StringBuffer optionRepname = getCommandLineOption( options, "rep" ).getArgument();
-    StringBuffer optionFilename = getCommandLineOption( options, "file" ).getArgument();
-    StringBuffer optionUsername = getCommandLineOption( options, "user" ).getArgument();
-    StringBuffer optionPassword = getCommandLineOption( options, "pass" ).getArgument();
+    StringBuilder optionRepname = getCommandLineOption( options, "rep" ).getArgument();
+    StringBuilder optionFilename = getCommandLineOption( options, "file" ).getArgument();
+    StringBuilder optionUsername = getCommandLineOption( options, "user" ).getArgument();
+    StringBuilder optionPassword = getCommandLineOption( options, "pass" ).getArgument();
 
     if ( Const.isEmpty( optionRepname )
       && Const.isEmpty( optionFilename ) && props.showRepositoriesDialogAtStartup() ) {
@@ -7833,14 +7833,14 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
     // note that at this point the rep object is populated by previous calls
 
-    StringBuffer optionRepname = getCommandLineOption( options, "rep" ).getArgument();
-    StringBuffer optionFilename = getCommandLineOption( options, "file" ).getArgument();
-    StringBuffer optionDirname = getCommandLineOption( options, "dir" ).getArgument();
-    StringBuffer optionTransname = getCommandLineOption( options, "trans" ).getArgument();
-    StringBuffer optionJobname = getCommandLineOption( options, "job" ).getArgument();
-    // StringBuffer optionUsername = getCommandLineOption(options,
+    StringBuilder optionRepname = getCommandLineOption( options, "rep" ).getArgument();
+    StringBuilder optionFilename = getCommandLineOption( options, "file" ).getArgument();
+    StringBuilder optionDirname = getCommandLineOption( options, "dir" ).getArgument();
+    StringBuilder optionTransname = getCommandLineOption( options, "trans" ).getArgument();
+    StringBuilder optionJobname = getCommandLineOption( options, "job" ).getArgument();
+    // StringBuilder optionUsername = getCommandLineOption(options,
     // "user").getArgument();
-    // StringBuffer optionPassword = getCommandLineOption(options,
+    // StringBuilder optionPassword = getCommandLineOption(options,
     // "pass").getArgument();
 
     try {
@@ -7850,7 +7850,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
           if ( rep != null ) {
 
             if ( Const.isEmpty( optionDirname ) ) {
-              optionDirname = new StringBuffer( RepositoryDirectory.DIRECTORY_SEPARATOR );
+              optionDirname = new StringBuilder( RepositoryDirectory.DIRECTORY_SEPARATOR );
             }
 
             // Options /file, /job and /trans are mutually
@@ -8048,20 +8048,20 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
     CommandLineOption[] clOptions =
       new CommandLineOption[] {
-        new CommandLineOption( "rep", "Repository name", new StringBuffer() ),
-        new CommandLineOption( "user", "Repository username", new StringBuffer() ),
-        new CommandLineOption( "pass", "Repository password", new StringBuffer() ),
-        new CommandLineOption( "job", "The name of the job to launch", new StringBuffer() ),
-        new CommandLineOption( "trans", "The name of the transformation to launch", new StringBuffer() ),
-        new CommandLineOption( "dir", "The directory (don't forget the leading /)", new StringBuffer() ),
-        new CommandLineOption( "file", "The filename (Transformation in XML) to launch", new StringBuffer() ),
+        new CommandLineOption( "rep", "Repository name", new StringBuilder() ),
+        new CommandLineOption( "user", "Repository username", new StringBuilder() ),
+        new CommandLineOption( "pass", "Repository password", new StringBuilder() ),
+        new CommandLineOption( "job", "The name of the job to launch", new StringBuilder() ),
+        new CommandLineOption( "trans", "The name of the transformation to launch", new StringBuilder() ),
+        new CommandLineOption( "dir", "The directory (don't forget the leading /)", new StringBuilder() ),
+        new CommandLineOption( "file", "The filename (Transformation in XML) to launch", new StringBuilder() ),
         new CommandLineOption(
           "level", "The logging level (Basic, Detailed, Debug, Rowlevel, Error, Nothing)",
-          new StringBuffer() ),
-        new CommandLineOption( "logfile", "The logging file to write to", new StringBuffer() ),
+          new StringBuilder() ),
+        new CommandLineOption( "logfile", "The logging file to write to", new StringBuilder() ),
         new CommandLineOption(
-          "log", "The logging file to write to (deprecated)", new StringBuffer(), false, true ),
-        new CommandLineOption( "perspective", "The perspective to start in", new StringBuffer(), false, true ) };
+          "log", "The logging file to write to (deprecated)", new StringBuilder(), false, true ),
+        new CommandLineOption( "perspective", "The perspective to start in", new StringBuilder(), false, true ) };
 
     // start with the default logger until we find out otherwise
     //
@@ -8078,13 +8078,13 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     String kettlePassword = Const.getEnvironmentVariable( "KETTLE_PASSWORD", null );
 
     if ( !Const.isEmpty( kettleRepname ) ) {
-      clOptions[0].setArgument( new StringBuffer( kettleRepname ) );
+      clOptions[0].setArgument( new StringBuilder( kettleRepname ) );
     }
     if ( !Const.isEmpty( kettleUsername ) ) {
-      clOptions[1].setArgument( new StringBuffer( kettleUsername ) );
+      clOptions[1].setArgument( new StringBuilder( kettleUsername ) );
     }
     if ( !Const.isEmpty( kettlePassword ) ) {
-      clOptions[2].setArgument( new StringBuffer( kettlePassword ) );
+      clOptions[2].setArgument( new StringBuilder( kettlePassword ) );
     }
 
     return clOptions;
@@ -8822,7 +8822,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
   public boolean messageBox( final String message, final String text, final boolean allowCancel, final int type ) {
 
-    final StringBuffer answer = new StringBuffer( "N" );
+    final StringBuilder answer = new StringBuilder( "N" );
 
     display.syncExec( new Runnable() {
 

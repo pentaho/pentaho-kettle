@@ -73,7 +73,7 @@ public class SocketWriterMeta extends BaseStepMeta implements StepMetaInterface 
   }
 
   public String getXML() {
-    StringBuffer xml = new StringBuffer();
+    StringBuilder xml = new StringBuilder();
 
     xml.append( "     " + XMLHandler.addTagValue( "port", port ) );
     xml.append( "     " + XMLHandler.addTagValue( "buffer_size", bufferSize ) );

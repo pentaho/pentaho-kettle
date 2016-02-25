@@ -426,8 +426,8 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface {
         data.db.commit( true );
       } else {
         data.db.rollback();
-        StringBuffer msg =
-          new StringBuffer( "Error batch inserting rows into table [" + data.realTableName + "]." );
+        StringBuilder msg =
+          new StringBuilder( "Error batch inserting rows into table [" + data.realTableName + "]." );
         msg.append( Const.CR );
         msg.append( "Errors encountered (first 10):" ).append( Const.CR );
         for ( int x = 0; x < be.getExceptionsList().size() && x < 10; x++ ) {

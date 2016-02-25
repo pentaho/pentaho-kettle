@@ -145,7 +145,7 @@ public class CubeOutputMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 300 );
+    StringBuilder retval = new StringBuilder( 300 );
 
     retval.append( "    <file>" ).append( Const.CR );
     retval.append( "      " ).append( XMLHandler.addTagValue( "name", filename ) );

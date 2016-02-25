@@ -138,7 +138,7 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 200 );
+    StringBuilder retval = new StringBuilder( 450 ); // 365 characters in spaces and tag names alone
 
     retval.append( super.getXML() );
 

@@ -91,7 +91,7 @@ public class FileInputList {
   private static final String YES = "Y";
 
   public static String getRequiredFilesDescription( List<FileObject> nonExistantFiles ) {
-    StringBuffer buffer = new StringBuffer();
+    StringBuilder buffer = new StringBuilder();
     for ( Iterator<FileObject> iter = nonExistantFiles.iterator(); iter.hasNext(); ) {
       FileObject file = iter.next();
       buffer.append( file.getName().getURI() );

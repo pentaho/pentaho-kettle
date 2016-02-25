@@ -64,7 +64,7 @@ public class GPG {
    * Reads an output stream from an external process. Implemented as a thread.
    */
   class ProcessStreamReader extends Thread {
-    StringBuffer stream;
+    StringBuilder stream;
     InputStreamReader in;
 
     static final int BUFFER_SIZE = 1024;
@@ -79,7 +79,7 @@ public class GPG {
 
       this.in = new InputStreamReader( in );
 
-      this.stream = new StringBuffer();
+      this.stream = new StringBuilder();
     }
 
     public void run() {

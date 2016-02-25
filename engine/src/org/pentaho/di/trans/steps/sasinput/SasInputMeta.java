@@ -120,7 +120,7 @@ public class SasInputMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer();
+    StringBuilder retval = new StringBuilder();
 
     retval.append( "    " + XMLHandler.addTagValue( "accept_field", acceptingField ) );
     for ( SasInputField field : outputFields ) {

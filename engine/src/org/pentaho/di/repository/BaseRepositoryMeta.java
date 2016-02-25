@@ -117,7 +117,7 @@ public class BaseRepositoryMeta {
    * @see org.pentaho.di.repository.RepositoryMeta#getXML()
    */
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 100 );
+    StringBuilder retval = new StringBuilder( 100 );
 
     retval.append( "    " ).append( XMLHandler.addTagValue( "id", id ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "name", name ) );

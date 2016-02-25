@@ -166,7 +166,7 @@ public class CheckSum extends BaseStep implements StepInterface {
   }
 
   private byte[] createCheckSum( Object[] r ) throws Exception {
-    StringBuffer Buff = new StringBuffer();
+    StringBuilder Buff = new StringBuilder();
 
     // Loop through fields
     for ( int i = 0; i < data.fieldnr; i++ ) {
@@ -184,7 +184,7 @@ public class CheckSum extends BaseStep implements StepInterface {
   }
 
   private static String getStringFromBytes( byte[] bytes ) {
-    StringBuffer sb = new StringBuffer();
+    StringBuilder sb = new StringBuilder();
     for ( int i = 0; i < bytes.length; i++ ) {
       byte b = bytes[i];
       sb.append( 0x00FF & b );
@@ -204,7 +204,7 @@ public class CheckSum extends BaseStep implements StepInterface {
     String hex = new String( in );
 
     char[] s = hex.toCharArray();
-    StringBuffer hexString = new StringBuffer( 2 * s.length );
+    StringBuilder hexString = new StringBuilder( 2 * s.length );
 
     for ( int i = 0; i < s.length; i++ ) {
       hexString.append( hexDigits[( s[i] & 0x00F0 ) >> 4] ); // hi nibble
@@ -216,7 +216,7 @@ public class CheckSum extends BaseStep implements StepInterface {
 
   private Long calculCheckSum( Object[] r ) throws Exception {
     Long retval;
-    StringBuffer Buff = new StringBuffer();
+    StringBuilder Buff = new StringBuilder();
 
     // Loop through fields
     for ( int i = 0; i < data.fieldnr; i++ ) {

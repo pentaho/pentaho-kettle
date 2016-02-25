@@ -373,7 +373,7 @@ public class PropertyOutputMeta extends BaseStepMeta implements StepMetaInterfac
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer();
+    StringBuilder retval = new StringBuilder();
 
     // Items ...
 

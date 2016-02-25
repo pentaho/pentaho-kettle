@@ -141,7 +141,7 @@ public class StepPartitioningMeta implements XMLInterface, Cloneable {
   }
 
   public String getXML() {
-    StringBuffer xml = new StringBuffer( 150 );
+    StringBuilder xml = new StringBuilder( 150 );
 
     xml.append( "         <partitioning>" ).append( Const.CR );
     xml.append( "           " ).append( XMLHandler.addTagValue( "method", getMethodCode() ) );

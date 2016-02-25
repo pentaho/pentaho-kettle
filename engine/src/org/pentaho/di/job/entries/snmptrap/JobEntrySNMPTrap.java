@@ -153,7 +153,7 @@ public class JobEntrySNMPTrap extends JobEntryBase implements Cloneable, JobEntr
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 128 );
+    StringBuilder retval = new StringBuilder( 200 );
 
     retval.append( super.getXML() );
     retval.append( "      " ).append( XMLHandler.addTagValue( "port", port ) );

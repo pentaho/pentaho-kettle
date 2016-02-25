@@ -239,7 +239,7 @@ public class KettleDatabaseRepositoryPartitionSchemaDelegate extends KettleDatab
           + quote( KettleDatabaseRepository.FIELD_PARTITION_SCHEMA_ID_PARTITION_SCHEMA ) + " = ? ",
         id_partition_schema );
     } else {
-      StringBuffer message = new StringBuffer();
+      StringBuilder message = new StringBuilder( 100 );
 
       message.append( "The partition schema is used by the following transformations:" ).append( Const.CR );
       for ( int i = 0; i < transList.length; i++ ) {

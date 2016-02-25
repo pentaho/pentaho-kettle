@@ -348,7 +348,7 @@ public class Row implements XMLInterface, Comparable<Row>, Serializable {
    */
   @Override
   public String toString() {
-    StringBuffer retval = new StringBuffer( 128 );
+    StringBuilder retval = new StringBuilder( 128 );
 
     retval.append( '[' );
     for ( int i = 0; i < size(); i++ ) {
@@ -375,7 +375,7 @@ public class Row implements XMLInterface, Comparable<Row>, Serializable {
    */
   public String toStringMeta() {
     int i;
-    StringBuffer retval = new StringBuffer( 128 );
+    StringBuilder retval = new StringBuilder( 128 );
 
     retval.append( '[' );
     for ( i = 0; i < size(); i++ ) {

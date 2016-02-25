@@ -1326,9 +1326,9 @@ public class Const {
    */
   public static String rightPad( String ret, int limit ) {
     if ( ret == null ) {
-      return rightPad( new StringBuffer(), limit );
+      return rightPad( new StringBuilder(), limit );
     } else {
-      return rightPad( new StringBuffer( ret ), limit );
+      return rightPad( new StringBuilder( ret ), limit );
     }
   }
 
@@ -1357,6 +1357,30 @@ public class Const {
   }
 
   /**
+   * Right pad a StringBuilder: adds spaces to a string until a certain length. If the length is smaller then the limit
+   * specified, the String is truncated.
+   *
+   * @param ret
+   *          The StringBuilder to pad
+   * @param limit
+   *          The desired length of the padded string.
+   * @return The padded String.
+   */
+  public static String rightPad( StringBuilder ret, int limit ) {
+    int len = ret.length();
+    int l;
+
+    if ( len > limit ) {
+      ret.setLength( limit );
+    } else {
+      for ( l = len; l < limit; l++ ) {
+        ret.append( ' ' );
+      }
+    }
+    return ret.toString();
+  }
+  
+  /**
    * Replace values in a String with another.
    *
    * @param string
@@ -1368,7 +1392,7 @@ public class Const {
    * @return The resulting string with the text pieces replaced.
    */
   public static String replace( String string, String repl, String with ) {
-    StringBuffer str = new StringBuffer( string );
+    StringBuilder str = new StringBuilder( string );
     for ( int i = str.length() - 1; i >= 0; i-- ) {
       if ( str.substring( i ).startsWith( repl ) ) {
         str.delete( i, i + repl.length() );
@@ -1403,6 +1427,31 @@ public class Const {
     }
   }
 
+  /**
+   * Alternate faster version of string replace using a stringbuilder as input (non-synchronized).
+   *
+   * @param str
+   *          The string where we want to replace in
+   * @param code
+   *          The code to search for
+   * @param repl
+   *          The replacement string for code
+   */
+  public static void repl( StringBuilder str, String code, String repl ) {
+    int clength = code.length();
+
+    int i = str.length() - clength;
+
+    while ( i >= 0 ) {
+      String look = str.substring( i, i + clength );
+      // Look for a match!
+      if ( look.equalsIgnoreCase( code ) ) {
+        str.replace( i, i + clength, repl );
+      }
+      i--;
+    }
+  }
+  
   /**
    * Count the number of spaces to the left of a text. (leading)
    *
@@ -1922,7 +1971,7 @@ public class Const {
     if ( string == null ) {
       return null;
     }
-    StringBuffer str = new StringBuffer( string );
+    StringBuilder str = new StringBuilder( string );
 
     int idx = str.indexOf( "%%" );
     while ( idx >= 0 ) {
@@ -2335,7 +2384,7 @@ public class Const {
     }
 
     // Keep track of partial splits and concatenate them into a legit split
-    StringBuffer concatSplit = null;
+    StringBuilder concatSplit = null;
 
     if ( delimiterSplit != null && delimiterSplit.length > 0 ) {
 
@@ -2363,7 +2412,7 @@ public class Const {
 
           // This split contains an enclosure, so either start or finish concatenating
           if ( concatSplit == null ) {
-            concatSplit = new StringBuffer( currentSplit ); // start concatenation
+            concatSplit = new StringBuilder( currentSplit ); // start concatenation
             addSplit = !oddNumberOfEnclosures;
           } else {
             // Check to make sure a new enclosure hasn't started within this split. This method expects
@@ -2480,6 +2529,17 @@ public class Const {
   }
 
   /**
+   * Check if the stringBuilder supplied is empty. A StringBuffer is empty when it is null or when the length is 0
+   *
+   * @param string
+   *          The stringBuffer to check
+   * @return true if the stringBuilder supplied is empty
+   */
+  public static boolean isEmpty( StringBuilder string ) {
+    return string == null || string.length() == 0;
+  }
+  
+  /**
    * Check if the string array supplied is empty. A String array is empty when it is null or when the number of elements
    * is 0
    *
@@ -2545,7 +2605,7 @@ public class Const {
    * @return the input string but with the first character of each word converted to upper-case.
    */
   public static String initCap( String string ) {
-    StringBuffer change = new StringBuffer( string );
+    StringBuilder change = new StringBuilder( string );
     boolean new_word;
     int i;
     char lower, upper, ch;
@@ -2581,7 +2641,7 @@ public class Const {
    * @return a valid filename
    */
   public static String createFilename( String name ) {
-    StringBuffer filename = new StringBuffer();
+    StringBuilder filename = new StringBuilder();
     for ( int i = 0; i < name.length(); i++ ) {
       char c = name.charAt( i );
       if ( Character.isUnicodeIdentifierPart( c ) ) {
@@ -2610,7 +2670,7 @@ public class Const {
     if ( pureFilename.endsWith( ".ktr" ) || pureFilename.endsWith( ".kjb" ) || pureFilename.endsWith( ".xml" ) ) {
       pureFilename = pureFilename.substring( 0, pureFilename.length() - 4 );
     }
-    StringBuffer sb = new StringBuffer();
+    StringBuilder sb = new StringBuilder();
     for ( int i = 0; i < pureFilename.length(); i++ ) {
       char c = pureFilename.charAt( i );
       if ( Character.isUnicodeIdentifierPart( c ) ) {

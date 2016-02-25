@@ -1373,7 +1373,7 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
         + quote( KettleDatabaseRepository.FIELD_TRANS_SLAVE_ID_SLAVE ) + " = ? ", id_slave );
       commit();
     } else {
-      StringBuffer message = new StringBuffer();
+      StringBuilder message = new StringBuilder( 100 );
 
       if ( transList.length > 0 ) {
         message.append( "Slave used by the following transformations:" ).append( Const.CR );

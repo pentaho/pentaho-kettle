@@ -595,7 +595,7 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
       File pluginFile = new File( String.format( "plugins/steps/%s/%s.step.xml", pluginName, pluginName ) );
       pluginFile.getParentFile().mkdirs();
       PrintWriter pw = new PrintWriter( new FileWriter( pluginFile ) );
-      StringBuffer outXML = new StringBuffer( "<step>\n" );
+      StringBuilder outXML = new StringBuilder( "<step>\n" );
       outXML.append( String.format( "\t<name>%s</name>\n", stepname ) );
       outXML.append( "\t<type>UserDefinedJavaClass</type>\n" );
       outXML.append( "\t<description/>\n\t" );

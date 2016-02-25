@@ -82,7 +82,7 @@ public class JobEntryTableExists extends JobEntryBase implements Cloneable, JobE
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 200 );
+    StringBuilder retval = new StringBuilder( 200 );
 
     retval.append( super.getXML() );
 

@@ -188,7 +188,7 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer();
+    StringBuilder retval = new StringBuilder( 550 );
     retval.append( super.getXML() );
     retval.append( "      " ).append( XMLHandler.addTagValue( "servername", servername ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "username", username ) );
@@ -1248,7 +1248,7 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
     if ( aString == null ) {
       return null;
     }
-    StringBuffer buffer = new StringBuffer();
+    StringBuilder buffer = new StringBuilder();
     String rest = aString;
 
     // search for closing string

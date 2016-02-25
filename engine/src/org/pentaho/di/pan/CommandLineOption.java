@@ -61,7 +61,7 @@ public class CommandLineOption {
   /**
    * The value for a normal string argument
    */
-  private StringBuffer argument;
+  private StringBuilder argument;
 
   /**
    * The value for a boolean argument
@@ -81,7 +81,7 @@ public class CommandLineOption {
   /**
    * @return Returns the argument.
    */
-  public StringBuffer getArgument() {
+  public StringBuilder getArgument() {
     return argument;
   }
 
@@ -89,7 +89,7 @@ public class CommandLineOption {
    * @param argument
    *          The argument to set.
    */
-  public void setArgument( StringBuffer argument ) {
+  public void setArgument( StringBuilder argument ) {
     this.argument = argument;
   }
 
@@ -101,13 +101,13 @@ public class CommandLineOption {
    * @param description
    *          the description of the option
    * @param argument
-   *          the StringBuffer that will contain the argument later
+   *          the StringBuilder that will contain the argument later
    * @param yesNo
    *          true if this is a Yes/No flag
    * @param hiddenOption
    *          true if this option should not be shown in the usage list.
    */
-  public CommandLineOption( String option, String description, StringBuffer argument, boolean yesNo,
+  public CommandLineOption( String option, String description, StringBuilder argument, boolean yesNo,
     boolean hiddenOption ) {
     this( option, description, argument, yesNo, hiddenOption, false );
   }
@@ -120,7 +120,7 @@ public class CommandLineOption {
    * @param description
    *          the description of the option
    * @param argument
-   *          the StringBuffer that will contain the argument later
+   *          the StringBuilder that will contain the argument later
    * @param yesNo
    *          true if this is a Yes/No flag
    * @param hiddenOption
@@ -128,7 +128,7 @@ public class CommandLineOption {
    * @param extraParameter
    *          true if this is an extra parameter after the regular options (filenames and so on)
    */
-  public CommandLineOption( String option, String description, StringBuffer argument, boolean yesNo,
+  public CommandLineOption( String option, String description, StringBuilder argument, boolean yesNo,
     boolean hiddenOption, boolean extraParameter ) {
     this.option = option;
     this.description = description;
@@ -148,7 +148,7 @@ public class CommandLineOption {
    * @param description
    *          the description of the option
    * @param argument
-   *          the StringBuffer that will contain the argument later
+   *          the StringBuilder that will contain the argument later
    * @param hiddenOption
    *          true if this option should not be shown in the usage list.
    */
@@ -170,9 +170,9 @@ public class CommandLineOption {
    * @param description
    *          the description of the option
    * @param argument
-   *          the StringBuffer that will contain the argument later
+   *          the StringBuilder that will contain the argument later
    */
-  public CommandLineOption( String option, String description, StringBuffer argument ) {
+  public CommandLineOption( String option, String description, StringBuilder argument ) {
     this( option, description, argument, false, false );
   }
 
@@ -183,7 +183,7 @@ public class CommandLineOption {
    *          The option string
    */
   public CommandLineOption( String option ) {
-    this( option, null, new StringBuffer(), false, false );
+    this( option, null, new StringBuilder(), false, false );
   }
 
   /**
@@ -282,7 +282,7 @@ public class CommandLineOption {
             value = "Y";
           }
 
-          // Add it to the StringBuffer
+          // Add it to the StringBuilder
           argument.append( value );
 
           return value;

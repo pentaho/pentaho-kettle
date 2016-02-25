@@ -145,7 +145,7 @@ public class JobEntryMailValidator extends JobEntryBase implements Cloneable, Jo
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer();
+    StringBuilder retval = new StringBuilder( 100 );
     retval.append( "      " ).append( XMLHandler.addTagValue( "smtpCheck", smtpCheck ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "timeout", timeout ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "defaultSMTP", defaultSMTP ) );

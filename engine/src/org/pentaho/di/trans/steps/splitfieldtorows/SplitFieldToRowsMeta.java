@@ -162,7 +162,7 @@ public class SplitFieldToRowsMeta extends BaseStepMeta implements StepMetaInterf
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer();
+    StringBuilder retval = new StringBuilder();
 
     retval.append( "   " + XMLHandler.addTagValue( "splitfield", splitField ) );
     retval.append( "   " + XMLHandler.addTagValue( "delimiter", delimiter ) );

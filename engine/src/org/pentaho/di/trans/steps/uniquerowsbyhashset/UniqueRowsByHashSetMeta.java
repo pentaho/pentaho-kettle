@@ -178,7 +178,7 @@ public class UniqueRowsByHashSetMeta extends BaseStepMeta implements StepMetaInt
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer();
+    StringBuilder retval = new StringBuilder();
 
     retval.append( "      " + XMLHandler.addTagValue( "store_values", storeValues ) );
     retval.append( "      " + XMLHandler.addTagValue( "reject_duplicate_row", rejectDuplicateRow ) );

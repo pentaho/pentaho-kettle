@@ -455,7 +455,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 512 );
+    StringBuilder retval = new StringBuilder( 512 );
 
     retval.append( "      " ).append( XMLHandler.addTagValue( "schema", schemaName ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "table", tablename ) );

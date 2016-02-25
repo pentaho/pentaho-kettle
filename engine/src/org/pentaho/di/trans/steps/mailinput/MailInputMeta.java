@@ -366,7 +366,7 @@ public class MailInputMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer();
+    StringBuilder retval = new StringBuilder();
     String tab = "      ";
     retval.append( "      " ).append( XMLHandler.addTagValue( "servername", servername ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "username", username ) );

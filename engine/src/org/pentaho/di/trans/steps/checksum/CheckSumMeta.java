@@ -253,7 +253,7 @@ public class CheckSumMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 200 );
+    StringBuilder retval = new StringBuilder( 200 );
     retval.append( "      " ).append( XMLHandler.addTagValue( "checksumtype", checksumtype ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "resultfieldName", resultfieldName ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "resultType", getResultTypeCode( resultType ) ) );

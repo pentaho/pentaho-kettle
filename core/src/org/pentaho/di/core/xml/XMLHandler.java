@@ -769,9 +769,8 @@ public class XMLHandler {
    * @return The XML String for the tag.
    */
   public static String addTagValue( String tag, String val, boolean cr, String... attributes ) {
-    StringBuffer value;
+    StringBuilder value = new StringBuilder( "<" );
     Encoder encoder = ESAPI.encoder();
-    value = new StringBuffer( "<" );
     value.append( tag );
 
     for ( int i = 0; i < attributes.length; i += 2 ) {

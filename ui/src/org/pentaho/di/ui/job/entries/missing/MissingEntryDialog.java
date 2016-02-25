@@ -76,7 +76,7 @@ public class MissingEntryDialog extends JobEntryDialog implements JobEntryDialog
   private String getErrorMessage( List<MissingEntry> missingEntries, int mode ) {
     String message = "";
     if ( mode == MISSING_JOB_ENTRIES ) {
-      StringBuffer entries = new StringBuffer();
+      StringBuilder entries = new StringBuilder();
       for ( MissingEntry entry : missingEntries ) {
         if ( missingEntries.indexOf( entry ) == missingEntries.size() - 1 ) {
           entries.append( "- " + entry.getName() + " - " + entry.getMissingPluginId() + "\n\n" );

@@ -180,7 +180,7 @@ public class AddJobServlet extends BaseHttpServlet implements CartePluginInterfa
     try {
       // First read the complete transformation in memory from the request
       int c;
-      StringBuffer xml = new StringBuffer();
+      StringBuilder xml = new StringBuilder();
       while ( ( c = in.read() ) != -1 ) {
         xml.append( (char) c );
       }
