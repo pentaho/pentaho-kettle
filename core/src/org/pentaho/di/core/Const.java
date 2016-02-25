@@ -751,6 +751,14 @@ public class Const {
     "KETTLE_COMPATIBILITY_MERGE_ROWS_USE_REFERENCE_STREAM_WHEN_IDENTICAL";
 
   /**
+   * System wide flag to control behavior of the Memory Group By step in case of SUM and AVERAGE aggregation. (PDI-5537)
+   * 'Y' preserves the old behavior and always returns a Number type for SUM and Average aggregations
+   * 'N' enables the documented behavior of returning the same type as the input fields use (correct behavior).
+   */
+  public static final String KETTLE_COMPATIBILITY_MEMORY_GROUP_BY_SUM_AVERAGE_RETURN_NUMBER_TYPE =
+    "KETTLE_COMPATIBILITY_MEMORY_GROUP_BY_SUM_AVERAGE_RETURN_NUMBER_TYPE";
+
+  /**
    * You can use this variable to speed up hostname lookup.
    * Hostname lookup is performed by Kettle so that it is capable of logging the server on which a job or transformation is executed.
    */

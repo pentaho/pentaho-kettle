@@ -22,6 +22,12 @@
 
 package org.pentaho.di.trans.steps.memgroupby;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+
 import org.apache.commons.math.stat.descriptive.rank.Percentile;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
@@ -45,12 +51,6 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.memgroupby.MemoryGroupByData.HashEntry;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
-
 /**
  * Groups information based on aggregation rules. (sum, count, ...)
  *
@@ -66,6 +66,7 @@ public class MemoryGroupBy extends BaseStep implements StepInterface {
 
   private boolean allNullsAreZero = false;
   private boolean minNullIsValued = false;
+  private boolean compatibilityMode = false;
 
   public MemoryGroupBy( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
                         Trans trans ) {
@@ -75,6 +76,7 @@ public class MemoryGroupBy extends BaseStep implements StepInterface {
     data = (MemoryGroupByData) stepDataInterface;
   }
 
+  @Override
   public boolean processRow( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
     meta = (MemoryGroupByMeta) smi;
     data = (MemoryGroupByData) sdi;
@@ -89,6 +91,8 @@ public class MemoryGroupBy extends BaseStep implements StepInterface {
       allNullsAreZero = ValueMetaBase.convertStringToBoolean( val );
       val = getVariable( Const.KETTLE_AGGREGATION_MIN_NULL_IS_VALUED, "N" );
       minNullIsValued = ValueMetaBase.convertStringToBoolean( val );
+      compatibilityMode = ValueMetaBase.convertStringToBoolean(
+        getVariable( Const.KETTLE_COMPATIBILITY_MEMORY_GROUP_BY_SUM_AVERAGE_RETURN_NUMBER_TYPE, "N" ) );
 
       // What is the output looking like?
       //
@@ -305,7 +309,7 @@ public class MemoryGroupBy extends BaseStep implements StepInterface {
               aggregate.distinctObjs[i].add( obj );
             }
           }
-          aggregate.counts[i] = (long) aggregate.distinctObjs[i].size();
+          aggregate.counts[i] = aggregate.distinctObjs[i].size();
           break;
         case MemoryGroupByMeta.TYPE_GROUP_COUNT_ALL:
           if ( !subjMeta.isNull( subj ) ) {
@@ -408,8 +412,6 @@ public class MemoryGroupBy extends BaseStep implements StepInterface {
           vMeta = new ValueMetaNumber( meta.getAggregateField()[i] );
           v = new ArrayList<Double>();
           break;
-        case MemoryGroupByMeta.TYPE_GROUP_SUM:
-        case MemoryGroupByMeta.TYPE_GROUP_AVERAGE:
         case MemoryGroupByMeta.TYPE_GROUP_STANDARD_DEVIATION:
           vMeta = new ValueMetaNumber( meta.getAggregateField()[i] );
           break;
@@ -417,6 +419,11 @@ public class MemoryGroupBy extends BaseStep implements StepInterface {
         case MemoryGroupByMeta.TYPE_GROUP_COUNT_ANY:
         case MemoryGroupByMeta.TYPE_GROUP_COUNT_ALL:
           vMeta = new ValueMetaInteger( meta.getAggregateField()[i] );
+          break;
+        case MemoryGroupByMeta.TYPE_GROUP_SUM:
+        case MemoryGroupByMeta.TYPE_GROUP_AVERAGE:
+          vMeta = !compatibilityMode && subjMeta.isNumeric() ? subjMeta.clone() : new ValueMetaNumber();
+          vMeta.setName( meta.getAggregateField()[i] );
           break;
         case MemoryGroupByMeta.TYPE_GROUP_FIRST:
         case MemoryGroupByMeta.TYPE_GROUP_LAST:
@@ -537,13 +544,13 @@ public class MemoryGroupBy extends BaseStep implements StepInterface {
 
   }
 
+  @Override
   public boolean init( StepMetaInterface smi, StepDataInterface sdi ) {
     meta = (MemoryGroupByMeta) smi;
     data = (MemoryGroupByData) sdi;
 
     if ( super.init( smi, sdi ) ) {
       data.map = new HashMap<HashEntry, Aggregate>( 5000 );
-
       return true;
     }
     return false;
@@ -555,6 +562,7 @@ public class MemoryGroupBy extends BaseStep implements StepInterface {
     ( (MemoryGroupByData) sdi ).clear();
   }
 
+  @Override
   public void batchComplete() throws KettleException {
     // Empty the hash table
     //
