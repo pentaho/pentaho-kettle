@@ -1050,6 +1050,23 @@ public class PurRepositoryIT extends RepositoryTestBase implements ApplicationCo
     repository.createRepositoryDirectory( treeLazy, "/home/admin2L/new1" );
   }
 
+  @Test
+  public void testFindDirectory() throws Exception {
+    System.setProperty( PurRepository.LAZY_REPOSITORY, "false" );
+    RepositoryDirectoryInterface tree = repository.loadRepositoryDirectoryTree();
+    RepositoryDirectoryInterface dir = repository.createRepositoryDirectory( tree, "/home/admin3/n" );
+    RepositoryDirectoryInterface sameDir = repository.findDirectory( "/home/admin3/n/" );
+    assertEquals( dir.getPath(), sameDir.getPath() );
+    assertEquals( dir.getParent().getPath(), sameDir.getParent().getPath() );
+
+    System.setProperty( PurRepository.LAZY_REPOSITORY, "true" );
+    tree = repository.loadRepositoryDirectoryTree();
+    dir = repository.createRepositoryDirectory( tree, "/home/admin3L/n" );
+    sameDir = repository.findDirectory( "/home/admin3L/n/" );
+    assertEquals( dir.getPath(), sameDir.getPath() );
+    assertEquals( dir.getParent().getPath(), sameDir.getParent().getPath() );
+  }
+
   protected static class LogListener implements KettleLoggingEventListener {
     private List<KettleLoggingEvent> events = new ArrayList<>();
     private LogLevel logThreshold;
