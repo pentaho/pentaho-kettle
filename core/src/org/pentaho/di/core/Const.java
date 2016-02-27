@@ -1336,6 +1336,8 @@ public class Const {
    * Right pad a StringBuffer: adds spaces to a string until a certain length. If the length is smaller then the limit
    * specified, the String is truncated.
    *
+   * MB - New version is nearly 25% faster
+   *
    * @param ret
    *          The StringBuffer to pad
    * @param limit
@@ -1343,23 +1345,23 @@ public class Const {
    * @return The padded String.
    */
   public static String rightPad( StringBuffer ret, int limit ) {
-    int len = ret.length();
-    int l;
-
-    if ( len > limit ) {
-      ret.setLength( limit );
-    } else {
-      for ( l = len; l < limit; l++ ) {
-        ret.append( ' ' );
+    if ( ret != null ) {
+      while ( ret.length() < limit ) {
+        ret.append( "                    " );
       }
+      ret.setLength( limit );
+      return ret.toString();
+    } else {
+      return null;
     }
-    return ret.toString();
   }
 
   /**
    * Right pad a StringBuilder: adds spaces to a string until a certain length. If the length is smaller then the limit
    * specified, the String is truncated.
    *
+   * MB - New version is nearly 25% faster
+   * 
    * @param ret
    *          The StringBuilder to pad
    * @param limit
@@ -1367,21 +1369,21 @@ public class Const {
    * @return The padded String.
    */
   public static String rightPad( StringBuilder ret, int limit ) {
-    int len = ret.length();
-    int l;
-
-    if ( len > limit ) {
-      ret.setLength( limit );
-    } else {
-      for ( l = len; l < limit; l++ ) {
-        ret.append( ' ' );
+    if ( ret != null ) {
+      while ( ret.length() < limit ) {
+        ret.append( "                    " );
       }
+      ret.setLength( limit );
+      return ret.toString();
+    } else { 
+      return null;
     }
-    return ret.toString();
   }
 
   /**
    * Replace values in a String with another.
+   *
+   * 33% Faster using replaceAll this way than original method
    *
    * @param string
    *          The original String.
@@ -1392,19 +1394,18 @@ public class Const {
    * @return The resulting string with the text pieces replaced.
    */
   public static String replace( String string, String repl, String with ) {
-    StringBuilder str = new StringBuilder( string );
-    for ( int i = str.length() - 1; i >= 0; i-- ) {
-      if ( str.substring( i ).startsWith( repl ) ) {
-        str.delete( i, i + repl.length() );
-        str.insert( i, with );
-      }
+    if ( string != null && repl != null && with != null ) {
+      return string.replaceAll(Pattern.quote(repl), Matcher.quoteReplacement(with));
+    } else {
+      return null;
     }
-    return str.toString();
   }
 
   /**
    * Alternate faster version of string replace using a stringbuffer as input.
    *
+   * 33% Faster using replaceAll this way than original method
+   * 
    * @param str
    *          The string where we want to replace in
    * @param code
@@ -1413,23 +1414,19 @@ public class Const {
    *          The replacement string for code
    */
   public static void repl( StringBuffer str, String code, String repl ) {
-    int clength = code.length();
-
-    int i = str.length() - clength;
-
-    while ( i >= 0 ) {
-      String look = str.substring( i, i + clength );
-      // Look for a match!
-      if ( look.equalsIgnoreCase( code ) ) {
-        str.replace( i, i + clength, repl );
-      }
-      i--;
+    if ( ( code == null ) || ( repl == null ) || ( code.length() == 0 ) || ( repl.length() == 0 ) || ( str == null ) || ( str.length() == 0 ) ) {
+      return; // do nothing
     }
+    String aString = str.toString();
+    str.setLength(0);
+    str.append( aString.replaceAll( Pattern.quote(code), Matcher.quoteReplacement(repl) ) );
   }
 
   /**
    * Alternate faster version of string replace using a stringbuilder as input (non-synchronized).
    *
+   * 33% Faster using replaceAll this way than original method
+   * 
    * @param str
    *          The string where we want to replace in
    * @param code
@@ -1438,18 +1435,12 @@ public class Const {
    *          The replacement string for code
    */
   public static void repl( StringBuilder str, String code, String repl ) {
-    int clength = code.length();
-
-    int i = str.length() - clength;
-
-    while ( i >= 0 ) {
-      String look = str.substring( i, i + clength );
-      // Look for a match!
-      if ( look.equalsIgnoreCase( code ) ) {
-        str.replace( i, i + clength, repl );
-      }
-      i--;
+    if ( ( code == null ) || ( repl == null ) || ( str == null ) ) {
+      return; // do nothing
     }
+    String aString = str.toString();
+    str.setLength(0);
+    str.append( aString.replaceAll( Pattern.quote(code), Matcher.quoteReplacement(repl) ) );
   }
 
   /**
@@ -2507,35 +2498,14 @@ public class Const {
   }
 
   /**
-   * Check if the string supplied is empty. A String is empty when it is null or when the length is 0
+   * Check if the CharSequence (String, StringBuffer, StringBuilder) supplied is empty. 
+   * A CharSequence is empty when it is null or when the length is 0
    *
    * @param string
    *          The string to check
    * @return true if the string supplied is empty
    */
-  public static boolean isEmpty( String string ) {
-    return string == null || string.length() == 0;
-  }
-
-  /**
-   * Check if the stringBuffer supplied is empty. A StringBuffer is empty when it is null or when the length is 0
-   *
-   * @param string
-   *          The stringBuffer to check
-   * @return true if the stringBuffer supplied is empty
-   */
-  public static boolean isEmpty( StringBuffer string ) {
-    return string == null || string.length() == 0;
-  }
-
-  /**
-   * Check if the stringBuilder supplied is empty. A StringBuffer is empty when it is null or when the length is 0
-   *
-   * @param string
-   *          The stringBuffer to check
-   * @return true if the stringBuilder supplied is empty
-   */
-  public static boolean isEmpty( StringBuilder string ) {
+  public static boolean isEmpty( CharSequence string ) {
     return string == null || string.length() == 0;
   }
 
@@ -2547,7 +2517,7 @@ public class Const {
    *          The string array to check
    * @return true if the string array supplied is empty
    */
-  public static boolean isEmpty( String[] strings ) {
+  public static boolean isEmpty( CharSequence[] strings ) {
     return strings == null || strings.length == 0;
   }
 
@@ -3031,23 +3001,63 @@ public class Const {
   }
 
   /**
-   * Remove CR / LF from String
+   * Remove CR / LF from String - Better performance version
+   *   - Doesn't NPE
+   *   - 40 times faster on an empty string
+   *   - 2 times faster on a mixed string
+   *   - 25% faster on 2 char string with only CRLF in it
    *
    * @param in
    *          input
    * @return cleaned string
    */
   public static String removeCRLF( String in ) {
-    char[] inArray = in.toCharArray();
-    StringBuilder out = new StringBuilder( inArray.length );
-    for ( char c : inArray ) {
-      if ( !( c == '\n' || c == '\r' ) ) {
-        out.append( c );
+    if ( ( in != null ) && ( in.length() > 0 ) ) {
+      int inLen = in.length(), posn = 0;
+      char[] tmp = new char[ inLen ];
+      char ch;
+      for ( int i = 0; i < inLen; i++) {
+        ch = in.charAt( i );
+        if ( ( ch != '\n' && ch != '\r' ) ) {
+          tmp[posn] = ch;
+          posn++;
+        }
       }
+      return new String(tmp, 0, posn);
+    } else {
+      return "";
     }
-    return out.toString();
   }
 
+  /**
+   * Remove Character from String - Better performance version
+   *   - Doesn't NPE
+   *   - 40 times faster on an empty string
+   *   - 2 times faster on a mixed string
+   *   - 25% faster on 2 char string with only CR/LF/TAB in it
+   *
+   * @param in
+   *          input
+   * @return cleaned string
+   */
+  public static String removeChar( String in, char badChar ) {
+    if ( ( in != null ) && ( in.length() > 0 ) ) {
+      int inLen = in.length(), posn = 0;
+      char[] tmp = new char[ inLen ];
+      char ch;
+      for ( int i = 0; i < inLen; i++) {
+        ch = in.charAt( i );
+        if ( ch != badChar ) {
+          tmp[posn] = ch;
+          posn++;
+        }
+      }
+      return new String(tmp, 0, posn);
+    } else {
+      return "";
+    }
+  }
+  
   /**
    * Remove CR / LF from String
    *
@@ -3056,14 +3066,7 @@ public class Const {
    * @return cleaned string
    */
   public static String removeCR( String in ) {
-    char[] inArray = in.toCharArray();
-    StringBuilder out = new StringBuilder( inArray.length );
-    for ( char c : inArray ) {
-      if ( c != '\n' ) {
-        out.append( c );
-      }
-    }
-    return out.toString();
+    return removeChar( in, '\n' );
   } // removeCR
 
   /**
@@ -3074,14 +3077,7 @@ public class Const {
    * @return cleaned string
    */
   public static String removeLF( String in ) {
-    char[] inArray = in.toCharArray();
-    StringBuilder out = new StringBuilder( inArray.length );
-    for ( char c : inArray ) {
-      if ( c != '\r' ) {
-        out.append( c );
-      }
-    }
-    return out.toString();
+    return removeChar( in, '\r' );
   } // removeCRLF
 
   /**
@@ -3092,14 +3088,7 @@ public class Const {
    * @return cleaned string
    */
   public static String removeTAB( String in ) {
-    char[] inArray = in.toCharArray();
-    StringBuilder out = new StringBuilder( inArray.length );
-    for ( char c : inArray ) {
-      if ( c != '\t' ) {
-        out.append( c );
-      }
-    }
-    return out.toString();
+    return removeChar( in, '\t' );
   }
 
   /**
@@ -3243,24 +3232,100 @@ public class Const {
     return StringEscapeUtils.escapeXml( content );
   }
 
+  /**
+   * New method avoids string concatenation is between 20% and > 2000% faster
+   * depending on length of the string to pad, and the size to pad it to.
+   * For larger amounts to pad, (e.g. pad a 4 character string out to 20 places)
+   * this is orders of magnitude faster.
+   * 
+   * @param valueToPad
+   *    the string to pad
+   * @param filler
+   *    the pad string to fill with
+   * @param size
+   *    the size to pad to
+   * @return
+   *    the new string, padded to the left
+   *    
+   * Note - The original method was flawed in a few cases:
+   * 
+   *   1- The filler could be a string of any length - and the returned 
+   *   string was not necessarily limited to size. So a 3 character pad
+   *   of an 11 character string could end up being 17 characters long.
+   *   2- For a pad of zero characters ("") the former method would enter
+   *   an infinite loop.
+   *   3- For a null pad, it would throw an NPE
+   *   4- For a null valueToPad, it would throw an NPE
+   */
   public static String Lpad( String valueToPad, String filler, int size ) {
-    if ( size == 0 ) {
+    if ( ( size == 0 ) || ( valueToPad == null ) || ( filler == null ) ) {
       return valueToPad;
     }
-    while ( valueToPad.length() < size ) {
-      valueToPad = filler + valueToPad;
+    int vSize = valueToPad.length();
+    int fSize = filler.length();
+    // This next if ensures previous behavior, but prevents infinite loop
+    // if "" is passed in as a filler.
+    if ( ( vSize >= size ) || ( fSize == 0 )  ) {
+      return valueToPad;
     }
-    return valueToPad;
+    int tgt = ( size - vSize );
+    StringBuilder sb = new StringBuilder( size );
+    sb.append( filler );
+    while ( sb.length() < tgt ) {
+      // instead of adding one character at a time, this
+      // is exponential - much fewer times in loop
+      sb.append( sb );
+    }
+    sb.append( valueToPad );
+    return sb.substring( Math.max( 0, sb.length() - size ) ); // this makes sure you have the right size string returned.
   }
 
+  /**
+   * New method avoids string concatenation is between 50% and > 2000% faster
+   * depending on length of the string to pad, and the size to pad it to.
+   * For larger amounts to pad, (e.g. pad a 4 character string out to 20 places)
+   * this is orders of magnitude faster.
+   * 
+   * @param valueToPad
+   *    the string to pad
+   * @param filler
+   *    the pad string to fill with
+   * @param size
+   *    the size to pad to
+   * @return
+   *   The string, padded to the right
+   *   
+   *   1- The filler can still be a string of any length - and the returned 
+   *   string was not necessarily limited to size. So a 3 character pad
+   *   of an 11 character string with a size of 15 could end up being 17 
+   *   characters long (instead of the "asked for 15").
+   *   2- For a pad of zero characters ("") the former method would enter
+   *   an infinite loop.
+   *   3- For a null pad, it would throw an NPE
+   *   4- For a null valueToPad, it would throw an NPE
+   */
   public static String Rpad( String valueToPad, String filler, int size ) {
-    if ( size == 0 ) {
+    if ( ( size == 0 ) || ( valueToPad == null ) || ( filler == null ) ) {
       return valueToPad;
     }
-    while ( valueToPad.length() < size ) {
-      valueToPad = valueToPad + filler;
+    int vSize = valueToPad.length();
+    int fSize = filler.length();
+    // This next if ensures previous behavior, but prevents infinite loop
+    // if "" is passed in as a filler.
+    if ( ( vSize >= size) || ( fSize == 0 )  ) {
+      return valueToPad;
     }
-    return valueToPad;
+    int tgt = ( size - vSize );
+    StringBuilder sb1 = new StringBuilder( size );
+    sb1.append( filler );
+    while ( sb1.length() < tgt ) {
+      // instead of adding one character at a time, this
+      // is exponential - much fewer times in loop
+      sb1.append( sb1 );
+    }
+    StringBuilder sb = new StringBuilder( valueToPad );
+    sb.append( sb1 );
+    return sb.substring(0, size);
   }
 
   public static boolean classIsOrExtends( Class<?> clazz, Class<?> superClass ) {
