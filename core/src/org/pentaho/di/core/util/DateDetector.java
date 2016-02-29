@@ -33,8 +33,12 @@ public class DateDetector {
   private static final String LOCALE_en_US = "en_US";
 
   @SuppressWarnings( "serial" )
-  private static final BidiMap DATE_FORMAT_TO_REGEXPS_US = new DualHashBidiMap() {
+  static final BidiMap DATE_FORMAT_TO_REGEXPS_US = new DualHashBidiMap() {
     {
+      put( "MM-dd-yyyy", "^[0-1]?[0-9]-[0-3]?[0-9]-\\d{4}$" );
+      put( "dd/MM/yyyy", "^[0-3]?[0-9]/[0-1]?[0-9]/\\d{4}$" );
+      put( "MM-dd-yy", "^[0-1]?[0-9]-[0-3]?[0-9]-\\d{2}$" );
+      put( "dd/MM/yy", "^[0-3]?[0-9]/[0-1]?[0-9]/\\d{2}$" );
       put( "yyyyMMdd", "^\\d{8}$" );
       put( "dd-MM-yy", "^\\d{1,2}-\\d{1,2}-\\d{2}$" );
       put( "dd-MM-yyyy", "^\\d{1,2}-\\d{1,2}-\\d{4}$" );
@@ -88,8 +92,12 @@ public class DateDetector {
   };
 
   @SuppressWarnings( "serial" )
-  private static final BidiMap DATE_FORMAT_TO_REGEXPS = new DualHashBidiMap() {
+  static final BidiMap DATE_FORMAT_TO_REGEXPS = new DualHashBidiMap() {
     {
+      put( "MM-dd-yyyy", "^[0-1]?[0-9]-[0-3]?[0-9]-\\d{4}$" );
+      put( "dd/MM/yyyy", "^[0-3]?[0-9]/[0-1]?[0-9]/\\d{4}$" );
+      put( "MM-dd-yy", "^[0-1]?[0-9]-[0-3]?[0-9]-\\d{2}$" );
+      put( "dd/MM/yy", "^[0-3]?[0-9]/[0-1]?[0-9]/\\d{2}$" );
       put( "yyyyMMdd", "^\\d{8}$" );
       put( "dd-MM-yy", "^\\d{1,2}-\\d{1,2}-\\d{2}$" );
       put( "dd-MM-yyyy", "^\\d{1,2}-\\d{1,2}-\\d{4}$" );
@@ -270,19 +278,44 @@ public class DateDetector {
     if ( dateString == null ) {
       return null;
     }
-    if ( locale != null && LOCALE_en_US.equalsIgnoreCase( locale ) ) {
-      for ( Object regexp : DATE_FORMAT_TO_REGEXPS_US.values() ) {
-        if ( dateString.toLowerCase().matches( (String) regexp ) ) {
-          return (String) DATE_FORMAT_TO_REGEXPS_US.getKey( regexp );
-        }
-      }
-    }
-    for ( Object regexp : DATE_FORMAT_TO_REGEXPS.values() ) {
+    for ( Object regexp : getDateFormatToRegExps( locale ).values() ) {
       if ( dateString.toLowerCase().matches( (String) regexp ) ) {
-        return (String) DATE_FORMAT_TO_REGEXPS.getKey( regexp );
+        return (String) getDateFormatToRegExps( locale ).getKey( regexp );
       }
     }
     return null;
+  }
+
+  /**
+   * Finds a date format that matches the date value given. Will try the desiredKey format before attempting others. The
+   * first to match is returned.
+   * 
+   * @param dateString
+   *          the literal value of the date (eg: "01/01/2001")
+   * @param locale
+   *          the locale in play
+   * @param desiredKey
+   *          the desired format (should be a valid key to DATE_FORMAT_TO_REGEXPS)
+   * @return The key to the format that matched or null if none found.
+   */
+  public static String detectDateFormatBiased( String dateString, String locale, String desiredKey ) {
+    if ( dateString == null ) {
+      return null;
+    }
+    String regex = (String) getDateFormatToRegExps( locale ).get( desiredKey );
+    if ( regex != null && dateString.toLowerCase().matches( regex ) ) {
+      return desiredKey;
+    } else {
+      return detectDateFormat( dateString, locale );
+    }
+  }
+
+  public static BidiMap getDateFormatToRegExps( String locale ) {
+    if ( locale == null || LOCALE_en_US.equalsIgnoreCase( locale ) ) {
+      return DATE_FORMAT_TO_REGEXPS_US;
+    } else {
+      return DATE_FORMAT_TO_REGEXPS;
+    }
   }
 
   /**
@@ -335,7 +368,9 @@ public class DateDetector {
    * @return true if we found that we know dateFormat and it applied for given string
    */
   public static boolean isValidDateFormatToStringDate( String dateFormat, String dateString, String locale ) {
-    String detectedDateFormat = detectDateFormat( dateString, locale );
+    String detectedDateFormat =
+        dateFormat != null ? detectDateFormatBiased( dateString, locale, dateFormat ) : detectDateFormat( dateString,
+            locale );
     if ( ( dateFormat != null ) && ( dateFormat.equals( detectedDateFormat ) ) ) {
       return true;
     }
