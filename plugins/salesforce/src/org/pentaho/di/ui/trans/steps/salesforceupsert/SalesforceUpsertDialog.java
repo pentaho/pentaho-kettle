@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -63,6 +63,7 @@ import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
@@ -737,6 +738,7 @@ public class SalesforceUpsertDialog extends BaseStepDialog implements StepDialog
   private void test() {
     boolean successConnection = true;
     String msgError = null;
+    String realUsername = null;
     SalesforceConnection connection = null;
     try {
       SalesforceUpsertMeta meta = new SalesforceUpsertMeta();
@@ -747,9 +749,10 @@ public class SalesforceUpsertDialog extends BaseStepDialog implements StepDialog
         return;
       }
 
-      connection =
-        new SalesforceConnection( log, transMeta.environmentSubstitute( meta.getTargetURL() ), transMeta
-          .environmentSubstitute( meta.getUserName() ), transMeta.environmentSubstitute( meta.getPassword() ) );
+      String realURL = transMeta.environmentSubstitute( meta.getTargetURL() );
+      realUsername = transMeta.environmentSubstitute( meta.getUserName() );
+      String realPassword = Utils.resolvePassword( variables, meta.getPassword() );
+      connection = new SalesforceConnection( log, realURL, realUsername, realPassword );
       connection.connect();
 
       successConnection = true;
@@ -768,7 +771,7 @@ public class SalesforceUpsertDialog extends BaseStepDialog implements StepDialog
 
     if ( successConnection ) {
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_INFORMATION );
-      mb.setMessage( BaseMessages.getString( PKG, "SalesforceUpsertDialog.Connected.OK", wUserName.getText() )
+      mb.setMessage( BaseMessages.getString( PKG, "SalesforceUpsertDialog.Connected.OK", realUsername )
         + Const.CR );
       mb.setText( BaseMessages.getString( PKG, "SalesforceUpsertDialog.Connected.Title.Ok" ) );
       mb.open();
@@ -776,7 +779,7 @@ public class SalesforceUpsertDialog extends BaseStepDialog implements StepDialog
       new ErrorDialog(
         shell,
         BaseMessages.getString( PKG, "SalesforceUpsertDialog.Connected.Title.Error" ),
-        BaseMessages.getString( PKG, "SalesforceUpsertDialog.Connected.NOK", wUserName.getText() ),
+        BaseMessages.getString( PKG, "SalesforceUpsertDialog.Connected.NOK", realUsername ),
         new Exception( msgError ) );
     }
 
