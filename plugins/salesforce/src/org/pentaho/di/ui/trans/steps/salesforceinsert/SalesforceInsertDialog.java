@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -63,16 +63,16 @@ import org.pentaho.di.core.SourceToTargetMapping;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
+import org.pentaho.di.core.row.value.ValueMetaNone;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
-import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.steps.salesforceinput.SalesforceConnection;
-import org.pentaho.di.trans.steps.salesforceinput.SalesforceConnectionUtils;
+import org.pentaho.di.trans.steps.salesforce.SalesforceConnection;
+import org.pentaho.di.trans.steps.salesforce.SalesforceConnectionUtils;
+import org.pentaho.di.trans.steps.salesforce.SalesforceStepMeta;
 import org.pentaho.di.trans.steps.salesforceinsert.SalesforceInsertMeta;
 import org.pentaho.di.ui.core.dialog.EnterMappingDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
@@ -84,8 +84,9 @@ import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.trans.step.TableItemInsertListener;
+import org.pentaho.di.ui.trans.steps.salesforce.SalesforceStepDialog;
 
-public class SalesforceInsertDialog extends BaseStepDialog implements StepDialogInterface {
+public class SalesforceInsertDialog extends SalesforceStepDialog {
 
   private static Class<?> PKG = SalesforceInsertMeta.class; // for i18n purposes, needed by Translator2!!
 
@@ -701,56 +702,6 @@ public class SalesforceInsertDialog extends BaseStepDialog implements StepDialog
     }
   }
 
-  private void test() {
-    boolean successConnection = true;
-    String msgError = null;
-    String realUsername = null;
-    SalesforceConnection connection = null;
-
-    try {
-      SalesforceInsertMeta meta = new SalesforceInsertMeta();
-      getInfo( meta );
-
-      // check if the user is given
-      if ( !checkUser() ) {
-        return;
-      }
-
-      String realURL = transMeta.environmentSubstitute( meta.getTargetURL() );
-      realUsername = transMeta.environmentSubstitute( meta.getUserName() );
-      String realPassword = transMeta.environmentSubstitute( meta.getPassword() );
-      connection =
-        new SalesforceConnection( log, realURL, realUsername, realPassword );
-      connection.connect();
-
-      successConnection = true;
-    } catch ( Exception e ) {
-      successConnection = false;
-      msgError = e.getMessage();
-    } finally {
-      if ( connection != null ) {
-        try {
-          connection.close();
-        } catch ( Exception e ) { /* Ignore */
-        }
-      }
-    }
-
-    if ( successConnection ) {
-      MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_INFORMATION );
-      mb.setMessage( BaseMessages.getString( PKG, "SalesforceInsertDialog.Connected.OK", realUsername )
-        + Const.CR );
-      mb.setText( BaseMessages.getString( PKG, "SalesforceInsertDialog.Connected.Title.Ok" ) );
-      mb.open();
-    } else {
-      new ErrorDialog(
-        shell,
-        BaseMessages.getString( PKG, "SalesforceInsertDialog.Connected.Title.Error" ),
-        BaseMessages.getString( PKG, "SalesforceInsertDialog.Connected.NOK", realUsername ),
-        new Exception( msgError ) );
-    }
-  }
-
   /**
    * Read the data from the TextFileInputMeta object and show it in this dialog.
    *
@@ -759,7 +710,7 @@ public class SalesforceInsertDialog extends BaseStepDialog implements StepDialog
    */
   public void getData( SalesforceInsertMeta in ) {
     wURL.setText( Const.NVL( in.getTargetURL(), "" ) );
-    wUserName.setText( Const.NVL( in.getUserName(), "" ) );
+    wUserName.setText( Const.NVL( in.getUsername(), "" ) );
     wPassword.setText( Const.NVL( in.getPassword(), "" ) );
     wBatchSize.setText( in.getBatchSize() );
     wModule.setText( Const.NVL( in.getModule(), "Account" ) );
@@ -790,8 +741,8 @@ public class SalesforceInsertDialog extends BaseStepDialog implements StepDialog
     wReturn.setRowNums();
     wReturn.optWidth( true );
 
-    wTimeOut.setText( Const.NVL( in.getTimeOut(), SalesforceConnectionUtils.DEFAULT_TIMEOUT ) );
-    wUseCompression.setSelection( in.isUsingCompression() );
+    wTimeOut.setText( Const.NVL( in.getTimeout(), SalesforceConnectionUtils.DEFAULT_TIMEOUT ) );
+    wUseCompression.setSelection( in.isCompression() );
     wRollbackAllChangesOnError.setSelection( in.isRollbackAllChangesOnError() );
 
     wStepname.selectAll();
@@ -816,31 +767,33 @@ public class SalesforceInsertDialog extends BaseStepDialog implements StepDialog
     dispose();
   }
 
-  private void getInfo( SalesforceInsertMeta in ) throws KettleException {
+  @Override
+  protected void getInfo( SalesforceStepMeta in ) throws KettleException {
+    SalesforceInsertMeta meta = (SalesforceInsertMeta) in;
     stepname = wStepname.getText(); // return value
 
     // copy info to SalesforceInsertMeta class (input)
-    in.setTargetURL( Const.NVL( wURL.getText(), SalesforceConnectionUtils.TARGET_DEFAULT_URL ) );
-    in.setUserName( wUserName.getText() );
-    in.setPassword( wPassword.getText() );
-    in.setModule( Const.NVL( wModule.getText(), "Account" ) );
-    in.setSalesforceIDFieldName( wSalesforceIDFieldName.getText() );
-    in.setBatchSize( wBatchSize.getText() );
+    meta.setTargetURL( Const.NVL( wURL.getText(), SalesforceConnectionUtils.TARGET_DEFAULT_URL ) );
+    meta.setUsername( wUserName.getText() );
+    meta.setPassword( wPassword.getText() );
+    meta.setModule( Const.NVL( wModule.getText(), "Account" ) );
+    meta.setSalesforceIDFieldName( wSalesforceIDFieldName.getText() );
+    meta.setBatchSize( wBatchSize.getText() );
 
     int nrfields = wReturn.nrNonEmpty();
 
-    in.allocate( nrfields );
+    meta.allocate( nrfields );
 
     //CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < nrfields; i++ ) {
       TableItem item = wReturn.getNonEmpty( i );
-      in.getUpdateLookup()[i] = item.getText( 1 );
-      in.getUpdateStream()[i] = item.getText( 2 );
-      in.getUseExternalId()[i] = Boolean.valueOf( "Y".equals( item.getText( 3 ) ) );
+      meta.getUpdateLookup()[i] = item.getText( 1 );
+      meta.getUpdateStream()[i] = item.getText( 2 );
+      meta.getUseExternalId()[i] = Boolean.valueOf( "Y".equals( item.getText( 3 ) ) );
     }
-    in.setUseCompression( wUseCompression.getSelection() );
-    in.setTimeOut( Const.NVL( wTimeOut.getText(), "0" ) );
-    in.setRollbackAllChangesOnError( wRollbackAllChangesOnError.getSelection() );
+    meta.setCompression( wUseCompression.getSelection() );
+    meta.setTimeout( Const.NVL( wTimeOut.getText(), "0" ) );
+    meta.setRollbackAllChangesOnError( wRollbackAllChangesOnError.getSelection() );
   }
 
   // check if module, username is given
@@ -939,7 +892,7 @@ public class SalesforceInsertDialog extends BaseStepDialog implements StepDialog
           // Mark date columns as TYPE_DATE to strip time part later
           targetFields.addValueMeta( ValueMetaFactory.createValueMeta( fieldNames[i], ValueMetaInterface.TYPE_DATE ) );
         } else {
-          targetFields.addValueMeta( new ValueMeta( fieldNames[i] ) );
+          targetFields.addValueMeta( new ValueMetaNone( fieldNames[i] ) );
         }
       }
     } catch ( Exception e ) {

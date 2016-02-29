@@ -20,40 +20,17 @@
  *
  ******************************************************************************/
 
-package org.pentaho.di.trans.steps.salesforceinsert;
+package org.pentaho.di.trans.steps.salesforce;
 
-import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.trans.steps.salesforce.SalesforceStepData;
+import static org.junit.Assert.assertNull;
 
-import com.sforce.soap.partner.SaveResult;
-import com.sforce.soap.partner.sobject.SObject;
+import org.junit.Test;
 
-/*
- * @author Samatar
- * @since 10-06-2007
- */
-public class SalesforceInsertData extends SalesforceStepData {
-  public RowMetaInterface inputRowMeta;
-  public RowMetaInterface outputRowMeta;
+public class SalesforceStepDataTest {
 
-  public int nrfields;
-  public int[] fieldnrs;
-
-  public SaveResult[] saveResult;
-
-  public SObject[] sfBuffer;
-  public Object[][] outputBuffer;
-  public int iBufferPos;
-
-  public String realSalesforceFieldName;
-
-  public SalesforceInsertData() {
-    super();
-
-    nrfields = 0;
-
-    saveResult = null;
-    realSalesforceFieldName = null;
-    iBufferPos = 0;
+  @Test
+  public void testConstructor() {
+    SalesforceStepData data = new SalesforceStepData();
+    assertNull( data.connection );
   }
 }

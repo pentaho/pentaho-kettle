@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,9 +23,7 @@
 package org.pentaho.di.trans.steps.salesforceupsert;
 
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.trans.step.BaseStepData;
-import org.pentaho.di.trans.step.StepDataInterface;
-import org.pentaho.di.trans.steps.salesforceinput.SalesforceConnection;
+import org.pentaho.di.trans.steps.salesforce.SalesforceStepData;
 
 import com.sforce.soap.partner.UpsertResult;
 import com.sforce.soap.partner.sobject.SObject;
@@ -34,16 +32,13 @@ import com.sforce.soap.partner.sobject.SObject;
  * @author Samatar
  * @since 10-06-2007
  */
-public class SalesforceUpsertData extends BaseStepData implements StepDataInterface {
+public class SalesforceUpsertData extends SalesforceStepData {
   public RowMetaInterface inputRowMeta;
   public RowMetaInterface outputRowMeta;
 
   public int nrfields;
-  public String realURL;
-  public String realModule;
   public int[] fieldnrs;
 
-  public SalesforceConnection connection;
   public UpsertResult[] upsertResult;
 
   public SObject[] sfBuffer;
@@ -57,10 +52,7 @@ public class SalesforceUpsertData extends BaseStepData implements StepDataInterf
 
     nrfields = 0;
 
-    connection = null;
-    realURL = null;
     upsertResult = null;
-    realModule = null;
     realSalesforceFieldName = null;
     iBufferPos = 0;
   }

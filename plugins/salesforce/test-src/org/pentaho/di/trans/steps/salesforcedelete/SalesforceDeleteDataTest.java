@@ -20,40 +20,24 @@
  *
  ******************************************************************************/
 
-package org.pentaho.di.trans.steps.salesforceinsert;
+package org.pentaho.di.trans.steps.salesforcedelete;
 
-import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.trans.steps.salesforce.SalesforceStepData;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
-import com.sforce.soap.partner.SaveResult;
-import com.sforce.soap.partner.sobject.SObject;
+import org.junit.Test;
 
-/*
- * @author Samatar
- * @since 10-06-2007
- */
-public class SalesforceInsertData extends SalesforceStepData {
-  public RowMetaInterface inputRowMeta;
-  public RowMetaInterface outputRowMeta;
+public class SalesforceDeleteDataTest {
 
-  public int nrfields;
-  public int[] fieldnrs;
-
-  public SaveResult[] saveResult;
-
-  public SObject[] sfBuffer;
-  public Object[][] outputBuffer;
-  public int iBufferPos;
-
-  public String realSalesforceFieldName;
-
-  public SalesforceInsertData() {
-    super();
-
-    nrfields = 0;
-
-    saveResult = null;
-    realSalesforceFieldName = null;
-    iBufferPos = 0;
+  @Test
+  public void testConstructor() {
+    SalesforceDeleteData data = new SalesforceDeleteData();
+    assertNull( data.inputRowMeta );
+    assertNull( data.outputRowMeta );
+    assertNull( data.deleteResult );
+    assertNull( data.deleteId );
+    assertNull( data.outputBuffer );
+    assertEquals( 0, data.iBufferPos );
+    assertEquals( -1, data.indexOfKeyField );
   }
 }

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -33,6 +33,10 @@ import org.pentaho.di.i18n.BaseMessages;
  *
  */
 public class SalesforceUtils {
+
+  private SalesforceUtils() {
+  }
+
   private static Class<?> PKG = SalesforceUtils.class; // for i18n purposes, needed by Translator2!!
 
   private static final String EXTID_SEPARATOR = "/";

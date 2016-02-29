@@ -57,24 +57,23 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
-import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.TransPreviewFactory;
-import org.pentaho.di.trans.step.BaseStepMeta;
-import org.pentaho.di.trans.step.StepDialogInterface;
-import org.pentaho.di.trans.steps.salesforceinput.SOQLValuesHighlight;
-import org.pentaho.di.trans.steps.salesforceinput.SalesforceConnection;
-import org.pentaho.di.trans.steps.salesforceinput.SalesforceConnectionUtils;
+import org.pentaho.di.trans.steps.salesforce.SOQLValuesHighlight;
+import org.pentaho.di.trans.steps.salesforce.SalesforceConnection;
+import org.pentaho.di.trans.steps.salesforce.SalesforceConnectionUtils;
+import org.pentaho.di.trans.steps.salesforce.SalesforceStepMeta;
 import org.pentaho.di.trans.steps.salesforceinput.SalesforceInputField;
 import org.pentaho.di.trans.steps.salesforceinput.SalesforceInputMeta;
 import org.pentaho.di.ui.core.dialog.EnterNumberDialog;
@@ -89,12 +88,12 @@ import org.pentaho.di.ui.core.widget.StyledTextComp;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
-import org.pentaho.di.ui.trans.step.BaseStepDialog;
+import org.pentaho.di.ui.trans.steps.salesforce.SalesforceStepDialog;
 
 import com.sforce.soap.partner.Field;
 import com.sforce.soap.partner.sobject.SObject;
 
-public class SalesforceInputDialog extends BaseStepDialog implements StepDialogInterface {
+public class SalesforceInputDialog extends SalesforceStepDialog {
 
   private static Class<?> PKG = SalesforceInputMeta.class; // for i18n purposes, needed by Translator2!!
 
@@ -198,7 +197,7 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
   private ColumnInfo[] colinf;
 
   public SalesforceInputDialog( Shell parent, Object in, TransMeta transMeta, String sname ) {
-    super( parent, (BaseStepMeta) in, transMeta, sname );
+    super( parent, in, transMeta, sname );
     input = (SalesforceInputMeta) in;
   }
 
@@ -1112,7 +1111,7 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
             BaseMessages.getString( PKG, "System.Combo.No" ) }, true ),
         new ColumnInfo(
           BaseMessages.getString( PKG, "SalesforceInputDialog.FieldsTable.Type.Column" ),
-          ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes(), true ),
+          ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMetaFactory.getValueMetaNames(), true ),
         new ColumnInfo(
           BaseMessages.getString( PKG, "SalesforceInputDialog.FieldsTable.Format.Column" ),
           ColumnInfo.COLUMN_TYPE_FORMAT, 3 ),
@@ -1318,53 +1317,6 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
     wlInclDeletionDateField.setEnabled( wInclDeletionDate.getSelection() );
   }
 
-  private void test() {
-
-    boolean successConnection = true;
-    String msgError = null;
-    SalesforceConnection connection = null;
-    String realUsername = null;
-    try {
-      SalesforceInputMeta meta = new SalesforceInputMeta();
-      getInfo( meta );
-
-      // get real values
-      String realURL = transMeta.environmentSubstitute( meta.getTargetURL() );
-      realUsername = transMeta.environmentSubstitute( meta.getUserName() );
-      String realPassword = transMeta.environmentSubstitute( meta.getPassword() );
-      int realTimeOut = Const.toInt( transMeta.environmentSubstitute( meta.getTimeOut() ), 0 );
-
-      connection = new SalesforceConnection( log, realURL, realUsername, realPassword );
-      connection.setTimeOut( realTimeOut );
-      connection.connect();
-
-    } catch ( Exception e ) {
-      successConnection = false;
-      msgError = e.getMessage();
-    } finally {
-      if ( connection != null ) {
-        try {
-          connection.close();
-        } catch ( Exception e ) { /* Ignore */
-        }
-      }
-    }
-    if ( successConnection ) {
-
-      MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_INFORMATION );
-      mb.setMessage( BaseMessages.getString( PKG, "SalesforceInputDialog.Connected.OK", realUsername )
-        + Const.CR );
-      mb.setText( BaseMessages.getString( PKG, "SalesforceInputDialog.Connected.Title.Ok" ) );
-      mb.open();
-    } else {
-      new ErrorDialog(
-        shell,
-        BaseMessages.getString( PKG, "SalesforceInputDialog.Connected.Title.Error" ),
-        BaseMessages.getString( PKG, "SalesforceInputDialog.Connected.NOK", realUsername ),
-        new Exception( msgError ) );
-    }
-  }
-
   private void get() {
     SalesforceConnection connection = null;
     try {
@@ -1378,9 +1330,9 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
       // get real values
       String realModule = transMeta.environmentSubstitute( meta.getModule() );
       String realURL = transMeta.environmentSubstitute( meta.getTargetURL() );
-      String realUsername = transMeta.environmentSubstitute( meta.getUserName() );
+      String realUsername = transMeta.environmentSubstitute( meta.getUsername() );
       String realPassword = transMeta.environmentSubstitute( meta.getPassword() );
-      int realTimeOut = Const.toInt( transMeta.environmentSubstitute( meta.getTimeOut() ), 0 );
+      int realTimeOut = Const.toInt( transMeta.environmentSubstitute( meta.getTimeout() ), 0 );
 
       connection = new SalesforceConnection( log, realURL, realUsername, realPassword );
       connection.setTimeOut( realTimeOut );
@@ -1480,7 +1432,7 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
         fieldType = "date";
       } else if ( StringUtil.IsInteger( firstValue ) ) {
         fieldType = "int";
-        fieldLength = Integer.toString( ValueMeta.DEFAULT_INTEGER_LENGTH );
+        fieldLength = Integer.toString( ValueMetaInterface.DEFAULT_INTEGER_LENGTH );
       } else if ( StringUtil.IsNumber( firstValue ) ) {
         fieldType = "double";
       } else if ( firstValue.equals( "true" ) || firstValue.equals( "false" ) ) {
@@ -1560,7 +1512,7 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
    */
   public void getData( SalesforceInputMeta in ) {
     wURL.setText( Const.NVL( in.getTargetURL(), "" ) );
-    wUserName.setText( Const.NVL( in.getUserName(), "" ) );
+    wUserName.setText( Const.NVL( in.getUsername(), "" ) );
     wPassword.setText( Const.NVL( in.getPassword(), "" ) );
     wModule.setText( Const.NVL( in.getModule(), "Account" ) );
     wCondition.setText( Const.NVL( in.getCondition(), "" ) );
@@ -1585,8 +1537,8 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
     wInclRownumField.setText( Const.NVL( in.getRowNumberField(), "" ) );
     wInclRownum.setSelection( in.includeRowNumber() );
 
-    wTimeOut.setText( Const.NVL( in.getTimeOut(), SalesforceConnectionUtils.DEFAULT_TIMEOUT ) );
-    wUseCompression.setSelection( in.isUsingCompression() );
+    wTimeOut.setText( Const.NVL( in.getTimeout(), SalesforceConnectionUtils.DEFAULT_TIMEOUT ) );
+    wUseCompression.setSelection( in.isCompression() );
     wQueryAll.setSelection( in.isQueryAll() );
     wLimit.setText( "" + in.getRowLimit() );
 
@@ -1687,40 +1639,43 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
     dispose();
   }
 
-  private void getInfo( SalesforceInputMeta in ) throws KettleException {
+  @Override
+  protected void getInfo( SalesforceStepMeta in ) throws KettleException {
+    SalesforceInputMeta meta = (SalesforceInputMeta) in;
+
     stepname = wStepname.getText(); // return value
 
     // copy info to SalesforceInputMeta class (input)
-    in.setTargetURL( Const.NVL( wURL.getText(), SalesforceConnectionUtils.TARGET_DEFAULT_URL ) );
-    in.setUserName( Const.NVL( wUserName.getText(), "" ) );
-    in.setPassword( Const.NVL( wPassword.getText(), "" ) );
-    in.setModule( Const.NVL( wModule.getText(), "Account" ) );
-    in.setCondition( Const.NVL( wCondition.getText(), "" ) );
+    meta.setTargetURL( Const.NVL( wURL.getText(), SalesforceConnectionUtils.TARGET_DEFAULT_URL ) );
+    meta.setUsername( Const.NVL( wUserName.getText(), "" ) );
+    meta.setPassword( Const.NVL( wPassword.getText(), "" ) );
+    meta.setModule( Const.NVL( wModule.getText(), "Account" ) );
+    meta.setCondition( Const.NVL( wCondition.getText(), "" ) );
 
-    in.setSpecifyQuery( wspecifyQuery.getSelection() );
-    in.setQuery( Const.NVL( wQuery.getText(), "" ) );
-    in.setUseCompression( wUseCompression.getSelection() );
-    in.setQueryAll( wQueryAll.getSelection() );
-    in.setTimeOut( Const.NVL( wTimeOut.getText(), "0" ) );
-    in.setRowLimit( Const.NVL( wLimit.getText(), "0" ) );
-    in.setTargetURLField( Const.NVL( wInclURLField.getText(), "" ) );
-    in.setSQLField( Const.NVL( wInclSQLField.getText(), "" ) );
-    in.setTimestampField( Const.NVL( wInclTimestampField.getText(), "" ) );
-    in.setModuleField( Const.NVL( wInclModuleField.getText(), "" ) );
-    in.setRowNumberField( Const.NVL( wInclRownumField.getText(), "" ) );
-    in.setRecordsFilter( SalesforceConnectionUtils.getRecordsFilterByDesc( wRecordsFilter.getText() ) );
-    in.setIncludeTargetURL( wInclURL.getSelection() );
-    in.setIncludeSQL( wInclSQL.getSelection() );
-    in.setIncludeTimestamp( wInclTimestamp.getSelection() );
-    in.setIncludeModule( wInclModule.getSelection() );
-    in.setIncludeRowNumber( wInclRownum.getSelection() );
-    in.setReadFrom( wReadFrom.getText() );
-    in.setReadTo( wReadTo.getText() );
-    in.setDeletionDateField( Const.NVL( wInclDeletionDateField.getText(), "" ) );
-    in.setIncludeDeletionDate( wInclDeletionDate.getSelection() );
+    meta.setSpecifyQuery( wspecifyQuery.getSelection() );
+    meta.setQuery( Const.NVL( wQuery.getText(), "" ) );
+    meta.setCompression( wUseCompression.getSelection() );
+    meta.setQueryAll( wQueryAll.getSelection() );
+    meta.setTimeout( Const.NVL( wTimeOut.getText(), "0" ) );
+    meta.setRowLimit( Const.NVL( wLimit.getText(), "0" ) );
+    meta.setTargetURLField( Const.NVL( wInclURLField.getText(), "" ) );
+    meta.setSQLField( Const.NVL( wInclSQLField.getText(), "" ) );
+    meta.setTimestampField( Const.NVL( wInclTimestampField.getText(), "" ) );
+    meta.setModuleField( Const.NVL( wInclModuleField.getText(), "" ) );
+    meta.setRowNumberField( Const.NVL( wInclRownumField.getText(), "" ) );
+    meta.setRecordsFilter( SalesforceConnectionUtils.getRecordsFilterByDesc( wRecordsFilter.getText() ) );
+    meta.setIncludeTargetURL( wInclURL.getSelection() );
+    meta.setIncludeSQL( wInclSQL.getSelection() );
+    meta.setIncludeTimestamp( wInclTimestamp.getSelection() );
+    meta.setIncludeModule( wInclModule.getSelection() );
+    meta.setIncludeRowNumber( wInclRownum.getSelection() );
+    meta.setReadFrom( wReadFrom.getText() );
+    meta.setReadTo( wReadTo.getText() );
+    meta.setDeletionDateField( Const.NVL( wInclDeletionDateField.getText(), "" ) );
+    meta.setIncludeDeletionDate( wInclDeletionDate.getSelection() );
     int nrFields = wFields.nrNonEmpty();
 
-    in.allocate( nrFields );
+    meta.allocate( nrFields );
 
     for ( int i = 0; i < nrFields; i++ ) {
       SalesforceInputField field = new SalesforceInputField();
@@ -1730,7 +1685,7 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
       field.setName( item.getText( 1 ) );
       field.setField( item.getText( 2 ) );
       field.setIdLookup( BaseMessages.getString( PKG, "System.Combo.Yes" ).equalsIgnoreCase( item.getText( 3 ) ) );
-      field.setType( ValueMeta.getType( item.getText( 4 ) ) );
+      field.setType( ValueMetaFactory.getIdForValueMeta( item.getText( 4 ) ) );
       field.setFormat( item.getText( 5 ) );
       field.setLength( Const.toInt( item.getText( 6 ), -1 ) );
       field.setPrecision( Const.toInt( item.getText( 7 ), -1 ) );
@@ -1741,7 +1696,7 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
       field.setRepeated( BaseMessages.getString( PKG, "System.Combo.Yes" ).equalsIgnoreCase( item.getText( 12 ) ) );
 
       //CHECKSTYLE:Indentation:OFF
-      in.getInputFields()[i] = field;
+      meta.getInputFields()[i] = field;
     }
   }
 
@@ -1806,7 +1761,7 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 
         // Define a new Salesforce connection
         connection =
-          new SalesforceConnection( log, url, transMeta.environmentSubstitute( meta.getUserName() ), transMeta
+          new SalesforceConnection( log, url, transMeta.environmentSubstitute( meta.getUsername() ), transMeta
             .environmentSubstitute( meta.getPassword() ) );
         // connect to Salesforce
         connection.connect();

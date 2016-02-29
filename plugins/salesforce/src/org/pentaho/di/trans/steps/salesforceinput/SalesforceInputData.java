@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,14 +25,13 @@ package org.pentaho.di.trans.steps.salesforceinput;
 import java.util.GregorianCalendar;
 
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.trans.step.BaseStepData;
-import org.pentaho.di.trans.step.StepDataInterface;
+import org.pentaho.di.trans.steps.salesforce.SalesforceStepData;
 
 /*
  * @author Samatar
  * @since 10-06-2007
  */
-public class SalesforceInputData extends BaseStepData implements StepDataInterface {
+public class SalesforceInputData extends SalesforceStepData {
   public int nr_repeats;
   public long rownr;
   public Object[] previousRow;
@@ -43,13 +42,11 @@ public class SalesforceInputData extends BaseStepData implements StepDataInterfa
   public int nrfields;
   public boolean limitReached;
   public long limit;
-  public String Module;
   // available before we call query more if needed
   public int nrRecords;
   // We use this variable to query more
   // we initialize it each time we call query more
   public int recordIndex;
-  public SalesforceConnection connection;
   public GregorianCalendar startCal;
   public GregorianCalendar endCal;
   public boolean finishedRecord;
@@ -66,7 +63,6 @@ public class SalesforceInputData extends BaseStepData implements StepDataInterfa
     recordIndex = 0;
     rownr = 0;
 
-    connection = null;
     startCal = null;
     endCal = null;
   }
