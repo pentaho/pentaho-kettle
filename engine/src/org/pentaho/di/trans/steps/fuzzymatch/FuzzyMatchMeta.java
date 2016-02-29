@@ -514,7 +514,7 @@ public class FuzzyMatchMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer();
+    StringBuilder retval = new StringBuilder();
 
     StreamInterface infoStream = getStepIOMeta().getInfoStreams().get( 0 );
     retval.append( "    " + XMLHandler.addTagValue( "from", infoStream.getStepname() ) );

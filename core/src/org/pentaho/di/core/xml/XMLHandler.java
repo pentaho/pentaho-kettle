@@ -454,11 +454,9 @@ public class XMLHandler {
       lastChildNr++; // we left off at the previouso one, so continue with the next.
     }
 
-    for ( int i = lastChildNr; i < children.getLength(); i++ ) // Try all children
-    {
+    for ( int i = lastChildNr; i < children.getLength(); i++ ) { // Try all children
       childnode = children.item( i );
-      if ( childnode.getNodeName().equalsIgnoreCase( tag ) ) // We found the right tag
-      {
+      if ( childnode.getNodeName().equalsIgnoreCase( tag ) ) { // We found the right tag
         if ( count == nr ) {
           if ( useCache ) {
             cache.storeCache( entry, i );
@@ -769,9 +767,8 @@ public class XMLHandler {
    * @return The XML String for the tag.
    */
   public static String addTagValue( String tag, String val, boolean cr, String... attributes ) {
-    StringBuffer value;
+    StringBuilder value = new StringBuilder( "<" );
     Encoder encoder = ESAPI.encoder();
-    value = new StringBuffer( "<" );
     value.append( tag );
 
     for ( int i = 0; i < attributes.length; i += 2 ) {

@@ -91,7 +91,7 @@ public class FileInputList {
   private static final String YES = "Y";
 
   public static String getRequiredFilesDescription( List<FileObject> nonExistantFiles ) {
-    StringBuffer buffer = new StringBuffer();
+    StringBuilder buffer = new StringBuilder();
     for ( Iterator<FileObject> iter = nonExistantFiles.iterator(); iter.hasNext(); ) {
       FileObject file = iter.next();
       buffer.append( file.getName().getURI() );
@@ -188,8 +188,7 @@ public class FileInputList {
           // Find all file names that match the wildcard in this directory
           //
           if ( processFolder ) {
-            if ( directoryFileObject != null && directoryFileObject.getType() == FileType.FOLDER ) // it's a directory
-            {
+            if ( directoryFileObject != null && directoryFileObject.getType() == FileType.FOLDER ) { // it's a directory
               FileObject[] fileObjects = directoryFileObject.findFiles( new AllFileSelector() {
                 @Override
                 public boolean traverseDescendents( FileSelectInfo info ) {
@@ -316,9 +315,7 @@ public class FileInputList {
         // Find all folder names in this directory
         //
         directoryFileObject = KettleVFS.getFileObject( onefile, space );
-        if ( directoryFileObject != null && directoryFileObject.getType() == FileType.FOLDER ) // it's a directory
-        {
-
+        if ( directoryFileObject != null && directoryFileObject.getType() == FileType.FOLDER ) { // it's a directory
           FileObject[] fileObjects = directoryFileObject.findFiles( new AllFileSelector() {
             @Override
             public boolean traverseDescendents( FileSelectInfo info ) {

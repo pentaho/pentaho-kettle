@@ -22,7 +22,6 @@
 
 package org.pentaho.di.core;
 
-import com.google.common.base.Throwables;
 import com.google.common.util.concurrent.SettableFuture;
 import org.pentaho.di.core.auth.AuthenticationConsumerPluginType;
 import org.pentaho.di.core.auth.AuthenticationProviderPluginType;

@@ -285,7 +285,7 @@ public class SQLValuesHighlight implements LineStyleListener {
     protected Map<String, Integer> kfKeys = null;
     protected Map<?, ?> kfFunctions = null;
 
-    protected StringBuffer fBuffer = new StringBuffer();
+    protected StringBuilder fBuffer = new StringBuilder();
     protected String fDoc;
     protected int fPos;
     protected int fEnd;

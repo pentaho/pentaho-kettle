@@ -135,7 +135,7 @@ public class RandomValue extends BaseStep implements StepInterface {
     mac.init( sk );
     // digest
     byte[] hashCode = mac.doFinal();
-    StringBuffer encoded = new StringBuffer();
+    StringBuilder encoded = new StringBuilder();
     for ( int i = 0; i < hashCode.length; i++ ) {
       String _b = Integer.toHexString( hashCode[i] );
       if ( _b.length() == 1 ) {

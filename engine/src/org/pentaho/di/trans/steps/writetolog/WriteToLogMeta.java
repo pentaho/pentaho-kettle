@@ -200,7 +200,7 @@ public class WriteToLogMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer();
+    StringBuilder retval = new StringBuilder();
     retval.append( "      " + XMLHandler.addTagValue( "loglevel", loglevel ) );
     retval.append( "      " + XMLHandler.addTagValue( "displayHeader", displayHeader ) );
     retval.append( "      " + XMLHandler.addTagValue( "limitRows", limitRows ) );

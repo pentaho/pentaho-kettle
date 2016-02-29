@@ -748,7 +748,7 @@ public class RssOutputMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer();
+    StringBuilder retval = new StringBuilder();
 
     retval.append( "    " + XMLHandler.addTagValue( "displayitem", displayitem ) );
     retval.append( "    " + XMLHandler.addTagValue( "customrss", customrss ) );

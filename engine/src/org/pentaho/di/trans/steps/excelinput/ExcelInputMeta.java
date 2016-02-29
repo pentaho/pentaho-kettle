@@ -934,7 +934,7 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 1024 );
+    StringBuilder retval = new StringBuilder( 1024 );
 
     retval.append( "    " ).append( XMLHandler.addTagValue( "header", startsWithHeader ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "noempty", ignoreEmptyRows ) );

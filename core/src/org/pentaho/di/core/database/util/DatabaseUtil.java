@@ -183,7 +183,7 @@ public class DatabaseUtil implements DataSourceProviderInterface {
   public DataSource getNamedDataSource( String datasourceName, DatasourceType type )
     throws DataSourceNamingException {
     if ( type != null ) {
-      switch( type ) {
+      switch ( type ) {
         case JNDI:
           return getNamedDataSource( datasourceName );
         case POOLED:

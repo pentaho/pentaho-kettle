@@ -711,7 +711,7 @@ public class SwingDirectGC implements GCInterface {
 
   @Override
   public void drawJobEntryIcon( int x, int y, JobEntryCopy jobEntryCopy ) {
-    drawJobEntryIcon( x, y , jobEntryCopy, 1.0f );
+    drawJobEntryIcon( x, y, jobEntryCopy, 1.0f );
   }
 
   @Override

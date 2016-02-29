@@ -169,7 +169,7 @@ public class ChangeFileEncodingMeta extends BaseStepMeta implements StepMetaInte
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer();
+    StringBuilder retval = new StringBuilder();
 
     retval.append( "    " + XMLHandler.addTagValue( "filenamefield", filenamefield ) );
     retval.append( "    " + XMLHandler.addTagValue( "targetfilenamefield", targetfilenamefield ) );

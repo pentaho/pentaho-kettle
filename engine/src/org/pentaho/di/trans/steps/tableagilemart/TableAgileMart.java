@@ -72,7 +72,7 @@ public class TableAgileMart extends TableOutput implements TableManager {
     TransMeta transMeta = getTransMeta();
     StepMeta stepMeta = meta.getParentStepMeta();
     DBCache dbcache = transMeta.getDbCache();
-    StringBuffer messageBuffer = new StringBuffer();
+    StringBuilder messageBuffer = new StringBuilder();
 
     try {
       RowMetaInterface prev = transMeta.getPrevStepFields( stepMeta.getName() );

@@ -3070,7 +3070,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 
     // See if there is a parent transformation. If so, print the name of the parent here as well...
     //
-    StringBuffer string = new StringBuffer();
+    StringBuilder string = new StringBuilder( 50 );
 
     // If we're running as a mapping, we get a reference to the calling (parent) transformation as well...
     //

@@ -90,7 +90,7 @@ public class KettleFileRepositoryMeta extends BaseRepositoryMeta implements Repo
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 100 );
+    StringBuilder retval = new StringBuilder( 100 );
 
     retval.append( "  " ).append( XMLHandler.openTag( XML_TAG ) );
     retval.append( super.getXML() );

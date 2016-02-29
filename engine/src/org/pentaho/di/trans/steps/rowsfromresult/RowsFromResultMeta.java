@@ -142,7 +142,7 @@ public class RowsFromResultMeta extends BaseStepMeta implements StepMetaInterfac
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer();
+    StringBuilder retval = new StringBuilder();
     retval.append( "    <fields>" );
     for ( int i = 0; i < fieldname.length; i++ ) {
       retval.append( "      <field>" );

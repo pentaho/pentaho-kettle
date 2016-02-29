@@ -178,8 +178,7 @@ public class CacheDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
       case ValueMetaInterface.TYPE_NUMBER:
       case ValueMetaInterface.TYPE_INTEGER:
       case ValueMetaInterface.TYPE_BIGNUMBER:
-        if ( fieldname.equalsIgnoreCase( tk ) ) // Technical & primary key : see at bottom
-        {
+        if ( fieldname.equalsIgnoreCase( tk ) ) { // Technical & primary key : see at bottom
           retval += "DECIMAL";
         } else {
           if ( length < 0 || precision < 0 ) {

@@ -256,7 +256,7 @@ public class RssInputMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer();
+    StringBuilder retval = new StringBuilder();
 
     retval.append( "    " + XMLHandler.addTagValue( "url_in_field", urlInField ) );
     retval.append( "    " + XMLHandler.addTagValue( "url_field_name", urlFieldname ) );

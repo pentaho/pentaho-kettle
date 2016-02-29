@@ -338,7 +338,7 @@ public class GetSubFoldersMeta extends BaseStepMeta implements StepMetaInterface
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 300 );
+    StringBuilder retval = new StringBuilder( 300 );
 
     retval.append( "    " ).append( XMLHandler.addTagValue( "rownum", includeRowNumber ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "foldername_dynamic", isFoldernameDynamic ) );

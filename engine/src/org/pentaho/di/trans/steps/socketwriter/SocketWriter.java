@@ -178,7 +178,7 @@ public class SocketWriter extends BaseStep implements StepInterface {
         data.clientSocket.shutdownInput();
         data.clientSocket.shutdownOutput();
         data.clientSocket.close();
-        if( log.isDetailed() ) {
+        if ( log.isDetailed() ) {
           logDetailed( "Closed connection to SocketWriter" );
         }
       } catch ( IOException e1 ) {

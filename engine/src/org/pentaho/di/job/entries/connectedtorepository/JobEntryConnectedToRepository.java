@@ -104,7 +104,7 @@ public class JobEntryConnectedToRepository extends JobEntryBase implements Clone
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer();
+    StringBuilder retval = new StringBuilder( 100 );
     retval.append( "      " ).append( XMLHandler.addTagValue( "isspecificrep", isspecificrep ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "repname", repname ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "isspecificuser", isspecificuser ) );

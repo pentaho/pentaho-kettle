@@ -243,7 +243,7 @@ public class WebService extends BaseStep implements StepInterface {
 
     List<String> headerNames = new ArrayList<String>( parameters.getHeaderNames() );
 
-    StringBuffer xml = new StringBuffer();
+    StringBuilder xml = new StringBuilder();
 
     // TODO We only manage one name space for all the elements. See in the
     // future how to manage multiple name spaces
@@ -289,7 +289,7 @@ public class WebService extends BaseStep implements StepInterface {
    *          indicates if the we are to use the namespace prefix when writing the WS field name
    * @throws KettleException
    */
-  private void addParametersToXML( StringBuffer xml, List<String> names, boolean qualifyWSField ) throws KettleException {
+  private void addParametersToXML( StringBuilder xml, List<String> names, boolean qualifyWSField ) throws KettleException {
 
     // Add the row parameters...
     //
@@ -556,8 +556,8 @@ public class WebService extends BaseStep implements StepInterface {
        * continues working as intended
        */
 
-        TransformerFactory transformerFactory = TransformerFactory.newInstance();
-        transformer = transformerFactory.newTransformer();
+      TransformerFactory transformerFactory = TransformerFactory.newInstance();
+      transformer = transformerFactory.newTransformer();
 
       transformer.setOutputProperty( OutputKeys.OMIT_XML_DECLARATION, "yes" );
       transformer.setOutputProperty( OutputKeys.INDENT, "yes" );

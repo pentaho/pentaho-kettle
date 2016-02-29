@@ -107,7 +107,7 @@ public class FilesToResultMeta extends BaseStepMeta implements StepMetaInterface
   }
 
   public String getXML() {
-    StringBuffer xml = new StringBuffer();
+    StringBuilder xml = new StringBuilder();
 
     xml.append( XMLHandler.addTagValue( "filename_field", filenameField ) );
     xml.append( XMLHandler.addTagValue( "file_type", ResultFile.getTypeCode( fileType ) ) );

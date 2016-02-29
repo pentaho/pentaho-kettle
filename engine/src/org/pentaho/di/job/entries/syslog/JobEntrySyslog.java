@@ -86,7 +86,7 @@ public class JobEntrySyslog extends JobEntryBase implements Cloneable, JobEntryI
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 128 );
+    StringBuilder retval = new StringBuilder( 128 );
 
     retval.append( super.getXML() );
     retval.append( "      " ).append( XMLHandler.addTagValue( "port", port ) );

@@ -335,8 +335,7 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface 
   }
 
   public void getDeleteFields( RowMetaInterface inputRowMeta ) throws KettleStepException {
-    if ( deleteName != null && deleteName.length > 0 ) // DESELECT values from the stream...
-    {
+    if ( deleteName != null && deleteName.length > 0 ) { // DESELECT values from the stream...
       for ( int i = 0; i < deleteName.length; i++ ) {
         try {
           inputRowMeta.removeValueMeta( deleteName[i] );
@@ -436,7 +435,7 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface 
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 300 );
+    StringBuilder retval = new StringBuilder( 300 );
 
     retval.append( "    <fields>" );
     for ( int i = 0; i < selectName.length; i++ ) {

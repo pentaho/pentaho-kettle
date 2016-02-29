@@ -157,7 +157,7 @@ public class AccessOutputMeta extends BaseStepMeta implements StepMetaInterface 
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 300 );
+    StringBuilder retval = new StringBuilder( 300 );
 
     retval.append( "    " ).append( XMLHandler.addTagValue( "filename", filename ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "table", tablename ) );
@@ -340,8 +340,7 @@ public class AccessOutputMeta extends BaseStepMeta implements StepMetaInterface 
               precision = -1; // precision is obviously incorrect if the type if Double/Float/Real
             }
           } else {
-            if ( precision == 0 && length < 18 && length > 0 ) // Among others Oracle is affected here.
-            {
+            if ( precision == 0 && length < 18 && length > 0 ) { // Among others Oracle is affected here.
               valtype = ValueMetaInterface.TYPE_INTEGER;
             }
           }

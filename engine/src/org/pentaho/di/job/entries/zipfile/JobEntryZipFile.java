@@ -22,12 +22,10 @@
 
 package org.pentaho.di.job.entries.zipfile;
 
-import static org.pentaho.di.job.entry.validator.AbstractFileValidator.putVariableSpace;
-import static org.pentaho.di.job.entry.validator.AndValidator.putValidators;
-import static org.pentaho.di.job.entry.validator.FileDoesNotExistValidator.putFailIfExists;
-import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.andValidator;
-import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.fileDoesNotExistValidator;
-import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notBlankValidator;
+import org.pentaho.di.job.entry.validator.AbstractFileValidator;
+import org.pentaho.di.job.entry.validator.AndValidator;
+import org.pentaho.di.job.entry.validator.FileDoesNotExistValidator;
+import org.pentaho.di.job.entry.validator.JobEntryValidatorUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -144,7 +142,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 500 );
+    StringBuilder retval = new StringBuilder( 500 );
 
     retval.append( super.getXML() );
     retval.append( "      " ).append( XMLHandler.addTagValue( "zipfilename", zipFilename ) );
@@ -1130,20 +1128,20 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
   public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
     ValidatorContext ctx1 = new ValidatorContext();
-    putVariableSpace( ctx1, getVariables() );
-    putValidators( ctx1, notBlankValidator(), fileDoesNotExistValidator() );
+    AbstractFileValidator.putVariableSpace( ctx1, getVariables() );
+    AndValidator.putValidators( ctx1, JobEntryValidatorUtils.notBlankValidator(), JobEntryValidatorUtils.fileDoesNotExistValidator() );
     if ( 3 == ifZipFileExists ) {
       // execute method fails if the file already exists; we should too
-      putFailIfExists( ctx1, true );
+      FileDoesNotExistValidator.putFailIfExists( ctx1, true );
     }
-    andValidator().validate( this, "zipFilename", remarks, ctx1 );
+    JobEntryValidatorUtils.andValidator().validate( this, "zipFilename", remarks, ctx1 );
 
     if ( 2 == afterZip ) {
       // setting says to move
-      andValidator().validate( this, "moveToDirectory", remarks, putValidators( notBlankValidator() ) );
+      JobEntryValidatorUtils.andValidator().validate( this, "moveToDirectory", remarks, AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
     }
 
-    andValidator().validate( this, "sourceDirectory", remarks, putValidators( notBlankValidator() ) );
+    JobEntryValidatorUtils.andValidator().validate( this, "sourceDirectory", remarks, AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
 
   }
 

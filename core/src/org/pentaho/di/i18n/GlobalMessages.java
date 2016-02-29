@@ -99,8 +99,7 @@ public class GlobalMessages extends AbstractMessageHandler {
 
   protected static String getLocaleString( Locale locale ) {
     String locString = locale.toString();
-    if ( locString.length() == 5 && locString.charAt( 2 ) == '_' ) // Force upper-lowercase format
-    {
+    if ( locString.length() == 5 && locString.charAt( 2 ) == '_' ) { // Force upper-lowercase format
       locString = locString.substring( 0, 2 ).toLowerCase() + "_" + locString.substring( 3 ).toUpperCase();
       // System.out.println("locString="+locString);
     }

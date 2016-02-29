@@ -311,7 +311,7 @@ public class SymmetricCryptoTransMeta extends BaseStepMeta implements StepMetaIn
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer();
+    StringBuilder retval = new StringBuilder();
     retval.append( "    " + XMLHandler.addTagValue( "operation_type", getOperationTypeCode( operationType ) ) );
     retval.append( "    " + XMLHandler.addTagValue( "algorithm", algorithm ) );
     retval.append( "    " + XMLHandler.addTagValue( "schema", schema ) );

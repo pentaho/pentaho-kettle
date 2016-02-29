@@ -153,7 +153,7 @@ public class JobEntrySNMPTrap extends JobEntryBase implements Cloneable, JobEntr
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 128 );
+    StringBuilder retval = new StringBuilder( 200 );
 
     retval.append( super.getXML() );
     retval.append( "      " ).append( XMLHandler.addTagValue( "port", port ) );
@@ -165,7 +165,7 @@ public class JobEntrySNMPTrap extends JobEntryBase implements Cloneable, JobEntr
     retval.append( "      " ).append( XMLHandler.addTagValue( "nrretry", nrretry ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "targettype", targettype ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "user", user ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "passphrase" , Encr.encryptPasswordIfNotUsingVariables( passphrase ) ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "passphrase", Encr.encryptPasswordIfNotUsingVariables( passphrase ) ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "engineid", engineid ) );
     return retval.toString();
   }

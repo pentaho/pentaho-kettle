@@ -22,9 +22,7 @@
 
 package org.pentaho.di.job.entry.validator;
 
-import static org.apache.commons.validator.util.ValidatorUtils.getValueAsString;
-import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.addFailureRemark;
-import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.getLevelOnFail;
+import org.apache.commons.validator.util.ValidatorUtils;
 
 import java.util.List;
 
@@ -48,7 +46,7 @@ public class IntegerValidator implements JobEntryValidator {
     Object result = null;
     String value = null;
 
-    value = getValueAsString( source, propertyName );
+    value = ValidatorUtils.getValueAsString( source, propertyName );
 
     if ( GenericValidator.isBlankOrNull( value ) ) {
       return true;
@@ -57,7 +55,8 @@ public class IntegerValidator implements JobEntryValidator {
     result = GenericTypeValidator.formatInt( value );
 
     if ( result == null ) {
-      addFailureRemark( source, propertyName, VALIDATOR_NAME, remarks, getLevelOnFail( context, VALIDATOR_NAME ) );
+      JobEntryValidatorUtils.addFailureRemark( source, propertyName, VALIDATOR_NAME, remarks,
+          JobEntryValidatorUtils.getLevelOnFail( context, VALIDATOR_NAME ) );
       return false;
     }
     return true;

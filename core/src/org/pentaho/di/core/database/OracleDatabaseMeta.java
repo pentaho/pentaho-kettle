@@ -352,7 +352,7 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
   @Override
   public String getFieldDefinition( ValueMetaInterface v, String tk, String pk, boolean use_autoinc,
     boolean add_fieldname, boolean add_cr ) {
-    StringBuffer retval = new StringBuffer( 128 );
+    StringBuilder retval = new StringBuilder( 128 );
 
     String fieldname = v.getName();
     int length = v.getLength();
@@ -456,7 +456,7 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 
   @Override
   public String getSQLLockTables( String[] tableNames ) {
-    StringBuffer sql = new StringBuffer( 128 );
+    StringBuilder sql = new StringBuilder( 128 );
     for ( int i = 0; i < tableNames.length; i++ ) {
       sql.append( "LOCK TABLE " ).append( tableNames[i] ).append( " IN EXCLUSIVE MODE;" ).append( Const.CR );
     }
