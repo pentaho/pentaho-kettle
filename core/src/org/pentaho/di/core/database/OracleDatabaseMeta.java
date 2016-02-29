@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -639,4 +639,17 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
     return 2000;
   }
 
+  /**
+   * Oracle does not support a construct like 'drop table if exists',
+   * which is apparently legal syntax in many other RDBMSs.
+   * So we need to implement the same behavior and avoid throwing 'table does not exist' exception.
+   *
+   * @param tableName Name of the table to drop
+   * @return 'drop table if exists'-like statement for Oracle
+   */
+  @Override
+  public String getDropTableIfExistsStatement( String tableName ) {
+    return "BEGIN EXECUTE IMMEDIATE 'DROP TABLE " + tableName
+      + "'; EXCEPTION WHEN OTHERS THEN IF SQLCODE != -942 THEN RAISE; END IF; END;";
+  }
 }

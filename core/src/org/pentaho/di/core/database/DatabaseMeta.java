@@ -85,6 +85,8 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   public static final RepositoryObjectType REPOSITORY_ELEMENT_TYPE = RepositoryObjectType.DATABASE;
 
+  private static final String DROP_TABLE_STATEMENT = "DROP TABLE IF EXISTS ";
+
   // Comparator for sorting databases alphabetically by name
   public static final Comparator<DatabaseMeta> comparator = new Comparator<DatabaseMeta>() {
     @Override
@@ -2954,5 +2956,21 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
    */
   public String getCreateTableStatement() {
     return databaseInterface.getCreateTableStatement();
+  }
+
+  /**
+   * Forms the drop table statement specific for a certain RDBMS.
+   *
+   * @param tableName Name of the table to drop
+   * @return Drop table statement specific for the current database
+   * @see <a href="http://jira.pentaho.com/browse/BISERVER-13024">BISERVER-13024</a>
+   */
+  public String getDropTableIfExistsStatement( String tableName ) {
+    if ( databaseInterface instanceof DatabaseInterfaceExtended ) {
+      return ( (DatabaseInterfaceExtended) databaseInterface ).getDropTableIfExistsStatement( tableName );
+    }
+    // A fallback statement in case somehow databaseInterface is of an old version.
+    // This is the previous, and in fact, buggy implementation. See BISERVER-13024.
+    return DROP_TABLE_STATEMENT + tableName;
   }
 }
