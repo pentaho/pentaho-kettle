@@ -522,14 +522,14 @@ public class PurRepository extends AbstractRepository implements Repository, Rep
     try {
       RepositoryFile homeFolder = pur.getFile( ClientRepositoryPaths.getUserHomeFolderPath( user.getLogin() ) );
       RepositoryFile folder = pur.getFileById( dirId.getId() );
+      finalName = ( newName != null ? newName : folder.getName() );
+      interimFolderPath = getParentPath( folder.getPath() );
+      finalParentPath = ( newParent != null ? getPath( null, newParent, null ) : interimFolderPath );
       // Make sure the user is not trying to move their own home directory
       if ( isSameOrAncestorFolder( folder, homeFolder ) ) {
         // Then throw an exception that the user cannot move their own home directory
         throw new KettleException( "You are not allowed to move/rename your home folder." );
       }
-      finalName = ( newName != null ? newName : folder.getName() );
-      interimFolderPath = getParentPath( folder.getPath() );
-      finalParentPath = ( newParent != null ? getPath( null, newParent, null ) : interimFolderPath );
 
       if ( !renameHomeDirectories && isUserHomeDirectory( folder ) ) {
         throw new RepositoryObjectAccessException( "Cannot move another users home directory",
