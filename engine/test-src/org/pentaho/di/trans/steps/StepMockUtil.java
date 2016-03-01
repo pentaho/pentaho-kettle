@@ -54,14 +54,14 @@ import org.pentaho.di.trans.steps.mock.StepMockHelper;
 public class StepMockUtil {
 
   public static <T extends StepMetaInterface, V extends BaseStep> StepMockHelper<T, StepDataInterface>
-  getStepMockHelper( Class<T> meta, String name ) {
-    StepMockHelper<T, StepDataInterface> stepMockHelper =
-        new StepMockHelper<T, StepDataInterface>( name, meta, StepDataInterface.class );
-    when( stepMockHelper.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) ).thenReturn(
-        stepMockHelper.logChannelInterface );
-    when( stepMockHelper.trans.isRunning() ).thenReturn( true );
-    return stepMockHelper;
-  }
+    getStepMockHelper( Class<T> meta, String name ) {
+      StepMockHelper<T, StepDataInterface> stepMockHelper =
+          new StepMockHelper<T, StepDataInterface>( name, meta, StepDataInterface.class );
+      when( stepMockHelper.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) ).thenReturn(
+          stepMockHelper.logChannelInterface );
+      when( stepMockHelper.trans.isRunning() ).thenReturn( true );
+      return stepMockHelper;
+    }
 
   public static <T extends BaseStep, K extends StepMetaInterface, V extends StepDataInterface> T getStep(
       Class<T> klass, StepMockHelper<K, V> mock ) throws NoSuchMethodException, SecurityException,

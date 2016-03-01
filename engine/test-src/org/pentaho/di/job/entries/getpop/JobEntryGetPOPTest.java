@@ -296,7 +296,7 @@ public class JobEntryGetPOPTest {
     try {
       String outputRes = entry.createOutputDirectory( JobEntryGetPOP.FOLDER_OUTPUT );
       assertTrue( "Variables not working in createOutputDirectory: output directory",
-              outputRes.equals(outputDir.toString() ) );
+              outputRes.equals( outputDir.toString() ) );
     } catch ( Exception e ) {
       fail( "Unexpected exception when calling createOutputDirectory for output directory" );
 

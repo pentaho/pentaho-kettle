@@ -97,7 +97,7 @@ public class KettleLifecycleSupportTest {
     registeredPlugins.add( pluginInterface );
     when( registry.loadClass( pluginInterface, KettleLifecycleListener.class ) ).thenReturn( kettleLifecycleListener );
     when( registry.loadClass( pluginInterface ) ).thenReturn( kettleLifecycleListener );
-    if( !typeListenerRegistration.getAllValues().isEmpty() ) {
+    if ( !typeListenerRegistration.getAllValues().isEmpty() ) {
       typeListenerRegistration.getValue().pluginAdded( pluginInterface );
     }
     return kettleLifecycleListener;

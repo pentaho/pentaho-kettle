@@ -238,7 +238,7 @@ public class MetaInjectTest {
 
     Set<SourceStepField> unavailableSourceSteps = Collections.singleton( UNAVAILABLE_SOURCE_STEP );
     MetaInject.removeUnavailableStepsFromMapping( targetMap, unavailableSourceSteps, Collections
-        .<TargetStepAttribute> emptySet() );
+        .<TargetStepAttribute>emptySet() );
     assertTrue( targetMap.isEmpty() );
   }
 
@@ -250,7 +250,7 @@ public class MetaInjectTest {
     targetMap.put( unavailableTargetStep, unavailableSourceStep );
 
     Set<TargetStepAttribute> unavailableTargetSteps = Collections.singleton( UNAVAILABLE_TARGET_STEP );
-    MetaInject.removeUnavailableStepsFromMapping( targetMap, Collections.<SourceStepField> emptySet(),
+    MetaInject.removeUnavailableStepsFromMapping( targetMap, Collections.<SourceStepField>emptySet(),
         unavailableTargetSteps );
     assertTrue( targetMap.isEmpty() );
   }

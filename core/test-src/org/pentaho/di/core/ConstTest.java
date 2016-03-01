@@ -1580,7 +1580,7 @@ public class ConstTest extends TestCase {
     final StringBuilder sb2 = new StringBuilder( s );
     assertEquals( s + "   ", Const.rightPad( sb2, 28 ) );
     assertEquals( "Pad me baby", Const.rightPad( sb2, 11 ) );
-}
+  }
 
   @Test
   public void testReplace() {
@@ -1610,7 +1610,7 @@ public class ConstTest extends TestCase {
     sb = new StringBuffer( "" );
     Const.repl( sb, "anything", "something" );
     assertEquals( "", sb.toString() );
-    sb = new StringBuffer("Replace what looks like a regex '[a-z1-3*+]' with '$1'");
+    sb = new StringBuffer( "Replace what looks like a regex '[a-z1-3*+]' with '$1'" );
     Const.repl( sb, "[a-z1-3*+]", "$1" );
     assertEquals( "Replace what looks like a regex '$1' with '$1'", sb.toString() );
 
@@ -1627,15 +1627,15 @@ public class ConstTest extends TestCase {
     sb2 = new StringBuilder( "" );
     Const.repl( sb2, "anything", "something" );
     assertEquals( "", sb2.toString() );
-    sb2 = new StringBuilder("Replace what looks like a regex '[a-z1-3*+]' with '$1'");
+    sb2 = new StringBuilder( "Replace what looks like a regex '[a-z1-3*+]' with '$1'" );
     Const.repl( sb2, "[a-z1-3*+]", "$1" );
     assertEquals( "Replace what looks like a regex '$1' with '$1'", sb2.toString() );
-    
+
     sb2 = new StringBuilder( "JUNK" );
     Const.repl(  sb2, null, "wibble" );
     assertEquals( "JUNK", sb2.toString() );
     Const.repl(  sb2, "JUNK", null );
-    
+
   }
 
   @Test
@@ -1932,7 +1932,7 @@ public class ConstTest extends TestCase {
     assertEquals( "", Const.removeCRLF( "" ) );
     assertEquals( "", Const.removeCRLF( null ) );
     assertEquals( "", Const.removeCRLF( "\r\n" ) );
-    assertEquals( "This is a test of the emergency broadcast system", 
+    assertEquals( "This is a test of the emergency broadcast system",
         Const.removeCRLF( "This \r\nis \ra \ntest \rof \n\rthe \r\nemergency \rbroadcast \nsystem\r\n" ) );
   }
 
@@ -2023,10 +2023,10 @@ public class ConstTest extends TestCase {
     assertEquals( s, Const.Lpad( s, "-", 3 ) );
     assertEquals( "--" + s, Const.Lpad( s, "-", 8 ) );
     // add in some edge cases
-    assertEquals( s, Const.Lpad( s, null, 15 )); // No NPE
-    assertEquals( s, Const.Lpad( s, "", 15 ));
-    assertEquals( s, Const.Lpad( s, "*", 5 ));
-    assertEquals( null, Const.Lpad( null, "*", 15 ));
+    assertEquals( s, Const.Lpad( s, null, 15 ) ); // No NPE
+    assertEquals( s, Const.Lpad( s, "", 15 ) );
+    assertEquals( s, Const.Lpad( s, "*", 5 ) );
+    assertEquals( null, Const.Lpad( null, "*", 15 ) );
     assertEquals( "****Test", Const.Lpad( "Test", "**********", 8 ) );
     assertEquals( "*Test", Const.Lpad( "Test", "**", 5 ) );
     assertEquals( "****", Const.Lpad( "", "*", 4 ) );
@@ -2039,10 +2039,10 @@ public class ConstTest extends TestCase {
     assertEquals( s, Const.Rpad( s, "-", 3 ) );
     assertEquals( s + "--", Const.Rpad( s, "-", 8 ) );
     // add in some edge cases
-    assertEquals( s, Const.Rpad( s, null, 15 )); // No NPE
-    assertEquals( s, Const.Rpad( s, "", 15 ));
-    assertEquals( s, Const.Rpad( s, "*", 5 ));
-    assertEquals( null, Const.Rpad( null, "*", 15 ));
+    assertEquals( s, Const.Rpad( s, null, 15 ) ); // No NPE
+    assertEquals( s, Const.Rpad( s, "", 15 ) );
+    assertEquals( s, Const.Rpad( s, "*", 5 ) );
+    assertEquals( null, Const.Rpad( null, "*", 15 ) );
     assertEquals( "Test****", Const.Rpad( "Test", "**********", 8 ) );
     assertEquals( "Test*", Const.Rpad( "Test", "**", 5 ) );
     assertEquals( "****", Const.Rpad( "", "*", 4 ) );

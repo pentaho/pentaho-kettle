@@ -22,8 +22,6 @@
 
 package org.pentaho.di.trans.steps.fileinput.text;
 
-import java.net.URL;
-
 import org.junit.Test;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.trans.steps.fileinput.BaseFileInputField;
@@ -79,7 +77,7 @@ public class TextFileInputContentParsingTest extends BaseTextParsingTest {
     process();
 
     check( new Object[][] { { "Field 1", "Field 2", "Field 3" }, { "first", "1", "1.1" }, { "second", "2", "2.2" }, {
-      "third", "3", "3.3" } } );
+                             "third", "3", "3.3" } } );
   }
 
   @Test
@@ -135,7 +133,7 @@ public class TextFileInputContentParsingTest extends BaseTextParsingTest {
     process();
 
     check( new Object[][] { { "first  ", "1      ", "1.1" }, { "second ", "2      ", "2.2" }, { "third  ", "3      ",
-      "3.3" } } );
+                             "3.3" } } );
   }
 
   @Test

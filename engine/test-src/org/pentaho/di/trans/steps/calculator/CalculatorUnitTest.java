@@ -566,7 +566,7 @@ public class CalculatorUnitTest {
       calculator.processRow( meta, new CalculatorData() );
     } catch ( KettleException ke ) {
       ke.printStackTrace();
-      fail( msg + ke.getMessage());
+      fail( msg + ke.getMessage() );
     }
   }
 

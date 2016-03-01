@@ -123,7 +123,7 @@ public class SSHMetaTest {
     setterMap.put( "proxyUsername", "setProxyUsername" );
     setterMap.put( "proxyPassword", "setProxyPassword" );
 
-    LoadSaveTester tester = new LoadSaveTester( SSHMeta.class, commonFields , getterMap, setterMap );
+    LoadSaveTester tester = new LoadSaveTester( SSHMeta.class, commonFields, getterMap, setterMap );
 
     tester.testXmlRoundTrip();
     tester.testRepoRoundTrip();
