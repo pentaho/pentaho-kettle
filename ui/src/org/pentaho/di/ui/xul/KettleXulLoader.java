@@ -48,6 +48,9 @@ public class KettleXulLoader extends SwtXulLoader {
   public KettleXulLoader() throws XulException {
     parser.handlers.remove( "DIALOG" );
     parser.registerHandler( "DIALOG", org.pentaho.di.ui.xul.KettleDialog.class.getName() );
+
+    parser.handlers.remove( "ICONWAITBOX" );
+    parser.registerHandler( "ICONWAITBOX", org.pentaho.di.ui.xul.KettleWaitBox.class.getName() );
   }
 
   public void setIconsSize( int width, int height ) {
