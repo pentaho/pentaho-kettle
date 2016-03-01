@@ -79,7 +79,7 @@ public class TextVarButton extends TextVar {
     formLayout.marginTop = 0;
     formLayout.marginBottom = 0;
     this.setLayout( formLayout );
-    
+
     Button button = new Button( this, SWT.PUSH );
     PropsUI.getInstance().setLook( button );
     button.setText( "..." );
@@ -92,7 +92,7 @@ public class TextVarButton extends TextVar {
     if ( selectionListener != null ) {
       button.addSelectionListener( selectionListener );
     }
-    
+
     wText = new Text( this, flags );
     controlDecoration = new ControlDecoration( wText, SWT.CENTER | SWT.RIGHT, this );
     Image image = GUIResource.getInstance().getImageVariable();

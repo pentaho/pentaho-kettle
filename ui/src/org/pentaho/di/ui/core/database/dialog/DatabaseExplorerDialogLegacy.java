@@ -629,8 +629,7 @@ public class DatabaseExplorerDialogLegacy extends Dialog {
         String schemaName = parent.getText();
         String tableName = ti[0].getText();
 
-        if ( ti[0].getItemCount() == 0 ) // No children, only the tables themselves...
-        {
+        if ( ti[0].getItemCount() == 0 ) { // No children, only the tables themselves...
           String tab = null;
           if ( schemaName.equalsIgnoreCase( STRING_TABLES )
             || schemaName.equalsIgnoreCase( STRING_VIEWS ) || schemaName.equalsIgnoreCase( STRING_SYNONYMS )

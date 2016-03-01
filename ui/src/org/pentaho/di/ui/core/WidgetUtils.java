@@ -42,7 +42,7 @@ public abstract class WidgetUtils {
     formLayout.marginHeight = margin;
     composite.setLayout( formLayout );
   }
-  
+
   public static CTabFolder createTabFolder( Composite composite, FormData fd, String... titles ) {
     Composite container = new Composite( composite, SWT.NONE );
     WidgetUtils.setFormLayout( container, 0 );
@@ -66,7 +66,7 @@ public abstract class WidgetUtils {
     tabFolder.setSelection( 0 );
     return tabFolder;
   }
-  
+
   public static  FormData firstColumn( Control top ) {
     return new FormDataBuilder().top( top, ConstUI.MEDUIM_MARGIN ).percentWidth( 47 ).result();
   }

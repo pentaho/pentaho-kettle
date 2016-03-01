@@ -606,8 +606,8 @@ public class RepositoryExplorerDialog extends Dialog {
           try {
             debug = "Drop item in tree";
 
-            if ( event.data == null ) // no data to copy, indicate failure in event.detail
-            {
+            if ( event.data == null ) { // no data to copy, indicate failure in event.detail
+           
               event.detail = DND.DROP_NONE;
               return;
             }
@@ -2314,8 +2314,7 @@ public class RepositoryExplorerDialog extends Dialog {
           }
           // ENTER --> Save changes...
           if ( e.character == SWT.CR ) {
-            if ( ti.getText().equals( name ) ) // Only if the name wasn't changed already.
-            {
+            if ( ti.getText().equals( name ) ) { // Only if the name wasn't changed already.
               String newname = text.getText();
               if ( renameDatabase( name, newname ) ) {
                 ti.setText( newname );

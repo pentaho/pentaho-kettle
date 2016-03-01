@@ -269,7 +269,7 @@ public abstract class ConfigurationDialog extends Dialog {
     tbtmParameters.setControl( parametersComposite );
 
     ColumnInfo[] cParams =
-        { new ColumnInfo( BaseMessages.getString( PKG, prefix + ".ParamsColumn.Argument" ), ColumnInfo.COLUMN_TYPE_TEXT,
+   { new ColumnInfo( BaseMessages.getString( PKG, prefix + ".ParamsColumn.Argument" ), ColumnInfo.COLUMN_TYPE_TEXT,
             false, true, 126 ), // Stepname
           new ColumnInfo( BaseMessages.getString( PKG, prefix + ".ParamsColumn.Default" ), ColumnInfo.COLUMN_TYPE_TEXT,
               false, true, 138 ), // Preview size
@@ -318,7 +318,7 @@ public abstract class ConfigurationDialog extends Dialog {
     tbtmVariables.setControl( variablesComposite );
 
     ColumnInfo[] cVariables =
-        { new ColumnInfo( BaseMessages.getString( PKG, prefix + ".VariablesColumn.Argument" ),
+    { new ColumnInfo( BaseMessages.getString( PKG, prefix + ".VariablesColumn.Argument" ),
             ColumnInfo.COLUMN_TYPE_TEXT, false, false, 287 ), // Stepname
           new ColumnInfo( BaseMessages.getString( PKG, prefix + ".VariablesColumn.Value" ), ColumnInfo.COLUMN_TYPE_TEXT,
               false, false, 300 ), // Preview size

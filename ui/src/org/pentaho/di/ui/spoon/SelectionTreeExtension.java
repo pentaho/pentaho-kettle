@@ -58,7 +58,11 @@ public class SelectionTreeExtension {
     return this.guiResource;
   }
 
-  public String getAction() { return this.action; }
+  public String getAction() {
+    return this.action;
+  }
 
-  public Object getSelection() { return this.selection; }
+  public Object getSelection() {
+    return this.selection;
+  }
 }

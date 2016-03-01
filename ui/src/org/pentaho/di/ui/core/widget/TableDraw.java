@@ -245,8 +245,7 @@ public class TableDraw extends Canvas {
     //
     // Note: We should always have one field @ position 0, length max
     //
-    if ( idx < 0 ) // Position is not yet in the list, the field is not deleted, but added
-    {
+    if ( idx < 0 ) { // Position is not yet in the list, the field is not deleted, but added
       if ( highest_smaller >= 0 ) {
         // OK, let's add a new field, but split the length of the previous field
         // We want to keep this list sorted, so add at position lowest_larger.

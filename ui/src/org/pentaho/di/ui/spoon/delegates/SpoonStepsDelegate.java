@@ -235,7 +235,7 @@ public class SpoonStepsDelegate extends SpoonDelegate {
     spoon.refreshTree();
     spoon.refreshGraph();
   }
-  
+
   public void delStep( TransMeta transMeta, StepMeta stepMeta ) {
     spoon.getLog().logDebug(
       toString(), BaseMessages.getString( PKG, "Spoon.Log.DeleteStep" ) + stepMeta.getName() ); // "Delete
@@ -260,7 +260,7 @@ public class SpoonStepsDelegate extends SpoonDelegate {
 
     spoon.refreshTree();
     spoon.refreshGraph();
-  }  
+  }
 
   public StepDialogInterface getStepDialog( StepMetaInterface stepMeta, TransMeta transMeta, String stepName ) throws KettleException {
     String dialogClassName = stepMeta.getDialogClassName();

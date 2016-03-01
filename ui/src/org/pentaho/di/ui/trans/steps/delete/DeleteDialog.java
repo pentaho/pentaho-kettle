@@ -511,7 +511,7 @@ public class DeleteDialog extends BaseStepDialog implements StepDialogInterface 
                 } catch ( Exception ignored ) {
                   // ignore any errors here.
                   db = null;
-                }                
+                }
               }
             }
           }
