@@ -65,21 +65,21 @@ import org.pentaho.metastore.api.IMetaStore;
 
 public class UnivariateStatsMetaTest {
   private final FieldLoadSaveValidator<UnivariateStatsMetaFunction> univariateFunctionFieldLoadSaveValidator =
-      new FieldLoadSaveValidator<UnivariateStatsMetaFunction>() {
-        final Random random = new Random();
+    new FieldLoadSaveValidator<UnivariateStatsMetaFunction>() {
+      final Random random = new Random();
 
-        @Override
-        public boolean validateTestObject( UnivariateStatsMetaFunction testObject, Object actual ) {
-          return testObject.getXML().equals( ( (UnivariateStatsMetaFunction) actual ).getXML() );
-        }
+      @Override
+      public boolean validateTestObject( UnivariateStatsMetaFunction testObject, Object actual ) {
+        return testObject.getXML().equals( ( (UnivariateStatsMetaFunction) actual ).getXML() );
+      }
 
-        @Override
-        public UnivariateStatsMetaFunction getTestObject() {
-          return new UnivariateStatsMetaFunction( UUID.randomUUID().toString(), random.nextBoolean(), random
-              .nextBoolean(), random.nextBoolean(), random.nextBoolean(), random.nextBoolean(), random.nextBoolean(),
-              random.nextDouble(), random.nextBoolean() );
-        }
-      };
+      @Override
+      public UnivariateStatsMetaFunction getTestObject() {
+        return new UnivariateStatsMetaFunction( UUID.randomUUID().toString(), random.nextBoolean(), random
+            .nextBoolean(), random.nextBoolean(), random.nextBoolean(), random.nextBoolean(), random.nextBoolean(),
+            random.nextDouble(), random.nextBoolean() );
+      }
+    };
   private final ArrayLoadSaveValidator<UnivariateStatsMetaFunction> univariateFunctionArrayFieldLoadSaveValidator =
       new ArrayLoadSaveValidator<UnivariateStatsMetaFunction>( univariateFunctionFieldLoadSaveValidator );
 

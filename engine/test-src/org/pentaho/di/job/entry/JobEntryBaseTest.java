@@ -33,7 +33,7 @@ public class JobEntryBaseTest {
   @Test
   public void testIdIsNullByDefault() {
     JobEntryBase base = new JobEntryBase();
-    Assert.assertNull("Object ID is null by default", base.getObjectId() );
+    Assert.assertNull( "Object ID is null by default", base.getObjectId() );
   }
 
 }

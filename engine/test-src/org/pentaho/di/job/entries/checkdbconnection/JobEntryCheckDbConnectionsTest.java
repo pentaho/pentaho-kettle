@@ -43,7 +43,7 @@ public class JobEntryCheckDbConnectionsTest {
   /**
    * Test whether a Millisecond-level timeout actually waits for N milliseconds, instead of N seconds
    */
-  @Test(timeout=5000)
+  @Test( timeout = 5000 )
   public void testMillisecondWait() {
     int waitMilliseconds = 15;
     Job mockedJob = Mockito.mock( Job.class );

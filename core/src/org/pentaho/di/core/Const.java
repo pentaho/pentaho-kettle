@@ -1361,7 +1361,7 @@ public class Const {
    * specified, the String is truncated.
    *
    * MB - New version is nearly 25% faster
-   * 
+   *
    * @param ret
    *          The StringBuilder to pad
    * @param limit
@@ -1375,7 +1375,7 @@ public class Const {
       }
       ret.setLength( limit );
       return ret.toString();
-    } else { 
+    } else {
       return null;
     }
   }
@@ -1395,7 +1395,7 @@ public class Const {
    */
   public static String replace( String string, String repl, String with ) {
     if ( string != null && repl != null && with != null ) {
-      return string.replaceAll(Pattern.quote(repl), Matcher.quoteReplacement(with));
+      return string.replaceAll( Pattern.quote( repl ), Matcher.quoteReplacement( with ) );
     } else {
       return null;
     }
@@ -1405,7 +1405,7 @@ public class Const {
    * Alternate faster version of string replace using a stringbuffer as input.
    *
    * 33% Faster using replaceAll this way than original method
-   * 
+   *
    * @param str
    *          The string where we want to replace in
    * @param code
@@ -1418,15 +1418,15 @@ public class Const {
       return; // do nothing
     }
     String aString = str.toString();
-    str.setLength(0);
-    str.append( aString.replaceAll( Pattern.quote(code), Matcher.quoteReplacement(repl) ) );
+    str.setLength( 0 );
+    str.append( aString.replaceAll( Pattern.quote( code ), Matcher.quoteReplacement( repl ) ) );
   }
 
   /**
    * Alternate faster version of string replace using a stringbuilder as input (non-synchronized).
    *
    * 33% Faster using replaceAll this way than original method
-   * 
+   *
    * @param str
    *          The string where we want to replace in
    * @param code
@@ -1439,8 +1439,8 @@ public class Const {
       return; // do nothing
     }
     String aString = str.toString();
-    str.setLength(0);
-    str.append( aString.replaceAll( Pattern.quote(code), Matcher.quoteReplacement(repl) ) );
+    str.setLength( 0 );
+    str.append( aString.replaceAll( Pattern.quote( code ), Matcher.quoteReplacement( repl ) ) );
   }
 
   /**
@@ -2498,7 +2498,7 @@ public class Const {
   }
 
   /**
-   * Check if the CharSequence (String, StringBuffer, StringBuilder) supplied is empty. 
+   * Check if the CharSequence (String, StringBuffer, StringBuilder) supplied is empty.
    * A CharSequence is empty when it is null or when the length is 0
    *
    * @param string
@@ -3016,14 +3016,14 @@ public class Const {
       int inLen = in.length(), posn = 0;
       char[] tmp = new char[ inLen ];
       char ch;
-      for ( int i = 0; i < inLen; i++) {
+      for ( int i = 0; i < inLen; i++ ) {
         ch = in.charAt( i );
         if ( ( ch != '\n' && ch != '\r' ) ) {
           tmp[posn] = ch;
           posn++;
         }
       }
-      return new String(tmp, 0, posn);
+      return new String( tmp, 0, posn );
     } else {
       return "";
     }
@@ -3045,19 +3045,19 @@ public class Const {
       int inLen = in.length(), posn = 0;
       char[] tmp = new char[ inLen ];
       char ch;
-      for ( int i = 0; i < inLen; i++) {
+      for ( int i = 0; i < inLen; i++ ) {
         ch = in.charAt( i );
         if ( ch != badChar ) {
           tmp[posn] = ch;
           posn++;
         }
       }
-      return new String(tmp, 0, posn);
+      return new String( tmp, 0, posn );
     } else {
       return "";
     }
   }
-  
+
   /**
    * Remove CR / LF from String
    *
@@ -3237,7 +3237,7 @@ public class Const {
    * depending on length of the string to pad, and the size to pad it to.
    * For larger amounts to pad, (e.g. pad a 4 character string out to 20 places)
    * this is orders of magnitude faster.
-   * 
+   *
    * @param valueToPad
    *    the string to pad
    * @param filler
@@ -3246,10 +3246,10 @@ public class Const {
    *    the size to pad to
    * @return
    *    the new string, padded to the left
-   *    
+   *
    * Note - The original method was flawed in a few cases:
-   * 
-   *   1- The filler could be a string of any length - and the returned 
+   *
+   *   1- The filler could be a string of any length - and the returned
    *   string was not necessarily limited to size. So a 3 character pad
    *   of an 11 character string could end up being 17 characters long.
    *   2- For a pad of zero characters ("") the former method would enter
@@ -3285,7 +3285,7 @@ public class Const {
    * depending on length of the string to pad, and the size to pad it to.
    * For larger amounts to pad, (e.g. pad a 4 character string out to 20 places)
    * this is orders of magnitude faster.
-   * 
+   *
    * @param valueToPad
    *    the string to pad
    * @param filler
@@ -3294,10 +3294,10 @@ public class Const {
    *    the size to pad to
    * @return
    *   The string, padded to the right
-   *   
-   *   1- The filler can still be a string of any length - and the returned 
+   *
+   *   1- The filler can still be a string of any length - and the returned
    *   string was not necessarily limited to size. So a 3 character pad
-   *   of an 11 character string with a size of 15 could end up being 17 
+   *   of an 11 character string with a size of 15 could end up being 17
    *   characters long (instead of the "asked for 15").
    *   2- For a pad of zero characters ("") the former method would enter
    *   an infinite loop.
@@ -3312,7 +3312,7 @@ public class Const {
     int fSize = filler.length();
     // This next if ensures previous behavior, but prevents infinite loop
     // if "" is passed in as a filler.
-    if ( ( vSize >= size) || ( fSize == 0 )  ) {
+    if ( ( vSize >= size ) || ( fSize == 0 )  ) {
       return valueToPad;
     }
     int tgt = ( size - vSize );
@@ -3325,7 +3325,7 @@ public class Const {
     }
     StringBuilder sb = new StringBuilder( valueToPad );
     sb.append( sb1 );
-    return sb.substring(0, size);
+    return sb.substring( 0, size );
   }
 
   public static boolean classIsOrExtends( Class<?> clazz, Class<?> superClass ) {

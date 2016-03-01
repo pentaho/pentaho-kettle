@@ -21,10 +21,7 @@
 package org.pentaho.di.core.logging;
 
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.junit.Test;
 import org.pentaho.di.core.Const;
@@ -109,41 +106,41 @@ public class LoggingBufferTest {
   public void testBufferSizeRestrictions() {
     final LoggingBuffer buff = new LoggingBuffer( 10 );
 
-    assertEquals( 10, buff.getMaxNrLines() );
-    assertEquals( 0, buff.getLastBufferLineNr() );
-    assertEquals( 0, buff.getNrLines() );
+    Assert.assertEquals( 10, buff.getMaxNrLines() );
+    Assert.assertEquals( 0, buff.getLastBufferLineNr() );
+    Assert.assertEquals( 0, buff.getNrLines() );
 
     // Load 20 records.  Only last 10 should be kept
-    for( int i = 1; i <= 20; i++ ) {
+    for ( int i = 1; i <= 20; i++ ) {
       buff.addLogggingEvent(
         new KettleLoggingEvent( "Test #" + i + Const.CR + "Hello World!", Long.valueOf( i ), LogLevel.DETAILED ) );
     }
-    assertEquals( 10, buff.getNrLines() );
+    Assert.assertEquals( 10, buff.getNrLines() );
 
     // Check remaining records, confirm that they are the proper records
     int i = 11;
     Iterator<BufferLine> it = buff.getBufferIterator();
-    assertNotNull( it );
-    while( it.hasNext() ) {
+    Assert.assertNotNull( it );
+    while ( it.hasNext() ) {
       BufferLine bl = it.next();
-      assertNotNull( bl.getEvent() );
-      assertEquals( "Test #" + i + Const.CR + "Hello World!", bl.getEvent().getMessage() );
-      assertEquals( Long.valueOf( i ).longValue(), bl.getEvent().getTimeStamp() );
-      assertEquals( LogLevel.DETAILED, bl.getEvent().getLevel() );
+      Assert.assertNotNull( bl.getEvent() );
+      Assert.assertEquals( "Test #" + i + Const.CR + "Hello World!", bl.getEvent().getMessage() );
+      Assert.assertEquals( Long.valueOf( i ).longValue(), bl.getEvent().getTimeStamp() );
+      Assert.assertEquals( LogLevel.DETAILED, bl.getEvent().getLevel() );
       i++;
     }
-    assertEquals( i, 21 ); // Confirm that only 10 lines were iterated over
+    Assert.assertEquals( i, 21 ); // Confirm that only 10 lines were iterated over
 
-    assertEquals( 0, buff.getBufferLinesBefore( 10L ).size() );
-    assertEquals( 5, buff.getBufferLinesBefore( 16L ).size() );
-    assertEquals( 10, buff.getBufferLinesBefore( System.currentTimeMillis() ).size() );
+    Assert.assertEquals( 0, buff.getBufferLinesBefore( 10L ).size() );
+    Assert.assertEquals( 5, buff.getBufferLinesBefore( 16L ).size() );
+    Assert.assertEquals( 10, buff.getBufferLinesBefore( System.currentTimeMillis() ).size() );
 
     buff.clear();
-    assertEquals( 0, buff.getNrLines() );
+    Assert.assertEquals( 0, buff.getNrLines() );
     it = buff.getBufferIterator();
-    assertNotNull( it );
-    while( it.hasNext() ) {
-      fail( "This should never be reached, as the LogBuffer is empty" );
+    Assert.assertNotNull( it );
+    while ( it.hasNext() ) {
+      Assert.fail( "This should never be reached, as the LogBuffer is empty" );
     }
   }
 }

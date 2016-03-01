@@ -89,14 +89,14 @@ public class ExcelWriterStepTest {
       try {
         step.prepareNextOutputFile();
         fail();
-      } catch (KettleException expected) {
+      } catch ( KettleException expected ) {
         String content = expected.getMessage();
         if ( !content.contains( "12345678901234567890123456789012" ) ) {
           fail();
         } else {
           // We expected this error message, the sheet name is too long for Excel
         }
-      }      
+      }
     } finally {
       System.setErr( err );
     }

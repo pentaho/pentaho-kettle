@@ -115,8 +115,9 @@ public abstract class BaseParsingTest<Meta extends StepMetaInterface, Data exten
    * Process all rows.
    */
   protected void process() throws Exception {
-    while ( step.processRow( meta, data ) )
-      ;
+    while ( step.processRow( meta, data ) ) {
+      // nothing here - just make sure the rows process
+    }
   }
 
   /**
