@@ -1,5 +1,5 @@
 /*!
- * Copyright 2010 - 2015 Pentaho Corporation.  All rights reserved.
+ * Copyright 2010 - 2016 Pentaho Corporation.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,7 +42,6 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.plugins.JobEntryPluginType;
 import org.pentaho.di.core.plugins.StepPluginType;
@@ -99,12 +98,11 @@ import org.springframework.security.providers.UsernamePasswordAuthenticationToke
 import org.springframework.security.userdetails.User;
 import org.springframework.security.userdetails.UserDetails;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.TestContextManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
-@RunWith( SpringJUnit4ClassRunner.class )
 @ContextConfiguration( locations = { "classpath:/repository.spring.xml",
   "classpath:/repository-test-override.spring.xml" } )
 public class UIEERepositoryDirectoryIT extends RepositoryTestBase implements ApplicationContextAware,
@@ -145,6 +143,12 @@ public class UIEERepositoryDirectoryIT extends RepositoryTestBase implements App
 
   private static IAuthorizationPolicy authorizationPolicy;
 
+  private TestContextManager testContextManager;
+
+  public UIEERepositoryDirectoryIT( Boolean lazyRepo ) {
+    super( lazyRepo );
+  }
+
   // ~ Methods =========================================================================================================
 
   @BeforeClass
@@ -165,6 +169,9 @@ public class UIEERepositoryDirectoryIT extends RepositoryTestBase implements App
 
   @Before
   public void setUp() throws Exception {
+    this.testContextManager = new TestContextManager( getClass() );
+    this.testContextManager.prepareTestInstance( this );
+
     loginAsRepositoryAdmin();
     SimpleJcrTestUtils.deleteItem( testJcrTemplate, ServerRepositoryPaths.getPentahoRootFolderPath() );
     mp = new MicroPlatform();

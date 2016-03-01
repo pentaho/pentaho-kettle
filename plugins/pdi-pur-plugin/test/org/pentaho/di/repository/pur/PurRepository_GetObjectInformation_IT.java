@@ -1,5 +1,5 @@
 /*!
- * Copyright 2010 - 2015 Pentaho Corporation.  All rights reserved.
+ * Copyright 2010 - 2016 Pentaho Corporation.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryElementInterface;
 import org.pentaho.di.repository.RepositoryObject;
+import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.repository.StringObjectId;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
@@ -29,17 +30,22 @@ import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
 import java.io.Serializable;
 import java.util.concurrent.Callable;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.pentaho.di.repository.RepositoryObjectType.JOB;
 
 /**
  * @author Andrey Khayrutdinov
  */
 public class PurRepository_GetObjectInformation_IT extends PurRepositoryTestBase {
+
+  public PurRepository_GetObjectInformation_IT( Boolean lazyRepo ) {
+    super( lazyRepo );
+  }
 
   @Test
   public void getObjectInformation_IsDeletedFlagSet_Job() throws Exception {
@@ -97,7 +103,8 @@ public class PurRepository_GetObjectInformation_IT extends PurRepositoryTestBase
     when( unifiedRepository.getFileById( any( Serializable.class ) ) ).thenThrow( new RuntimeException( "unknown id" ) );
     purRepository.setTest( unifiedRepository );
 
-    RepositoryObject information = purRepository.getObjectInformation( new StringObjectId( "invalid id" ), JOB );
+    RepositoryObject information = purRepository.getObjectInformation( new StringObjectId( "invalid id" ),
+        RepositoryObjectType.JOB );
     assertNull( "Should return null if file was not found", information );
   }
 
@@ -107,7 +114,8 @@ public class PurRepository_GetObjectInformation_IT extends PurRepositoryTestBase
     when( unifiedRepository.getFileById( any( Serializable.class ) ) ).thenReturn( null );
     purRepository.setTest( unifiedRepository );
 
-    RepositoryObject information = purRepository.getObjectInformation( new StringObjectId( "invalid id" ), JOB );
+    RepositoryObject information = purRepository.getObjectInformation( new StringObjectId( "invalid id" ),
+        RepositoryObjectType.JOB );
     assertNull( "Should return null if file was not found", information );
   }
 }

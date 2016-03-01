@@ -1,5 +1,5 @@
 /*!
- * Copyright 2010 - 2015 Pentaho Corporation.  All rights reserved.
+ * Copyright 2010 - 2016 Pentaho Corporation.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,12 +34,15 @@ import java.util.Map;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.pentaho.di.repository.RepositoryObjectType.*;
 
 /**
  * @author Andrey Khayrutdinov
  */
 public class PurRepository_SharedObjects_IT extends PurRepositoryTestBase {
+
+  public PurRepository_SharedObjects_IT( Boolean lazyRepo ) {
+    super( lazyRepo );
+  }
 
   @Test
   public void loadClusters() throws Exception {
@@ -143,7 +146,8 @@ public class PurRepository_SharedObjects_IT extends PurRepositoryTestBase {
     purRepository.save( partition, null, null );
 
     Map<RepositoryObjectType, List<? extends SharedObjectInterface>> map = map();
-    purRepository.readSharedObjects( map, CLUSTER_SCHEMA, DATABASE, SLAVE_SERVER, PARTITION_SCHEMA );
+    purRepository.readSharedObjects( map, RepositoryObjectType.CLUSTER_SCHEMA, RepositoryObjectType.DATABASE,
+        RepositoryObjectType.SLAVE_SERVER, RepositoryObjectType.PARTITION_SCHEMA );
 
     RepositoryElementInterface[] saved = new RepositoryElementInterface[] { cluster, database, slaveServer, partition };
     assertEquals( saved.length, map.size() );
@@ -155,7 +159,7 @@ public class PurRepository_SharedObjects_IT extends PurRepositoryTestBase {
   }
 
   private static ClusterSchema cluster() {
-    return new ClusterSchema( "testCluster", Collections.<SlaveServer> emptyList() );
+    return new ClusterSchema( "testCluster", Collections.<SlaveServer>emptyList() );
   }
 
   private static DatabaseMeta database() {

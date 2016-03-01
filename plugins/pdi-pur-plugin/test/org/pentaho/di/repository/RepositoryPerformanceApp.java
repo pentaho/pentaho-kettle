@@ -1,5 +1,5 @@
 /*!
- * Copyright 2010 - 2015 Pentaho Corporation.  All rights reserved.
+ * Copyright 2010 - 2016 Pentaho Corporation.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,7 +43,7 @@ public class RepositoryPerformanceApp extends RepositoryTestBase implements java
   static final long serialVersionUID = -5389269822527972858L; /* EESOURCE: UPDATE SERIALVERUID */
 
   public RepositoryPerformanceApp( String url ) {
-    super();
+    super( true );
     setRepositoryLocation( url );
   }
 
@@ -130,6 +130,7 @@ public class RepositoryPerformanceApp extends RepositoryTestBase implements java
       try {
         repository.save( transMeta, VERSION_COMMENT_V1.concat( String.valueOf( ix ) ), null );
       } catch ( Exception e ) {
+        // nothing to do
       }
 
       JobMeta jobMeta =
@@ -138,6 +139,7 @@ public class RepositoryPerformanceApp extends RepositoryTestBase implements java
       try {
         repository.save( jobMeta, VERSION_COMMENT_V1.concat( String.valueOf( ix ) ), null );
       } catch ( Exception e ) {
+        // nothing to do
       }
     }
   }
