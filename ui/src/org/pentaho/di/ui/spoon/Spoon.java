@@ -316,6 +316,7 @@ import org.pentaho.di.ui.trans.dialog.TransHopDialog;
 import org.pentaho.di.ui.trans.dialog.TransLoadProgressDialog;
 import org.pentaho.di.ui.util.HelpUtils;
 import org.pentaho.di.ui.util.ThreadGuiResources;
+import org.pentaho.di.ui.xul.KettleWaitBox;
 import org.pentaho.di.ui.xul.KettleXulLoader;
 import org.pentaho.di.version.BuildVersion;
 import org.pentaho.metastore.api.IMetaStore;
@@ -3970,9 +3971,10 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       };
 
       try {
-        final XulWaitBox box = (XulWaitBox) this.mainSpoonContainer.getDocumentRoot().createElement( "waitbox" );
+        final KettleWaitBox box = (KettleWaitBox) this.mainSpoonContainer.getDocumentRoot().createElement( "iconwaitbox" );
         box.setIndeterminate( true );
         box.setCanCancel( false );
+        box.setIcon( "ui/images/kettle_logo_small.svg" );
         box.setTitle( BaseMessages.getString(
           RepositoryDialogInterface.class, "RepositoryExplorerDialog.Connection.Wait.Title" ) );
         box.setMessage( BaseMessages.getString(

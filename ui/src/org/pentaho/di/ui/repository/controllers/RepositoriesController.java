@@ -33,6 +33,7 @@ import org.pentaho.di.ui.repository.RepositoriesHelper;
 import org.pentaho.di.ui.repository.dialog.RepositoryDialogInterface;
 import org.pentaho.di.ui.repository.model.RepositoriesModel;
 import org.pentaho.di.ui.repository.repositoryexplorer.ControllerInitializationException;
+import org.pentaho.di.ui.xul.KettleWaitBox;
 import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.binding.Binding;
 import org.pentaho.ui.xul.binding.BindingConvertor;
@@ -201,11 +202,12 @@ public class RepositoriesController extends AbstractXulEventHandler {
     if ( loginModel.isValid() == false ) {
       return;
     }
-    XulWaitBox box;
+    KettleWaitBox box;
     try {
-      box = (XulWaitBox) document.createElement( "waitbox" );
+      box = (KettleWaitBox) document.createElement( "iconwaitbox" );
       box.setIndeterminate( true );
       box.setCanCancel( false );
+      box.setIcon( "ui/images/kettle_logo_small.svg" );
       box.setTitle( BaseMessages.getString( PKG, "RepositoryExplorerDialog.Connection.Wait.Title" ) );
       box.setMessage( BaseMessages.getString( PKG, "RepositoryExplorerDialog.Connection.Wait.Message" ) );
       final Shell loginShell = (Shell) loginDialog.getRootObject();
