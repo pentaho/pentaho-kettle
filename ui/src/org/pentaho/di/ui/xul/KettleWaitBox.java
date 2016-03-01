@@ -34,10 +34,12 @@ import org.pentaho.ui.xul.swt.tags.SwtWaitBox;
  */
 public class KettleWaitBox extends SwtWaitBox {
 
+  private XulDomContainer container;
   private String icon;
 
   public KettleWaitBox( Element self, XulComponent parent, XulDomContainer container, String tagName ) {
     super( self, parent, container, tagName );
+    this.container = container;
   }
 
   @Override protected Shell createDialog() {
