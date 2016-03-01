@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,6 +24,7 @@ package org.pentaho.di.trans.steps.jobexecutor;
 
 import java.util.ArrayList;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.ResultFile;
@@ -32,6 +33,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.extension.ExtensionPointHandler;
 import org.pentaho.di.core.extension.KettleExtensionPoint;
 import org.pentaho.di.core.logging.KettleLogStore;
+import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.logging.LoggingRegistry;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.ValueMeta;
@@ -40,6 +42,8 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.DelegationListener;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobExecutionConfiguration;
+import org.pentaho.di.job.JobMeta;
+import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -49,7 +53,13 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
- * Execute a job for every input row
+ * Execute a job for every input row.
+ * <p>
+ *     <b>Note:</b><br/>
+ *     Be aware, logic of the classes methods is very similar to corresponding methods of
+ *     {@link org.pentaho.di.trans.steps.transexecutor.TransExecutor TransExecutor}.
+ *     If you change something in this class, consider copying your changes to TransExecutor as well.
+ * </p>
  *
  * @author Matt
  * @since 22-nov-2005
@@ -128,37 +138,36 @@ public class JobExecutor extends BaseStep implements StepInterface {
         }
       }
 
-      boolean newGroup = false;
+      // Grouping by field and execution time works ONLY if grouping by size is disabled.
+      if ( data.groupSize < 0 ) {
+        if ( data.groupFieldIndex >= 0 ) { // grouping by field
+          Object groupFieldData = row[data.groupFieldIndex];
+          if ( data.prevGroupFieldData != null ) {
+            if ( data.groupFieldMeta.compare( data.prevGroupFieldData, groupFieldData ) != 0 ) {
+              executeJob();
+            }
+          }
+          data.prevGroupFieldData = groupFieldData;
+        } else if ( data.groupTime > 0 ) { // grouping by execution time
+          long now = System.currentTimeMillis();
+          if ( now - data.groupTimeStart >= data.groupTime ) {
+            executeJob();
+          }
+        }
+      }
+
+      // Add next value AFTER job execution, in case we are grouping by field (see PDI-14958),
+      // and BEFORE checking size of a group, in case we are grouping by size (see PDI-14121).
       data.groupBuffer.add( new RowMetaAndData( getInputRowMeta(), row ) ); // should we clone for safety?
-      if ( data.groupSize >= 0 ) {
-        // Pass the input rows in blocks to the job result rows...
-        //
-        if ( data.groupSize != 0 ) {
-          // Pass all input rows...
-          if ( data.groupBuffer.size() >= data.groupSize ) {
-            newGroup = true;
-          }
-        }
-      } else if ( data.groupFieldIndex >= 0 ) {
-        Object groupFieldData = row[data.groupFieldIndex];
-        if ( data.prevGroupFieldData != null ) {
-          if ( data.groupFieldMeta.compare( data.prevGroupFieldData, groupFieldData ) != 0 ) {
-            newGroup = true;
-          }
-        }
 
-        data.prevGroupFieldData = groupFieldData;
-      } else if ( data.groupTime > 0 ) {
-        long now = System.currentTimeMillis();
-        if ( now - data.groupTimeStart >= data.groupTime ) {
-          newGroup = true;
+      // Grouping by size.
+      // If group buffer size exceeds specified limit, then execute job and flush group buffer.
+      if ( data.groupSize > 0 ) {
+        // Pass all input rows...
+        if ( data.groupBuffer.size() >= data.groupSize ) {
+          executeJob();
         }
       }
-
-      if ( newGroup ) {
-        executeJob();
-      }
-
 
       return true;
     } catch ( Exception e ) {
@@ -176,15 +185,9 @@ public class JobExecutor extends BaseStep implements StepInterface {
 
     data.groupTimeStart = System.currentTimeMillis();
 
-    // Keep the strain on the logging back-end conservative.
-    // TODO: make this optional/user-defined later
-    //
-    if ( data.executorJob != null ) {
-      KettleLogStore.discardLines( data.executorJob.getLogChannelId(), false );
-      LoggingRegistry.getInstance().removeIncludingChildren( data.executorJob.getLogChannelId() );
-    }
+    discardLogLines( data );
 
-    data.executorJob = new Job( meta.getRepository(), data.executorJobMeta, this );
+    data.executorJob = createJob( meta.getRepository(), data.executorJobMeta, this );
 
     data.executorJob.setParentTrans( getTrans() );
     data.executorJob.setLogLevel( getLogLevel() );
@@ -338,6 +341,21 @@ public class JobExecutor extends BaseStep implements StepInterface {
     }
 
     data.groupBuffer.clear();
+  }
+
+  @VisibleForTesting
+  Job createJob( Repository repository, JobMeta jobMeta, LoggingObjectInterface parentLogging ) {
+    return new Job( repository, jobMeta, parentLogging );
+  }
+
+  @VisibleForTesting
+  void discardLogLines( JobExecutorData data ) {
+    // Keep the strain on the logging back-end conservative.
+    // TODO: make this optional/user-defined later
+    if ( data.executorJob != null ) {
+      KettleLogStore.discardLines( data.executorJob.getLogChannelId(), false );
+      LoggingRegistry.getInstance().removeIncludingChildren( data.executorJob.getLogChannelId() );
+    }
   }
 
   private void passParametersToJob() throws KettleException {
