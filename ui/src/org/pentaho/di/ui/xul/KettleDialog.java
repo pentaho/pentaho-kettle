@@ -36,7 +36,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class KettleDialog extends SwtDialog {
-  final private Map<String, Image[]> imagesCache = new HashMap<>();
+  private final Map<String, Image[]> imagesCache = new HashMap<>();
 
   public KettleDialog( Element self, XulComponent parent, XulDomContainer container, String tagName ) {
     super( self, parent, container, tagName );
