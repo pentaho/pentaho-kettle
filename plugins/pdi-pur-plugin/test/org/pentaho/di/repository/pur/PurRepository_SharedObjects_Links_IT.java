@@ -38,6 +38,10 @@ import org.w3c.dom.Node;
 
 public class PurRepository_SharedObjects_Links_IT extends PurRepositoryIT {
 
+  public PurRepository_SharedObjects_Links_IT( Boolean lazyRepo ) {
+    super( lazyRepo );
+  }
+
   private interface GenericMeta {
     public AbstractMeta createFilled() throws Exception;
 

@@ -16,17 +16,20 @@
  */
 package org.pentaho.di.repository.pur;
 
-import static java.util.Arrays.asList;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.pentaho.di.repository.pur.PurRepositoryTestingUtils.*;
 
 import java.io.File;
 import java.io.Serializable;
 import java.util.AbstractList;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,7 +45,6 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.KettleEnvironment;
@@ -123,7 +125,7 @@ import org.springframework.security.providers.UsernamePasswordAuthenticationToke
 import org.springframework.security.userdetails.User;
 import org.springframework.security.userdetails.UserDetails;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.TestContextManager;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.xml.sax.Attributes;
@@ -131,7 +133,6 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.ext.DefaultHandler2;
 
-@RunWith( SpringJUnit4ClassRunner.class )
 @ContextConfiguration( locations = { "classpath:/repository.spring.xml",
   "classpath:/repository-test-override.spring.xml" } )
 public class PurRepositoryIT extends RepositoryTestBase implements ApplicationContextAware, java.io.Serializable {
@@ -171,6 +172,12 @@ public class PurRepositoryIT extends RepositoryTestBase implements ApplicationCo
 
   private static IAuthorizationPolicy authorizationPolicy;
 
+  private TestContextManager testContextManager;
+
+  public PurRepositoryIT( Boolean lazyRepo ) {
+    super( lazyRepo );
+  }
+
   // ~ Methods =========================================================================================================
 
   @BeforeClass
@@ -191,6 +198,9 @@ public class PurRepositoryIT extends RepositoryTestBase implements ApplicationCo
 
   @Before
   public void setUp() throws Exception {
+    this.testContextManager = new TestContextManager( getClass() );
+    this.testContextManager.prepareTestInstance( this );
+
     IRepositoryVersionManager mockRepositoryVersionManager = mock( IRepositoryVersionManager.class );
     when( mockRepositoryVersionManager.isVersioningEnabled( anyString() ) ).thenReturn( true );
     when( mockRepositoryVersionManager.isVersionCommentEnabled( anyString() ) ).thenReturn( false );
@@ -284,15 +294,16 @@ public class PurRepositoryIT extends RepositoryTestBase implements ApplicationCo
     // next line is copy of SecurityHelper.setPrincipal
     pentahoSession.setAttribute( "SECURITY_PRINCIPAL", authentication );
     SecurityContextHolder.setStrategyName( SecurityContextHolder.MODE_GLOBAL );
-    setSession( pentahoSession, authentication );
+    PurRepositoryTestingUtils.setSession( pentahoSession, authentication );
     repositoryLifecyleManager.newTenant();
     repositoryLifecyleManager.newUser();
   }
 
   protected void loginAsRepositoryAdmin() {
-    StandaloneSession repositoryAdminSession = createSession( repositoryAdminUsername );
-    Authentication repositoryAdminAuthentication = createAuthentication( repositoryAdminUsername, superAdminRoleName );
-    setSession( repositoryAdminSession, repositoryAdminAuthentication );
+    StandaloneSession repositoryAdminSession = PurRepositoryTestingUtils.createSession( repositoryAdminUsername );
+    Authentication repositoryAdminAuthentication = PurRepositoryTestingUtils.createAuthentication(
+        repositoryAdminUsername, superAdminRoleName );
+    PurRepositoryTestingUtils.setSession( repositoryAdminSession, repositoryAdminAuthentication );
   }
 
   protected void logout() {
@@ -334,8 +345,8 @@ public class PurRepositoryIT extends RepositoryTestBase implements ApplicationCo
     PentahoSessionHolder.setSession( pentahoSession );
     pentahoSession.setAttribute( IPentahoSession.TENANT_ID_KEY, tenant.getId() );
 
-    Authentication auth = createAuthentication( username, roles );
-    setSession( pentahoSession, auth );
+    Authentication auth = PurRepositoryTestingUtils.createAuthentication( username, roles );
+    PurRepositoryTestingUtils.setSession( pentahoSession, auth );
 
     createUserHomeFolder( tenant, username );
   }
@@ -380,12 +391,13 @@ public class PurRepositoryIT extends RepositoryTestBase implements ApplicationCo
     String principleId = userNameUtils.getPrincipleId( theTenant, theUsername );
     String authenticatedRoleId = roleNameUtils.getPrincipleId( theTenant, tenantAuthenticatedRoleName );
     TransactionCallbackWithoutResult callback =
-        createUserHomeDirCallback( theTenant, theUsername, principleId, authenticatedRoleId, repositoryFileDao );
+        PurRepositoryTestingUtils.createUserHomeDirCallback( theTenant, theUsername, principleId, authenticatedRoleId,
+            repositoryFileDao );
     try {
       txnTemplate.execute( callback );
     } finally {
       // Switch our identity back to the original user.
-      setSession( origPentahoSession, origAuthentication );
+      PurRepositoryTestingUtils.setSession( origPentahoSession, origAuthentication );
     }
   }
 
@@ -601,7 +613,8 @@ public class PurRepositoryIT extends RepositoryTestBase implements ApplicationCo
   private class MockRepositoryExportParser extends DefaultHandler2 {
     private List<String> nodeNames = new ArrayList<String>();
     private SAXParseException fatalError;
-    private List<String> nodesToCapture = asList( "repository", "transformations", "transformation", "jobs", "job" );
+    private List<String> nodesToCapture = Arrays
+        .asList( "repository", "transformations", "transformation", "jobs", "job" );
 
     //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
 
@@ -1033,42 +1046,13 @@ public class PurRepositoryIT extends RepositoryTestBase implements ApplicationCo
 
   @Test
   public void testCreateRepositoryDirectory() throws KettleException {
-    System.setProperty( PurRepository.LAZY_REPOSITORY, "false" );
     RepositoryDirectoryInterface tree = repository.loadRepositoryDirectoryTree();
-    assertNotEquals( LazyUnifiedRepositoryDirectory.class, tree.getClass() );
     repository.createRepositoryDirectory( tree.findDirectory( "home" ), "/admin1" );
     repository.createRepositoryDirectory( tree, "/home/admin2" );
     repository.createRepositoryDirectory( tree, "/home/admin2/new1" );
     RepositoryDirectoryInterface repositoryDirectory =
         repository.createRepositoryDirectory( tree, "/home/admin2/new1" );
     repository.getJobAndTransformationObjects( repositoryDirectory.getObjectId(), false );
-
-    System.setProperty( PurRepository.LAZY_REPOSITORY, "true" );
-    RepositoryDirectoryInterface treeLazy = repository.loadRepositoryDirectoryTree();
-    assertEquals( LazyUnifiedRepositoryDirectory.class, treeLazy.getClass() );
-    repository.createRepositoryDirectory( treeLazy.findDirectory( "home" ), "/admin1L" );
-    repository.createRepositoryDirectory( treeLazy, "/home/admin2L" );
-    repository.createRepositoryDirectory( treeLazy, "/home/admin2L/new1" );
-    repositoryDirectory = repository.createRepositoryDirectory( treeLazy, "/home/admin2L/new1" );
-
-    repository.getJobAndTransformationObjects( repositoryDirectory.getObjectId(), false );
-  }
-
-  @Test
-  public void testFindDirectory() throws Exception {
-    System.setProperty( PurRepository.LAZY_REPOSITORY, "false" );
-    RepositoryDirectoryInterface tree = repository.loadRepositoryDirectoryTree();
-    RepositoryDirectoryInterface dir = repository.createRepositoryDirectory( tree, "/home/admin3/n" );
-    RepositoryDirectoryInterface sameDir = repository.findDirectory( "/home/admin3/n/" );
-    assertEquals( dir.getPath(), sameDir.getPath() );
-    assertEquals( dir.getParent().getPath(), sameDir.getParent().getPath() );
-
-    System.setProperty( PurRepository.LAZY_REPOSITORY, "true" );
-    tree = repository.loadRepositoryDirectoryTree();
-    dir = repository.createRepositoryDirectory( tree, "/home/admin3L/n" );
-    sameDir = repository.findDirectory( "/home/admin3L/n/" );
-    assertEquals( dir.getPath(), sameDir.getPath() );
-    assertEquals( dir.getParent().getPath(), sameDir.getParent().getPath() );
   }
 
   protected static class LogListener implements KettleLoggingEventListener {

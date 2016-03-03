@@ -25,7 +25,7 @@ import org.pentaho.di.trans.TransMeta;
 import java.util.Calendar;
 import java.util.List;
 
-import static junit.framework.TestCase.assertEquals;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Created by nbaker on 1/14/16.
@@ -36,8 +36,12 @@ public class PurRepository_RepositoryDirectory_IT extends PurRepositoryTestBase 
   private TransMeta transMeta;
   private RepositoryDirectoryInterface defaultSaveDirectory;
 
+  public PurRepository_RepositoryDirectory_IT( Boolean lazyRepo ) {
+    super( lazyRepo );
+  }
+
   @Before
-  public void setup() throws Exception{
+  public void setup() throws Exception {
 
     transMeta = new TransMeta();
     transMeta.setName( "Test" );
@@ -55,7 +59,7 @@ public class PurRepository_RepositoryDirectory_IT extends PurRepositoryTestBase 
   public void testGetRepositoryObjectsFirst() throws Exception {
     // Try it accessing getRepositoryObjects() first
     List<RepositoryElementMetaInterface> repositoryObjects = defaultSaveDirectory.getRepositoryObjects();
-    assertEquals( 2, repositoryObjects.size() );
+    assertEquals( 1, repositoryObjects.size() );
     assertEquals( "Test", repositoryObjects.get( 0 ).getName() );
 
   }
@@ -64,7 +68,7 @@ public class PurRepository_RepositoryDirectory_IT extends PurRepositoryTestBase 
     // Try it again this time calling getChildren() then getRepositoryObjects()
     defaultSaveDirectory.getChildren();
     List<RepositoryElementMetaInterface> repositoryObjects = defaultSaveDirectory.getRepositoryObjects();
-    assertEquals( 2, repositoryObjects.size() );
+    assertEquals( 1, repositoryObjects.size() );
     assertEquals( "Test", repositoryObjects.get( 0 ).getName() );
 
   }

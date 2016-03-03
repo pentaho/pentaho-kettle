@@ -1,5 +1,5 @@
 /*!
- * Copyright 2010 - 2015 Pentaho Corporation.  All rights reserved.
+ * Copyright 2010 - 2016 Pentaho Corporation.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,27 +20,38 @@ import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.repository.ObjectId;
+import org.pentaho.di.repository.RepositoryObjectType;
+import org.pentaho.di.repository.RepositoryTestLazySupport;
 import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
 import org.pentaho.platform.api.repository2.unified.RepositoryFile;
 
+import java.util.Arrays;
 import java.util.List;
 
-import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotSame;
-import static org.mockito.Mockito.*;
-import static org.pentaho.di.repository.RepositoryObjectType.DATABASE;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyBoolean;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 
 /**
  * @author Andrey Khayrutdinov
  */
-public class PurRepository_DatabaseNames_Test {
+public class PurRepository_DatabaseNames_Test extends RepositoryTestLazySupport {
 
   private static final String EXISTING_DB = "existing";
   private static final String EXISTING_DB_PATH = getPathForDb( EXISTING_DB );
 
+  public PurRepository_DatabaseNames_Test( Boolean lazyRepo ) {
+    super( lazyRepo );
+  }
+
   private static String getPathForDb( String db ) {
-    return "/etc/pdi/databases/" + db + DATABASE.getExtension();
+    return "/etc/pdi/databases/" + db + RepositoryObjectType.DATABASE.getExtension();
   }
 
   private PurRepository purRepository;
@@ -71,9 +82,10 @@ public class PurRepository_DatabaseNames_Test {
     final String lookupName = EXISTING_DB.toUpperCase();
     assertNotSame( lookupName, EXISTING_DB );
 
-    List<RepositoryFile> files = asList( file( "a" ), file( EXISTING_DB ), file( "b" ) );
+    List<RepositoryFile> files = Arrays.asList( file( "a" ), file( EXISTING_DB ), file( "b" ) );
     purRepository = spy( purRepository );
-    doReturn( files ).when( purRepository ).getAllFilesOfType( any( ObjectId.class ), eq( DATABASE ), anyBoolean() );
+    doReturn( files ).when( purRepository ).getAllFilesOfType( any( ObjectId.class ),
+        eq( RepositoryObjectType.DATABASE ), anyBoolean() );
 
     ObjectId databaseID = purRepository.getDatabaseID( lookupName );
     assertEquals( EXISTING_DB, databaseID.getId() );
@@ -86,6 +98,7 @@ public class PurRepository_DatabaseNames_Test {
   }
 
   private static RepositoryFile file( String name ) {
-    return new RepositoryFile.Builder( name + DATABASE.getExtension() ).title( name ).id( name ).build();
+    return new RepositoryFile.Builder( name + RepositoryObjectType.DATABASE.getExtension() ).title( name ).id( name )
+        .build();
   }
 }

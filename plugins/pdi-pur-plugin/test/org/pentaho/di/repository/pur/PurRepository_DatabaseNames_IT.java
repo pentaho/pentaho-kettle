@@ -1,5 +1,5 @@
 /*!
- * Copyright 2010 - 2015 Pentaho Corporation.  All rights reserved.
+ * Copyright 2010 - 2016 Pentaho Corporation.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,19 +22,22 @@ import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.platform.api.repository2.unified.RepositoryFile;
 import org.pentaho.platform.api.repository2.unified.data.node.NodeRepositoryFileData;
+import org.pentaho.platform.repository.RepositoryFilenameUtils;
 
 import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNotNull;
-import static org.pentaho.di.repository.pur.PurRepository.checkAndSanitize;
-import static org.pentaho.platform.repository.RepositoryFilenameUtils.escape;
 
 /**
  * @author Andrey Khayrutdinov
  */
 public class PurRepository_DatabaseNames_IT extends PurRepositoryTestBase {
+
+  public PurRepository_DatabaseNames_IT( Boolean lazyRepo ) {
+    super( lazyRepo );
+  }
 
   @Test
   public void getDatabaseId_ExactMatch() throws Exception {
@@ -71,7 +74,7 @@ public class PurRepository_DatabaseNames_IT extends PurRepositoryTestBase {
     another.setName( similar );
 
     final String filename =
-        checkAndSanitize( escape( similar, unifiedRepository.getReservedChars() )
+        PurRepository.checkAndSanitize( RepositoryFilenameUtils.escape( similar, unifiedRepository.getReservedChars() )
             + RepositoryObjectType.DATABASE.getExtension() );
     RepositoryFile file = new RepositoryFile.Builder( filename ).title( similar ).build();
 
