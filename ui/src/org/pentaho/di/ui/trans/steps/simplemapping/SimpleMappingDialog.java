@@ -655,7 +655,7 @@ public class SimpleMappingDialog extends BaseStepDialog implements StepDialogInt
 
   // Method is defined as package-protected in order to be accessible by unit tests
   void loadTransformation() throws KettleException {
-    switch( getSpecificationMethod() ) {
+    switch ( getSpecificationMethod() ) {
       case FILENAME:
         loadFileTrans( wFilename.getText() );
         break;
@@ -791,7 +791,7 @@ public class SimpleMappingDialog extends BaseStepDialog implements StepDialogInt
       }
       if ( saved ) {
         setRadioButtons();
-        switch( getSpecificationMethod() ) {
+        switch ( getSpecificationMethod() ) {
           case FILENAME:
             wFilename.setText( Const.NVL( newTransMeta.getFilename(), "" ) );
             break;
@@ -837,7 +837,7 @@ public class SimpleMappingDialog extends BaseStepDialog implements StepDialogInt
    */
   public void getData() {
     setSpecificationMethod( mappingMeta.getSpecificationMethod() );
-    switch( getSpecificationMethod() ) {
+    switch ( getSpecificationMethod() ) {
       case FILENAME:
         wFilename.setText( Const.NVL( mappingMeta.getFileName(), "" ) );
         break;
@@ -1227,7 +1227,7 @@ public class SimpleMappingDialog extends BaseStepDialog implements StepDialogInt
     }
 
     mappingMeta.setSpecificationMethod( getSpecificationMethod() );
-    switch( getSpecificationMethod() ) {
+    switch ( getSpecificationMethod() ) {
       case FILENAME:
         mappingMeta.setFileName( wFilename.getText() );
         mappingMeta.setDirectoryPath( null );

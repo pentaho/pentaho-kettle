@@ -152,7 +152,7 @@ public class SpoonPluginManagerTest {
 
   private class DummyLifecycleListener implements SpoonLifecycleListener {
     @Override public void onEvent( SpoonLifeCycleEvent evt ) {
-      if ( evt == SpoonLifeCycleEvent.STARTUP) {
+      if ( evt == SpoonLifeCycleEvent.STARTUP ) {
         notifications.incrementAndGet();
       }
     }

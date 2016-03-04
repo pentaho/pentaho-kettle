@@ -38,8 +38,7 @@ import org.pentaho.di.trans.steps.fixedinput.FixedFileInputField;
 import org.pentaho.di.trans.steps.fixedinput.FixedInputMeta;
 import org.pentaho.di.ui.core.PropsUI;
 
-public class FixedFileImportWizardPage1 extends WizardPage // implements Listener
-{
+public class FixedFileImportWizardPage1 extends WizardPage { // implements Listener
   private static Class<?> PKG = FixedInputMeta.class; // for i18n purposes, needed by Translator2!!
 
   private FixedTableDraw wTable;

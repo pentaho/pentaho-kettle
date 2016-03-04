@@ -40,8 +40,7 @@ import org.pentaho.di.trans.steps.fileinput.text.TextFileInputMeta;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.widget.TableDraw;
 
-public class TextFileImportWizardPage1 extends WizardPage // implements Listener
-{
+public class TextFileImportWizardPage1 extends WizardPage { // implements Listener
   private static Class<?> PKG = TextFileInputMeta.class; // for i18n purposes, needed by Translator2!!
 
   private TableDraw wTable;

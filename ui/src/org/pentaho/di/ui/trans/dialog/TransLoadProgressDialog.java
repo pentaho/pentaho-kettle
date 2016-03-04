@@ -106,7 +106,7 @@ public class TransLoadProgressDialog {
                 transname, repdir, new ProgressMonitorAdapter( monitor ), true, versionLabel );
           }
           // Call extension point(s) now that the file has been opened
-          ExtensionPointHandler.callExtensionPoint(spoon.getLog(), KettleExtensionPoint.TransAfterOpen.id, transInfo );
+          ExtensionPointHandler.callExtensionPoint( spoon.getLog(), KettleExtensionPoint.TransAfterOpen.id, transInfo );
           if ( transInfo.hasMissingPlugins() ) {
             StepMeta stepMeta = transInfo.getStep( 0 );
             MissingTransDialog missingTransDialog =

@@ -379,7 +379,7 @@ public class SpoonPerspectiveManager {
           toolbar.forceFocus();
         }
       } );
-      
+
       perspectivesCombo.addKeyListener( new KeyAdapter() {
         public void keyPressed( KeyEvent event ) {
           if ( event.character == SWT.CR ) {

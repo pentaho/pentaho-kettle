@@ -23,7 +23,6 @@
 package org.pentaho.di.ui.repository.repositoryexplorer;
 
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.List;
 import java.util.ResourceBundle;
 

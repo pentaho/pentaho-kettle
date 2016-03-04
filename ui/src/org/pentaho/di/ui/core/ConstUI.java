@@ -116,12 +116,12 @@ public class ConstUI {
    * the default canvas refresh interval for running transformations
    */
   public static final int INTERVAL_MS_TRANS_CANVAS_REFRESH = 1000;
-  
+
   /**
    * margin between points of controls
    */
   public static final int SMALL_MARGIN = 5;
-  
+
   /**
    * margin between points of controls
    */

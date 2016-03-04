@@ -521,10 +521,8 @@ public class DenormaliserDialog extends BaseStepDialog implements StepDialogInte
         BaseStepDialog.getFieldsFromPrevious(
           r, wTarget, 2, new int[] {}, new int[] {}, -1, -1, new TableItemInsertListener() {
             public boolean tableItemInserted( TableItem tableItem, ValueMetaInterface v ) {
-              if ( Const.indexOfString( v.getName(), groupingFields ) < 0 ) // Not a grouping field
-              {
-                if ( !wKeyField.getText().equalsIgnoreCase( v.getName() ) ) // Not the key field
-                {
+              if ( Const.indexOfString( v.getName(), groupingFields ) < 0 ) { // Not a grouping field
+                if ( !wKeyField.getText().equalsIgnoreCase( v.getName() ) ) { // Not the key field
                   int nr = tableItem.getParent().indexOf( tableItem ) + 1;
                   tableItem.setText( 1, BaseMessages.getString( PKG, "DenormaliserDialog.TargetFieldname.Label" )
                     + nr ); // the target fieldname

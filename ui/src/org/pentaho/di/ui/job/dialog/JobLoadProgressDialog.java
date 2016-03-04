@@ -88,9 +88,9 @@ public class JobLoadProgressDialog {
           } else {
             jobInfo = rep.loadJob( jobname, repdir, new ProgressMonitorAdapter( monitor ), versionLabel );
           }
-          if( jobInfo.hasMissingPlugins() ) {
+          if ( jobInfo.hasMissingPlugins() ) {
             MissingEntryDialog missingDialog = new MissingEntryDialog( shell, jobInfo.getMissingEntries() );
-            if( missingDialog.open() == null ) {
+            if ( missingDialog.open() == null ) {
               jobInfo = null;
             }
           }

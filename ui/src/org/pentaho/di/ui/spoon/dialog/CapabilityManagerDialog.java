@@ -27,13 +27,11 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
@@ -55,8 +53,6 @@ import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
@@ -95,10 +91,10 @@ public class CapabilityManagerDialog {
     }
 
     KettleClientEnvironment.getInstance().setClient( KettleClientEnvironment.ClientType.SPOON );
-    Shell shell = new Shell(display, SWT.DIALOG_TRIM );
+    Shell shell = new Shell( display, SWT.DIALOG_TRIM );
     shell.open();
     CapabilityManagerDialog capabilityManagerDialog = new CapabilityManagerDialog( shell );
-capabilityManagerDialog.open();
+    capabilityManagerDialog.open();
     while ( !shell.isDisposed() ) {
       if ( !display.readAndDispatch() ) {
         display.sleep();
@@ -135,13 +131,13 @@ capabilityManagerDialog.open();
       }
     } );
 
-    ScrolledComposite scrollpane = new ScrolledComposite(shell, SWT.BORDER | SWT.V_SCROLL );
+    ScrolledComposite scrollpane = new ScrolledComposite( shell, SWT.BORDER | SWT.V_SCROLL );
 
     FormData treeFormData = new FormData();
     treeFormData.left = new FormAttachment( 0, 0 ); // To the right of the label
     treeFormData.top = new FormAttachment( 0, 0 );
     treeFormData.right = new FormAttachment( 100, 0 );
-    Label label = new Label(shell, SWT.NONE);
+    Label label = new Label( shell, SWT.NONE );
     label.setText( "Capabilities:" );
     label.setLayoutData( treeFormData );
 
@@ -188,8 +184,8 @@ capabilityManagerDialog.open();
                       dialog.open();
                     } else {
                       MessageDialog dialog = new MessageDialog( shell, "Capability Install Success", null,
-                          capability.getId() + " " + ((!selected) ? "un":"")+"installed successfully", MessageDialog.INFORMATION,
-                          new String[] { "OK" }, 0 );
+                          capability.getId() + " " + ( ( !selected ) ? "un" : "" ) + "installed successfully", MessageDialog.INFORMATION,
+                            new String[] { "OK" }, 0 );
                       dialog.open();
                     }
                     updateAllCheckboxes();
@@ -208,10 +204,8 @@ capabilityManagerDialog.open();
       } );
 
     }
-    mainPanel.setSize(mainPanel.computeSize(SWT.DEFAULT,
-        SWT.DEFAULT));
-    scrollpane.setMinSize( mainPanel.computeSize( SWT.DEFAULT,
-        SWT.DEFAULT ) );
+    mainPanel.setSize( mainPanel.computeSize( SWT.DEFAULT, SWT.DEFAULT ) );
+    scrollpane.setMinSize( mainPanel.computeSize( SWT.DEFAULT, SWT.DEFAULT ) );
     BaseStepDialog.setSize( shell, 250, 400, false );
 
     shell.open();
@@ -221,7 +215,7 @@ capabilityManagerDialog.open();
       }
     }
   }
-  private void updateAllCheckboxes(){
+  private void updateAllCheckboxes() {
     DefaultCapabilityManager capabilityManager = DefaultCapabilityManager.getInstance();
     for ( Button button : buttons ) {
       button.setSelection( capabilityManager.getCapabilityById( button.getText() ).isInstalled() );

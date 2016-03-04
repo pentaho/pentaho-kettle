@@ -30,7 +30,7 @@ import org.pentaho.di.trans.step.StepPartitioningMeta;
 public class MethodProcessorFactory {
 
   public static MethodProcessor create( int methodType ) {
-    switch( methodType ) {
+    switch ( methodType ) {
       case StepPartitioningMeta.PARTITIONING_METHOD_NONE:
         return new NoneMethodProcessor();
       case StepPartitioningMeta.PARTITIONING_METHOD_MIRROR:

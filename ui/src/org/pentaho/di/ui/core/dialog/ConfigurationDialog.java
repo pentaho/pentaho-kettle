@@ -269,16 +269,16 @@ public abstract class ConfigurationDialog extends Dialog {
     tbtmParameters.setControl( parametersComposite );
 
     ColumnInfo[] cParams =
-        { new ColumnInfo( BaseMessages.getString( PKG, prefix + ".ParamsColumn.Argument" ), ColumnInfo.COLUMN_TYPE_TEXT,
+    { new ColumnInfo( BaseMessages.getString( PKG, prefix + ".ParamsColumn.Argument" ), ColumnInfo.COLUMN_TYPE_TEXT,
             false, true, 126 ), // Stepname
-          new ColumnInfo( BaseMessages.getString( PKG, prefix + ".ParamsColumn.Default" ), ColumnInfo.COLUMN_TYPE_TEXT,
-              false, true, 138 ), // Preview size
+      new ColumnInfo( BaseMessages.getString( PKG, prefix + ".ParamsColumn.Default" ), ColumnInfo.COLUMN_TYPE_TEXT,
+          false, true, 138 ), // Preview size
 
-          new ColumnInfo( BaseMessages.getString( PKG, prefix + ".ParamsColumn.Value" ), ColumnInfo.COLUMN_TYPE_TEXT,
-              false, false, 142 ), // Preview size
+      new ColumnInfo( BaseMessages.getString( PKG, prefix + ".ParamsColumn.Value" ), ColumnInfo.COLUMN_TYPE_TEXT,
+          false, false, 142 ), // Preview size
 
-          new ColumnInfo( BaseMessages.getString( PKG, prefix + ".ParamsColumn.Description" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false, true, 181 ), // Preview size
+      new ColumnInfo( BaseMessages.getString( PKG, prefix + ".ParamsColumn.Description" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false, true, 181 ), // Preview size
     };
 
     String[] namedParams = abstractMeta.listParameters();
@@ -318,10 +318,10 @@ public abstract class ConfigurationDialog extends Dialog {
     tbtmVariables.setControl( variablesComposite );
 
     ColumnInfo[] cVariables =
-        { new ColumnInfo( BaseMessages.getString( PKG, prefix + ".VariablesColumn.Argument" ),
+    { new ColumnInfo( BaseMessages.getString( PKG, prefix + ".VariablesColumn.Argument" ),
             ColumnInfo.COLUMN_TYPE_TEXT, false, false, 287 ), // Stepname
-          new ColumnInfo( BaseMessages.getString( PKG, prefix + ".VariablesColumn.Value" ), ColumnInfo.COLUMN_TYPE_TEXT,
-              false, false, 300 ), // Preview size
+      new ColumnInfo( BaseMessages.getString( PKG, prefix + ".VariablesColumn.Value" ), ColumnInfo.COLUMN_TYPE_TEXT,
+          false, false, 300 ), // Preview size
     };
 
     int nrVariables = configuration.getVariables() != null ? configuration.getVariables().size() : 0;

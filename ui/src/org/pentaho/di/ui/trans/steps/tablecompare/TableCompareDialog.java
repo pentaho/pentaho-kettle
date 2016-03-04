@@ -53,9 +53,7 @@ import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.steps.tablecompare.TableCompare;
 import org.pentaho.di.trans.steps.tablecompare.TableCompareMeta;
 import org.pentaho.di.ui.core.widget.LabelCombo;
-import org.pentaho.di.ui.core.widget.LabelComboVar;
 import org.pentaho.di.ui.core.widget.LabelText;
-import org.pentaho.di.ui.core.widget.LabelTextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class TableCompareDialog extends BaseStepDialog implements StepDialogInterface {

@@ -252,7 +252,7 @@ public class JobExecutionConfigurationDialog extends ConfigurationDialog {
     if ( configuration.isExecutingRemotely() ) {
       stackedLayout.topControl = serverOptionsComposite;
     }
-    
+
     wSafeMode.setSelection( configuration.isSafeModeEnabled() );
     wClearLog.setSelection( configuration.isClearingLog() );
     wRemoteHost.setText( configuration.getRemoteServer() == null ? "" : configuration.getRemoteServer().toString() );
