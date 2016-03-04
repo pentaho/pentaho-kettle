@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -156,8 +156,8 @@ public class MappingInputMeta extends BaseStepMeta implements StepMetaInterface 
     for ( int i = 0; i < nrfields; i++ ) {
       retval.fieldName[i] = fieldName[i];
       retval.fieldType[i] = fieldType[i];
-      fieldLength[i] = fieldLength[i];
-      fieldPrecision[i] = fieldPrecision[i];
+      retval.fieldLength[i] = fieldLength[i];
+      retval.fieldPrecision[i] = fieldPrecision[i];
     }
 
     return retval;
