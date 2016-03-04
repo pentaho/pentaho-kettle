@@ -94,7 +94,7 @@ public class CapabilityManagerDialog {
     Shell shell = new Shell( display, SWT.DIALOG_TRIM );
     shell.open();
     CapabilityManagerDialog capabilityManagerDialog = new CapabilityManagerDialog( shell );
-      capabilityManagerDialog.open();
+    capabilityManagerDialog.open();
     while ( !shell.isDisposed() ) {
       if ( !display.readAndDispatch() ) {
         display.sleep();
@@ -204,10 +204,8 @@ public class CapabilityManagerDialog {
       } );
 
     }
-    mainPanel.setSize( mainPanel.computeSize( SWT.DEFAULT,
-        SWT.DEFAULT) );
-    scrollpane.setMinSize( mainPanel.computeSize( SWT.DEFAULT,
-        SWT.DEFAULT ) );
+    mainPanel.setSize( mainPanel.computeSize( SWT.DEFAULT, SWT.DEFAULT ) );
+    scrollpane.setMinSize( mainPanel.computeSize( SWT.DEFAULT, SWT.DEFAULT ) );
     BaseStepDialog.setSize( shell, 250, 400, false );
 
     shell.open();

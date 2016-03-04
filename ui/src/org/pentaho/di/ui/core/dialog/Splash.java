@@ -134,8 +134,8 @@ public class Splash {
 
         String fullVersionText =  BaseMessages.getString( PKG, "SplashDialog.Version" );
         String buildVersion = BuildVersion.getInstance().getVersion();
-        if ( StringUtils.ordinalIndexOf( buildVersion,".", 2 ) > 0 ) {
-          fullVersionText =  fullVersionText + " "  + buildVersion.substring( 0, StringUtils.ordinalIndexOf( buildVersion,".", 2 ) );
+        if ( StringUtils.ordinalIndexOf( buildVersion, ".", 2 ) > 0 ) {
+          fullVersionText =  fullVersionText + " "  + buildVersion.substring( 0, StringUtils.ordinalIndexOf( buildVersion, ".", 2 ) );
         } else {
           fullVersionText =  fullVersionText + " "  + buildVersion;
         }

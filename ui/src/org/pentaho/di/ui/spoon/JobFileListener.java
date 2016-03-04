@@ -102,8 +102,8 @@ public class JobFileListener implements FileListener {
   protected JobMeta processLinkedJobs( JobMeta jobMeta ) {
     for ( int i = 0; i < jobMeta.nrJobEntries(); i++ ) {
       JobEntryCopy jec = jobMeta.getJobEntry( i );
-      if (jec.getEntry() instanceof JobEntryJob) {
-        JobEntryJob jej = ( JobEntryJob ) jec.getEntry();
+      if ( jec.getEntry() instanceof JobEntryJob ) {
+        JobEntryJob jej = (JobEntryJob) jec.getEntry();
         ObjectLocationSpecificationMethod specMethod = jej.getSpecificationMethod();
         // If the reference is by filename, change it to Repository By Name. Otherwise it's fine so leave it alone
         if ( specMethod == ObjectLocationSpecificationMethod.FILENAME ) {
