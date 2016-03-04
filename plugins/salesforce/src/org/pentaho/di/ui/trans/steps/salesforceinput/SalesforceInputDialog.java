@@ -1323,13 +1323,14 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
     boolean successConnection = true;
     String msgError = null;
     SalesforceConnection connection = null;
+    String realUsername = null;
     try {
       SalesforceInputMeta meta = new SalesforceInputMeta();
       getInfo( meta );
 
       // get real values
       String realURL = transMeta.environmentSubstitute( meta.getTargetURL() );
-      String realUsername = transMeta.environmentSubstitute( meta.getUserName() );
+      realUsername = transMeta.environmentSubstitute( meta.getUserName() );
       String realPassword = transMeta.environmentSubstitute( meta.getPassword() );
       int realTimeOut = Const.toInt( transMeta.environmentSubstitute( meta.getTimeOut() ), 0 );
 
@@ -1351,7 +1352,7 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
     if ( successConnection ) {
 
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_INFORMATION );
-      mb.setMessage( BaseMessages.getString( PKG, "SalesforceInputDialog.Connected.OK", wUserName.getText() )
+      mb.setMessage( BaseMessages.getString( PKG, "SalesforceInputDialog.Connected.OK", realUsername )
         + Const.CR );
       mb.setText( BaseMessages.getString( PKG, "SalesforceInputDialog.Connected.Title.Ok" ) );
       mb.open();
@@ -1359,7 +1360,7 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
       new ErrorDialog(
         shell,
         BaseMessages.getString( PKG, "SalesforceInputDialog.Connected.Title.Error" ),
-        BaseMessages.getString( PKG, "SalesforceInputDialog.Connected.NOK", wUserName.getText() ),
+        BaseMessages.getString( PKG, "SalesforceInputDialog.Connected.NOK", realUsername ),
         new Exception( msgError ) );
     }
   }
