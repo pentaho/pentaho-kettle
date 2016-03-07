@@ -293,21 +293,19 @@ public class MemoryGroupBy extends BaseStep implements StepInterface {
           aggregate.agg[i] = sum;
           break;
         case MemoryGroupByMeta.TYPE_GROUP_COUNT_DISTINCT:
+          if ( aggregate.distinctObjs == null ) {
+            aggregate.distinctObjs = new Set[meta.getSubjectField().length];
+          }
+          if ( aggregate.distinctObjs[i] == null ) {
+            aggregate.distinctObjs[i] = new TreeSet<>();
+          }
           if ( !subjMeta.isNull( subj ) ) {
-            if ( aggregate.distinctObjs == null ) {
-              aggregate.distinctObjs = new Set[meta.getSubjectField().length];
-            }
-            if ( aggregate.distinctObjs[i] == null ) {
-              aggregate.distinctObjs[i] = new TreeSet<Object>();
-            }
             Object obj = subjMeta.convertToNormalStorageType( subj );
             if ( !aggregate.distinctObjs[i].contains( obj ) ) {
               aggregate.distinctObjs[i].add( obj );
-              // null is exact 0, or we will not be able to ++.
-              value = value == null ? new Long( 0 ) : value;
-              aggregate.agg[i] = (Long) value + 1;
             }
           }
+          aggregate.counts[i] = (long) aggregate.distinctObjs[i].size();
           break;
         case MemoryGroupByMeta.TYPE_GROUP_COUNT_ALL:
           if ( !subjMeta.isNull( subj ) ) {
@@ -505,9 +503,8 @@ public class MemoryGroupBy extends BaseStep implements StepInterface {
             break;
           case MemoryGroupByMeta.TYPE_GROUP_COUNT_ANY:
           case MemoryGroupByMeta.TYPE_GROUP_COUNT_ALL:
-            ag = new Long( aggregate.counts[i] );
-            break;
           case MemoryGroupByMeta.TYPE_GROUP_COUNT_DISTINCT:
+            ag = aggregate.counts[i];
             break;
           case MemoryGroupByMeta.TYPE_GROUP_MIN:
             break;
