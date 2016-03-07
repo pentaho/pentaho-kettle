@@ -34,11 +34,9 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Map;
 
-import static java.sql.Types.*;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.pentaho.di.core.row.ValueMetaInterface.*;
 
 public class ThinUtilTest {
   @SuppressWarnings( "deprecation" )
@@ -199,14 +197,14 @@ public class ThinUtilTest {
       }
     }
     TypeMap[] typeMaps = new TypeMap[] {
-      new TypeMap( TYPE_STRING,    VARCHAR,   "VARCHAR" ),
-      new TypeMap( TYPE_DATE,      TIMESTAMP, "TIMESTAMP" ),
-      new TypeMap( TYPE_INTEGER,   BIGINT,    "BIGINT" ),
-      new TypeMap( TYPE_NUMBER,    DOUBLE,    "DOUBLE" ),
-      new TypeMap( TYPE_BIGNUMBER, DECIMAL,   "DECIMAL" ),
-      new TypeMap( TYPE_BOOLEAN,   BOOLEAN,   "BOOLEAN" ),
-      new TypeMap( TYPE_BINARY,    BLOB,      "BLOB" ),
-      new TypeMap( TYPE_NONE,      OTHER,     "OTHER" ),
+      new TypeMap( ValueMetaInterface.TYPE_STRING,    Types.VARCHAR,   "VARCHAR" ),
+      new TypeMap( ValueMetaInterface.TYPE_DATE,      Types.TIMESTAMP, "TIMESTAMP" ),
+      new TypeMap( ValueMetaInterface.TYPE_INTEGER,   Types.BIGINT,    "BIGINT" ),
+      new TypeMap( ValueMetaInterface.TYPE_NUMBER,    Types.DOUBLE,    "DOUBLE" ),
+      new TypeMap( ValueMetaInterface.TYPE_BIGNUMBER, Types.DECIMAL,   "DECIMAL" ),
+      new TypeMap( ValueMetaInterface.TYPE_BOOLEAN,   Types.BOOLEAN,   "BOOLEAN" ),
+      new TypeMap( ValueMetaInterface.TYPE_BINARY,    Types.BLOB,      "BLOB" ),
+      new TypeMap( ValueMetaInterface.TYPE_NONE,      Types.OTHER,     "OTHER" ),
     };
     for ( TypeMap map : typeMaps ) {
       assertEquals( map.sqlDesc, ThinUtil.getSqlTypeDesc( map.valueMeta ) );
