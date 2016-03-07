@@ -52,7 +52,14 @@ import org.pentaho.di.trans.steps.salesforceinput.SalesforceConnectionUtils;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
-@Step(id="SalesforceInsert", i18nPackageName="org.pentaho.di.trans.steps.salesforceinsert", name="SalesforceInsert.TypeLongDesc.SalesforceInsert", description="SalesforceInsert.TypeTooltipDesc.SalesforceInsert", categoryDescription="i18n:org.pentaho.di.trans.step:BaseStep.Category.Output", image="FFO.svg", documentationUrl="http://wiki.pentaho.com/display/EAI/Salesforce+Insert")
+@Step(
+    id = "SalesforceInsert",
+    i18nPackageName = "org.pentaho.di.trans.steps.salesforceinsert",
+    name = "SalesforceInsert.TypeLongDesc.SalesforceInsert",
+    description = "SalesforceInsert.TypeTooltipDesc.SalesforceInsert",
+    categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Output",
+    image = "FFO.svg",
+    documentationUrl = "http://wiki.pentaho.com/display/EAI/Salesforce+Insert" )
 public class SalesforceInsertMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = SalesforceInsertMeta.class; // for i18n purposes, needed by Translator2!!
 

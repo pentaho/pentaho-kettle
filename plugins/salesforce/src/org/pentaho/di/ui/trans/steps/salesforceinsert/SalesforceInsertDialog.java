@@ -74,7 +74,6 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.salesforceinput.SalesforceConnection;
 import org.pentaho.di.trans.steps.salesforceinput.SalesforceConnectionUtils;
 import org.pentaho.di.trans.steps.salesforceinsert.SalesforceInsertMeta;
-import org.pentaho.di.trans.steps.salesforceupdate.SalesforceUpdateMeta;
 import org.pentaho.di.ui.core.dialog.EnterMappingDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
@@ -707,7 +706,7 @@ public class SalesforceInsertDialog extends BaseStepDialog implements StepDialog
     String msgError = null;
     String realUsername = null;
     SalesforceConnection connection = null;
-    
+
     try {
       SalesforceInsertMeta meta = new SalesforceInsertMeta();
       getInfo( meta );
