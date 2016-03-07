@@ -32,6 +32,8 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.injection.Injection;
+import org.pentaho.di.core.injection.InjectionSupported;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
@@ -59,42 +61,54 @@ import org.w3c.dom.Node;
 @Step( id = "XMLJoin", image = "XJN.svg", i18nPackageName = "org.pentaho.di.trans.steps.xmljoin",
     name = "XMLJoin.name", description = "XMLJoin.description", categoryDescription = "XMLJoin.category",
     documentationUrl = "http://wiki.pentaho.com/display/EAI/XML+Join" )
+@InjectionSupported( localizationPrefix = "XMLJoin.Injection." )
 public class XMLJoinMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = XMLJoinMeta.class; // for i18n purposes, needed by Translator2!!
 
   /** The base name of the output file */
 
   /** Flag: execute complex join */
+  @Injection( name = "COMPLEX_JOIN" )
   private boolean complexJoin;
 
   /** What step holds the xml string to join into */
+  @Injection( name = "TARGET_XML_STEP" )
   private String targetXMLstep;
 
   /** What field holds the xml string to join into */
+  @Injection( name = "TARGET_XML_FIELD" )
   private String targetXMLfield;
 
   /** What field holds the XML tags to join */
+  @Injection( name = "SOURCE_XML_FIELD" )
   private String sourceXMLfield;
 
   /** The name value containing the resulting XML fragment */
+  @Injection( name = "VALUE_XML_FIELD" )
   private String valueXMLfield;
 
   /** The name of the repeating row XML element */
+  @Injection( name = "TARGET_XPATH" )
   private String targetXPath;
 
   /** What step holds the xml strings to join */
+  @Injection( name = "SOURCE_XML_STEP" )
   private String sourceXMLstep;
 
   /** What field holds the join compare value */
+  @Injection( name = "JOIN_COMPARE_FIELD" )
   private String joinCompareField;
 
   /** The encoding to use for reading: null or empty string means system default encoding */
+  @Injection( name = "ENCODING" )
   private String encoding;
 
   /** Flag: execute complex join */
+  @Injection( name = "OMIT_XML_HEADER" )
   private boolean omitXMLHeader;
 
   /** Flag: omit null values from result xml */
+  @Injection( name = "OMIT_NULL_VALUES" )
   private boolean omitNullValues;
 
   public XMLJoinMeta() {
