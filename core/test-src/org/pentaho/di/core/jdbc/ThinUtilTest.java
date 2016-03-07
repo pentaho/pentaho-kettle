@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -34,7 +34,11 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Map;
 
+import static java.sql.Types.*;
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.pentaho.di.core.row.ValueMetaInterface.*;
 
 public class ThinUtilTest {
   @SuppressWarnings( "deprecation" )
@@ -164,13 +168,53 @@ public class ThinUtilTest {
     assertEquals( expectedName, testValue.getName() );
     assertEquals( ValueMetaInterface.TYPE_BINARY, testValue.getType() );
 
+    testValue = ThinUtil.getValueMeta( expectedName, Types.OTHER );
+    assertEquals( expectedName, testValue.getName() );
+    assertEquals( ValueMetaInterface.TYPE_NONE, testValue.getType() );
+
+    testValue = ThinUtil.getValueMeta( expectedName, Types.NULL );
+    assertEquals( expectedName, testValue.getName() );
+    assertEquals( ValueMetaInterface.TYPE_NONE, testValue.getType() );
+
     try {
-      testValue = ThinUtil.getValueMeta( expectedName, Integer.MIN_VALUE );
+      ThinUtil.getValueMeta( expectedName, Integer.MIN_VALUE );
       fail();
     } catch ( SQLException expected ) {
       // Do nothing, there is no SQL Type for Integer.MIN_VALUE, an exception was thrown as expected.
     }
   }
+
+  @SuppressWarnings( "deprecation" )
+  @Test
+  public void checkValueMetaTypeToSqlTypeConsistency() throws SQLException {
+    class TypeMap {
+      ValueMetaInterface valueMeta;
+      int sqlType;
+      String sqlDesc;
+      TypeMap( int valueMetaType, int sqlType, String desc ) {
+        this.valueMeta = mock( ValueMetaInterface.class );
+        when( valueMeta.getType() ).thenReturn( valueMetaType );
+        this.sqlType = sqlType;
+        this.sqlDesc = desc;
+      }
+    }
+    TypeMap[] typeMaps = new TypeMap[] {
+      new TypeMap( TYPE_STRING,    VARCHAR,   "VARCHAR" ),
+      new TypeMap( TYPE_DATE,      TIMESTAMP, "TIMESTAMP" ),
+      new TypeMap( TYPE_INTEGER,   BIGINT,    "BIGINT" ),
+      new TypeMap( TYPE_NUMBER,    DOUBLE,    "DOUBLE" ),
+      new TypeMap( TYPE_BIGNUMBER, DECIMAL,   "DECIMAL" ),
+      new TypeMap( TYPE_BOOLEAN,   BOOLEAN,   "BOOLEAN" ),
+      new TypeMap( TYPE_BINARY,    BLOB,      "BLOB" ),
+      new TypeMap( TYPE_NONE,      OTHER,     "OTHER" ),
+    };
+    for ( TypeMap map : typeMaps ) {
+      assertEquals( map.sqlDesc, ThinUtil.getSqlTypeDesc( map.valueMeta ) );
+      assertEquals( map.sqlType, ThinUtil.getSqlType( map.valueMeta ) );
+      assertEquals( map.valueMeta.getType(), ThinUtil.getValueMeta( "test", map.sqlType ).getType() );
+    }
+  }
+
 
   @SuppressWarnings( "deprecation" )
   @Test
@@ -193,7 +237,7 @@ public class ThinUtilTest {
     ValueMetaAndData result = ThinUtil.attemptIntegerValueExtraction( "12345" );
     assertNotNull( result );
     assertEquals( ValueMetaInterface.TYPE_INTEGER, result.getValueMeta().getType() );
-    assertEquals( Long.valueOf( 12345 ), result.getValueData() );
+    assertEquals( 12345L, result.getValueData() );
 
     //assertNull( ThinUtil.attemptIntegerValueExtraction( null ) );
     assertNull( ThinUtil.attemptIntegerValueExtraction( "" ) );

@@ -38,6 +38,14 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaAndData;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaBigNumber;
+import org.pentaho.di.core.row.value.ValueMetaBinary;
+import org.pentaho.di.core.row.value.ValueMetaBoolean;
+import org.pentaho.di.core.row.value.ValueMetaDate;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
+import org.pentaho.di.core.row.value.ValueMetaNone;
+import org.pentaho.di.core.row.value.ValueMetaNumber;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.xml.XMLHandler;
 
 /**
@@ -80,6 +88,8 @@ public class ThinUtil {
         return java.sql.Types.BOOLEAN;
       case ValueMetaInterface.TYPE_BINARY:
         return java.sql.Types.BLOB;
+      case ValueMetaInterface.TYPE_NONE:
+        return java.sql.Types.OTHER;
       default:
         break;
     }
@@ -102,6 +112,8 @@ public class ThinUtil {
         return "BOOLEAN";
       case ValueMetaInterface.TYPE_BINARY:
         return "BLOB";
+      case ValueMetaInterface.TYPE_NONE:
+        return "OTHER";
       default:
         break;
     }
@@ -110,44 +122,39 @@ public class ThinUtil {
 
   public static ValueMetaInterface getValueMeta( String valueName, int sqlType ) throws SQLException {
     switch ( sqlType ) {
+      case java.sql.Types.OTHER:
+      case java.sql.Types.NULL:
+        return new ValueMetaNone( valueName );
+
       case java.sql.Types.BIGINT:
-        return new ValueMeta( valueName, ValueMetaInterface.TYPE_INTEGER );
       case java.sql.Types.INTEGER:
-        return new ValueMeta( valueName, ValueMetaInterface.TYPE_INTEGER );
       case java.sql.Types.SMALLINT:
-        return new ValueMeta( valueName, ValueMetaInterface.TYPE_INTEGER );
+        return new ValueMetaInteger( valueName );
 
       case java.sql.Types.CHAR:
-        return new ValueMeta( valueName, ValueMetaInterface.TYPE_STRING );
       case java.sql.Types.VARCHAR:
-        return new ValueMeta( valueName, ValueMetaInterface.TYPE_STRING );
       case java.sql.Types.CLOB:
-        return new ValueMeta( valueName, ValueMetaInterface.TYPE_STRING );
+        return new ValueMetaString( valueName );
 
       case java.sql.Types.DATE:
-        return new ValueMeta( valueName, ValueMetaInterface.TYPE_DATE );
       case java.sql.Types.TIMESTAMP:
-        return new ValueMeta( valueName, ValueMetaInterface.TYPE_DATE );
       case java.sql.Types.TIME:
-        return new ValueMeta( valueName, ValueMetaInterface.TYPE_DATE );
+        return new ValueMetaDate( valueName );
 
       case java.sql.Types.DECIMAL:
-        return new ValueMeta( valueName, ValueMetaInterface.TYPE_BIGNUMBER );
+        return new ValueMetaBigNumber( valueName );
 
       case java.sql.Types.DOUBLE:
-        return new ValueMeta( valueName, ValueMetaInterface.TYPE_NUMBER );
       case java.sql.Types.FLOAT:
-        return new ValueMeta( valueName, ValueMetaInterface.TYPE_NUMBER );
+        return new ValueMetaNumber( valueName );
 
       case java.sql.Types.BOOLEAN:
-        return new ValueMeta( valueName, ValueMetaInterface.TYPE_BOOLEAN );
       case java.sql.Types.BIT:
-        return new ValueMeta( valueName, ValueMetaInterface.TYPE_BOOLEAN );
+        return new ValueMetaBoolean( valueName );
 
       case java.sql.Types.BINARY:
-        return new ValueMeta( valueName, ValueMetaInterface.TYPE_BINARY );
       case java.sql.Types.BLOB:
-        return new ValueMeta( valueName, ValueMetaInterface.TYPE_BINARY );
+        return new ValueMetaBinary( valueName );
 
       default:
         throw new SQLException( "Don't know how to handle SQL Type: " + sqlType + ", with name: " + valueName );
