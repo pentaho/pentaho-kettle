@@ -52,7 +52,14 @@ import org.pentaho.di.trans.steps.salesforceinput.SalesforceConnectionUtils;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
-@Step(id="SalesforceUpsert", i18nPackageName="org.pentaho.di.trans.steps.salesforceupsert", name="SalesforceUpsert.TypeLongDesc.SalesforceUpsert", description="SalesforceUpsert.TypeTooltipDesc.SalesforceUpsert", categoryDescription="i18n:org.pentaho.di.trans.step:BaseStep.Category.Output", image="SFU.svg", documentationUrl="http://wiki.pentaho.com/display/EAI/Salesforce+Upsert")
+@Step(
+    id = "SalesforceUpsert",
+    i18nPackageName = "org.pentaho.di.trans.steps.salesforceupsert",
+    name = "SalesforceUpsert.TypeLongDesc.SalesforceUpsert",
+    description = "SalesforceUpsert.TypeTooltipDesc.SalesforceUpsert",
+    categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Output",
+    image = "SFU.svg",
+    documentationUrl = "http://wiki.pentaho.com/display/EAI/Salesforce+Upsert" )
 public class SalesforceUpsertMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = SalesforceUpsertMeta.class; // for i18n purposes, needed by Translator2!!
 

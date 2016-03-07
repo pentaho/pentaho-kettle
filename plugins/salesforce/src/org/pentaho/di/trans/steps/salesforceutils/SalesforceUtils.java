@@ -21,8 +21,6 @@
  ******************************************************************************/
 package org.pentaho.di.trans.steps.salesforceutils;
 
-import static java.util.regex.Pattern.compile;
-
 import java.util.regex.Pattern;
 
 import org.pentaho.di.core.logging.LogChannelInterface;
@@ -43,7 +41,7 @@ public class SalesforceUtils {
 
   private static final String CUSTOM_OBJECT_SUFFIX = "_c";
 
-  private static final Pattern FIELD_NAME_WITH_EXTID_PATTERN = compile( "^\\w+\\:\\w+\\/\\w+$" );
+  private static final Pattern FIELD_NAME_WITH_EXTID_PATTERN = Pattern.compile( "^\\w+\\:\\w+\\/\\w+$" );
 
   /**
    * Extract and return the correct name for the field that should be processed as NULL

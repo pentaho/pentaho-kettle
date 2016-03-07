@@ -52,7 +52,14 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
-@Step(id="SalesforceInput", i18nPackageName="org.pentaho.di.trans.steps.salesforceinput", name="SalesforceInput.TypeLongDesc.SalesforceInput", description="SalesforceInput.TypeTooltipDesc.SalesforceInput", categoryDescription="i18n:org.pentaho.di.trans.step:BaseStep.Category.Input", image="SFI.svg", documentationUrl="http://wiki.pentaho.com/display/EAI/SalesForce+Input")
+@Step(
+    id = "SalesforceInput",
+    i18nPackageName = "org.pentaho.di.trans.steps.salesforceinput",
+    name = "SalesforceInput.TypeLongDesc.SalesforceInput",
+    description = "SalesforceInput.TypeTooltipDesc.SalesforceInput",
+    categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Input",
+    image = "SFI.svg",
+    documentationUrl = "http://wiki.pentaho.com/display/EAI/SalesForce+Input" )
 public class SalesforceInputMeta extends BaseStepMeta implements StepMetaInterface {
   public static String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
