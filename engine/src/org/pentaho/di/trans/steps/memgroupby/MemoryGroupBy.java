@@ -316,11 +316,11 @@ public class MemoryGroupBy extends BaseStep implements StepInterface {
           aggregate.counts[i]++;
           break;
         case MemoryGroupByMeta.TYPE_GROUP_MIN:
-          if ( subj == null && !minNullIsValued ) {
+          if ( minNullIsValued || ( subj != null && value != null ) ) {
             // PDI-11530 do not compare null
-            break;
-          }
-          if ( subjMeta.compare( subj, valueMeta, value ) < 0 ) {
+            aggregate.agg[i] = subjMeta.compare( subj, valueMeta, value ) < 0 ? subj : value;
+          } else if ( value == null && subj != null ) {
+            // By default set aggregate to first not null value
             aggregate.agg[i] = subj;
           }
           break;
