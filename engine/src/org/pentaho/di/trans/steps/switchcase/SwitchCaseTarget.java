@@ -42,9 +42,9 @@ public class SwitchCaseTarget implements Cloneable {
 
   public SwitchCaseTarget() {
   }
-  
+
   public Object clone() throws CloneNotSupportedException {
     return super.clone();
   }
-  
+
 }

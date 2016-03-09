@@ -92,7 +92,7 @@ import org.w3c.dom.Node;
  * conveniently read the step settings from the XML node.
  * <p>
  * <i><a href=
- * "#saveRep(org.pentaho.di.repository.Repository, org.pentaho.di.repository.ObjectId, 
+ * "#saveRep(org.pentaho.di.repository.Repository, org.pentaho.di.repository.ObjectId,
  *   org.pentaho.di.repository.ObjectId)"
  * >public void saveRep(...)</a></i>
  * <p>
@@ -650,7 +650,7 @@ public interface StepMetaInterface {
   public StepMetaInjectionInterface getStepMetaInjectionInterface();
 
   /**
-   * @return The step metadata itself, not the metadata description.  
+   * @return The step metadata itself, not the metadata description.
    * For lists it will have 0 entries in case there are no entries.
    * @throws KettleException
    */
@@ -689,7 +689,7 @@ public interface StepMetaInterface {
   public boolean[] isReferencedObjectEnabled();
 
   /**
-   * @return A description of the active referenced object in a transformation.  
+   * @return A description of the active referenced object in a transformation.
    * Null if nothing special needs to be done or if the active metadata isn't different from design.
    */
   public String getActiveReferencedObjectDescription();

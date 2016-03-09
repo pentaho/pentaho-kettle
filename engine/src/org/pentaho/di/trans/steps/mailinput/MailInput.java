@@ -160,7 +160,7 @@ public class MailInput extends BaseStep implements StepInterface {
     // set FlagTerm?
     if ( !data.usePOP ) {
       //POP3 does not support any flags.
-      //but still use ones for IMAP and maybe for MBOX?      
+      //but still use ones for IMAP and maybe for MBOX?
       switch ( meta.getValueImapList() ) {
         case MailConnectionMeta.VALUE_IMAP_LIST_NEW:
           data.mailConn.setFlagTermNew();

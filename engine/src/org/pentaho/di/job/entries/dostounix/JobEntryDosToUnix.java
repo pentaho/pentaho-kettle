@@ -235,7 +235,7 @@ public class JobEntryDosToUnix extends JobEntryBase implements Cloneable, JobEnt
       // How many field arguments?
       int nrFields = XMLHandler.countNodes( fields, "field" );
       allocate( nrFields );
-      
+
       // Read them all...
       for ( int i = 0; i < nrFields; i++ ) {
         Node fnode = XMLHandler.getSubNodeByNr( fields, "field", i );
@@ -265,7 +265,7 @@ public class JobEntryDosToUnix extends JobEntryBase implements Cloneable, JobEnt
       // How many arguments?
       int argnr = rep.countNrJobEntryAttributes( id_jobentry, "source_filefolder" );
       allocate( argnr );
-      
+
       // Read them all...
       for ( int a = 0; a < argnr; a++ ) {
         source_filefolder[a] = rep.getJobEntryAttributeString( id_jobentry, a, "source_filefolder" );

@@ -45,13 +45,13 @@ public class HadoopSnappyCompressionOutputStream extends CompressionOutputStream
 
   /**
    * Gets an OutputStream that uses the snappy codec and wraps the supplied base output stream.
-   * 
+   *
    * @param the
    *          buffer size for the codec to use (in bytes)
    * @param out
    *          the base output stream to wrap around
    * @return a OutputStream that uses the Snappy codec
-   * 
+   *
    * @throws Exception
    *           if snappy is not available or an error occurs during reflection
    */
@@ -61,14 +61,14 @@ public class HadoopSnappyCompressionOutputStream extends CompressionOutputStream
 
   /**
    * Gets an OutputStream that uses the snappy codec and wraps the supplied base output stream.
-   * 
+   *
    * @param the
    *          buffer size for the codec to use (in bytes)
-   * 
+   *
    * @param out
    *          the base output stream to wrap around
    * @return a OutputStream that uses the Snappy codec
-   * 
+   *
    * @throws Exception
    *           if snappy is not available or an error occurs during reflection
    */

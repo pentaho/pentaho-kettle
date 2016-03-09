@@ -242,9 +242,9 @@ public class TransExecutorMeta extends BaseStepMeta implements StepMetaInterface
     outputRowsLength = new int[nrFields];
     outputRowsPrecision = new int[nrFields];
   }
-  
+
   public Object clone() {
-    TransExecutorMeta retval = (TransExecutorMeta)super.clone();
+    TransExecutorMeta retval = (TransExecutorMeta) super.clone();
     int nrFields = outputRowsField.length;
     System.arraycopy( outputRowsField, 0, retval.outputRowsField, 0, nrFields );
     System.arraycopy( outputRowsType, 0, retval.outputRowsType, 0, nrFields );

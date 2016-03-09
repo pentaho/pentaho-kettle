@@ -108,7 +108,7 @@ public class ParGzipCsvInputMeta extends BaseStepMeta implements StepMetaInterfa
 
   public Object clone() {
     ParGzipCsvInputMeta retval = (ParGzipCsvInputMeta) super.clone();
-    int nrFields = inputFields.length; 
+    int nrFields = inputFields.length;
     retval.allocate( nrFields );
     for ( int i = 0; i < nrFields; i++ ) {
       retval.inputFields[ i ] = (TextFileInputField) inputFields [ i ].clone();

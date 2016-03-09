@@ -57,7 +57,7 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Sort the rows in the input-streams based on certain criteria
- * 
+ *
  * @author Matt
  * @since 29-apr-2003
  */
@@ -492,7 +492,7 @@ public class SortRows extends BaseStep implements StepInterface {
   /**
    * This method passes all rows in the buffer to the next steps. Usually call to this method indicates that this
    * particular step finishing processing.
-   * 
+   *
    */
   void passBuffer() throws KettleException {
     // Now we can start the output!

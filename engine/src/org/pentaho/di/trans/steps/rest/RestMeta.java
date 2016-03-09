@@ -385,7 +385,7 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
     System.arraycopy( parameterName, 0, retval.parameterName, 0, nrparameters );
     System.arraycopy( matrixParameterField, 0, retval.matrixParameterField, 0, nrmatrixparameters );
     System.arraycopy( matrixParameterName, 0, retval.matrixParameterName, 0, nrmatrixparameters );
-    
+
     return retval;
   }
 

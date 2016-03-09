@@ -62,9 +62,9 @@ import com.google.common.annotations.VisibleForTesting;
 
 /**
  * Performs a streaming bulk load to a VectorWise table.
- * 
+ *
  * Based on Sven Boden's Oracle Bulk Loader step
- * 
+ *
  * @author matt
  * @since 14-apr-2009
  */
@@ -300,12 +300,12 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
 
   /**
    * Create the command line for a sql process depending on the meta information supplied.
-   * 
+   *
    * @param meta
    *          The meta data to create the command line from
-   * 
+   *
    * @return The string to execute.
-   * 
+   *
    * @throws KettleException
    *           Upon any exception
    */

@@ -40,7 +40,7 @@ import org.pentaho.di.trans.step.StepMeta;
 
 /**
  * Base meta for file-based input steps.
- * 
+ *
  * @author Alexander Buloichik
  */
 public abstract class BaseFileInputStepMeta extends BaseStepMeta {

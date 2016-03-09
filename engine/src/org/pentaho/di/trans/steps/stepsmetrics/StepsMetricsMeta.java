@@ -95,7 +95,7 @@ public class StepsMetricsMeta extends BaseStepMeta implements StepMetaInterface 
     int nrfields = stepName.length;
 
     retval.allocate( nrfields );
-    
+
     System.arraycopy( stepName, 0, retval.stepName, 0, nrfields );
     System.arraycopy( stepCopyNr, 0, retval.stepCopyNr, 0, nrfields );
     System.arraycopy( stepRequired, 0, retval.stepRequired, 0, nrfields );

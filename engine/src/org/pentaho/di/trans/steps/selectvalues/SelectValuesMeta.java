@@ -213,12 +213,12 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface 
     int nrmeta = meta.length;
 
     retval.allocate( nrfields, nrremove, nrmeta );
-    System.arraycopy( selectName, 0, retval.selectName, 0, nrfields);
-    System.arraycopy( selectRename, 0, retval.selectRename, 0, nrfields);
-    System.arraycopy( selectLength, 0, retval.selectLength, 0, nrfields);
-    System.arraycopy( selectPrecision, 0, retval.selectPrecision, 0, nrfields);
+    System.arraycopy( selectName, 0, retval.selectName, 0, nrfields );
+    System.arraycopy( selectRename, 0, retval.selectRename, 0, nrfields );
+    System.arraycopy( selectLength, 0, retval.selectLength, 0, nrfields );
+    System.arraycopy( selectPrecision, 0, retval.selectPrecision, 0, nrfields );
 
-    System.arraycopy( deleteName, 0, retval.deleteName, 0, nrremove);
+    System.arraycopy( deleteName, 0, retval.deleteName, 0, nrremove );
 
     for ( int i = 0; i < nrmeta; i++ ) {
       //CHECKSTYLE:Indentation:OFF

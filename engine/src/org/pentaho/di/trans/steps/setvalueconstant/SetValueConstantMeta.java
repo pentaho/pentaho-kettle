@@ -76,10 +76,10 @@ public class SetValueConstantMeta extends BaseStepMeta implements StepMetaInterf
 
     int nrfields = fieldName.length;
     retval.allocate( nrfields );
-    System.arraycopy( fieldName, 0, retval.fieldName, 0, nrfields);
-    System.arraycopy( replaceValue, 0, retval.replaceValue, 0, nrfields);
-    System.arraycopy( replaceMask, 0, retval.replaceMask, 0, nrfields);
-    System.arraycopy( setEmptyString, 0, retval.setEmptyString, 0, nrfields);
+    System.arraycopy( fieldName, 0, retval.fieldName, 0, nrfields );
+    System.arraycopy( replaceValue, 0, retval.replaceValue, 0, nrfields );
+    System.arraycopy( replaceMask, 0, retval.replaceMask, 0, nrfields );
+    System.arraycopy( setEmptyString, 0, retval.setEmptyString, 0, nrfields );
 
     return retval;
   }

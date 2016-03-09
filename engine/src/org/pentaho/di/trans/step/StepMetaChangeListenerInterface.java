@@ -26,13 +26,13 @@ import org.pentaho.di.trans.TransMeta;
 public interface StepMetaChangeListenerInterface {
   /**
    * This method is called when a step was changed
-   * 
+   *
    * @param transMeta
    *          TransMeta which include this steps
-   * 
+   *
    * @param oldMeta
    *          the previous meta, which changed
-   * 
+   *
    * @param newMeta
    *          the updated meta with new variables values
    */

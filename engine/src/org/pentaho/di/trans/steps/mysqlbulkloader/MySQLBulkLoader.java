@@ -50,9 +50,9 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Performs a streaming bulk load to a MySQL table.
- * 
+ *
  * Based on Sven Boden's Oracle Bulk Loader step
- * 
+ *
  * @author matt
  * @since 14-apr-2009
  */

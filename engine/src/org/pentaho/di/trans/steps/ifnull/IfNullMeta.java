@@ -143,15 +143,15 @@ public class IfNullMeta extends BaseStepMeta implements StepMetaInterface {
     int nrfields = fieldName.length;
     retval.allocate( nrTypes, nrfields );
 
-    System.arraycopy( typeName, 0, retval.typeName, 0, nrTypes);
-    System.arraycopy( typereplaceValue, 0, retval.typereplaceValue, 0, nrTypes);
-    System.arraycopy( typereplaceMask, 0, retval.typereplaceMask, 0, nrTypes);
-    System.arraycopy( setTypeEmptyString, 0, retval.setTypeEmptyString, 0, nrTypes);
+    System.arraycopy( typeName, 0, retval.typeName, 0, nrTypes );
+    System.arraycopy( typereplaceValue, 0, retval.typereplaceValue, 0, nrTypes );
+    System.arraycopy( typereplaceMask, 0, retval.typereplaceMask, 0, nrTypes );
+    System.arraycopy( setTypeEmptyString, 0, retval.setTypeEmptyString, 0, nrTypes );
 
-    System.arraycopy( fieldName, 0, retval.fieldName, 0, nrfields);
-    System.arraycopy( replaceValue, 0, retval.replaceValue, 0, nrfields);
-    System.arraycopy( replaceMask, 0, retval.replaceMask, 0, nrfields);
-    System.arraycopy( setEmptyString, 0, retval.setEmptyString, 0, nrfields);
+    System.arraycopy( fieldName, 0, retval.fieldName, 0, nrfields );
+    System.arraycopy( replaceValue, 0, retval.replaceValue, 0, nrfields );
+    System.arraycopy( replaceMask, 0, retval.replaceMask, 0, nrfields );
+    System.arraycopy( setEmptyString, 0, retval.setEmptyString, 0, nrfields );
 
     return retval;
   }

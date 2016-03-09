@@ -34,7 +34,7 @@ import org.pentaho.di.trans.step.errorhandling.FileErrorHandler;
 
 /**
  * Some base data for file-based input steps.
- * 
+ *
  * @author Alexander Buloichik
  */
 public class BaseFileInputStepData extends BaseStepData {

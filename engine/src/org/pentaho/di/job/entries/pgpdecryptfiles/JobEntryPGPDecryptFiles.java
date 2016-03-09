@@ -165,7 +165,7 @@ public class JobEntryPGPDecryptFiles extends JobEntryBase implements Cloneable, 
       System.arraycopy( destination_filefolder, 0, je.destination_filefolder, 0, nrFields );
       System.arraycopy( wildcard, 0, je.wildcard, 0, nrFields );
       System.arraycopy( passphrase, 0, je.passphrase, 0, nrFields );
-    }    
+    }
     return je;
   }
 
@@ -255,7 +255,7 @@ public class JobEntryPGPDecryptFiles extends JobEntryBase implements Cloneable, 
       // How many field arguments?
       int nrFields = XMLHandler.countNodes( fields, "field" );
       allocate( nrFields );
-      
+
       // Read them all...
       for ( int i = 0; i < nrFields; i++ ) {
         Node fnode = XMLHandler.getSubNodeByNr( fields, "field", i );

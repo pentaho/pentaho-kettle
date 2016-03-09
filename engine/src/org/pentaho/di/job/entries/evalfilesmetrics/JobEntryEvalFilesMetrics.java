@@ -162,7 +162,7 @@ public class JobEntryEvalFilesMetrics extends JobEntryBase implements Cloneable,
     wildcard = new String[nrFields];
     includeSubFolders = new String[nrFields];
   }
-  
+
   public Object clone() {
     JobEntryEvalFilesMetrics je = (JobEntryEvalFilesMetrics) super.clone();
     if ( source_filefolder != null ) {
@@ -243,7 +243,7 @@ public class JobEntryEvalFilesMetrics extends JobEntryBase implements Cloneable,
       // How many field arguments?
       int nrFields = XMLHandler.countNodes( fields, "field" );
       allocate( nrFields );
-      
+
       // Read them all...
       for ( int i = 0; i < nrFields; i++ ) {
         Node fnode = XMLHandler.getSubNodeByNr( fields, "field", i );
@@ -279,7 +279,7 @@ public class JobEntryEvalFilesMetrics extends JobEntryBase implements Cloneable,
       // How many arguments?
       int argnr = rep.countNrJobEntryAttributes( id_jobentry, "source_filefolder" );
       allocate( argnr );
-      
+
       // Read them all...
       for ( int a = 0; a < argnr; a++ ) {
         source_filefolder[a] = rep.getJobEntryAttributeString( id_jobentry, a, "source_filefolder" );
