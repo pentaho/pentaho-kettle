@@ -102,11 +102,8 @@ public class SetValueFieldMeta extends BaseStepMeta implements StepMetaInterface
     int count = fieldName.length;
 
     retval.allocate( count );
-
-    for ( int i = 0; i < count; i++ ) {
-      retval.fieldName[i] = fieldName[i];
-      retval.replaceByFieldValue[i] = replaceByFieldValue[i];
-    }
+    System.arraycopy( fieldName, 0, retval.fieldName, 0, count);
+    System.arraycopy( replaceByFieldValue, 0, retval.replaceByFieldValue, 0, count);
 
     return retval;
   }

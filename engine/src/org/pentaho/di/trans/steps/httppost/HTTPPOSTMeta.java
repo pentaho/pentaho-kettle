@@ -334,19 +334,16 @@ public class HTTPPOSTMeta extends BaseStepMeta implements StepMetaInterface {
 
     int nrargs = argumentField.length;
     retval.allocate( nrargs );
-    for ( int i = 0; i < nrargs; i++ ) {
-      retval.argumentField[i] = argumentField[i];
-      retval.argumentParameter[i] = argumentParameter[i];
-      retval.argumentHeader[i] = argumentHeader[i];
-    }
+    System.arraycopy( argumentField, 0, retval.argumentField, 0, nrargs );
+    System.arraycopy( argumentParameter, 0, retval.argumentParameter, 0, nrargs );
+    System.arraycopy( argumentHeader, 0, retval.argumentHeader, 0, nrargs );
+    
 
     int nrqueryparams = queryField.length;
     retval.allocateQuery( nrqueryparams );
-    for ( int i = 0; i < nrqueryparams; i++ ) {
-      retval.queryField[i] = queryField[i];
-      retval.queryParameter[i] = queryParameter[i];
-    }
-
+    System.arraycopy( queryField, 0, retval.queryField, 0, nrqueryparams );
+    System.arraycopy( queryParameter, 0, retval.queryParameter, 0, nrqueryparams );
+    
     return retval;
   }
 

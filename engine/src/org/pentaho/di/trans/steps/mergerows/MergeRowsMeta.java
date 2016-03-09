@@ -129,7 +129,11 @@ public class MergeRowsMeta extends BaseStepMeta implements StepMetaInterface {
 
   public Object clone() {
     MergeRowsMeta retval = (MergeRowsMeta) super.clone();
-
+    int nrKeys = keyFields.length;
+    int nrValues = valueFields.length;
+    retval.allocate( nrKeys, nrValues );
+    System.arraycopy( keyFields, 0, retval.keyFields, 0, nrKeys );
+    System.arraycopy( valueFields, 0, retval.valueFields, 0, nrValues );
     return retval;
   }
 

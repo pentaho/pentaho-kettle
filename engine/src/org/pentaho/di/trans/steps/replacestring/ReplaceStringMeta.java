@@ -219,18 +219,15 @@ public class ReplaceStringMeta extends BaseStepMeta implements StepMetaInterface
 
     retval.allocate( nrkeys );
 
-    for ( int i = 0; i < nrkeys; i++ ) {
-      retval.fieldInStream[i] = fieldInStream[i];
-      retval.fieldOutStream[i] = fieldOutStream[i];
-      retval.useRegEx[i] = useRegEx[i];
-      retval.replaceString[i] = replaceString[i];
-      retval.replaceByString[i] = replaceByString[i];
-      retval.setEmptyString[i] = setEmptyString[i];
-      retval.replaceFieldByString[i] = replaceFieldByString[i];
-      retval.wholeWord[i] = wholeWord[i];
-      retval.caseSensitive[i] = caseSensitive[i];
-    }
-
+    System.arraycopy( fieldInStream, 0, retval.fieldInStream, 0, nrkeys );
+    System.arraycopy( fieldOutStream, 0, retval.fieldOutStream, 0, nrkeys );
+    System.arraycopy( useRegEx, 0, retval.useRegEx, 0, nrkeys );
+    System.arraycopy( replaceString, 0, retval.replaceString, 0, nrkeys );
+    System.arraycopy( replaceByString, 0, retval.replaceByString, 0, nrkeys );
+    System.arraycopy( setEmptyString, 0, retval.setEmptyString, 0, nrkeys );
+    System.arraycopy( replaceFieldByString, 0, retval.replaceFieldByString, 0, nrkeys );
+    System.arraycopy( wholeWord, 0, retval.wholeWord, 0, nrkeys );
+    System.arraycopy( caseSensitive, 0, retval.caseSensitive, 0, nrkeys );
     return retval;
   }
 

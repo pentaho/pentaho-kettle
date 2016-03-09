@@ -560,13 +560,12 @@ public class AccessInputMeta extends BaseStepMeta implements StepMetaInterface {
     int nrFiles = fileName.length;
     int nrFields = inputFields.length;
     retval.allocate( nrFiles, nrFields );
-    for ( int i = 0; i < nrFiles; i++ ) {
-      retval.fileName[i] = fileName[i];
-      retval.fileMask[i] = fileMask[i];
-      retval.excludeFileMask[i] = excludeFileMask[i];
-      retval.fileRequired[i] = fileRequired[i];
-      retval.includeSubFolders[i] = includeSubFolders[i];
-    }
+    System.arraycopy( fileName, 0, retval.fileName, 0, nrFields );
+    System.arraycopy( fileMask, 0, retval.fileMask, 0, nrFields );
+    System.arraycopy( excludeFileMask, 0, retval.excludeFileMask, 0, nrFields );
+    System.arraycopy( fileRequired, 0, retval.fileRequired, 0, nrFields );
+    System.arraycopy( includeSubFolders, 0, retval.includeSubFolders, 0, nrFields );
+    
     for ( int i = 0; i < nrFields; i++ ) {
       if ( inputFields[i] != null ) {
         retval.inputFields[i] = (AccessInputField) inputFields[i].clone();

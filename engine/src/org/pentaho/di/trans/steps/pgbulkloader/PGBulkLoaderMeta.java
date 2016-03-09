@@ -215,12 +215,9 @@ public class PGBulkLoaderMeta extends BaseStepMeta implements StepMetaInjectionI
     int nrvalues = fieldTable.length;
 
     retval.allocate( nrvalues );
-
-    for ( int i = 0; i < nrvalues; i++ ) {
-      retval.fieldTable[i] = fieldTable[i];
-      retval.fieldStream[i] = fieldStream[i];
-      retval.dateMask[i] = dateMask[i];
-    }
+    System.arraycopy( fieldTable, 0, retval.fieldTable, 0, nrvalues );
+    System.arraycopy( fieldStream, 0, retval.fieldStream, 0, nrvalues );
+    System.arraycopy( dateMask, 0, retval.dateMask, 0, nrvalues );
     return retval;
   }
 

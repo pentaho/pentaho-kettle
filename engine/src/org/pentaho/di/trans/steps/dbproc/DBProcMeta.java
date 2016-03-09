@@ -223,11 +223,9 @@ public class DBProcMeta extends BaseStepMeta implements StepMetaInterface {
 
     retval.allocate( nrargs );
 
-    for ( int i = 0; i < nrargs; i++ ) {
-      retval.argument[i] = argument[i];
-      retval.argumentDirection[i] = argumentDirection[i];
-      retval.argumentType[i] = argumentType[i];
-    }
+    System.arraycopy( argument, 0, retval.argument, 0, nrargs );
+    System.arraycopy( argumentDirection, 0, retval.argumentDirection, 0, nrargs );
+    System.arraycopy( argumentType, 0, retval.argumentType, 0, nrargs );
 
     return retval;
   }

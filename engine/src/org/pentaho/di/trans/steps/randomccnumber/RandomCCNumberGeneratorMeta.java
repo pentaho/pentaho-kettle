@@ -179,12 +179,9 @@ public class RandomCCNumberGeneratorMeta extends BaseStepMeta implements StepMet
     int count = fieldCCType.length;
 
     retval.allocate( count );
-
-    for ( int i = 0; i < count; i++ ) {
-      retval.fieldCCType[i] = fieldCCType[i];
-      retval.fieldCCLength[i] = fieldCCLength[i];
-      retval.fieldCCSize[i] = fieldCCSize[i];
-    }
+    System.arraycopy( fieldCCType, 0, retval.fieldCCType, 0, count );
+    System.arraycopy( fieldCCLength, 0, retval.fieldCCLength, 0, count );
+    System.arraycopy( fieldCCSize, 0, retval.fieldCCSize, 0, count );
 
     return retval;
   }

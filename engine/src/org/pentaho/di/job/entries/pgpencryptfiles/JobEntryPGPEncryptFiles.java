@@ -161,8 +161,25 @@ public class JobEntryPGPEncryptFiles extends JobEntryBase implements Cloneable, 
     this( "" );
   }
 
+  public void allocate( int nrFields ) {
+    action_type = new int[nrFields];
+    source_filefolder = new String[nrFields];
+    userid = new String[nrFields];
+    destination_filefolder = new String[nrFields];
+    wildcard = new String[nrFields];
+  }
+  
   public Object clone() {
     JobEntryPGPEncryptFiles je = (JobEntryPGPEncryptFiles) super.clone();
+    if ( action_type != null ) {
+      int nrFields = action_type.length;
+      je.allocate( nrFields );
+      System.arraycopy( action_type, 0, je.action_type, 0, nrFields );
+      System.arraycopy( source_filefolder, 0, je.source_filefolder, 0, nrFields );
+      System.arraycopy( userid, 0, je.userid, 0, nrFields );
+      System.arraycopy( destination_filefolder, 0, je.destination_filefolder, 0, nrFields );
+      System.arraycopy( wildcard, 0, je.wildcard, 0, nrFields );
+    }    
     return je;
   }
 
@@ -261,11 +278,7 @@ public class JobEntryPGPEncryptFiles extends JobEntryBase implements Cloneable, 
 
       // How many field arguments?
       int nrFields = XMLHandler.countNodes( fields, "field" );
-      action_type = new int[nrFields];
-      source_filefolder = new String[nrFields];
-      userid = new String[nrFields];
-      destination_filefolder = new String[nrFields];
-      wildcard = new String[nrFields];
+      allocate( nrFields );
 
       // Read them all...
       for ( int i = 0; i < nrFields; i++ ) {
@@ -326,11 +339,7 @@ public class JobEntryPGPEncryptFiles extends JobEntryBase implements Cloneable, 
 
       // How many arguments?
       int argnr = rep.countNrJobEntryAttributes( id_jobentry, "source_filefolder" );
-      action_type = new int[argnr];
-      source_filefolder = new String[argnr];
-      userid = new String[argnr];
-      destination_filefolder = new String[argnr];
-      wildcard = new String[argnr];
+      allocate( argnr );
 
       // Read them all...
       for ( int a = 0; a < argnr; a++ ) {

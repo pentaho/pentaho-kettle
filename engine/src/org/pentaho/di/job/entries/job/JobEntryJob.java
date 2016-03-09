@@ -138,8 +138,30 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
     clear();
   }
 
+  private void allocateArgs( int nrArgs ) {
+    arguments = new String[nrArgs];
+  }
+
+  private void allocateParams( int nrParameters ) {
+    parameters = new String[nrParameters];
+    parameterFieldNames = new String[nrParameters];
+    parameterValues = new String[nrParameters];
+  }
+
   public Object clone() {
     JobEntryJob je = (JobEntryJob) super.clone();
+    if ( arguments != null ) {
+      int nrArgs = arguments.length;
+      je.allocateArgs( nrArgs );
+      System.arraycopy( arguments, 0, je.arguments, 0, nrArgs );
+    }
+    if ( parameters != null ) {
+      int nrParameters = parameters.length;
+      je.allocateParams( nrParameters );
+      System.arraycopy( parameters, 0, je.parameters, 0, nrParameters );
+      System.arraycopy( parameterFieldNames, 0, je.parameterFieldNames, 0, nrParameters );
+      System.arraycopy( parameterValues, 0, je.parameterValues, 0, nrParameters );
+    }
     return je;
   }
 
@@ -359,7 +381,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
       while ( XMLHandler.getTagValue( entrynode, "argument" + argnr ) != null ) {
         argnr++;
       }
-      arguments = new String[argnr];
+      allocateArgs( argnr );
 
       // Read them all... This is a very BAD way to do it by the way. Sven
       // Boden.
@@ -373,10 +395,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
       passingAllParameters = Const.isEmpty( passAll ) || "Y".equalsIgnoreCase( passAll );
 
       int nrParameters = XMLHandler.countNodes( parametersNode, "parameter" );
-
-      parameters = new String[nrParameters];
-      parameterFieldNames = new String[nrParameters];
-      parameterValues = new String[nrParameters];
+      allocateParams( nrParameters );
 
       for ( int i = 0; i < nrParameters; i++ ) {
         Node knode = XMLHandler.getSubNodeByNr( parametersNode, "parameter", i );
@@ -427,7 +446,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 
       // How many arguments?
       int argnr = rep.countNrJobEntryAttributes( id_jobentry, "argument" );
-      arguments = new String[argnr];
+      allocateArgs( argnr );
 
       // Read all arguments ...
       for ( int a = 0; a < argnr; a++ ) {
@@ -436,9 +455,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 
       // How many arguments?
       int parameternr = rep.countNrJobEntryAttributes( id_jobentry, "parameter_name" );
-      parameters = new String[parameternr];
-      parameterFieldNames = new String[parameternr];
-      parameterValues = new String[parameternr];
+      allocateParams( parameternr );
 
       // Read all parameters ...
       for ( int a = 0; a < parameternr; a++ ) {

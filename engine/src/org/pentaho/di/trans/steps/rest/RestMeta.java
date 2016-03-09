@@ -379,18 +379,13 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
     int nrmatrixparameters = matrixParameterField.length;
 
     retval.allocate( nrheaders, nrparameters, nrmatrixparameters );
-    for ( int i = 0; i < nrheaders; i++ ) {
-      retval.headerField[i] = headerField[i];
-      retval.headerName[i] = headerName[i];
-    }
-    for ( int i = 0; i < nrparameters; i++ ) {
-      retval.parameterField[i] = parameterField[i];
-      retval.parameterName[i] = parameterName[i];
-    }
-    for ( int i = 0; i < nrmatrixparameters; i++ ) {
-      retval.matrixParameterField[i] = matrixParameterField[i];
-      retval.matrixParameterName[i] = matrixParameterName[i];
-    }
+    System.arraycopy( headerField, 0, retval.headerField, 0, nrheaders );
+    System.arraycopy( headerName, 0, retval.headerName, 0, nrheaders );
+    System.arraycopy( parameterField, 0, retval.parameterField, 0, nrparameters );
+    System.arraycopy( parameterName, 0, retval.parameterName, 0, nrparameters );
+    System.arraycopy( matrixParameterField, 0, retval.matrixParameterField, 0, nrmatrixparameters );
+    System.arraycopy( matrixParameterName, 0, retval.matrixParameterName, 0, nrmatrixparameters );
+    
     return retval;
   }
 

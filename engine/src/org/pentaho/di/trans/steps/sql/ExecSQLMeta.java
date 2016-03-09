@@ -231,6 +231,9 @@ public class ExecSQLMeta extends BaseStepMeta implements StepMetaInterface {
 
   public Object clone() {
     ExecSQLMeta retval = (ExecSQLMeta) super.clone();
+    int nrArgs = arguments.length;
+    retval.allocate( nrArgs );
+    System.arraycopy( arguments, 0, retval.arguments, 0, nrArgs );
     return retval;
   }
 

@@ -276,10 +276,9 @@ public class MonetDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInjec
 
     retval.allocate( nrvalues );
 
-    for ( int i = 0; i < nrvalues; i++ ) {
-      retval.fieldTable[i] = fieldTable[i];
-      retval.fieldStream[i] = fieldStream[i];
-    }
+    System.arraycopy( fieldTable, 0, retval.fieldTable, 0, nrvalues );
+    System.arraycopy( fieldStream, 0, retval.fieldStream, 0, nrvalues );
+    System.arraycopy( fieldFormatOk, 0, retval.fieldFormatOk, 0, nrvalues );
     return retval;
   }
 

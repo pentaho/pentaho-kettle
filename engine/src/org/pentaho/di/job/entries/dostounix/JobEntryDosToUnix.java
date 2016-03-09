@@ -133,8 +133,21 @@ public class JobEntryDosToUnix extends JobEntryBase implements Cloneable, JobEnt
     this( "" );
   }
 
+  public void allocate( int nrFields ) {
+    source_filefolder = new String[nrFields];
+    wildcard = new String[nrFields];
+    conversionTypes = new int[nrFields];
+  }
+
   public Object clone() {
     JobEntryDosToUnix je = (JobEntryDosToUnix) super.clone();
+    if ( source_filefolder != null ) {
+      int nrFields = source_filefolder.length;
+      je.allocate( nrFields );
+      System.arraycopy( source_filefolder, 0, je.source_filefolder, 0, nrFields );
+      System.arraycopy( wildcard, 0, je.wildcard, 0, nrFields );
+      System.arraycopy( conversionTypes, 0, je.conversionTypes, 0, nrFields );
+    }
     return je;
   }
 
@@ -221,10 +234,8 @@ public class JobEntryDosToUnix extends JobEntryBase implements Cloneable, JobEnt
 
       // How many field arguments?
       int nrFields = XMLHandler.countNodes( fields, "field" );
-      source_filefolder = new String[nrFields];
-      wildcard = new String[nrFields];
-      conversionTypes = new int[nrFields];
-
+      allocate( nrFields );
+      
       // Read them all...
       for ( int i = 0; i < nrFields; i++ ) {
         Node fnode = XMLHandler.getSubNodeByNr( fields, "field", i );
@@ -253,9 +264,8 @@ public class JobEntryDosToUnix extends JobEntryBase implements Cloneable, JobEnt
 
       // How many arguments?
       int argnr = rep.countNrJobEntryAttributes( id_jobentry, "source_filefolder" );
-      source_filefolder = new String[argnr];
-      wildcard = new String[argnr];
-      conversionTypes = new int[argnr];
+      allocate( argnr );
+      
       // Read them all...
       for ( int a = 0; a < argnr; a++ ) {
         source_filefolder[a] = rep.getJobEntryAttributeString( id_jobentry, a, "source_filefolder" );
