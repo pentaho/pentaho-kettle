@@ -89,8 +89,19 @@ public class JobEntryTruncateTables extends JobEntryBase implements Cloneable, J
     this( "" );
   }
 
+  public void allocate( int nrFields ) {
+    this.arguments = new String[nrFields];
+    this.schemaname = new String[nrFields];
+  }
+  
   public Object clone() {
     JobEntryTruncateTables je = (JobEntryTruncateTables) super.clone();
+    if ( arguments != null ) {
+      int nrFields = arguments.length;
+      je.allocate( nrFields );
+      System.arraycopy( arguments, 0, je.arguments, 0, nrFields );
+      System.arraycopy( schemaname, 0, je.schemaname, 0, nrFields );
+    }
     return je;
   }
 
@@ -127,9 +138,8 @@ public class JobEntryTruncateTables extends JobEntryBase implements Cloneable, J
 
       // How many field arguments?
       int nrFields = XMLHandler.countNodes( fields, "field" );
-      this.arguments = new String[nrFields];
-      this.schemaname = new String[nrFields];
-
+      allocate( nrFields );
+      
       // Read them all...
       for ( int i = 0; i < nrFields; i++ ) {
         Node fnode = XMLHandler.getSubNodeByNr( fields, "field", i );
@@ -149,8 +159,7 @@ public class JobEntryTruncateTables extends JobEntryBase implements Cloneable, J
       this.argFromPrevious = rep.getJobEntryAttributeBoolean( id_jobentry, "arg_from_previous" );
       // How many arguments?
       int argnr = rep.countNrJobEntryAttributes( id_jobentry, "name" );
-      this.arguments = new String[argnr];
-      this.schemaname = new String[argnr];
+      allocate( argnr );
 
       // Read them all...
       for ( int a = 0; a < argnr; a++ ) {
