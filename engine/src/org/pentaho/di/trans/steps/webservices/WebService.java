@@ -549,8 +549,8 @@ public class WebService extends BaseStep implements StepInterface {
       // Create a few objects to help do the layout of XML snippets we find along the way
       //
       Transformer transformer = null;
-      /* 
-       * as of BACKLOG-4068, explicit xalan factory references have been deprecated; we use the javax.xml factory 
+      /*
+       * as of BACKLOG-4068, explicit xalan factory references have been deprecated; we use the javax.xml factory
        * and let java's SPI determine the proper transformer implementation. In addition, tests has been made to
        * safeguard that https://github.com/pentaho/pentaho-kettle/commit/3b57f7a9aac657fe77cc4f08e8d4287fcccbc073
        * continues working as intended

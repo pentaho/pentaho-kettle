@@ -990,7 +990,7 @@ public class MonetDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInjec
 
   /**
    * Returns the version of MonetDB that is used.
-   * 
+   *
    * @return The version of MonetDB
    * @throws KettleException
    *           if an error occurs
@@ -1013,7 +1013,7 @@ public class MonetDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInjec
 
   /**
    * Returns <code>true</code> if used the version of MonetBD Jan2014-SP2 or later, <code>false</code> otherwise.
-   * 
+   *
    * @return the compatibilityDbVersionMode
    */
   public boolean isCompatibilityDbVersionMode() {

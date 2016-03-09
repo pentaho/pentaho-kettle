@@ -103,7 +103,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
   /** Commit size for insert / update */
   private int commitSize;
 
-  /** Preload the cache, defaults to false 
+  /** Preload the cache, defaults to false
    * @author nicow2
    * */
   private boolean preloadCache = false;

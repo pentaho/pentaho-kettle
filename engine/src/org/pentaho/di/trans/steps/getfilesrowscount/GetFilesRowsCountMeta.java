@@ -342,11 +342,11 @@ public class GetFilesRowsCountMeta extends BaseStepMeta implements StepMetaInter
     int nrFiles = fileName.length;
 
     retval.allocate( nrFiles );
-    System.arraycopy(fileName, 0, fileName, 0, nrFiles);
-    System.arraycopy(fileMask, 0, fileMask, 0, nrFiles);
-    System.arraycopy(excludeFileMask, 0, excludeFileMask, 0, nrFiles);
-    System.arraycopy(fileRequired, 0, fileRequired, 0, nrFiles);
-    System.arraycopy(includeSubFolders, 0, includeSubFolders, 0, nrFiles);
+    System.arraycopy( fileName, 0, fileName, 0, nrFiles );
+    System.arraycopy( fileMask, 0, fileMask, 0, nrFiles );
+    System.arraycopy( excludeFileMask, 0, excludeFileMask, 0, nrFiles );
+    System.arraycopy( fileRequired, 0, fileRequired, 0, nrFiles );
+    System.arraycopy( includeSubFolders, 0, includeSubFolders, 0, nrFiles );
 
     return retval;
   }

@@ -66,7 +66,7 @@ public class MetricsPainter {
 
   /**
    * Draws a metrics tab.
-   * 
+   *
    * @param durations
    *          is a list of metrics durations
    * @return list of drawing areas.Throw IllegalArgumentException in case if input parameter is null or an empty

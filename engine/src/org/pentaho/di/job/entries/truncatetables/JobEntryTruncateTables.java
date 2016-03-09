@@ -93,7 +93,7 @@ public class JobEntryTruncateTables extends JobEntryBase implements Cloneable, J
     this.arguments = new String[nrFields];
     this.schemaname = new String[nrFields];
   }
-  
+
   public Object clone() {
     JobEntryTruncateTables je = (JobEntryTruncateTables) super.clone();
     if ( arguments != null ) {
@@ -139,7 +139,7 @@ public class JobEntryTruncateTables extends JobEntryBase implements Cloneable, J
       // How many field arguments?
       int nrFields = XMLHandler.countNodes( fields, "field" );
       allocate( nrFields );
-      
+
       // Read them all...
       for ( int i = 0; i < nrFields; i++ ) {
         Node fnode = XMLHandler.getSubNodeByNr( fields, "field", i );

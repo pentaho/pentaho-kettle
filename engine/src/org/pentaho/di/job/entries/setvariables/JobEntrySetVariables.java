@@ -107,9 +107,9 @@ public class JobEntrySetVariables extends JobEntryBase implements Cloneable, Job
   public void allocate( int nrFields ) {
     variableName = new String[nrFields];
     variableValue = new String[nrFields];
-    variableType = new int[nrFields];    
+    variableType = new int[nrFields];
   }
-  
+
   public Object clone() {
     JobEntrySetVariables je = (JobEntrySetVariables) super.clone();
     if ( variableName != null ) {
@@ -160,7 +160,7 @@ public class JobEntrySetVariables extends JobEntryBase implements Cloneable, Job
       // How many field variableName?
       int nrFields = XMLHandler.countNodes( fields, "field" );
       allocate( nrFields );
-      
+
       // Read them all...
       for ( int i = 0; i < nrFields; i++ ) {
         Node fnode = XMLHandler.getSubNodeByNr( fields, "field", i );

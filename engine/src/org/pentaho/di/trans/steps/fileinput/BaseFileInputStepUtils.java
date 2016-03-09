@@ -35,7 +35,7 @@ import org.pentaho.di.trans.step.errorhandling.FileErrorHandler;
 
 /**
  * Utils for file-based input steps.
- * 
+ *
  * @author Alexander Buloichik
  */
 public class BaseFileInputStepUtils {

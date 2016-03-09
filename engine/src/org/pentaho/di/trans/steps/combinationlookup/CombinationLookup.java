@@ -753,21 +753,21 @@ public class CombinationLookup extends BaseStep implements StepInterface {
       List<Object[]> cacheValues;
 
       /* build SQl Statement to preload cache
-       * 
-           * SELECT 
-           * min(<retval>) as <retval>, 
-           * key1, 
-           * key2, 
-           * key3  
-           * FROM   <table> 
-           * 
+       *
+           * SELECT
+           * min(<retval>) as <retval>,
+           * key1,
+           * key2,
+           * key3
+           * FROM   <table>
+           *
            * GROUP BY key1,
            * key2,
            * key3;
-           * 
+           *
            */
 
-      // Build a string representation of the lookupKeys 
+      // Build a string representation of the lookupKeys
       for ( int i = 0; i < meta.getKeyLookup().length; i++ ) {
         lookupKeys += databaseMeta.quoteField( meta.getKeyLookup()[i] );
 
@@ -795,7 +795,7 @@ public class CombinationLookup extends BaseStep implements StepInterface {
         Object[] hashRow = new Object[data.hashRowMeta.size()];
         // Assumes the technical key is at position 0 !!
         System.arraycopy( cacheRow, 1, hashRow, 0, hashRow.length );
-        // Potential Cache Overflow is ahndled inside 
+        // Potential Cache Overflow is ahndled inside
         addToCache( hashRowMeta, hashRow, (Long) cacheRow[0] );
         incrementLinesInput();
       }

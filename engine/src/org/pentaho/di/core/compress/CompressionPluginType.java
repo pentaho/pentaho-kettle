@@ -41,7 +41,7 @@ import org.w3c.dom.Node;
 
 /**
  * This class represents the compression plugin type.
- * 
+ *
  */
 @PluginMainClassType( CompressionProvider.class )
 @PluginAnnotationType( CompressionPlugin.class )

@@ -96,7 +96,7 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
   /** The number of input rows that are sent as result rows to the job in one go, defaults to "1" */
   private String groupSize;
 
-  /** Optional name of a field to group rows together that are sent together to the job 
+  /** Optional name of a field to group rows together that are sent together to the job
    * as result rows (empty default) */
   private String groupField;
 

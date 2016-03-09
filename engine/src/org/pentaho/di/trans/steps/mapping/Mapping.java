@@ -57,7 +57,7 @@ import org.pentaho.di.trans.steps.mappingoutput.MappingOutput;
 
 /**
  * Execute a mapping: a re-usuable transformation
- * 
+ *
  * @author Matt
  * @since 22-nov-2005
  */
@@ -774,8 +774,8 @@ public class Mapping extends BaseStep implements StepInterface {
     /*
      * if (mappingOutputs.length==1) { mappingOutputs[0].addRowListener(rowListener); } else { // Find the main data
      * path... //
-     * 
-     * 
+     *
+     *
      * }
      */
 

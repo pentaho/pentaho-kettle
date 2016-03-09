@@ -95,9 +95,9 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
 
   public void allocate( int nrFields ) {
     arguments = new String[nrFields];
-    filemasks = new String[nrFields];    
+    filemasks = new String[nrFields];
   }
-  
+
   public Object clone() {
     JobEntryDeleteFiles je = (JobEntryDeleteFiles) super.clone();
     if ( arguments != null ) {
@@ -164,7 +164,7 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
       // How many arguments?
       int argnr = rep.countNrJobEntryAttributes( id_jobentry, "name" );
       allocate( argnr );
-      
+
       // Read them all...
       for ( int a = 0; a < argnr; a++ ) {
         arguments[a] = rep.getJobEntryAttributeString( id_jobentry, a, "name" );

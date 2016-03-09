@@ -306,7 +306,7 @@ public class InsertUpdateMeta extends BaseStepMeta implements StepMetaInterface,
     System.arraycopy( updateLookup, 0, retval.updateLookup, 0, nrvalues );
     System.arraycopy( updateStream, 0, retval.updateStream, 0, nrvalues );
     System.arraycopy( update, 0, retval.update, 0, nrvalues );
-    
+
     return retval;
   }
 

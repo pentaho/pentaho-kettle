@@ -130,7 +130,7 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
     destination_filefolder = new String[nrFields];
     wildcard = new String[nrFields];
   }
-  
+
   public Object clone() {
     JobEntryCopyFiles je = (JobEntryCopyFiles) super.clone();
     if ( source_filefolder != null ) {

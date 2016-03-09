@@ -78,9 +78,9 @@ public class JobEntryColumnsExist extends JobEntryBase implements Cloneable, Job
   }
 
   public void allocate( int nrFields ) {
-    arguments = new String[nrFields];    
+    arguments = new String[nrFields];
   }
-  
+
   public Object clone() {
     JobEntryColumnsExist je = (JobEntryColumnsExist) super.clone();
     if ( arguments != null ) {

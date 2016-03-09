@@ -140,14 +140,14 @@ public class SingleThreaderMeta extends BaseStepMeta implements StepMetaInterfac
     parameters = new String[nrParameters];
     parameterValues = new String[nrParameters];
   }
-  
+
   public Object clone() {
     SingleThreaderMeta retval = (SingleThreaderMeta) super.clone();
     int nrParameters = parameters.length;
     retval.allocate( nrParameters );
     System.arraycopy( parameters, 0, retval.parameters, 0, nrParameters );
     System.arraycopy( parameterValues, 0, retval.parameterValues, 0, nrParameters );
-    
+
     return retval;
   }
 

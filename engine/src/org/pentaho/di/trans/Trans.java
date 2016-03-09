@@ -5316,7 +5316,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
    * Sets encoding of HttpServletResponse according to System encoding.Check if system encoding is null or an empty and
    * set it to HttpServletResponse when not and writes error to log if null. Throw IllegalArgumentException if input
    * parameter is null.
-   * 
+   *
    * @param response
    *          the HttpServletResponse to set encoding, mayn't be null
    */

@@ -616,7 +616,7 @@ public class DatabaseLookup extends BaseStep implements StepInterface {
   }
 
   /*
-   * this method is required in order to 
+   * this method is required in order to
    * provide ability for unit tests to
    * mock the main database instance for the step
    * (@see org.pentaho.di.trans.steps.databaselookup.PDI5436Test)

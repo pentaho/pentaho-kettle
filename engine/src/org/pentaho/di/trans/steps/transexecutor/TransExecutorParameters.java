@@ -71,11 +71,11 @@ public class TransExecutorParameters implements Cloneable {
     field = new String[nrVariables];
     input = new String[nrVariables];
   }
-  
+
   @Override
   public Object clone() {
     try {
-      TransExecutorParameters retval = (TransExecutorParameters)super.clone();
+      TransExecutorParameters retval = (TransExecutorParameters) super.clone();
       int nrVariables = variable.length;
       System.arraycopy( variable, 0, retval.variable, 0, nrVariables );
       System.arraycopy( field, 0, retval.field, 0, nrVariables );

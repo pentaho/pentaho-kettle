@@ -170,7 +170,7 @@ public class JobEntryPGPEncryptFiles extends JobEntryBase implements Cloneable, 
     destination_filefolder = new String[nrFields];
     wildcard = new String[nrFields];
   }
-  
+
   public Object clone() {
     JobEntryPGPEncryptFiles je = (JobEntryPGPEncryptFiles) super.clone();
     if ( action_type != null ) {
@@ -181,7 +181,7 @@ public class JobEntryPGPEncryptFiles extends JobEntryBase implements Cloneable, 
       System.arraycopy( userid, 0, je.userid, 0, nrFields );
       System.arraycopy( destination_filefolder, 0, je.destination_filefolder, 0, nrFields );
       System.arraycopy( wildcard, 0, je.wildcard, 0, nrFields );
-    }    
+    }
     return je;
   }
 

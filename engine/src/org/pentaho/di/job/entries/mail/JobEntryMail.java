@@ -173,9 +173,9 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
 
   public void allocateImages( int nrImages ) {
     embeddedimages = new String[nrImages];
-    contentids = new String[nrImages];    
+    contentids = new String[nrImages];
   }
-  
+
   public Object clone() {
     JobEntryMail je = (JobEntryMail) super.clone();
     if ( fileType != null ) {
@@ -188,7 +188,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
       je.allocateImages( nrImages );
       System.arraycopy( embeddedimages, 0, je.embeddedimages, 0, nrImages );
       System.arraycopy( contentids, 0, je.contentids, 0, nrImages );
-    }    
+    }
     return je;
   }
 

@@ -102,7 +102,7 @@ public class JobEntryDeleteFolders extends JobEntryBase implements Cloneable, Jo
   public void allocate( int nrFields ) {
     arguments = new String[nrFields];
   }
-  
+
   public Object clone() {
     JobEntryDeleteFolders je = (JobEntryDeleteFolders) super.clone();
     if ( arguments != null ) {

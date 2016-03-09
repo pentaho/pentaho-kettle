@@ -141,7 +141,7 @@ public class SFTPClient {
         }
         jsch.addIdentity( getUserName(), FileUtil.getContent( KettleVFS.getFileObject( prvkey ) ), // byte[] privateKey
           null, // byte[] publicKey
-          passphrasebytes ); // byte[] passPhrase          
+          passphrasebytes ); // byte[] passPhrase
       }
       s = jsch.getSession( userName, serverIP.getHostAddress(), serverPort );
     } catch ( IOException e ) {

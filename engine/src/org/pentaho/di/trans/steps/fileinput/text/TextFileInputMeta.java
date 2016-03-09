@@ -425,7 +425,7 @@ public class TextFileInputMeta extends BaseFileInputStepMeta implements StepMeta
     System.arraycopy( inputFiles.excludeFileMask, 0, retval.inputFiles.excludeFileMask, 0, nrfiles );
     System.arraycopy( inputFiles.fileRequired, 0, retval.inputFiles.fileRequired, 0, nrfiles );
     System.arraycopy( inputFiles.includeSubFolders, 0, retval.inputFiles.includeSubFolders, 0, nrfiles );
-    
+
     for ( int i = 0; i < nrfields; i++ ) {
       retval.inputFiles.inputFields[i] = (BaseFileInputField) inputFiles.inputFields[i].clone();
     }

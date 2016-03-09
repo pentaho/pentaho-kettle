@@ -101,7 +101,7 @@ import org.pentaho.di.trans.TransMeta;
  *
  */
 public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
-  // private static Class<?> PKG = Repository.class; // for i18n purposes, needed by Translator2!! 
+  // private static Class<?> PKG = Repository.class; // for i18n purposes, needed by Translator2!!
 
   public KettleDatabaseRepositoryTransDelegate transDelegate;
   public KettleDatabaseRepositoryJobDelegate jobDelegate;
