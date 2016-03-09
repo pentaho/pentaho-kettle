@@ -291,15 +291,10 @@ public class HTTPMeta extends BaseStepMeta implements StepMetaInterface {
 
     retval.allocate( nrargs, nrheaderparams );
 
-    for ( int i = 0; i < nrargs; i++ ) {
-      retval.argumentField[i] = argumentField[i];
-      retval.argumentParameter[i] = argumentParameter[i];
-    }
-
-    for ( int i = 0; i < nrheaderparams; i++ ) {
-      retval.headerField[i] = headerField[i];
-      retval.headerParameter[i] = headerParameter[i];
-    }
+    System.arraycopy( argumentField, 0, retval.argumentField, 0, nrargs );
+    System.arraycopy( argumentParameter, 0, retval.argumentParameter, 0, nrargs );
+    System.arraycopy( headerField, 0, retval.headerField, 0, nrheaderparams );
+    System.arraycopy( headerParameter, 0, retval.headerParameter, 0, nrheaderparams );
 
     return retval;
   }

@@ -131,13 +131,10 @@ public class StringCutMeta extends BaseStepMeta implements StepMetaInterface {
     int nrkeys = fieldInStream.length;
 
     retval.allocate( nrkeys );
-
-    for ( int i = 0; i < nrkeys; i++ ) {
-      retval.fieldInStream[i] = fieldInStream[i];
-      retval.fieldOutStream[i] = fieldOutStream[i];
-      retval.cutTo[i] = cutTo[i];
-      retval.cutFrom[i] = cutFrom[i];
-    }
+    System.arraycopy( fieldInStream, 0, retval.fieldInStream, 0, nrkeys );
+    System.arraycopy( fieldOutStream, 0, retval.fieldOutStream, 0, nrkeys );
+    System.arraycopy( cutTo, 0, retval.cutTo, 0, nrkeys );
+    System.arraycopy( cutFrom, 0, retval.cutFrom, 0, nrkeys );
 
     return retval;
   }

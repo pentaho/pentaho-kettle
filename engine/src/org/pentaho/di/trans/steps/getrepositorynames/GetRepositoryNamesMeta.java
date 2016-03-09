@@ -97,12 +97,10 @@ public class GetRepositoryNamesMeta extends BaseStepMeta implements StepMetaInte
 
     retval.allocate( nrfiles );
 
-    for ( int i = 0; i < nrfiles; i++ ) {
-      retval.directory[i] = directory[i];
-      retval.nameMask[i] = nameMask[i];
-      retval.excludeNameMask[i] = excludeNameMask[i];
-      retval.includeSubFolders[i] = includeSubFolders[i];
-    }
+    System.arraycopy( directory, 0, retval.directory, 0, nrfiles );
+    System.arraycopy( nameMask, 0, retval.nameMask, 0, nrfiles );
+    System.arraycopy( excludeNameMask, 0, retval.excludeNameMask, 0, nrfiles );
+    System.arraycopy( includeSubFolders, 0, retval.includeSubFolders, 0, nrfiles );
 
     return retval;
   }

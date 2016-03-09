@@ -239,10 +239,8 @@ public class GetSubFoldersMeta extends BaseStepMeta implements StepMetaInterface
 
     retval.allocate( nrfiles );
 
-    for ( int i = 0; i < nrfiles; i++ ) {
-      retval.folderName[i] = folderName[i];
-      retval.folderRequired[i] = folderRequired[i];
-    }
+    System.arraycopy( folderName, 0, retval.folderName, 0, nrfiles );
+    System.arraycopy( folderRequired, 0, retval.folderRequired, 0, nrfiles );
 
     return retval;
   }

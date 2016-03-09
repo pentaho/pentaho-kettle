@@ -349,21 +349,20 @@ public class FieldSplitterMeta extends BaseStepMeta implements StepMetaInterface
 
     retval.allocate( nrfields );
 
-    for ( int i = 0; i < nrfields; i++ ) {
-      retval.fieldName[i] = fieldName[i];
-      retval.fieldID[i] = fieldID[i];
-      retval.fieldRemoveID[i] = fieldRemoveID[i];
-      retval.fieldType[i] = fieldType[i];
-      retval.fieldLength[i] = fieldLength[i];
-      retval.fieldPrecision[i] = fieldPrecision[i];
-      retval.fieldFormat[i] = fieldFormat[i];
-      retval.fieldGroup[i] = fieldGroup[i];
-      retval.fieldDecimal[i] = fieldDecimal[i];
-      retval.fieldCurrency[i] = fieldCurrency[i];
-      retval.fieldNullIf[i] = fieldNullIf[i];
-      retval.fieldIfNull[i] = fieldIfNull[i];
-      retval.fieldTrimType[i] = fieldTrimType[i];
-    }
+    System.arraycopy( fieldName, 0, retval.fieldName, 0, nrfields );
+    System.arraycopy( fieldID, 0, retval.fieldID, 0, nrfields );
+    System.arraycopy( fieldRemoveID, 0, retval.fieldRemoveID, 0, nrfields );
+    System.arraycopy( fieldType, 0, retval.fieldType, 0, nrfields );
+    System.arraycopy( fieldLength, 0, retval.fieldLength, 0, nrfields );
+    System.arraycopy( fieldPrecision, 0, retval.fieldPrecision, 0, nrfields );
+    System.arraycopy( fieldFormat, 0, retval.fieldFormat, 0, nrfields );
+    System.arraycopy( fieldGroup, 0, retval.fieldGroup, 0, nrfields );
+    System.arraycopy( fieldDecimal, 0, retval.fieldDecimal, 0, nrfields );
+    System.arraycopy( fieldCurrency, 0, retval.fieldCurrency, 0, nrfields );
+    System.arraycopy( fieldNullIf, 0, retval.fieldNullIf, 0, nrfields );
+    System.arraycopy( fieldIfNull, 0, retval.fieldIfNull, 0, nrfields );
+    System.arraycopy( fieldTrimType, 0, retval.fieldTrimType, 0, nrfields );
+    System.arraycopy( fieldName, 0, retval.fieldName, 0, nrfields );
 
     return retval;
   }
