@@ -29,6 +29,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.vfs2.FileObject;
@@ -57,6 +58,7 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
@@ -88,6 +90,7 @@ import org.pentaho.di.trans.step.StepInjectionMetaEntry;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInjectionInterface;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.steps.metainject.MetaInject;
 import org.pentaho.di.trans.steps.metainject.MetaInjectMeta;
 import org.pentaho.di.trans.steps.metainject.MetaInjectOutputField;
 import org.pentaho.di.trans.steps.metainject.SourceStepField;
@@ -314,12 +317,51 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
     metaInjectMeta.setChanged( changed );
 
     shell.open();
+
+    checkInvalidMapping();
+
     while ( !shell.isDisposed() ) {
       if ( !display.readAndDispatch() ) {
         display.sleep();
       }
     }
     return stepname;
+  }
+
+  private void checkInvalidMapping() {
+    if ( injectTransMeta == null ) {
+      try {
+        loadTransformation();
+      } catch ( KettleException e ) {
+        showErrorOnLoadTransformationDialog( e );
+        return;
+      }
+    }
+    Set<SourceStepField> unavailableSourceSteps =
+        MetaInject.getUnavailableSourceSteps( targetSourceMapping, transMeta, stepMeta );
+    Set<TargetStepAttribute> unavailableTargetSteps =
+        MetaInject.getUnavailableTargetSteps( targetSourceMapping, injectTransMeta );
+    if ( unavailableSourceSteps.isEmpty() && unavailableTargetSteps.isEmpty() ) {
+      return;
+    }
+    showInvalidMappingDialog( unavailableSourceSteps, unavailableTargetSteps );
+  }
+
+  private void showInvalidMappingDialog( Set<SourceStepField> unavailableSourceSteps,
+      Set<TargetStepAttribute> unavailableTargetSteps ) {
+    MessageBox mb = new MessageBox( shell, SWT.YES | SWT.NO | SWT.ICON_QUESTION );
+    mb.setMessage( BaseMessages.getString( PKG, "MetaInjectDialog.InvalidMapping.Question" ) );
+    mb.setText( BaseMessages.getString( PKG, "MetaInjectDialog.InvalidMapping.Title" ) );
+    int id = mb.open();
+    if ( id == SWT.YES ) {
+      MetaInject.removeUnavailableStepsFromMapping( targetSourceMapping, unavailableSourceSteps,
+          unavailableTargetSteps );
+    }
+  }
+
+  private void showErrorOnLoadTransformationDialog( KettleException e ) {
+    new ErrorDialog( shell, BaseMessages.getString( PKG, "MetaInjectDialog.ErrorLoadingSpecifiedTransformation.Title" ),
+        BaseMessages.getString( PKG, "MetaInjectDialog.ErrorLoadingSpecifiedTransformation.Message" ), e );
   }
 
   private void addFileTab() {
