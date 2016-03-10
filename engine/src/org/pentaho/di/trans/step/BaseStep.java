@@ -2435,14 +2435,14 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
   /**
    * This method finds the surrounding steps and rowsets for this base step. This steps keeps it's own list of rowsets
    * (etc.) to prevent it from having to search every time.
-   * 
+   *
    * Note that all rowsets input and output is already created by transformation itself. So
    * in this place we will look and choose which rowsets will be used by this particular step.
-   * 
+   *
    * We will collect all input rowsets and output rowsets so step will be able to read input data,
    * and write to the output.
-   * 
-   * Steps can run in multiple copies, on in partitioned fashion. For this case we should take 
+   *
+   * Steps can run in multiple copies, on in partitioned fashion. For this case we should take
    * in account that in different cases we should take in account one to one, one to many and other cases
    * properly.
    */

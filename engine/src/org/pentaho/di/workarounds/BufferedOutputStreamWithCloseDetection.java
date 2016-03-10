@@ -28,7 +28,7 @@ import java.io.OutputStream;
 
 /**
  * Workaround for stream close issue under Java 8.
- * 
+ *
  * The problem is: during Workbook writing to stream, Apache POI closes output stream itself. After that, ExcelWriteStep
  * closes this stream also because it was open in the ExcelWriterStep. But Java 8 contains bug
  * https://bugs.openjdk.java.net/browse/JDK-8042377 with second stream closing. As result, second close() throws

@@ -30,7 +30,7 @@ import org.pentaho.di.trans.step.StepMeta;
  * @author matt
  *
  */
-public class SwitchCaseTarget {
+public class SwitchCaseTarget implements Cloneable {
   /** The value to switch over */
   public String caseValue;
 
@@ -42,4 +42,9 @@ public class SwitchCaseTarget {
 
   public SwitchCaseTarget() {
   }
+
+  public Object clone() throws CloneNotSupportedException {
+    return super.clone();
+  }
+
 }

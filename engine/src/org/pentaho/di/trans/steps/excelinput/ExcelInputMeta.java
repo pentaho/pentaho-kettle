@@ -636,19 +636,15 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface {
       retval.field[i] = (ExcelInputField) field[i].clone();
     }
 
-    for ( int i = 0; i < nrfiles; i++ ) {
-      retval.fileName[i] = fileName[i];
-      retval.fileMask[i] = fileMask[i];
-      retval.excludeFileMask[i] = excludeFileMask[i];
-      retval.fileRequired[i] = fileRequired[i];
-      retval.includeSubFolders[i] = includeSubFolders[i];
-    }
+    System.arraycopy( fileName, 0, retval.fileName, 0, nrfiles );
+    System.arraycopy( fileMask, 0, retval.fileMask, 0, nrfiles );
+    System.arraycopy( excludeFileMask, 0, retval.excludeFileMask, 0, nrfiles );
+    System.arraycopy( fileRequired, 0, retval.fileRequired, 0, nrfiles );
+    System.arraycopy( includeSubFolders, 0, retval.includeSubFolders, 0, nrfiles );
 
-    for ( int i = 0; i < nrsheets; i++ ) {
-      retval.sheetName[i] = sheetName[i];
-      retval.startColumn[i] = startColumn[i];
-      retval.startRow[i] = startRow[i];
-    }
+    System.arraycopy( sheetName, 0, retval.sheetName, 0, nrsheets );
+    System.arraycopy( startColumn, 0, retval.startColumn, 0, nrsheets );
+    System.arraycopy( startRow, 0, retval.startRow, 0, nrsheets );
 
     return retval;
   }

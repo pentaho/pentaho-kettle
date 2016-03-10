@@ -188,13 +188,10 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface {
     int nrfields = fieldName.length;
 
     retval.allocate( nrfields );
-
-    for ( int i = 0; i < nrfields; i++ ) {
-      retval.fieldName[i] = fieldName[i];
-      retval.ascending[i] = ascending[i];
-      retval.caseSensitive[i] = caseSensitive[i];
-      retval.preSortedField[i] = preSortedField[i];
-    }
+    System.arraycopy( fieldName, 0, retval.fieldName, 0, nrfields );
+    System.arraycopy( ascending, 0, retval.ascending, 0, nrfields );
+    System.arraycopy( caseSensitive, 0, retval.caseSensitive, 0, nrfields );
+    System.arraycopy( preSortedField, 0, retval.preSortedField, 0, nrfields );
 
     return retval;
   }

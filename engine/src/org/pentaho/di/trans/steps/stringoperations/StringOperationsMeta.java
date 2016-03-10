@@ -314,21 +314,17 @@ public class StringOperationsMeta extends BaseStepMeta implements StepMetaInterf
     int nrkeys = fieldInStream.length;
 
     retval.allocate( nrkeys );
-
-    for ( int i = 0; i < nrkeys; i++ ) {
-      retval.fieldInStream[i] = fieldInStream[i];
-      retval.fieldOutStream[i] = fieldOutStream[i];
-      retval.trimType[i] = trimType[i];
-      retval.lowerUpper[i] = lowerUpper[i];
-      retval.padding_type[i] = padding_type[i];
-      retval.padChar[i] = padChar[i];
-      retval.padLen[i] = padLen[i];
-      retval.initCap[i] = initCap[i];
-      retval.maskXML[i] = maskXML[i];
-      retval.digits[i] = digits[i];
-      retval.remove_special_characters[i] = remove_special_characters[i];
-
-    }
+    System.arraycopy( fieldInStream, 0, retval.fieldInStream, 0, nrkeys );
+    System.arraycopy( fieldOutStream, 0, retval.fieldOutStream, 0, nrkeys );
+    System.arraycopy( trimType, 0, retval.trimType, 0, nrkeys );
+    System.arraycopy( lowerUpper, 0, retval.lowerUpper, 0, nrkeys );
+    System.arraycopy( padding_type, 0, retval.padding_type, 0, nrkeys );
+    System.arraycopy( padChar, 0, retval.padChar, 0, nrkeys );
+    System.arraycopy( padLen, 0, retval.padLen, 0, nrkeys );
+    System.arraycopy( initCap, 0, retval.initCap, 0, nrkeys );
+    System.arraycopy( maskXML, 0, retval.maskXML, 0, nrkeys );
+    System.arraycopy( digits, 0, retval.digits, 0, nrkeys );
+    System.arraycopy( remove_special_characters, 0, retval.remove_special_characters, 0, nrkeys );
 
     return retval;
   }

@@ -370,19 +370,15 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
 
     retval.allocate( nrkeys, nrvalues );
 
-    for ( int i = 0; i < nrkeys; i++ ) {
-      retval.streamKeyField1[i] = streamKeyField1[i];
-      retval.tableKeyField[i] = tableKeyField[i];
-      retval.keyCondition[i] = keyCondition[i];
-      retval.streamKeyField2[i] = streamKeyField2[i];
-    }
+    System.arraycopy( streamKeyField1, 0, retval.streamKeyField1, 0, nrkeys );
+    System.arraycopy( tableKeyField, 0, retval.tableKeyField, 0, nrkeys );
+    System.arraycopy( keyCondition, 0, retval.keyCondition, 0, nrkeys );
+    System.arraycopy( streamKeyField2, 0, retval.streamKeyField2, 0, nrkeys );
 
-    for ( int i = 0; i < nrvalues; i++ ) {
-      retval.returnValueField[i] = returnValueField[i];
-      retval.returnValueNewName[i] = returnValueNewName[i];
-      retval.returnValueDefault[i] = returnValueDefault[i];
-      retval.returnValueDefaultType[i] = returnValueDefaultType[i];
-    }
+    System.arraycopy( returnValueField, 0, retval.returnValueField, 0, nrvalues );
+    System.arraycopy( returnValueNewName, 0, retval.returnValueNewName, 0, nrvalues );
+    System.arraycopy( returnValueDefault, 0, retval.returnValueDefault, 0, nrvalues );
+    System.arraycopy( returnValueDefaultType, 0, retval.returnValueDefaultType, 0, nrvalues );
 
     return retval;
   }

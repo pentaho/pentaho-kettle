@@ -72,7 +72,7 @@ import org.pentaho.di.trans.step.errorhandling.FileErrorHandlerMissingFiles;
  *
  * @author Matt
  * @since 4-apr-2003
- * 
+ *
  * @deprecated replaced by implementation in the ...steps.fileinput.text package
  */
 public class TextFileInput extends BaseStep implements StepInterface {

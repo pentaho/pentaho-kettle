@@ -149,7 +149,7 @@ public class JobEntryExportRepository extends JobEntryBase implements Cloneable,
   }
 
   public String getXML() {
-    StringBuilder retval = new StringBuilder( 400 ); // 300 chars in just tag names and spaces 
+    StringBuilder retval = new StringBuilder( 400 ); // 300 chars in just tag names and spaces
 
     retval.append( super.getXML() );
     retval.append( "      " ).append( XMLHandler.addTagValue( "repositoryname", repositoryname ) );

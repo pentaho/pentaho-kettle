@@ -91,11 +91,8 @@ public class SortedMergeMeta extends BaseStepMeta implements StepMetaInterface {
     int nrfields = fieldName.length;
 
     retval.allocate( nrfields );
-
-    for ( int i = 0; i < nrfields; i++ ) {
-      retval.fieldName[i] = fieldName[i];
-      retval.ascending[i] = ascending[i];
-    }
+    System.arraycopy( fieldName, 0, retval.fieldName, 0, nrfields );
+    System.arraycopy( ascending, 0, retval.ascending, 0, nrfields );
 
     return retval;
   }

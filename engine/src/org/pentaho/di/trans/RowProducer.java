@@ -79,7 +79,7 @@ public class RowProducer {
   }
 
   /**
-   * Signal that we are done producing rows. 
+   * Signal that we are done producing rows.
    * It will allow the step to which this producer is attached to know that no more rows are forthcoming.
    */
   public void finished() {

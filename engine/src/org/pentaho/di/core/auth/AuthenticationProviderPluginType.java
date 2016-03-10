@@ -40,7 +40,7 @@ import org.w3c.dom.Node;
 
 /**
  * This class represents the authentication plugin type.
- * 
+ *
  */
 @PluginMainClassType( AuthenticationProviderType.class )
 @PluginAnnotationType( AuthenticationProviderPlugin.class )
