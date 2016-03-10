@@ -46,6 +46,7 @@ import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
+import java.text.Collator;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
@@ -99,6 +100,7 @@ public class ValueMetaBase implements ValueMetaInterface {
   protected int type;
   protected int trimType;
   protected int storageType;
+
   protected String origin;
   protected String comments;
   protected Object[] index;
@@ -107,10 +109,14 @@ public class ValueMetaBase implements ValueMetaInterface {
   protected String decimalSymbol;
   protected String groupingSymbol;
   protected String currencySymbol;
+  protected int collatorStrength;
   protected boolean caseInsensitive;
+  protected boolean collatorDisabled;
   protected boolean sortedDescending;
   protected boolean outputPaddingEnabled;
   protected boolean largeTextField;
+  protected Locale collatorDefaultLocale;
+  protected Collator collator;
   protected Locale dateFormatLocale;
   protected TimeZone dateFormatTimeZone;
   protected boolean dateFormatLenient;
@@ -188,6 +194,10 @@ public class ValueMetaBase implements ValueMetaInterface {
     this.decimalSymbol = "" + Const.DEFAULT_DECIMAL_SEPARATOR;
     this.groupingSymbol = "" + Const.DEFAULT_GROUPING_SEPARATOR;
     this.dateFormatLocale = Locale.getDefault();
+    this.collatorDisabled = true;
+    this.collatorDefaultLocale = new Locale( System.getProperty( "user.language" ), System.getProperty( "user.country" ) );
+    this.collator = Collator.getInstance( collatorDefaultLocale );
+    this.collatorStrength = 0;
     this.dateFormatTimeZone = TimeZone.getDefault();
     this.identicalFormat = true;
     this.bigNumberFormatting = true;
@@ -576,6 +586,52 @@ public class ValueMetaBase implements ValueMetaInterface {
   @Override
   public void setCaseInsensitive( boolean caseInsensitive ) {
     this.caseInsensitive = caseInsensitive;
+  }
+
+   /**
+   * @return the collatorDisabled
+   */
+  @Override
+  public boolean isCollatorDisabled() {
+    return collatorDisabled;
+  }
+
+  /**
+   * @param collatorDisabled
+   *          the collatorDisabled to set
+   */
+  @Override
+  public void setCollatorDisabled( boolean collatorDisabled ) {
+    this.collatorDisabled = collatorDisabled;
+  }
+  
+  
+    /**
+   * @ sets the collator Locale
+   */
+  @Override
+  public void setCollatorLocale( Locale locale ) {
+    this.collator = Collator.getInstance( locale );
+  }
+
+    /**
+   * @get the collatorStrength
+   */
+  @Override
+  public int getCollatorStrength() {
+    return collatorStrength;
+  }
+
+  /**
+   * @param collatorStrength
+   *          the collatorStrength to set
+   */
+  @Override
+  public void setCollatorStrength( int collatorStrength ) throws IllegalArgumentException {
+    try{ this.collator.setStrength( collatorStrength );
+    } catch ( IllegalArgumentException e ) {
+      throw new IllegalArgumentException(" : Collator strength must be an int between 0 and 3. ");
+    }
   }
 
   /**
@@ -2692,6 +2748,12 @@ public class ValueMetaBase implements ValueMetaInterface {
       // Case sensitivity of compare
       outputStream.writeBoolean( caseInsensitive );
 
+      // Collator Disabled of compare
+      outputStream.writeBoolean( collatorDisabled );
+
+      // Collator strength of compare
+      outputStream.writeInt( collatorStrength );
+
       // Sorting information
       outputStream.writeBoolean( sortedDescending );
 
@@ -2832,6 +2894,12 @@ public class ValueMetaBase implements ValueMetaInterface {
       // Case sensitivity
       caseInsensitive = inputStream.readBoolean();
 
+      // Collator disabled
+      collatorDisabled = inputStream.readBoolean();
+
+      // Collator strength
+      collatorStrength = inputStream.readInt();
+
       // Sorting type
       sortedDescending = inputStream.readBoolean();
 
@@ -2949,6 +3017,8 @@ public class ValueMetaBase implements ValueMetaInterface {
     xml.append( XMLHandler.addTagValue( "currency_symbol", currencySymbol ) );
     xml.append( XMLHandler.addTagValue( "trim_type", getTrimTypeCode( trimType ) ) );
     xml.append( XMLHandler.addTagValue( "case_insensitive", caseInsensitive ) );
+    xml.append( XMLHandler.addTagValue( "collator_disabled", collatorDisabled ) );
+    xml.append( XMLHandler.addTagValue( "collator_strength", collatorStrength ) );
     xml.append( XMLHandler.addTagValue( "sort_descending", sortedDescending ) );
     xml.append( XMLHandler.addTagValue( "output_padding", outputPaddingEnabled ) );
     xml.append( XMLHandler.addTagValue( "date_format_lenient", dateFormatLenient ) );
@@ -3036,6 +3106,8 @@ public class ValueMetaBase implements ValueMetaInterface {
     currencySymbol = XMLHandler.getTagValue( node, "currency_symbol" );
     trimType = getTrimTypeByCode( XMLHandler.getTagValue( node, "trim_type" ) );
     caseInsensitive = "Y".equalsIgnoreCase( XMLHandler.getTagValue( node, "case_insensitive" ) );
+    collatorDisabled = "Y".equalsIgnoreCase( XMLHandler.getTagValue( node, "collator_disabled" ) );
+    collatorStrength = Integer.parseInt( XMLHandler.getTagValue( node, "collator_strength" ) );
     sortedDescending = "Y".equalsIgnoreCase( XMLHandler.getTagValue( node, "sort_descending" ) );
     outputPaddingEnabled = "Y".equalsIgnoreCase( XMLHandler.getTagValue( node, "output_padding" ) );
     dateFormatLenient = "Y".equalsIgnoreCase( XMLHandler.getTagValue( node, "date_format_lenient" ) );
@@ -3390,10 +3462,14 @@ public class ValueMetaBase implements ValueMetaInterface {
         String one = getString( data1 );
         String two = getString( data2 );
 
-        if ( caseInsensitive ) {
-          cmp = one.compareToIgnoreCase( two );
+        if ( collatorDisabled ) {
+          if ( caseInsensitive ) {
+            cmp = one.compareToIgnoreCase( two );
+          } else {
+            cmp = one.compareTo( two );
+          }
         } else {
-          cmp = one.compareTo( two );
+          cmp = collator.compare( one, two );
         }
         break;
 

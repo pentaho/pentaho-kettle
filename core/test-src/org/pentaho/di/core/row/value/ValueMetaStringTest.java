@@ -28,7 +28,7 @@ import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
+import java.util.Locale;
 import junit.framework.Assert;
 
 import org.junit.AfterClass;
@@ -754,7 +754,46 @@ public class ValueMetaStringTest {
     assertSignum( 0, meta.compare( "1 ", " 1 " ) ); // "1" == "1"
     assertSignum( 0, meta.compare( "1 ", "1" ) ); // "1" == "1"
     assertSignum( 0, meta.compare( "1 ", "1 " ) ); // "1" == "1"
+
+
   }
+  
+      @Test
+  public void testCompare_collatorEnabled() throws KettleValueException {
+    ValueMetaString meta = new ValueMetaString( BASE_VALUE );
+    meta.setCollatorDisabled( false );
+    meta.setCollatorLocale( Locale.FRENCH );
+
+    meta.setCollatorStrength( 3 );
+    assertSignum( -1, meta.compare( "E", "F" ) );
+    assertSignum( -1, meta.compare( "e", "\u00e9" ) );
+    assertSignum( -1, meta.compare( "e", "E") );
+    assertSignum( -1, meta.compare( "\u0001", "\u0002") );
+    assertSignum( 0, meta.compare( "e", "e") );
+
+    meta.setCollatorStrength( 2 );
+    assertSignum( -1, meta.compare( "E", "F") );
+    assertSignum( -1, meta.compare( "e", "\u00e9") );
+    assertSignum( -1, meta.compare( "e", "E") );
+    assertSignum( 0, meta.compare( "\u0001", "\u0002") );
+    assertSignum( 0, meta.compare( "e", "e") );
+
+    meta.setCollatorStrength( 1 );
+    assertSignum( -1, meta.compare( "E", "F") );
+    assertSignum( -1, meta.compare( "e", "\u00e9") );
+    assertSignum( 0, meta.compare( "e", "E") );
+    assertSignum( 0, meta.compare( "\u0001", "\u0002") );
+    assertSignum( 0, meta.compare( "e", "e") );
+
+    meta.setCollatorStrength( 0 );
+    assertSignum( -1, meta.compare( "E", "F" ) );
+    assertSignum( 0, meta.compare( "e", "\u00e9" ) );
+    assertSignum( 0, meta.compare( "e", "E" ) );
+    assertSignum( 0, meta.compare( "\u0001", "\u0002" ) );
+    assertSignum( 0, meta.compare( "e", "e" ) ); 
+    }
+  
+ 
 
   private static void ensureBooleanStaticFieldVal( Field f, boolean newValue ) throws NoSuchFieldException,
     SecurityException, IllegalArgumentException, IllegalAccessException {
