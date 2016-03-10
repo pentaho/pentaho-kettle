@@ -32,6 +32,9 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.injection.Injection;
+import org.pentaho.di.core.injection.InjectionDeep;
+import org.pentaho.di.core.injection.InjectionSupported;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
@@ -60,29 +63,36 @@ import org.w3c.dom.Node;
 @Step( id = "AddXML", image = "add_xml.svg", i18nPackageName = "org.pentaho.di.trans.steps.addxml",
     name = "AddXML.name", description = "AddXML.description", categoryDescription = "AddXML.category",
     documentationUrl = "http://wiki.pentaho.com/display/EAI/Add+XML" )
+@InjectionSupported( localizationPrefix = "AddXMLMeta.Injection.", groups = { "OUTPUT_FIELDS" } )
 public class AddXMLMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = AddXMLMeta.class; // for i18n purposes, needed by Translator2!!
 
   /** The base name of the output file */
 
   /** Flag: ommit the XML Header */
+  @Injection( name = "OMIT_XML_HEADER" )
   private boolean omitXMLheader;
 
   /** Flag: omit null elements from the xml result */
+  @Injection( name = "OMIT_NULL_VALUES" )
   private boolean omitNullValues;
 
   /** The encoding to use for reading: null or empty string means system default encoding */
+  @Injection( name = "ENCODING" )
   private String encoding;
 
   /** The name value containing the resulting XML fragment */
+  @Injection( name = "VALUE_NAME" )
   private String valueName;
 
   /** The name of the repeating row XML element */
+  @Injection( name = "ROOT_NODE" )
   private String rootNode;
 
   /* THE FIELD SPECIFICATIONS ... */
 
   /** The output fields */
+  @InjectionDeep
   private XMLField[] outputFields;
 
   public AddXMLMeta() {
