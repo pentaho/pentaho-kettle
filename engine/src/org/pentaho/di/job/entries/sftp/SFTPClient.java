@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,6 +27,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetAddress;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileType;
 import org.apache.commons.vfs2.FileUtil;
@@ -128,7 +129,7 @@ public class SFTPClient {
     this.serverPort = serverPort;
     this.userName = userName;
 
-    JSch jsch = new JSch();
+    JSch jsch = createJSch();
     try {
       if ( !Const.isEmpty( privateKeyFilename ) ) {
         // We need to use private key authentication
@@ -144,6 +145,7 @@ public class SFTPClient {
           passphrasebytes ); // byte[] passPhrase          
       }
       s = jsch.getSession( userName, serverIP.getHostAddress(), serverPort );
+      s.setConfig( "PreferredAuthentications", "publickey,keyboard-interactive,password,gssapi-with-mic" );
     } catch ( IOException e ) {
       throw new KettleJobException( e );
     } catch ( KettleFileException e ) {
@@ -425,5 +427,10 @@ public class SFTPClient {
       return null;
     }
     return this.compression;
+  }
+
+  @VisibleForTesting
+  JSch createJSch() {
+    return new JSch();
   }
 }
