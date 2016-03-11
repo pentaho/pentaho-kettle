@@ -22,6 +22,10 @@
 
 package org.pentaho.di.trans.steps.synchronizeaftermerge;
 
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
+
+import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -29,15 +33,12 @@ import java.sql.SQLException;
 
 import org.junit.After;
 import org.junit.AfterClass;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.mockito.Mockito;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
-import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.row.RowMeta;
@@ -101,6 +102,7 @@ public class SynchronizeAfterMergeIT {
   public void tearDown() throws SQLException {
     if ( connection != null ) {
       connection.close();
+      connection = null;
     }
   }
 
@@ -131,10 +133,10 @@ public class SynchronizeAfterMergeIT {
     StepMeta injectorStep = new StepMeta( injectorPid, injectorStepname, injectorMeta );
     transMeta.addStep( injectorStep );
 
-    DatabaseMeta dbMeta = Mockito.spy( new DatabaseMeta() );
+    DatabaseMeta dbMeta = spy( new DatabaseMeta() );
     dbMeta.setDatabaseType( "H2" );
-    Mockito.when( dbMeta.getURL() ).thenReturn( "jdbc:h2:mem:PERSON;" );
-    Mockito.when( dbMeta.supportsErrorHandlingOnBatchUpdates() ).thenReturn( false );
+    when( dbMeta.getURL() ).thenReturn( "jdbc:h2:mem:PERSON;" );
+    when( dbMeta.supportsErrorHandlingOnBatchUpdates() ).thenReturn( false );
 
     SynchronizeAfterMergeMeta synchronizeAfterMergeMeta = new SynchronizeAfterMergeMeta();
     //set commit size
@@ -189,18 +191,23 @@ public class SynchronizeAfterMergeIT {
   }
 
   @Test
-  public void testProcessRow_RowSizeEqualsCommitSize() throws KettleException {
-    transMeta.setSizeRowset( COMMIT_SIZE );
-    processRow();
+  public void testProcessRow_Itterupted() throws Exception {
+    processRow( TransProcessControl.ITTERUPT );
   }
 
   @Test
-  public void testProcessRow_RowSizeLesserThanCommitSize() throws KettleException {
-    transMeta.setSizeRowset( ROW_SIZE );
-    processRow();
+  public void testProcessRow_RowSizeEqualsCommitSize() throws Exception {
+    transMeta.setSizeRowset( COMMIT_SIZE );
+    processRow( TransProcessControl.WAIT );
   }
 
-  private void processRow() throws KettleException {
+  @Test
+  public void testProcessRow_RowSizeLesserThanCommitSize() throws Exception {
+    transMeta.setSizeRowset( ROW_SIZE );
+    processRow( TransProcessControl.WAIT );
+  }
+
+  private void processRow( TransProcessControl control ) throws Exception {
     Trans trans = new Trans( transMeta );
     trans.prepareExecution( null );
 
@@ -208,11 +215,27 @@ public class SynchronizeAfterMergeIT {
     trans.startThreads();
     generateData( rp );
     rp.finished();
-
-    trans.waitUntilFinished();
     StepInterface si = trans.getStepInterface( synchronizeAfterMergeStepname, 0 );
-    Assert.assertEquals( "Unexpected error occurred",  0, si.getErrors() );
-    Assert.assertEquals( "Step still started", StepExecutionStatus.STATUS_FINISHED, si.getStatus() );
+    switch ( control ) {
+      case ITTERUPT:
+        trans.stopAll();
+        while (  !si.getStatus().equals( StepExecutionStatus.STATUS_STOPPED ) ) {
+          //wait until transformation does not stopped
+        };
+        break;
+      case WAIT:
+      default:
+        trans.waitUntilFinished();
+        assertEquals( "Step still started", StepExecutionStatus.STATUS_FINISHED, si.getStatus() );
+        break;
+    }
+    assertEquals( "Unexpected error occurred",  0, si.getErrors() );
+
+    Field field = SynchronizeAfterMerge.class.getDeclaredField( "data" );
+    field.setAccessible( true );
+    SynchronizeAfterMergeData  data = (SynchronizeAfterMergeData) field.get( si );
+    //should be closed and set null after finish transformation
+    assertNull( data.db.getConnection() );
   }
 
   private void generateData( RowProducer rp ) {
@@ -230,4 +253,10 @@ public class SynchronizeAfterMergeIT {
       rp.putRow( rm.clone(), new Object[] { "personNameInserted" + i, i, INSERT_FLAG } );
     }
   }
+
+  private enum TransProcessControl {
+    WAIT,
+    ITTERUPT
+  }
+
 }
