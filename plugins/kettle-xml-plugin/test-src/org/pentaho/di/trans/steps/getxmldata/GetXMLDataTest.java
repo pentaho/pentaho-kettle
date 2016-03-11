@@ -108,9 +108,9 @@ public class GetXMLDataTest extends TestCase {
     RowMetaInterface rm = new RowMeta();
 
     ValueMetaInterface[] valuesMeta =
-        { new ValueMeta( "field1", ValueMeta.TYPE_STRING ), new ValueMeta( "objectid", ValueMeta.TYPE_STRING ),
-          new ValueMeta( "sapident", ValueMeta.TYPE_STRING ), new ValueMeta( "quantity", ValueMeta.TYPE_STRING ),
-          new ValueMeta( "merkmalname", ValueMeta.TYPE_STRING ), new ValueMeta( "merkmalswert", ValueMeta.TYPE_STRING ) };
+      { new ValueMeta( "field1", ValueMeta.TYPE_STRING ), new ValueMeta( "objectid", ValueMeta.TYPE_STRING ),
+        new ValueMeta( "sapident", ValueMeta.TYPE_STRING ), new ValueMeta( "quantity", ValueMeta.TYPE_STRING ),
+        new ValueMeta( "merkmalname", ValueMeta.TYPE_STRING ), new ValueMeta( "merkmalswert", ValueMeta.TYPE_STRING ) };
 
     for ( int i = 0; i < valuesMeta.length; i++ ) {
       rm.addValueMeta( valuesMeta[i] );
@@ -337,5 +337,113 @@ public class GetXMLDataTest extends TestCase {
     List<RowMetaAndData> goldenImageRows = createResultData1();
 
     checkRows( goldenImageRows, resultRows );
+  }
+
+  public void testInit() throws Exception {
+
+    KettleEnvironment.init();
+
+    //
+    // Create a new transformation...
+    //
+    TransMeta transMeta = new TransMeta();
+    transMeta.setName( "getxmldata1" );
+
+    PluginRegistry registry = PluginRegistry.getInstance();
+
+    //
+    // create an injector step...
+    //
+    String injectorStepname = "injector step";
+    InjectorMeta im = new InjectorMeta();
+
+    // Set the information of the injector.
+    String injectorPid = registry.getPluginId( StepPluginType.class, im );
+    StepMeta injectorStep = new StepMeta( injectorPid, injectorStepname, im );
+    transMeta.addStep( injectorStep );
+
+    //
+    // Create a Get XML Data step
+    //
+    String getXMLDataName = "get xml data step";
+    GetXMLDataMeta gxdm = new GetXMLDataMeta();
+
+    String getXMLDataPid = registry.getPluginId( StepPluginType.class, gxdm );
+    StepMeta getXMLDataStep = new StepMeta( getXMLDataPid, getXMLDataName, gxdm );
+    transMeta.addStep( getXMLDataStep );
+
+    GetXMLDataField[] fields = new GetXMLDataField[5];
+
+    for ( int idx = 0; idx < fields.length; idx++ ) {
+      fields[idx] = new GetXMLDataField();
+    }
+
+    fields[0].setName( "objectid" );
+    fields[0].setXPath( "${xml_path}" );
+    fields[0].setElementType( GetXMLDataField.ELEMENT_TYPE_NODE );
+    fields[0].setType( ValueMetaInterface.TYPE_STRING );
+    fields[0].setFormat( "" );
+    fields[0].setLength( -1 );
+    fields[0].setPrecision( -1 );
+    fields[0].setCurrencySymbol( "" );
+    fields[0].setDecimalSymbol( "" );
+    fields[0].setGroupSymbol( "" );
+    fields[0].setTrimType( GetXMLDataField.TYPE_TRIM_NONE );
+
+    gxdm.setEncoding( "UTF-8" );
+    gxdm.setIsAFile( false );
+    gxdm.setInFields( true );
+    gxdm.setLoopXPath( "Level1/Level2/Props" );
+    gxdm.setXMLField( "field1" );
+    gxdm.setInputFields( fields );
+
+    TransHopMeta hi = new TransHopMeta( injectorStep, getXMLDataStep );
+    transMeta.addTransHop( hi );
+
+    //
+    // Create a dummy step 1
+    //
+    String dummyStepname1 = "dummy step 1";
+    DummyTransMeta dm1 = new DummyTransMeta();
+
+    String dummyPid1 = registry.getPluginId( StepPluginType.class, dm1 );
+    StepMeta dummyStep1 = new StepMeta( dummyPid1, dummyStepname1, dm1 );
+    transMeta.addStep( dummyStep1 );
+
+    TransHopMeta hi1 = new TransHopMeta( getXMLDataStep, dummyStep1 );
+    transMeta.addTransHop( hi1 );
+
+    // Now execute the transformation...
+    Trans trans = new Trans( transMeta );
+
+    trans.prepareExecution( null );
+
+    StepInterface si = trans.getStepInterface( dummyStepname1, 0 );
+    RowStepCollector dummyRc1 = new RowStepCollector();
+    si.addRowListener( dummyRc1 );
+
+    RowProducer rp = trans.addRowProducer( injectorStepname, 0 );
+    trans.startThreads();
+
+    // add rows
+    List<RowMetaAndData> inputList = createData();
+    Iterator<RowMetaAndData> it = inputList.iterator();
+    while ( it.hasNext() ) {
+      RowMetaAndData rm = it.next();
+      rp.putRow( rm.getRowMeta(), rm.getData() );
+    }
+    rp.finished();
+
+    trans.waitUntilFinished();
+
+    // Compare the results
+    List<RowMetaAndData> resultRows = dummyRc1.getRowsWritten();
+    List<RowMetaAndData> goldenImageRows = createResultData1();
+
+    GetXMLDataData getXMLDataData = new GetXMLDataData();
+    GetXMLData getXmlData = new GetXMLData( dummyStep1, getXMLDataData, 0, transMeta, trans );
+    getXmlData.setVariable( "xml_path", "data/owner" );
+    getXmlData.init( gxdm, getXMLDataData );
+    assertEquals( gxdm.getInputFields()[0].getXPath(), "${xml_path}" );
   }
 }
