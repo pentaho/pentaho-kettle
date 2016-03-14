@@ -34,6 +34,7 @@ import org.pentaho.di.trans.TransTestingUtil;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.steps.StepMockUtil;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
+import org.pentaho.di.trans.steps.selectvalues.SelectValuesMeta.SelectField;
 
 import java.util.Calendar;
 import java.util.List;
@@ -114,7 +115,8 @@ public class SelectValues_LocaleHandling_Test {
 
     SelectValuesMeta stepMeta = new SelectValuesMeta();
     stepMeta.allocate( 1, 0, 1 );
-    stepMeta.getSelectName()[ 0 ] = "field";
+    stepMeta.getSelectFields()[0] = new SelectField();
+    stepMeta.getSelectFields()[0].setName( "field" );
     stepMeta.getMeta()[ 0 ] =
       new SelectMetadataChange( stepMeta, "field", null, ValueMetaInterface.TYPE_STRING, -2, -2,
         ValueMetaInterface.STORAGE_TYPE_NORMAL, "ww", false, locale, null, false, null, null, null );

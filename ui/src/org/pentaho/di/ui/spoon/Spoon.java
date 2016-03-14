@@ -8199,10 +8199,10 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
           //CHECKSTYLE:Indentation:OFF
           for ( int i = 0; i < mappings.size(); i++ ) {
             SourceToTargetMapping mapping = mappings.get( i );
-            svm.getSelectName()[i] = sourceFields.getValueMeta( mapping.getSourcePosition() ).getName();
-            svm.getSelectRename()[i] = target[mapping.getTargetPosition()];
-            svm.getSelectLength()[i] = -1;
-            svm.getSelectPrecision()[i] = -1;
+            svm.getSelectFields()[i].setName( sourceFields.getValueMeta( mapping.getSourcePosition() ).getName() );
+            svm.getSelectFields()[i].setRename( target[mapping.getTargetPosition()] );
+            svm.getSelectFields()[i].setLength( -1 );
+            svm.getSelectFields()[i].setPrecision( -1 );
           }
           // a new comment. Sincerely yours CO ;)
           // Now that we have the meta-data, create a new step info object
