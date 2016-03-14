@@ -1930,6 +1930,20 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterfaceEx
   }
 
   /**
+   * @return true if the database type can be tested against a database instance
+   */
+  public boolean canTest() {
+    return true;
+  }
+
+  /**
+   * @return true if the database name is a required parameter
+   */
+  public boolean requiresName() {
+    return true;
+  }
+
+  /**
    * Returns a true of savepoints can be released, false if not.
    *
    * @return

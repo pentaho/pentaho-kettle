@@ -45,7 +45,6 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.database.GenericDatabaseMeta;
 import org.pentaho.di.core.database.MSSQLServerNativeDatabaseMeta;
 import org.pentaho.di.core.database.PartitionDatabaseMeta;
-import org.pentaho.di.core.database.SAPR3DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.plugins.DatabasePluginType;
@@ -1229,13 +1228,13 @@ public class DataHandler extends AbstractXulEventHandler {
 
     // SAP Attributes...
     if ( languageBox != null ) {
-      meta.getAttributes().put( SAPR3DatabaseMeta.ATTRIBUTE_SAP_LANGUAGE, languageBox.getValue() );
+      meta.getAttributes().put( "SAPLanguage", languageBox.getValue() );
     }
     if ( systemNumberBox != null ) {
-      meta.getAttributes().put( SAPR3DatabaseMeta.ATTRIBUTE_SAP_SYSTEM_NUMBER, systemNumberBox.getValue() );
+      meta.getAttributes().put( "SAPSystemNumber", systemNumberBox.getValue() );
     }
     if ( clientBox != null ) {
-      meta.getAttributes().put( SAPR3DatabaseMeta.ATTRIBUTE_SAP_CLIENT, clientBox.getValue() );
+      meta.getAttributes().put( "SAPClient", clientBox.getValue() );
     }
 
     // Generic settings...
@@ -1315,13 +1314,13 @@ public class DataHandler extends AbstractXulEventHandler {
 
     // SAP Attributes...
     if ( languageBox != null ) {
-      languageBox.setValue( meta.getAttributes().getProperty( SAPR3DatabaseMeta.ATTRIBUTE_SAP_LANGUAGE ) );
+      languageBox.setValue( meta.getAttributes().getProperty( "SAPLanguage" ) );
     }
     if ( systemNumberBox != null ) {
-      systemNumberBox.setValue( meta.getAttributes().getProperty( SAPR3DatabaseMeta.ATTRIBUTE_SAP_SYSTEM_NUMBER ) );
+      systemNumberBox.setValue( meta.getAttributes().getProperty( "SAPSystemNumber" ) );
     }
     if ( clientBox != null ) {
-      clientBox.setValue( meta.getAttributes().getProperty( SAPR3DatabaseMeta.ATTRIBUTE_SAP_CLIENT ) );
+      clientBox.setValue( meta.getAttributes().getProperty( "SAPClient" ) );
     }
 
     // Generic settings...

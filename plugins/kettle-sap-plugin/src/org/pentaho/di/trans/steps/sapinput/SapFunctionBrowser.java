@@ -20,7 +20,7 @@
  *
  ******************************************************************************/
 
-package org.pentaho.di.ui.trans.steps.sapinput;
+package org.pentaho.di.trans.steps.sapinput;
 
 import java.util.ArrayList;
 import java.util.List;

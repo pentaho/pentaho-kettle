@@ -175,11 +175,6 @@
     <classname>org.pentaho.di.core.database.SAPDBDatabaseMeta</classname>
   </database-type>                                                       
 
-  <database-type id="SAPR3">
-    <description>SAP ERP System</description>
-    <classname>org.pentaho.di.core.database.SAPR3DatabaseMeta</classname>
-  </database-type>                                                       
-
   <database-type id="SQLITE">
     <description>SQLite</description>
     <classname>org.pentaho.di.core.database.SQLiteDatabaseMeta</classname>

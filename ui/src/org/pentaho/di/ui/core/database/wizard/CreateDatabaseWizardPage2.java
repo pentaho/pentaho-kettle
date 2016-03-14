@@ -37,8 +37,8 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.database.BaseDatabaseMeta;
 import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.di.core.database.SAPR3DatabaseMeta;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
@@ -170,7 +170,7 @@ public class CreateDatabaseWizardPage2 extends WizardPage {
       databaseMeta.setPassword( wPassword.getText() );
     }
 
-    wTest.setEnabled( !( databaseMeta.getDatabaseInterface() instanceof SAPR3DatabaseMeta ) );
+    wTest.setEnabled( ( (BaseDatabaseMeta) databaseMeta.getDatabaseInterface() ).canTest() );
 
     return databaseMeta;
   }

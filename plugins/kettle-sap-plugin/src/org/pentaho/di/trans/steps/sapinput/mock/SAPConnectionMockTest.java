@@ -26,7 +26,7 @@ import java.util.Collection;
 import java.util.Vector;
 
 import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.di.core.database.SAPR3DatabaseMeta;
+import org.pentaho.di.core.database.sap.SAPR3DatabaseMeta;
 import org.pentaho.di.trans.steps.sapinput.sap.SAPConnection;
 import org.pentaho.di.trans.steps.sapinput.sap.SAPException;
 import org.pentaho.di.trans.steps.sapinput.sap.SAPField;
