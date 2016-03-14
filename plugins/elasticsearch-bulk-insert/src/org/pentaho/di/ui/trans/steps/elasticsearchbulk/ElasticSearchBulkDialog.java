@@ -62,7 +62,6 @@ import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.NoNodeAvailableException;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.cluster.ClusterState;
-import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.discovery.MasterNotDiscoveredException;
@@ -893,21 +892,21 @@ public class ElasticSearchBulkDialog extends BaseStepDialog implements StepDialo
       ElasticSearchBulkMeta tempMeta = new ElasticSearchBulkMeta();
       toModel( tempMeta );
 
-      ImmutableSettings.Builder settingsBuilder = ImmutableSettings.settingsBuilder();
-      settingsBuilder.put( ImmutableSettings.Builder.EMPTY_SETTINGS ); // keep default classloader
+      Settings.Builder settingsBuilder = Settings.settingsBuilder();
+      settingsBuilder.put( Settings.Builder.EMPTY_SETTINGS ); // keep default classloader
       settingsBuilder.put( tempMeta.getSettings() );
-      Settings settings = settingsBuilder.build();
+      TransportClient.Builder tClientBuilder = TransportClient.builder().settings( settingsBuilder );
 
       if ( tempMeta.getServers().length > 0 ) {
         node = null;
-        TransportClient tClient = new TransportClient( settings );
+        TransportClient tClient = tClientBuilder.build();
         for ( InetSocketTransportAddress address : tempMeta.getServers() ) {
           tClient.addTransportAddress( address );
         }
         client = tClient;
       } else {
         NodeBuilder nodeBuilder = NodeBuilder.nodeBuilder();
-        nodeBuilder.settings( settings );
+        nodeBuilder.settings( settingsBuilder );
         node = nodeBuilder.client( true ).node();
         client = node.client();
         node.start();

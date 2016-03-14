@@ -40,7 +40,7 @@ explicitly covering such access.
 
   <dependencies defaultconf="dev->default">
 
-    <dependency org="org.elasticsearch"  name="elasticsearch" rev="1.5.2" transitive="true" conf="default->default"/>
+    <dependency org="org.elasticsearch"  name="elasticsearch" rev="2.2.0" transitive="true" conf="default->default"/>
 
     <dependency org="pentaho-kettle" name="kettle-engine" rev="${dependency.kettle.revision}" transitive="true" changing="true"/>
     <dependency org="pentaho-kettle" name="kettle-core" rev="${dependency.kettle.revision}" transitive="true" changing="true"/>
