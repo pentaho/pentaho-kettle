@@ -1542,8 +1542,8 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
     }
 
     if ( !isPartitioned()
-      && !( getDatabaseInterface() instanceof SAPR3DatabaseMeta
-      || getDatabaseInterface() instanceof GenericDatabaseMeta ) ) {
+      && ( ( (BaseDatabaseMeta) getDatabaseInterface() ).requiresName()
+      && !( getDatabaseInterface() instanceof GenericDatabaseMeta ) ) ) {
       if ( getDatabaseName() == null || getDatabaseName().length() == 0 ) {
         remarks.add( "Please specify the name of the database" );
       }

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -20,32 +20,15 @@
  *
  ******************************************************************************/
 
-package org.pentaho.di.core;
+package org.pentaho.di.ui.core.database.wizard;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import org.eclipse.jface.wizard.WizardPage;
 import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.di.core.database.SAPR3DatabaseMeta;
+import org.pentaho.di.ui.core.PropsUI;
 
-public class ConstDB {
-  /**
-   * Select the SAP ERP databases in the List of databases.
-   *
-   * @param databases
-   *          All the databases
-   * @return SAP ERP databases in a List of databases.
-   */
-  public static final List<DatabaseMeta> selectSAPR3Databases( List<DatabaseMeta> databases ) {
-    List<DatabaseMeta> sap = new ArrayList<DatabaseMeta>();
-
-    for ( DatabaseMeta db : databases ) {
-      if ( db.getDatabaseInterface() instanceof SAPR3DatabaseMeta ) {
-        sap.add( db );
-      }
-    }
-
-    return sap;
-  }
-
+/**
+ * Created by bmorrise on 3/9/16.
+ */
+public interface WizardPageFactory {
+  WizardPage createWizardPage( PropsUI props, DatabaseMeta info );
 }

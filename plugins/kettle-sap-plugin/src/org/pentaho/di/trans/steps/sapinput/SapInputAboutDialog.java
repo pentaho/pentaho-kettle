@@ -20,7 +20,7 @@
  *
  ******************************************************************************/
 
-package org.pentaho.di.ui.trans.steps.sapinput;
+package org.pentaho.di.trans.steps.sapinput;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;

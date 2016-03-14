@@ -20,11 +20,17 @@
  *
  ******************************************************************************/
 
-package org.pentaho.di.core.database;
+package org.pentaho.di.core.database.sap;
 
-import org.pentaho.di.core.Const;
+import org.eclipse.jface.wizard.WizardPage;
+import org.pentaho.di.core.database.BaseDatabaseMeta;
+import org.pentaho.di.core.database.DatabaseInterface;
+import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.plugins.DatabaseMetaPlugin;
 import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.core.util.EnvUtil;
+import org.pentaho.di.ui.core.database.wizard.CreateDatabaseWizardPageSAPR3;
+import org.pentaho.di.ui.core.PropsUI;
+import org.pentaho.di.ui.core.database.wizard.WizardPageFactory;
 
 /**
  * Contains SAP ERP system specific information through static final members
@@ -33,10 +39,12 @@ import org.pentaho.di.core.util.EnvUtil;
  * @since 03-07-2005
  */
 
-public class SAPR3DatabaseMeta extends BaseDatabaseMeta implements DatabaseInterface {
+@DatabaseMetaPlugin( type = "SAPR3", typeDescription = "SAP ERP System" )
+public class SAPR3DatabaseMeta extends BaseDatabaseMeta implements DatabaseInterface, WizardPageFactory {
   public static final String ATTRIBUTE_SAP_LANGUAGE = "SAPLanguage";
   public static final String ATTRIBUTE_SAP_SYSTEM_NUMBER = "SAPSystemNumber";
   public static final String ATTRIBUTE_SAP_CLIENT = "SAPClient";
+  public static final String SAPR3 = "SAPR3";
 
   @Override
   public int[] getAccessTypeList() {
@@ -146,8 +154,7 @@ public class SAPR3DatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 
   @Override
   public String getDatabaseFactoryName() {
-    return EnvUtil.getSystemProperty(
-      Const.KETTLE_SAP_CONNECTION_FACTORY, Const.KETTLE_SAP_CONNECTION_FACTORY_DEFAULT_NAME );
+    return org.pentaho.di.trans.steps.sapinput.sap.SAPConnectionFactory.class.getName();
   }
 
   /**
@@ -158,4 +165,17 @@ public class SAPR3DatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
     return false;
   }
 
+  @Override
+  public boolean canTest() {
+    return false;
+  }
+
+  @Override
+  public boolean requiresName() {
+    return false;
+  }
+
+  @Override public WizardPage createWizardPage( PropsUI props, DatabaseMeta info ) {
+    return new CreateDatabaseWizardPageSAPR3( SAPR3, props, info );
+  }
 }

@@ -20,7 +20,7 @@
  *
  ******************************************************************************/
 
-package org.pentaho.di.ui.trans.steps.sapinput;
+package org.pentaho.di.trans.steps.sapinput;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -54,7 +54,7 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.di.core.database.SAPR3DatabaseMeta;
+import org.pentaho.di.core.database.sap.SAPR3DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -66,10 +66,6 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.TransPreviewFactory;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
-import org.pentaho.di.trans.steps.sapinput.SapInputMeta;
-import org.pentaho.di.trans.steps.sapinput.SapOutputField;
-import org.pentaho.di.trans.steps.sapinput.SapParameter;
-import org.pentaho.di.trans.steps.sapinput.SapType;
 import org.pentaho.di.trans.steps.sapinput.sap.SAPConnection;
 import org.pentaho.di.trans.steps.sapinput.sap.SAPConnectionFactory;
 import org.pentaho.di.trans.steps.sapinput.sap.SAPField;

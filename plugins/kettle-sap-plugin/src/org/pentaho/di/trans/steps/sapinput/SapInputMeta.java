@@ -28,6 +28,7 @@ import java.util.List;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -56,6 +57,8 @@ import org.w3c.dom.Node;
  * Created on 2-jun-2003
  *
  */
+@Step( id = "SAPINPUT", image = "SIP.svg", i18nPackageName = "org.pentaho.di.trans.steps.sapinput",
+     name = "SapInput.Step.Name", description = "SapInput.Step.Description", categoryDescription = "Input" )
 public class SapInputMeta extends BaseStepMeta implements StepMetaInterface {
   private static final String XML_TAG_PARAMETERS = "parameters";
 
@@ -339,6 +342,11 @@ public class SapInputMeta extends BaseStepMeta implements StepMetaInterface {
       cr = new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, "Please select a function to use", stepMeta );
       remarks.add( cr );
     }
+  }
+
+  @Override
+  public String getDialogClassName() {
+    return SapInputDialog.class.getName();
   }
 
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,

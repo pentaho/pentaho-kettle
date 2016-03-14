@@ -36,9 +36,10 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.di.core.database.SAPR3DatabaseMeta;
+import org.pentaho.di.core.database.sap.SAPR3DatabaseMeta;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.PropsUI;
+import org.pentaho.di.ui.core.database.wizard.CreateDatabaseWizard;
 
 /**
  *
