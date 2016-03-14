@@ -156,7 +156,7 @@ public class MappingInputMeta extends BaseStepMeta implements StepMetaInterface 
     System.arraycopy( fieldName, 0, retval.fieldName, 0, nrfields );
     System.arraycopy( fieldType, 0, retval.fieldType, 0, nrfields );
     System.arraycopy( fieldLength, 0, retval.fieldLength, 0, nrfields );
-    System.arraycopy( fieldPrecision, 0, fieldPrecision, 0, nrfields );
+    System.arraycopy( fieldPrecision, 0, retval.fieldPrecision, 0, nrfields );
     return retval;
   }
 

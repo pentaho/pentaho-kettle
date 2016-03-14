@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,6 +22,7 @@
 
 package org.pentaho.di.trans.steps.tableoutput;
 
+import com.google.common.base.Preconditions;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -255,6 +256,8 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface, 
   }
 
   public Object clone() {
+    Preconditions.checkState( fieldStream.length == fieldDatabase.length,
+      "Table fields and stream fields are not of equal length." );
     TableOutputMeta retval = (TableOutputMeta) super.clone();
     int nrRows = fieldStream.length;
     retval.allocate( nrRows );
@@ -287,7 +290,7 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface, 
   }
 
   /**
-   * @param commitSize
+   * @param commitSizeInt
    *          The commitSize to set.
    */
   public void setCommitSize( int commitSizeInt ) {
