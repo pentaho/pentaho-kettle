@@ -125,8 +125,9 @@ public class ValidatorMeta extends BaseStepMeta implements StepMetaInterface {
   public Object clone() {
     ValidatorMeta retval = (ValidatorMeta) super.clone();
     if ( validations != null ) {
-      retval.allocate( validations.size() );
-      for ( int i = 0; i < validations.size(); i++ ) {
+      int valSize = validations.size();
+      retval.allocate( valSize );
+      for ( int i = 0; i < valSize; i++ ) {
         retval.validations.add( validations.get( i ).clone() );
       }
     } else {

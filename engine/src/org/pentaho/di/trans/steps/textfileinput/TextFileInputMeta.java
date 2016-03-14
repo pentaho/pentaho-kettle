@@ -920,24 +920,22 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
     } catch ( Exception e ) {
       throw new KettleXMLException( "Unable to load step info from XML", e );
     }
-  } 
+  }
 
   public Object clone() {
     TextFileInputMeta retval = (TextFileInputMeta) super.clone();
 
-    int nrfiles = fileName.length;
+    int nrFiles = fileName.length;
     int nrfields = inputFields.length;
     int nrfilters = filter.length;
 
-    retval.allocate( nrfiles, nrfields, nrfilters );
+    retval.allocate( nrFiles, nrfields, nrfilters );
 
-    for ( int i = 0; i < nrfiles; i++ ) {
-      retval.fileName[i] = fileName[i];
-      retval.fileMask[i] = fileMask[i];
-      retval.excludeFileMask[i] = excludeFileMask[i];
-      retval.fileRequired[i] = fileRequired[i];
-      retval.includeSubFolders[i] = includeSubFolders[i];
-    }
+    System.arraycopy( fileName, 0, retval.fileName, 0, nrFiles );
+    System.arraycopy( fileMask, 0, retval.fileMask, 0, nrFiles );
+    System.arraycopy( excludeFileMask, 0, retval.excludeFileMask, 0, nrFiles );
+    System.arraycopy( fileRequired, 0, retval.fileRequired, 0, nrFiles );
+    System.arraycopy( includeSubFolders, 0, retval.includeSubFolders, 0, nrFiles );
 
     for ( int i = 0; i < nrfields; i++ ) {
       retval.inputFields[i] = (TextFileInputField) inputFields[i].clone();
@@ -2045,7 +2043,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
     allocateFiles( fileName.length );
     setFileName( fileName );
   }
-  
+
   protected String loadSource( Node filenode, Node filenamenode, int i, IMetaStore metaStore ) {
     return XMLHandler.getNodeValue( filenamenode );
   }
@@ -2057,7 +2055,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
   protected String loadSourceRep( Repository rep, ObjectId id_step, int i ) throws KettleException {
     return rep.getStepAttributeString( id_step, i, "file_name" );
   }
-  
+
   protected void saveSourceRep( Repository rep, ObjectId id_transformation, ObjectId id_step, int i, String fileName )
     throws KettleException {
     rep.saveStepAttribute( id_transformation, id_step, i, "file_name", fileName ); //this should be in subclass

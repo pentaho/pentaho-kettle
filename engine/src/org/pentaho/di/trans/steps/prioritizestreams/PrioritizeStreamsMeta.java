@@ -73,10 +73,7 @@ public class PrioritizeStreamsMeta extends BaseStepMeta implements StepMetaInter
     int nrfields = stepName.length;
 
     retval.allocate( nrfields );
-
-    for ( int i = 0; i < nrfields; i++ ) {
-      retval.stepName[i] = stepName[i];
-    }
+    System.arraycopy( stepName, 0, retval.stepName, 0, nrfields );
     return retval;
   }
 
