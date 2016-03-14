@@ -106,7 +106,7 @@ public class SwitchCaseMeta extends BaseStepMeta implements StepMetaInterface {
     retval.allocate();
     try {
       for ( int i = 0; i < caseTargets.size(); i++ ) {
-        retval.caseTargets.add( (SwitchCaseTarget)caseTargets.get( i ).clone() );
+        retval.caseTargets.add( (SwitchCaseTarget) caseTargets.get( i ).clone() );
       }
       return retval;
     } catch ( CloneNotSupportedException ex ) {

@@ -104,9 +104,9 @@ public class JobEntryCheckFilesLocked extends JobEntryBase implements Cloneable,
 
   public void allocate( int nrFields ) {
     arguments = new String[nrFields];
-    filemasks = new String[nrFields];    
+    filemasks = new String[nrFields];
   }
-  
+
   public String getXML() {
     StringBuilder retval = new StringBuilder( 300 );
 

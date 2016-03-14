@@ -132,9 +132,9 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
 
   private void allocate( int nrHeaders ) {
     headerName = new String[nrHeaders];
-    headerValue = new String[nrHeaders];    
+    headerValue = new String[nrHeaders];
   }
-  
+
   public Object clone() {
     JobEntryHTTP je = (JobEntryHTTP) super.clone();
     if ( headerName != null ) {

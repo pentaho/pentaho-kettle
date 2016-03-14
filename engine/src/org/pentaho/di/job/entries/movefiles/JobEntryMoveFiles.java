@@ -149,9 +149,9 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
   public void allocate( int nrFields ) {
     source_filefolder = new String[nrFields];
     destination_filefolder = new String[nrFields];
-    wildcard = new String[nrFields];    
+    wildcard = new String[nrFields];
   }
-  
+
   public Object clone() {
     JobEntryMoveFiles je = (JobEntryMoveFiles) super.clone();
     if ( source_filefolder != null ) {
