@@ -26,6 +26,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.pentaho.di.core.injection.DefaultInjectionTypeConverter;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaBoolean;
@@ -35,6 +36,8 @@ import org.pentaho.di.core.row.value.ValueMetaString;
 public class RowMetaAndDataTest {
   RowMeta rowsMeta;
   RowMetaAndData row;
+
+  DefaultInjectionTypeConverter converter = new DefaultInjectionTypeConverter();
 
   enum TestEnum {
     ONE, Two, three
@@ -58,118 +61,109 @@ public class RowMetaAndDataTest {
   public void testStringConversion() throws Exception {
 
     row = new RowMetaAndData( rowsMeta, "text", null, null );
-    assertEquals( "text", row.getAsJavaType( "str", String.class ) );
+    assertEquals( "text", row.getAsJavaType( "str", String.class, converter ) );
 
     row = new RowMetaAndData( rowsMeta, "7", null, null );
-    assertEquals( 7, row.getAsJavaType( "str", int.class ) );
-    assertEquals( 7, row.getAsJavaType( "str", Integer.class ) );
+    assertEquals( 7, row.getAsJavaType( "str", int.class, converter ) );
+    assertEquals( 7, row.getAsJavaType( "str", Integer.class, converter ) );
 
-    assertEquals( 7L, row.getAsJavaType( "str", long.class ) );
-    assertEquals( 7L, row.getAsJavaType( "str", Long.class ) );
+    assertEquals( 7L, row.getAsJavaType( "str", long.class, converter ) );
+    assertEquals( 7L, row.getAsJavaType( "str", Long.class, converter ) );
 
     row = new RowMetaAndData( rowsMeta, "y", null, null );
-    assertEquals( true, row.getAsJavaType( "str", boolean.class ) );
-    assertEquals( true, row.getAsJavaType( "str", Boolean.class ) );
+    assertEquals( true, row.getAsJavaType( "str", boolean.class, converter ) );
+    assertEquals( true, row.getAsJavaType( "str", Boolean.class, converter ) );
 
     row = new RowMetaAndData( rowsMeta, "yes", null, null );
-    assertEquals( true, row.getAsJavaType( "str", boolean.class ) );
-    assertEquals( true, row.getAsJavaType( "str", Boolean.class ) );
+    assertEquals( true, row.getAsJavaType( "str", boolean.class, converter ) );
+    assertEquals( true, row.getAsJavaType( "str", Boolean.class, converter ) );
 
     row = new RowMetaAndData( rowsMeta, "true", null, null );
-    assertEquals( true, row.getAsJavaType( "str", boolean.class ) );
-    assertEquals( true, row.getAsJavaType( "str", Boolean.class ) );
+    assertEquals( true, row.getAsJavaType( "str", boolean.class, converter ) );
+    assertEquals( true, row.getAsJavaType( "str", Boolean.class, converter ) );
 
     row = new RowMetaAndData( rowsMeta, "no", null, null );
-    assertEquals( false, row.getAsJavaType( "str", boolean.class ) );
-    assertEquals( false, row.getAsJavaType( "str", Boolean.class ) );
+    assertEquals( false, row.getAsJavaType( "str", boolean.class, converter ) );
+    assertEquals( false, row.getAsJavaType( "str", Boolean.class, converter ) );
 
     row = new RowMetaAndData( rowsMeta, "n", null, null );
-    assertEquals( false, row.getAsJavaType( "str", boolean.class ) );
-    assertEquals( false, row.getAsJavaType( "str", Boolean.class ) );
+    assertEquals( false, row.getAsJavaType( "str", boolean.class, converter ) );
+    assertEquals( false, row.getAsJavaType( "str", Boolean.class, converter ) );
 
     row = new RowMetaAndData( rowsMeta, "false", null, null );
-    assertEquals( false, row.getAsJavaType( "str", boolean.class ) );
-    assertEquals( false, row.getAsJavaType( "str", Boolean.class ) );
+    assertEquals( false, row.getAsJavaType( "str", boolean.class, converter ) );
+    assertEquals( false, row.getAsJavaType( "str", Boolean.class, converter ) );
 
     row = new RowMetaAndData( rowsMeta, "f", null, null );
-    assertEquals( false, row.getAsJavaType( "str", boolean.class ) );
-    assertEquals( false, row.getAsJavaType( "str", Boolean.class ) );
+    assertEquals( false, row.getAsJavaType( "str", boolean.class, converter ) );
+    assertEquals( false, row.getAsJavaType( "str", Boolean.class, converter ) );
 
     row = new RowMetaAndData( rowsMeta, "other", null, null );
-    assertEquals( false, row.getAsJavaType( "str", boolean.class ) );
-    assertEquals( false, row.getAsJavaType( "str", Boolean.class ) );
+    assertEquals( false, row.getAsJavaType( "str", boolean.class, converter ) );
+    assertEquals( false, row.getAsJavaType( "str", Boolean.class, converter ) );
 
     row = new RowMetaAndData( rowsMeta, TestEnum.ONE.name(), null, null );
-    assertEquals( TestEnum.ONE, row.getAsJavaType( "str", TestEnum.class ) );
+    assertEquals( TestEnum.ONE, row.getAsJavaType( "str", TestEnum.class, converter ) );
     row = new RowMetaAndData( rowsMeta, TestEnum.Two.name(), null, null );
-    assertEquals( TestEnum.Two, row.getAsJavaType( "str", TestEnum.class ) );
+    assertEquals( TestEnum.Two, row.getAsJavaType( "str", TestEnum.class, converter ) );
     row = new RowMetaAndData( rowsMeta, TestEnum.three.name(), null, null );
-    assertEquals( TestEnum.three, row.getAsJavaType( "str", TestEnum.class ) );
+    assertEquals( TestEnum.three, row.getAsJavaType( "str", TestEnum.class, converter ) );
 
     row = new RowMetaAndData( rowsMeta, null, null, null );
-    assertEquals( null, row.getAsJavaType( "str", String.class ) );
-    assertEquals( null, row.getAsJavaType( "str", int.class ) );
-    assertEquals( null, row.getAsJavaType( "str", Integer.class ) );
-    assertEquals( null, row.getAsJavaType( "str", long.class ) );
-    assertEquals( null, row.getAsJavaType( "str", Long.class ) );
-    assertEquals( null, row.getAsJavaType( "str", boolean.class ) );
-    assertEquals( null, row.getAsJavaType( "str", Boolean.class ) );
+    assertEquals( null, row.getAsJavaType( "str", String.class, converter ) );
+    assertEquals( null, row.getAsJavaType( "str", Integer.class, converter ) );
+    assertEquals( null, row.getAsJavaType( "str", Long.class, converter ) );
+    assertEquals( null, row.getAsJavaType( "str", Boolean.class, converter ) );
   }
 
   @Test
   public void testBooleanConversion() throws Exception {
 
     row = new RowMetaAndData( rowsMeta, null, true, null );
-    assertEquals( true, row.getAsJavaType( "bool", boolean.class ) );
-    assertEquals( true, row.getAsJavaType( "bool", Boolean.class ) );
-    assertEquals( 1, row.getAsJavaType( "bool", int.class ) );
-    assertEquals( 1, row.getAsJavaType( "bool", Integer.class ) );
-    assertEquals( 1L, row.getAsJavaType( "bool", long.class ) );
-    assertEquals( 1L, row.getAsJavaType( "bool", Long.class ) );
-    assertEquals( "Y", row.getAsJavaType( "bool", String.class ) );
+    assertEquals( true, row.getAsJavaType( "bool", boolean.class, converter ) );
+    assertEquals( true, row.getAsJavaType( "bool", Boolean.class, converter ) );
+    assertEquals( 1, row.getAsJavaType( "bool", int.class, converter ) );
+    assertEquals( 1, row.getAsJavaType( "bool", Integer.class, converter ) );
+    assertEquals( 1L, row.getAsJavaType( "bool", long.class, converter ) );
+    assertEquals( 1L, row.getAsJavaType( "bool", Long.class, converter ) );
+    assertEquals( "Y", row.getAsJavaType( "bool", String.class, converter ) );
 
     row = new RowMetaAndData( rowsMeta, null, false, null );
-    assertEquals( false, row.getAsJavaType( "bool", boolean.class ) );
-    assertEquals( false, row.getAsJavaType( "bool", Boolean.class ) );
-    assertEquals( 0, row.getAsJavaType( "bool", int.class ) );
-    assertEquals( 0, row.getAsJavaType( "bool", Integer.class ) );
-    assertEquals( 0L, row.getAsJavaType( "bool", long.class ) );
-    assertEquals( 0L, row.getAsJavaType( "bool", Long.class ) );
-    assertEquals( "N", row.getAsJavaType( "bool", String.class ) );
+    assertEquals( false, row.getAsJavaType( "bool", boolean.class, converter ) );
+    assertEquals( false, row.getAsJavaType( "bool", Boolean.class, converter ) );
+    assertEquals( 0, row.getAsJavaType( "bool", int.class, converter ) );
+    assertEquals( 0, row.getAsJavaType( "bool", Integer.class, converter ) );
+    assertEquals( 0L, row.getAsJavaType( "bool", long.class, converter ) );
+    assertEquals( 0L, row.getAsJavaType( "bool", Long.class, converter ) );
+    assertEquals( "N", row.getAsJavaType( "bool", String.class, converter ) );
 
     row = new RowMetaAndData( rowsMeta, null, null, null );
-    assertEquals( null, row.getAsJavaType( "bool", String.class ) );
-    assertEquals( null, row.getAsJavaType( "bool", int.class ) );
-    assertEquals( null, row.getAsJavaType( "bool", Integer.class ) );
-    assertEquals( null, row.getAsJavaType( "bool", long.class ) );
-    assertEquals( null, row.getAsJavaType( "bool", Long.class ) );
-    assertEquals( null, row.getAsJavaType( "bool", boolean.class ) );
-    assertEquals( null, row.getAsJavaType( "bool", Boolean.class ) );
+    assertEquals( null, row.getAsJavaType( "bool", String.class, converter ) );
+    assertEquals( null, row.getAsJavaType( "bool", Integer.class, converter ) );
+    assertEquals( null, row.getAsJavaType( "bool", Long.class, converter ) );
+    assertEquals( null, row.getAsJavaType( "bool", Boolean.class, converter ) );
   }
 
   @Test
   public void testIntegerConversion() throws Exception {
 
     row = new RowMetaAndData( rowsMeta, null, null, 7L );
-    assertEquals( true, row.getAsJavaType( "int", boolean.class ) );
-    assertEquals( true, row.getAsJavaType( "int", Boolean.class ) );
-    assertEquals( 7, row.getAsJavaType( "int", int.class ) );
-    assertEquals( 7, row.getAsJavaType( "int", Integer.class ) );
-    assertEquals( 7L, row.getAsJavaType( "int", long.class ) );
-    assertEquals( 7L, row.getAsJavaType( "int", Long.class ) );
-    assertEquals( "7", row.getAsJavaType( "int", String.class ) );
+    assertEquals( true, row.getAsJavaType( "int", boolean.class, converter ) );
+    assertEquals( true, row.getAsJavaType( "int", Boolean.class, converter ) );
+    assertEquals( 7, row.getAsJavaType( "int", int.class, converter ) );
+    assertEquals( 7, row.getAsJavaType( "int", Integer.class, converter ) );
+    assertEquals( 7L, row.getAsJavaType( "int", long.class, converter ) );
+    assertEquals( 7L, row.getAsJavaType( "int", Long.class, converter ) );
+    assertEquals( "7", row.getAsJavaType( "int", String.class, converter ) );
 
     row = new RowMetaAndData( rowsMeta, null, null, 0L );
-    assertEquals( false, row.getAsJavaType( "int", boolean.class ) );
-    assertEquals( false, row.getAsJavaType( "int", Boolean.class ) );
+    assertEquals( false, row.getAsJavaType( "int", boolean.class, converter ) );
+    assertEquals( false, row.getAsJavaType( "int", Boolean.class, converter ) );
 
     row = new RowMetaAndData( rowsMeta, null, null, null );
-    assertEquals( null, row.getAsJavaType( "int", String.class ) );
-    assertEquals( null, row.getAsJavaType( "int", int.class ) );
-    assertEquals( null, row.getAsJavaType( "int", Integer.class ) );
-    assertEquals( null, row.getAsJavaType( "int", long.class ) );
-    assertEquals( null, row.getAsJavaType( "int", Long.class ) );
-    assertEquals( null, row.getAsJavaType( "int", boolean.class ) );
-    assertEquals( null, row.getAsJavaType( "int", Boolean.class ) );
+    assertEquals( null, row.getAsJavaType( "int", String.class, converter ) );
+    assertEquals( null, row.getAsJavaType( "int", Integer.class, converter ) );
+    assertEquals( null, row.getAsJavaType( "int", Long.class, converter ) );
+    assertEquals( null, row.getAsJavaType( "int", Boolean.class, converter ) );
   }
 }

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -20,29 +20,18 @@
  *
  ******************************************************************************/
 
-package org.pentaho.di.core.injection;
+package org.pentaho.di.trans.steps.googleanalytics;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import org.pentaho.di.core.exception.KettleValueException;
+import org.pentaho.di.core.injection.InjectionTypeConverter;
+import org.pentaho.di.core.row.ValueMeta;
 
 /**
- * Field that support injection should be marked by this annotation.
+ * Converter for output types.
  */
-@Retention( RetentionPolicy.RUNTIME )
-@Target( { ElementType.FIELD, ElementType.METHOD } )
-public @interface Injection {
-
-  /** Injection key. */
-  String name();
-
-  /** Injection group. */
-  String group() default "";
-
-  /** Converter from RowMetaAndData to java types. */
-  Class<? extends InjectionTypeConverter> converter() default DefaultInjectionTypeConverter.class;
-
-  /** Convert empty values or not. By default, empty value doesn't change target value. */
-  boolean convertEmpty() default false;
+public class OutputTypeConverter extends InjectionTypeConverter {
+  @Override
+  public int string2intPrimitive( String v ) throws KettleValueException {
+    return ValueMeta.getType( v );
+  }
 }

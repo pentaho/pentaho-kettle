@@ -22,7 +22,6 @@
 
 package org.pentaho.di.trans.steps.fieldsplitter;
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.pentaho.di.core.CheckResult;
@@ -132,6 +131,7 @@ public class FieldSplitterMeta extends BaseStepMeta implements StepMetaInterface
   private boolean[] fieldRemoveID;
 
   /** type of new field */
+  @Injection( name = "DATA_TYPE", group = "FIELDS", converter = DataTypeConverter.class )
   private int[] fieldType;
 
   /** formatting mask to convert value */
@@ -167,6 +167,7 @@ public class FieldSplitterMeta extends BaseStepMeta implements StepMetaInterface
   private String[] fieldIfNull;
 
   /** Perform trimming of this type on the fieldName during lookup and storage */
+  @Injection( name = "TRIM_TYPE", group = "FIELDS", converter = TrimTypeConverter.class )
   private int[] fieldTrimType;
 
   public FieldSplitterMeta() {
@@ -299,26 +300,6 @@ public class FieldSplitterMeta extends BaseStepMeta implements StepMetaInterface
 
   public void setFieldTrimType( final int[] fieldTrimType ) {
     this.fieldTrimType = fieldTrimType;
-  }
-
-  @Injection( name = "DATA_TYPE", group = "FIELDS" )
-  public void setFieldType( int index, String value ) {
-    if ( fieldType == null ) {
-      fieldType = new int[index + 1];
-    } else if ( fieldType.length <= index ) {
-      fieldType = Arrays.copyOf( fieldType, index + 1 );
-    }
-    fieldType[index] = ValueMeta.getType( value );
-  }
-
-  @Injection( name = "TRIM_TYPE", group = "FIELDS" )
-  public void setFieldTrimType( int index, String value ) {
-    if ( fieldTrimType == null ) {
-      fieldTrimType = new int[index + 1];
-    } else if ( fieldTrimType.length <= index ) {
-      fieldTrimType = Arrays.copyOf( fieldTrimType, index + 1 );
-    }
-    fieldTrimType[index] = ValueMeta.getTrimTypeByCode( value );
   }
 
   public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {

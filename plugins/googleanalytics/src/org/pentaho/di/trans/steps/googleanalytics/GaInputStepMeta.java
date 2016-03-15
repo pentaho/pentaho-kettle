@@ -23,7 +23,6 @@
 package org.pentaho.di.trans.steps.googleanalytics;
 
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -62,8 +61,7 @@ import org.w3c.dom.Node;
   categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Input",
   image = "GAN.svg",
 
-  documentationUrl = "http://wiki.pentaho.com/display/EAI/Google+Analytics"
-)
+  documentationUrl = "http://wiki.pentaho.com/display/EAI/Google+Analytics" )
 @InjectionSupported( localizationPrefix = "GoogleAnalytics.Injection.", groups = { "OUTPUT_FIELDS" } )
 public class GaInputStepMeta extends BaseStepMeta implements StepMetaInterface {
 
@@ -132,6 +130,7 @@ public class GaInputStepMeta extends BaseStepMeta implements StepMetaInterface {
   private String[] feedFieldType;
   @Injection( name = "OUTPUT_FIELD", group = "OUTPUT_FIELDS" )
   private String[] outputField;
+  @Injection( name = "OUTPUT_TYPE", group = "OUTPUT_FIELDS", converter = OutputTypeConverter.class )
   private int[] outputType;
   @Injection( name = "CONVERSION_MASK", group = "OUTPUT_FIELDS" )
   private String[] conversionMask;
@@ -297,16 +296,6 @@ public class GaInputStepMeta extends BaseStepMeta implements StepMetaInterface {
 
   public int[] getOutputType() {
     return outputType;
-  }
-
-  @Injection( name = "OUTPUT_TYPE", group = "OUTPUT_FIELDS" )
-  public void setOutputType( int index, String value ) {
-    if ( outputType == null ) {
-      outputType = new int[index + 1];
-    } else if ( outputType.length <= index ) {
-      outputType = Arrays.copyOf( outputType, index + 1 );
-    }
-    outputType[index] = ValueMeta.getType( value );
   }
 
   public int getFieldsCount() {

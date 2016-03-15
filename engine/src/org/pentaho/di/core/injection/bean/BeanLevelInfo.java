@@ -31,6 +31,7 @@ import java.util.List;
 
 import org.pentaho.di.core.injection.Injection;
 import org.pentaho.di.core.injection.InjectionDeep;
+import org.pentaho.di.core.injection.InjectionTypeConverter;
 
 /**
  * Storage for one step on the bean deep level.
@@ -46,6 +47,10 @@ class BeanLevelInfo {
   public Method getter, setter;
   /** Flag for mark array. */
   public boolean array;
+  /** Values converter. */
+  public InjectionTypeConverter converter;
+  /** False if source empty value shoudn't affect on target field. */
+  public boolean convertEmpty;
 
   public void init( BeanInjectionInfo info ) {
     introspect( info, leafClass );
@@ -69,9 +74,19 @@ class BeanLevelInfo {
    */
   protected void introspect( BeanInjectionInfo info, Field[] fields, Method[] methods ) {
     for ( Field f : fields ) {
-      if ( f.isSynthetic() || f.isEnumConstant() || Modifier.isStatic( f.getModifiers() ) ) {
-        // fields can't contain real data
+      Injection annotationInjection = f.getAnnotation( Injection.class );
+      InjectionDeep annotationInjectionDeep = f.getAnnotation( InjectionDeep.class );
+      if ( annotationInjection == null && annotationInjectionDeep == null ) {
+        // no injection annotations
         continue;
+      }
+      if ( annotationInjection != null && annotationInjectionDeep != null ) {
+        // both annotations exist - wrong
+        throw new RuntimeException( "Field can't be annotated twice for injection " + f );
+      }
+      if ( f.isSynthetic() || f.isEnumConstant() || Modifier.isStatic( f.getModifiers() ) ) {
+        // fields can't contain real data with such modifier
+        throw new RuntimeException( "Wrong modifier for anotated field " + f );
       }
       BeanLevelInfo leaf = new BeanLevelInfo();
       leaf.parent = this;
@@ -83,48 +98,58 @@ class BeanLevelInfo {
         leaf.array = false;
         leaf.leafClass = f.getType();
       }
-      Injection metaInj = f.getAnnotation( Injection.class );
-      if ( metaInj != null ) {
-        info.addInjectionProperty( metaInj, leaf );
-      } else if ( f.isAnnotationPresent( InjectionDeep.class ) ) {
+      if ( annotationInjection != null ) {
+        try {
+          leaf.converter = annotationInjection.converter().newInstance();
+        } catch ( Exception ex ) {
+          throw new RuntimeException( "Error instantiate converter for " + f, ex );
+        }
+        leaf.convertEmpty = annotationInjection.convertEmpty();
+        info.addInjectionProperty( annotationInjection, leaf );
+      } else if ( annotationInjectionDeep != null ) {
         // introspect deeper
         leaf.init( info );
       }
     }
     for ( Method m : methods ) {
-      if ( m.isSynthetic() || Modifier.isStatic( m.getModifiers() ) ) {
-        // method is static
+      Injection annotationInjection = m.getAnnotation( Injection.class );
+      InjectionDeep annotationInjectionDeep = m.getAnnotation( InjectionDeep.class );
+      if ( annotationInjection == null && annotationInjectionDeep == null ) {
+        // no injection annotations
         continue;
       }
-
-      Injection metaInj = m.getAnnotation( Injection.class );
-      if ( metaInj != null || m.isAnnotationPresent( InjectionDeep.class ) ) {
-        // fill info
-        BeanLevelInfo leaf = new BeanLevelInfo();
-        leaf.parent = this;
+      if ( annotationInjection != null && annotationInjectionDeep != null ) {
+        // both annotations exist - wrong
+        throw new RuntimeException( "Method can't be annotated twice for injection " + m );
+      }
+      if ( m.isSynthetic() || Modifier.isStatic( m.getModifiers() ) ) {
+        // method is static
+        throw new RuntimeException( "Wrong modifier for anotated method " + m );
+      }
+      BeanLevelInfo leaf = new BeanLevelInfo();
+      leaf.parent = this;
+      if ( annotationInjectionDeep != null ) {
         Class<?> getterClass = isGetter( m );
-        if ( getterClass != null ) {
-          leaf.getter = m;
-          leaf.leafClass = getterClass;
+        if ( getterClass == null || getterClass.isArray() ) {
+          throw new RuntimeException( "Method should be getter: " + m );
         }
+        leaf.getter = m;
+        leaf.leafClass = getterClass;
+        leaf.init( info );
+      } else {
         Class<?> setterClass = isSetter( m );
-        if ( setterClass != null ) {
-          leaf.setter = m;
-          leaf.leafClass = setterClass;
+        if ( setterClass == null || setterClass.isArray() ) {
+          throw new RuntimeException( "Method should be setter: " + m );
         }
-        if ( leaf.leafClass == null ) {
-          continue;
+        leaf.setter = m;
+        leaf.leafClass = setterClass;
+        try {
+          leaf.converter = annotationInjection.converter().newInstance();
+        } catch ( Exception ex ) {
+          throw new RuntimeException( "Error instantiate converter for " + m, ex );
         }
-        leaf.array = false;
-        if ( setterClass != null && leaf.setter.getParameterTypes().length == 2 ) {
-          leaf.array = true;
-        }
-        if ( metaInj != null ) {
-          info.addInjectionProperty( metaInj, leaf );
-        } else if ( m.isAnnotationPresent( InjectionDeep.class ) ) {
-          // introspect deeper
-          leaf.init( info );
-        }
+        leaf.convertEmpty = annotationInjection.convertEmpty();
+        info.addInjectionProperty( annotationInjection, leaf );
       }
     }
   }
@@ -133,16 +158,9 @@ class BeanLevelInfo {
     if ( m.getReturnType() == void.class ) {
       return null;
     }
-    switch ( m.getParameterTypes().length ) {
-      case 0:
-        // getter without parameters
-        return m.getReturnType();
-      case 1:
-        if ( m.getParameterTypes()[0] == int.class ) {
-          // getter with one parameter: index
-          return m.getReturnType();
-        }
-        break;
+    if ( m.getParameterTypes().length == 0 ) {
+      // getter without parameters
+      return m.getReturnType();
     }
     return null;
   }
@@ -151,16 +169,9 @@ class BeanLevelInfo {
     if ( m.getReturnType() != void.class ) {
       return null;
     }
-    switch ( m.getParameterTypes().length ) {
-      case 1:
-        // setter with one parameter
-        return m.getParameterTypes()[0];
-      case 2:
-        if ( m.getParameterTypes()[0] == int.class ) {
-          // setter with two parameters: index and value
-          return m.getParameterTypes()[1];
-        }
-        break;
+    if ( m.getParameterTypes().length == 1 ) {
+      // setter with one parameter
+      return m.getParameterTypes()[0];
     }
     return null;
   }
