@@ -22,8 +22,6 @@
 
 DIR="`pwd`"
 
-export OPT="-Dpentaho.karaf.data.parent.folder=`pwd` $OPT"
-
 echo "$KETTLE_HOME"
 
 if [ ! -z "$KETTLE_HOME" ] # not blank
