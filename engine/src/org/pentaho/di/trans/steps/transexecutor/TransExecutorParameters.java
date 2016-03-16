@@ -66,21 +66,10 @@ public class TransExecutorParameters implements Cloneable {
     inheritingAllVariables = true;
   }
 
-  public void allocate( int nrVariables ) {
-    variable = new String[nrVariables];
-    field = new String[nrVariables];
-    input = new String[nrVariables];
-  }
-
   @Override
   public Object clone() {
     try {
-      TransExecutorParameters retval = (TransExecutorParameters) super.clone();
-      int nrVariables = variable.length;
-      System.arraycopy( variable, 0, retval.variable, 0, nrVariables );
-      System.arraycopy( field, 0, retval.field, 0, nrVariables );
-      System.arraycopy( input, 0, retval.input, 0, nrVariables );
-      return retval;
+      return super.clone();
     } catch ( CloneNotSupportedException e ) {
       throw new RuntimeException( e ); // Nope, we don't want that in our code.
     }
@@ -89,7 +78,9 @@ public class TransExecutorParameters implements Cloneable {
   public TransExecutorParameters( Node paramNode ) {
 
     int nrVariables = XMLHandler.countNodes( paramNode, XML_VARIABLES_TAG );
-    allocate( nrVariables );
+    variable = new String[nrVariables];
+    field = new String[nrVariables];
+    input = new String[nrVariables];
 
     for ( int i = 0; i < variable.length; i++ ) {
       Node variableMappingNode = XMLHandler.getSubNodeByNr( paramNode, XML_VARIABLES_TAG, i );
@@ -132,7 +123,10 @@ public class TransExecutorParameters implements Cloneable {
   public TransExecutorParameters( Repository rep, ObjectId id_step ) throws KettleException {
     int nrVariables = rep.countNrStepAttributes( id_step, "parameter_variable" );
 
-    allocate( nrVariables );
+    variable = new String[nrVariables];
+    field = new String[nrVariables];
+    input = new String[nrVariables];
+
     for ( int i = 0; i < nrVariables; i++ ) {
       variable[i] = rep.getStepAttributeString( id_step, i, "parameter_variable" );
       field[i] = rep.getStepAttributeString( id_step, i, "parameter_field" );

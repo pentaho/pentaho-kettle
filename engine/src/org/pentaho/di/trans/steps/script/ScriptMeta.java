@@ -210,12 +210,14 @@ public class ScriptMeta extends BaseStepMeta implements StepMetaInterface {
 
     retval.allocate( nrfields );
 
-    System.arraycopy( fieldname, 0, retval.fieldname, 0, nrfields );
-    System.arraycopy( rename, 0, retval.rename, 0, nrfields );
-    System.arraycopy( type, 0, retval.type, 0, nrfields );
-    System.arraycopy( length, 0, retval.length, 0, nrfields );
-    System.arraycopy( precision, 0, retval.precision, 0, nrfields );
-    System.arraycopy( replace, 0, retval.replace, 0, nrfields );
+    for ( int i = 0; i < nrfields; i++ ) {
+      retval.fieldname[i] = fieldname[i];
+      retval.rename[i] = rename[i];
+      retval.type[i] = type[i];
+      retval.length[i] = length[i];
+      retval.precision[i] = precision[i];
+      retval.replace[i] = replace[i];
+    }
 
     return retval;
   }

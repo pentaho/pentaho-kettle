@@ -74,8 +74,12 @@ public class BlockUntilStepsFinishMeta extends BaseStepMeta implements StepMetaI
     int nrfields = stepName.length;
 
     retval.allocate( nrfields );
-    System.arraycopy( stepName, 0, retval.stepName, 0, nrfields );
-    System.arraycopy( stepCopyNr, 0, retval.stepCopyNr, 0, nrfields );
+
+    for ( int i = 0; i < nrfields; i++ ) {
+      retval.stepName[i] = stepName[i];
+      retval.stepCopyNr[i] = stepCopyNr[i];
+
+    }
     return retval;
   }
 
