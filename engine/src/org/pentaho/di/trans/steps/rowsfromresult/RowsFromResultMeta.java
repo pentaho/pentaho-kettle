@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -132,6 +132,7 @@ public class RowsFromResultMeta extends BaseStepMeta implements StepMetaInterfac
   public Object clone() {
     RowsFromResultMeta retval = (RowsFromResultMeta) super.clone();
     int nrFields = fieldname.length;
+    retval.allocate( nrFields );
     System.arraycopy( fieldname, 0, retval.fieldname, 0, nrFields );
     System.arraycopy( type, 0, retval.type, 0, nrFields );
     System.arraycopy( length, 0, retval.length, 0, nrFields );
