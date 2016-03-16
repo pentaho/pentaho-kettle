@@ -113,17 +113,8 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
     clear();
   }
 
-  public void allocate( int nrFields ) {
-    arguments = new String[nrFields];
-  }
-
   public Object clone() {
     JobEntryShell je = (JobEntryShell) super.clone();
-    if ( arguments != null ) {
-      int nrFields = arguments.length;
-      je.allocate( nrFields );
-      System.arraycopy( arguments, 0, je.arguments, 0, nrFields );
-    }
     return je;
   }
 
@@ -183,7 +174,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
       while ( XMLHandler.getTagValue( entrynode, "argument" + argnr ) != null ) {
         argnr++;
       }
-      allocate( argnr );
+      arguments = new String[argnr];
 
       // Read them all...
       // THIS IS A VERY BAD WAY OF READING/SAVING AS IT MAKES
@@ -217,7 +208,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
       script = rep.getJobEntryAttributeString( id_jobentry, "script" );
       // How many arguments?
       int argnr = rep.countNrJobEntryAttributes( id_jobentry, "argument" );
-      allocate( argnr );
+      arguments = new String[argnr];
 
       // Read them all...
       for ( int a = 0; a < argnr; a++ ) {

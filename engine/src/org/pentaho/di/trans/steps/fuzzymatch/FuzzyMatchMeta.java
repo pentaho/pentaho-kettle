@@ -169,8 +169,10 @@ public class FuzzyMatchMeta extends BaseStepMeta implements StepMetaInterface {
 
     retval.allocate( nrvalues );
 
-    System.arraycopy( value, 0, retval.value, 0, nrvalues );
-    System.arraycopy( valueName, 0, retval.valueName, 0, nrvalues );
+    for ( int i = 0; i < nrvalues; i++ ) {
+      retval.value[i] = value[i];
+      retval.valueName[i] = valueName[i];
+    }
 
     return retval;
   }

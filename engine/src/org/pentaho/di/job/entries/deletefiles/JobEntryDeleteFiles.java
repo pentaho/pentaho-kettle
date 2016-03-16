@@ -93,19 +93,8 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
     this( "" );
   }
 
-  public void allocate( int nrFields ) {
-    arguments = new String[nrFields];
-    filemasks = new String[nrFields];
-  }
-
   public Object clone() {
     JobEntryDeleteFiles je = (JobEntryDeleteFiles) super.clone();
-    if ( arguments != null ) {
-      int nrFields = arguments.length;
-      je.allocate( nrFields );
-      System.arraycopy( arguments, 0, je.arguments, 0, nrFields );
-      System.arraycopy( filemasks, 0, je.filemasks, 0, nrFields );
-    }
     return je;
   }
 
@@ -141,7 +130,8 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
 
       // How many field arguments?
       int nrFields = XMLHandler.countNodes( fields, "field" );
-      allocate( nrFields );
+      arguments = new String[nrFields];
+      filemasks = new String[nrFields];
 
       // Read them all...
       for ( int i = 0; i < nrFields; i++ ) {
@@ -163,7 +153,8 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
 
       // How many arguments?
       int argnr = rep.countNrJobEntryAttributes( id_jobentry, "name" );
-      allocate( argnr );
+      arguments = new String[argnr];
+      filemasks = new String[argnr];
 
       // Read them all...
       for ( int a = 0; a < argnr; a++ ) {
