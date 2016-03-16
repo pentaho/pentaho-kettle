@@ -531,16 +531,12 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 
     retval.allocate( nrkeys, nrfields );
 
-    for ( int i = 0; i < nrkeys; i++ ) {
-      retval.keyStream[i] = keyStream[i];
-      retval.keyLookup[i] = keyLookup[i];
-    }
+    System.arraycopy( keyStream, 0, retval.keyStream, 0, nrkeys );
+    System.arraycopy( keyLookup, 0, retval.keyLookup, 0, nrkeys );
 
-    for ( int i = 0; i < nrfields; i++ ) {
-      retval.fieldStream[i] = fieldStream[i];
-      retval.fieldLookup[i] = fieldLookup[i];
-      retval.fieldUpdate[i] = fieldUpdate[i];
-    }
+    System.arraycopy( fieldStream, 0, retval.fieldStream, 0, nrfields );
+    System.arraycopy( fieldLookup, 0, retval.fieldLookup, 0, nrfields );
+    System.arraycopy( fieldUpdate, 0, retval.fieldUpdate, 0, nrfields );
 
     return retval;
   }
