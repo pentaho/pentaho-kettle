@@ -210,8 +210,10 @@ public class DatabaseJoinMeta extends BaseStepMeta implements StepMetaInterface 
 
     retval.allocate( nrparam );
 
-    System.arraycopy( parameterField, 0, retval.parameterField, 0, nrparam );
-    System.arraycopy( parameterType, 0, retval.parameterType, 0, nrparam );
+    for ( int i = 0; i < nrparam; i++ ) {
+      retval.parameterField[i] = parameterField[i];
+      retval.parameterType[i] = parameterType[i];
+    }
 
     return retval;
   }

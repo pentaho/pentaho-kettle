@@ -113,8 +113,10 @@ public class SystemDataMeta extends BaseStepMeta implements StepMetaInterface {
 
     retval.allocate( count );
 
-    System.arraycopy( fieldName, 0, retval.fieldName, 0, count );
-    System.arraycopy( fieldType, 0, retval.fieldType, 0, count );
+    for ( int i = 0; i < count; i++ ) {
+      retval.fieldName[i] = fieldName[i];
+      retval.fieldType[i] = fieldType[i];
+    }
 
     return retval;
   }

@@ -188,7 +188,10 @@ public class CheckSumMeta extends BaseStepMeta implements StepMetaInterface {
     int nrfields = fieldName.length;
 
     retval.allocate( nrfields );
-    System.arraycopy( fieldName, 0, retval.fieldName, 0, nrfields );
+
+    for ( int i = 0; i < nrfields; i++ ) {
+      retval.fieldName[i] = fieldName[i];
+    }
     return retval;
   }
 

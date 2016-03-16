@@ -151,23 +151,8 @@ public class JobEntryPGPDecryptFiles extends JobEntryBase implements Cloneable, 
     this( "" );
   }
 
-  public void allocate( int nrFields ) {
-    source_filefolder = new String[nrFields];
-    passphrase = new String[nrFields];
-    destination_filefolder = new String[nrFields];
-    wildcard = new String[nrFields];
-  }
-
   public Object clone() {
     JobEntryPGPDecryptFiles je = (JobEntryPGPDecryptFiles) super.clone();
-    if ( source_filefolder != null ) {
-      int nrFields = source_filefolder.length;
-      je.allocate( nrFields );
-      System.arraycopy( source_filefolder, 0, je.source_filefolder, 0, nrFields );
-      System.arraycopy( destination_filefolder, 0, je.destination_filefolder, 0, nrFields );
-      System.arraycopy( wildcard, 0, je.wildcard, 0, nrFields );
-      System.arraycopy( passphrase, 0, je.passphrase, 0, nrFields );
-    }
     return je;
   }
 
@@ -256,7 +241,10 @@ public class JobEntryPGPDecryptFiles extends JobEntryBase implements Cloneable, 
 
       // How many field arguments?
       int nrFields = XMLHandler.countNodes( fields, "field" );
-      allocate( nrFields );
+      source_filefolder = new String[nrFields];
+      passphrase = new String[nrFields];
+      destination_filefolder = new String[nrFields];
+      wildcard = new String[nrFields];
 
       // Read them all...
       for ( int i = 0; i < nrFields; i++ ) {
@@ -303,7 +291,10 @@ public class JobEntryPGPDecryptFiles extends JobEntryBase implements Cloneable, 
 
       // How many arguments?
       int argnr = rep.countNrJobEntryAttributes( id_jobentry, "source_filefolder" );
-      allocate( argnr );
+      source_filefolder = new String[argnr];
+      passphrase = new String[argnr];
+      destination_filefolder = new String[argnr];
+      wildcard = new String[argnr];
 
       // Read them all...
       for ( int a = 0; a < argnr; a++ ) {

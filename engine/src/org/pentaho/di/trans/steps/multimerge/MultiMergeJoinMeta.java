@@ -126,9 +126,6 @@ public class MultiMergeJoinMeta extends BaseStepMeta implements StepMetaInterfac
 
   public Object clone() {
     MultiMergeJoinMeta retval = (MultiMergeJoinMeta) super.clone();
-    int nrKeys = keyFields.length;
-    retval.allocateKeys( nrKeys );
-    System.arraycopy( keyFields, 0, retval.keyFields, 0, nrKeys );
     return retval;
   }
 

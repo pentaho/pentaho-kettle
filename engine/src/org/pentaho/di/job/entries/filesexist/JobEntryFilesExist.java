@@ -70,17 +70,8 @@ public class JobEntryFilesExist extends JobEntryBase implements Cloneable, JobEn
     this( "" );
   }
 
-  public void allocate( int nrFields ) {
-    arguments = new String[nrFields];
-  }
-
   public Object clone() {
     JobEntryFilesExist je = (JobEntryFilesExist) super.clone();
-    if ( arguments != null ) {
-      int nrFields = arguments.length;
-      je.allocate( nrFields );
-      System.arraycopy( arguments, 0, je.arguments, 0, nrFields );
-    }
     return je;
   }
 
@@ -113,7 +104,7 @@ public class JobEntryFilesExist extends JobEntryBase implements Cloneable, JobEn
 
       // How many field arguments?
       int nrFields = XMLHandler.countNodes( fields, "field" );
-      allocate( nrFields );
+      arguments = new String[nrFields];
 
       // Read them all...
       for ( int i = 0; i < nrFields; i++ ) {
@@ -135,7 +126,7 @@ public class JobEntryFilesExist extends JobEntryBase implements Cloneable, JobEn
 
       // How many arguments?
       int argnr = rep.countNrJobEntryAttributes( id_jobentry, "name" );
-      allocate( argnr );
+      arguments = new String[argnr];
 
       // Read them all...
       for ( int a = 0; a < argnr; a++ ) {
