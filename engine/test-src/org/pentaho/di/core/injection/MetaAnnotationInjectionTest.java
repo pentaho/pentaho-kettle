@@ -26,6 +26,7 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -117,6 +118,35 @@ public class MetaAnnotationInjectionTest {
     assertNotNull( targetBean.getComplexField() );
     assertTrue( targetBean.getComplexField().length == 1 );
     assertEquals( TEST_NAME, targetBean.getComplexField()[0].getFieldName() );
+  }
+
+  @Test
+  public void testWrongDeclarations() throws Exception {
+    try {
+      new BeanInjectionInfo( MetaBeanWrong1.class );
+      fail();
+    } catch ( Exception ex ) {
+    }
+    try {
+      new BeanInjectionInfo( MetaBeanWrong2.class );
+      fail();
+    } catch ( Exception ex ) {
+    }
+    try {
+      new BeanInjectionInfo( MetaBeanWrong3.class );
+      fail();
+    } catch ( Exception ex ) {
+    }
+    try {
+      new BeanInjectionInfo( MetaBeanWrong4.class );
+      fail();
+    } catch ( Exception ex ) {
+    }
+    try {
+      new BeanInjectionInfo( MetaBeanWrong5.class );
+      fail();
+    } catch ( Exception ex ) {
+    }
   }
 
   private static BeanInjector buildBeanInjectorFor( Class<?> clazz ) {
