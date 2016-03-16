@@ -130,8 +130,19 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
     this( "" );
   }
 
+  private void allocate( int nrHeaders ) {
+    headerName = new String[nrHeaders];
+    headerValue = new String[nrHeaders];    
+  }
+  
   public Object clone() {
     JobEntryHTTP je = (JobEntryHTTP) super.clone();
+    if ( headerName != null ) {
+      int nrHeaders = headerName.length;
+      je.allocate( nrHeaders );
+      System.arraycopy( headerName, 0, je.headerName, 0, nrHeaders );
+      System.arraycopy( headerValue, 0, je.headerValue, 0, nrHeaders );
+    }
     return je;
   }
 
@@ -200,8 +211,7 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
 
       // How many field headerName?
       int nrHeaders = XMLHandler.countNodes( headers, "header" );
-      headerName = new String[nrHeaders];
-      headerValue = new String[nrHeaders];
+      allocate( nrHeaders );
       for ( int i = 0; i < nrHeaders; i++ ) {
         Node fnode = XMLHandler.getSubNodeByNr( headers, "header", i );
         headerName[i] = XMLHandler.getTagValue( fnode, "header_name" );
@@ -240,8 +250,8 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
 
       // How many headerName?
       int argnr = rep.countNrJobEntryAttributes( id_jobentry, "header_name" );
-      headerName = new String[argnr];
-      headerValue = new String[argnr];
+      allocate( argnr );
+
       for ( int a = 0; a < argnr; a++ ) {
         headerName[a] = rep.getJobEntryAttributeString( id_jobentry, a, "header_name" );
         headerValue[a] = rep.getJobEntryAttributeString( id_jobentry, a, "header_value" );

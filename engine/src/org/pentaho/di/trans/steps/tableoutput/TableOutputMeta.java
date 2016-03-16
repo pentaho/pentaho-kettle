@@ -256,20 +256,10 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface, 
 
   public Object clone() {
     TableOutputMeta retval = (TableOutputMeta) super.clone();
-
-    int nrStream = fieldStream.length;
-    int nrDatabase = fieldDatabase.length;
-
-    retval.fieldStream = new String[nrStream];
-    retval.fieldDatabase = new String[nrDatabase];
-
-    for ( int i = 0; i < nrStream; i++ ) {
-      retval.fieldStream[i] = fieldStream[i];
-    }
-
-    for ( int i = 0; i < nrDatabase; i++ ) {
-      retval.fieldDatabase[i] = fieldDatabase[i];
-    }
+    int nrRows = fieldStream.length;
+    retval.allocate( nrRows );
+    System.arraycopy( fieldStream, 0, retval.fieldStream, 0, nrRows );
+    System.arraycopy( fieldDatabase, 0, retval.fieldDatabase, 0, nrRows );
 
     return retval;
   }

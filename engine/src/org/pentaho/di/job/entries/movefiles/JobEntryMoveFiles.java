@@ -146,8 +146,21 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
     this( "" );
   }
 
+  public void allocate( int nrFields ) {
+    source_filefolder = new String[nrFields];
+    destination_filefolder = new String[nrFields];
+    wildcard = new String[nrFields];    
+  }
+  
   public Object clone() {
     JobEntryMoveFiles je = (JobEntryMoveFiles) super.clone();
+    if ( source_filefolder != null ) {
+      int nrFields = source_filefolder.length;
+      je.allocate( nrFields );
+      System.arraycopy( source_filefolder, 0, je.source_filefolder, 0, nrFields );
+      System.arraycopy( wildcard, 0, je.wildcard, 0, nrFields );
+      System.arraycopy( destination_filefolder, 0, je.destination_filefolder, 0, nrFields );
+    }
     return je;
   }
 
@@ -236,9 +249,7 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 
       // How many field arguments?
       int nrFields = XMLHandler.countNodes( fields, "field" );
-      source_filefolder = new String[nrFields];
-      destination_filefolder = new String[nrFields];
-      wildcard = new String[nrFields];
+      allocate( nrFields );
 
       // Read them all...
       for ( int i = 0; i < nrFields; i++ ) {
@@ -285,9 +296,7 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 
       // How many arguments?
       int argnr = rep.countNrJobEntryAttributes( id_jobentry, "source_filefolder" );
-      source_filefolder = new String[argnr];
-      destination_filefolder = new String[argnr];
-      wildcard = new String[argnr];
+      allocate( argnr );
 
       // Read them all...
       for ( int a = 0; a < argnr; a++ ) {
