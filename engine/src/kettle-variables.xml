@@ -416,7 +416,7 @@
 
   <kettle-variable>
     <description>Set this variable to true if VFS should treat the user directory as the root directory when connecting via ftp. Defaults to false.</description>
-    <variable>vfs.sftp.org.apache.commons.vfs2.provider.sftp.SftpFileSystemConfigBuilder.USER_DIR_IS_ROOT</variable>
+    <variable>vfs.sftp.userDirIsRoot</variable>
     <default-value>false</default-value>
   </kettle-variable>
 
