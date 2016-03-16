@@ -22,10 +22,6 @@
 
 package org.pentaho.di.trans.steps.selectvalues;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -59,6 +55,10 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Meta Data class for the Select Values Step.
@@ -107,7 +107,7 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface 
     this.deleteName = deleteName;
   }
 
-  public String[] selectFieldNames() {
+  public String[] getSelectName() {
     String[] names = new String[selectFields.length];
     for ( int i = 0; i < selectFields.length; i++ ) {
       names[i] = selectFields[i].getName();
@@ -115,12 +115,28 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface 
     return names;
   }
 
-  public String[] selectFieldRenames() {
+  public String[] getSelectRename() {
     String[] renames = new String[selectFields.length];
     for ( int i = 0; i < selectFields.length; i++ ) {
       renames[i] = selectFields[i].getRename();
     }
     return renames;
+  }
+
+  public int[] getSelectLength() {
+    int[] lengths = new int[selectFields.length];
+    for ( int i = 0; i < selectFields.length; i++ ) {
+      lengths[i] = selectFields[i].getLength();
+    }
+    return lengths;
+  }
+
+  public int[] getSelectPrecision() {
+    int[] precisions = new int[selectFields.length];
+    for ( int i = 0; i < selectFields.length; i++ ) {
+      precisions[i] = selectFields[i].getLength();
+    }
+    return precisions;
   }
 
   public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
@@ -259,7 +275,7 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface 
         List<String> extra = new ArrayList<String>();
         for ( int i = 0; i < inputRowMeta.size(); i++ ) {
           String fieldName = inputRowMeta.getValueMeta( i ).getName();
-          if ( Const.indexOfString( fieldName, selectFieldNames() ) < 0 ) {
+          if ( Const.indexOfString( fieldName, getSelectName() ) < 0 ) {
             extra.add( fieldName );
           }
         }
@@ -559,7 +575,7 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface 
         // Starting from prev...
         for ( int i = 0; i < prev.size(); i++ ) {
           ValueMetaInterface pv = prev.getValueMeta( i );
-          int idx = Const.indexOfString( pv.getName(), selectFieldNames() );
+          int idx = Const.indexOfString( pv.getName(), getSelectName() );
           if ( idx < 0 ) {
             error_message += "\t\t" + pv.getName() + " (" + pv.getTypeDesc() + ")" + Const.CR;
             error_found = true;
@@ -773,7 +789,7 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface 
       if ( !Const.isEmpty( output ) && !input.equalsIgnoreCase( output ) ) {
         // See if the input is not the output of a row in the Select tab
         //
-        int idx = Const.indexOfString( input, selectFieldRenames() );
+        int idx = Const.indexOfString( input, getSelectRename() );
 
         if ( idx < 0 ) {
           // nothing special, add it to the list
