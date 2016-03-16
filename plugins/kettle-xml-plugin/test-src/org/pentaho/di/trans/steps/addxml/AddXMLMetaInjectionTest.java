@@ -25,6 +25,7 @@ package org.pentaho.di.trans.steps.addxml;
 import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.di.core.injection.BaseMetadataInjectionTest;
+import org.pentaho.di.core.row.value.ValueMetaBase;
 
 public class AddXMLMetaInjectionTest extends BaseMetadataInjectionTest<AddXMLMeta> {
 
@@ -78,11 +79,12 @@ public class AddXMLMetaInjectionTest extends BaseMetadataInjectionTest<AddXMLMet
       }
     } );
 
-    check( "OUTPUT_TYPE", new IntGetter() {
+    String[] typeNames = ValueMetaBase.getAllTypes();
+    checkStringToInt( "OUTPUT_TYPE", new IntGetter() {
       public int get() {
         return meta.getOutputFields()[0].getType();
       }
-    } );
+    }, typeNames, getTypeCodes( typeNames ) );
 
     check( "OUTPUT_FORMAT", new StringGetter() {
       public String get() {
@@ -137,6 +139,14 @@ public class AddXMLMetaInjectionTest extends BaseMetadataInjectionTest<AddXMLMet
         return meta.getOutputFields()[0].getNullString();
       }
     } );
+  }
+
+  private static int[] getTypeCodes( String[] typeNames ) {
+    int[] typeCodes = new int[typeNames.length];
+    for ( int i = 0; i < typeNames.length; i++ ) {
+      typeCodes[i] = ValueMetaBase.getType( typeNames[i] );
+    }
+    return typeCodes;
   }
 
 }
