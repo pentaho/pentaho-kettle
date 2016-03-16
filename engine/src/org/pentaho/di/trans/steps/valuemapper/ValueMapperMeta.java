@@ -113,8 +113,10 @@ public class ValueMapperMeta extends BaseStepMeta implements StepMetaInterface {
 
     retval.allocate( count );
 
-    System.arraycopy( sourceValue, 0, retval.sourceValue, 0, count );
-    System.arraycopy( targetValue, 0, retval.targetValue, 0, count );
+    for ( int i = 0; i < count; i++ ) {
+      retval.sourceValue[i] = sourceValue[i];
+      retval.targetValue[i] = targetValue[i];
+    }
 
     return retval;
   }

@@ -130,12 +130,7 @@ public class RowsFromResultMeta extends BaseStepMeta implements StepMetaInterfac
   }
 
   public Object clone() {
-    RowsFromResultMeta retval = (RowsFromResultMeta) super.clone();
-    int nrFields = fieldname.length;
-    System.arraycopy( fieldname, 0, retval.fieldname, 0, nrFields );
-    System.arraycopy( type, 0, retval.type, 0, nrFields );
-    System.arraycopy( length, 0, retval.length, 0, nrFields );
-    System.arraycopy( precision, 0, retval.precision, 0, nrFields );
+    Object retval = super.clone();
     return retval;
   }
 

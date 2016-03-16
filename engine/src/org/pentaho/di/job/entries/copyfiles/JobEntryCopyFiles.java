@@ -76,7 +76,7 @@ import org.w3c.dom.Node;
  */
 public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEntryInterface {
   private static Class<?> PKG = JobEntryCopyFiles.class; // for i18n purposes, needed by Translator2!!
-
+  
   public static final String SOURCE_CONFIGURATION_NAME = "source_configuration_name";
   public static final String SOURCE_FILE_FOLDER = "source_filefolder";
 
@@ -103,7 +103,7 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
   HashSet<String> list_files_remove = new HashSet<String>();
   HashSet<String> list_add_result = new HashSet<String>();
   int NbrFail = 0;
-
+  
   private Map<String, String> configurationMappings = new HashMap<String, String>();
 
   public JobEntryCopyFiles( String n ) {
@@ -125,21 +125,8 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
     this( "" );
   }
 
-  public void allocate( int nrFields ) {
-    source_filefolder = new String[nrFields];
-    destination_filefolder = new String[nrFields];
-    wildcard = new String[nrFields];
-  }
-
   public Object clone() {
     JobEntryCopyFiles je = (JobEntryCopyFiles) super.clone();
-    if ( source_filefolder != null ) {
-      int nrFields = source_filefolder.length;
-      je.allocate( nrFields );
-      System.arraycopy( source_filefolder, 0, je.source_filefolder, 0, nrFields );
-      System.arraycopy( destination_filefolder, 0, je.destination_filefolder, 0, nrFields );
-      System.arraycopy( wildcard, 0, je.wildcard, 0, nrFields );
-    }
     return je;
   }
 
@@ -190,7 +177,9 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
 
       // How many field arguments?
       int nrFields = XMLHandler.countNodes( fields, "field" );
-      allocate( nrFields );
+      source_filefolder = new String[nrFields];
+      destination_filefolder = new String[nrFields];
+      wildcard = new String[nrFields];
 
       // Read them all...
       for ( int i = 0; i < nrFields; i++ ) {
@@ -271,7 +260,9 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
 
       // How many arguments?
       int argnr = rep.countNrJobEntryAttributes( id_jobentry, "source_filefolder" );
-      allocate( argnr );
+      source_filefolder = new String[argnr];
+      destination_filefolder = new String[argnr];
+      wildcard = new String[argnr];
 
       // Read them all...
       for ( int a = 0; a < argnr; a++ ) {
@@ -1132,22 +1123,22 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
   public boolean evaluates() {
     return true;
   }
-
+  
   public String loadURL( String url, String ncName, IMetaStore metastore, Map mappings ) {
     if ( !Const.isEmpty( ncName ) && !Const.isEmpty( url ) ) {
       mappings.put( url, ncName );
     }
     return url;
   }
-
+  
   public void setConfigurationMappings( Map<String, String> mappings ) {
     this.configurationMappings = mappings;
   }
-
+  
   public String getConfigurationBy( String url ) {
     return this.configurationMappings.get( url );
   }
-
+  
   public String getUrlPath( String incomingURL ) {
     String path = null;
     try {

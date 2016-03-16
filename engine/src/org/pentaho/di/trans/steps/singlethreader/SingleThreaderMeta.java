@@ -122,7 +122,8 @@ public class SingleThreaderMeta extends BaseStepMeta implements StepMetaInterfac
 
       int nrParameters = XMLHandler.countNodes( parametersNode, "parameter" );
 
-      allocate( nrParameters );
+      parameters = new String[nrParameters];
+      parameterValues = new String[nrParameters];
 
       for ( int i = 0; i < nrParameters; i++ ) {
         Node knode = XMLHandler.getSubNodeByNr( parametersNode, "parameter", i );
@@ -136,18 +137,8 @@ public class SingleThreaderMeta extends BaseStepMeta implements StepMetaInterfac
     }
   }
 
-  public void allocate( int nrParameters ) {
-    parameters = new String[nrParameters];
-    parameterValues = new String[nrParameters];
-  }
-
   public Object clone() {
-    SingleThreaderMeta retval = (SingleThreaderMeta) super.clone();
-    int nrParameters = parameters.length;
-    retval.allocate( nrParameters );
-    System.arraycopy( parameters, 0, retval.parameters, 0, nrParameters );
-    System.arraycopy( parameterValues, 0, retval.parameterValues, 0, nrParameters );
-
+    Object retval = super.clone();
     return retval;
   }
 

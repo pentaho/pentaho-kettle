@@ -165,8 +165,12 @@ public class UniqueRowsMeta extends BaseStepMeta implements StepMetaInterface {
     int nrfields = compareFields.length;
 
     retval.allocate( nrfields );
-    System.arraycopy( compareFields, 0, retval.compareFields, 0, nrfields );
-    System.arraycopy( caseInsensitive, 0, retval.caseInsensitive, 0, nrfields );
+
+    //CHECKSTYLE:Indentation:OFF
+    for ( int i = 0; i < nrfields; i++ ) {
+      retval.getCompareFields()[i] = compareFields[i];
+      retval.getCaseInsensitive()[i] = caseInsensitive[i];
+    }
 
     return retval;
   }
