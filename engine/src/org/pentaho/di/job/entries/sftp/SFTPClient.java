@@ -62,6 +62,14 @@ public class SFTPClient {
   public static final String SOCKS5_DEFAULT_PORT = "1080";
   public static final int SSH_DEFAULT_PORT = 22;
 
+  // -D parameter telling whether we should use GSSAPI authentication or not
+  static final String ENV_PARAM_USERAUTH_GSSAPI = "userauth.gssapi.enabled";
+
+  private static final String PREFERRED_AUTH_CONFIG_NAME = "PreferredAuthentications";
+  private static final String PREFERRED_AUTH_DEFAULT = "publickey,keyboard-interactive,password";
+  // adding GSSAPI to be the last one
+  private static final String PREFERRED_AUTH_WITH_GSSAPI = PREFERRED_AUTH_DEFAULT + ",gssapi-with-mic";
+
   private InetAddress serverIP;
   private int serverPort;
   private String userName;
@@ -148,7 +156,7 @@ public class SFTPClient {
           passphrasebytes ); // byte[] passPhrase          
       }
       s = jsch.getSession( userName, serverIP.getHostAddress(), serverPort );
-      s.setConfig( "PreferredAuthentications", "publickey,keyboard-interactive,password,gssapi-with-mic" );
+      s.setConfig( PREFERRED_AUTH_CONFIG_NAME, getPreferredAuthentications() );
     } catch ( IOException e ) {
       throw new KettleJobException( e );
     } catch ( KettleFileException e ) {
@@ -435,5 +443,13 @@ public class SFTPClient {
   @VisibleForTesting
   JSch createJSch() {
     return new JSch();
+  }
+
+  /**
+   * Whether we should use GSSAPI when authenticating or not.
+   */
+  private String getPreferredAuthentications() {
+    String param = Const.getEnvironmentVariable( ENV_PARAM_USERAUTH_GSSAPI, null );
+    return Boolean.valueOf( param ) ? PREFERRED_AUTH_WITH_GSSAPI : PREFERRED_AUTH_DEFAULT;
   }
 }
