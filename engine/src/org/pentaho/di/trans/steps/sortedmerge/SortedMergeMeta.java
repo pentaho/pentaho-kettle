@@ -31,6 +31,8 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.injection.Injection;
+import org.pentaho.di.core.injection.InjectionSupported;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
@@ -53,18 +55,16 @@ import org.w3c.dom.Node;
  * Created on 02-jun-2003
  *
  */
-
+@InjectionSupported( localizationPrefix = "SortedMerge.Injection.", groups = { "FIELDS" } )
 public class SortedMergeMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = SortedMergeMeta.class; // for i18n purposes, needed by Translator2!!
 
   /** order by which fields? */
+  @Injection( name = "FIELD_NAME", group = "FIELDS" )
   private String[] fieldName;
   /** false : descending, true=ascending */
+  @Injection( name = "ASCENDING", group = "FIELDS" )
   private boolean[] ascending;
-
-  public SortedMergeMeta() {
-    super(); // allocate BaseStepMeta
-  }
 
   public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     readData( stepnode );
