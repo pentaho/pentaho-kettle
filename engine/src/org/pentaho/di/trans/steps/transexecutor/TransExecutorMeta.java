@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -246,6 +246,7 @@ public class TransExecutorMeta extends BaseStepMeta implements StepMetaInterface
   public Object clone() {
     TransExecutorMeta retval = (TransExecutorMeta) super.clone();
     int nrFields = outputRowsField.length;
+    retval.allocate( nrFields );
     System.arraycopy( outputRowsField, 0, retval.outputRowsField, 0, nrFields );
     System.arraycopy( outputRowsType, 0, retval.outputRowsType, 0, nrFields );
     System.arraycopy( outputRowsLength, 0, retval.outputRowsLength, 0, nrFields );
