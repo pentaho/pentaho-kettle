@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -46,7 +46,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 public class TransExecutorMetaTest {
@@ -285,6 +285,24 @@ public class TransExecutorMetaTest {
     meta.setOutputRowsSourceStepMeta( null );
   }
 
+  @Test
+  public void testClone() throws Exception {
+    TransExecutorMeta meta = new TransExecutorMeta();
+    meta.setOutputRowsField( new String[] { "field1", "field2" } );
+    meta.setOutputRowsLength( new int[] { 5, 5 } );
+    meta.setOutputRowsPrecision( new int[] { 5, 5 } );
+    meta.setOutputRowsType( new int[] { 0, 0 } );
+
+    TransExecutorMeta cloned = (TransExecutorMeta) meta.clone();
+    assertFalse( cloned.getOutputRowsField() == meta.getOutputRowsField() );
+    assertTrue( Arrays.equals( cloned.getOutputRowsField(), meta.getOutputRowsField() ) );
+    assertFalse( cloned.getOutputRowsLength() == meta.getOutputRowsLength() );
+    assertTrue( Arrays.equals( cloned.getOutputRowsLength(), meta.getOutputRowsLength() ) );
+    assertFalse( cloned.getOutputRowsPrecision() == meta.getOutputRowsPrecision() );
+    assertTrue( Arrays.equals( cloned.getOutputRowsPrecision(), meta.getOutputRowsPrecision() ) );
+    assertFalse( cloned.getOutputRowsType() == meta.getOutputRowsType() );
+    assertTrue( Arrays.equals( cloned.getOutputRowsType(), meta.getOutputRowsType() ) );
+  }
 
   @SuppressWarnings( "unchecked" )
   private static StepIOMetaInterface mockStepIo( StreamInterface stream, int desiredIndex ) {
