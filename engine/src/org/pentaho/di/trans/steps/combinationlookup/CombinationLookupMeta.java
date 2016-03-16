@@ -355,12 +355,8 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
     int nrkeys = keyField.length;
 
     retval.allocate( nrkeys );
-
-    // Read keys to dimension
-    for ( int i = 0; i < nrkeys; i++ ) {
-      retval.keyField[i] = keyField[i];
-      retval.keyLookup[i] = keyLookup[i];
-    }
+    System.arraycopy( keyField, 0, retval.keyField, 0, nrkeys );
+    System.arraycopy( keyLookup, 0, retval.keyLookup, 0, nrkeys );
 
     return retval;
   }

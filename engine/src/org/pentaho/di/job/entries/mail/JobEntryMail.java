@@ -167,8 +167,28 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
     allocate( 0 );
   }
 
+  public void allocate( int nrFileTypes ) {
+    fileType = new int[nrFileTypes];
+  }
+
+  public void allocateImages( int nrImages ) {
+    embeddedimages = new String[nrImages];
+    contentids = new String[nrImages];    
+  }
+  
   public Object clone() {
     JobEntryMail je = (JobEntryMail) super.clone();
+    if ( fileType != null ) {
+      int nrFileTypes = fileType.length;
+      je.allocate( nrFileTypes );
+      System.arraycopy( fileType, 0, je.fileType, 0, nrFileTypes );
+    }
+    if ( embeddedimages != null ) {
+      int nrImages = embeddedimages.length;
+      je.allocateImages( nrImages );
+      System.arraycopy( embeddedimages, 0, je.embeddedimages, 0, nrImages );
+      System.arraycopy( contentids, 0, je.contentids, 0, nrImages );
+    }    
     return je;
   }
 
@@ -235,10 +255,6 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
     return retval.toString();
   }
 
-  public void allocate( int nrFileTypes ) {
-    fileType = new int[nrFileTypes];
-  }
-
   public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers,
     Repository rep, IMetaStore metaStore ) throws KettleXMLException {
     try {
@@ -290,8 +306,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
 
       // How many field embedded images ?
       int nrImages = XMLHandler.countNodes( images, "embeddedimage" );
-      embeddedimages = new String[nrImages];
-      contentids = new String[nrImages];
+      allocateImages( nrImages );
 
       // Read them all...
       for ( int i = 0; i < nrImages; i++ ) {
@@ -352,8 +367,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
 
       // How many arguments?
       int imagesnr = rep.countNrJobEntryAttributes( id_jobentry, "embeddedimage" );
-      embeddedimages = new String[imagesnr];
-      contentids = new String[imagesnr];
+      allocateImages( imagesnr );
 
       // Read them all...
       for ( int a = 0; a < imagesnr; a++ ) {

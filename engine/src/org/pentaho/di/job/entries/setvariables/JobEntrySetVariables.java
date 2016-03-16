@@ -104,8 +104,21 @@ public class JobEntrySetVariables extends JobEntryBase implements Cloneable, Job
     this( "" );
   }
 
+  public void allocate( int nrFields ) {
+    variableName = new String[nrFields];
+    variableValue = new String[nrFields];
+    variableType = new int[nrFields];    
+  }
+  
   public Object clone() {
     JobEntrySetVariables je = (JobEntrySetVariables) super.clone();
+    if ( variableName != null ) {
+      int nrFields = variableName.length;
+      je.allocate( nrFields );
+      System.arraycopy( variableName, 0, je.variableName, 0, nrFields );
+      System.arraycopy( variableValue, 0, je.variableValue, 0, nrFields );
+      System.arraycopy( variableType, 0, je.variableType, 0, nrFields );
+    }
     return je;
   }
 
@@ -146,10 +159,8 @@ public class JobEntrySetVariables extends JobEntryBase implements Cloneable, Job
       Node fields = XMLHandler.getSubNode( entrynode, "fields" );
       // How many field variableName?
       int nrFields = XMLHandler.countNodes( fields, "field" );
-      variableName = new String[nrFields];
-      variableValue = new String[nrFields];
-      variableType = new int[nrFields];
-
+      allocate( nrFields );
+      
       // Read them all...
       for ( int i = 0; i < nrFields; i++ ) {
         Node fnode = XMLHandler.getSubNodeByNr( fields, "field", i );
@@ -175,9 +186,7 @@ public class JobEntrySetVariables extends JobEntryBase implements Cloneable, Job
 
       // How many variableName?
       int argnr = rep.countNrJobEntryAttributes( id_jobentry, "variable_name" );
-      variableName = new String[argnr];
-      variableValue = new String[argnr];
-      variableType = new int[argnr];
+      allocate( argnr );
 
       // Read them all...
       for ( int a = 0; a < argnr; a++ ) {
