@@ -124,7 +124,7 @@ public class SelectValues extends BaseStep implements StepInterface {
         ArrayList<Integer> unspecifiedKeyNrs = new ArrayList<Integer>();
         for ( int i = 0; i < rowMeta.size(); i++ ) {
           String fieldName = rowMeta.getValueMeta( i ).getName();
-          if ( Const.indexOfString( fieldName, meta.selectFieldNames() ) < 0 ) {
+          if ( Const.indexOfString( fieldName, meta.getSelectName() ) < 0 ) {
             extra.add( fieldName );
           }
         }
