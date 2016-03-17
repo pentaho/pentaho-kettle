@@ -1,5 +1,5 @@
 /*!
- * Copyright 2010 - 2015 Pentaho Corporation.  All rights reserved.
+ * Copyright 2010 - 2016 Pentaho Corporation.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -81,7 +81,7 @@ public class AbsSecurityProvider extends PurRepositorySecurityProvider implement
       return isAllowedActiveCache.get( actionName );
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString( AbsSecurityProvider.class,
-          "AbsSecurityProvider.ERROR_0002_UNABLE_TO_ACCESS_IS_ALLOWED" ), e );//$NON-NLS-1$
+        "AbsSecurityProvider.ERROR_0002_UNABLE_TO_ACCESS_IS_ALLOWED" ), e ); //$NON-NLS-1$
     }
   }
 
@@ -89,7 +89,7 @@ public class AbsSecurityProvider extends PurRepositorySecurityProvider implement
   public void validateAction( RepositoryOperation... operations ) throws KettleException {
 
     for ( RepositoryOperation operation : operations ) {
-      switch( operation ) {
+      switch ( operation ) {
         case EXECUTE_TRANSFORMATION:
         case EXECUTE_JOB:
           checkOperationAllowed( EXECUTE_CONTENT_ACTION );
