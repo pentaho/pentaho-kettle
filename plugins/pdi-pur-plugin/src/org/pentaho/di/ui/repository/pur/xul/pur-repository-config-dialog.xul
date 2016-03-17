@@ -26,7 +26,7 @@ explicitly covering such access.
             ondialogcancel="repositoryConfigController.cancel()"
             buttons="accept, cancel" buttonalign="right" title="${RepositoryConfigDialog.Title}"
             appicon="ui/images/spoon.ico"
-            height="260" width="350"
+            height="280" width="350"
             resizable="true"
             xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
               xmlns:pen="http://www.pentaho.org/2008/xul"
