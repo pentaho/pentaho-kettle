@@ -55,15 +55,30 @@ public class BeanInjector {
       if ( obj == null ) {
         return null; // some value in path is null - return empty
       }
-      if ( s.array ) {
-        int index = extractedIndexes.get( arrIndex++ );
-        if ( Array.getLength( obj ) <= index ) {
-          return null;
-        }
-        obj = Array.get( obj, index );
-        if ( obj == null ) {
-          return null; // element is empty
-        }
+      switch ( s.dim ) {
+        case ARRAY:
+          int indexArray = extractedIndexes.get( arrIndex++ );
+          if ( Array.getLength( obj ) <= indexArray ) {
+            return null;
+          }
+          obj = Array.get( obj, indexArray );
+          if ( obj == null ) {
+            return null; // element is empty
+          }
+          break;
+        case LIST:
+          int indexList = extractedIndexes.get( arrIndex++ );
+          List<?> list = (List<?>) obj;
+          if ( list.size() <= indexList ) {
+            return null;
+          }
+          obj = list.get( indexList );
+          if ( obj == null ) {
+            return null; // element is empty
+          }
+          break;
+        case NONE:
+          break;
       }
     }
     return obj;
@@ -112,82 +127,100 @@ public class BeanInjector {
       BeanLevelInfo s = prop.path.get( i );
       if ( i < prop.path.size() - 1 ) {
         // get path
-        if ( s.array ) {
-          // array
-          Object existArray = extendArray( s, obj, index + 1 );
-          Object next = Array.get( existArray, index ); // get specific element
-          if ( next == null ) {
-            // Object can be inner of metadata class. In this case constructor will require parameter
-            for ( Constructor<?> c : s.leafClass.getConstructors() ) {
-              if ( c.getParameterTypes().length == 0 ) {
+        Object next;
+        switch ( s.dim ) {
+          case ARRAY:
+            // array
+            Object existArray = extendArray( s, obj, index + 1 );
+            next = Array.get( existArray, index ); // get specific element
+            if ( next == null ) {
+              next = createObject( s.leafClass, root );
+              Array.set( existArray, index, next );
+            }
+            obj = next;
+            break;
+          case LIST:
+            // list
+            List<Object> existList = extendList( s, obj, index + 1 );
+            next = existList.get( index ); // get specific element
+            if ( next == null ) {
+              next = createObject( s.leafClass, root );
+              existList.set( index, next );
+            }
+            obj = next;
+            break;
+          case NONE:
+            // plain field
+            if ( s.field != null ) {
+              next = s.field.get( obj );
+              if ( next == null ) {
+                next = createObject( s.leafClass, root );
+                s.field.set( obj, next );
+              }
+              obj = next;
+            } else if ( s.getter != null ) {
+              next = s.getter.invoke( obj );
+              if ( next == null ) {
+                if ( s.setter == null ) {
+                  throw new KettleException( "No setter defined for " + root.getClass() );
+                }
                 next = s.leafClass.newInstance();
-                break;
-              } else if ( c.getParameterTypes().length == 1 && c.getParameterTypes()[0].isAssignableFrom(
-                  info.clazz ) ) {
-                next = c.newInstance( root );
-                break;
+                s.setter.invoke( obj, next );
               }
+              obj = next;
+            } else {
+              throw new KettleException( "No field or getter defined for " + root.getClass() );
             }
-            if ( next == null ) {
-              throw new KettleException( "Empty constructor not found for " + s.leafClass );
-            }
-            Array.set( existArray, index, next );
-          }
-          obj = next;
-        } else {
-          // plain field
-          if ( s.field != null ) {
-            Object next = s.field.get( obj );
-            if ( next == null ) {
-              next = s.leafClass.newInstance();
-              s.field.set( obj, next );
-            }
-            obj = next;
-          } else if ( s.getter != null ) {
-            Object next = s.getter.invoke( obj );
-            if ( next == null ) {
-              if ( s.setter == null ) {
-                throw new KettleException( "No setter defined for " + root.getClass() );
-              }
-              next = s.leafClass.newInstance();
-              s.setter.invoke( obj, next );
-            }
-            obj = next;
-          } else {
-            throw new KettleException( "No field or getter defined for " + root.getClass() );
-          }
+            break;
         }
       } else {
         // set to latest field
         if ( !s.convertEmpty && data.isEmptyValue( dataName ) ) {
           return;
         }
-        if ( s.array ) {
-          if ( s.field != null ) {
-            Object existArray = extendArray( s, obj, index + 1 );
-            Object value = data.getAsJavaType( dataName, s.leafClass, s.converter );
-            Array.set( existArray, index, value );
-          } else if ( s.setter != null ) {
-            Object value = data.getAsJavaType( dataName, s.leafClass, s.converter );
-            // usual setter
-            s.setter.invoke( obj, value );
-          } else {
-            throw new KettleException( "No field or setter defined for " + root.getClass() );
+        if ( s.setter != null ) {
+          Object value = data.getAsJavaType( dataName, s.leafClass, s.converter );
+          // usual setter
+          s.setter.invoke( obj, value );
+        } else if ( s.field != null ) {
+          Object value;
+          switch ( s.dim ) {
+            case ARRAY:
+              Object existArray = extendArray( s, obj, index + 1 );
+              value = data.getAsJavaType( dataName, s.leafClass, s.converter );
+              Array.set( existArray, index, value );
+              break;
+            case LIST:
+              List<Object> existList = extendList( s, obj, index + 1 );
+              value = data.getAsJavaType( dataName, s.leafClass, s.converter );
+              existList.set( index, value );
+              break;
+            case NONE:
+              value = data.getAsJavaType( dataName, s.leafClass, s.converter );
+              s.field.set( obj, value );
+              break;
           }
         } else {
-          if ( s.field != null ) {
-            Object value = data.getAsJavaType( dataName, s.leafClass, s.converter );
-            s.field.set( obj, value );
-          } else if ( s.setter != null ) {
-            Object value = data.getAsJavaType( dataName, s.leafClass, s.converter );
-            // usual setter
-            s.setter.invoke( obj, value );
-          } else {
-            throw new KettleException( "No field or setter defined for " + root.getClass() );
-          }
+          throw new KettleException( "No field or setter defined for " + root.getClass() );
         }
       }
     }
+  }
+
+  private Object createObject( Class<?> clazz, Object root ) throws KettleException {
+    try {
+      // Object can be inner of metadata class. In this case constructor will require parameter
+      for ( Constructor<?> c : clazz.getConstructors() ) {
+        if ( c.getParameterTypes().length == 0 ) {
+          return clazz.newInstance();
+        } else if ( c.getParameterTypes().length == 1 && c.getParameterTypes()[0].isAssignableFrom( info.clazz ) ) {
+          return c.newInstance( root );
+        }
+      }
+    } catch ( Throwable ex ) {
+      throw new KettleException( "Can't create object " + clazz, ex );
+    }
+    throw new KettleException( "Constructor not found for " + clazz );
   }
 
   private Object extendArray( BeanLevelInfo s, Object obj, int newSize ) throws Exception {
@@ -203,6 +236,21 @@ public class BeanInjector {
       existArray = newSized;
       s.field.set( obj, existArray );
     }
+
     return existArray;
+  }
+
+  private List<Object> extendList( BeanLevelInfo s, Object obj, int newSize ) throws Exception {
+    @SuppressWarnings( "unchecked" )
+    List<Object> existList = (List<Object>) s.field.get( obj );
+    if ( existList == null ) {
+      existList = new ArrayList<>();
+      s.field.set( obj, existList );
+    }
+    while ( existList.size() < newSize ) {
+      existList.add( null );
+    }
+
+    return existList;
   }
 }
