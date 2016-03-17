@@ -43,7 +43,9 @@ import org.w3c.dom.Node;
 public class TransHopMeta implements Cloneable, XMLInterface, Comparable<TransHopMeta> {
   private static Class<?> PKG = Trans.class; // for i18n purposes, needed by Translator2!!
 
-  public static final String XML_TAG = "hop";
+  public static final String XML_HOP_TAG = "hop";
+  public static final String XML_FROM_TAG = "from";
+  public static final String XML_TO_TAG = "to";
 
   private StepMeta from_step;
 
@@ -56,6 +58,8 @@ public class TransHopMeta implements Cloneable, XMLInterface, Comparable<TransHo
   private boolean changed;
 
   private ObjectId id;
+  
+  private boolean errorHop;
 
   public TransHopMeta( StepMeta from, StepMeta to, boolean en ) {
     from_step = from;
@@ -75,8 +79,8 @@ public class TransHopMeta implements Cloneable, XMLInterface, Comparable<TransHo
 
   public TransHopMeta( Node hopnode, List<StepMeta> steps ) throws KettleXMLException {
     try {
-      from_step = searchStep( steps, XMLHandler.getTagValue( hopnode, "from" ) );
-      to_step = searchStep( steps, XMLHandler.getTagValue( hopnode, "to" ) );
+      from_step = searchStep( steps, XMLHandler.getTagValue( hopnode, XML_FROM_TAG ) );
+      to_step = searchStep( steps, XMLHandler.getTagValue( hopnode, XML_TO_TAG ) );
       String en = XMLHandler.getTagValue( hopnode, "enabled" );
 
       if ( en == null ) {
@@ -105,7 +109,15 @@ public class TransHopMeta implements Cloneable, XMLInterface, Comparable<TransHo
     return to_step;
   }
 
-  private StepMeta searchStep( List<StepMeta> steps, String name ) {
+  public boolean isErrorHop() {
+	return errorHop;
+  }
+
+  public void setErrorHop( boolean errorHop ) {
+	this.errorHop = errorHop;
+  }
+
+private StepMeta searchStep( List<StepMeta> steps, String name ) {
     for ( StepMeta stepMeta : steps ) {
       if ( stepMeta.getName().equalsIgnoreCase( name ) ) {
         return stepMeta;
@@ -189,8 +201,8 @@ public class TransHopMeta implements Cloneable, XMLInterface, Comparable<TransHo
 
     if ( from_step != null && to_step != null ) {
       retval.append( "  <hop> " );
-      retval.append( XMLHandler.addTagValue( "from", from_step.getName(), false ) );
-      retval.append( XMLHandler.addTagValue( "to", to_step.getName(), false ) );
+      retval.append( XMLHandler.addTagValue( XML_FROM_TAG, from_step.getName(), false ) );
+      retval.append( XMLHandler.addTagValue( XML_TO_TAG, to_step.getName(), false ) );
       retval.append( XMLHandler.addTagValue( "enabled", enabled, false ) );
       retval.append( " </hop>" );
     }

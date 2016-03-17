@@ -21,6 +21,25 @@
  ******************************************************************************/
 package org.pentaho.di.trans;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.same;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
+
+import java.util.Arrays;
+import java.util.List;
+
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -45,22 +64,8 @@ import org.pentaho.di.trans.steps.metainject.MetaInjectMeta;
 import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.metastore.stores.memory.MemoryMetaStore;
 
-import java.util.List;
-
-import static org.junit.Assert.*;
-import static org.mockito.Matchers.same;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.anyString;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
-
 public class TransMetaTest {
-
+  public static final String STEP_NAME = "Any step name";
   @BeforeClass
   public static void initKettle() throws Exception {
     KettleEnvironment.init();
@@ -283,6 +288,30 @@ public class TransMetaTest {
     hops = transMeta.getTransHopSteps( true );
     assertSame( step3, hops.get( 0 ) );
     assertSame( step4, hops.get( 1 ) );
+  }
+
+  @Test
+  public void testIsAnySelectedStepUsedInTransHopsNothingSelectedCase() {
+    List<StepMeta> selectedSteps = Arrays.asList( new StepMeta(), new StepMeta(), new StepMeta() );
+    transMeta.getSteps().addAll( selectedSteps );
+
+    assertFalse( transMeta.isAnySelectedStepUsedInTransHops() );
+  }
+
+  @Test
+  public void testIsAnySelectedStepUsedInTransHopsAnySelectedCase() {
+    StepMeta stepMeta = new StepMeta();
+    stepMeta.setName( STEP_NAME );
+    TransHopMeta transHopMeta = new TransHopMeta();
+    stepMeta.setSelected( true );
+    List<StepMeta> selectedSteps = Arrays.asList( new StepMeta(), stepMeta, new StepMeta() );
+    
+    transHopMeta.setToStep( stepMeta );
+    transHopMeta.setFromStep( stepMeta );
+    transMeta.getSteps().addAll( selectedSteps );
+    transMeta.addTransHop( transHopMeta );
+
+    assertTrue( transMeta.isAnySelectedStepUsedInTransHops() );
   }
 
   private static StepMeta mockStepMeta( String name ) {
