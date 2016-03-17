@@ -31,6 +31,9 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.injection.Injection;
+import org.pentaho.di.core.injection.InjectionDeep;
+import org.pentaho.di.core.injection.InjectionSupported;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -58,29 +61,29 @@ import org.w3c.dom.Node;
  *
  * Created on 08-sep-2005
  */
-
+@InjectionSupported( localizationPrefix = "Validator.Injection.", groups = { "VALIDATIONS" } )
 public class ValidatorMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = ValidatorMeta.class; // for i18n purposes, needed by Translator2!!
 
   /** The calculations to be performed */
+  @InjectionDeep
   private List<Validation> validations;
 
   /** Checkbox to have all rules validated, with all the errors in the output */
+  @Injection( name = "VALIDATE_ALL" )
   private boolean validatingAll;
 
   /**
    * If enabled, it concatenates all encountered errors with the selected separator
    */
+  @Injection( name = "CONCATENATE_ERRORS" )
   private boolean concatenatingErrors;
 
   /**
    * The concatenation separator
    */
+  @Injection( name = "CONCATENATION_SEPARATOR" )
   private String concatenationSeparator;
-
-  public ValidatorMeta() {
-    super(); // allocate BaseStepMeta
-  }
 
   public void allocate( int nrValidations ) {
     validations = new ArrayList<Validation>( nrValidations );
