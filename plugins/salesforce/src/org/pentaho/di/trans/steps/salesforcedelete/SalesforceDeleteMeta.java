@@ -53,7 +53,7 @@ import org.w3c.dom.Node;
 @Step(
     id = "SalesforceDelete",
     i18nPackageName = "org.pentaho.di.trans.steps.salesforcedelete",
-    name = " SalesforceDelete.TypeLongDesc.SalesforceDelete",
+    name = "SalesforceDelete.TypeLongDesc.SalesforceDelete",
     description = "SalesforceDelete.TypeTooltipDesc.SalesforceDelete",
     categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Output",
     image = "SFD.svg",
