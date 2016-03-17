@@ -24,17 +24,18 @@ package org.pentaho.di.core.database;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.pentaho.di.core.exception.KettleDatabaseException;
+import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.util.StringUtil;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import static junit.framework.Assert.assertEquals;
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyMapOf;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.doCallRealMethod;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.*;
 
 /**
  *
@@ -57,17 +58,21 @@ public class DatabaseMeta_AppendExtraParamsTest {
   private final String CONN_URL_NO_EXTRA_OPTIONS = "jdbc:sqlserver://127.0.0.1:1433";
 
   @Before
-  public void setUp() {
+  public void setUp() throws KettleDatabaseException {
     meta = mock( DatabaseMeta.class );
     mssqlServerDatabaseMeta = new MSSQLServerDatabaseMeta();
     mssqlServerDatabaseMeta.setPluginId( CONN_TYPE_MSSQL );
     doReturn( mssqlServerDatabaseMeta ).when( meta ).getDatabaseInterface();
 
     doCallRealMethod().when( meta ).appendExtraOptions( anyString(), anyMapOf( String.class, String.class ) );
-    doCallRealMethod().when( meta ).databaseForBothConnTypesIsTheSame( anyString(), anyString() );
+    doCallRealMethod().when( meta )
+      .databaseForBothDbInterfacesIsTheSame( any( DatabaseInterface.class ), any( DatabaseInterface.class ) );
     doCallRealMethod().when( meta ).getExtraOptionIndicator();
     doCallRealMethod().when( meta ).getExtraOptionSeparator();
     doCallRealMethod().when( meta ).getExtraOptionValueSeparator();
+    doReturn( mock( LogChannelInterface.class ) ).when( meta ).getGeneralLogger();
+    doReturn( mssqlServerDatabaseMeta ).when( meta ).getDbInterface( CONN_TYPE_MSSQL );
+
   }
 
   @Test
@@ -103,10 +108,11 @@ public class DatabaseMeta_AppendExtraParamsTest {
   }
 
   @Test
-  public void extraOptionsAreNotAppended_WhenConnTypePointsToAnotherDataBase() {
-    Map<String, String> extraOptions = generateExtraOptions( CONN_TYPE_MSSQL, 2 );
-    mssqlServerDatabaseMeta.setPluginId( STRING_DEFAULT );
+  public void extraOptionsAreNotAppended_WhenConnTypePointsToAnotherDataBase() throws Exception {
+    Map<String, String> extraOptions = generateExtraOptions( STRING_DEFAULT, 2 );
 
+    // emulate that there is no database with STRING_DEFAULT plugin id.
+    doThrow( new KettleDatabaseException(  ) ).when( meta ).getDbInterface( STRING_DEFAULT );
     String connUrlWithExtraOptions = meta.appendExtraOptions( CONN_URL_NO_EXTRA_OPTIONS, extraOptions );
     assertEquals( CONN_URL_NO_EXTRA_OPTIONS, connUrlWithExtraOptions );
   }
