@@ -26,10 +26,10 @@ public enum RepositoryOperation {
 
   READ_TRANSFORMATION( "Read transformation" ), MODIFY_TRANSFORMATION( "Modify transformation" ),
     DELETE_TRANSFORMATION( "Delete transformation" ), EXECUTE_TRANSFORMATION( "Execute transformation" ),
-    LOCK_TRANSFORMATION( "Lock transformation" ),
+    LOCK_TRANSFORMATION( "Lock transformation" ), SCHEDULE_TRANSFORMATION("Schedule transformation"),
 
     READ_JOB( "Read job" ), MODIFY_JOB( "Modify job" ), DELETE_JOB( "Delete job" ), EXECUTE_JOB( "Execute job" ),
-    LOCK_JOB( "Lock job" ),
+    LOCK_JOB( "Lock job" ), SCHEDULE_JOB("Schedule job"),
 
     MODIFY_DATABASE( "Modify database connection" ), DELETE_DATABASE( "Delete database connection" ),
     EXPLORE_DATABASE( "Explore database connection" ),

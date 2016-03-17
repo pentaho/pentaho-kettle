@@ -19,7 +19,6 @@ package org.pentaho.di.repository.pur;
 import java.util.List;
 
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.exception.KettleSecurityException;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.IUser;
 import org.pentaho.di.repository.RepositoryOperation;
@@ -87,20 +86,37 @@ public class AbsSecurityProvider extends PurRepositorySecurityProvider implement
   }
 
   @Override
-  public void validateAction( RepositoryOperation... operations ) throws KettleException, KettleSecurityException {
+  public void validateAction( RepositoryOperation... operations ) throws KettleException {
 
     for ( RepositoryOperation operation : operations ) {
-      if ( ( operation == RepositoryOperation.EXECUTE_TRANSFORMATION )
-          || ( operation == RepositoryOperation.EXECUTE_JOB ) ) {
-        if ( isAllowed( IAbsSecurityProvider.EXECUTE_CONTENT_ACTION ) == false ) {
-          throw new KettleException( operation + " : permission not allowed" );
-        }
-      } else if ( ( operation == RepositoryOperation.MODIFY_TRANSFORMATION )
-          || ( operation == RepositoryOperation.MODIFY_JOB ) ) {
-        if ( isAllowed( IAbsSecurityProvider.CREATE_CONTENT_ACTION ) == false ) {
-          throw new KettleException( operation + " : permission not allowed" );
-        }
+      switch( operation ) {
+        case EXECUTE_TRANSFORMATION:
+        case EXECUTE_JOB:
+          checkOperationAllowed( EXECUTE_CONTENT_ACTION );
+          break;
+
+        case MODIFY_TRANSFORMATION:
+        case MODIFY_JOB:
+          checkOperationAllowed( CREATE_CONTENT_ACTION );
+          break;
+
+        case SCHEDULE_TRANSFORMATION:
+        case SCHEDULE_JOB:
+          checkOperationAllowed( SCHEDULE_CONTENT_ACTION );
+          break;
       }
     }
   }
+
+  /**
+   *
+   * @throws KettleException
+   *           if an operation is not allowed
+   */
+  private void checkOperationAllowed( String operation ) throws KettleException {
+    if ( !isAllowed( operation ) ) {
+      throw new KettleException( operation + " : permission not allowed" );
+    }
+  }
+
 }
