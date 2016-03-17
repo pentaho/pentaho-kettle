@@ -94,9 +94,10 @@ public class AddXML extends BaseStep implements StepInterface {
       //
       data.fieldIndexes = new int[meta.getOutputFields().length];
       for ( int i = 0; i < data.fieldIndexes.length; i++ ) {
-        data.fieldIndexes[i] = getInputRowMeta().indexOfValue( meta.getOutputFields()[i].getFieldName() );
+        String fieldsName = meta.getOutputFields()[i].getFieldName();
+        data.fieldIndexes[i] = getInputRowMeta().indexOfValue( fieldsName );
         if ( data.fieldIndexes[i] < 0 ) {
-          throw new KettleException( BaseMessages.getString( PKG, "AddXML.Exception.FieldNotFound" ) );
+          throw new KettleException( BaseMessages.getString( PKG, "AddXML.Exception.FieldNotFound", fieldsName ) );
         }
       }
     }

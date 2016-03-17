@@ -40,7 +40,6 @@ public class XMLField implements Cloneable {
   @Injection( name = "OUTPUT_ELEMENT_NAME", group = "OUTPUT_FIELDS" )
   private String elementName;
 
-  @Injection( name = "OUTPUT_TYPE", group = "OUTPUT_FIELDS" )
   private int type;
 
   @Injection( name = "OUTPUT_FORMAT", group = "OUTPUT_FIELDS" )
@@ -139,6 +138,7 @@ public class XMLField implements Cloneable {
     this.type = type;
   }
 
+  @Injection( name = "OUTPUT_TYPE", group = "OUTPUT_FIELDS" )
   public void setType( String typeDesc ) {
     this.type = ValueMeta.getType( typeDesc );
   }
