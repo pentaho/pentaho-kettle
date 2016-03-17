@@ -22,6 +22,10 @@
 
 package org.pentaho.di.trans.steps.selectvalues;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -55,10 +59,6 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * Meta Data class for the Select Values Step.
@@ -107,12 +107,32 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface 
     this.deleteName = deleteName;
   }
 
+  /**
+   * @param selectName
+   *          The selectName to set.
+   */
+  public void setSelectName( String[] selectName ) {
+    for ( int i = 0; ( i < selectFields.length ) && ( i < selectName.length ); i++ ) {
+      selectFields[i].setName( selectName[i] );
+    }
+  }
+
   public String[] getSelectName() {
     String[] names = new String[selectFields.length];
     for ( int i = 0; i < selectFields.length; i++ ) {
       names[i] = selectFields[i].getName();
     }
     return names;
+  }
+
+  /**
+   * @param selectRename
+   *          The selectRename to set.
+   */
+  public void setSelectRename( String[] selectRename ) {
+    for ( int i = 0; ( i < selectFields.length ) && ( i < selectRename.length ); i++ ) {
+      selectFields[i].setRename( selectRename[i] );
+    }
   }
 
   public String[] getSelectRename() {
@@ -123,12 +143,32 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface 
     return renames;
   }
 
+  /**
+   * @param selectLength
+   *          The selectLength to set.
+   */
+  public void setSelectLength( int[] selectLength ) {
+    for ( int i = 0; ( i < selectFields.length ) && ( i < selectLength.length ); i++ ) {
+      selectFields[i].setLength( selectLength[i] );
+    }
+  }
+
   public int[] getSelectLength() {
     int[] lengths = new int[selectFields.length];
     for ( int i = 0; i < selectFields.length; i++ ) {
       lengths[i] = selectFields[i].getLength();
     }
     return lengths;
+  }
+
+  /**
+   * @param selectPrecision
+   *          The selectPrecision to set.
+   */
+  public void setSelectPrecision( int[] selectPrecision ) {
+    for ( int i = 0; ( i < selectFields.length ) && ( i < selectPrecision.length ); i++ ) {
+      selectFields[i].setPrecision( selectPrecision[i] );
+    }
   }
 
   public int[] getSelectPrecision() {
