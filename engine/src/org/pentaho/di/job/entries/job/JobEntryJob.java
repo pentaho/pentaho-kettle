@@ -22,11 +22,6 @@
 
 package org.pentaho.di.job.entries.job;
 
-import static org.pentaho.di.job.entry.validator.AndValidator.putValidators;
-import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.andValidator;
-import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notBlankValidator;
-import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notNullValidator;
-
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -64,6 +59,8 @@ import org.pentaho.di.job.JobExecutionConfiguration;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
+import org.pentaho.di.job.entry.validator.AndValidator;
+import org.pentaho.di.job.entry.validator.JobEntryValidatorUtils;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
@@ -1390,16 +1387,16 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
   public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
     if ( setLogfile ) {
-      andValidator().validate( this, "logfile", remarks, putValidators( notBlankValidator() ) );
+      JobEntryValidatorUtils.andValidator().validate( this, "logfile", remarks, AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
     }
 
     if ( null != directory ) {
       // if from repo
-      andValidator().validate( this, "directory", remarks, putValidators( notNullValidator() ) );
-      andValidator().validate( this, "jobName", remarks, putValidators( notBlankValidator() ) );
+      JobEntryValidatorUtils.andValidator().validate( this, "directory", remarks, AndValidator.putValidators( JobEntryValidatorUtils.notNullValidator() ) );
+      JobEntryValidatorUtils.andValidator().validate( this, "jobName", remarks, AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
     } else {
       // else from xml file
-      andValidator().validate( this, "filename", remarks, putValidators( notBlankValidator() ) );
+      JobEntryValidatorUtils.andValidator().validate( this, "filename", remarks, AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
     }
   }
 

@@ -309,5 +309,5 @@ public abstract class BaseFileInputStepMeta extends BaseStepMeta {
     return references;
   }
 
-  abstract public String getEncoding();
+  public abstract String getEncoding();
 }

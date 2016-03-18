@@ -34,7 +34,6 @@ import java.util.List;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.Database;
-import org.pentaho.di.core.database.DatabaseInterface;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleConfigException;
 import org.pentaho.di.core.exception.KettleDatabaseException;
@@ -262,8 +261,7 @@ public class CombinationLookup extends BaseStep implements StepInterface {
       Object[] add = data.db.getLookup( data.prepStatementLookup );
       incrementLinesInput();
 
-      if ( add == null ) // The dimension entry was not found, we need to add it!
-      {
+      if ( add == null ) { // The dimension entry was not found, we need to add it!
         // First try to use an AUTOINCREMENT field
         switch ( getTechKeyCreation() ) {
           case CREATION_METHOD_TABLEMAX:
@@ -488,8 +486,7 @@ public class CombinationLookup extends BaseStep implements StepInterface {
     String debug = "Combination insert";
     DatabaseMeta databaseMeta = meta.getDatabaseMeta();
     try {
-      if ( data.prepStatementInsert == null ) // first time: construct prepared statement
-      {
+      if ( data.prepStatementInsert == null ) { // first time: construct prepared statement
         debug = "First: construct prepared statement";
 
         data.insertRowMeta = new RowMeta();

@@ -330,8 +330,7 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface 
   }
 
   public void getDeleteFields( RowMetaInterface inputRowMeta ) throws KettleStepException {
-    if ( deleteName != null && deleteName.length > 0 ) // DESELECT values from the stream...
-    {
+    if ( deleteName != null && deleteName.length > 0 ) { // DESELECT values from the stream...
       for ( int i = 0; i < deleteName.length; i++ ) {
         try {
           inputRowMeta.removeValueMeta( deleteName[i] );

@@ -879,7 +879,7 @@ public class ScriptMeta extends BaseStepMeta implements StepMetaInterface {
   public static ScriptEngine createNewScriptEngine( String stepName ) {
     System.setProperty( "org.jruby.embed.localvariable.behavior", "persistent" ); // required for JRuby, transparent for
                                                                                   // others
-    if( Thread.currentThread().getContextClassLoader() == null ) {
+    if ( Thread.currentThread().getContextClassLoader() == null ) {
       Thread.currentThread().setContextClassLoader( ScriptMeta.class.getClassLoader() );
     }
     ScriptEngineManager manager = new ScriptEngineManager();

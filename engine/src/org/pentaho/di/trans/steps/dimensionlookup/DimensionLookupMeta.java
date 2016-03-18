@@ -94,7 +94,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
     BaseMessages.getString( PKG, "DimensionLookupMeta.TypeDesc.LastVersion" ), };
 
   public static final String[] typeCodes = { // for saving to the repository
-      "Insert", "Update", "Punch through", "DateInsertedOrUpdated", "DateInserted", "DateUpdated", "LastVersion", };
+    "Insert", "Update", "Punch through", "DateInsertedOrUpdated", "DateInserted", "DateUpdated", "LastVersion", };
 
   public static final String[] typeDescLookup = ValueMeta.getTypes();
 
@@ -105,10 +105,10 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
   public static final int START_DATE_ALTERNATIVE_COLUMN_VALUE = 4;
 
   private static final String[] startDateAlternativeCodes = { "none",
-      "sysdate",
-      "trans_start",
-      "null",
-      "column_value",
+    "sysdate",
+    "trans_start",
+    "null",
+    "column_value",
   };
 
   private static final String[] startDateAlternativeDescs = {

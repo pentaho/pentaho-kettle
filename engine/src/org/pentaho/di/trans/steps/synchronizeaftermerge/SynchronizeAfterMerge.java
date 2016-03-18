@@ -475,8 +475,7 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface {
           data.batchBuffer.add( row );
         }
 
-        if ( rowIsSafe ) // A commit was done and the rows are all safe (no error)
-        {
+        if ( rowIsSafe ) { // A commit was done and the rows are all safe (no error)
           for ( int i = 0; i < data.batchBuffer.size(); i++ ) {
             Object[] rowb = data.batchBuffer.get( i );
             putRow( data.outputRowMeta, rowb );

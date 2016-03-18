@@ -21,8 +21,6 @@
  ******************************************************************************/
 package org.pentaho.di.trans.steps.monetdbbulkloader;
 
-import static java.util.regex.Pattern.compile;
-
 import java.util.regex.Pattern;
 
 import org.pentaho.di.i18n.BaseMessages;
@@ -60,7 +58,7 @@ public class MonetDbVersion implements Comparable<MonetDbVersion> {
    * </code>
    *
    */
-  private static final Pattern VERSION_PATTERN = compile( "^[0-9]+(\\.[0-9]+)*$" );
+  private static final Pattern VERSION_PATTERN = Pattern.compile( "^[0-9]+(\\.[0-9]+)*$" );
 
   /**
    * The major version of the Jan2014-SP2 release.
