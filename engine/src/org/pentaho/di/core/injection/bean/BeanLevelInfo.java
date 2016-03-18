@@ -25,6 +25,8 @@ package org.pentaho.di.core.injection.bean;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -37,6 +39,10 @@ import org.pentaho.di.core.injection.InjectionTypeConverter;
  * Storage for one step on the bean deep level.
  */
 class BeanLevelInfo {
+  enum DIMENSION {
+    NONE, ARRAY, LIST
+  };
+
   /** Parent step or null for root. */
   public BeanLevelInfo parent;
   /** Class for step from field or methods. */
@@ -45,8 +51,8 @@ class BeanLevelInfo {
   public Field field;
   /** Getter and setter. */
   public Method getter, setter;
-  /** Flag for mark array. */
-  public boolean array;
+  /** Dimension of level. */
+  public DIMENSION dim = DIMENSION.NONE;
   /** Values converter. */
   public InjectionTypeConverter converter;
   /** False if source empty value shoudn't affect on target field. */
@@ -92,10 +98,19 @@ class BeanLevelInfo {
       leaf.parent = this;
       leaf.field = f;
       if ( f.getType().isArray() ) {
-        leaf.array = true;
+        leaf.dim = DIMENSION.ARRAY;
         leaf.leafClass = f.getType().getComponentType();
+      } else if ( List.class.isAssignableFrom( f.getType() ) ) {
+        leaf.dim = DIMENSION.LIST;
+        Type fieldType = f.getGenericType();
+        Type listType = ( (ParameterizedType) fieldType ).getActualTypeArguments()[0];
+        try {
+          leaf.leafClass = Class.forName( listType.getTypeName(), false, leafClass.getClassLoader() );
+        } catch ( Throwable ex ) {
+          throw new RuntimeException( "Can't retrieve type from List for " + f );
+        }
       } else {
-        leaf.array = false;
+        leaf.dim = DIMENSION.NONE;
         leaf.leafClass = f.getType();
       }
       if ( annotationInjection != null ) {

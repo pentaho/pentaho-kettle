@@ -125,7 +125,7 @@ public class BeanInjectionInfo {
       this.path = path;
       int ac = 0;
       for ( BeanLevelInfo level : path ) {
-        if ( level.array ) {
+        if ( level.dim != BeanLevelInfo.DIMENSION.NONE ) {
           ac++;
         }
       }
