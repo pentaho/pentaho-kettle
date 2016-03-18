@@ -22,12 +22,15 @@
 
 package org.pentaho.di.trans.steps.selectvalues;
 
+import static org.junit.Assert.assertArrayEquals;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
+import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
@@ -36,6 +39,17 @@ import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
 import org.pentaho.di.trans.steps.selectvalues.SelectValuesMeta.SelectField;
 
 public class SelectValuesMetaTest {
+
+  private static final String FIRST_FIELD = "FIRST_FIELD";
+
+  private static final String SECOND_FIELD = "SECOND_FIELD";
+
+  private SelectValuesMeta selectValuesMeta;
+
+  @Before
+  public void before() {
+    selectValuesMeta = new SelectValuesMeta();
+  }
 
   @Test
   public void loadSaveTest() throws KettleException {
@@ -59,6 +73,110 @@ public class SelectValuesMetaTest {
 
     tester.testRepoRoundTrip();
     tester.testXmlRoundTrip();
+  }
+
+  @Test
+  public void setSelectName() {
+    selectValuesMeta.setSelectName( new String[] { FIRST_FIELD, SECOND_FIELD } );
+    assertArrayEquals( new String[] { FIRST_FIELD, SECOND_FIELD }, selectValuesMeta.getSelectName() );
+  }
+
+  @Test
+  public void setSelectName_getOtherFields() {
+    selectValuesMeta.setSelectName( new String[] { FIRST_FIELD, SECOND_FIELD } );
+    assertArrayEquals( new String[0], selectValuesMeta.getSelectRename() );
+    assertArrayEquals( new int[0], selectValuesMeta.getSelectLength() );
+    assertArrayEquals( new int[0], selectValuesMeta.getSelectPrecision() );
+  }
+
+  @Test
+  public void setSelectName_smallerThanPrevious() {
+    selectValuesMeta.setSelectName( new String[] { FIRST_FIELD, SECOND_FIELD } );
+    selectValuesMeta.setSelectName( new String[] { FIRST_FIELD } );
+    assertArrayEquals( new String[] { FIRST_FIELD }, selectValuesMeta.getSelectName() );
+  }
+
+  @Test
+  public void getSelectName() {
+    assertArrayEquals( new String[0], selectValuesMeta.getSelectName() );
+  }
+
+  @Test
+  public void setSelectRename() {
+    selectValuesMeta.setSelectRename( new String[] { FIRST_FIELD, SECOND_FIELD } );
+    assertArrayEquals( new String[] { FIRST_FIELD, SECOND_FIELD }, selectValuesMeta.getSelectRename() );
+  }
+
+  @Test
+  public void setSelectRename_getOtherFields() {
+    selectValuesMeta.setSelectRename( new String[] { FIRST_FIELD, SECOND_FIELD } );
+    assertArrayEquals( new String[0], selectValuesMeta.getSelectName() );
+    assertArrayEquals( new int[0], selectValuesMeta.getSelectLength() );
+    assertArrayEquals( new int[0], selectValuesMeta.getSelectPrecision() );
+  }
+
+  @Test
+  public void setSelectRename_smallerThanPrevious() {
+    selectValuesMeta.setSelectRename( new String[] { FIRST_FIELD, SECOND_FIELD } );
+    selectValuesMeta.setSelectRename( new String[] { FIRST_FIELD } );
+    assertArrayEquals( new String[] { FIRST_FIELD }, selectValuesMeta.getSelectRename() );
+  }
+
+  @Test
+  public void getSelectRename() {
+    assertArrayEquals( new String[0], selectValuesMeta.getSelectRename() );
+  }
+
+  @Test
+  public void setSelectLength() {
+    selectValuesMeta.setSelectLength( new int[] { 1, 2 } );
+    assertArrayEquals( new int[] { 1, 2 }, selectValuesMeta.getSelectLength() );
+  }
+
+  @Test
+  public void setSelectLength_getOtherFields() {
+    selectValuesMeta.setSelectLength( new int[] { 1, 2 } );
+    assertArrayEquals( new String[0], selectValuesMeta.getSelectName() );
+    assertArrayEquals( new String[0], selectValuesMeta.getSelectRename() );
+    assertArrayEquals( new int[0], selectValuesMeta.getSelectPrecision() );
+  }
+
+  @Test
+  public void setSelectLength_smallerThanPrevious() {
+    selectValuesMeta.setSelectLength( new int[] { 1, 2 } );
+    selectValuesMeta.setSelectLength( new int[] { 1 } );
+    assertArrayEquals( new int[] { 1 }, selectValuesMeta.getSelectLength() );
+  }
+
+  @Test
+  public void getSelectLength() {
+    assertArrayEquals( new int[0], selectValuesMeta.getSelectLength() );
+  }
+
+  @Test
+  public void setSelectPrecision() {
+    selectValuesMeta.setSelectPrecision( new int[] { 1, 2 } );
+    assertArrayEquals( new int[] { 1, 2 }, selectValuesMeta.getSelectPrecision() );
+  }
+
+  @Test
+  public void setSelectPrecision_getOtherFields() {
+    selectValuesMeta.setSelectPrecision( new int[] { 1, 2 } );
+    assertArrayEquals( new String[0], selectValuesMeta.getSelectName() );
+    assertArrayEquals( new String[0], selectValuesMeta.getSelectRename() );
+    assertArrayEquals( new int[0], selectValuesMeta.getSelectLength() );
+  }
+
+  @Test
+  public void setSelectPrecision_smallerThanPrevious() {
+    selectValuesMeta.setSelectPrecision( new int[] { 1, 2 } );
+    selectValuesMeta.setSelectPrecision( new int[] { 1 } );
+    assertArrayEquals( new int[] { 1 }, selectValuesMeta.getSelectPrecision() );
+  }
+
+  @Test
+  public void getSelectPrecision() {
+    assertArrayEquals( new int[0], selectValuesMeta.getSelectPrecision() );
   }
 
   public static class SelectFieldLoadSaveValidator implements FieldLoadSaveValidator<SelectField> {
