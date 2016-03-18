@@ -31,6 +31,8 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.injection.Injection;
+import org.pentaho.di.core.injection.InjectionSupported;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
@@ -60,13 +62,16 @@ import org.w3c.dom.Node;
  * Created on 02-jun-2003
  *
  */
-
+@InjectionSupported( localizationPrefix = "MergeRows.Injection." )
 public class MergeRowsMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = MergeRowsMeta.class; // for i18n purposes, needed by Translator2!!
 
+  @Injection( name = "FLAG_FIELD" )
   private String flagField;
 
+  @Injection( name = "KEY_FIELDS" )
   private String[] keyFields;
+  @Injection( name = "VALUE_FIELDS" )
   private String[] valueFields;
 
   /**
