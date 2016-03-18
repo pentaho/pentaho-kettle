@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -88,7 +88,7 @@ import org.w3c.dom.Node;
  *
  */
 public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntryInterface {
-  private static Class<?> PKG = JobEntryZipFile.class; // for i18n purposes, needed by Translator2!!
+  private static final Class<?> PKG = JobEntryZipFile.class; // for i18n purposes, needed by Translator2!!
 
   private String zipFilename;
   public int compressionRate;
@@ -280,7 +280,6 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
       if ( parentfolder != null ) {
         try {
           parentfolder.close();
-          parentfolder = null;
         } catch ( Exception ex ) {
           // Ignore
         }
@@ -294,7 +293,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
     boolean createparentfolder ) {
     boolean Fileexists = false;
     File tempFile = null;
-    File fileZip = null;
+    File fileZip;
     boolean resultat = false;
     boolean renameOk = false;
     boolean orginExist = false;
@@ -302,11 +301,11 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
     // Check if target file/folder exists!
     FileObject originFile = null;
     ZipInputStream zin = null;
-    byte[] buffer = null;
+    byte[] buffer;
     OutputStream dest = null;
     BufferedOutputStream buff = null;
     ZipOutputStream out = null;
-    ZipEntry entry = null;
+    ZipEntry entry;
     String localSourceFilename = realSourceDirectoryOrFile;
 
     try {
@@ -366,7 +365,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
           // After Zip, Move files..User must give a destination Folder
 
           // Let's see if we deal with file or folder
-          FileObject[] fileList = null;
+          FileObject[] fileList;
 
           FileObject sourceFileOrFolder = KettleVFS.getFileObject( localSourceFilename );
           boolean isSourceDirectory = sourceFileOrFolder.getType().equals( FileType.FOLDER );
@@ -624,8 +623,6 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
             }
             // Close the ZipOutPutStream
             out.close();
-            buff.close();
-            dest.close();
 
             if ( log.isBasic() ) {
               logBasic( BaseMessages.getString( PKG, "JobZipFiles.Log.TotalZippedFiles", "" + zippedFiles.length ) );
@@ -734,16 +731,13 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
           if ( zin != null ) {
             zin.close();
           }
-          if ( entry != null ) {
-            entry = null;
-          }
 
         } catch ( IOException ex ) {
           logError( "Error closing zip file entry for file '" + originFile.toString() + "'", ex );
         }
       }
     } else {
-      resultat = true;
+      resultat = false;
       if ( localrealZipfilename == null ) {
         logError( BaseMessages.getString( PKG, "JobZipFiles.No_ZipFile_Defined.Label" ) );
       }
@@ -839,10 +833,10 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
     List<RowMetaAndData> rows = result.getRows();
 
     // reset values
-    String realZipfilename = null;
+    String realZipfilename;
     String realWildcard = null;
     String realWildcardExclude = null;
-    String realTargetdirectory = null;
+    String realTargetdirectory;
     String realMovetodirectory = environmentSubstitute( movetoDirectory );
 
     // Sanity check
@@ -892,11 +886,9 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
             realMovetodirectory = KettleVFS.getFilename( moveToDirectory );
             try {
               moveToDirectory.close();
-              moveToDirectory = null;
             } catch ( Exception e ) {
               logError( "Error moving to directory", e );
-              result.setResult( false );
-              result.setNrErrors( 1 );
+              SanityControlOK = false;
             }
           }
         }
@@ -904,9 +896,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
     }
 
     if ( !SanityControlOK ) {
-      result.setNrErrors( 1 );
-      result.setResult( false );
-      return result;
+      return errorResult( result );
     }
 
     // arguments from previous
@@ -941,8 +931,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
               if ( !processRowFile(
                 parentJob, result, realZipfilename, realWildcard, realWildcardExclude, realTargetdirectory,
                 realMovetodirectory, createParentFolder ) ) {
-                result.setResult( false );
-                return result;
+                return errorResult( result );
               }
             } else {
               logError( "destination zip filename is empty! Ignoring row..." );
@@ -965,9 +954,13 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
         realWildcardExclude = environmentSubstitute( excludeWildCard );
         realTargetdirectory = environmentSubstitute( sourceDirectory );
 
-        result.setResult( processRowFile(
-          parentJob, result, realZipfilename, realWildcard, realWildcardExclude, realTargetdirectory,
-          realMovetodirectory, createParentFolder ) );
+        boolean success = processRowFile( parentJob, result, realZipfilename, realWildcard, realWildcardExclude,
+          realTargetdirectory, realMovetodirectory, createParentFolder );
+        if ( success ) {
+          result.setResult( true );
+        } else {
+          errorResult( result );
+        }
       } else {
         logError( "Source folder/file is empty! Ignoring row..." );
       }
@@ -977,9 +970,15 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
     return result;
   }
 
+  private Result errorResult( Result result ) {
+    result.setNrErrors( 1 );
+    result.setResult( false );
+    return result;
+  }
+
   public String getFullFilename( String filename, boolean add_date, boolean add_time, boolean specify_format,
     String datetime_folder ) {
-    String retval = "";
+    String retval;
     if ( Const.isEmpty( filename ) ) {
       return null;
     }
