@@ -87,6 +87,9 @@
     <dependency org="${ivy.artifact.group}" name="kettle-json-plugin" rev="${project.revision}" changing="true" conf="plugins->default">
         <artifact name="kettle-json-plugin" type="zip"/>
     </dependency>
+    <dependency org="${ivy.artifact.group}" name="kettle-sap-plugin" rev="${project.revision}" changing="true" conf="plugins->default">
+        <artifact name="kettle-sap-plugin" type="zip"/>
+    </dependency>    
     <dependency org="pentaho" name="pentaho-karaf-assembly" rev="${project.revision}" changing="true" conf="pentaho-system->default" m:classifier="client">
       <artifact name="pentaho-karaf-assembly" type="zip" m:classifier="client"/>
     </dependency>
