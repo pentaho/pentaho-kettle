@@ -51,6 +51,10 @@ public class DatabaseMetaTest {
   private static final String DROP_STATEMENT = "dropStatement";
   private static final String DROP_STATEMENT_FALLBACK = "DROP TABLE IF EXISTS " + TABLE_NAME;
 
+  private static final String CONNECTION_TYPE_ID_MSSQL = "MSSQL";
+  private static final String CONNECTION_TYPE_ID_MSSQL_NATIVE = "MSSQLNATIVE";
+  private static final String CONNECTION_TYPE_ID_ORACLE = "ORACLE";
+
   private DatabaseMeta databaseMeta;
   private DatabaseInterface databaseInterface;
 
@@ -253,4 +257,21 @@ public class DatabaseMetaTest {
 
     assertEquals( DROP_STATEMENT_FALLBACK, statement );
   }
+
+  @Test
+  public void databases_WithSameDbConnTypes_AreTheSame() {
+    assertTrue( databaseMeta.databaseForBothConnTypesIsTheSame( CONNECTION_TYPE_ID_ORACLE, CONNECTION_TYPE_ID_ORACLE ) );
+  }
+
+  @Test
+  public void databases_WithDifferentDbConnTypes_AreDifferent_IfNonOfThemIsSubsetOfAnother() {
+    assertFalse( databaseMeta.databaseForBothConnTypesIsTheSame( CONNECTION_TYPE_ID_MSSQL, CONNECTION_TYPE_ID_ORACLE ) );
+  }
+
+  @Test
+  public void databases_WithDifferentDbConnTypes_AreTheSame_IfOneConnTypeIsSubsetOfAnother() {
+    assertTrue( databaseMeta.databaseForBothConnTypesIsTheSame( CONNECTION_TYPE_ID_MSSQL, CONNECTION_TYPE_ID_MSSQL_NATIVE ) );
+  }
+
+
 }

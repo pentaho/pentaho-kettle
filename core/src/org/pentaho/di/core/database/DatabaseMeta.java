@@ -1134,9 +1134,10 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
             String parameter = typedParameter.substring( dotIndex + 1 );
             String value = map.get( typedParameter );
 
-            // Only add to the URL if it's the same database type code...
-            //
-            if ( databaseInterface.getPluginId().equals( typeCode ) ) {
+            // Only add to the URL if it's the same database type code,
+            // or underlying database is the same for both id's, and any subset of
+            // connection settings for one database is valid for another
+            if ( databaseForBothConnTypesIsTheSame( typeCode, databaseInterface.getPluginId() ) ) {
               if ( first && url.indexOf( valueSeparator ) == -1 ) {
                 url.append( optionIndicator );
               } else {
@@ -1159,6 +1160,32 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
     // }
 
     return url.toString();
+  }
+
+  /**
+   *  This method is designed to identify whether the actual database for two database connection types is the same.
+   *  This situation can occur in two cases:
+   *
+   *  1. {@code secondaryDbConnType} represents a connection to a database, that is the same as {@code primaryDbConnType}
+   *  2. {@code secondaryDbConnType} represents a connection to a database, that is a subset of {@code primaryDbConnType}
+   *  and <b> all connection settings specified to one connection is valid to another </b>. In this case
+   *  we treat {@code secondaryDbConnType} as {@code primaryDbConnType}
+   *
+   *  Example of case 2 is the following:
+   *  MSSQLNATIVE connection type is a subset of MSSQL connection type and all valid MSSQLNATIVE connection settings are valid to MSSQL also.
+   *  In this case we can safely treat MSSQLNATIVE connection type as MSSQL connection type.
+   *
+   */
+  protected boolean databaseForBothConnTypesIsTheSame( String primaryDbConnType, String secondaryDbConnType ) {
+    if ( primaryDbConnType.equals( secondaryDbConnType ) ) {
+      return true;
+    }
+
+    if ( primaryDbConnType.equals( "MSSQL" ) && secondaryDbConnType.equals( "MSSQLNATIVE" ) ) {
+      return true;
+    }
+
+    return false;
   }
 
   public Properties getConnectionProperties() {
