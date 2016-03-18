@@ -23,6 +23,7 @@
 package org.pentaho.di.trans.steps.selectvalues;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -112,17 +113,22 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface 
    *          The selectName to set.
    */
   public void setSelectName( String[] selectName ) {
-    for ( int i = 0; ( i < selectFields.length ) && ( i < selectName.length ); i++ ) {
+    resizeSelectFields( selectName.length );
+    for ( int i = 0; i < selectFields.length; i++ ) {
       selectFields[i].setName( selectName[i] );
     }
   }
 
   public String[] getSelectName() {
-    String[] names = new String[selectFields.length];
+    List<String> names = new ArrayList<String>();
     for ( int i = 0; i < selectFields.length; i++ ) {
-      names[i] = selectFields[i].getName();
+      String value = selectFields[i].getName();
+      if ( value == null ) {
+        break;
+      }
+      names.add( value );
     }
-    return names;
+    return names.toArray( new String[names.size()] );
   }
 
   /**
@@ -130,17 +136,28 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface 
    *          The selectRename to set.
    */
   public void setSelectRename( String[] selectRename ) {
-    for ( int i = 0; ( i < selectFields.length ) && ( i < selectRename.length ); i++ ) {
-      selectFields[i].setRename( selectRename[i] );
+    if ( selectRename.length > selectFields.length ) {
+      resizeSelectFields( selectRename.length );
+    }
+    for ( int i = 0; i < selectFields.length; i++ ) {
+      if ( i < selectRename.length ) {
+        selectFields[i].setRename( selectRename[i] );
+      } else {
+        selectFields[i].setRename( null );
+      }
     }
   }
 
   public String[] getSelectRename() {
-    String[] renames = new String[selectFields.length];
+    List<String> renames = new ArrayList<String>();
     for ( int i = 0; i < selectFields.length; i++ ) {
-      renames[i] = selectFields[i].getRename();
+      String value = selectFields[i].getRename();
+      if ( value == null ) {
+        break;
+      }
+      renames.add( value );
     }
-    return renames;
+    return renames.toArray( new String[renames.size()] );
   }
 
   /**
@@ -148,17 +165,32 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface 
    *          The selectLength to set.
    */
   public void setSelectLength( int[] selectLength ) {
-    for ( int i = 0; ( i < selectFields.length ) && ( i < selectLength.length ); i++ ) {
-      selectFields[i].setLength( selectLength[i] );
+    if ( selectLength.length > selectFields.length ) {
+      resizeSelectFields( selectLength.length );
+    }
+    for ( int i = 0; i < selectFields.length; i++ ) {
+      if ( i < selectLength.length ) {
+        selectFields[i].setLength( selectLength[i] );
+      } else {
+        selectFields[i].setLength( -2 );
+      }
     }
   }
 
   public int[] getSelectLength() {
-    int[] lengths = new int[selectFields.length];
+    List<Integer> lengths = new ArrayList<Integer>();
     for ( int i = 0; i < selectFields.length; i++ ) {
-      lengths[i] = selectFields[i].getLength();
+      int value = selectFields[i].getLength();
+      if ( value == -2 ) {
+        break;
+      }
+      lengths.add( value );
     }
-    return lengths;
+    int[] lengthsArray = new int[lengths.size()];
+    for ( int i = 0; i < lengthsArray.length; i++ ) {
+      lengthsArray[i] = lengths.get( i );
+    }
+    return lengthsArray;
   }
 
   /**
@@ -166,17 +198,42 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface 
    *          The selectPrecision to set.
    */
   public void setSelectPrecision( int[] selectPrecision ) {
-    for ( int i = 0; ( i < selectFields.length ) && ( i < selectPrecision.length ); i++ ) {
-      selectFields[i].setPrecision( selectPrecision[i] );
+    if ( selectPrecision.length > selectFields.length ) {
+      resizeSelectFields( selectPrecision.length );
+    }
+    for ( int i = 0; i < selectFields.length; i++ ) {
+      if ( i < selectPrecision.length ) {
+        selectFields[i].setPrecision( selectPrecision[i] );
+      } else {
+        selectFields[i].setPrecision( -2 );
+      }
     }
   }
 
   public int[] getSelectPrecision() {
-    int[] precisions = new int[selectFields.length];
+    List<Integer> precisions = new ArrayList<Integer>();
     for ( int i = 0; i < selectFields.length; i++ ) {
-      precisions[i] = selectFields[i].getLength();
+      int value = selectFields[i].getPrecision();
+      if ( value == -2 ) {
+        break;
+      }
+      precisions.add( value );
     }
-    return precisions;
+    int[] precisionsArray = new int[precisions.size()];
+    for ( int i = 0; i < precisionsArray.length; i++ ) {
+      precisionsArray[i] = precisions.get( i );
+    }
+    return precisionsArray;
+  }
+
+  private void resizeSelectFields( int length ) {
+    int fillStartIndex = selectFields.length;
+    selectFields = Arrays.copyOf( selectFields, length );
+    for ( int i = fillStartIndex; i < selectFields.length; i++ ) {
+      selectFields[i] = new SelectField();
+      selectFields[i].setLength( -2 );
+      selectFields[i].setPrecision( -2 );
+    }
   }
 
   public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
