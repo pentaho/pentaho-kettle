@@ -985,6 +985,7 @@ public class JsonInputTest {
     jsonInput.getInputRowSets().add( input );
     jsonInput.setInputRowMeta( rowMeta );
     jsonInput.init( meta, data );
+    jsonInput.initializeVariablesFrom( null );
     return jsonInput;
   }
 
