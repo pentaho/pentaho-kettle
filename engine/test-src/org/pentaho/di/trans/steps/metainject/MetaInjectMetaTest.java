@@ -105,7 +105,7 @@ public class MetaInjectMetaTest {
 
     MetaInjectMeta injectMetaSpy = spy( metaInjectMeta );
     TransMeta transMeta = mock( TransMeta.class );
-    Map<String, ResourceDefinition> definitions = Collections.<String, ResourceDefinition> emptyMap();
+    Map<String, ResourceDefinition> definitions = Collections.<String, ResourceDefinition>emptyMap();
     doReturn( TEST_FILE_NAME ).when( transMeta ).exportResources( transMeta, definitions, resourceNamingInterface,
         repository, metaStore );
     doReturn( transMeta ).when( injectMetaSpy ).loadTransformationMeta( repository, variableSpace );

@@ -298,18 +298,15 @@ public class InsertUpdateMeta extends BaseStepMeta implements StepMetaInterface,
 
     retval.allocate( nrkeys, nrvalues );
 
-    for ( int i = 0; i < nrkeys; i++ ) {
-      retval.keyStream[i] = keyStream[i];
-      retval.keyLookup[i] = keyLookup[i];
-      retval.keyCondition[i] = keyCondition[i];
-      retval.keyStream2[i] = keyStream2[i];
-    }
+    System.arraycopy( keyStream, 0, retval.keyStream, 0, nrkeys );
+    System.arraycopy( keyLookup, 0, retval.keyLookup, 0, nrkeys );
+    System.arraycopy( keyCondition, 0, retval.keyCondition, 0, nrkeys );
+    System.arraycopy( keyStream2, 0, retval.keyStream2, 0, nrkeys );
 
-    for ( int i = 0; i < nrvalues; i++ ) {
-      retval.updateLookup[i] = updateLookup[i];
-      retval.updateStream[i] = updateStream[i];
-      retval.update[i] = update[i];
-    }
+    System.arraycopy( updateLookup, 0, retval.updateLookup, 0, nrvalues );
+    System.arraycopy( updateStream, 0, retval.updateStream, 0, nrvalues );
+    System.arraycopy( update, 0, retval.update, 0, nrvalues );
+
     return retval;
   }
 

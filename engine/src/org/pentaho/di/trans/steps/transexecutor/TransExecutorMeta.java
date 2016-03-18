@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -236,8 +236,21 @@ public class TransExecutorMeta extends BaseStepMeta implements StepMetaInterface
     outputRowsField = new String[0];
   }
 
+  public void allocate( int nrFields ) {
+    outputRowsField = new String[nrFields];
+    outputRowsType = new int[nrFields];
+    outputRowsLength = new int[nrFields];
+    outputRowsPrecision = new int[nrFields];
+  }
+
   public Object clone() {
-    Object retval = super.clone();
+    TransExecutorMeta retval = (TransExecutorMeta) super.clone();
+    int nrFields = outputRowsField.length;
+    retval.allocate( nrFields );
+    System.arraycopy( outputRowsField, 0, retval.outputRowsField, 0, nrFields );
+    System.arraycopy( outputRowsType, 0, retval.outputRowsType, 0, nrFields );
+    System.arraycopy( outputRowsLength, 0, retval.outputRowsLength, 0, nrFields );
+    System.arraycopy( outputRowsPrecision, 0, retval.outputRowsPrecision, 0, nrFields );
     return retval;
   }
 
@@ -364,10 +377,7 @@ public class TransExecutorMeta extends BaseStepMeta implements StepMetaInterface
       outputRowsSourceStep = XMLHandler.getTagValue( stepnode, "result_rows_target_step" );
 
       int nrFields = XMLHandler.countNodes( stepnode, "result_rows_field" );
-      outputRowsField = new String[nrFields];
-      outputRowsType = new int[nrFields];
-      outputRowsLength = new int[nrFields];
-      outputRowsPrecision = new int[nrFields];
+      allocate( nrFields );
 
       for ( int i = 0; i < nrFields; i++ ) {
 
@@ -422,10 +432,7 @@ public class TransExecutorMeta extends BaseStepMeta implements StepMetaInterface
 
     outputRowsSourceStep = rep.getStepAttributeString( id_step, "result_rows_target_step" );
     int nrFields = rep.countNrStepAttributes( id_step, "result_rows_field_name" );
-    outputRowsField = new String[nrFields];
-    outputRowsType = new int[nrFields];
-    outputRowsLength = new int[nrFields];
-    outputRowsPrecision = new int[nrFields];
+    allocate( nrFields );
 
     for ( int i = 0; i < nrFields; i++ ) {
       outputRowsField[i] = rep.getStepAttributeString( id_step, i, "result_rows_field_name" );

@@ -50,7 +50,7 @@ public class NoneCompressionProvider implements CompressionProvider {
 
   /**
    * Gets the description for the compression provider.
-   * 
+   *
    * @return a description of the provider. For core plugins this needs to match what's in the XML file
    */
   @Override
@@ -60,7 +60,7 @@ public class NoneCompressionProvider implements CompressionProvider {
 
   /**
    * Gets the name for the compression provider.
-   * 
+   *
    * @return the name of the provider. For core plugins this needs to match what's in the XML file
    */
   @Override

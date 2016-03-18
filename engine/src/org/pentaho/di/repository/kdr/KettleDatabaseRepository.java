@@ -101,7 +101,7 @@ import org.pentaho.di.trans.TransMeta;
  *
  */
 public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
-  // private static Class<?> PKG = Repository.class; // for i18n purposes, needed by Translator2!! 
+  // private static Class<?> PKG = Repository.class; // for i18n purposes, needed by Translator2!!
 
   public KettleDatabaseRepositoryTransDelegate transDelegate;
   public KettleDatabaseRepositoryJobDelegate jobDelegate;
@@ -293,7 +293,7 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
 
   public ObjectId renameTransformation( ObjectId id_transformation, RepositoryDirectoryInterface newDir,
       String newName ) throws KettleException {
-    return renameTransformation(id_transformation, null, newDir, newName );
+    return renameTransformation( id_transformation, null, newDir, newName );
   }
 
   public synchronized ObjectId renameTransformation( ObjectId id_transformation, String versionComment,
@@ -341,7 +341,7 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
 
   public ObjectId renameJob( ObjectId id_job, RepositoryDirectoryInterface dir, String newname )
     throws KettleException {
-    return renameJob(id_job, null, dir, newname );
+    return renameJob( id_job, null, dir, newname );
   }
 
   public synchronized ObjectId renameJob( ObjectId id_job, String versionComment, RepositoryDirectoryInterface dir,

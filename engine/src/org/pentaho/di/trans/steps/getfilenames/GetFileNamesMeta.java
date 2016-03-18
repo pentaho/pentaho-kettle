@@ -385,13 +385,12 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface 
 
     retval.allocate( nrfiles );
 
-    for ( int i = 0; i < nrfiles; i++ ) {
-      retval.fileName[i] = fileName[i];
-      retval.fileMask[i] = fileMask[i];
-      retval.excludeFileMask[i] = excludeFileMask[i];
-      retval.fileRequired[i] = fileRequired[i];
-      retval.includeSubFolders[i] = includeSubFolders[i];
-    }
+    System.arraycopy( fileName, 0, retval.fileName, 0, nrfiles );
+    System.arraycopy( fileMask, 0, retval.fileMask, 0, nrfiles );
+    System.arraycopy( excludeFileMask, 0, retval.excludeFileMask, 0, nrfiles );
+    System.arraycopy( fileRequired, 0, retval.fileRequired, 0, nrfiles );
+    System.arraycopy( fileName, 0, retval.fileName, 0, nrfiles );
+    System.arraycopy( includeSubFolders, 0, retval.includeSubFolders, 0, nrfiles );
 
     return retval;
   }

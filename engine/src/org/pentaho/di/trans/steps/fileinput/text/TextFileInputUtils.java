@@ -43,7 +43,7 @@ import org.pentaho.di.trans.steps.fileinput.BaseFileInputStepMeta;
 
 /**
  * Some common methods for text file parsing.
- * 
+ *
  * @author Alexander Buloichik
  */
 public class TextFileInputUtils {

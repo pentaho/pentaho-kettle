@@ -34,7 +34,6 @@ import java.util.List;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.Database;
-import org.pentaho.di.core.database.DatabaseInterface;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleConfigException;
 import org.pentaho.di.core.exception.KettleDatabaseException;
@@ -262,8 +261,7 @@ public class CombinationLookup extends BaseStep implements StepInterface {
       Object[] add = data.db.getLookup( data.prepStatementLookup );
       incrementLinesInput();
 
-      if ( add == null ) // The dimension entry was not found, we need to add it!
-      {
+      if ( add == null ) { // The dimension entry was not found, we need to add it!
         // First try to use an AUTOINCREMENT field
         switch ( getTechKeyCreation() ) {
           case CREATION_METHOD_TABLEMAX:
@@ -488,8 +486,7 @@ public class CombinationLookup extends BaseStep implements StepInterface {
     String debug = "Combination insert";
     DatabaseMeta databaseMeta = meta.getDatabaseMeta();
     try {
-      if ( data.prepStatementInsert == null ) // first time: construct prepared statement
-      {
+      if ( data.prepStatementInsert == null ) { // first time: construct prepared statement
         debug = "First: construct prepared statement";
 
         data.insertRowMeta = new RowMeta();
@@ -753,21 +750,21 @@ public class CombinationLookup extends BaseStep implements StepInterface {
       List<Object[]> cacheValues;
 
       /* build SQl Statement to preload cache
-       * 
-           * SELECT 
-           * min(<retval>) as <retval>, 
-           * key1, 
-           * key2, 
-           * key3  
-           * FROM   <table> 
-           * 
+       *
+           * SELECT
+           * min(<retval>) as <retval>,
+           * key1,
+           * key2,
+           * key3
+           * FROM   <table>
+           *
            * GROUP BY key1,
            * key2,
            * key3;
-           * 
+           *
            */
 
-      // Build a string representation of the lookupKeys 
+      // Build a string representation of the lookupKeys
       for ( int i = 0; i < meta.getKeyLookup().length; i++ ) {
         lookupKeys += databaseMeta.quoteField( meta.getKeyLookup()[i] );
 
@@ -795,7 +792,7 @@ public class CombinationLookup extends BaseStep implements StepInterface {
         Object[] hashRow = new Object[data.hashRowMeta.size()];
         // Assumes the technical key is at position 0 !!
         System.arraycopy( cacheRow, 1, hashRow, 0, hashRow.length );
-        // Potential Cache Overflow is ahndled inside 
+        // Potential Cache Overflow is ahndled inside
         addToCache( hashRowMeta, hashRow, (Long) cacheRow[0] );
         incrementLinesInput();
       }

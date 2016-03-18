@@ -49,7 +49,7 @@ public class FormulaMetaFunction implements Cloneable {
   private transient boolean needDataConversion = false;
 
   /**
-   * 
+   *
    * @param fieldName
    * @param formula
    * @param valueType

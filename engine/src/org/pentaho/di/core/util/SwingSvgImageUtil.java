@@ -121,7 +121,7 @@ public class SwingSvgImageUtil {
       result = getUniversalImageInternal( classLoader, SvgSupport.toSvgName( filename ) );
     }
 
-    // if we haven't loaded SVG attempt to use PNG 
+    // if we haven't loaded SVG attempt to use PNG
     if ( result == null ) {
       result = getUniversalImageInternal( classLoader, SvgSupport.toPngName( filename ) );
     }

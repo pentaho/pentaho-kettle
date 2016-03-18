@@ -87,7 +87,7 @@ public class StepInjectionUtil {
   /**
    * This method compares 2 sets of step injection meta entries. They have to be in the same order.
    * We will traverse into nested details.
-   * 
+   *
    * @param refEntries The reference list
    * @param cmpEntries The list to compare
    * @throws KettleException

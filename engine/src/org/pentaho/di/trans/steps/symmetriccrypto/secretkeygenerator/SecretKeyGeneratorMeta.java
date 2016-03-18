@@ -205,13 +205,10 @@ public class SecretKeyGeneratorMeta extends BaseStepMeta implements StepMetaInte
     int count = algorithm.length;
 
     retval.allocate( count );
-
-    for ( int i = 0; i < count; i++ ) {
-      retval.algorithm[i] = algorithm[i];
-      retval.scheme[i] = scheme[i];
-      retval.secretKeyLength[i] = secretKeyLength[i];
-      retval.secretKeyCount[i] = secretKeyCount[i];
-    }
+    System.arraycopy( algorithm, 0, retval.algorithm, 0, count );
+    System.arraycopy( scheme, 0, retval.scheme, 0, count );
+    System.arraycopy( secretKeyLength, 0, retval.secretKeyLength, 0, count );
+    System.arraycopy( secretKeyCount, 0, retval.secretKeyCount, 0, count );
 
     return retval;
   }

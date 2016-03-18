@@ -52,7 +52,7 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Retrieves values from a database by calling database stored procedures or functions
- * 
+ *
  * @author Matt
  * @since 26-apr-2003
  */

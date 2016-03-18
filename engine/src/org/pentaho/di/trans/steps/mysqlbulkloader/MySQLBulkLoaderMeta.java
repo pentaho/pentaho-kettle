@@ -65,10 +65,10 @@ import org.w3c.dom.Node;
  * - Write to the FIFO file<br>
  * - At the end, close the output stream to the FIFO file<br>
  * * At the end, remove the FIFO file <br>
- * 
- * 
+ *
+ *
  * Created on 24-oct-2007<br>
- * 
+ *
  * @author Matt Casters<br>
  */
 public class MySQLBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface,
@@ -216,7 +216,7 @@ public class MySQLBulkLoaderMeta extends BaseStepMeta implements StepMetaInterfa
     System.arraycopy( fieldTable, 0, retval.fieldTable, 0, nrvalues );
     System.arraycopy( fieldStream, 0, retval.fieldStream, 0, nrvalues );
     System.arraycopy( fieldFormatType, 0, retval.fieldFormatType, 0, nrvalues );
-    
+
     return retval;
   }
 

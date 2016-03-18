@@ -96,7 +96,7 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
   /** The number of input rows that are sent as result rows to the job in one go, defaults to "1" */
   private String groupSize;
 
-  /** Optional name of a field to group rows together that are sent together to the job 
+  /** Optional name of a field to group rows together that are sent together to the job
    * as result rows (empty default) */
   private String groupField;
 
@@ -592,9 +592,9 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
     JobMeta mappingJobMeta = null;
 
     CurrentDirectoryResolver r = new CurrentDirectoryResolver();
-    VariableSpace tmpSpace = r.resolveCurrentDirectory( executorMeta.getSpecificationMethod(), 
+    VariableSpace tmpSpace = r.resolveCurrentDirectory( executorMeta.getSpecificationMethod(),
         space, rep, executorMeta.getParentStepMeta(), executorMeta.getFileName() );
-    
+
     switch ( executorMeta.getSpecificationMethod() ) {
       case FILENAME:
         String realFilename = tmpSpace.environmentSubstitute( executorMeta.getFileName() );
@@ -615,7 +615,7 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
               // try without extension
               if ( realFilename.endsWith( Const.STRING_JOB_DEFAULT_EXT ) ) {
                 try {
-                  String tmpFilename = realFilename.substring( realFilename.lastIndexOf( "/" ) + 1, 
+                  String tmpFilename = realFilename.substring( realFilename.lastIndexOf( "/" ) + 1,
                       realFilename.indexOf( "." + Const.STRING_JOB_DEFAULT_EXT ) );
                   String dirStr = realFilename.substring( 0, realFilename.lastIndexOf( "/" ) );
                   RepositoryDirectoryInterface dir = rep.findDirectory( dirStr );
@@ -639,7 +639,7 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
       case REPOSITORY_BY_NAME:
         String realJobname = tmpSpace.environmentSubstitute( executorMeta.getJobName() );
         String realDirectory = tmpSpace.environmentSubstitute( executorMeta.getDirectoryPath() );
-        
+
         if ( rep != null ) {
           if ( !Const.isEmpty( realJobname ) && !Const.isEmpty( realDirectory ) ) {
             realDirectory = r.normalizeSlashes( realDirectory );
@@ -665,7 +665,7 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
           } catch ( KettleException ke ) {
             try {
               // add .kjb extension and try again
-              mappingJobMeta = new JobMeta( tmpSpace, 
+              mappingJobMeta = new JobMeta( tmpSpace,
                   realDirectory + "/" + realJobname + "." + Const.STRING_JOB_DEFAULT_EXT, rep, metaStore, null );
             } catch ( KettleException ke2 ) {
               throw new KettleException( BaseMessages.getString(

@@ -22,11 +22,6 @@
 
 package org.pentaho.di.job.entries.http;
 
-import static org.pentaho.di.job.entry.validator.AndValidator.putValidators;
-import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.andValidator;
-import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.integerValidator;
-import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notBlankValidator;
-
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -63,6 +58,8 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
+import org.pentaho.di.job.entry.validator.AndValidator;
+import org.pentaho.di.job.entry.validator.JobEntryValidatorUtils;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.resource.ResourceEntry;
@@ -130,8 +127,19 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
     this( "" );
   }
 
+  private void allocate( int nrHeaders ) {
+    headerName = new String[nrHeaders];
+    headerValue = new String[nrHeaders];
+  }
+
   public Object clone() {
     JobEntryHTTP je = (JobEntryHTTP) super.clone();
+    if ( headerName != null ) {
+      int nrHeaders = headerName.length;
+      je.allocate( nrHeaders );
+      System.arraycopy( headerName, 0, je.headerName, 0, nrHeaders );
+      System.arraycopy( headerValue, 0, je.headerValue, 0, nrHeaders );
+    }
     return je;
   }
 
@@ -200,8 +208,7 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
 
       // How many field headerName?
       int nrHeaders = XMLHandler.countNodes( headers, "header" );
-      headerName = new String[nrHeaders];
-      headerValue = new String[nrHeaders];
+      allocate( nrHeaders );
       for ( int i = 0; i < nrHeaders; i++ ) {
         Node fnode = XMLHandler.getSubNodeByNr( headers, "header", i );
         headerName[i] = XMLHandler.getTagValue( fnode, "header_name" );
@@ -240,8 +247,8 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
 
       // How many headerName?
       int argnr = rep.countNrJobEntryAttributes( id_jobentry, "header_name" );
-      headerName = new String[argnr];
-      headerValue = new String[argnr];
+      allocate( argnr );
+
       for ( int a = 0; a < argnr; a++ ) {
         headerName[a] = rep.getJobEntryAttributeString( id_jobentry, a, "header_name" );
         headerValue[a] = rep.getJobEntryAttributeString( id_jobentry, a, "header_value" );
@@ -696,10 +703,10 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
   @Override
   public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
-    andValidator().validate( this, "targetFilename", remarks, putValidators( notBlankValidator() ) );
-    andValidator().validate( this, "targetFilenameExtention", remarks, putValidators( notBlankValidator() ) );
-    andValidator().validate( this, "uploadFilename", remarks, putValidators( notBlankValidator() ) );
-    andValidator().validate( this, "proxyPort", remarks, putValidators( integerValidator() ) );
+    JobEntryValidatorUtils.andValidator().validate( this, "targetFilename", remarks, AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
+    JobEntryValidatorUtils.andValidator().validate( this, "targetFilenameExtention", remarks, AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
+    JobEntryValidatorUtils.andValidator().validate( this, "uploadFilename", remarks, AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
+    JobEntryValidatorUtils.andValidator().validate( this, "proxyPort", remarks, AndValidator.putValidators( JobEntryValidatorUtils.integerValidator() ) );
   }
 
 }

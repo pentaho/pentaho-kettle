@@ -444,7 +444,7 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface {
 
         if ( data.specialErrorHandling && data.supportsSavepoints ) {
           if ( data.savepoint != null || !data.lookupFailure ) {
-            //do this when savepoint was set, and this is not lookup failure PDI-10878 
+            //do this when savepoint was set, and this is not lookup failure PDI-10878
             data.db.rollback( data.savepoint );
             if ( data.releaseSavepoint ) {
               data.db.releaseSavepoint( data.savepoint );
@@ -475,8 +475,7 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface {
           data.batchBuffer.add( row );
         }
 
-        if ( rowIsSafe ) // A commit was done and the rows are all safe (no error)
-        {
+        if ( rowIsSafe ) { // A commit was done and the rows are all safe (no error)
           for ( int i = 0; i < data.batchBuffer.size(); i++ ) {
             Object[] rowb = data.batchBuffer.get( i );
             putRow( data.outputRowMeta, rowb );
