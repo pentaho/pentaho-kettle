@@ -22,16 +22,15 @@
 
 package org.pentaho.di.core.sql;
 
-import java.util.List;
-
+import junit.framework.TestCase;
+import org.junit.Test;
 import org.pentaho.di.core.exception.KettleSQLException;
-import org.pentaho.di.core.jdbc.ThinUtil;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 
-import junit.framework.TestCase;
+import java.util.List;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -169,7 +168,7 @@ public class SQLTest extends TestCase {
       "SELECT DISTINCT\n          BT_SERVICE_SERVICE.Category AS COL0\n         ,BT_SERVICE_SERVICE.Country AS COL1\n         ,BT_SERVICE_SERVICE.products_sold AS COL2\n         ,BT_SERVICE_SERVICE.sales_amount AS COL3\n"
         + "FROM \n          Service BT_SERVICE_SERVICE\n" + "ORDER BY\n          COL0";
 
-    SQL sql = new SQL( ThinUtil.stripNewlines( sqlString ) );
+    SQL sql = new SQL( SQLUtil.stripNewlines( sqlString ) );
 
     assertEquals( "Service", sql.getServiceName() );
     sql.parse( rowMeta );
@@ -197,7 +196,7 @@ public class SQLTest extends TestCase {
     String sqlString =
       "select \"Service\".\"Category\" as \"c0\" from \"Service\" as \"Service\" group by \"Service\".\"Category\" order by CASE WHEN \"Service\".\"Category\" IS NULL THEN 1 ELSE 0 END, \"Service\".\"Category\" ASC";
 
-    SQL sql = new SQL( ThinUtil.stripNewlines( sqlString ) );
+    SQL sql = new SQL( SQLUtil.stripNewlines( sqlString ) );
 
     assertEquals( "Service", sql.getServiceName() );
     sql.parse( rowMeta );
@@ -223,7 +222,7 @@ public class SQLTest extends TestCase {
     String sqlString =
       "SELECT            BT_MONGODB_MONGODB.state AS COL0          ,SUM(BT_MONGODB_MONGODB.rows) AS COL1 FROM            MongoDB BT_MONGODB_MONGODB GROUP BY            BT_MONGODB_MONGODB.state ORDER BY            COL1 DESC";
 
-    SQL sql = new SQL( ThinUtil.stripNewlines( sqlString ) );
+    SQL sql = new SQL( SQLUtil.stripNewlines( sqlString ) );
 
     assertEquals( "MongoDB", sql.getServiceName() );
     sql.parse( rowMeta );
@@ -250,7 +249,7 @@ public class SQLTest extends TestCase {
 
     String sqlString = "SELECT Category, Country, products_sold, sales_amount FROM Kettle.Service";
 
-    SQL sql = new SQL( ThinUtil.stripNewlines( sqlString ) );
+    SQL sql = new SQL( SQLUtil.stripNewlines( sqlString ) );
 
     assertEquals( "Kettle", sql.getNamespace() );
     assertEquals( "Service", sql.getServiceName() );
@@ -275,7 +274,7 @@ public class SQLTest extends TestCase {
 
     String sqlString = "SELECT Category, Country, products_sold, sales_amount FROM Kettle.\"Service\"";
 
-    SQL sql = new SQL( ThinUtil.stripNewlines( sqlString ) );
+    SQL sql = new SQL( SQLUtil.stripNewlines( sqlString ) );
 
     assertEquals( "Kettle", sql.getNamespace() );
     assertEquals( "Service", sql.getServiceName() );
@@ -300,7 +299,7 @@ public class SQLTest extends TestCase {
 
     String sqlString = "SELECT Category, Country, products_sold, sales_amount FROM \"Kettle\".Service";
 
-    SQL sql = new SQL( ThinUtil.stripNewlines( sqlString ) );
+    SQL sql = new SQL( SQLUtil.stripNewlines( sqlString ) );
 
     assertEquals( "Kettle", sql.getNamespace() );
     assertEquals( "Service", sql.getServiceName() );
@@ -325,7 +324,7 @@ public class SQLTest extends TestCase {
 
     String sqlString = "SELECT Category, Country, products_sold, sales_amount FROM \"Kettle\".\"Service\"";
 
-    SQL sql = new SQL( ThinUtil.stripNewlines( sqlString ) );
+    SQL sql = new SQL( SQLUtil.stripNewlines( sqlString ) );
 
     assertEquals( "Kettle", sql.getNamespace() );
     assertEquals( "Service", sql.getServiceName() );
@@ -351,7 +350,7 @@ public class SQLTest extends TestCase {
     String sqlString =
       "SELECT * FROM \"GETTING_STARTED\" WHERE \"GETTING_STARTED\".\"CUSTOMERNAME\" = 'ANNA''S DECORATIONS, LTD'";
 
-    SQL sql = new SQL( ThinUtil.stripNewlines( sqlString ) );
+    SQL sql = new SQL( SQLUtil.stripNewlines( sqlString ) );
 
     assertEquals( "GETTING_STARTED", sql.getServiceName() );
     sql.parse( rowMeta );
@@ -372,7 +371,7 @@ public class SQLTest extends TestCase {
 
     String sqlString = "SELECT * FROM \"GETTING_STARTED\" WHERE \"GETTING_STARTED\".\"CUSTOMERNAME\" = ''";
 
-    SQL sql = new SQL( ThinUtil.stripNewlines( sqlString ) );
+    SQL sql = new SQL( SQLUtil.stripNewlines( sqlString ) );
 
     assertEquals( "GETTING_STARTED", sql.getServiceName() );
     sql.parse( rowMeta );
@@ -394,7 +393,7 @@ public class SQLTest extends TestCase {
     String sqlString =
       "SELECT * FROM \"GETTING_STARTED\" WHERE \"GETTING_STARTED\".\"CUSTOMERNAME\" = ''''''''''''";
 
-    SQL sql = new SQL( ThinUtil.stripNewlines( sqlString ) );
+    SQL sql = new SQL( SQLUtil.stripNewlines( sqlString ) );
 
     assertEquals( "GETTING_STARTED", sql.getServiceName() );
     sql.parse( rowMeta );
@@ -416,7 +415,7 @@ public class SQLTest extends TestCase {
     String sqlString =
       "SELECT * FROM \"GETTING_STARTED\" WHERE \"GETTING_STARTED\".\"CUSTOMERNAME\" IN ('ANNA''S DECORATIONS, LTD', 'MEN ''R'' US RETAILERS, Ltd.' )";
 
-    SQL sql = new SQL( ThinUtil.stripNewlines( sqlString ) );
+    SQL sql = new SQL( SQLUtil.stripNewlines( sqlString ) );
 
     assertEquals( "GETTING_STARTED", sql.getServiceName() );
     sql.parse( rowMeta );
@@ -439,7 +438,7 @@ public class SQLTest extends TestCase {
     String sqlString =
       "SELECT * FROM \"GETTING_STARTED\" WHERE \"GETTING_STARTED\".\"CUSTOMERNAME\" IN ('ANNA''S DECORATIONS; LTD', 'MEN ''R'' US RETAILERS; Ltd.' )";
 
-    SQL sql = new SQL( ThinUtil.stripNewlines( sqlString ) );
+    SQL sql = new SQL( SQLUtil.stripNewlines( sqlString ) );
 
     assertEquals( "GETTING_STARTED", sql.getServiceName() );
     sql.parse( rowMeta );
@@ -548,5 +547,78 @@ public class SQLTest extends TestCase {
         .thenReturn( valueMeta );
     }
     return rowMeta;
+  }
+
+  @Test
+  public void testExample1() throws KettleSQLException {
+    String select = "A, B, C";
+    String from = "Step";
+    SQL sql = new SQL( "SELECT " + select + " FROM " + from );
+    assertEquals( select, sql.getSelectClause() );
+    assertEquals( from, sql.getServiceName() );
+    assertNull( sql.getWhereClause() );
+    assertNull( sql.getGroupClause() );
+    assertNull( sql.getHavingClause() );
+    assertNull( sql.getOrderClause() );
+  }
+
+  @Test
+  public void testExample2() throws KettleSQLException {
+    String select = "A, B, C";
+    String from = "Step";
+    String where = "D > 6 AND E = 'abcd'";
+    SQL sql = new SQL( "SELECT " + select + " FROM " + from + " WHERE " + where );
+    assertEquals( select, sql.getSelectClause() );
+    assertEquals( from, sql.getServiceName() );
+    assertEquals( where, sql.getWhereClause() );
+    assertNull( sql.getGroupClause() );
+    assertNull( sql.getHavingClause() );
+    assertNull( sql.getOrderClause() );
+  }
+
+  @Test
+  public void testExample3() throws KettleSQLException {
+    String select = "A, B, C";
+    String from = "Step";
+    String order = "B, A, C";
+    SQL sql = new SQL( "SELECT " + select + " FROM " + from + " ORDER BY " + order );
+    assertEquals( select, sql.getSelectClause() );
+    assertEquals( from, sql.getServiceName() );
+    assertNull( sql.getWhereClause() );
+    assertNull( sql.getGroupClause() );
+    assertNull( sql.getHavingClause() );
+    assertEquals( order, sql.getOrderClause() );
+  }
+
+  @Test
+  public void testExample4() throws KettleSQLException {
+    String select = "A, B, sum(C)";
+    String from = "Step";
+    String where = "D > 6 AND E = 'abcd'";
+    String group = "A, B";
+    String having = "sum(C) > 100";
+    String order = "sum(C) DESC";
+    SQL sql =
+        new SQL( "SELECT " + select + " FROM " + from + " WHERE " + where + " GROUP BY " + group + " HAVING " + having
+            + " ORDER BY " + order );
+    assertEquals( select, sql.getSelectClause() );
+    assertEquals( from, sql.getServiceName() );
+    assertEquals( where, sql.getWhereClause() );
+    assertEquals( group, sql.getGroupClause() );
+    assertEquals( having, sql.getHavingClause() );
+    assertEquals( order, sql.getOrderClause() );
+  }
+
+  @Test
+  public void testWhereInColumnIndexPDI12347() throws KettleSQLException {
+    String select = "whereDoYouLive, good, fine";
+    String from = "testingABC";
+    SQL sql = new SQL( "SELECT " + select + " FROM " + from );
+    assertEquals( select, sql.getSelectClause() );
+    assertEquals( from, sql.getServiceName() );
+    assertNull( sql.getWhereClause() );
+    assertNull( sql.getGroupClause() );
+    assertNull( sql.getHavingClause() );
+    assertNull( sql.getOrderClause() );
   }
 }

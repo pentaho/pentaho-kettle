@@ -20,17 +20,7 @@
  *
  ******************************************************************************/
 
-package org.pentaho.di.core.jdbc;
-
-import java.math.BigDecimal;
-import java.sql.SQLException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+package org.pentaho.di.core.sql;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleSQLException;
@@ -48,14 +38,17 @@ import org.pentaho.di.core.row.value.ValueMetaNumber;
 import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.xml.XMLHandler;
 
-/**
- * Static methods provided by this class should be copied to their respective projects
- *
- * Data Service client code is now available in the pdi-dataservice-plugin project
- *
- */
-@Deprecated
-public class ThinUtil {
+import java.math.BigDecimal;
+import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+class SQLUtil {
 
   public static String stripNewlines( String sql ) {
     if ( sql == null ) {
@@ -347,17 +340,17 @@ public class ThinUtil {
   public static String stripQuoteTableAlias( String field, String tableAliasPrefix ) {
     String result = stripTableAlias( field, tableAliasPrefix );
     if ( result.equals( field ) ) {
-      result = ThinUtil.stripQuotes( Const.trim( field ), '"' );
+      result = SQLUtil.stripQuotes( Const.trim( field ), '"' );
     }
     return result;
   }
 
   public static String stripTableAlias( String field, String tableAliasPrefix ) {
     if ( field.toUpperCase().startsWith( ( tableAliasPrefix + "." ).toUpperCase() ) ) {
-      return ThinUtil.stripQuotesIfNoWhitespace(
+      return SQLUtil.stripQuotesIfNoWhitespace(
         field.substring( tableAliasPrefix.length() + 1 ), '"' );
     } else if ( field.toUpperCase().startsWith( ( "\"" + tableAliasPrefix + "\"." ).toUpperCase() ) ) {
-      return ThinUtil.stripQuotesIfNoWhitespace(
+      return SQLUtil.stripQuotesIfNoWhitespace(
         field.substring( tableAliasPrefix.length() + 3 ), '"' );
     } else {
       return field;
@@ -513,7 +506,7 @@ public class ThinUtil {
     List<String> strings = new ArrayList<String>();
     int startIndex = 0;
     for ( int index = 0; index < fieldClause.length(); index++ ) {
-      index = ThinUtil.skipChars( fieldClause, index, skipChars );
+      index = SQLUtil.skipChars( fieldClause, index, skipChars );
       if ( index >= fieldClause.length() ) {
         strings.add( fieldClause.substring( startIndex ) );
         startIndex = -1;
@@ -569,7 +562,7 @@ public class ThinUtil {
 
     int startIndex = 0;
     while ( startIndex < sql.length() ) {
-      startIndex = ThinUtil.skipChars( sql, startIndex, '"', '\'' );
+      startIndex = SQLUtil.skipChars( sql, startIndex, '"', '\'' );
       if ( sql.substring( startIndex ).startsWith( startClause.toUpperCase() ) ) {
         break;
       }
@@ -592,7 +585,7 @@ public class ThinUtil {
 
       int index = startIndex;
       while ( index < endIndex ) {
-        index = ThinUtil.skipChars( sql, index, '"', '\'' );
+        index = SQLUtil.skipChars( sql, index, '"', '\'' );
 
         // See if the end-clause is present at this location.
         //
@@ -652,7 +645,7 @@ public class ThinUtil {
     ValueMetaInterface valueMeta = serviceFields.searchValueMeta( field );
     if ( valueMeta == null ) {
       valueMeta = serviceFields.searchValueMeta(
-        ThinUtil.stripQuotes( field, '"' ) );
+        SQLUtil.stripQuotes( field, '"' ) );
     }
     return valueMeta == null ? field : valueMeta.getName();
   }

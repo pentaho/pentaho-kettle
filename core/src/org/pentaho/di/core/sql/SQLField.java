@@ -26,7 +26,6 @@ import java.util.List;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleSQLException;
-import org.pentaho.di.core.jdbc.ThinUtil;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaAndData;
@@ -84,7 +83,7 @@ public class SQLField {
     // The field clause is in the form: <field or aggregate> [as] [alias]
     // Fields can be quoted with "
     //
-    List<String> strings = ThinUtil.splitClause( fieldClause, ' ', '"', '(' );
+    List<String> strings = SQLUtil.splitClause( fieldClause, ' ', '"', '(' );
 
     if ( strings.size() == 0 ) {
       throw new KettleSQLException( "Unable to find a valid field" );
@@ -92,7 +91,7 @@ public class SQLField {
 
     if ( strings.size() >= 1 ) {
       String value = strings.get( 0 );
-      field = ThinUtil.stripQuoteTableAlias( value, tableAlias );
+      field = SQLUtil.stripQuoteTableAlias( value, tableAlias );
       expression = field;
 
       if ( orderField ) {
@@ -130,8 +129,8 @@ public class SQLField {
               throw new KettleSQLException( "No closing bracket found after keyword ["
                 + aggregation.getKeyWord() + "]" );
             }
-            field = ThinUtil.stripQuotes( Const.trim( value.substring( openIndex + 1, closeIndex ) ), '"' );
-            field = ThinUtil.stripQuoteTableAlias( field, tableAlias );
+            field = SQLUtil.stripQuotes( Const.trim( value.substring( openIndex + 1, closeIndex ) ), '"' );
+            field = SQLUtil.stripQuoteTableAlias( field, tableAlias );
             break;
           }
         }
@@ -149,7 +148,7 @@ public class SQLField {
           if ( field.toUpperCase().startsWith( "DISTINCT " ) ) {
             int firstSpaceIndex = field.indexOf( ' ' );
             field = field.substring( firstSpaceIndex + 1 );
-            field = ThinUtil.stripQuoteTableAlias( field, tableAlias );
+            field = SQLUtil.stripQuoteTableAlias( field, tableAlias );
 
             countDistinct = true;
           }
@@ -159,7 +158,7 @@ public class SQLField {
         }
 
         if ( strings.size() == 2 ) {
-          alias = ThinUtil.stripQuotes( Const.trim( strings.get( 1 ) ), '"' );
+          alias = SQLUtil.stripQuotes( Const.trim( strings.get( 1 ) ), '"' );
         }
         // Uses the "AS" word in between
         if ( strings.size() == 3 ) {
@@ -167,7 +166,7 @@ public class SQLField {
             throw new KettleSQLException( "AS keyword expected between the field and the alias in field clause: ["
               + fieldClause + "]" );
           }
-          alias = ThinUtil.stripQuotes( Const.trim( strings.get( 2 ) ), '"' );
+          alias = SQLUtil.stripQuotes( Const.trim( strings.get( 2 ) ), '"' );
         }
       }
     }
@@ -210,7 +209,7 @@ public class SQLField {
       //
       if ( field.startsWith( "IIF(" ) ) {
         String arguments = field.substring( 4, field.length() - 1 ); // skip the closing bracket too
-        List<String> argsList = ThinUtil.splitClause( arguments, ',', '\'', '(' );
+        List<String> argsList = SQLUtil.splitClause( arguments, ',', '\'', '(' );
         if ( argsList.size() != 3 ) {
           throw new KettleSQLException( "The IIF function requires exactly 3 arguments" );
         }
@@ -221,14 +220,14 @@ public class SQLField {
       } else if ( field.toUpperCase().startsWith( "CASE WHEN " ) && field.toUpperCase().endsWith( "END" ) ) {
         // Same as IIF but with a different format.
         //
-        String condition = Const.trim( ThinUtil.findClause( field, "WHEN", "THEN" ) );
-        String trueClause = Const.trim( ThinUtil.findClause( field, "THEN", "ELSE" ) );
-        String falseClause = Const.trim( ThinUtil.findClause( field, "ELSE", "END" ) );
+        String condition = Const.trim( SQLUtil.findClause( field, "WHEN", "THEN" ) );
+        String trueClause = Const.trim( SQLUtil.findClause( field, "THEN", "ELSE" ) );
+        String falseClause = Const.trim( SQLUtil.findClause( field, "ELSE", "END" ) );
         iif = new IifFunction( tableAlias, condition, trueClause, falseClause, serviceFields );
 
       } else {
         if ( valueMeta == null ) {
-          field = ThinUtil.resolveFieldName( field, serviceFields );
+          field = SQLUtil.resolveFieldName( field, serviceFields );
           valueMeta = serviceFields.searchValueMeta( field );
           if ( orderField && selectFields != null ) {
             // See if this isn't an aliased select field that we're ordering on
@@ -247,7 +246,7 @@ public class SQLField {
           // OK, field is not a service field nor an aggregate, not IIF
           // See if it's a constant value...
           //
-          ValueMetaAndData vmad = ThinUtil.extractConstant( field );
+          ValueMetaAndData vmad = SQLUtil.extractConstant( field );
           if ( vmad != null ) {
             valueMeta = vmad.getValueMeta();
             valueData = vmad.getValueData();

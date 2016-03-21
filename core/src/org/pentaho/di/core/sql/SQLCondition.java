@@ -25,7 +25,6 @@ package org.pentaho.di.core.sql;
 import org.pentaho.di.core.Condition;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleSQLException;
-import org.pentaho.di.core.jdbc.ThinUtil;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaAndData;
 import org.pentaho.di.core.row.value.ValueMetaString;
@@ -100,7 +99,7 @@ public class SQLCondition {
   private int searchForString( String clause, String string, int startIndex ) throws KettleSQLException {
     int index = startIndex;
     while ( index < clause.length() ) {
-      index = ThinUtil.skipChars( clause, index, '\'', '(' );
+      index = SQLUtil.skipChars( clause, index, '\'', '(' );
       if ( index + string.length() > clause.length() ) {
         return -1; // done.
       }
@@ -275,14 +274,14 @@ public class SQLCondition {
 
     // Remove the optional table alias prefix from the left field
     //
-    left = ThinUtil.resolveFieldName( ThinUtil.stripQuoteTableAlias( left, tableAlias ),
+    left = SQLUtil.resolveFieldName( SQLUtil.stripQuoteTableAlias( left, tableAlias ),
       getServiceFields() );
     String operatorString = strings.get( 1 );
     String right = strings.get( 2 );
 
     // If it's another column name, remove possible table alias prefix.
     //
-    right = ThinUtil.resolveFieldName( ThinUtil.stripQuoteTableAlias( right, tableAlias ),
+    right = SQLUtil.resolveFieldName( SQLUtil.stripQuoteTableAlias( right, tableAlias ),
       getServiceFields() );
 
     ValueMetaAndData value = null;
@@ -293,7 +292,7 @@ public class SQLCondition {
       //
       String trimmed = Const.trim( right );
       String partClause = trimmed.substring( 1, trimmed.length() - 1 );
-      List<String> parts = ThinUtil.splitClause( partClause, ',', '\'' );
+      List<String> parts = SQLUtil.splitClause( partClause, ',', '\'' );
       StringBuilder valueString = new StringBuilder();
       for ( String part : parts ) {
         if ( valueString.length() > 0 ) {
@@ -342,7 +341,7 @@ public class SQLCondition {
 
       }
 
-      value = ThinUtil.extractConstant( right );
+      value = SQLUtil.extractConstant( right );
     }
 
     if ( value != null ) {
@@ -375,7 +374,7 @@ public class SQLCondition {
         Condition.FUNC_NULL, Condition.FUNC_LIKE, Condition.FUNC_CONTAINS, };
     int index = 0;
     while ( index < clause.length() ) {
-      index = ThinUtil.skipChars( clause, index, '\'', '"' );
+      index = SQLUtil.skipChars( clause, index, '\'', '"' );
       for ( String operator : operators ) {
         if ( index <= clause.length() - operator.length() ) {
           if ( clause.substring( index ).toUpperCase().startsWith( operator ) ) {
