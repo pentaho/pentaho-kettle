@@ -1162,6 +1162,15 @@ public class ValueMetaBase implements ValueMetaInterface {
    * @throws KettleValueException
    */
   protected String convertBinaryStringToString( byte[] binary ) throws KettleValueException {
+    //noinspection deprecation
+    return convertBinaryStringToString( binary, EMPTY_STRING_AND_NULL_ARE_DIFFERENT );
+  }
+
+  /*
+   * Do not use this method directly! It is for tests!
+   */
+  @Deprecated
+  String convertBinaryStringToString( byte[] binary, boolean emptyStringDiffersFromNull ) throws KettleValueException {
     // OK, so we have an internal representation of the original object, read
     // from file.
     // Before we release it back, we have to see if we don't have to do a
@@ -1172,7 +1181,7 @@ public class ValueMetaBase implements ValueMetaInterface {
     //
     // if (binary==null || binary.length==0) return null;
     if ( binary == null || binary.length == 0 ) {
-      return ( EMPTY_STRING_AND_NULL_ARE_DIFFERENT && binary != null ) ? "" : null;
+      return ( emptyStringDiffersFromNull && binary != null ) ? "" : null;
     }
 
     String encoding;
@@ -3301,11 +3310,20 @@ public class ValueMetaBase implements ValueMetaInterface {
    */
   @Override
   public boolean isNull( Object data ) throws KettleValueException {
+    //noinspection deprecation
+    return isNull( data, EMPTY_STRING_AND_NULL_ARE_DIFFERENT );
+  }
+
+  /*
+   * Do not use this method directly! It is for tests!
+   */
+  @Deprecated
+  boolean isNull( Object data, boolean emptyStringDiffersFromNull ) throws KettleValueException {
     try {
       Object value = data;
 
       if ( isStorageBinaryString() ) {
-        if ( value == null || !EMPTY_STRING_AND_NULL_ARE_DIFFERENT && ( (byte[]) value ).length == 0 ) {
+        if ( value == null || !emptyStringDiffersFromNull && ( (byte[]) value ).length == 0 ) {
           return true; // shortcut
         }
         value = convertBinaryStringToNativeType( (byte[]) data );
@@ -3318,7 +3336,7 @@ public class ValueMetaBase implements ValueMetaInterface {
         return true;
       }
 
-      if ( EMPTY_STRING_AND_NULL_ARE_DIFFERENT ) {
+      if ( emptyStringDiffersFromNull ) {
         return false;
       }
 
