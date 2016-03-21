@@ -293,7 +293,7 @@ public class SpoonJobDelegate extends SpoonDelegate {
     int hopIndex = 0;
     for ( int i = job.nrJobHops() - 1; i >= 0; i-- ) {
       JobHopMeta hi = job.getJobHop( i );
-      for ( int j = 0; j < jobEntries.length; j++ ) {
+      for ( int j = 0; j < jobEntries.length && hopIndex < hopIndexes.length; j++ ) {
         if ( hi.getFromEntry().equals( jobEntries[j] ) || hi.getToEntry().equals( jobEntries[j] ) ) {
           int idx = job.indexOfJobHop( hi );
           jobHops.add( (JobHopMeta) hi.clone() );
@@ -301,6 +301,7 @@ public class SpoonJobDelegate extends SpoonDelegate {
           job.removeJobHop( idx );
           spoon.refreshTree();
           hopIndex++;
+          break;
         }
       }
     }
