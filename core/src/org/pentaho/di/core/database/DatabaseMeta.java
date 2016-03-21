@@ -1114,52 +1114,64 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
     }
     baseUrl = databaseInterface.getURL( environmentSubstitute( hostname ), environmentSubstitute( port ),
       environmentSubstitute( databaseName ) );
-    StringBuilder url = new StringBuilder( environmentSubstitute( baseUrl ) );
+    String url =  environmentSubstitute( baseUrl );
 
     if ( databaseInterface.supportsOptionsInURL() ) {
-      // OK, now add all the options...
-      String optionIndicator = getExtraOptionIndicator();
-      String optionSeparator = getExtraOptionSeparator();
-      String valueSeparator = getExtraOptionValueSeparator();
-
-      Map<String, String> map = getExtraOptions();
-      if ( map.size() > 0 ) {
-        Iterator<String> iterator = map.keySet().iterator();
-        boolean first = true;
-        while ( iterator.hasNext() ) {
-          String typedParameter = iterator.next();
-          int dotIndex = typedParameter.indexOf( '.' );
-          if ( dotIndex >= 0 ) {
-            String typeCode = typedParameter.substring( 0, dotIndex );
-            String parameter = typedParameter.substring( dotIndex + 1 );
-            String value = map.get( typedParameter );
-
-            // Only add to the URL if it's the same database type code,
-            // or underlying database is the same for both id's, and any subset of
-            // connection settings for one database is valid for another
-            if ( databaseForBothConnTypesIsTheSame( typeCode, databaseInterface.getPluginId() ) ) {
-              if ( first && url.indexOf( valueSeparator ) == -1 ) {
-                url.append( optionIndicator );
-              } else {
-                url.append( optionSeparator );
-              }
-
-              url.append( parameter );
-              if ( !Const.isEmpty( value ) && !value.equals( EMPTY_OPTIONS_STRING ) ) {
-                url.append( valueSeparator ).append( value );
-              }
-              first = false;
-            }
-          }
-        }
-      }
+      url = appendExtraOptions( url, getExtraOptions() );
     }
     // else {
     // We need to put all these options in a Properties file later (Oracle & Co.)
     // This happens at connect time...
     // }
 
-    return url.toString();
+    return url;
+  }
+
+  protected String appendExtraOptions( String url, Map<String, String> extraOptions ) {
+    if ( extraOptions.isEmpty() ) {
+      return url;
+    }
+
+    StringBuilder urlBuilder = new StringBuilder( url );
+
+    final String optionIndicator = getExtraOptionIndicator();
+    final String optionSeparator = getExtraOptionSeparator();
+    final String valueSeparator = getExtraOptionValueSeparator();
+
+    Iterator<String> iterator = extraOptions.keySet().iterator();
+    boolean first = true;
+    while ( iterator.hasNext() ) {
+      String typedParameter = iterator.next();
+      int dotIndex = typedParameter.indexOf( '.' );
+      if ( dotIndex == -1 ) {
+        continue;
+      }
+
+      final String value = extraOptions.get( typedParameter );
+      if ( Const.isEmpty( value ) || value.equals( EMPTY_OPTIONS_STRING ) ) {
+        // skip this science no value is provided
+        continue;
+      }
+
+      final String typeCode = typedParameter.substring( 0, dotIndex );
+      final String parameter = typedParameter.substring( dotIndex + 1 );
+
+      // Only add to the URL if it's the same database type code,
+      // or underlying database is the same for both id's, and any subset of
+      // connection settings for one database is valid for another
+      if ( databaseForBothConnTypesIsTheSame( typeCode, getDatabaseInterface().getPluginId() ) ) {
+        if ( first && url.indexOf( valueSeparator ) == -1 ) {
+          urlBuilder.append( optionIndicator );
+        } else {
+          urlBuilder.append( optionSeparator );
+        }
+
+        urlBuilder.append( parameter ).append( valueSeparator ).append( value );
+        first = false;
+      }
+    }
+
+    return urlBuilder.toString();
   }
 
   /**
@@ -1218,21 +1230,21 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
   }
 
   public String getExtraOptionIndicator() {
-    return databaseInterface.getExtraOptionIndicator();
+    return getDatabaseInterface().getExtraOptionIndicator();
   }
 
   /**
    * @return The extra option separator in database URL for this platform (usually this is semicolon ; )
    */
   public String getExtraOptionSeparator() {
-    return databaseInterface.getExtraOptionSeparator();
+    return getDatabaseInterface().getExtraOptionSeparator();
   }
 
   /**
    * @return The extra option value separator in database URL for this platform (usually this is the equal sign = )
    */
   public String getExtraOptionValueSeparator() {
-    return databaseInterface.getExtraOptionValueSeparator();
+    return getDatabaseInterface().getExtraOptionValueSeparator();
   }
 
   /**
