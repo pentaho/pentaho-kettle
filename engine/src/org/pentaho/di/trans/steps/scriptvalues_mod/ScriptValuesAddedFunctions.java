@@ -1832,21 +1832,23 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
           } else if ( "p".equals( sArg3 ) ) {
             // Upto the parent
             scm.setVariable( sArg1, sArg2 );
-
             VariableSpace parentSpace = scm.getParentVariableSpace();
-            if ( parentSpace != null ) {
-              parentSpace.setVariable( sArg1, sArg2 );
+            // need to climb up to trans level and then to job level
+            for (int i = 0; i < 2; i++) {
+              if ( parentSpace != null ) {
+                parentSpace.setVariable( sArg1, sArg2 );
+                parentSpace = parentSpace.getParentVariableSpace();
+              }
             }
           } else if ( "g".equals( sArg3 ) ) {
             // Upto the grand parent
             scm.setVariable( sArg1, sArg2 );
 
             VariableSpace parentSpace = scm.getParentVariableSpace();
-            if ( parentSpace != null ) {
-              parentSpace.setVariable( sArg1, sArg2 );
-              VariableSpace grandParentSpace = parentSpace.getParentVariableSpace();
-              if ( grandParentSpace != null ) {
-                grandParentSpace.setVariable( sArg1, sArg2 );
+            for (int i = 0; i < 3; i++) {
+              if ( parentSpace != null ) {
+                parentSpace.setVariable( sArg1, sArg2 );
+                parentSpace = parentSpace.getParentVariableSpace();
               }
             }
           } else {
