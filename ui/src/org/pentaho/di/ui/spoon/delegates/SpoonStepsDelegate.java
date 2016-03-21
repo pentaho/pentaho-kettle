@@ -206,7 +206,7 @@ public class SpoonStepsDelegate extends SpoonDelegate {
     int hopIndex = 0;
     for ( int i = transformation.nrTransHops() - 1; i >= 0; i-- ) {
       TransHopMeta hi = transformation.getTransHop( i );
-      for ( int j = 0; j < steps.length; j++ ) {
+      for ( int j = 0; j < steps.length && hopIndex < hopIndexes.length; j++ ) {
         if ( hi.getFromStep().equals( steps[j] ) || hi.getToStep().equals( steps[j] ) ) {
           int idx = transformation.indexOfTransHop( hi );
           transHops.add( (TransHopMeta) hi.clone() );
@@ -214,6 +214,7 @@ public class SpoonStepsDelegate extends SpoonDelegate {
           transformation.removeTransHop( idx );
           spoon.refreshTree();
           hopIndex++;
+          break;
         }
       }
     }
