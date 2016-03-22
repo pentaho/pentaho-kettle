@@ -103,7 +103,7 @@ public class JsonInputMetaTest {
 
   @Mock
   JsonInputField inputField;
-
+  
   @Before
   public void setup() {
     jsonInputMeta = new JsonInputMeta();
@@ -125,8 +125,7 @@ public class JsonInputMetaTest {
     jsonInputMeta.setReadUrl( true );
     jsonInputMeta.setRemoveSourceField( true );
   }
-
-  @Test
+   @Test
   public void verifyReadingRepoSetsAcceptFilenames() throws Exception {
     ObjectId objectId = new ObjectId() {
       @Override
@@ -139,5 +138,20 @@ public class JsonInputMetaTest {
     Assert.assertTrue( jsonInputMeta.isInFields() );
     Assert.assertTrue( jsonInputMeta.inputFiles.acceptingFilenames );
   }
+  
+  @Test
+  public void getFieldsRemoveSourceField() throws Exception {
+    RowMetaInterface[] info = new RowMetaInterface[1];
+    info[ 0 ] = rowMetaInterfaceItem;
 
+    jsonInputMeta.setRemoveSourceField( true );
+    jsonInputMeta.setFieldValue( DATA );
+    jsonInputMeta.setInFields( true );
+
+    when( rowMeta.indexOfValue( DATA ) ).thenReturn( 0 );
+
+    jsonInputMeta.getFields( rowMeta, NAME, info, nextStep, space, repository, metaStore );
+
+    verify( rowMeta ).removeValueMeta( 0 );
+  }
 }
