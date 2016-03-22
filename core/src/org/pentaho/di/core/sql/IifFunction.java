@@ -24,7 +24,6 @@ package org.pentaho.di.core.sql;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleSQLException;
-import org.pentaho.di.core.jdbc.ThinUtil;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaAndData;
 
@@ -63,12 +62,12 @@ public class IifFunction {
       return null;
     }
 
-    ValueMetaAndData value = ThinUtil.attemptDateValueExtraction( string );
+    ValueMetaAndData value = SQLUtil.attemptDateValueExtraction( string );
     if ( value != null ) {
       return value;
     }
 
-    value = ThinUtil.attemptStringValueExtraction( string );
+    value = SQLUtil.attemptStringValueExtraction( string );
     if ( value != null ) {
       return value;
     }
@@ -85,22 +84,22 @@ public class IifFunction {
       return new ValueMetaAndData( serviceFields.getValueMeta( index ), null );
     }
 
-    value = ThinUtil.attemptBooleanValueExtraction( string );
+    value = SQLUtil.attemptBooleanValueExtraction( string );
     if ( value != null ) {
       return value;
     }
 
-    value = ThinUtil.attemptIntegerValueExtraction( string );
+    value = SQLUtil.attemptIntegerValueExtraction( string );
     if ( value != null ) {
       return value;
     }
 
-    value = ThinUtil.attemptNumberValueExtraction( string );
+    value = SQLUtil.attemptNumberValueExtraction( string );
     if ( value != null ) {
       return value;
     }
 
-    value = ThinUtil.attemptBigNumberValueExtraction( string );
+    value = SQLUtil.attemptBigNumberValueExtraction( string );
     if ( value != null ) {
       return value;
     }

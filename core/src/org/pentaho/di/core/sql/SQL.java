@@ -26,8 +26,6 @@ import java.util.List;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleSQLException;
-import org.pentaho.di.core.jdbc.FoundClause;
-import org.pentaho.di.core.jdbc.ThinUtil;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 
@@ -62,7 +60,7 @@ public class SQL {
   /**
    * Create a new SQL object by parsing the supplied SQL string. This is a simple implementation with only one table
    * allows
-   * 
+   *
    * @param sqlString
    *          the SQL string to parse
    * @param serviceName
@@ -82,46 +80,46 @@ public class SQL {
     // First get the major blocks...
     /*
      * SELECT A, B, C FROM Step
-     * 
+     *
      * SELECT A, B, C FROM Step WHERE D > 6 AND E = 'abcd'
-     * 
+     *
      * SELECT A, B, C FROM Step ORDER BY B, A, C
-     * 
+     *
      * SELECT A, B, sum(C) FROM Step WHERE D > 6 AND E = 'abcd' GROUP BY A, B HAVING sum(C) > 100 ORDER BY sum(C) DESC
      */
     //
-    FoundClause foundClause = ThinUtil.findClauseWithRest( sql, "SELECT", "FROM" );
+    FoundClause foundClause = SQLUtil.findClauseWithRest( sql, "SELECT", "FROM" );
     selectClause = foundClause.getClause();
     if ( foundClause.getRest() == null ) {
       return;
     }
-    foundClause = ThinUtil.findClauseWithRest( foundClause.getRest(), "FROM", "WHERE", "GROUP BY", "ORDER BY", "LIMIT" );
+    foundClause = SQLUtil.findClauseWithRest( foundClause.getRest(), "FROM", "WHERE", "GROUP BY", "ORDER BY", "LIMIT" );
     serviceClause = foundClause.getClause();
     parseServiceClause();
     if ( foundClause.getRest() == null ) {
       return;
     }
-    foundClause = ThinUtil.findClauseWithRest( foundClause.getRest(), "WHERE", "GROUP BY", "ORDER BY", "LIMIT" );
+    foundClause = SQLUtil.findClauseWithRest( foundClause.getRest(), "WHERE", "GROUP BY", "ORDER BY", "LIMIT" );
     whereClause = foundClause.getClause();
     if ( foundClause.getRest() == null ) {
       return;
     }
-    foundClause = ThinUtil.findClauseWithRest( foundClause.getRest(), "GROUP BY", "HAVING", "ORDER BY", "LIMIT" );
+    foundClause = SQLUtil.findClauseWithRest( foundClause.getRest(), "GROUP BY", "HAVING", "ORDER BY", "LIMIT" );
     groupClause = foundClause.getClause();
     if ( foundClause.getRest() == null ) {
       return;
     }
-    foundClause = ThinUtil.findClauseWithRest( foundClause.getRest(), "HAVING", "ORDER BY", "LIMIT" );
+    foundClause = SQLUtil.findClauseWithRest( foundClause.getRest(), "HAVING", "ORDER BY", "LIMIT" );
     havingClause = foundClause.getClause();
     if ( foundClause.getRest() == null ) {
       return;
     }
-    foundClause = ThinUtil.findClauseWithRest( foundClause.getRest(), "ORDER BY", "LIMIT" );
+    foundClause = SQLUtil.findClauseWithRest( foundClause.getRest(), "ORDER BY", "LIMIT" );
     orderClause = foundClause.getClause();
     if ( foundClause.getRest() == null ) {
       return;
     }
-    foundClause = ThinUtil.findClauseWithRest( foundClause.getRest(), "LIMIT" );
+    foundClause = SQLUtil.findClauseWithRest( foundClause.getRest(), "LIMIT" );
     limitClause = foundClause.getClause();
   }
 
@@ -131,19 +129,19 @@ public class SQL {
       return;
     }
 
-    List<String> parts = ThinUtil.splitClause( serviceClause, ' ', '"' );
+    List<String> parts = SQLUtil.splitClause( serviceClause, ' ', '"' );
     if ( parts.size() >= 1 ) {
       // The service name is in the first part/
       // However, it can be in format Namespace.Service (Schema.Table)
       //
-      List<String> list = ThinUtil.splitClause( parts.get( 0 ), '.', '"' );
+      List<String> list = SQLUtil.splitClause( parts.get( 0 ), '.', '"' );
       if ( list.size() == 1 ) {
         namespace = null;
-        serviceName = ThinUtil.stripQuotes( list.get( 0 ), '"' );
+        serviceName = SQLUtil.stripQuotes( list.get( 0 ), '"' );
       }
       if ( list.size() == 2 ) {
-        namespace = ThinUtil.stripQuotes( list.get( 0 ), '"' );
-        serviceName = ThinUtil.stripQuotes( list.get( 1 ), '"' );
+        namespace = SQLUtil.stripQuotes( list.get( 0 ), '"' );
+        serviceName = SQLUtil.stripQuotes( list.get( 1 ), '"' );
       }
       if ( list.size() > 2 ) {
         throw new KettleSQLException( "Too many parts detected in table name specification [" + serviceClause + "]" );
@@ -151,12 +149,12 @@ public class SQL {
     }
 
     if ( parts.size() == 2 ) {
-      serviceAlias = ThinUtil.stripQuotes( parts.get( 1 ), '"' );
+      serviceAlias = SQLUtil.stripQuotes( parts.get( 1 ), '"' );
     }
     if ( parts.size() == 3 ) {
 
       if ( parts.get( 1 ).equalsIgnoreCase( "AS" ) ) {
-        serviceAlias = ThinUtil.stripQuotes( parts.get( 2 ), '"' );
+        serviceAlias = SQLUtil.stripQuotes( parts.get( 2 ), '"' );
       } else {
         throw new KettleSQLException( "AS expected in from clause: " + serviceClause );
       }

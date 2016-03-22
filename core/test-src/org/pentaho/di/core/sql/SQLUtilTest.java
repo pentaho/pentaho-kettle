@@ -20,7 +20,7 @@
  *
  ******************************************************************************/
 
-package org.pentaho.di.core.jdbc;
+package org.pentaho.di.core.sql;
 
 import com.google.common.collect.ImmutableMap;
 import org.junit.Test;
@@ -34,41 +34,46 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Map;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class ThinUtilTest {
+public class SQLUtilTest {
   @SuppressWarnings( "deprecation" )
   @Test
   public void testFindClauseNullOrEmptyString() throws KettleSQLException {
-    assertNull( ThinUtil.findClause( null, null ) );
-    assertNull( ThinUtil.findClause( "", null ) );
+    assertNull( SQLUtil.findClause( null, null ) );
+    assertNull( SQLUtil.findClause( "", null ) );
   }
 
   @SuppressWarnings( "deprecation" )
   @Test
   public void testFindSelectFromNotFound() throws KettleSQLException {
-    assertNull( ThinUtil.findClause( "Select * From Test", "WHERE" ) );
+    assertNull( SQLUtil.findClause( "Select * From Test", "WHERE" ) );
   }
 
   @SuppressWarnings( "deprecation" )
   @Test
   public void testFindSelectFromFound() throws KettleSQLException {
-    assertEquals( "*", ThinUtil.findClause( "Select * From Test", "SELECT", "FROM" ) );
+    assertEquals( "*", SQLUtil.findClause( "Select * From Test", "SELECT", "FROM" ) );
   }
 
   @SuppressWarnings( "deprecation" )
   @Test
   public void testFindClauseSkipsChars() throws KettleSQLException {
-    assertNull( ThinUtil.findClause( "'Select' * From Test", "SELECT", "FROM" ) );
+    assertNull( SQLUtil.findClause( "'Select' * From Test", "SELECT", "FROM" ) );
   }
 
   @SuppressWarnings( "deprecation" )
   @Test
   public void testAttemptDateValueExtraction() throws Exception {
-    ValueMetaAndData timestamp = ThinUtil.attemptDateValueExtraction( "TIMESTAMP '2014-01-01 00:00:00'" );
-    ValueMetaAndData date = ThinUtil.attemptDateValueExtraction( "DATE '2014-01-01'" );
+    ValueMetaAndData timestamp = SQLUtil.attemptDateValueExtraction( "TIMESTAMP '2014-01-01 00:00:00'" );
+    ValueMetaAndData date = SQLUtil.attemptDateValueExtraction( "DATE '2014-01-01'" );
 
     assertNotNull( timestamp );
     assertEquals( "2014-01-01 00:00:00", timestamp.toString() );
@@ -81,20 +86,20 @@ public class ThinUtilTest {
   @Test
   public void testLikePatternMatching() {
     try {
-      ThinUtil.like( "foo", null );
+      SQLUtil.like( "foo", null );
       fail( "Null pattern should not be allowed" );
     } catch ( IllegalArgumentException e ) {
       assertNotNull( e );
     }
 
-    assertTrue( "Exact Matching", ThinUtil.like( "foobar", "foobar" ) );
+    assertTrue( "Exact Matching", SQLUtil.like( "foobar", "foobar" ) );
 
-    assertTrue( "_ Matching", ThinUtil.like( "foobar", "f__b_r" ) );
-    assertTrue( "* Matching", ThinUtil.like( "foobar", "foo%" ) );
+    assertTrue( "_ Matching", SQLUtil.like( "foobar", "f__b_r" ) );
+    assertTrue( "* Matching", SQLUtil.like( "foobar", "foo%" ) );
 
-    assertTrue( "Regex Escaping", ThinUtil.like( "foo\\*?[]()bar", "%\\*?[]()%" ) );
+    assertTrue( "Regex Escaping", SQLUtil.like( "foo\\*?[]()bar", "%\\*?[]()%" ) );
 
-    assertFalse( "False Match", ThinUtil.like( "foo", "bar" ) );
+    assertFalse( "False Match", SQLUtil.like( "foo", "bar" ) );
   }
 
   @SuppressWarnings( "deprecation" )
@@ -102,80 +107,80 @@ public class ThinUtilTest {
   public void testGetValueMeta() throws SQLException {
     ValueMetaInterface testValue;
     String expectedName = "testName";
-    testValue = ThinUtil.getValueMeta( expectedName, Types.BIGINT );
+    testValue = SQLUtil.getValueMeta( expectedName, Types.BIGINT );
     assertEquals( expectedName, testValue.getName() );
     assertEquals( ValueMetaInterface.TYPE_INTEGER, testValue.getType() );
 
-    testValue = ThinUtil.getValueMeta( expectedName, Types.INTEGER );
+    testValue = SQLUtil.getValueMeta( expectedName, Types.INTEGER );
     assertEquals( expectedName, testValue.getName() );
     assertEquals( ValueMetaInterface.TYPE_INTEGER, testValue.getType() );
 
-    testValue = ThinUtil.getValueMeta( expectedName, Types.SMALLINT );
+    testValue = SQLUtil.getValueMeta( expectedName, Types.SMALLINT );
     assertEquals( expectedName, testValue.getName() );
     assertEquals( ValueMetaInterface.TYPE_INTEGER, testValue.getType() );
 
-    testValue = ThinUtil.getValueMeta( expectedName, Types.CHAR );
+    testValue = SQLUtil.getValueMeta( expectedName, Types.CHAR );
     assertEquals( expectedName, testValue.getName() );
     assertEquals( ValueMetaInterface.TYPE_STRING, testValue.getType() );
 
-    testValue = ThinUtil.getValueMeta( expectedName, Types.VARCHAR );
+    testValue = SQLUtil.getValueMeta( expectedName, Types.VARCHAR );
     assertEquals( expectedName, testValue.getName() );
     assertEquals( ValueMetaInterface.TYPE_STRING, testValue.getType() );
 
-    testValue = ThinUtil.getValueMeta( expectedName, Types.CLOB );
+    testValue = SQLUtil.getValueMeta( expectedName, Types.CLOB );
     assertEquals( expectedName, testValue.getName() );
     assertEquals( ValueMetaInterface.TYPE_STRING, testValue.getType() );
 
-    testValue = ThinUtil.getValueMeta( expectedName, Types.DATE );
+    testValue = SQLUtil.getValueMeta( expectedName, Types.DATE );
     assertEquals( expectedName, testValue.getName() );
     assertEquals( ValueMetaInterface.TYPE_DATE, testValue.getType() );
 
-    testValue = ThinUtil.getValueMeta( expectedName, Types.TIMESTAMP );
+    testValue = SQLUtil.getValueMeta( expectedName, Types.TIMESTAMP );
     assertEquals( expectedName, testValue.getName() );
     assertEquals( ValueMetaInterface.TYPE_DATE, testValue.getType() );
 
-    testValue = ThinUtil.getValueMeta( expectedName, Types.TIME );
+    testValue = SQLUtil.getValueMeta( expectedName, Types.TIME );
     assertEquals( expectedName, testValue.getName() );
     assertEquals( ValueMetaInterface.TYPE_DATE, testValue.getType() );
 
-    testValue = ThinUtil.getValueMeta( expectedName, Types.DECIMAL );
+    testValue = SQLUtil.getValueMeta( expectedName, Types.DECIMAL );
     assertEquals( expectedName, testValue.getName() );
     assertEquals( ValueMetaInterface.TYPE_BIGNUMBER, testValue.getType() );
 
-    testValue = ThinUtil.getValueMeta( expectedName, Types.DOUBLE );
+    testValue = SQLUtil.getValueMeta( expectedName, Types.DOUBLE );
     assertEquals( expectedName, testValue.getName() );
     assertEquals( ValueMetaInterface.TYPE_NUMBER, testValue.getType() );
 
-    testValue = ThinUtil.getValueMeta( expectedName, Types.FLOAT );
+    testValue = SQLUtil.getValueMeta( expectedName, Types.FLOAT );
     assertEquals( expectedName, testValue.getName() );
     assertEquals( ValueMetaInterface.TYPE_NUMBER, testValue.getType() );
 
-    testValue = ThinUtil.getValueMeta( expectedName, Types.BOOLEAN );
+    testValue = SQLUtil.getValueMeta( expectedName, Types.BOOLEAN );
     assertEquals( expectedName, testValue.getName() );
     assertEquals( ValueMetaInterface.TYPE_BOOLEAN, testValue.getType() );
 
-    testValue = ThinUtil.getValueMeta( expectedName, Types.BIT );
+    testValue = SQLUtil.getValueMeta( expectedName, Types.BIT );
     assertEquals( expectedName, testValue.getName() );
     assertEquals( ValueMetaInterface.TYPE_BOOLEAN, testValue.getType() );
 
-    testValue = ThinUtil.getValueMeta( expectedName, Types.BINARY );
+    testValue = SQLUtil.getValueMeta( expectedName, Types.BINARY );
     assertEquals( expectedName, testValue.getName() );
     assertEquals( ValueMetaInterface.TYPE_BINARY, testValue.getType() );
 
-    testValue = ThinUtil.getValueMeta( expectedName, Types.BLOB );
+    testValue = SQLUtil.getValueMeta( expectedName, Types.BLOB );
     assertEquals( expectedName, testValue.getName() );
     assertEquals( ValueMetaInterface.TYPE_BINARY, testValue.getType() );
 
-    testValue = ThinUtil.getValueMeta( expectedName, Types.OTHER );
+    testValue = SQLUtil.getValueMeta( expectedName, Types.OTHER );
     assertEquals( expectedName, testValue.getName() );
     assertEquals( ValueMetaInterface.TYPE_NONE, testValue.getType() );
 
-    testValue = ThinUtil.getValueMeta( expectedName, Types.NULL );
+    testValue = SQLUtil.getValueMeta( expectedName, Types.NULL );
     assertEquals( expectedName, testValue.getName() );
     assertEquals( ValueMetaInterface.TYPE_NONE, testValue.getType() );
 
     try {
-      ThinUtil.getValueMeta( expectedName, Integer.MIN_VALUE );
+      SQLUtil.getValueMeta( expectedName, Integer.MIN_VALUE );
       fail();
     } catch ( SQLException expected ) {
       // Do nothing, there is no SQL Type for Integer.MIN_VALUE, an exception was thrown as expected.
@@ -207,9 +212,9 @@ public class ThinUtilTest {
       new TypeMap( ValueMetaInterface.TYPE_NONE,      Types.OTHER,     "OTHER" ),
     };
     for ( TypeMap map : typeMaps ) {
-      assertEquals( map.sqlDesc, ThinUtil.getSqlTypeDesc( map.valueMeta ) );
-      assertEquals( map.sqlType, ThinUtil.getSqlType( map.valueMeta ) );
-      assertEquals( map.valueMeta.getType(), ThinUtil.getValueMeta( "test", map.sqlType ).getType() );
+      assertEquals( map.sqlDesc, SQLUtil.getSqlTypeDesc( map.valueMeta ) );
+      assertEquals( map.sqlType, SQLUtil.getSqlType( map.valueMeta ) );
+      assertEquals( map.valueMeta.getType(), SQLUtil.getValueMeta( "test", map.sqlType ).getType() );
     }
   }
 
@@ -217,91 +222,91 @@ public class ThinUtilTest {
   @SuppressWarnings( "deprecation" )
   @Test
   public void testAttemptDateValueExtraction2() throws KettleValueException {
-    ValueMetaAndData result = ThinUtil.attemptDateValueExtraction( "[2015/01/02 03:04:56.789]" );
+    ValueMetaAndData result = SQLUtil.attemptDateValueExtraction( "[2015/01/02 03:04:56.789]" );
     assertNotNull( result );
     assertEquals( ValueMetaInterface.TYPE_DATE, result.getValueMeta().getType() );
     assertEquals( "2015/01/02 03:04:56.789", result.getValueMeta().getString( result.getValueData() ) );
 
     //assertNull( ThinUtil.attemptDateValueExtraction( null ) );
-    assertNull( ThinUtil.attemptDateValueExtraction( "" ) );
-    assertNull( ThinUtil.attemptDateValueExtraction( "[]" ) );
-    assertNull( ThinUtil.attemptDateValueExtraction( "[notadate]" ) );
-    assertNull( ThinUtil.attemptDateValueExtraction( "2015/01/02 03:04:56.789" ) );
+    assertNull( SQLUtil.attemptDateValueExtraction( "" ) );
+    assertNull( SQLUtil.attemptDateValueExtraction( "[]" ) );
+    assertNull( SQLUtil.attemptDateValueExtraction( "[notadate]" ) );
+    assertNull( SQLUtil.attemptDateValueExtraction( "2015/01/02 03:04:56.789" ) );
   }
 
   @SuppressWarnings( "deprecation" )
   @Test
   public void testAttemptIntegerValueExtraction() {
-    ValueMetaAndData result = ThinUtil.attemptIntegerValueExtraction( "12345" );
+    ValueMetaAndData result = SQLUtil.attemptIntegerValueExtraction( "12345" );
     assertNotNull( result );
     assertEquals( ValueMetaInterface.TYPE_INTEGER, result.getValueMeta().getType() );
     assertEquals( 12345L, result.getValueData() );
 
     //assertNull( ThinUtil.attemptIntegerValueExtraction( null ) );
-    assertNull( ThinUtil.attemptIntegerValueExtraction( "" ) );
-    assertNull( ThinUtil.attemptIntegerValueExtraction( "123.45" ) );
+    assertNull( SQLUtil.attemptIntegerValueExtraction( "" ) );
+    assertNull( SQLUtil.attemptIntegerValueExtraction( "123.45" ) );
   }
 
   @SuppressWarnings( "deprecation" )
   @Test
   public void testAttemptNumberValueExtraction() {
-    ValueMetaAndData result = ThinUtil.attemptNumberValueExtraction( "12345.678" );
+    ValueMetaAndData result = SQLUtil.attemptNumberValueExtraction( "12345.678" );
     assertNotNull( result );
     assertEquals( ValueMetaInterface.TYPE_NUMBER, result.getValueMeta().getType() );
     assertEquals( 12345.678, result.getValueData() );
 
     //assertNull( ThinUtil.attemptNumberValueExtraction( null ) );
-    assertNull( ThinUtil.attemptNumberValueExtraction( "" ) );
-    assertNull( ThinUtil.attemptNumberValueExtraction( "abcde" ) );
+    assertNull( SQLUtil.attemptNumberValueExtraction( "" ) );
+    assertNull( SQLUtil.attemptNumberValueExtraction( "abcde" ) );
   }
 
   @SuppressWarnings( "deprecation" )
   @Test
   public void testAttemptBigNumberValueExtraction() {
-    ValueMetaAndData result = ThinUtil.attemptBigNumberValueExtraction( "1234567890123456789.0987654321" );
+    ValueMetaAndData result = SQLUtil.attemptBigNumberValueExtraction( "1234567890123456789.0987654321" );
     assertNotNull( result );
     assertEquals( ValueMetaInterface.TYPE_BIGNUMBER, result.getValueMeta().getType() );
     assertEquals( new BigDecimal( "1234567890123456789.0987654321" ), result.getValueData() );
 
     //assertNull( ThinUtil.attemptBigNumberValueExtraction( null ) );
-    assertNull( ThinUtil.attemptBigNumberValueExtraction( "" ) );
-    assertNull( ThinUtil.attemptBigNumberValueExtraction( "abcde" ) );
+    assertNull( SQLUtil.attemptBigNumberValueExtraction( "" ) );
+    assertNull( SQLUtil.attemptBigNumberValueExtraction( "abcde" ) );
   }
 
   @SuppressWarnings( "deprecation" )
   @Test
   public void testAttemptStringValueExtraction() {
-    ValueMetaAndData result = ThinUtil.attemptStringValueExtraction( "'testValue'" );
+    ValueMetaAndData result = SQLUtil.attemptStringValueExtraction( "'testValue'" );
     assertNotNull( result );
     assertEquals( ValueMetaInterface.TYPE_STRING, result.getValueMeta().getType() );
     assertEquals( "testValue", result.getValueData() );
 
-    result = ThinUtil.attemptStringValueExtraction( "'test\'\'Value'" );
+    result = SQLUtil.attemptStringValueExtraction( "'test\'\'Value'" );
     assertNotNull( result );
     assertEquals( ValueMetaInterface.TYPE_STRING, result.getValueMeta().getType() );
     assertEquals( "test\'Value", result.getValueData() );
 
     //assertNull( ThinUtil.attemptStringValueExtraction( null ) );
-    assertNull( ThinUtil.attemptStringValueExtraction( "" ) );
-    assertNull( ThinUtil.attemptStringValueExtraction( "abcde" ) );
+    assertNull( SQLUtil.attemptStringValueExtraction( "" ) );
+    assertNull( SQLUtil.attemptStringValueExtraction( "abcde" ) );
   }
 
   @SuppressWarnings( "deprecation" )
   @Test
   public void testAttemptBooleanValueExtraction() {
-    ValueMetaAndData result = ThinUtil.attemptBooleanValueExtraction( "TrUe" );
+    ValueMetaAndData result = SQLUtil.attemptBooleanValueExtraction( "TrUe" );
     assertNotNull( result );
     assertEquals( ValueMetaInterface.TYPE_BOOLEAN, result.getValueMeta().getType() );
     assertEquals( Boolean.TRUE, result.getValueData() );
 
-    result = ThinUtil.attemptBooleanValueExtraction( "fAlSe" );
+    result = SQLUtil.attemptBooleanValueExtraction( "fAlSe" );
     assertNotNull( result );
     assertEquals( ValueMetaInterface.TYPE_BOOLEAN, result.getValueMeta().getType() );
     assertEquals( Boolean.FALSE, result.getValueData() );
 
-    assertNull( ThinUtil.attemptBooleanValueExtraction( null ) );
-    assertNull( ThinUtil.attemptBooleanValueExtraction( "" ) );
-    assertNull( ThinUtil.attemptBooleanValueExtraction( "abcde" ) );
+    assertNull( SQLUtil.attemptBooleanValueExtraction( null ) );
+    assertNull( SQLUtil.attemptBooleanValueExtraction( "" ) );
+    assertNull( SQLUtil.attemptBooleanValueExtraction( "abcde" ) );
   }
 
   @SuppressWarnings( "deprecation" )
@@ -321,7 +326,7 @@ public class ThinUtilTest {
       for ( char quote : new char[] { '\'', '"', '`' } ) {
         assertEquals(
           testStrings.get( test ).replace( '"', quote ),
-          ThinUtil.stripQuotesIfNoWhitespace( test.replace( '"', quote ), quote ) );
+          SQLUtil.stripQuotesIfNoWhitespace( test.replace( '"', quote ), quote ) );
       }
     }
   }

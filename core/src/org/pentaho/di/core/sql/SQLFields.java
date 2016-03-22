@@ -25,7 +25,6 @@ package org.pentaho.di.core.sql;
 import com.google.common.collect.Lists;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleSQLException;
-import org.pentaho.di.core.jdbc.ThinUtil;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 
@@ -76,7 +75,7 @@ public class SQLFields {
     List<String> strings = new ArrayList<String>();
     int startIndex = 0;
     for ( int index = 0; index < fieldsClause.length(); index++ ) {
-      index = ThinUtil.skipChars( fieldsClause, index, '"', '\'', '(' );
+      index = SQLUtil.skipChars( fieldsClause, index, '"', '\'', '(' );
       if ( index >= fieldsClause.length() ) {
         strings.add( fieldsClause.substring( startIndex ) );
         startIndex = -1;
@@ -95,7 +94,7 @@ public class SQLFields {
     //
     fields.clear();
     for ( String string : strings ) {
-      String fieldString = ThinUtil.stripTableAlias( Const.trim( string ), tableAlias );
+      String fieldString = SQLUtil.stripTableAlias( Const.trim( string ), tableAlias );
       if ( "*".equals( fieldString ) ) {
         // Add all service fields
         //
