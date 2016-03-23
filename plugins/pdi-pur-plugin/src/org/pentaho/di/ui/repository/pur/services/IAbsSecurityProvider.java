@@ -1,5 +1,5 @@
 /*!
- * Copyright 2010 - 2015 Pentaho Corporation.  All rights reserved.
+ * Copyright 2010 - 2016 Pentaho Corporation.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,21 +31,23 @@ import org.pentaho.di.repository.RepositorySecurityProvider;
  */
 
 public interface IAbsSecurityProvider extends RepositorySecurityProvider {
-  public final static String CREATE_CONTENT_ROLE = "org.pentaho.di.creator"; //$NON-NLS-1$
+  String CREATE_CONTENT_ROLE = "org.pentaho.di.creator"; //$NON-NLS-1$
 
-  public final static String READ_CONTENT_ROLE = "org.pentaho.di.reader";//$NON-NLS-1$
+  String READ_CONTENT_ROLE = "org.pentaho.di.reader"; //$NON-NLS-1$
 
-  public final static String ADMINISTER_SECURITY_ROLE = "org.pentaho.di.securityAdministrator";//$NON-NLS-1$
+  String ADMINISTER_SECURITY_ROLE = "org.pentaho.di.securityAdministrator"; //$NON-NLS-1$
 
-  public final static String CREATE_CONTENT_ACTION = "org.pentaho.repository.create"; //$NON-NLS-1$
+  String CREATE_CONTENT_ACTION = "org.pentaho.repository.create"; //$NON-NLS-1$
 
-  public final static String READ_CONTENT_ACTION = "org.pentaho.repository.read";//$NON-NLS-1$
+  String READ_CONTENT_ACTION = "org.pentaho.repository.read"; //$NON-NLS-1$
 
-  public final static String EXECUTE_CONTENT_ACTION = "org.pentaho.repository.execute";//$NON-NLS-1$
+  String EXECUTE_CONTENT_ACTION = "org.pentaho.repository.execute"; //$NON-NLS-1$
 
-  public final static String ADMINISTER_SECURITY_ACTION = "org.pentaho.security.administerSecurity";//$NON-NLS-1$
+  String SCHEDULE_CONTENT_ACTION = "org.pentaho.scheduler.manage";
 
-  public final static String NAMESPACE = "org.pentaho"; //$NON-NLS-1$
+  String ADMINISTER_SECURITY_ACTION = "org.pentaho.security.administerSecurity"; //$NON-NLS-1$
+
+  String NAMESPACE = "org.pentaho"; //$NON-NLS-1$
 
   /**
    * Returns {@code true} if the the action should be allowed.
