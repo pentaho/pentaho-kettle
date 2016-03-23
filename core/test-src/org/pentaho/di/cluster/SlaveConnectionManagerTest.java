@@ -28,7 +28,7 @@ import org.junit.Test;
 import javax.net.ssl.SSLContext;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertFalse;
 
 public class SlaveConnectionManagerTest {
 
@@ -42,7 +42,7 @@ public class SlaveConnectionManagerTest {
   @Test
   public void shouldOverrideDefaultSSLContextByDefault() throws Exception {
     SlaveConnectionManager instance = SlaveConnectionManager.getInstance();
-    assertNotEquals( defaultContext, SSLContext.getDefault() );
+    assertFalse( defaultContext.equals( SSLContext.getDefault() ) );
   }
 
   @Test
