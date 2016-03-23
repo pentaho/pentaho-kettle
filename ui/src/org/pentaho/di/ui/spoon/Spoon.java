@@ -2429,8 +2429,13 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         new Image[] {
           GUIResource.getInstance().getImageStartMedium(), GUIResource.getInstance().getImageDummyMedium() };
 
+      int pos = 0;
       for ( int i = 0; i < specialText.length; i++ ) {
-        TreeItem specialItem = new TreeItem( generalItem, SWT.NONE, i );
+        if ( !filterMatch( specialText[i] ) && !filterMatch( specialTooltip[i] ) ) {
+          continue;
+        }
+
+        TreeItem specialItem = new TreeItem( generalItem, SWT.NONE, pos );
         specialItem.setImage( specialImage[i] );
         specialItem.setText( specialText[i] );
         specialItem.addListener( SWT.Selection, new Listener() {
@@ -2442,6 +2447,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         } );
 
         coreJobToolTipMap.put( specialText[i], specialTooltip[i] );
+        pos++;
       }
     }
 
