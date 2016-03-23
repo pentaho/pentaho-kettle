@@ -763,6 +763,14 @@ public class JsonInputMeta extends BaseFileInputStepMeta implements StepMetaInte
   @Override
   public void getFields( RowMetaInterface rowMeta, String name, RowMetaInterface[] info, StepMeta nextStep,
       VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+
+    if ( inFields && removeSourceField && !Const.isEmpty( valueField ) ) {
+      int index = rowMeta.indexOfValue( valueField );
+      if ( index != -1 ) {
+        rowMeta.removeValueMeta( index );
+      }
+    }
+
     for ( JsonInputField field : getInputFields() ) {
       try {
         rowMeta.addValueMeta( field.toValueMeta( name, space ) );
