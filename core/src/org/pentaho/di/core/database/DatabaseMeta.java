@@ -1159,7 +1159,16 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
       // Only add to the URL if it's the same database type code,
       // or underlying database is the same for both id's, and any subset of
       // connection settings for one database is valid for another
-      if ( databaseForBothConnTypesIsTheSame( typeCode, getDatabaseInterface().getPluginId() ) ) {
+      boolean dbForBothDbInterfacesIsSame = false;
+      try {
+        DatabaseInterface primaryDb = getDbInterface( typeCode );
+        dbForBothDbInterfacesIsSame = databaseForBothDbInterfacesIsTheSame( primaryDb, getDatabaseInterface() );
+      } catch ( KettleDatabaseException e ) {
+        getGeneralLogger().logError(
+          "DatabaseInterface with " + typeCode + " database type is not found! Parameter " + parameter
+            + "won't be appended to URL" );
+      }
+      if ( dbForBothDbInterfacesIsSame ) {
         if ( first && url.indexOf( valueSeparator ) == -1 ) {
           urlBuilder.append( optionIndicator );
         } else {
@@ -1175,29 +1184,25 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
   }
 
   /**
-   *  This method is designed to identify whether the actual database for two database connection types is the same.
-   *  This situation can occur in two cases:
-   *
-   *  1. {@code secondaryDbConnType} represents a connection to a database, that is the same as {@code primaryDbConnType}
-   *  2. {@code secondaryDbConnType} represents a connection to a database, that is a subset of {@code primaryDbConnType}
-   *  and <b> all connection settings specified to one connection is valid to another </b>. In this case
-   *  we treat {@code secondaryDbConnType} as {@code primaryDbConnType}
-   *
-   *  Example of case 2 is the following:
-   *  MSSQLNATIVE connection type is a subset of MSSQL connection type and all valid MSSQLNATIVE connection settings are valid to MSSQL also.
-   *  In this case we can safely treat MSSQLNATIVE connection type as MSSQL connection type.
-   *
+   * This method is designed to identify whether the actual database for two database connection types is the same.
+   * This situation can occur in two cases:
+   * 1. plugin id of {@code primary} is the same as plugin id of {@code secondary}
+   * 2. {@code secondary} is a descendant {@code primary} (with any deepness).
    */
-  protected boolean databaseForBothConnTypesIsTheSame( String primaryDbConnType, String secondaryDbConnType ) {
-    if ( primaryDbConnType.equals( secondaryDbConnType ) ) {
+  protected boolean databaseForBothDbInterfacesIsTheSame( DatabaseInterface primary, DatabaseInterface secondary ) {
+    if ( primary == null || secondary == null ) {
+      throw new IllegalArgumentException( "DatabaseInterface shouldn't be null!" );
+    }
+
+    if ( primary.getPluginId() == null || secondary.getPluginId() == null ) {
+      return false;
+    }
+
+    if ( primary.getPluginId().equals( secondary.getPluginId() ) ) {
       return true;
     }
 
-    if ( primaryDbConnType.equals( "MSSQL" ) && secondaryDbConnType.equals( "MSSQLNATIVE" ) ) {
-      return true;
-    }
-
-    return false;
+    return primary.getClass().isAssignableFrom( secondary.getClass() );
   }
 
   public Properties getConnectionProperties() {
@@ -3011,5 +3016,19 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
     // A fallback statement in case somehow databaseInterface is of an old version.
     // This is the previous, and in fact, buggy implementation. See BISERVER-13024.
     return DROP_TABLE_STATEMENT + tableName;
+  }
+
+  /**
+   * For testing
+   */
+  protected LogChannelInterface getGeneralLogger() {
+    return LogChannel.GENERAL;
+  }
+
+  /**
+   * For testing
+   */
+  protected DatabaseInterface getDbInterface( String typeCode ) throws KettleDatabaseException {
+    return getDatabaseInterface( typeCode );
   }
 }
