@@ -975,6 +975,12 @@ public class JsonInputDialog extends BaseStepDialog implements StepDialogInterfa
     fdremoveSourceField.left = new FormAttachment( middle, -margin );
     fdremoveSourceField.top = new FormAttachment( wlreadUrl, margin );
     wremoveSourceField.setLayoutData( fdremoveSourceField );
+    SelectionAdapter removeSourceFieldAdapter = new SelectionAdapter() {
+      @Override public void widgetSelected( SelectionEvent selectionEvent ) {
+        input.setChanged();
+      }
+    };
+    wremoveSourceField.addSelectionListener( removeSourceFieldAdapter );
 
     // ///////////////////////////////////////////////////////////
     // / END OF Output Field GROUP
