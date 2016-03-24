@@ -191,20 +191,23 @@ public class ValueMetaTimestamp extends ValueMetaDate {
   public int compare( Object data1, Object data2 ) throws KettleValueException {
     Timestamp timestamp1 = getTimestamp( data1 );
     Timestamp timestamp2 = getTimestamp( data2 );
+    int cmp = 0;
     if ( timestamp1 == null ) {
       if ( timestamp2 == null ) {
-        return 0;
+        cmp = 0;
       } else {
-        return -1;
+        cmp = -1;
       }
+    } else if ( timestamp2 == null ) {
+      cmp = 1;
     } else {
-      if ( timestamp2 == null ) {
-        return 1;
-      } else {
-        return timestamp1.compareTo( timestamp2 );
-      }
+      cmp = timestamp1.compareTo( timestamp2 );
     }
-
+    if ( isSortedDescending() ) {
+      return -cmp;
+    } else {
+      return cmp;
+    }
   }
 
   protected Timestamp convertBigNumberToTimestamp( BigDecimal bd ) {
@@ -310,7 +313,7 @@ public class ValueMetaTimestamp extends ValueMetaDate {
       // because you could get an NPE since you haven't checked isEmpty(pol)
       // yet!
       if ( Const.isEmpty( pol )
-          || pol.equalsIgnoreCase( Const.rightPad( new StringBuffer( null_value ), pol.length() ) ) ) {
+          || pol.equalsIgnoreCase( Const.rightPad( new StringBuilder( null_value ), pol.length() ) ) ) {
         pol = ifNull;
       }
     }
@@ -328,7 +331,7 @@ public class ValueMetaTimestamp extends ValueMetaDate {
           // If the polled value is equal to the spaces right-padded null_value,
           // we have a match
           //
-          if ( pol.equalsIgnoreCase( Const.rightPad( new StringBuffer( null_value ), pol.length() ) ) ) {
+          if ( pol.equalsIgnoreCase( Const.rightPad( new StringBuilder( null_value ), pol.length() ) ) ) {
             return null;
           }
         }
@@ -343,10 +346,10 @@ public class ValueMetaTimestamp extends ValueMetaDate {
     }
 
     // Trimming
-    StringBuffer strpol;
+    StringBuilder strpol;
     switch ( trim_type ) {
       case ValueMetaInterface.TRIM_TYPE_LEFT:
-        strpol = new StringBuffer( pol );
+        strpol = new StringBuilder( pol );
         while ( strpol.length() > 0 && strpol.charAt( 0 ) == ' ' ) {
           strpol.deleteCharAt( 0 );
         }
@@ -354,14 +357,14 @@ public class ValueMetaTimestamp extends ValueMetaDate {
 
         break;
       case ValueMetaInterface.TRIM_TYPE_RIGHT:
-        strpol = new StringBuffer( pol );
+        strpol = new StringBuilder( pol );
         while ( strpol.length() > 0 && strpol.charAt( strpol.length() - 1 ) == ' ' ) {
           strpol.deleteCharAt( strpol.length() - 1 );
         }
         pol = strpol.toString();
         break;
       case ValueMetaInterface.TRIM_TYPE_BOTH:
-        strpol = new StringBuffer( pol );
+        strpol = new StringBuilder( pol );
         while ( strpol.length() > 0 && strpol.charAt( 0 ) == ' ' ) {
           strpol.deleteCharAt( 0 );
         }

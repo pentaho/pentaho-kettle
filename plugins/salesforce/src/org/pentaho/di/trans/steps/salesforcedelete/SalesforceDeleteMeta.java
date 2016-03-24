@@ -50,7 +50,14 @@ import org.pentaho.di.trans.steps.salesforceinput.SalesforceConnectionUtils;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
-@Step(id="SalesforceDelete", i18nPackageName="org.pentaho.di.trans.steps.salesforcedelete", name="SalesforceDelete.TypeLongDesc.SalesforceDelete", description="SalesforceDelete.TypeTooltipDesc.SalesforceDelete", categoryDescription="i18n:org.pentaho.di.trans.step:BaseStep.Category.Output", image="SFD.svg", documentationUrl="http://wiki.pentaho.com/display/EAI/Salesforce+Delete")
+@Step(
+    id = "SalesforceDelete",
+    i18nPackageName = "org.pentaho.di.trans.steps.salesforcedelete",
+    name = "SalesforceDelete.TypeLongDesc.SalesforceDelete",
+    description = "SalesforceDelete.TypeTooltipDesc.SalesforceDelete",
+    categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Output",
+    image = "SFD.svg",
+    documentationUrl = "http://wiki.pentaho.com/display/EAI/Salesforce+Delete" )
 public class SalesforceDeleteMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = SalesforceDeleteMeta.class; // for i18n purposes, needed by Translator2!!
 

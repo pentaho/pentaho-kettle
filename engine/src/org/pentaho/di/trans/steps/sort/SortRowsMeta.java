@@ -33,6 +33,8 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.injection.Injection;
+import org.pentaho.di.core.injection.InjectionSupported;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
@@ -44,7 +46,6 @@ import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
-import org.pentaho.di.trans.step.StepInjectionMetaEntry;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
@@ -54,41 +55,52 @@ import org.w3c.dom.Node;
 /*
  * Created on 02-jun-2003
  */
+@InjectionSupported( localizationPrefix = "SortRows.Injection.", groups = { "FIELDS" } )
 public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = SortRowsMeta.class; // for i18n purposes, needed by Translator2!!
 
   /** order by which fields? */
+  @Injection( name = "NAME", group = "FIELDS" )
   private String[] fieldName;
 
   /** false : descending, true=ascending */
+  @Injection( name = "SORT_ASCENDING", group = "FIELDS" )
   private boolean[] ascending;
 
   /** false : case insensitive, true=case sensitive */
+  @Injection( name = "IGNORE_CASE", group = "FIELDS" )
   private boolean[] caseSensitive;
 
   /** false : not a presorted field, true=presorted field */
+  @Injection( name = "PRESORTED", group = "FIELDS" )
   private boolean[] preSortedField;
   private List<String> groupFields;
 
   /** Directory to store the temp files */
+  @Injection( name = "SORT_DIRECTORY" )
   private String directory;
 
   /** Temp files prefix... */
+  @Injection( name = "SORT_FILE_PREFIX" )
   private String prefix;
 
   /** The sort size: number of rows sorted and kept in memory */
+  @Injection( name = "SORT_SIZE_ROWS" )
   private String sortSize;
 
   /** The free memory limit in percentages in case we don't use the sort size */
+  @Injection( name = "FREE_MEMORY_TRESHOLD" )
   private String freeMemoryLimit;
 
   /** only pass unique rows to the output stream(s) */
+  @Injection( name = "ONLY_PASS_UNIQUE_ROWS" )
   private boolean onlyPassingUniqueRows;
 
   /**
    * Compress files: if set to true, temporary files are compressed, thus reducing I/O at the cost of slightly higher
    * CPU usage
    */
+  @Injection( name = "COMPRESS_TEMP_FILES" )
   private boolean compressFiles;
 
   /** The variable to use to set the compressFiles option boolean */
@@ -176,13 +188,10 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface {
     int nrfields = fieldName.length;
 
     retval.allocate( nrfields );
-
-    for ( int i = 0; i < nrfields; i++ ) {
-      retval.fieldName[i] = fieldName[i];
-      retval.ascending[i] = ascending[i];
-      retval.caseSensitive[i] = caseSensitive[i];
-      retval.preSortedField[i] = preSortedField[i];
-    }
+    System.arraycopy( fieldName, 0, retval.fieldName, 0, nrfields );
+    System.arraycopy( ascending, 0, retval.ascending, 0, nrfields );
+    System.arraycopy( caseSensitive, 0, retval.caseSensitive, 0, nrfields );
+    System.arraycopy( preSortedField, 0, retval.preSortedField, 0, nrfields );
 
     return retval;
   }
@@ -239,7 +248,7 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 256 );
+    StringBuilder retval = new StringBuilder( 256 );
 
     retval.append( "      " ).append( XMLHandler.addTagValue( "directory", directory ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "prefix", prefix ) );
@@ -547,15 +556,5 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface {
 
   public boolean isGroupSortEnabled() {
     return ( this.getGroupFields() != null ) ? true : false;
-  }
-
-  @Override
-  public SortRowsMetaInjection getStepMetaInjectionInterface() {
-    return new SortRowsMetaInjection( this );
-  }
-
-  @Override
-  public List<StepInjectionMetaEntry> extractStepMetadataEntries() throws KettleException {
-    return getStepMetaInjectionInterface().extractStepMetadataEntries();
   }
 }

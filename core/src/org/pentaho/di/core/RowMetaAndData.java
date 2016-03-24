@@ -26,6 +26,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 import org.pentaho.di.core.exception.KettleValueException;
+import org.pentaho.di.core.injection.InjectionTypeConverter;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -279,6 +280,129 @@ public class RowMetaAndData implements Cloneable {
 
   public ValueMetaInterface getValueMeta( int index ) {
     return rowMeta.getValueMeta( index );
+  }
+
+  public boolean isEmptyValue( String valueName ) throws KettleValueException {
+    int idx = rowMeta.indexOfValue( valueName );
+    if ( idx < 0 ) {
+      throw new KettleValueException( "Unknown column '" + valueName + "'" );
+    }
+
+    ValueMetaInterface metaType = rowMeta.getValueMeta( idx );
+    // find by source value type
+    switch ( metaType.getType() ) {
+      case ValueMetaInterface.TYPE_STRING:
+        return rowMeta.getString( data, idx ) == null;
+      case ValueMetaInterface.TYPE_BOOLEAN:
+        return rowMeta.getBoolean( data, idx ) == null;
+      case ValueMetaInterface.TYPE_INTEGER:
+        return rowMeta.getInteger( data, idx ) == null;
+      case ValueMetaInterface.TYPE_NUMBER:
+        return rowMeta.getNumber( data, idx ) == null;
+    }
+    throw new KettleValueException( "Unknown source type" + metaType.getTypeDesc() );
+  }
+
+  /**
+   * Returns value as specified java type using converter. Used for metadata injection.
+   */
+  public Object getAsJavaType( String valueName, Class<?> destinationType, InjectionTypeConverter converter )
+    throws KettleValueException {
+    int idx = rowMeta.indexOfValue( valueName );
+    if ( idx < 0 ) {
+      throw new KettleValueException( "Unknown column '" + valueName + "'" );
+    }
+
+    ValueMetaInterface metaType = rowMeta.getValueMeta( idx );
+    // find by source value type
+    switch ( metaType.getType() ) {
+      case ValueMetaInterface.TYPE_STRING:
+        String vs = rowMeta.getString( data, idx );
+        if ( String.class.isAssignableFrom( destinationType ) ) {
+          return converter.string2string( vs );
+        } else if ( int.class.isAssignableFrom( destinationType ) ) {
+          return converter.string2intPrimitive( vs );
+        } else if ( Integer.class.isAssignableFrom( destinationType ) ) {
+          return converter.string2integer( vs );
+        } else if ( long.class.isAssignableFrom( destinationType ) ) {
+          return converter.string2longPrimitive( vs );
+        } else if ( Long.class.isAssignableFrom( destinationType ) ) {
+          return converter.string2long( vs );
+        } else if ( boolean.class.isAssignableFrom( destinationType ) ) {
+          return converter.string2booleanPrimitive( vs );
+        } else if ( Boolean.class.isAssignableFrom( destinationType ) ) {
+          return converter.string2boolean( vs );
+        } else if ( destinationType.isEnum() ) {
+          return converter.string2enum( destinationType, vs );
+        } else {
+          throw new RuntimeException( "Wrong value conversion to " + destinationType );
+        }
+      case ValueMetaInterface.TYPE_BOOLEAN:
+        Boolean vb = rowMeta.getBoolean( data, idx );
+        if ( String.class.isAssignableFrom( destinationType ) ) {
+          return converter.boolean2string( vb );
+        } else if ( int.class.isAssignableFrom( destinationType ) ) {
+          return converter.boolean2intPrimitive( vb );
+        } else if ( Integer.class.isAssignableFrom( destinationType ) ) {
+          return converter.boolean2integer( vb );
+        } else if ( long.class.isAssignableFrom( destinationType ) ) {
+          return converter.boolean2longPrimitive( vb );
+        } else if ( Long.class.isAssignableFrom( destinationType ) ) {
+          return converter.boolean2long( vb );
+        } else if ( boolean.class.isAssignableFrom( destinationType ) ) {
+          return converter.boolean2booleanPrimitive( vb );
+        } else if ( Boolean.class.isAssignableFrom( destinationType ) ) {
+          return converter.boolean2boolean( vb );
+        } else if ( destinationType.isEnum() ) {
+          return converter.boolean2enum( destinationType, vb );
+        } else {
+          throw new RuntimeException( "Wrong value conversion to " + destinationType );
+        }
+      case ValueMetaInterface.TYPE_INTEGER:
+        Long vi = rowMeta.getInteger( data, idx );
+        if ( String.class.isAssignableFrom( destinationType ) ) {
+          return converter.integer2string( vi );
+        } else if ( int.class.isAssignableFrom( destinationType ) ) {
+          return converter.integer2intPrimitive( vi );
+        } else if ( Integer.class.isAssignableFrom( destinationType ) ) {
+          return converter.integer2integer( vi );
+        } else if ( long.class.isAssignableFrom( destinationType ) ) {
+          return converter.integer2longPrimitive( vi );
+        } else if ( Long.class.isAssignableFrom( destinationType ) ) {
+          return converter.integer2long( vi );
+        } else if ( boolean.class.isAssignableFrom( destinationType ) ) {
+          return converter.integer2booleanPrimitive( vi );
+        } else if ( Boolean.class.isAssignableFrom( destinationType ) ) {
+          return converter.integer2boolean( vi );
+        } else if ( destinationType.isEnum() ) {
+          return converter.integer2enum( destinationType, vi );
+        } else {
+          throw new RuntimeException( "Wrong value conversion to " + destinationType );
+        }
+      case ValueMetaInterface.TYPE_NUMBER:
+        Double vn = rowMeta.getNumber( data, idx );
+        if ( String.class.isAssignableFrom( destinationType ) ) {
+          return converter.number2string( vn );
+        } else if ( int.class.isAssignableFrom( destinationType ) ) {
+          return converter.number2intPrimitive( vn );
+        } else if ( Integer.class.isAssignableFrom( destinationType ) ) {
+          return converter.number2integer( vn );
+        } else if ( long.class.isAssignableFrom( destinationType ) ) {
+          return converter.number2longPrimitive( vn );
+        } else if ( Long.class.isAssignableFrom( destinationType ) ) {
+          return converter.number2long( vn );
+        } else if ( boolean.class.isAssignableFrom( destinationType ) ) {
+          return converter.number2booleanPrimitive( vn );
+        } else if ( Boolean.class.isAssignableFrom( destinationType ) ) {
+          return converter.number2boolean( vn );
+        } else if ( destinationType.isEnum() ) {
+          return converter.number2enum( destinationType, vn );
+        } else {
+          throw new RuntimeException( "Wrong value conversion to " + destinationType );
+        }
+    }
+
+    throw new KettleValueException( "Unknown conversion from " + metaType.getTypeDesc() + " into " + destinationType );
   }
 
   public void removeValue( String valueName ) throws KettleValueException {

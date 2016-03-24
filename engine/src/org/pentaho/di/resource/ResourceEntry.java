@@ -73,7 +73,7 @@ public class ResourceEntry {
   }
 
   public String toXml( int indentLevel ) {
-    StringBuffer buff = new StringBuffer( 30 );
+    StringBuilder buff = new StringBuilder( 30 );
     buff
       .append( StringUtil.getIndent( indentLevel ) )
       .append( "<Resource type='" )

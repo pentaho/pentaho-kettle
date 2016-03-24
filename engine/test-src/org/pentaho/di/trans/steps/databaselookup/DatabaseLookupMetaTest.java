@@ -60,7 +60,7 @@ public class DatabaseLookupMetaTest {
 
     List<ValueMetaInterface> expectedRow =
         Arrays.asList( new ValueMetaInterface[] {
-            new ValueMetaString( "value" ), new ValueMetaString( "v1" ), new ValueMetaString( "v2" ), } );
+         new ValueMetaString( "value" ), new ValueMetaString( "v1" ), new ValueMetaString( "v2" ), } );
     assertEquals( 3, row.getValueMetaList().size() );
     for ( int i = 0; i < 3; i++ ) {
       assertEquals( expectedRow.get( i ).getName(), row.getValueMetaList().get( i ).getName() );

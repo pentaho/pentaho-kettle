@@ -22,8 +22,7 @@
 
 package org.pentaho.di.core.util;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
@@ -43,7 +42,7 @@ import org.pentaho.di.i18n.BaseMessages;
  */
 public final class PluginMessages {
 
-  private static final Map<String, PluginMessages> MESSAGES_MAP = new HashMap<String, PluginMessages>();
+  private static final ConcurrentHashMap<String, PluginMessages> MESSAGES_MAP = new ConcurrentHashMap<>();
 
   /**
    * Factory method.
@@ -56,13 +55,12 @@ public final class PluginMessages {
    */
   public static PluginMessages getMessages( final String packageName ) throws IllegalArgumentException {
     Assert.assertNotBlank( packageName, "Package name cannot be blank" );
-    synchronized ( PluginMessages.class ) {
-      if ( MESSAGES_MAP.containsKey( packageName ) ) {
-        return MESSAGES_MAP.get( packageName );
-      }
-      MESSAGES_MAP.put( packageName, new PluginMessages( packageName ) );
+
+    PluginMessages pm = MESSAGES_MAP.get( packageName );
+    if ( pm == null ) {
+      return MESSAGES_MAP.putIfAbsent( packageName, new PluginMessages( packageName ) );
     }
-    return MESSAGES_MAP.get( packageName );
+    return pm;
   }
 
   /**

@@ -1,20 +1,19 @@
 /*!
-* Copyright 2010 - 2015 Pentaho Corporation.  All rights reserved.
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-*/
-
+ * Copyright 2010 - 2015 Pentaho Corporation.  All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
 package org.pentaho.di.repository.pur;
 
 import java.util.Calendar;
@@ -38,7 +37,6 @@ import org.pentaho.di.repository.IRepositoryImporter;
 import org.pentaho.di.repository.IRepositoryService;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.ObjectRevision;
-import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryElementInterface;
 import org.pentaho.di.repository.RepositoryElementMetaInterface;
@@ -75,63 +73,63 @@ public class RepositoryProxy extends AbstractRepository implements ILockService,
 
   private DataNode node;
 
-  public RepositoryProxy(final DataNode node) {
+  public RepositoryProxy( final DataNode node ) {
     super();
     this.node = node;
   }
 
-  public void connect(String username, String password) throws KettleException, KettleSecurityException {
+  public void connect( String username, String password ) throws KettleException, KettleSecurityException {
     throw new UnsupportedOperationException();
   }
 
-  public int countNrJobEntryAttributes(ObjectId idJobentry, String code) throws KettleException {
-    return getPropertyCount(idJobentry, code);
+  public int countNrJobEntryAttributes( ObjectId idJobentry, String code ) throws KettleException {
+    return getPropertyCount( idJobentry, code );
   }
 
-  protected int getPropertyCount(final ObjectId idStep, final String code) throws KettleException {
+  protected int getPropertyCount( final ObjectId idStep, final String code ) throws KettleException {
     int count = 0;
-    for (DataProperty prop : node.getProperties()) {
-      if (prop.getName().startsWith(code + PROP_CODE_NR_SEPARATOR)) {
+    for ( DataProperty prop : node.getProperties() ) {
+      if ( prop.getName().startsWith( code + PROP_CODE_NR_SEPARATOR ) ) {
         count++;
       }
     }
     return count;
   }
 
-  public int countNrStepAttributes(final ObjectId idStep, final String code) throws KettleException {
-    return getPropertyCount(idStep, code);
+  public int countNrStepAttributes( final ObjectId idStep, final String code ) throws KettleException {
+    return getPropertyCount( idStep, code );
   }
 
-  public RepositoryDirectoryInterface createRepositoryDirectory(final RepositoryDirectoryInterface parentDirectory,
-      final String directoryPath) throws KettleException {
+  public RepositoryDirectoryInterface createRepositoryDirectory( final RepositoryDirectoryInterface parentDirectory,
+      final String directoryPath ) throws KettleException {
     throw new UnsupportedOperationException();
   }
 
-  public void deleteClusterSchema(ObjectId idCluster) throws KettleException {
+  public void deleteClusterSchema( ObjectId idCluster ) throws KettleException {
     throw new UnsupportedOperationException();
   }
 
-  public void deleteDatabaseMeta(String databaseName) throws KettleException {
+  public void deleteDatabaseMeta( String databaseName ) throws KettleException {
     throw new UnsupportedOperationException();
   }
 
-  public void deleteJob(ObjectId idJob) throws KettleException {
+  public void deleteJob( ObjectId idJob ) throws KettleException {
     throw new UnsupportedOperationException();
   }
 
-  public void deletePartitionSchema(ObjectId idPartitionSchema) throws KettleException {
+  public void deletePartitionSchema( ObjectId idPartitionSchema ) throws KettleException {
     throw new UnsupportedOperationException();
   }
 
-  public void deleteRepositoryDirectory(RepositoryDirectoryInterface dir) throws KettleException {
+  public void deleteRepositoryDirectory( RepositoryDirectoryInterface dir ) throws KettleException {
     throw new UnsupportedOperationException();
   }
 
-  public void deleteSlave(ObjectId idSlave) throws KettleException {
+  public void deleteSlave( ObjectId idSlave ) throws KettleException {
     throw new UnsupportedOperationException();
   }
 
-  public void deleteTransformation(ObjectId idTransformation) throws KettleException {
+  public void deleteTransformation( ObjectId idTransformation ) throws KettleException {
     throw new UnsupportedOperationException();
   }
 
@@ -139,88 +137,91 @@ public class RepositoryProxy extends AbstractRepository implements ILockService,
     throw new UnsupportedOperationException();
   }
 
-  public boolean exists(String name, RepositoryDirectoryInterface repositoryDirectory, RepositoryObjectType objectType)
+  public boolean
+    exists( String name, RepositoryDirectoryInterface repositoryDirectory, RepositoryObjectType objectType )
       throws KettleException {
     throw new UnsupportedOperationException();
   }
 
-  public ObjectId getClusterID(String name) throws KettleException {
+  public ObjectId getClusterID( String name ) throws KettleException {
     throw new UnsupportedOperationException();
   }
 
-  public ObjectId[] getClusterIDs(boolean includeDeleted) throws KettleException {
+  public ObjectId[] getClusterIDs( boolean includeDeleted ) throws KettleException {
     throw new UnsupportedOperationException();
   }
 
-  public String[] getClusterNames(boolean includeDeleted) throws KettleException {
+  public String[] getClusterNames( boolean includeDeleted ) throws KettleException {
     throw new UnsupportedOperationException();
   }
 
-  public ObjectId getDatabaseID(String name) throws KettleException {
+  public ObjectId getDatabaseID( String name ) throws KettleException {
     throw new UnsupportedOperationException();
   }
 
-  public ObjectId[] getDatabaseIDs(boolean includeDeleted) throws KettleException {
+  public ObjectId[] getDatabaseIDs( boolean includeDeleted ) throws KettleException {
     throw new UnsupportedOperationException();
   }
 
-  public String[] getDatabaseNames(boolean includeDeleted) throws KettleException {
+  public String[] getDatabaseNames( boolean includeDeleted ) throws KettleException {
     throw new UnsupportedOperationException();
   }
 
-  public String[] getDirectoryNames(ObjectId idDirectory) throws KettleException {
+  public String[] getDirectoryNames( ObjectId idDirectory ) throws KettleException {
     throw new UnsupportedOperationException();
   }
-  
+
   @Override
-  public boolean getJobEntryAttributeBoolean(ObjectId idJobentry, int nr, String code, boolean def) throws KettleException {
+  public boolean getJobEntryAttributeBoolean( ObjectId idJobentry, int nr, String code, boolean def )
+    throws KettleException {
     String attribute = code + PROP_CODE_NR_SEPARATOR + nr;
-    if (node.hasProperty(attribute)) {
-      return node.getProperty(attribute).getBoolean();
-    } else if (nr == 0 && node.hasProperty(code)) {
-      //Old pur stored elements with no nr when not specified
-      return node.getProperty(code).getBoolean();
+    if ( node.hasProperty( attribute ) ) {
+      return node.getProperty( attribute ).getBoolean();
+    } else if ( nr == 0 && node.hasProperty( code ) ) {
+      // Old pur stored elements with no nr when not specified
+      return node.getProperty( code ).getBoolean();
     } else {
       return def;
     }
   }
 
-  public long getJobEntryAttributeInteger(ObjectId idJobentry, int nr, String code) throws KettleException {
-    if (node.hasProperty(code + PROP_CODE_NR_SEPARATOR + nr)) {
-      return node.getProperty(code + PROP_CODE_NR_SEPARATOR + nr).getLong();
-    } else if (nr == 0 && node.hasProperty(code)) {
-      //Old pur stored elements with no nr when not specified
-      return node.getProperty(code).getLong();
+  public long getJobEntryAttributeInteger( ObjectId idJobentry, int nr, String code ) throws KettleException {
+    if ( node.hasProperty( code + PROP_CODE_NR_SEPARATOR + nr ) ) {
+      return node.getProperty( code + PROP_CODE_NR_SEPARATOR + nr ).getLong();
+    } else if ( nr == 0 && node.hasProperty( code ) ) {
+      // Old pur stored elements with no nr when not specified
+      return node.getProperty( code ).getLong();
     } else {
       return 0;
     }
   }
 
-  public String getJobEntryAttributeString(ObjectId idJobentry, int nr, String code) throws KettleException {
+  public String getJobEntryAttributeString( ObjectId idJobentry, int nr, String code ) throws KettleException {
     String propName = code + PROP_CODE_NR_SEPARATOR + nr;
-    if (node.hasProperty(propName)) {
-      return node.getProperty(propName).getString();
-    } else if (nr == 0 && node.hasProperty(code)) {
-      //Old pur stored elements with no nr when not specified
-      return node.getProperty(code).getString();
+    if ( node.hasProperty( propName ) ) {
+      return node.getProperty( propName ).getString();
+    } else if ( nr == 0 && node.hasProperty( code ) ) {
+      // Old pur stored elements with no nr when not specified
+      return node.getProperty( code ).getString();
     } else {
       return null;
     }
   }
 
-  public ObjectId getJobId(String name, RepositoryDirectoryInterface repositoryDirectory) throws KettleException {
+  public ObjectId getJobId( String name, RepositoryDirectoryInterface repositoryDirectory ) throws KettleException {
     throw new UnsupportedOperationException();
   }
 
-  public RepositoryLock getJobLock(ObjectId idJob) throws KettleException {
+  public RepositoryLock getJobLock( ObjectId idJob ) throws KettleException {
     throw new UnsupportedOperationException();
   }
 
-  public String[] getJobNames(ObjectId idDirectory, boolean includeDeleted) throws KettleException {
+  public String[] getJobNames( ObjectId idDirectory, boolean includeDeleted ) throws KettleException {
     throw new UnsupportedOperationException();
   }
 
-  public List<RepositoryElementMetaInterface> getJobObjects(ObjectId idDirectory, boolean includeDeleted) throws KettleException {
+  public List<RepositoryElementMetaInterface> getJobObjects( ObjectId idDirectory, boolean includeDeleted )
+    throws KettleException {
     throw new UnsupportedOperationException();
   }
 
@@ -232,15 +233,15 @@ public class RepositoryProxy extends AbstractRepository implements ILockService,
     throw new UnsupportedOperationException();
   }
 
-  public ObjectId getPartitionSchemaID(String name) throws KettleException {
+  public ObjectId getPartitionSchemaID( String name ) throws KettleException {
     throw new UnsupportedOperationException();
   }
 
-  public ObjectId[] getPartitionSchemaIDs(boolean includeDeleted) throws KettleException {
+  public ObjectId[] getPartitionSchemaIDs( boolean includeDeleted ) throws KettleException {
     throw new UnsupportedOperationException();
   }
 
-  public String[] getPartitionSchemaNames(boolean includeDeleted) throws KettleException {
+  public String[] getPartitionSchemaNames( boolean includeDeleted ) throws KettleException {
     throw new UnsupportedOperationException();
   }
 
@@ -256,15 +257,15 @@ public class RepositoryProxy extends AbstractRepository implements ILockService,
     throw new UnsupportedOperationException();
   }
 
-  public ObjectId getSlaveID(String name) throws KettleException {
+  public ObjectId getSlaveID( String name ) throws KettleException {
     throw new UnsupportedOperationException();
   }
 
-  public ObjectId[] getSlaveIDs(boolean includeDeleted) throws KettleException {
+  public ObjectId[] getSlaveIDs( boolean includeDeleted ) throws KettleException {
     throw new UnsupportedOperationException();
   }
 
-  public String[] getSlaveNames(boolean includeDeleted) throws KettleException {
+  public String[] getSlaveNames( boolean includeDeleted ) throws KettleException {
     throw new UnsupportedOperationException();
   }
 
@@ -272,54 +273,55 @@ public class RepositoryProxy extends AbstractRepository implements ILockService,
     throw new UnsupportedOperationException();
   }
 
-  public boolean getStepAttributeBoolean(ObjectId idStep, int nr, String code, boolean def) throws KettleException {
-    if (node.hasProperty(code + PROP_CODE_NR_SEPARATOR + nr)) {
-      return node.getProperty(code + PROP_CODE_NR_SEPARATOR + nr).getBoolean();
-    } else if (nr == 0 && node.hasProperty(code)) {
-      //Old pur stored elements with no nr when not specified
-      return node.getProperty(code).getBoolean();
+  public boolean getStepAttributeBoolean( ObjectId idStep, int nr, String code, boolean def ) throws KettleException {
+    if ( node.hasProperty( code + PROP_CODE_NR_SEPARATOR + nr ) ) {
+      return node.getProperty( code + PROP_CODE_NR_SEPARATOR + nr ).getBoolean();
+    } else if ( nr == 0 && node.hasProperty( code ) ) {
+      // Old pur stored elements with no nr when not specified
+      return node.getProperty( code ).getBoolean();
     } else {
       return def;
     }
   }
 
-  public long getStepAttributeInteger(ObjectId idStep, int nr, String code) throws KettleException {
-    if (node.hasProperty(code + PROP_CODE_NR_SEPARATOR + nr)) {
-      return node.getProperty(code + PROP_CODE_NR_SEPARATOR + nr).getLong();
-    } else if (nr == 0 && node.hasProperty(code)) {
-      //Old pur stored elements with no nr when not specified
-      return node.getProperty(code).getLong();
+  public long getStepAttributeInteger( ObjectId idStep, int nr, String code ) throws KettleException {
+    if ( node.hasProperty( code + PROP_CODE_NR_SEPARATOR + nr ) ) {
+      return node.getProperty( code + PROP_CODE_NR_SEPARATOR + nr ).getLong();
+    } else if ( nr == 0 && node.hasProperty( code ) ) {
+      // Old pur stored elements with no nr when not specified
+      return node.getProperty( code ).getLong();
     } else {
       return 0;
     }
   }
 
-  public String getStepAttributeString(ObjectId idStep, int nr, String code) throws KettleException {
+  public String getStepAttributeString( ObjectId idStep, int nr, String code ) throws KettleException {
     String propName = code + PROP_CODE_NR_SEPARATOR + nr;
-    if (node.hasProperty(propName)) {
-      return node.getProperty(propName).getString();
-    } else if (nr == 0 && node.hasProperty(code)) {
-      //Old pur stored elements with no nr when not specified
-      return node.getProperty(code).getString();
+    if ( node.hasProperty( propName ) ) {
+      return node.getProperty( propName ).getString();
+    } else if ( nr == 0 && node.hasProperty( code ) ) {
+      // Old pur stored elements with no nr when not specified
+      return node.getProperty( code ).getString();
     } else {
       return null;
     }
   }
 
-  public ObjectId getTransformationID(String name, RepositoryDirectoryInterface repositoryDirectory) throws KettleException {
+  public ObjectId getTransformationID( String name, RepositoryDirectoryInterface repositoryDirectory )
+    throws KettleException {
     throw new UnsupportedOperationException();
   }
 
-  public RepositoryLock getTransformationLock(ObjectId idTransformation) throws KettleException {
+  public RepositoryLock getTransformationLock( ObjectId idTransformation ) throws KettleException {
     throw new UnsupportedOperationException();
   }
 
-  public String[] getTransformationNames(ObjectId idDirectory, boolean includeDeleted) throws KettleException {
+  public String[] getTransformationNames( ObjectId idDirectory, boolean includeDeleted ) throws KettleException {
     throw new UnsupportedOperationException();
   }
 
-  public List<RepositoryElementMetaInterface> getTransformationObjects(ObjectId idDirectory, boolean includeDeleted)
-      throws KettleException {
+  public List<RepositoryElementMetaInterface> getTransformationObjects( ObjectId idDirectory, boolean includeDeleted )
+    throws KettleException {
     throw new UnsupportedOperationException();
   }
 
@@ -331,82 +333,84 @@ public class RepositoryProxy extends AbstractRepository implements ILockService,
     throw new UnsupportedOperationException();
   }
 
-  public void init(RepositoryMeta repositoryMeta) {
+  public void init( RepositoryMeta repositoryMeta ) {
     throw new UnsupportedOperationException();
   }
 
-  public void insertJobEntryDatabase(ObjectId idJob, ObjectId idJobentry, ObjectId idDatabase) throws KettleException {
-    DataNodeRef ref = new DataNodeRef(idDatabase.getId());
-    node.setProperty(idDatabase.getId(), ref);
+  public void insertJobEntryDatabase( ObjectId idJob, ObjectId idJobentry, ObjectId idDatabase ) throws KettleException {
+    DataNodeRef ref = new DataNodeRef( idDatabase.getId() );
+    node.setProperty( idDatabase.getId(), ref );
   }
 
-  public ObjectId insertLogEntry(String description) throws KettleException {
+  public ObjectId insertLogEntry( String description ) throws KettleException {
     throw new UnsupportedOperationException();
   }
 
-  public void insertStepDatabase(ObjectId idTransformation, ObjectId idStep, ObjectId idDatabase)
-      throws KettleException {
-    DataNodeRef ref = new DataNodeRef(idDatabase.getId());
-    node.setProperty(idDatabase.getId(), ref);
+  public void insertStepDatabase( ObjectId idTransformation, ObjectId idStep, ObjectId idDatabase )
+    throws KettleException {
+    DataNodeRef ref = new DataNodeRef( idDatabase.getId() );
+    node.setProperty( idDatabase.getId(), ref );
   }
 
   public boolean isConnected() {
     throw new UnsupportedOperationException();
   }
 
-  public ClusterSchema loadClusterSchema(ObjectId idClusterSchema, List<SlaveServer> slaveServers, String versionLabel)
+  public ClusterSchema
+    loadClusterSchema( ObjectId idClusterSchema, List<SlaveServer> slaveServers, String versionLabel )
       throws KettleException {
     throw new UnsupportedOperationException();
   }
 
-  public Condition loadConditionFromStepAttribute(ObjectId idStep, String code) throws KettleException {
-    DataNode conditionNode = node.getNode(code);
-    if (conditionNode.hasProperty(PROPERTY_XML)) {
-      String xml = conditionNode.getProperty(PROPERTY_XML).getString();
-      Condition condition = new Condition(XMLHandler.getSubNode(XMLHandler.loadXMLString(xml), Condition.XML_TAG));
+  public Condition loadConditionFromStepAttribute( ObjectId idStep, String code ) throws KettleException {
+    DataNode conditionNode = node.getNode( code );
+    if ( conditionNode.hasProperty( PROPERTY_XML ) ) {
+      String xml = conditionNode.getProperty( PROPERTY_XML ).getString();
+      Condition condition = new Condition( XMLHandler.getSubNode( XMLHandler.loadXMLString( xml ), Condition.XML_TAG ) );
       return condition;
     } else {
       return null;
     }
   }
 
-  public DatabaseMeta loadDatabaseMeta(ObjectId idDatabase, String revision) throws KettleException {
+  public DatabaseMeta loadDatabaseMeta( ObjectId idDatabase, String revision ) throws KettleException {
     throw new UnsupportedOperationException();
   }
 
-  public DatabaseMeta loadDatabaseMetaFromJobEntryAttribute(ObjectId idJobentry, String nameCode, int nr, 
-       String code, List<DatabaseMeta> databases) throws KettleException {
-     String attribute = code + PROP_CODE_NR_SEPARATOR + nr;
-     if (attribute != null && node.hasProperty(attribute)) {
-       return loadDatabaseMeta(attribute, databases);
-     } else if (code != null && node.hasProperty(code)) {
-       return loadDatabaseMeta(code, databases);
-     }
-     return null;
-  }
-
-  private DatabaseMeta loadDatabaseMeta(String code, List<DatabaseMeta> databases) throws KettleException {
-    if (DataNodeRef.REF_MISSING.equals(node.getProperty(code).getRef().getId()) && System.getProperty("kettle.allow_missing_refs") == null) {
-      throw new KettleException(BaseMessages.getString(PKG, "RepositoryProxy.ERROR_0001_MISSING_REF"));
-    }
-    ObjectId databaseId = new StringObjectId(node.getProperty(code).getRef().getId().toString());
-    return DatabaseMeta.findDatabase(databases, databaseId);
-  }
-  
-  public DatabaseMeta loadDatabaseMetaFromStepAttribute(ObjectId idStep, String code, List<DatabaseMeta> databases)
-      throws KettleException {
-    if (code != null && node.hasProperty(code)) {
-      return loadDatabaseMeta(code, databases);
+  public DatabaseMeta loadDatabaseMetaFromJobEntryAttribute( ObjectId idJobentry, String nameCode, int nr, String code,
+      List<DatabaseMeta> databases ) throws KettleException {
+    String attribute = code + PROP_CODE_NR_SEPARATOR + nr;
+    if ( attribute != null && node.hasProperty( attribute ) ) {
+      return loadDatabaseMeta( attribute, databases );
+    } else if ( code != null && node.hasProperty( code ) ) {
+      return loadDatabaseMeta( code, databases );
     }
     return null;
   }
 
-  public JobMeta loadJob(String jobname, RepositoryDirectoryInterface repdir, ProgressMonitorListener monitor, String revision)
-      throws KettleException {
+  private DatabaseMeta loadDatabaseMeta( String code, List<DatabaseMeta> databases ) throws KettleException {
+    if ( DataNodeRef.REF_MISSING.equals( node.getProperty( code ).getRef().getId() )
+        && System.getProperty( "kettle.allow_missing_refs" ) == null ) {
+      throw new KettleException( BaseMessages.getString( PKG, "RepositoryProxy.ERROR_0001_MISSING_REF" ) );
+    }
+    ObjectId databaseId = new StringObjectId( node.getProperty( code ).getRef().getId().toString() );
+    return DatabaseMeta.findDatabase( databases, databaseId );
+  }
+
+  public DatabaseMeta loadDatabaseMetaFromStepAttribute( ObjectId idStep, String code, List<DatabaseMeta> databases )
+    throws KettleException {
+    if ( code != null && node.hasProperty( code ) ) {
+      return loadDatabaseMeta( code, databases );
+    }
+    return null;
+  }
+
+  public JobMeta loadJob( String jobname, RepositoryDirectoryInterface repdir, ProgressMonitorListener monitor,
+      String revision ) throws KettleException {
     throw new UnsupportedOperationException();
   }
 
-  public PartitionSchema loadPartitionSchema(ObjectId idPartitionSchema, String versionLabel) throws KettleException {
+  public PartitionSchema loadPartitionSchema( ObjectId idPartitionSchema, String versionLabel ) throws KettleException {
     throw new UnsupportedOperationException();
   }
 
@@ -414,28 +418,28 @@ public class RepositoryProxy extends AbstractRepository implements ILockService,
     throw new UnsupportedOperationException();
   }
 
-  public RepositoryDirectoryInterface findDirectory(String directory) throws KettleException {
+  public RepositoryDirectoryInterface findDirectory( String directory ) throws KettleException {
     throw new UnsupportedOperationException();
   }
 
-  public RepositoryDirectoryInterface findDirectory(ObjectId directory) throws KettleException {
+  public RepositoryDirectoryInterface findDirectory( ObjectId directory ) throws KettleException {
     throw new UnsupportedOperationException();
   }
 
-  public SlaveServer loadSlaveServer(ObjectId idSlaveServer, String versionLabel) throws KettleException {
+  public SlaveServer loadSlaveServer( ObjectId idSlaveServer, String versionLabel ) throws KettleException {
     throw new UnsupportedOperationException();
   }
 
-  public TransMeta loadTransformation(String transname, RepositoryDirectoryInterface repdir, ProgressMonitorListener monitor,
-      boolean setInternalVariables, String revision) throws KettleException {
+  public TransMeta loadTransformation( String transname, RepositoryDirectoryInterface repdir,
+      ProgressMonitorListener monitor, boolean setInternalVariables, String revision ) throws KettleException {
     throw new UnsupportedOperationException();
   }
 
-  public RepositoryLock lockJob(ObjectId idJob, String message) throws KettleException {
+  public RepositoryLock lockJob( ObjectId idJob, String message ) throws KettleException {
     throw new UnsupportedOperationException();
   }
 
-  public RepositoryLock lockTransformation(ObjectId idTransformation, String message) throws KettleException {
+  public RepositoryLock lockTransformation( ObjectId idTransformation, String message ) throws KettleException {
     throw new UnsupportedOperationException();
   }
 
@@ -446,139 +450,142 @@ public class RepositoryProxy extends AbstractRepository implements ILockService,
   public void clearSharedObjectCache() {
     // no op
   }
-  
-  public SharedObjects readJobMetaSharedObjects(JobMeta jobMeta) throws KettleException {
+
+  public SharedObjects readJobMetaSharedObjects( JobMeta jobMeta ) throws KettleException {
     throw new UnsupportedOperationException();
   }
 
-  public SharedObjects readTransSharedObjects(TransMeta transMeta) throws KettleException {
+  public SharedObjects readTransSharedObjects( TransMeta transMeta ) throws KettleException {
     throw new UnsupportedOperationException();
   }
 
-  public ObjectId renameJob(ObjectId idJob, RepositoryDirectoryInterface newDirectory, String newName) throws KettleException {
-    throw new UnsupportedOperationException();
-  }
-  
-  public ObjectId renameJob(ObjectId idJob, String versionComment, RepositoryDirectoryInterface newDirectory,
-    String newName) throws KettleException {
+  public ObjectId renameJob( ObjectId idJob, RepositoryDirectoryInterface newDirectory, String newName )
+    throws KettleException {
     throw new UnsupportedOperationException();
   }
 
-  public ObjectId renameRepositoryDirectory(ObjectId id, RepositoryDirectoryInterface newParentDir, String newName)
-      throws KettleException {
+  public ObjectId renameJob( ObjectId idJob, String versionComment, RepositoryDirectoryInterface newDirectory,
+      String newName ) throws KettleException {
     throw new UnsupportedOperationException();
   }
 
-  public ObjectId renameTransformation(ObjectId idTransformation, RepositoryDirectoryInterface newDirectory,
-    String newName) throws KettleException {
+  public ObjectId renameRepositoryDirectory( ObjectId id, RepositoryDirectoryInterface newParentDir, String newName )
+    throws KettleException {
     throw new UnsupportedOperationException();
   }
-  
-  public ObjectId renameTransformation(ObjectId idTransformation, String versionComment,
-    RepositoryDirectoryInterface newDirectory, String newName) throws KettleException {
+
+  public ObjectId renameTransformation( ObjectId idTransformation, RepositoryDirectoryInterface newDirectory,
+      String newName ) throws KettleException {
     throw new UnsupportedOperationException();
   }
-  
-  public void save(RepositoryElementInterface repositoryElement, String versionComment, ProgressMonitorListener monitor, boolean overwrite)
-  throws KettleException {
+
+  public ObjectId renameTransformation( ObjectId idTransformation, String versionComment,
+      RepositoryDirectoryInterface newDirectory, String newName ) throws KettleException {
+    throw new UnsupportedOperationException();
+  }
+
+  public void save( RepositoryElementInterface repositoryElement, String versionComment,
+      ProgressMonitorListener monitor, boolean overwrite ) throws KettleException {
     throw new UnsupportedOperationException();
   }
 
   @Override
-  public void save(RepositoryElementInterface repositoryElementInterface, String s, Calendar calendar, ProgressMonitorListener progressMonitorListener, boolean b) throws KettleException {
+  public void save( RepositoryElementInterface repositoryElementInterface, String s, Calendar calendar,
+      ProgressMonitorListener progressMonitorListener, boolean b ) throws KettleException {
     throw new UnsupportedOperationException();
   }
 
-  public void saveConditionStepAttribute(ObjectId idTransformation, ObjectId idStep, String code, Condition condition)
-      throws KettleException {
-    DataNode conditionNode = node.addNode(code);
-    conditionNode.setProperty(PROPERTY_XML, condition.getXML());
+  public void saveConditionStepAttribute( ObjectId idTransformation, ObjectId idStep, String code, Condition condition )
+    throws KettleException {
+    DataNode conditionNode = node.addNode( code );
+    conditionNode.setProperty( PROPERTY_XML, condition.getXML() );
   }
 
-  public void saveDatabaseMetaJobEntryAttribute(ObjectId idJob, ObjectId idJobentry, int nr, String nameCode, String code,
-        DatabaseMeta database) throws KettleException {
-      if (database != null && database.getObjectId() != null) {
-        DataNodeRef ref = new DataNodeRef(database.getObjectId().getId());
-        node.setProperty(code + PROP_CODE_NR_SEPARATOR + nr, ref);
-      }
-    }
-
-  public void saveDatabaseMetaStepAttribute(ObjectId idTransformation, ObjectId idStep, String code,
-      DatabaseMeta database) throws KettleException {
-    if (database != null && database.getObjectId() != null) {
-      DataNodeRef ref = new DataNodeRef(database.getObjectId().getId());
-      node.setProperty(code, ref);
+  public void saveDatabaseMetaJobEntryAttribute( ObjectId idJob, ObjectId idJobentry, int nr, String nameCode,
+      String code, DatabaseMeta database ) throws KettleException {
+    if ( database != null && database.getObjectId() != null ) {
+      DataNodeRef ref = new DataNodeRef( database.getObjectId().getId() );
+      node.setProperty( code + PROP_CODE_NR_SEPARATOR + nr, ref );
     }
   }
 
-  public void saveJobEntryAttribute(ObjectId idJob, ObjectId idJobentry, int nr, String code, String value)
-      throws KettleException {
-    node.setProperty(code + PROP_CODE_NR_SEPARATOR + nr, value);
+  public void saveDatabaseMetaStepAttribute( ObjectId idTransformation, ObjectId idStep, String code,
+      DatabaseMeta database ) throws KettleException {
+    if ( database != null && database.getObjectId() != null ) {
+      DataNodeRef ref = new DataNodeRef( database.getObjectId().getId() );
+      node.setProperty( code, ref );
+    }
   }
 
-  public void saveJobEntryAttribute(ObjectId idJob, ObjectId idJobentry, int nr, String code, boolean value)
-      throws KettleException {
-    node.setProperty(code + PROP_CODE_NR_SEPARATOR + nr, value);
+  public void saveJobEntryAttribute( ObjectId idJob, ObjectId idJobentry, int nr, String code, String value )
+    throws KettleException {
+    node.setProperty( code + PROP_CODE_NR_SEPARATOR + nr, value );
   }
 
-  public void saveJobEntryAttribute(ObjectId idJob, ObjectId idJobentry, int nr, String code, long value)
-      throws KettleException {
-    node.setProperty(code + PROP_CODE_NR_SEPARATOR + nr, value);
+  public void saveJobEntryAttribute( ObjectId idJob, ObjectId idJobentry, int nr, String code, boolean value )
+    throws KettleException {
+    node.setProperty( code + PROP_CODE_NR_SEPARATOR + nr, value );
   }
 
-  public void saveRepositoryDirectory(RepositoryDirectoryInterface dir) throws KettleException {
+  public void saveJobEntryAttribute( ObjectId idJob, ObjectId idJobentry, int nr, String code, long value )
+    throws KettleException {
+    node.setProperty( code + PROP_CODE_NR_SEPARATOR + nr, value );
+  }
+
+  public void saveRepositoryDirectory( RepositoryDirectoryInterface dir ) throws KettleException {
     throw new UnsupportedOperationException();
   }
 
-  public void saveStepAttribute(ObjectId idTransformation, ObjectId idStep, int nr, String code, String value)
-      throws KettleException {
-    node.setProperty(code + PROP_CODE_NR_SEPARATOR + nr, value);
+  public void saveStepAttribute( ObjectId idTransformation, ObjectId idStep, int nr, String code, String value )
+    throws KettleException {
+    node.setProperty( code + PROP_CODE_NR_SEPARATOR + nr, value );
   }
 
-  public void saveStepAttribute(ObjectId idTransformation, ObjectId idStep, int nr, String code, boolean value)
-      throws KettleException {
-    node.setProperty(code + PROP_CODE_NR_SEPARATOR + nr, value);
+  public void saveStepAttribute( ObjectId idTransformation, ObjectId idStep, int nr, String code, boolean value )
+    throws KettleException {
+    node.setProperty( code + PROP_CODE_NR_SEPARATOR + nr, value );
   }
 
-  public void saveStepAttribute(ObjectId idTransformation, ObjectId idStep, int nr, String code, long value)
-      throws KettleException {
-    node.setProperty(code + PROP_CODE_NR_SEPARATOR + nr, value);
+  public void saveStepAttribute( ObjectId idTransformation, ObjectId idStep, int nr, String code, long value )
+    throws KettleException {
+    node.setProperty( code + PROP_CODE_NR_SEPARATOR + nr, value );
   }
 
-  public void saveStepAttribute(ObjectId idTransformation, ObjectId idStep, int nr, String code, double value)
-      throws KettleException {
-    node.setProperty(code + PROP_CODE_NR_SEPARATOR + nr, value);
+  public void saveStepAttribute( ObjectId idTransformation, ObjectId idStep, int nr, String code, double value )
+    throws KettleException {
+    node.setProperty( code + PROP_CODE_NR_SEPARATOR + nr, value );
   }
 
-  public void undeleteObject(RepositoryElementMetaInterface element) throws KettleException {
+  public void undeleteObject( RepositoryElementMetaInterface element ) throws KettleException {
     throw new UnsupportedOperationException();
   }
 
-  public void unlockJob(ObjectId idJob) throws KettleException {
+  public void unlockJob( ObjectId idJob ) throws KettleException {
     throw new UnsupportedOperationException();
   }
 
-  public void unlockTransformation(ObjectId idTransformation) throws KettleException {
+  public void unlockTransformation( ObjectId idTransformation ) throws KettleException {
     throw new UnsupportedOperationException();
   }
 
-  public ObjectAcl getAcl(ObjectId arg0, boolean arg1) throws KettleException {
+  public ObjectAcl getAcl( ObjectId arg0, boolean arg1 ) throws KettleException {
     throw new UnsupportedOperationException();
   }
 
-  public List<ObjectRevision> getRevisions(ObjectId arg0) throws KettleException {
+  public List<ObjectRevision> getRevisions( ObjectId arg0 ) throws KettleException {
     throw new UnsupportedOperationException();
   }
 
-  public void setAcl(ObjectId arg0, ObjectAcl arg1) throws KettleException {
-    throw new UnsupportedOperationException();
-  }
-  public List<RepositoryElementMetaInterface> getJobAndTransformationObjects(ObjectId idDirectory, boolean includeDeleted)
-      throws KettleException {
+  public void setAcl( ObjectId arg0, ObjectAcl arg1 ) throws KettleException {
     throw new UnsupportedOperationException();
   }
 
-  public IRepositoryService getService(Class<? extends IRepositoryService> clazz) throws KettleException {
+  public List<RepositoryElementMetaInterface> getJobAndTransformationObjects( ObjectId idDirectory,
+      boolean includeDeleted ) throws KettleException {
+    throw new UnsupportedOperationException();
+  }
+
+  public IRepositoryService getService( Class<? extends IRepositoryService> clazz ) throws KettleException {
     throw new UnsupportedOperationException();
   }
 
@@ -586,11 +593,11 @@ public class RepositoryProxy extends AbstractRepository implements ILockService,
     throw new UnsupportedOperationException();
   }
 
-  public boolean hasService(Class<? extends IRepositoryService> clazz) throws KettleException {
+  public boolean hasService( Class<? extends IRepositoryService> clazz ) throws KettleException {
     throw new UnsupportedOperationException();
   }
 
-  public RepositoryDirectoryInterface getDefaultSaveDirectory(RepositoryElementInterface arg0) throws KettleException {
+  public RepositoryDirectoryInterface getDefaultSaveDirectory( RepositoryElementInterface arg0 ) throws KettleException {
     throw new UnsupportedOperationException();
   }
 
@@ -598,21 +605,21 @@ public class RepositoryProxy extends AbstractRepository implements ILockService,
     throw new UnsupportedOperationException();
   }
 
-  public boolean canUnlockFileById(ObjectId id) throws KettleException {
-    throw new UnsupportedOperationException();
-  }
-  
-  public RepositoryObject getObjectInformation(ObjectId objectId, RepositoryObjectType objectType)
-      throws KettleException {
+  public boolean canUnlockFileById( ObjectId id ) throws KettleException {
     throw new UnsupportedOperationException();
   }
 
-  public JobMeta loadJob(ObjectId idJob, String versionLabel) throws KettleException {
+  public RepositoryObject getObjectInformation( ObjectId objectId, RepositoryObjectType objectType )
+    throws KettleException {
     throw new UnsupportedOperationException();
   }
 
-  public TransMeta loadTransformation(ObjectId idTransformation, String versionLabel) throws KettleException {
-    throw new UnsupportedOperationException();  
+  public JobMeta loadJob( ObjectId idJob, String versionLabel ) throws KettleException {
+    throw new UnsupportedOperationException();
+  }
+
+  public TransMeta loadTransformation( ObjectId idTransformation, String versionLabel ) throws KettleException {
+    throw new UnsupportedOperationException();
   }
 
   public String getConnectMessage() {
@@ -620,11 +627,11 @@ public class RepositoryProxy extends AbstractRepository implements ILockService,
     return null;
   }
 
-  public String[] getJobsUsingDatabase(ObjectId id_database) throws KettleException {
+  public String[] getJobsUsingDatabase( ObjectId id_database ) throws KettleException {
     throw new UnsupportedOperationException();
   }
 
-  public String[] getTransformationsUsingDatabase(ObjectId id_database) throws KettleException {
+  public String[] getTransformationsUsingDatabase( ObjectId id_database ) throws KettleException {
     throw new UnsupportedOperationException();
   }
 

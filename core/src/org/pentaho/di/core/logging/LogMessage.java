@@ -22,7 +22,7 @@
 
 package org.pentaho.di.core.logging;
 
-import static org.pentaho.di.core.Const.KETTLE_LOG_MARK_MAPPINGS;
+import org.pentaho.di.core.Const;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -78,7 +78,7 @@ public class LogMessage implements LogMessageInterface {
     // Derive the subject from the registry
     //
     LoggingObjectInterface loggingObject = LoggingRegistry.getInstance().getLoggingObject( logChannelId );
-    boolean detailedLogTurnOn = "Y".equals( EnvUtil.getSystemProperty( KETTLE_LOG_MARK_MAPPINGS ) ) ? true : false;
+    boolean detailedLogTurnOn = "Y".equals( EnvUtil.getSystemProperty( Const.KETTLE_LOG_MARK_MAPPINGS ) ) ? true : false;
     if ( loggingObject != null ) {
       if ( !detailedLogTurnOn ) {
         subject = loggingObject.getObjectName();
@@ -118,7 +118,7 @@ public class LogMessage implements LogMessageInterface {
    */
   private String formatDetailedSubject( List<String> subjects ) {
 
-    StringBuffer string = new StringBuffer();
+    StringBuilder string = new StringBuilder();
 
     int currentStep = 0;
     int rootStep = subjects.size() - 1;

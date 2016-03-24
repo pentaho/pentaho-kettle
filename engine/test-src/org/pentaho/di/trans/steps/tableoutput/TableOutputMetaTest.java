@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -38,6 +38,7 @@ import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.StringObjectId;
 import org.pentaho.di.trans.steps.loadsave.MemoryRepository;
+import org.pentaho.di.utils.TestUtils;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
@@ -148,39 +149,40 @@ public class TableOutputMetaTest {
     assertFalse( tableOutputMeta.isTableNameInField() );
     assertTrue( tableOutputMeta.isTableNameInTable() );
     assertFalse( tableOutputMeta.isReturningGeneratedKeys() );
-    assertEquals(
-      "    <connection/>\n"
-        + "    <schema>public</schema>\n"
-        + "    <table>sales_csv</table>\n"
-        + "    <commit>1000</commit>\n"
-        + "    <truncate>Y</truncate>\n"
-        + "    <ignore_errors>N</ignore_errors>\n"
-        + "    <use_batch>Y</use_batch>\n"
-        + "    <specify_fields>Y</specify_fields>\n"
-        + "    <partitioning_enabled>N</partitioning_enabled>\n"
-        + "    <partitioning_field/>\n"
-        + "    <partitioning_daily>N</partitioning_daily>\n"
-        + "    <partitioning_monthly>Y</partitioning_monthly>\n"
-        + "    <tablename_in_field>N</tablename_in_field>\n"
-        + "    <tablename_field/>\n"
-        + "    <tablename_in_table>Y</tablename_in_table>\n"
-        + "    <return_keys>N</return_keys>\n"
-        + "    <return_field/>\n"
-        + "    <fields>\n"
-        + "        <field>\n"
-        + "          <column_name>ORDERNUMBER</column_name>\n"
-        + "          <stream_name>ORDERNUMBER</stream_name>\n"
-        + "        </field>\n"
-        + "        <field>\n"
-        + "          <column_name>QUANTITYORDERED</column_name>\n"
-        + "          <stream_name>QUANTITYORDERED</stream_name>\n"
-        + "        </field>\n"
-        + "        <field>\n"
-        + "          <column_name>PRICEEACH</column_name>\n"
-        + "          <stream_name>PRICEEACH</stream_name>\n"
-        + "        </field>\n"
-        + "    </fields>\n",
-      tableOutputMeta.getXML() );
+    String expectedXml = ""
+      + "    <connection/>\n"
+      + "    <schema>public</schema>\n"
+      + "    <table>sales_csv</table>\n"
+      + "    <commit>1000</commit>\n"
+      + "    <truncate>Y</truncate>\n"
+      + "    <ignore_errors>N</ignore_errors>\n"
+      + "    <use_batch>Y</use_batch>\n"
+      + "    <specify_fields>Y</specify_fields>\n"
+      + "    <partitioning_enabled>N</partitioning_enabled>\n"
+      + "    <partitioning_field/>\n"
+      + "    <partitioning_daily>N</partitioning_daily>\n"
+      + "    <partitioning_monthly>Y</partitioning_monthly>\n"
+      + "    <tablename_in_field>N</tablename_in_field>\n"
+      + "    <tablename_field/>\n"
+      + "    <tablename_in_table>Y</tablename_in_table>\n"
+      + "    <return_keys>N</return_keys>\n"
+      + "    <return_field/>\n"
+      + "    <fields>\n"
+      + "        <field>\n"
+      + "          <column_name>ORDERNUMBER</column_name>\n"
+      + "          <stream_name>ORDERNUMBER</stream_name>\n"
+      + "        </field>\n"
+      + "        <field>\n"
+      + "          <column_name>QUANTITYORDERED</column_name>\n"
+      + "          <stream_name>QUANTITYORDERED</stream_name>\n"
+      + "        </field>\n"
+      + "        <field>\n"
+      + "          <column_name>PRICEEACH</column_name>\n"
+      + "          <stream_name>PRICEEACH</stream_name>\n"
+      + "        </field>\n"
+      + "    </fields>\n";
+    String actualXml = TestUtils.toUnixLineSeparators( tableOutputMeta.getXML() );
+    assertEquals( expectedXml, actualXml );
   }
 
   @Test
@@ -243,6 +245,7 @@ public class TableOutputMetaTest {
     TableOutputMeta tableOutputMeta = new TableOutputMeta();
     tableOutputMeta.setDefault();
     tableOutputMeta.setFieldStream( new String[] {"1", "2", "3"} );
+    tableOutputMeta.setFieldDatabase( new String[] {"d1", "d2", "d3"} );
     TableOutputMeta clone = (TableOutputMeta) tableOutputMeta.clone();
     assertNotSame( clone, tableOutputMeta );
     assertEquals( clone.getXML(), tableOutputMeta.getXML() );

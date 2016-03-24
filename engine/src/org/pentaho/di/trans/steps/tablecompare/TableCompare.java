@@ -448,8 +448,7 @@ public class TableCompare extends BaseStep implements StepInterface {
               // both records are populated, compare the records...
               //
               int compare = oneMeta.compare( one, two, keyNrs );
-              if ( compare == 0 ) // The Key matches, we CAN compare the two rows...
-              {
+              if ( compare == 0 ) { // The Key matches, we CAN compare the two rows...
                 int compareValues = oneMeta.compare( one, two, valueNrs );
                 if ( compareValues != 0 ) {
                   // Return the compare (most recent) row
@@ -555,7 +554,7 @@ public class TableCompare extends BaseStep implements StepInterface {
   }
 
   private String getKeyDesc( RowMetaInterface keyRowMeta, int[] keyNrs, Object[] one ) throws KettleException {
-    StringBuffer keyDesc = new StringBuffer();
+    StringBuilder keyDesc = new StringBuilder();
     for ( int x = 0; x < keyNrs.length; x++ ) {
       ValueMetaInterface keyValueMeta = keyRowMeta.getValueMeta( x );
       Object keyValueData = one[keyNrs[x]];

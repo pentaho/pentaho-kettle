@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -1177,24 +1177,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
       JobLogTable jobLogTable = jobMeta.getJobLogTable();
       if ( jobLogTable.isDefined() ) {
 
-        String tableName = jobMeta.getJobLogTable().getActualTableName();
-        DatabaseMeta logcon = jobMeta.getJobLogTable().getDatabaseMeta();
-
-        Database ldb = new Database( this, logcon );
-        ldb.shareVariablesWith( this );
-        try {
-          ldb.connect();
-          ldb.setCommit( logCommitSize );
-          ldb.writeLogRecord( jobMeta.getJobLogTable(), status, this, null );
-        } catch ( KettleDatabaseException dbe ) {
-          addErrors( 1 );
-          throw new KettleJobException( "Unable to end processing by writing log record to table " + tableName, dbe );
-        } finally {
-          if ( !ldb.isAutoCommit() ) {
-            ldb.commitLog( true, jobMeta.getJobLogTable() );
-          }
-          ldb.disconnect();
-        }
+        writeLogTableInformation( jobLogTable, status );
       }
 
       return true;
@@ -1203,6 +1186,38 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
     }
   }
 
+  /**
+   *  Writes information to Job Log table.
+   *  Cleans old records, in case job is finished.
+   *
+   */
+  protected void writeLogTableInformation( JobLogTable jobLogTable, LogStatus status )
+    throws KettleJobException, KettleDatabaseException {
+    boolean cleanLogRecords = status.equals( LogStatus.END );
+    String tableName = jobLogTable.getActualTableName();
+    DatabaseMeta logcon = jobLogTable.getDatabaseMeta();
+
+    Database ldb = createDataBase( logcon );
+    ldb.shareVariablesWith( this );
+    try {
+      ldb.connect();
+      ldb.setCommit( logCommitSize );
+      ldb.writeLogRecord( jobLogTable, status, this, null );
+
+      if ( cleanLogRecords ) {
+        ldb.cleanupLogRecords( jobLogTable );
+      }
+
+    } catch ( KettleDatabaseException dbe ) {
+      addErrors( 1 );
+      throw new KettleJobException( "Unable to end processing by writing log record to table " + tableName, dbe );
+    } finally {
+      if ( !ldb.isAutoCommit() ) {
+        ldb.commitLog( true, jobLogTable );
+      }
+      ldb.disconnect();
+    }
+  }
   /**
    * Write log channel information.
    *
@@ -1257,26 +1272,31 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
    */
   protected void writeJobEntryLogInformation() throws KettleException {
     Database db = null;
-    JobEntryLogTable jobEntryLogTable = jobMeta.getJobEntryLogTable();
+    JobEntryLogTable jobEntryLogTable = getJobMeta().getJobEntryLogTable();
     try {
-      db = new Database( this, jobEntryLogTable.getDatabaseMeta() );
+      db = createDataBase( jobEntryLogTable.getDatabaseMeta() );
       db.shareVariablesWith( this );
       db.connect();
       db.setCommit( logCommitSize );
 
-      for ( JobEntryCopy copy : jobMeta.getJobCopies() ) {
+      for ( JobEntryCopy copy : getJobMeta().getJobCopies() ) {
         db.writeLogRecord( jobEntryLogTable, LogStatus.START, copy, this );
       }
 
+      db.cleanupLogRecords( jobEntryLogTable );
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString( PKG, "Job.Exception.UnableToJobEntryInformationToLogTable" ),
-          e );
+        e );
     } finally {
       if ( !db.isAutoCommit() ) {
         db.commitLog( true, jobEntryLogTable );
       }
       db.disconnect();
     }
+  }
+
+  protected Database createDataBase( DatabaseMeta databaseMeta ) {
+    return new Database( this, databaseMeta );
   }
 
   /**

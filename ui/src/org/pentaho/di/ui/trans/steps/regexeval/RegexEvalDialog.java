@@ -718,7 +718,7 @@ public class RegexEvalDialog extends BaseStepDialog implements StepDialogInterfa
       RowMetaInterface r = transMeta.getPrevStepFields( stepname );
       if ( r != null ) {
         for ( String item : r.getFieldNames() ) {
-            wfieldevaluate.add(  item );
+          wfieldevaluate.add(  item );
         }
       }
 

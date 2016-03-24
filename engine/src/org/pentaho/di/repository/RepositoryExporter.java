@@ -53,27 +53,28 @@ import org.pentaho.di.repository.filerep.KettleFileRepository;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.mapping.MappingMeta;
+import org.pentaho.di.trans.steps.metainject.MetaInjectMeta;
 
 /**
  * <p>This class is used to read repository, load jobs and transformations, and export them into xml file.
  *  Xml file will be overwrite. In case of not success export this file will be deleted.</p>
- * 
+ *
  * <p>It is possible to set some export rules (similar as import rules). In case of export rule violation - whole export
  * process will be treated as unsuccessful, export xml file will be deleted.</p>
- * 
+ *
  * <p>In case of during export some item form repository will be failed to load in case of missing step plugin
  * etc - same as before - whole export process will be treated as failed, export xml file will be deleted.</p>
- * 
+ *
  * <p>Internally this implementation uses 2 types of output xml writers - actual and null implementation. When during
  * export some item violates export rule - output xml file will be deleted, actual writer implementation will be
  * replaced by null (nothing-to-do) implementation. Monitor current status will be replaced by error message with number
  * of rule violation errors.</p>
- * 
+ *
  * <p>Monitor's progress bar is not the actual progress, as we don't actually know the amount of real export. In current
  * implementation we avoid to discover repository for total amount of export work to show more sophisticated progress
  * bar. Export may be canceled using this monitor cancel action. Using monitor cancel is only the way to interrupt
  * running export without exception. In case of export is canceled - output export file will not be created.</p>
- * 
+ *
  *  @see ProgressMonitorListener
  *  @see IRepositoryExporter
  *  @see IRepositoryExporterFeedback
@@ -117,7 +118,7 @@ public class RepositoryExporter implements IRepositoryExporterFeedback {
    * Instead of it this method attempts to scan whole repository to get full picture how many items violates
    * export rules. This information is available as collection of feedbacks. To determine possible export rule
    * violations and not perform full collection scan for error feedbacks use isRuleViolation() call</p>
-   * 
+   *
    * @see #isRulesViolation()
    */
   @Override
@@ -128,7 +129,7 @@ public class RepositoryExporter implements IRepositoryExporterFeedback {
 
   /**
    * This implementation is backward compatible. This means if we have some export rules defined, and during
-   * export one rule will be violated - we will throw exception and we will stop export. 
+   * export one rule will be violated - we will throw exception and we will stop export.
    */
   @Override
   public void exportAllObjects( ProgressMonitorListener monitorOuter, String xmlFilename,
@@ -289,7 +290,7 @@ public class RepositoryExporter implements IRepositoryExporterFeedback {
       return Collections.emptyList();
     }
     if ( !boolFeedback ) {
-      // this is call from Pan, job Executor or somthing else - we should throw 
+      // this is call from Pan, job Executor or somthing else - we should throw
       // exception if one or more export rules is viloated.
       RepositoryImporter.validateImportedElement( importRules, subject );
     }
@@ -389,6 +390,25 @@ public class RepositoryExporter implements IRepositoryExporterFeedback {
             } catch ( Exception e ) {
               log.logError( BaseMessages.getString( PKG, "Repository.Exporter.Log.UnableToLoadTransInMap", mappingMeta
                   .getName() ), e );
+            }
+          }
+        }
+        if ( stepMeta.isEtlMetaInject() ) {
+          MetaInjectMeta metaInjectMeta = (MetaInjectMeta) stepMeta.getStepMetaInterface();
+          // convert to a named based reference.
+          //
+          if ( metaInjectMeta.getSpecificationMethod() == ObjectLocationSpecificationMethod.FILENAME ) {
+            try {
+              TransMeta meta =
+                  MetaInjectMeta.loadTransformationMeta( metaInjectMeta, fileRep, fileRep.metaStore, transMeta );
+              FileObject fileObject = KettleVFS.getFileObject( meta.getFilename() );
+              metaInjectMeta.setSpecificationMethod( ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME );
+              metaInjectMeta.setFileName( null );
+              metaInjectMeta.setTransName( meta.getName() );
+              metaInjectMeta.setDirectoryPath( Const.NVL( calcRepositoryDirectory( fileRep, fileObject ), "/" ) );
+            } catch ( Exception e ) {
+              log.logError( BaseMessages.getString( PKG, "Repository.Exporter.Log.UnableToLoadTransInMDI",
+                  metaInjectMeta.getName() ), e );
             }
           }
         }
@@ -576,7 +596,7 @@ public class RepositoryExporter implements IRepositoryExporterFeedback {
 
   /**
    * Empty implementation if we do not want to write anymore.
-   * 
+   *
    */
   private class NullStFileWriter implements IExportWriter {
 
@@ -615,7 +635,7 @@ public class RepositoryExporter implements IRepositoryExporterFeedback {
   /**
    * One day will be replaced by real StAX implementation. Actual write activity is delayed before real attempt to write
    * anything.
-   * 
+   *
    */
   private class ExportStFileWriter implements IExportWriter {
 
@@ -752,7 +772,7 @@ public class RepositoryExporter implements IRepositoryExporterFeedback {
 
     /**
      * simple progress monitor
-     * 
+     *
      * @param monitor
      */
     ProgressMonitorDecorator( ProgressMonitorListener monitor ) {

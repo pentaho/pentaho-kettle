@@ -44,7 +44,7 @@ public class HadoopSnappyCompressionProvider implements CompressionProvider {
 
   /**
    * Locate the Snappy Shim for the active Hadoop Configuration via the Hadoop Configuration Util
-   * 
+   *
    * @return A {@link org.pentaho.hadoop.shim.spi.SnappyShim} to interact with Snappy
    * @throws Exception
    *           Error locating a valid Snappy shim:
@@ -83,7 +83,7 @@ public class HadoopSnappyCompressionProvider implements CompressionProvider {
   /**
    * Tests whether hadoop-snappy (not to be confused with other java-based snappy implementations such as jsnappy or
    * snappy-java) plus the native snappy libraries are available.
-   * 
+   *
    * @return true if hadoop-snappy is available on the classpath
    */
   public static boolean isHadoopSnappyAvailable() {

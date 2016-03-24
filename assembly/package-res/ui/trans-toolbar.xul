@@ -1,7 +1,5 @@
 <window xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" align="stretch">
   <toolbar id="nav-toolbar" mode="icons">
-    <toolbarbutton id="trans-run" label="${Spoon.Menu.Transformation.Run}" image="images/run.svg"
-      tooltiptext="${Spoon.Tooltip.RunTranformation}" onclick="transgraph.runTransformation()" />
     <toolbarbutton id="trans-pause" label="${Spoon.Menu.Transformation.Pause}" image="images/pause.svg"
       tooltiptext="${Spoon.Tooltip.PauseTranformation}" onclick="transgraph.pauseTransformation()" />
     <toolbarbutton id="trans-stop" label="${Spoon.Menu.Transformation.Stop}" image="images/stop.svg"

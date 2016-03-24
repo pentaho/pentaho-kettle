@@ -31,6 +31,8 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.injection.Injection;
+import org.pentaho.di.core.injection.InjectionSupported;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
@@ -56,37 +58,47 @@ import org.pentaho.di.trans.step.errorhandling.StreamInterface.StreamType;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
+@InjectionSupported( localizationPrefix = "StreamLookupMeta.Injection." )
 public class StreamLookupMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = StreamLookupMeta.class; // for i18n purposes, needed by Translator2!!
 
   /** fields in input streams with which we look up values */
+  @Injection( name = "KEY_STREAM" )
   private String[] keystream;
 
   /** fields in lookup stream with which we look up values */
+  @Injection( name = "KEY_LOOKUP" )
   private String[] keylookup;
 
   /** return these field values from lookup */
+  @Injection( name = "RETRIEVE_VALUE" )
   private String[] value;
 
   /** rename to this after lookup */
+  @Injection( name = "RETRIEVE_VALUE_NAME" )
   private String[] valueName;
 
   /** default value in case not found... */
+  @Injection( name = "RETRIEVE_VALUE_DEFAULT" )
   private String[] valueDefault;
 
   /** type of default value */
+  @Injection( name = "RETRIEVE_DEFAULT_TYPE" )
   private int[] valueDefaultType;
 
   /** Indicate that the input is considered sorted! */
   private boolean inputSorted;
 
   /** Indicate that we need to preserve memory by serializing objects */
+  @Injection( name = "PRESERVE_MEMORY" )
   private boolean memoryPreservationActive;
 
   /** Indicate that we want to use a sorted list vs. a hashtable */
+  @Injection( name = "SORTED_LIST" )
   private boolean usingSortedList;
 
   /** The content of the key and lookup is a single Integer (long) */
+  @Injection( name = "INTEGER_PAIR" )
   private boolean usingIntegerPair;
 
   public StreamLookupMeta() {

@@ -43,8 +43,6 @@ import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.job.Job;
-import org.pentaho.di.job.JobMeta;
 
 public class GetStatusServletTest {
   private TransformationMap mockTransformationMap;

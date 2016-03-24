@@ -180,6 +180,7 @@ public class TableView extends Composite {
   private boolean showingBlueNullValues;
   private boolean showingConversionErrorsInline;
   private boolean isTextButton = false;
+  private boolean addIndexColumn = true;
 
   public TableView( VariableSpace space, Composite parent, int style, ColumnInfo[] columnInfo, int nrRows,
                     ModifyListener lsm, PropsUI pr ) {
@@ -187,7 +188,12 @@ public class TableView extends Composite {
   }
 
   public TableView( VariableSpace space, Composite parent, int style, ColumnInfo[] columnInfo, int nrRows,
-                    boolean readOnly, ModifyListener lsm, PropsUI pr ) {
+      boolean readOnly, ModifyListener lsm, PropsUI pr ) {
+    this( space, parent, style, columnInfo, nrRows, false, lsm, pr, true );
+  }
+
+  public TableView( VariableSpace space, Composite parent, int style, ColumnInfo[] columnInfo, int nrRows,
+      boolean readOnly, ModifyListener lsm, PropsUI pr, final boolean addIndexColumn ) {
     super( parent, SWT.NO_BACKGROUND | SWT.NO_FOCUS | SWT.NO_MERGE_PAINTS | SWT.NO_RADIO_GROUP );
     this.parent = parent;
     this.columns = columnInfo;
@@ -196,6 +202,7 @@ public class TableView extends Composite {
     this.readonly = readOnly;
     this.clipboard = null;
     this.variables = space;
+    this.addIndexColumn = addIndexColumn;
 
     sortfield = 0;
     sortfieldLast = -1;
@@ -263,7 +270,7 @@ public class TableView extends Composite {
     tablecolumn[0] = new TableColumn( table, SWT.RIGHT );
     tablecolumn[0].setResizable( true );
     tablecolumn[0].setText( "#" );
-    tablecolumn[0].setWidth( 25 );
+    tablecolumn[0].setWidth( addIndexColumn ? 25 : 0 );
     tablecolumn[0].setAlignment( SWT.RIGHT );
 
     for ( int i = 0; i < columns.length; i++ ) {
@@ -2053,7 +2060,7 @@ public class TableView extends Composite {
       //
       InsertTextInterface insertTextInterface = new InsertTextInterface() {
         public void insertText( String string, int position ) {
-          StringBuffer buffer = new StringBuffer( table.getItem( rownr ).getText( colnr ) );
+          StringBuilder buffer = new StringBuilder( table.getItem( rownr ).getText( colnr ) );
           buffer.insert( position, string );
           table.getItem( rownr ).setText( colnr, buffer.toString() );
           int newPosition = position + string.length();
@@ -2401,7 +2408,13 @@ public class TableView extends Composite {
         // Platform specific code not needed any more with current version SWT
         // if (Const.isOSX() || Const.isLinux()) max*=1.25;
         if ( tc.getWidth() != max + extra ) {
-          tc.setWidth( max + extra );
+          if ( c > 0 || ( c == 0 && addIndexColumn ) ) {
+            if ( columns[c - 1].getWidth() == -1 ) {
+              tc.setWidth( max + extra );
+            } else {
+              tc.setWidth( columns[c - 1].getWidth() );
+            }
+          }
         }
       } catch ( Exception e ) {
         // Ignore errors

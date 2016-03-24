@@ -254,8 +254,7 @@ public class GetFileNames extends BaseStep implements StepInterface {
         // Send row
         putRow( data.outputRowMeta, outputRow );
 
-        if ( meta.getRowLimit() > 0 && data.rownr >= meta.getRowLimit() ) // limit has been reached: stop now.
-        {
+        if ( meta.getRowLimit() > 0 && data.rownr >= meta.getRowLimit() ) { // limit has been reached: stop now.
           setOutputDone();
           return false;
         }
@@ -312,7 +311,7 @@ public class GetFileNames extends BaseStep implements StepInterface {
         data.nrStepFields = data.outputRowMeta.size();
 
         if ( !meta.isFileField() ) {
-          data.files = meta.getFileList( getTransMeta() );
+          data.files = meta.getFileList( this );
           data.filessize = data.files.nrOfFiles();
           handleMissingFiles();
         } else {

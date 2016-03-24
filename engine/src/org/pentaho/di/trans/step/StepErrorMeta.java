@@ -144,7 +144,7 @@ public class StepErrorMeta extends ChangedFlag implements XMLInterface, Cloneabl
   }
 
   public String getXML() {
-    StringBuffer xml = new StringBuffer( 300 );
+    StringBuilder xml = new StringBuilder( 300 );
 
     xml.append( "      " ).append( XMLHandler.openTag( XML_TAG ) ).append( Const.CR );
     xml.append( "        " ).append(

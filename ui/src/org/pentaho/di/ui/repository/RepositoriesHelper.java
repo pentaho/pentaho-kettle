@@ -101,14 +101,14 @@ public class RepositoriesHelper {
     String[] names = new String[plugins.size()];
     for ( int i = 0; i < names.length; i++ ) {
       PluginInterface plugin = plugins.get( i );
-      names[i] = plugin.getName() + " : " + plugin.getDescription();
+      names[i] = plugin.getName() + " - " + plugin.getDescription();
     }
 
     // TODO: make this a bit fancier!
     EnterSelectionDialog selectRepositoryType = new EnterSelectionDialog( this.shell, names,
       BaseMessages.getString( PKG, "RepositoryLogin.SelectRepositoryType" ),
       BaseMessages.getString( PKG, "RepositoryLogin.SelectRepositoryTypeCreate" ) );
-    String choice = selectRepositoryType.open();
+    String choice = selectRepositoryType.openRepoDialog();
     if ( choice != null ) {
       int index = selectRepositoryType.getSelectionNr();
       PluginInterface plugin = plugins.get( index );

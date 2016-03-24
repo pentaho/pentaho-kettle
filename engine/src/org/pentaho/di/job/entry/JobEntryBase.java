@@ -94,7 +94,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
   /** Whether the job entry has changed. */
   private boolean changed;
 
-  /** The object id for the job entry. Should be unique in most cases. Used to distinguish 
+  /** The object id for the job entry. Should be unique in most cases. Used to distinguish
    * Logging channels for objects. */
   private ObjectId id;
 
@@ -395,7 +395,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
    * @return the xml representation of the job entry
    */
   public String getXML() {
-    StringBuffer retval = new StringBuffer();
+    StringBuilder retval = new StringBuilder();
     retval.append( "      " ).append( XMLHandler.addTagValue( "name", getName() ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "description", getDescription() ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "type", configId ) );

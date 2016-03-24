@@ -1643,11 +1643,7 @@ public class ValueDataUtil {
    * @return The padded String.
    */
   public static final String rightPad( String ret, int limit ) {
-    if ( ret == null ) {
-      return rightPad( new StringBuffer(), limit );
-    } else {
-      return rightPad( new StringBuffer( ret ), limit );
-    }
+    return Const.rightPad( ret, limit );
   }
 
   /**
@@ -1661,17 +1657,7 @@ public class ValueDataUtil {
    * @return The padded String.
    */
   public static final String rightPad( StringBuffer ret, int limit ) {
-    int len = ret.length();
-    int l;
-
-    if ( len > limit ) {
-      ret.setLength( limit );
-    } else {
-      for ( l = len; l < limit; l++ ) {
-        ret.append( ' ' );
-      }
-    }
-    return ret.toString();
+    return Const.rightPad( ret, limit );
   }
 
   /**

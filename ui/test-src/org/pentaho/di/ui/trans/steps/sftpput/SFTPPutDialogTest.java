@@ -33,7 +33,6 @@ import org.pentaho.di.trans.steps.sftpput.SFTPPutMeta;
 import org.pentaho.di.ui.core.PropsUI;
 
 import java.lang.reflect.Field;
-import java.net.UnknownHostException;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;

@@ -22,9 +22,6 @@
 
 package org.pentaho.di.ui.repository.dialog;
 
-import java.util.Collections;
-import java.util.Set;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MenuDetectEvent;
 import org.eclipse.swt.events.MenuDetectListener;
@@ -51,6 +48,7 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
+import org.pentaho.di.repository.RepositoryExtended;
 import org.pentaho.di.ui.core.ConstUI;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.dialog.EnterStringDialog;
@@ -59,6 +57,9 @@ import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.repository.RepositoryDirectoryUI;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
+
+import java.util.Collections;
+import java.util.Set;
 
 /**
  * This dialog represents an explorer type of interface on a given database connection. It shows the tables defined in
@@ -113,7 +114,7 @@ public class SelectDirectoryDialog extends Dialog {
     Shell parent = getParent();
     shell = new Shell( parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN );
     props.setLook( shell );
-    shell.setImage( GUIResource.getInstance().getImageConnection() );
+    shell.setImage( GUIResource.getInstance().getImageSpoon() );
     shell.setText( BaseMessages.getString( PKG, "SelectDirectoryDialog.Dialog.Main.Title" ) );
 
     FormLayout formLayout = new FormLayout();
@@ -127,11 +128,17 @@ public class SelectDirectoryDialog extends Dialog {
     props.setLook( wTree );
 
     try {
-      repositoryTree = rep.loadRepositoryDirectoryTree();
+      // We're terrible and load the entire repository, disable lazy loading if set
+      if ( rep instanceof RepositoryExtended ) {
+        RepositoryExtended repositoryExtended = (RepositoryExtended) this.rep;
+        repositoryTree = repositoryExtended.loadRepositoryDirectoryTree( true );
+      } else {
+        repositoryTree = this.rep.loadRepositoryDirectoryTree();
+      }
     } catch ( KettleException e ) {
       new ErrorDialog( shell,
-        BaseMessages.getString( PKG, "SelectDirectoryDialog.Dialog.ErrorRefreshingDirectoryTree.Title" ),
-        BaseMessages.getString( PKG, "SelectDirectoryDialog.Dialog.ErrorRefreshingDirectoryTree.Message" ), e );
+          BaseMessages.getString( PKG, "SelectDirectoryDialog.Dialog.ErrorRefreshingDirectoryTree.Title" ),
+          BaseMessages.getString( PKG, "SelectDirectoryDialog.Dialog.ErrorRefreshingDirectoryTree.Message" ), e );
       return null;
     }
 
@@ -250,7 +257,7 @@ public class SelectDirectoryDialog extends Dialog {
     }
 
     tiTree = new TreeItem( wTree, SWT.NONE );
-    tiTree.setImage( GUIResource.getInstance().getImageFolderConnections() );
+    tiTree.setImage( GUIResource.getInstance().getImageFolder() );
     RepositoryDirectoryUI.getDirectoryTree( tiTree, dircolor, repositoryTree );
     tiTree.setExpanded( true );
 
@@ -283,9 +290,9 @@ public class SelectDirectoryDialog extends Dialog {
               // What's the name of the new directory?
               //
               EnterStringDialog etd = new EnterStringDialog( shell,
-                BaseMessages.getString( PKG, "SelectDirectoryDialog.Dialog.EnterDirectoryName.Title" ),
-                BaseMessages.getString( PKG, "SelectDirectoryDialog.Dialog.EnterDirectoryName.Message" ),
-                BaseMessages.getString( PKG, "SelectDirectoryDialog.Dialog.EnterDirectoryName.Default" ) );
+                  BaseMessages.getString( PKG, "SelectDirectoryDialog.Dialog.EnterDirectoryName.Title" ),
+                  BaseMessages.getString( PKG, "SelectDirectoryDialog.Dialog.EnterDirectoryName.Message" ),
+                  BaseMessages.getString( PKG, "SelectDirectoryDialog.Dialog.EnterDirectoryName.Default" ) );
               String newdir = etd.open();
               if ( newdir != null ) {
                 RepositoryDirectory subdir = new RepositoryDirectory( dir, newdir );
@@ -294,27 +301,27 @@ public class SelectDirectoryDialog extends Dialog {
                   dir.addSubdirectory( subdir );
                   TreeItem tiNew = new TreeItem( ti, SWT.NONE );
                   tiNew.setText( newdir );
-                  tiNew.setImage( GUIResource.getInstance().getImageArrow() );
+                  tiNew.setImage( GUIResource.getInstance().getImageFolder() );
                   wTree.setSelection( new TreeItem[] { tiNew } );
                 } catch ( Exception exception ) {
                   new ErrorDialog( shell, BaseMessages.getString(
-                    PKG, "SelectDirectoryDialog.Dialog.UnableToCreateDirectory.Message" ), BaseMessages
-                    .getString( PKG, "SelectDirectoryDialog.Dialog.UnableToCreateDirectory.Title" ), exception );
+                      PKG, "SelectDirectoryDialog.Dialog.UnableToCreateDirectory.Message" ), BaseMessages
+                      .getString( PKG, "SelectDirectoryDialog.Dialog.UnableToCreateDirectory.Title" ), exception );
                 }
               }
             } else {
               MessageBox mb = new MessageBox( shell, SWT.ICON_ERROR | SWT.OK );
               mb.setMessage( BaseMessages.getString(
-                PKG, "SelectDirectoryDialog.Dialog.UnableToLocateDirectory.Message" ) );
+                  PKG, "SelectDirectoryDialog.Dialog.UnableToLocateDirectory.Message" ) );
               mb.setText( BaseMessages.getString(
-                PKG, "SelectDirectoryDialog.Dialog.UnableToLocateDirectory.Title" ) );
+                  PKG, "SelectDirectoryDialog.Dialog.UnableToLocateDirectory.Title" ) );
               mb.open();
             }
           } else {
             MessageBox mb = new MessageBox( shell, SWT.ICON_ERROR | SWT.OK );
             mb.setMessage( BaseMessages.getString( PKG, "SelectDirectoryDialog.Dialog.PermissionDenied.Message1" )
-              + ( rep.getUserInfo() == null ? "" : rep.getUserInfo().getLogin() )
-              + BaseMessages.getString( PKG, "SelectDirectoryDialog.Dialog.PermissionDenied.Message2" ) );
+                + ( rep.getUserInfo() == null ? "" : rep.getUserInfo().getLogin() )
+                + BaseMessages.getString( PKG, "SelectDirectoryDialog.Dialog.PermissionDenied.Message2" ) );
             mb.setText( BaseMessages.getString( PKG, "SelectDirectoryDialog.Dialog.PermissionDenied.Title" ) );
             mb.open();
           }
@@ -338,9 +345,9 @@ public class SelectDirectoryDialog extends Dialog {
               //
               String oldName = dir.getName();
               EnterStringDialog etd = new EnterStringDialog( shell,
-                oldName,
-                BaseMessages.getString( PKG, "SelectDirectoryDialog.Dialog.EnterDirectoryNewName.Message" ),
-                BaseMessages.getString( PKG, "SelectDirectoryDialog.Dialog.EnterDirectoryNewName.Title" ) );
+                  oldName,
+                  BaseMessages.getString( PKG, "SelectDirectoryDialog.Dialog.EnterDirectoryNewName.Message" ),
+                  BaseMessages.getString( PKG, "SelectDirectoryDialog.Dialog.EnterDirectoryNewName.Title" ) );
               String newName = etd.open();
               if ( newName != null && !newName.equals( oldName ) ) {
                 dir.setName( newName );
@@ -350,13 +357,14 @@ public class SelectDirectoryDialog extends Dialog {
                   wTree.setSelection( ti );
                 } catch ( Exception exception ) {
                   new ErrorDialog(
-                    shell,
-                    BaseMessages.getString( PKG, "RepositoryExplorerDialog.Directory.Rename.UnexpectedError.Message1" )
-                      + oldName + "]" + Const.CR
-                      + BaseMessages
-                      .getString( PKG, "RepositoryExplorerDialog.Directory.Rename.UnexpectedError.Message2" ),
-                    BaseMessages.getString( PKG, "RepositoryExplorerDialog.Directory.Rename.UnexpectedError.Title" ),
-                    exception );
+                      shell,
+                      BaseMessages
+                          .getString( PKG, "RepositoryExplorerDialog.Directory.Rename.UnexpectedError.Message1" )
+                          + oldName + "]" + Const.CR
+                          + BaseMessages
+                          .getString( PKG, "RepositoryExplorerDialog.Directory.Rename.UnexpectedError.Message2" ),
+                      BaseMessages.getString( PKG, "RepositoryExplorerDialog.Directory.Rename.UnexpectedError.Title" ),
+                      exception );
                 }
               }
             }
@@ -378,9 +386,9 @@ public class SelectDirectoryDialog extends Dialog {
                 ti.dispose();
               } catch ( KettleException exception ) {
                 new ErrorDialog( shell,
-                  BaseMessages.getString( PKG, "RepositoryExplorerDialog.Directory.Delete.ErrorRemoving.Title" ),
-                  BaseMessages.getString( PKG, "RepositoryExplorerDialog.Directory.Delete.ErrorRemoving.Message1" ),
-                  exception );
+                    BaseMessages.getString( PKG, "RepositoryExplorerDialog.Directory.Delete.ErrorRemoving.Title" ),
+                    BaseMessages.getString( PKG, "RepositoryExplorerDialog.Directory.Delete.ErrorRemoving.Message1" ),
+                    exception );
               }
             }
           }

@@ -205,7 +205,7 @@ public class ExecProcess extends BaseStep implements StepInterface {
   }
 
   private String getOutputString( BufferedReader b ) throws IOException {
-    StringBuffer retvalBuff = new StringBuffer();
+    StringBuilder retvalBuff = new StringBuilder();
     String line;
     String delim = meta.getOutputLineDelimiter();
     if ( delim == null ) {

@@ -22,9 +22,8 @@
 
 package org.pentaho.di.job.entries.columnsexist;
 
-import static org.pentaho.di.job.entry.validator.AndValidator.putValidators;
-import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.andValidator;
-import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notBlankValidator;
+import org.pentaho.di.job.entry.validator.AndValidator;
+import org.pentaho.di.job.entry.validator.JobEntryValidatorUtils;
 
 import java.util.List;
 
@@ -77,13 +76,22 @@ public class JobEntryColumnsExist extends JobEntryBase implements Cloneable, Job
     this( "" );
   }
 
+  public void allocate( int nrFields ) {
+    arguments = new String[nrFields];
+  }
+
   public Object clone() {
     JobEntryColumnsExist je = (JobEntryColumnsExist) super.clone();
+    if ( arguments != null ) {
+      int nrFields = arguments.length;
+      je.allocate( nrFields );
+      System.arraycopy( arguments, 0, je.arguments, 0, nrFields );
+    }
     return je;
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 200 );
+    StringBuilder retval = new StringBuilder( 200 );
 
     retval.append( super.getXML() );
 
@@ -119,7 +127,7 @@ public class JobEntryColumnsExist extends JobEntryBase implements Cloneable, Job
 
       // How many field arguments?
       int nrFields = XMLHandler.countNodes( fields, "field" );
-      arguments = new String[nrFields];
+      allocate( nrFields );
 
       // Read them all...
       for ( int i = 0; i < nrFields; i++ ) {
@@ -301,8 +309,8 @@ public class JobEntryColumnsExist extends JobEntryBase implements Cloneable, Job
   @Override
   public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
-    andValidator().validate( this, "tablename", remarks, putValidators( notBlankValidator() ) );
-    andValidator().validate( this, "columnname", remarks, putValidators( notBlankValidator() ) );
+    JobEntryValidatorUtils.andValidator().validate( this, "tablename", remarks, AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
+    JobEntryValidatorUtils.andValidator().validate( this, "columnname", remarks, AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
   }
 
 }

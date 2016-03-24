@@ -114,7 +114,7 @@ public class KettleSftpFileSystemConfigBuilder extends KettleGenericFileSystemCo
             }
             setParam( opts, "identities", identities );
           } else {
-            setParam( opts, name, value );
+            super.setParameter( opts, name, value, fullParameterName, vfsUrl );
           }
         } else {
           // No host match found

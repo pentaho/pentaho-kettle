@@ -113,10 +113,8 @@ public class WriteToLogMeta extends BaseStepMeta implements StepMetaInterface {
     int nrfields = fieldName.length;
 
     retval.allocate( nrfields );
+    System.arraycopy( fieldName, 0, retval.fieldName, 0, nrfields );
 
-    for ( int i = 0; i < nrfields; i++ ) {
-      retval.fieldName[i] = fieldName[i];
-    }
     return retval;
   }
 
@@ -200,7 +198,7 @@ public class WriteToLogMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer();
+    StringBuilder retval = new StringBuilder();
     retval.append( "      " + XMLHandler.addTagValue( "loglevel", loglevel ) );
     retval.append( "      " + XMLHandler.addTagValue( "displayHeader", displayHeader ) );
     retval.append( "      " + XMLHandler.addTagValue( "limitRows", limitRows ) );

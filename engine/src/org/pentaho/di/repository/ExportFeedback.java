@@ -32,15 +32,15 @@ import org.pentaho.di.i18n.BaseMessages;
 
 /**
  * This class is used to write export feedback. Usually it is transaction or job export result info.
- * 
+ *
  * Every time this object is created it gets time created info automatically.
- * 
+ *
  * Usually every ExportFeedback instance is related with one transformation or job export result. They are organized as
  * a List. In special cases when we want a record not-about job or transformation - we can set {@link #isSimpleString()}
  * to true. In this case {@link #getItemName()} will be used as a simple string. Others fields will not be used.
- * 
+ *
  * To get a String representation of this item call to {@link #toString()}.
- * 
+ *
  */
 public final class ExportFeedback {
 

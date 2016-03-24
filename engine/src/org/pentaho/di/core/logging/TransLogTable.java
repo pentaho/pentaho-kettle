@@ -105,7 +105,7 @@ public class TransLogTable extends BaseLogTable implements Cloneable, LogTableIn
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer();
+    StringBuilder retval = new StringBuilder();
 
     retval.append( XMLHandler.openTag( XML_TAG ) );
     retval.append( XMLHandler.addTagValue( "connection", connectionName ) );
@@ -507,5 +507,13 @@ public class TransLogTable extends BaseLogTable implements Cloneable, LogTableIn
     indexes.add( lookupIndex );
 
     return indexes;
+  }
+
+  @Override
+  public void setAllGlobalParametersToNull()  {
+    super.setAllGlobalParametersToNull();
+
+    logInterval = isGlobalParameter( logInterval ) ? null : logInterval;
+    logSizeLimit = isGlobalParameter( logSizeLimit ) ? null : logSizeLimit;
   }
 }

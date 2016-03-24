@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -32,8 +32,10 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaDate;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -95,12 +97,10 @@ public class GetRepositoryNamesMeta extends BaseStepMeta implements StepMetaInte
 
     retval.allocate( nrfiles );
 
-    for ( int i = 0; i < nrfiles; i++ ) {
-      retval.directory[i] = directory[i];
-      retval.nameMask[i] = nameMask[i];
-      retval.excludeNameMask[i] = excludeNameMask[i];
-      retval.includeSubFolders[i] = includeSubFolders[i];
-    }
+    System.arraycopy( directory, 0, retval.directory, 0, nrfiles );
+    System.arraycopy( nameMask, 0, retval.nameMask, 0, nrfiles );
+    System.arraycopy( excludeNameMask, 0, retval.excludeNameMask, 0, nrfiles );
+    System.arraycopy( includeSubFolders, 0, retval.includeSubFolders, 0, nrfiles );
 
     return retval;
   }
@@ -133,7 +133,7 @@ public class GetRepositoryNamesMeta extends BaseStepMeta implements StepMetaInte
 
     // the directory and name of the object
     //
-    ValueMetaInterface object = new ValueMeta( "object", ValueMeta.TYPE_STRING );
+    ValueMetaInterface object = new ValueMetaString( "object" );
     object.setLength( 500 );
     object.setPrecision( -1 );
     object.setOrigin( origin );
@@ -141,7 +141,7 @@ public class GetRepositoryNamesMeta extends BaseStepMeta implements StepMetaInte
 
     // the directory
     //
-    ValueMetaInterface directory = new ValueMeta( "directory", ValueMeta.TYPE_STRING );
+    ValueMetaInterface directory = new ValueMetaString( "directory" );
     directory.setLength( 500 );
     directory.setPrecision( -1 );
     directory.setOrigin( origin );
@@ -149,7 +149,7 @@ public class GetRepositoryNamesMeta extends BaseStepMeta implements StepMetaInte
 
     // the name
     //
-    ValueMetaInterface name = new ValueMeta( "name", ValueMeta.TYPE_STRING );
+    ValueMetaInterface name = new ValueMetaString( "name" );
     name.setLength( 500 );
     name.setPrecision( -1 );
     name.setOrigin( origin );
@@ -157,7 +157,7 @@ public class GetRepositoryNamesMeta extends BaseStepMeta implements StepMetaInte
 
     // the object type
     //
-    ValueMetaInterface objectType = new ValueMeta( "object_type", ValueMeta.TYPE_STRING );
+    ValueMetaInterface objectType = new ValueMetaString( "object_type" );
     objectType.setLength( 500 );
     objectType.setPrecision( -1 );
     objectType.setOrigin( origin );
@@ -165,7 +165,7 @@ public class GetRepositoryNamesMeta extends BaseStepMeta implements StepMetaInte
 
     // object_id
     //
-    ValueMetaInterface objectId = new ValueMeta( "object_id", ValueMeta.TYPE_STRING );
+    ValueMetaInterface objectId = new ValueMetaString( "object_id" );
     object.setLength( 500 );
     object.setPrecision( -1 );
     objectId.setOrigin( origin );
@@ -173,7 +173,7 @@ public class GetRepositoryNamesMeta extends BaseStepMeta implements StepMetaInte
 
     // modified by
     //
-    ValueMetaInterface modifiedBy = new ValueMeta( "modified_by", ValueMeta.TYPE_STRING );
+    ValueMetaInterface modifiedBy = new ValueMetaString( "modified_by" );
     object.setLength( 500 );
     object.setPrecision( -1 );
     modifiedBy.setOrigin( origin );
@@ -181,20 +181,20 @@ public class GetRepositoryNamesMeta extends BaseStepMeta implements StepMetaInte
 
     // modified date
     //
-    ValueMetaInterface modifiedDate = new ValueMeta( "modified_date", ValueMeta.TYPE_DATE );
+    ValueMetaInterface modifiedDate = new ValueMetaDate( "modified_date" );
     modifiedDate.setOrigin( origin );
     row.addValueMeta( modifiedDate );
 
     // description
     //
-    ValueMetaInterface description = new ValueMeta( "description", ValueMeta.TYPE_STRING );
+    ValueMetaInterface description = new ValueMetaString( "description" );
     description.setLength( 500 );
     description.setPrecision( -1 );
     description.setOrigin( origin );
     row.addValueMeta( description );
 
     if ( includeRowNumber ) {
-      ValueMetaInterface v = new ValueMeta( space.environmentSubstitute( rowNumberField ), ValueMeta.TYPE_INTEGER );
+      ValueMetaInterface v = new ValueMetaInteger( space.environmentSubstitute( rowNumberField ) );
       v.setLength( ValueMetaInterface.DEFAULT_INTEGER_LENGTH, 0 );
       v.setOrigin( origin );
       row.addValueMeta( v );
@@ -203,7 +203,7 @@ public class GetRepositoryNamesMeta extends BaseStepMeta implements StepMetaInte
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 300 );
+    StringBuilder retval = new StringBuilder( 300 );
 
     retval.append( "    " ).append( XMLHandler.addTagValue( "object_type", objectTypeSelection.toString() ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "rownum", includeRowNumber ) );

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -34,9 +34,18 @@ import java.util.regex.Pattern;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleSQLException;
+import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaAndData;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaBigNumber;
+import org.pentaho.di.core.row.value.ValueMetaBinary;
+import org.pentaho.di.core.row.value.ValueMetaBoolean;
+import org.pentaho.di.core.row.value.ValueMetaDate;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
+import org.pentaho.di.core.row.value.ValueMetaNone;
+import org.pentaho.di.core.row.value.ValueMetaNumber;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.xml.XMLHandler;
 
 /**
@@ -53,7 +62,7 @@ public class ThinUtil {
       return null;
     }
 
-    StringBuffer sbsql = new StringBuffer( sql );
+    StringBuilder sbsql = new StringBuilder( sql );
 
     for ( int i = sbsql.length() - 1; i >= 0; i-- ) {
       if ( sbsql.charAt( i ) == '\n' || sbsql.charAt( i ) == '\r' ) {
@@ -79,6 +88,8 @@ public class ThinUtil {
         return java.sql.Types.BOOLEAN;
       case ValueMetaInterface.TYPE_BINARY:
         return java.sql.Types.BLOB;
+      case ValueMetaInterface.TYPE_NONE:
+        return java.sql.Types.OTHER;
       default:
         break;
     }
@@ -101,6 +112,8 @@ public class ThinUtil {
         return "BOOLEAN";
       case ValueMetaInterface.TYPE_BINARY:
         return "BLOB";
+      case ValueMetaInterface.TYPE_NONE:
+        return "OTHER";
       default:
         break;
     }
@@ -109,44 +122,39 @@ public class ThinUtil {
 
   public static ValueMetaInterface getValueMeta( String valueName, int sqlType ) throws SQLException {
     switch ( sqlType ) {
+      case java.sql.Types.OTHER:
+      case java.sql.Types.NULL:
+        return new ValueMetaNone( valueName );
+
       case java.sql.Types.BIGINT:
-        return new ValueMeta( valueName, ValueMetaInterface.TYPE_INTEGER );
       case java.sql.Types.INTEGER:
-        return new ValueMeta( valueName, ValueMetaInterface.TYPE_INTEGER );
       case java.sql.Types.SMALLINT:
-        return new ValueMeta( valueName, ValueMetaInterface.TYPE_INTEGER );
+        return new ValueMetaInteger( valueName );
 
       case java.sql.Types.CHAR:
-        return new ValueMeta( valueName, ValueMetaInterface.TYPE_STRING );
       case java.sql.Types.VARCHAR:
-        return new ValueMeta( valueName, ValueMetaInterface.TYPE_STRING );
       case java.sql.Types.CLOB:
-        return new ValueMeta( valueName, ValueMetaInterface.TYPE_STRING );
+        return new ValueMetaString( valueName );
 
       case java.sql.Types.DATE:
-        return new ValueMeta( valueName, ValueMetaInterface.TYPE_DATE );
       case java.sql.Types.TIMESTAMP:
-        return new ValueMeta( valueName, ValueMetaInterface.TYPE_DATE );
       case java.sql.Types.TIME:
-        return new ValueMeta( valueName, ValueMetaInterface.TYPE_DATE );
+        return new ValueMetaDate( valueName );
 
       case java.sql.Types.DECIMAL:
-        return new ValueMeta( valueName, ValueMetaInterface.TYPE_BIGNUMBER );
+        return new ValueMetaBigNumber( valueName );
 
       case java.sql.Types.DOUBLE:
-        return new ValueMeta( valueName, ValueMetaInterface.TYPE_NUMBER );
       case java.sql.Types.FLOAT:
-        return new ValueMeta( valueName, ValueMetaInterface.TYPE_NUMBER );
+        return new ValueMetaNumber( valueName );
 
       case java.sql.Types.BOOLEAN:
-        return new ValueMeta( valueName, ValueMetaInterface.TYPE_BOOLEAN );
       case java.sql.Types.BIT:
-        return new ValueMeta( valueName, ValueMetaInterface.TYPE_BOOLEAN );
+        return new ValueMetaBoolean( valueName );
 
       case java.sql.Types.BINARY:
-        return new ValueMeta( valueName, ValueMetaInterface.TYPE_BINARY );
       case java.sql.Types.BLOB:
-        return new ValueMeta( valueName, ValueMetaInterface.TYPE_BINARY );
+        return new ValueMetaBinary( valueName );
 
       default:
         throw new SQLException( "Don't know how to handle SQL Type: " + sqlType + ", with name: " + valueName );
@@ -346,9 +354,11 @@ public class ThinUtil {
 
   public static String stripTableAlias( String field, String tableAliasPrefix ) {
     if ( field.toUpperCase().startsWith( ( tableAliasPrefix + "." ).toUpperCase() ) ) {
-      return ThinUtil.stripQuotes( field.substring( tableAliasPrefix.length() + 1 ), '"' );
+      return ThinUtil.stripQuotesIfNoWhitespace(
+        field.substring( tableAliasPrefix.length() + 1 ), '"' );
     } else if ( field.toUpperCase().startsWith( ( "\"" + tableAliasPrefix + "\"." ).toUpperCase() ) ) {
-      return ThinUtil.stripQuotes( field.substring( tableAliasPrefix.length() + 3 ), '"' );
+      return ThinUtil.stripQuotesIfNoWhitespace(
+        field.substring( tableAliasPrefix.length() + 3 ), '"' );
     } else {
       return field;
     }
@@ -473,6 +483,19 @@ public class ThinUtil {
       }
     }
     return builder.toString();
+  }
+
+  /**
+   * Strips leading and trailing quotes if no whitespace present, and no
+   * additional quotes in the string.
+   */
+  public static String stripQuotesIfNoWhitespace(
+    String string, char... quoteChars ) {
+    if ( string.matches( ".*\\s.*" ) ) {
+      // whitespace present
+      return string;
+    }
+    return stripQuotes( string, quoteChars );
   }
 
   private static int countQuotes( String string, char quoteChar ) {
@@ -616,8 +639,21 @@ public class ThinUtil {
     }
 
     // Translate LIKE operators to REGEX
-    pattern = pattern.replace( "_", "." ).replace("%", ".*?" );
+    pattern = pattern.replace( "_", "." ).replace( "%", ".*?" );
 
     return Pattern.compile( pattern, Pattern.CASE_INSENSITIVE | Pattern.DOTALL );
+  }
+
+  /**
+   * Attempts to resolve the reference to field from the serviceFields value meta list.
+   * Will search with both the quoted and unquoted field.
+   */
+  public static String resolveFieldName( String field, RowMetaInterface serviceFields ) {
+    ValueMetaInterface valueMeta = serviceFields.searchValueMeta( field );
+    if ( valueMeta == null ) {
+      valueMeta = serviceFields.searchValueMeta(
+        ThinUtil.stripQuotes( field, '"' ) );
+    }
+    return valueMeta == null ? field : valueMeta.getName();
   }
 }

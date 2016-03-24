@@ -795,7 +795,7 @@ public class Translator2 {
     java.util.List<MessagesStore> changedMessagesStores = store.getChangedMessagesStores();
     if ( changedMessagesStores.size() > 0 ) {
 
-      StringBuffer msg = new StringBuffer();
+      StringBuilder msg = new StringBuilder();
       for ( MessagesStore messagesStore : changedMessagesStores ) {
         String filename = messagesStore.getSaveFilename( messagesStore.getSourceFolder() );
         messagesStore.setFilename( filename );
@@ -841,7 +841,7 @@ public class Translator2 {
       java.util.List<MessagesStore> messagesStores = store.getMessagesStores( selectedLocale, null );
       if ( messagesStores.size() > 0 ) {
 
-        StringBuffer msg = new StringBuffer();
+        StringBuilder msg = new StringBuilder();
         for ( MessagesStore messagesStore : messagesStores ) {
           // Find the main locale variation for this messages store...
           //

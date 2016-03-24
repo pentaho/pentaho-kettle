@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,6 +23,7 @@
 package org.pentaho.di.core.row.value;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.net.InetAddress;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -40,6 +41,31 @@ import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.ValueMetaInterface;
 
 public class ValueMetaInternetAddress extends ValueMetaDate {
+
+  @Override
+  public int compare( Object data1, Object data2 ) throws KettleValueException {
+    InetAddress inet1 = getInternetAddress( data1 );
+    InetAddress inet2 = getInternetAddress( data2 );
+    int cmp = 0;
+    if ( inet1 == null ) {
+      if ( inet2 == null ) {
+        cmp = 0;
+      } else {
+        cmp = -1;
+      }
+    } else if ( inet2 == null ) {
+      cmp = 1;
+    } else {
+      BigInteger bigint1 = new BigInteger( inet1.getAddress() );
+      BigInteger bigint2 = new BigInteger( inet2.getAddress() );
+      cmp = bigint1.compareTo( bigint2 );
+    }
+    if ( isSortedDescending() ) {
+      return -cmp;
+    } else {
+      return cmp;
+    }
+  }
 
   public ValueMetaInternetAddress() {
     this( null );
@@ -291,7 +317,7 @@ public class ValueMetaInternetAddress extends ValueMetaDate {
       // because you could get an NPE since you haven't checked isEmpty(pol)
       // yet!
       if ( Const.isEmpty( pol )
-        || pol.equalsIgnoreCase( Const.rightPad( new StringBuffer( null_value ), pol.length() ) ) ) {
+        || pol.equalsIgnoreCase( Const.rightPad( new StringBuilder( null_value ), pol.length() ) ) ) {
         pol = ifNull;
       }
     }
@@ -309,7 +335,7 @@ public class ValueMetaInternetAddress extends ValueMetaDate {
           // If the polled value is equal to the spaces right-padded null_value,
           // we have a match
           //
-          if ( pol.equalsIgnoreCase( Const.rightPad( new StringBuffer( null_value ), pol.length() ) ) ) {
+          if ( pol.equalsIgnoreCase( Const.rightPad( new StringBuilder( null_value ), pol.length() ) ) ) {
             return null;
           }
         }
@@ -323,11 +349,11 @@ public class ValueMetaInternetAddress extends ValueMetaDate {
       }
     }
 
-    StringBuffer strpol;
+    StringBuilder strpol;
     // Trimming
     switch ( trim_type ) {
       case ValueMetaInterface.TRIM_TYPE_LEFT:
-        strpol = new StringBuffer( pol );
+        strpol = new StringBuilder( pol );
         while ( strpol.length() > 0 && strpol.charAt( 0 ) == ' ' ) {
           strpol.deleteCharAt( 0 );
         }
@@ -335,7 +361,7 @@ public class ValueMetaInternetAddress extends ValueMetaDate {
 
         break;
       case ValueMetaInterface.TRIM_TYPE_RIGHT:
-        strpol = new StringBuffer( pol );
+        strpol = new StringBuilder( pol );
         while ( strpol.length() > 0 && strpol.charAt( strpol.length() - 1 ) == ' ' ) {
           strpol.deleteCharAt( strpol.length() - 1 );
         }
@@ -343,7 +369,7 @@ public class ValueMetaInternetAddress extends ValueMetaDate {
 
         break;
       case ValueMetaInterface.TRIM_TYPE_BOTH:
-        strpol = new StringBuffer( pol );
+        strpol = new StringBuilder( pol );
         while ( strpol.length() > 0 && strpol.charAt( 0 ) == ' ' ) {
           strpol.deleteCharAt( 0 );
         }

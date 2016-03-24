@@ -1,20 +1,19 @@
 /*!
-* Copyright 2010 - 2015 Pentaho Corporation.  All rights reserved.
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-*/
-
+ * Copyright 2010 - 2015 Pentaho Corporation.  All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
 package org.pentaho.di.repository.pur;
 
 import org.apache.jackrabbit.api.JackrabbitWorkspace;
@@ -54,8 +53,9 @@ class PurRepositoryTestingUtils {
 
   /**
    * Creates a session for {@code username}. No tenant is set.
-   *
-   * @param username user name
+   * 
+   * @param username
+   *          user name
    * @return {@code StandaloneSession} instance
    */
   static StandaloneSession createSession( String username ) {
@@ -64,9 +64,11 @@ class PurRepositoryTestingUtils {
 
   /**
    * Creates a session for {@code username} and sets {@code tenant} as its tenant.
-   *
-   * @param tenant   tenant
-   * @param username user name
+   * 
+   * @param tenant
+   *          tenant
+   * @param username
+   *          user name
    * @return {@code StandaloneSession} instance
    */
   static StandaloneSession createSession( ITenant tenant, String username ) {
@@ -78,50 +80,53 @@ class PurRepositoryTestingUtils {
 
   /**
    * Creates an {@code Authentication} instance for {@code userName} and with {@code roles} granted.
-   *
-   * @param userName user name
-   * @param roles    user roles
+   * 
+   * @param userName
+   *          user name
+   * @param roles
+   *          user roles
    * @return {@code Authentication} instance
    */
   static Authentication createAuthentication( String userName, String... roles ) {
-    GrantedAuthorityImpl[] authorities = new GrantedAuthorityImpl[ roles.length ];
+    GrantedAuthorityImpl[] authorities = new GrantedAuthorityImpl[roles.length];
     for ( int i = 0, rolesLength = roles.length; i < rolesLength; i++ ) {
-      authorities[ i ] = new GrantedAuthorityImpl( roles[ i ] );
+      authorities[i] = new GrantedAuthorityImpl( roles[i] );
     }
     UserDetails userDetails = new User( userName, "", true, true, true, true, authorities );
     return new UsernamePasswordAuthenticationToken( userDetails, "", authorities );
   }
 
-
   /**
    * Sets Pentaho Session and authentication.
-   *
-   * @param session        session
-   * @param authentication authentication
+   * 
+   * @param session
+   *          session
+   * @param authentication
+   *          authentication
    */
   static void setSession( IPentahoSession session, Authentication authentication ) {
     PentahoSessionHolder.setSession( session );
     SecurityContextHolder.getContext().setAuthentication( authentication );
   }
 
-
   /**
-   * Creates a callback for setting up {@code username}'s home folder. In the folder exists, noting is done. If {@code
-   * tenant}'s home folder does not exist nothing is done.
-   *
-   * @param tenant              tenant
-   * @param username            user name
-   * @param principleId         user principle's id
-   * @param authenticatedRoleId user authenticated role's id
-   * @param fileDao             file dao
+   * Creates a callback for setting up {@code username}'s home folder. In the folder exists, noting is done. If
+   * {@code tenant}'s home folder does not exist nothing is done.
+   * 
+   * @param tenant
+   *          tenant
+   * @param username
+   *          user name
+   * @param principleId
+   *          user principle's id
+   * @param authenticatedRoleId
+   *          user authenticated role's id
+   * @param fileDao
+   *          file dao
    * @return callback for performing the action
    */
-  static TransactionCallbackWithoutResult createUserHomeDirCallback(
-    final ITenant tenant,
-    final String username,
-    final String principleId,
-    final String authenticatedRoleId,
-    final IRepositoryFileDao fileDao ) {
+  static TransactionCallbackWithoutResult createUserHomeDirCallback( final ITenant tenant, final String username,
+      final String principleId, final String authenticatedRoleId, final IRepositoryFileDao fileDao ) {
     return new TransactionCallbackWithoutResult() {
       public void doInTransactionWithoutResult( final TransactionStatus status ) {
         String tenantRootFolderPath = ServerRepositoryPaths.getTenantRootFolderPath( tenant );
@@ -145,33 +150,33 @@ class PurRepositoryTestingUtils {
           RepositoryFileSid ownerSid = new RepositoryFileSid( principleId, RepositoryFileSid.Type.USER );
 
           RepositoryFileSid tenantAuthenticatedRoleSid =
-            new RepositoryFileSid( authenticatedRoleId, RepositoryFileSid.Type.ROLE );
+              new RepositoryFileSid( authenticatedRoleId, RepositoryFileSid.Type.ROLE );
 
-          RepositoryFileAcl.Builder aclsForTenantHomeFolder = new RepositoryFileAcl.Builder( userSid )
-            .ace( tenantAuthenticatedRoleSid, EnumSet.of( RepositoryFilePermission.READ ) );
+          RepositoryFileAcl.Builder aclsForTenantHomeFolder =
+              new RepositoryFileAcl.Builder( userSid ).ace( tenantAuthenticatedRoleSid, EnumSet
+                  .of( RepositoryFilePermission.READ ) );
 
           aclsForUserHomeFolder =
-            new RepositoryFileAcl.Builder( userSid ).ace( ownerSid, EnumSet.of( RepositoryFilePermission.ALL ) );
-          tenantHomeFolder = fileDao.createFolder( tenantRootFolder.getId(), new RepositoryFile.Builder(
-              ServerRepositoryPaths.getTenantHomeFolderName() ).folder( true ).build(),
-            aclsForTenantHomeFolder.build(), "tenant home folder" );
+              new RepositoryFileAcl.Builder( userSid ).ace( ownerSid, EnumSet.of( RepositoryFilePermission.ALL ) );
+          tenantHomeFolder =
+              fileDao.createFolder( tenantRootFolder.getId(), new RepositoryFile.Builder( ServerRepositoryPaths
+                  .getTenantHomeFolderName() ).folder( true ).build(), aclsForTenantHomeFolder.build(),
+                  "tenant home folder" );
         } else {
           RepositoryFileSid ownerSid = new RepositoryFileSid( principleId, RepositoryFileSid.Type.USER );
           aclsForUserHomeFolder =
-            new RepositoryFileAcl.Builder( userSid ).ace( ownerSid, EnumSet.of( RepositoryFilePermission.ALL ) );
+              new RepositoryFileAcl.Builder( userSid ).ace( ownerSid, EnumSet.of( RepositoryFilePermission.ALL ) );
         }
 
-        fileDao.createFolder( tenantHomeFolder.getId(),
-          new RepositoryFile.Builder( username ).folder( true ).build(),
-          aclsForUserHomeFolder.build(), "user home folder" );
+        fileDao.createFolder( tenantHomeFolder.getId(), new RepositoryFile.Builder( username ).folder( true ).build(),
+            aclsForUserHomeFolder.build(), "user home folder" );
       }
     };
   }
 
-
   /**
    * Create a {@linkplain JcrCallback} for setting up ACL management in test repository
-   *
+   * 
    * @return acl management callback
    */
   static JcrCallback setAclManagementCallback() {
@@ -185,7 +190,7 @@ class PurRepositoryTestingUtils {
           privilegeManager.getPrivilege( pentahoJcrConstants.getPHO_ACLMANAGEMENT_PRIVILEGE() );
         } catch ( AccessControlException ace ) {
           privilegeManager.registerPrivilege( pentahoJcrConstants.getPHO_ACLMANAGEMENT_PRIVILEGE(), false,
-            new String[ 0 ] );
+              new String[0] );
         }
         session.save();
         return null;

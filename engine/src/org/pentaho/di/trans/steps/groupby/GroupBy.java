@@ -192,8 +192,7 @@ public class GroupBy extends BaseStep implements StepInterface {
       data.groupAggMeta.addRowMeta( data.aggMeta );
     }
 
-    if ( r == null ) // no more input to be expected... (or none received in the first place)
-    {
+    if ( r == null ) { // no more input to be expected... (or none received in the first place)
       handleLastOfGroup();
       setOutputDone();
       return false;

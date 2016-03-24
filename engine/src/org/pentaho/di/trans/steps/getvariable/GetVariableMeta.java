@@ -133,18 +133,16 @@ public class GetVariableMeta extends BaseStepMeta implements StepMetaInterface {
 
     retval.allocate( count );
 
-    for ( int i = 0; i < count; i++ ) {
-      retval.fieldName[i] = fieldName[i];
-      retval.variableString[i] = variableString[i];
-      retval.fieldType[i] = fieldType[i];
-      retval.fieldFormat[i] = fieldFormat[i];
-      retval.currency[i] = currency[i];
-      retval.decimal[i] = decimal[i];
-      retval.group[i] = group[i];
-      retval.fieldLength[i] = fieldLength[i];
-      retval.fieldPrecision[i] = fieldPrecision[i];
-      retval.trimType[i] = trimType[i];
-    }
+    System.arraycopy( fieldName, 0, retval.fieldName, 0, count );
+    System.arraycopy( variableString, 0, retval.variableString, 0, count );
+    System.arraycopy( fieldType, 0, retval.fieldType, 0, count );
+    System.arraycopy( fieldFormat, 0, retval.fieldFormat, 0, count );
+    System.arraycopy( currency, 0, retval.currency, 0, count );
+    System.arraycopy( decimal, 0, retval.decimal, 0, count );
+    System.arraycopy( group, 0, retval.group, 0, count );
+    System.arraycopy( fieldLength, 0, retval.fieldLength, 0, count );
+    System.arraycopy( fieldPrecision, 0, retval.fieldPrecision, 0, count );
+    System.arraycopy( trimType, 0, retval.trimType, 0, count );
 
     return retval;
   }
@@ -231,7 +229,7 @@ public class GetVariableMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 300 );
+    StringBuilder retval = new StringBuilder( 300 );
 
     retval.append( "    <fields>" ).append( Const.CR );
     for ( int i = 0; i < fieldName.length; i++ ) {

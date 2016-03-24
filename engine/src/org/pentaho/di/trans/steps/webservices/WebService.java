@@ -243,7 +243,7 @@ public class WebService extends BaseStep implements StepInterface {
 
     List<String> headerNames = new ArrayList<String>( parameters.getHeaderNames() );
 
-    StringBuffer xml = new StringBuffer();
+    StringBuilder xml = new StringBuilder();
 
     // TODO We only manage one name space for all the elements. See in the
     // future how to manage multiple name spaces
@@ -289,7 +289,7 @@ public class WebService extends BaseStep implements StepInterface {
    *          indicates if the we are to use the namespace prefix when writing the WS field name
    * @throws KettleException
    */
-  private void addParametersToXML( StringBuffer xml, List<String> names, boolean qualifyWSField ) throws KettleException {
+  private void addParametersToXML( StringBuilder xml, List<String> names, boolean qualifyWSField ) throws KettleException {
 
     // Add the row parameters...
     //
@@ -549,15 +549,15 @@ public class WebService extends BaseStep implements StepInterface {
       // Create a few objects to help do the layout of XML snippets we find along the way
       //
       Transformer transformer = null;
-      /* 
-       * as of BACKLOG-4068, explicit xalan factory references have been deprecated; we use the javax.xml factory 
+      /*
+       * as of BACKLOG-4068, explicit xalan factory references have been deprecated; we use the javax.xml factory
        * and let java's SPI determine the proper transformer implementation. In addition, tests has been made to
        * safeguard that https://github.com/pentaho/pentaho-kettle/commit/3b57f7a9aac657fe77cc4f08e8d4287fcccbc073
        * continues working as intended
        */
 
-        TransformerFactory transformerFactory = TransformerFactory.newInstance();
-        transformer = transformerFactory.newTransformer();
+      TransformerFactory transformerFactory = TransformerFactory.newInstance();
+      transformer = transformerFactory.newTransformer();
 
       transformer.setOutputProperty( OutputKeys.OMIT_XML_DECLARATION, "yes" );
       transformer.setOutputProperty( OutputKeys.INDENT, "yes" );

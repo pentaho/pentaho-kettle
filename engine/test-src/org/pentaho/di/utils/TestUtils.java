@@ -76,4 +76,11 @@ public class TestUtils {
       throw new RuntimeException( e );
     }
   }
+
+  public static String toUnixLineSeparators( String string ) {
+    if ( string != null ) {
+      string = string.replaceAll( "\r", "" );
+    }
+    return string;
+  }
 }

@@ -442,7 +442,7 @@ public class EnterPrintDialog extends Dialog {
       image, 0, 0, imd.width, imd.height, 0, 0, (int) ( width * percentScreenX ),
       (int) ( height * percentScreenY ) );
 
-    StringBuffer text = new StringBuffer();
+    StringBuilder text = new StringBuilder();
     text.append( nrcols ).append( "x" ).append( nrrows ).append( " @ " ).append( scale ).append( "%" );
     gc.drawText( text.toString(), 0, 0 );
     for ( int c = 1; c < nrcols; c++ ) {

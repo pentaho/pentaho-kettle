@@ -416,8 +416,14 @@
 
   <kettle-variable>
     <description>Set this variable to true if VFS should treat the user directory as the root directory when connecting via ftp. Defaults to false.</description>
-    <variable>vfs.sftp.org.apache.commons.vfs2.provider.sftp.SftpFileSystemConfigBuilder.USER_DIR_IS_ROOT</variable>
+    <variable>vfs.sftp.userDirIsRoot</variable>
     <default-value>false</default-value>
+  </kettle-variable>
+
+  <kettle-variable>
+    <description>Set this variable to restore the directory loading behavior of the repository as it was before 6.1. Changing this to false will make repository loading more expensive</description>
+    <variable>KETTLE_LAZY_REPOSITORY</variable>
+    <default-value>true</default-value>
   </kettle-variable>
 
 </kettle-variables>

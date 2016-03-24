@@ -70,13 +70,22 @@ public class JobEntryFilesExist extends JobEntryBase implements Cloneable, JobEn
     this( "" );
   }
 
+  public void allocate( int nrFields ) {
+    arguments = new String[nrFields];
+  }
+
   public Object clone() {
     JobEntryFilesExist je = (JobEntryFilesExist) super.clone();
+    if ( arguments != null ) {
+      int nrFields = arguments.length;
+      je.allocate( nrFields );
+      System.arraycopy( arguments, 0, je.arguments, 0, nrFields );
+    }
     return je;
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer();
+    StringBuilder retval = new StringBuilder( 30 );
 
     retval.append( super.getXML() );
     retval.append( "      " ).append( XMLHandler.addTagValue( "filename", filename ) );
@@ -104,7 +113,7 @@ public class JobEntryFilesExist extends JobEntryBase implements Cloneable, JobEn
 
       // How many field arguments?
       int nrFields = XMLHandler.countNodes( fields, "field" );
-      arguments = new String[nrFields];
+      allocate( nrFields );
 
       // Read them all...
       for ( int i = 0; i < nrFields; i++ ) {
@@ -126,7 +135,7 @@ public class JobEntryFilesExist extends JobEntryBase implements Cloneable, JobEn
 
       // How many arguments?
       int argnr = rep.countNrJobEntryAttributes( id_jobentry, "name" );
-      arguments = new String[argnr];
+      allocate( argnr );
 
       // Read them all...
       for ( int a = 0; a < argnr; a++ ) {
@@ -182,8 +191,7 @@ public class JobEntryFilesExist extends JobEntryBase implements Cloneable, JobEn
           String realFilefoldername = environmentSubstitute( arguments[i] );
           file = KettleVFS.getFileObject( realFilefoldername, this );
 
-          if ( file.exists() && file.isReadable() ) // TODO: is it needed to check file for readability?
-          {
+          if ( file.exists() && file.isReadable() ) { // TODO: is it needed to check file for readability?
             if ( log.isDetailed() ) {
               logDetailed( BaseMessages.getString( PKG, "JobEntryFilesExist.File_Exists", realFilefoldername ) );
             }

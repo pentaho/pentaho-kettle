@@ -139,9 +139,25 @@ public class TransTestFactory {
 
   public static List<RowMetaAndData> executeTestTransformation( TransMeta transMeta, String injectorStepname,
       String testStepname, String dummyStepname, List<RowMetaAndData> inputData ) throws KettleException {
+    return executeTestTransformation( transMeta, injectorStepname, testStepname,
+      dummyStepname, inputData, null, null );
+  }
+  public static List<RowMetaAndData> executeTestTransformation( TransMeta transMeta, String injectorStepname,
+      String testStepname, String dummyStepname, List<RowMetaAndData> inputData,
+      VariableSpace runTimeVariables, VariableSpace runTimeParameters ) throws KettleException {
     // Now execute the transformation...
     Trans trans = new Trans( transMeta );
 
+    trans.initializeVariablesFrom( runTimeVariables );
+    if ( runTimeParameters != null ) {
+      for ( String param : trans.listParameters() ) {
+        String value = runTimeParameters.getVariable( param ); 
+        if ( value != null ) {
+          trans.setParameterValue( param, value );
+          transMeta.setParameterValue( param, value );
+        }
+      }
+    }
     trans.prepareExecution( null );
 
     // Capture the rows that come out of the dummy step...

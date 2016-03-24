@@ -22,11 +22,8 @@
 
 package org.pentaho.di.trans.steps.databaselookup;
 
-import java.util.LinkedHashMap;
-
-import org.pentaho.di.core.RowMetaAndData;
-import org.pentaho.di.core.TimedRow;
 import org.pentaho.di.core.database.Database;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
@@ -36,7 +33,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
  * @since 24-jan-2005
  */
 public class DatabaseLookupData extends BaseStepData implements StepDataInterface {
-  public LinkedHashMap<RowMetaAndData, TimedRow> look; // to store values in used to look up things...
+  public Cache cache;
   public Database db;
 
   public Object[] nullif; // Not found: default values...
@@ -58,4 +55,29 @@ public class DatabaseLookupData extends BaseStepData implements StepDataInterfac
     db = null;
   }
 
+  /**
+   * Cache for {@code DatabaseLookup} step.
+   */
+  public interface Cache {
+    /**
+     * Returns the very first data row that matches all conditions or {@code null} if none has been found.
+     * Note, cache should keep the order in which elements were put into it.
+     *
+     * @param lookupMeta  meta object for dealing with {@code lookupRow}
+     * @param lookupRow   tuple containing values for comparison
+     * @return first matching data row or {@code null}
+     * @throws KettleException
+     */
+    Object[] getRowFromCache( RowMetaInterface lookupMeta, Object[] lookupRow ) throws KettleException;
+
+    /**
+     * Saved {@code add} as data row and {@code lookupRow} as a key for searching it.
+     *
+     * @param meta        step's meta
+     * @param lookupMeta  {@code lookupRow}'s meta
+     * @param lookupRow   tuple of keys
+     * @param add         tuple of data
+     */
+    void storeRowInCache( DatabaseLookupMeta meta, RowMetaInterface lookupMeta, Object[] lookupRow, Object[] add );
+  }
 }

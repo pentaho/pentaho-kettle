@@ -128,7 +128,7 @@ public class HypersonicDatabaseMeta extends BaseDatabaseMeta implements Database
   @Override
   public String getFieldDefinition( ValueMetaInterface v, String tk, String pk, boolean use_autoinc,
       boolean add_fieldname, boolean add_cr ) {
-    StringBuffer retval = new StringBuffer( 128 );
+    StringBuilder retval = new StringBuilder( 128 );
 
     String fieldname = v.getName();
     int length = v.getLength();
@@ -267,6 +267,11 @@ public class HypersonicDatabaseMeta extends BaseDatabaseMeta implements Database
   @Override
   public String getSQLSequenceExists( String sequenceName ) {
     return "SELECT * FROM INFORMATION_SCHEMA.SYSTEM_SEQUENCES WHERE SEQUENCE_NAME = '" + sequenceName + "'";
+  }
+
+  @Override
+  public String getSQLListOfSequences() {
+    return "SELECT SEQUENCE_NAME FROM INFORMATION_SCHEMA.SYSTEM_SEQUENCES";
   }
 
   /**

@@ -51,7 +51,7 @@ import org.w3c.dom.Node;
 
 /**
  * Contains the meta-data for the UnivariateStats step: calculates predefined univariate statistics
- * 
+ *
  * @author Mark Hall (mhall{[at]}pentaho.org)
  * @version 1.0
  */
@@ -70,7 +70,7 @@ public class UnivariateStatsMeta extends BaseStepMeta implements StepMetaInterfa
 
   /**
    * Get the stats to be computed for the input fields
-   * 
+   *
    * @return an <code>UnivariateStatsMetaFunction[]</code> value
    */
   public UnivariateStatsMetaFunction[] getInputFieldMetaFunctions() {
@@ -81,7 +81,7 @@ public class UnivariateStatsMeta extends BaseStepMeta implements StepMetaInterfa
    * Returns how many UnivariateStatsMetaFunctions are currently being used. Each UnivariateStatsMetaFunction represents
    * an input field to be processed along with the user-requested stats to compute for it. The same input field may
    * occur in more than one UnivariateStatsMetaFunction as more than one percentile may be required.
-   * 
+   *
    * @return the number of non-unique input fields
    */
   public int getNumFieldsToProcess() {
@@ -90,7 +90,7 @@ public class UnivariateStatsMeta extends BaseStepMeta implements StepMetaInterfa
 
   /**
    * Set the stats to be computed for the input fields
-   * 
+   *
    * @param mf
    *          an array of <code>UnivariateStatsMetaFunction</code>s
    */
@@ -100,7 +100,7 @@ public class UnivariateStatsMeta extends BaseStepMeta implements StepMetaInterfa
 
   /**
    * Allocate space for stats to compute
-   * 
+   *
    * @param nrStats
    *          the number of UnivariateStatsMetaFunctions to allocate
    */
@@ -110,7 +110,7 @@ public class UnivariateStatsMeta extends BaseStepMeta implements StepMetaInterfa
 
   /**
    * Loads the meta data for this (configured) step from XML.
-   * 
+   *
    * @param stepnode
    *          the step to load
    * @exception KettleXMLException
@@ -130,12 +130,12 @@ public class UnivariateStatsMeta extends BaseStepMeta implements StepMetaInterfa
 
   /**
    * Return the XML describing this (configured) step
-   * 
+   *
    * @return a <code>String</code> containing the XML
    */
   @Override
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 300 );
+    StringBuilder retval = new StringBuilder( 300 );
 
     if ( m_stats != null ) {
       for ( int i = 0; i < m_stats.length; i++ ) {
@@ -147,7 +147,7 @@ public class UnivariateStatsMeta extends BaseStepMeta implements StepMetaInterfa
 
   /**
    * Check for equality
-   * 
+   *
    * @param obj
    *          an <code>Object</code> to compare with
    * @return true if equal to the supplied object
@@ -164,7 +164,7 @@ public class UnivariateStatsMeta extends BaseStepMeta implements StepMetaInterfa
 
   /**
    * Clone this step's meta data
-   * 
+   *
    * @return the cloned meta data
    */
   @Override
@@ -204,7 +204,7 @@ public class UnivariateStatsMeta extends BaseStepMeta implements StepMetaInterfa
 
   /**
    * Save this step's meta data to a repository
-   * 
+   *
    * @param rep
    *          the repository to save to
    * @param metaStore
@@ -244,7 +244,7 @@ public class UnivariateStatsMeta extends BaseStepMeta implements StepMetaInterfa
   /**
    * Returns an array of ValueMetaInterface that contains the meta data for each value computed by the supplied
    * UnivariateStatsMetaFunction
-   * 
+   *
    * @param fn
    *          the <code>UnivariateStatsMetaFunction</code> to construct meta data for
    * @param origin
@@ -307,7 +307,7 @@ public class UnivariateStatsMeta extends BaseStepMeta implements StepMetaInterfa
 
   /**
    * Check the settings of this step and put findings in a remarks list.
-   * 
+   *
    * @param remarks
    *          the list to put the remarks in. see <code>org.pentaho.di.core.CheckResult</code>
    * @param transmeta
@@ -352,7 +352,7 @@ public class UnivariateStatsMeta extends BaseStepMeta implements StepMetaInterfa
 
   /**
    * Get the executing step, needed by Trans to launch a step.
-   * 
+   *
    * @param stepMeta
    *          the step info
    * @param stepDataInterface
@@ -375,7 +375,7 @@ public class UnivariateStatsMeta extends BaseStepMeta implements StepMetaInterfa
   /**
    * Get a new instance of the appropriate data class. This data class implements the StepDataInterface. It basically
    * contains the persisting data that needs to live on, even if a worker thread is terminated.
-   * 
+   *
    * @return a <code>StepDataInterface</code> value
    */
   @Override

@@ -22,11 +22,9 @@
 
 package org.pentaho.di.job.entries.evalfilesmetrics;
 
-import static org.pentaho.di.job.entry.validator.AbstractFileValidator.putVariableSpace;
-import static org.pentaho.di.job.entry.validator.AndValidator.putValidators;
-import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.andValidator;
-import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.fileExistsValidator;
-import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notNullValidator;
+import org.pentaho.di.job.entry.validator.AbstractFileValidator;
+import org.pentaho.di.job.entry.validator.AndValidator;
+import org.pentaho.di.job.entry.validator.JobEntryValidatorUtils;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -159,13 +157,26 @@ public class JobEntryEvalFilesMetrics extends JobEntryBase implements Cloneable,
     this( "" );
   }
 
+  public void allocate( int nrFields ) {
+    source_filefolder = new String[nrFields];
+    wildcard = new String[nrFields];
+    includeSubFolders = new String[nrFields];
+  }
+
   public Object clone() {
     JobEntryEvalFilesMetrics je = (JobEntryEvalFilesMetrics) super.clone();
+    if ( source_filefolder != null ) {
+      int nrFields = source_filefolder.length;
+      je.allocate( nrFields );
+      System.arraycopy( source_filefolder, 0, je.source_filefolder, 0, nrFields );
+      System.arraycopy( wildcard, 0, je.wildcard, 0, nrFields );
+      System.arraycopy( includeSubFolders, 0, je.includeSubFolders, 0, nrFields );
+    }
     return je;
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 300 );
+    StringBuilder retval = new StringBuilder( 300 );
 
     retval.append( super.getXML() );
     retval.append( "      " ).append(
@@ -231,9 +242,8 @@ public class JobEntryEvalFilesMetrics extends JobEntryBase implements Cloneable,
 
       // How many field arguments?
       int nrFields = XMLHandler.countNodes( fields, "field" );
-      source_filefolder = new String[nrFields];
-      wildcard = new String[nrFields];
-      includeSubFolders = new String[nrFields];
+      allocate( nrFields );
+
       // Read them all...
       for ( int i = 0; i < nrFields; i++ ) {
         Node fnode = XMLHandler.getSubNodeByNr( fields, "field", i );
@@ -268,9 +278,8 @@ public class JobEntryEvalFilesMetrics extends JobEntryBase implements Cloneable,
     try {
       // How many arguments?
       int argnr = rep.countNrJobEntryAttributes( id_jobentry, "source_filefolder" );
-      source_filefolder = new String[argnr];
-      wildcard = new String[argnr];
-      includeSubFolders = new String[argnr];
+      allocate( argnr );
+
       // Read them all...
       for ( int a = 0; a < argnr; a++ ) {
         source_filefolder[a] = rep.getJobEntryAttributeString( id_jobentry, a, "source_filefolder" );
@@ -995,18 +1004,20 @@ public class JobEntryEvalFilesMetrics extends JobEntryBase implements Cloneable,
 
   public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
-    boolean res = andValidator().validate( this, "arguments", remarks, putValidators( notNullValidator() ) );
+    boolean res = JobEntryValidatorUtils.andValidator().validate( this, "arguments", remarks,
+        AndValidator.putValidators( JobEntryValidatorUtils.notNullValidator() ) );
 
     if ( res == false ) {
       return;
     }
 
     ValidatorContext ctx = new ValidatorContext();
-    putVariableSpace( ctx, getVariables() );
-    putValidators( ctx, notNullValidator(), fileExistsValidator() );
+    AbstractFileValidator.putVariableSpace( ctx, getVariables() );
+    AndValidator.putValidators( ctx, JobEntryValidatorUtils.notNullValidator(),
+        JobEntryValidatorUtils.fileExistsValidator() );
 
     for ( int i = 0; i < source_filefolder.length; i++ ) {
-      andValidator().validate( this, "arguments[" + i + "]", remarks, ctx );
+      JobEntryValidatorUtils.andValidator().validate( this, "arguments[" + i + "]", remarks, ctx );
     }
   }
 

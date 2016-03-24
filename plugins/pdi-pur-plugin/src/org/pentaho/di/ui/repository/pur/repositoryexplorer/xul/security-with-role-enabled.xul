@@ -1,0 +1,228 @@
+<?xml version="1.0"?>
+<!--===========================================================================
+PENTAHO CORPORATION PROPRIETARY AND CONFIDENTIAL
+
+Copyright 2002 - 2014 Pentaho Corporation (Pentaho). All rights reserved.
+
+NOTICE: All information including source code contained herein is, and
+remains the sole property of Pentaho and its licensors. The intellectual
+and technical concepts contained herein are proprietary and confidential
+to, and are trade secrets of Pentaho and may be covered by U.S. and foreign
+patents, or patents in process, and are protected by trade secret and
+copyright laws. The receipt or possession of this source code and/or related
+information does not convey or imply any rights to reproduce, disclose or
+distribute its contents, or to manufacture, use, or sell anything that it
+may describe, in whole or in part. Any reproduction, modification, distribution,
+or public display of this information without the express written authorization
+from Pentaho is strictly prohibited and in violation of applicable laws and
+international treaties. Access to the source code contained herein is strictly
+prohibited to anyone except those individuals and entities who have executed
+confidentiality and non-disclosure agreements or other agreements with Pentaho,
+explicitly covering such access.
+============================================================================-->
+<overlay 
+  xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" xmlns:pen="http://www.pentaho.org/2008/xul">
+
+	<!--  ###############################################################################   -->
+    <!--     hbox with user management button.                                          -->
+    <!--  ###############################################################################   -->    
+	
+	<hbox id="user-manage-button-box">
+		<button id="add-role-to-user" image="${New_image}" pen:disabledimage="${Disabled_New_image}" onclick="iSecurityController.showAddRoleToUserDialog()" disabled="true"/>
+		<button id="remove-role-from-user" image="${Delete_image}" pen:disabledimage="${Disabled_Delete_image}" onclick="iSecurityController.removeRolesFromUser()" disabled="true"/>
+	</hbox>
+
+	<!--  ###############################################################################   -->
+    <!--     hbox with role deck box                                                        -->
+    <!--  ###############################################################################   -->    
+    <deck id="user-role-deck">
+		<hbox id="role-box" flex="1">
+			<vbox flex="1">
+				<!-- Roles list pane -->
+				<hbox>
+					<label value="${SecurityTab.Available}"/>
+					<label id="spacer-label" flex="1" />
+					<button id="role-edit" image="${Edit_image}" pen:disabledimage="${Disabled_Edit_image}" onclick="iSecurityController.showEditRoleDialog()" disabled="true"/>
+					<button id="role-add" image="${New_image}" pen:disabledimage="${Disabled_New_image}" onclick="iSecurityController.showAddRoleDialog()"/>
+					<button id="role-remove" image="${Delete_image}" pen:disabledimage="${Disabled_Delete_image}" onclick="iSecurityController.removeRole()" disabled="true"/>
+				</hbox>
+				<!-- Roles list -->
+				<listbox id="roles-list" pen:binding="name" disabled="false" flex="1"/>
+			</vbox>
+			<vbox id="role-vbox" flex="4">
+				<hbox id="role-hbox" flex="1">
+					<vbox id="inner-role-vbox" flex="1">
+						<hbox id="role-button-hbox">
+							<label id="members-label" value="${SecurityTab.Members}"/>
+							<label id="spacer-label" flex="1" />
+							<button id="add-user-to-role" image="${New_image}" pen:disabledimage="${Disabled_New_image}" onclick="iSecurityController.showAddUserToRoleDialog()" disabled="true"/>
+							<button id="remove-user-from-role" image="${Delete_image}" pen:disabledimage="${Disabled_Delete_image}" onclick="iSecurityController.removeUsersFromRole()" disabled="true"/>
+						</hbox>
+						<tree id="role-detail-table" flex="1" hidecolumnpicker="true" enableColumnDrag="true">
+							<treecols>
+								<treecol id="user-name-col" flex="1" label="${SecurityTab.Name}"
+									pen:binding="name" pen:childrenbinding="children"/>
+								<treecol id="user-desc-col" flex="1" label="${SecurityTab.Description}"
+									pen:binding="description"/>
+							</treecols>
+							<treechildren />
+						</tree>
+					</vbox>
+				</hbox>
+			</vbox>				
+		</hbox>
+		<hbox id="system-role-box" flex="1">
+			<vbox flex="1">
+				<!-- System Roles list pane -->
+				<hbox>
+					<label value="${SecurityTab.Available}"/>
+				</hbox>
+				<!-- Roles list -->
+				<listbox id="system-roles-list" pen:binding="name" disabled="false" flex="1"/>
+			</vbox>
+			<vbox id="system-role-vbox" flex="4">
+				<hbox>
+					<label id="spacer-label"/>
+				</hbox>			    
+				<vbox flex="1">
+					<label flex="1" multiline="true" id="instructional-text-label" value="${SecurityTab.SystemRoleInstructionalText}"/>
+				</vbox>
+			</vbox>				
+		</hbox>
+		
+	</deck>
+
+	<!--  ###############################################################################   -->
+    <!--     hbox with user and role radio button.                                          -->
+    <!--  ###############################################################################   -->    
+	
+	<hbox id="user-role-radio-button-box">
+		<radio id="user-radio-button" label="${SecurityTab.User}" command="iSecurityController.changeToUserDeck()" />
+		<radio id="role-radio-button" label="${SecurityTab.Role}" command="iSecurityController.changeToRoleDeck()" />
+		<radio id="system-role-radio-button" label="${SecurityTab.SystemRole}" command="iSecurityController.changeToSystemRoleDeck()" />		
+	</hbox>
+
+	<!--  ###############################################################################   -->
+    <!--     Setting the height of the user dialog to be 400                                -->
+    <!--  ###############################################################################   -->    
+    <dialog id="add-user-dialog" height="400"/>
+    
+	<!--  ###############################################################################   -->
+    <!--     Setting the width of the text box                                              -->
+    <!--  ###############################################################################   -->    
+    
+	<textbox id="user-name" flex="3"/>
+    <hbox id="user-name-box">
+		<label id="spacer-label" flex="1" />
+	</hbox>
+	<textbox id="user-password" flex="3"/>
+	<hbox id="user-password-box">
+		<label id="spacer-label" flex="1" />
+	</hbox>
+	<textbox id="user-description" flex="3"/>
+	<hbox id="user-description-box"> 
+		<label id="spacer-label" flex="1" />
+	</hbox>
+
+	<!--  ###############################################################################   -->
+    <!--     Making the user detail table visible                                           -->
+    <!--  ###############################################################################   -->    
+    
+    <vbox id="user-memberof-box" visible="true"/>
+    
+	<!--  ###############################################################################   -->
+    <!--     vbox with role assignment accumulator box                                      -->
+    <!--  ###############################################################################   -->    
+
+    <vbox id="role-to-user-box">
+      <groupbox id="role-to-user-group" flex="1">
+      	<caption label="Member"/>
+	       <hbox flex="1">
+		       <vbox flex="1">
+		       	   <label value="${AddUserDialog.Available}"/>
+		    	   <listbox id="available-roles-list" pen:binding="name" disabled="false" flex="1" seltype="multi"/>
+		       </vbox>
+		       <vbox>
+   		       		<label id="spacer-label" flex="1" />
+					<button id="assign-role-to-user" image="${AddSingle16_image}" onclick="iSecurityController.assignRolesToUser()"  disabled="true"/>					    
+					<button id="unassign-role-from-user" image="${RemoveSingle16_image}" onclick="iSecurityController.unassignRolesFromUser()" disabled="true"/>
+		       		<label id="spacer-label" flex="1" />
+		       </vbox>
+	   	       <vbox flex="1">
+			       <label value="${AddUserDialog.Assigned}"/>
+			       <listbox id="selected-roles-list" pen:binding="name" disabled="false" flex="1" seltype="multi"/>
+		       </vbox>
+	       </hbox>      	
+      </groupbox>
+   </vbox>
+	
+   
+   
+   	<!--  ###############################################################################   -->
+    <!--     Adding the add role dialog to the main xul container                           -->
+    <!--  ###############################################################################   -->    
+   
+   	<dialog id="repository-explorer-dialog"> 
+	  <!--  ###############################################################################   -->
+	  <!--     ADD ROLE DIALOG: Dialog to add/edit/manage role                                -->
+	  <!--  ###############################################################################   -->    
+	  
+	  <dialog id="add-role-dialog" buttonlabelaccept="${Dialog.Ok}" buttonlabelcancel="${Dialog.Cancel}"
+	    		ondialogaccept="iSecurityController.saveRole()"
+	    		ondialogcancel="iSecurityController.cancelAddRoleDialog()" 
+	    		buttons="accept, cancel" buttonalign="right" title="${AddRoleDialog.AddRole}"
+	    		appicon="ui/images/spoon.ico" 
+	    		resizable="true"
+	    		height="400" width="350">
+	       <vbox>
+				<label value="${AddUserDialog.RoleName}" />
+				<hbox>
+					<textbox id="role-name"  flex="3" multiline="false"/>
+					<label id="spacer-label" flex="1" />
+				</hbox>
+				
+				<label value="${AddUserDialog.Description}"/>
+				<hbox>
+					<textbox id="role-description"  flex="3" multiline="false"/>
+					<label id="spacer-label" flex="1" />
+				</hbox>
+	      </vbox>
+	      <groupbox id="role-to-user-group" flex="1">
+	      	  <caption label="Member"/>
+		      <hbox flex="1">
+			       <vbox flex="1">
+			       	   <label value="${AddRoleDialog.Available}"/>
+			    	   <listbox id="available-users-list" pen:binding="name" disabled="false" flex="1" seltype="multi"/>
+			       </vbox>
+			       <vbox>
+			       		<label id="spacer-label" flex="1" />
+						<button id="assign-user-to-role" image="${AddSingle16_image}" onclick="iSecurityController.assignUsersToRole()"  disabled="true"/>					    
+						<button id="unassign-user-from-role" image="${RemoveSingle16_image}" onclick="iSecurityController.unassignUsersFromRole()" disabled="true"/>
+						<label id="spacer-label" flex="1" />
+			       </vbox>
+		   	       <vbox flex="1">
+				       <label value="${AddRoleDialog.Assigned}"/>
+				       <listbox id="selected-users-list" pen:binding="name" disabled="false" flex="1" seltype="multi"/>
+			       </vbox>
+		       </hbox>
+	       </groupbox>
+	  </dialog>
+	     
+   </dialog>
+   
+	<!--  ###############################################################################   -->
+    <!--     vbox for Non Managed Role Setup                                                            -->
+    <!--  ###############################################################################   -->    
+
+   <window id="repository-explorer-window">
+		<vbox id="role-vbox-nonmanaged" flex="1">
+			<hbox>
+				<label id="spacer-label"/>
+			</hbox>			    
+			<vbox>
+				<label multiline="true" id="instructional-text-label" value=""/>
+			</vbox>
+		</vbox>
+	</window>
+</overlay>
+

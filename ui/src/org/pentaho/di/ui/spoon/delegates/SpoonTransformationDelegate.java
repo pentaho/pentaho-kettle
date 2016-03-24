@@ -840,7 +840,7 @@ public class SpoonTransformationDelegate extends SpoonDelegate {
 
     boolean execConfigAnswer = true;
 
-    if ( debugAnswer == TransDebugDialog.DEBUG_CONFIG && replayDate == null ) {
+    if ( debugAnswer == TransDebugDialog.DEBUG_CONFIG && replayDate == null && transMeta.isShowDialog() ) {
       TransExecutionConfigurationDialog dialog =
         new TransExecutionConfigurationDialog( spoon.getShell(), executionConfiguration, transMeta );
       execConfigAnswer = dialog.open();
@@ -912,8 +912,8 @@ public class SpoonTransformationDelegate extends SpoonDelegate {
       }
     }
   }
-  
-  private static void showSaveTransformationBeforeRunningDialog(Shell shell) {
+
+  private static void showSaveTransformationBeforeRunningDialog( Shell shell ) {
     MessageBox m = new MessageBox( shell, SWT.OK | SWT.ICON_WARNING );
     m.setText( BaseMessages.getString( PKG, "TransLog.Dialog.SaveTransformationBeforeRunning.Title" ) );
     m.setMessage( BaseMessages.getString( PKG, "TransLog.Dialog.SaveTransformationBeforeRunning.Message" ) );

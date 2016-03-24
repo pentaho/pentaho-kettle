@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,9 +23,16 @@
 package org.pentaho.di.core.sql;
 
 import junit.framework.TestCase;
+import org.junit.Test;
 import org.pentaho.di.core.Condition;
 import org.pentaho.di.core.exception.KettleSQLException;
 import org.pentaho.di.core.row.RowMetaInterface;
+
+import java.util.List;
+
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
+import static org.pentaho.di.core.sql.SQLTest.mockRowMeta;
 
 public class SQLConditionTest extends TestCase {
 
@@ -907,5 +914,61 @@ public class SQLConditionTest extends TestCase {
 
     assertEquals( "CUSTOMERNAME", condition.getLeftValuename() );
     assertEquals( "'\\;';Toys 'R' us", condition.getRightExactString() );
+  }
+
+  @Test
+  public void testLeftFieldWithTableQualifier() throws KettleSQLException {
+    RowMetaInterface rowMeta = mockRowMeta( "noSpaceField" );
+
+    SQLCondition sqlCondition = new SQLCondition(
+      "table", "\"table\".\"noSpaceField\" IS NULL", rowMeta );
+
+    Condition condition = sqlCondition.getCondition();
+    assertThat( condition.getFunctionDesc(), is( "IS NULL" ) );
+    assertThat( condition.getLeftValuename(), is( "noSpaceField" ) );
+    assertTrue( condition.isAtomic() );
+  }
+
+  @Test
+  public void testLeftFieldWithSpaceAndTableQualifier() throws KettleSQLException {
+    RowMetaInterface rowMeta = mockRowMeta( "Space Field" );
+
+    SQLCondition sqlCondition = new SQLCondition(
+      "table", "\"table\".\"Space Field\" IS NULL", rowMeta );
+    Condition condition = sqlCondition.getCondition();
+    assertThat( condition.getFunctionDesc(), is( "IS NULL" ) );
+    assertThat( condition.getLeftValuename(), is( "Space Field" ) );
+    assertTrue( condition.isAtomic() );
+  }
+
+  @Test
+  public void testLeftAndRightFieldWithSpaceAndTableQualifier() throws KettleSQLException {
+    RowMetaInterface rowMeta = mockRowMeta( "Left Field", "Right Field" );
+
+    SQLCondition sqlCondition = new SQLCondition(
+      "table", "\"table\".\"Left Field\" = \"table\".\"Right Field\"", rowMeta );
+    Condition condition = sqlCondition.getCondition();
+    assertThat( condition.getFunctionDesc(), is( "=" ) );
+    assertThat( condition.getLeftValuename(), is( "Left Field" ) );
+    assertThat( condition.getRightValuename(), is( "Right Field" ) );
+    assertTrue( condition.isAtomic() );
+  }
+
+  @Test
+  public void testCompoundConditionLeftFieldWithSpaceAndTableQualifier() throws KettleSQLException {
+    RowMetaInterface rowMeta = mockRowMeta( "Space Field" );
+
+    SQLCondition sqlCondition = new SQLCondition(
+      "table", "\"table\".\"Space Field\" IS NULL AND \"table\".\"Space Field\" > 1", rowMeta );
+    Condition condition = sqlCondition.getCondition();
+    assertThat( condition.getChildren().size(), is( 2 ) );
+
+    List<Condition> children = condition.getChildren();
+    assertThat( children.get( 0 ).getFunctionDesc(), is( "IS NULL" ) );
+    assertThat( children.get( 0 ).getLeftValuename(), is( "Space Field" ) );
+    assertThat( children.get( 1 ).getOperator(), is( Condition.OPERATOR_AND ) );
+    assertThat( children.get( 1 ).getFunctionDesc(), is( ">" ) );
+    assertThat( children.get( 1 ).getLeftValuename(), is( "Space Field" ) );
+    assertTrue( condition.isComposite() );
   }
 }

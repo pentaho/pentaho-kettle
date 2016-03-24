@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -60,7 +60,7 @@ public class MemoryGroupByIntTest {
 
   @BeforeClass
   public static void before() throws KettleException {
-    KettleEnvironment.init();
+    KettleEnvironment.init( false );
   }
 
   List<RowMetaAndData> getTestRowMetaAndData( int count, Integer[] nulls ) {
@@ -88,6 +88,34 @@ public class MemoryGroupByIntTest {
       list.add( new RowMetaAndData( rm, row ) );
     }
     return list;
+  }
+
+  /**
+   * This case tests when the MemoryGroupBy step receives 0 input rows, and also no row meta is in the previous step,
+   * whether it throws an error and fails, or ends successfully without error, while passing no output rows.
+   * See PDI-12501 for details
+   */
+  @Test
+  public void testMemoryGroupByNoInputData() throws KettleException {
+    MemoryGroupByMeta meta = new MemoryGroupByMeta();
+    meta.setSubjectField( new String[]{ KEY2 } );
+    meta.setAggregateField( new String[]{ OUT1 } );
+    meta.setGroupField( new String[]{ KEY1 } );
+    meta.setAggregateType( new int[] { GroupByMeta.TYPE_GROUP_CONCAT_COMMA } );
+
+    TransMeta transMeta = TransTestFactory.generateTestTransformation( null, meta, stepName );
+    List<RowMetaAndData> inputList = new ArrayList<RowMetaAndData>();
+    List<RowMetaAndData> result = null;
+    try {
+      result =
+        TransTestFactory.executeTestTransformation( transMeta, TransTestFactory.INJECTOR_STEPNAME, stepName,
+          TransTestFactory.DUMMY_STEPNAME, inputList );
+    } catch ( KettleException e ) {
+      Assert.fail();
+    }
+    Assert.assertNotNull( result );
+    Assert.assertEquals( 0, result.size() );
+    
   }
 
   /**

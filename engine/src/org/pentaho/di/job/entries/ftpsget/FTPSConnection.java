@@ -421,7 +421,7 @@ public class FTPSConnection implements FTPListener {
 
   private void writeToFile( InputStream is, OutputStream os, String filename ) throws KettleException {
     try {
-      IOUtils.copy(is, os);
+      IOUtils.copy( is, os );
     } catch ( IOException e ) {
       throw new KettleException( BaseMessages.getString( PKG, "JobFTPS.Error.WritingToFile", filename ), e );
     } finally {

@@ -204,19 +204,19 @@ public class SpoonStepsDelegate extends SpoonDelegate {
     List<TransHopMeta> transHops = new ArrayList<TransHopMeta>();
     int[] hopIndexes = new int[transformation.nrTransHops()];
     int hopIndex = 0;
-    main: for ( int i = transformation.nrTransHops() - 1; i >= 0; i-- ) {
+    for ( int i = transformation.nrTransHops() - 1; i >= 0; i-- ) {
       TransHopMeta hi = transformation.getTransHop( i );
-      for ( int j = 0; j < steps.length; j++ ) {
+      for ( int j = 0; j < steps.length && hopIndex < hopIndexes.length; j++ ) {
         if ( hi.getFromStep().equals( steps[j] ) || hi.getToStep().equals( steps[j] ) ) {
           int idx = transformation.indexOfTransHop( hi );
           transHops.add( (TransHopMeta) hi.clone() );
           hopIndexes[hopIndex] = idx;
           transformation.removeTransHop( idx );
           spoon.refreshTree();
-          continue main;
+          hopIndex++;
+          break;
         }
       }
-      hopIndex++;
     }
     if ( !transHops.isEmpty() ) {
       TransHopMeta[] hops = transHops.toArray( new TransHopMeta[transHops.size()] );
@@ -235,7 +235,7 @@ public class SpoonStepsDelegate extends SpoonDelegate {
     spoon.refreshTree();
     spoon.refreshGraph();
   }
-  
+
   public void delStep( TransMeta transMeta, StepMeta stepMeta ) {
     spoon.getLog().logDebug(
       toString(), BaseMessages.getString( PKG, "Spoon.Log.DeleteStep" ) + stepMeta.getName() ); // "Delete
@@ -260,7 +260,7 @@ public class SpoonStepsDelegate extends SpoonDelegate {
 
     spoon.refreshTree();
     spoon.refreshGraph();
-  }  
+  }
 
   public StepDialogInterface getStepDialog( StepMetaInterface stepMeta, TransMeta transMeta, String stepName ) throws KettleException {
     String dialogClassName = stepMeta.getDialogClassName();

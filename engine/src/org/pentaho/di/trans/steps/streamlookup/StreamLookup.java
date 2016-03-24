@@ -285,8 +285,7 @@ public class StreamLookup extends BaseStep implements StepInterface {
       }
     }
 
-    if ( add == null ) // nothing was found, unknown code: add the specified default value...
-    {
+    if ( add == null ) { // nothing was found, unknown code: add the specified default value...
       add = data.nullIf;
     }
 

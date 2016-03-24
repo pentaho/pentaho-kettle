@@ -22,7 +22,7 @@
 
 package org.pentaho.di.core.database;
 
-import static org.mockito.Mockito.mock;
+import org.mockito.Mockito;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -34,12 +34,11 @@ import javax.naming.spi.InitialContextFactoryBuilder;
 import javax.naming.spi.NamingManager;
 import javax.sql.DataSource;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.junit.After;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.mockito.Mockito;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.logging.LoggingObjectType;
@@ -58,7 +57,7 @@ public class DatabaseConnectUnitTest {
   public static void beforeClass() throws NamingException {
     if ( !NamingManager.hasInitialContextFactoryBuilder() ) {
       // If JNDI is not initialized, use simpleJNDI
-      System.setProperty( Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.memory.MemoryContextFactory" );// pentaho#simple-jndi;1.0.0
+      System.setProperty( Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.memory.MemoryContextFactory" ); // pentaho#simple-jndi;1.0.0
       System.setProperty( "org.osjava.sj.jndi.shared", "true" );
       InitialContextFactoryBuilder simpleBuilder = new SimpleNamingContextBuilder();
       NamingManager.setInitialContextFactoryBuilder( simpleBuilder );
@@ -82,7 +81,7 @@ public class DatabaseConnectUnitTest {
     Mockito.when( meta.getAccessType() ).thenReturn( DatabaseMeta.TYPE_ACCESS_JNDI );
     Mockito.when( meta.environmentSubstitute( jndiName ) ).thenReturn( jndiName );
 
-    Connection connection = mock( Connection.class );
+    Connection connection = Mockito.mock( Connection.class );
 
     DataSource ds = Mockito.mock( DataSource.class );
     Mockito.when( ds.getConnection() ).thenReturn( connection );

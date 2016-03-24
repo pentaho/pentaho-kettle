@@ -652,6 +652,7 @@ public class SalesforceUpdateDialog extends BaseStepDialog implements StepDialog
   private void test() {
     boolean successConnection = true;
     String msgError = null;
+    String realUsername = null;
     SalesforceConnection connection = null;
     try {
       SalesforceUpdateMeta meta = new SalesforceUpdateMeta();
@@ -662,9 +663,11 @@ public class SalesforceUpdateDialog extends BaseStepDialog implements StepDialog
         return;
       }
 
+      String realURL = transMeta.environmentSubstitute( meta.getTargetURL() );
+      realUsername = transMeta.environmentSubstitute( meta.getUserName() );
+      String realPassword = transMeta.environmentSubstitute( meta.getPassword() );
       connection =
-        new SalesforceConnection( log, transMeta.environmentSubstitute( meta.getTargetURL() ), transMeta
-          .environmentSubstitute( meta.getUserName() ), transMeta.environmentSubstitute( meta.getPassword() ) );
+        new SalesforceConnection( log, realURL, realUsername, realPassword );
       connection.connect();
 
       successConnection = true;
@@ -683,7 +686,7 @@ public class SalesforceUpdateDialog extends BaseStepDialog implements StepDialog
 
     if ( successConnection ) {
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_INFORMATION );
-      mb.setMessage( BaseMessages.getString( PKG, "SalesforceUpdateDialog.Connected.OK", wUserName.getText() )
+      mb.setMessage( BaseMessages.getString( PKG, "SalesforceUpdateDialog.Connected.OK", realUsername )
         + Const.CR );
       mb.setText( BaseMessages.getString( PKG, "SalesforceUpdateDialog.Connected.Title.Ok" ) );
       mb.open();
@@ -691,7 +694,7 @@ public class SalesforceUpdateDialog extends BaseStepDialog implements StepDialog
       new ErrorDialog(
         shell,
         BaseMessages.getString( PKG, "SalesforceUpdateDialog.Connected.Title.Error" ),
-        BaseMessages.getString( PKG, "SalesforceUpdateDialog.Connected.NOK", wUserName.getText() ),
+        BaseMessages.getString( PKG, "SalesforceUpdateDialog.Connected.NOK", realUsername ),
         new Exception( msgError ) );
     }
 

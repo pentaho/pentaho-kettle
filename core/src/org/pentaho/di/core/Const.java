@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,6 +22,15 @@
  ******************************************************************************/
 
 package org.pentaho.di.core;
+
+import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang.StringUtils;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.util.EnvUtil;
+import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.laf.BasePropertyHandler;
+import org.pentaho.di.version.BuildVersion;
 
 import java.awt.Font;
 import java.awt.GraphicsEnvironment;
@@ -53,15 +62,6 @@ import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
-import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.core.util.EnvUtil;
-import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.laf.BasePropertyHandler;
-import org.pentaho.di.version.BuildVersion;
-
 /**
  * This class is used to define a number of default values for various settings throughout Kettle. It also contains a
  * number of static final methods to make your life easier.
@@ -84,7 +84,7 @@ public class Const {
   /**
    * Copyright year
    */
-  public static final String COPYRIGHT_YEAR = "2014";
+  public static final String COPYRIGHT_YEAR = "2015";
 
   /**
    * Release Type
@@ -393,7 +393,7 @@ public class Const {
   public static final String[] STRING_TRANS_AND_JOB_FILTER_EXT = new String[] {
     "*.ktr;*.kjb;*.xml", "*.ktr;*.xml", "*.kjb;*.xml", "*.xml", "*.*" };
 
-  /** The discriptions of the possible extensions a transformation XML file can have. */
+  /** The descriptions of the possible extensions a transformation XML file can have. */
   private static String[] STRING_TRANS_AND_JOB_FILTER_NAMES;
 
   /** The extension of a Kettle transformation XML file */
@@ -402,7 +402,7 @@ public class Const {
   /** The possible extensions a transformation XML file can have. */
   public static final String[] STRING_TRANS_FILTER_EXT = new String[] { "*.ktr;*.xml", "*.xml", "*.*" };
 
-  /** The discriptions of the possible extensions a transformation XML file can have. */
+  /** The descriptions of the possible extensions a transformation XML file can have. */
   private static String[] STRING_TRANS_FILTER_NAMES;
 
   /** The extension of a Kettle job XML file */
@@ -411,7 +411,7 @@ public class Const {
   /** The possible extensions a job XML file can have. */
   public static final String[] STRING_JOB_FILTER_EXT = new String[] { "*.kjb;*.xml", "*.xml", "*.*" };
 
-  /** The discriptions of the possible extensions a job XML file can have. */
+  /** The descriptions of the possible extensions a job XML file can have. */
   private static String[] STRING_JOB_FILTER_NAMES;
 
   /** Name of the kettle parameters file */
@@ -1056,9 +1056,9 @@ public class Const {
 
   /**
    * A variable to configure VFS USER_DIR_IS_ROOT option: should be "true" or "false"
+   * {@linkplain org.apache.commons.vfs2.provider.sftp.SftpFileSystemConfigBuilder#USER_DIR_IS_ROOT}
    */
-  public static final String VFS_USER_DIR_IS_ROOT =
-      "vfs.sftp.org.apache.commons.vfs2.provider.sftp.SftpFileSystemConfigBuilder.USER_DIR_IS_ROOT";
+  public static final String VFS_USER_DIR_IS_ROOT = "vfs.sftp.userDirIsRoot";
 
   /**
    * rounds double f to any number of places after decimal point Does arithmetic using BigDecimal class to avoid integer
@@ -1071,7 +1071,7 @@ public class Const {
    * @return The rounded floating point value
    */
 
-  public static final double round( double f, int places ) {
+  public static double round( double f, int places ) {
     return round( f, places, java.math.BigDecimal.ROUND_HALF_EVEN );
   }
 
@@ -1087,10 +1087,10 @@ public class Const {
    *          The mode for rounding, e.g. java.math.BigDecimal.ROUND_HALF_EVEN
    * @return The rounded floating point value
    */
-  public static final double round( double f, int places, int roundingMode ) {
+  public static double round( double f, int places, int roundingMode ) {
     // We can't round non-numbers or infinite values
     //
-    if ( f == Double.NaN || f == Double.NEGATIVE_INFINITY || f == Double.POSITIVE_INFINITY ) {
+    if ( Double.isNaN( f ) || f == Double.NEGATIVE_INFINITY || f == Double.POSITIVE_INFINITY ) {
       return f;
     }
 
@@ -1112,7 +1112,7 @@ public class Const {
    *          The mode for rounding, e.g. java.math.BigDecimal.ROUND_HALF_EVEN
    * @return The rounded floating point value
    */
-  public static final BigDecimal round( BigDecimal f, int places, int roundingMode ) {
+  public static BigDecimal round( BigDecimal f, int places, int roundingMode ) {
     if ( roundingMode == ROUND_HALF_CEILING ) {
       if ( f.signum() >= 0 ) {
         return round( f, places, BigDecimal.ROUND_HALF_UP );
@@ -1136,7 +1136,7 @@ public class Const {
    *          The mode for rounding, e.g. java.math.BigDecimal.ROUND_HALF_EVEN
    * @return The rounded floating point value
    */
-  public static final long round( long f, int places, int roundingMode ) {
+  public static long round( long f, int places, int roundingMode ) {
     if ( places >= 0 ) {
       return f;
     }
@@ -1146,7 +1146,7 @@ public class Const {
 
   /*
    * OLD code: caused a lot of problems with very small and very large numbers. It's a miracle it worked at all. Go
-   * ahead, have a laugh... public static final float round(double f, int places) { float temp = (float) (f *
+   * ahead, have a laugh... public static float round(double f, int places) { float temp = (float) (f *
    * (Math.pow(10, places)));
    *
    * temp = (Math.round(temp));
@@ -1167,7 +1167,7 @@ public class Const {
    *          The default value
    * @return The converted value or the default.
    */
-  public static final int toInt( String str, int def ) {
+  public static int toInt( String str, int def ) {
     int retval;
     try {
       retval = Integer.parseInt( str );
@@ -1186,7 +1186,7 @@ public class Const {
    *          The default value
    * @return The converted value or the default.
    */
-  public static final long toLong( String str, long def ) {
+  public static long toLong( String str, long def ) {
     long retval;
     try {
       retval = Long.parseLong( str );
@@ -1205,7 +1205,7 @@ public class Const {
    *          The default value
    * @return The converted value or the default.
    */
-  public static final double toDouble( String str, double def ) {
+  public static double toDouble( String str, double def ) {
     double retval;
     try {
       retval = Double.parseDouble( str );
@@ -1225,7 +1225,7 @@ public class Const {
    *          The default value
    * @return The converted value or the default.
    */
-  public static final Date toDate( String str, Date def ) {
+  public static Date toDate( String str, Date def ) {
     SimpleDateFormat df = new SimpleDateFormat( "yyyy/MM/dd HH:mm:ss.SSS", Locale.US );
     try {
       return df.parse( str );
@@ -1242,7 +1242,7 @@ public class Const {
    *          The character to verify if it is a space.
    * @return true if the character is a space. false otherwise.
    */
-  public static final boolean isSpace( char c ) {
+  public static boolean isSpace( char c ) {
     return c == ' ' || c == '\t' || c == '\r' || c == '\n' || Character.isWhitespace( c );
   }
 
@@ -1292,7 +1292,7 @@ public class Const {
    *          The string to trim
    * @return The trimmed string.
    */
-  public static final String trim( String str ) {
+  public static String trim( String str ) {
     if ( str == null ) {
       return null;
     }
@@ -1324,11 +1324,11 @@ public class Const {
    *          The desired length of the padded string.
    * @return The padded String.
    */
-  public static final String rightPad( String ret, int limit ) {
+  public static String rightPad( String ret, int limit ) {
     if ( ret == null ) {
-      return rightPad( new StringBuffer(), limit );
+      return rightPad( new StringBuilder(), limit );
     } else {
-      return rightPad( new StringBuffer( ret ), limit );
+      return rightPad( new StringBuilder( ret ), limit );
     }
   }
 
@@ -1336,28 +1336,54 @@ public class Const {
    * Right pad a StringBuffer: adds spaces to a string until a certain length. If the length is smaller then the limit
    * specified, the String is truncated.
    *
+   * MB - New version is nearly 25% faster
+   *
    * @param ret
    *          The StringBuffer to pad
    * @param limit
    *          The desired length of the padded string.
    * @return The padded String.
    */
-  public static final String rightPad( StringBuffer ret, int limit ) {
-    int len = ret.length();
-    int l;
-
-    if ( len > limit ) {
-      ret.setLength( limit );
-    } else {
-      for ( l = len; l < limit; l++ ) {
-        ret.append( ' ' );
+  public static String rightPad( StringBuffer ret, int limit ) {
+    if ( ret != null ) {
+      while ( ret.length() < limit ) {
+        ret.append( "                    " );
       }
+      ret.setLength( limit );
+      return ret.toString();
+    } else {
+      return null;
     }
-    return ret.toString();
+  }
+
+  /**
+   * Right pad a StringBuilder: adds spaces to a string until a certain length. If the length is smaller then the limit
+   * specified, the String is truncated.
+   *
+   * MB - New version is nearly 25% faster
+   *
+   * @param ret
+   *          The StringBuilder to pad
+   * @param limit
+   *          The desired length of the padded string.
+   * @return The padded String.
+   */
+  public static String rightPad( StringBuilder ret, int limit ) {
+    if ( ret != null ) {
+      while ( ret.length() < limit ) {
+        ret.append( "                    " );
+      }
+      ret.setLength( limit );
+      return ret.toString();
+    } else {
+      return null;
+    }
   }
 
   /**
    * Replace values in a String with another.
+   *
+   * 33% Faster using replaceAll this way than original method
    *
    * @param string
    *          The original String.
@@ -1367,19 +1393,18 @@ public class Const {
    *          The new text bit
    * @return The resulting string with the text pieces replaced.
    */
-  public static final String replace( String string, String repl, String with ) {
-    StringBuffer str = new StringBuffer( string );
-    for ( int i = str.length() - 1; i >= 0; i-- ) {
-      if ( str.substring( i ).startsWith( repl ) ) {
-        str.delete( i, i + repl.length() );
-        str.insert( i, with );
-      }
+  public static String replace( String string, String repl, String with ) {
+    if ( string != null && repl != null && with != null ) {
+      return string.replaceAll( Pattern.quote( repl ), Matcher.quoteReplacement( with ) );
+    } else {
+      return null;
     }
-    return str.toString();
   }
 
   /**
    * Alternate faster version of string replace using a stringbuffer as input.
+   *
+   * 33% Faster using replaceAll this way than original method
    *
    * @param str
    *          The string where we want to replace in
@@ -1389,18 +1414,33 @@ public class Const {
    *          The replacement string for code
    */
   public static void repl( StringBuffer str, String code, String repl ) {
-    int clength = code.length();
-
-    int i = str.length() - clength;
-
-    while ( i >= 0 ) {
-      String look = str.substring( i, i + clength );
-      // Look for a match!
-      if ( look.equalsIgnoreCase( code ) ) {
-        str.replace( i, i + clength, repl );
-      }
-      i--;
+    if ( ( code == null ) || ( repl == null ) || ( code.length() == 0 ) || ( repl.length() == 0 ) || ( str == null ) || ( str.length() == 0 ) ) {
+      return; // do nothing
     }
+    String aString = str.toString();
+    str.setLength( 0 );
+    str.append( aString.replaceAll( Pattern.quote( code ), Matcher.quoteReplacement( repl ) ) );
+  }
+
+  /**
+   * Alternate faster version of string replace using a stringbuilder as input (non-synchronized).
+   *
+   * 33% Faster using replaceAll this way than original method
+   *
+   * @param str
+   *          The string where we want to replace in
+   * @param code
+   *          The code to search for
+   * @param repl
+   *          The replacement string for code
+   */
+  public static void repl( StringBuilder str, String code, String repl ) {
+    if ( ( code == null ) || ( repl == null ) || ( str == null ) ) {
+      return; // do nothing
+    }
+    String aString = str.toString();
+    str.setLength( 0 );
+    str.append( aString.replaceAll( Pattern.quote( code ), Matcher.quoteReplacement( repl ) ) );
   }
 
   /**
@@ -1410,7 +1450,7 @@ public class Const {
    *          The text to examine
    * @return The number of leading spaces found.
    */
-  public static final int nrSpacesBefore( String field ) {
+  public static int nrSpacesBefore( String field ) {
     int nr = 0;
     int len = field.length();
     while ( nr < len && field.charAt( nr ) == ' ' ) {
@@ -1426,7 +1466,7 @@ public class Const {
    *          The text to examine
    * @return The number of trailing spaces found.
    */
-  public static final int nrSpacesAfter( String field ) {
+  public static int nrSpacesAfter( String field ) {
     int nr = 0;
     int len = field.length();
     while ( nr < len && field.charAt( field.length() - 1 - nr ) == ' ' ) {
@@ -1442,7 +1482,7 @@ public class Const {
    *          The string to check
    * @return true if the string has nothing but spaces.
    */
-  public static final boolean onlySpaces( String str ) {
+  public static boolean onlySpaces( String str ) {
     for ( int i = 0; i < str.length(); i++ ) {
       if ( !isSpace( str.charAt( i ) ) ) {
         return false;
@@ -1456,7 +1496,7 @@ public class Const {
    *
    * @return The name of the OS
    */
-  public static final String getOS() {
+  public static String getOS() {
     return System.getProperty( "os.name" );
   }
 
@@ -1498,28 +1538,28 @@ public class Const {
   /**
    * @return True if the OS is a Windows derivate.
    */
-  public static final boolean isWindows() {
+  public static boolean isWindows() {
     return getOS().startsWith( "Windows" );
   }
 
   /**
    * @return True if the OS is a Linux derivate.
    */
-  public static final boolean isLinux() {
+  public static boolean isLinux() {
     return getOS().startsWith( "Linux" );
   }
 
   /**
    * @return True if the OS is an OSX derivate.
    */
-  public static final boolean isOSX() {
+  public static boolean isOSX() {
     return getOS().toUpperCase().contains( "OS X" );
   }
 
   /**
    * @return True if KDE is in use.
    */
-  public static final boolean isKDE() {
+  public static boolean isKDE() {
     return StringUtils.isNotBlank( System.getenv( "KDE_SESSION_VERSION" ) );
   }
 
@@ -1530,7 +1570,7 @@ public class Const {
    *
    * @return The hostname
    */
-  public static final String getHostname() {
+  public static String getHostname() {
 
     if ( cachedHostname != null ) {
       return cachedHostname;
@@ -1577,7 +1617,7 @@ public class Const {
    *
    * @return The hostname
    */
-  public static final String getHostnameReal() {
+  public static String getHostnameReal() {
 
     // In case we don't want to leave anything to doubt...
     //
@@ -1623,7 +1663,7 @@ public class Const {
    *
    * @return The IP address
    */
-  public static final String getIPAddress() throws Exception {
+  public static String getIPAddress() throws Exception {
     Enumeration<NetworkInterface> enumInterfaces = NetworkInterface.getNetworkInterfaces();
     while ( enumInterfaces.hasMoreElements() ) {
       NetworkInterface nwi = enumInterfaces.nextElement();
@@ -1648,7 +1688,7 @@ public class Const {
    * @throws SocketException
    *           in case of a security or network error
    */
-  public static final String getIPAddress( String networkInterfaceName ) throws SocketException {
+  public static String getIPAddress( String networkInterfaceName ) throws SocketException {
     NetworkInterface networkInterface = NetworkInterface.getByName( networkInterfaceName );
     Enumeration<InetAddress> ipAddresses = networkInterface.getInetAddresses();
     while ( ipAddresses.hasMoreElements() ) {
@@ -1666,7 +1706,7 @@ public class Const {
    *
    * @return The MAC address.
    */
-  public static final String getMACAddress() throws Exception {
+  public static String getMACAddress() throws Exception {
     String ip = getIPAddress();
     String mac = "none";
     String os = getOS();
@@ -1780,7 +1820,7 @@ public class Const {
    *
    * @return The path to the users home directory, or the System property {@code KETTLE_HOME} if set.
    */
-  public static final String getUserHomeDirectory() {
+  public static String getUserHomeDirectory() {
     return NVL( System.getenv( "KETTLE_HOME" ), NVL( System.getProperty( "KETTLE_HOME" ),
         System.getProperty( "user.home" ) ) );
   }
@@ -1790,7 +1830,7 @@ public class Const {
    *
    * @return The Kettle absolute directory.
    */
-  public static final String getKettleDirectory() {
+  public static String getKettleDirectory() {
     return getUserHomeDirectory() + FILE_SEPARATOR + getUserBaseDir();
   }
 
@@ -1799,14 +1839,14 @@ public class Const {
    *
    * @return The Kettle directory.
    */
-  public static final String getUserBaseDir() {
+  public static String getUserBaseDir() {
     return BasePropertyHandler.getProperty( "userBaseDir", ".kettle" );
   }
 
   /**
    * Returns the value of DI_HOME.
    */
-  public static final String getDIHomeDirectory() {
+  public static String getDIHomeDirectory() {
     return System.getProperty( "DI_HOME" );
   }
 
@@ -1815,7 +1855,7 @@ public class Const {
    *
    * @return the name of the shared objects file
    */
-  public static final String getSharedObjectsFile() {
+  public static String getSharedObjectsFile() {
     return getKettleDirectory() + FILE_SEPARATOR + SHARED_DATA_FILE;
   }
 
@@ -1824,7 +1864,7 @@ public class Const {
    *
    * @return The local repositories file.
    */
-  public static final String getKettleLocalRepositoriesFile() {
+  public static String getKettleLocalRepositoriesFile() {
     return "repositories.xml";
   }
 
@@ -1833,7 +1873,7 @@ public class Const {
    *
    * @return The Kettle repositories file.
    */
-  public static final String getKettleUserRepositoriesFile() {
+  public static String getKettleUserRepositoriesFile() {
     return getKettleDirectory() + FILE_SEPARATOR + getKettleLocalRepositoriesFile();
   }
 
@@ -1844,7 +1884,7 @@ public class Const {
    *
    * @return The local Carte password file.
    */
-  public static final String getKettleLocalCartePasswordFile() {
+  public static String getKettleLocalCartePasswordFile() {
     return "pwd/kettle.pwd";
   }
 
@@ -1855,8 +1895,41 @@ public class Const {
    *
    * @return The Carte password file in the home directory.
    */
-  public static final String getKettleCartePasswordFile() {
+  public static String getKettleCartePasswordFile() {
     return getKettleDirectory() + FILE_SEPARATOR + "kettle.pwd";
+  }
+
+  /**
+   * Provides the base documentation url (top-level help)
+   *
+   * @return the fully qualified base documentation URL
+   */
+  public static String getBaseDocUrl() {
+    return BaseMessages.getString( PKG, "Const.BaseDocUrl" );
+  }
+
+  /**
+   * Provides the documentation url with the configured base + the given URI.
+   *
+   * @param uri
+   *          the resource identifier for the documentation (eg. 0L0/0Y0/030/050/000)
+   *
+   * @return the fully qualified documentation URL for the given URI
+   */
+  public static String getDocUrl( final String uri ) {
+    // initialize the docUrl to point to the top-level doc page
+    String docUrl = getBaseDocUrl();
+    if ( !isEmpty( uri ) ) {
+      // if the uri is not empty, use it to build the URL
+      if ( uri.startsWith( "http" ) ) {
+        // use what is provided, it's already absolute
+        docUrl = uri;
+      } else {
+        // the uri provided needs to be assembled
+        docUrl = uri.startsWith( "/" ) ? docUrl + uri.substring( 1 ) : docUrl + uri;
+      }
+    }
+    return docUrl;
   }
 
   /**
@@ -1885,11 +1958,11 @@ public class Const {
    * @deprecated use StringUtil.environmentSubstitute(): handles both Windows and unix conventions
    */
   @Deprecated
-  public static final String replEnv( String string ) {
+  public static String replEnv( String string ) {
     if ( string == null ) {
       return null;
     }
-    StringBuffer str = new StringBuffer( string );
+    StringBuilder str = new StringBuilder( string );
 
     int idx = str.indexOf( "%%" );
     while ( idx >= 0 ) {
@@ -1937,7 +2010,7 @@ public class Const {
    * @deprecated please use StringUtil.environmentSubstitute now.
    */
   @Deprecated
-  public static final String[] replEnv( String[] string ) {
+  public static String[] replEnv( String[] string ) {
     String[] retval = new String[string.length];
     for ( int i = 0; i < string.length; i++ ) {
       retval[i] = Const.replEnv( string[i] );
@@ -1954,7 +2027,7 @@ public class Const {
    *          The default value in case source is null or the length of the string is 0
    * @return source if source is not null, otherwise return def
    */
-  public static final String NVL( String source, String def ) {
+  public static String NVL( String source, String def ) {
     if ( source == null || source.length() == 0 ) {
       return def;
     }
@@ -1968,7 +2041,7 @@ public class Const {
    *          The source value to check for null.
    * @return empty string if source is null, otherwise simply return the source value.
    */
-  public static final String nullToEmpty( String source ) {
+  public static String nullToEmpty( String source ) {
     if ( source == null ) {
       return "";
     }
@@ -1984,7 +2057,7 @@ public class Const {
    *          The array of strings to look in
    * @return The index of a search string in an array of strings. -1 if not found.
    */
-  public static final int indexOfString( String lookup, String[] array ) {
+  public static int indexOfString( String lookup, String[] array ) {
     if ( array == null ) {
       return -1;
     }
@@ -2009,7 +2082,7 @@ public class Const {
    *          The array of strings to look in
    * @return The indexes of strings in an array of strings. -1 if not found.
    */
-  public static final int[] indexsOfStrings( String[] lookup, String[] array ) {
+  public static int[] indexsOfStrings( String[] lookup, String[] array ) {
     int[] indexes = new int[lookup.length];
     for ( int i = 0; i < indexes.length; i++ ) {
       indexes[i] = indexOfString( lookup[i], array );
@@ -2027,7 +2100,7 @@ public class Const {
    *          The array of strings to look in
    * @return The indexes of strings in an array of strings. Only existing indexes are returned (no -1)
    */
-  public static final int[] indexsOfFoundStrings( String[] lookup, String[] array ) {
+  public static int[] indexsOfFoundStrings( String[] lookup, String[] array ) {
     List<Integer> indexesList = new ArrayList<Integer>();
     for ( int i = 0; i < lookup.length; i++ ) {
       int idx = indexOfString( lookup[i], array );
@@ -2051,7 +2124,7 @@ public class Const {
    *          The ArrayList of strings to look in
    * @return The index of a search string in an array of strings. -1 if not found.
    */
-  public static final int indexOfString( String lookup, List<String> list ) {
+  public static int indexOfString( String lookup, List<String> list ) {
     if ( list == null ) {
       return -1;
     }
@@ -2072,7 +2145,7 @@ public class Const {
    *          The array of strings to sort.
    * @return The sorted array of strings.
    */
-  public static final String[] sortStrings( String[] input ) {
+  public static String[] sortStrings( String[] input ) {
     Arrays.sort( input );
     return input;
   }
@@ -2094,7 +2167,7 @@ public class Const {
    *          The separator used.
    * @return the string split into an array of strings
    */
-  public static final String[] splitString( String string, String separator ) {
+  public static String[] splitString( String string, String separator ) {
     /*
      * 0123456 Example a;b;c;d --> new String[] { a, b, c, d }
      */
@@ -2140,7 +2213,7 @@ public class Const {
    *          The separator used.
    * @return the string split into an array of strings
    */
-  public static final String[] splitString( String string, char separator ) {
+  public static String[] splitString( String string, char separator ) {
     return splitString( string, separator, false );
   }
 
@@ -2159,7 +2232,7 @@ public class Const {
    *          in case the separator can be escaped (\;) The escape characters are NOT removed!
    * @return the string split into an array of strings
    */
-  public static final String[] splitString( String string, char separator, boolean escape ) {
+  public static String[] splitString( String string, char separator, boolean escape ) {
     /*
      * 0123456 Example a;b;c;d --> new String[] { a, b, c, d }
      */
@@ -2208,7 +2281,7 @@ public class Const {
    *          The separator used.
    * @return the string split into an array of strings
    */
-  public static final String[] splitPath( String path, String separator ) {
+  public static String[] splitPath( String path, String separator ) {
     //
     // Example /a/b/c --> new String[] { a, b, c }
     //
@@ -2302,7 +2375,7 @@ public class Const {
     }
 
     // Keep track of partial splits and concatenate them into a legit split
-    StringBuffer concatSplit = null;
+    StringBuilder concatSplit = null;
 
     if ( delimiterSplit != null && delimiterSplit.length > 0 ) {
 
@@ -2330,7 +2403,7 @@ public class Const {
 
           // This split contains an enclosure, so either start or finish concatenating
           if ( concatSplit == null ) {
-            concatSplit = new StringBuffer( currentSplit ); // start concatenation
+            concatSplit = new StringBuilder( currentSplit ); // start concatenation
             addSplit = !oddNumberOfEnclosures;
           } else {
             // Check to make sure a new enclosure hasn't started within this split. This method expects
@@ -2366,7 +2439,7 @@ public class Const {
    *          the array that you want to do a distinct on
    * @return a sorted array of uniquely occurring strings
    */
-  public static final String[] getDistinctStrings( String[] strings ) {
+  public static String[] getDistinctStrings( String[] strings ) {
     if ( strings == null ) {
       return null;
     }
@@ -2390,11 +2463,11 @@ public class Const {
   /**
    * Returns a string of the stack trace of the specified exception
    */
-  public static final String getStackTracker( Throwable e ) {
+  public static String getStackTracker( Throwable e ) {
     return getClassicStackTrace( e );
   }
 
-  public static final String getClassicStackTrace( Throwable e ) {
+  public static String getClassicStackTrace( Throwable e ) {
     StringWriter stringWriter = new StringWriter();
     PrintWriter printWriter = new PrintWriter( stringWriter );
     e.printStackTrace( printWriter );
@@ -2425,24 +2498,14 @@ public class Const {
   }
 
   /**
-   * Check if the string supplied is empty. A String is empty when it is null or when the length is 0
+   * Check if the CharSequence (String, StringBuffer, StringBuilder) supplied is empty.
+   * A CharSequence is empty when it is null or when the length is 0
    *
    * @param string
    *          The string to check
    * @return true if the string supplied is empty
    */
-  public static final boolean isEmpty( String string ) {
-    return string == null || string.length() == 0;
-  }
-
-  /**
-   * Check if the stringBuffer supplied is empty. A StringBuffer is empty when it is null or when the length is 0
-   *
-   * @param string
-   *          The stringBuffer to check
-   * @return true if the stringBuffer supplied is empty
-   */
-  public static final boolean isEmpty( StringBuffer string ) {
+  public static boolean isEmpty( CharSequence string ) {
     return string == null || string.length() == 0;
   }
 
@@ -2454,7 +2517,7 @@ public class Const {
    *          The string array to check
    * @return true if the string array supplied is empty
    */
-  public static final boolean isEmpty( String[] strings ) {
+  public static boolean isEmpty( CharSequence[] strings ) {
     return strings == null || strings.length == 0;
   }
 
@@ -2465,7 +2528,7 @@ public class Const {
    *          The array to check
    * @return true if the array supplied is empty
    */
-  public static final boolean isEmpty( Object[] array ) {
+  public static boolean isEmpty( Object[] array ) {
     return array == null || array.length == 0;
   }
 
@@ -2476,14 +2539,14 @@ public class Const {
    *          the list to check
    * @return true if the supplied list is empty
    */
-  public static final boolean isEmpty( List<?> list ) {
+  public static boolean isEmpty( List<?> list ) {
     return list == null || list.size() == 0;
   }
 
   /**
    * @return a new ClassLoader
    */
-  public static final ClassLoader createNewClassLoader() throws KettleException {
+  public static ClassLoader createNewClassLoader() throws KettleException {
     try {
       // Nothing really in URL, everything is in scope.
       URL[] urls = new URL[] {};
@@ -2500,7 +2563,7 @@ public class Const {
    *
    * @return a new java byte array
    */
-  public static final byte[] createByteArray( int size ) {
+  public static byte[] createByteArray( int size ) {
     return new byte[size];
   }
 
@@ -2511,8 +2574,8 @@ public class Const {
    *          The strings to convert to initcap
    * @return the input string but with the first character of each word converted to upper-case.
    */
-  public static final String initCap( String string ) {
-    StringBuffer change = new StringBuffer( string );
+  public static String initCap( String string ) {
+    StringBuilder change = new StringBuilder( string );
     boolean new_word;
     int i;
     char lower, upper, ch;
@@ -2547,8 +2610,8 @@ public class Const {
    *          The name to use as a base for the filename
    * @return a valid filename
    */
-  public static final String createFilename( String name ) {
-    StringBuffer filename = new StringBuffer();
+  public static String createFilename( String name ) {
+    StringBuilder filename = new StringBuilder();
     for ( int i = 0; i < name.length(); i++ ) {
       char c = name.charAt( i );
       if ( Character.isUnicodeIdentifierPart( c ) ) {
@@ -2560,7 +2623,7 @@ public class Const {
     return filename.toString().toLowerCase();
   }
 
-  public static final String createFilename( String directory, String name, String extension ) {
+  public static String createFilename( String directory, String name, String extension ) {
     if ( directory.endsWith( Const.FILE_SEPARATOR ) ) {
       return directory + createFilename( name ) + extension;
     } else {
@@ -2568,7 +2631,7 @@ public class Const {
     }
   }
 
-  public static final String createName( String filename ) {
+  public static String createName( String filename ) {
     if ( Const.isEmpty( filename ) ) {
       return filename;
     }
@@ -2577,7 +2640,7 @@ public class Const {
     if ( pureFilename.endsWith( ".ktr" ) || pureFilename.endsWith( ".kjb" ) || pureFilename.endsWith( ".xml" ) ) {
       pureFilename = pureFilename.substring( 0, pureFilename.length() - 4 );
     }
-    StringBuffer sb = new StringBuffer();
+    StringBuilder sb = new StringBuilder();
     for ( int i = 0; i < pureFilename.length(); i++ ) {
       char c = pureFilename.charAt( i );
       if ( Character.isUnicodeIdentifierPart( c ) ) {
@@ -2618,7 +2681,7 @@ public class Const {
     if ( idx != -1 ) {
       return sFullPath.substring( idx + 1 );
     } else {
-      idx = sFullPath.lastIndexOf( '/' ); // URL, VFS
+      idx = sFullPath.lastIndexOf( '/' ); // URL, VFS/**/
       if ( idx != -1 ) {
         return sFullPath.substring( idx + 1 );
       } else {
@@ -2756,8 +2819,8 @@ public class Const {
    * @return concatenated string representing a file url
    */
   public static String safeAppendDirectory( String dir, String file ) {
-    boolean dirHasSeparator = ( ( dir.lastIndexOf( FILE_SEPARATOR ) ) == dir.length() );
-    boolean fileHasSeparator = ( file.indexOf( FILE_SEPARATOR ) != 0 );
+    boolean dirHasSeparator = ( ( dir.lastIndexOf( FILE_SEPARATOR ) ) == dir.length() - 1 );
+    boolean fileHasSeparator = ( file.indexOf( FILE_SEPARATOR ) == 0 );
     if ( ( dirHasSeparator && !fileHasSeparator ) || ( !dirHasSeparator && fileHasSeparator ) ) {
       return dir + file;
     }
@@ -2788,16 +2851,14 @@ public class Const {
    *
    * @return Percentage of free memory.
    */
-  public static final int getPercentageFreeMemory() {
+  public static int getPercentageFreeMemory() {
     Runtime runtime = Runtime.getRuntime();
     long maxMemory = runtime.maxMemory();
     long allocatedMemory = runtime.totalMemory();
     long freeMemory = runtime.freeMemory();
     long totalFreeMemory = ( freeMemory + ( maxMemory - allocatedMemory ) );
 
-    int percentage = (int) Math.round( 100 * (double) totalFreeMemory / maxMemory );
-
-    return percentage;
+    return (int) Math.round( 100 * (double) totalFreeMemory / maxMemory );
   }
 
   /**
@@ -2810,7 +2871,7 @@ public class Const {
     if ( Const.isEmpty( input ) ) {
       return null;
     }
-    StringBuffer digitsOnly = new StringBuffer();
+    StringBuilder digitsOnly = new StringBuilder();
     char c;
     for ( int i = 0; i < input.length(); i++ ) {
       c = input.charAt( i );
@@ -2830,7 +2891,7 @@ public class Const {
     if ( Const.isEmpty( input ) ) {
       return null;
     }
-    StringBuffer digitsOnly = new StringBuffer();
+    StringBuilder digitsOnly = new StringBuilder();
     char c;
     for ( int i = 0; i < input.length(); i++ ) {
       c = input.charAt( i );
@@ -2940,22 +3001,61 @@ public class Const {
   }
 
   /**
-   * Remove CR / LF from String
+   * Remove CR / LF from String - Better performance version
+   *   - Doesn't NPE
+   *   - 40 times faster on an empty string
+   *   - 2 times faster on a mixed string
+   *   - 25% faster on 2 char string with only CRLF in it
    *
    * @param in
    *          input
    * @return cleaned string
    */
   public static String removeCRLF( String in ) {
-    char[] inArray = in.toCharArray();
-    StringBuffer out = new StringBuffer( inArray.length );
-    for ( int i = 0; i < inArray.length; i++ ) {
-      char c = inArray[i];
-      if ( !( c == '\n' || c == '\r' ) ) {
-        out.append( c );
+    if ( ( in != null ) && ( in.length() > 0 ) ) {
+      int inLen = in.length(), posn = 0;
+      char[] tmp = new char[ inLen ];
+      char ch;
+      for ( int i = 0; i < inLen; i++ ) {
+        ch = in.charAt( i );
+        if ( ( ch != '\n' && ch != '\r' ) ) {
+          tmp[posn] = ch;
+          posn++;
+        }
       }
+      return new String( tmp, 0, posn );
+    } else {
+      return "";
     }
-    return out.toString();
+  }
+
+  /**
+   * Remove Character from String - Better performance version
+   *   - Doesn't NPE
+   *   - 40 times faster on an empty string
+   *   - 2 times faster on a mixed string
+   *   - 25% faster on 2 char string with only CR/LF/TAB in it
+   *
+   * @param in
+   *          input
+   * @return cleaned string
+   */
+  public static String removeChar( String in, char badChar ) {
+    if ( ( in != null ) && ( in.length() > 0 ) ) {
+      int inLen = in.length(), posn = 0;
+      char[] tmp = new char[ inLen ];
+      char ch;
+      for ( int i = 0; i < inLen; i++ ) {
+        ch = in.charAt( i );
+        if ( ch != badChar ) {
+          tmp[posn] = ch;
+          posn++;
+        }
+      }
+      return new String( tmp, 0, posn );
+    } else {
+      return "";
+    }
   }
 
   /**
@@ -2966,15 +3066,7 @@ public class Const {
    * @return cleaned string
    */
   public static String removeCR( String in ) {
-    char[] inArray = in.toCharArray();
-    StringBuffer out = new StringBuffer( inArray.length );
-    for ( int i = 0; i < inArray.length; i++ ) {
-      char c = inArray[i];
-      if ( c != '\n' ) {
-        out.append( c );
-      }
-    }
-    return out.toString();
+    return removeChar( in, '\n' );
   } // removeCR
 
   /**
@@ -2985,34 +3077,18 @@ public class Const {
    * @return cleaned string
    */
   public static String removeLF( String in ) {
-    char[] inArray = in.toCharArray();
-    StringBuffer out = new StringBuffer( inArray.length );
-    for ( int i = 0; i < inArray.length; i++ ) {
-      char c = inArray[i];
-      if ( c != '\r' ) {
-        out.append( c );
-      }
-    }
-    return out.toString();
+    return removeChar( in, '\r' );
   } // removeCRLF
 
   /**
-   * Remove Horizontan Tab from String
+   * Remove horizontal tab from string
    *
    * @param in
    *          input
    * @return cleaned string
    */
   public static String removeTAB( String in ) {
-    char[] inArray = in.toCharArray();
-    StringBuffer out = new StringBuffer( inArray.length );
-    for ( int i = 0; i < inArray.length; i++ ) {
-      char c = inArray[i];
-      if ( c != '\t' ) {
-        out.append( c );
-      }
-    }
-    return out.toString();
+    return removeChar( in, '\t' );
   }
 
   /**
@@ -3035,8 +3111,7 @@ public class Const {
     }
     String dateformatString = NVL( DateFormat, "HH:mm:ss" );
     int t = decodeTime( time, dateformatString );
-    Date d = new Date( input.getTime() + t );
-    return d;
+    return new Date( input.getTime() + t );
   }
 
   // Decodes a time value in specified date format and returns it as milliseconds since midnight.
@@ -3054,13 +3129,13 @@ public class Const {
   }
 
   /**
-   * Get the number of occurances of searchFor in string.
+   * Get the number of occurrences of searchFor in string.
    *
    * @param string
    *          String to be searched
    * @param searchFor
    *          to be counted string
-   * @return number of occurances
+   * @return number of occurrences
    */
   public static int getOccurenceString( String string, String searchFor ) {
     if ( string == null || string.length() == 0 ) {
@@ -3071,6 +3146,7 @@ public class Const {
     if ( len > 0 ) {
       int start = string.indexOf( searchFor );
       while ( start != -1 ) {
+        counter++;
         start = string.indexOf( searchFor, start + len );
       }
     }
@@ -3121,13 +3197,13 @@ public class Const {
   }
 
   /**
-   * Get the number of occurances of searchFor in string.
+   * Get the number of occurrences of searchFor in string.
    *
    * @param string
    *          String to be searched
    * @param searchFor
    *          to be counted string
-   * @return number of occurances
+   * @return number of occurrences
    */
   public static int getOcuranceString( String string, String searchFor ) {
     if ( string == null || string.length() == 0 ) {
@@ -3156,33 +3232,106 @@ public class Const {
     return StringEscapeUtils.escapeXml( content );
   }
 
+  /**
+   * New method avoids string concatenation is between 20% and > 2000% faster
+   * depending on length of the string to pad, and the size to pad it to.
+   * For larger amounts to pad, (e.g. pad a 4 character string out to 20 places)
+   * this is orders of magnitude faster.
+   *
+   * @param valueToPad
+   *    the string to pad
+   * @param filler
+   *    the pad string to fill with
+   * @param size
+   *    the size to pad to
+   * @return
+   *    the new string, padded to the left
+   *
+   * Note - The original method was flawed in a few cases:
+   *
+   *   1- The filler could be a string of any length - and the returned
+   *   string was not necessarily limited to size. So a 3 character pad
+   *   of an 11 character string could end up being 17 characters long.
+   *   2- For a pad of zero characters ("") the former method would enter
+   *   an infinite loop.
+   *   3- For a null pad, it would throw an NPE
+   *   4- For a null valueToPad, it would throw an NPE
+   */
   public static String Lpad( String valueToPad, String filler, int size ) {
-    if ( size == 0 ) {
+    if ( ( size == 0 ) || ( valueToPad == null ) || ( filler == null ) ) {
       return valueToPad;
     }
-    while ( valueToPad.length() < size ) {
-      valueToPad = filler + valueToPad;
+    int vSize = valueToPad.length();
+    int fSize = filler.length();
+    // This next if ensures previous behavior, but prevents infinite loop
+    // if "" is passed in as a filler.
+    if ( ( vSize >= size ) || ( fSize == 0 )  ) {
+      return valueToPad;
     }
-    return valueToPad;
+    int tgt = ( size - vSize );
+    StringBuilder sb = new StringBuilder( size );
+    sb.append( filler );
+    while ( sb.length() < tgt ) {
+      // instead of adding one character at a time, this
+      // is exponential - much fewer times in loop
+      sb.append( sb );
+    }
+    sb.append( valueToPad );
+    return sb.substring( Math.max( 0, sb.length() - size ) ); // this makes sure you have the right size string returned.
   }
 
+  /**
+   * New method avoids string concatenation is between 50% and > 2000% faster
+   * depending on length of the string to pad, and the size to pad it to.
+   * For larger amounts to pad, (e.g. pad a 4 character string out to 20 places)
+   * this is orders of magnitude faster.
+   *
+   * @param valueToPad
+   *    the string to pad
+   * @param filler
+   *    the pad string to fill with
+   * @param size
+   *    the size to pad to
+   * @return
+   *   The string, padded to the right
+   *
+   *   1- The filler can still be a string of any length - and the returned
+   *   string was not necessarily limited to size. So a 3 character pad
+   *   of an 11 character string with a size of 15 could end up being 17
+   *   characters long (instead of the "asked for 15").
+   *   2- For a pad of zero characters ("") the former method would enter
+   *   an infinite loop.
+   *   3- For a null pad, it would throw an NPE
+   *   4- For a null valueToPad, it would throw an NPE
+   */
   public static String Rpad( String valueToPad, String filler, int size ) {
-    if ( size == 0 ) {
+    if ( ( size == 0 ) || ( valueToPad == null ) || ( filler == null ) ) {
       return valueToPad;
     }
-    while ( valueToPad.length() < size ) {
-      valueToPad = valueToPad + filler;
+    int vSize = valueToPad.length();
+    int fSize = filler.length();
+    // This next if ensures previous behavior, but prevents infinite loop
+    // if "" is passed in as a filler.
+    if ( ( vSize >= size ) || ( fSize == 0 )  ) {
+      return valueToPad;
     }
-    return valueToPad;
+    int tgt = ( size - vSize );
+    StringBuilder sb1 = new StringBuilder( size );
+    sb1.append( filler );
+    while ( sb1.length() < tgt ) {
+      // instead of adding one character at a time, this
+      // is exponential - much fewer times in loop
+      sb1.append( sb1 );
+    }
+    StringBuilder sb = new StringBuilder( valueToPad );
+    sb.append( sb1 );
+    return sb.substring( 0, size );
   }
 
   public static boolean classIsOrExtends( Class<?> clazz, Class<?> superClass ) {
     if ( clazz.equals( Object.class ) ) {
       return false;
     }
-    if ( clazz.equals( superClass ) ) {
-      return true;
-    }
-    return classIsOrExtends( clazz.getSuperclass(), superClass );
+    return clazz.equals( superClass ) || classIsOrExtends( clazz.getSuperclass(), superClass );
   }
 }

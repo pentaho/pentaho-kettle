@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -90,8 +90,7 @@ public class MappingInputMeta extends BaseStepMeta implements StepMetaInterface 
   }
 
   /**
-   * @param fieldLength
-   *          The fieldLength to set.
+   * @param fieldLength The fieldLength to set.
    */
   public void setFieldLength( int[] fieldLength ) {
     this.fieldLength = fieldLength;
@@ -105,8 +104,7 @@ public class MappingInputMeta extends BaseStepMeta implements StepMetaInterface 
   }
 
   /**
-   * @param fieldName
-   *          The fieldName to set.
+   * @param fieldName The fieldName to set.
    */
   public void setFieldName( String[] fieldName ) {
     this.fieldName = fieldName;
@@ -120,8 +118,7 @@ public class MappingInputMeta extends BaseStepMeta implements StepMetaInterface 
   }
 
   /**
-   * @param fieldPrecision
-   *          The fieldPrecision to set.
+   * @param fieldPrecision The fieldPrecision to set.
    */
   public void setFieldPrecision( int[] fieldPrecision ) {
     this.fieldPrecision = fieldPrecision;
@@ -135,8 +132,7 @@ public class MappingInputMeta extends BaseStepMeta implements StepMetaInterface 
   }
 
   /**
-   * @param fieldType
-   *          The fieldType to set.
+   * @param fieldType The fieldType to set.
    */
   public void setFieldType( int[] fieldType ) {
     this.fieldType = fieldType;
@@ -153,21 +149,18 @@ public class MappingInputMeta extends BaseStepMeta implements StepMetaInterface 
 
     retval.allocate( nrfields );
 
-    for ( int i = 0; i < nrfields; i++ ) {
-      retval.fieldName[i] = fieldName[i];
-      retval.fieldType[i] = fieldType[i];
-      fieldLength[i] = fieldLength[i];
-      fieldPrecision[i] = fieldPrecision[i];
-    }
-
+    System.arraycopy( fieldName, 0, retval.fieldName, 0, nrfields );
+    System.arraycopy( fieldType, 0, retval.fieldType, 0, nrfields );
+    System.arraycopy( fieldLength, 0, retval.fieldLength, 0, nrfields );
+    System.arraycopy( fieldPrecision, 0, retval.fieldPrecision, 0, nrfields );
     return retval;
   }
 
   public void allocate( int nrfields ) {
-    fieldName = new String[nrfields];
-    fieldType = new int[nrfields];
-    fieldLength = new int[nrfields];
-    fieldPrecision = new int[nrfields];
+    fieldName = new String[ nrfields ];
+    fieldType = new int[ nrfields ];
+    fieldLength = new int[ nrfields ];
+    fieldPrecision = new int[ nrfields ];
   }
 
   private void readData( Node stepnode ) throws KettleXMLException {
@@ -180,13 +173,13 @@ public class MappingInputMeta extends BaseStepMeta implements StepMetaInterface 
       for ( int i = 0; i < nrfields; i++ ) {
         Node fnode = XMLHandler.getSubNodeByNr( fields, "field", i );
 
-        fieldName[i] = XMLHandler.getTagValue( fnode, "name" );
-        fieldType[i] = ValueMeta.getType( XMLHandler.getTagValue( fnode, "type" ) );
+        fieldName[ i ] = XMLHandler.getTagValue( fnode, "name" );
+        fieldType[ i ] = ValueMeta.getType( XMLHandler.getTagValue( fnode, "type" ) );
         String slength = XMLHandler.getTagValue( fnode, "length" );
         String sprecision = XMLHandler.getTagValue( fnode, "precision" );
 
-        fieldLength[i] = Const.toInt( slength, -1 );
-        fieldPrecision[i] = Const.toInt( sprecision, -1 );
+        fieldLength[ i ] = Const.toInt( slength, -1 );
+        fieldPrecision[ i ] = Const.toInt( sprecision, -1 );
       }
 
       selectingAndSortingUnspecifiedFields =
@@ -198,17 +191,17 @@ public class MappingInputMeta extends BaseStepMeta implements StepMetaInterface 
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 300 );
+    StringBuilder retval = new StringBuilder( 300 );
 
     retval.append( "    <fields>" ).append( Const.CR );
     for ( int i = 0; i < fieldName.length; i++ ) {
-      if ( fieldName[i] != null && fieldName[i].length() != 0 ) {
+      if ( fieldName[ i ] != null && fieldName[ i ].length() != 0 ) {
         retval.append( "      <field>" ).append( Const.CR );
-        retval.append( "        " ).append( XMLHandler.addTagValue( "name", fieldName[i] ) );
+        retval.append( "        " ).append( XMLHandler.addTagValue( "name", fieldName[ i ] ) );
         retval
-          .append( "        " ).append( XMLHandler.addTagValue( "type", ValueMeta.getTypeDesc( fieldType[i] ) ) );
-        retval.append( "        " ).append( XMLHandler.addTagValue( "length", fieldLength[i] ) );
-        retval.append( "        " ).append( XMLHandler.addTagValue( "precision", fieldPrecision[i] ) );
+          .append( "        " ).append( XMLHandler.addTagValue( "type", ValueMeta.getTypeDesc( fieldType[ i ] ) ) );
+        retval.append( "        " ).append( XMLHandler.addTagValue( "length", fieldLength[ i ] ) );
+        retval.append( "        " ).append( XMLHandler.addTagValue( "precision", fieldPrecision[ i ] ) );
         retval.append( "      </field>" ).append( Const.CR );
       }
     }
@@ -229,15 +222,15 @@ public class MappingInputMeta extends BaseStepMeta implements StepMetaInterface 
     allocate( nrfields );
 
     for ( int i = 0; i < nrfields; i++ ) {
-      fieldName[i] = "field" + i;
-      fieldType[i] = ValueMetaInterface.TYPE_STRING;
-      fieldLength[i] = 30;
-      fieldPrecision[i] = -1;
+      fieldName[ i ] = "field" + i;
+      fieldType[ i ] = ValueMetaInterface.TYPE_STRING;
+      fieldLength[ i ] = 30;
+      fieldPrecision[ i ] = -1;
     }
   }
 
   public void getFields( RowMetaInterface row, String origin, RowMetaInterface[] info, StepMeta nextStep,
-    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+                         VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     // Row should normally be empty when we get here.
     // That is because there is no previous step to this mapping input step from the viewpoint of this single
     // sub-transformation.
@@ -272,10 +265,10 @@ public class MappingInputMeta extends BaseStepMeta implements StepMetaInterface 
         RowMetaInterface newRow = new RowMeta();
 
         for ( int i = 0; i < fieldName.length; i++ ) {
-          int index = inputRowMeta.indexOfValue( fieldName[i] );
+          int index = inputRowMeta.indexOfValue( fieldName[ i ] );
           if ( index < 0 ) {
             throw new KettleStepException( BaseMessages.getString(
-              PKG, "MappingInputMeta.Exception.UnknownField", fieldName[i] ) );
+              PKG, "MappingInputMeta.Exception.UnknownField", fieldName[ i ] ) );
           }
 
           newRow.addValueMeta( inputRowMeta.getValueMeta( index ) );
@@ -309,9 +302,9 @@ public class MappingInputMeta extends BaseStepMeta implements StepMetaInterface 
         //
         if ( !row.isEmpty() ) {
           for ( int i = 0; i < fieldName.length; i++ ) {
-            if ( row.indexOfValue( fieldName[i] ) < 0 ) {
+            if ( row.indexOfValue( fieldName[ i ] ) < 0 ) {
               throw new KettleStepException( BaseMessages.getString(
-                PKG, "MappingInputMeta.Exception.UnknownField", fieldName[i] ) );
+                PKG, "MappingInputMeta.Exception.UnknownField", fieldName[ i ] ) );
             }
           }
         }
@@ -320,14 +313,14 @@ public class MappingInputMeta extends BaseStepMeta implements StepMetaInterface 
       if ( row.isEmpty() ) {
         // We'll have to work with the statically provided information
         for ( int i = 0; i < fieldName.length; i++ ) {
-          if ( !Const.isEmpty( fieldName[i] ) ) {
-            int valueType = fieldType[i];
+          if ( !Const.isEmpty( fieldName[ i ] ) ) {
+            int valueType = fieldType[ i ];
             if ( valueType == ValueMetaInterface.TYPE_NONE ) {
               valueType = ValueMetaInterface.TYPE_STRING;
             }
-            ValueMetaInterface v = new ValueMeta( fieldName[i], valueType );
-            v.setLength( fieldLength[i] );
-            v.setPrecision( fieldPrecision[i] );
+            ValueMetaInterface v = new ValueMeta( fieldName[ i ], valueType );
+            v.setLength( fieldLength[ i ] );
+            v.setPrecision( fieldPrecision[ i ] );
             v.setOrigin( origin );
             row.addValueMeta( v );
           }
@@ -338,17 +331,18 @@ public class MappingInputMeta extends BaseStepMeta implements StepMetaInterface 
     }
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
+    throws KettleException {
     try {
       int nrfields = rep.countNrStepAttributes( id_step, "field_name" );
 
       allocate( nrfields );
 
       for ( int i = 0; i < nrfields; i++ ) {
-        fieldName[i] = rep.getStepAttributeString( id_step, i, "field_name" );
-        fieldType[i] = ValueMeta.getType( rep.getStepAttributeString( id_step, i, "field_type" ) );
-        fieldLength[i] = (int) rep.getStepAttributeInteger( id_step, i, "field_length" );
-        fieldPrecision[i] = (int) rep.getStepAttributeInteger( id_step, i, "field_precision" );
+        fieldName[ i ] = rep.getStepAttributeString( id_step, i, "field_name" );
+        fieldType[ i ] = ValueMeta.getType( rep.getStepAttributeString( id_step, i, "field_type" ) );
+        fieldLength[ i ] = (int) rep.getStepAttributeInteger( id_step, i, "field_length" );
+        fieldPrecision[ i ] = (int) rep.getStepAttributeInteger( id_step, i, "field_precision" );
       }
 
       selectingAndSortingUnspecifiedFields = rep.getStepAttributeBoolean( id_step, "select_unspecified" );
@@ -358,16 +352,17 @@ public class MappingInputMeta extends BaseStepMeta implements StepMetaInterface 
     }
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
+    throws KettleException {
     try {
       for ( int i = 0; i < fieldName.length; i++ ) {
-        if ( fieldName[i] != null && fieldName[i].length() != 0 ) {
-          rep.saveStepAttribute( id_transformation, id_step, i, "field_name", fieldName[i] );
+        if ( fieldName[ i ] != null && fieldName[ i ].length() != 0 ) {
+          rep.saveStepAttribute( id_transformation, id_step, i, "field_name", fieldName[ i ] );
           rep
             .saveStepAttribute( id_transformation, id_step, i, "field_type", ValueMeta
-              .getTypeDesc( fieldType[i] ) );
-          rep.saveStepAttribute( id_transformation, id_step, i, "field_length", fieldLength[i] );
-          rep.saveStepAttribute( id_transformation, id_step, i, "field_precision", fieldPrecision[i] );
+              .getTypeDesc( fieldType[ i ] ) );
+          rep.saveStepAttribute( id_transformation, id_step, i, "field_length", fieldLength[ i ] );
+          rep.saveStepAttribute( id_transformation, id_step, i, "field_precision", fieldPrecision[ i ] );
         }
       }
 
@@ -380,8 +375,8 @@ public class MappingInputMeta extends BaseStepMeta implements StepMetaInterface 
   }
 
   public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
-    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
-    Repository repository, IMetaStore metaStore ) {
+                     RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+                     Repository repository, IMetaStore metaStore ) {
     CheckResult cr;
     if ( prev == null || prev.size() == 0 ) {
       cr =
@@ -410,7 +405,7 @@ public class MappingInputMeta extends BaseStepMeta implements StepMetaInterface 
   }
 
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta tr,
-    Trans trans ) {
+                                Trans trans ) {
     return new MappingInput( stepMeta, stepDataInterface, cnr, tr, trans );
   }
 
@@ -437,8 +432,7 @@ public class MappingInputMeta extends BaseStepMeta implements StepMetaInterface 
   }
 
   /**
-   * @param valueRenames
-   *          the valueRenames to set
+   * @param valueRenames the valueRenames to set
    */
   public void setValueRenames( List<MappingValueRename> valueRenames ) {
     this.valueRenames = valueRenames;
@@ -452,8 +446,7 @@ public class MappingInputMeta extends BaseStepMeta implements StepMetaInterface 
   }
 
   /**
-   * @param selectingAndSortingUnspecifiedFields
-   *          the selectingAndSortingUnspecifiedFields to set
+   * @param selectingAndSortingUnspecifiedFields the selectingAndSortingUnspecifiedFields to set
    */
   public void setSelectingAndSortingUnspecifiedFields( boolean selectingAndSortingUnspecifiedFields ) {
     this.selectingAndSortingUnspecifiedFields = selectingAndSortingUnspecifiedFields;

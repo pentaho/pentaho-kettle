@@ -101,14 +101,24 @@ public class SwitchCaseMeta extends BaseStepMeta implements StepMetaInterface {
     caseTargets = new ArrayList<SwitchCaseTarget>();
   }
 
-  public Object clone() {
+  public Object clone()  {
     SwitchCaseMeta retval = (SwitchCaseMeta) super.clone();
-
-    return retval;
+    retval.allocate();
+    try {
+      for ( int i = 0; i < caseTargets.size(); i++ ) {
+        retval.caseTargets.add( (SwitchCaseTarget) caseTargets.get( i ).clone() );
+      }
+      return retval;
+    } catch ( CloneNotSupportedException ex ) {
+      // I hate this design pattern, but most of the other implementations of
+      // clone catch the exception and return null. So, I'm sticking with what is known
+      // MB - PDI-15057
+      return null;
+    }
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 200 );
+    StringBuilder retval = new StringBuilder( 200 );
 
     retval.append( XMLHandler.addTagValue( "fieldname", fieldname ) );
     retval.append( XMLHandler.addTagValue( "use_contains", isContains ) );

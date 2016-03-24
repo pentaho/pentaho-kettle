@@ -34,6 +34,7 @@ import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.steps.StepMockUtil;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
+import org.pentaho.di.trans.steps.selectvalues.SelectValuesMeta.SelectField;
 
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
@@ -79,7 +80,8 @@ public class SelectValuesTest {
   public void errorRowSetObtainsFieldName() throws Exception {
     SelectValuesMeta stepMeta = new SelectValuesMeta();
     stepMeta.allocate( 1, 0, 1 );
-    stepMeta.getSelectName()[ 0 ] = SELECTED_FIELD;
+    stepMeta.getSelectFields()[0] = new SelectField();
+    stepMeta.getSelectFields()[0].setName( SELECTED_FIELD );
     stepMeta.getMeta()[ 0 ] =
       new SelectMetadataChange( stepMeta, SELECTED_FIELD, null, ValueMetaInterface.TYPE_INTEGER, -2, -2,
         ValueMetaInterface.STORAGE_TYPE_NORMAL, null, false, null, null, false, null, null, null );

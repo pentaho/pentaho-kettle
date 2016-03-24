@@ -130,6 +130,10 @@ public class AnalyticQuery extends BaseStep implements StepInterface {
       processQueue();
     }
 
+    if ( log.isBasic() && checkFeedback( getLinesRead() ) ) {
+      logBasic( BaseMessages.getString( PKG, "AnalyticQuery.LineNumber", getLinesRead() ) );
+    }
+
     return true;
   }
 

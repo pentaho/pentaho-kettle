@@ -92,7 +92,7 @@ public class PerformanceLogTable extends BaseLogTable implements Cloneable, LogT
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer();
+    StringBuilder retval = new StringBuilder();
 
     retval.append( XMLHandler.openTag( XML_TAG ) );
     retval.append( XMLHandler.addTagValue( "connection", connectionName ) );
@@ -295,4 +295,10 @@ public class PerformanceLogTable extends BaseLogTable implements Cloneable, LogT
     return indexes;
   }
 
+  @Override
+  public void setAllGlobalParametersToNull()  {
+    super.setAllGlobalParametersToNull();
+
+    logInterval = isGlobalParameter( logInterval ) ? null : logInterval;
+  }
 }

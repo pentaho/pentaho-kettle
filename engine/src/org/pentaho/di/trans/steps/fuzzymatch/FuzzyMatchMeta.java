@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -32,8 +32,10 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
+import org.pentaho.di.core.row.value.ValueMetaNumber;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -169,10 +171,8 @@ public class FuzzyMatchMeta extends BaseStepMeta implements StepMetaInterface {
 
     retval.allocate( nrvalues );
 
-    for ( int i = 0; i < nrvalues; i++ ) {
-      retval.value[i] = value[i];
-      retval.valueName[i] = valueName[i];
-    }
+    System.arraycopy( value, 0, retval.value, 0, nrvalues );
+    System.arraycopy( valueName, 0, retval.valueName, 0, nrvalues );
 
     return retval;
   }
@@ -450,9 +450,9 @@ public class FuzzyMatchMeta extends BaseStepMeta implements StepMetaInterface {
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     // Add match field
     ValueMetaInterface v =
-      new ValueMeta( space.environmentSubstitute( getOutputMatchField() ), ValueMeta.TYPE_STRING );
+      new ValueMetaString( space.environmentSubstitute( getOutputMatchField() ) );
     v.setOrigin( name );
-    v.setStorageType( ValueMeta.STORAGE_TYPE_NORMAL );
+    v.setStorageType( ValueMetaInterface.STORAGE_TYPE_NORMAL );
     inputRowMeta.addValueMeta( v );
 
     String mainField = space.environmentSubstitute( getOutputValueField() );
@@ -460,20 +460,20 @@ public class FuzzyMatchMeta extends BaseStepMeta implements StepMetaInterface {
       switch ( getAlgorithmType() ) {
         case FuzzyMatchMeta.OPERATION_TYPE_DAMERAU_LEVENSHTEIN:
         case FuzzyMatchMeta.OPERATION_TYPE_LEVENSHTEIN:
-          v = new ValueMeta( mainField, ValueMeta.TYPE_INTEGER );
+          v = new ValueMetaInteger( mainField );
           v.setLength( ValueMetaInterface.DEFAULT_INTEGER_LENGTH );
           break;
         case FuzzyMatchMeta.OPERATION_TYPE_JARO:
         case FuzzyMatchMeta.OPERATION_TYPE_JARO_WINKLER:
         case FuzzyMatchMeta.OPERATION_TYPE_PAIR_SIMILARITY:
-          v = new ValueMeta( mainField, ValueMeta.TYPE_NUMBER );
+          v = new ValueMetaNumber( mainField );
           break;
         default:
           // Phonetic algorithms
-          v = new ValueMeta( mainField, ValueMeta.TYPE_STRING );
+          v = new ValueMetaString( mainField );
           break;
       }
-      v.setStorageType( ValueMeta.STORAGE_TYPE_NORMAL );
+      v.setStorageType( ValueMetaInterface.STORAGE_TYPE_NORMAL );
       v.setOrigin( name );
       inputRowMeta.addValueMeta( v );
     }
@@ -503,7 +503,7 @@ public class FuzzyMatchMeta extends BaseStepMeta implements StepMetaInterface {
         }
       } else {
         for ( int i = 0; i < valueName.length; i++ ) {
-          v = new ValueMeta( valueName[i], ValueMeta.TYPE_STRING );
+          v = new ValueMetaString( valueName[i] );
           v.setOrigin( name );
           inputRowMeta.addValueMeta( v );
         }
@@ -512,7 +512,7 @@ public class FuzzyMatchMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer();
+    StringBuilder retval = new StringBuilder();
 
     StreamInterface infoStream = getStepIOMeta().getInfoStreams().get( 0 );
     retval.append( "    " + XMLHandler.addTagValue( "from", infoStream.getStepname() ) );

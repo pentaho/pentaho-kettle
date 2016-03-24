@@ -71,7 +71,7 @@ public class StepMetaTest {
 
     boolean shouldDistribute = rand.nextBoolean();
     meta.setDistributes( shouldDistribute );
-    if( shouldDistribute ) {
+    if ( shouldDistribute ) {
       meta.setRowDistribution( selectRowDistribution() );
     }
 

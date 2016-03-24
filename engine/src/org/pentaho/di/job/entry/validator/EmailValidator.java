@@ -22,7 +22,7 @@
 
 package org.pentaho.di.job.entry.validator;
 
-import static org.apache.commons.validator.util.ValidatorUtils.getValueAsString;
+import org.apache.commons.validator.util.ValidatorUtils;
 
 import java.util.List;
 
@@ -44,7 +44,7 @@ public class EmailValidator implements JobEntryValidator {
     List<CheckResultInterface> remarks, ValidatorContext context ) {
     String value = null;
 
-    value = getValueAsString( source, propertyName );
+    value = ValidatorUtils.getValueAsString( source, propertyName );
 
     if ( !GenericValidator.isBlankOrNull( value ) && !GenericValidator.isEmail( value ) ) {
       JobEntryValidatorUtils.addFailureRemark(

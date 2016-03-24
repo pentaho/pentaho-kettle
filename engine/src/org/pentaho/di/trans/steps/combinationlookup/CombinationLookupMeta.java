@@ -103,7 +103,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
   /** Commit size for insert / update */
   private int commitSize;
 
-  /** Preload the cache, defaults to false 
+  /** Preload the cache, defaults to false
    * @author nicow2
    * */
   private boolean preloadCache = false;
@@ -355,12 +355,8 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
     int nrkeys = keyField.length;
 
     retval.allocate( nrkeys );
-
-    // Read keys to dimension
-    for ( int i = 0; i < nrkeys; i++ ) {
-      retval.keyField[i] = keyField[i];
-      retval.keyLookup[i] = keyLookup[i];
-    }
+    System.arraycopy( keyField, 0, retval.keyField, 0, nrkeys );
+    System.arraycopy( keyLookup, 0, retval.keyLookup, 0, nrkeys );
 
     return retval;
   }
@@ -455,7 +451,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 512 );
+    StringBuilder retval = new StringBuilder( 512 );
 
     retval.append( "      " ).append( XMLHandler.addTagValue( "schema", schemaName ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "table", tablename ) );

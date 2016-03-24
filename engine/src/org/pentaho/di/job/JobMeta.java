@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -576,7 +576,7 @@ public class JobMeta extends AbstractMeta
       props = Props.getInstance();
     }
 
-    StringBuffer retval = new StringBuffer( 500 );
+    StringBuilder retval = new StringBuilder( 500 );
 
     retval.append( "<" ).append( XML_TAG ).append( ">" ).append( Const.CR );
 
@@ -2552,9 +2552,10 @@ public class JobMeta extends AbstractMeta
         //
         JobMeta jobMeta = (JobMeta) this.realClone( false );
 
-        // All objects get re-located to the root folder
-        //
-        jobMeta.setRepositoryDirectory( new RepositoryDirectory() );
+        // All objects get re-located to the root folder,
+        // but, when exporting, we need to see current directory
+        // in order to make 'Internal.Entry.Current.Directory' variable work
+        jobMeta.setRepositoryDirectory( directory );
 
         // Add used resources, modify transMeta accordingly
         // Go through the list of steps, etc.

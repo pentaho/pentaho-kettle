@@ -439,7 +439,7 @@ public class SWTDirectGC implements GCInterface {
 
   @Override
   public void drawJobEntryIcon( int x, int y, JobEntryCopy jobEntryCopy ) {
-    drawJobEntryIcon( x, y , jobEntryCopy, currentMagnification );
+    drawJobEntryIcon( x, y, jobEntryCopy, currentMagnification );
   }
 
   @Override

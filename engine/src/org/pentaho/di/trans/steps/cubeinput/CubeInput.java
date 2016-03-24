@@ -63,15 +63,14 @@ public class CubeInput extends BaseStep implements StepInterface {
       data = (CubeInputData) sdi;
       realRowLimit = Const.toInt( environmentSubstitute( meta.getRowLimit() ), 0 );
     }
-    
+
 
     try {
       Object[] r = data.meta.readData( data.dis );
       putRow( data.meta, r ); // fill the rowset(s). (sleeps if full)
       incrementLinesInput();
 
-      if ( realRowLimit > 0 && getLinesInput() >= realRowLimit ) // finished!
-      {
+      if ( realRowLimit > 0 && getLinesInput() >= realRowLimit ) { // finished!
         setOutputDone();
         return false;
       }

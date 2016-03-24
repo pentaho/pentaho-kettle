@@ -91,7 +91,7 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer();
+    StringBuilder retval = new StringBuilder( 100 );
 
     retval.append( "    " ).append( XMLHandler.openTag( XML_TAG ) ).append( Const.CR );
     retval.append( entry.getXML() );
@@ -353,7 +353,7 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
   public boolean isDummy() {
     return entry.isDummy();
   }
-  
+
   public boolean isMissing() {
     return entry instanceof MissingEntry;
   }

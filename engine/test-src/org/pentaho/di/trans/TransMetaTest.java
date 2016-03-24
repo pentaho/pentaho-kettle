@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -28,10 +28,13 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.listeners.ContentChangedListener;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.metastore.DatabaseMetaStoreUtil;
@@ -41,10 +44,16 @@ import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.trans.step.StepIOMeta;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.steps.datagrid.DataGridMeta;
 import org.pentaho.di.trans.steps.metainject.MetaInjectMeta;
+import org.pentaho.di.trans.steps.userdefinedjavaclass.StepDefinition;
+import org.pentaho.di.trans.steps.userdefinedjavaclass.UserDefinedJavaClassDef;
+import org.pentaho.di.trans.steps.userdefinedjavaclass.UserDefinedJavaClassMeta;
 import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.metastore.stores.memory.MemoryMetaStore;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -63,7 +72,7 @@ public class TransMetaTest {
 
   @BeforeClass
   public static void initKettle() throws Exception {
-    KettleEnvironment.init();
+    KettleEnvironment.init( false );
   }
 
   private TransMeta transMeta;
@@ -283,6 +292,56 @@ public class TransMetaTest {
     hops = transMeta.getTransHopSteps( true );
     assertSame( step3, hops.get( 0 ) );
     assertSame( step4, hops.get( 1 ) );
+  }
+
+  @Test
+  public void testGetPrevInfoFields() throws KettleStepException {
+    DataGridMeta dgm1 = new DataGridMeta();
+    dgm1.setFieldName( new String[]{ "id", "colA" } );
+    dgm1.allocate( 2 );
+    dgm1.setFieldType( new String[]{
+      ValueMetaFactory.getValueMetaName( ValueMetaInterface.TYPE_INTEGER ),
+      ValueMetaFactory.getValueMetaName( ValueMetaInterface.TYPE_STRING ) } );
+    List<List<String>> dgm1Data = new ArrayList<List<String>>();
+    dgm1Data.add( Arrays.asList( new String[]{ "1", "A" } ) );
+    dgm1Data.add( Arrays.asList( new String[]{ "2", "B" } ) );
+    dgm1.setDataLines( dgm1Data );
+
+    DataGridMeta dgm2 = new DataGridMeta();
+    dgm2.allocate( 1 );
+    dgm2.setFieldName( new String[]{ "moreData" } );
+    dgm2.setFieldType( new String[]{
+      ValueMetaFactory.getValueMetaName( ValueMetaInterface.TYPE_STRING ) } );
+    List<List<String>> dgm2Data = new ArrayList<List<String>>();
+    dgm2Data.add( Arrays.asList( new String[]{ "Some Informational Data" } ) );
+    dgm2.setDataLines( dgm2Data );
+
+    StepMeta dg1 = new StepMeta( "input1", dgm1 );
+    StepMeta dg2 = new StepMeta( "input2", dgm2 );
+
+    final String UDJC_METHOD =
+      "public boolean processRow( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException { return false; }";
+    UserDefinedJavaClassMeta udjcMeta = new UserDefinedJavaClassMeta();
+    udjcMeta.getInfoStepDefinitions().add( new StepDefinition( dg2.getName(), dg2.getName(), dg2, "info_data" ) );
+    udjcMeta.replaceDefinitions( Arrays.asList( new UserDefinedJavaClassDef[]{
+      new UserDefinedJavaClassDef( UserDefinedJavaClassDef.ClassType.TRANSFORM_CLASS, "MainClass", UDJC_METHOD ) } ) );
+
+    StepMeta udjc = new StepMeta( "PDI-14910", udjcMeta );
+
+    TransHopMeta hop1 = new TransHopMeta( dg1, udjc, true );
+    TransHopMeta hop2 = new TransHopMeta( dg2, udjc, true );
+    transMeta.addStep( dg1 );
+    transMeta.addStep( dg2 );
+    transMeta.addStep( udjc );
+    transMeta.addTransHop( hop1 );
+    transMeta.addTransHop( hop2 );
+
+    RowMetaInterface row = null;
+    row = transMeta.getPrevInfoFields( udjc );
+    assertNotNull( row );
+    assertEquals( 1, row.size() );
+    assertEquals( "moreData", row.getValueMeta( 0 ).getName() );
+    assertEquals( ValueMetaInterface.TYPE_STRING, row.getValueMeta( 0 ).getType() );
   }
 
   private static StepMeta mockStepMeta( String name ) {

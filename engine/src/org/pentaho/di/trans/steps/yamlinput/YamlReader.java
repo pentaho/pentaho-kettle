@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -211,7 +211,7 @@ public class YamlReader {
     }
 
     switch ( valueMeta.getType() ) {
-      case ValueMeta.TYPE_INTEGER:
+      case ValueMetaInterface.TYPE_INTEGER:
         if ( value instanceof Integer ) {
           o = new Long( (Integer) value );
         } else if ( value instanceof BigInteger ) {
@@ -222,7 +222,7 @@ public class YamlReader {
           o = new Long( value.toString() );
         }
         break;
-      case ValueMeta.TYPE_NUMBER:
+      case ValueMetaInterface.TYPE_NUMBER:
         if ( value instanceof Integer ) {
           o = new Double( (Integer) value );
         } else if ( value instanceof BigInteger ) {
@@ -235,7 +235,7 @@ public class YamlReader {
           o = new Double( (String) value );
         }
         break;
-      case ValueMeta.TYPE_BIGNUMBER:
+      case ValueMetaInterface.TYPE_BIGNUMBER:
         if ( value instanceof Integer ) {
           o = new BigDecimal( (Integer) value );
         } else if ( value instanceof BigInteger ) {
@@ -246,13 +246,13 @@ public class YamlReader {
           o = new BigDecimal( (Double) value );
         }
         break;
-      case ValueMeta.TYPE_BOOLEAN:
+      case ValueMetaInterface.TYPE_BOOLEAN:
         o = value;
         break;
-      case ValueMeta.TYPE_DATE:
+      case ValueMetaInterface.TYPE_DATE:
         o = value;
         break;
-      case ValueMeta.TYPE_BINARY:
+      case ValueMetaInterface.TYPE_BINARY:
         o = value;
         break;
       default:
@@ -332,7 +332,7 @@ public class YamlReader {
         Iterator it = map.entrySet().iterator();
         while ( it.hasNext() ) {
           Map.Entry pairs = (Map.Entry) it.next();
-          ValueMeta valueMeta = new ValueMeta( pairs.getKey().toString(), getType( pairs.getValue() ) );
+          ValueMetaInterface valueMeta = new ValueMeta( pairs.getKey().toString(), getType( pairs.getValue() ) );
           rowMeta.addValueMeta( valueMeta );
         }
       } else if ( data instanceof List ) {
@@ -348,7 +348,7 @@ public class YamlReader {
           Iterator its = map.entrySet().iterator();
           while ( its.hasNext() ) {
             Map.Entry pairs = (Map.Entry) its.next();
-            ValueMeta valueMeta = new ValueMeta( pairs.getKey().toString(), getType( pairs.getValue() ) );
+            ValueMetaInterface valueMeta = new ValueMeta( pairs.getKey().toString(), getType( pairs.getValue() ) );
             rowMeta.addValueMeta( valueMeta );
           }
         } else {
@@ -363,28 +363,28 @@ public class YamlReader {
   private int getType( Object value ) {
 
     if ( value instanceof Integer ) {
-      return ValueMeta.TYPE_INTEGER;
+      return ValueMetaInterface.TYPE_INTEGER;
     }
     if ( value instanceof Double ) {
-      return ValueMeta.TYPE_NUMBER;
+      return ValueMetaInterface.TYPE_NUMBER;
     } else if ( value instanceof Long ) {
-      return ValueMeta.TYPE_INTEGER;
+      return ValueMetaInterface.TYPE_INTEGER;
     } else if ( value instanceof Date ) {
-      return ValueMeta.TYPE_DATE;
+      return ValueMetaInterface.TYPE_DATE;
     } else if ( value instanceof java.sql.Date ) {
-      return ValueMeta.TYPE_DATE;
+      return ValueMetaInterface.TYPE_DATE;
     } else if ( value instanceof Timestamp ) {
-      return ValueMeta.TYPE_DATE;
+      return ValueMetaInterface.TYPE_DATE;
     } else if ( value instanceof Boolean ) {
-      return ValueMeta.TYPE_BOOLEAN;
+      return ValueMetaInterface.TYPE_BOOLEAN;
     } else if ( value instanceof BigInteger ) {
-      return ValueMeta.TYPE_BIGNUMBER;
+      return ValueMetaInterface.TYPE_BIGNUMBER;
     } else if ( value instanceof BigDecimal ) {
-      return ValueMeta.TYPE_BIGNUMBER;
+      return ValueMetaInterface.TYPE_BIGNUMBER;
     } else if ( value instanceof Byte ) {
-      return ValueMeta.TYPE_BINARY;
+      return ValueMetaInterface.TYPE_BINARY;
     }
-    return ValueMeta.TYPE_STRING;
+    return ValueMetaInterface.TYPE_STRING;
   }
 
   private Object getDocument() {

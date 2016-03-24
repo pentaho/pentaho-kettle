@@ -153,10 +153,11 @@ public class SplitFieldToRows extends BaseStep implements StepInterface {
       data.rownr = 1L;
 
       try {
+        String delimiter = Const.nullToEmpty( meta.getDelimiter() );
         if ( meta.isDelimiterRegex() ) {
-          data.delimiterPattern = Pattern.compile( environmentSubstitute( meta.getDelimiter() ) );
+          data.delimiterPattern = Pattern.compile( environmentSubstitute( delimiter ) );
         } else {
-          data.delimiterPattern = Pattern.compile( Pattern.quote( environmentSubstitute( meta.getDelimiter() ) ) );
+          data.delimiterPattern = Pattern.compile( Pattern.quote( environmentSubstitute( delimiter ) ) );
         }
       } catch ( PatternSyntaxException pse ) {
         log.logError( pse.getMessage() );

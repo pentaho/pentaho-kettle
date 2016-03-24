@@ -777,7 +777,7 @@ public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterfa
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 800 );
+    StringBuilder retval = new StringBuilder( 800 );
 
     retval.append( "    " ).append( XMLHandler.addTagValue( "header", headerEnabled ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "footer", footerEnabled ) );

@@ -31,6 +31,7 @@ import java.util.Date;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.gui.TextFileInputFieldInterface;
+import org.pentaho.di.core.injection.Injection;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 
@@ -41,19 +42,44 @@ import org.pentaho.di.core.row.ValueMetaInterface;
  * @since 19-04-2004
  */
 public class BaseFileInputField implements Cloneable, TextFileInputFieldInterface {
+  @Injection( name = "FIELD_NAME", group = "FIELDS" )
   private String name;
-  private int position;
-  private int length;
+
+  @Injection( name = "FIELD_POSITION", group = "FIELDS" )
+  private int position = -1;
+
+  @Injection( name = "FIELD_LENGTH", group = "FIELDS" )
+  private int length = -1;
+
   private int type;
+
+  @Injection( name = "FIELD_IGNORE", group = "FIELDS" )
   private boolean ignore;
+
+  @Injection( name = "FIELD_FORMAT", group = "FIELDS" )
   private String format;
+
   private int trimtype;
-  private int precision;
+
+  @Injection( name = "FIELD_PRECISION", group = "FIELDS" )
+  private int precision = -1;
+
+  @Injection( name = "FIELD_CURRENCY", group = "FIELDS" )
   private String currencySymbol;
+
+  @Injection( name = "FIELD_DECIMAL", group = "FIELDS" )
   private String decimalSymbol;
+
+  @Injection( name = "FIELD_GROUP", group = "FIELDS" )
   private String groupSymbol;
+
+  @Injection( name = "FIELD_REPEAT", group = "FIELDS" )
   private boolean repeat;
+
+  @Injection( name = "FIELD_NULL_STRING", group = "FIELDS" )
   private String nullString;
+
+  @Injection( name = "FIELD_IF_NULL", group = "FIELDS" )
   private String ifNullValue;
 
   private String[] samples;
@@ -159,6 +185,11 @@ public class BaseFileInputField implements Cloneable, TextFileInputFieldInterfac
     this.type = type;
   }
 
+  @Injection( name = "FIELD_TYPE", group = "FIELDS" )
+  public void setType( String value ) {
+    this.type = ValueMeta.getType( value );
+  }
+
   public boolean isIgnored() {
     return ignore;
   }
@@ -197,6 +228,11 @@ public class BaseFileInputField implements Cloneable, TextFileInputFieldInterfac
 
   public void setTrimType( int trimtype ) {
     this.trimtype = trimtype;
+  }
+
+  @Injection( name = "FIELD_TRIM_TYPE", group = "FIELDS" )
+  public void setTrimType( String value ) {
+    this.trimtype = ValueMeta.getTrimTypeByCode( value );
   }
 
   public String getGroupSymbol() {
@@ -530,8 +566,8 @@ public class BaseFileInputField implements Cloneable, TextFileInputFieldInterfac
     // System.out.println("d="+d+", diff="+diff);
 
     // remainder: 12.345678 --> 0.345678
-    for ( int i = 1; i < maxprec; i++ ) // cap off precision at a reasonable maximum
-    {
+    for ( int i = 1; i < maxprec; i++ ) {
+      // cap off precision at a reasonable maximum
       double factor = Math.pow( 10.0, i );
       diff = Math.abs( Math.floor( d * factor ) - ( d * factor ) );
       if ( diff < maxdiff ) {

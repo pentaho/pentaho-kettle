@@ -32,8 +32,8 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaBoolean;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -94,7 +94,7 @@ public class DetectLastRowMeta extends BaseStepMeta implements StepMetaInterface
 
     if ( !Const.isEmpty( resultfieldname ) ) {
       ValueMetaInterface v =
-        new ValueMeta( space.environmentSubstitute( resultfieldname ), ValueMeta.TYPE_BOOLEAN );
+        new ValueMetaBoolean( space.environmentSubstitute( resultfieldname ) );
       v.setOrigin( name );
       row.addValueMeta( v );
     }

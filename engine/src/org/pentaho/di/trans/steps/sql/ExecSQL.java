@@ -168,7 +168,7 @@ public class ExecSQL extends BaseStep implements StepInterface {
     } else {
       int numMarkers = data.markerPositions.size();
       if ( numMarkers > 0 ) {
-        StringBuffer buf = new StringBuffer( data.sql );
+        StringBuilder buf = new StringBuilder( data.sql );
 
         // Replace the values in the SQL string...
         //

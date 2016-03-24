@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -32,8 +32,10 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaBinary;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -188,10 +190,7 @@ public class CheckSumMeta extends BaseStepMeta implements StepMetaInterface {
     int nrfields = fieldName.length;
 
     retval.allocate( nrfields );
-
-    for ( int i = 0; i < nrfields; i++ ) {
-      retval.fieldName[i] = fieldName[i];
-    }
+    System.arraycopy( fieldName, 0, retval.fieldName, 0, nrfields );
     return retval;
   }
 
@@ -251,7 +250,7 @@ public class CheckSumMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 200 );
+    StringBuilder retval = new StringBuilder( 200 );
     retval.append( "      " ).append( XMLHandler.addTagValue( "checksumtype", checksumtype ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "resultfieldName", resultfieldName ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "resultType", getResultTypeCode( resultType ) ) );
@@ -323,14 +322,14 @@ public class CheckSumMeta extends BaseStepMeta implements StepMetaInterface {
     if ( !Const.isEmpty( resultfieldName ) ) {
       ValueMetaInterface v = null;
       if ( checksumtype.equals( TYPE_CRC32 ) || checksumtype.equals( TYPE_ADLER32 ) ) {
-        v = new ValueMeta( space.environmentSubstitute( resultfieldName ), ValueMeta.TYPE_INTEGER );
+        v = new ValueMetaInteger( space.environmentSubstitute( resultfieldName ) );
       } else {
         switch ( resultType ) {
           case result_TYPE_BINARY:
-            v = new ValueMeta( space.environmentSubstitute( resultfieldName ), ValueMeta.TYPE_BINARY );
+            v = new ValueMetaBinary( space.environmentSubstitute( resultfieldName ) );
             break;
           default:
-            v = new ValueMeta( space.environmentSubstitute( resultfieldName ), ValueMeta.TYPE_STRING );
+            v = new ValueMetaString( space.environmentSubstitute( resultfieldName ) );
             break;
         }
       }

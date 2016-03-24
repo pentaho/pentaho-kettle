@@ -22,10 +22,8 @@
 
 package org.pentaho.di.job.entries.delay;
 
-import static org.pentaho.di.job.entry.validator.AndValidator.putValidators;
-import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.andValidator;
-import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.integerValidator;
-import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.longValidator;
+import org.pentaho.di.job.entry.validator.AndValidator;
+import org.pentaho.di.job.entry.validator.JobEntryValidatorUtils;
 
 import java.util.List;
 
@@ -229,8 +227,10 @@ public class JobEntryDelay extends JobEntryBase implements Cloneable, JobEntryIn
 
   public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
-    andValidator().validate( this, "maximumTimeout", remarks, putValidators( longValidator() ) );
-    andValidator().validate( this, "scaleTime", remarks, putValidators( integerValidator() ) );
+    JobEntryValidatorUtils.andValidator().validate( this, "maximumTimeout", remarks,
+        AndValidator.putValidators( JobEntryValidatorUtils.longValidator() ) );
+    JobEntryValidatorUtils.andValidator().validate( this, "scaleTime", remarks,
+        AndValidator.putValidators( JobEntryValidatorUtils.integerValidator() ) );
   }
 
   public int getScaleTime() {

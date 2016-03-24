@@ -76,13 +76,10 @@ public class SetValueConstantMeta extends BaseStepMeta implements StepMetaInterf
 
     int nrfields = fieldName.length;
     retval.allocate( nrfields );
-
-    for ( int i = 0; i < nrfields; i++ ) {
-      retval.fieldName[i] = fieldName[i];
-      retval.replaceValue[i] = replaceValue[i];
-      retval.replaceMask[i] = replaceMask[i];
-      retval.setEmptyString[i] = setEmptyString[i];
-    }
+    System.arraycopy( fieldName, 0, retval.fieldName, 0, nrfields );
+    System.arraycopy( replaceValue, 0, retval.replaceValue, 0, nrfields );
+    System.arraycopy( replaceMask, 0, retval.replaceMask, 0, nrfields );
+    System.arraycopy( setEmptyString, 0, retval.setEmptyString, 0, nrfields );
 
     return retval;
   }
@@ -183,7 +180,7 @@ public class SetValueConstantMeta extends BaseStepMeta implements StepMetaInterf
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer();
+    StringBuilder retval = new StringBuilder();
     retval.append( "   " + XMLHandler.addTagValue( "usevar", usevar ) );
     retval.append( "    <fields>" + Const.CR );
     for ( int i = 0; i < fieldName.length; i++ ) {

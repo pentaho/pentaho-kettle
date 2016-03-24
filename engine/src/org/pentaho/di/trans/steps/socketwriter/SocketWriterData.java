@@ -39,6 +39,7 @@ public class SocketWriterData extends BaseStepData implements StepDataInterface 
   public Socket clientSocket;
   public int flushInterval;
   public ServerSocket serverSocket;
+  int serverSocketPort;
 
   public SocketWriterData() {
     super();

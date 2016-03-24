@@ -89,7 +89,7 @@ public class KettleClientEnvironment {
     if ( !"Y".equalsIgnoreCase( System.getProperty( Const.KETTLE_DISABLE_CONSOLE_LOGGING, "N" ) ) ) {
       KettleLogStore.getAppender().addLoggingEventListener( new ConsoleLoggingEventListener() );
     }
-    
+
 
     // Load value meta data plugins
     //
@@ -102,7 +102,7 @@ public class KettleClientEnvironment {
 
     List<PluginInterface> logginPlugins = PluginRegistry.getInstance().getPlugins( LoggingPluginType.class );
     initLogginPlugins( logginPlugins );
-    
+
     String passwordEncoderPluginID = Const.NVL( EnvUtil.getSystemProperty( Const.KETTLE_PASSWORD_ENCODER_PLUGIN ), "Kettle" );
 
     Encr.init( passwordEncoderPluginID );

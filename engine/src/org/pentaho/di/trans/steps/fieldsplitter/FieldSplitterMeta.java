@@ -31,6 +31,8 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.injection.Injection;
+import org.pentaho.di.core.injection.InjectionSupported;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
@@ -46,7 +48,6 @@ import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.step.StepMetaInjectionInterface;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
@@ -101,55 +102,72 @@ import org.w3c.dom.Node;
 
 </CODE>
  **/
+@InjectionSupported( localizationPrefix = "FieldSplitter.Injection.", groups = { "FIELDS" } )
 public class FieldSplitterMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = FieldSplitterMeta.class; // for i18n purposes, needed by Translator2!!
 
   /** Field to split */
+  @Injection( name = "FIELD_TO_SPLIT" )
   private String splitField;
 
   /** Split fields based upon this delimiter. */
+  @Injection( name = "DELIMITER" )
   private String delimiter;
 
   /** Ignore delimiter inside pairs of the enclosure string */
+  @Injection( name = "ENCLOSURE" )
   private String enclosure;
 
   /** new field names */
+  @Injection( name = "NAME", group = "FIELDS" )
   private String[] fieldName;
 
   /** Field ID's to scan for */
+  @Injection( name = "ID", group = "FIELDS" )
   private String[] fieldID;
 
   /** flag: remove ID */
+  @Injection( name = "REMOVE_ID", group = "FIELDS" )
   private boolean[] fieldRemoveID;
 
   /** type of new field */
+  @Injection( name = "DATA_TYPE", group = "FIELDS", converter = DataTypeConverter.class )
   private int[] fieldType;
 
   /** formatting mask to convert value */
+  @Injection( name = "FORMAT", group = "FIELDS" )
   private String[] fieldFormat;
 
   /** Grouping symbol */
+  @Injection( name = "GROUPING", group = "FIELDS" )
   private String[] fieldGroup;
 
   /** Decimal point . or , */
+  @Injection( name = "DECIMAL", group = "FIELDS" )
   private String[] fieldDecimal;
 
   /** Currency symbol */
+  @Injection( name = "CURRENCY", group = "FIELDS" )
   private String[] fieldCurrency;
 
   /** Length of field */
+  @Injection( name = "LENGTH", group = "FIELDS" )
   private int[] fieldLength;
 
   /** Precision of field */
+  @Injection( name = "PRECISION", group = "FIELDS" )
   private int[] fieldPrecision;
 
   /** Replace this value with a null */
+  @Injection( name = "NULL_IF", group = "FIELDS" )
   private String[] fieldNullIf;
 
   /** Default value in case no value was found (ID option) */
+  @Injection( name = "DEFAULT", group = "FIELDS" )
   private String[] fieldIfNull;
 
   /** Perform trimming of this type on the fieldName during lookup and storage */
+  @Injection( name = "TRIM_TYPE", group = "FIELDS", converter = TrimTypeConverter.class )
   private int[] fieldTrimType;
 
   public FieldSplitterMeta() {
@@ -311,21 +329,20 @@ public class FieldSplitterMeta extends BaseStepMeta implements StepMetaInterface
 
     retval.allocate( nrfields );
 
-    for ( int i = 0; i < nrfields; i++ ) {
-      retval.fieldName[i] = fieldName[i];
-      retval.fieldID[i] = fieldID[i];
-      retval.fieldRemoveID[i] = fieldRemoveID[i];
-      retval.fieldType[i] = fieldType[i];
-      retval.fieldLength[i] = fieldLength[i];
-      retval.fieldPrecision[i] = fieldPrecision[i];
-      retval.fieldFormat[i] = fieldFormat[i];
-      retval.fieldGroup[i] = fieldGroup[i];
-      retval.fieldDecimal[i] = fieldDecimal[i];
-      retval.fieldCurrency[i] = fieldCurrency[i];
-      retval.fieldNullIf[i] = fieldNullIf[i];
-      retval.fieldIfNull[i] = fieldIfNull[i];
-      retval.fieldTrimType[i] = fieldTrimType[i];
-    }
+    System.arraycopy( fieldName, 0, retval.fieldName, 0, nrfields );
+    System.arraycopy( fieldID, 0, retval.fieldID, 0, nrfields );
+    System.arraycopy( fieldRemoveID, 0, retval.fieldRemoveID, 0, nrfields );
+    System.arraycopy( fieldType, 0, retval.fieldType, 0, nrfields );
+    System.arraycopy( fieldLength, 0, retval.fieldLength, 0, nrfields );
+    System.arraycopy( fieldPrecision, 0, retval.fieldPrecision, 0, nrfields );
+    System.arraycopy( fieldFormat, 0, retval.fieldFormat, 0, nrfields );
+    System.arraycopy( fieldGroup, 0, retval.fieldGroup, 0, nrfields );
+    System.arraycopy( fieldDecimal, 0, retval.fieldDecimal, 0, nrfields );
+    System.arraycopy( fieldCurrency, 0, retval.fieldCurrency, 0, nrfields );
+    System.arraycopy( fieldNullIf, 0, retval.fieldNullIf, 0, nrfields );
+    System.arraycopy( fieldIfNull, 0, retval.fieldIfNull, 0, nrfields );
+    System.arraycopy( fieldTrimType, 0, retval.fieldTrimType, 0, nrfields );
+    System.arraycopy( fieldName, 0, retval.fieldName, 0, nrfields );
 
     return retval;
   }
@@ -377,6 +394,18 @@ public class FieldSplitterMeta extends BaseStepMeta implements StepMetaInterface
     allocate( 0 );
   }
 
+  public int getFieldsCount() {
+    int count = Math.min( getFieldName().length, getFieldType().length );
+    count = Math.min( count, getFieldLength().length );
+    count = Math.min( count, getFieldPrecision().length );
+    count = Math.min( count, getFieldFormat().length );
+    count = Math.min( count, getFieldDecimal().length );
+    count = Math.min( count, getFieldGroup().length );
+    count = Math.min( count, getFieldCurrency().length );
+    count = Math.min( count, getFieldTrimType().length );
+    return count;
+  }
+
   public void getFields( RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep,
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     // Remove the field to split
@@ -387,7 +416,8 @@ public class FieldSplitterMeta extends BaseStepMeta implements StepMetaInterface
     }
 
     // Add the new fields at the place of the index --> replace!
-    for ( int i = 0; i < getFieldName().length; i++ ) {
+    int count = getFieldsCount();
+    for ( int i = 0; i < count; i++ ) {
       try {
         final ValueMetaInterface v = ValueMetaFactory.createValueMeta( getFieldName()[i], getFieldType()[i] );
         v.setLength( getFieldLength()[i], getFieldPrecision()[i] );
@@ -566,10 +596,5 @@ public class FieldSplitterMeta extends BaseStepMeta implements StepMetaInterface
 
   public StepDataInterface getStepData() {
     return new FieldSplitterData();
-  }
-
-  @Override
-  public StepMetaInjectionInterface getStepMetaInjectionInterface() {
-    return new FieldSplitterMetaInjection( this );
   }
 }

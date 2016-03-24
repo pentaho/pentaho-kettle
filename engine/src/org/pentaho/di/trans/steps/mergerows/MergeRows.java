@@ -163,8 +163,7 @@ public class MergeRows extends BaseStep implements StepInterface {
 
       // Also get a next row from compare rowset...
       data.two = getRowFrom( data.twoRowSet );
-    } else if ( data.one != null && data.two == null ) // Record 1 is flagged as deleted!
-    {
+    } else if ( data.one != null && data.two == null ) { // Record 1 is flagged as deleted!
       outputRow = data.one;
       outputIndex = data.oneRowSet.getRowMeta().size();
       flagField = VALUE_DELETED;

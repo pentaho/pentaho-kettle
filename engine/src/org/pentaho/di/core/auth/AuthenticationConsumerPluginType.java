@@ -36,7 +36,7 @@ import org.pentaho.di.core.plugins.PluginTypeInterface;
 
 /**
  * This class represents the authentication plugin type.
- * 
+ *
  */
 @PluginMainClassType( AuthenticationConsumerType.class )
 @PluginAnnotationType( AuthenticationConsumerPlugin.class )

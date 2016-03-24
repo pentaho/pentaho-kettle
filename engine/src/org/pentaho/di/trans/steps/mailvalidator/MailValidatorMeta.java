@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -32,8 +32,9 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaBoolean;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -281,20 +282,20 @@ public class MailValidatorMeta extends BaseStepMeta implements StepMetaInterface
 
     String realResultFieldName = space.environmentSubstitute( resultfieldname );
     if ( ResultAsString ) {
-      ValueMetaInterface v = new ValueMeta( realResultFieldName, ValueMeta.TYPE_STRING );
+      ValueMetaInterface v = new ValueMetaString( realResultFieldName );
       v.setLength( 100, -1 );
       v.setOrigin( name );
       r.addValueMeta( v );
 
     } else {
-      ValueMetaInterface v = new ValueMeta( realResultFieldName, ValueMeta.TYPE_BOOLEAN );
+      ValueMetaInterface v = new ValueMetaBoolean( realResultFieldName );
       v.setOrigin( name );
       r.addValueMeta( v );
     }
 
     String realErrorsFieldName = space.environmentSubstitute( errorsFieldName );
     if ( !Const.isEmpty( realErrorsFieldName ) ) {
-      ValueMetaInterface v = new ValueMeta( realErrorsFieldName, ValueMeta.TYPE_STRING );
+      ValueMetaInterface v = new ValueMetaString( realErrorsFieldName );
       v.setLength( 100, -1 );
       v.setOrigin( name );
       r.addValueMeta( v );
@@ -302,7 +303,7 @@ public class MailValidatorMeta extends BaseStepMeta implements StepMetaInterface
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer();
+    StringBuilder retval = new StringBuilder();
 
     retval.append( "    " + XMLHandler.addTagValue( "emailfield", emailfield ) );
     retval.append( "    " + XMLHandler.addTagValue( "resultfieldname", resultfieldname ) );

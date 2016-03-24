@@ -30,6 +30,8 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.injection.Injection;
+import org.pentaho.di.core.injection.InjectionSupported;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
@@ -53,14 +55,20 @@ import org.w3c.dom.Node;
  *
  * Created on 03-apr-2006
  */
+@InjectionSupported( localizationPrefix = "ValueMapper.Injection.", groups = { "VALUES" } )
 public class ValueMapperMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = ValueMapperMeta.class; // for i18n purposes, needed by Translator2!!
 
+  @Injection( name = "FIELDNAME" )
   private String fieldToUse;
+  @Injection( name = "TARGET_FIELDNAME" )
   private String targetField;
+  @Injection( name = "NON_MATCH_DEFAULT" )
   private String nonMatchDefault;
 
+  @Injection( name = "SOURCE", group = "VALUES" )
   private String[] sourceValue;
+  @Injection( name = "TARGET", group = "VALUES" )
   private String[] targetValue;
 
   public ValueMapperMeta() {
@@ -113,10 +121,8 @@ public class ValueMapperMeta extends BaseStepMeta implements StepMetaInterface {
 
     retval.allocate( count );
 
-    for ( int i = 0; i < count; i++ ) {
-      retval.sourceValue[i] = sourceValue[i];
-      retval.targetValue[i] = targetValue[i];
-    }
+    System.arraycopy( sourceValue, 0, retval.sourceValue, 0, count );
+    System.arraycopy( targetValue, 0, retval.targetValue, 0, count );
 
     return retval;
   }
@@ -193,7 +199,7 @@ public class ValueMapperMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer();
+    StringBuilder retval = new StringBuilder();
 
     retval.append( "    " ).append( XMLHandler.addTagValue( "field_to_use", fieldToUse ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "target_field", targetField ) );

@@ -82,7 +82,7 @@ public class KettleVFS {
         if ( fsm != null ) {
           try {
             fsm.close();
-          } catch ( Exception ignored ){
+          } catch ( Exception ignored ) {
             // Exceptions can be thrown due to a closed classloader
           }
         }
@@ -222,14 +222,14 @@ public class KettleVFS {
       }
       InputStreamReader reader = new InputStreamReader( inputStream, charSetName );
       int c;
-      StringBuffer stringBuffer = new StringBuffer();
+      StringBuilder aBuffer = new StringBuilder();
       while ( ( c = reader.read() ) != -1 ) {
-        stringBuffer.append( (char) c );
+        aBuffer.append( (char) c );
       }
       reader.close();
       inputStream.close();
 
-      return stringBuffer.toString();
+      return aBuffer.toString();
     } catch ( IOException e ) {
       throw new KettleFileException( e );
     }
@@ -378,7 +378,7 @@ public class KettleVFS {
         // being
         // duplicated which would cause the sort to fail.
         String filename =
-            new StringBuffer( 50 ).append( directory ).append( '/' ).append( prefix ).append( '_' ).append(
+            new StringBuilder( 50 ).append( directory ).append( '/' ).append( prefix ).append( '_' ).append(
             UUIDUtil.getUUIDAsString() ).append( suffix ).toString();
         fileObject = getFileObject( filename, space );
       } while ( fileObject.exists() );

@@ -578,12 +578,12 @@ public class ExcelOutput extends BaseStep implements StepInterface {
       }
 
       try {
-          setFonts();
+        setFonts();
       } catch ( Exception we ) {
-          logError( "Error preparing fonts, colors for header and rows: " + we.toString() );
-          return retval;
+        logError( "Error preparing fonts, colors for header and rows: " + we.toString() );
+        return retval;
       }
-      
+
       data.headerWrote = false;
       data.splitnr++;
       data.oneFileOpened = true;

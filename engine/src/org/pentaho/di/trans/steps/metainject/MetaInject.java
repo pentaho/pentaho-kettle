@@ -25,9 +25,14 @@ package org.pentaho.di.trans.steps.metainject;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
@@ -36,6 +41,8 @@ import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleValueException;
+import org.pentaho.di.core.injection.bean.BeanInjectionInfo;
+import org.pentaho.di.core.injection.bean.BeanInjector;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.vfs.KettleVFS;
@@ -68,7 +75,7 @@ public class MetaInject extends BaseStep implements StepInterface {
   private MetaInjectData data;
 
   public MetaInject( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-    Trans trans ) {
+      Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -77,7 +84,7 @@ public class MetaInject extends BaseStep implements StepInterface {
     data = (MetaInjectData) sdi;
 
     // Read the data from all input steps and keep it in memory...
-    // Skip the step from which we stream data.  Keep that available for runtime action.
+    // Skip the step from which we stream data. Keep that available for runtime action.
     //
     data.rowMap = new HashMap<String, List<RowMetaAndData>>();
     for ( String prevStepName : getTransMeta().getPrevStepNames( getStepMeta() ) ) {
@@ -101,124 +108,14 @@ public class MetaInject extends BaseStep implements StepInterface {
       }
     }
 
+    for ( Map.Entry<String, StepMetaInterface> en : data.stepInjectionMetasMap.entrySet() ) {
+      newInjection( en.getKey(), en.getValue() );
+    }
+
     for ( String targetStep : data.stepInjectionMap.keySet() ) {
-
-      if ( log.isDetailed() ) {
-        logDetailed( "Handing step '" + targetStep + "' injection!" );
+      if ( !data.stepInjectionMetasMap.containsKey( targetStep ) ) {
+        oldInjection( targetStep );
       }
-
-      // This is the injection interface:
-      //
-      StepMetaInjectionInterface injectionInterface = data.stepInjectionMap.get( targetStep );
-
-      // This is the injection description:
-      //
-      List<StepInjectionMetaEntry> metadataEntries = injectionInterface.getStepInjectionMetadataEntries();
-
-      // Create a new list of metadata injection entries...
-      //
-      List<StepInjectionMetaEntry> inject = new ArrayList<StepInjectionMetaEntry>();
-
-      // Collect all the metadata for this target step...
-      //
-      Map<TargetStepAttribute, SourceStepField> targetMap = meta.getTargetSourceMapping();
-      for ( TargetStepAttribute target : targetMap.keySet() ) {
-        SourceStepField source = targetMap.get( target );
-
-        if ( target.getStepname().equalsIgnoreCase( targetStep ) ) {
-          // This is the step to collect data for...
-          // We also know which step to read the data from. (source)
-          //
-          List<RowMetaAndData> rows = data.rowMap.get( source.getStepname() );
-          if ( rows != null && rows.size() > 0 ) {
-            // Which metadata key is this referencing? Find the attribute key in the metadata entries...
-            //
-            StepInjectionMetaEntry entry = findMetaEntry( metadataEntries, target.getAttributeKey() );
-            if ( entry != null ) {
-              if ( !target.isDetail() ) {
-                setEntryValue( entry, rows.get( 0 ), source );
-                inject.add( entry );
-              } else {
-                // We are going to pass this entry N times for N target mappings
-                // As such, we have to see if it's already in the injection list...
-                //
-                StepInjectionMetaEntry metaEntries = findMetaEntry( inject, entry.getKey() );
-                if ( metaEntries == null ) {
-
-                  StepInjectionMetaEntry rootEntry = findDetailRootEntry( metadataEntries, entry );
-
-                  // Inject an empty copy
-                  //
-                  metaEntries = rootEntry.clone();
-                  metaEntries.setDetails( new ArrayList<StepInjectionMetaEntry>() );
-                  inject.add( metaEntries );
-
-                  // We also need to pre-populate the whole grid: X rows by Y attributes
-                  //
-                  StepInjectionMetaEntry metaEntry = rootEntry.getDetails().get( 0 );
-
-                  for ( int i = 0; i < rows.size(); i++ ) {
-                    StepInjectionMetaEntry metaCopy = metaEntry.clone();
-                    metaEntries.getDetails().add( metaCopy );
-                    metaCopy.setDetails( new ArrayList<StepInjectionMetaEntry>() );
-
-                    for ( StepInjectionMetaEntry me : metaEntry.getDetails() ) {
-                      StepInjectionMetaEntry meCopy = me.clone();
-                      metaCopy.getDetails().add( meCopy );
-                    }
-                  }
-
-                  // From now on we can simply refer to the correct X,Y coordinate.
-                } else {
-                  StepInjectionMetaEntry rootEntry = findDetailRootEntry( inject, metaEntries );
-                  metaEntries = rootEntry;
-                }
-
-                for ( int i = 0; i < rows.size(); i++ ) {
-                  RowMetaAndData row = rows.get( i );
-                  try {
-                    List<StepInjectionMetaEntry> rowEntries = metaEntries.getDetails().get( i ).getDetails();
-
-                    for ( StepInjectionMetaEntry rowEntry : rowEntries ) {
-                      // We have to look up the sources for these targets again in the target-2-source mapping
-                      // That is because we only want handle this as few times as possible...
-                      //
-                      SourceStepField detailSource = findDetailSource( targetMap, targetStep, rowEntry.getKey() );
-                      if ( detailSource != null ) {
-                        setEntryValue( rowEntry, row, detailSource );
-                      } else {
-                        if ( log.isDetailed() ) {
-                          logDetailed( "No detail source found for key: "
-                            + rowEntry.getKey() + " and target step: " + targetStep );
-                        }
-                      }
-                    }
-                  } catch ( Exception e ) {
-                    throw new KettleException( "Unexpected error occurred while injecting metadata", e );
-                  }
-                }
-
-                if ( log.isDetailed() ) {
-                  logDetailed( "injected entry: " + entry );
-                }
-              }
-              // End of TopLevel/Detail if block
-            } else {
-              if ( log.isDetailed() ) {
-                logDetailed( "entry not found: " + target.getAttributeKey() );
-              }
-            }
-          } else {
-            if ( log.isDetailed() ) {
-              logDetailed( "No rows found for source step: " + source.getStepname() );
-            }
-          }
-        }
-      }
-
-      // Inject the metadata into the step!
-      //
-      injectionInterface.injectStepMetadataEntries( inject );
     }
 
     if ( log.isDetailed() ) {
@@ -232,8 +129,8 @@ public class MetaInject extends BaseStep implements StepInterface {
         os.write( XMLHandler.getXMLHeader().getBytes( Const.XML_ENCODING ) );
         os.write( data.transMeta.getXML().getBytes( Const.XML_ENCODING ) );
       } catch ( IOException e ) {
-        throw new KettleException( "Unable to write target file (ktr after injection) to file '"
-          + targetFile + "'", e );
+        throw new KettleException( "Unable to write target file (ktr after injection) to file '" + targetFile + "'",
+            e );
       } finally {
         if ( os != null ) {
           try {
@@ -260,7 +157,7 @@ public class MetaInject extends BaseStep implements StepInterface {
       injectTrans.prepareExecution( null );
 
       // See if we need to stream some data over...
-      // 
+      //
       RowProducer rowProducer = null;
       if ( data.streaming ) {
         rowProducer = injectTrans.addRowProducer( data.streamingTargetStepname, 0 );
@@ -325,6 +222,172 @@ public class MetaInject extends BaseStep implements StepInterface {
     return false;
   }
 
+  private void newInjection( String targetStep, StepMetaInterface targetStepMeta ) throws KettleException {
+    if ( log.isDetailed() ) {
+      logDetailed( "Handing step '" + targetStep + "' injection!" );
+    }
+    BeanInjectionInfo injectionInfo = new BeanInjectionInfo( targetStepMeta.getClass() );
+    BeanInjector injector = new BeanInjector( injectionInfo );
+
+    // Collect all the metadata for this target step...
+    //
+    Map<TargetStepAttribute, SourceStepField> targetMap = meta.getTargetSourceMapping();
+    for ( TargetStepAttribute target : targetMap.keySet() ) {
+      SourceStepField source = targetMap.get( target );
+
+      if ( target.getStepname().equalsIgnoreCase( targetStep ) ) {
+        // This is the step to collect data for...
+        // We also know which step to read the data from. (source)
+        //
+        List<RowMetaAndData> rows = data.rowMap.get( source.getStepname() );
+        if ( rows != null && !rows.isEmpty() ) {
+          // Which metadata key is this referencing? Find the attribute key in the metadata entries...
+          //
+          if ( injector.hasProperty( targetStepMeta, target.getAttributeKey() ) ) {
+            // target step has specified key
+            boolean skip = false;
+            for ( RowMetaAndData r : rows ) {
+              if ( r.getRowMeta().indexOfValue( source.getField() ) < 0 ) {
+                logError( BaseMessages.getString( PKG, "MetaInject.SourceFieldIsNotDefined.Message", source.getField(),
+                    getTransMeta().getName() ) );
+                // source step doesn't contain specified field
+                skip = true;
+              }
+            }
+            if ( !skip ) {
+              // specified field exist - need to inject
+              injector.setProperty( targetStepMeta, target.getAttributeKey(), rows, source.getField() );
+            }
+          } else {
+            // target step doesn't have specified key - just report but don't fail like in 6.0 (BACKLOG-6753)
+            logError( BaseMessages.getString( PKG, "MetaInject.TargetKeyIsNotDefined.Message", target.getAttributeKey(),
+                getTransMeta().getName() ) );
+          }
+        }
+      }
+    }
+  }
+
+  private void oldInjection( String targetStep ) throws KettleException {
+
+    if ( log.isDetailed() ) {
+      logDetailed( "Handing step '" + targetStep + "' injection!" );
+    }
+
+    // This is the injection interface:
+    //
+    StepMetaInjectionInterface injectionInterface = data.stepInjectionMap.get( targetStep );
+
+    // This is the injection description:
+    //
+    List<StepInjectionMetaEntry> metadataEntries = injectionInterface.getStepInjectionMetadataEntries();
+
+    // Create a new list of metadata injection entries...
+    //
+    List<StepInjectionMetaEntry> inject = new ArrayList<StepInjectionMetaEntry>();
+
+    // Collect all the metadata for this target step...
+    //
+    Map<TargetStepAttribute, SourceStepField> targetMap = meta.getTargetSourceMapping();
+    for ( TargetStepAttribute target : targetMap.keySet() ) {
+      SourceStepField source = targetMap.get( target );
+
+      if ( target.getStepname().equalsIgnoreCase( targetStep ) ) {
+        // This is the step to collect data for...
+        // We also know which step to read the data from. (source)
+        //
+        List<RowMetaAndData> rows = data.rowMap.get( source.getStepname() );
+        if ( rows != null && rows.size() > 0 ) {
+          // Which metadata key is this referencing? Find the attribute key in the metadata entries...
+          //
+          StepInjectionMetaEntry entry = findMetaEntry( metadataEntries, target.getAttributeKey() );
+          if ( entry != null ) {
+            if ( !target.isDetail() ) {
+              setEntryValueIfFieldExists( entry, rows.get( 0 ), source );
+              inject.add( entry );
+            } else {
+              // We are going to pass this entry N times for N target mappings
+              // As such, we have to see if it's already in the injection list...
+              //
+              StepInjectionMetaEntry metaEntries = findMetaEntry( inject, entry.getKey() );
+              if ( metaEntries == null ) {
+
+                StepInjectionMetaEntry rootEntry = findDetailRootEntry( metadataEntries, entry );
+
+                // Inject an empty copy
+                //
+                metaEntries = rootEntry.clone();
+                metaEntries.setDetails( new ArrayList<StepInjectionMetaEntry>() );
+                inject.add( metaEntries );
+
+                // We also need to pre-populate the whole grid: X rows by Y attributes
+                //
+                StepInjectionMetaEntry metaEntry = rootEntry.getDetails().get( 0 );
+
+                for ( int i = 0; i < rows.size(); i++ ) {
+                  StepInjectionMetaEntry metaCopy = metaEntry.clone();
+                  metaEntries.getDetails().add( metaCopy );
+                  metaCopy.setDetails( new ArrayList<StepInjectionMetaEntry>() );
+
+                  for ( StepInjectionMetaEntry me : metaEntry.getDetails() ) {
+                    StepInjectionMetaEntry meCopy = me.clone();
+                    metaCopy.getDetails().add( meCopy );
+                  }
+                }
+
+                // From now on we can simply refer to the correct X,Y coordinate.
+              } else {
+                StepInjectionMetaEntry rootEntry = findDetailRootEntry( inject, metaEntries );
+                metaEntries = rootEntry;
+              }
+
+              for ( int i = 0; i < rows.size(); i++ ) {
+                RowMetaAndData row = rows.get( i );
+                try {
+                  List<StepInjectionMetaEntry> rowEntries = metaEntries.getDetails().get( i ).getDetails();
+
+                  for ( StepInjectionMetaEntry rowEntry : rowEntries ) {
+                    // We have to look up the sources for these targets again in the target-2-source mapping
+                    // That is because we only want handle this as few times as possible...
+                    //
+                    SourceStepField detailSource = findDetailSource( targetMap, targetStep, rowEntry.getKey() );
+                    if ( detailSource != null ) {
+                      setEntryValueIfFieldExists( rowEntry, row, detailSource );
+                    } else {
+                      if ( log.isDetailed() ) {
+                        logDetailed( "No detail source found for key: " + rowEntry.getKey() + " and target step: "
+                            + targetStep );
+                      }
+                    }
+                  }
+                } catch ( Exception e ) {
+                  throw new KettleException( "Unexpected error occurred while injecting metadata", e );
+                }
+              }
+
+              if ( log.isDetailed() ) {
+                logDetailed( "injected entry: " + entry );
+              }
+            }
+            // End of TopLevel/Detail if block
+          } else {
+            if ( log.isDetailed() ) {
+              logDetailed( "entry not found: " + target.getAttributeKey() );
+            }
+          }
+        } else {
+          if ( log.isDetailed() ) {
+            logDetailed( "No rows found for source step: " + source.getStepname() );
+          }
+        }
+      }
+    }
+
+    // Inject the metadata into the step!
+    //
+    injectionInterface.injectStepMetadataEntries( inject );
+  }
+
   private void copyResult( Trans trans ) {
     Result result = trans.getResult();
     setLinesInput( result.getNrLinesInput() );
@@ -337,7 +400,7 @@ public class MetaInject extends BaseStep implements StepInterface {
   }
 
   private StepInjectionMetaEntry findDetailRootEntry( List<StepInjectionMetaEntry> metadataEntries,
-    StepInjectionMetaEntry entry ) {
+      StepInjectionMetaEntry entry ) {
     for ( StepInjectionMetaEntry rowsEntry : metadataEntries ) {
       for ( StepInjectionMetaEntry rowEntry : rowsEntry.getDetails() ) {
         for ( StepInjectionMetaEntry detailEntry : rowEntry.getDetails() ) {
@@ -350,8 +413,8 @@ public class MetaInject extends BaseStep implements StepInterface {
     return null;
   }
 
-  private SourceStepField findDetailSource( Map<TargetStepAttribute, SourceStepField> targetMap,
-    String targetStep, String key ) {
+  private SourceStepField findDetailSource( Map<TargetStepAttribute, SourceStepField> targetMap, String targetStep,
+      String key ) {
     return targetMap.get( new TargetStepAttribute( targetStep, key, true ) );
   }
 
@@ -368,7 +431,23 @@ public class MetaInject extends BaseStep implements StepInterface {
     return null;
   }
 
-  private void setEntryValue( StepInjectionMetaEntry entry, RowMetaAndData row, SourceStepField source ) throws KettleValueException {
+  /**
+   * package-local visibility for testing purposes
+   */
+  void setEntryValueIfFieldExists( StepInjectionMetaEntry entry, RowMetaAndData row, SourceStepField source )
+      throws KettleValueException {
+    RowMetaInterface rowMeta = row.getRowMeta();
+    if ( rowMeta.indexOfValue( source.getField() ) < 0 ) {
+      return;
+    }
+    setEntryValue( entry, row, source );
+  }
+
+  /**
+   * package-local visibility for testing purposes
+   */
+  static void setEntryValue( StepInjectionMetaEntry entry, RowMetaAndData row, SourceStepField source )
+    throws KettleValueException {
     // A standard attribute, a single row of data...
     //
     Object value = null;
@@ -403,17 +482,27 @@ public class MetaInject extends BaseStep implements StepInterface {
 
     if ( super.init( smi, sdi ) ) {
       try {
-        data.transMeta =
-          MetaInjectMeta.loadTransformationMeta(
-            meta, getTrans().getRepository(), getTrans().getMetaStore(), this );
+        data.transMeta = loadTransformationMeta();
         data.transMeta.copyVariablesFrom( this );
+        data.transMeta.copyParametersFrom( this.getTransMeta() );
 
+        checkSoureStepsAvailability();
+        checkTargetStepsAvailability();
         // Get a mapping between the step name and the injection...
         //
+        // Get new injection info
+        data.stepInjectionMetasMap = new HashMap<String, StepMetaInterface>();
+        for ( StepMeta stepMeta : data.transMeta.getUsedSteps() ) {
+          StepMetaInterface meta = stepMeta.getStepMetaInterface();
+          if ( BeanInjectionInfo.isInjectionSupported( meta.getClass() ) ) {
+            data.stepInjectionMetasMap.put( stepMeta.getName(), meta );
+          }
+        }
+        // Get old injection info
         data.stepInjectionMap = new HashMap<String, StepMetaInjectionInterface>();
         for ( StepMeta stepMeta : data.transMeta.getUsedSteps() ) {
           StepMetaInjectionInterface injectionInterface =
-            stepMeta.getStepMetaInterface().getStepMetaInjectionInterface();
+              stepMeta.getStepMetaInterface().getStepMetaInjectionInterface();
           if ( injectionInterface != null ) {
             data.stepInjectionMap.put( stepMeta.getName(), injectionInterface );
           }
@@ -436,4 +525,110 @@ public class MetaInject extends BaseStep implements StepInterface {
 
     return false;
   }
+
+  private void checkTargetStepsAvailability() {
+    Set<String> existedStepNames = convertToUpperCaseSet( data.transMeta.getStepNames() );
+    Map<TargetStepAttribute, SourceStepField> targetMap = meta.getTargetSourceMapping();
+    Set<TargetStepAttribute> unavailableTargetSteps = getUnavailableTargetSteps( targetMap, data.transMeta );
+    Set<String> alreadyMarkedSteps = new HashSet<String>();
+    for ( TargetStepAttribute currentTarget : unavailableTargetSteps ) {
+      if ( alreadyMarkedSteps.contains( currentTarget.getStepname() ) ) {
+        continue;
+      }
+      alreadyMarkedSteps.add( currentTarget.getStepname() );
+      if ( existedStepNames.contains( currentTarget.getStepname().toUpperCase() ) ) {
+        logError( BaseMessages.getString( PKG, "MetaInject.TargetStepIsNotUsed.Message", currentTarget.getStepname(),
+            data.transMeta.getName() ) );
+      } else {
+        logError( BaseMessages.getString( PKG, "MetaInject.TargetStepIsNotDefined.Message", currentTarget.getStepname(),
+            data.transMeta.getName() ) );
+      }
+    }
+    // alreadyMarked contains wrong steps. Spoon can report error if it will not fail transformation [BACKLOG-6753]
+  }
+
+  public static void removeUnavailableStepsFromMapping( Map<TargetStepAttribute, SourceStepField> targetMap,
+      Set<SourceStepField> unavailableSourceSteps, Set<TargetStepAttribute> unavailableTargetSteps ) {
+    Iterator<Entry<TargetStepAttribute, SourceStepField>> targetMapIterator = targetMap.entrySet().iterator();
+    while ( targetMapIterator.hasNext() ) {
+      Entry<TargetStepAttribute, SourceStepField> entry = targetMapIterator.next();
+      SourceStepField currentSourceStepField = entry.getValue();
+      TargetStepAttribute currentTargetStepAttribute = entry.getKey();
+      if ( unavailableSourceSteps.contains( currentSourceStepField ) || unavailableTargetSteps.contains(
+          currentTargetStepAttribute ) ) {
+        targetMapIterator.remove();
+      }
+    }
+  }
+
+  public static Set<TargetStepAttribute> getUnavailableTargetSteps( Map<TargetStepAttribute, SourceStepField> targetMap,
+      TransMeta injectedTransMeta ) {
+    Set<String> usedStepNames = getUsedStepsForReferencendTransformation( injectedTransMeta );
+    Set<TargetStepAttribute> unavailableTargetSteps = new HashSet<TargetStepAttribute>();
+    for ( TargetStepAttribute currentTarget : targetMap.keySet() ) {
+      if ( !usedStepNames.contains( currentTarget.getStepname().toUpperCase() ) ) {
+        unavailableTargetSteps.add( currentTarget );
+      }
+    }
+    return Collections.unmodifiableSet( unavailableTargetSteps );
+  }
+
+  private static Set<String> getUsedStepsForReferencendTransformation( TransMeta transMeta ) {
+    Set<String> usedStepNames = new HashSet<String>();
+    for ( StepMeta currentStep : transMeta.getUsedSteps() ) {
+      usedStepNames.add( currentStep.getName().toUpperCase() );
+    }
+    return usedStepNames;
+  }
+
+  public static Set<SourceStepField> getUnavailableSourceSteps( Map<TargetStepAttribute, SourceStepField> targetMap,
+      TransMeta sourceTransMeta, StepMeta stepMeta ) {
+    String[] stepNamesArray = sourceTransMeta.getPrevStepNames( stepMeta );
+    Set<String> existedStepNames = convertToUpperCaseSet( stepNamesArray );
+    Set<SourceStepField> unavailableSourceSteps = new HashSet<SourceStepField>();
+    for ( SourceStepField currentSource : targetMap.values() ) {
+      if ( !existedStepNames.contains( currentSource.getStepname().toUpperCase() ) ) {
+        unavailableSourceSteps.add( currentSource );
+      }
+    }
+    return Collections.unmodifiableSet( unavailableSourceSteps );
+  }
+
+  private void checkSoureStepsAvailability() {
+    Map<TargetStepAttribute, SourceStepField> targetMap = meta.getTargetSourceMapping();
+    Set<SourceStepField> unavailableSourceSteps =
+        getUnavailableSourceSteps( targetMap, getTransMeta(), getStepMeta() );
+    Set<String> alreadyMarkedSteps = new HashSet<String>();
+    for ( SourceStepField currentSource : unavailableSourceSteps ) {
+      if ( alreadyMarkedSteps.contains( currentSource.getStepname() ) ) {
+        continue;
+      }
+      alreadyMarkedSteps.add( currentSource.getStepname() );
+      logError( BaseMessages.getString( PKG, "MetaInject.SourceStepIsNotAvailable.Message", currentSource.getStepname(),
+          getTransMeta().getName() ) );
+    }
+    // alreadyMarked contains wrong steps. Spoon can report error if it will not fail transformation [BACKLOG-6753]
+  }
+
+  /**
+   * package-local visibility for testing purposes
+   */
+  static Set<String> convertToUpperCaseSet( String[] array ) {
+    if ( array == null ) {
+      return Collections.emptySet();
+    }
+    Set<String> strings = new HashSet<String>();
+    for ( String currentString : array ) {
+      strings.add( currentString.toUpperCase() );
+    }
+    return strings;
+  }
+
+  /**
+   * package-local visibility for testing purposes
+   */
+  TransMeta loadTransformationMeta() throws KettleException {
+    return MetaInjectMeta.loadTransformationMeta( meta, getTrans().getRepository(), getTrans().getMetaStore(), this );
+  }
+
 }

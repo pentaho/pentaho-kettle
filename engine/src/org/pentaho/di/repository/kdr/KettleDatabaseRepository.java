@@ -101,7 +101,7 @@ import org.pentaho.di.trans.TransMeta;
  *
  */
 public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
-  // private static Class<?> PKG = Repository.class; // for i18n purposes, needed by Translator2!! 
+  // private static Class<?> PKG = Repository.class; // for i18n purposes, needed by Translator2!!
 
   public KettleDatabaseRepositoryTransDelegate transDelegate;
   public KettleDatabaseRepositoryJobDelegate jobDelegate;
@@ -293,7 +293,7 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
 
   public ObjectId renameTransformation( ObjectId id_transformation, RepositoryDirectoryInterface newDir,
       String newName ) throws KettleException {
-    return renameTransformation(id_transformation, null, newDir, newName );
+    return renameTransformation( id_transformation, null, newDir, newName );
   }
 
   public synchronized ObjectId renameTransformation( ObjectId id_transformation, String versionComment,
@@ -341,7 +341,7 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
 
   public ObjectId renameJob( ObjectId id_job, RepositoryDirectoryInterface dir, String newname )
     throws KettleException {
-    return renameJob(id_job, null, dir, newname );
+    return renameJob( id_job, null, dir, newname );
   }
 
   public synchronized ObjectId renameJob( ObjectId id_job, String versionComment, RepositoryDirectoryInterface dir,
@@ -1373,7 +1373,7 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
         + quote( KettleDatabaseRepository.FIELD_TRANS_SLAVE_ID_SLAVE ) + " = ? ", id_slave );
       commit();
     } else {
-      StringBuffer message = new StringBuffer();
+      StringBuilder message = new StringBuilder( 100 );
 
       if ( transList.length > 0 ) {
         message.append( "Slave used by the following transformations:" ).append( Const.CR );

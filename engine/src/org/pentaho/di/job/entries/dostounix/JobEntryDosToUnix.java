@@ -26,9 +26,14 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import com.google.common.annotations.VisibleForTesting;
 
 import org.apache.commons.vfs2.AllFileSelector;
 import org.apache.commons.vfs2.FileObject;
@@ -128,13 +133,26 @@ public class JobEntryDosToUnix extends JobEntryBase implements Cloneable, JobEnt
     this( "" );
   }
 
+  public void allocate( int nrFields ) {
+    source_filefolder = new String[nrFields];
+    wildcard = new String[nrFields];
+    conversionTypes = new int[nrFields];
+  }
+
   public Object clone() {
     JobEntryDosToUnix je = (JobEntryDosToUnix) super.clone();
+    if ( source_filefolder != null ) {
+      int nrFields = source_filefolder.length;
+      je.allocate( nrFields );
+      System.arraycopy( source_filefolder, 0, je.source_filefolder, 0, nrFields );
+      System.arraycopy( wildcard, 0, je.wildcard, 0, nrFields );
+      System.arraycopy( conversionTypes, 0, je.conversionTypes, 0, nrFields );
+    }
     return je;
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 300 );
+    StringBuilder retval = new StringBuilder( 300 );
 
     retval.append( super.getXML() );
     retval.append( "      " ).append( XMLHandler.addTagValue( "arg_from_previous", arg_from_previous ) );
@@ -216,9 +234,7 @@ public class JobEntryDosToUnix extends JobEntryBase implements Cloneable, JobEnt
 
       // How many field arguments?
       int nrFields = XMLHandler.countNodes( fields, "field" );
-      source_filefolder = new String[nrFields];
-      wildcard = new String[nrFields];
-      conversionTypes = new int[nrFields];
+      allocate( nrFields );
 
       // Read them all...
       for ( int i = 0; i < nrFields; i++ ) {
@@ -248,9 +264,8 @@ public class JobEntryDosToUnix extends JobEntryBase implements Cloneable, JobEnt
 
       // How many arguments?
       int argnr = rep.countNrJobEntryAttributes( id_jobentry, "source_filefolder" );
-      source_filefolder = new String[argnr];
-      wildcard = new String[argnr];
-      conversionTypes = new int[argnr];
+      allocate( argnr );
+
       // Read them all...
       for ( int a = 0; a < argnr; a++ ) {
         source_filefolder[a] = rep.getJobEntryAttributeString( id_jobentry, a, "source_filefolder" );
@@ -318,8 +333,8 @@ public class JobEntryDosToUnix extends JobEntryBase implements Cloneable, JobEnt
       }
 
     }
-    if ( arg_from_previous && rows != null ) // Copy the input row to the (command line) arguments
-    {
+    if ( arg_from_previous && rows != null ) {
+      // Copy the input row to the (command line) arguments
       for ( int iteration = 0; iteration < rows.size() && !parentJob.isStopped(); iteration++ ) {
         if ( successConditionBroken ) {
           if ( !successConditionBrokenExit ) {
@@ -461,7 +476,8 @@ public class JobEntryDosToUnix extends JobEntryBase implements Cloneable, JobEnt
     }
   }
 
-  private boolean convert( FileObject file, boolean toUnix ) {
+  @VisibleForTesting
+  boolean convert( FileObject file, boolean toUnix ) {
     boolean retval = false;
     // CR = CR
     // LF = LF
@@ -482,51 +498,27 @@ public class JobEntryDosToUnix extends JobEntryBase implements Cloneable, JobEnt
       if ( isDebug() ) {
         logDebug( BaseMessages.getString( PKG, "JobDosToUnix.Log.CreatingTempFile", tempFile.getAbsolutePath() ) );
       }
-      FileOutputStream out = new FileOutputStream( tempFile );
-      FileInputStream in = new FileInputStream( localfilename );
 
-      if ( toUnix ) {
-        // Dos to Unix
-        while ( in.available() > 0 ) {
-          int b1 = in.read();
-          if ( b1 == CR ) {
-            int b2 = in.read();
-            if ( b2 == LF ) {
-              out.write( LF );
-            } else {
-              out.write( b1 );
-              out.write( b2 );
-            }
-          } else {
-            out.write( b1 );
-          }
-        }
-      } else {
-        // Unix to Dos
-        while ( in.available() > 0 ) {
-          int b1 = in.read();
-          if ( b1 == LF ) {
-            out.write( CR );
-            out.write( LF );
-          } else {
-            out.write( b1 );
-          }
+      final int FOUR_KB = 4 * 1024;
+      byte[] buffer = new byte[ FOUR_KB ];
+      try ( FileOutputStream out = new FileOutputStream( tempFile );
+            FileInputStream in = new FileInputStream( localfilename ) ) {
+
+        ConversionAutomata automata = new ConversionAutomata( out, toUnix );
+        int read;
+        while ( ( read = in.read( buffer ) ) > 0 ) {
+          automata.convert( buffer, read );
         }
       }
-
-      in.close();
-      out.close();
 
       if ( isDebug() ) {
         logDebug( BaseMessages.getString( PKG, "JobDosToUnix.Log.DeletingSourceFile", localfilename ) );
       }
-      file.delete();
       if ( isDebug() ) {
         logDebug( BaseMessages.getString(
           PKG, "JobDosToUnix.Log.RenamingTempFile", tempFile.getAbsolutePath(), source.getAbsolutePath() ) );
       }
-      tempFile.renameTo( source );
-
+      Files.move( tempFile.toPath(), source.toPath(), StandardCopyOption.REPLACE_EXISTING );
       retval = true;
 
     } catch ( Exception e ) {
@@ -796,4 +788,103 @@ public class JobEntryDosToUnix extends JobEntryBase implements Cloneable, JobEnt
     return true;
   }
 
+  private static class ConversionAutomata {
+
+    private final OutputStream os;
+    private final boolean toUnix;
+    private byte state;
+
+    ConversionAutomata( OutputStream os, boolean toUnix ) {
+      this.os = os;
+      this.toUnix = toUnix;
+      this.state = 0;
+    }
+
+    void convert( byte[] input, int amount ) throws IOException {
+      if ( toUnix ) {
+        toUnix( input, amount );
+      } else {
+        toDos( input, amount );
+      }
+    }
+
+    private void toUnix( byte[] input, int amount ) throws IOException {
+      // [0]:
+      //     read CR -> goto [1];
+      //     read __ -> write __;
+      // [1]:
+      //     read LF -> write LF;           goto [0];
+      //     read CR -> write CR;                    // two CRs in a row -- write the first and hold the second
+      //     read __ -> write CR; write __; goto [0];
+
+      int index = 0;
+      while ( index < amount ) {
+        int b = input[ index++ ];
+        switch ( state ) {
+          case 0:
+            if ( b == CR ) {
+              state = 1;
+            } else {
+              os.write( b );
+            }
+            break;
+          case 1:
+            if ( b == LF ) {
+              os.write( LF );
+              state = 0;
+            } else {
+              os.write( CR );
+              if ( b != CR ) {
+                os.write( b );
+                state = 0;
+              }
+            }
+            break;
+          default:
+            throw unknownStateException();
+        }
+      }
+    }
+
+    private void toDos( byte[] input, int amount ) throws IOException {
+      // [0]:
+      //     read CR -> goto [1];
+      //     read LF -> write CR; write LF;
+      //     read __ -> write __;
+      // [1]:
+      //     read LF -> write CR; write LF; goto [0]; // read CR,LF -> write them
+      //     read CR -> write CR;
+      //     read __ -> write CR; write __; goto [0];
+
+      int index = 0;
+      while ( index < amount ) {
+        int b = input[ index++ ];
+        switch ( state ) {
+          case 0:
+            if ( b == CR ) {
+              state = 1;
+            } else if ( b == LF ) {
+              os.write( CR );
+              os.write( LF );
+            } else {
+              os.write( b );
+            }
+            break;
+          case 1:
+            os.write( CR );
+            if ( b != CR ) {
+              os.write( b );
+              state = 0;
+            }
+            break;
+          default:
+            throw unknownStateException();
+        }
+      }
+    }
+
+    private IllegalStateException unknownStateException() {
+      return new IllegalStateException( "Unknown state: " + state );
+    }
+  }
 }

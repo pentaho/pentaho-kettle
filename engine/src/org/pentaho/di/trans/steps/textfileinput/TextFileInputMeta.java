@@ -928,19 +928,17 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
   public Object clone() {
     TextFileInputMeta retval = (TextFileInputMeta) super.clone();
 
-    int nrfiles = fileName.length;
+    int nrFiles = fileName.length;
     int nrfields = inputFields.length;
     int nrfilters = filter.length;
 
-    retval.allocate( nrfiles, nrfields, nrfilters );
+    retval.allocate( nrFiles, nrfields, nrfilters );
 
-    for ( int i = 0; i < nrfiles; i++ ) {
-      retval.fileName[i] = fileName[i];
-      retval.fileMask[i] = fileMask[i];
-      retval.excludeFileMask[i] = excludeFileMask[i];
-      retval.fileRequired[i] = fileRequired[i];
-      retval.includeSubFolders[i] = includeSubFolders[i];
-    }
+    System.arraycopy( fileName, 0, retval.fileName, 0, nrFiles );
+    System.arraycopy( fileMask, 0, retval.fileMask, 0, nrFiles );
+    System.arraycopy( excludeFileMask, 0, retval.excludeFileMask, 0, nrFiles );
+    System.arraycopy( fileRequired, 0, retval.fileRequired, 0, nrFiles );
+    System.arraycopy( includeSubFolders, 0, retval.includeSubFolders, 0, nrFiles );
 
     for ( int i = 0; i < nrfields; i++ ) {
       retval.inputFields[i] = (TextFileInputField) inputFields[i].clone();
@@ -1180,7 +1178,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 1500 );
+    StringBuilder retval = new StringBuilder( 1500 );
 
     retval.append( "    " ).append( XMLHandler.addTagValue( "accept_filenames", acceptingFilenames ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "passing_through_fields", passingThruFields ) );
@@ -2053,7 +2051,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
     return XMLHandler.getNodeValue( filenamenode );
   }
 
-  protected void saveSource( StringBuffer retVal, String source ) {
+  protected void saveSource( StringBuilder retVal, String source ) {
     retVal.append( "      " ).append( XMLHandler.addTagValue( "name", source ) );
   }
 

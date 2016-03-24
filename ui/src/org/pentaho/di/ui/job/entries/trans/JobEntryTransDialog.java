@@ -1176,6 +1176,7 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
           saved = spoon.saveToRepository( newTransMeta, false );
           if ( rep.getRepositoryMeta().getRepositoryCapabilities().supportsReferences() ) {
             specificationMethod = ObjectLocationSpecificationMethod.REPOSITORY_BY_REFERENCE;
+            referenceObjectId = newTransMeta.getObjectId();
           } else {
             specificationMethod = ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME;
           }
@@ -1188,7 +1189,7 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
       }
       if ( saved ) {
         setRadioButtons();
-        switch( specificationMethod ) {
+        switch ( specificationMethod ) {
           case FILENAME:
             wFilename.setText( Const.NVL( newTransMeta.getFilename(), "" ) );
             break;
@@ -1410,7 +1411,7 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
     wName.setText( Const.NVL( jobEntry.getName(), "" ) );
 
     specificationMethod = jobEntry.getSpecificationMethod();
-    switch( specificationMethod ) {
+    switch ( specificationMethod ) {
       case FILENAME:
         wFilename.setText( Const.NVL( jobEntry.getFilename(), "" ) );
         break;
@@ -1516,7 +1517,7 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
   private void getInfo( JobEntryTrans jet ) throws KettleException {
     jet.setName( wName.getText() );
     jet.setSpecificationMethod( specificationMethod );
-    switch( specificationMethod ) {
+    switch ( specificationMethod ) {
       case FILENAME:
         jet.setFileName( wFilename.getText() );
         if ( jet.getFilename().isEmpty() ) {

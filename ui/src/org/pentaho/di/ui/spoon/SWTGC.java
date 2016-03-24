@@ -436,7 +436,7 @@ public class SWTGC implements GCInterface {
     }
     if ( jobEntryCopy.isMissing() ) {
       swtImage = GUIResource.getInstance().getSwtImageMissing();
-    } 
+    }
     if ( image == null ) {
       return;
     }
@@ -449,7 +449,7 @@ public class SWTGC implements GCInterface {
 
   @Override
   public void drawJobEntryIcon( int x, int y, JobEntryCopy jobEntryCopy ) {
-    drawJobEntryIcon( x, y , jobEntryCopy, currentMagnification );
+    drawJobEntryIcon( x, y, jobEntryCopy, currentMagnification );
   }
 
   @Override

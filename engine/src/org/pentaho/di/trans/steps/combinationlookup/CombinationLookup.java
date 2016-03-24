@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -34,7 +34,6 @@ import java.util.List;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.Database;
-import org.pentaho.di.core.database.DatabaseInterface;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleConfigException;
 import org.pentaho.di.core.exception.KettleDatabaseException;
@@ -43,8 +42,9 @@ import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaDate;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -243,7 +243,7 @@ public class CombinationLookup extends BaseStep implements StepInterface {
       lookupIndex++;
 
       if ( meta.getDatabaseMeta().requiresCastToVariousForIsNull()
-          && rowMeta.getValueMeta( rowIndex ).getType() == ValueMeta.TYPE_STRING ) {
+          && rowMeta.getValueMeta( rowIndex ).getType() == ValueMetaInterface.TYPE_STRING ) {
         lookupRow[lookupIndex] = rowMeta.getValueMeta( rowIndex ).isNull( row[rowIndex] ) ? null : "NotNull"; // KEYi IS
                                                                                                               // NULL or
                                                                                                               // ? IS
@@ -261,8 +261,7 @@ public class CombinationLookup extends BaseStep implements StepInterface {
       Object[] add = data.db.getLookup( data.prepStatementLookup );
       incrementLinesInput();
 
-      if ( add == null ) // The dimension entry was not found, we need to add it!
-      {
+      if ( add == null ) { // The dimension entry was not found, we need to add it!
         // First try to use an AUTOINCREMENT field
         switch ( getTechKeyCreation() ) {
           case CREATION_METHOD_TABLEMAX:
@@ -437,7 +436,7 @@ public class CombinationLookup extends BaseStep implements StepInterface {
     if ( meta.useHash() ) {
       sql += databaseMeta.quoteField( meta.getHashField() ) + " = ? " + Const.CR;
       comma = true;
-      data.lookupRowMeta.addValueMeta( new ValueMeta( meta.getHashField(), ValueMetaInterface.TYPE_INTEGER ) );
+      data.lookupRowMeta.addValueMeta( new ValueMetaInteger( meta.getHashField() ) );
     } else {
       sql += "( ( ";
     }
@@ -487,8 +486,7 @@ public class CombinationLookup extends BaseStep implements StepInterface {
     String debug = "Combination insert";
     DatabaseMeta databaseMeta = meta.getDatabaseMeta();
     try {
-      if ( data.prepStatementInsert == null ) // first time: construct prepared statement
-      {
+      if ( data.prepStatementInsert == null ) { // first time: construct prepared statement
         debug = "First: construct prepared statement";
 
         data.insertRowMeta = new RowMeta();
@@ -506,13 +504,11 @@ public class CombinationLookup extends BaseStep implements StepInterface {
         if ( !isAutoIncrement() ) {
           // NO AUTOINCREMENT
           sql += databaseMeta.quoteField( meta.getTechnicalKeyField() );
-          data.insertRowMeta.addValueMeta( new ValueMeta(
-              meta.getTechnicalKeyField(), ValueMetaInterface.TYPE_INTEGER ) );
+          data.insertRowMeta.addValueMeta( new ValueMetaInteger( meta.getTechnicalKeyField() ) );
           comma = true;
         } else if ( databaseMeta.needsPlaceHolder() ) {
           sql += "0"; // placeholder on informix! Will be replaced in table by real autoinc value.
-          data.insertRowMeta.addValueMeta( new ValueMeta(
-              meta.getTechnicalKeyField(), ValueMetaInterface.TYPE_INTEGER ) );
+          data.insertRowMeta.addValueMeta( new ValueMetaInteger( meta.getTechnicalKeyField() ) );
           comma = true;
         }
 
@@ -521,7 +517,7 @@ public class CombinationLookup extends BaseStep implements StepInterface {
             sql += ", ";
           }
           sql += databaseMeta.quoteField( meta.getHashField() );
-          data.insertRowMeta.addValueMeta( new ValueMeta( meta.getHashField(), ValueMetaInterface.TYPE_INTEGER ) );
+          data.insertRowMeta.addValueMeta( new ValueMetaInteger( meta.getHashField() ) );
           comma = true;
         }
 
@@ -531,7 +527,7 @@ public class CombinationLookup extends BaseStep implements StepInterface {
           }
           sql += databaseMeta.quoteField( meta.getLastUpdateField() );
           data.insertRowMeta
-            .addValueMeta( new ValueMeta( meta.getLastUpdateField(), ValueMetaInterface.TYPE_DATE ) );
+            .addValueMeta( new ValueMetaDate( meta.getLastUpdateField() ) );
           comma = true;
         }
 
@@ -754,21 +750,21 @@ public class CombinationLookup extends BaseStep implements StepInterface {
       List<Object[]> cacheValues;
 
       /* build SQl Statement to preload cache
-       * 
-           * SELECT 
-           * min(<retval>) as <retval>, 
-           * key1, 
-           * key2, 
-           * key3  
-           * FROM   <table> 
-           * 
+       *
+           * SELECT
+           * min(<retval>) as <retval>,
+           * key1,
+           * key2,
+           * key3
+           * FROM   <table>
+           *
            * GROUP BY key1,
            * key2,
            * key3;
-           * 
+           *
            */
 
-      // Build a string representation of the lookupKeys 
+      // Build a string representation of the lookupKeys
       for ( int i = 0; i < meta.getKeyLookup().length; i++ ) {
         lookupKeys += databaseMeta.quoteField( meta.getKeyLookup()[i] );
 
@@ -796,7 +792,7 @@ public class CombinationLookup extends BaseStep implements StepInterface {
         Object[] hashRow = new Object[data.hashRowMeta.size()];
         // Assumes the technical key is at position 0 !!
         System.arraycopy( cacheRow, 1, hashRow, 0, hashRow.length );
-        // Potential Cache Overflow is ahndled inside 
+        // Potential Cache Overflow is ahndled inside
         addToCache( hashRowMeta, hashRow, (Long) cacheRow[0] );
         incrementLinesInput();
       }

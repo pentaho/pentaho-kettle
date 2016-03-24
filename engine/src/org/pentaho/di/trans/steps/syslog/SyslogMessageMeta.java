@@ -199,7 +199,7 @@ public class SyslogMessageMeta extends BaseStepMeta implements StepMetaInterface
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer();
+    StringBuilder retval = new StringBuilder();
 
     retval.append( "    " + XMLHandler.addTagValue( "messagefieldname", messagefieldname ) );
     retval.append( "    " + XMLHandler.addTagValue( "port", port ) );

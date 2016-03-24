@@ -58,7 +58,7 @@ public class WebResult {
   }
 
   public String getXML() {
-    StringBuffer xml = new StringBuffer();
+    StringBuilder xml = new StringBuilder();
 
     xml.append( "<" + XML_TAG + ">" ).append( Const.CR );
 

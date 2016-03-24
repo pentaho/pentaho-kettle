@@ -94,7 +94,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
     BaseMessages.getString( PKG, "DimensionLookupMeta.TypeDesc.LastVersion" ), };
 
   public static final String[] typeCodes = { // for saving to the repository
-      "Insert", "Update", "Punch through", "DateInsertedOrUpdated", "DateInserted", "DateUpdated", "LastVersion", };
+    "Insert", "Update", "Punch through", "DateInsertedOrUpdated", "DateInserted", "DateUpdated", "LastVersion", };
 
   public static final String[] typeDescLookup = ValueMeta.getTypes();
 
@@ -105,10 +105,10 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
   public static final int START_DATE_ALTERNATIVE_COLUMN_VALUE = 4;
 
   private static final String[] startDateAlternativeCodes = { "none",
-      "sysdate",
-      "trans_start",
-      "null",
-      "column_value",
+    "sysdate",
+    "trans_start",
+    "null",
+    "column_value",
   };
 
   private static final String[] startDateAlternativeDescs = {
@@ -531,16 +531,12 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 
     retval.allocate( nrkeys, nrfields );
 
-    for ( int i = 0; i < nrkeys; i++ ) {
-      retval.keyStream[i] = keyStream[i];
-      retval.keyLookup[i] = keyLookup[i];
-    }
+    System.arraycopy( keyStream, 0, retval.keyStream, 0, nrkeys );
+    System.arraycopy( keyLookup, 0, retval.keyLookup, 0, nrkeys );
 
-    for ( int i = 0; i < nrfields; i++ ) {
-      retval.fieldStream[i] = fieldStream[i];
-      retval.fieldLookup[i] = fieldLookup[i];
-      retval.fieldUpdate[i] = fieldUpdate[i];
-    }
+    System.arraycopy( fieldStream, 0, retval.fieldStream, 0, nrfields );
+    System.arraycopy( fieldLookup, 0, retval.fieldLookup, 0, nrfields );
+    System.arraycopy( fieldUpdate, 0, retval.fieldUpdate, 0, nrfields );
 
     return retval;
   }
@@ -759,7 +755,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 512 );
+    StringBuilder retval = new StringBuilder( 512 );
 
     retval.append( "      " ).append( XMLHandler.addTagValue( "schema", schemaName ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "table", tableName ) );

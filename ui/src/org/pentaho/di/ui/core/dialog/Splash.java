@@ -31,6 +31,7 @@ import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
@@ -57,7 +58,7 @@ import org.pentaho.di.version.BuildVersion;
 
 /**
  * Displays the Kettle splash screen
- * 
+ *
  * @author Matt
  * @since 14-mrt-2005
  */
@@ -112,9 +113,6 @@ public class Splash {
 
     splash.addPaintListener( new PaintListener() {
       public void paintControl( PaintEvent e ) {
-        String fullVersionText =
-            BaseMessages.getString( PKG, "SplashDialog.Version" ) + " " + BuildVersion.getInstance().getVersion();
-
         StringBuilder sb = new StringBuilder();
         String line = null;
 
@@ -134,18 +132,13 @@ public class Splash {
         String licenseText = String.format( sb.toString(), cal );
         e.gc.drawImage( kettle_image, 0, 0 );
 
-        // If this is a Milestone or RC release, warn the user
-        if ( Const.RELEASE.equals( Const.ReleaseType.MILESTONE ) ) {
-          fullVersionText = BaseMessages.getString( PKG, "SplashDialog.DeveloperRelease" ) + " - " + fullVersionText;
-          drawVersionWarning( e );
-        } else if ( Const.RELEASE.equals( Const.ReleaseType.RELEASE_CANDIDATE ) ) {
-          fullVersionText = BaseMessages.getString( PKG, "SplashDialog.ReleaseCandidate" ) + " - " + fullVersionText;
-        } else if ( Const.RELEASE.equals( Const.ReleaseType.PREVIEW ) ) {
-          fullVersionText = BaseMessages.getString( PKG, "SplashDialog.PreviewRelease" ) + " - " + fullVersionText;
-        } else if ( Const.RELEASE.equals( Const.ReleaseType.GA ) ) {
-          fullVersionText = BaseMessages.getString( PKG, "SplashDialog.GA" ) + " - " + fullVersionText;
+        String fullVersionText =  BaseMessages.getString( PKG, "SplashDialog.Version" );
+        String buildVersion = BuildVersion.getInstance().getVersion();
+        if ( StringUtils.ordinalIndexOf( buildVersion, ".", 2 ) > 0 ) {
+          fullVersionText =  fullVersionText + " "  + buildVersion.substring( 0, StringUtils.ordinalIndexOf( buildVersion, ".", 2 ) );
+        } else {
+          fullVersionText =  fullVersionText + " "  + buildVersion;
         }
-
         e.gc.setFont( verFont );
         e.gc.drawText( fullVersionText, 290, 205, true );
 
@@ -153,7 +146,7 @@ public class Splash {
         String outputStringDate = "";
         SimpleDateFormat inputFormat = null;
         SimpleDateFormat outputFormat = null;
-    
+
         if ( inputStringDate.matches( "^\\d{4}/\\d{1,2}/\\d{1,2}\\s\\d{1,2}:\\d{2}:\\d{2}.\\d{3}$" ) ) {
           inputFormat = new SimpleDateFormat( "yyyy/MM/dd hh:mm:ss.SSS" );
         }
@@ -175,8 +168,8 @@ public class Splash {
         } catch ( ParseException pe ) {
           // Just show date in origin format
           outputStringDate = inputStringDate;
-        }        
-        
+        }
+
         // try using the desired font size for the license text
         e.gc.setFont( licFont );
 
@@ -192,10 +185,20 @@ public class Splash {
 
         e.gc.drawText( licenseText, 290, 275, true );
 
-        // use the same font/size as the license text
-        String version = BaseMessages.getString( PKG, "SplashDialog.BuildVersion" ) + " " + 
-            BuildVersion.getInstance().getVersion();
+        String version =  buildVersion;
+        // If this is a Milestone or RC release, warn the user
+        if ( Const.RELEASE.equals( Const.ReleaseType.MILESTONE ) ) {
+          version = BaseMessages.getString( PKG, "SplashDialog.DeveloperRelease" ) + " - " + version;
+          drawVersionWarning( e );
+        } else if ( Const.RELEASE.equals( Const.ReleaseType.RELEASE_CANDIDATE ) ) {
+          version = BaseMessages.getString( PKG, "SplashDialog.ReleaseCandidate" ) + " - " + version;
+        } else if ( Const.RELEASE.equals( Const.ReleaseType.PREVIEW ) ) {
+          version = BaseMessages.getString( PKG, "SplashDialog.PreviewRelease" ) + " - " + version;
+        } else if ( Const.RELEASE.equals( Const.ReleaseType.GA ) ) {
+          version = BaseMessages.getString( PKG, "SplashDialog.GA" ) + " - " + version;
+        }
         String buildDate = BaseMessages.getString( PKG, "SplashDialog.BuildDate" ) + " " + outputStringDate;
+        // use the same font/size as the license text
         e.gc.drawText( version, 290, 235, true );
         e.gc.drawText( buildDate, 290, 250, true );
       }

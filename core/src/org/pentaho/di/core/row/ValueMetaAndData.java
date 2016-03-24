@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -28,6 +28,14 @@ import java.util.Date;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.value.ValueMetaBase;
+import org.pentaho.di.core.row.value.ValueMetaBigNumber;
+import org.pentaho.di.core.row.value.ValueMetaBinary;
+import org.pentaho.di.core.row.value.ValueMetaBoolean;
+import org.pentaho.di.core.row.value.ValueMetaDate;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
+import org.pentaho.di.core.row.value.ValueMetaNumber;
+import org.pentaho.di.core.row.value.ValueMetaSerializable;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.w3c.dom.Node;
 
@@ -52,21 +60,21 @@ public class ValueMetaAndData {
   public ValueMetaAndData( String valueName, Object valueData ) throws KettleValueException {
     this.valueData = valueData;
     if ( valueData instanceof String ) {
-      this.valueMeta = new ValueMeta( valueName, ValueMetaInterface.TYPE_STRING );
+      this.valueMeta = new ValueMetaString( valueName );
     } else if ( valueData instanceof Double ) {
-      this.valueMeta = new ValueMeta( valueName, ValueMetaInterface.TYPE_NUMBER );
+      this.valueMeta = new ValueMetaNumber( valueName );
     } else if ( valueData instanceof Long ) {
-      this.valueMeta = new ValueMeta( valueName, ValueMetaInterface.TYPE_INTEGER );
+      this.valueMeta = new ValueMetaInteger( valueName );
     } else if ( valueData instanceof Date ) {
-      this.valueMeta = new ValueMeta( valueName, ValueMetaInterface.TYPE_DATE );
+      this.valueMeta = new ValueMetaDate( valueName, ValueMetaInterface.TYPE_DATE );
     } else if ( valueData instanceof BigDecimal ) {
-      this.valueMeta = new ValueMeta( valueName, ValueMetaInterface.TYPE_BIGNUMBER );
+      this.valueMeta = new ValueMetaBigNumber( valueName );
     } else if ( valueData instanceof Boolean ) {
-      this.valueMeta = new ValueMeta( valueName, ValueMetaInterface.TYPE_BOOLEAN );
+      this.valueMeta = new ValueMetaBoolean( valueName );
     } else if ( valueData instanceof byte[] ) {
-      this.valueMeta = new ValueMeta( valueName, ValueMetaInterface.TYPE_BINARY );
+      this.valueMeta = new ValueMetaBinary( valueName );
     } else {
-      this.valueMeta = new ValueMeta( valueName, ValueMetaInterface.TYPE_SERIALIZABLE );
+      this.valueMeta = new ValueMetaSerializable( valueName );
     }
   }
 
@@ -111,7 +119,7 @@ public class ValueMetaAndData {
     meta.setGroupingSymbol( null );
     meta.setCurrencySymbol( null );
 
-    StringBuffer retval = new StringBuffer( 128 );
+    StringBuilder retval = new StringBuilder( 128 );
     retval.append( "<" + XML_TAG + ">" );
     retval.append( XMLHandler.addTagValue( "name", meta.getName(), false ) );
     retval.append( XMLHandler.addTagValue( "type", meta.getTypeDesc(), false ) );
@@ -169,7 +177,7 @@ public class ValueMetaAndData {
       }
 
       if ( valtype != ValueMetaInterface.TYPE_STRING ) {
-        ValueMetaInterface originMeta = new ValueMeta( valname, ValueMetaInterface.TYPE_STRING );
+        ValueMetaInterface originMeta = new ValueMetaString( valname );
         if ( valueMeta.isNumeric() ) {
           originMeta.setDecimalSymbol( "." );
           originMeta.setGroupingSymbol( null );

@@ -99,7 +99,7 @@ public class JobLogTable extends BaseLogTable implements Cloneable, LogTableInte
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer();
+    StringBuilder retval = new StringBuilder();
 
     retval.append( XMLHandler.openTag( XML_TAG ) );
     retval.append( XMLHandler.addTagValue( "connection", connectionName ) );
@@ -446,5 +446,13 @@ public class JobLogTable extends BaseLogTable implements Cloneable, LogTableInte
     indexes.add( lookupIndex );
 
     return indexes;
+  }
+
+  @Override
+  public void setAllGlobalParametersToNull() {
+    super.setAllGlobalParametersToNull();
+
+    logInterval = isGlobalParameter( logInterval ) ? null : logInterval;
+    logSizeLimit = isGlobalParameter( logSizeLimit ) ? null : logSizeLimit;
   }
 }

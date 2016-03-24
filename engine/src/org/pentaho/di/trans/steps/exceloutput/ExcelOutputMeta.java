@@ -35,6 +35,9 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.injection.Injection;
+import org.pentaho.di.core.injection.InjectionDeep;
+import org.pentaho.di.core.injection.InjectionSupported;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
@@ -51,7 +54,6 @@ import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.step.StepMetaInjectionInterface;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
@@ -62,7 +64,7 @@ import org.w3c.dom.Node;
  * @author Matt
  * @since on 6-sep-2006
  */
-
+@InjectionSupported( localizationPrefix = "ExcelOutput.Injection.", groups = { "FIELDS", "CUSTOM", "CONTENT" } )
 public class ExcelOutputMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = ExcelOutputMeta.class; // for i18n purposes, needed by Translator2!!
 
@@ -242,101 +244,138 @@ public class ExcelOutputMeta extends BaseStepMeta implements StepMetaInterface {
   public static final int DEFAULT_ROW_WIDTH = 255;
 
   private int header_font_name;
+  @Injection( name = "HEADER_FONT_SIZE", group = "CUSTOM" )
   private String header_font_size;
+  @Injection( name = "HEADER_FONT_BOLD", group = "CUSTOM" )
   private boolean header_font_bold;
+  @Injection( name = "HEADER_FONT_ITALIC", group = "CUSTOM" )
   private boolean header_font_italic;
   private int header_font_underline;
   private int header_font_orientation;
+  @Injection( name = "HEADER_FONT_COLOR", group = "CUSTOM" )
   private int header_font_color;
+  @Injection( name = "HEADER_BACKGROUND_COLOR", group = "CUSTOM" )
   private int header_background_color;
+  @Injection( name = "HEADER_ROW_HEIGHT", group = "CUSTOM" )
   private String header_row_height;
   private int header_alignment;
+  @Injection( name = "HEADER_IMAGE", group = "CUSTOM" )
   private String header_image;
   // Row font
   private int row_font_name;
+  @Injection( name = "ROW_FONT_SIZE", group = "CUSTOM" )
   private String row_font_size;
+  @Injection( name = "ROW_FONT_COLOR", group = "CUSTOM" )
   private int row_font_color;
+  @Injection( name = "ROW_BACKGROUND_COLOR", group = "CUSTOM" )
   private int row_background_color;
 
   /** The base name of the output file */
+  @Injection( name = "FILENAME" )
   private String fileName;
 
   /** The file extention in case of a generated filename */
+  @Injection( name = "EXTENSION" )
   private String extension;
 
   /** The password to protect the sheet */
+  @Injection( name = "PASSWORD", group = "CONTENT" )
   private String password;
 
   /** Add a header at the top of the file? */
+  @Injection( name = "HEADER_ENABLED", group = "CONTENT" )
   private boolean headerEnabled;
 
   /** Add a footer at the bottom of the file? */
+  @Injection( name = "FOOTER_ENABLED", group = "CONTENT" )
   private boolean footerEnabled;
 
   /** if this value is larger then 0, the text file is split up into parts of this number of lines */
+  @Injection( name = "SPLIT_EVERY", group = "CONTENT" )
   private int splitEvery;
 
   /** Flag: add the stepnr in the filename */
+  @Injection( name = "STEP_NR_IN_FILENAME" )
   private boolean stepNrInFilename;
 
   /** Flag: add the date in the filename */
+  @Injection( name = "DATE_IN_FILENAME" )
   private boolean dateInFilename;
 
   /** Flag: add the filenames to result filenames */
+  @Injection( name = "FILENAME_TO_RESULT" )
   private boolean addToResultFilenames;
 
   /** Flag: protect the sheet */
+  @Injection( name = "PROTECT", group = "CONTENT" )
   private boolean protectsheet;
 
   /** Flag: add the time in the filename */
+  @Injection( name = "TIME_IN_FILENAME" )
   private boolean timeInFilename;
 
   /** Flag: use a template */
+  @Injection( name = "TEMPLATE", group = "CONTENT" )
   private boolean templateEnabled;
 
   /** the excel template */
+  @Injection( name = "TEMPLATE_FILENAME", group = "CONTENT" )
   private String templateFileName;
 
   /** Flag: append when template */
+  @Injection( name = "TEMPLATE_APPEND", group = "CONTENT" )
   private boolean templateAppend;
 
   /** the excel sheet name */
+  @Injection( name = "SHEET_NAME", group = "CONTENT" )
   private String sheetname;
 
   /** Flag : use temporary files while writing? */
+  @Injection( name = "USE_TEMPFILES", group = "CONTENT" )
   private boolean usetempfiles;
 
   /** Temporary directory **/
+  @Injection( name = "TEMPDIR", group = "CONTENT" )
   private String tempdirectory;
 
   /* THE FIELD SPECIFICATIONS ... */
 
   /** The output fields */
+  @InjectionDeep
   private ExcelField[] outputFields;
 
   /** The encoding to use for reading: null or empty string means system default encoding */
+  @Injection( name = "ENCODING", group = "CONTENT" )
   private String encoding;
 
   /** Calculated value ... */
+  @Injection( name = "NEWLINE", group = "CONTENT" )
   private String newline;
 
   /** Flag : append workbook? */
+  @Injection( name = "APPEND", group = "CONTENT" )
   private boolean append;
 
   /** Flag : Do not open new file when transformation start */
+  @Injection( name = "DONT_OPEN_NEW_FILE" )
   private boolean doNotOpenNewFileInit;
 
   /** Flag: create parent folder when necessary */
+  @Injection( name = "CREATE_PARENT_FOLDER" )
   private boolean createparentfolder;
 
+  @Injection( name = "DATE_FORMAT_SPECIFIED" )
   private boolean SpecifyFormat;
 
+  @Injection( name = "DATE_FORMAT" )
   private String date_time_format;
 
   /** Flag : auto size columns? */
+  @Injection( name = "AUTOSIZE_COLUMNS", group = "CONTENT" )
   private boolean autosizecolums;
 
   /** Flag : write null field values as blank Excel cells? */
+  @Injection( name = "NULL_AS_BLANK", group = "CONTENT" )
   private boolean nullIsBlank;
 
   public ExcelOutputMeta() {
@@ -987,7 +1026,7 @@ public class ExcelOutputMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 800 );
+    StringBuilder retval = new StringBuilder( 800 );
 
     retval.append( "    " ).append( XMLHandler.addTagValue( "header", headerEnabled ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "footer", footerEnabled ) );
@@ -1339,11 +1378,6 @@ public class ExcelOutputMeta extends BaseStepMeta implements StepMetaInterface {
     return new ExcelOutputData();
   }
 
-  @Override
-  public StepMetaInjectionInterface getStepMetaInjectionInterface() {
-    return new ExcelOutputMetaInjection( this );
-  }
-
   public String[] getUsedLibraries() {
     return new String[] { "jxl.jar", };
   }
@@ -1558,16 +1592,36 @@ public class ExcelOutputMeta extends BaseStepMeta implements StepMetaInterface {
     this.header_font_name = fontname;
   }
 
+  @Injection( name = "HEADER_FONT_NAME", group = "CUSTOM" )
+  public void setHeaderFontName( String fontname ) {
+    this.header_font_name = getFontNameByCode( fontname );
+  }
+
   public void setRowFontName( int fontname ) {
     this.row_font_name = fontname;
+  }
+
+  @Injection( name = "ROW_FONT_NAME", group = "CUSTOM" )
+  public void setRowFontName( String fontname ) {
+    this.row_font_name = getFontNameByCode( fontname );
   }
 
   public void setHeaderFontUnderline( int fontunderline ) {
     this.header_font_underline = fontunderline;
   }
 
+  @Injection( name = "HEADER_FONT_UNDERLINE", group = "CUSTOM" )
+  public void setHeaderFontUnderline( String fontunderline ) {
+    this.header_font_underline = getFontUnderlineByCode( fontunderline );
+  }
+
   public void setHeaderFontOrientation( int fontorientation ) {
     this.header_font_orientation = fontorientation;
+  }
+
+  @Injection( name = "HEADER_FONT_ORIENTATION", group = "CUSTOM" )
+  public void setHeaderFontOrientation( String fontorientation ) {
+    this.header_font_orientation = getFontOrientationByCode( fontorientation );
   }
 
   public void setHeaderFontColor( int fontcolor ) {
@@ -1588,6 +1642,11 @@ public class ExcelOutputMeta extends BaseStepMeta implements StepMetaInterface {
 
   public void setHeaderAlignment( int alignment ) {
     this.header_alignment = alignment;
+  }
+
+  @Injection( name = "HEADER_ALIGNMENT", group = "CUSTOM" )
+  public void setHeaderAlignment( String alignment ) {
+    this.header_alignment = getFontAlignmentByCode( alignment );
   }
 
   public void setHeaderFontSize( String fontsize ) {

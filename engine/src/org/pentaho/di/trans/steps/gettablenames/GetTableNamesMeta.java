@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -32,8 +32,9 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaBoolean;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -282,7 +283,7 @@ public class GetTableNamesMeta extends BaseStepMeta implements StepMetaInterface
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     String realtablename = space.environmentSubstitute( tablenamefieldname );
     if ( !Const.isEmpty( realtablename ) ) {
-      ValueMetaInterface v = new ValueMeta( realtablename, ValueMeta.TYPE_STRING );
+      ValueMetaInterface v = new ValueMetaString( realtablename );
       v.setLength( 500 );
       v.setPrecision( -1 );
       v.setOrigin( name );
@@ -291,7 +292,7 @@ public class GetTableNamesMeta extends BaseStepMeta implements StepMetaInterface
 
     String realObjectType = space.environmentSubstitute( objecttypefieldname );
     if ( !Const.isEmpty( realObjectType ) ) {
-      ValueMetaInterface v = new ValueMeta( realObjectType, ValueMeta.TYPE_STRING );
+      ValueMetaInterface v = new ValueMetaString( realObjectType );
       v.setLength( 500 );
       v.setPrecision( -1 );
       v.setOrigin( name );
@@ -299,14 +300,14 @@ public class GetTableNamesMeta extends BaseStepMeta implements StepMetaInterface
     }
     String sysobject = space.environmentSubstitute( issystemobjectfieldname );
     if ( !Const.isEmpty( sysobject ) ) {
-      ValueMetaInterface v = new ValueMeta( sysobject, ValueMeta.TYPE_BOOLEAN );
+      ValueMetaInterface v = new ValueMetaBoolean( sysobject );
       v.setOrigin( name );
       r.addValueMeta( v );
     }
 
     String realSQLCreation = space.environmentSubstitute( sqlcreationfieldname );
     if ( !Const.isEmpty( realSQLCreation ) ) {
-      ValueMetaInterface v = new ValueMeta( realSQLCreation, ValueMeta.TYPE_STRING );
+      ValueMetaInterface v = new ValueMetaString( realSQLCreation );
       v.setLength( 500 );
       v.setPrecision( -1 );
       v.setOrigin( name );
@@ -315,7 +316,7 @@ public class GetTableNamesMeta extends BaseStepMeta implements StepMetaInterface
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer();
+    StringBuilder retval = new StringBuilder();
 
     retval.append( "    " + XMLHandler.addTagValue( "connection", database == null ? "" : database.getName() ) );
     retval.append( "    " + XMLHandler.addTagValue( "schemaname", schemaname ) );

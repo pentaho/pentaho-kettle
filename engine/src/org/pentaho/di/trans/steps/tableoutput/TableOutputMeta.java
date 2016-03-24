@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,13 +22,13 @@
 
 package org.pentaho.di.trans.steps.tableoutput;
 
+import com.google.common.base.Preconditions;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ProvidesModelerMeta;
 import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.database.Database;
-import org.pentaho.di.core.database.DatabaseInterface;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
@@ -255,21 +255,13 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface, 
   }
 
   public Object clone() {
+    Preconditions.checkState( fieldStream.length == fieldDatabase.length,
+      "Table fields and stream fields are not of equal length." );
     TableOutputMeta retval = (TableOutputMeta) super.clone();
-
-    int nrStream = fieldStream.length;
-    int nrDatabase = fieldDatabase.length;
-
-    retval.fieldStream = new String[nrStream];
-    retval.fieldDatabase = new String[nrDatabase];
-
-    for ( int i = 0; i < nrStream; i++ ) {
-      retval.fieldStream[i] = fieldStream[i];
-    }
-
-    for ( int i = 0; i < nrDatabase; i++ ) {
-      retval.fieldDatabase[i] = fieldDatabase[i];
-    }
+    int nrRows = fieldStream.length;
+    retval.allocate( nrRows );
+    System.arraycopy( fieldStream, 0, retval.fieldStream, 0, nrRows );
+    System.arraycopy( fieldDatabase, 0, retval.fieldDatabase, 0, nrRows );
 
     return retval;
   }
@@ -297,7 +289,7 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface, 
   }
 
   /**
-   * @param commitSize
+   * @param commitSizeInt
    *          The commitSize to set.
    */
   public void setCommitSize( int commitSizeInt ) {

@@ -38,7 +38,9 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.salesforceinput.SalesforceConnection;
+import org.pentaho.di.trans.steps.salesforceutils.SalesforceUtils;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.sforce.soap.partner.sobject.SObject;
 
 /**
@@ -53,8 +55,8 @@ public class SalesforceUpdate extends BaseStep implements StepInterface {
   private SalesforceUpdateMeta meta;
   private SalesforceUpdateData data;
 
-  public SalesforceUpdate( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr,
-    TransMeta transMeta, Trans trans ) {
+  public SalesforceUpdate( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
+      Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -83,8 +85,8 @@ public class SalesforceUpdate extends BaseStep implements StepInterface {
 
       // Check if field list is filled
       if ( data.nrfields == 0 ) {
-        throw new KettleException( BaseMessages.getString(
-          PKG, "SalesforceUpdateDialog.FieldsMissing.DialogMessage" ) );
+        throw new KettleException( BaseMessages.getString( PKG,
+            "SalesforceUpdateDialog.FieldsMissing.DialogMessage" ) );
       }
 
       // Create the output row meta-data
@@ -97,8 +99,8 @@ public class SalesforceUpdate extends BaseStep implements StepInterface {
       for ( int i = 0; i < meta.getUpdateStream().length; i++ ) {
         data.fieldnrs[i] = getInputRowMeta().indexOfValue( meta.getUpdateStream()[i] );
         if ( data.fieldnrs[i] < 0 ) {
-          throw new KettleException( "Field ["
-            + meta.getUpdateStream()[i] + "] couldn't be found in the input stream!" );
+          throw new KettleException( "Field [" + meta.getUpdateStream()[i]
+              + "] couldn't be found in the input stream!" );
         }
       }
     }
@@ -112,7 +114,8 @@ public class SalesforceUpdate extends BaseStep implements StepInterface {
     return true;
   }
 
-  private void writeToSalesForce( Object[] rowData ) throws KettleException {
+  @VisibleForTesting
+    void writeToSalesForce( Object[] rowData ) throws KettleException {
     try {
 
       if ( log.isDetailed() ) {
@@ -131,10 +134,11 @@ public class SalesforceUpdate extends BaseStep implements StepInterface {
           if ( valueIsNull ) {
             // The value is null
             // We need to keep track of this field
-            fieldsToNull.add( meta.getUpdateLookup()[i] );
+            fieldsToNull.add( SalesforceUtils.getFieldToNullName( log, meta.getUpdateLookup()[i], meta
+                .getUseExternalId()[i] ) );
           } else {
-            updatefields.add( SalesforceConnection.createMessageElement(
-              meta.getUpdateLookup()[i], rowData[data.fieldnrs[i]], meta.getUseExternalId()[i] ) );
+            updatefields.add( SalesforceConnection.createMessageElement( meta.getUpdateLookup()[i],
+                rowData[data.fieldnrs[i]], meta.getUseExternalId()[i] ) );
           }
         }
 
@@ -209,9 +213,8 @@ public class SalesforceUpdate extends BaseStep implements StepInterface {
             // Only send the first error
             //
             com.sforce.soap.partner.Error err = data.saveResult[j].getErrors()[0];
-            throw new KettleException( BaseMessages
-              .getString( PKG, "SalesforceUpdate.Error.FlushBuffer", new Integer( j ), err.getStatusCode(), err
-                .getMessage() ) );
+            throw new KettleException( BaseMessages.getString( PKG, "SalesforceUpdate.Error.FlushBuffer", new Integer(
+                j ), err.getStatusCode(), err.getMessage() ) );
           }
 
           String errorMessage = "";
@@ -219,8 +222,8 @@ public class SalesforceUpdate extends BaseStep implements StepInterface {
             // get the next error
             com.sforce.soap.partner.Error err = data.saveResult[j].getErrors()[i];
             errorMessage +=
-              BaseMessages.getString( PKG, "SalesforceUpdate.Error.FlushBuffer", new Integer( j ), err
-                .getStatusCode(), err.getMessage() );
+                BaseMessages.getString( PKG, "SalesforceUpdate.Error.FlushBuffer", new Integer( j ), err
+                    .getStatusCode(), err.getMessage() );
           }
 
           // Simply add this row to the error row
@@ -286,7 +289,7 @@ public class SalesforceUpdate extends BaseStep implements StepInterface {
         data.realURL = environmentSubstitute( meta.getTargetURL() );
         // create a Salesforce connection
         data.connection =
-          new SalesforceConnection( log, data.realURL, realUser, environmentSubstitute( meta.getPassword() ) );
+            new SalesforceConnection( log, data.realURL, realUser, environmentSubstitute( meta.getPassword() ) );
         // set timeout
         data.connection.setTimeOut( Const.toInt( environmentSubstitute( meta.getTimeOut() ), 0 ) );
         // Do we use compression?
@@ -299,8 +302,8 @@ public class SalesforceUpdate extends BaseStep implements StepInterface {
 
         return true;
       } catch ( KettleException ke ) {
-        logError( BaseMessages.getString( PKG, "SalesforceUpdate.Log.ErrorOccurredDuringStepInitialize" )
-          + ke.getMessage() );
+        logError( BaseMessages.getString( PKG, "SalesforceUpdate.Log.ErrorOccurredDuringStepInitialize" ) + ke
+            .getMessage() );
       }
       return true;
     }

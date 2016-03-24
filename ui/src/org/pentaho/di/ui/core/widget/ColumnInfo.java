@@ -53,6 +53,7 @@ public class ColumnInfo {
   private boolean readonly;
   private String button_text;
   private boolean hide_negative;
+  private int width = -1;
 
   private ValueMetaInterface valueMeta;
 
@@ -60,7 +61,7 @@ public class ColumnInfo {
   private SelectionListener textVarButtonSelectionListener;
 
   private TextVarButtonRenderCallback renderTextVarButtonCallback;
-  
+
   private FieldDisabledListener disabledListener;
 
   private boolean usingVariables;
@@ -171,6 +172,28 @@ public class ColumnInfo {
   public ColumnInfo( String colname, int coltype, boolean num, boolean ro ) {
     this( colname, coltype, num );
     readonly = ro;
+  }
+
+  /**
+   * Creates a column info class for use with the TableView class.
+   *
+   * @param colname
+   *          The column name
+   * @param coltype
+   *          The column type (see: COLUMN_TYPE_...)
+   * @param num
+   *          true if the column type is numeric. Use setValueType() to specify the type of numeric:
+   *          ValueMetaInterface.TYPE_INTEGER is the default.
+   * @param ro
+   *          true if the column is read-only.
+   *
+   * @param width
+   *          The column width
+   */
+  public ColumnInfo( String colname, int coltype, boolean num, boolean ro, int width ) {
+    this( colname, coltype, num );
+    readonly = ro;
+    this.width = width;
   }
 
   /**
@@ -367,13 +390,16 @@ public class ColumnInfo {
   public void setTextVarButtonSelectionListener( SelectionListener textVarButtonSelectionListener ) {
     this.textVarButtonSelectionListener = textVarButtonSelectionListener;
   }
-  
+
   public void setRenderTextVarButtonCallback( TextVarButtonRenderCallback callback ) {
     this.renderTextVarButtonCallback = callback;
   }
-  
+
   public boolean shouldRenderTextVarButton() {
     return this.renderTextVarButtonCallback == null || this.renderTextVarButtonCallback.shouldRenderButton();
   }
-  
+
+  public int getWidth() {
+    return this.width;
+  }
 }

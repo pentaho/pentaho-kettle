@@ -142,11 +142,8 @@ public class RandomValueMeta extends BaseStepMeta implements StepMetaInterface {
     int count = fieldName.length;
 
     retval.allocate( count );
-
-    for ( int i = 0; i < count; i++ ) {
-      retval.fieldName[i] = fieldName[i];
-      retval.fieldType[i] = fieldType[i];
-    }
+    System.arraycopy( fieldName, 0, retval.fieldName, 0, count );
+    System.arraycopy( fieldType, 0, retval.fieldType, 0, count );
 
     return retval;
   }
@@ -241,7 +238,7 @@ public class RandomValueMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 200 );
+    StringBuilder retval = new StringBuilder( 200 );
 
     retval.append( "    <fields>" ).append( Const.CR );
 

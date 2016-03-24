@@ -702,33 +702,52 @@ public class SalesforceInsertDialog extends BaseStepDialog implements StepDialog
   }
 
   private void test() {
+    boolean successConnection = true;
+    String msgError = null;
+    String realUsername = null;
     SalesforceConnection connection = null;
+
     try {
+      SalesforceInsertMeta meta = new SalesforceInsertMeta();
+      getInfo( meta );
+
       // check if the user is given
       if ( !checkUser() ) {
         return;
       }
 
-      connection = getConnection();
+      String realURL = transMeta.environmentSubstitute( meta.getTargetURL() );
+      realUsername = transMeta.environmentSubstitute( meta.getUserName() );
+      String realPassword = transMeta.environmentSubstitute( meta.getPassword() );
+      connection =
+        new SalesforceConnection( log, realURL, realUsername, realPassword );
+      connection.connect();
 
-      MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_INFORMATION );
-      mb.setMessage( BaseMessages.getString( PKG, "SalesforceInsertDialog.Connected.OK", wUserName.getText() )
-        + Const.CR );
-      mb.setText( BaseMessages.getString( PKG, "SalesforceInsertDialog.Connected.Title.Ok" ) );
-      mb.open();
+      successConnection = true;
     } catch ( Exception e ) {
-      new ErrorDialog( shell,
-        BaseMessages.getString( PKG, "SalesforceInsertDialog.Connected.Title.Error" ),
-        BaseMessages.getString( PKG, "SalesforceInsertDialog.Connected.NOK", wUserName.getText() ),
-        new Exception( e.getMessage() ) );
+      successConnection = false;
+      msgError = e.getMessage();
     } finally {
       if ( connection != null ) {
         try {
           connection.close();
-        } catch ( Exception e ) {
-          // Ignore close error
+        } catch ( Exception e ) { /* Ignore */
         }
       }
+    }
+
+    if ( successConnection ) {
+      MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_INFORMATION );
+      mb.setMessage( BaseMessages.getString( PKG, "SalesforceInsertDialog.Connected.OK", realUsername )
+        + Const.CR );
+      mb.setText( BaseMessages.getString( PKG, "SalesforceInsertDialog.Connected.Title.Ok" ) );
+      mb.open();
+    } else {
+      new ErrorDialog(
+        shell,
+        BaseMessages.getString( PKG, "SalesforceInsertDialog.Connected.Title.Error" ),
+        BaseMessages.getString( PKG, "SalesforceInsertDialog.Connected.NOK", realUsername ),
+        new Exception( msgError ) );
     }
   }
 

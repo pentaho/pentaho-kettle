@@ -34,6 +34,9 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.fileinput.FileInputList;
+import org.pentaho.di.core.injection.Injection;
+import org.pentaho.di.core.injection.InjectionDeep;
+import org.pentaho.di.core.injection.InjectionSupported;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
@@ -53,7 +56,6 @@ import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.step.StepMetaInjectionInterface;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
@@ -61,6 +63,7 @@ import org.w3c.dom.Node;
 /**
  * Meta data for the Excel step.
  */
+@InjectionSupported( localizationPrefix = "ExcelInput.Injection.", groups = { "FIELDS", "SHEETS", "FILENAME_LINES" } )
 public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = ExcelInputMeta.class; // for i18n purposes, needed by Translator2!!
 
@@ -89,17 +92,21 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface {
   /**
    * The filenames to load or directory in case a filemask was set.
    */
+  @Injection( name = "FILENAME", group = "FILENAME_LINES" )
   private String[] fileName;
 
   /**
    * The regular expression to use (null means: no mask)
    */
+  @Injection( name = "FILEMASK", group = "FILENAME_LINES" )
   private String[] fileMask;
 
   /** Wildcard or filemask to exclude (regular expression) */
+  @Injection( name = "EXCLUDE_FILEMASK", group = "FILENAME_LINES" )
   private String[] excludeFileMask;
 
   /** Array of boolean values as string, indicating if a file is required. */
+  @Injection( name = "FILE_REQUIRED", group = "FILENAME_LINES" )
   private String[] fileRequired;
 
   /**
@@ -110,16 +117,19 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface {
   /**
    * The names of the sheets to load. Null means: all sheets...
    */
+  @Injection( name = "SHEET_NAME", group = "SHEETS" )
   private String[] sheetName;
 
   /**
    * The row-nr where we start processing.
    */
+  @Injection( name = "SHEET_START_ROW", group = "SHEETS" )
   private int[] startRow;
 
   /**
    * The column-nr where we start processing.
    */
+  @Injection( name = "SHEET_START_COL", group = "SHEETS" )
   private int[] startColumn;
 
   /**
@@ -162,6 +172,7 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface {
   /**
    * The fields to read in the range. Note: the number of columns in the range has to match field.length
    */
+  @InjectionDeep
   private ExcelInputField[] field;
 
   /** Strict types : will generate erros */
@@ -201,6 +212,7 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface {
   private String acceptingStepName;
 
   /** Array of boolean values as string, indicating if we need to fetch sub folders. */
+  @Injection( name = "INCLUDE_SUBFOLDERS", group = "FILENAME_LINES" )
   private String[] includeSubFolders;
 
   /** The step to accept filenames from */
@@ -222,6 +234,7 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface {
   private String extensionFieldName;
   private String sizeFieldName;
 
+  @Injection( name = "SPREADSHEET_TYPE" )
   private SpreadSheetType spreadSheetType;
 
   public ExcelInputMeta() {
@@ -623,19 +636,15 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface {
       retval.field[i] = (ExcelInputField) field[i].clone();
     }
 
-    for ( int i = 0; i < nrfiles; i++ ) {
-      retval.fileName[i] = fileName[i];
-      retval.fileMask[i] = fileMask[i];
-      retval.excludeFileMask[i] = excludeFileMask[i];
-      retval.fileRequired[i] = fileRequired[i];
-      retval.includeSubFolders[i] = includeSubFolders[i];
-    }
+    System.arraycopy( fileName, 0, retval.fileName, 0, nrfiles );
+    System.arraycopy( fileMask, 0, retval.fileMask, 0, nrfiles );
+    System.arraycopy( excludeFileMask, 0, retval.excludeFileMask, 0, nrfiles );
+    System.arraycopy( fileRequired, 0, retval.fileRequired, 0, nrfiles );
+    System.arraycopy( includeSubFolders, 0, retval.includeSubFolders, 0, nrfiles );
 
-    for ( int i = 0; i < nrsheets; i++ ) {
-      retval.sheetName[i] = sheetName[i];
-      retval.startColumn[i] = startColumn[i];
-      retval.startRow[i] = startRow[i];
-    }
+    System.arraycopy( sheetName, 0, retval.sheetName, 0, nrsheets );
+    System.arraycopy( startColumn, 0, retval.startColumn, 0, nrsheets );
+    System.arraycopy( startRow, 0, retval.startRow, 0, nrsheets );
 
     return retval;
   }
@@ -921,7 +930,7 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 1024 );
+    StringBuilder retval = new StringBuilder( 1024 );
 
     retval.append( "    " ).append( XMLHandler.addTagValue( "header", startsWithHeader ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "noempty", ignoreEmptyRows ) );
@@ -1550,9 +1559,4 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface {
   public void setSpreadSheetType( SpreadSheetType spreadSheetType ) {
     this.spreadSheetType = spreadSheetType;
   }
-
-  public StepMetaInjectionInterface getStepMetaInjectionInterface() {
-    return new ExcelInputMetaInjection( this );
-  }
-
 }

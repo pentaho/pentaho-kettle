@@ -29,7 +29,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.vfs2.FileObject;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
@@ -56,6 +58,7 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
@@ -68,6 +71,7 @@ import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.gui.SpoonFactory;
 import org.pentaho.di.core.gui.SpoonInterface;
+import org.pentaho.di.core.injection.bean.BeanInjectionInfo;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
@@ -85,6 +89,8 @@ import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepInjectionMetaEntry;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInjectionInterface;
+import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.steps.metainject.MetaInject;
 import org.pentaho.di.trans.steps.metainject.MetaInjectMeta;
 import org.pentaho.di.trans.steps.metainject.MetaInjectOutputField;
 import org.pentaho.di.trans.steps.metainject.SourceStepField;
@@ -311,12 +317,51 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
     metaInjectMeta.setChanged( changed );
 
     shell.open();
+
+    checkInvalidMapping();
+
     while ( !shell.isDisposed() ) {
       if ( !display.readAndDispatch() ) {
         display.sleep();
       }
     }
     return stepname;
+  }
+
+  private void checkInvalidMapping() {
+    if ( injectTransMeta == null ) {
+      try {
+        loadTransformation();
+      } catch ( KettleException e ) {
+        showErrorOnLoadTransformationDialog( e );
+        return;
+      }
+    }
+    Set<SourceStepField> unavailableSourceSteps =
+        MetaInject.getUnavailableSourceSteps( targetSourceMapping, transMeta, stepMeta );
+    Set<TargetStepAttribute> unavailableTargetSteps =
+        MetaInject.getUnavailableTargetSteps( targetSourceMapping, injectTransMeta );
+    if ( unavailableSourceSteps.isEmpty() && unavailableTargetSteps.isEmpty() ) {
+      return;
+    }
+    showInvalidMappingDialog( unavailableSourceSteps, unavailableTargetSteps );
+  }
+
+  private void showInvalidMappingDialog( Set<SourceStepField> unavailableSourceSteps,
+      Set<TargetStepAttribute> unavailableTargetSteps ) {
+    MessageBox mb = new MessageBox( shell, SWT.YES | SWT.NO | SWT.ICON_QUESTION );
+    mb.setMessage( BaseMessages.getString( PKG, "MetaInjectDialog.InvalidMapping.Question" ) );
+    mb.setText( BaseMessages.getString( PKG, "MetaInjectDialog.InvalidMapping.Title" ) );
+    int id = mb.open();
+    if ( id == SWT.YES ) {
+      MetaInject.removeUnavailableStepsFromMapping( targetSourceMapping, unavailableSourceSteps,
+          unavailableTargetSteps );
+    }
+  }
+
+  private void showErrorOnLoadTransformationDialog( KettleException e ) {
+    new ErrorDialog( shell, BaseMessages.getString( PKG, "MetaInjectDialog.ErrorLoadingSpecifiedTransformation.Title" ),
+        BaseMessages.getString( PKG, "MetaInjectDialog.ErrorLoadingSpecifiedTransformation.Message" ), e );
   }
 
   private void addFileTab() {
@@ -1182,7 +1227,8 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
       transItem.setText( injectTransMeta.getName() );
       List<StepMeta> injectSteps = new ArrayList<StepMeta>();
       for ( StepMeta stepMeta : injectTransMeta.getUsedSteps() ) {
-        if ( stepMeta.getStepMetaInterface().getStepMetaInjectionInterface() != null ) {
+        StepMetaInterface meta = stepMeta.getStepMetaInterface();
+        if ( meta.getStepMetaInjectionInterface() != null || BeanInjectionInfo.isInjectionSupported( meta.getClass() ) ) {
           injectSteps.add( stepMeta );
         }
       }
@@ -1195,56 +1241,11 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
 
         // For each step, add the keys
         //
-        StepMetaInjectionInterface injection = stepMeta.getStepMetaInterface().getStepMetaInjectionInterface();
-        List<StepInjectionMetaEntry> entries = injection.getStepInjectionMetadataEntries();
-        for ( final StepInjectionMetaEntry entry : entries ) {
-          if ( entry.getValueType() != ValueMetaInterface.TYPE_NONE ) {
-            TreeItem entryItem = new TreeItem( stepItem, SWT.NONE );
-            entryItem.setText( entry.getKey() );
-            entryItem.setText( 1, entry.getDescription() );
-            TargetStepAttribute target = new TargetStepAttribute( stepMeta.getName(), entry.getKey(), false );
-            treeItemTargetMap.put( entryItem, target );
-
-            SourceStepField source = targetSourceMapping.get( target );
-            if ( source != null ) {
-              entryItem.setText( 2, Const.NVL( source.getStepname(), "" ) );
-              entryItem.setText( 3, Const.NVL( source.getField(), "" ) );
-            }
-          } else {
-            // Fields...
-            //
-            TreeItem listsItem = new TreeItem( stepItem, SWT.NONE );
-            listsItem.setText( entry.getKey() );
-            listsItem.setText( 1, entry.getDescription() );
-            StepInjectionMetaEntry listEntry = entry.getDetails().get( 0 );
-            listsItem.addListener( SWT.Selection, new Listener() {
-
-              @Override
-              public void handleEvent( Event arg0 ) {
-                System.out.println( entry.getKey() + " - " + entry.getDescription() );
-              }
-            } );
-
-            /*
-             * // Field... // TreeItem listItem = new TreeItem(listsItem, SWT.NONE);
-             * listItem.setText(listEntry.getKey()); listItem.setText(1, listEntry.getDescription());
-             */
-
-            for ( StepInjectionMetaEntry me : listEntry.getDetails() ) {
-              TreeItem treeItem = new TreeItem( listsItem, SWT.NONE );
-              treeItem.setText( me.getKey() );
-              treeItem.setText( 1, me.getDescription() );
-
-              TargetStepAttribute target = new TargetStepAttribute( stepMeta.getName(), me.getKey(), true );
-              treeItemTargetMap.put( treeItem, target );
-
-              SourceStepField source = targetSourceMapping.get( target );
-              if ( source != null ) {
-                treeItem.setText( 2, Const.NVL( source.getStepname(), "" ) );
-                treeItem.setText( 3, Const.NVL( source.getField(), "" ) );
-              }
-            }
-          }
+        StepMetaInterface metaInterface = stepMeta.getStepMetaInterface();
+        if ( BeanInjectionInfo.isInjectionSupported( metaInterface.getClass() ) ) {
+          processNewMDIDescription( stepMeta, stepItem, metaInterface );
+        } else {
+          processOldMDIDescription( stepMeta, stepItem, metaInterface.getStepMetaInjectionInterface() );
         }
       }
 
@@ -1263,6 +1264,90 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
       Arrays.sort( sourceSteps );
       wSourceStep.setItems( sourceSteps );
       wStreamingTargetStep.setItems( sourceSteps );
+    }
+  }
+
+  private void processOldMDIDescription( StepMeta stepMeta, TreeItem stepItem, StepMetaInjectionInterface injection )
+    throws KettleException {
+    List<StepInjectionMetaEntry> entries = injection.getStepInjectionMetadataEntries();
+    for ( final StepInjectionMetaEntry entry : entries ) {
+      if ( entry.getValueType() != ValueMetaInterface.TYPE_NONE ) {
+        TreeItem entryItem = new TreeItem( stepItem, SWT.NONE );
+        entryItem.setText( entry.getKey() );
+        entryItem.setText( 1, entry.getDescription() );
+        TargetStepAttribute target = new TargetStepAttribute( stepMeta.getName(), entry.getKey(), false );
+        treeItemTargetMap.put( entryItem, target );
+
+        SourceStepField source = targetSourceMapping.get( target );
+        if ( source != null ) {
+          entryItem.setText( 2, Const.NVL( source.getStepname(), "" ) );
+          entryItem.setText( 3, Const.NVL( source.getField(), "" ) );
+        }
+      } else {
+        // Fields...
+        //
+        TreeItem listsItem = new TreeItem( stepItem, SWT.NONE );
+        listsItem.setText( entry.getKey() );
+        listsItem.setText( 1, entry.getDescription() );
+        StepInjectionMetaEntry listEntry = entry.getDetails().get( 0 );
+        listsItem.addListener( SWT.Selection, new Listener() {
+
+          @Override
+          public void handleEvent( Event arg0 ) {
+            System.out.println( entry.getKey() + " - " + entry.getDescription() );
+          }
+        } );
+
+        /*
+         * // Field... // TreeItem listItem = new TreeItem(listsItem, SWT.NONE);
+         * listItem.setText(listEntry.getKey()); listItem.setText(1, listEntry.getDescription());
+         */
+
+        for ( StepInjectionMetaEntry me : listEntry.getDetails() ) {
+          TreeItem treeItem = new TreeItem( listsItem, SWT.NONE );
+          treeItem.setText( me.getKey() );
+          treeItem.setText( 1, me.getDescription() );
+
+          TargetStepAttribute target = new TargetStepAttribute( stepMeta.getName(), me.getKey(), true );
+          treeItemTargetMap.put( treeItem, target );
+
+          SourceStepField source = targetSourceMapping.get( target );
+          if ( source != null ) {
+            treeItem.setText( 2, Const.NVL( source.getStepname(), "" ) );
+            treeItem.setText( 3, Const.NVL( source.getField(), "" ) );
+          }
+        }
+      }
+    }
+  }
+
+  private void processNewMDIDescription( StepMeta stepMeta, TreeItem stepItem, StepMetaInterface metaInterface ) {
+    BeanInjectionInfo stepInjectionInfo = new BeanInjectionInfo( metaInterface.getClass() );
+
+    for ( BeanInjectionInfo.Group gr : stepInjectionInfo.getGroups() ) {
+      boolean rootGroup = StringUtils.isEmpty( gr.getName() );
+      TreeItem groupItem;
+      if ( !rootGroup ) {
+        groupItem = new TreeItem( stepItem, SWT.NONE );
+        groupItem.setText( gr.getName() );
+        groupItem.setText( 1, gr.getDescription() );
+      } else {
+        groupItem = null;
+      }
+      for ( BeanInjectionInfo.Property property : gr.getGroupProperties() ) {
+        TreeItem treeItem = new TreeItem( rootGroup ? stepItem : groupItem, SWT.NONE );
+        treeItem.setText( property.getName() );
+        treeItem.setText( 1, property.getDescription() );
+
+        TargetStepAttribute target = new TargetStepAttribute( stepMeta.getName(), property.getName(), !rootGroup );
+        treeItemTargetMap.put( treeItem, target );
+
+        SourceStepField source = targetSourceMapping.get( target );
+        if ( source != null ) {
+          treeItem.setText( 2, Const.NVL( source.getStepname(), "" ) );
+          treeItem.setText( 3, Const.NVL( source.getField(), "" ) );
+        }
+      }
     }
   }
 

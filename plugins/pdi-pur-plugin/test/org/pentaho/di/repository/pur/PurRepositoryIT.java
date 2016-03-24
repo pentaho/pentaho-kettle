@@ -1,33 +1,35 @@
 /*!
-* Copyright 2010 - 2015 Pentaho Corporation.  All rights reserved.
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-*/
-
+ * Copyright 2010 - 2016 Pentaho Corporation.  All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
 package org.pentaho.di.repository.pur;
 
-import static java.util.Arrays.asList;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.pentaho.di.repository.pur.PurRepositoryTestingUtils.*;
 
 import java.io.File;
 import java.io.Serializable;
 import java.util.AbstractList;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,7 +45,6 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.KettleEnvironment;
@@ -51,6 +52,10 @@ import org.pentaho.di.core.NotePadMeta;
 import org.pentaho.di.core.ProgressMonitorListener;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.logging.KettleLogStore;
+import org.pentaho.di.core.logging.KettleLoggingEvent;
+import org.pentaho.di.core.logging.KettleLoggingEventListener;
+import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.plugins.JobEntryPluginType;
 import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.vfs.KettleVFS;
@@ -120,7 +125,7 @@ import org.springframework.security.providers.UsernamePasswordAuthenticationToke
 import org.springframework.security.userdetails.User;
 import org.springframework.security.userdetails.UserDetails;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.TestContextManager;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.xml.sax.Attributes;
@@ -128,9 +133,8 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.ext.DefaultHandler2;
 
-@RunWith( SpringJUnit4ClassRunner.class )
 @ContextConfiguration( locations = { "classpath:/repository.spring.xml",
-    "classpath:/repository-test-override.spring.xml" } )
+  "classpath:/repository-test-override.spring.xml" } )
 public class PurRepositoryIT extends RepositoryTestBase implements ApplicationContextAware, java.io.Serializable {
 
   static final long serialVersionUID = 2064159405078106703L; /* EESOURCE: UPDATE SERIALVERUID */
@@ -139,7 +143,7 @@ public class PurRepositoryIT extends RepositoryTestBase implements ApplicationCo
 
   private ITenantedPrincipleNameResolver userNameUtils = new DefaultTenantedPrincipleNameResolver();
   private ITenantedPrincipleNameResolver roleNameUtils = new DefaultTenantedPrincipleNameResolver(
-    DefaultTenantedPrincipleNameResolver.ALTERNATE_DELIMETER );
+      DefaultTenantedPrincipleNameResolver.ALTERNATE_DELIMETER );
 
   private ITenantManager tenantManager;
 
@@ -168,12 +172,18 @@ public class PurRepositoryIT extends RepositoryTestBase implements ApplicationCo
 
   private static IAuthorizationPolicy authorizationPolicy;
 
+  private TestContextManager testContextManager;
+
+  public PurRepositoryIT( Boolean lazyRepo ) {
+    super( lazyRepo );
+  }
+
   // ~ Methods =========================================================================================================
 
   @BeforeClass
   public static void setUpClass() throws Exception {
-    System.out.println(
-      "Repository: " + PurRepositoryIT.class.getClassLoader().getResource( "repository.spring.xml" ).getPath() );
+    System.out.println( "Repository: "
+        + PurRepositoryIT.class.getClassLoader().getResource( "repository.spring.xml" ).getPath() );
 
     // folder cannot be deleted at teardown shutdown hooks have not yet necessarily completed
     // parent folder must match jcrRepository.homeDir bean property in repository-test-override.spring.xml
@@ -188,6 +198,9 @@ public class PurRepositoryIT extends RepositoryTestBase implements ApplicationCo
 
   @Before
   public void setUp() throws Exception {
+    this.testContextManager = new TestContextManager( getClass() );
+    this.testContextManager.prepareTestInstance( this );
+
     IRepositoryVersionManager mockRepositoryVersionManager = mock( IRepositoryVersionManager.class );
     when( mockRepositoryVersionManager.isVersioningEnabled( anyString() ) ).thenReturn( true );
     when( mockRepositoryVersionManager.isVersionCommentEnabled( anyString() ) ).thenReturn( false );
@@ -204,18 +217,17 @@ public class PurRepositoryIT extends RepositoryTestBase implements ApplicationCo
     mp.defineInstance( "roleAuthorizationPolicyRoleBindingDaoTarget", roleBindingDaoTarget );
     mp.defineInstance( "repositoryAdminUsername", repositoryAdminUsername );
     mp.defineInstance( "RepositoryFileProxyFactory",
-      new RepositoryFileProxyFactory( testJcrTemplate, repositoryFileDao ) );
+        new RepositoryFileProxyFactory( testJcrTemplate, repositoryFileDao ) );
     mp.defineInstance( "useMultiByteEncoding", new Boolean( false ) );
 
     // Start the micro-platform
     mp.start();
     loginAsRepositoryAdmin();
     setAclManagement();
-    systemTenant = tenantManager
-      .createTenant( null, ServerRepositoryPaths.getPentahoRootFolderName(), singleTenantAdminRoleName,
-        tenantAuthenticatedRoleName, "Anonymous" );
-    userRoleDao
-      .createUser( systemTenant, sysAdminUserName, "password", "", new String[] { singleTenantAdminRoleName } );
+    systemTenant =
+        tenantManager.createTenant( null, ServerRepositoryPaths.getPentahoRootFolderName(), singleTenantAdminRoleName,
+            tenantAuthenticatedRoleName, "Anonymous" );
+    userRoleDao.createUser( systemTenant, sysAdminUserName, "password", "", new String[] { singleTenantAdminRoleName } );
     logout();
 
     super.setUp();
@@ -225,9 +237,9 @@ public class PurRepositoryIT extends RepositoryTestBase implements ApplicationCo
     // programmatically register plugins, annotation based plugins do not get loaded unless
     // they are in kettle's plugins folder.
     JobEntryPluginType.getInstance().registerCustom( JobEntryAttributeTesterJobEntry.class, "test",
-      "JobEntryAttributeTester", "JobEntryAttributeTester", "JobEntryAttributeTester", "" );
-    StepPluginType.getInstance().registerCustom( TransStepAttributeTesterTransStep.class, "test", "StepAttributeTester",
-      "StepAttributeTester", "StepAttributeTester", "" );
+        "JobEntryAttributeTester", "JobEntryAttributeTester", "JobEntryAttributeTester", "" );
+    StepPluginType.getInstance().registerCustom( TransStepAttributeTesterTransStep.class, "test",
+        "StepAttributeTester", "StepAttributeTester", "StepAttributeTester", "" );
 
     repositoryMeta = new PurRepositoryMeta();
     repositoryMeta.setName( "JackRabbit" );
@@ -238,8 +250,9 @@ public class PurRepositoryIT extends RepositoryTestBase implements ApplicationCo
     repository.init( repositoryMeta );
 
     login( sysAdminUserName, systemTenant, new String[] { singleTenantAdminRoleName, tenantAuthenticatedRoleName } );
-    ITenant tenantAcme = tenantManager
-      .createTenant( systemTenant, EXP_TENANT, singleTenantAdminRoleName, tenantAuthenticatedRoleName, "Anonymous" );
+    ITenant tenantAcme =
+        tenantManager.createTenant( systemTenant, EXP_TENANT, singleTenantAdminRoleName, tenantAuthenticatedRoleName,
+            "Anonymous" );
     userRoleDao.createUser( tenantAcme, EXP_LOGIN, "password", "", new String[] { singleTenantAdminRoleName } );
     logout();
 
@@ -247,7 +260,7 @@ public class PurRepositoryIT extends RepositoryTestBase implements ApplicationCo
 
     PurRepository purRep = (PurRepository) repository;
     purRep.setPurRepositoryConnector( new PurRepositoryConnector( purRep, (PurRepositoryMeta) repositoryMeta, purRep
-      .getRootRef() ) );
+        .getRootRef() ) );
     ( (PurRepository) repository ).setTest( repo );
     repository.connect( EXP_LOGIN, "password" );
     login( EXP_LOGIN, tenantAcme, new String[] { singleTenantAdminRoleName, tenantAuthenticatedRoleName } );
@@ -272,24 +285,25 @@ public class PurRepositoryIT extends RepositoryTestBase implements ApplicationCo
     StandaloneSession pentahoSession = new StandaloneSession( userInfo.getLogin() );
     pentahoSession.setAuthenticated( userInfo.getLogin() );
     pentahoSession.setAttribute( IPentahoSession.TENANT_ID_KEY, "/pentaho/" + EXP_TENANT );
-    final GrantedAuthority[] authorities = new GrantedAuthority[ 2 ];
-    authorities[ 0 ] = new GrantedAuthorityImpl( "Authenticated" );
-    authorities[ 1 ] = new GrantedAuthorityImpl( "acme_Authenticated" );
+    final GrantedAuthority[] authorities = new GrantedAuthority[2];
+    authorities[0] = new GrantedAuthorityImpl( "Authenticated" );
+    authorities[1] = new GrantedAuthorityImpl( "acme_Authenticated" );
     final String password = "ignored"; //$NON-NLS-1$
     UserDetails userDetails = new User( userInfo.getLogin(), password, true, true, true, true, authorities );
     Authentication authentication = new UsernamePasswordAuthenticationToken( userDetails, password, authorities );
     // next line is copy of SecurityHelper.setPrincipal
     pentahoSession.setAttribute( "SECURITY_PRINCIPAL", authentication );
     SecurityContextHolder.setStrategyName( SecurityContextHolder.MODE_GLOBAL );
-    setSession( pentahoSession, authentication );
+    PurRepositoryTestingUtils.setSession( pentahoSession, authentication );
     repositoryLifecyleManager.newTenant();
     repositoryLifecyleManager.newUser();
   }
 
   protected void loginAsRepositoryAdmin() {
-    StandaloneSession repositoryAdminSession = createSession( repositoryAdminUsername );
-    Authentication repositoryAdminAuthentication = createAuthentication( repositoryAdminUsername, superAdminRoleName );
-    setSession( repositoryAdminSession, repositoryAdminAuthentication );
+    StandaloneSession repositoryAdminSession = PurRepositoryTestingUtils.createSession( repositoryAdminUsername );
+    Authentication repositoryAdminAuthentication = PurRepositoryTestingUtils.createAuthentication(
+        repositoryAdminUsername, superAdminRoleName );
+    PurRepositoryTestingUtils.setSession( repositoryAdminSession, repositoryAdminAuthentication );
   }
 
   protected void logout() {
@@ -306,7 +320,7 @@ public class PurRepositoryIT extends RepositoryTestBase implements ApplicationCo
     authList.add( new GrantedAuthorityImpl( "Authenticated" ) );
     authList.add( new GrantedAuthorityImpl( "acme_Authenticated" ) );
     authList.add( new GrantedAuthorityImpl( "acme_Admin" ) );
-    GrantedAuthority[] authorities = authList.toArray( new GrantedAuthority[ 0 ] );
+    GrantedAuthority[] authorities = authList.toArray( new GrantedAuthority[0] );
     UserDetails userDetails = new User( "joe", password, true, true, true, true, authorities );
     Authentication auth = new UsernamePasswordAuthenticationToken( userDetails, password, authorities );
     PentahoSessionHolder.setSession( pentahoSession );
@@ -318,9 +332,11 @@ public class PurRepositoryIT extends RepositoryTestBase implements ApplicationCo
 
   /**
    * Logs in with given username.
-   *
-   * @param username username of user
-   * @param tenantId tenant to which this user belongs
+   * 
+   * @param username
+   *          username of user
+   * @param tenant
+   *          tenant to which this user belongs
    * @tenantAdmin true to add the tenant admin authority to the user's roles
    */
   protected void login( final String username, final ITenant tenant, String[] roles ) {
@@ -329,8 +345,8 @@ public class PurRepositoryIT extends RepositoryTestBase implements ApplicationCo
     PentahoSessionHolder.setSession( pentahoSession );
     pentahoSession.setAttribute( IPentahoSession.TENANT_ID_KEY, tenant.getId() );
 
-    Authentication auth = createAuthentication( username, roles );
-    setSession( pentahoSession, auth );
+    Authentication auth = PurRepositoryTestingUtils.createAuthentication( username, roles );
+    PurRepositoryTestingUtils.setSession( pentahoSession, auth );
 
     createUserHomeFolder( tenant, username );
   }
@@ -375,12 +391,13 @@ public class PurRepositoryIT extends RepositoryTestBase implements ApplicationCo
     String principleId = userNameUtils.getPrincipleId( theTenant, theUsername );
     String authenticatedRoleId = roleNameUtils.getPrincipleId( theTenant, tenantAuthenticatedRoleName );
     TransactionCallbackWithoutResult callback =
-      createUserHomeDirCallback( theTenant, theUsername, principleId, authenticatedRoleId, repositoryFileDao );
+        PurRepositoryTestingUtils.createUserHomeDirCallback( theTenant, theUsername, principleId, authenticatedRoleId,
+            repositoryFileDao );
     try {
       txnTemplate.execute( callback );
     } finally {
       // Switch our identity back to the original user.
-      setSession( origPentahoSession, origAuthentication );
+      PurRepositoryTestingUtils.setSession( origPentahoSession, origAuthentication );
     }
   }
 
@@ -400,7 +417,7 @@ public class PurRepositoryIT extends RepositoryTestBase implements ApplicationCo
     authorizationPolicy = null;
     login( sysAdminUserName, systemTenant, new String[] { singleTenantAdminRoleName, tenantAuthenticatedRoleName } );
     ITenant tenant =
-      tenantManager.getTenant( "/" + ServerRepositoryPaths.getPentahoRootFolderName() + "/" + TENANT_ID_ACME );
+        tenantManager.getTenant( "/" + ServerRepositoryPaths.getPentahoRootFolderName() + "/" + TENANT_ID_ACME );
     if ( tenant != null ) {
       cleanupUserAndRoles( tenant );
     }
@@ -416,7 +433,7 @@ public class PurRepositoryIT extends RepositoryTestBase implements ApplicationCo
     repositoryAdminUsername = null;
     singleTenantAdminRoleName = null;
     tenantAuthenticatedRoleName = null;
-    //    roleBindingDao = null;
+    // roleBindingDao = null;
     authorizationPolicy = null;
     testJcrTemplate = null;
 
@@ -498,19 +515,20 @@ public class PurRepositoryIT extends RepositoryTestBase implements ApplicationCo
     tenantAuthenticatedRoleName = (String) applicationContext.getBean( "singleTenantAuthenticatedAuthorityName" );
     singleTenantAdminRoleName = (String) applicationContext.getBean( "singleTenantAdminAuthorityName" );
     tenantManager = (ITenantManager) applicationContext.getBean( "tenantMgrProxy" );
-    roleBindingDaoTarget = (IRoleAuthorizationPolicyRoleBindingDao) applicationContext
-      .getBean( "roleAuthorizationPolicyRoleBindingDaoTarget" );
+    roleBindingDaoTarget =
+        (IRoleAuthorizationPolicyRoleBindingDao) applicationContext
+            .getBean( "roleAuthorizationPolicyRoleBindingDaoTarget" );
     authorizationPolicy = (IAuthorizationPolicy) applicationContext.getBean( "authorizationPolicy" );
     repo = (IUnifiedRepository) applicationContext.getBean( "unifiedRepository" );
     userRoleDao = (IUserRoleDao) applicationContext.getBean( "userRoleDao" );
     repositoryFileDao = (IRepositoryFileDao) applicationContext.getBean( "repositoryFileDao" );
     testUserRoleDao = userRoleDao;
     repositoryLifecyleManager =
-      (IBackingRepositoryLifecycleManager) applicationContext.getBean( "defaultBackingRepositoryLifecycleManager" );
+        (IBackingRepositoryLifecycleManager) applicationContext.getBean( "defaultBackingRepositoryLifecycleManager" );
     txnTemplate = (TransactionTemplate) applicationContext.getBean( "jcrTransactionTemplate" );
     TestPrincipalProvider.userRoleDao = testUserRoleDao;
     TestPrincipalProvider.adminCredentialsStrategy =
-      (CredentialsStrategy) applicationContext.getBean( "jcrAdminCredentialsStrategy" );
+        (CredentialsStrategy) applicationContext.getBean( "jcrAdminCredentialsStrategy" );
     TestPrincipalProvider.repository = (Repository) applicationContext.getBean( "jcrRepository" );
   }
 
@@ -549,11 +567,11 @@ public class PurRepositoryIT extends RepositoryTestBase implements ApplicationCo
     repository.save( partSchema2, VERSION_COMMENT_V1, null );
 
     Map<RepositoryObjectType, List<? extends SharedObjectInterface>> sharedObjectsByType =
-      new HashMap<RepositoryObjectType, List<? extends SharedObjectInterface>>();
+        new HashMap<RepositoryObjectType, List<? extends SharedObjectInterface>>();
     repo.readSharedObjects( sharedObjectsByType, RepositoryObjectType.PARTITION_SCHEMA );
 
-    List<PartitionSchema> partitionSchemas = (List<PartitionSchema>) sharedObjectsByType
-      .get( RepositoryObjectType.PARTITION_SCHEMA );
+    List<PartitionSchema> partitionSchemas =
+        (List<PartitionSchema>) sharedObjectsByType.get( RepositoryObjectType.PARTITION_SCHEMA );
     assertEquals( 2, partitionSchemas.size() );
 
     System.setProperty( "KETTLE_COMPATIBILITY_PUR_OLD_NAMING_MODE", "Y" );
@@ -566,8 +584,7 @@ public class PurRepositoryIT extends RepositoryTestBase implements ApplicationCo
     sharedObjectsByType = new HashMap<RepositoryObjectType, List<? extends SharedObjectInterface>>();
     repo.readSharedObjects( sharedObjectsByType, RepositoryObjectType.PARTITION_SCHEMA );
 
-    partitionSchemas = (List<PartitionSchema>) sharedObjectsByType
-      .get( RepositoryObjectType.PARTITION_SCHEMA );
+    partitionSchemas = (List<PartitionSchema>) sharedObjectsByType.get( RepositoryObjectType.PARTITION_SCHEMA );
     assertEquals( 3, partitionSchemas.size() );
   }
 
@@ -596,9 +613,10 @@ public class PurRepositoryIT extends RepositoryTestBase implements ApplicationCo
   private class MockRepositoryExportParser extends DefaultHandler2 {
     private List<String> nodeNames = new ArrayList<String>();
     private SAXParseException fatalError;
-    private List<String> nodesToCapture =
-      asList( "repository", "transformations", "transformation", "jobs", "job" );
-      //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+    private List<String> nodesToCapture = Arrays
+        .asList( "repository", "transformations", "transformation", "jobs", "job" );
+
+    //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
 
     @Override
     public void startElement( String uri, String localName, String qName, Attributes attributes ) throws SAXException {
@@ -668,10 +686,13 @@ public class PurRepositoryIT extends RepositoryTestBase implements ApplicationCo
     assertTrue( hasVersionWithComment( jobMeta, VERSION_COMMENT_V1 ) );
     assertTrue( repository.exists( EXP_JOB_NAME, jobsDir, RepositoryObjectType.JOB ) );
 
+    LogListener errorLogListener = new LogListener( LogLevel.ERROR );
+    KettleLogStore.getAppender().addLoggingEventListener( errorLogListener );
+
     try {
-      repository.getExporter()
-        .exportAllObjects( new MockProgressMonitorListener(), exportFileName, null, "all" ); //$NON-NLS-1$
+      repository.getExporter().exportAllObjects( new MockProgressMonitorListener(), exportFileName, null, "all" ); //$NON-NLS-1$
       FileObject exportFile = KettleVFS.getFileObject( exportFileName );
+      assertFalse( "file left open", exportFile.getContent().isOpen() );
       assertNotNull( exportFile );
       MockRepositoryExportParser parser = new MockRepositoryExportParser();
       SAXParserFactory.newInstance().newSAXParser().parse( KettleVFS.getInputStream( exportFile ), parser );
@@ -681,12 +702,13 @@ public class PurRepositoryIT extends RepositoryTestBase implements ApplicationCo
       assertNotNull( "No nodes found in export", parser.getNodeNames() ); //$NON-NLS-1$
       assertTrue( "No nodes found in export", !parser.getNodeNames().isEmpty() ); //$NON-NLS-1$
       assertEquals( "Incorrect number of nodes", 5, parser.getNodeNames().size() ); //$NON-NLS-1$
-      assertEquals( "Incorrect number of transformations", 1,
-        parser.getNodesWithName( "transformation" ).size() ); //$NON-NLS-1$ //$NON-NLS-2$
-      assertEquals( "Incorrect number of jobs", 1,
-        parser.getNodesWithName( "job" ).size() ); //$NON-NLS-1$ //$NON-NLS-2$
+      assertEquals( "Incorrect number of transformations", 1, parser.getNodesWithName( "transformation" ).size() ); //$NON-NLS-1$ //$NON-NLS-2$
+      assertEquals( "Incorrect number of jobs", 1, parser.getNodesWithName( "job" ).size() ); //$NON-NLS-1$ //$NON-NLS-2$
+      assertTrue( "log error", errorLogListener.getEvents().isEmpty() );
+
     } finally {
       KettleVFS.getFileObject( exportFileName ).delete();
+      KettleLogStore.getAppender().removeLoggingEventListener( errorLogListener );
     }
   }
 
@@ -698,7 +720,6 @@ public class PurRepositoryIT extends RepositoryTestBase implements ApplicationCo
     MetaStoreTestBase base = new MetaStoreTestBase();
     base.testFunctionality( metaStore );
   }
-
 
   @Test
   public void testMetaStoreNamespaces() throws MetaStoreException {
@@ -875,14 +896,14 @@ public class PurRepositoryIT extends RepositoryTestBase implements ApplicationCo
     }
   }
 
-
   @Test
   public void doesNotChangeFileWhenFailsToRename_slaves() throws Exception {
     final SlaveServer server1 = new SlaveServer();
     final SlaveServer server2 = new SlaveServer();
     try {
       testDoesNotChangeFileWhenFailsToRename( server1, server2, new Callable<RepositoryElementInterface>() {
-        @Override public RepositoryElementInterface call() throws Exception {
+        @Override
+        public RepositoryElementInterface call() throws Exception {
           return repository.loadSlaveServer( server2.getObjectId(), null );
         }
       } );
@@ -898,7 +919,8 @@ public class PurRepositoryIT extends RepositoryTestBase implements ApplicationCo
     final ClusterSchema schema2 = new ClusterSchema();
     try {
       testDoesNotChangeFileWhenFailsToRename( schema1, schema2, new Callable<RepositoryElementInterface>() {
-        @Override public RepositoryElementInterface call() throws Exception {
+        @Override
+        public RepositoryElementInterface call() throws Exception {
           return repository.loadClusterSchema( schema2.getObjectId(), null, null );
         }
       } );
@@ -914,7 +936,8 @@ public class PurRepositoryIT extends RepositoryTestBase implements ApplicationCo
     final PartitionSchema schema2 = new PartitionSchema();
     try {
       testDoesNotChangeFileWhenFailsToRename( schema1, schema2, new Callable<RepositoryElementInterface>() {
-        @Override public RepositoryElementInterface call() throws Exception {
+        @Override
+        public RepositoryElementInterface call() throws Exception {
           return repository.loadPartitionSchema( schema2.getObjectId(), null );
         }
       } );
@@ -925,8 +948,7 @@ public class PurRepositoryIT extends RepositoryTestBase implements ApplicationCo
   }
 
   private void testDoesNotChangeFileWhenFailsToRename( RepositoryElementInterface element1,
-                                                       RepositoryElementInterface element2,
-                                                       Callable<RepositoryElementInterface> loader ) throws Exception {
+      RepositoryElementInterface element2, Callable<RepositoryElementInterface> loader ) throws Exception {
     final String name1 = "name1";
     final String name2 = "name2";
 
@@ -947,7 +969,6 @@ public class PurRepositoryIT extends RepositoryTestBase implements ApplicationCo
     RepositoryElementInterface loaded = loader.call();
     assertEquals( element2, loaded );
   }
-
 
   @Test
   public void testExportWithRules() throws Exception {
@@ -986,23 +1007,26 @@ public class PurRepositoryIT extends RepositoryTestBase implements ApplicationCo
 
     // create rules for export to .xml file
     List<ImportRuleInterface> rules = new AbstractList<ImportRuleInterface>() {
-      @Override public ImportRuleInterface get( int index ) {
+      @Override
+      public ImportRuleInterface get( int index ) {
         TransformationHasANoteImportRule rule = new TransformationHasANoteImportRule();
         rule.setEnabled( true );
         return rule;
       }
-      @Override public int size() {
+
+      @Override
+      public int size() {
         return 1;
       }
     };
     ImportRules importRules = new ImportRules();
     importRules.setRules( rules );
 
-    //create exporter
+    // create exporter
     IRepositoryExporter exporter = repository.getExporter();
     exporter.setImportRulesToValidate( importRules );
 
-    //export itself
+    // export itself
     try {
       exporter.exportAllObjects( new MockProgressMonitorListener(), exportFileName, null, "all" ); //$NON-NLS-1$
       FileObject exportFile = KettleVFS.getFileObject( exportFileName );
@@ -1012,12 +1036,41 @@ public class PurRepositoryIT extends RepositoryTestBase implements ApplicationCo
       if ( parser.getFatalError() != null ) {
         throw parser.getFatalError();
       }
-      //assumed transformation with note will be here and only it
-      assertEquals( "Incorrect number of transformations", 1,
-          parser.getNodesWithName( RepositoryObjectType.TRANSFORMATION.getTypeDescription() )
-              .size() ); //$NON-NLS-1$ //$NON-NLS-2$
+      // assumed transformation with note will be here and only it
+      assertEquals( "Incorrect number of transformations", 1, parser.getNodesWithName(
+          RepositoryObjectType.TRANSFORMATION.getTypeDescription() ).size() ); //$NON-NLS-1$ //$NON-NLS-2$
     } finally {
       KettleVFS.getFileObject( exportFileName ).delete();
+    }
+  }
+
+  @Test
+  public void testCreateRepositoryDirectory() throws KettleException {
+    RepositoryDirectoryInterface tree = repository.loadRepositoryDirectoryTree();
+    repository.createRepositoryDirectory( tree.findDirectory( "home" ), "/admin1" );
+    repository.createRepositoryDirectory( tree, "/home/admin2" );
+    repository.createRepositoryDirectory( tree, "/home/admin2/new1" );
+    RepositoryDirectoryInterface repositoryDirectory =
+        repository.createRepositoryDirectory( tree, "/home/admin2/new1" );
+    repository.getJobAndTransformationObjects( repositoryDirectory.getObjectId(), false );
+  }
+
+  protected static class LogListener implements KettleLoggingEventListener {
+    private List<KettleLoggingEvent> events = new ArrayList<>();
+    private LogLevel logThreshold;
+
+    public LogListener( LogLevel logThreshold ) {
+      this.logThreshold = logThreshold;
+    }
+
+    public List<KettleLoggingEvent> getEvents() {
+      return events;
+    }
+
+    public void eventAdded( KettleLoggingEvent event ) {
+      if ( logThreshold.getLevel() >= event.getLevel().getLevel() ) {
+        events.add( event );
+      }
     }
   }
 }

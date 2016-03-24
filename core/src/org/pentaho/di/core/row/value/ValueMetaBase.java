@@ -903,7 +903,7 @@ public class ValueMetaBase implements ValueMetaInterface {
               // version
               // 3.0
             } else {
-              StringBuffer integerPattern = new StringBuffer();
+              StringBuilder integerPattern = new StringBuilder();
 
               // First the format for positive integers...
               //
@@ -927,7 +927,7 @@ public class ValueMetaBase implements ValueMetaInterface {
             if ( length < 1 ) {
               decimalFormat.applyPattern( " ##########0.0########;-#########0.0########" );
             } else {
-              StringBuffer numberPattern = new StringBuffer();
+              StringBuilder numberPattern = new StringBuilder();
 
               // First do the format for positive numbers...
               //
@@ -952,7 +952,7 @@ public class ValueMetaBase implements ValueMetaInterface {
 
               // Now do the format for negative numbers...
               //
-              StringBuffer negativePattern = new StringBuffer( numberPattern );
+              StringBuilder negativePattern = new StringBuilder( numberPattern );
               negativePattern.setCharAt( 0, '-' );
 
               numberPattern.append( ";" );
@@ -1162,6 +1162,15 @@ public class ValueMetaBase implements ValueMetaInterface {
    * @throws KettleValueException
    */
   protected String convertBinaryStringToString( byte[] binary ) throws KettleValueException {
+    //noinspection deprecation
+    return convertBinaryStringToString( binary, EMPTY_STRING_AND_NULL_ARE_DIFFERENT );
+  }
+
+  /*
+   * Do not use this method directly! It is for tests!
+   */
+  @Deprecated
+  String convertBinaryStringToString( byte[] binary, boolean emptyStringDiffersFromNull ) throws KettleValueException {
     // OK, so we have an internal representation of the original object, read
     // from file.
     // Before we release it back, we have to see if we don't have to do a
@@ -1172,7 +1181,7 @@ public class ValueMetaBase implements ValueMetaInterface {
     //
     // if (binary==null || binary.length==0) return null;
     if ( binary == null || binary.length == 0 ) {
-      return ( EMPTY_STRING_AND_NULL_ARE_DIFFERENT && binary != null ) ? "" : null;
+      return ( emptyStringDiffersFromNull && binary != null ) ? "" : null;
     }
 
     String encoding;
@@ -2321,11 +2330,11 @@ public class ValueMetaBase implements ValueMetaInterface {
   @Override
   public String toStringMeta() {
     // We (Sven Boden) did explicit performance testing for this
-    // part. The original version used Strings instead of StringBuffers,
+    // part. The original version used Strings instead of StringBuilders,
     // performance between the 2 does not differ that much. A few milliseconds
-    // on 100000 iterations in the advantage of StringBuffers. The
+    // on 100000 iterations in the advantage of StringBuilders. The
     // lessened creation of objects may be worth it in the long run.
-    StringBuffer retval = new StringBuffer( getTypeDesc() );
+    StringBuilder retval = new StringBuilder( getTypeDesc() );
 
     switch ( getType() ) {
       case TYPE_STRING:
@@ -2872,7 +2881,7 @@ public class ValueMetaBase implements ValueMetaInterface {
 
   @Override
   public String getMetaXML() throws IOException {
-    StringBuffer xml = new StringBuffer();
+    StringBuilder xml = new StringBuilder();
 
     xml.append( XMLHandler.openTag( XML_META_TAG ) );
 
@@ -3054,7 +3063,7 @@ public class ValueMetaBase implements ValueMetaInterface {
 
   @Override
   public String getDataXML( Object object ) throws IOException {
-    StringBuffer xml = new StringBuffer();
+    StringBuilder xml = new StringBuilder();
 
     String string;
 
@@ -3301,11 +3310,20 @@ public class ValueMetaBase implements ValueMetaInterface {
    */
   @Override
   public boolean isNull( Object data ) throws KettleValueException {
+    //noinspection deprecation
+    return isNull( data, EMPTY_STRING_AND_NULL_ARE_DIFFERENT );
+  }
+
+  /*
+   * Do not use this method directly! It is for tests!
+   */
+  @Deprecated
+  boolean isNull( Object data, boolean emptyStringDiffersFromNull ) throws KettleValueException {
     try {
       Object value = data;
 
       if ( isStorageBinaryString() ) {
-        if ( value == null || !EMPTY_STRING_AND_NULL_ARE_DIFFERENT && ( (byte[]) value ).length == 0 ) {
+        if ( value == null || !emptyStringDiffersFromNull && ( (byte[]) value ).length == 0 ) {
           return true; // shortcut
         }
         value = convertBinaryStringToNativeType( (byte[]) data );
@@ -3318,7 +3336,7 @@ public class ValueMetaBase implements ValueMetaInterface {
         return true;
       }
 
-      if ( EMPTY_STRING_AND_NULL_ARE_DIFFERENT ) {
+      if ( emptyStringDiffersFromNull ) {
         return false;
       }
 
@@ -3700,7 +3718,7 @@ public class ValueMetaBase implements ValueMetaInterface {
       // because you could get an NPE since you haven't checked isEmpty(pol)
       // yet!
       if ( Const.isEmpty( pol )
-          || pol.equalsIgnoreCase( Const.rightPad( new StringBuffer( null_value ), pol.length() ) ) ) {
+          || pol.equalsIgnoreCase( Const.rightPad( new StringBuilder( null_value ), pol.length() ) ) ) {
         pol = ifNull;
       }
     }
@@ -3722,7 +3740,7 @@ public class ValueMetaBase implements ValueMetaInterface {
           // If the polled value is equal to the spaces right-padded null_value,
           // we have a match
           //
-          if ( pol.equalsIgnoreCase( Const.rightPad( new StringBuffer( null_value ), pol.length() ) ) ) {
+          if ( pol.equalsIgnoreCase( Const.rightPad( new StringBuilder( null_value ), pol.length() ) ) ) {
             return emptyValue;
           }
         }
@@ -3737,10 +3755,10 @@ public class ValueMetaBase implements ValueMetaInterface {
     }
 
     // Trimming
-    StringBuffer strpol;
+    StringBuilder strpol;
     switch ( trim_type ) {
       case ValueMetaInterface.TRIM_TYPE_LEFT:
-        strpol = new StringBuffer( pol );
+        strpol = new StringBuilder( pol );
         while ( strpol.length() > 0 && strpol.charAt( 0 ) == ' ' ) {
           strpol.deleteCharAt( 0 );
         }
@@ -3748,7 +3766,7 @@ public class ValueMetaBase implements ValueMetaInterface {
 
         break;
       case ValueMetaInterface.TRIM_TYPE_RIGHT:
-        strpol = new StringBuffer( pol );
+        strpol = new StringBuilder( pol );
         while ( strpol.length() > 0 && strpol.charAt( strpol.length() - 1 ) == ' ' ) {
           strpol.deleteCharAt( strpol.length() - 1 );
         }
@@ -3756,7 +3774,7 @@ public class ValueMetaBase implements ValueMetaInterface {
 
         break;
       case ValueMetaInterface.TRIM_TYPE_BOTH:
-        strpol = new StringBuffer( pol );
+        strpol = new StringBuilder( pol );
         while ( strpol.length() > 0 && strpol.charAt( 0 ) == ' ' ) {
           strpol.deleteCharAt( 0 );
         }

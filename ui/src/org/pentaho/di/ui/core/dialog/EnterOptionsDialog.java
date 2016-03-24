@@ -144,7 +144,7 @@ public class EnterOptionsDialog extends Dialog {
   private Text wMiddlePct;
 
   private Text wGridSize;
-  
+
   private Button wShowCanvasGrid;
 
   private Button wAntiAlias;
@@ -834,7 +834,7 @@ public class EnterOptionsDialog extends Dialog {
     fdGridSize.right = new FormAttachment( 100, -margin );
     fdGridSize.top = new FormAttachment( wMiddlePct, margin );
     wGridSize.setLayoutData( fdGridSize );
-    
+
     // Show Canvas Grid
     Label wlShowCanvasGrid = new Label( wLookComp, SWT.RIGHT );
     wlShowCanvasGrid.setText( BaseMessages.getString( PKG, "EnterOptionsDialog.ShowCanvasGrid.Label" ) );
@@ -853,7 +853,7 @@ public class EnterOptionsDialog extends Dialog {
     fdShowCanvasGrid.right = new FormAttachment( 100, -margin );
     fdShowCanvasGrid.top = new FormAttachment( wGridSize, margin );
     wShowCanvasGrid.setLayoutData( fdShowCanvasGrid );
-    
+
     // Enable anti-aliasing
     Label wlAntiAlias = new Label( wLookComp, SWT.RIGHT );
     wlAntiAlias.setText( BaseMessages.getString( PKG, "EnterOptionsDialog.CanvasAntiAliasing.Label" ) );

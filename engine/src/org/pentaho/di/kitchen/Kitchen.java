@@ -26,7 +26,6 @@ import java.text.SimpleDateFormat;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -105,8 +104,7 @@ public class Kitchen {
                 return null;
               }
             } );
-          return new AbstractMap.SimpleImmutableEntry<KettlePluginException, Future<KettleException>>
-            ( null, kettleEnvironmentInitFuture );
+          return new AbstractMap.SimpleImmutableEntry<KettlePluginException, Future<KettleException>>( null, kettleEnvironmentInitFuture );
         }
       } );
 
@@ -124,68 +122,68 @@ public class Kitchen {
     RepositoryMeta repositoryMeta = null;
     Job job = null;
 
-    StringBuffer optionRepname, optionUsername, optionPassword, optionJobname, optionDirname;
-    StringBuffer optionFilename, optionLoglevel, optionLogfile, optionLogfileOld, optionListdir;
-    StringBuffer optionListjobs, optionListrep, optionNorep, optionVersion, optionListParam, optionExport;
+    StringBuilder optionRepname, optionUsername, optionPassword, optionJobname, optionDirname;
+    StringBuilder optionFilename, optionLoglevel, optionLogfile, optionLogfileOld, optionListdir;
+    StringBuilder optionListjobs, optionListrep, optionNorep, optionVersion, optionListParam, optionExport;
     NamedParams optionParams = new NamedParamsDefault();
     NamedParams customOptions = new NamedParamsDefault();
 
     CommandLineOption maxLogLinesOption =
       new CommandLineOption(
-        "maxloglines", BaseMessages.getString( PKG, "Kitchen.CmdLine.MaxLogLines" ), new StringBuffer() );
+        "maxloglines", BaseMessages.getString( PKG, "Kitchen.CmdLine.MaxLogLines" ), new StringBuilder() );
     CommandLineOption maxLogTimeoutOption =
       new CommandLineOption(
-        "maxlogtimeout", BaseMessages.getString( PKG, "Kitchen.CmdLine.MaxLogTimeout" ), new StringBuffer() );
+        "maxlogtimeout", BaseMessages.getString( PKG, "Kitchen.CmdLine.MaxLogTimeout" ), new StringBuilder() );
 
     CommandLineOption[] options =
       new CommandLineOption[]{
         new CommandLineOption( "rep", BaseMessages.getString( PKG, "Kitchen.CmdLine.RepName" ), optionRepname =
-          new StringBuffer() ),
+          new StringBuilder() ),
         new CommandLineOption(
           "user", BaseMessages.getString( PKG, "Kitchen.CmdLine.RepUsername" ), optionUsername =
-          new StringBuffer() ),
+          new StringBuilder() ),
         new CommandLineOption(
           "pass", BaseMessages.getString( PKG, "Kitchen.CmdLine.RepPassword" ), optionPassword =
-          new StringBuffer() ),
+          new StringBuilder() ),
         new CommandLineOption(
           "job", BaseMessages.getString( PKG, "Kitchen.CmdLine.RepJobName" ), optionJobname =
-          new StringBuffer() ),
+          new StringBuilder() ),
         new CommandLineOption( "dir", BaseMessages.getString( PKG, "Kitchen.CmdLine.RepDir" ), optionDirname =
-          new StringBuffer() ),
+          new StringBuilder() ),
         new CommandLineOption(
           "file", BaseMessages.getString( PKG, "Kitchen.CmdLine.XMLJob" ), optionFilename =
-          new StringBuffer() ),
+          new StringBuilder() ),
         new CommandLineOption(
           "level", BaseMessages.getString( PKG, "Kitchen.CmdLine.LogLevel" ), optionLoglevel =
-          new StringBuffer() ),
+          new StringBuilder() ),
         new CommandLineOption(
           "logfile", BaseMessages.getString( PKG, "Kitchen.CmdLine.LogFile" ), optionLogfile =
-          new StringBuffer() ),
+          new StringBuilder() ),
         new CommandLineOption(
           "log", BaseMessages.getString( PKG, "Kitchen.CmdLine.LogFileOld" ), optionLogfileOld =
-          new StringBuffer(), false, true ),
+          new StringBuilder(), false, true ),
         new CommandLineOption(
           "listdir", BaseMessages.getString( PKG, "Kitchen.CmdLine.ListDir" ), optionListdir =
-          new StringBuffer(), true, false ),
+          new StringBuilder(), true, false ),
         new CommandLineOption(
           "listjobs", BaseMessages.getString( PKG, "Kitchen.CmdLine.ListJobsDir" ), optionListjobs =
-          new StringBuffer(), true, false ),
+          new StringBuilder(), true, false ),
         new CommandLineOption(
           "listrep", BaseMessages.getString( PKG, "Kitchen.CmdLine.ListAvailableReps" ), optionListrep =
-          new StringBuffer(), true, false ),
+          new StringBuilder(), true, false ),
         new CommandLineOption( "norep", BaseMessages.getString( PKG, "Kitchen.CmdLine.NoRep" ), optionNorep =
-          new StringBuffer(), true, false ),
+          new StringBuilder(), true, false ),
         new CommandLineOption(
           "version", BaseMessages.getString( PKG, "Kitchen.CmdLine.Version" ), optionVersion =
-          new StringBuffer(), true, false ),
+          new StringBuilder(), true, false ),
         new CommandLineOption(
           "param", BaseMessages.getString( PKG, "Kitchen.ComdLine.Param" ), optionParams, false ),
         new CommandLineOption(
           "listparam", BaseMessages.getString( PKG, "Kitchen.ComdLine.ListParam" ), optionListParam =
-          new StringBuffer(), true, false ),
+          new StringBuilder(), true, false ),
         new CommandLineOption(
           "export", BaseMessages.getString( PKG, "Kitchen.ComdLine.Export" ), optionExport =
-          new StringBuffer(), true, false ),
+          new StringBuilder(), true, false ),
         new CommandLineOption(
           "custom", BaseMessages.getString( PKG, "Kitchen.ComdLine.Custom" ), customOptions, false ),
         maxLogLinesOption, maxLogTimeoutOption, };
@@ -206,13 +204,13 @@ public class Kitchen {
     String kettlePassword = Const.getEnvironmentVariable( "KETTLE_PASSWORD", null );
 
     if ( !Const.isEmpty( kettleRepname ) ) {
-      optionRepname = new StringBuffer( kettleRepname );
+      optionRepname = new StringBuilder( kettleRepname );
     }
     if ( !Const.isEmpty( kettleUsername ) ) {
-      optionUsername = new StringBuffer( kettleUsername );
+      optionUsername = new StringBuilder( kettleUsername );
     }
     if ( !Const.isEmpty( kettlePassword ) ) {
-      optionPassword = new StringBuffer( kettlePassword );
+      optionPassword = new StringBuilder( kettlePassword );
     }
 
     if ( Const.isEmpty( optionLogfile ) && !Const.isEmpty( optionLogfileOld ) ) {
@@ -288,6 +286,7 @@ public class Kitchen {
           }
 
           RepositoriesMeta repsinfo = new RepositoriesMeta();
+          repsinfo.getLog().setLogLevel( log.getLogLevel() );
           try {
             repsinfo.readData();
           } catch ( Exception e ) {
@@ -308,7 +307,7 @@ public class Kitchen {
               PluginRegistry.getInstance().loadClass(
                 RepositoryPluginType.class, repositoryMeta, Repository.class );
             repository.init( repositoryMeta );
-
+            repository.getLog().setLogLevel( log.getLogLevel() );
             repository.connect( optionUsername != null ? optionUsername.toString() : null, optionPassword != null
               ? optionPassword.toString() : null );
 
@@ -425,7 +424,7 @@ public class Kitchen {
 
         // Setting the list parameters option will make kitchen exit below in the parameters section
         //
-        optionListParam = new StringBuffer( "Y" );
+        optionListParam = new StringBuilder( "Y" );
       } catch ( Exception e ) {
         System.out.println( Const.getStackTracker( e ) );
         exitJVM( 2 );

@@ -22,10 +22,8 @@
 
 package org.pentaho.di.job.entries.mailvalidator;
 
-import static org.pentaho.di.job.entry.validator.AndValidator.putValidators;
-import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.andValidator;
-import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.emailValidator;
-import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notBlankValidator;
+import org.pentaho.di.job.entry.validator.AndValidator;
+import org.pentaho.di.job.entry.validator.JobEntryValidatorUtils;
 
 import java.util.List;
 
@@ -145,7 +143,7 @@ public class JobEntryMailValidator extends JobEntryBase implements Cloneable, Jo
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer();
+    StringBuilder retval = new StringBuilder( 100 );
     retval.append( "      " ).append( XMLHandler.addTagValue( "smtpCheck", smtpCheck ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "timeout", timeout ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "defaultSMTP", defaultSMTP ) );
@@ -283,11 +281,14 @@ public class JobEntryMailValidator extends JobEntryBase implements Cloneable, Jo
   public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
 
-    andValidator().validate( this, "emailAddress", remarks, putValidators( notBlankValidator() ) );
-    andValidator().validate( this, "emailSender", remarks, putValidators( notBlankValidator(), emailValidator() ) );
+    JobEntryValidatorUtils.andValidator().validate( this, "emailAddress", remarks,
+        AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
+    JobEntryValidatorUtils.andValidator().validate( this, "emailSender", remarks,
+        AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator(), JobEntryValidatorUtils.emailValidator() ) );
 
     if ( isSMTPCheck() ) {
-      andValidator().validate( this, "defaultSMTP", remarks, putValidators( notBlankValidator() ) );
+      JobEntryValidatorUtils.andValidator().validate( this, "defaultSMTP", remarks,
+          AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
     }
   }
 }

@@ -108,11 +108,8 @@ public class NullIfMeta extends BaseStepMeta implements StepMetaInterface {
 
     retval.allocate( count );
 
-    for ( int i = 0; i < count; i++ ) {
-      retval.fieldName[i] = fieldName[i];
-      retval.fieldValue[i] = fieldValue[i];
-    }
-
+    System.arraycopy( fieldName, 0, retval.fieldName, 0, count );
+    System.arraycopy( fieldValue, 0, retval.fieldValue, 0, count );
     return retval;
   }
 
@@ -157,7 +154,7 @@ public class NullIfMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer();
+    StringBuilder retval = new StringBuilder();
 
     retval.append( "    <fields>" + Const.CR );
 

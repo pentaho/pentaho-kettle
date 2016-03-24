@@ -59,10 +59,19 @@ public class MemoryGroupByData extends BaseStepData implements StepDataInterface
 
     public int hashCode() {
       try {
-        return groupMeta.hashCode( groupData );
+        return groupMeta.hashCode( getHashValue() );
       } catch ( KettleValueException e ) {
         throw new RuntimeException( e );
       }
+    }
+
+    private Object[] getHashValue() throws KettleValueException {
+      Object[] groupDataHash = new Object[groupMeta.size()];
+      for ( int i = 0; i < groupMeta.size(); i++ ) {
+        ValueMetaInterface valueMeta = groupMeta.getValueMeta( i );
+        groupDataHash[i] = valueMeta.convertToNormalStorageType( groupData[i] );
+      }
+      return groupDataHash;
     }
   }
 

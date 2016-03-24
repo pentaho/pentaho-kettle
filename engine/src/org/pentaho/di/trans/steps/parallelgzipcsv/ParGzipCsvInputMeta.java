@@ -107,7 +107,12 @@ public class ParGzipCsvInputMeta extends BaseStepMeta implements StepMetaInterfa
   }
 
   public Object clone() {
-    Object retval = super.clone();
+    ParGzipCsvInputMeta retval = (ParGzipCsvInputMeta) super.clone();
+    int nrFields = inputFields.length;
+    retval.allocate( nrFields );
+    for ( int i = 0; i < nrFields; i++ ) {
+      retval.inputFields[ i ] = (TextFileInputField) inputFields [ i ].clone();
+    }
     return retval;
   }
 
@@ -165,7 +170,7 @@ public class ParGzipCsvInputMeta extends BaseStepMeta implements StepMetaInterfa
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 500 );
+    StringBuilder retval = new StringBuilder( 500 );
 
     retval.append( "    " ).append( XMLHandler.addTagValue( "filename", filename ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "filename_field", filenameField ) );

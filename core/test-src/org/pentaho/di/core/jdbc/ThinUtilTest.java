@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,22 +22,21 @@
 
 package org.pentaho.di.core.jdbc;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
-import java.math.BigDecimal;
-import java.sql.SQLException;
-import java.sql.Types;
-
+import com.google.common.collect.ImmutableMap;
 import org.junit.Test;
 import org.pentaho.di.core.exception.KettleSQLException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.ValueMetaAndData;
 import org.pentaho.di.core.row.ValueMetaInterface;
+
+import java.math.BigDecimal;
+import java.sql.SQLException;
+import java.sql.Types;
+import java.util.Map;
+
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class ThinUtilTest {
   @SuppressWarnings( "deprecation" )
@@ -167,13 +166,53 @@ public class ThinUtilTest {
     assertEquals( expectedName, testValue.getName() );
     assertEquals( ValueMetaInterface.TYPE_BINARY, testValue.getType() );
 
+    testValue = ThinUtil.getValueMeta( expectedName, Types.OTHER );
+    assertEquals( expectedName, testValue.getName() );
+    assertEquals( ValueMetaInterface.TYPE_NONE, testValue.getType() );
+
+    testValue = ThinUtil.getValueMeta( expectedName, Types.NULL );
+    assertEquals( expectedName, testValue.getName() );
+    assertEquals( ValueMetaInterface.TYPE_NONE, testValue.getType() );
+
     try {
-      testValue = ThinUtil.getValueMeta( expectedName, Integer.MIN_VALUE );
+      ThinUtil.getValueMeta( expectedName, Integer.MIN_VALUE );
       fail();
     } catch ( SQLException expected ) {
       // Do nothing, there is no SQL Type for Integer.MIN_VALUE, an exception was thrown as expected.
     }
   }
+
+  @SuppressWarnings( "deprecation" )
+  @Test
+  public void checkValueMetaTypeToSqlTypeConsistency() throws SQLException {
+    class TypeMap {
+      ValueMetaInterface valueMeta;
+      int sqlType;
+      String sqlDesc;
+      TypeMap( int valueMetaType, int sqlType, String desc ) {
+        this.valueMeta = mock( ValueMetaInterface.class );
+        when( valueMeta.getType() ).thenReturn( valueMetaType );
+        this.sqlType = sqlType;
+        this.sqlDesc = desc;
+      }
+    }
+    TypeMap[] typeMaps = new TypeMap[] {
+      new TypeMap( ValueMetaInterface.TYPE_STRING,    Types.VARCHAR,   "VARCHAR" ),
+      new TypeMap( ValueMetaInterface.TYPE_DATE,      Types.TIMESTAMP, "TIMESTAMP" ),
+      new TypeMap( ValueMetaInterface.TYPE_INTEGER,   Types.BIGINT,    "BIGINT" ),
+      new TypeMap( ValueMetaInterface.TYPE_NUMBER,    Types.DOUBLE,    "DOUBLE" ),
+      new TypeMap( ValueMetaInterface.TYPE_BIGNUMBER, Types.DECIMAL,   "DECIMAL" ),
+      new TypeMap( ValueMetaInterface.TYPE_BOOLEAN,   Types.BOOLEAN,   "BOOLEAN" ),
+      new TypeMap( ValueMetaInterface.TYPE_BINARY,    Types.BLOB,      "BLOB" ),
+      new TypeMap( ValueMetaInterface.TYPE_NONE,      Types.OTHER,     "OTHER" ),
+    };
+    for ( TypeMap map : typeMaps ) {
+      assertEquals( map.sqlDesc, ThinUtil.getSqlTypeDesc( map.valueMeta ) );
+      assertEquals( map.sqlType, ThinUtil.getSqlType( map.valueMeta ) );
+      assertEquals( map.valueMeta.getType(), ThinUtil.getValueMeta( "test", map.sqlType ).getType() );
+    }
+  }
+
 
   @SuppressWarnings( "deprecation" )
   @Test
@@ -196,7 +235,7 @@ public class ThinUtilTest {
     ValueMetaAndData result = ThinUtil.attemptIntegerValueExtraction( "12345" );
     assertNotNull( result );
     assertEquals( ValueMetaInterface.TYPE_INTEGER, result.getValueMeta().getType() );
-    assertEquals( Long.valueOf( 12345 ), result.getValueData() );
+    assertEquals( 12345L, result.getValueData() );
 
     //assertNull( ThinUtil.attemptIntegerValueExtraction( null ) );
     assertNull( ThinUtil.attemptIntegerValueExtraction( "" ) );
@@ -209,7 +248,7 @@ public class ThinUtilTest {
     ValueMetaAndData result = ThinUtil.attemptNumberValueExtraction( "12345.678" );
     assertNotNull( result );
     assertEquals( ValueMetaInterface.TYPE_NUMBER, result.getValueMeta().getType() );
-    assertEquals( Double.valueOf( 12345.678 ), result.getValueData() );
+    assertEquals( 12345.678, result.getValueData() );
 
     //assertNull( ThinUtil.attemptNumberValueExtraction( null ) );
     assertNull( ThinUtil.attemptNumberValueExtraction( "" ) );
@@ -263,5 +302,27 @@ public class ThinUtilTest {
     assertNull( ThinUtil.attemptBooleanValueExtraction( null ) );
     assertNull( ThinUtil.attemptBooleanValueExtraction( "" ) );
     assertNull( ThinUtil.attemptBooleanValueExtraction( "abcde" ) );
+  }
+
+  @SuppressWarnings( "deprecation" )
+  @Test
+  public void testStripQuotesIfNoWhitespace() {
+    // map of tests to expected result
+    Map<String, String> testStrings = new ImmutableMap.Builder<String, String>()
+      .put( "\"quotedNospace\"",                   "quotedNospace" )
+      .put( "unquoted",                            "unquoted" )
+      .put( "\"quoted space\"",                    "\"quoted space\"" )
+      .put( "\"field\" \"fieldAlias\"",            "\"field\" \"fieldAlias\"" )
+      .put( "\"field with space\" \"fieldAlias\"", "\"field with space\" \"fieldAlias\"" )
+      .put( "\"field\" AS \"field Alias\"",        "\"field\" AS \"field Alias\"" )
+      .build();
+
+    for ( String test : testStrings.keySet() ) {
+      for ( char quote : new char[] { '\'', '"', '`' } ) {
+        assertEquals(
+          testStrings.get( test ).replace( '"', quote ),
+          ThinUtil.stripQuotesIfNoWhitespace( test.replace( '"', quote ), quote ) );
+      }
+    }
   }
 }

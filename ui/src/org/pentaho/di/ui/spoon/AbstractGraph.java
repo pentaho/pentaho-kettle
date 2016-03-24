@@ -113,15 +113,18 @@ public abstract class AbstractGraph extends Composite {
   }
 
   protected <T extends GUIPositionInterface> void doRightClickSelection( T clicked, List<T> selection ) {
-    if ( !selection.isEmpty() && !selection.contains( clicked ) ) {
+    if ( selection.contains( clicked ) ) {
+      return;
+    }
+    if ( !selection.isEmpty() ) {
       for ( GUIPositionInterface selected : selection ) {
         selected.setSelected( false );
       }
       selection.clear();
-      clicked.setSelected( true );
-      selection.add( clicked );
-      redraw();
     }
+    clicked.setSelected( true );
+    selection.add( clicked );
+    redraw();
   }
 
   public void redraw() {

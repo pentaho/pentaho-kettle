@@ -157,28 +157,20 @@ public class RssOutputMeta extends BaseStepMeta implements StepMetaInterface {
     retval.allocate( nrfields );
 
     // Read custom channel fields
-    for ( int i = 0; i < nrfields; i++ ) {
-      retval.ChannelCustomFields[i] = ChannelCustomFields[i];
-      retval.ChannelCustomTags[i] = ChannelCustomTags[i];
-    }
+    System.arraycopy( ChannelCustomFields, 0, retval.ChannelCustomFields, 0, nrfields );
+    System.arraycopy( ChannelCustomTags, 0, retval.ChannelCustomTags, 0, nrfields );
 
+    // items
     int nritemfields = ItemCustomFields.length;
     retval.allocateitem( nritemfields );
-
-    // Read custom channel fields
-    for ( int i = 0; i < nritemfields; i++ ) {
-      retval.ItemCustomFields[i] = ItemCustomFields[i];
-      retval.ItemCustomTags[i] = ItemCustomTags[i];
-    }
+    System.arraycopy( ItemCustomFields, 0, retval.ItemCustomFields, 0, nritemfields );
+    System.arraycopy( ItemCustomTags, 0, retval.ItemCustomTags, 0, nritemfields );
 
     // Namespaces
-    int nramespaces = NameSpaces.length;
-    retval.allocatenamespace( nramespaces );
-    // Read custom channel fields
-    for ( int i = 0; i < nramespaces; i++ ) {
-      retval.NameSpacesTitle[i] = NameSpacesTitle[i];
-      retval.NameSpaces[i] = NameSpaces[i];
-    }
+    int nrNameSpaces = NameSpaces.length;
+    retval.allocatenamespace( nrNameSpaces );
+    System.arraycopy( NameSpacesTitle, 0, retval.NameSpacesTitle, 0, nrNameSpaces );
+    System.arraycopy( NameSpaces, 0, retval.NameSpaces, 0, nrNameSpaces );
 
     return retval;
 
@@ -748,7 +740,7 @@ public class RssOutputMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer();
+    StringBuilder retval = new StringBuilder();
 
     retval.append( "    " + XMLHandler.addTagValue( "displayitem", displayitem ) );
     retval.append( "    " + XMLHandler.addTagValue( "customrss", customrss ) );

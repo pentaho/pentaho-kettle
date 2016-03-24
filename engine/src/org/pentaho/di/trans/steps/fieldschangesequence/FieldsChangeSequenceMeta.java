@@ -99,9 +99,7 @@ public class FieldsChangeSequenceMeta extends BaseStepMeta implements StepMetaIn
 
     retval.allocate( nrfields );
 
-    for ( int i = 0; i < nrfields; i++ ) {
-      retval.fieldName[i] = fieldName[i];
-    }
+    System.arraycopy( fieldName, 0, retval.fieldName, 0, nrfields );
     return retval;
   }
 
@@ -157,7 +155,7 @@ public class FieldsChangeSequenceMeta extends BaseStepMeta implements StepMetaIn
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer();
+    StringBuilder retval = new StringBuilder();
     retval.append( "      " + XMLHandler.addTagValue( "start", start ) );
     retval.append( "      " + XMLHandler.addTagValue( "increment", increment ) );
     retval.append( "      " + XMLHandler.addTagValue( "resultfieldName", resultfieldName ) );

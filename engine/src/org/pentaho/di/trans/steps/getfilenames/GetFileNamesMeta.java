@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -36,8 +36,11 @@ import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.fileinput.FileInputList;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaBoolean;
+import org.pentaho.di.core.row.value.ValueMetaDate;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -382,13 +385,12 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface 
 
     retval.allocate( nrfiles );
 
-    for ( int i = 0; i < nrfiles; i++ ) {
-      retval.fileName[i] = fileName[i];
-      retval.fileMask[i] = fileMask[i];
-      retval.excludeFileMask[i] = excludeFileMask[i];
-      retval.fileRequired[i] = fileRequired[i];
-      retval.includeSubFolders[i] = includeSubFolders[i];
-    }
+    System.arraycopy( fileName, 0, retval.fileName, 0, nrfiles );
+    System.arraycopy( fileMask, 0, retval.fileMask, 0, nrfiles );
+    System.arraycopy( excludeFileMask, 0, retval.excludeFileMask, 0, nrfiles );
+    System.arraycopy( fileRequired, 0, retval.fileRequired, 0, nrfiles );
+    System.arraycopy( fileName, 0, retval.fileName, 0, nrfiles );
+    System.arraycopy( includeSubFolders, 0, retval.includeSubFolders, 0, nrfiles );
 
     return retval;
   }
@@ -429,80 +431,80 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface 
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
 
     // the filename
-    ValueMetaInterface filename = new ValueMeta( "filename", ValueMeta.TYPE_STRING );
+    ValueMetaInterface filename = new ValueMetaString( "filename" );
     filename.setLength( 500 );
     filename.setPrecision( -1 );
     filename.setOrigin( name );
     row.addValueMeta( filename );
 
     // the short filename
-    ValueMetaInterface short_filename = new ValueMeta( "short_filename", ValueMeta.TYPE_STRING );
+    ValueMetaInterface short_filename = new ValueMetaString( "short_filename" );
     short_filename.setLength( 500 );
     short_filename.setPrecision( -1 );
     short_filename.setOrigin( name );
     row.addValueMeta( short_filename );
 
     // the path
-    ValueMetaInterface path = new ValueMeta( "path", ValueMeta.TYPE_STRING );
+    ValueMetaInterface path = new ValueMetaString( "path" );
     path.setLength( 500 );
     path.setPrecision( -1 );
     path.setOrigin( name );
     row.addValueMeta( path );
 
     // the type
-    ValueMetaInterface type = new ValueMeta( "type", ValueMeta.TYPE_STRING );
+    ValueMetaInterface type = new ValueMetaString( "type" );
     type.setLength( 500 );
     type.setPrecision( -1 );
     type.setOrigin( name );
     row.addValueMeta( type );
 
     // the exists
-    ValueMetaInterface exists = new ValueMeta( "exists", ValueMeta.TYPE_BOOLEAN );
+    ValueMetaInterface exists = new ValueMetaBoolean( "exists" );
     exists.setOrigin( name );
     row.addValueMeta( exists );
 
     // the ishidden
-    ValueMetaInterface ishidden = new ValueMeta( "ishidden", ValueMeta.TYPE_BOOLEAN );
+    ValueMetaInterface ishidden = new ValueMetaBoolean( "ishidden" );
     ishidden.setOrigin( name );
     row.addValueMeta( ishidden );
 
     // the isreadable
-    ValueMetaInterface isreadable = new ValueMeta( "isreadable", ValueMeta.TYPE_BOOLEAN );
+    ValueMetaInterface isreadable = new ValueMetaBoolean( "isreadable" );
     isreadable.setOrigin( name );
     row.addValueMeta( isreadable );
 
     // the iswriteable
-    ValueMetaInterface iswriteable = new ValueMeta( "iswriteable", ValueMeta.TYPE_BOOLEAN );
+    ValueMetaInterface iswriteable = new ValueMetaBoolean( "iswriteable" );
     iswriteable.setOrigin( name );
     row.addValueMeta( iswriteable );
 
     // the lastmodifiedtime
-    ValueMetaInterface lastmodifiedtime = new ValueMeta( "lastmodifiedtime", ValueMeta.TYPE_DATE );
+    ValueMetaInterface lastmodifiedtime = new ValueMetaDate( "lastmodifiedtime" );
     lastmodifiedtime.setOrigin( name );
     row.addValueMeta( lastmodifiedtime );
 
     // the size
-    ValueMetaInterface size = new ValueMeta( "size", ValueMeta.TYPE_INTEGER );
+    ValueMetaInterface size = new ValueMetaInteger( "size" );
     size.setOrigin( name );
     row.addValueMeta( size );
 
     // the extension
-    ValueMetaInterface extension = new ValueMeta( "extension", ValueMeta.TYPE_STRING );
+    ValueMetaInterface extension = new ValueMetaString( "extension" );
     extension.setOrigin( name );
     row.addValueMeta( extension );
 
     // the uri
-    ValueMetaInterface uri = new ValueMeta( "uri", ValueMeta.TYPE_STRING );
+    ValueMetaInterface uri = new ValueMetaString( "uri" );
     uri.setOrigin( name );
     row.addValueMeta( uri );
 
     // the rooturi
-    ValueMetaInterface rooturi = new ValueMeta( "rooturi", ValueMeta.TYPE_STRING );
+    ValueMetaInterface rooturi = new ValueMetaString( "rooturi" );
     rooturi.setOrigin( name );
     row.addValueMeta( rooturi );
 
     if ( includeRowNumber ) {
-      ValueMetaInterface v = new ValueMeta( space.environmentSubstitute( rowNumberField ), ValueMeta.TYPE_INTEGER );
+      ValueMetaInterface v = new ValueMetaInteger( space.environmentSubstitute( rowNumberField ) );
       v.setLength( ValueMetaInterface.DEFAULT_INTEGER_LENGTH, 0 );
       v.setOrigin( name );
       row.addValueMeta( v );
@@ -511,7 +513,7 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface 
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 300 );
+    StringBuilder retval = new StringBuilder( 300 );
 
     retval.append( "    <filter>" ).append( Const.CR );
     retval.append( "      " ).append( XMLHandler.addTagValue( "filterfiletype", fileTypeFilter.toString() ) );

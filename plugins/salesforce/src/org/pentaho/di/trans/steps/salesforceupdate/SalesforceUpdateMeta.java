@@ -50,7 +50,14 @@ import org.pentaho.di.trans.steps.salesforceinput.SalesforceConnectionUtils;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
-@Step(id="SalesforceUpdate", i18nPackageName="org.pentaho.di.trans.steps.salesforceupdate", name="SalesforceUpdate.TypeLongDesc.SalesforceUpdate", description="SalesforceUpdate.TypeTooltipDesc.SalesforceUpdate", categoryDescription="i18n:org.pentaho.di.trans.step:BaseStep.Category.Output", image="SFUD.svg", documentationUrl="http://wiki.pentaho.com/display/EAI/Salesforce+Update")
+@Step(
+    id = "SalesforceUpdate",
+    i18nPackageName = "org.pentaho.di.trans.steps.salesforceupdate",
+    name = "SalesforceUpdate.TypeLongDesc.SalesforceUpdate",
+    description = "SalesforceUpdate.TypeTooltipDesc.SalesforceUpdate",
+    categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Output",
+    image = "SFUD.svg",
+    documentationUrl = "http://wiki.pentaho.com/display/EAI/Salesforce+Update" )
 public class SalesforceUpdateMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = SalesforceUpdateMeta.class; // for i18n purposes, needed by Translator2!!
 

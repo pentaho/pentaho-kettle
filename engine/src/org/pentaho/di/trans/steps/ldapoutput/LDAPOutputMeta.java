@@ -519,12 +519,10 @@ public class LDAPOutputMeta extends BaseStepMeta implements LdapMeta {
     int nrvalues = updateLookup.length;
 
     retval.allocate( nrvalues );
+    System.arraycopy( updateLookup, 0, retval.updateLookup, 0, nrvalues );
+    System.arraycopy( updateStream, 0, retval.updateStream, 0, nrvalues );
+    System.arraycopy( update, 0, retval.update, 0, nrvalues );
 
-    for ( int i = 0; i < nrvalues; i++ ) {
-      retval.updateLookup[i] = updateLookup[i];
-      retval.updateStream[i] = updateStream[i];
-      retval.update[i] = update[i];
-    }
     return retval;
   }
 
@@ -631,7 +629,7 @@ public class LDAPOutputMeta extends BaseStepMeta implements LdapMeta {
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 500 );
+    StringBuilder retval = new StringBuilder( 500 );
 
     retval.append( "    " ).append( XMLHandler.addTagValue( "useauthentication", useAuthentication ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "host", Host ) );

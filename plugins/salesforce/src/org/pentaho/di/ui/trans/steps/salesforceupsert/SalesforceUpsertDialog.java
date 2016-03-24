@@ -737,6 +737,7 @@ public class SalesforceUpsertDialog extends BaseStepDialog implements StepDialog
   private void test() {
     boolean successConnection = true;
     String msgError = null;
+    String realUsername = null;
     SalesforceConnection connection = null;
     try {
       SalesforceUpsertMeta meta = new SalesforceUpsertMeta();
@@ -747,9 +748,10 @@ public class SalesforceUpsertDialog extends BaseStepDialog implements StepDialog
         return;
       }
 
-      connection =
-        new SalesforceConnection( log, transMeta.environmentSubstitute( meta.getTargetURL() ), transMeta
-          .environmentSubstitute( meta.getUserName() ), transMeta.environmentSubstitute( meta.getPassword() ) );
+      String realURL = transMeta.environmentSubstitute( meta.getTargetURL() );
+      realUsername = transMeta.environmentSubstitute( meta.getUserName() );
+      String realPassword = transMeta.environmentSubstitute( meta.getPassword() );
+      connection = new SalesforceConnection( log, realURL, realUsername, realPassword );
       connection.connect();
 
       successConnection = true;
@@ -768,7 +770,7 @@ public class SalesforceUpsertDialog extends BaseStepDialog implements StepDialog
 
     if ( successConnection ) {
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_INFORMATION );
-      mb.setMessage( BaseMessages.getString( PKG, "SalesforceUpsertDialog.Connected.OK", wUserName.getText() )
+      mb.setMessage( BaseMessages.getString( PKG, "SalesforceUpsertDialog.Connected.OK", realUsername )
         + Const.CR );
       mb.setText( BaseMessages.getString( PKG, "SalesforceUpsertDialog.Connected.Title.Ok" ) );
       mb.open();
@@ -776,7 +778,7 @@ public class SalesforceUpsertDialog extends BaseStepDialog implements StepDialog
       new ErrorDialog(
         shell,
         BaseMessages.getString( PKG, "SalesforceUpsertDialog.Connected.Title.Error" ),
-        BaseMessages.getString( PKG, "SalesforceUpsertDialog.Connected.NOK", wUserName.getText() ),
+        BaseMessages.getString( PKG, "SalesforceUpsertDialog.Connected.NOK", realUsername ),
         new Exception( msgError ) );
     }
 

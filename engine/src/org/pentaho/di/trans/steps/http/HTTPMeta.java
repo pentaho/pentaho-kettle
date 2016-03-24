@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -33,8 +33,9 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -290,15 +291,10 @@ public class HTTPMeta extends BaseStepMeta implements StepMetaInterface {
 
     retval.allocate( nrargs, nrheaderparams );
 
-    for ( int i = 0; i < nrargs; i++ ) {
-      retval.argumentField[i] = argumentField[i];
-      retval.argumentParameter[i] = argumentParameter[i];
-    }
-
-    for ( int i = 0; i < nrheaderparams; i++ ) {
-      retval.headerField[i] = headerField[i];
-      retval.headerParameter[i] = headerParameter[i];
-    }
+    System.arraycopy( argumentField, 0, retval.argumentField, 0, nrargs );
+    System.arraycopy( argumentParameter, 0, retval.argumentParameter, 0, nrargs );
+    System.arraycopy( headerField, 0, retval.headerField, 0, nrheaderparams );
+    System.arraycopy( headerParameter, 0, retval.headerParameter, 0, nrheaderparams );
 
     return retval;
   }
@@ -334,26 +330,26 @@ public class HTTPMeta extends BaseStepMeta implements StepMetaInterface {
   public void getFields( RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info, StepMeta nextStep,
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     if ( !Const.isEmpty( fieldName ) ) {
-      ValueMetaInterface v = new ValueMeta( fieldName, ValueMeta.TYPE_STRING );
+      ValueMetaInterface v = new ValueMetaString( fieldName );
       v.setOrigin( name );
       inputRowMeta.addValueMeta( v );
     }
     if ( !Const.isEmpty( resultCodeFieldName ) ) {
       ValueMetaInterface v =
-        new ValueMeta( space.environmentSubstitute( resultCodeFieldName ), ValueMeta.TYPE_INTEGER );
+        new ValueMetaInteger( space.environmentSubstitute( resultCodeFieldName ) );
       v.setOrigin( name );
       inputRowMeta.addValueMeta( v );
     }
     if ( !Const.isEmpty( responseTimeFieldName ) ) {
       ValueMetaInterface v =
-        new ValueMeta( space.environmentSubstitute( responseTimeFieldName ), ValueMeta.TYPE_INTEGER );
+        new ValueMetaInteger( space.environmentSubstitute( responseTimeFieldName ) );
       v.setOrigin( name );
       inputRowMeta.addValueMeta( v );
     }
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 300 );
+    StringBuilder retval = new StringBuilder( 300 );
 
     retval.append( "    " ).append( XMLHandler.addTagValue( "url", url ) );
     retval.append( "    " + XMLHandler.addTagValue( "urlInField", urlInField ) );

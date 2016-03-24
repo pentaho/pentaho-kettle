@@ -851,7 +851,7 @@ public class SalesforceConnection {
     try {
       return getBinding().upsert( upsertField, sfBuffer );
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG, "SalesforceInput.ErrorUpsert" , e ) );
+      throw new KettleException( BaseMessages.getString( PKG, "SalesforceInput.ErrorUpsert", e ) );
     }
   }
 
@@ -859,7 +859,7 @@ public class SalesforceConnection {
     try {
       return getBinding().create( sfBuffer );
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG, "SalesforceInput.ErrorInsert" , e ) );
+      throw new KettleException( BaseMessages.getString( PKG, "SalesforceInput.ErrorInsert", e ) );
     }
   }
 
@@ -867,7 +867,7 @@ public class SalesforceConnection {
     try {
       return getBinding().update( sfBuffer );
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG, "SalesforceInput.ErrorUpdate" , e ) );
+      throw new KettleException( BaseMessages.getString( PKG, "SalesforceInput.ErrorUpdate", e ) );
     }
   }
 
@@ -875,7 +875,7 @@ public class SalesforceConnection {
     try {
       return getBinding().delete( id );
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG, "SalesforceInput.ErrorDelete" , e ) );
+      throw new KettleException( BaseMessages.getString( PKG, "SalesforceInput.ErrorDelete", e ) );
     }
   }
 

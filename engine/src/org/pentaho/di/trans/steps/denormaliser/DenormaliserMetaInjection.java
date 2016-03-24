@@ -139,10 +139,12 @@ public class DenormaliserMetaInjection implements StepMetaInjectionInterface {
       }
     }
 
-    // Pass the grid to the step metadata
-    //
-    meta.setDenormaliserTargetField( denormaliserTargetFields
-      .toArray( new DenormaliserTargetField[denormaliserTargetFields.size()] ) );
+    if ( !denormaliserTargetFields.isEmpty() ) {
+      // Pass the grid to the step metadata
+      //
+      meta.setDenormaliserTargetField( denormaliserTargetFields.toArray(
+          new DenormaliserTargetField[denormaliserTargetFields.size()] ) );
+    }
 
   }
 

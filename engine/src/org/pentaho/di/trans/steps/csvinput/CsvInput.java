@@ -22,13 +22,6 @@
 
 package org.pentaho.di.trans.steps.csvinput;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.provider.local.LocalFile;
 import org.pentaho.di.core.Const;
@@ -51,6 +44,13 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.textfileinput.EncodingType;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Read a simple CSV file Just output Strings found in the file...
@@ -425,6 +425,21 @@ public class CsvInput extends BaseStep implements StepInterface {
             // Make certain that at least one record exists before
             // filling the rest of them with null
             if ( outputIndex > 0 ) {
+              // Optionally add the current filename to the mix as well...
+              //
+              if ( meta.isIncludingFilename() && !Const.isEmpty( meta.getFilenameField() ) ) {
+                if ( meta.isLazyConversionActive() ) {
+                  outputRowData[ data.filenameFieldIndex ] = data.binaryFilename;
+                } else {
+                  outputRowData[ data.filenameFieldIndex ] = data.filenames[ data.filenr - 1 ];
+                }
+              }
+
+              if ( data.isAddingRowNumber ) {
+                outputRowData[data.rownumFieldIndex] = data.rowNumber++;
+              }
+
+              incrementLinesInput();
               return outputRowData;
             }
           }
@@ -727,7 +742,7 @@ public class CsvInput extends BaseStep implements StepInterface {
         }
       }
 
-      switch( data.encodingType ) {
+      switch ( data.encodingType ) {
         case DOUBLE_BIG_ENDIAN:
           data.crLfMatcher = new MultiByteBigCrLfMatcher();
           break;

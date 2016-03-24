@@ -224,7 +224,16 @@ public class MemoryGroupByMeta extends BaseStepMeta implements StepMetaInterface
   }
 
   public Object clone() {
-    Object retval = super.clone();
+    MemoryGroupByMeta retval = (MemoryGroupByMeta) super.clone();
+    int nrFields = aggregateField.length;
+    int nrGroups = groupField.length;
+
+    retval.allocate( nrGroups, nrFields );
+    System.arraycopy( groupField, 0, retval.groupField, 0, nrGroups );
+    System.arraycopy( aggregateField, 0, retval.aggregateField, 0, nrFields );
+    System.arraycopy( subjectField, 0, retval.subjectField, 0, nrFields );
+    System.arraycopy( aggregateType, 0, retval.aggregateType, 0, nrFields );
+    System.arraycopy( valueField, 0, retval.valueField, 0, nrFields );
     return retval;
   }
 
@@ -392,7 +401,7 @@ public class MemoryGroupByMeta extends BaseStepMeta implements StepMetaInterface
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 500 );
+    StringBuilder retval = new StringBuilder( 500 );
 
     retval.append( "      " ).append( XMLHandler.addTagValue( "give_back_row", alwaysGivingBackOneRow ) );
 

@@ -51,9 +51,9 @@ public class JobFileListener implements FileListener {
 
       JobMeta jobMeta = new JobMeta();
       jobMeta.loadXML( jobNode, fname, spoon.getRepository(), spoon.getMetaStore(), false, spoon );
-      if( jobMeta.hasMissingPlugins() ) {
+      if ( jobMeta.hasMissingPlugins() ) {
         MissingEntryDialog missingDialog = new MissingEntryDialog( spoon.getShell(), jobMeta.getMissingEntries() );
-        if( missingDialog.open() == null ) {
+        if ( missingDialog.open() == null ) {
           return true;
         }
       }
@@ -63,7 +63,7 @@ public class JobFileListener implements FileListener {
       spoon.setJobMetaVariables( jobMeta );
       spoon.getProperties().addLastFile( LastUsedFile.FILE_TYPE_JOB, fname, null, false, null );
       spoon.addMenuLast();
-      
+
       // If we are importing into a repository we need to fix 
       // up the references to other jobs and transformations
       // if any exist.
@@ -74,7 +74,7 @@ public class JobFileListener implements FileListener {
       } else {
         jobMeta.clearChanged();
       }
-      
+
       jobMeta.setFilename( fname );
       spoon.delegates.jobs.addJobGraph( jobMeta );
 
@@ -96,14 +96,13 @@ public class JobFileListener implements FileListener {
   private JobMeta fixLinks( JobMeta jobMeta ) {
     jobMeta = processLinkedJobs( jobMeta );
     jobMeta = processLinkedTrans( jobMeta );
-    
     return jobMeta;
   }
 
   protected JobMeta processLinkedJobs( JobMeta jobMeta ) {
-    for ( int i=0; i<jobMeta.nrJobEntries(); i++ ) {
+    for ( int i = 0; i < jobMeta.nrJobEntries(); i++ ) {
       JobEntryCopy jec = jobMeta.getJobEntry( i );
-      if (jec.getEntry() instanceof JobEntryJob) {
+      if ( jec.getEntry() instanceof JobEntryJob ) {
         JobEntryJob jej = (JobEntryJob) jec.getEntry();
         ObjectLocationSpecificationMethod specMethod = jej.getSpecificationMethod();
         // If the reference is by filename, change it to Repository By Name. Otherwise it's fine so leave it alone
@@ -122,9 +121,9 @@ public class JobFileListener implements FileListener {
   }
 
   protected JobMeta processLinkedTrans( JobMeta jobMeta ) {
-    for ( int i=0; i<jobMeta.nrJobEntries(); i++ ) {
+    for ( int i = 0; i < jobMeta.nrJobEntries(); i++ ) {
       JobEntryCopy jec = jobMeta.getJobEntry( i );
-      if (jec.getEntry() instanceof JobEntryTrans) {
+      if ( jec.getEntry() instanceof JobEntryTrans ) {
         JobEntryTrans jet = (JobEntryTrans) jec.getEntry();
         ObjectLocationSpecificationMethod specMethod = jet.getSpecificationMethod();
         // If the reference is by filename, change it to Repository By Name. Otherwise it's fine so leave it alone

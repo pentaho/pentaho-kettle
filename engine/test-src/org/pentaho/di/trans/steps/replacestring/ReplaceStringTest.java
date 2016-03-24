@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -58,7 +58,7 @@ public class ReplaceStringTest {
     when( stepMockHelper.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) ).thenReturn(
         stepMockHelper.logChannelInterface );
     verify( stepMockHelper.logChannelInterface, never() ).logError( anyString() );
-    verify( stepMockHelper.logChannelInterface, never() ).logError( anyString(), anyObject() );
+    verify( stepMockHelper.logChannelInterface, never() ).logError( anyString(), any( Object[].class ) );
     verify( stepMockHelper.logChannelInterface, never() ).logError( anyString(), (Throwable) anyObject() );
     when( stepMockHelper.trans.isRunning() ).thenReturn( true );
   }

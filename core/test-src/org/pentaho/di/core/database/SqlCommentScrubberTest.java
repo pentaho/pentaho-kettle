@@ -22,7 +22,7 @@
 
 package org.pentaho.di.core.database;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.Assert;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -64,6 +64,6 @@ public class SqlCommentScrubberTest {
 
   @Test
   public void testRemoveComments() throws Exception {
-    assertEquals(expected, SqlCommentScrubber.removeComments( input ) );
+    Assert.assertEquals( expected, SqlCommentScrubber.removeComments( input ) );
   }
 }

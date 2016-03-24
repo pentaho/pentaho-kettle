@@ -223,11 +223,9 @@ public class DBProcMeta extends BaseStepMeta implements StepMetaInterface {
 
     retval.allocate( nrargs );
 
-    for ( int i = 0; i < nrargs; i++ ) {
-      retval.argument[i] = argument[i];
-      retval.argumentDirection[i] = argumentDirection[i];
-      retval.argumentType[i] = argumentType[i];
-    }
+    System.arraycopy( argument, 0, retval.argument, 0, nrargs );
+    System.arraycopy( argumentDirection, 0, retval.argumentDirection, 0, nrargs );
+    System.arraycopy( argumentType, 0, retval.argumentType, 0, nrargs );
 
     return retval;
   }
@@ -275,7 +273,7 @@ public class DBProcMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 500 );
+    StringBuilder retval = new StringBuilder( 500 );
 
     retval
       .append( "    " ).append( XMLHandler.addTagValue( "connection", database == null ? "" : database.getName() ) );

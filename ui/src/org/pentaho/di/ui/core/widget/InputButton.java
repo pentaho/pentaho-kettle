@@ -36,7 +36,7 @@ public class InputButton extends Composite {
     WidgetUtils.setFormLayout( this, 0 );
 
     button = new Button( this, SWT.PUSH );
-    button.setLayoutData( new FormDataBuilder().right().bottom().width( width ).result() );   
+    button.setLayoutData( new FormDataBuilder().right().bottom().width( width ).result() );
   }
 
   public void setText( String text ) {

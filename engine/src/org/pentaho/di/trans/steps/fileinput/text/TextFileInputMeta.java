@@ -37,6 +37,9 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.fileinput.FileInputList;
+import org.pentaho.di.core.injection.Injection;
+import org.pentaho.di.core.injection.InjectionDeep;
+import org.pentaho.di.core.injection.InjectionSupported;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
@@ -55,7 +58,6 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.step.StepMetaInjectionInterface;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.fileinput.BaseFileInputField;
 import org.pentaho.di.trans.steps.fileinput.BaseFileInputStepMeta;
@@ -64,6 +66,7 @@ import org.w3c.dom.Node;
 
 import com.google.common.annotations.VisibleForTesting;
 
+@InjectionSupported( localizationPrefix = "TextFileInput.Injection.", groups = { "FILENAME_LINES", "FIELDS", "FILTERS" } )
 public class TextFileInputMeta extends BaseFileInputStepMeta implements StepMetaInterface {
   private static Class<?> PKG = TextFileInputMeta.class; // for i18n purposes, needed by Translator2!! TODO: check i18n
                                                          // for base
@@ -77,104 +80,139 @@ public class TextFileInputMeta extends BaseFileInputStepMeta implements StepMeta
   public static final int FILE_TYPE_CSV = 0;
   public static final int FILE_TYPE_FIXED = 1;
 
+  @InjectionDeep
   public Content content = new Content();
 
   public static class Content implements Cloneable {
 
     /** Type of file: CSV or fixed */
+    @Injection( name = "FILE_TYPE" )
     public String fileType;
 
     /** String used to separated field (;) */
+    @Injection( name = "SEPARATOR" )
     public String separator;
 
     /** String used to enclose separated fields (") */
+    @Injection( name = "ENCLOSURE" )
     public String enclosure;
 
     /** Switch to allow breaks (CR/LF) in Enclosures */
+    @Injection( name = "BREAK_IN_ENCLOSURE" )
     public boolean breakInEnclosureAllowed;
 
     /** Escape character used to escape the enclosure String (\) */
+    @Injection( name = "ESCAPE_CHAR" )
     public String escapeCharacter;
 
     /** Flag indicating that the file contains one header line that should be skipped. */
+    @Injection( name = "HEADER_PRESENT" )
     public boolean header;
 
     /** The number of header lines, defaults to 1 */
-    public int nrHeaderLines;
+    @Injection( name = "NR_HEADER_LINES" )
+    public int nrHeaderLines = -1;
 
     /** Flag indicating that the file contains one footer line that should be skipped. */
+    @Injection( name = "HAS_FOOTER" )
     public boolean footer;
 
     /** The number of footer lines, defaults to 1 */
-    public int nrFooterLines;
+    @Injection( name = "NR_FOOTER_LINES" )
+    public int nrFooterLines = -1;
 
     /** Flag indicating that a single line is wrapped onto one or more lines in the text file. */
+    @Injection( name = "HAS_WRAPPED_LINES" )
     public boolean lineWrapped;
 
     /** The number of times the line wrapped */
-    public int nrWraps;
+    @Injection( name = "NR_WRAPS" )
+    public int nrWraps = -1;
 
     /** Flag indicating that the text-file has a paged layout. */
+    @Injection( name = "HAS_PAGED_LAYOUT" )
     public boolean layoutPaged;
 
     /** The number of lines to read per page */
-    public int nrLinesPerPage;
+    @Injection( name = "NR_LINES_PER_PAGE" )
+    public int nrLinesPerPage = -1;
 
     /** The number of lines in the document header */
-    public int nrLinesDocHeader;
+    @Injection( name = "NR_DOC_HEADER_LINES" )
+    public int nrLinesDocHeader = -1;
 
     /** Type of compression being used */
+    @Injection( name = "COMPRESSION_TYPE" )
     public String fileCompression;
 
     /** Flag indicating that we should skip all empty lines */
+    @Injection( name = "NO_EMPTY_LINES" )
     public boolean noEmptyLines;
 
     /** Flag indicating that we should include the filename in the output */
+    @Injection( name = "INCLUDE_FILENAME" )
     public boolean includeFilename;
 
     /** The name of the field in the output containing the filename */
+    @Injection( name = "FILENAME_FIELD" )
     public String filenameField;
 
     /** Flag indicating that a row number field should be included in the output */
+    @Injection( name = "INCLUDE_ROW_NUMBER" )
     public boolean includeRowNumber;
 
     /** The name of the field in the output containing the row number */
+    @Injection( name = "ROW_NUMBER_FIELD" )
     public String rowNumberField;
 
     /** Flag indicating row number is per file */
+    @Injection( name = "ROW_NUMBER_BY_FILE" )
     public boolean rowNumberByFile;
 
     /** The file format: DOS or UNIX or mixed */
+    @Injection( name = "FILE_FORMAT" )
     public String fileFormat;
 
     /** The encoding to use for reading: null or empty string means system default encoding */
+    @Injection( name = "ENCODING" )
     public String encoding;
 
     /** The maximum number or lines to read */
-    public long rowLimit;
+    @Injection( name = "ROW_LIMIT" )
+    public long rowLimit = -1;
 
     /** Indicate whether or not we want to date fields strictly according to the format or lenient */
+    @Injection( name = "DATE_FORMAT_LENIENT" )
     public boolean dateFormatLenient;
 
     /** Specifies the Locale of the Date format, null means the default */
     public Locale dateFormatLocale;
 
+    @Injection( name = "DATE_FORMAT_LOCALE" )
+    public void setDateFormatLocale( String locale ) {
+      this.dateFormatLocale = new Locale( locale );
+    }
   }
 
   /** The filters to use... */
+  @InjectionDeep
   private TextFileFilter[] filter = {};
 
   /** The name of the field that will contain the number of errors in the row */
-  private String errorCountField;
+  @Injection( name = "ERROR_COUNT_FIELD" )
+  public String errorCountField;
 
   /** The name of the field that will contain the names of the fields that generated errors, separated by , */
-  private String errorFieldsField;
+  @Injection( name = "ERROR_FIELDS_FIELD" )
+  public String errorFieldsField;
 
   /** The name of the field that will contain the error texts, separated by CR */
-  private String errorTextField;
+  @Injection( name = "ERROR_TEXT_FIELD" )
+  public String errorTextField;
 
   /** If error line are skipped, you can replay without introducing doubles. */
-  private boolean errorLineSkipped;
+  @Injection( name = "ERROR_LINES_SKIPPED" )
+  public boolean errorLineSkipped;
 
   /** The step to accept filenames from */
   private StepMeta acceptingStep;
@@ -382,13 +420,11 @@ public class TextFileInputMeta extends BaseFileInputStepMeta implements StepMeta
 
     retval.allocate( nrfiles, nrfields, nrfilters );
 
-    for ( int i = 0; i < nrfiles; i++ ) {
-      retval.inputFiles.fileName[i] = inputFiles.fileName[i];
-      retval.inputFiles.fileMask[i] = inputFiles.fileMask[i];
-      retval.inputFiles.excludeFileMask[i] = inputFiles.excludeFileMask[i];
-      retval.inputFiles.fileRequired[i] = inputFiles.fileRequired[i];
-      retval.inputFiles.includeSubFolders[i] = inputFiles.includeSubFolders[i];
-    }
+    System.arraycopy( inputFiles.fileName, 0, retval.inputFiles.fileName, 0, nrfiles );
+    System.arraycopy( inputFiles.fileMask, 0, retval.inputFiles.fileMask, 0, nrfiles );
+    System.arraycopy( inputFiles.excludeFileMask, 0, retval.inputFiles.excludeFileMask, 0, nrfiles );
+    System.arraycopy( inputFiles.fileRequired, 0, retval.inputFiles.fileRequired, 0, nrfiles );
+    System.arraycopy( inputFiles.includeSubFolders, 0, retval.inputFiles.includeSubFolders, 0, nrfiles );
 
     for ( int i = 0; i < nrfields; i++ ) {
       retval.inputFiles.inputFields[i] = (BaseFileInputField) inputFiles.inputFields[i].clone();
@@ -636,7 +672,7 @@ public class TextFileInputMeta extends BaseFileInputStepMeta implements StepMeta
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 1500 );
+    StringBuilder retval = new StringBuilder( 1500 );
 
     retval.append( "    " ).append( XMLHandler.addTagValue( "accept_filenames", inputFiles.acceptingFilenames ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "passing_through_fields", inputFiles.passingThruFields ) );
@@ -1210,11 +1246,6 @@ public class TextFileInputMeta extends BaseFileInputStepMeta implements StepMeta
     return errorHandling.errorIgnored && errorHandling.skipBadFiles;
   }
 
-  @Override
-  public StepMetaInjectionInterface getStepMetaInjectionInterface() {
-    return new TextFileInputMetaInjection( this );
-  }
-
   @VisibleForTesting
   public void setFileNameForTest( String[] fileName ) {
     allocateFiles( fileName.length );
@@ -1225,7 +1256,7 @@ public class TextFileInputMeta extends BaseFileInputStepMeta implements StepMeta
     return XMLHandler.getNodeValue( filenamenode );
   }
 
-  protected void saveSource( StringBuffer retVal, String source ) {
+  protected void saveSource( StringBuilder retVal, String source ) {
     retVal.append( "      " ).append( XMLHandler.addTagValue( "name", source ) );
   }
 

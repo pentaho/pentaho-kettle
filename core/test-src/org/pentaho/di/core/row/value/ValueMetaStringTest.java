@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,41 +22,38 @@
 
 package org.pentaho.di.core.row.value;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.sql.Timestamp;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import junit.framework.Assert;
 
-import org.junit.AfterClass;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.di.core.exception.KettleValueException;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 
 public class ValueMetaStringTest {
   private static final String BASE_VALUE = "Some text";
   private static final String TEST_VALUE = "Some text";
-  private static final boolean ValueMetaBase_EMPTY_STRING_AND_NULL_ARE_DIFFERENT =
-      ValueMetaBase.EMPTY_STRING_AND_NULL_ARE_DIFFERENT;
-  private static final boolean ValueMeta_EMPTY_STRING_AND_NULL_ARE_DIFFERENT =
-      ValueMeta.EMPTY_STRING_AND_NULL_ARE_DIFFERENT;
 
-  @AfterClass
-  public static void afterClass() throws NoSuchFieldException, SecurityException, IllegalArgumentException,
-    IllegalAccessException {
-    resetEmptyStringIsNotNull();
+  private ConfigurableMeta meta;
+
+  @Before
+  public void setUp() {
+    meta = new ConfigurableMeta( BASE_VALUE );
+  }
+
+  @After
+  public void tearDown() {
+    meta = null;
   }
 
   @Test
-  public void testGetNativeData_emptyIsNotNull() throws KettleValueException, ParseException, NoSuchFieldException,
-    SecurityException, IllegalArgumentException, IllegalAccessException {
-    ensureEmptyStringIsNotNull( true );
+  public void testGetNativeData_emptyIsNotNull() throws Exception {
+    meta.setNullsAndEmptyAreDifferent( true );
 
-    ValueMetaString meta = new ValueMetaString( BASE_VALUE );
     Assert.assertEquals( BASE_VALUE, meta.getNativeDataType( BASE_VALUE ) );
     Assert.assertEquals( TEST_VALUE, meta.getNativeDataType( TEST_VALUE ) );
     Assert.assertEquals( null, meta.getNativeDataType( null ) );
@@ -95,11 +92,9 @@ public class ValueMetaStringTest {
   }
 
   @Test
-  public void testGetNativeData_emptyIsNull() throws KettleValueException, ParseException, NoSuchFieldException,
-    SecurityException, IllegalArgumentException, IllegalAccessException {
-    ensureEmptyStringIsNotNull( false );
+  public void testGetNativeData_emptyIsNull() throws Exception {
+    meta.setNullsAndEmptyAreDifferent( false );
 
-    ValueMetaString meta = new ValueMetaString( BASE_VALUE );
     Assert.assertEquals( BASE_VALUE, meta.getNativeDataType( BASE_VALUE ) );
     Assert.assertEquals( TEST_VALUE, meta.getNativeDataType( TEST_VALUE ) );
     Assert.assertEquals( null, meta.getNativeDataType( null ) );
@@ -146,9 +141,8 @@ public class ValueMetaStringTest {
 
   @Test
   public void testIsNull_emptyIsNotNull() throws KettleValueException {
-    ensureEmptyStringIsNotNull( true );
+    meta.setNullsAndEmptyAreDifferent( true );
 
-    ValueMetaString meta = new ValueMetaString( BASE_VALUE );
     Assert.assertEquals( true, meta.isNull( null ) );
     Assert.assertEquals( false, meta.isNull( "" ) );
 
@@ -173,9 +167,8 @@ public class ValueMetaStringTest {
 
   @Test
   public void testIsNull_emptyIsNull() throws KettleValueException {
-    ensureEmptyStringIsNotNull( false );
+    meta.setNullsAndEmptyAreDifferent( false );
 
-    ValueMetaString meta = new ValueMetaString( BASE_VALUE );
     Assert.assertEquals( true, meta.isNull( null ) );
     Assert.assertEquals( true, meta.isNull( "" ) );
 
@@ -215,9 +208,8 @@ public class ValueMetaStringTest {
 
   @Test
   public void testGetString_emptyIsNotNull() throws KettleValueException {
-    ensureEmptyStringIsNotNull( true );
+    meta.setNullsAndEmptyAreDifferent( true );
 
-    ValueMetaString meta = new ValueMetaString( BASE_VALUE );
     Assert.assertEquals( null, meta.getString( null ) );
     Assert.assertEquals( "", meta.getString( "" ) );
 
@@ -240,9 +232,8 @@ public class ValueMetaStringTest {
 
   @Test
   public void testGetString_emptyIsNull() throws KettleValueException {
-    ensureEmptyStringIsNotNull( false );
+    meta.setNullsAndEmptyAreDifferent( false );
 
-    ValueMetaString meta = new ValueMetaString( BASE_VALUE );
     Assert.assertEquals( null, meta.getString( null ) );
     //Assert.assertEquals( null, meta.getString( "" ) ); // TODO: is it correct?
     Assert.assertEquals( "", meta.getString( "" ) ); // TODO: is it correct?
@@ -269,9 +260,7 @@ public class ValueMetaStringTest {
 
   @Test
   public void testCompare_emptyIsNotNull() throws KettleValueException {
-    ensureEmptyStringIsNotNull( true );
-
-    ValueMetaString meta = new ValueMetaString( BASE_VALUE );
+    meta.setNullsAndEmptyAreDifferent( true );
 
     meta.setTrimType( ValueMetaInterface.TRIM_TYPE_NONE );
 
@@ -508,9 +497,7 @@ public class ValueMetaStringTest {
 
   @Test
   public void testCompare_emptyIsNull() throws KettleValueException {
-    ensureEmptyStringIsNotNull( false );
-
-    ValueMetaString meta = new ValueMetaString( BASE_VALUE );
+    meta.setNullsAndEmptyAreDifferent( false );
 
     meta.setTrimType( ValueMetaInterface.TRIM_TYPE_NONE );
 
@@ -756,63 +743,6 @@ public class ValueMetaStringTest {
     assertSignum( 0, meta.compare( "1 ", "1 " ) ); // "1" == "1"
   }
 
-  private static void ensureBooleanStaticFieldVal( Field f, boolean newValue ) throws NoSuchFieldException,
-    SecurityException, IllegalArgumentException, IllegalAccessException {
-    boolean value = f.getBoolean( null );
-    if ( value != newValue ) {
-      final boolean fieldAccessibleBak = f.isAccessible();
-      Field.setAccessible( new Field[] { f }, true );
-
-      Field modifiersField = Field.class.getDeclaredField( "modifiers" );
-      final int modifiersBak = f.getModifiers();
-      final int modifiersNew = modifiersBak & ~Modifier.FINAL;
-      final boolean modifAccessibleBak = modifiersField.isAccessible();
-      if ( modifiersBak != modifiersNew ) {
-        if ( !modifAccessibleBak ) {
-          modifiersField.setAccessible( true );
-        }
-        modifiersField.setInt( f, modifiersNew );
-      }
-
-      f.setBoolean( null, newValue );
-
-      if ( modifiersBak != modifiersNew ) {
-        modifiersField.setInt( f, modifiersBak );
-        if ( !modifAccessibleBak ) {
-          modifiersField.setAccessible( modifAccessibleBak );
-        }
-      }
-      if ( !fieldAccessibleBak ) {
-        Field.setAccessible( new Field[] { f }, fieldAccessibleBak );
-      }
-    }
-  }
-
-  private void ensureEmptyStringIsNotNull( boolean newValue ) {
-    try {
-      ensureBooleanStaticFieldVal( ValueMetaBase.class.getField( "EMPTY_STRING_AND_NULL_ARE_DIFFERENT" ), newValue );
-      ensureBooleanStaticFieldVal( ValueMeta.class.getField( "EMPTY_STRING_AND_NULL_ARE_DIFFERENT" ), newValue );
-    } catch ( NoSuchFieldException e ) {
-      throw new RuntimeException( e );
-    } catch ( SecurityException e ) {
-      throw new RuntimeException( e );
-    } catch ( IllegalArgumentException e ) {
-      throw new RuntimeException( e );
-    } catch ( IllegalAccessException e ) {
-      throw new RuntimeException( e );
-    }
-    Assert.assertEquals( "ValueMetaBase.EMPTY_STRING_AND_NULL_ARE_DIFFERENT", newValue,
-        ValueMetaBase.EMPTY_STRING_AND_NULL_ARE_DIFFERENT );
-    Assert.assertEquals( "ValueMeta.EMPTY_STRING_AND_NULL_ARE_DIFFERENT", newValue,
-        ValueMeta.EMPTY_STRING_AND_NULL_ARE_DIFFERENT );
-  }
-
-  private static void resetEmptyStringIsNotNull() throws NoSuchFieldException, IllegalAccessException {
-    ensureBooleanStaticFieldVal( ValueMetaBase.class.getField( "EMPTY_STRING_AND_NULL_ARE_DIFFERENT" ),
-        ValueMetaBase_EMPTY_STRING_AND_NULL_ARE_DIFFERENT );
-    ensureBooleanStaticFieldVal( ValueMeta.class.getField( "EMPTY_STRING_AND_NULL_ARE_DIFFERENT" ),
-        ValueMeta_EMPTY_STRING_AND_NULL_ARE_DIFFERENT );
-  }
 
   private static void assertSignum( int expected, int actual ) {
     assertSignum( "", expected, actual );
@@ -829,6 +759,29 @@ public class ValueMetaStringTest {
       }
     } else {
       Assert.assertEquals( msg, expected, actual );
+    }
+  }
+
+  @SuppressWarnings( "deprecation" )
+  private static class ConfigurableMeta extends ValueMetaString {
+    private boolean nullsAndEmptyAreDifferent;
+
+    public ConfigurableMeta( String name ) {
+      super( name );
+    }
+
+    public void setNullsAndEmptyAreDifferent( boolean nullsAndEmptyAreDifferent ) {
+      this.nullsAndEmptyAreDifferent = nullsAndEmptyAreDifferent;
+    }
+
+    @Override
+    public boolean isNull( Object data ) throws KettleValueException {
+      return super.isNull( data, nullsAndEmptyAreDifferent );
+    }
+
+    @Override
+    protected String convertBinaryStringToString( byte[] binary ) throws KettleValueException {
+      return super.convertBinaryStringToString( binary, nullsAndEmptyAreDifferent );
     }
   }
 }

@@ -52,7 +52,7 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Retrieves values from a database by calling database stored procedures or functions
- * 
+ *
  * @author Matt
  * @since 26-apr-2003
  */
@@ -182,7 +182,7 @@ public class HTTP extends BaseStep implements StepInterface {
               } else {
                 inputStreamReader = new InputStreamReader( method.getResponseBodyAsStream() );
               }
-              StringBuffer bodyBuffer = new StringBuffer();
+              StringBuilder bodyBuffer = new StringBuilder();
 
               int c;
               while ( ( c = inputStreamReader.read() ) != -1 ) {
@@ -243,7 +243,7 @@ public class HTTP extends BaseStep implements StepInterface {
         // get dynamic url
         data.realUrl = outputRowMeta.getString( row, data.indexOfUrlField );
       }
-      StringBuffer url = new StringBuffer( data.realUrl ); // the base URL with variable substitution
+      StringBuilder url = new StringBuilder( data.realUrl ); // the base URL with variable substitution
 
       for ( int i = 0; i < data.argnrs.length; i++ ) {
         if ( i == 0 && url.indexOf( "?" ) < 0 ) {

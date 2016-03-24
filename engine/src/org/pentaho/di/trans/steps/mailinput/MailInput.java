@@ -86,8 +86,7 @@ public class MailInput extends BaseStep implements StepInterface {
     }
     putRow( data.outputRowMeta, outputRowData ); // copy row to output rowset(s);
 
-    if ( data.rowlimit > 0 && data.rownr >= data.rowlimit ) // limit has been reached: stop now.
-    {
+    if ( data.rowlimit > 0 && data.rownr >= data.rowlimit ) { // limit has been reached: stop now.
       setOutputDone();
       return false;
     }
@@ -161,7 +160,7 @@ public class MailInput extends BaseStep implements StepInterface {
     // set FlagTerm?
     if ( !data.usePOP ) {
       //POP3 does not support any flags.
-      //but still use ones for IMAP and maybe for MBOX?      
+      //but still use ones for IMAP and maybe for MBOX?
       switch ( meta.getValueImapList() ) {
         case MailConnectionMeta.VALUE_IMAP_LIST_NEW:
           data.mailConn.setFlagTermNew();

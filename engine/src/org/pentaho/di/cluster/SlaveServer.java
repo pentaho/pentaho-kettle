@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -57,7 +57,7 @@ import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.vfs.KettleVFS;
@@ -123,7 +123,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
 
   private static int getNumberOfSlaveServerRetries() {
     try {
-      return Integer.parseInt(Const.NVL(System.getProperty( "KETTLE_CARTE_RETRIES" ), "0" ) );
+      return Integer.parseInt( Const.NVL( System.getProperty( "KETTLE_CARTE_RETRIES" ), "0" ) );
     } catch ( Exception e ) {
       return 0;
     }
@@ -131,7 +131,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
 
   public static int getBackoffIncrements() {
     try {
-      return Integer.parseInt(Const.NVL(System.getProperty( "KETTLE_CARTE_RETRY_BACKOFF_INCREMENTS" ), "1000" ) );
+      return Integer.parseInt( Const.NVL( System.getProperty( "KETTLE_CARTE_RETRY_BACKOFF_INCREMENTS" ), "1000" ) );
     } catch ( Exception e ) {
       return 1000;
     }
@@ -985,7 +985,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
     if ( !Const.isEmpty( variableName ) ) {
       String value = environmentSubstitute( variableName );
       if ( !Const.isEmpty( value ) ) {
-        return ValueMeta.convertStringToBoolean( value );
+        return ValueMetaString.convertStringToBoolean( value );
       }
     }
     return defaultValue;

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -43,7 +43,7 @@ import org.pentaho.di.trans.steps.fileinput.BaseFileInputStepMeta;
 
 /**
  * Some common methods for text file parsing.
- * 
+ *
  * @author Alexander Buloichik
  */
 public class TextFileInputUtils {
@@ -383,13 +383,12 @@ public class TextFileInputUtils {
         int trim_type = fieldnr < nrfields ? f.getTrimType() : ValueMetaInterface.TRIM_TYPE_NONE;
 
         if ( fieldnr < strings.length ) {
-          String pol = strings[fieldnr];
+          String pol = strings[ fieldnr ];
           try {
-            if ( valueMeta.isNull( pol ) ) {
-              value = null;
-            } else {
-              value = valueMeta.convertDataFromString( pol, convertMeta, nullif, ifnull, trim_type );
+            if ( valueMeta.isNull( pol ) || !Const.isEmpty( nullif ) && nullif.equals( pol ) ) {
+              pol = null;
             }
+            value = valueMeta.convertDataFromString( pol, convertMeta, nullif, ifnull, trim_type );
           } catch ( Exception e ) {
             // OK, give some feedback!
             String message =

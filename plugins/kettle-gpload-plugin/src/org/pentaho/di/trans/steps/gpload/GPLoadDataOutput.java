@@ -12,9 +12,8 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
+ * Copyright (c) 2002-2016 Pentaho Corporation..  All rights reserved.
  */
-
 package org.pentaho.di.trans.steps.gpload;
 
 import java.io.BufferedWriter;
@@ -121,6 +120,10 @@ public class GPLoadDataOutput {
     return output;
   }
 
+  protected void setOutput( PrintWriter output ) {
+    this.output = output;
+  }
+
   private String createEscapedString( String orig, String enclosure ) {
     StringBuffer buf = new StringBuffer( orig );
 
@@ -223,13 +226,7 @@ public class GPLoadDataOutput {
           case ValueMetaInterface.TYPE_DATE:
             Date dt = mi.getDate( row, number );
             output.print( enclosure );
-            String mask = meta.getDateMask()[i];
-            if ( GPLoadMeta.DATE_MASK_DATETIME.equals( mask ) ) {
-              output.print( sdfDateTime.format( dt ) );
-            } else {
-              // Default is date format
-              output.print( sdfDate.format( dt ) );
-            }
+            output.print( sdfDate.format( dt ) );
             output.print( enclosure );
             break;
           case ValueMetaInterface.TYPE_BOOLEAN:
@@ -247,6 +244,12 @@ public class GPLoadDataOutput {
             output.print( "<startlob>" );
             output.print( byt );
             output.print( "<endlob>" );
+            break;
+          case ValueMetaInterface.TYPE_TIMESTAMP:
+            Date time = mi.getDate( row, number );
+            output.print( enclosure );
+            output.print( sdfDateTime.format( time ) );
+            output.print( enclosure );
             break;
           default:
             throw new KettleException( BaseMessages.getString( PKG, "GPLoadDataOutput.Exception.TypeNotSupported", v

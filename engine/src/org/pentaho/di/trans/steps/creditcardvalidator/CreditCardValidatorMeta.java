@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -32,8 +32,9 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaBoolean;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -162,26 +163,26 @@ public class CreditCardValidatorMeta extends BaseStepMeta implements StepMetaInt
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     String realresultfieldname = space.environmentSubstitute( resultfieldname );
     if ( !Const.isEmpty( realresultfieldname ) ) {
-      ValueMetaInterface v = new ValueMeta( realresultfieldname, ValueMeta.TYPE_BOOLEAN );
+      ValueMetaInterface v = new ValueMetaBoolean( realresultfieldname );
       v.setOrigin( name );
       inputRowMeta.addValueMeta( v );
     }
     String realcardtype = space.environmentSubstitute( cardtype );
     if ( !Const.isEmpty( realcardtype ) ) {
-      ValueMetaInterface v = new ValueMeta( realcardtype, ValueMeta.TYPE_STRING );
+      ValueMetaInterface v = new ValueMetaString( realcardtype );
       v.setOrigin( name );
       inputRowMeta.addValueMeta( v );
     }
     String realnotvalidmsg = space.environmentSubstitute( notvalidmsg );
     if ( !Const.isEmpty( notvalidmsg ) ) {
-      ValueMetaInterface v = new ValueMeta( realnotvalidmsg, ValueMeta.TYPE_STRING );
+      ValueMetaInterface v = new ValueMetaString( realnotvalidmsg );
       v.setOrigin( name );
       inputRowMeta.addValueMeta( v );
     }
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer();
+    StringBuilder retval = new StringBuilder();
 
     retval.append( "    " + XMLHandler.addTagValue( "fieldname", fieldname ) );
     retval.append( "    " + XMLHandler.addTagValue( "resultfieldname", resultfieldname ) );

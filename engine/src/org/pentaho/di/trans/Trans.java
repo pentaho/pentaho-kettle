@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -2427,17 +2427,18 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
    */
   protected void writeStepLogInformation() throws KettleException {
     Database db = null;
-    StepLogTable stepLogTable = transMeta.getStepLogTable();
+    StepLogTable stepLogTable = getTransMeta().getStepLogTable();
     try {
-      db = new Database( this, stepLogTable.getDatabaseMeta() );
+      db = createDataBase( stepLogTable.getDatabaseMeta() );
       db.shareVariablesWith( this );
       db.connect();
       db.setCommit( logCommitSize );
 
-      for ( StepMetaDataCombi combi : steps ) {
+      for ( StepMetaDataCombi combi : getSteps() ) {
         db.writeLogRecord( stepLogTable, LogStatus.START, combi, null );
       }
 
+      db.cleanupLogRecords( stepLogTable );
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString( PKG,
           "Trans.Exception.UnableToWriteStepInformationToLogTable" ), e );
@@ -2448,6 +2449,10 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
       db.disconnect();
     }
 
+  }
+
+  protected Database createDataBase( DatabaseMeta meta ) {
+    return new Database( this, meta );
   }
 
   protected synchronized void writeMetricsInformation() throws KettleException {
@@ -3065,7 +3070,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 
     // See if there is a parent transformation. If so, print the name of the parent here as well...
     //
-    StringBuffer string = new StringBuffer();
+    StringBuilder string = new StringBuilder( 50 );
 
     // If we're running as a mapping, we get a reference to the calling (parent) transformation as well...
     //
@@ -5311,7 +5316,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
    * Sets encoding of HttpServletResponse according to System encoding.Check if system encoding is null or an empty and
    * set it to HttpServletResponse when not and writes error to log if null. Throw IllegalArgumentException if input
    * parameter is null.
-   * 
+   *
    * @param response
    *          the HttpServletResponse to set encoding, mayn't be null
    */

@@ -56,7 +56,7 @@ import org.pentaho.di.trans.step.errorhandling.FileErrorHandlerMissingFiles;
 
 /**
  * This class contains base functionality for file-based input steps.
- * 
+ *
  * @author Alexander Buloichik
  */
 public abstract class BaseFileInputStep<M extends BaseFileInputStepMeta, D extends BaseFileInputStepData> extends
@@ -129,7 +129,7 @@ public abstract class BaseFileInputStep<M extends BaseFileInputStepMeta, D exten
 
   /**
    * Open next VFS file for processing.
-   * 
+   *
    * This method will support different parallelization methods later.
    */
   protected boolean openNextFile() {
@@ -257,7 +257,7 @@ public abstract class BaseFileInputStep<M extends BaseFileInputStepMeta, D exten
 
   /**
    * Initialize error handling.
-   * 
+   *
    * TODO: should we set charset for error files from content meta ? What about case for automatic charset ?
    */
   private void initErrorHandling() {

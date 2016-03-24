@@ -207,7 +207,7 @@ public class StepPluginType extends BasePluginType implements PluginTypeInterfac
 
   @Override
   protected String extractDocumentationUrl( Annotation annotation ) {
-    return ( (Step) annotation ).documentationUrl();
+    return Const.getDocUrl( ( (Step) annotation ).documentationUrl() );
   }
 
   @Override

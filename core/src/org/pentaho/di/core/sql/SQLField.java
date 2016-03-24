@@ -147,8 +147,8 @@ public class SQLField {
           // COUNT(DISTINCT foo)
           //
           if ( field.toUpperCase().startsWith( "DISTINCT " ) ) {
-            int lastSpaceIndex = field.lastIndexOf( ' ' );
-            field = field.substring( lastSpaceIndex + 1 );
+            int firstSpaceIndex = field.indexOf( ' ' );
+            field = field.substring( firstSpaceIndex + 1 );
             field = ThinUtil.stripQuoteTableAlias( field, tableAlias );
 
             countDistinct = true;
@@ -228,6 +228,7 @@ public class SQLField {
 
       } else {
         if ( valueMeta == null ) {
+          field = ThinUtil.resolveFieldName( field, serviceFields );
           valueMeta = serviceFields.searchValueMeta( field );
           if ( orderField && selectFields != null ) {
             // See if this isn't an aliased select field that we're ordering on

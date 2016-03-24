@@ -52,10 +52,10 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Make a HTTP Post call
- * 
+ *
  * @author Samatar
  * @since 15-jan-2009
- * 
+ *
  */
 
 public class HTTPPOST extends BaseStep implements StepInterface {
@@ -250,7 +250,7 @@ public class HTTPPOST extends BaseStep implements StepInterface {
                 inputStreamReader = new InputStreamReader( post.getResponseBodyAsStream(), encoding );
               }
 
-              StringBuffer bodyBuffer = new StringBuffer();
+              StringBuilder bodyBuffer = new StringBuilder();
 
               int c;
               while ( ( c = inputStreamReader.read() ) != -1 ) {

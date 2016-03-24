@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -32,8 +32,9 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -177,29 +178,29 @@ public class ExecProcessMeta extends BaseStepMeta implements StepMetaInterface {
     // Output fields (String)
     String realOutputFieldname = space.environmentSubstitute( resultfieldname );
     if ( !Const.isEmpty( realOutputFieldname ) ) {
-      ValueMetaInterface v = new ValueMeta( realOutputFieldname, ValueMeta.TYPE_STRING );
+      ValueMetaInterface v = new ValueMetaString( realOutputFieldname );
       v.setLength( 100, -1 );
       v.setOrigin( name );
       inputRowMeta.addValueMeta( v );
     }
     String realerrofieldname = space.environmentSubstitute( errorfieldname );
     if ( !Const.isEmpty( realerrofieldname ) ) {
-      ValueMetaInterface v = new ValueMeta( realerrofieldname, ValueMeta.TYPE_STRING );
+      ValueMetaInterface v = new ValueMetaString( realerrofieldname );
       v.setLength( 100, -1 );
       v.setOrigin( name );
       inputRowMeta.addValueMeta( v );
     }
     String realexitvaluefieldname = space.environmentSubstitute( exitvaluefieldname );
     if ( !Const.isEmpty( realexitvaluefieldname ) ) {
-      ValueMetaInterface v = new ValueMeta( realexitvaluefieldname, ValueMeta.TYPE_INTEGER );
-      v.setLength( ValueMeta.DEFAULT_INTEGER_LENGTH, 0 );
+      ValueMetaInterface v = new ValueMetaInteger( realexitvaluefieldname );
+      v.setLength( ValueMetaInterface.DEFAULT_INTEGER_LENGTH, 0 );
       v.setOrigin( name );
       inputRowMeta.addValueMeta( v );
     }
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer();
+    StringBuilder retval = new StringBuilder();
 
     retval.append( "    " + XMLHandler.addTagValue( "processfield", processfield ) );
     retval.append( "    " + XMLHandler.addTagValue( "resultfieldname", resultfieldname ) );

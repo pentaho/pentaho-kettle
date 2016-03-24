@@ -81,7 +81,7 @@ public class SlaveServerStatus {
   }
 
   public String getXML() throws KettleException {
-    StringBuffer xml = new StringBuffer();
+    StringBuilder xml = new StringBuilder();
 
     xml.append( "<" + XML_TAG + ">" ).append( Const.CR );
     xml.append( XMLHandler.addTagValue( "statusdesc", statusDescription ) );

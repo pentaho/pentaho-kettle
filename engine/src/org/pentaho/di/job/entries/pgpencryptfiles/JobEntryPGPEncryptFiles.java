@@ -22,11 +22,9 @@
 
 package org.pentaho.di.job.entries.pgpencryptfiles;
 
-import static org.pentaho.di.job.entry.validator.AbstractFileValidator.putVariableSpace;
-import static org.pentaho.di.job.entry.validator.AndValidator.putValidators;
-import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.andValidator;
-import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.fileExistsValidator;
-import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notNullValidator;
+import org.pentaho.di.job.entry.validator.AbstractFileValidator;
+import org.pentaho.di.job.entry.validator.AndValidator;
+import org.pentaho.di.job.entry.validator.JobEntryValidatorUtils;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -163,13 +161,30 @@ public class JobEntryPGPEncryptFiles extends JobEntryBase implements Cloneable, 
     this( "" );
   }
 
+  public void allocate( int nrFields ) {
+    action_type = new int[nrFields];
+    source_filefolder = new String[nrFields];
+    userid = new String[nrFields];
+    destination_filefolder = new String[nrFields];
+    wildcard = new String[nrFields];
+  }
+
   public Object clone() {
     JobEntryPGPEncryptFiles je = (JobEntryPGPEncryptFiles) super.clone();
+    if ( action_type != null ) {
+      int nrFields = action_type.length;
+      je.allocate( nrFields );
+      System.arraycopy( action_type, 0, je.action_type, 0, nrFields );
+      System.arraycopy( source_filefolder, 0, je.source_filefolder, 0, nrFields );
+      System.arraycopy( userid, 0, je.userid, 0, nrFields );
+      System.arraycopy( destination_filefolder, 0, je.destination_filefolder, 0, nrFields );
+      System.arraycopy( wildcard, 0, je.wildcard, 0, nrFields );
+    }
     return je;
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 300 );
+    StringBuilder retval = new StringBuilder( 450 );
 
     retval.append( super.getXML() );
     retval.append( "      " ).append( XMLHandler.addTagValue( "gpglocation", gpglocation ) );
@@ -263,11 +278,7 @@ public class JobEntryPGPEncryptFiles extends JobEntryBase implements Cloneable, 
 
       // How many field arguments?
       int nrFields = XMLHandler.countNodes( fields, "field" );
-      action_type = new int[nrFields];
-      source_filefolder = new String[nrFields];
-      userid = new String[nrFields];
-      destination_filefolder = new String[nrFields];
-      wildcard = new String[nrFields];
+      allocate( nrFields );
 
       // Read them all...
       for ( int i = 0; i < nrFields; i++ ) {
@@ -328,11 +339,7 @@ public class JobEntryPGPEncryptFiles extends JobEntryBase implements Cloneable, 
 
       // How many arguments?
       int argnr = rep.countNrJobEntryAttributes( id_jobentry, "source_filefolder" );
-      action_type = new int[argnr];
-      source_filefolder = new String[argnr];
-      userid = new String[argnr];
-      destination_filefolder = new String[argnr];
-      wildcard = new String[argnr];
+      allocate( argnr );
 
       // Read them all...
       for ( int a = 0; a < argnr; a++ ) {
@@ -1443,18 +1450,20 @@ public class JobEntryPGPEncryptFiles extends JobEntryBase implements Cloneable, 
 
   public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
-    boolean res = andValidator().validate( this, "arguments", remarks, putValidators( notNullValidator() ) );
+    boolean res = JobEntryValidatorUtils.andValidator().validate( this, "arguments", remarks,
+        AndValidator.putValidators( JobEntryValidatorUtils.notNullValidator() ) );
 
     if ( res == false ) {
       return;
     }
 
     ValidatorContext ctx = new ValidatorContext();
-    putVariableSpace( ctx, getVariables() );
-    putValidators( ctx, notNullValidator(), fileExistsValidator() );
+    AbstractFileValidator.putVariableSpace( ctx, getVariables() );
+    AndValidator.putValidators( ctx, JobEntryValidatorUtils.notNullValidator(),
+        JobEntryValidatorUtils.fileExistsValidator() );
 
     for ( int i = 0; i < source_filefolder.length; i++ ) {
-      andValidator().validate( this, "arguments[" + i + "]", remarks, ctx );
+      JobEntryValidatorUtils.andValidator().validate( this, "arguments[" + i + "]", remarks, ctx );
     }
   }
 
