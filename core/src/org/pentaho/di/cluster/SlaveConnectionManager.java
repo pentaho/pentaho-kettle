@@ -104,4 +104,8 @@ public class SlaveConnectionManager {
       }
     };
   }
+
+  static void reset() {
+    slaveConnectionManager = null;
+  }
 }
