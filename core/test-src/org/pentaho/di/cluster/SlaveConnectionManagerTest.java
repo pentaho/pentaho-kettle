@@ -36,11 +36,13 @@ public class SlaveConnectionManagerTest {
 
   @Before
   public void setUp() throws Exception {
+    SlaveConnectionManager.reset();
     defaultContext = SSLContext.getDefault();
   }
 
   @Test
   public void shouldOverrideDefaultSSLContextByDefault() throws Exception {
+    System.clearProperty( "javax.net.ssl.keyStore" );
     SlaveConnectionManager instance = SlaveConnectionManager.getInstance();
     assertNotEquals( defaultContext, SSLContext.getDefault() );
   }
