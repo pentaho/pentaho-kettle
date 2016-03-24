@@ -24,11 +24,15 @@ package org.pentaho.di.trans.steps.getxmldata;
 
 import java.io.InputStream;
 import java.io.StringReader;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.zip.GZIPInputStream;
 
+import org.apache.commons.httpclient.Header;
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpMethod;
+import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemException;
 import org.dom4j.Element;
@@ -156,7 +160,20 @@ public class GetXMLData extends BaseStep implements StepInterface {
         data.document = reader.read( new StringReader( StringXML ) );
       } else if ( readurl ) {
         // read url as source
-        data.document = reader.read( new URL( StringXML ) );
+        HttpClient client = new HttpClient();
+        HttpMethod method = new GetMethod( StringXML );
+        method.addRequestHeader( "Accept-Encoding", "gzip" );
+        client.executeMethod( method );
+        Header contentEncoding = method.getResponseHeader( "Content-Encoding" );
+        if ( contentEncoding != null ) {
+          String acceptEncodingValue = contentEncoding.getValue();
+          if ( acceptEncodingValue.indexOf( "gzip" ) != -1 ) {
+            GZIPInputStream in = new GZIPInputStream( method.getResponseBodyAsStream() );
+            data.document = reader.read( in );
+          }
+        } else {
+          data.document = reader.read( method.getResponseBodyAsStream() );
+        }
       } else {
         // get encoding. By default UTF-8
         String encoding = "UTF-8";
