@@ -33,6 +33,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
+import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -61,8 +62,8 @@ import org.pentaho.di.core.SourceToTargetMapping;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaNone;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
@@ -172,7 +173,7 @@ public class SalesforceUpsertDialog extends BaseStepDialog implements StepDialog
    * List of ColumnInfo that should have the field names of the selected database table
    */
   private static List<ColumnInfo> tableFieldColumns = new ArrayList<ColumnInfo>();
-  private boolean gotFields = false;
+  private String[] moduleFields;
 
   private boolean excludeNonUpdatableFields = true;
 
@@ -198,13 +199,13 @@ public class SalesforceUpsertDialog extends BaseStepDialog implements StepDialog
     ModifyListener lsTableMod = new ModifyListener() {
       public void modifyText( ModifyEvent arg0 ) {
         input.setChanged();
-        setModuleFieldCombo();
+        moduleFields = null;
       }
     };
     SelectionAdapter lsSelection = new SelectionAdapter() {
       public void widgetSelected( SelectionEvent e ) {
         input.setChanged();
-        setModuleFieldCombo();
+        moduleFields = null;
       }
     };
     changed = input.hasChanged();
@@ -432,14 +433,12 @@ public class SalesforceUpsertDialog extends BaseStepDialog implements StepDialog
     wModule.setLayoutData( fdModule );
     wModule.addFocusListener( new FocusListener() {
       public void focusLost( org.eclipse.swt.events.FocusEvent e ) {
-        getModulesListError = false;
       }
 
       public void focusGained( org.eclipse.swt.events.FocusEvent e ) {
         // check if the URL and login credentials passed and not just had error
-        if ( Const.isEmpty( wURL.getText() )
-          || Const.isEmpty( wUserName.getText() ) || Const.isEmpty( wPassword.getText() )
-          || ( getModulesListError ) ) {
+        if ( skipFetchModules() ) {
+          getModulesListError = false;
           return;
         }
 
@@ -563,6 +562,18 @@ public class SalesforceUpsertDialog extends BaseStepDialog implements StepDialog
     wReturn =
       new TableView( transMeta, wGeneralComp, SWT.BORDER
         | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, ciReturn, UpInsRows, lsMod, props );
+    wReturn.getTable().addFocusListener( new FocusListener() {
+
+      @Override
+      public void focusGained( FocusEvent e ) {
+        setModuleFieldCombo();
+      }
+
+      @Override
+      public void focusLost( FocusEvent e ) {
+      }
+
+    } );
 
     wGetLU = new Button( wGeneralComp, SWT.PUSH );
     wGetLU.setText( BaseMessages.getString( PKG, "SalesforceUpsertDialog.GetAndUpdateFields.Label" ) );
@@ -788,7 +799,6 @@ public class SalesforceUpsertDialog extends BaseStepDialog implements StepDialog
     try {
       String selectedField = wUpsertField.getText();
       wUpsertField.removeAll();
-
       wUpsertField.setItems( getModuleFields() );
 
       if ( !Const.isEmpty( selectedField ) ) {
@@ -921,25 +931,32 @@ public class SalesforceUpsertDialog extends BaseStepDialog implements StepDialog
   }
 
   private String[] getModuleFields() throws KettleException {
+    if ( moduleFields != null ) {
+      return moduleFields;
+    } else if ( skipFetchModules() || Const.isEmpty( wModule.getText() ) ) {
+      getModulesListError = false;
+      return new String[0];
+    }
+
+    getModulesListError = true;
     SalesforceUpsertMeta meta = new SalesforceUpsertMeta();
     getInfo( meta );
-
-    SalesforceConnection connection = null;
     String url = transMeta.environmentSubstitute( meta.getTargetURL() );
+    String selectedModule = transMeta.environmentSubstitute( meta.getModule() );
+    // Define a new Salesforce connection
+    SalesforceConnection connection =
+      new SalesforceConnection( log, url, transMeta.environmentSubstitute( meta.getUserName() ),
+          transMeta.environmentSubstitute( meta.getPassword() ) );
+    int realTimeOut = Const.toInt( transMeta.environmentSubstitute( meta.getTimeOut() ), 0 );
+    connection.setTimeOut( realTimeOut );
+    Cursor busy = new Cursor( shell.getDisplay(), SWT.CURSOR_WAIT );
     try {
-      String selectedModule = transMeta.environmentSubstitute( meta.getModule() );
-      // Define a new Salesforce connection
-      connection =
-        new SalesforceConnection( log, url, transMeta.environmentSubstitute( meta.getUserName() ), transMeta
-          .environmentSubstitute( meta.getPassword() ) );
-      int realTimeOut = Const.toInt( transMeta.environmentSubstitute( meta.getTimeOut() ), 0 );
-      connection.setTimeOut( realTimeOut );
+      shell.setCursor( busy );
       // connect to Salesforce
       connection.connect();
-      return connection.getFields( selectedModule, excludeNonUpdatableFields );
-
-    } catch ( Exception e ) {
-      throw new KettleException( "Erreur getting fields from module [" + url + "]!", e );
+      moduleFields = connection.getFields( selectedModule, excludeNonUpdatableFields );
+      getModulesListError = false;
+      return moduleFields;
     } finally {
       if ( connection != null ) {
         try {
@@ -947,8 +964,16 @@ public class SalesforceUpsertDialog extends BaseStepDialog implements StepDialog
         } catch ( Exception e ) { /* Ignore */
         }
       }
+      shell.setCursor( null );
+      busy.dispose();
     }
+  }
 
+  private boolean skipFetchModules() {
+    return Const.isEmpty( wURL.getText() )
+      || Const.isEmpty( wUserName.getText() )
+      || Const.isEmpty( wPassword.getText() )
+      || getModulesListError;
   }
 
   /**
@@ -977,7 +1002,7 @@ public class SalesforceUpsertDialog extends BaseStepDialog implements StepDialog
 
       String[] fields = getModuleFields();
       for ( int i = 0; i < fields.length; i++ ) {
-        targetFields.addValueMeta( new ValueMeta( fields[i] ) );
+        targetFields.addValueMeta( new ValueMetaNone( fields[i] ) );
       }
     } catch ( Exception e ) {
       new ErrorDialog( shell, BaseMessages.getString(
@@ -1133,46 +1158,31 @@ public class SalesforceUpsertDialog extends BaseStepDialog implements StepDialog
   }
 
   public void setModuleFieldCombo() {
-    if ( gotFields ) {
-      return;
+    // clear
+    for ( int i = 0; i < tableFieldColumns.size(); i++ ) {
+      ColumnInfo colInfo = tableFieldColumns.get( i );
+      colInfo.setComboValues( new String[] {} );
     }
-    gotFields = true;
-    Display display = shell.getDisplay();
-    if ( !( display == null || display.isDisposed() ) ) {
-      display.asyncExec( new Runnable() {
-        public void run() {
-          // clear
+    String selectedModule = transMeta.environmentSubstitute( wModule.getText() );
+    if ( !Const.isEmpty( selectedModule ) ) {
+      try {
+        // loop through the objects and find build the list of fields
+        String[] fieldsName = getModuleFields();
+
+        if ( fieldsName != null ) {
           for ( int i = 0; i < tableFieldColumns.size(); i++ ) {
             ColumnInfo colInfo = tableFieldColumns.get( i );
-            colInfo.setComboValues( new String[] {} );
+            colInfo.setComboValues( fieldsName );
           }
-          if ( wModule.isDisposed() ) {
-            return;
-          }
-          String selectedModule = transMeta.environmentSubstitute( wModule.getText() );
-          if ( !Const.isEmpty( selectedModule ) ) {
-            try {
-              // loop through the objects and find build the list of fields
-              String[] fieldsName = getModuleFields();
-
-              if ( fieldsName != null ) {
-                for ( int i = 0; i < tableFieldColumns.size(); i++ ) {
-                  ColumnInfo colInfo = tableFieldColumns.get( i );
-                  colInfo.setComboValues( fieldsName );
-                }
-              }
-            } catch ( Exception e ) {
-              for ( int i = 0; i < tableFieldColumns.size(); i++ ) {
-                ColumnInfo colInfo = tableFieldColumns.get( i );
-                colInfo.setComboValues( new String[] {} );
-              }
-              // ignore any errors here. drop downs will not be
-              // filled, but no problem for the user
-            }
-          }
-
         }
-      } );
+      } catch ( Exception e ) {
+        for ( int i = 0; i < tableFieldColumns.size(); i++ ) {
+          ColumnInfo colInfo = tableFieldColumns.get( i );
+          colInfo.setComboValues( new String[] {} );
+        }
+        // ignore any errors here. drop downs will not be
+        // filled, but no problem for the user
+      }
     }
   }
 
