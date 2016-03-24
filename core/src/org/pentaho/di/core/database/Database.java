@@ -3193,7 +3193,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
 
       }
     } catch ( Exception e ) {
-      DatabaseLogExceptionFactory.getExceptionStrategy( logTable )
+      DatabaseLogExceptionFactory.getExceptionStrategy( logTable, e )
         .registerException( log, e, PKG, "Database.Error.WriteLogTable",
           environmentSubstitute( logTable.getActualTableName() ) );
     }
