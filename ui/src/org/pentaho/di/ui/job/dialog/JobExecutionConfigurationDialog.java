@@ -149,13 +149,12 @@ public class JobExecutionConfigurationDialog extends ConfigurationDialog {
     props.setLook( wLogLevel );
     FormData fdLogLevel = new FormData();
     fdLogLevel.left = new FormAttachment( wlLogLevel, 6 );
-    fdLogLevel.width = 200;
     if ( Const.isOSX() ) {
       fdLogLevel.top = new FormAttachment( wClearLog, 2, SWT.TOP );
     } else {
       fdLogLevel.top = new FormAttachment( wClearLog, -2, SWT.TOP );
     }
-    fdLogLevel.right = new FormAttachment( 0, 500 );
+    fdLogLevel.right = new FormAttachment( 0, 540 );
     wLogLevel.setLayoutData( fdLogLevel );
     wLogLevel.setItems( LogLevel.getLogLevelDescriptions() );
 
