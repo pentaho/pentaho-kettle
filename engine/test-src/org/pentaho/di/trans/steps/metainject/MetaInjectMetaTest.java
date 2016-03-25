@@ -47,6 +47,14 @@ import org.pentaho.metastore.api.IMetaStore;
 
 public class MetaInjectMetaTest {
 
+  private static final String SOURCE_STEP_NAME = "SOURCE_STEP_NAME";
+
+  private static final String SOURCE_FIELD_NAME = "SOURCE_STEP_NAME";
+
+  private static final String TARGET_STEP_NAME = "TARGET_STEP_NAME";
+
+  private static final String TARGET_FIELD_NAME = "TARGET_STEP_NAME";
+
   private static final String TEST_FILE_NAME = "TEST_FILE_NAME";
 
   private static final String EXPORTED_FILE_NAME =
@@ -115,6 +123,28 @@ public class MetaInjectMetaTest {
     assertEquals( TEST_FILE_NAME, actualExportedFileName );
     assertEquals( EXPORTED_FILE_NAME, injectMetaSpy.getFileName() );
     verify( transMeta ).exportResources( transMeta, definitions, resourceNamingInterface, repository, metaStore );
+  }
+
+  @Test
+  public void convertToMap() {
+    MetaInjectMapping metaInjectMapping = new MetaInjectMapping();
+    metaInjectMapping.setSourceStep( SOURCE_STEP_NAME );
+    metaInjectMapping.setSourceField( SOURCE_FIELD_NAME );
+    metaInjectMapping.setTargetStep( TARGET_STEP_NAME );
+    metaInjectMapping.setTargetField( TARGET_FIELD_NAME );
+
+    Map<TargetStepAttribute, SourceStepField> actualResult =
+        MetaInjectMeta.convertToMap( Collections.singletonList( metaInjectMapping ) );
+
+    assertEquals( 1, actualResult.size() );
+
+    TargetStepAttribute targetStepAttribute = actualResult.keySet().iterator().next();
+    assertEquals( TARGET_STEP_NAME, targetStepAttribute.getStepname() );
+    assertEquals( TARGET_FIELD_NAME, targetStepAttribute.getAttributeKey() );
+
+    SourceStepField sourceStepField = actualResult.values().iterator().next();
+    assertEquals( SOURCE_STEP_NAME, sourceStepField.getStepname() );
+    assertEquals( SOURCE_FIELD_NAME, sourceStepField.getField() );
   }
 
 }
