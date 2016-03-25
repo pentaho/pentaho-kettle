@@ -1,5 +1,5 @@
 /*!
- * Copyright 2010 - 2015 Pentaho Corporation.  All rights reserved.
+ * Copyright 2010 - 2016 Pentaho Corporation.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package com.pentaho.repository.importexport;
 
 import java.util.List;
 
+import org.pentaho.di.repository.pur.PurRepository;
 import org.pentaho.platform.api.repository2.unified.IRepositoryFileData;
 import org.pentaho.platform.api.repository2.unified.RepositoryFile;
 import org.pentaho.platform.api.repository2.unified.RepositoryFileAcl;
@@ -39,12 +40,11 @@ public class PDIImportFileHandler extends RepositoryFileImportFileHandler implem
   protected RepositoryFile createFile( final RepositoryFileImportBundle bundle, final String repositoryPath,
       final IRepositoryFileData data ) throws PlatformImportException {
 
-    RepositoryFileImportBundle pdiBundle = bundle;
     String originalName = bundle.getName();
-    pdiBundle.setName( PDIImportUtil.checkAndSanitize( originalName ) );
-    pdiBundle.setTitle( originalName );
+    bundle.setName( PurRepository.checkAndSanitize( originalName ) );
+    bundle.setTitle( originalName );
 
-    return super.createFile( pdiBundle, repositoryPath, data );
+    return super.createFile( bundle, repositoryPath, data );
   }
 
   @Override
