@@ -70,6 +70,8 @@ import org.w3c.dom.Node;
 public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = SelectValuesMeta.class; // for i18n purposes, needed by Translator2!!
 
+  public static final int UNDEFINED = -2;
+
   // SELECT mode
   @InjectionDeep
   private SelectField[] selectFields = {};
@@ -120,15 +122,11 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface 
   }
 
   public String[] getSelectName() {
-    List<String> names = new ArrayList<String>();
-    for ( int i = 0; i < selectFields.length; i++ ) {
-      String value = selectFields[i].getName();
-      if ( value == null ) {
-        break;
-      }
-      names.add( value );
+    String[] selectName = new String[selectFields.length];
+    for ( int i = 0; i < selectName.length; i++ ) {
+      selectName[i] = selectFields[i].getName();
     }
-    return names.toArray( new String[names.size()] );
+    return selectName;
   }
 
   /**
@@ -149,15 +147,11 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface 
   }
 
   public String[] getSelectRename() {
-    List<String> renames = new ArrayList<String>();
-    for ( int i = 0; i < selectFields.length; i++ ) {
-      String value = selectFields[i].getRename();
-      if ( value == null ) {
-        break;
-      }
-      renames.add( value );
+    String[] selectRename = new String[selectFields.length];
+    for ( int i = 0; i < selectRename.length; i++ ) {
+      selectRename[i] = selectFields[i].getRename();
     }
-    return renames.toArray( new String[renames.size()] );
+    return selectRename;
   }
 
   /**
@@ -172,25 +166,17 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface 
       if ( i < selectLength.length ) {
         selectFields[i].setLength( selectLength[i] );
       } else {
-        selectFields[i].setLength( -2 );
+        selectFields[i].setLength( UNDEFINED );
       }
     }
   }
 
   public int[] getSelectLength() {
-    List<Integer> lengths = new ArrayList<Integer>();
-    for ( int i = 0; i < selectFields.length; i++ ) {
-      int value = selectFields[i].getLength();
-      if ( value == -2 ) {
-        break;
-      }
-      lengths.add( value );
+    int[] selectLength = new int[selectFields.length];
+    for ( int i = 0; i < selectLength.length; i++ ) {
+      selectLength[i] = selectFields[i].getLength();
     }
-    int[] lengthsArray = new int[lengths.size()];
-    for ( int i = 0; i < lengthsArray.length; i++ ) {
-      lengthsArray[i] = lengths.get( i );
-    }
-    return lengthsArray;
+    return selectLength;
   }
 
   /**
@@ -205,25 +191,17 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface 
       if ( i < selectPrecision.length ) {
         selectFields[i].setPrecision( selectPrecision[i] );
       } else {
-        selectFields[i].setPrecision( -2 );
+        selectFields[i].setPrecision( UNDEFINED );
       }
     }
   }
 
   public int[] getSelectPrecision() {
-    List<Integer> precisions = new ArrayList<Integer>();
-    for ( int i = 0; i < selectFields.length; i++ ) {
-      int value = selectFields[i].getPrecision();
-      if ( value == -2 ) {
-        break;
-      }
-      precisions.add( value );
+    int[] selectPrecision = new int[selectFields.length];
+    for ( int i = 0; i < selectPrecision.length; i++ ) {
+      selectPrecision[i] = selectFields[i].getPrecision();
     }
-    int[] precisionsArray = new int[precisions.size()];
-    for ( int i = 0; i < precisionsArray.length; i++ ) {
-      precisionsArray[i] = precisions.get( i );
-    }
-    return precisionsArray;
+    return selectPrecision;
   }
 
   private void resizeSelectFields( int length ) {
@@ -231,8 +209,8 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface 
     selectFields = Arrays.copyOf( selectFields, length );
     for ( int i = fillStartIndex; i < selectFields.length; i++ ) {
       selectFields[i] = new SelectField();
-      selectFields[i].setLength( -2 );
-      selectFields[i].setPrecision( -2 );
+      selectFields[i].setLength( UNDEFINED );
+      selectFields[i].setPrecision( UNDEFINED );
     }
   }
 
@@ -300,8 +278,8 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface 
         selectFields[i] = new SelectField();
         selectFields[i].setName( XMLHandler.getTagValue( line, "name" ) );
         selectFields[i].setRename( XMLHandler.getTagValue( line, "rename" ) );
-        selectFields[i].setLength( Const.toInt( XMLHandler.getTagValue( line, "length" ), -2 ) ); // $NON-NtagLS-1$
-        selectFields[i].setPrecision( Const.toInt( XMLHandler.getTagValue( line, "precision" ), -2 ) );
+        selectFields[i].setLength( Const.toInt( XMLHandler.getTagValue( line, "length" ), UNDEFINED ) ); // $NON-NtagLS-1$
+        selectFields[i].setPrecision( Const.toInt( XMLHandler.getTagValue( line, "precision" ), UNDEFINED ) );
       }
       selectingAndSortingUnspecifiedFields =
           "Y".equalsIgnoreCase( XMLHandler.getTagValue( fields, "select_unspecified" ) );
@@ -350,11 +328,11 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface 
             v.setName( selectFields[i].getRename() );
             v.setOrigin( name );
           }
-          if ( selectFields[i].getLength() != -2 ) {
+          if ( selectFields[i].getLength() != UNDEFINED ) {
             v.setLength( selectFields[i].getLength() );
             v.setOrigin( name );
           }
-          if ( selectFields[i].getPrecision() != -2 ) {
+          if ( selectFields[i].getPrecision() != UNDEFINED ) {
             v.setPrecision( selectFields[i].getPrecision() );
             v.setOrigin( name );
           }
@@ -431,11 +409,11 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface 
             //
             v.setStorageType( ValueMetaInterface.STORAGE_TYPE_NORMAL );
           }
-          if ( metaChange.getLength() != -2 ) {
+          if ( metaChange.getLength() != UNDEFINED ) {
             v.setLength( metaChange.getLength() );
             v.setOrigin( name );
           }
-          if ( metaChange.getPrecision() != -2 ) {
+          if ( metaChange.getPrecision() != UNDEFINED ) {
             v.setPrecision( metaChange.getPrecision() );
             v.setOrigin( name );
           }
