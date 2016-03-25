@@ -2231,7 +2231,7 @@ public class PurRepository extends AbstractRepository implements Repository, Rep
   /**
    * Performs one-way conversion on incoming String to produce a syntactically valid JCR path (section 4.6 Path Syntax).
    */
-  protected static String checkAndSanitize( final String in ) {
+  public static String checkAndSanitize( final String in ) {
     if ( in == null ) {
       throw new IllegalArgumentException();
     }
