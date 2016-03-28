@@ -27,5 +27,5 @@ import java.sql.SQLException;
 /**
  * Class for DatabaseLogExceptionFactory unit test
  */
-public class PacketTooBigException extends SQLException {
+public class MysqlDataTruncation extends SQLException {
 }
