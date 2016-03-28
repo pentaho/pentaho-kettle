@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -19,7 +19,6 @@
  * limitations under the License.
  *
  ******************************************************************************/
-
 package org.pentaho.di.trans.steps.salesforceinput;
 
 import java.io.IOException;
@@ -31,6 +30,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import javax.xml.namespace.QName;
+import javax.xml.rpc.ServiceException;
 import javax.xml.soap.SOAPException;
 
 import org.apache.axis.message.MessageElement;
@@ -38,6 +38,7 @@ import org.apache.axis.transport.http.HTTPConstants;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.i18n.BaseMessages;
@@ -250,10 +251,19 @@ public class SalesforceConnection {
     this.password = value;
   }
 
-  public void connect() throws KettleException {
+  /**
+   * It is extracted method for test goal, should use only for test purpose
+   * 
+   * @return SoapBindingStub - new soap binding stub 
+   * @throws ServiceException
+   */
+  protected SoapBindingStub getSoapBinding() throws ServiceException {
+    return (SoapBindingStub) new SforceServiceLocator().getSoap();
+  }
 
+  public void connect() throws KettleException {
     try {
-      this.binding = (SoapBindingStub) new SforceServiceLocator().getSoap();
+      this.binding = getSoapBinding();
       if ( log.isDetailed() ) {
         log.logDetailed( BaseMessages.getString( PKG, "SalesforceInput.Log.LoginURL", binding
           ._getProperty( SoapBindingStub.ENDPOINT_ADDRESS_PROPERTY ) ) );
@@ -299,7 +309,7 @@ public class SalesforceConnection {
       }
 
       // Login
-      this.loginResult = getBinding().login( getUsername(), getPassword() );
+      this.loginResult = getBinding().login( getUsername(), Encr.decryptPasswordOptionallyEncrypted( getPassword() ) );
 
       if ( log.isDebug() ) {
         log.logDebug( BaseMessages.getString( PKG, "SalesforceInput.Log.SessionId" )
@@ -851,7 +861,7 @@ public class SalesforceConnection {
     try {
       return getBinding().upsert( upsertField, sfBuffer );
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG, "SalesforceInput.ErrorUpsert" , e ) );
+      throw new KettleException( BaseMessages.getString( PKG, "SalesforceInput.ErrorUpsert", e ) );
     }
   }
 
@@ -859,7 +869,7 @@ public class SalesforceConnection {
     try {
       return getBinding().create( sfBuffer );
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG, "SalesforceInput.ErrorInsert" , e ) );
+      throw new KettleException( BaseMessages.getString( PKG, "SalesforceInput.ErrorInsert", e ) );
     }
   }
 
@@ -867,7 +877,7 @@ public class SalesforceConnection {
     try {
       return getBinding().update( sfBuffer );
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG, "SalesforceInput.ErrorUpdate" , e ) );
+      throw new KettleException( BaseMessages.getString( PKG, "SalesforceInput.ErrorUpdate", e ) );
     }
   }
 
@@ -875,7 +885,7 @@ public class SalesforceConnection {
     try {
       return getBinding().delete( id );
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG, "SalesforceInput.ErrorDelete" , e ) );
+      throw new KettleException( BaseMessages.getString( PKG, "SalesforceInput.ErrorDelete", e ) );
     }
   }
 
