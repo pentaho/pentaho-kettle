@@ -31,6 +31,8 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.injection.Injection;
+import org.pentaho.di.core.injection.InjectionSupported;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaString;
@@ -50,27 +52,37 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
+@InjectionSupported( localizationPrefix = "ReplaceString.Injection.", groups = { "FIELDS" } )
 public class ReplaceStringMeta extends BaseStepMeta implements StepMetaInterface {
 
   private static Class<?> PKG = ReplaceStringMeta.class; // for i18n purposes, needed by Translator2!!
 
+  @Injection( name = "FIELD_IN_STREAM", group = "FIELDS" )
   private String[] fieldInStream;
 
+  @Injection( name = "FIELD_OUT_STREAM", group = "FIELDS" )
   private String[] fieldOutStream;
 
+  @Injection( name = "USE_REGEX", group = "FIELDS" )
   private int[] useRegEx;
 
+  @Injection( name = "REPLACE_STRING", group = "FIELDS" )
   private String[] replaceString;
 
+  @Injection( name = "REPLACE_BY", group = "FIELDS" )
   private String[] replaceByString;
 
   /** Flag : set empty string **/
+  @Injection( name = "EMPTY_STRING", group = "FIELDS" )
   private boolean[] setEmptyString;
 
+  @Injection( name = "REPLACE_WITH_FIELD", group = "FIELDS" )
   private String[] replaceFieldByString;
 
+  @Injection( name = "REPLACE_WHOLE_WORD", group = "FIELDS" )
   private int[] wholeWord;
 
+  @Injection( name = "CASE_SENSITIVE", group = "FIELDS" )
   private int[] caseSensitive;
 
   public static final String[] caseSensitiveCode = { "no", "yes" };
