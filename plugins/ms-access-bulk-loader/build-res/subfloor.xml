@@ -155,8 +155,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   <property name="javac.deprecation"
             value="true"
             description="Indicates whether source should be compiled with deprecation information"/>
-  <property name="javac.source" value="7" description="Provide source compatibility with specified release"/>
-  <property name="javac.target" value="7" description="Generate class files for specific VM version"/>
+  <property name="javac.source" value="8" description="Provide source compatibility with specified release"/>
+  <property name="javac.target" value="8" description="Generate class files for specific VM version"/>
   <property name="javac.maxmemory" value="256M" description="Max memory alloted to java compile"/>
   <property name="javac.xlint" value="-Xlint:all"/>
 
@@ -242,7 +242,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             value="${testbin.dir}/instrumented-classes"
             description="Directory where instrumented project classes are placed for use by code coverage utility"/>
   <property name="jacoco.version"
-            value="0.7.4.201502262128"
+            value="0.7.6.201602180812"
             description="The version of jacoco to use for code coverage"/>
   <property name="cobertura.version"
             value="2.1.1"
@@ -326,9 +326,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
   <!-- Sonar properties -->
 
-  <property name="sonar-ant-task-version" value="2.2"/>
+  <property name="sonar-ant-task-version" value="2.4"/>
   <property name="sonar.classname" value="org.sonar.ant.SonarTask"/>
-  <property name="sonar.hostname" value="10.177.176.23"/>
+  <property name="sonar.hostname" value="sonar.pentaho.com"/>
   <property name="sonar.port" value="9000"/>
   <property name="sonar.host.url" value="http://${sonar.hostname}:${sonar.port}"/>
   <property name="sonar.jdbc.username" value="sonar"/>
@@ -366,7 +366,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             value="6.12"
             description="The version of CheckStyle to use for coding standards"/>
   <property name="pentaho.coding.standards.version"
-			value="1.0.3"/>
+			value="1.0.4"/>
   <property name="checkstyle.dir"
             value="${basedir}/checkstyle"/>
   <property name="checkstyle.lib.dir"
@@ -1846,11 +1846,17 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     init-test-reports
 
     Prepare directories for JUnit test reports
+
+    Do not chain the clean-test-reports target because running unit tests
+    followed by integration tests is resulting in missing unit test reports.
+    These directories will be cleaned by a top level "clean" call or a user
+    can call "clean-test-reports" directly if desired.
     ====================================================================-->
-  <target name="init-test-reports" depends="clean-test-reports">
+  <target name="init-test-reports" >
     <mkdir dir="${testreports.xml.dir}"/>
     <mkdir dir="${testreports.html.dir}"/>
   </target>
+
 
   <!--=======================================================================
         integration-test
@@ -1950,7 +1956,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   <target name="javadoc" depends="javadoc.init, compile">
     <javadoc destdir="${javadoc.dir}/docs/api"
              access="public"
-             source="7"
+             source="${javac.source}"
              use="true"
              notree="false"
              nonavbar="false"
