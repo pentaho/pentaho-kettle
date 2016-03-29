@@ -37,7 +37,6 @@ import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.logging.LogTableCoreInterface;
 
 import static org.mockito.Mockito.*;
-import static org.pentaho.di.core.database.util.DatabaseLogExceptionFactory.KETTLE_GLOBAL_PROP_NAME;
 
 public class DatabaseLogExceptionFactoryTest {
 
@@ -51,11 +50,11 @@ public class DatabaseLogExceptionFactoryTest {
 
   @Before public void setUp() {
     logTable = mock( LogTableCoreInterface.class );
-    System.clearProperty( KETTLE_GLOBAL_PROP_NAME );
+    System.clearProperty( DatabaseLogExceptionFactory.KETTLE_GLOBAL_PROP_NAME );
   }
 
   @After public void tearDown() {
-    System.clearProperty( KETTLE_GLOBAL_PROP_NAME );
+    System.clearProperty( DatabaseLogExceptionFactory.KETTLE_GLOBAL_PROP_NAME );
   }
 
   @Test public void testGetExceptionStrategyWithoutException() {
@@ -65,7 +64,7 @@ public class DatabaseLogExceptionFactoryTest {
   }
 
   @Test public void testGetExceptionStrategyWithoutExceptionPropSetY() {
-    System.setProperty( KETTLE_GLOBAL_PROP_NAME, PROPERTY_VALUE_TRUE );
+    System.setProperty( DatabaseLogExceptionFactory.KETTLE_GLOBAL_PROP_NAME, PROPERTY_VALUE_TRUE );
     LogExceptionBehaviourInterface exceptionStrategy = DatabaseLogExceptionFactory.getExceptionStrategy( logTable );
     String strategyName = exceptionStrategy.getClass().getName();
     assertEquals( THROWABLE, strategyName );
@@ -80,7 +79,7 @@ public class DatabaseLogExceptionFactoryTest {
   }
 
   @Test public void testGetExceptionStrategyWithExceptionPropSetY() {
-    System.setProperty( KETTLE_GLOBAL_PROP_NAME, PROPERTY_VALUE_TRUE );
+    System.setProperty( DatabaseLogExceptionFactory.KETTLE_GLOBAL_PROP_NAME, PROPERTY_VALUE_TRUE );
     LogExceptionBehaviourInterface
       exceptionStrategy =
       DatabaseLogExceptionFactory.getExceptionStrategy( logTable, new Exception() );
@@ -130,7 +129,7 @@ public class DatabaseLogExceptionFactoryTest {
    * Property value has priority
    */
   @Test public void testExceptionStrategyWithPacketTooBigExceptionPropSetY() {
-    System.setProperty( KETTLE_GLOBAL_PROP_NAME, PROPERTY_VALUE_TRUE );
+    System.setProperty( DatabaseLogExceptionFactory.KETTLE_GLOBAL_PROP_NAME, PROPERTY_VALUE_TRUE );
 
     DatabaseMeta databaseMeta = mock( DatabaseMeta.class );
     DatabaseInterface databaseInterface = new MySQLDatabaseMeta();
