@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -68,6 +68,8 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.gui.PrimitiveGCInterface;
+import org.pentaho.di.core.logging.LogChannel;
+import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.row.ValueDataUtil;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.util.EnvUtil;
@@ -144,6 +146,8 @@ public class ValueMetaBase implements ValueMetaInterface {
   protected boolean originalAutoIncrement;
   protected int originalNullable;
   protected boolean originalSigned;
+
+  private LogChannelInterface log = new LogChannel( "ValueMetaBase" );
 
   /**
    * The trim type codes
@@ -4789,6 +4793,9 @@ public class ValueMetaBase implements ValueMetaInterface {
               int begin = len - maxlen;
               if ( begin < 0 ) {
                 begin = 0;
+              }
+              if ( begin > 0 ) {
+                log.logMinimal( String.format( "Truncating %d symbols of original message in '%s' field", begin, getName() ) );
               }
 
               // Get the substring!
