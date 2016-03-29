@@ -171,6 +171,10 @@ public class LoadSaveTester {
     metaLoaded.loadXML( XMLHandler.getSubNode( XMLHandler.loadXMLFile( is, null, false, false ), "step" ),
       (List<DatabaseMeta>) null, (IMetaStore) null );
     validateLoadedMeta( xmlAttributes, validatorMap, metaToSave, metaLoaded );
+
+    // Test clone() method
+    metaLoaded = (StepMetaInterface) metaToSave.clone();
+    validateLoadedMeta( xmlAttributes, validatorMap, metaToSave, metaLoaded );
   }
 
   public void testRepoRoundTrip() throws KettleException {

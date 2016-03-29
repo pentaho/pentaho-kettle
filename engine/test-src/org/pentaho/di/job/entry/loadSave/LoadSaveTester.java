@@ -73,6 +73,7 @@ public class LoadSaveTester<T extends JobEntryInterface> extends LoadSaveBase<T>
     return fieldLoadSaveValidatorFactory;
   }
 
+  @SuppressWarnings( "unchecked" )
   public void testXmlRoundTrip() throws KettleException {
     T metaToSave = createMeta();
     Map<String, FieldLoadSaveValidator<?>> validatorMap =
@@ -81,6 +82,10 @@ public class LoadSaveTester<T extends JobEntryInterface> extends LoadSaveBase<T>
     String xml = "<step>" + metaToSave.getXML() + "</step>";
     InputStream is = new ByteArrayInputStream( xml.getBytes() );
     metaLoaded.loadXML( XMLHandler.getSubNode( XMLHandler.loadXMLFile( is, null, false, false ), "step" ), null, null, null, null );
+    validateLoadedMeta( xmlAttributes, validatorMap, metaToSave, metaLoaded );
+
+    // Test clone() method
+    metaLoaded = (T) metaToSave.clone();
     validateLoadedMeta( xmlAttributes, validatorMap, metaToSave, metaLoaded );
   }
 
