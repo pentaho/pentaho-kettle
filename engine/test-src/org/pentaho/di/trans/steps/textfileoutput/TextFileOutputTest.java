@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -34,8 +34,6 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.pentaho.di.core.util.Assert.assertFalse;
-import static org.pentaho.di.core.util.Assert.assertTrue;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -287,10 +285,10 @@ public class TextFileOutputTest {
                 content = (String) contents.toArray()[i++];
                 contentFile = createTemplateFile( content );
                 if ( resultFile.exists() ) {
-                  assertTrue( IOUtils.contentEquals( resultFile.getContent().getInputStream(), contentFile.getContent()
+                  org.pentaho.di.core.util.Assert.assertTrue( IOUtils.contentEquals( resultFile.getContent().getInputStream(), contentFile.getContent()
                       .getInputStream() ) );
                 } else {
-                  assertFalse( contentFile.exists() );
+                  org.pentaho.di.core.util.Assert.assertFalse( contentFile.exists() );
                 }
               } catch ( Exception e ) {
                 Assert.fail( e.getMessage() + "\n FileExists = " + fileExists + "\n DataReceived = " + dataReceived
@@ -413,7 +411,8 @@ public class TextFileOutputTest {
 
     for ( int i = 0; i < textFileField.length; i++ ) {
       String name = textFileField[i].getName();
-      when( inputRowMeta.getValueMeta( i ) ).thenReturn( new ValueMetaString( name ) );
+      ValueMetaString valueMetaString = new ValueMetaString( name );
+      when( inputRowMeta.getValueMeta( i ) ).thenReturn( valueMetaString );
       when( inputRowMeta.indexOfValue( name ) ).thenReturn( i );
     }
 
