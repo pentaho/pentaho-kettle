@@ -1811,26 +1811,26 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
           Job parentJob = null;
 
           // variables are always set in the step and in the hosting transformation
-          scm.setVariable(sArg1,sArg2);
+          scm.setVariable( sArg1, sArg2 );
           Trans trans = scm.getTrans();
-          if (trans != null) {
-            trans.setVariable(sArg1,sArg2);
+          if ( trans != null ) {
+            trans.setVariable( sArg1, sArg2 );
 
             // Set the variable in a potential parent transformation (in case of sub-transformation)
             while ( trans.getParentTrans() != null ) {
               trans = trans.getParentTrans();
-              trans.setVariable( sArg1, sArg2);
+              trans.setVariable( sArg1, sArg2 );
             }
             parentJob = trans.getParentJob();
           }
 
-          switch (sArg3) {
+          switch ( sArg3 ) {
             case "s":
               System.setProperty( sArg1, sArg2 );
 
               // Set the variable up to job hierarchy.
               while ( parentJob != null ) {
-                parentJob.setVariable( sArg1, sArg2);
+                parentJob.setVariable( sArg1, sArg2 );
                 parentJob = parentJob.getParentJob();
               }
               break;
@@ -1838,7 +1838,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
             case "r":
               // Set the variable up to job hierarchy.
               while ( parentJob != null ) {
-                parentJob.setVariable( sArg1, sArg2);
+                parentJob.setVariable( sArg1, sArg2 );
                 parentJob = parentJob.getParentJob();
               }
               break;
@@ -1848,7 +1848,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 
               // Set the variable on the parent job
               if ( parentJob != null ) {
-                parentJob.setVariable( sArg1, sArg2);
+                parentJob.setVariable( sArg1, sArg2 );
                 gpJob = parentJob.getParentJob();
               }
 
@@ -1861,7 +1861,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
             case "p":
               // Set the variable on the parent job
               if ( parentJob != null ) {
-                parentJob.setVariable( sArg1, sArg2);
+                parentJob.setVariable( sArg1, sArg2 );
               }
               break;
 
