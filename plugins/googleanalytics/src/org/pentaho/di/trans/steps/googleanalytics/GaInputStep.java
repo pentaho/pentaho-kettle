@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -183,7 +183,7 @@ public class GaInputStep extends BaseStep implements StepInterface {
         }
       }
 
-      if ( !Const.isEmpty( meta.getFilters() ) ) {
+      if ( !Const.isEmpty( meta.getFilters() ) && !Const.isEmpty( environmentSubstitute( meta.getFilters() ) ) ) {
         query.setFilters( environmentSubstitute( meta.getFilters() ) );
       }
       if ( !Const.isEmpty( meta.getSort() ) ) {
