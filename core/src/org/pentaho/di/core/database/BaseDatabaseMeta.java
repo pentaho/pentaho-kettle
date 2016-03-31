@@ -2279,4 +2279,9 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterfaceEx
   public String getDropTableIfExistsStatement( String tableName ) {
     return "DROP TABLE IF EXISTS " + tableName;
   }
+
+  @Override
+  public boolean fullExceptionLog( Exception e ) {
+    return true;
+  }
 }

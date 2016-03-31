@@ -37,4 +37,14 @@ public interface DatabaseInterfaceExtended extends DatabaseInterface {
    * @return Drop table statement specific for the current database
    */
   String getDropTableIfExistsStatement( String tableName );
+
+  /**
+   * Returns false if exception doesn't require
+   * full exception log. Could be used in cases of DB vendor
+   * specific error which doesn't require stack trace log.
+   *
+   * @param e exception to check
+   * @return decision result
+   */
+  public boolean fullExceptionLog( Exception e );
 }

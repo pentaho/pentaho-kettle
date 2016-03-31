@@ -22,54 +22,56 @@
 
 package org.pentaho.di.core.database;
 
+import com.google.common.collect.Sets;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.row.ValueMetaInterface;
 
+import java.util.Set;
+
 /**
  * Contains MySQL specific information through static final members
- * 
+ *
  * @author Matt
  * @since 11-mrt-2005
  */
 
 public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInterface {
-  @Override
-  public int[] getAccessTypeList() {
+
+  private static final Set
+    SHORT_MESSAGE_EXCEPTIONS =
+    Sets.newHashSet( "com.mysql.jdbc.PacketTooBigException", "com.mysql.jdbc.MysqlDataTruncation" );
+
+  @Override public int[] getAccessTypeList() {
     return new int[] { DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI };
   }
 
-  @Override
-  public int getDefaultDatabasePort() {
+  @Override public int getDefaultDatabasePort() {
     if ( getAccessType() == DatabaseMeta.TYPE_ACCESS_NATIVE ) {
       return 3306;
     }
     return -1;
   }
 
-  @Override
-  public String getLimitClause( int nrRows ) {
+  @Override public String getLimitClause( int nrRows ) {
     return " LIMIT " + nrRows;
   }
 
   /**
    * Returns the minimal SQL to launch in order to determine the layout of the resultset for a given database table
-   * 
+   *
    * @param tableName
-   *          The name of the table to determine the layout for
+   *   The name of the table to determine the layout for
    * @return The SQL to launch.
    */
-  @Override
-  public String getSQLQueryFields( String tableName ) {
+  @Override public String getSQLQueryFields( String tableName ) {
     return "SELECT * FROM " + tableName + " LIMIT 0";
   }
 
-  @Override
-  public String getSQLTableExists( String tablename ) {
+  @Override public String getSQLTableExists( String tablename ) {
     return getSQLQueryFields( tablename );
   }
 
-  @Override
-  public String getSQLColumnExists( String columnname, String tablename ) {
+  @Override public String getSQLColumnExists( String columnname, String tablename ) {
     return getSQLQueryColumnFields( columnname, tablename );
   }
 
@@ -80,16 +82,14 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
   /**
    * @see org.pentaho.di.core.database.DatabaseInterface#getNotFoundTK(boolean)
    */
-  @Override
-  public int getNotFoundTK( boolean use_autoinc ) {
+  @Override public int getNotFoundTK( boolean use_autoinc ) {
     if ( supportsAutoInc() && use_autoinc ) {
       return 1;
     }
     return super.getNotFoundTK( use_autoinc );
   }
 
-  @Override
-  public String getDriverClass() {
+  @Override public String getDriverClass() {
     if ( getAccessType() == DatabaseMeta.TYPE_ACCESS_ODBC ) {
       return "sun.jdbc.odbc.JdbcOdbcDriver";
     } else {
@@ -97,8 +97,7 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
     }
   }
 
-  @Override
-  public String getURL( String hostname, String port, String databaseName ) {
+  @Override public String getURL( String hostname, String port, String databaseName ) {
     if ( getAccessType() == DatabaseMeta.TYPE_ACCESS_ODBC ) {
       return "jdbc:odbc:" + databaseName;
     } else {
@@ -113,100 +112,91 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
   /**
    * @return The extra option separator in database URL for this platform (usually this is semicolon ; )
    */
-  @Override
-  public String getExtraOptionSeparator() {
+  @Override public String getExtraOptionSeparator() {
     return "&";
   }
 
   /**
    * @return This indicator separates the normal URL from the options
    */
-  @Override
-  public String getExtraOptionIndicator() {
+  @Override public String getExtraOptionIndicator() {
     return "?";
   }
 
   /**
    * @return true if the database supports transactions.
    */
-  @Override
-  public boolean supportsTransactions() {
+  @Override public boolean supportsTransactions() {
     return false;
   }
 
   /**
    * @return true if the database supports bitmap indexes
    */
-  @Override
-  public boolean supportsBitmapIndex() {
+  @Override public boolean supportsBitmapIndex() {
     return false;
   }
 
   /**
    * @return true if the database supports views
    */
-  @Override
-  public boolean supportsViews() {
+  @Override public boolean supportsViews() {
     return true;
   }
 
   /**
    * @return true if the database supports synonyms
    */
-  @Override
-  public boolean supportsSynonyms() {
+  @Override public boolean supportsSynonyms() {
     return false;
   }
 
   /**
    * Generates the SQL statement to add a column to the specified table
-   * 
+   *
    * @param tablename
-   *          The table to add
+   *   The table to add
    * @param v
-   *          The column defined as a value
+   *   The column defined as a value
    * @param tk
-   *          the name of the technical key field
+   *   the name of the technical key field
    * @param use_autoinc
-   *          whether or not this field uses auto increment
+   *   whether or not this field uses auto increment
    * @param pk
-   *          the name of the primary key field
+   *   the name of the primary key field
    * @param semicolon
-   *          whether or not to add a semi-colon behind the statement.
+   *   whether or not to add a semi-colon behind the statement.
    * @return the SQL statement to add a column to the specified table
    */
-  @Override
-  public String getAddColumnStatement( String tablename, ValueMetaInterface v, String tk, boolean use_autoinc,
-      String pk, boolean semicolon ) {
+  @Override public String getAddColumnStatement( String tablename, ValueMetaInterface v, String tk, boolean use_autoinc,
+    String pk, boolean semicolon ) {
     return "ALTER TABLE " + tablename + " ADD " + getFieldDefinition( v, tk, pk, use_autoinc, true, false );
   }
 
   /**
    * Generates the SQL statement to modify a column in the specified table
-   * 
+   *
    * @param tablename
-   *          The table to add
+   *   The table to add
    * @param v
-   *          The column defined as a value
+   *   The column defined as a value
    * @param tk
-   *          the name of the technical key field
+   *   the name of the technical key field
    * @param use_autoinc
-   *          whether or not this field uses auto increment
+   *   whether or not this field uses auto increment
    * @param pk
-   *          the name of the primary key field
+   *   the name of the primary key field
    * @param semicolon
-   *          whether or not to add a semi-colon behind the statement.
+   *   whether or not to add a semi-colon behind the statement.
    * @return the SQL statement to modify a column in the specified table
    */
-  @Override
-  public String getModifyColumnStatement( String tablename, ValueMetaInterface v, String tk, boolean use_autoinc,
-      String pk, boolean semicolon ) {
+  @Override public String getModifyColumnStatement( String tablename, ValueMetaInterface v, String tk,
+    boolean use_autoinc, String pk, boolean semicolon ) {
     return "ALTER TABLE " + tablename + " MODIFY " + getFieldDefinition( v, tk, pk, use_autoinc, true, false );
   }
 
-  @Override
-  public String getFieldDefinition( ValueMetaInterface v, String tk, String pk, boolean use_autoinc,
-      boolean add_fieldname, boolean add_cr ) {
+  @Override public String getFieldDefinition( ValueMetaInterface v, String tk, String pk, boolean use_autoinc,
+    boolean add_fieldname, boolean add_cr ) {
     String retval = "";
 
     String fieldname = v.getName();
@@ -234,7 +224,7 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
       case ValueMetaInterface.TYPE_INTEGER:
       case ValueMetaInterface.TYPE_BIGNUMBER:
         if ( fieldname.equalsIgnoreCase( tk ) || // Technical key
-            fieldname.equalsIgnoreCase( pk ) // Primary key
+          fieldname.equalsIgnoreCase( pk ) // Primary key
         ) {
           if ( use_autoinc ) {
             retval += "BIGINT AUTO_INCREMENT NOT NULL PRIMARY KEY";
@@ -305,62 +295,58 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.core.database.DatabaseInterface#getReservedWords()
    */
-  @Override
-  public String[] getReservedWords() {
+  @Override public String[] getReservedWords() {
     return new String[] { "ADD", "ALL", "ALTER", "ANALYZE", "AND", "AS", "ASC", "ASENSITIVE", "BEFORE", "BETWEEN",
       "BIGINT", "BINARY", "BLOB", "BOTH", "BY", "CALL", "CASCADE", "CASE", "CHANGE", "CHAR", "CHARACTER", "CHECK",
       "COLLATE", "COLUMN", "CONDITION", "CONNECTION", "CONSTRAINT", "CONTINUE", "CONVERT", "CREATE", "CROSS",
       "CURRENT_DATE", "CURRENT_TIME", "CURRENT_TIMESTAMP", "CURRENT_USER", "CURSOR", "DATABASE", "DATABASES",
       "DAY_HOUR", "DAY_MICROSECOND", "DAY_MINUTE", "DAY_SECOND", "DEC", "DECIMAL", "DECLARE", "DEFAULT", "DELAYED",
-      "DELETE", "DESC", "DESCRIBE", "DETERMINISTIC", "DISTINCT", "DISTINCTROW", "DIV", "DOUBLE", "DROP", "DUAL",
-      "EACH", "ELSE", "ELSEIF", "ENCLOSED", "ESCAPED", "EXISTS", "EXIT", "EXPLAIN", "FALSE", "FETCH", "FLOAT", "FOR",
-      "FORCE", "FOREIGN", "FROM", "FULLTEXT", "GOTO", "GRANT", "GROUP", "HAVING", "HIGH_PRIORITY", "HOUR_MICROSECOND",
+      "DELETE", "DESC", "DESCRIBE", "DETERMINISTIC", "DISTINCT", "DISTINCTROW", "DIV", "DOUBLE", "DROP", "DUAL", "EACH",
+      "ELSE", "ELSEIF", "ENCLOSED", "ESCAPED", "EXISTS", "EXIT", "EXPLAIN", "FALSE", "FETCH", "FLOAT", "FOR", "FORCE",
+      "FOREIGN", "FROM", "FULLTEXT", "GOTO", "GRANT", "GROUP", "HAVING", "HIGH_PRIORITY", "HOUR_MICROSECOND",
       "HOUR_MINUTE", "HOUR_SECOND", "IF", "IGNORE", "IN", "INDEX", "INFILE", "INNER", "INOUT", "INSENSITIVE", "INSERT",
       "INT", "INTEGER", "INTERVAL", "INTO", "IS", "ITERATE", "JOIN", "KEY", "KEYS", "KILL", "LEADING", "LEAVE", "LEFT",
-      "LIKE", "LIMIT", "LINES", "LOAD", "LOCALTIME", "LOCALTIMESTAMP", "LOCATE", "LOCK", "LONG", "LONGBLOB",
-      "LONGTEXT", "LOOP", "LOW_PRIORITY", "MATCH", "MEDIUMBLOB", "MEDIUMINT", "MEDIUMTEXT", "MIDDLEINT",
-      "MINUTE_MICROSECOND", "MINUTE_SECOND", "MOD", "MODIFIES", "NATURAL", "NOT", "NO_WRITE_TO_BINLOG", "NULL",
-      "NUMERIC", "ON", "OPTIMIZE", "OPTION", "OPTIONALLY", "OR", "ORDER", "OUT", "OUTER", "OUTFILE", "POSITION",
-      "PRECISION", "PRIMARY", "PROCEDURE", "PURGE", "READ", "READS", "REAL", "REFERENCES", "REGEXP", "RENAME",
-      "REPEAT", "REPLACE", "REQUIRE", "RESTRICT", "RETURN", "REVOKE", "RIGHT", "RLIKE", "SCHEMA", "SCHEMAS",
-      "SECOND_MICROSECOND", "SELECT", "SENSITIVE", "SEPARATOR", "SET", "SHOW", "SMALLINT", "SONAME", "SPATIAL",
-      "SPECIFIC", "SQL", "SQLEXCEPTION", "SQLSTATE", "SQLWARNING", "SQL_BIG_RESULT", "SQL_CALC_FOUND_ROWS",
-      "SQL_SMALL_RESULT", "SSL", "STARTING", "STRAIGHT_JOIN", "TABLE", "TERMINATED", "THEN", "TINYBLOB", "TINYINT",
-      "TINYTEXT", "TO", "TRAILING", "TRIGGER", "TRUE", "UNDO", "UNION", "UNIQUE", "UNLOCK", "UNSIGNED", "UPDATE",
-      "USAGE", "USE", "USING", "UTC_DATE", "UTC_TIME", "UTC_TIMESTAMP", "VALUES", "VARBINARY", "VARCHAR",
-      "VARCHARACTER", "VARYING", "WHEN", "WHERE", "WHILE", "WITH", "WRITE", "XOR", "YEAR_MONTH", "ZEROFILL" };
+      "LIKE", "LIMIT", "LINES", "LOAD", "LOCALTIME", "LOCALTIMESTAMP", "LOCATE", "LOCK", "LONG", "LONGBLOB", "LONGTEXT",
+      "LOOP", "LOW_PRIORITY", "MATCH", "MEDIUMBLOB", "MEDIUMINT", "MEDIUMTEXT", "MIDDLEINT", "MINUTE_MICROSECOND",
+      "MINUTE_SECOND", "MOD", "MODIFIES", "NATURAL", "NOT", "NO_WRITE_TO_BINLOG", "NULL", "NUMERIC", "ON", "OPTIMIZE",
+      "OPTION", "OPTIONALLY", "OR", "ORDER", "OUT", "OUTER", "OUTFILE", "POSITION", "PRECISION", "PRIMARY", "PROCEDURE",
+      "PURGE", "READ", "READS", "REAL", "REFERENCES", "REGEXP", "RENAME", "REPEAT", "REPLACE", "REQUIRE", "RESTRICT",
+      "RETURN", "REVOKE", "RIGHT", "RLIKE", "SCHEMA", "SCHEMAS", "SECOND_MICROSECOND", "SELECT", "SENSITIVE",
+      "SEPARATOR", "SET", "SHOW", "SMALLINT", "SONAME", "SPATIAL", "SPECIFIC", "SQL", "SQLEXCEPTION", "SQLSTATE",
+      "SQLWARNING", "SQL_BIG_RESULT", "SQL_CALC_FOUND_ROWS", "SQL_SMALL_RESULT", "SSL", "STARTING", "STRAIGHT_JOIN",
+      "TABLE", "TERMINATED", "THEN", "TINYBLOB", "TINYINT", "TINYTEXT", "TO", "TRAILING", "TRIGGER", "TRUE", "UNDO",
+      "UNION", "UNIQUE", "UNLOCK", "UNSIGNED", "UPDATE", "USAGE", "USE", "USING", "UTC_DATE", "UTC_TIME",
+      "UTC_TIMESTAMP", "VALUES", "VARBINARY", "VARCHAR", "VARCHARACTER", "VARYING", "WHEN", "WHERE", "WHILE", "WITH",
+      "WRITE", "XOR", "YEAR_MONTH", "ZEROFILL" };
   }
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.core.database.DatabaseInterface#getStartQuote()
    */
-  @Override
-  public String getStartQuote() {
+  @Override public String getStartQuote() {
     return "`";
   }
 
   /**
    * Simply add an underscore in the case of MySQL!
-   * 
+   *
    * @see org.pentaho.di.core.database.DatabaseInterface#getEndQuote()
    */
-  @Override
-  public String getEndQuote() {
+  @Override public String getEndQuote() {
     return "`";
   }
 
   /**
    * @param tableNames
-   *          The names of the tables to lock
+   *   The names of the tables to lock
    * @return The SQL command to lock database tables for write purposes.
    */
-  @Override
-  public String getSQLLockTables( String[] tableNames ) {
+  @Override public String getSQLLockTables( String[] tableNames ) {
     String sql = "LOCK TABLES ";
     for ( int i = 0; i < tableNames.length; i++ ) {
       if ( i > 0 ) {
@@ -375,29 +361,25 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 
   /**
    * @param tableName
-   *          The name of the table to unlock
+   *   The name of the table to unlock
    * @return The SQL command to unlock a database table.
    */
-  @Override
-  public String getSQLUnlockTables( String[] tableName ) {
+  @Override public String getSQLUnlockTables( String[] tableName ) {
     return "UNLOCK TABLES"; // This unlocks all tables
   }
 
-  @Override
-  public boolean needsToLockAllTables() {
+  @Override public boolean needsToLockAllTables() {
     return true;
   }
 
   /**
    * @return extra help text on the supported options on the selected database platform.
    */
-  @Override
-  public String getExtraOptionsHelpText() {
+  @Override public String getExtraOptionsHelpText() {
     return "http://dev.mysql.com/doc/refman/5.0/en/connector-j-reference-configuration-properties.html";
   }
 
-  @Override
-  public String[] getUsedLibraries() {
+  @Override public String[] getUsedLibraries() {
     return new String[] { "mysql-connector-java-3.1.14-bin.jar" };
   }
 
@@ -405,8 +387,7 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
    * @param tableName
    * @return true if the specified table is a system table
    */
-  @Override
-  public boolean isSystemTable( String tableName ) {
+  @Override public boolean isSystemTable( String tableName ) {
     if ( tableName.startsWith( "sys" ) ) {
       return true;
     }
@@ -418,17 +399,17 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 
   /**
    * Get the SQL to insert a new empty unknown record in a dimension.
-   * 
+   *
    * @param schemaTable
-   *          the schema-table name to insert into
+   *   the schema-table name to insert into
    * @param keyField
-   *          The key field
+   *   The key field
    * @param versionField
-   *          the version field
+   *   the version field
    * @return the SQL to insert the unknown record into the SCD.
    */
-  @Override
-  public String getSQLInsertAutoIncUnknownDimensionRow( String schemaTable, String keyField, String versionField ) {
+  @Override public String getSQLInsertAutoIncUnknownDimensionRow( String schemaTable, String keyField,
+    String versionField ) {
     return "insert into " + schemaTable + "(" + keyField + ", " + versionField + ") values (1, 1)";
   }
 
@@ -436,8 +417,7 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
    * @param string
    * @return A string that is properly quoted for use in a SQL statement (insert, update, delete, etc)
    */
-  @Override
-  public String quoteSQLString( String string ) {
+  @Override public String quoteSQLString( String string ) {
     string = string.replaceAll( "'", "\\\\'" );
     string = string.replaceAll( "\\n", "\\\\n" );
     string = string.replaceAll( "\\r", "\\\\r" );
@@ -447,34 +427,34 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
   /**
    * @return true if the database is a MySQL variant, like MySQL 5.1, InfiniDB, InfoBright, and so on.
    */
-  @Override
-  public boolean isMySQLVariant() {
+  @Override public boolean isMySQLVariant() {
     return true;
   }
 
   /**
    * Returns a false as Oracle does not allow for the releasing of savepoints.
    */
-  @Override
-  public boolean releaseSavepoint() {
+  @Override public boolean releaseSavepoint() {
     return false;
   }
 
-  @Override
-  public boolean supportsErrorHandlingOnBatchUpdates() {
+  @Override public boolean supportsErrorHandlingOnBatchUpdates() {
     return true;
   }
 
-  @Override
-  public boolean isRequiringTransactionsOnQueries() {
+  @Override public boolean isRequiringTransactionsOnQueries() {
     return false;
   }
 
   /**
    * @return true if Kettle can create a repository on this type of database.
    */
-  @Override
-  public boolean supportsRepository() {
+  @Override public boolean supportsRepository() {
     return true;
+  }
+
+  @Override public boolean fullExceptionLog( Exception e ) {
+    Throwable cause = ( e == null ? null : e.getCause() );
+    return !( cause != null && SHORT_MESSAGE_EXCEPTIONS.contains( cause.getClass().getName() ) );
   }
 }
