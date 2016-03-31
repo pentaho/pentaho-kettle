@@ -21,7 +21,9 @@
     <dependency org="pentaho-kettle" name="kettle-core"        rev="${dependency.kettle.revision}" conf="dev->default" changing="true"/>
     <dependency org="pentaho-kettle" name="kettle-engine"      rev="${dependency.kettle.revision}" conf="dev->default" changing="true"/>
     <dependency org="pentaho-kettle" name="kettle-ui-swt"      rev="${dependency.kettle.revision}" conf="dev->default" changing="true"/>
-	<dependency org="pentaho"        name="salesforce-partner" rev="24.0"/>
+
+    <dependency org="pentaho"         name="salesforce-partner" rev="24.0"  conf="dev->default"/>
+    <dependency org="org.apache.axis" name="axis-saaj" rev="1.4"/>
 
     <!-- SWT it required to compile any version of any architecture will work -->
     <dependency org="org.eclipse.swt" name="swt-linux-x86_64" rev="4.3.2" conf="dev->default" transitive="false"/>
