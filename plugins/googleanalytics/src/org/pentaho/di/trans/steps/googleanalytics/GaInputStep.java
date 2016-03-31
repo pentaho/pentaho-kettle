@@ -182,7 +182,7 @@ public class GaInputStep extends BaseStep implements StepInterface {
         }
       }
 
-      if ( !Const.isEmpty( meta.getFilters() ) ) {
+      if ( !Const.isEmpty( meta.getFilters() ) && !Const.isEmpty( environmentSubstitute( meta.getFilters() ) ) ) {
         query.setFilters( environmentSubstitute( meta.getFilters() ) );
       }
       if ( !Const.isEmpty( meta.getSort() ) ) {
