@@ -232,7 +232,15 @@ public abstract class ConfigurationDialog extends Dialog {
 
   protected void optionsSectionLayout( Class<?> PKG, String prefix ) {
     gDetails = new Group( shell, SWT.SHADOW_ETCHED_IN );
-    fdLocal.bottom = new FormAttachment( 100, -510 );
+    if ( Const.isLinux() ) {
+      fdLocal.bottom = new FormAttachment( 100, -510 );
+    }
+    if ( Const.isOSX() ) {
+      fdLocal.bottom = new FormAttachment( 100, -524 );
+    }
+    if ( Const.isWindows() ) {
+      fdLocal.bottom = new FormAttachment( 100, -530 );
+    }
     gDetails.setText( BaseMessages.getString( PKG, prefix + ".DetailsGroup.Label" ) );
     props.setLook( gDetails );
 
@@ -256,7 +264,15 @@ public abstract class ConfigurationDialog extends Dialog {
     fd_tabFolder = new FormData();
     fd_tabFolder.right = new FormAttachment( 100, -15 );
     fd_tabFolder.left = new FormAttachment( 0, 15 );
-    fd_tabFolder.top = new FormAttachment( 0, 276 );
+    if ( Const.isLinux() ) {
+      fd_tabFolder.top = new FormAttachment( 0, 276 );
+    }
+    if ( Const.isOSX() ) {
+      fd_tabFolder.top = new FormAttachment( 0, 276 );
+    }
+    if ( Const.isWindows() ) {
+      fd_tabFolder.top = new FormAttachment( 0, 245 );
+    }
     tabFolder.setLayoutData( fd_tabFolder );
 
     // Parameters
@@ -268,15 +284,13 @@ public abstract class ConfigurationDialog extends Dialog {
     parametersComposite.setLayout( new FormLayout() );
     tbtmParameters.setControl( parametersComposite );
 
-    ColumnInfo[] cParams =
-    { new ColumnInfo( BaseMessages.getString( PKG, prefix + ".ParamsColumn.Argument" ), ColumnInfo.COLUMN_TYPE_TEXT,
-            false, true, 126 ), // Stepname
-      new ColumnInfo( BaseMessages.getString( PKG, prefix + ".ParamsColumn.Default" ), ColumnInfo.COLUMN_TYPE_TEXT,
-          false, true, 138 ), // Preview size
-
-      new ColumnInfo( BaseMessages.getString( PKG, prefix + ".ParamsColumn.Value" ), ColumnInfo.COLUMN_TYPE_TEXT,
-          false, false, 142 ), // Preview size
-
+    ColumnInfo[] cParams = {
+      new ColumnInfo( BaseMessages.getString( PKG, prefix + ".ParamsColumn.Argument" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false, true, 126 ), // Stepname
+      new ColumnInfo( BaseMessages.getString( PKG, prefix + ".ParamsColumn.Default" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false, true, 138 ), // Preview size
+      new ColumnInfo( BaseMessages.getString( PKG, prefix + ".ParamsColumn.Value" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false, false, 142 ), // Preview size
       new ColumnInfo( BaseMessages.getString( PKG, prefix + ".ParamsColumn.Description" ),
           ColumnInfo.COLUMN_TYPE_TEXT, false, true, 181 ), // Preview size
     };
@@ -317,11 +331,11 @@ public abstract class ConfigurationDialog extends Dialog {
     variablesComposite.setLayout( new FormLayout() );
     tbtmVariables.setControl( variablesComposite );
 
-    ColumnInfo[] cVariables =
-    { new ColumnInfo( BaseMessages.getString( PKG, prefix + ".VariablesColumn.Argument" ),
-            ColumnInfo.COLUMN_TYPE_TEXT, false, false, 287 ), // Stepname
-      new ColumnInfo( BaseMessages.getString( PKG, prefix + ".VariablesColumn.Value" ), ColumnInfo.COLUMN_TYPE_TEXT,
-          false, false, 300 ), // Preview size
+    ColumnInfo[] cVariables = {
+      new ColumnInfo( BaseMessages.getString( PKG, prefix + ".VariablesColumn.Argument" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false, false, 287 ), // Stepname
+      new ColumnInfo( BaseMessages.getString( PKG, prefix + ".VariablesColumn.Value" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false, false, 300 ), // Preview size
     };
 
     int nrVariables = configuration.getVariables() != null ? configuration.getVariables().size() : 0;
@@ -338,7 +352,8 @@ public abstract class ConfigurationDialog extends Dialog {
     wVariables.setLayoutData( fdVariables );
   }
 
-  protected void buttonsSectionLayout( Class<?> PKG, String prefix, final String docTitle, final String docUrl, final String docHeader ) {
+  protected void buttonsSectionLayout( Class<?> PKG, String prefix, final String docTitle, final String docUrl,
+      final String docHeader ) {
 
     // Bottom buttons and separator
 
@@ -422,8 +437,8 @@ public abstract class ConfigurationDialog extends Dialog {
     Rectangle shellBounds = getParent().getBounds();
     Point dialogSize = shell.getSize();
 
-    shell.setLocation( shellBounds.x + ( shellBounds.width - dialogSize.x ) / 2, shellBounds.y + ( shellBounds.height
-        - dialogSize.y ) / 2 );
+    shell.setLocation( shellBounds.x + ( shellBounds.width - dialogSize.x ) / 2, shellBounds.y
+        + ( shellBounds.height - dialogSize.y ) / 2 );
 
     while ( !shell.isDisposed() ) {
       if ( !display.readAndDispatch() ) {
@@ -499,7 +514,15 @@ public abstract class ConfigurationDialog extends Dialog {
     // separator
     environmentSeparator = new Label( gLocal, SWT.SEPARATOR | SWT.VERTICAL );
     FormData fd_environmentSeparator = new FormData();
-    fd_environmentSeparator.height = 83;
+    if ( Const.isLinux() ) {
+      fd_environmentSeparator.height = 83;
+    }
+    if ( Const.isOSX() ) {
+      fd_environmentSeparator.height = 70;
+    }
+    if ( Const.isWindows() ) {
+      fd_environmentSeparator.height = 60;
+    }
     fd_environmentSeparator.top = new FormAttachment( wExecLocal, 0, SWT.TOP );
     fd_environmentSeparator.left = new FormAttachment( 0, 113 );
     environmentSeparator.setLayoutData( fd_environmentSeparator );

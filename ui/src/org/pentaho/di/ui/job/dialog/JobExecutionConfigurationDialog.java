@@ -92,8 +92,8 @@ public class JobExecutionConfigurationDialog extends ConfigurationDialog {
 
     wExpandRemote = new Button( serverOptionsComposite, SWT.CHECK );
     wExpandRemote.setText( BaseMessages.getString( PKG, prefix + ".ExpandRemote.Label" ) );
-    wExpandRemote.setToolTipText( BaseMessages.getString( PKG,
-        "JobExecutionConfigurationDialog.ExpandRemote.Tooltip" ) );
+    wExpandRemote
+        .setToolTipText( BaseMessages.getString( PKG, "JobExecutionConfigurationDialog.ExpandRemote.Tooltip" ) );
     props.setLook( wExpandRemote );
     FormData fd_expandCheckButton = new FormData();
     fd_expandCheckButton.bottom = new FormAttachment( wPassExport, 0, SWT.BOTTOM );
@@ -109,18 +109,29 @@ public class JobExecutionConfigurationDialog extends ConfigurationDialog {
     props.setLook( wSafeMode );
     FormData fdSafeMode = new FormData();
     fdSafeMode.right = new FormAttachment( 0, 186 );
-    fdSafeMode.top = new FormAttachment( 0, 30 );
+    if ( Const.isLinux() ) {
+      fdSafeMode.top = new FormAttachment( 0, 30 );
+    }
+    if ( Const.isOSX() ) {
+      fdSafeMode.top = new FormAttachment( 0, 33 );
+    }
+    if ( Const.isWindows() ) {
+      fdSafeMode.top = new FormAttachment( 0, 33 );
+    }
     fdSafeMode.left = new FormAttachment( 0, 10 );
     wSafeMode.setLayoutData( fdSafeMode );
 
     wGatherMetrics = new Button( gDetails, SWT.CHECK );
     wGatherMetrics.setText( BaseMessages.getString( PKG, "JobExecutionConfigurationDialog.GatherMetrics.Label" ) );
-    wGatherMetrics.setToolTipText( BaseMessages.getString( PKG,
-        "JobExecutionConfigurationDialog.GatherMetrics.Tooltip" ) );
+    wGatherMetrics.setToolTipText( BaseMessages
+        .getString( PKG, "JobExecutionConfigurationDialog.GatherMetrics.Tooltip" ) );
     props.setLook( wGatherMetrics );
     FormData fdGatherMetrics = new FormData();
     fdGatherMetrics.right = new FormAttachment( 0, 230 );
     fdGatherMetrics.top = new FormAttachment( 0, 55 );
+    if ( Const.isOSX() ) {
+      fdGatherMetrics.top = new FormAttachment( 0, 57 );
+    }
     fdGatherMetrics.left = new FormAttachment( 0, 10 );
     wGatherMetrics.setLayoutData( fdGatherMetrics );
 
@@ -130,7 +141,16 @@ public class JobExecutionConfigurationDialog extends ConfigurationDialog {
     props.setLook( wClearLog );
     FormData fdClearLog = new FormData();
     fdClearLog.right = new FormAttachment( 0, 200 );
-    fdClearLog.top = new FormAttachment( 0, 5 );
+
+    if ( Const.isLinux() ) {
+      fdClearLog.top = new FormAttachment( 0, 5 );
+    }
+    if ( Const.isOSX() ) {
+      fdClearLog.top = new FormAttachment( 0, 8 );
+    }
+    if ( Const.isWindows() ) {
+      fdClearLog.top = new FormAttachment( 0, 10 );
+    }
     fdClearLog.left = new FormAttachment( 0, 10 );
     wClearLog.setLayoutData( fdClearLog );
 
@@ -140,7 +160,15 @@ public class JobExecutionConfigurationDialog extends ConfigurationDialog {
     wlLogLevel.setToolTipText( BaseMessages.getString( PKG, "JobExecutionConfigurationDialog.LogLevel.Tooltip" ) );
     FormData fdlLogLevel = new FormData();
     fdlLogLevel.right = new FormAttachment( 0, 333 );
-    fdlLogLevel.top = new FormAttachment( 0, 7 );
+    if ( Const.isOSX() ) {
+      fdlLogLevel.top = new FormAttachment( 0, 10 );
+    }
+    if ( Const.isLinux() ) {
+      fdlLogLevel.top = new FormAttachment( 0, 7 );
+    }
+    if ( Const.isWindows() ) {
+      fdlLogLevel.top = new FormAttachment( 0, 10 );
+    }
     fdlLogLevel.left = new FormAttachment( 0, 260 );
     wlLogLevel.setLayoutData( fdlLogLevel );
 
