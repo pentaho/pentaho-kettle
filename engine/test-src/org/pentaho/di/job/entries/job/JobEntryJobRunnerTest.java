@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -75,6 +75,57 @@ public class JobEntryJobRunnerTest {
   }
 
   @Test
+  public void testRunSetsResult() throws Exception {
+    when( mockJob.isStopped() ).thenReturn( false );
+    when( mockJob.getParentJob() ).thenReturn( parentJob );
+    when( parentJob.isStopped() ).thenReturn( false );
+    when( mockJob.execute( Mockito.anyInt(), Mockito.any( Result.class ) ) ).thenReturn( mockResult );
+
+    jobRunner.run();
+    verify( mockJob, times( 1 ) ).setResult( Mockito.any( Result.class ) );
+  }
+
+  @Test
+  public void testRunWithExceptionOnExecuteSetsResult() throws Exception {
+    when( mockJob.isStopped() ).thenReturn( false );
+    when( mockJob.getParentJob() ).thenReturn( parentJob );
+    when( parentJob.isStopped() ).thenReturn( false );
+    when( mockJob.execute( Mockito.anyInt(), Mockito.any( Result.class ) ) ).thenThrow( KettleException.class );
+
+    jobRunner.run();
+    verify( mockJob, times( 1 ) ).setResult( Mockito.any( Result.class ) );
+  }
+
+  @Test
+  public void testRunWithExceptionOnFireJobSetsResult() throws KettleException {
+    when( mockJob.isStopped() ).thenReturn( false );
+    when( mockJob.getParentJob() ).thenReturn( parentJob );
+    when( parentJob.isStopped() ).thenReturn( false );
+    when( mockJob.execute( Mockito.anyInt(), Mockito.any( Result.class ) ) ).thenReturn( mockResult );
+
+    doThrow( Exception.class ).when( mockJob ).fireJobFinishListeners();
+
+    jobRunner.run();
+    verify( mockJob, times( 1 ) ).setResult( Mockito.any( Result.class ) );
+    assertTrue( jobRunner.isFinished() );
+  }
+
+  @Test
+  public void testRunWithExceptionOnExecuteAndFireJobSetsResult() throws KettleException {
+    when( mockJob.isStopped() ).thenReturn( false );
+    when( mockJob.getParentJob() ).thenReturn( parentJob );
+    when( parentJob.isStopped() ).thenReturn( false );
+    when( mockJob.execute( Mockito.anyInt(), Mockito.any( Result.class ) ) ).thenReturn( mockResult );
+
+    when( mockJob.execute( Mockito.anyInt(), Mockito.any( Result.class ) ) ).thenThrow( KettleException.class );
+    doThrow( Exception.class ).when( mockJob ).fireJobFinishListeners();
+
+    jobRunner.run();
+    verify( mockJob, times( 1 ) ).setResult( Mockito.any( Result.class ) );
+    assertTrue( jobRunner.isFinished() );
+  }
+
+  @Test
   public void testRunWithException() throws Exception {
     when( mockJob.isStopped() ).thenReturn( false );
     when( mockJob.getParentJob() ).thenReturn( parentJob );
@@ -82,7 +133,9 @@ public class JobEntryJobRunnerTest {
     when( mockJob.execute( Mockito.anyInt(), Mockito.any( Result.class ) ) ).thenThrow( KettleException.class );
     jobRunner.run();
     verify( mockResult, times( 1 ) ).setNrErrors( Mockito.anyInt() );
-    doThrow( KettleException.class ).when( mockJob ).fireJobFinishListeners();
+
+    //[PDI-14981] catch more general exception to prevent thread hanging
+    doThrow( Exception.class ).when( mockJob ).fireJobFinishListeners();
     jobRunner.run();
 
   }
