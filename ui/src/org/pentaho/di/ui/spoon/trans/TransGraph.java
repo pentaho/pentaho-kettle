@@ -402,6 +402,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     this.transMeta = transMeta;
     this.areaOwners = new ArrayList<AreaOwner>();
     this.log = spoon.getLog();
+    spoon.selectionFilter.setText( "" );
 
     this.mouseOverSteps = new ArrayList<StepMeta>();
     this.delayTimers = new HashMap<StepMeta, DelayTimer>();
