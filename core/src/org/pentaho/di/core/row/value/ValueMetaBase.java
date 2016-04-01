@@ -4790,22 +4790,18 @@ public class ValueMetaBase implements ValueMetaInterface {
               int len = string.length();
 
               // Take the last maxlen characters of the string...
-              int begin = len - maxlen;
-              if ( begin < 0 ) {
-                begin = 0;
-              }
+              int begin = Math.max( len - maxlen, 0 );
               if ( begin > 0 ) {
+                // Truncate if logging result if it exceeds database maximum string field length
                 log.logMinimal( String.format( "Truncating %d symbols of original message in '%s' field", begin, getName() ) );
+                string = string.substring( begin );
               }
-
-              // Get the substring!
-              String logging = string.substring( begin );
 
               if ( databaseMeta.supportsSetCharacterStream() ) {
-                StringReader sr = new StringReader( logging );
-                preparedStatement.setCharacterStream( index, sr, logging.length() );
+                StringReader sr = new StringReader( string );
+                preparedStatement.setCharacterStream( index, sr, string.length() );
               } else {
-                preparedStatement.setString( index, logging );
+                preparedStatement.setString( index, string );
               }
             } else {
               preparedStatement.setNull( index, java.sql.Types.VARCHAR );
