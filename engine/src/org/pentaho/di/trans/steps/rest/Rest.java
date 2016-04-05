@@ -30,15 +30,20 @@ import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
+import java.util.Iterator;
+import java.util.List;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManagerFactory;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriBuilder;
 
+import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.auth.AuthScope;
+import org.json.simple.JSONObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
@@ -52,6 +57,7 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 
+import com.google.common.collect.Multiset.Entry;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.UniformInterfaceException;
@@ -202,11 +208,30 @@ public class Rest extends BaseStep implements StepInterface {
 
       // Get Response
       String body;
+      String headerString = null;
       try {
         body = response.getEntity( String.class );
       } catch ( UniformInterfaceException ex ) {
         body = "";
       }
+      
+      // get Header
+      MultivaluedMap<String, String> headers = response.getHeaders();
+      
+      JSONObject json = new JSONObject();
+      for ( java.util.Map.Entry<String, List<String>> entry : headers.entrySet() ) {
+    	  String name = entry.getKey();
+    	  List<String> value = entry.getValue(); 
+    	  
+    	  if (value.size() > 1) {
+    		  json.put( name, value );
+    	  } else {
+    		  json.put( name, value.get(0) );
+    	  }
+      }
+      
+      headerString = json.toJSONString();
+      
       // for output
       int returnFieldsOffset = data.inputRowMeta.size();
       // add response to output
@@ -225,6 +250,11 @@ public class Rest extends BaseStep implements StepInterface {
       if ( !Const.isEmpty( data.resultResponseFieldName ) ) {
         newRow = RowDataUtil.addValueData( newRow, returnFieldsOffset, new Long( responseTime ) );
       }
+      
+      // add response header to output
+      if ( !Const.isEmpty( data.resultHeaderFieldName ) ) {
+          newRow = RowDataUtil.addValueData( newRow, returnFieldsOffset, headerString.toString() );
+        }
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString( PKG, "Rest.Error.CanNotReadURL", data.realUrl ), e );
 
@@ -490,6 +520,7 @@ public class Rest extends BaseStep implements StepInterface {
       data.resultFieldName = environmentSubstitute( meta.getFieldName() );
       data.resultCodeFieldName = environmentSubstitute( meta.getResultCodeFieldName() );
       data.resultResponseFieldName = environmentSubstitute( meta.getResponseTimeFieldName() );
+      data.resultHeaderFieldName = environmentSubstitute( meta.getResponseHeaderFieldName() );
 
       // get authentication settings once
       data.realProxyHost = environmentSubstitute( meta.getProxyHost() );

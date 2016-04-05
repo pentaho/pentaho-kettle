@@ -73,6 +73,7 @@ public class RestData extends BaseStepData implements StepDataInterface {
   public String resultFieldName;
   public String resultCodeFieldName;
   public String resultResponseFieldName;
+  public String resultHeaderFieldName;
 
   /** Flag set headers **/
   public boolean useHeaders;
@@ -110,6 +111,7 @@ public class RestData extends BaseStepData implements StepDataInterface {
     this.resultFieldName = null;
     this.resultCodeFieldName = null;
     this.resultResponseFieldName = null;
+    this.resultHeaderFieldName = null;
     this.nrheader = 0;
     this.nrParams = 0;
     this.nrMatrixParams = 0;

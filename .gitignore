@@ -12,6 +12,7 @@ override.properties
 testdata.log
 testdata.properties
 testdata.script
+package-pom.xml
 .classpath
 .project
 projects/
@@ -22,4 +23,7 @@ build-res/module-scripts/
 *.war
 *.ear
 *.iml
+*.db
+*.tmp
+*~
 /*.launch
