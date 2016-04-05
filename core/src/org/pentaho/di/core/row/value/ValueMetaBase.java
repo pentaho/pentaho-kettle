@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -68,6 +68,8 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.gui.PrimitiveGCInterface;
+import org.pentaho.di.core.logging.LogChannel;
+import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.row.ValueDataUtil;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.util.EnvUtil;
@@ -144,6 +146,8 @@ public class ValueMetaBase implements ValueMetaInterface {
   protected boolean originalAutoIncrement;
   protected int originalNullable;
   protected boolean originalSigned;
+
+  private LogChannelInterface log = new LogChannel( "ValueMetaBase" );
 
   /**
    * The trim type codes
@@ -4786,19 +4790,18 @@ public class ValueMetaBase implements ValueMetaInterface {
               int len = string.length();
 
               // Take the last maxlen characters of the string...
-              int begin = len - maxlen;
-              if ( begin < 0 ) {
-                begin = 0;
+              int begin = Math.max( len - maxlen, 0 );
+              if ( begin > 0 ) {
+                // Truncate if logging result if it exceeds database maximum string field length
+                log.logMinimal( String.format( "Truncating %d symbols of original message in '%s' field", begin, getName() ) );
+                string = string.substring( begin );
               }
 
-              // Get the substring!
-              String logging = string.substring( begin );
-
               if ( databaseMeta.supportsSetCharacterStream() ) {
-                StringReader sr = new StringReader( logging );
-                preparedStatement.setCharacterStream( index, sr, logging.length() );
+                StringReader sr = new StringReader( string );
+                preparedStatement.setCharacterStream( index, sr, string.length() );
               } else {
-                preparedStatement.setString( index, logging );
+                preparedStatement.setString( index, string );
               }
             } else {
               preparedStatement.setNull( index, java.sql.Types.VARCHAR );
