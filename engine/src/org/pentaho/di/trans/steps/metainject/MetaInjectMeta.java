@@ -439,8 +439,8 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface, S
   }
 
   @Injection( name = "TRANS_OBJECT_ID" )
-  public void setTransObjectId( String transObjectIdString ) {
-    this.transObjectId = new StringObjectId( transObjectIdString );
+  public void setTransStringObjectId( String transStringObjectId ) {
+    this.transObjectId = new StringObjectId( transStringObjectId );
   }
 
   /**
