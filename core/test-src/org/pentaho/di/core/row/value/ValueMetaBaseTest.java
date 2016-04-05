@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,28 +22,22 @@
 package org.pentaho.di.core.row.value;
 
 import org.apache.commons.lang.SystemUtils;
-import org.junit.Assert;
+import org.junit.*;
 import org.mockito.Mockito;
+import org.pentaho.di.core.exception.KettleDatabaseException;
+import org.pentaho.di.core.logging.*;
 import org.pentaho.di.core.row.ValueMetaInterface;
 
 
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.InetAddress;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.Time;
-import java.sql.Timestamp;
-import java.sql.Types;
+import java.sql.*;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
+import java.util.*;
 import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.TimeZone;
 
 import org.apache.commons.lang.StringUtils;
-import org.junit.BeforeClass;
-import org.junit.Test;
 import org.owasp.esapi.ESAPI;
 import org.owasp.esapi.Encoder;
 import org.pentaho.di.core.database.DatabaseInterface;
@@ -59,18 +53,35 @@ import org.pentaho.di.i18n.BaseMessages;
 public class ValueMetaBaseTest {
 
   private static final String TEST_NAME = "TEST_NAME";
+  private static final String LOG_FIELD = "LOG_FIELD";
+  public static final int MAX_TEXT_FIELD_LEN = 5;
+
   // Get PKG from class under test
   private static Class<?> PKG = ( new ValueMetaBase() {
     public Class<?> getPackage() {
       return PKG;
     }
   } ).getPackage();
+  private StoreLoggingEventListener listener;
 
   @BeforeClass
   public static void setUpBeforeClass() throws KettleException {
     PluginRegistry.addPluginType( ValueMetaPluginType.getInstance() );
     PluginRegistry.addPluginType( DatabasePluginType.getInstance() );
     PluginRegistry.init( true );
+    KettleLogStore.init();
+  }
+
+  @Before
+  public void setUp() {
+    listener = new StoreLoggingEventListener();
+    KettleLogStore.getAppender().addLoggingEventListener( listener );
+  }
+
+  @After
+  public void tearDown() {
+    KettleLogStore.getAppender().removeLoggingEventListener( listener );
+    listener = new StoreLoggingEventListener();
   }
 
   @Test
@@ -505,6 +516,38 @@ public class ValueMetaBaseTest {
     Assert.assertEquals( local( 1918, 3, 25, 0, 0, 0, 0 ), dateMeta.convertStringToDate( "1918-03-25  \n" ) );
   }
 
+  @Test
+  public void testSetPreparedStatementStringValueDontLogTruncated() throws KettleDatabaseException {
+    ValueMetaBase valueMetaString = new ValueMetaBase( "LOG_FIELD", ValueMetaInterface.TYPE_STRING,  LOG_FIELD.length(), 0 );
+
+    DatabaseMeta databaseMeta = Mockito.mock( DatabaseMeta.class );
+    PreparedStatement preparedStatement = Mockito.mock( PreparedStatement.class );
+    Mockito.when( databaseMeta.getMaxTextFieldLength() ).thenReturn( LOG_FIELD.length() );
+    List<KettleLoggingEvent> events = listener.getEvents();
+    Assert.assertEquals( 0, events.size() );
+
+    valueMetaString.setPreparedStatementValue( databaseMeta, preparedStatement, 0, LOG_FIELD );
+
+    //no logging occurred as max string length equals to logging text length
+    Assert.assertEquals( 0, events.size() );
+  }
+
+  @Test
+  public void testSetPreparedStatementStringValueLogTruncated() throws KettleDatabaseException {
+    ValueMetaBase valueMetaString = new ValueMetaBase( "LOG_FIELD", ValueMetaInterface.TYPE_STRING,  LOG_FIELD.length(), 0 );
+
+    DatabaseMeta databaseMeta = Mockito.mock( DatabaseMeta.class );
+    PreparedStatement preparedStatement = Mockito.mock( PreparedStatement.class );
+    Mockito.when( databaseMeta.getMaxTextFieldLength() ).thenReturn( MAX_TEXT_FIELD_LEN );
+    List<KettleLoggingEvent> events = listener.getEvents();
+    Assert.assertEquals( 0, events.size() );
+
+    valueMetaString.setPreparedStatementValue( databaseMeta, preparedStatement, 0, LOG_FIELD );
+
+    //check that truncated string was logged
+    Assert.assertEquals( 1, events.size() );
+  }
+
   Date local( int year, int month, int dat, int hrs, int min, int sec, int ms ) {
     GregorianCalendar cal = new GregorianCalendar( year, month - 1, dat, hrs, min, sec );
     cal.set( Calendar.MILLISECOND, ms );
@@ -516,5 +559,19 @@ public class ValueMetaBaseTest {
     cal.setTimeZone( TimeZone.getTimeZone( "UTC" ) );
     cal.set( Calendar.MILLISECOND, ms );
     return cal.getTime();
+  }
+
+  private class StoreLoggingEventListener implements KettleLoggingEventListener {
+
+    private List<KettleLoggingEvent> events = new ArrayList<>();
+
+    @Override
+    public void eventAdded( KettleLoggingEvent event ) {
+      events.add( event );
+    }
+
+    public List<KettleLoggingEvent> getEvents() {
+      return events;
+    }
   }
 }
