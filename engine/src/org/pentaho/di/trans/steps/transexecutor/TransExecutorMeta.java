@@ -233,7 +233,7 @@ public class TransExecutorMeta extends BaseStepMeta implements StepMetaInterface
     super(); // allocate BaseStepMeta
 
     parameters = new TransExecutorParameters();
-    outputRowsField = new String[0];
+    this.allocate( 0 );
   }
 
   public void allocate( int nrFields ) {
