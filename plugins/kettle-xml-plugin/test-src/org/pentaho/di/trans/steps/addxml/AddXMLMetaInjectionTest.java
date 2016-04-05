@@ -141,12 +141,4 @@ public class AddXMLMetaInjectionTest extends BaseMetadataInjectionTest<AddXMLMet
     } );
   }
 
-  private static int[] getTypeCodes( String[] typeNames ) {
-    int[] typeCodes = new int[typeNames.length];
-    for ( int i = 0; i < typeNames.length; i++ ) {
-      typeCodes[i] = ValueMetaBase.getType( typeNames[i] );
-    }
-    return typeCodes;
-  }
-
 }
