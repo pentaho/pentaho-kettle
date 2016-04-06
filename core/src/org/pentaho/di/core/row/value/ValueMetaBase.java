@@ -68,7 +68,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.gui.PrimitiveGCInterface;
-import org.pentaho.di.core.logging.LogChannel;
+import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.row.ValueDataUtil;
 import org.pentaho.di.core.row.ValueMetaInterface;
@@ -147,7 +147,7 @@ public class ValueMetaBase implements ValueMetaInterface {
   protected int originalNullable;
   protected boolean originalSigned;
 
-  private LogChannelInterface log = new LogChannel( "ValueMetaBase" );
+  private static final LogChannelInterface log = KettleLogStore.getLogChannelInterfaceFactory().create( "ValueMetaBase" );
 
   /**
    * The trim type codes
