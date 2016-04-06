@@ -86,6 +86,9 @@ public class DataHandler extends AbstractXulEventHandler {
   public static final SortedMap<String, DatabaseInterface> connectionMap = new TreeMap<>();
   public static final Map<String, String> connectionNametoID = new HashMap<>();
 
+  // Kettle thin related
+  private static final String WEB_APPLICATION_NAME = "WEB_APPLICATION_NAME";
+
   // The connectionMap allows us to keep track of the connection
   // type we are working with and the correlating database interface
 
@@ -166,10 +169,12 @@ public class DataHandler extends AbstractXulEventHandler {
 
   // MS SQL Server specific
   private XulCheckbox doubleDecimalSeparatorCheck;
-  // private XulCheckbox mssqlIntegratedSecurity;
 
   // MySQL specific
   private XulCheckbox resultStreamingCursorCheck;
+
+  // Pentaho data services specific
+  private XulTextbox webAppName;
 
   // ==== Options Panel ==== //
 
@@ -1259,6 +1264,10 @@ public class DataHandler extends AbstractXulEventHandler {
         MSSQLServerNativeDatabaseMeta.ATTRIBUTE_USE_INTEGRATED_SECURITY,
         useIntegratedSecurity != null ? useIntegratedSecurity.toString() : "false" );
     }
+
+    if ( webAppName != null ) {
+      meta.getAttributes().put( WEB_APPLICATION_NAME, webAppName.getValue() );
+    }
   }
 
   private void setConnectionSpecificInfo( DatabaseMeta meta ) {
@@ -1347,6 +1356,14 @@ public class DataHandler extends AbstractXulEventHandler {
         useIntegratedSecurityCheck.setChecked( false );
       }
     }
+
+    if ( webAppName != null ) {
+      if ( databaseMeta != null && databaseMeta.getAttributes().containsKey( WEB_APPLICATION_NAME ) ) {
+        webAppName.setValue( databaseMeta.getAttributes().getProperty( WEB_APPLICATION_NAME ) );
+      } else if ( databaseMeta == null || !databaseMeta.getExtraOptions().containsKey( "KettleThin.webappname" ) ) {
+        webAppName.setValue( "pentaho-di" );
+      }
+    }
   }
 
   protected void getControls() {
@@ -1375,6 +1392,7 @@ public class DataHandler extends AbstractXulEventHandler {
     clientBox = (XulTextbox) document.getElementById( "client-text" );
     doubleDecimalSeparatorCheck = (XulCheckbox) document.getElementById( "decimal-separator-check" );
     resultStreamingCursorCheck = (XulCheckbox) document.getElementById( "result-streaming-check" );
+    webAppName = (XulTextbox) document.getElementById( "web-application-name-text" );
     poolingCheck = (XulCheckbox) document.getElementById( "use-pool-check" );
     clusteringCheck = (XulCheckbox) document.getElementById( "use-cluster-check" );
     clusterParameterDescriptionLabel = (XulLabel) document.getElementById( "cluster-parameter-description-label" );
