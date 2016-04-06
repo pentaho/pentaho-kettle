@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,7 +24,6 @@ package org.pentaho.di.core.database;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
-import static org.pentaho.di.core.database.DatabaseMeta.indexOfName;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -154,22 +153,22 @@ public class DatabaseMetaTest {
 
   @Test
   public void indexOfName_NullArray() {
-    assertEquals( -1, indexOfName( null, "" ) );
+    assertEquals( -1, DatabaseMeta.indexOfName( null, "" ) );
   }
 
   @Test
   public void indexOfName_NullName() {
-    assertEquals( -1, indexOfName( new String[] { "1" }, null ) );
+    assertEquals( -1, DatabaseMeta.indexOfName( new String[] { "1" }, null ) );
   }
 
   @Test
   public void indexOfName_ExactMatch() {
-    assertEquals( 1, indexOfName( new String[] { "a", "b", "c" }, "b" ) );
+    assertEquals( 1, DatabaseMeta.indexOfName( new String[] { "a", "b", "c" }, "b" ) );
   }
 
   @Test
   public void indexOfName_NonExactMatch() {
-    assertEquals( 1, indexOfName( new String[] { "a", "b", "c" }, "B" ) );
+    assertEquals( 1, DatabaseMeta.indexOfName( new String[] { "a", "b", "c" }, "B" ) );
   }
 
 
