@@ -36,13 +36,9 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.repository.Repository;
-import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.repository.utils.IRepositoryFactory;
-import org.pentaho.platform.plugin.services.importer.PlatformImportException;
-import org.pentaho.platform.web.http.api.resources.services.FileService;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
