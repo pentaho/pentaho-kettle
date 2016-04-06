@@ -36,6 +36,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.plugins.DatabasePluginType;
@@ -45,6 +46,16 @@ import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 
 public class DatabaseMetaTest {
+  private DatabaseMeta databaseMeta;
+
+  @Before
+  public void setUp() {
+    databaseMeta = mock( DatabaseMeta.class );
+    when( databaseMeta
+      .databaseForBothDbInterfacesIsTheSame( any( DatabaseInterface.class ), any( DatabaseInterface.class ) ) )
+      .thenCallRealMethod();
+  }
+
   @Test
   public void testGetDatabaseInterfacesMapWontReturnNullIfCalledSimultaneouslyWithClear() throws InterruptedException, ExecutionException {
     final AtomicBoolean done = new AtomicBoolean( false );
@@ -207,5 +218,61 @@ public class DatabaseMetaTest {
   @Test
   public void indexOfName_NonExactMatch() {
     assertEquals( 1, indexOfName( new String[] { "a", "b", "c" }, "B" ) );
+  }
+
+
+  @Test
+  public void databases_WithSameDbConnTypes_AreTheSame() {
+    DatabaseInterface mssqlServerDatabaseMeta =  new MSSQLServerDatabaseMeta();
+    mssqlServerDatabaseMeta.setPluginId( "MSSQL" );
+
+    assertTrue( databaseMeta.databaseForBothDbInterfacesIsTheSame( mssqlServerDatabaseMeta, mssqlServerDatabaseMeta ) );
+  }
+
+  @Test
+  public void databases_WithSameDbConnTypes_AreNotSame_IfPluginIdIsNull() {
+    DatabaseInterface mssqlServerDatabaseMeta =  new MSSQLServerDatabaseMeta();
+    mssqlServerDatabaseMeta.setPluginId( null );
+
+    assertFalse( databaseMeta.databaseForBothDbInterfacesIsTheSame( mssqlServerDatabaseMeta, mssqlServerDatabaseMeta ) );
+  }
+
+  @Test
+  public void databases_WithDifferentDbConnTypes_AreDifferent_IfNonOfThemIsSubsetOfAnother() {
+    DatabaseInterface mssqlServerDatabaseMeta =  new MSSQLServerDatabaseMeta();
+    mssqlServerDatabaseMeta.setPluginId( "MSSQL" );
+    DatabaseInterface oracleDatabaseMeta = new OracleDatabaseMeta();
+    oracleDatabaseMeta.setPluginId( "ORACLE" );
+
+    assertFalse( databaseMeta.databaseForBothDbInterfacesIsTheSame( mssqlServerDatabaseMeta, oracleDatabaseMeta ) );
+  }
+
+  @Test
+  public void databases_WithDifferentDbConnTypes_AreTheSame_IfOneConnTypeIsSubsetOfAnother_2LevelHierarchy() {
+    DatabaseInterface mssqlServerDatabaseMeta =  new MSSQLServerDatabaseMeta();
+    mssqlServerDatabaseMeta.setPluginId( "MSSQL" );
+    DatabaseInterface mssqlServerNativeDatabaseMeta =  new MSSQLServerNativeDatabaseMeta();
+    mssqlServerNativeDatabaseMeta.setPluginId( "MSSQLNATIVE" );
+
+
+    assertTrue( databaseMeta.databaseForBothDbInterfacesIsTheSame( mssqlServerDatabaseMeta,
+      mssqlServerNativeDatabaseMeta ) );
+  }
+
+  @Test
+  public void databases_WithDifferentDbConnTypes_AreTheSame_IfOneConnTypeIsSubsetOfAnother_3LevelHierarchy() {
+    class MSSQLServerNativeDatabaseMetaChild extends MSSQLServerDatabaseMeta {
+      @Override
+      public String getPluginId() {
+        return "MSSQLNATIVE_CHILD";
+      }
+    }
+
+    DatabaseInterface mssqlServerDatabaseMeta = new MSSQLServerDatabaseMeta();
+    mssqlServerDatabaseMeta.setPluginId( "MSSQL" );
+    DatabaseInterface mssqlServerNativeDatabaseMetaChild = new MSSQLServerNativeDatabaseMetaChild();
+
+    assertTrue(
+      databaseMeta.databaseForBothDbInterfacesIsTheSame( mssqlServerDatabaseMeta, mssqlServerNativeDatabaseMetaChild ) );
   }
 }
