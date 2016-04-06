@@ -21,6 +21,7 @@
  ******************************************************************************/
 package org.pentaho.ui.database.event;
 
+import java.util.Properties;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -75,6 +76,7 @@ public class DataHandlerTest {
   XulTextbox userNameBox;
   XulTextbox passwordBox;
   XulTextbox serverInstanceBox;
+  XulTextbox webappName;
   XulMessageBox messageBox;
   XulRoot generalDatasourceWindow;
 
@@ -120,6 +122,9 @@ public class DataHandlerTest {
     when( document.getElementById( "instance-text" ) ).thenReturn( serverInstanceBox );
     when( serverInstanceBox.getValue() ).thenReturn( "instance" );
     when( serverInstanceBox.getAttributeValue( "shouldDisablePortIfPopulated" ) ).thenReturn( "true" );
+    webappName = mock( XulTextbox.class );
+    when( document.getElementById( "web-application-name-text" ) ).thenReturn( webappName );
+    when( webappName.getValue() ).thenReturn( "webappName" );
 
     messageBox = mock( XulMessageBox.class );
     when( document.createElement( "messagebox" ) ).thenReturn( messageBox );
@@ -176,6 +181,7 @@ public class DataHandlerTest {
     when( dbInterface.getDefaultDatabasePort() ).thenReturn( 5309 );
     when( connectionBox.getSelectedItem() ).thenReturn( "myDb" );
     DataHandler.connectionMap.put( "myDb", dbInterface );
+    dataHandler.getData();
     dataHandler.loadAccessData();
   }
 
@@ -227,6 +233,7 @@ public class DataHandlerTest {
 
     DatabaseMeta dbMeta = mock( DatabaseMeta.class );
     when( dbMeta.getAccessType() ).thenReturn( DatabaseMeta.TYPE_ACCESS_JNDI );
+    when( dbMeta.getAttributes() ).thenReturn( new Properties() );
 
     when( accessBox.getSelectedItem() ).thenReturn( "JNDI" );
     when( deckOptionsBox.getSelectedIndex() ).thenReturn( -1 );
@@ -239,8 +246,11 @@ public class DataHandlerTest {
   }
 
   @Test
-  public void testPushCache() throws Exception {
-
+  public void testPushPopCache() throws Exception {
+    dataHandler.getData();
+    dataHandler.pushCache();
+    dataHandler.popCache();
+    verify( webappName ).setValue( "pentaho-di" );
   }
 
   @Test
