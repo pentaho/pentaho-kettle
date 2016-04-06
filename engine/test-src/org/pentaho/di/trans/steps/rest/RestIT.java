@@ -29,20 +29,22 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.pentaho.di.core.util.Assert.assertTrue;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
+import com.sun.jersey.api.client.ClientResponse;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
+import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
@@ -56,6 +58,8 @@ import org.pentaho.di.trans.steps.mock.StepMockHelper;
 import com.sun.jersey.api.container.httpserver.HttpServerFactory;
 import com.sun.net.httpserver.HttpServer;
 
+import javax.ws.rs.core.MultivaluedMap;
+
 /**
  * User: Dzmitry Stsiapanau Date: 11/29/13 Time: 3:42 PM
  */
@@ -67,10 +71,12 @@ public class RestIT {
 
     Object[] row = new Object[] { "anyData" };
     Object[] outputRow;
+    boolean  override;
 
     public RestHandler( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-        Trans trans ) {
+        Trans trans, boolean override ) {
       super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
+      this.override = override;
     }
 
     @SuppressWarnings( "unused" )
@@ -100,6 +106,25 @@ public class RestIT {
     @Override
     public void putRow( RowMetaInterface rowMeta, Object[] row ) throws KettleStepException {
       outputRow = row;
+    }
+
+    @Override
+    protected MultivaluedMap<String, String> searchForHeaders( ClientResponse response ) {
+      if ( override ) {
+        String host = "host";
+        List<String> localhost = new ArrayList<String>();
+        localhost.add( "localhost" );
+        Map.Entry<String, List<String>> entry = Mockito.mock( Map.Entry.class );
+        when( entry.getKey() ).thenReturn( host );
+        when( entry.getValue() ).thenReturn( localhost );
+        Set<Map.Entry<String, List<String>>> set = new HashSet<Map.Entry<String, List<String>>>();
+        set.add( entry );
+        MultivaluedMap<String, String> test = Mockito.mock( MultivaluedMap.class );
+        when( test.entrySet() ).thenReturn( set );
+        return test;
+      } else {
+        return super.searchForHeaders( response );
+      }
     }
 
     public Object[] getOutputRow() {
@@ -135,8 +160,13 @@ public class RestIT {
   @Test
   public void testNoContent() throws Exception {
     RestData data = new RestData();
-    Object[] expectedRow = new Object[] { "", 204L, null, null, null, null, null, null, null, null, null, null };
-    Rest rest = new RestHandler( stepMockHelper.stepMeta, data, 0, stepMockHelper.transMeta, stepMockHelper.trans );
+    int[] index = { 0, 1 };
+    RowMeta meta = new RowMeta();
+    meta.addValueMeta( new ValueMetaString( "fieldName" ) );
+    meta.addValueMeta( new ValueMetaInteger( "codeFieldName" ) );
+    Object[] expectedRow = new Object[] { "", 204L };
+    Rest rest =
+      new RestHandler( stepMockHelper.stepMeta, data, 0, stepMockHelper.transMeta, stepMockHelper.trans, false );
     RowMetaInterface inputRowMeta = mock( RowMetaInterface.class );
     rest.setInputRowMeta( inputRowMeta );
     when( inputRowMeta.clone() ).thenReturn( inputRowMeta );
@@ -147,11 +177,38 @@ public class RestIT {
     data.resultFieldName = "ResultFieldName";
     data.resultCodeFieldName = "ResultCodeFieldName";
     assertTrue( rest.processRow( stepMockHelper.processRowsStepMetaInterface, data ) );
-    System.out.println( Arrays.toString( expectedRow ) );
     Object[] out = ( (RestHandler) rest ).getOutputRow();
-    System.out.println( Arrays.toString( out ) );
-    assertTrue( Arrays.equals( expectedRow, out ) );
+    assertTrue( meta.equals( out, expectedRow, index ) );
   }
+
+  @Test
+  public void testResponseHeader() throws Exception {
+    RestData data = new RestData();
+    int[] index = { 0, 1, 2 };
+    RowMeta meta = new RowMeta();
+    meta.addValueMeta( new ValueMetaString( "fieldName" ) );
+    meta.addValueMeta( new ValueMetaInteger( "codeFieldName" ) );
+    meta.addValueMeta( new ValueMetaString( "headerFieldName" ) );
+    Object[] expectedRow =
+      new Object[] { "", 204L, "{\"host\":\"localhost\"}" };
+    Rest rest =
+      new RestHandler( stepMockHelper.stepMeta, data, 0, stepMockHelper.transMeta, stepMockHelper.trans, true );
+    RowMetaInterface inputRowMeta = mock( RowMetaInterface.class );
+    rest.setInputRowMeta( inputRowMeta );
+    when( inputRowMeta.clone() ).thenReturn( inputRowMeta );
+    when( stepMockHelper.processRowsStepMetaInterface.getUrl() ).thenReturn(
+      HTTP_LOCALHOST_9998 + "restTest/restNoContentAnswer" );
+    when( stepMockHelper.processRowsStepMetaInterface.getMethod() ).thenReturn( RestMeta.HTTP_METHOD_GET );
+    when( stepMockHelper.processRowsStepMetaInterface.getResponseHeaderFieldName() ).thenReturn(
+      "ResponseHeaderFieldName" );
+    rest.init( stepMockHelper.processRowsStepMetaInterface, data );
+    data.resultFieldName = "ResultFieldName";
+    data.resultCodeFieldName = "ResultCodeFieldName";
+    assertTrue( rest.processRow( stepMockHelper.processRowsStepMetaInterface, data ) );
+    Object[] out = ( (RestHandler) rest ).getOutputRow();
+    assertTrue( meta.equals( out, expectedRow, index ) );
+  }
+
 
   @Test
   public void testLoadSaveRoundTrip() throws KettleException {
@@ -159,7 +216,8 @@ public class RestIT {
         Arrays.asList( "applicationType", "method", "url", "urlInField", "dynamicMethod", "methodFieldName",
             "urlField", "bodyField", "httpLogin", "httpPassword", "proxyHost", "proxyPort", "preemptive",
             "trustStoreFile", "trustStorePassword", "headerField", "headerName", "parameterField", "parameterName",
-            "matrixParameterField", "matrixParameterName", "fieldName", "resultCodeFieldName", "responseTimeFieldName" );
+            "matrixParameterField", "matrixParameterName", "fieldName", "resultCodeFieldName", "responseTimeFieldName",
+            "responseHeaderFieldName" );
 
     Map<String, FieldLoadSaveValidator<?>> fieldLoadSaveValidatorAttributeMap =
         new HashMap<String, FieldLoadSaveValidator<?>>();
