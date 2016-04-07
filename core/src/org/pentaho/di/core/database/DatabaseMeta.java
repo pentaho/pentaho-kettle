@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -1094,52 +1094,99 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
       databaseName = environmentSubstitute( getDatabaseName() );
     }
     baseUrl = databaseInterface.getURL( hostname, port, databaseName );
-    StringBuffer url = new StringBuffer( environmentSubstitute( baseUrl ) );
+    String url = environmentSubstitute( baseUrl );
+
 
     if ( databaseInterface.supportsOptionsInURL() ) {
-      // OK, now add all the options...
-      String optionIndicator = getExtraOptionIndicator();
-      String optionSeparator = getExtraOptionSeparator();
-      String valueSeparator = getExtraOptionValueSeparator();
-
-      Map<String, String> map = getExtraOptions();
-      if ( map.size() > 0 ) {
-        Iterator<String> iterator = map.keySet().iterator();
-        boolean first = true;
-        while ( iterator.hasNext() ) {
-          String typedParameter = iterator.next();
-          int dotIndex = typedParameter.indexOf( '.' );
-          if ( dotIndex >= 0 ) {
-            String typeCode = typedParameter.substring( 0, dotIndex );
-            String parameter = typedParameter.substring( dotIndex + 1 );
-            String value = map.get( typedParameter );
-
-            // Only add to the URL if it's the same database type code...
-            //
-            if ( databaseInterface.getPluginId().equals( typeCode ) ) {
-              if ( first && url.indexOf( valueSeparator ) == -1 ) {
-                url.append( optionIndicator );
-              } else {
-                url.append( optionSeparator );
-              }
-
-              url.append( parameter );
-              if ( !Const.isEmpty( value ) && !value.equals( EMPTY_OPTIONS_STRING ) ) {
-                url.append( valueSeparator ).append( value );
-              }
-              first = false;
-            }
-          }
-        }
-      }
+      url = appendExtraOptions( url, getExtraOptions() );
     }
     // else {
     // We need to put all these options in a Properties file later (Oracle & Co.)
     // This happens at connect time...
     // }
 
-    return url.toString();
+    return url;
   }
+
+  protected String appendExtraOptions( String url, Map<String, String> extraOptions ) {
+    if ( extraOptions.isEmpty() ) {
+      return url;
+    }
+
+    StringBuilder urlBuilder = new StringBuilder( url );
+
+    final String optionIndicator = getExtraOptionIndicator();
+    final String optionSeparator = getExtraOptionSeparator();
+    final String valueSeparator = getExtraOptionValueSeparator();
+
+    Iterator<String> iterator = extraOptions.keySet().iterator();
+    boolean first = true;
+    while ( iterator.hasNext() ) {
+      String typedParameter = iterator.next();
+      int dotIndex = typedParameter.indexOf( '.' );
+      if ( dotIndex == -1 ) {
+        continue;
+      }
+
+      final String value = extraOptions.get( typedParameter );
+      if ( Const.isEmpty( value ) || value.equals( EMPTY_OPTIONS_STRING ) ) {
+        // skip this science no value is provided
+        continue;
+      }
+
+      final String typeCode = typedParameter.substring( 0, dotIndex );
+      final String parameter = typedParameter.substring( dotIndex + 1 );
+
+      // Only add to the URL if it's the same database type code,
+      // or underlying database is the same for both id's, and any subset of
+      // connection settings for one database is valid for another
+      boolean dbForBothDbInterfacesIsSame = false;
+      try {
+        DatabaseInterface primaryDb = getDbInterface( typeCode );
+        dbForBothDbInterfacesIsSame = databaseForBothDbInterfacesIsTheSame( primaryDb, getDatabaseInterface() );
+      } catch ( KettleDatabaseException e ) {
+        getGeneralLogger().logError(
+          "DatabaseInterface with " + typeCode + " database type is not found! Parameter " + parameter
+            + "won't be appended to URL" );
+      }
+
+      if ( dbForBothDbInterfacesIsSame ) {
+        if ( first && url.indexOf( valueSeparator ) == -1 ) {
+          urlBuilder.append( optionIndicator );
+        } else {
+          urlBuilder.append( optionSeparator );
+        }
+
+        urlBuilder.append( parameter ).append( valueSeparator ).append( value );
+        first = false;
+      }
+    }
+
+    return urlBuilder.toString();
+  }
+
+  /**
+   * This method is designed to identify whether the actual database for two database connection types is the same.
+   * This situation can occur in two cases:
+   * 1. plugin id of {@code primary} is the same as plugin id of {@code secondary}
+   * 2. {@code secondary} is a descendant {@code primary} (with any deepness).
+   */
+  protected boolean databaseForBothDbInterfacesIsTheSame( DatabaseInterface primary, DatabaseInterface secondary ) {
+    if ( primary == null || secondary == null ) {
+      throw new IllegalArgumentException( "DatabaseInterface shouldn't be null." );
+    }
+
+    if ( primary.getPluginId() == null || secondary.getPluginId() == null ) {
+      return false;
+    }
+
+    if ( primary.getPluginId().equals( secondary.getPluginId() ) ) {
+      return true;
+    }
+
+    return primary.getClass().isAssignableFrom( secondary.getClass() );
+  }
+
 
   public Properties getConnectionProperties() {
     Properties properties = new Properties();
@@ -1171,21 +1218,21 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
   }
 
   public String getExtraOptionIndicator() {
-    return databaseInterface.getExtraOptionIndicator();
+    return getDatabaseInterface( ).getExtraOptionIndicator();
   }
 
   /**
    * @return The extra option separator in database URL for this platform (usually this is semicolon ; )
    */
   public String getExtraOptionSeparator() {
-    return databaseInterface.getExtraOptionSeparator();
+    return getDatabaseInterface( ).getExtraOptionSeparator();
   }
 
   /**
    * @return The extra option value separator in database URL for this platform (usually this is the equal sign = )
    */
   public String getExtraOptionValueSeparator() {
-    return databaseInterface.getExtraOptionValueSeparator();
+    return getDatabaseInterface( ).getExtraOptionValueSeparator();
   }
 
   /**
@@ -2886,5 +2933,19 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
    */
   public void setReadOnly( boolean readOnly ) {
     this.readOnly = readOnly;
+  }
+
+  /**
+   * For testing
+   */
+  protected LogChannelInterface getGeneralLogger() {
+    return LogChannel.GENERAL;
+  }
+
+  /**
+   * For testing
+   */
+  protected DatabaseInterface getDbInterface( String typeCode ) throws KettleDatabaseException {
+    return getDatabaseInterface( typeCode );
   }
 }
