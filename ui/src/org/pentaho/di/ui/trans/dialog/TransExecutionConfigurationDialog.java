@@ -59,8 +59,7 @@ public class TransExecutionConfigurationDialog extends ConfigurationDialog {
   private Composite execClusterComposite;
   private Button showDialogRunCheckbox;
 
-  public TransExecutionConfigurationDialog( Shell parent, TransExecutionConfiguration configuration,
-      TransMeta transMeta ) {
+  public TransExecutionConfigurationDialog( Shell parent, TransExecutionConfiguration configuration, TransMeta transMeta ) {
     super( parent, configuration, transMeta );
   }
 
@@ -128,7 +127,15 @@ public class TransExecutionConfigurationDialog extends ConfigurationDialog {
     props.setLook( wSafeMode );
     FormData fdSafeMode = new FormData();
     fdSafeMode.right = new FormAttachment( 0, 186 );
-    fdSafeMode.top = new FormAttachment( 0, 30 );
+    if ( Const.isLinux() ) {
+      fdSafeMode.top = new FormAttachment( 0, 30 );
+    }
+    if ( Const.isOSX() ) {
+      fdSafeMode.top = new FormAttachment( 0, 33 );
+    }
+    if ( Const.isWindows() ) {
+      fdSafeMode.top = new FormAttachment( 0, 33 );
+    }
     fdSafeMode.left = new FormAttachment( 0, 10 );
     wSafeMode.setLayoutData( fdSafeMode );
 
@@ -149,7 +156,17 @@ public class TransExecutionConfigurationDialog extends ConfigurationDialog {
     props.setLook( wClearLog );
     FormData fdClearLog = new FormData();
     fdClearLog.right = new FormAttachment( 0, 200 );
-    fdClearLog.top = new FormAttachment( 0, 5 );
+
+    if ( Const.isLinux() ) {
+      fdClearLog.top = new FormAttachment( 0, 5 );
+    }
+    if ( Const.isOSX() ) {
+      fdClearLog.top = new FormAttachment( 0, 10 );
+    }
+    if ( Const.isWindows() ) {
+      fdClearLog.top = new FormAttachment( 0, 10 );
+    }
+
     fdClearLog.left = new FormAttachment( 0, 10 );
     wClearLog.setLayoutData( fdClearLog );
 
@@ -159,7 +176,15 @@ public class TransExecutionConfigurationDialog extends ConfigurationDialog {
     wlLogLevel.setToolTipText( BaseMessages.getString( PKG, "TransExecutionConfigurationDialog.LogLevel.Tooltip" ) );
     FormData fdlLogLevel = new FormData();
     fdlLogLevel.right = new FormAttachment( 0, 333 );
-    fdlLogLevel.top = new FormAttachment( 0, 7 );
+    if ( Const.isLinux() ) {
+      fdlLogLevel.top = new FormAttachment( 0, 7 );
+    }
+    if ( Const.isOSX() ) {
+      fdlLogLevel.top = new FormAttachment( 0, 10 );
+    }
+    if ( Const.isWindows() ) {
+      fdlLogLevel.top = new FormAttachment( 0, 10 );
+    }
     fdlLogLevel.left = new FormAttachment( 0, 260 );
     wlLogLevel.setLayoutData( fdlLogLevel );
 
@@ -211,8 +236,8 @@ public class TransExecutionConfigurationDialog extends ConfigurationDialog {
     } else {
       wExecCluster = new Button( gLocal, SWT.RADIO );
       wExecCluster.setText( BaseMessages.getString( PKG, "TransExecutionConfigurationDialog.ExecCluster.Label" ) );
-      wExecCluster.setToolTipText( BaseMessages.getString( PKG,
-          "TransExecutionConfigurationDialog.ExecCluster.Tooltip" ) );
+      wExecCluster.setToolTipText( BaseMessages
+          .getString( PKG, "TransExecutionConfigurationDialog.ExecCluster.Tooltip" ) );
       props.setLook( wExecCluster );
       fdExecCluster = new FormData();
       fdExecCluster.left = new FormAttachment( 0, 10 );
