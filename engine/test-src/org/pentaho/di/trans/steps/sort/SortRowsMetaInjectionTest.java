@@ -33,7 +33,7 @@ public class SortRowsMetaInjectionTest extends BaseMetadataInjectionTest<SortRow
   }
 
   @Test
-<<<<<<< 7e50125023c65298cdd263c48aa90e32d0157f64
+
   public void test() throws Exception {
     check( "SORT_DIRECTORY", new StringGetter() {
       public String get() {
@@ -85,7 +85,7 @@ public class SortRowsMetaInjectionTest extends BaseMetadataInjectionTest<SortRow
         return meta.getPreSortedField()[0];
       }
     } );
-=======
+
   public void sortRowsMetaInjectTest() throws Exception {
     boolean[] origAscending = new boolean[] { false, true };
     boolean[] origCaseSensitive = new boolean[] { false, true };
@@ -149,6 +149,6 @@ public class SortRowsMetaInjectionTest extends BaseMetadataInjectionTest<SortRow
 	assertArrayEquals( "Grid Injection - new values: collator-strength", defIntArray, meta.getCollatorStrength() );
     assertTrue( "Grid Injection - new values: presorted", Arrays.equals( defBooleanArray, meta.getPreSortedField() ) );
     assertArrayEquals( "Grid Injection - new values: field-names", new String[] {name}, meta.getFieldName() );
->>>>>>> Collator Support to sortRows. Default Locale set as collatore locale.
+
   }
 }
