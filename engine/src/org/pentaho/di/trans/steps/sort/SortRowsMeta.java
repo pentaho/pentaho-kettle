@@ -72,9 +72,11 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface {
   private boolean[] caseSensitive;
 
     /** false : collator disabeld, true=collator enabled */
+  @Injection( name = "COLLATOR_ENABLED", group = "FIELDS" )
   private boolean[] collatorEnabled;
 
   //collator strength, 0,1,2,3
+  @Injection( name = "COLLATOR_STRENGTH", group = "FIELDS" )
   private int[] collatorStrength;
 
   /** false : not a presorted field, true=presorted field */
