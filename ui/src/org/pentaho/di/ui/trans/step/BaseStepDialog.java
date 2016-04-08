@@ -25,7 +25,6 @@ package org.pentaho.di.ui.trans.step;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.google.common.annotations.VisibleForTesting;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
@@ -69,6 +68,7 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.laf.BasePropertyHandler;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryElementMetaInterface;
+import org.pentaho.di.shared.SharedObjects;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepInterface;
@@ -87,6 +87,8 @@ import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.util.DialogUtils;
 import org.pentaho.di.ui.util.HelpUtils;
 import org.pentaho.metastore.api.IMetaStore;
+
+import com.google.common.annotations.VisibleForTesting;
 
 /**
  * This class provides functionality common to Step Dialogs.
@@ -1390,14 +1392,40 @@ public class BaseStepDialog extends Dialog {
       if ( databaseMeta != null ) {
         // cloning to avoid spoiling data on cancel or incorrect input
         DatabaseMeta clone = (DatabaseMeta) databaseMeta.clone();
+        // setting old Id, so a repository (if it used) could find and replace the existing connection
+        clone.setObjectId( databaseMeta.getObjectId() );
         String connectionName = showDbDialogUnlessCancelledOrValid( clone, databaseMeta );
         if ( connectionName != null ) {
           // need to replace the old connection with a new one
+          if ( databaseMeta.isShared() ) {
+            if ( !replaceSharedConnection( databaseMeta, clone ) ) {
+              return;
+            }
+          }
           transMeta.removeDatabase( transMeta.indexOfDatabase( databaseMeta ) );
           transMeta.addDatabase( clone );
           reinitConnectionDropDown( wConnection, connectionName );
         }
       }
+    }
+
+    boolean replaceSharedConnection( DatabaseMeta dbConnection, DatabaseMeta newDbConnection ) {
+      try {
+        SharedObjects sharedObjects = transMeta.getSharedObjects();
+        sharedObjects.removeObject( dbConnection );
+        sharedObjects.storeObject( newDbConnection );
+        sharedObjects.saveToFile();
+        return true;
+      } catch ( Exception e ) {
+        showErrorDialog( e );
+        return false;
+      }
+    }
+
+    void showErrorDialog( Exception e ) {
+      new ErrorDialog( wConnection.getShell(), BaseMessages.getString( PKG,
+          "BaseStep.Exception.UnexpectedErrorEditingConnection.DialogTitle" ), BaseMessages.getString( PKG,
+              "BaseStep.Exception.UnexpectedErrorEditingConnection.DialogMessage" ), e );
     }
   }
 }
