@@ -34,5 +34,9 @@
     <dependency org="org.apache.ftpserver" name="ftpserver-core" rev="1.0.6"  conf="test->default" transitive="true" />
     <dependency org="org.bouncycastle"    name="bcprov-jdk14"  rev="1.51"    conf="test->default" transitive="true" />
 
+    <!-- Salesforce plugin dependency -->
+    <dependency org="pentaho"         name="salesforce-partner" rev="24.0"/>
+    <exclude    org="org.apache.axis" module="axis-saaj"/>
+
   </dependencies>
 </ivy-module>
