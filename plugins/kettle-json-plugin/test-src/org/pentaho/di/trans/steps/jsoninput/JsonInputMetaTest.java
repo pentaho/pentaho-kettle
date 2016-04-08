@@ -154,4 +154,10 @@ public class JsonInputMetaTest {
 
     verify( rowMeta ).removeValueMeta( 0 );
   }
+
+  @Test
+  public void testGetXml() {
+    String xml = jsonInputMeta.getXML();
+    Assert.assertEquals( xml, TEST_XML );
+  }
 }
