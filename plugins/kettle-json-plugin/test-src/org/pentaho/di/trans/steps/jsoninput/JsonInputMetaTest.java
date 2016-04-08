@@ -22,6 +22,7 @@
 
 package org.pentaho.di.trans.steps.jsoninput;
 
+import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -44,6 +45,38 @@ public class JsonInputMetaTest {
 
   public static final String DATA = "data";
   public static final String NAME = "name";
+
+  private String TEST_XML = "    <include>Y</include>\n"
+    + "    <include_field>filename</include_field>\n"
+    + "    <rownum>N</rownum>\n"
+    + "    <addresultfile>N</addresultfile>\n"
+    + "    <readurl>Y</readurl>\n"
+    + "    <removeSourceField>Y</removeSourceField>\n"
+    + "    <IsIgnoreEmptyFile>N</IsIgnoreEmptyFile>\n"
+    + "    <doNotFailIfNoFile>N</doNotFailIfNoFile>\n"
+    + "    <ignoreMissingPath>N</ignoreMissingPath>\n"
+    + "    <rownum_field/>\n"
+    + "    <file>\n"
+    + "      <name>file.json</name>\n"
+    + "      <filemask/>\n"
+    + "      <exclude_filemask/>\n"
+    + "      <file_required>N</file_required>\n"
+    + "      <include_subfolders>N</include_subfolders>\n"
+    + "    </file>\n"
+    + "    <fields>\n"
+    + "null    </fields>\n"
+    + "    <limit>0</limit>\n"
+    + "    <IsInFields>N</IsInFields>\n"
+    + "    <IsAFile>N</IsAFile>\n"
+    + "    <valueField/>\n"
+    + "    <shortFileFieldName/>\n"
+    + "    <pathFieldName/>\n"
+    + "    <hiddenFieldName/>\n"
+    + "    <lastModificationTimeFieldName/>\n"
+    + "    <uriNameFieldName/>\n"
+    + "    <rootUriNameFieldName/>\n"
+    + "    <extensionFieldName/>\n"
+    + "    <sizeFieldName/>\n";
 
   JsonInputMeta jsonInputMeta;
 
@@ -76,6 +109,21 @@ public class JsonInputMetaTest {
     jsonInputMeta = new JsonInputMeta();
     jsonInputMeta.setInputFiles( inputFiles );
     jsonInputMeta.setInputFields( new JsonInputField[] { inputField } );
+
+
+    inputFiles.fileRequired = new String[] { " " };
+    inputFiles.includeSubFolders = new String[] { " " };
+
+    jsonInputMeta.setFileName( new String[] { "file.json" } );
+    jsonInputMeta.setFileMask( new String[] { "" } );
+    jsonInputMeta.setExcludeFileMask( new String[] { "" } );
+    jsonInputMeta.setFileRequired( new String[] { "" } );
+    jsonInputMeta.setIncludeSubFolders( new String[] { "" } );
+
+    jsonInputMeta.setIncludeFilename( true );
+    jsonInputMeta.setFilenameField( "filename" );
+    jsonInputMeta.setReadUrl( true );
+    jsonInputMeta.setRemoveSourceField( true );
   }
 
   @Test
@@ -92,5 +140,11 @@ public class JsonInputMetaTest {
     jsonInputMeta.getFields( rowMeta, NAME, info, nextStep, space, repository, metaStore );
 
     verify( rowMeta ).removeValueMeta( 0 );
+  }
+
+  @Test
+  public void testGetXml() {
+    String xml = jsonInputMeta.getXML();
+    Assert.assertEquals( xml, TEST_XML );
   }
 }
