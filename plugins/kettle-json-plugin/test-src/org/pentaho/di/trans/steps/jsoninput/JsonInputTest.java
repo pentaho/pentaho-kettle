@@ -22,10 +22,6 @@
 
 package org.pentaho.di.trans.steps.jsoninput;
 
-import static org.junit.Assert.*;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.when;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
@@ -53,6 +49,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleException;
@@ -123,9 +120,9 @@ public class JsonInputTest {
   public void setUp() {
     helper =
         new StepMockHelper<JsonInputMeta, JsonInputData>( "json input test", JsonInputMeta.class, JsonInputData.class );
-    when( helper.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) ).thenReturn(
+    Mockito.when( helper.logChannelInterfaceFactory.create( Mockito.any(), Mockito.any( LoggingObjectInterface.class ) ) ).thenReturn(
         helper.logChannelInterface );
-    when( helper.trans.isRunning() ).thenReturn( true );
+    Mockito.when( helper.trans.isRunning() ).thenReturn( true );
   }
 
   @After
@@ -611,8 +608,8 @@ public class JsonInputTest {
     jsonInput.addRowListener( rowComparator );
 
     processRows( jsonInput, 2 );
-    assertEquals( out.toString(), 0, jsonInput.getErrors() );
-    assertEquals( "rows written", 2, jsonInput.getLinesWritten() );
+    Assert.assertEquals( out.toString(), 0, jsonInput.getErrors() );
+    Assert.assertEquals( "rows written", 2, jsonInput.getLinesWritten() );
   }
 
   @Test
@@ -669,7 +666,7 @@ public class JsonInputTest {
       jsonInput.addRowListener( rowComparator );
 
       processRows( jsonInput, 5 );
-      assertEquals( err.toString(), 0, jsonInput.getErrors() );
+      Assert.assertEquals( err.toString(), 0, jsonInput.getErrors() );
     } finally {
       deleteFiles();
     }
@@ -694,7 +691,7 @@ public class JsonInputTest {
       processRows( jsonInput, 1 );
     }
     String errMsgs = err.toString();
-    assertTrue( errMsgs, errMsgs.contains( "No file(s) specified!" ) );
+    Assert.assertTrue( errMsgs, errMsgs.contains( "No file(s) specified!" ) );
   }
 
   @Test
@@ -826,7 +823,7 @@ public class JsonInputTest {
       } );
       processRows( jsonInput, 1 );
       String logMsgs = log.toString();
-      assertTrue( logMsgs, logMsgs.contains( "is empty!" ) );
+      Assert.assertTrue( logMsgs, logMsgs.contains( "is empty!" ) );
     } finally {
       deleteFiles();
     }
@@ -876,12 +873,12 @@ public class JsonInputTest {
 
     JsonInputMeta meta = createSimpleMeta( "json", field );
     meta.setRemoveSourceField( true );
-    when( helper.stepMeta.isDoingErrorHandling() ).thenReturn( true );
+    Mockito.when( helper.stepMeta.isDoingErrorHandling() ).thenReturn( true );
     JsonInput jsonInput = createJsonInput( "json", meta, new Object[] { input1 }, new Object[] { input2 } );
     StepErrorMeta errMeta = new StepErrorMeta( jsonInput, helper.stepMeta );
     errMeta.setEnabled( true );
     errMeta.setErrorFieldsValuename( "err field" );
-    when( helper.stepMeta.getStepErrorMeta() ).thenReturn( errMeta );
+    Mockito.when( helper.stepMeta.getStepErrorMeta() ).thenReturn( errMeta );
     final List<Object[]> errorLines = new ArrayList<>();
     jsonInput.addRowListener( new RowComparatorListener( new Object[] { "ok" } ) {
       @Override
@@ -893,6 +890,23 @@ public class JsonInputTest {
     Assert.assertEquals( "fwd error", 1, errorLines.size() );
     Assert.assertEquals( "input in err line", input1, errorLines.get( 0 )[0] );
     Assert.assertEquals( "rows written", 1, jsonInput.getLinesWritten() );
+  }
+
+  @Test
+  public void testUrlInput() throws Exception {
+    JsonInputField field = new JsonInputField( "value" );
+    field.setPath( "$.value" );
+    field.setType( ValueMetaInterface.TYPE_STRING );
+
+    String input1 = "http://localhost/test.json";
+
+    JsonInputMeta meta = createSimpleMeta( "json", field );
+    meta.setReadUrl( true );
+
+    JsonInput jsonInput = createJsonInput( "json", meta, new Object[] { input1 } );
+    processRows( jsonInput, 3 );
+
+    Assert.assertEquals( 1, jsonInput.getErrors() );
   }
 
   protected JsonInputMeta createSimpleMeta( String inputColumn, JsonInputField ... jsonPathFields ) {
