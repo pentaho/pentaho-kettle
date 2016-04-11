@@ -413,7 +413,8 @@ public class TextFileOutputTest {
 
     for ( int i = 0; i < textFileField.length; i++ ) {
       String name = textFileField[i].getName();
-      when( inputRowMeta.getValueMeta( i ) ).thenReturn( new ValueMetaString( name ) );
+      ValueMetaString valueMetaString = new ValueMetaString( name );
+      when( inputRowMeta.getValueMeta( i ) ).thenReturn( valueMetaString );
       when( inputRowMeta.indexOfValue( name ) ).thenReturn( i );
     }
 
