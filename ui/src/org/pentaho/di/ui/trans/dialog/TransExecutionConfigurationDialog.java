@@ -70,7 +70,15 @@ public class TransExecutionConfigurationDialog extends ConfigurationDialog {
     wlRemoteHost.setText( BaseMessages.getString( PKG, prefix + ".RemoteHost.Label" ) );
     wlRemoteHost.setToolTipText( BaseMessages.getString( PKG, prefix + ".RemoteHost.Tooltip" ) );
     FormData fdlRemoteHost = new FormData();
-    fdlRemoteHost.top = new FormAttachment( 0, 12 );
+    if( Const.isLinux() ) {
+      fdlRemoteHost.top = new FormAttachment( 0, 12 );
+    }
+    if( Const.isOSX() ) {
+      fdlRemoteHost.top = new FormAttachment( 0, 12 );
+    }
+    if( Const.isWindows() ) {
+      fdlRemoteHost.top = new FormAttachment( 0, 5 );
+    }
     fdlRemoteHost.left = new FormAttachment( environmentSeparator, 5 );
     wlRemoteHost.setLayoutData( fdlRemoteHost );
 
@@ -80,7 +88,15 @@ public class TransExecutionConfigurationDialog extends ConfigurationDialog {
     FormData fdRemoteHost = new FormData();
     fdRemoteHost.left = new FormAttachment( wlRemoteHost, 0, SWT.LEFT );
     fdRemoteHost.right = new FormAttachment( 100, -293 );
-    fdRemoteHost.top = new FormAttachment( wlRemoteHost, 10 );
+    if( Const.isLinux() ) {
+      fdRemoteHost.top = new FormAttachment( wlRemoteHost, 10 );
+    }
+    if( Const.isOSX() ) {
+      fdRemoteHost.top = new FormAttachment( wlRemoteHost, 10 );
+    }
+    if( Const.isWindows() ) {
+      fdRemoteHost.top = new FormAttachment( wlRemoteHost, 5 );
+    }
     wRemoteHost.setLayoutData( fdRemoteHost );
     for ( int i = 0; i < abstractMeta.getSlaveServers().size(); i++ ) {
       SlaveServer slaveServer = abstractMeta.getSlaveServers().get( i );
@@ -93,9 +109,16 @@ public class TransExecutionConfigurationDialog extends ConfigurationDialog {
     props.setLook( wPassExport );
     FormData fdPassExport = new FormData();
     fdPassExport.left = new FormAttachment( wRemoteHost, 0, SWT.LEFT );
-    fdPassExport.top = new FormAttachment( wRemoteHost, 10 );
+    if( Const.isLinux() ) {
+      fdPassExport.top = new FormAttachment( wRemoteHost, 10 );
+    }
+    if( Const.isOSX() ) {
+      fdPassExport.top = new FormAttachment( wRemoteHost, 10 );
+    }
+    if( Const.isWindows() ) {
+      fdPassExport.top = new FormAttachment( wRemoteHost, 5 );
+    }
     wPassExport.setLayoutData( fdPassExport );
-
   }
 
   protected void clusteredOptionsComposite() {
