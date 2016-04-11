@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,6 +25,7 @@ import java.util.Properties;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.pentaho.di.core.database.BaseDatabaseMeta;
 import org.pentaho.di.core.database.DatabaseInterface;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.logging.KettleLogStore;
@@ -233,13 +234,17 @@ public class DataHandlerTest {
 
     DatabaseMeta dbMeta = mock( DatabaseMeta.class );
     when( dbMeta.getAccessType() ).thenReturn( DatabaseMeta.TYPE_ACCESS_JNDI );
-    when( dbMeta.getAttributes() ).thenReturn( new Properties() );
+    Properties props = new Properties();
+    props.put( BaseDatabaseMeta.ATTRIBUTE_PREFIX_EXTRA_OPTION + "KettleThin.webappname", "foo" );
+    when( dbMeta.getAttributes() ).thenReturn( props );
 
     when( accessBox.getSelectedItem() ).thenReturn( "JNDI" );
     when( deckOptionsBox.getSelectedIndex() ).thenReturn( -1 );
     dataHandler.setData( dbMeta );
     assertEquals( dbMeta, dataHandler.getData() );
     assertNotSame( initialDbMeta, dataHandler.getData() );
+    assertFalse( props.containsKey( BaseDatabaseMeta.ATTRIBUTE_PREFIX_EXTRA_OPTION + "KettleThin.webappname" ) );
+    assertTrue( props.get( "WEB_APPLICATION_NAME" ).equals( "foo" ) );
 
     dataHandler.setData( null );
     assertEquals( dbMeta, dataHandler.getData() );

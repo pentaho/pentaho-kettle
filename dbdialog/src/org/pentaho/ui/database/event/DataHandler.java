@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -88,6 +88,8 @@ public class DataHandler extends AbstractXulEventHandler {
 
   // Kettle thin related
   private static final String WEB_APPLICATION_NAME = "WEB_APPLICATION_NAME";
+  private static final String EXTRA_OPTION_WEB_APPLICATION_NAME = BaseDatabaseMeta.ATTRIBUTE_PREFIX_EXTRA_OPTION
+      + "KettleThin.webappname";
 
   // The connectionMap allows us to keep track of the connection
   // type we are working with and the correlating database interface
@@ -786,6 +788,12 @@ public class DataHandler extends AbstractXulEventHandler {
       return;
     }
 
+    if ( meta.getAttributes().containsKey( EXTRA_OPTION_WEB_APPLICATION_NAME ) ) {
+      meta.getAttributes().put( WEB_APPLICATION_NAME, meta.getAttributes().get( EXTRA_OPTION_WEB_APPLICATION_NAME ) );
+      meta.getAttributes().remove( EXTRA_OPTION_WEB_APPLICATION_NAME );
+      meta.setChanged();
+    }
+
     getControls();
 
     // Name:
@@ -1360,7 +1368,7 @@ public class DataHandler extends AbstractXulEventHandler {
     if ( webAppName != null ) {
       if ( databaseMeta != null && databaseMeta.getAttributes().containsKey( WEB_APPLICATION_NAME ) ) {
         webAppName.setValue( databaseMeta.getAttributes().getProperty( WEB_APPLICATION_NAME ) );
-      } else if ( databaseMeta == null || !databaseMeta.getExtraOptions().containsKey( "KettleThin.webappname" ) ) {
+      } else {
         webAppName.setValue( "pentaho-di" );
       }
     }
