@@ -870,6 +870,23 @@ public class JsonInputTest {
     Assert.assertEquals( "rows written", 1, jsonInput.getLinesWritten() );
   }
 
+  @Test
+  public void testUrlInput() throws Exception {
+    JsonInputField field = new JsonInputField( "value" );
+    field.setPath( "$.value" );
+    field.setType( ValueMetaInterface.TYPE_STRING );
+
+    String input1 = "http://localhost/test.json";
+
+    JsonInputMeta meta = createSimpleMeta( "json", field );
+    meta.setReadUrl( true );
+
+    JsonInput jsonInput = createJsonInput( "json", meta, new Object[] { input1 } );
+    processRows( jsonInput, 3 );
+
+    Assert.assertEquals( 1, jsonInput.getErrors() );
+  }
+
   protected JsonInputMeta createSimpleMeta( String inputColumn, JsonInputField ... jsonPathFields ) {
     JsonInputMeta jsonInputMeta = new JsonInputMeta();
     jsonInputMeta.setDefault();

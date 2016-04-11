@@ -24,6 +24,8 @@ package org.pentaho.di.trans.steps.jsoninput.reader;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.Iterator;
 
 import org.apache.commons.io.IOUtils;
@@ -68,6 +70,8 @@ public class InputsReader implements Iterable<InputStream> {
         files = data.files.getFiles().listIterator( data.currentFileIndex );
       }
       return new FileContentIterator( files, data, errorHandler );
+    } else if ( meta.isReadUrl() ) {
+      return  new URLContentIterator( errorHandler, getFieldIterator() );
     } else {
       // direct content
       return new ChainedIterator<InputStream, String>( getFieldIterator(), errorHandler ) {
@@ -174,6 +178,22 @@ public class InputsReader implements Iterable<InputStream> {
     public FileObject tryNext() throws KettleFileException {
       String fileName = step.environmentSubstitute( inner.next() );
       return fileName == null ? null : KettleVFS.getFileObject( fileName, vars );
+    }
+  }
+
+  protected class URLContentIterator extends ChainedIterator<InputStream, String> {
+
+    public URLContentIterator( ErrorHandler handler, Iterator<String> urls ) {
+      super( urls, handler );
+    }
+
+    @Override protected InputStream tryNext() throws Exception {
+      if ( hasNext() ) {
+        URL url = new URL( step.environmentSubstitute( inner.next() ) );
+        URLConnection connection = url.openConnection();
+        return connection.getInputStream();
+      }
+      return null;
     }
   }
 
