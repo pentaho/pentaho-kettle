@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,10 +22,13 @@
 
 package org.pentaho.di.core.logging;
 
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyListOf;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -34,15 +37,13 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.di.core.gui.GCInterface;
+import org.pentaho.di.core.gui.PrimitiveGCInterface;
 import org.pentaho.di.core.metrics.MetricsDuration;
 import org.pentaho.di.core.gui.Point;
 
 public class MetricsPainterTest {
   MetricsPainter metricsPainter;
   List<MetricsDuration> durations = null;
-  final int heightStub = 0;
-  final double pixelsPerMsStub = 0;
-  final long periodInMsStub = 0;
 
   @Before
   public void initialize() {
@@ -60,14 +61,20 @@ public class MetricsPainterTest {
     callPaint( durations );
   }
 
-  @Test( timeout = 1000 )
+  @Test( timeout = 10000 )
   public void testDrawTimeScaleLineInfinityLoop() {
+    final int heightStub = 0;
+    final double pixelsPerMsStub = 0;
+    final long periodInMsStub = 0;
+
     GCInterface gCInterfaceMock = mock( GCInterface.class );
     when( metricsPainter.getGc() ).thenReturn( gCInterfaceMock );
     doCallRealMethod().when( metricsPainter ).drawTimeScaleLine( heightStub, pixelsPerMsStub, periodInMsStub );
     when( gCInterfaceMock.textExtent( anyString() ) ).thenReturn( mock( Point.class ) );
 
     metricsPainter.drawTimeScaleLine( heightStub, pixelsPerMsStub, periodInMsStub );
+
+    verify( gCInterfaceMock, times( 2 ) ).setForeground( any( PrimitiveGCInterface.EColor.class ) );
   }
 
   private void callPaint( List<MetricsDuration> durations ) {
