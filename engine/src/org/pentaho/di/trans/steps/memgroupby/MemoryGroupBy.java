@@ -36,11 +36,11 @@ import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueDataUtil;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaBase;
 import org.pentaho.di.core.row.value.ValueMetaInteger;
 import org.pentaho.di.core.row.value.ValueMetaNumber;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -293,21 +293,19 @@ public class MemoryGroupBy extends BaseStep implements StepInterface {
           aggregate.agg[i] = sum;
           break;
         case MemoryGroupByMeta.TYPE_GROUP_COUNT_DISTINCT:
+          if ( aggregate.distinctObjs == null ) {
+            aggregate.distinctObjs = new Set[meta.getSubjectField().length];
+          }
+          if ( aggregate.distinctObjs[i] == null ) {
+            aggregate.distinctObjs[i] = new TreeSet<>();
+          }
           if ( !subjMeta.isNull( subj ) ) {
-            if ( aggregate.distinctObjs == null ) {
-              aggregate.distinctObjs = new Set[meta.getSubjectField().length];
-            }
-            if ( aggregate.distinctObjs[i] == null ) {
-              aggregate.distinctObjs[i] = new TreeSet<Object>();
-            }
             Object obj = subjMeta.convertToNormalStorageType( subj );
             if ( !aggregate.distinctObjs[i].contains( obj ) ) {
               aggregate.distinctObjs[i].add( obj );
-              // null is exact 0, or we will not be able to ++.
-              value = value == null ? new Long( 0 ) : value;
-              aggregate.agg[i] = (Long) value + 1;
             }
           }
+          aggregate.counts[i] = (long) aggregate.distinctObjs[i].size();
           break;
         case MemoryGroupByMeta.TYPE_GROUP_COUNT_ALL:
           if ( !subjMeta.isNull( subj ) ) {
@@ -318,11 +316,11 @@ public class MemoryGroupBy extends BaseStep implements StepInterface {
           aggregate.counts[i]++;
           break;
         case MemoryGroupByMeta.TYPE_GROUP_MIN:
-          if ( subj == null && !minNullIsValued ) {
+          if ( minNullIsValued || ( subj != null && value != null ) ) {
             // PDI-11530 do not compare null
-            break;
-          }
-          if ( subjMeta.compare( subj, valueMeta, value ) < 0 ) {
+            aggregate.agg[i] = subjMeta.compare( subj, valueMeta, value ) < 0 ? subj : value;
+          } else if ( value == null && subj != null ) {
+            // By default set aggregate to first not null value
             aggregate.agg[i] = subj;
           }
           break;
@@ -406,18 +404,18 @@ public class MemoryGroupBy extends BaseStep implements StepInterface {
       switch ( meta.getAggregateType()[i] ) {
         case MemoryGroupByMeta.TYPE_GROUP_MEDIAN:
         case MemoryGroupByMeta.TYPE_GROUP_PERCENTILE:
-          vMeta = new ValueMeta( meta.getAggregateField()[i], ValueMetaInterface.TYPE_NUMBER );
+          vMeta = new ValueMetaNumber( meta.getAggregateField()[i] );
           v = new ArrayList<Double>();
           break;
         case MemoryGroupByMeta.TYPE_GROUP_SUM:
         case MemoryGroupByMeta.TYPE_GROUP_AVERAGE:
         case MemoryGroupByMeta.TYPE_GROUP_STANDARD_DEVIATION:
-          vMeta = new ValueMeta( meta.getAggregateField()[i], ValueMetaInterface.TYPE_NUMBER );
+          vMeta = new ValueMetaNumber( meta.getAggregateField()[i] );
           break;
         case MemoryGroupByMeta.TYPE_GROUP_COUNT_DISTINCT:
         case MemoryGroupByMeta.TYPE_GROUP_COUNT_ANY:
         case MemoryGroupByMeta.TYPE_GROUP_COUNT_ALL:
-          vMeta = new ValueMeta( meta.getAggregateField()[i], ValueMetaInterface.TYPE_INTEGER );
+          vMeta = new ValueMetaInteger( meta.getAggregateField()[i] );
           break;
         case MemoryGroupByMeta.TYPE_GROUP_FIRST:
         case MemoryGroupByMeta.TYPE_GROUP_LAST:
@@ -430,11 +428,11 @@ public class MemoryGroupBy extends BaseStep implements StepInterface {
           v = r == null ? null : r[data.subjectnrs[i]];
           break;
         case MemoryGroupByMeta.TYPE_GROUP_CONCAT_COMMA:
-          vMeta = new ValueMeta( meta.getAggregateField()[i], ValueMetaInterface.TYPE_STRING );
+          vMeta = new ValueMetaString( meta.getAggregateField()[i] );
           v = new StringBuilder();
           break;
         case MemoryGroupByMeta.TYPE_GROUP_CONCAT_STRING:
-          vMeta = new ValueMeta( meta.getAggregateField()[i], ValueMetaInterface.TYPE_STRING );
+          vMeta = new ValueMetaString( meta.getAggregateField()[i] );
           v = new StringBuilder();
           break;
         default:
@@ -485,9 +483,10 @@ public class MemoryGroupBy extends BaseStep implements StepInterface {
           case MemoryGroupByMeta.TYPE_GROUP_SUM:
             break;
           case MemoryGroupByMeta.TYPE_GROUP_AVERAGE:
-            ag =
-              ValueDataUtil.divide( data.aggMeta.getValueMeta( i ), ag, new ValueMeta(
-                "c", ValueMetaInterface.TYPE_INTEGER ), new Long( aggregate.counts[i] ) );
+            ag = ValueDataUtil.divide(
+              data.aggMeta.getValueMeta( i ), ag,
+              new ValueMetaInteger( "c" ), aggregate.counts[i]
+            );
             break;
           case MemoryGroupByMeta.TYPE_GROUP_MEDIAN:
           case MemoryGroupByMeta.TYPE_GROUP_PERCENTILE:
@@ -505,9 +504,8 @@ public class MemoryGroupBy extends BaseStep implements StepInterface {
             break;
           case MemoryGroupByMeta.TYPE_GROUP_COUNT_ANY:
           case MemoryGroupByMeta.TYPE_GROUP_COUNT_ALL:
-            ag = new Long( aggregate.counts[i] );
-            break;
           case MemoryGroupByMeta.TYPE_GROUP_COUNT_DISTINCT:
+            ag = aggregate.counts[i];
             break;
           case MemoryGroupByMeta.TYPE_GROUP_MIN:
             break;
