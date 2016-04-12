@@ -561,6 +561,9 @@ public abstract class ConfigurationDialog extends Dialog {
     FormData fd_localDescriptionLabel = new FormData();
     fd_localDescriptionLabel.left = new FormAttachment( environmentSeparator, 5 );
     fd_localDescriptionLabel.top = new FormAttachment( 0, 12 );
+    if ( Const.isOSX() ) {
+      fd_localDescriptionLabel.top = new FormAttachment( 0, 10 );
+    }
     localDescriptionLabel.setLayoutData( fd_localDescriptionLabel );
   }
 

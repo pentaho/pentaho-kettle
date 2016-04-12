@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -59,7 +59,8 @@ public class TransExecutionConfigurationDialog extends ConfigurationDialog {
   private Composite execClusterComposite;
   private Button showDialogRunCheckbox;
 
-  public TransExecutionConfigurationDialog( Shell parent, TransExecutionConfiguration configuration, TransMeta transMeta ) {
+  public TransExecutionConfigurationDialog( Shell parent, TransExecutionConfiguration configuration,
+    TransMeta transMeta ) {
     super( parent, configuration, transMeta );
   }
 
@@ -70,13 +71,13 @@ public class TransExecutionConfigurationDialog extends ConfigurationDialog {
     wlRemoteHost.setText( BaseMessages.getString( PKG, prefix + ".RemoteHost.Label" ) );
     wlRemoteHost.setToolTipText( BaseMessages.getString( PKG, prefix + ".RemoteHost.Tooltip" ) );
     FormData fdlRemoteHost = new FormData();
-    if( Const.isLinux() ) {
+    if ( Const.isLinux() ) {
       fdlRemoteHost.top = new FormAttachment( 0, 12 );
     }
-    if( Const.isOSX() ) {
-      fdlRemoteHost.top = new FormAttachment( 0, 12 );
+    if ( Const.isOSX() ) {
+      fdlRemoteHost.top = new FormAttachment( 0, 10 );
     }
-    if( Const.isWindows() ) {
+    if ( Const.isWindows() ) {
       fdlRemoteHost.top = new FormAttachment( 0, 5 );
     }
     fdlRemoteHost.left = new FormAttachment( environmentSeparator, 5 );
@@ -88,13 +89,13 @@ public class TransExecutionConfigurationDialog extends ConfigurationDialog {
     FormData fdRemoteHost = new FormData();
     fdRemoteHost.left = new FormAttachment( wlRemoteHost, 0, SWT.LEFT );
     fdRemoteHost.right = new FormAttachment( 100, -293 );
-    if( Const.isLinux() ) {
+    if ( Const.isLinux() ) {
       fdRemoteHost.top = new FormAttachment( wlRemoteHost, 10 );
     }
-    if( Const.isOSX() ) {
-      fdRemoteHost.top = new FormAttachment( wlRemoteHost, 10 );
+    if ( Const.isOSX() ) {
+      fdRemoteHost.top = new FormAttachment( wlRemoteHost, 8 );
     }
-    if( Const.isWindows() ) {
+    if ( Const.isWindows() ) {
       fdRemoteHost.top = new FormAttachment( wlRemoteHost, 5 );
     }
     wRemoteHost.setLayoutData( fdRemoteHost );
@@ -109,13 +110,13 @@ public class TransExecutionConfigurationDialog extends ConfigurationDialog {
     props.setLook( wPassExport );
     FormData fdPassExport = new FormData();
     fdPassExport.left = new FormAttachment( wRemoteHost, 0, SWT.LEFT );
-    if( Const.isLinux() ) {
+    if ( Const.isLinux() ) {
       fdPassExport.top = new FormAttachment( wRemoteHost, 10 );
     }
-    if( Const.isOSX() ) {
+    if ( Const.isOSX() ) {
       fdPassExport.top = new FormAttachment( wRemoteHost, 10 );
     }
-    if( Const.isWindows() ) {
+    if ( Const.isWindows() ) {
       fdPassExport.top = new FormAttachment( wRemoteHost, 5 );
     }
     wPassExport.setLayoutData( fdPassExport );
@@ -129,6 +130,9 @@ public class TransExecutionConfigurationDialog extends ConfigurationDialog {
         "TransExecutionConfigurationDialog.ClusterDescription.Label" ) );
     FormData fd_clusterDescriptionLabel = new FormData();
     fd_clusterDescriptionLabel.top = new FormAttachment( 0, 12 );
+    if ( Const.isOSX() ) {
+      fd_clusterDescriptionLabel.top = new FormAttachment( 0, 10 );
+    }
     fd_clusterDescriptionLabel.left = new FormAttachment( environmentSeparator, 5 );
     clusterDescriptionLabel.setLayoutData( fd_clusterDescriptionLabel );
 
@@ -136,6 +140,9 @@ public class TransExecutionConfigurationDialog extends ConfigurationDialog {
     props.setLook( showDialogRunCheckbox );
     FormData fd_resroucesCheckBox = new FormData();
     fd_resroucesCheckBox.top = new FormAttachment( clusterDescriptionLabel, 10 );
+    if ( Const.isOSX() ) {
+      fd_resroucesCheckBox.top = new FormAttachment( clusterDescriptionLabel, 8 );
+    }
     fd_resroucesCheckBox.left = new FormAttachment( clusterDescriptionLabel, 0, SWT.LEFT );
     showDialogRunCheckbox.setLayoutData( fd_resroucesCheckBox );
     showDialogRunCheckbox.setText( BaseMessages.getString( PKG,
