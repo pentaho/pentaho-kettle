@@ -24,10 +24,12 @@ package org.pentaho.di.core.util;
 
 import org.junit.Test;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.variables.Variables;
 
 import java.util.Locale;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 /**
@@ -36,12 +38,13 @@ import static org.junit.Assert.assertNull;
 public class EnvUtilTest {
 
   @Test
-  public void testEnvironmentInit() throws Exception {
+  public void vfsUserDirIsRoot_IsPublishedOnInitialisation() throws Exception {
     EnvUtil.environmentInit();
-    //See PDI-14522
-    boolean expected = false;
-    boolean actual = Boolean.valueOf( System.getProperties().get( Const.VFS_USER_DIR_IS_ROOT ).toString() );
-    assertEquals( expected, actual );
+    //See PDI-14522, PDI-14821
+    // don't check the exact value, because the initialisation depends on local settings
+    // instead, simply check the value exists
+    assertNotNull( Variables.getADefaultVariableSpace().getVariable( Const.VFS_USER_DIR_IS_ROOT ) );
+    assertNotNull( System.getProperty( Const.VFS_USER_DIR_IS_ROOT ) );
   }
 
   @Test

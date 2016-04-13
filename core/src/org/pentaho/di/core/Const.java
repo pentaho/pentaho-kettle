@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -1056,9 +1056,9 @@ public class Const {
 
   /**
    * A variable to configure VFS USER_DIR_IS_ROOT option: should be "true" or "false"
+   * {@linkplain org.apache.commons.vfs2.provider.sftp.SftpFileSystemConfigBuilder#USER_DIR_IS_ROOT}
    */
-  public static final String VFS_USER_DIR_IS_ROOT =
-      "vfs.sftp.org.apache.commons.vfs2.provider.sftp.SftpFileSystemConfigBuilder.USER_DIR_IS_ROOT";
+  public static final String VFS_USER_DIR_IS_ROOT = "vfs.sftp.userDirIsRoot";
 
   /**
    * rounds double f to any number of places after decimal point Does arithmetic using BigDecimal class to avoid integer
