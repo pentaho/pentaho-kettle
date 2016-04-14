@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,9 +24,11 @@ package org.pentaho.di.trans.steps.xmloutput;
 
 import java.io.File;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
+
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamException;
 
 import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.Const;
@@ -37,7 +39,6 @@ import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.vfs.KettleVFS;
-import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -54,6 +55,8 @@ import org.pentaho.di.trans.steps.xmloutput.XMLField.ContentType;
  * @since 14-jan-2006
  */
 public class XMLOutput extends BaseStep implements StepInterface {
+  private static final XMLOutputFactory XML_OUT_FACTORY = XMLOutputFactory.newInstance();
+
   private XMLOutputMeta meta;
 
   private XMLOutputData data;
@@ -154,13 +157,13 @@ public class XMLOutput extends BaseStep implements StepInterface {
          */
 
         // OK, write a new row to the XML file:
-        data.writer.write( ( " <" + meta.getRepeatElement() + ">" ).toCharArray() );
+        data.writer.writeStartElement( meta.getRepeatElement() );
 
         for ( int i = 0; i < data.formatRowMeta.size(); i++ ) {
           // Put a space between the XML elements of the row
           //
           if ( i > 0 ) {
-            data.writer.write( ' ' );
+            data.writer.writeCharacters( " " );
           }
 
           ValueMetaInterface valueMeta = data.formatRowMeta.getValueMeta( i );
@@ -173,11 +176,10 @@ public class XMLOutput extends BaseStep implements StepInterface {
          * Only write the fields specified!
          */
         // Write a new row to the XML file:
-        data.writer.write( ( " <" + meta.getRepeatElement() ).toCharArray() );
+        data.writer.writeStartElement( meta.getRepeatElement() );
 
         // First do the attributes and write them...
-        data.writer.write( buildRowAttributes( r ).toCharArray() );
-        data.writer.write( ">".toCharArray() );
+        writeRowAttributes( r );
 
         // Now write the elements
         //
@@ -185,7 +187,7 @@ public class XMLOutput extends BaseStep implements StepInterface {
           XMLField outputField = meta.getOutputFields()[i];
           if ( outputField.getContentType() == ContentType.Element ) {
             if ( i > 0 ) {
-              data.writer.write( ' ' ); // a space between
+              data.writer.writeCharacters( " " ); // a space between
               // elements
             }
 
@@ -204,8 +206,8 @@ public class XMLOutput extends BaseStep implements StepInterface {
         }
       }
 
-      data.writer.write( ( " </" + meta.getRepeatElement() + ">" ).toCharArray() );
-      data.writer.write( Const.CR.toCharArray() );
+      data.writer.writeEndElement();
+      data.writer.writeCharacters( Const.CR );
     } catch ( Exception e ) {
       throw new KettleException( "Error writing XML row :" + e.toString() + Const.CR + "Row: "
           + getInputRowMeta().getString( r ), e );
@@ -214,9 +216,7 @@ public class XMLOutput extends BaseStep implements StepInterface {
     incrementLinesOutput();
   }
 
-  String buildRowAttributes( Object[] r ) throws KettleValueException {
-    StringBuffer rowAttributes = new StringBuffer();
-
+  void writeRowAttributes( Object[] r ) throws KettleValueException, XMLStreamException {
     for ( int i = 0; i < meta.getOutputFields().length; i++ ) {
       XMLField xmlField = meta.getOutputFields()[i];
       if ( xmlField.getContentType() == ContentType.Attribute ) {
@@ -228,19 +228,20 @@ public class XMLOutput extends BaseStep implements StepInterface {
           elementName = xmlField.getFieldName();
         }
 
-        rowAttributes.append( ' ' ).append( elementName ).append( "=\"" );
-        XMLHandler.appendReplacedChars( rowAttributes, valueMeta.getString( valueData ) );
-        rowAttributes.append( "\"" );
+        data.writer.writeAttribute( elementName, valueMeta.getString( valueData ) );
       }
     }
-    return rowAttributes.toString();
   }
 
   private void writeField( ValueMetaInterface valueMeta, Object valueData, String element ) throws KettleStepException {
     try {
-      String str = XMLHandler.addTagValue( element, valueMeta.getString( valueData ), false );
-      if ( str != null ) {
-        data.writer.write( str.toCharArray() );
+      String value = valueMeta.getString( valueData );
+      if ( value != null ) {
+        data.writer.writeStartElement( element );
+        data.writer.writeCharacters( value );
+        data.writer.writeEndElement();
+      } else {
+        data.writer.writeEmptyElement( element );
       }
     } catch ( Exception e ) {
       throw new KettleStepException( "Error writing line :", e );
@@ -257,12 +258,13 @@ public class XMLOutput extends BaseStep implements StepInterface {
 
     try {
       if ( meta.isServletOutput() ) {
-        data.writer = getTrans().getServletPrintWriter();
+        data.writer = XML_OUT_FACTORY.createXMLStreamWriter( getTrans().getServletPrintWriter() );
         if ( meta.getEncoding() != null && meta.getEncoding().length() > 0 ) {
-          data.writer.write( XMLHandler.getXMLHeader( meta.getEncoding() ).toCharArray() );
+          data.writer.writeStartDocument( meta.getEncoding(), "1.0" );
         } else {
-          data.writer.write( XMLHandler.getXMLHeader( Const.XML_ENCODING ).toCharArray() );
+          data.writer.writeStartDocument( Const.XML_ENCODING, "1.0" );
         }
+        data.writer.writeCharacters( Const.CR );
       } else {
 
         FileObject file = KettleVFS.getFileObject( buildFilename( true ), getTransMeta() );
@@ -290,25 +292,23 @@ public class XMLOutput extends BaseStep implements StepInterface {
         }
         if ( meta.getEncoding() != null && meta.getEncoding().length() > 0 ) {
           logBasic( "Opening output stream in encoding: " + meta.getEncoding() );
-          data.writer = new OutputStreamWriter( outputStream, meta.getEncoding() );
-          data.writer.write( XMLHandler.getXMLHeader( meta.getEncoding() ).toCharArray() );
+          data.writer = XML_OUT_FACTORY.createXMLStreamWriter( outputStream, meta.getEncoding() );
+          data.writer.writeStartDocument( meta.getEncoding(), "1.0" );
         } else {
           logBasic( "Opening output stream in default encoding : " + Const.XML_ENCODING );
-          data.writer = new OutputStreamWriter( outputStream );
-          data.writer.write( XMLHandler.getXMLHeader( Const.XML_ENCODING ).toCharArray() );
+          data.writer = XML_OUT_FACTORY.createXMLStreamWriter( outputStream );
+          data.writer.writeStartDocument( Const.XML_ENCODING, "1.0" );
         }
-      }
-
-      // Add the name space if defined
-      StringBuffer nameSpace = new StringBuffer();
-      if ( ( meta.getNameSpace() != null ) && ( !"".equals( meta.getNameSpace() ) ) ) {
-        nameSpace.append( " xmlns=\"" );
-        nameSpace.append( meta.getNameSpace() );
-        nameSpace.append( "\"" );
+        data.writer.writeCharacters( Const.CR );
       }
 
       // OK, write the header & the parent element:
-      data.writer.write( ( "<" + meta.getMainElement() + nameSpace.toString() + ">" + Const.CR ).toCharArray() );
+      data.writer.writeStartElement( meta.getMainElement() );
+      // Add the name space if defined
+      if ( ( meta.getNameSpace() != null ) && ( !"".equals( meta.getNameSpace() ) ) ) {
+        data.writer.writeDefaultNamespace( meta.getNameSpace() );
+      }
+      data.writer.writeCharacters( Const.CR );
 
       retval = true;
     } catch ( Exception e ) {
@@ -326,10 +326,12 @@ public class XMLOutput extends BaseStep implements StepInterface {
     if ( data.OpenedNewFile ) {
       try {
         // Close the parent element
-        data.writer.write( ( "</" + meta.getMainElement() + ">" + Const.CR ).toCharArray() );
+        data.writer.writeEndElement();
+        data.writer.writeCharacters( Const.CR );
 
         // System.out.println("Closed xml file...");
 
+        data.writer.writeEndDocument();
         data.writer.close();
 
         if ( meta.isZipped() ) {
