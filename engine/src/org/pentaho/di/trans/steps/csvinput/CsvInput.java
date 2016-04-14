@@ -341,9 +341,10 @@ public class CsvInput extends BaseStep implements StepInterface {
         if ( data.bytesToSkipInFirstFile > 0 ) {
           data.fc.position( data.bytesToSkipInFirstFile );
 
-          // Now, we need to skip the first row, until the first CR that is.
-          //
-          readOneRow( true, true );
+          // evaluate whether there is a need to skip a row
+          if ( needToSkipRow() ) {
+            readOneRow( true, true );
+          }
         }
       }
 
@@ -385,6 +386,50 @@ public class CsvInput extends BaseStep implements StepInterface {
     } catch ( Exception e ) {
       throw new KettleException( e );
     }
+  }
+
+  /**
+   * We need to skip row only if a line, that we are currently on is read by the previous step <b>partly</b>.
+   * In other words, we DON'T skip a line if we are just beginning to read it from the first symbol.
+   * We have to do some work for this: read last byte from the previous step and make sure that it is a new line byte.
+   * But it's not enough. There could be a situation, where new line is indicated by '\r\n' construction. And if we are
+   * <b>between</b> this construction, we want to skip last '\n', and don't want to include it in our line.
+   *
+   * So, we DON'T skip line only if the previous char is new line indicator AND we are not between '\r\n'.
+   *
+   */
+  private boolean needToSkipRow() {
+    try {
+      // first we move pointer to the last byte of the previous step
+      data.fc.position( data.fc.position() - 1 );
+      // read data, if not yet
+      data.resizeBufferIfNeeded();
+
+      // check whether the last symbol from the previous step is a new line
+      if ( data.newLineFound() ) {
+        // don't increase bytes read for this step, as it is actually content of another step
+        // and we are reading this just for evaluation.
+        data.moveEndBufferPointer( false );
+        // now we are at the first char of our thread.
+        // there is still a situation we want to avoid: when there is a windows style "/r/n", and we are between two
+        // of this chars. In this case we need to skip a line. Otherwise we don't skip it.
+        return data.newLineFound();
+      } else {
+        // moving to the first char of our line.
+        data.moveEndBufferPointer( false );
+      }
+
+    } catch ( IOException e ) {
+      e.printStackTrace();
+    } finally {
+      try {
+        data.fc.position( data.fc.position() + 1 );
+      } catch ( IOException e ) {
+        // nothing to do here
+      }
+    }
+
+    return true;
   }
 
   /**
@@ -656,6 +701,7 @@ public class CsvInput extends BaseStep implements StepInterface {
       throw new KettleFileException( "Exception reading line using NIO", e );
     }
   }
+
 
   public boolean init( StepMetaInterface smi, StepDataInterface sdi ) {
     meta = (CsvInputMeta) smi;
