@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -203,7 +203,7 @@ public class CsvInputData extends BaseStepData implements StepDataInterface {
    * This method should be used very carefully. Moving pointer without increasing number of written bytes
    * can lead to data corruption.
    */
-   boolean moveEndBufferPointer( boolean increaseTotalBytes ) throws IOException {
+  boolean moveEndBufferPointer( boolean increaseTotalBytes ) throws IOException {
     endBuffer++;
     if ( increaseTotalBytes ) {
       totalBytesRead++;
