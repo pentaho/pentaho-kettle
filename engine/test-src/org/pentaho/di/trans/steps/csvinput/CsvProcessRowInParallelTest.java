@@ -1,3 +1,25 @@
+/*! ******************************************************************************
+ *
+ * Pentaho Data Integration
+ *
+ * Copyright (C) 2016 by Pentaho : http://www.pentaho.com
+ *
+ *******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
+
 package org.pentaho.di.trans.steps.csvinput;
 
 import org.junit.Test;
@@ -45,13 +67,13 @@ public class CsvProcessRowInParallelTest extends CsvInputUnitTestBase {
   public void oneByteNewLineIndicator_NewLineAtTheEnd_2Threads() throws Exception {
     final int totalNumberOfSteps = 2;
     final String fileContent =
-        "a;1\r" +
-        "b;2\r";
+          "a;1\r"
+        + "b;2\r";
 
     File sharedFile = createTestFile( "UTF-8", fileContent );
 
-    assertEquals( createAndRunOneStep(sharedFile, 0, totalNumberOfSteps), 1 );
-    assertEquals( createAndRunOneStep(sharedFile, 1, totalNumberOfSteps), 1 );
+    assertEquals( createAndRunOneStep( sharedFile, 0, totalNumberOfSteps ), 1 );
+    assertEquals( createAndRunOneStep( sharedFile, 1, totalNumberOfSteps ), 1 );
   }
 
   @Test
@@ -59,14 +81,14 @@ public class CsvProcessRowInParallelTest extends CsvInputUnitTestBase {
     final int totalNumberOfSteps = 2;
 
     final String fileContent =
-        "a;1\r" +
-        "b;2\r" +
-        "c;3";
+          "a;1\r"
+        + "b;2\r"
+        + "c;3";
 
     File sharedFile = createTestFile( "UTF-8", fileContent );
 
-    assertEquals( createAndRunOneStep(sharedFile, 0, totalNumberOfSteps), 2 );
-    assertEquals( createAndRunOneStep(sharedFile, 1, totalNumberOfSteps), 1 );
+    assertEquals( createAndRunOneStep( sharedFile, 0, totalNumberOfSteps ), 2 );
+    assertEquals( createAndRunOneStep( sharedFile, 1, totalNumberOfSteps ), 1 );
   }
 
   @Test
@@ -87,8 +109,8 @@ public class CsvProcessRowInParallelTest extends CsvInputUnitTestBase {
 
     File sharedFile = createTestFile( "UTF-8", fileContent );
 
-    assertEquals( createAndRunOneStep(sharedFile, 0, totalNumberOfSteps), 5 );
-    assertEquals( createAndRunOneStep(sharedFile, 1, totalNumberOfSteps), 5 );
+    assertEquals( createAndRunOneStep( sharedFile, 0, totalNumberOfSteps ), 5 );
+    assertEquals( createAndRunOneStep( sharedFile, 1, totalNumberOfSteps ), 5 );
   }
 
   @Test
@@ -109,8 +131,8 @@ public class CsvProcessRowInParallelTest extends CsvInputUnitTestBase {
 
     File sharedFile = createTestFile( "UTF-8", fileContent );
 
-    assertEquals( createAndRunOneStep(sharedFile, 0, totalNumberOfSteps), 5 );
-    assertEquals( createAndRunOneStep(sharedFile, 1, totalNumberOfSteps), 5 );
+    assertEquals( createAndRunOneStep( sharedFile, 0, totalNumberOfSteps ), 5 );
+    assertEquals( createAndRunOneStep( sharedFile, 1, totalNumberOfSteps ), 5 );
   }
 
 
@@ -118,41 +140,41 @@ public class CsvProcessRowInParallelTest extends CsvInputUnitTestBase {
   @Test
   public void twoByteNewLineIndicator_NewLineAtTheEnd_2Threads() throws Exception {
     final String fileContent =
-        "a;1\r\n" +
-        "b;2\r\n";
+          "a;1\r\n"
+        + "b;2\r\n";
     final int totalNumberOfSteps = 2;
 
     File sharedFile = createTestFile( "UTF-8", fileContent );
 
-    assertEquals( createAndRunOneStep(sharedFile, 0, totalNumberOfSteps), 1 );
-    assertEquals( createAndRunOneStep(sharedFile, 1, totalNumberOfSteps), 1 );
+    assertEquals( createAndRunOneStep( sharedFile, 0, totalNumberOfSteps ), 1 );
+    assertEquals( createAndRunOneStep( sharedFile, 1, totalNumberOfSteps ), 1 );
   }
 
   @Test
   public void twoByteNewLineIndicator_NoNewLineAtTheEnd_2Threads() throws Exception {
     final String fileContent =
-        "a;1\r\n" +
-        "b;2";
+          "a;1\r\n"
+        + "b;2";
     final int totalNumberOfSteps = 2;
 
     File sharedFile = createTestFile( "UTF-8", fileContent );
 
-    assertEquals( createAndRunOneStep(sharedFile, 0, totalNumberOfSteps), 1 );
-    assertEquals( createAndRunOneStep(sharedFile, 1, totalNumberOfSteps), 1 );
+    assertEquals( createAndRunOneStep( sharedFile, 0, totalNumberOfSteps ), 1 );
+    assertEquals( createAndRunOneStep( sharedFile, 1, totalNumberOfSteps ), 1 );
   }
 
 
   @Test
   public void twoByteNewLineIndicator_NewLineAtTheEnd_3Threads() throws Exception {
     final String fileContent =
-        "a;1\r\n" +
-        "b;2\r\n" +
+          "a;1\r\n"
+        + "b;2\r\n"
           // thread 1 should read until this line
-        "c;3\r\n" +
-        "d;4\r\n" +
+        + "c;3\r\n"
+        + "d;4\r\n"
           // thread 2 should read until this line
-        "e;5\r\n" +
-        "f;6\r\n";
+        + "e;5\r\n"
+        + "f;6\r\n";
           // thread 3 should read until this line
 
 
@@ -160,9 +182,9 @@ public class CsvProcessRowInParallelTest extends CsvInputUnitTestBase {
 
     File sharedFile = createTestFile( "UTF-8", fileContent );
 
-    assertEquals( createAndRunOneStep(sharedFile, 0, totalNumberOfSteps), 2 );
-    assertEquals( createAndRunOneStep(sharedFile, 1, totalNumberOfSteps), 2 );
-    assertEquals( createAndRunOneStep(sharedFile, 2, totalNumberOfSteps), 2 );
+    assertEquals( createAndRunOneStep( sharedFile, 0, totalNumberOfSteps ), 2 );
+    assertEquals( createAndRunOneStep( sharedFile, 1, totalNumberOfSteps ), 2 );
+    assertEquals( createAndRunOneStep( sharedFile, 2, totalNumberOfSteps ), 2 );
   }
 
   /**
@@ -178,33 +200,33 @@ public class CsvProcessRowInParallelTest extends CsvInputUnitTestBase {
   @Test
   public void mixedBytesNewLineIndicator_NoNewLineAtTheEnd_2Threads() throws Exception {
     final String fileContent =
-        "abcd;1\r\n" +
-        "b;2\r\n" +
-        "d;3";
+          "abcd;1\r\n"
+        + "b;2\r\n"
+        + "d;3";
 
 
     final int totalNumberOfSteps = 2;
 
     File sharedFile = createTestFile( "UTF-8", fileContent );
 
-    assertEquals( createAndRunOneStep(sharedFile, 0, totalNumberOfSteps), 1 );
-    assertEquals( createAndRunOneStep(sharedFile, 1, totalNumberOfSteps), 2 );
+    assertEquals( createAndRunOneStep( sharedFile, 0, totalNumberOfSteps ), 1 );
+    assertEquals( createAndRunOneStep( sharedFile, 1, totalNumberOfSteps ), 2 );
   }
 
   @Test
   public void mixedBytesNewLineIndicator_NewLineAtTheEnd_2Threads() throws Exception {
     final String fileContent =
-        "abcd;1\r\n" +
-        "b;2\r" +
-        "d;3\r";
+          "abcd;1\r\n"
+        + "b;2\r"
+        + "d;3\r";
 
 
     final int totalNumberOfSteps = 2;
 
     File sharedFile = createTestFile( "UTF-8", fileContent );
 
-    assertEquals( createAndRunOneStep(sharedFile, 0, totalNumberOfSteps), 1 );
-    assertEquals( createAndRunOneStep(sharedFile, 1, totalNumberOfSteps), 2 );
+    assertEquals( createAndRunOneStep( sharedFile, 0, totalNumberOfSteps ), 1 );
+    assertEquals( createAndRunOneStep( sharedFile, 1, totalNumberOfSteps ), 2 );
   }
 
 
@@ -225,7 +247,7 @@ public class CsvProcessRowInParallelTest extends CsvInputUnitTestBase {
       public void rowWrittenEvent( RowMetaInterface rowMeta, Object[] row ) throws KettleStepException {
         writtenRows[ 0 ]++;
       }
-    });
+    } );
 
     boolean haveRowsToRead;
     do {
@@ -254,7 +276,7 @@ public class CsvProcessRowInParallelTest extends CsvInputUnitTestBase {
     return processRows( combiStep1 );
   }
 
-  private StepMetaDataCombi createBaseCombi(File sharedFile) {
+  private StepMetaDataCombi createBaseCombi( File sharedFile ) {
 
     StepMetaDataCombi combi = new StepMetaDataCombi();
 
