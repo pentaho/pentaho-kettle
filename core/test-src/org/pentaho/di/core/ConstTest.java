@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -302,76 +302,177 @@ public class ConstTest extends TestCase {
    * Test splitString with delimiter and enclosure
    */
   @Test
-  public void testSplitStringWithDelimiterAndEnclosure() {
-    String[] result;
-
-    result = Const.splitString( null, null, null );
+  public void testSplitStringNullWithDelimiterNullAndEnclosureNull() {
+    String[] result = Const.splitString( null, null, null );
     assertNull( result );
 
-    result = Const.splitString( "Hello, world", null, null );
-    assertNotNull( result );
-    assertEquals( result.length, 1 );
-    assertEquals( result[0], "Hello, world" );
+    result = Const.splitString( null, null, null, true );
+    assertNull( result );
+  }
 
-    result = Const.splitString( "Hello, world", ",", null );
+  @Test
+  public void testSplitStringWithDelimiterNullAndEnclosureNull() {
+    String[] result = Const.splitString( "Hello, world", null, null );
     assertNotNull( result );
-    assertEquals( result.length, 2 );
-    assertEquals( result[0], "Hello" );
-    assertEquals( result[1], " world" );
+    assertEquals( 1, result.length );
+    assertEquals( "Hello, world", result[0] );
 
-    result = Const.splitString( "Hello, world", ",", "" );
+    result = Const.splitString( "Hello, world", null, null, true );
     assertNotNull( result );
-    assertEquals( result.length, 2 );
-    assertEquals( result[0], "Hello" );
-    assertEquals( result[1], " world" );
+    assertEquals( 1, result.length );
+    assertEquals( "Hello, world", result[0] );
+  }
 
-    result = Const.splitString( "\"Hello, world\"", ",", "\"" );
+  @Test
+  public void testSplitStringWithDelimiterAndEnclosureNull() {
+    String[] result = Const.splitString( "Hello, world", ",", null );
     assertNotNull( result );
-    assertEquals( result.length, 1 );
-    assertEquals( result[0], "\"Hello, world\"" );
+    assertEquals( 2, result.length );
+    assertEquals( "Hello", result[0] );
+    assertEquals( " world", result[1] );
+
+    result = Const.splitString( "Hello, world", ",", null, true );
+    assertNotNull( result );
+    assertEquals( 2, result.length );
+    assertEquals( "Hello", result[0] );
+    assertEquals( " world", result[1] );
+  }
+
+  @Test
+  public void testSplitStringWithDelimiterAndEmptyEnclosure() {
+    String[] result = Const.splitString( "Hello, world", ",", "" );
+    assertNotNull( result );
+    assertEquals( 2, result.length );
+    assertEquals( "Hello", result[0] );
+    assertEquals( " world", result[1] );
+
+    result = Const.splitString( "Hello, world", ",", "", true );
+    assertNotNull( result );
+    assertEquals( 2, result.length );
+    assertEquals( "Hello", result[0] );
+    assertEquals( " world", result[1] );
+  }
+
+  @Test
+  public void testSplitStringWithDelimiterAndQuoteEnclosure() {
+    String[] result = Const.splitString( "\"Hello, world\"", ",", "\"" );
+    assertNotNull( result );
+    assertEquals( 1, result.length );
+    assertEquals( "\"Hello, world\"", result[0] );
+
+    result = Const.splitString( "\"Hello, world\"", ",", "\"", true );
+    assertNotNull( result );
+    assertEquals( 1, result.length );
+    assertEquals( "Hello, world", result[0] );
 
     result = Const.splitString( "\"Hello, world\",\"I\",\"am\",\"here\"", ",", "\"" );
     assertNotNull( result );
-    assertEquals( result.length, 4 );
-    assertEquals( result[0], "\"Hello, world\"" );
-    assertEquals( result[1], "\"I\"" );
-    assertEquals( result[2], "\"am\"" );
-    assertEquals( result[3], "\"here\"" );
+    assertEquals( 4, result.length );
+    assertEquals( "\"Hello, world\"", result[0] );
+    assertEquals( "\"I\"", result[1] );
+    assertEquals( "\"am\"", result[2] );
+    assertEquals( "\"here\"", result[3] );
+
+    result = Const.splitString( "\"Hello, world\",\"I\",\"am\",\"here\"", ",", "\"", true );
+    assertNotNull( result );
+    assertEquals( 4, result.length );
+    assertEquals( "Hello, world", result[0] );
+    assertEquals( "I", result[1] );
+    assertEquals( "am", result[2] );
+    assertEquals( "here", result[3] );
 
     result = Const.splitString( "\"Hello, world\",\"I,\",\"am,,\",\", here\"", ",", "\"" );
     assertNotNull( result );
-    assertEquals( result.length, 4 );
-    assertEquals( result[0], "\"Hello, world\"" );
-    assertEquals( result[1], "\"I,\"" );
-    assertEquals( result[2], "\"am,,\"" );
-    assertEquals( result[3], "\", here\"" );
+    assertEquals( 4, result.length );
+    assertEquals( "\"Hello, world\"", result[0] );
+    assertEquals( "\"I,\"", result[1] );
+    assertEquals( "\"am,,\"", result[2] );
+    assertEquals( "\", here\"", result[3] );
 
-    // Try a different delimiter and enclosure
-    result = Const.splitString( "a;'b;c;d';'e,f';'g';h", ";", "'" );
+    result = Const.splitString( "\"Hello, world\",\"I,\",\"am,,\",\", here\"", ",", "\"", true );
     assertNotNull( result );
-    assertEquals( result.length, 5 );
-    assertEquals( result[0], "a" );
-    assertEquals( result[1], "'b;c;d'" );
-    assertEquals( result[2], "'e,f'" );
-    assertEquals( result[3], "'g'" );
-    assertEquals( result[4], "h" );
+    assertEquals( 4, result.length );
+    assertEquals( "Hello, world", result[0] );
+    assertEquals( "I,", result[1] );
+    assertEquals( "am,,", result[2] );
+    assertEquals( ", here", result[3] );
+  }
+
+  @Test
+  public void testSplitStringWithDifferentDelimiterAndEnclosure() {
+    // Try a different delimiter and enclosure
+    String[] result = Const.splitString( "a;'b;c;d';'e,f';'g';h", ";", "'" );
+    assertNotNull( result );
+    assertEquals( 5, result.length );
+    assertEquals( "a", result[0] );
+    assertEquals( "'b;c;d'", result[1] );
+    assertEquals( "'e,f'", result[2] );
+    assertEquals( "'g'", result[3] );
+    assertEquals( "h", result[4] );
+
+    result = Const.splitString( "a;'b;c;d';'e,f';'g';h", ";", "'", true );
+    assertNotNull( result );
+    assertEquals( 5, result.length );
+    assertEquals( "a", result[0] );
+    assertEquals( "b;c;d", result[1] );
+    assertEquals( "e,f", result[2] );
+    assertEquals( "g", result[3] );
+    assertEquals( "h", result[4] );
 
     // Check for null and empty as the last split
     result = Const.splitString( "a;b;c;", ";", null );
     assertNotNull( result );
-    assertEquals( result.length, 3 );
+    assertEquals( 3, result.length );
+
+    result = Const.splitString( "a;b;c;", ";", null, true );
+    assertNotNull( result );
+    assertEquals( 3, result.length );
 
     result = Const.splitString( "a;b;c;''", ";", "'" );
     assertNotNull( result );
-    assertEquals( result.length, 4 );
+    assertEquals( 4, result.length );
 
+    result = Const.splitString( "a;b;c;''", ";", "'", true );
+    assertNotNull( result );
+    assertEquals( 4, result.length );
+  }
+
+  @Test
+  public void testSplitStringWithMultipleCharacterDelimiterAndEnclosure() {
     // Check for multiple-character strings
-    result =
+    String[] result =
         Const.splitString( "html this is a web page html</newpage>html and so is this html", "</newpage>", "html" );
     assertNotNull( result );
-    assertEquals( result.length, 2 );
-    assertEquals( result[0], "html this is a web page html" );
-    assertEquals( result[1], "html and so is this html" );
+    assertEquals( 2, result.length );
+    assertEquals( "html this is a web page html", result[0] );
+    assertEquals( "html and so is this html", result[1] );
+    result =
+      Const.splitString( "html this is a web page html</newpage>html and so is this html", "</newpage>", "html", true );
+    assertNotNull( result );
+    assertEquals( 2, result.length );
+    assertEquals( " this is a web page ", result[0] );
+    assertEquals( " and so is this ", result[1] );
+  }
+
+  @Test
+  public void testSplitStringWithDelimiterAndOddEnclosure() {
+    String[] result = Const.splitString( "\"\"abc,d\"\"e\"f", ",", "\"" );
+    assertNotNull( result );
+    assertEquals( 1, result.length );
+    assertEquals( "\"\"abc", result[0] );
+
+    result = Const.splitString( "\"\"abc,d\"\"e\"f", ",", "\"", true );
+    assertNotNull( result );
+    assertEquals( 1, result.length );
+    assertEquals( "abc", result[0] );
+
+    result = Const.splitString( "\"abc,d\"e\"f", ",", "\"" );
+    assertNotNull( result );
+    assertEquals( 0, result.length );
+
+    result = Const.splitString( "\"abc,d\"e\"f", ",", "\"", true );
+    assertNotNull( result );
+    assertEquals( 0, result.length );
   }
 
   /**
