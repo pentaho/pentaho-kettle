@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -242,27 +242,24 @@ public class XMLInputStream extends BaseStep implements StepInterface {
         data.elementID++;
         data.elementLevelID[data.elementLevel] = data.elementID;
 
+        String xml_data_name;
         if ( meta.isEnableNamespaces() ) {
           String prefix = e.asStartElement().getName().getPrefix();
           if ( Const.isEmpty( prefix ) ) {
-            outputRowData[data.pos_xml_data_name] = e.asStartElement().getName().getLocalPart();
+            xml_data_name = e.asStartElement().getName().getLocalPart();
           } else { // add namespace prefix:
-            outputRowData[data.pos_xml_data_name] = prefix + ":" + e.asStartElement().getName().getLocalPart();
+            xml_data_name = prefix + ":" + e.asStartElement().getName().getLocalPart();
           }
         } else {
-          if ( data.pos_xml_data_name >= 0 ) {
-            outputRowData[data.pos_xml_data_name] = e.asStartElement().getName().getLocalPart();
-          }
+          xml_data_name = e.asStartElement().getName().getLocalPart();
+        }
+        if ( data.pos_xml_data_name >= 0 ) {
+          outputRowData[data.pos_xml_data_name] = xml_data_name;
         }
         // store the name
-        if ( data.pos_xml_data_name >= 0 ) {
-          data.elementName[data.elementLevel] = new String( (String) outputRowData[data.pos_xml_data_name] );
-        }
+        data.elementName[data.elementLevel] = xml_data_name;
         // store simple path
-        if ( data.pos_xml_data_name >= 0 ) {
-          data.elementPath[data.elementLevel] =
-              data.elementPath[data.elementLevel - 1] + "/" + outputRowData[data.pos_xml_data_name];
-        }
+        data.elementPath[data.elementLevel] = data.elementPath[data.elementLevel - 1] + "/" + xml_data_name;
 
         // write Namespaces out
         if ( meta.isEnableNamespaces() ) {
@@ -287,17 +284,20 @@ public class XMLInputStream extends BaseStep implements StepInterface {
         break;
 
       case XMLStreamConstants.CHARACTERS:
+      case XMLStreamConstants.CDATA:
         if ( data.pos_xml_data_name >= 0 ) {
           outputRowData[data.pos_xml_data_name] = data.elementName[data.elementLevel];
         }
+        String xml_data_value = e.asCharacters().getData();
         if ( data.pos_xml_data_value >= 0 ) {
-          outputRowData[data.pos_xml_data_value] = e.asCharacters().getData();
+          if ( meta.isEnableTrim() ) {
+            // optional trim is also eliminating white spaces, tab, cr, lf
+            xml_data_value = Const.trim( xml_data_value );
+          }
+          outputRowData[data.pos_xml_data_value] = xml_data_value;
         }
-        // optional trim is also eliminating white spaces, tab, cr, lf
-        if ( data.pos_xml_data_value >= 0 && meta.isEnableTrim() ) {
-          outputRowData[data.pos_xml_data_value] = Const.trim( (String) outputRowData[data.pos_xml_data_value] );
-        }
-        if ( data.pos_xml_data_value >= 0 && Const.isEmpty( (String) outputRowData[data.pos_xml_data_value] ) ) {
+
+        if ( data.pos_xml_data_value < 0 || Const.isEmpty( (String) outputRowData[data.pos_xml_data_value] ) ) {
           outputRowData = null; // ignore & continue
         }
         break;
@@ -305,19 +305,6 @@ public class XMLInputStream extends BaseStep implements StepInterface {
       case XMLStreamConstants.PROCESSING_INSTRUCTION:
         outputRowData = null; // ignore & continue
         // TODO test if possible
-        break;
-
-      case XMLStreamConstants.CDATA:
-        // normally this is automatically in CHARACTERS
-        outputRowData[data.pos_xml_data_name] = data.elementName[data.elementLevel];
-        outputRowData[data.pos_xml_data_value] = e.asCharacters().getData();
-        // optional trim is also eliminating white spaces, tab, cr, lf
-        if ( meta.isEnableTrim() ) {
-          outputRowData[data.pos_xml_data_value] = Const.trim( (String) outputRowData[data.pos_xml_data_value] );
-        }
-        if ( Const.isEmpty( (String) outputRowData[data.pos_xml_data_value] ) ) {
-          outputRowData = null; // ignore & continue
-        }
         break;
 
       case XMLStreamConstants.COMMENT:
@@ -435,8 +422,12 @@ public class XMLInputStream extends BaseStep implements StepInterface {
   }
 
   private void parseAttribute( Object[] outputRowDataAttribute, Attribute a, boolean enabledNamespaces ) {
-    outputRowDataAttribute[data.pos_xml_data_name] = getAttributeName( a, enabledNamespaces );
-    outputRowDataAttribute[data.pos_xml_data_value] = a.getValue();
+    if ( data.pos_xml_data_name != -1 ) {
+      outputRowDataAttribute[data.pos_xml_data_name] = getAttributeName( a, enabledNamespaces );
+    }
+    if ( data.pos_xml_data_value != -1 ) {
+      outputRowDataAttribute[data.pos_xml_data_value] = a.getValue();
+    }
   }
 
   /**
