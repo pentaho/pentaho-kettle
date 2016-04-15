@@ -233,7 +233,7 @@ public abstract class ConfigurationDialog extends Dialog {
   protected void optionsSectionLayout( Class<?> PKG, String prefix ) {
     gDetails = new Group( shell, SWT.SHADOW_ETCHED_IN );
     if ( Const.isLinux() ) {
-      fdLocal.bottom = new FormAttachment( 100, -510 );
+      fdLocal.bottom = new FormAttachment( 100, -513 );
     }
     if ( Const.isOSX() ) {
       fdLocal.bottom = new FormAttachment( 100, -524 );
@@ -407,8 +407,16 @@ public abstract class ConfigurationDialog extends Dialog {
     } );
 
     Label separator = new Label( shell, SWT.SEPARATOR | SWT.HORIZONTAL );
-    fd_wCancel.top = new FormAttachment( separator, 15 );
-    fd_btnHelp.top = new FormAttachment( separator, 15 );
+    if ( Const.isLinux() ) {
+      fd_wCancel.top = new FormAttachment( separator, 10 );
+    } else {
+      fd_wCancel.top = new FormAttachment( separator, 15 );
+    }
+    if ( Const.isLinux() ) {
+      fd_btnHelp.top = new FormAttachment( separator, 10 );
+    } else {
+      fd_btnHelp.top = new FormAttachment( separator, 15 );
+    }
     fd_wCancel.right = new FormAttachment( separator, 0, SWT.RIGHT );
     FormData fd_separator = new FormData();
     fd_separator.right = new FormAttachment( 100, -15 );
