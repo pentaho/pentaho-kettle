@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,13 +22,14 @@
 
 package org.pentaho.di.trans.steps.xmloutput;
 
-import java.io.Writer;
 import java.text.DateFormatSymbols;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.zip.ZipOutputStream;
+
+import javax.xml.stream.XMLStreamWriter;
 
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData;
@@ -61,7 +62,7 @@ public class XMLOutputData extends BaseStepData implements StepDataInterface {
 
   public ZipOutputStream zip;
 
-  public Writer writer;
+  public XMLStreamWriter writer;
 
   public DecimalFormat defaultDecimalFormat;
 

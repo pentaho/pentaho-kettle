@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -84,8 +84,12 @@ public class XMLHandler {
   /**
    * The header string to specify encoding in UTF-8 for XML files
    *
+   * Implementation should be changed for some standard XML processing (like StAX, for example) because ESAPI has issues
+   * with charset processing.
+   * 
    * @return The XML header.
    */
+  @Deprecated
   public static String getXMLHeader() {
     return getXMLHeader( Const.XML_ENCODING );
   }
@@ -93,10 +97,14 @@ public class XMLHandler {
   /**
    * The header string to specify encoding in an XML file
    *
+   * Implementation should be changed for some standard XML processing (like StAX, for example) because ESAPI has issues
+   * with charset processing.
+   * 
    * @param encoding
    *          The desired encoding to use in the XML file
    * @return The XML header.
    */
+  @Deprecated
   public static String getXMLHeader( String encoding ) {
     return "<?xml version=\"1.0\" encoding=\"" + encoding + "\"?>" + Const.CR;
   }
@@ -757,6 +765,9 @@ public class XMLHandler {
 
   /**
    * Build an XML string for a certain tag String value
+   * 
+   * Implementation should be changed for some standard XML processing (like StAX, for example) because ESAPI has issues
+   * with charset processing.
    *
    * @param tag
    *          The XML tag
@@ -766,6 +777,7 @@ public class XMLHandler {
    *          true if a carriage return is desired after the ending tag.
    * @return The XML String for the tag.
    */
+  @Deprecated
   public static String addTagValue( String tag, String val, boolean cr, String... attributes ) {
     StringBuilder value = new StringBuilder( "<" );
     Encoder encoder = ESAPI.encoder();
@@ -795,19 +807,10 @@ public class XMLHandler {
   }
 
   /**
-   * Take the characters from string val and append them to the value stringbuffer In case a character is not allowed in
-   * XML, we convert it to an XML code
-   *
-   * @param value
-   *          the stringbuffer to append to
-   * @param string
-   *          the string to "encode"
+   * Implementation should be changed for some standard XML processing (like StAX, for example) because ESAPI has issues
+   * with charset processing.
    */
-  public static void appendReplacedChars( StringBuffer value, String string ) {
-    Encoder encoder = ESAPI.encoder();
-    value.append( encoder.encodeForXML( string ) );
-  }
-
+  @Deprecated
   public static void appendReplacedChars( StringBuilder value, String string ) {
     Encoder encoder = ESAPI.encoder();
     value.append( encoder.encodeForXML( string ) );
