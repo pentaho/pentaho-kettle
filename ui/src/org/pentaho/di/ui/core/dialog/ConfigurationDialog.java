@@ -435,7 +435,7 @@ public abstract class ConfigurationDialog extends Dialog {
       shell.setSize( 740, 678 );
     }
     if ( Const.isOSX() ) {
-      shell.setSize( 653, 678 );
+      shell.setSize( 670, 678 );
     }
 
     // Set the focus on the OK button
