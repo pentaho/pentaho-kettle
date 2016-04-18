@@ -72,7 +72,7 @@ public class TransExecutionConfigurationDialog extends ConfigurationDialog {
     wlRemoteHost.setToolTipText( BaseMessages.getString( PKG, prefix + ".RemoteHost.Tooltip" ) );
     FormData fdlRemoteHost = new FormData();
     if ( Const.isLinux() ) {
-      fdlRemoteHost.top = new FormAttachment( 0, 12 );
+      fdlRemoteHost.top = new FormAttachment( 0, 10 );
     }
     if ( Const.isOSX() ) {
       fdlRemoteHost.top = new FormAttachment( 0, 10 );
@@ -90,7 +90,7 @@ public class TransExecutionConfigurationDialog extends ConfigurationDialog {
     fdRemoteHost.left = new FormAttachment( wlRemoteHost, 0, SWT.LEFT );
     fdRemoteHost.right = new FormAttachment( 100, -293 );
     if ( Const.isLinux() ) {
-      fdRemoteHost.top = new FormAttachment( wlRemoteHost, 10 );
+      fdRemoteHost.top = new FormAttachment( wlRemoteHost, 8 );
     }
     if ( Const.isOSX() ) {
       fdRemoteHost.top = new FormAttachment( wlRemoteHost, 8 );
@@ -111,7 +111,7 @@ public class TransExecutionConfigurationDialog extends ConfigurationDialog {
     FormData fdPassExport = new FormData();
     fdPassExport.left = new FormAttachment( wRemoteHost, 0, SWT.LEFT );
     if ( Const.isLinux() ) {
-      fdPassExport.top = new FormAttachment( wRemoteHost, 10 );
+      fdPassExport.top = new FormAttachment( wRemoteHost, 8 );
     }
     if ( Const.isOSX() ) {
       fdPassExport.top = new FormAttachment( wRemoteHost, 10 );
@@ -207,7 +207,7 @@ public class TransExecutionConfigurationDialog extends ConfigurationDialog {
     FormData fdlLogLevel = new FormData();
     fdlLogLevel.right = new FormAttachment( 0, 333 );
     if ( Const.isLinux() ) {
-      fdlLogLevel.top = new FormAttachment( 0, 7 );
+      fdlLogLevel.top = new FormAttachment( 0, 8 );
     }
     if ( Const.isOSX() ) {
       fdlLogLevel.top = new FormAttachment( 0, 10 );
@@ -225,8 +225,12 @@ public class TransExecutionConfigurationDialog extends ConfigurationDialog {
     fdLogLevel.left = new FormAttachment( wlLogLevel, 6 );
     if ( Const.isOSX() ) {
       fdLogLevel.top = new FormAttachment( wClearLog, 2, SWT.TOP );
-    } else {
+    }
+    if ( Const.isWindows() ) {
       fdLogLevel.top = new FormAttachment( wClearLog, -2, SWT.TOP );
+    }
+    if ( Const.isLinux() ) {
+      fdLogLevel.top = new FormAttachment( wClearLog, 0, SWT.TOP );
     }
     fdLogLevel.right = new FormAttachment( 0, 540 );
     wLogLevel.setLayoutData( fdLogLevel );
