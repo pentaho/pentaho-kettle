@@ -30,6 +30,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
@@ -79,7 +80,7 @@ public class SpoonPerspectiveManager {
 
   private final Map<Class<? extends SpoonPerspective>, SpoonPerspective> perspectives;
 
-  private final Map<SpoonPerspective, PerspectiveInitializer> initializerMap;
+  private final Map<SpoonPerspective, PerspectiveManager> perspectiveManagerMap;
 
   private final LinkedHashSet<SpoonPerspective> orderedPerspectives;
 
@@ -103,13 +104,17 @@ public class SpoonPerspectiveManager {
     this.startupPerspective = startupPerspective;
   }
 
+  Map<SpoonPerspective,PerspectiveManager> getPerspectiveManagerMap() {
+    return Collections.unmodifiableMap( perspectiveManagerMap );
+  }
+
   protected static class SpoonPerspectiveComparator implements Comparator<SpoonPerspective> {
     public int compare( SpoonPerspective o1, SpoonPerspective o2 ) {
       return o1.getId().compareTo( o2.getId() );
     }
   }
 
-  private class PerspectiveInitializer {
+  static class PerspectiveManager {
     private final SpoonPerspective per;
 
     private final XulVbox box;
@@ -119,9 +124,10 @@ public class SpoonPerspectiveManager {
     private final SwtToolbarbutton btn;
     private final CCombo perspectivesCombo;
     private final String name;
+    private boolean initialized;
 
-    public PerspectiveInitializer( SpoonPerspective per, XulVbox box, XulToolbar mainToolbar, SwtToolbarbutton btn,
-        CCombo perspectivesCombo, String name ) {
+    public PerspectiveManager( SpoonPerspective per, XulVbox box, XulToolbar mainToolbar, SwtToolbarbutton btn,
+                               CCombo perspectivesCombo, String name ) {
       super();
       this.per = per;
       this.box = box;
@@ -129,9 +135,17 @@ public class SpoonPerspectiveManager {
       this.btn = btn;
       this.perspectivesCombo = perspectivesCombo;
       this.name = name;
+      initialized = false;
     }
 
-    public void initialize() {
+    public void initializeIfNeeded() {
+      if ( !initialized ) {
+        performInit();
+        initialized = true;
+      }
+    }
+
+    void performInit() {
       per.getUI().setParent( (Composite) box.getManagedObject() );
       per.getUI().layout();
       ( (Composite) mainToolbar.getManagedObject() ).layout( true, true );
@@ -153,12 +167,32 @@ public class SpoonPerspectiveManager {
         }
       } );
     }
+
+
+    /**
+     * Removes {@code perspectiveName} from {@code perspectivesCombo}
+     */
+    void removePerspective( final String perspectiveName ) {
+      perspectivesCombo.remove( perspectiveName );
+    }
+
+    /**
+     * Adds {@code perspectiveName} to {@code perspectivesCombo} if there is no perspective with such name.
+     */
+    boolean addPerspectiveNameIfNotExists( final String perspectiveName ) {
+      if ( perspectivesCombo.indexOf( perspectiveName ) == -1 ) {
+        perspectivesCombo.add( perspectiveName );
+        return true;
+      }
+
+      return false;
+    }
   }
 
   @SuppressWarnings( "rawtypes" )
   private SpoonPerspectiveManager() {
     perspectives = new LinkedHashMap<Class<? extends SpoonPerspective>, SpoonPerspective>();
-    initializerMap = new HashMap<SpoonPerspective, PerspectiveInitializer>();
+    perspectiveManagerMap = new HashMap<SpoonPerspective, PerspectiveManager>();
     orderedPerspectives = new LinkedHashSet<SpoonPerspective>();
   }
 
@@ -207,6 +241,51 @@ public class SpoonPerspectiveManager {
   }
 
   /**
+   * Changes perspective visibility due to {@code hidePerspective} value.
+   * If perspective exists already, and we want to make it visible, no new perspective will be added.
+   *
+   */
+  private void changePerspectiveVisibility( final String perspectiveId, boolean hidePerspective ) {
+    PerspectiveManager perspectiveManager;
+
+    for ( SpoonPerspective sp : getPerspectiveManagerMap().keySet() ) {
+      if ( sp.getId().equals( perspectiveId ) ) {
+        perspectiveManager = getPerspectiveManagerMap().get( sp );
+        if ( hidePerspective ) {
+          perspectiveManager.removePerspective( sp.getDisplayName( Locale.getDefault() ) );
+        } else {
+          boolean perspectiveAdded =
+            perspectiveManager.addPerspectiveNameIfNotExists( sp.getDisplayName( Locale.getDefault() ) );
+          if ( !perspectiveAdded ) {
+            if ( getLogger().isBasic() ) {
+              getLogger()
+                .logBasic( "Perspective with id: " + perspectiveId + " exists already. No need to add another one." );
+            }
+          }
+        }
+
+        return;
+      }
+    }
+
+    getLogger().logError( "Perspective with " + perspectiveId + " is not found." );
+  }
+
+  /**
+   * Shows perspective with {@code perspectiveId} if it is not shown yet.
+   */
+  public void showPerspective( final String perspectiveId ) {
+    changePerspectiveVisibility( perspectiveId, false );
+  }
+
+  /**
+   * Hides perspective with {@code perspectiveId}.
+   */
+  public void hidePerspective( final String perspectiveId ) {
+    changePerspectiveVisibility( perspectiveId, true );
+  }
+
+  /**
    * Returns an unmodifiable List of perspectives in no set order.
    *
    * @return
@@ -228,11 +307,10 @@ public class SpoonPerspectiveManager {
         }
       }
     }
-    Spoon.getInstance().enableMenus();
+    getSpoon().enableMenus();
   }
 
   /**
-   *
    * Activates the given instance of the class literal passed in. Activating a perspective first deactivates the current
    * perspective removing any overlays its applied to the UI. It then switches the main deck to display the perspective
    * UI and applies the optional overlays to the main Spoon XUL container.
@@ -252,9 +330,9 @@ public class SpoonPerspectiveManager {
     if ( sp == null ) {
       throw new KettleException( "Could not locate perspective by class: " + clazz );
     }
-    PerspectiveInitializer perspectiveInitializer = initializerMap.remove( sp );
-    if ( perspectiveInitializer != null ) {
-      perspectiveInitializer.initialize();
+    PerspectiveManager perspectiveManager = getPerspectiveManagerMap().get( sp );
+    if ( perspectiveManager != null ) {
+      perspectiveManager.initializeIfNeeded();
     }
     unloadPerspective( activePerspective );
     activePerspective = sp;
@@ -296,7 +374,7 @@ public class SpoonPerspectiveManager {
 
     sp.setActive( true );
     deck.setSelectedIndex( deck.getChildNodes().indexOf( deck.getElementById( "perspective-" + sp.getId() ) ) );
-    Spoon.getInstance().enableMenus();
+    getSpoon().enableMenus();
   }
 
   /**
@@ -453,8 +531,9 @@ public class SpoonPerspectiveManager {
       box.setFlex( 1 );
       deck.addChild( box );
 
-      PerspectiveInitializer perspectiveInitializer =
-          new PerspectiveInitializer( per, box, mainToolbar, btn, perspectivesCombo, name );
+      PerspectiveManager perspectiveManager =
+          new PerspectiveManager( per, box, mainToolbar, btn, perspectivesCombo, name );
+      perspectiveManagerMap.put( per, perspectiveManager );
       // Need to force init for main perspective even if it won't be shown
       if ( perspectiveIdx == y || y == 0 ) {
         if ( perspectiveIdx == y ) {
@@ -464,10 +543,9 @@ public class SpoonPerspectiveManager {
           }
           perClass = per.getClass();
         }
+
         // force init
-        perspectiveInitializer.initialize();
-      } else {
-        initializerMap.put( per, perspectiveInitializer );
+        perspectiveManager.initializeIfNeeded();
       }
       y++;
       installedPerspectives.add( per );
@@ -483,5 +561,19 @@ public class SpoonPerspectiveManager {
         // TODO Auto-generated catch block
       }
     }
+  }
+
+
+  /**
+   * For testing
+   */
+  Spoon getSpoon() {
+    return Spoon.getInstance();
+  }
+  /**
+   * For testing
+   */
+  LogChannelInterface getLogger() {
+    return log;
   }
 }
