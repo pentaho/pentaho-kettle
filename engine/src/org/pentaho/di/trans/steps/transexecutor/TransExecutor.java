@@ -248,6 +248,7 @@ public class TransExecutor extends BaseStep implements StepInterface {
     Trans executorTrans = new Trans( getData().getExecutorTransMeta(), this );
 
     executorTrans.setParentTrans( getTrans() );
+    executorTrans.setRepository( getTrans().getRepository() );
     executorTrans.setLogLevel( getLogLevel() );
     executorTrans.setArguments( getTrans().getArguments() );
 
