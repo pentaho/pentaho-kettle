@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -722,6 +722,10 @@ public class GroupBy extends BaseStep implements StepInterface {
           case GroupByMeta.TYPE_GROUP_MAX:
             break;
           case GroupByMeta.TYPE_GROUP_STANDARD_DEVIATION:
+            if ( ag == null ) {
+              // PMD-1037 - when all input data is null ag is null, npe on access ag
+              break;
+            }
             double sum = (Double) ag / data.counts[ i ];
             ag = Double.valueOf( Math.sqrt( sum ) );
             break;
