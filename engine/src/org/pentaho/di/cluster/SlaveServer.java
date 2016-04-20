@@ -855,7 +855,8 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
 
   public Properties getKettleProperties() throws Exception {
     String xml = execService( GetPropertiesServlet.CONTEXT_PATH + "/?xml=Y" );
-    InputStream in = new ByteArrayInputStream( xml.getBytes() );
+    String decryptedXml =  Encr.decryptPassword( xml );
+    InputStream in = new ByteArrayInputStream( decryptedXml.getBytes() );
     Properties properties = new Properties();
     properties.loadFromXML( in );
     return properties;
