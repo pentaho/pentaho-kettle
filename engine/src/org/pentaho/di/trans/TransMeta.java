@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -1477,21 +1477,18 @@ public class TransMeta extends AbstractMeta
    *           the kettle step exception
    */
   public RowMetaInterface getPrevInfoFields( StepMeta stepMeta ) throws KettleStepException {
-    RowMetaInterface row = new RowMeta();
-
     for ( int i = 0; i < nrTransHops(); i++ ) { // Look at all the hops;
-
       TransHopMeta hi = getTransHop( i );
+
       if ( hi.isEnabled() && hi.getToStep().equals( stepMeta ) ) {
         StepMeta infoStep = hi.getFromStep();
         if ( isStepInformative( stepMeta, infoStep ) ) {
-          row = getPrevStepFields( infoStep );
-          getThisStepFields( infoStep, stepMeta, row );
-          return row;
+          RowMetaInterface row = getPrevStepFields( infoStep );
+          return getThisStepFields( infoStep, stepMeta, row );
         }
       }
     }
-    return row;
+    return new RowMeta();
   }
 
   /**
