@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -55,6 +55,7 @@ import org.pentaho.di.core.encryption.TwoWayPasswordEncoderPluginType;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.util.EnvUtil;
+import org.pentaho.di.www.GetPropertiesServlet;
 
 /**
  * Tests for SlaveServer class
@@ -144,4 +145,22 @@ public class SlaveServerTest {
 
     assertTrue( !slaveServer.getName().equals( slaveServer2.getName() ) );
   }
+
+  @Test
+  public void testGetKettleProperties() throws Exception {
+    String encryptedResponse = "3c3f786d6c2076657273696f6e3d22312e302220656e636f64696e6"
+      + "73d225554462d38223f3e0a3c21444f43545950452070726f706572"
+      + "746965730a202053595354454d2022687474703a2f2f6a6176612e737"
+      + "56e2e636f6d2f6474642f70726f706572746965732e647464223e0a3c"
+      + "70726f706572746965733e0a2020203c636f6d6d656e743e3c2f636f6d6d6"
+      + "56e743e0a2020203c656e747279206b65793d224167696c6542494461746162"
+      + "617365223e4167696c6542493c2f656e7470c7a6a5f445d7808bbb1cbc64d797bc84";
+    doReturn(
+      encryptedResponse )
+      .when( slaveServer ).execService( GetPropertiesServlet.CONTEXT_PATH + "/?xml=Y" );
+    slaveServer.getKettleProperties().getProperty( "AgileBIDatabase" );
+    assertEquals( "AgileBI", slaveServer.getKettleProperties().getProperty( "AgileBIDatabase" ) );
+
+  }
+
 }
