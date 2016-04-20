@@ -34,9 +34,12 @@ import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaString;
+import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
@@ -91,6 +94,34 @@ public class TransExecutorUnitTest {
     data = null;
     internalTrans = null;
     internalResult = null;
+  }
+
+  @Test
+  public void testCreateInternalTransSetsRepository() throws KettleException {
+    Trans transParentMock = mock( Trans.class );
+    Repository repositoryMock = mock( Repository.class );
+    TransExecutorData transExecutorDataMock = mock( TransExecutorData.class );
+    TransMeta transMetaMock = mock( TransMeta.class );
+
+    executor.init( meta, data );
+    when( transParentMock.getRepository() ).thenReturn( repositoryMock );
+    when( transParentMock.getLogLevel() ).thenReturn( LogLevel.DEBUG );
+    doNothing().when( transParentMock ).initializeVariablesFrom( any( VariableSpace.class ) );
+    when( executor.getLogLevel() ).thenReturn( LogLevel.DEBUG );
+    when( executor.createInternalTrans() ).thenCallRealMethod();
+    when( executor.getTrans() ).thenReturn( transParentMock );
+    when( executor.getData() ).thenReturn( transExecutorDataMock );
+    when( transMetaMock.listVariables() ).thenReturn( new String[0] );
+    when( transMetaMock.listParameters() ).thenReturn( new String[0] );
+    when( transExecutorDataMock.getExecutorTransMeta() ).thenReturn( transMetaMock );
+
+    Trans internalTrans = executor.createInternalTrans();
+    assertNotNull( internalTrans );
+
+    Trans parentTrans = internalTrans.getParentTrans();
+    assertEquals( parentTrans, transParentMock );
+    assertEquals( parentTrans.getRepository(), repositoryMock );
+    assertEquals( internalTrans.getRepository(), repositoryMock );
   }
 
 
