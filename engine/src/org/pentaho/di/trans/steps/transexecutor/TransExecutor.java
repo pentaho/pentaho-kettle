@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -237,6 +237,7 @@ public class TransExecutor extends BaseStep implements StepInterface {
     Trans executorTrans = new Trans( getData().getExecutorTransMeta(), this );
 
     executorTrans.setParentTrans( getTrans() );
+    executorTrans.setRepository( getTrans().getRepository() );
     executorTrans.setLogLevel( getLogLevel() );
     executorTrans.setArguments( getTrans().getArguments() );
 
