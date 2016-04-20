@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,8 +23,10 @@
 package org.pentaho.di.www;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.util.EnvUtil;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Properties;
@@ -48,11 +50,13 @@ public class GetPropertiesServlet extends BodyHttpServlet {
   WebResult generateBody( HttpServletRequest request, HttpServletResponse response, boolean useXML ) throws Exception {
     ServletOutputStream out = response.getOutputStream();
     Properties kettleProperties = EnvUtil.readProperties( Const.KETTLE_PROPERTIES );
+    ByteArrayOutputStream os = new ByteArrayOutputStream();
     if ( useXML ) {
-      kettleProperties.storeToXML( out, "" );
+      kettleProperties.storeToXML( os, "" );
     } else {
-      kettleProperties.store( out, "" );
+      kettleProperties.store( os, "" );
     }
+    out.write( Encr.encryptPassword( os.toString() ).getBytes() );
     return null;
   }
 
