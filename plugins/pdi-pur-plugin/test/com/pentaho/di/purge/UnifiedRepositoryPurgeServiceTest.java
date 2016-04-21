@@ -1,5 +1,5 @@
 /*!
- * Copyright 2010 - 2015 Pentaho Corporation.  All rights reserved.
+ * Copyright 2010 - 2016 Pentaho Corporation.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -152,6 +152,21 @@ public class UnifiedRepositoryPurgeServiceTest {
   }
 
   @Test
+  public void keepNumberOfVersions0Test() throws KettleException {
+    IUnifiedRepository mockRepo = mock( IUnifiedRepository.class );
+    final HashMap<String, List<VersionSummary>> versionListMap = processVersionMap( mockRepo );
+
+    UnifiedRepositoryPurgeService purgeService = new UnifiedRepositoryPurgeService( mockRepo );
+    String fileId = "1";
+    int versionCount = 0;
+
+    purgeService.keepNumberOfVersions( element1, versionCount );
+
+    verifyVersionCountDeletion( versionListMap, mockRepo, fileId, versionCount );
+    verify( mockRepo, never() ).deleteFileAtVersion( eq( "2" ), anyString() );
+  }
+
+  @Test
   public void keepNumberOfVersionsTest() throws KettleException {
     IUnifiedRepository mockRepo = mock( IUnifiedRepository.class );
     final HashMap<String, List<VersionSummary>> versionListMap = processVersionMap( mockRepo );
@@ -242,9 +257,17 @@ public class UnifiedRepositoryPurgeServiceTest {
 
     // Since each tree call delivers the same mock tree, we expect the files to get deleted once per folder.
     String fileId = "1";
+    String fileLastRevision = "105";
     List<VersionSummary> list = versionListMap.get( fileId );
     for ( VersionSummary sum : list ) {
-      verify( mockRepo, times( 4 ) ).deleteFileAtVersion( fileId, sum.getId() );
+      final int expectedTimes;
+      if ( !fileLastRevision.equals( sum.getId() ) ) {
+        expectedTimes = 4;
+      } else {
+        expectedTimes = 0;
+      }
+      verify( mockRepo, times( expectedTimes ) ).deleteFileAtVersion( fileId, sum.getId() );
+      verify( UnifiedRepositoryPurgeService.getRepoWs(), times( 4 ) ).deleteFileWithPermanentFlag( eq( fileId ), eq( true ), anyString() );
     }
   }
 
