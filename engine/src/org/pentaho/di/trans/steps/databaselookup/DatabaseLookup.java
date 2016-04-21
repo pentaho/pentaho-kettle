@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -580,7 +580,7 @@ public class DatabaseLookup extends BaseStep implements StepInterface {
         for ( int i = 0; i < meta.getKeyCondition().length; i++ ) {
           data.conditions[ i ] =
             Const.indexOfString( meta.getKeyCondition()[ i ], DatabaseLookupMeta.conditionStrings );
-          if ( !( "=".equals( meta.getKeyCondition()[ i ] ) ) ) {
+          if ( !( "=".equals( meta.getKeyCondition()[ i ] ) || "IS NULL".equalsIgnoreCase( meta.getKeyCondition()[ i ] ) ) ) {
             data.allEquals = false;
           }
           if ( data.conditions[ i ] == DatabaseLookupMeta.CONDITION_LIKE ) {
