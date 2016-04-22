@@ -31,7 +31,6 @@ import java.sql.ResultSetMetaData;
 import java.sql.Types;
 import java.util.Date;
 
-import org.pentaho.di.compatibility.Value;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseInterface;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -282,25 +281,25 @@ public class ValueMetaInternetAddress extends ValueMetaDate {
     String null_value = nullIf;
     if ( null_value == null ) {
       switch ( convertMeta.getType() ) {
-        case Value.VALUE_TYPE_BOOLEAN:
+        case ValueMetaInterface.TYPE_BOOLEAN:
           null_value = Const.NULL_BOOLEAN;
           break;
-        case Value.VALUE_TYPE_STRING:
+        case ValueMetaInterface.TYPE_STRING:
           null_value = Const.NULL_STRING;
           break;
-        case Value.VALUE_TYPE_BIGNUMBER:
+        case ValueMetaInterface.TYPE_BIGNUMBER:
           null_value = Const.NULL_BIGNUMBER;
           break;
-        case Value.VALUE_TYPE_NUMBER:
+        case ValueMetaInterface.TYPE_NUMBER:
           null_value = Const.NULL_NUMBER;
           break;
-        case Value.VALUE_TYPE_INTEGER:
+        case ValueMetaInterface.TYPE_INTEGER:
           null_value = Const.NULL_INTEGER;
           break;
-        case Value.VALUE_TYPE_DATE:
+        case ValueMetaInterface.TYPE_DATE:
           null_value = Const.NULL_DATE;
           break;
-        case Value.VALUE_TYPE_BINARY:
+        case ValueMetaInterface.TYPE_BINARY:
           null_value = Const.NULL_BINARY;
           break;
         default:
