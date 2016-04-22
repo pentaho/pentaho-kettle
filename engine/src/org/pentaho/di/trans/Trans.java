@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -1462,8 +1462,10 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
           badGuys.add( e );
         }
       }
-      // Signal for the the waitUntilFinished blocker...
-      transFinishedBlockingQueue.add( new Object() );
+      if ( transFinishedBlockingQueue != null ) {
+        // Signal for the the waitUntilFinished blocker...
+        transFinishedBlockingQueue.add( new Object() );
+      }
       if ( !badGuys.isEmpty() ) {
         // FIFO
         throw new KettleException( badGuys.get( 0 ) );
