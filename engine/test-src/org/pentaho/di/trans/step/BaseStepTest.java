@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -26,9 +26,12 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 import static org.junit.Assert.*;
 
+import java.io.IOException;
+import java.net.ServerSocket;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -57,6 +60,7 @@ import org.pentaho.di.core.row.value.ValueMetaInteger;
 import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.trans.BasePartitioner;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
+import org.pentaho.di.www.SocketRepository;
 
 public class BaseStepTest {
   private StepMockHelper<StepMetaInterface, StepDataInterface> mockHelper;
@@ -312,4 +316,53 @@ public class BaseStepTest {
     assertEquals( ValueMetaInterface.TYPE_DATE, result.getValueMeta( 8 ).getType() );
     assertEquals( endDate, result.getDate( 8, Calendar.getInstance().getTime() ) );
   }
+
+  @Test
+  public void testCleanupRemoteSteps() {
+    RemoteStep remoteStepMock = mock( RemoteStep.class );
+    BaseStep.cleanupRemoteSteps( Collections.singletonList( remoteStepMock ) );
+    verify( remoteStepMock ).cleanup();
+  }
+
+  @Test
+  public void testCleanup() throws IOException {
+    when( mockHelper.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) ).thenReturn(
+        mockHelper.logChannelInterface );
+    BaseStep baseStep =
+        new BaseStep( mockHelper.stepMeta, mockHelper.stepDataInterface, 0, mockHelper.transMeta, mockHelper.trans );
+    ServerSocket serverSocketMock = mock( ServerSocket.class );
+    doReturn( 0 ).when( serverSocketMock ).getLocalPort();
+    baseStep.setServerSockets( Collections.singletonList( serverSocketMock ) );
+    SocketRepository socketRepositoryMock = mock( SocketRepository.class );
+    baseStep.setSocketRepository( socketRepositoryMock );
+
+    baseStep.cleanup();
+
+    verify( socketRepositoryMock ).releaseSocket( 0 );
+  }
+
+  @Test
+  public void testCleanupWithInexistentRemoteSteps() throws IOException {
+    when( mockHelper.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) ).thenReturn(
+        mockHelper.logChannelInterface );
+    BaseStep baseStep =
+        spy( new BaseStep( mockHelper.stepMeta, mockHelper.stepDataInterface, 0, mockHelper.transMeta,
+            mockHelper.trans ) );
+    ServerSocket serverSocketMock = mock( ServerSocket.class );
+    doReturn( 0 ).when( serverSocketMock ).getLocalPort();
+    baseStep.setServerSockets( Collections.singletonList( serverSocketMock ) );
+    SocketRepository socketRepositoryMock = mock( SocketRepository.class );
+    baseStep.setSocketRepository( socketRepositoryMock );
+    RemoteStep inputStep = mock( RemoteStep.class );
+    doReturn( Collections.singletonList( inputStep ) ).when( baseStep ).getRemoteInputSteps();
+    RemoteStep outputStep = mock( RemoteStep.class );
+    doReturn( Collections.singletonList( outputStep ) ).when( baseStep ).getRemoteOutputSteps();
+
+    baseStep.cleanup();
+
+    verify( inputStep ).cleanup();
+    verify( outputStep ).cleanup();
+    verify( socketRepositoryMock ).releaseSocket( 0 );
+  }
+
 }

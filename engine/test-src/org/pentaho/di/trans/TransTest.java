@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -26,7 +26,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doCallRealMethod;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -34,6 +38,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -283,6 +288,27 @@ public class TransTest {
     trans.writeStepLogInformation();
 
     verify( mockedDataBase ).cleanupLogRecords( stepLogTable );
+  }
+
+  @Test
+  public void testFireTransFinishedListeners() throws Exception {
+    Trans trans = new Trans();
+    TransListener mockListener = mock( TransListener.class );
+    trans.setTransListeners( Collections.singletonList( mockListener ) );
+
+    trans.fireTransFinishedListeners();
+
+    verify( mockListener ).transFinished( trans );
+  }
+
+  @Test( expected = KettleException.class )
+  public void testFireTransFinishedListenersExceprionOnTransFinished() throws Exception {
+    Trans trans = new Trans();
+    TransListener mockListener = mock( TransListener.class );
+    doThrow( KettleException.class ).when( mockListener ).transFinished( trans );
+    trans.setTransListeners( Collections.singletonList( mockListener ) );
+
+    trans.fireTransFinishedListeners();
   }
 
   private void startThreads( Runnable one, Runnable two, CountDownLatch start ) throws InterruptedException {
