@@ -1119,8 +1119,7 @@ public class TransMeta extends AbstractMeta
     int i;
     for ( i = 0; i < nrTransHops(); i++ ) {
       TransHopMeta hi = getTransHop( i );
-      if ( hi.getFromStep() != null && hi.getFromStep().equals( fromstep ) ) // return the first
-      {
+      if ( hi.getFromStep() != null && hi.getFromStep().equals( fromstep ) ) { // return the first
         return hi;
       }
     }
@@ -1186,8 +1185,7 @@ public class TransMeta extends AbstractMeta
     int i;
     for ( i = 0; i < nrTransHops(); i++ ) {
       TransHopMeta hi = getTransHop( i );
-      if ( hi.getToStep() != null && hi.getToStep().equals( tostep ) ) // Return the first!
-      {
+      if ( hi.getToStep() != null && hi.getToStep().equals( tostep ) ) { // Return the first!
         return hi;
       }
     }
@@ -1662,11 +1660,9 @@ public class TransMeta extends AbstractMeta
   public StepMeta getStep( int x, int y, int iconsize ) {
     int i, s;
     s = steps.size();
-    for ( i = s - 1; i >= 0; i-- ) // Back to front because drawing goes from start to end
-    {
+    for ( i = s - 1; i >= 0; i-- ) { // Back to front because drawing goes from start to end
       StepMeta stepMeta = steps.get( i );
-      if ( partOfTransHop( stepMeta ) || stepMeta.isDrawn() ) // Only consider steps from active or inactive hops!
-      {
+      if ( partOfTransHop( stepMeta ) || stepMeta.isDrawn() ) { // Only consider steps from active or inactive hops!
         Point p = stepMeta.getLocation();
         if ( p != null ) {
           if ( x >= p.x && x <= p.x + iconsize && y >= p.y && y <= p.y + iconsize + 20 ) {
@@ -2954,8 +2950,7 @@ public class TransMeta extends AbstractMeta
           if ( exist == null ) {
             addDatabase( dbcon );
           } else {
-            if ( !exist.isShared() ) // otherwise, we just keep the shared connection.
-            {
+            if ( !exist.isShared() ) { // otherwise, we just keep the shared connection.
               if ( shouldOverwrite( prompter, props, BaseMessages.getString( PKG,
                   "TransMeta.Message.OverwriteConnectionYN", dbcon.getName() ), BaseMessages.getString( PKG,
                   "TransMeta.Message.OverwriteConnection.DontShowAnyMoreMessage" ) ) ) {
