@@ -368,7 +368,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
           FileObject sourceFileOrFolder = KettleVFS.getFileObject( localSourceFilename );
           boolean isSourceDirectory = sourceFileOrFolder.getType().equals( FileType.FOLDER );
           final Pattern pattern;
-          final Pattern patternexclude;
+          final Pattern patternExclude;
 
           if ( isSourceDirectory ) {
             // Let's prepare the pattern matcher for performance reasons.
@@ -380,49 +380,22 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
               pattern = null;
             }
             if ( !Const.isEmpty( realWildcardExclude ) ) {
-              patternexclude = Pattern.compile( realWildcardExclude );
+              patternExclude = Pattern.compile( realWildcardExclude );
             } else {
-              patternexclude = null;
+              patternExclude = null;
             }
 
             // Target is a directory
             // Get all the files in the directory...
             //
             if ( includingSubFolders ) {
-              fileList = sourceFileOrFolder.findFiles( new FileSelector() {
-
-                public boolean traverseDescendents( FileSelectInfo fileInfo ) throws Exception {
-                  return true;
-                }
-
-                public boolean includeFile( FileSelectInfo fileInfo ) throws Exception {
-                  boolean include;
-
-                  // Only include files in the sub-folders...
-                  // When we include sub-folders we match the whole filename, not just the base-name
-                  //
-                  if ( fileInfo.getFile().getType().equals( FileType.FILE ) ) {
-                    include = true;
-                    if ( pattern != null ) {
-                      String name = fileInfo.getFile().getName().getPath();
-                      include = pattern.matcher( name ).matches();
-                    }
-                    if ( include && patternexclude != null ) {
-                      String name = fileInfo.getFile().getName().getPath();
-                      include = !pattern.matcher( name ).matches();
-                    }
-                  } else {
-                    include = false;
-                  }
-                  return include;
-                }
-              } );
+              fileList = sourceFileOrFolder.findFiles( new ZipJobEntryPatternFileSelector( pattern, patternExclude ) );
             } else {
               fileList = sourceFileOrFolder.getChildren();
             }
           } else {
             pattern = null;
-            patternexclude = null;
+            patternExclude = null;
 
             // Target is a file
             fileList = new FileObject[] { sourceFileOrFolder };
@@ -559,8 +532,8 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
                   getIt = matcher.matches();
                 }
 
-                if ( patternexclude != null ) {
-                  Matcher matcherexclude = patternexclude.matcher( filename );
+                if ( patternExclude != null ) {
+                  Matcher matcherexclude = patternExclude.matcher( filename );
                   getItexclude = matcherexclude.matches();
                 }
               }
@@ -1168,4 +1141,46 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
   public void setStoredSourcePathDepth( String storedSourcePathDepth ) {
     this.storedSourcePathDepth = storedSourcePathDepth;
   }
+
+  /**
+   * Helper class providing pattern restrictions for
+   * file names to be zipped
+   */
+  public static class ZipJobEntryPatternFileSelector implements FileSelector {
+
+    private Pattern pattern;
+    private Pattern patternExclude;
+
+    public ZipJobEntryPatternFileSelector( Pattern pattern, Pattern patternExclude ) {
+      this.pattern = pattern;
+      this.patternExclude = patternExclude;
+    }
+
+    public boolean traverseDescendents( FileSelectInfo fileInfo ) throws Exception {
+      return true;
+    }
+
+    public boolean includeFile( FileSelectInfo fileInfo ) throws Exception {
+      boolean include;
+
+      // Only include files in the sub-folders...
+      // When we include sub-folders we match the whole filename, not just the base-name
+      //
+      if ( fileInfo.getFile().getType().equals( FileType.FILE ) ) {
+        include = true;
+        if ( pattern != null ) {
+          String name = fileInfo.getFile().getName().getBaseName();
+          include = pattern.matcher( name ).matches();
+        }
+        if ( include && patternExclude != null ) {
+          String name = fileInfo.getFile().getName().getBaseName();
+          include = !patternExclude.matcher( name ).matches();
+        }
+      } else {
+        include = false;
+      }
+      return include;
+    }
+  }
+
 }
