@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -26,6 +26,7 @@ import static org.junit.Assert.assertNull;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.Assert;
 
 /**
  * @author Tatsiana_Kasiankova
@@ -48,4 +49,14 @@ public class MultiMergeJoinMetaTest {
     assertArrayEquals( inputSteps, multiMergeMeta.getInputSteps() );
   }
 
+  @Test
+  public void testGetXml() {
+    String[] inputSteps = new String[] { "Step1", "Step2" };
+    multiMergeMeta.setInputSteps( inputSteps );
+    multiMergeMeta.setKeyFields( new String[] {"Key1", "Key2"} );
+    String xml = multiMergeMeta.getXML();
+    Assert.assertTrue( xml.contains( "step0" ) );
+    Assert.assertTrue( xml.contains( "step1" ) );
+
+  }
 }
