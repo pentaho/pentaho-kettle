@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -781,10 +781,19 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
       }
     }
 
-    for ( RemoteStep remoteStep : getRemoteInputSteps() ) {
-      remoteStep.cleanup();
+    List<RemoteStep> remoteInputSteps = getRemoteInputSteps();
+    if ( remoteInputSteps != null ) {
+      cleanupRemoteSteps( remoteInputSteps );
     }
-    for ( RemoteStep remoteStep : getRemoteOutputSteps() ) {
+
+    List<RemoteStep> remoteOutputSteps = getRemoteOutputSteps();
+    if ( remoteOutputSteps != null ) {
+      cleanupRemoteSteps( remoteOutputSteps );
+    }
+  }
+
+  static void cleanupRemoteSteps( List<RemoteStep> remoteSteps ) {
+    for ( RemoteStep remoteStep : remoteSteps ) {
       remoteStep.cleanup();
     }
   }
