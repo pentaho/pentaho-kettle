@@ -85,7 +85,7 @@ public class SpoonPerspectiveManagerTest {
 
 
   @Test
-  public void hidePerspective(){
+  public void hidePerspective() {
     SpoonPerspectiveManager.PerspectiveManager perspectiveManager = perspectiveManagerMap.get( perspective );
     spoonPerspectiveManager.hidePerspective( perspective.getId() );
 
@@ -93,7 +93,7 @@ public class SpoonPerspectiveManagerTest {
   }
 
   @Test
-  public void showPerspective(){
+  public void showPerspective() {
     SpoonPerspectiveManager.PerspectiveManager perspectiveManager = perspectiveManagerMap.get( perspective );
     spoonPerspectiveManager.showPerspective( perspective.getId() );
 
@@ -125,7 +125,7 @@ public class SpoonPerspectiveManagerTest {
   }
 
 
-  private class DummyPerspective implements SpoonPerspective{
+  private class DummyPerspective implements SpoonPerspective {
 
     @Override public String getId() {
       return PERSPECTIVE_ID;
