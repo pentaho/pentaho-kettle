@@ -149,7 +149,7 @@ public class PurRepositoryConnector implements IRepositoryConnector {
           if ( log.isBasic() ) {
             log.logBasic( BaseMessages.getString( PKG, "PurRepositoryConnector.CreateServiceProvider.End" ) ); //$NON-NLS-1$
           }
-          boolean canSchedule = allowedActionsContains( (AbsSecurityProvider) result.getSecurityProvider(),
+          final boolean canSchedule = allowedActionsContains( (AbsSecurityProvider) result.getSecurityProvider(),
             IAbsSecurityProvider.SCHEDULE_CONTENT_ACTION );
           Display.getDefault().asyncExec( new Runnable() {
             public void run() {
