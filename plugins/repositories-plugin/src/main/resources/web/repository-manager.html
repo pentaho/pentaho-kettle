@@ -1,0 +1,31 @@
+<div class="main_div">
+  <div class="margin_bottom_20">
+    <table id="repoMngTable">
+      <!-- These tr's must be repeatable -->
+      <tr ng-repeat="repository in model.repositories" ng-class="{active : repository === model.selectedRepository}"  ng-click="selectRepository(repository)">
+        <td class="bullet" />
+        <td class="repo_type text_left">
+          <div class="margin_bottom_10">{{repository.name}}</div>
+          <div>{{repository.description}}</div>
+        </td>
+        <td class="default">
+          <button class="defaultBtn" ng-click="setDefault(repository)" ng-class="">Set Default</button>
+        </td>
+      </tr>
+    </table>
+  </div>
+  <div>
+    <button id="deleteBtn" class="right margin_left_10 secondary" type="button" ng-show="model.selectedRepository" ng-click="delete(model.selectedRepository)">Delete</button>
+    <button id="editBtn" class="right secondary" type="button" style="margin-left: 85px;" ng-show="model.selectedRepository" ng-click="edit(model.selectedRepository)">Edit</button>
+    <button id="addBtn" class="right standard" type="button" ng-click="add()">Add</button>
+  </div>
+  <div class="bottom">
+    <div class="margin_bottom_20">
+      <hr />
+    </div>
+    <div>
+      <img class="left" alt="" src="images/u42.png" /><a id="btnHelp" class="left" href="">Help</a>
+      <button id="btnClose" class="right secondary" type="button" ng-click="close()">Close</button>
+    </div>
+  </div>
+</div>

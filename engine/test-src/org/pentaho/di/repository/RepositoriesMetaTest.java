@@ -91,6 +91,7 @@ public class RepositoriesMetaTest {
       + "  <repository>    <id>KettleFileRepository</id>" + Const.CR
       + "    <name>Test Repository</name>" + Const.CR
       + "    <description>Test Repository Description</description>" + Const.CR
+      + "    <is_default>false</is_default>" + Const.CR
       + "    <base_directory>test-repository</base_directory>" + Const.CR
       + "    <read_only>N</read_only>" + Const.CR
       + "    <hides_hidden_files>N</hides_hidden_files>" + Const.CR
@@ -107,6 +108,7 @@ public class RepositoriesMetaTest {
     assertEquals( "  <repository>    <id>KettleFileRepository</id>" + Const.CR
       + "    <name>Test Repository</name>" + Const.CR
       + "    <description>Test Repository Description</description>" + Const.CR
+      + "    <is_default>false</is_default>" + Const.CR
       + "    <base_directory>test-repository</base_directory>" + Const.CR
       + "    <read_only>N</read_only>" + Const.CR
       + "    <hides_hidden_files>N</hides_hidden_files>" + Const.CR

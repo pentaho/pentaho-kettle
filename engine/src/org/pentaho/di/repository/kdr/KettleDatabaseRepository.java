@@ -213,6 +213,10 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
     }
   }
 
+  @Override public boolean test() {
+    return true;
+  }
+
   /**
    * Add the repository service to the map and add the interface to the list
    *

@@ -1,0 +1,44 @@
+{
+  "paths": {
+    "repositories_7.0": "repositories/web/js"
+  },
+
+  "packages": [
+    {
+      "name": "repositories_7.0",
+      "location": "repositories/web/js",
+      "main": "app.js"
+    },
+    {
+      "name": "repositoriesMain_7.0",
+      "location": "repositories/web",
+      "main": "main.js"
+    }
+
+  ],
+
+  "map": {
+    "repositories_7.0": {
+      "jquery": "common-ui/jquery",
+      "angular-sanitize": "angular-sanitize_1.2.15",
+      "angular-animate": "repositories/web/js/angular-animate",
+      "repositories": "repositories_7.0"
+    },
+    "repositoriesMain_7.0": {
+      "jquery": "common-ui/jquery",
+      "angular-sanitize": "angular-sanitize_1.2.15",
+      "angular-animate": "repositories/web/js/angular-animate",
+      "repositories": "repositories_7.0",
+      "repositoriesMain": "repositoriesMain_7.0"
+    }
+  },
+
+  "shim": {
+    "angular": {
+      "deps": [ "common-ui/jquery" ]
+    },
+    "repositories/web/js/angular-animate": {
+      "deps": [ "angular" ]
+    }
+  }
+}

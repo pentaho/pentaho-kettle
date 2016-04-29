@@ -1,0 +1,43 @@
+<div class="main_div">
+  <div class="title_text margin_bottom_30">Repository Details</div>
+  <div class="middle_div">
+    <div class="margin_bottom_15">
+      <label for="displayName" class="margin_bottom_5 block text_left">Display
+        Name</label> <input id="displayName" class="block" type="text" size="50" ng-model="model.displayName" />
+    </div>
+    <div class="margin_bottom_20">
+      <label for="location" class="margin_bottom_5 block text_left">Location</label>
+      <button id="browse" class="right standard"
+          style="margin-right: 5px;" ng-click="selectLocation()">Browse</button>
+      <input id="location" class="block" type="text" ng-model="model.location" />
+    </div>
+    <div class="margin_bottom_20 text_left">
+      <div class="margin_bottom_10">
+        <input id="dont_modify" type="checkbox" ng-checked="model.doNotModify" /><label for="dont_modify">
+        Don't modify items in this location</label>
+      </div>
+      <div>
+        <input id="show_hidden" type="checkbox" ng-checked="model.showHiddenFolders" /><label for="show_hidden">
+        Show hidden folders</label>
+      </div>
+    </div>
+    <div class="margin_bottom_20">
+      <label for="description" class="margin_bottom_5 block text_left">Description</label>
+      <textarea id="description" class="block" rows="4" cols="50" ng-model="model.description"></textarea>
+    </div>
+    <div class="text_left">
+      <input id="makeDefault" type="checkbox" ng-checked="model.isDefaultOnStartup" /><label for="makeDefault">
+      Make default-launch on startup</label>
+    </div>
+  </div>
+  <div class="bottom">
+    <div class="margin_bottom_20">
+      <hr />
+    </div>
+    <div>
+      <img class="left" alt="" src="images/u42.png" /><a id="btnHelp" class="left" href="">Help</a>
+      <button id="finish" class="right margin_left_10 secondary" type="button" ng-disabled="!canFinish()" ng-click="finish()">Finish</button>
+      <button class="right secondary" type="button" ng-click="back()">Back</button>
+    </div>
+  </div>
+</div>
