@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,6 +24,7 @@ package org.pentaho.di.trans.steps.multimerge;
 
 import java.util.List;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -135,14 +136,13 @@ public class MultiMergeJoinMeta extends BaseStepMeta implements StepMetaInterfac
   public String getXML() {
     StringBuffer retval = new StringBuffer();
 
-    List<StreamInterface> infoStreams = getStepIOMeta().getInfoStreams();
-
+    String[] inputStepsNames  = inputSteps != null ? inputSteps : ArrayUtils.EMPTY_STRING_ARRAY;
     retval.append( "    " ).append( XMLHandler.addTagValue( "join_type", getJoinType() ) );
-    for ( int i = 0; i < infoStreams.size(); i++ ) {
-      retval.append( "    " ).append( XMLHandler.addTagValue( "step" + i, infoStreams.get( i ).getStepname() ) );
+    for ( int i = 0; i < inputStepsNames.length; i++ ) {
+      retval.append( "    " ).append( XMLHandler.addTagValue( "step" + i, inputStepsNames[ i ] ) );
     }
 
-    retval.append( "    " ).append( XMLHandler.addTagValue( "number_input", infoStreams.size() ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "number_input", inputStepsNames.length ) );
     retval.append( "    " ).append( XMLHandler.openTag( "keys" ) ).append( Const.CR );
     for ( int i = 0; i < keyFields.length; i++ ) {
       retval.append( "      " ).append( XMLHandler.addTagValue( "key", keyFields[i] ) );
@@ -172,8 +172,8 @@ public class MultiMergeJoinMeta extends BaseStepMeta implements StepMetaInterfac
 
       for ( int i = 0; i < nInputStreams; i++ ) {
         getStepIOMeta().addStream(
-          new Stream( StreamType.INFO, null, BaseMessages.getString(
-            PKG, "MultiMergeJoin.InfoStream.Description" ), StreamIcon.INFO, null ) );
+            new Stream( StreamType.INFO, null, BaseMessages.getString( PKG, "MultiMergeJoin.InfoStream.Description" ),
+                StreamIcon.INFO, null ) );
       }
 
       List<StreamInterface> infoStreams = getStepIOMeta().getInfoStreams();
@@ -185,8 +185,8 @@ public class MultiMergeJoinMeta extends BaseStepMeta implements StepMetaInterfac
 
       joinType = XMLHandler.getTagValue( stepnode, "join_type" );
     } catch ( Exception e ) {
-      throw new KettleXMLException( BaseMessages.getString(
-        PKG, "MultiMergeJoinMeta.Exception.UnableToLoadStepInfo" ), e );
+      throw new KettleXMLException( BaseMessages.getString( PKG, "MultiMergeJoinMeta.Exception.UnableToLoadStepInfo" ),
+          e );
     }
   }
 
@@ -195,7 +195,8 @@ public class MultiMergeJoinMeta extends BaseStepMeta implements StepMetaInterfac
     allocateKeys( 0 );
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
+    throws KettleException {
     try {
       int nrKeys = rep.countNrStepAttributes( id_step, "keys" );
 
@@ -206,10 +207,15 @@ public class MultiMergeJoinMeta extends BaseStepMeta implements StepMetaInterfac
       }
 
       long nInputStreams = rep.getStepAttributeInteger( id_step, "number_input" );
+
+      allocateInputSteps( (int) nInputStreams );
+
       for ( int i = 0; i < nInputStreams; i++ ) {
+        String stepName = rep.getStepAttributeString( id_step, "step" + i );
         getStepIOMeta().addStream(
-          new Stream( StreamType.INFO, null, BaseMessages.getString(
-            PKG, "MultiMergeJoin.InfoStream.Description" ), StreamIcon.INFO, null ) );
+            new Stream( StreamType.INFO, null, BaseMessages.getString( PKG, "MultiMergeJoin.InfoStream.Description" ),
+                StreamIcon.INFO, null ) );
+        inputSteps[i] = stepName;
       }
       List<StreamInterface> infoStreams = getStepIOMeta().getInfoStreams();
 
@@ -219,8 +225,8 @@ public class MultiMergeJoinMeta extends BaseStepMeta implements StepMetaInterfac
 
       joinType = rep.getStepAttributeString( id_step, "join_type" );
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString(
-        PKG, "MultiMergeJoinMeta.Exception.UnexpectedErrorReadingStepInfo" ), e );
+      throw new KettleException( BaseMessages.getString( PKG,
+          "MultiMergeJoinMeta.Exception.UnexpectedErrorReadingStepInfo" ), e );
     }
   }
 
@@ -231,7 +237,8 @@ public class MultiMergeJoinMeta extends BaseStepMeta implements StepMetaInterfac
     }
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
+    throws KettleException {
     try {
       for ( int i = 0; i < keyFields.length; i++ ) {
         rep.saveStepAttribute( id_transformation, id_step, i, "keys", keyFields[i] );
@@ -246,25 +253,25 @@ public class MultiMergeJoinMeta extends BaseStepMeta implements StepMetaInterfac
       rep.saveStepAttribute( id_transformation, id_step, "join_type", getJoinType() );
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString( PKG, "MultiMergeJoinMeta.Exception.UnableToSaveStepInfo" )
-        + id_step, e );
+          + id_step, e );
     }
   }
 
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
-    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
-    Repository repository, IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
+      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
+      IMetaStore metaStore ) {
     /*
      * @todo Need to check for the following: 1) Join type must be one of INNER / LEFT OUTER / RIGHT OUTER / FULL OUTER
      * 2) Number of input streams must be two (for now at least) 3) The field names of input streams must be unique
      */
     CheckResult cr =
-      new CheckResult( CheckResultInterface.TYPE_RESULT_WARNING, BaseMessages.getString(
-        PKG, "MultiMergeJoinMeta.CheckResult.StepNotVerified" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_WARNING, BaseMessages.getString( PKG,
+            "MultiMergeJoinMeta.CheckResult.StepNotVerified" ), stepMeta );
     remarks.add( cr );
   }
 
   public void getFields( RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep,
-    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+      VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     // We don't have any input fields here in "r" as they are all info fields.
     // So we just merge in the info fields.
     //
@@ -283,7 +290,7 @@ public class MultiMergeJoinMeta extends BaseStepMeta implements StepMetaInterfac
   }
 
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta tr,
-    Trans trans ) {
+      Trans trans ) {
     return new MultiMergeJoin( stepMeta, stepDataInterface, cnr, tr, trans );
   }
 
