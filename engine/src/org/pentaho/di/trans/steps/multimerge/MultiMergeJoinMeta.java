@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,6 +24,7 @@ package org.pentaho.di.trans.steps.multimerge;
 
 import java.util.List;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -135,14 +136,13 @@ public class MultiMergeJoinMeta extends BaseStepMeta implements StepMetaInterfac
   public String getXML() {
     StringBuilder retval = new StringBuilder();
 
-    List<StreamInterface> infoStreams = getStepIOMeta().getInfoStreams();
-
+    String[] inputStepsNames  = inputSteps != null ? inputSteps : ArrayUtils.EMPTY_STRING_ARRAY;
     retval.append( "    " ).append( XMLHandler.addTagValue( "join_type", getJoinType() ) );
-    for ( int i = 0; i < infoStreams.size(); i++ ) {
-      retval.append( "    " ).append( XMLHandler.addTagValue( "step" + i, infoStreams.get( i ).getStepname() ) );
+    for ( int i = 0; i < inputStepsNames.length; i++ ) {
+      retval.append( "    " ).append( XMLHandler.addTagValue( "step" + i, inputStepsNames[ i ] ) );
     }
 
-    retval.append( "    " ).append( XMLHandler.addTagValue( "number_input", infoStreams.size() ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "number_input", inputStepsNames.length ) );
     retval.append( "    " ).append( XMLHandler.openTag( "keys" ) ).append( Const.CR );
     for ( int i = 0; i < keyFields.length; i++ ) {
       retval.append( "      " ).append( XMLHandler.addTagValue( "key", keyFields[i] ) );
