@@ -1,0 +1,30 @@
+<div class="main_div">
+  <div class="title_text margin_bottom_30">Connection Details</div>
+  <div class="middle_div">
+    <div class="margin_bottom_15">
+      <label for="displayName" class="margin_bottom_5 block text_left">Display Name</label>
+      <input id="displayName" class="block" type="text" size="50" ng-model="model.displayName" />
+    </div>
+    <div class="margin_bottom_15">
+      <label for="url" class="margin_bottom_5 block text_left">URL</label>
+      <input id="url" class="block" type="text" size="50" ng-model="model.url" />
+    </div>
+    <div class="margin_bottom_20">
+      <label for="description" class="margin_bottom_5 block text_left">Description</label>
+      <textarea id="description" class="block" rows="4" cols="50" ng-model="model.description"></textarea>
+    </div>
+    <div class="text_left">
+      <input id="makeDefault" type="checkbox" ng-checked="model.isDefaultOnStartup" /><label for="makeDefault">Make default-launch on startup</label>
+    </div>
+  </div>
+  <div class="bottom">
+    <div class="margin_bottom_20">
+      <hr />
+    </div>
+    <div>
+      <img class="left" alt="" src="images/u42.png" /><a id="btnHelp" class="left" href="">Help</a>
+      <button id="finish" class="right margin_left_10 secondary" type="button" ng-disabled="!canFinish()" ng-click="finish()">Finish</button>
+      <button class="right secondary" type="button" ng-click="back()">Back</button>
+    </div>
+  </div>
+</div>

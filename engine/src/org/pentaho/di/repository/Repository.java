@@ -752,4 +752,11 @@ public interface Repository {
    *         Metastore.
    */
   public IMetaStore getMetaStore();
+
+  /**
+   * Test the repository connection to make sure it's valid
+   *
+   * @return true or false whether or not the connection is valid
+   */
+  public boolean test();
 }

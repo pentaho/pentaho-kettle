@@ -778,4 +778,7 @@ public class MemoryRepository extends AbstractRepository {
     return "Y".equalsIgnoreCase( getJobAttribute( id_jobentry, nr, code, def ? "Y" : "N" ) );
   }
 
+  @Override public boolean test() {
+    return true;
+  }
 }

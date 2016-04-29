@@ -647,4 +647,7 @@ public class RepositoryProxy extends AbstractRepository implements ILockService,
     return null;
   }
 
+  @Override public boolean test() {
+    return true;
+  }
 }

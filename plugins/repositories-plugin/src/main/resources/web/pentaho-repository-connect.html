@@ -1,0 +1,19 @@
+<div class="main_div">
+  <div class="header margin_bottom_60">
+    <img id="pentaho-img" alt="" src="images/u135.png" />
+  </div>
+  <div class="title_text margin_bottom_30">Repository Connection</div>
+  <div class="middle_div2">
+    <div class="margin_bottom_20">
+      <label for="userName" class="margin_bottom_5 block text_left">User Name</label>
+      <input id="userName" class="block repo_conn_txt" type="text" ng-model="username" />
+    </div>
+    <div class="margin_bottom_20">
+      <label for="password" class="margin_bottom_5 block text_left">Password</label>
+      <input id="password" class="block repo_conn_txt" type="password" ng-model="password" />
+    </div>
+    <div>
+      <button id="connect" class="standard" type="button" ng-disabled="!canConnect()" ng-click="connect()">Connect</button>
+    </div>
+  </div>
+</div>

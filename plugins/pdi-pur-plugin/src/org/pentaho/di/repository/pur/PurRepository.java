@@ -20,6 +20,7 @@ package org.pentaho.di.repository.pur;
 
 import java.io.Serializable;
 import java.lang.reflect.Proxy;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -82,6 +83,7 @@ import org.pentaho.di.repository.pur.model.RepositoryLock;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.shared.SharedObjects;
 import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.ui.repository.pur.PurRepositoryDialog;
 import org.pentaho.di.ui.repository.pur.services.IAbsSecurityProvider;
 import org.pentaho.di.ui.repository.pur.services.IAclService;
 import org.pentaho.di.ui.repository.pur.services.ILockService;
@@ -99,6 +101,10 @@ import org.pentaho.platform.api.repository2.unified.data.node.DataNode;
 import org.pentaho.platform.api.repository2.unified.data.node.NodeRepositoryFileData;
 import org.pentaho.platform.repository.RepositoryFilenameUtils;
 import org.pentaho.platform.repository2.ClientRepositoryPaths;
+import org.pentaho.platform.repository2.unified.webservices.jaxws.IUnifiedRepositoryJaxwsWebService;
+
+import javax.xml.namespace.QName;
+import javax.xml.ws.Service;
 
 /**
  * Implementation of {@link Repository} that delegates to the Pentaho unified repository (PUR), an instance of
@@ -2926,4 +2932,21 @@ public class PurRepository extends AbstractRepository implements Repository, Rep
     }
   }
 
+  @Override public boolean test() {
+    String repoUrl = repositoryMeta.getRepositoryLocation().getUrl();
+    final String url = repoUrl + ( repoUrl.endsWith( "/" ) ? "" : "/" ) + "webservices/unifiedRepository?wsdl";
+    Service service;
+    try {
+      service = Service.create( new URL( url ), new QName( "http://www.pentaho.org/ws/1.0", "unifiedRepository" ) );
+      if ( service != null ) {
+        IUnifiedRepositoryJaxwsWebService repoWebService = service.getPort( IUnifiedRepositoryJaxwsWebService.class );
+        if ( repoWebService != null ) {
+          return true;
+        }
+      }
+    } catch ( Exception e ) {
+      return false;
+    }
+    return false;
+  }
 }

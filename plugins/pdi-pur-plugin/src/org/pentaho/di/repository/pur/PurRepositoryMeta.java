@@ -17,6 +17,7 @@
 package org.pentaho.di.repository.pur;
 
 import java.util.List;
+import java.util.Map;
 
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
@@ -142,4 +143,16 @@ public class PurRepositoryMeta extends BaseRepositoryMeta implements RepositoryM
         isVersionCommentMandatory() );
   }
 
+  @Override public void populate( Map<String, Object> properties ) {
+    String displayName = (String) properties.get( "displayName" );
+    String url = (String) properties.get( "url" );
+    String description = (String) properties.get( "description" );
+    Boolean isDefaultOnStartup = (Boolean) properties.get( "isDefaultOnStartup" );
+
+    PurRepositoryLocation purRepositoryLocation = new PurRepositoryLocation( url );
+
+    setName( displayName );
+    setRepositoryLocation( purRepositoryLocation );
+    setDescription( description );
+  }
 }
