@@ -1,5 +1,5 @@
 /*!
- * Copyright 2010 - 2015 Pentaho Corporation.  All rights reserved.
+ * Copyright 2010 - 2016 Pentaho Corporation.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import junit.framework.Assert;
@@ -204,6 +205,9 @@ public class RepositorySyncWebServiceTest implements Serializable {
       }
     }
 
+    @Override public void populate( Map<String, Object> map ) {
+
+    }
   }
 
   public IRepositorySyncWebService getRepositorySyncWebService() {
