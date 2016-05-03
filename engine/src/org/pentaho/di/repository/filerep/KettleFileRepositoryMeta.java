@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,6 +23,7 @@
 package org.pentaho.di.repository.filerep;
 
 import java.util.List;
+import java.util.Map;
 
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
@@ -145,6 +146,22 @@ public class KettleFileRepositoryMeta extends BaseRepositoryMeta implements Repo
 
   public RepositoryMeta clone() {
     return new KettleFileRepositoryMeta( REPOSITORY_TYPE_ID, getName(), getDescription(), getBaseDirectory() );
+  }
+
+  @Override public void populate( Map<String, Object> properties ) {
+    String displayName = (String) properties.get( "displayName" );
+    Boolean showHiddenFolders = (Boolean) properties.get( "showHiddenFolders" );
+    String description = (String) properties.get( "description" );
+    String location = (String) properties.get( "location" );
+    Boolean doNotModify = (Boolean) properties.get( "doNotModify" );
+    Boolean isDefault = (Boolean) properties.get( "isDefault" );
+
+    setName( displayName );
+    setHidingHiddenFiles( showHiddenFolders );
+    setDescription( description );
+    setBaseDirectory( location );
+    setReadOnly( doNotModify );
+    setDefault( isDefault );
   }
 
   /**

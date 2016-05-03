@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -35,6 +35,7 @@ public class BaseRepositoryMeta {
   protected String id;
   protected String name;
   protected String description;
+  protected Boolean isDefault = false;
 
   public BaseRepositoryMeta( String id ) {
     this.id = id;
@@ -95,6 +96,19 @@ public class BaseRepositoryMeta {
     this.description = description;
   }
 
+  /**
+   * @param id
+   * @param name
+   * @param description
+   * @param isDefault
+   */
+  public BaseRepositoryMeta( String id, String name, String description, boolean isDefault ) {
+    this.id = id;
+    this.name = name;
+    this.description = description;
+    this.isDefault = isDefault;
+  }
+
   /*
    * (non-Javadoc)
    *
@@ -106,6 +120,7 @@ public class BaseRepositoryMeta {
       id = Const.NVL( XMLHandler.getTagValue( repnode, "id" ), id );
       name = XMLHandler.getTagValue( repnode, "name" );
       description = XMLHandler.getTagValue( repnode, "description" );
+      isDefault = Boolean.valueOf( XMLHandler.getTagValue( repnode, "is_default" ) );
     } catch ( Exception e ) {
       throw new KettleException( "Unable to load repository meta object", e );
     }
@@ -122,6 +137,7 @@ public class BaseRepositoryMeta {
     retval.append( "    " ).append( XMLHandler.addTagValue( "id", id ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "name", name ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "description", description ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "is_default", isDefault.toString() ) );
 
     return retval.toString();
   }
@@ -178,6 +194,24 @@ public class BaseRepositoryMeta {
    */
   public void setDescription( String description ) {
     this.description = description;
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.pentaho.di.repository.RepositoryMeta#isDefault()
+   */
+  public Boolean isDefault() {
+    return isDefault;
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.pentaho.di.repository.RepositoryMeta#setDefault(java.lang.Boolean)
+   */
+  public void setDefault( Boolean isDefault ) {
+    this.isDefault = isDefault;
   }
 
 }

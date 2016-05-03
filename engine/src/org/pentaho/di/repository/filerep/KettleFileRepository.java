@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -131,6 +131,10 @@ public class KettleFileRepository extends AbstractRepository {
       this.metaStore.setDescription( this.repositoryMeta.getDescription() );
     }
     connected = true;
+  }
+
+  @Override public boolean test() {
+    return new File( this.repositoryMeta.getBaseDirectory() ).exists();
   }
 
   public void disconnect() {
