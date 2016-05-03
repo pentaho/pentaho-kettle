@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,6 +23,7 @@
 package org.pentaho.di.repository;
 
 import java.util.List;
+import java.util.Map;
 
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
@@ -74,6 +75,17 @@ public interface RepositoryMeta {
   public abstract void setDescription( String description );
 
   /**
+   * @return the isDefault
+   */
+  public abstract Boolean isDefault();
+
+  /**
+   * @param isDefault
+   *          the isDefault to set
+   */
+  public abstract void setDefault( Boolean isDefault );
+
+  /**
    * Describes the capabilities of the repository
    *
    * @return The repository capabilities object
@@ -81,5 +93,7 @@ public interface RepositoryMeta {
   public RepositoryCapabilities getRepositoryCapabilities();
 
   public RepositoryMeta clone();
+
+  public abstract void populate( Map<String, Object> properties );
 
 }
