@@ -25,6 +25,7 @@ package org.pentaho.di.core;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.text.StrBuilder;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.util.EnvUtil;
@@ -2447,7 +2448,7 @@ public class Const {
             String splitResult = concatSplit.toString();
             //remove enclosure from resulting split
             if ( removeEnclosure ) {
-              splitResult = splitResult.replaceAll( enclosure, "" );
+              splitResult = removeEnclosure( splitResult, enclosure );
             }
 
             splitList.add( splitResult );
@@ -2460,6 +2461,20 @@ public class Const {
 
     // Return list as array
     return splitList.toArray( new String[splitList.size()] );
+  }
+
+  private static String removeEnclosure( String stringToSplit, String enclosure ) {
+
+    int firstIndex = stringToSplit.indexOf( enclosure );
+    int lastIndex = stringToSplit.lastIndexOf( enclosure );
+    if ( firstIndex == lastIndex ) {
+      return stringToSplit;
+    }
+    StrBuilder strBuilder = new StrBuilder( stringToSplit );
+    strBuilder.replace( firstIndex, enclosure.length() + firstIndex, "" );
+    strBuilder.replace( lastIndex - enclosure.length(), lastIndex, "" );
+
+    return strBuilder.toString();
   }
 
   /**

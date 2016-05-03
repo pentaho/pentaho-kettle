@@ -41,6 +41,12 @@ import java.util.List;
  *
  */
 public class ConstTest extends TestCase {
+
+  private static String DELIMITER1 = ",";
+  private static String DELIMITER2 = "</newpage>";
+  private static String ENCLOSURE1 = "\"";
+  private static String ENCLOSURE2 = "html";
+
   protected boolean isArraySorted( String[] arr ) {
     if ( arr.length < 2 ) {
       return true;
@@ -305,97 +311,240 @@ public class ConstTest extends TestCase {
   public void testSplitStringNullWithDelimiterNullAndEnclosureNull() {
     String[] result = Const.splitString( null, null, null );
     assertNull( result );
+  }
 
-    result = Const.splitString( null, null, null, true );
+  @Test
+  public void testSplitStringNullWithDelimiterNullAndEnclosureNullRemoveEnclosure() {
+    String[] result = Const.splitString( null, null, null, true );
     assertNull( result );
   }
 
   @Test
   public void testSplitStringWithDelimiterNullAndEnclosureNull() {
-    String[] result = Const.splitString( "Hello, world", null, null );
-    assertNotNull( result );
-    assertEquals( 1, result.length );
-    assertEquals( "Hello, world", result[0] );
+    String stringToSplit = "Hello, world";
+    String[] result = Const.splitString( stringToSplit, null, null );
+    assertSplit( result, stringToSplit );
+  }
 
-    result = Const.splitString( "Hello, world", null, null, true );
-    assertNotNull( result );
-    assertEquals( 1, result.length );
-    assertEquals( "Hello, world", result[0] );
+  @Test
+  public void testSplitStringWithDelimiterNullAndEnclosureNullRemoveEnclosure() {
+    String stringToSplit = "Hello, world";
+    String[] result = Const.splitString( stringToSplit, null, null, true );
+    assertSplit( result, stringToSplit );
   }
 
   @Test
   public void testSplitStringWithDelimiterAndEnclosureNull() {
-    String[] result = Const.splitString( "Hello, world", ",", null );
-    assertNotNull( result );
-    assertEquals( 2, result.length );
-    assertEquals( "Hello", result[0] );
-    assertEquals( " world", result[1] );
+    String mask = "Hello%s world";
+    String[] chunks = {"Hello", " world"};
 
-    result = Const.splitString( "Hello, world", ",", null, true );
-    assertNotNull( result );
-    assertEquals( 2, result.length );
-    assertEquals( "Hello", result[0] );
-    assertEquals( " world", result[1] );
+    String stringToSplit = String.format( mask, DELIMITER1 );
+    String[] result = Const.splitString( stringToSplit, DELIMITER1, null );
+    assertSplit( result, chunks );
+  }
+
+  @Test
+  public void testSplitStringWithDelimiterAndEnclosureNullMultiChar() {
+    String mask = "Hello%s world";
+    String[] chunks = {"Hello", " world"};
+
+    String stringToSplit = String.format( mask, DELIMITER2 );
+    String[] result = Const.splitString( stringToSplit, DELIMITER2, null );
+    assertSplit( result, chunks );
+  }
+
+  @Test
+  public void testSplitStringWithDelimiterAndEnclosureNullRemoveEnclosure() {
+    String mask = "Hello%s world";
+    String[] chunks = {"Hello", " world"};
+
+    String stringToSplit = String.format( mask, DELIMITER1 );
+    String[] result = Const.splitString( stringToSplit, DELIMITER1, null, true );
+    assertSplit( result, chunks );
+  }
+
+  @Test
+  public void testSplitStringWithDelimiterAndEnclosureNullMultiCharRemoveEnclosure() {
+    String mask = "Hello%s world";
+    String[] chunks = {"Hello", " world"};
+
+    String stringToSplit = String.format( mask, DELIMITER2 );
+    String[] result = Const.splitString( stringToSplit, DELIMITER2, null, true );
+    assertSplit( result, chunks );
   }
 
   @Test
   public void testSplitStringWithDelimiterAndEmptyEnclosure() {
-    String[] result = Const.splitString( "Hello, world", ",", "" );
-    assertNotNull( result );
-    assertEquals( 2, result.length );
-    assertEquals( "Hello", result[0] );
-    assertEquals( " world", result[1] );
+    String mask = "Hello%s world";
+    String[] chunks = {"Hello", " world"};
 
-    result = Const.splitString( "Hello, world", ",", "", true );
-    assertNotNull( result );
-    assertEquals( 2, result.length );
-    assertEquals( "Hello", result[0] );
-    assertEquals( " world", result[1] );
+    String stringToSplit = String.format( mask, DELIMITER1 );
+    String[] result = Const.splitString( stringToSplit, DELIMITER1, "" );
+    assertSplit( result, chunks );
   }
 
   @Test
-  public void testSplitStringWithDelimiterAndQuoteEnclosure() {
-    String[] result = Const.splitString( "\"Hello, world\"", ",", "\"" );
-    assertNotNull( result );
-    assertEquals( 1, result.length );
-    assertEquals( "\"Hello, world\"", result[0] );
+  public void testSplitStringWithDelimiterAndEmptyEnclosureMultiChar() {
+    String mask = "Hello%s world";
+    String[] chunks = {"Hello", " world"};
 
-    result = Const.splitString( "\"Hello, world\"", ",", "\"", true );
-    assertNotNull( result );
-    assertEquals( 1, result.length );
-    assertEquals( "Hello, world", result[0] );
+    String stringToSplit = String.format( mask, DELIMITER2 );
+    String[] result = Const.splitString( stringToSplit, DELIMITER2, "" );
+    assertSplit( result, chunks );
+  }
 
-    result = Const.splitString( "\"Hello, world\",\"I\",\"am\",\"here\"", ",", "\"" );
-    assertNotNull( result );
-    assertEquals( 4, result.length );
-    assertEquals( "\"Hello, world\"", result[0] );
-    assertEquals( "\"I\"", result[1] );
-    assertEquals( "\"am\"", result[2] );
-    assertEquals( "\"here\"", result[3] );
+  @Test
+  public void testSplitStringWithDelimiterAndEmptyEnclosureRemoveEnclosure() {
+    String mask = "Hello%s world";
+    String[] chunks = {"Hello", " world"};
 
-    result = Const.splitString( "\"Hello, world\",\"I\",\"am\",\"here\"", ",", "\"", true );
-    assertNotNull( result );
-    assertEquals( 4, result.length );
-    assertEquals( "Hello, world", result[0] );
-    assertEquals( "I", result[1] );
-    assertEquals( "am", result[2] );
-    assertEquals( "here", result[3] );
+    String stringToSplit = String.format( mask, DELIMITER1 );
+    String[] result = Const.splitString( stringToSplit, DELIMITER1, "", true );
+    assertSplit( result, chunks );
+  }
 
-    result = Const.splitString( "\"Hello, world\",\"I,\",\"am,,\",\", here\"", ",", "\"" );
-    assertNotNull( result );
-    assertEquals( 4, result.length );
-    assertEquals( "\"Hello, world\"", result[0] );
-    assertEquals( "\"I,\"", result[1] );
-    assertEquals( "\"am,,\"", result[2] );
-    assertEquals( "\", here\"", result[3] );
+  @Test
+  public void testSplitStringWithDelimiterAndEmptyEnclosureMultiCharRemoveEnclosure() {
+    String mask = "Hello%s world";
+    String[] chunks = {"Hello", " world"};
 
-    result = Const.splitString( "\"Hello, world\",\"I,\",\"am,,\",\", here\"", ",", "\"", true );
-    assertNotNull( result );
-    assertEquals( 4, result.length );
-    assertEquals( "Hello, world", result[0] );
-    assertEquals( "I,", result[1] );
-    assertEquals( "am,,", result[2] );
-    assertEquals( ", here", result[3] );
+    String stringToSplit = String.format( mask, DELIMITER2 );
+    String [] result = Const.splitString( stringToSplit, DELIMITER2, "", true );
+    assertSplit( result, chunks );
+  }
+
+  @Test
+  public void testSplitStringWithDelimiterAndQuoteEnclosure1() {
+    //"Hello, world"
+    String mask = "%sHello%s world%s";
+
+    String stringToSplit = String.format( mask, ENCLOSURE1, DELIMITER1, ENCLOSURE1 );
+    String[] result = Const.splitString( stringToSplit, DELIMITER1, ENCLOSURE1 );
+    assertSplit( result, stringToSplit );
+  }
+
+  @Test
+  public void testSplitStringWithDelimiterAndQuoteEnclosureMultiChar1() {
+    //"Hello, world"
+    String mask = "%sHello%s world%s";
+
+    String stringToSplit = String.format( mask, ENCLOSURE2, DELIMITER2, ENCLOSURE2 );
+    String[] result = Const.splitString( stringToSplit, DELIMITER2, ENCLOSURE2 );
+    assertSplit( result, stringToSplit );
+  }
+
+  @Test
+  public void testSplitStringWithDelimiterAndQuoteEnclosureRemoveEnclosure1() {
+    //"Hello, world"
+    String mask = "%sHello%s world%s";
+    String[] chunks1 = { "Hello" + DELIMITER1 + " world" };
+
+    String stringToSplit = String.format( mask, ENCLOSURE1, DELIMITER1, ENCLOSURE1 );
+    String[] result = Const.splitString( stringToSplit, DELIMITER1, ENCLOSURE1, true );
+    assertSplit( result, chunks1 );
+  }
+
+  @Test
+  public void testSplitStringWithDelimiterAndQuoteEnclosureMultiCharRemoveEnclosure1() {
+    //"Hello, world"
+    String mask = "%sHello%s world%s";
+    String[] chunks2 = { "Hello" + DELIMITER2 + " world" };
+
+    String stringToSplit = String.format( mask, ENCLOSURE2, DELIMITER2, ENCLOSURE2 );
+    String[] result = Const.splitString( stringToSplit, DELIMITER2, ENCLOSURE2, true );
+    assertSplit( result, chunks2 );
+  }
+
+  @Test
+  public void testSplitStringWithDelimiterAndQuoteEnclosure2() {
+    testSplitStringWithDelimiterAndQuoteEnclosure2( ENCLOSURE1, DELIMITER1 );
+  }
+
+  @Test
+  public void testSplitStringWithDelimiterAndQuoteEnclosureMultiChar2() {
+    testSplitStringWithDelimiterAndQuoteEnclosure2( ENCLOSURE2, DELIMITER2 );
+  }
+
+  private void testSplitStringWithDelimiterAndQuoteEnclosure2( String e, String d ) {
+    //"Hello, world","I","am","here"
+    String mask = "%sHello%s world%s%s%sI%s%s%sam%s%s%shere%s";
+
+    String[] chunks1 = { e + "Hello" + d + " world" + e,
+      e + "I" + e,
+      e + "am" + e,
+      e + "here" + e };
+
+    String stringToSplit = String.format( mask, e, d, e, d, e, e, d, e, e, d, e, e );
+    String[] result = Const.splitString( stringToSplit, d, e );
+    assertSplit( result, chunks1 );
+  }
+
+  @Test
+  public void testSplitStringWithDelimiterAndQuoteEnclosureRemoveEnclosure2() {
+    testSplitStringWithDelimiterAndQuoteEnclosureRemoveEnclosure2( ENCLOSURE1, DELIMITER1 );
+  }
+
+  @Test
+  public void testSplitStringWithDelimiterAndQuoteEnclosureMultiCharRemoveEnclosure2() {
+    testSplitStringWithDelimiterAndQuoteEnclosureRemoveEnclosure2( ENCLOSURE2, DELIMITER2 );
+  }
+
+  private void testSplitStringWithDelimiterAndQuoteEnclosureRemoveEnclosure2( String e, String d ) {
+    //"Hello, world","I","am","here"
+    String mask = "%sHello%s world%s%s%sI%s%s%sam%s%s%shere%s";
+
+    String[] chunks1 = { "Hello" + d + " world",
+      "I", "am", "here" };
+
+    String stringToSplit = String.format( mask, e, d, e, d, e, e, d, e, e, d, e, e );
+    String[] result = Const.splitString( stringToSplit, d, e, true );
+    assertSplit( result, chunks1 );
+  }
+
+  @Test
+  public void testSplitStringWithDelimiterAndQuoteEnclosure3() {
+    testSplitStringWithDelimiterAndQuoteEnclosure3( ENCLOSURE1, DELIMITER1 );
+  }
+
+  @Test
+  public void testSplitStringWithDelimiterAndQuoteEnclosureMultiChar3() {
+    testSplitStringWithDelimiterAndQuoteEnclosure3( ENCLOSURE2, DELIMITER2 );
+  }
+
+  private void testSplitStringWithDelimiterAndQuoteEnclosure3( String e, String d ) {
+    //"Hello, world","I,","am,,",", here"
+    String mask = "%sHello%s world%s" + "%s" + "%sI%s%s" + "%s" + "%sam%s%s%s" + "%s" + "%s%s here%s";
+
+    String[] chunks1 = { e + "Hello" + d + " world" + e,
+      e + "I" + d + e,
+      e + "am" + d + d + e,
+      e + d + " here" + e };
+    String stringToSplit = String.format( mask, e, d, e, d, e, d, e, d, e, d, d, e, d, e, d, e );
+    String[] result = Const.splitString( stringToSplit, d, e );
+    assertSplit( result, chunks1 );
+  }
+
+  @Test
+  public void testSplitStringWithDelimiterAndQuoteEnclosureRemovesEnclosure3() {
+    testSplitStringWithDelimiterAndQuoteEnclosureRemovesEnclosure3( ENCLOSURE1, DELIMITER1 );
+  }
+
+  @Test
+  public void testSplitStringWithDelimiterAndQuoteEnclosureMultiCharRemovesEnclosure3() {
+    testSplitStringWithDelimiterAndQuoteEnclosureRemovesEnclosure3( ENCLOSURE2, DELIMITER2 );
+  }
+
+  private void testSplitStringWithDelimiterAndQuoteEnclosureRemovesEnclosure3( String e, String d ) {
+    //"Hello, world","I,","am,,",", here"
+    String mask = "%sHello%s world%s" + "%s" + "%sI%s%s" + "%s" + "%sam%s%s%s" + "%s" + "%s%s here%s";
+
+    String[] chunks1 = { "Hello" + d + " world",
+      "I" + d,
+      "am" + d + d,
+      d + " here" };
+    String stringToSplit = String.format( mask, e, d, e, d, e, d, e, d, e, d, d, e, d, e, d, e );
+    String[] result = Const.splitString( stringToSplit, d, e, true );
+    assertSplit( result, chunks1 );
   }
 
   @Test
@@ -410,29 +559,12 @@ public class ConstTest extends TestCase {
     assertEquals( "'g'", result[3] );
     assertEquals( "h", result[4] );
 
-    result = Const.splitString( "a;'b;c;d';'e,f';'g';h", ";", "'", true );
-    assertNotNull( result );
-    assertEquals( 5, result.length );
-    assertEquals( "a", result[0] );
-    assertEquals( "b;c;d", result[1] );
-    assertEquals( "e,f", result[2] );
-    assertEquals( "g", result[3] );
-    assertEquals( "h", result[4] );
-
     // Check for null and empty as the last split
     result = Const.splitString( "a;b;c;", ";", null );
     assertNotNull( result );
     assertEquals( 3, result.length );
 
-    result = Const.splitString( "a;b;c;", ";", null, true );
-    assertNotNull( result );
-    assertEquals( 3, result.length );
-
     result = Const.splitString( "a;b;c;''", ";", "'" );
-    assertNotNull( result );
-    assertEquals( 4, result.length );
-
-    result = Const.splitString( "a;b;c;''", ";", "'", true );
     assertNotNull( result );
     assertEquals( 4, result.length );
   }
@@ -441,38 +573,60 @@ public class ConstTest extends TestCase {
   public void testSplitStringWithMultipleCharacterDelimiterAndEnclosure() {
     // Check for multiple-character strings
     String[] result =
-        Const.splitString( "html this is a web page html</newpage>html and so is this html", "</newpage>", "html" );
+      Const.splitString( "html this is a web page html</newpage>html and so is this html", "</newpage>", "html" );
     assertNotNull( result );
     assertEquals( 2, result.length );
     assertEquals( "html this is a web page html", result[0] );
     assertEquals( "html and so is this html", result[1] );
-    result =
-      Const.splitString( "html this is a web page html</newpage>html and so is this html", "</newpage>", "html", true );
-    assertNotNull( result );
-    assertEquals( 2, result.length );
-    assertEquals( " this is a web page ", result[0] );
-    assertEquals( " and so is this ", result[1] );
   }
 
   @Test
-  public void testSplitStringWithDelimiterAndOddEnclosure() {
-    String[] result = Const.splitString( "\"\"abc,d\"\"e\"f", ",", "\"" );
-    assertNotNull( result );
-    assertEquals( 1, result.length );
-    assertEquals( "\"\"abc", result[0] );
+  public void testSplitStringRemoveEnclosureNested1() {
+    testSplitStringRemoveEnclosureNested1( ENCLOSURE1, DELIMITER1 );
+  }
 
-    result = Const.splitString( "\"\"abc,d\"\"e\"f", ",", "\"", true );
-    assertNotNull( result );
-    assertEquals( 1, result.length );
-    assertEquals( "abc", result[0] );
+  @Test
+  public void testSplitStringRemoveEnclosureNestedMultiChar1() {
+    testSplitStringRemoveEnclosureNested1( ENCLOSURE2, DELIMITER2 );
+  }
 
-    result = Const.splitString( "\"abc,d\"e\"f", ",", "\"" );
-    assertNotNull( result );
-    assertEquals( 0, result.length );
+  private void testSplitStringRemoveEnclosureNested1( String e, String d ) {
+    //"a, "b" c"
+    String mask = "%sa" + "%s" + " %sb%s c%s";
 
-    result = Const.splitString( "\"abc,d\"e\"f", ",", "\"", true );
+    String[] chunks = { "a" + d + " " + e + "b" + e + " c" };
+
+    String stringToSplit = String.format( mask, e, d, e, e, e );
+    String[] result = Const.splitString( stringToSplit, d, e, true );
+    assertSplit( result, chunks );
+  }
+
+  @Test
+  public void testSplitStringRemoveEnclosureNested2() {
+    testSplitStringRemoveEnclosureNested( ENCLOSURE1, DELIMITER1 );
+  }
+
+  @Test
+  public void testSplitStringRemoveEnclosureNestedMultiChar2() {
+    testSplitStringRemoveEnclosureNested( ENCLOSURE2, DELIMITER2 );
+  }
+
+  private void testSplitStringRemoveEnclosureNested( String e, String d ) {
+    //"""a,b,c"""
+    String mask = "%s%s%sa" + "%s" + "b" + "%s" + "c%s%s%s";
+    String[] chunks = { e + e + "a" + d  + "b" + d + "c" + e + e};
+
+    String stringToSplit = String.format( mask, e, e, e, d, d, e, e, e );
+    String[] result = Const.splitString( stringToSplit, d, e, true );
+    assertSplit( result, chunks );
+  }
+
+  private void assertSplit( String[] result, String... chunks ) {
     assertNotNull( result );
-    assertEquals( 0, result.length );
+    assertEquals( chunks.length, result.length );
+    for ( int i = 0; i < chunks.length; i++ ) {
+      assertEquals( chunks[i], result[i] );
+    }
   }
 
   /**
