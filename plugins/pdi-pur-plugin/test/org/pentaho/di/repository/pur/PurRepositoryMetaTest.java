@@ -1,5 +1,5 @@
 /*!
- * Copyright 2010 - 2015 Pentaho Corporation.  All rights reserved.
+ * Copyright 2010 - 2016 Pentaho Corporation.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,9 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -79,5 +81,22 @@ public class PurRepositoryMetaTest {
     repositoryMeta.loadXML( repnode2, databases );
 
     assertEquals( repositoryMeta.getRepositoryLocation().getUrl(), URL_WITHOUT_TRAILING );
+  }
+
+  @Test
+  public void testPopulate() throws Exception {
+    Map<String, Object> properties = new HashMap<String, Object>();
+    properties.put( "displayName", "Display Name" );
+    properties.put( "url", "URL" );
+    properties.put( "description", "Description" );
+    properties.put( "isDefault", true );
+
+    PurRepositoryMeta purRepositoryMeta = new PurRepositoryMeta();
+    purRepositoryMeta.populate( properties );
+
+    assertEquals( "Display Name", purRepositoryMeta.getName() );
+    assertEquals( "URL", purRepositoryMeta.getRepositoryLocation().getUrl() );
+    assertEquals( "Description", purRepositoryMeta.getDescription() );
+    assertEquals( true, purRepositoryMeta.isDefault() );
   }
 }

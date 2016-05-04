@@ -1,5 +1,5 @@
 /*!
- * Copyright 2010 - 2015 Pentaho Corporation.  All rights reserved.
+ * Copyright 2010 - 2016 Pentaho Corporation.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.pentaho.di.repository.pur;
 
 import java.util.List;
+import java.util.Map;
 
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
@@ -142,4 +143,17 @@ public class PurRepositoryMeta extends BaseRepositoryMeta implements RepositoryM
         isVersionCommentMandatory() );
   }
 
+  @Override public void populate( Map<String, Object> properties ) {
+    String displayName = (String) properties.get( "displayName" );
+    String url = (String) properties.get( "url" );
+    String description = (String) properties.get( "description" );
+    Boolean isDefault = (Boolean) properties.get( "isDefault" );
+
+    PurRepositoryLocation purRepositoryLocation = new PurRepositoryLocation( url );
+
+    setName( displayName );
+    setRepositoryLocation( purRepositoryLocation );
+    setDescription( description );
+    setDefault( isDefault );
+  }
 }
