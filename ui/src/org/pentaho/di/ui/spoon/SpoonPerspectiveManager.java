@@ -528,6 +528,7 @@ public class SpoonPerspectiveManager {
 
       PerspectiveManager perspectiveManager =
           new PerspectiveManager( per, box, mainToolbar, btn, perspectivesCombo, name );
+      perspectiveManagerMap.put( per, perspectiveManager );
       // Need to force init for main perspective even if it won't be shown
       if ( perspectiveIdx == y || y == 0 ) {
         if ( perspectiveIdx == y ) {
