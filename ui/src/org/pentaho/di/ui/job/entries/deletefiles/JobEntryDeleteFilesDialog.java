@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -370,7 +370,7 @@ public class JobEntryDeleteFilesDialog extends JobEntryDialog implements JobEntr
     wlFields.setLayoutData( fdlFields );
 
     String[] jobArgs = jobEntry.getArguments();
-    final int fieldsRows = (jobArgs == null) ? 1 : jobArgs.length;
+    final int fieldsRows = ( jobArgs == null ) ? 1 : jobArgs.length;
 
     ColumnInfo[] colinf =
       new ColumnInfo[] {

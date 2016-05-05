@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -30,7 +30,6 @@ import org.pentaho.di.job.entry.validator.AndValidator;
 import org.pentaho.di.job.entry.validator.JobEntryValidatorUtils;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -255,7 +254,7 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
     Multimap<String, String> pathToMaskMap = ArrayListMultimap.create();
     if ( argFromPrevious && rowsFromPreviousMeta != null ) {
       for ( RowMetaAndData resultRow : rowsFromPreviousMeta ) {
-        if (resultRow.size() < 2){
+        if ( resultRow.size() < 2 ) {
           logError( BaseMessages.getString(
             PKG, "JobDeleteFiles.Error.InvalidNumberOfRowsFromPrevMeta", resultRow.size() ) );
           return pathToMaskMap;
