@@ -22,7 +22,6 @@
 
 package org.pentaho.di.ui.spoon;
 
-import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.widgets.Composite;
 import org.junit.Before;
 import org.junit.Test;
@@ -36,6 +35,7 @@ import org.pentaho.ui.xul.containers.XulVbox;
 import org.pentaho.ui.xul.impl.XulEventHandler;
 
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -89,7 +89,7 @@ public class SpoonPerspectiveManagerTest {
     SpoonPerspectiveManager.PerspectiveManager perspectiveManager = perspectiveManagerMap.get( perspective );
     spoonPerspectiveManager.hidePerspective( perspective.getId() );
 
-    verify( perspectiveManager ).removePerspective( PERSPECTIVE_NAME );
+    verify( perspectiveManager ).setPerspectiveHidden( PERSPECTIVE_NAME, true );
   }
 
   @Test
@@ -97,7 +97,7 @@ public class SpoonPerspectiveManagerTest {
     SpoonPerspectiveManager.PerspectiveManager perspectiveManager = perspectiveManagerMap.get( perspective );
     spoonPerspectiveManager.showPerspective( perspective.getId() );
 
-    verify( perspectiveManager ).addPerspectiveNameIfNotExists( PERSPECTIVE_NAME );
+    verify( perspectiveManager ).setPerspectiveHidden( PERSPECTIVE_NAME, false );
   }
 
 
@@ -113,10 +113,11 @@ public class SpoonPerspectiveManagerTest {
   }
 
   private SpoonPerspectiveManager.PerspectiveManager createPerspectiveManager( SpoonPerspective perspective ) {
+    List<SpoonPerspectiveManager.PerspectiveData> perspectiveDatas = new ArrayList<SpoonPerspectiveManager.PerspectiveData>();
+    perspectiveDatas.add( new SpoonPerspectiveManager.PerspectiveData( PERSPECTIVE_NAME, PERSPECTIVE_ID ) );
     SpoonPerspectiveManager.PerspectiveManager perspectiveManager =
-      new SpoonPerspectiveManager.PerspectiveManager( perspective, mock(
-        XulVbox.class ), mock( XulToolbar.class ), null, mock( CCombo.class ),
-        perspective.getDisplayName( Locale.getDefault() ) );
+      new SpoonPerspectiveManager.PerspectiveManager( perspective, mock( XulVbox.class ), mock( XulToolbar.class ),
+        perspectiveDatas, perspective.getDisplayName( Locale.getDefault() ) );
 
     perspectiveManager = spy( perspectiveManager );
     doNothing().when( perspectiveManager ).performInit();
