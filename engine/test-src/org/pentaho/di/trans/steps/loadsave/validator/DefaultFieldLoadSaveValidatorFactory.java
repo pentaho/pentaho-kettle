@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.trans.steps.loadsave.getter.Getter;
 
 public class DefaultFieldLoadSaveValidatorFactory implements FieldLoadSaveValidatorFactory {
@@ -56,6 +57,7 @@ public class DefaultFieldLoadSaveValidatorFactory implements FieldLoadSaveValida
     registerValidator( int[].class.getCanonicalName(), new PrimitiveIntArrayLoadSaveValidator(
         new IntLoadSaveValidator() ) );
     registerValidator( Locale.class.getCanonicalName(), new LocaleLoadSaveValidator() );
+    registerValidator( DatabaseMeta.class.getCanonicalName(), new DatabaseMetaLoadSaveValidator() );
   }
 
   public void registerValidator( String typeString, FieldLoadSaveValidator<?> validator ) {
