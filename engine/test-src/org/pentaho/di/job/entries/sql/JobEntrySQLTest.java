@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2014 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -19,10 +19,10 @@
  * limitations under the License.
  *
  ******************************************************************************/
+
 package org.pentaho.di.job.entries.sql;
 
-import static java.util.Arrays.asList;
-
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -37,12 +37,13 @@ public class JobEntrySQLTest extends JobEntryLoadSaveTestSupport<JobEntrySQL> {
 
   @Override
   protected List<String> listCommonAttributes() {
-    return asList(
+    return Arrays.asList(
         "sql",
         "useVariableSubstitution",
         "sqlfromfile",
         "sqlfilename",
-        "sendOneStatement" );
+        "sendOneStatement",
+        "database" );
   }
 
   @Override
@@ -52,7 +53,8 @@ public class JobEntrySQLTest extends JobEntryLoadSaveTestSupport<JobEntrySQL> {
         "useVariableSubstitution", "getUseVariableSubstitution",
         "sqlfromfile", "getSQLFromFile",
         "sqlfilename", "getSQLFilename",
-        "sendOneStatement", "isSendOneStatement" );
+        "sendOneStatement", "isSendOneStatement",
+        "database", "getDatabase" );
   }
 
   @Override
@@ -62,7 +64,8 @@ public class JobEntrySQLTest extends JobEntryLoadSaveTestSupport<JobEntrySQL> {
         "useVariableSubstitution", "setUseVariableSubstitution",
         "sqlfromfile", "setSQLFromFile",
         "sqlfilename", "setSQLFilename",
-        "sendOneStatement", "setSendOneStatement" );
+        "sendOneStatement", "setSendOneStatement",
+        "database", "setDatabase" );
   }
 
 }
