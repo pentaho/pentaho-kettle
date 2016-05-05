@@ -58,7 +58,7 @@ import org.pentaho.platform.repository2.unified.webservices.RepositoryFileTreeDt
  */
 public class UnifiedRepositoryPurgeServiceTest {
 
-  private final static String[][] versionData = new String[][] {
+  private static final String[][] versionData = new String[][] {
     { "100", "1", "01/01/2000", "Bugs Bunny", "original", "1.0" },
     { "101", "1", "01/01/2002", "Bugs Bunny", "1st change", "1.1" },
     { "102", "1", "01/01/2004", "Micky Mouse", "2nd change", "1.2" },
@@ -70,9 +70,9 @@ public class UnifiedRepositoryPurgeServiceTest {
     { "202", "2", "01/01/2005", "Fred Flintstone", "2nd change", "1.2" },
     { "203", "2", "01/01/2013", "Barny Rubble", "3rd change", "1.3" }, };
 
-  private final static DateFormat DATE_FORMAT = new SimpleDateFormat( "MM/dd/yyyy" );
+  private static final DateFormat DATE_FORMAT = new SimpleDateFormat( "MM/dd/yyyy" );
 
-  private final static String treeResponse =
+  private static final String treeResponse =
       "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>"
           + "<repositoryFileTreeDto><children><children><file><folder>false</folder><hidden>false</hidden><id>1</id><locked>false</locked><name>file1.ktr</name><ownerType>-1</ownerType><path>/home/joe/file1.ktr</path><versionId>1.5</versionId><versioned>true</versioned></file></children>"
           + "<children><children><file><folder>false</folder><hidden>false</hidden><id>2</id><locked>false</locked><name>file2.ktr</name><ownerType>-1</ownerType><path>/home/joe/newdirTest/file2.ktr</path><versionId>1.3</versionId><versioned>true</versioned></file></children>"
