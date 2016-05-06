@@ -20,7 +20,7 @@
  *
  ******************************************************************************/
 
-package org.pentaho.di.ui.trans.steps.textfileinput;
+package org.pentaho.di.ui.trans.steps.fileinput.text;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -49,16 +49,17 @@ import org.pentaho.di.core.fileinput.FileInputList;
 import org.pentaho.di.core.playlist.FilePlayListAll;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.value.ValueMetaString;
+import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.errorhandling.FileErrorHandler;
 import org.pentaho.di.trans.steps.StepMockUtil;
-import org.pentaho.di.trans.steps.textfileinput.TextFileFilter;
-import org.pentaho.di.trans.steps.textfileinput.TextFileFilterProcessor;
-import org.pentaho.di.trans.steps.textfileinput.TextFileInput;
-import org.pentaho.di.trans.steps.textfileinput.TextFileInputData;
-import org.pentaho.di.trans.steps.textfileinput.TextFileInputField;
-import org.pentaho.di.trans.steps.textfileinput.TextFileInputMeta;
+import org.pentaho.di.trans.steps.fileinput.text.TextFileFilter;
+import org.pentaho.di.trans.steps.fileinput.text.TextFileFilterProcessor;
+import org.pentaho.di.trans.steps.fileinput.text.TextFileInput;
+import org.pentaho.di.trans.steps.fileinput.text.TextFileInputData;
+import org.pentaho.di.trans.steps.fileinput.BaseFileInputField;
+import org.pentaho.di.trans.steps.fileinput.text.TextFileInputMeta;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.widget.TableView;
 
@@ -117,21 +118,21 @@ public class TextFileInputDialogTest {
     os.close();
 
     TextFileInputMeta meta = new TextFileInputMeta();
-    meta.setLineWrapped( false );
-    meta.setInputFields( new TextFileInputField[]{
-      new TextFileInputField( "col1", -1, -1 ),
-      new TextFileInputField( "col2", -1, -1 )
-    } );
-    meta.setFileCompression( "None" );
-    meta.setFileType( "CSV" );
-    meta.setHeader( false );
-    meta.setNrHeaderLines( -1 );
-    meta.setFooter( false );
-    meta.setNrFooterLines( -1 );
+    meta.content.lineWrapped = false;
+    meta.inputFiles.inputFields = new BaseFileInputField[]{
+      new BaseFileInputField( "col1", -1, -1 ),
+      new BaseFileInputField( "col2", -1, -1 )
+    };
+    meta.content.fileCompression = "None";
+    meta.content.fileType = "CSV";
+    meta.content.header = false;
+    meta.content.nrHeaderLines = -1;
+    meta.content.footer = false;
+    meta.content.nrFooterLines = -1;
 
     TextFileInputData data = new TextFileInputData();
-    data.setFiles( new FileInputList() );
-    data.getFiles().addFile( KettleVFS.getFileObject( virtualFile ) );
+    data.files = new FileInputList();
+    data.files.addFile( KettleVFS.getFileObject( virtualFile ) );
 
     data.outputRowMeta = new RowMeta();
     data.outputRowMeta.addValueMeta( new ValueMetaString( "col1" ) );
@@ -140,7 +141,7 @@ public class TextFileInputDialogTest {
     data.dataErrorLineHandler = mock( FileErrorHandler.class );
     data.fileFormatType = TextFileInputMeta.FILE_FORMAT_UNIX;
     data.separator = ",";
-    data.filterProcessor = new TextFileFilterProcessor( new TextFileFilter[ 0 ] );
+    data.filterProcessor = new TextFileFilterProcessor( new TextFileFilter[0], new Variables() {} );
     data.filePlayList = new FilePlayListAll();
 
     TextFileInputDialog dialog =
