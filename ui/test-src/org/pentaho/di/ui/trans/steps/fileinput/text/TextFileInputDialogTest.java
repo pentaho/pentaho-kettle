@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -141,7 +141,7 @@ public class TextFileInputDialogTest {
     data.dataErrorLineHandler = mock( FileErrorHandler.class );
     data.fileFormatType = TextFileInputMeta.FILE_FORMAT_UNIX;
     data.separator = ",";
-    data.filterProcessor = new TextFileFilterProcessor( new TextFileFilter[0], new Variables() {} );
+    data.filterProcessor = new TextFileFilterProcessor( new TextFileFilter[0], new Variables() { } );
     data.filePlayList = new FilePlayListAll();
 
     TextFileInputDialog dialog =
