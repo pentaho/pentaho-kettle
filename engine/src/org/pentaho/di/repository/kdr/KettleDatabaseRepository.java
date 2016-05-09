@@ -217,6 +217,60 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
     return true;
   }
 
+  @Override public void create() {
+    if ( repositoryMeta.getConnection() != null ) {
+      if ( repositoryMeta.getConnection().getAccessType() == DatabaseMeta.TYPE_ACCESS_ODBC ) {
+        // This will change in a future story
+        log.logDebug( "ODBC type is not advised for repository use" );
+      }
+
+      try {
+        if ( !getDatabaseMeta().getDatabaseInterface().supportsRepository() ) {
+          // show error about not being valid
+          log.logError( "This database type does not support being a repository" );
+        }
+
+        connectionDelegate.connect( true, true );
+        boolean upgrade = false;
+
+        try {
+          String userTableName = getDatabaseMeta().quoteField( KettleDatabaseRepository.TABLE_R_USER );
+          upgrade = getDatabase().checkTableExists( userTableName );
+          if ( upgrade ) {
+            // This will change in future story
+            log.logDebug( "Database upgrade will now take place" );
+          }
+        } catch ( KettleDatabaseException dbe ) {
+          // Roll back the connection: this is required for certain databases like PGSQL
+          // Otherwise we can't execute any other DDL statement.
+          //
+          rollback();
+
+          // Don't show an error anymore, just go ahead and propose to create the repository!
+        }
+
+        String pwd = "admin";
+        if ( pwd != null ) {
+          try {
+            // authenticate as admin before upgrade
+            // disconnect before connecting, we connected above already
+            //
+            disconnect();
+            connect( "admin", pwd, true );
+          } catch ( KettleException e ) {
+            log.logError( "Invalid user credentials" );
+          }
+        }
+
+        createRepositorySchema( null, upgrade, new ArrayList<String>(), false );
+
+        disconnect();
+      } catch ( KettleException ke ) {
+        log.logError( "An error has occurred creating a repository" );
+      }
+    }
+  }
+
   /**
    * Add the repository service to the map and add the interface to the list
    *

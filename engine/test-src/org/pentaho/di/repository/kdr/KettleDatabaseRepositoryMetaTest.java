@@ -20,58 +20,62 @@
  *
  ******************************************************************************/
 
-package org.pentaho.di.repository.filerep;
+package org.pentaho.di.repository.kdr;
+
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.when;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.repository.RepositoriesMeta;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-
 /**
  * Created by bmorrise on 4/26/16.
  */
 @RunWith( MockitoJUnitRunner.class )
-public class KettleFileRepositoryMetaTest {
+public class KettleDatabaseRepositoryMetaTest {
+
+  @Mock
+  RepositoriesMeta repositoriesMeta;
+
+  @Mock
+  DatabaseMeta databaseMeta;
 
   public static final String NAME = "Name";
   public static final String DESCRIPTION = "Description";
-  public static final String THIS_IS_THE_PATH = "/this/is/the/path";
-
-  @Mock
-  private RepositoriesMeta repositoriesMeta;
-
-  KettleFileRepositoryMeta kettleFileRepositoryMeta;
+  public static final String DATABASE_CONNECTION = "Database Connection";
+  KettleDatabaseRepositoryMeta kettleDatabaseRepositoryMeta;
 
   @Before
   public void setup() {
-    kettleFileRepositoryMeta = new KettleFileRepositoryMeta();
+    kettleDatabaseRepositoryMeta = new KettleDatabaseRepositoryMeta();
   }
 
   @Test
   public void testPopulate() throws Exception {
+    kettleDatabaseRepositoryMeta.setConnection( databaseMeta );
+    when( databaseMeta.getName() ).thenReturn( DATABASE_CONNECTION );
+    when( repositoriesMeta.searchDatabase( DATABASE_CONNECTION ) ).thenReturn( databaseMeta );
+
     Map<String, Object> properties = new HashMap<>();
     properties.put( "displayName", NAME );
-    properties.put( "showHiddenFolders", true );
     properties.put( "description", DESCRIPTION );
-    properties.put( "location", THIS_IS_THE_PATH );
-    properties.put( "doNotModify", true );
+    properties.put( "databaseConnection", DATABASE_CONNECTION );
     properties.put( "isDefault", true );
 
-    kettleFileRepositoryMeta.populate( properties, repositoriesMeta );
+    kettleDatabaseRepositoryMeta.populate( properties, repositoriesMeta );
 
-    assertEquals( NAME, kettleFileRepositoryMeta.getName() );
-    assertEquals( true, kettleFileRepositoryMeta.isHidingHiddenFiles() );
-    assertEquals( DESCRIPTION, kettleFileRepositoryMeta.getDescription() );
-    assertEquals( THIS_IS_THE_PATH, kettleFileRepositoryMeta.getBaseDirectory() );
-    assertEquals( true, kettleFileRepositoryMeta.isReadOnly() );
-    assertEquals( true, kettleFileRepositoryMeta.isDefault() );
+    assertEquals( NAME, kettleDatabaseRepositoryMeta.getName() );
+    assertEquals( DESCRIPTION, kettleDatabaseRepositoryMeta.getDescription() );
+    assertEquals( DATABASE_CONNECTION, kettleDatabaseRepositoryMeta.getConnection().getName() );
+    assertEquals( true, kettleDatabaseRepositoryMeta.isDefault() );
   }
 
 }
