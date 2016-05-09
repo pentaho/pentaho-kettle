@@ -132,5 +132,11 @@ public abstract class AbstractRepository implements Repository {
     saveDatabaseMetaJobEntryAttribute( id_job, id_jobentry, 0, nameCode, idCode, database );
   }
 
-  public abstract boolean test();
+  public boolean test() {
+    return true;
+  }
+
+  public void create() {
+
+  }
 }

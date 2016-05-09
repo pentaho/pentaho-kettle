@@ -94,6 +94,6 @@ public interface RepositoryMeta {
 
   public RepositoryMeta clone();
 
-  public abstract void populate( Map<String, Object> properties );
+  public abstract void populate( Map<String, Object> properties, RepositoriesMeta repositoriesMeta );
 
 }

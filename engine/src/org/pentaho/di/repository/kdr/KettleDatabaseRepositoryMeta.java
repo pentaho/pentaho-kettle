@@ -29,6 +29,7 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.BaseRepositoryMeta;
+import org.pentaho.di.repository.RepositoriesMeta;
 import org.pentaho.di.repository.RepositoryCapabilities;
 import org.pentaho.di.repository.RepositoryMeta;
 import org.w3c.dom.Node;
@@ -112,6 +113,14 @@ public class KettleDatabaseRepositoryMeta extends BaseRepositoryMeta implements 
     return description;
   }
 
+  public Boolean isDefault() {
+    return isDefault;
+  }
+
+  public void setDefault( Boolean isDefault ) {
+    this.isDefault = isDefault;
+  }
+
   public void setConnection( DatabaseMeta connection ) {
     this.databaseMeta = connection;
   }
@@ -146,7 +155,18 @@ public class KettleDatabaseRepositoryMeta extends BaseRepositoryMeta implements 
     return new KettleDatabaseRepositoryMeta( REPOSITORY_TYPE_ID, getName(), getDescription(), getConnection() );
   }
 
-  @Override public void populate( Map<String, Object> properties ) {
+  @Override public void populate( Map<String, Object> properties, RepositoriesMeta repositoriesMeta ) {
+    String displayName = (String) properties.get( "displayName" );
+    String description = (String) properties.get( "description" );
+    String databaseConnection = (String) properties.get( "databaseConnection" );
+    Boolean isDefault = (Boolean) properties.get( "isDefault" );
 
+    DatabaseMeta databaseMeta = repositoriesMeta.searchDatabase( databaseConnection );
+    if ( databaseMeta != null ) {
+      setConnection( databaseMeta );
+    }
+    setName( displayName );
+    setDescription( description );
+    setDefault( isDefault );
   }
 }

@@ -29,6 +29,7 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.BaseRepositoryMeta;
+import org.pentaho.di.repository.RepositoriesMeta;
 import org.pentaho.di.repository.RepositoryCapabilities;
 import org.pentaho.di.repository.RepositoryMeta;
 import org.w3c.dom.Node;
@@ -148,7 +149,7 @@ public class KettleFileRepositoryMeta extends BaseRepositoryMeta implements Repo
     return new KettleFileRepositoryMeta( REPOSITORY_TYPE_ID, getName(), getDescription(), getBaseDirectory() );
   }
 
-  @Override public void populate( Map<String, Object> properties ) {
+  @Override public void populate( Map<String, Object> properties, RepositoriesMeta repositoriesMeta ) {
     String displayName = (String) properties.get( "displayName" );
     Boolean showHiddenFolders = (Boolean) properties.get( "showHiddenFolders" );
     String description = (String) properties.get( "description" );
