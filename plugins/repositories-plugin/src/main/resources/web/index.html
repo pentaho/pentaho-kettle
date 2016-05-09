@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="/requirejs-manager/js/require-init.js"></script>
+  <link href="css/style.css" rel="stylesheet">
+  <script>
+        require(['repositoriesMain_7.0'], function(app) {
+            app.init(document);
+        });
+    </script>
+
+</head>
+<body>
+<div ng-view class="view-frame" ng-class="slide"></div>
+</body>
+</html>

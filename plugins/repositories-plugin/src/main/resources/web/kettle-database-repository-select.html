@@ -1,0 +1,39 @@
+<div class="main_div" ng-show="model.databases.length">
+  <div class="title_text margin_bottom_30">Select a database
+    connection</div>
+  <div class="middle_div">
+    <div id="dbDiv" class="margin_bottom_20 text_left">
+      <!-- This div must be repeatable -->
+      <div ng-repeat="database in model.databases" class="db_list_items" ng-class="{active : database == model.selectedDatabase}" ng-click="selectDatabase(database)">{{database.name}}</div>
+    </div>
+    <div>
+      <button id="delete" class="right margin_left_10 secondary"
+          type="button">Delete</button>
+      <button id="edit" class="right margin_left_10 secondary"
+          type="button">Edit</button>
+      <button id="new" class="right secondary" type="button" ng-click="createNewConnection()">New</button>
+    </div>
+  </div>
+</div>
+<div class="main_div" ng-hide="model.databases.length">
+  <div class="title_text margin_bottom_30">Select a database
+    connection</div>
+  <div class="middle_div">
+    <div class="margin_bottom_20">
+      <textarea id="no_conn" class="text_center" readonly="readonly">You do not have a database connection for this repository. Please create one.</textarea>
+    </div>
+    <div>
+      <button class="same_width standard" type="button" ng-click="createNewConnection()">Create New Connection</button>
+    </div>
+  </div>
+</div>
+<div class="bottom">
+  <div class="margin_bottom_20">
+    <hr />
+  </div>
+  <div>
+    <img class="left" alt="" src="images/u42.png" /><a id="btnHelp"
+      class="left" href="">Help</a>
+    <button class="right standard" type="button" ng-click="back()">Back</button>
+  </div>
+</div>
