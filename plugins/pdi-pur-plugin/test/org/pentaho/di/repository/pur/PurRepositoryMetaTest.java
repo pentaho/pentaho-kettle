@@ -31,6 +31,10 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
+import org.pentaho.di.repository.RepositoriesMeta;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
@@ -40,7 +44,11 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.RepositoryMeta;
 
+@RunWith( MockitoJUnitRunner.class )
 public class PurRepositoryMetaTest {
+
+  @Mock
+  private RepositoriesMeta repositoriesMeta;
 
   private static final String URL_WITHOUT_TRAILING = "http://host:0000/pentaho-di";
   private static final String EXAMPLE_RESOURCES =
@@ -92,7 +100,7 @@ public class PurRepositoryMetaTest {
     properties.put( "isDefault", true );
 
     PurRepositoryMeta purRepositoryMeta = new PurRepositoryMeta();
-    purRepositoryMeta.populate( properties );
+    purRepositoryMeta.populate( properties, repositoriesMeta );
 
     assertEquals( "Display Name", purRepositoryMeta.getName() );
     assertEquals( "URL", purRepositoryMeta.getRepositoryLocation().getUrl() );

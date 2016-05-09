@@ -23,6 +23,7 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.BaseRepositoryMeta;
+import org.pentaho.di.repository.RepositoriesMeta;
 import org.pentaho.di.repository.RepositoryCapabilities;
 import org.pentaho.di.repository.RepositoryMeta;
 import org.w3c.dom.Node;
@@ -143,7 +144,7 @@ public class PurRepositoryMeta extends BaseRepositoryMeta implements RepositoryM
         isVersionCommentMandatory() );
   }
 
-  @Override public void populate( Map<String, Object> properties ) {
+  @Override public void populate( Map<String, Object> properties, RepositoriesMeta repositoriesMeta ) {
     String displayName = (String) properties.get( "displayName" );
     String url = (String) properties.get( "url" );
     String description = (String) properties.get( "description" );

@@ -41,6 +41,7 @@ import org.pentaho.di.laf.BasePropertyHandler;
 import org.pentaho.di.laf.LAFFactory;
 import org.pentaho.di.laf.PropertyHandler;
 import org.pentaho.di.repository.BaseRepositoryMeta;
+import org.pentaho.di.repository.RepositoriesMeta;
 import org.pentaho.di.repository.RepositoryCapabilities;
 import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.platform.api.engine.IApplicationContext;
@@ -205,7 +206,7 @@ public class RepositorySyncWebServiceTest implements Serializable {
       }
     }
 
-    @Override public void populate( Map<String, Object> map ) {
+    @Override public void populate( Map<String, Object> map, RepositoriesMeta repositoriesMeta ) {
 
     }
   }
