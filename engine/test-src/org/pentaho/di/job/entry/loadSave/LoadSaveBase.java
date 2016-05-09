@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,9 +22,11 @@
 
 package org.pentaho.di.job.entry.loadSave;
 
+import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.trans.steps.loadsave.getter.Getter;
 import org.pentaho.di.trans.steps.loadsave.setter.Setter;
+import org.pentaho.di.trans.steps.loadsave.validator.DatabaseMetaLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.DefaultFieldLoadSaveValidatorFactory;
 import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidatorFactory;
@@ -46,6 +48,7 @@ abstract class LoadSaveBase<T> {
   final List<String> repoAttributes;
   final JavaBeanManipulator<T> manipulator;
   final FieldLoadSaveValidatorFactory fieldLoadSaveValidatorFactory;
+  final List<DatabaseMeta> databases;
 
   public LoadSaveBase( Class<T> clazz,
                        List<String> commonAttributes, List<String> xmlAttributes, List<String> repoAttributes,
@@ -65,6 +68,7 @@ abstract class LoadSaveBase<T> {
     }
     this.fieldLoadSaveValidatorFactory =
       new DefaultFieldLoadSaveValidatorFactory( fieldLoadSaveValidatorMethodMap, fieldLoadSaveValidatorTypeMap );
+    databases = new ArrayList<DatabaseMeta>();
   }
 
   public T createMeta() {
@@ -84,8 +88,12 @@ abstract class LoadSaveBase<T> {
       Setter setter = manipulator.getSetter( attribute );
       FieldLoadSaveValidator<?> validator = fieldLoadSaveValidatorFactory.createValidator( getter );
       try {
+        Object testValue = validator.getTestObject();
         //noinspection unchecked
-        setter.set( metaToSave, validator.getTestObject() );
+        setter.set( metaToSave, testValue );
+        if ( validator instanceof DatabaseMetaLoadSaveValidator ) {
+          addDatabase( (DatabaseMeta) testValue );
+        }
       } catch ( Exception e ) {
         throw new RuntimeException( "Unable to invoke setter for " + attribute, e );
       }
@@ -136,5 +144,11 @@ abstract class LoadSaveBase<T> {
     result.addAll( list1 );
     result.addAll( list2 );
     return result;
+  }
+
+  private void addDatabase( DatabaseMeta db ) {
+    if ( !databases.contains( db ) ) {
+      databases.add( db );
+    }
   }
 }

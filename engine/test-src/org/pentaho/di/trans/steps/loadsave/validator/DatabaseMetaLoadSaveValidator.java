@@ -23,39 +23,32 @@
 package org.pentaho.di.trans.steps.loadsave.validator;
 
 import java.util.Random;
+import java.util.UUID;
 
-/**
- * @author Andrey Khayrutdinov
- */
-public class IntLoadSaveValidator implements FieldLoadSaveValidator<Integer> {
-  private final Integer maxValue;
+import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.repository.LongObjectId;
 
-  /**
-   * An IntLoadSaveValidator that returns test values between Integer.MIN_VALUE and Integer.MAX_VALUE.
-   */
-  public IntLoadSaveValidator() {
-    maxValue = null;
-  }
+public class DatabaseMetaLoadSaveValidator implements FieldLoadSaveValidator<DatabaseMeta> {
 
-  /**
-   * An IntLoadSaveValidator that only returns test values between 0 and maxValue, inclusive.
-   * 
-   * @param maxValue The maximum Int value that should be returned
-   */
-  public IntLoadSaveValidator( Integer maxValue ) {
-    this.maxValue = maxValue;
+  private static final Random rand = new Random();
+
+  @Override
+  public DatabaseMeta getTestObject() {
+    DatabaseMeta db = new DatabaseMeta();
+    db.setObjectId( new LongObjectId( rand.nextInt( Integer.MAX_VALUE ) ) );
+    db.setName( UUID.randomUUID().toString() );
+    db.setHostname( UUID.randomUUID().toString() );
+    db.setUsername( UUID.randomUUID().toString() );
+    db.setPassword( UUID.randomUUID().toString() );
+    return db;
   }
 
   @Override
-  public Integer getTestObject() {
-    if ( maxValue == null ) {
-      return new Random().nextInt();
+  public boolean validateTestObject( DatabaseMeta testObject, Object actual ) {
+    if ( actual instanceof DatabaseMeta ) {
+      return testObject.equals( actual );
     }
-    return new Random().nextInt( maxValue );
+    return false;
   }
 
-  @Override
-  public boolean validateTestObject( Integer original, Object actual ) {
-    return original.equals( actual );
-  }
 }
