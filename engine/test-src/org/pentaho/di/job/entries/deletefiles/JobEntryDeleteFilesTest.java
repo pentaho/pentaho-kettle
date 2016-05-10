@@ -109,6 +109,23 @@ public class JobEntryDeleteFilesTest {
   }
 
   @Test
+  public void filesPathVariables_AreProcessed_OnlyIfValueIsNotBlank() throws Exception {
+    final String pathToFileBlankValue = "pathToFileBlankValue";
+    final String pathToFileValidValue = "pathToFileValidValue";
+
+    jobEntry.setVariable( pathToFileBlankValue, Const.EMPTY_STRING );
+    jobEntry.setVariable( pathToFileValidValue, PATH_TO_FILE );
+
+    jobEntry.setArguments( new String[] { asVariable( pathToFileBlankValue ), asVariable( pathToFileValidValue ) } );
+    jobEntry.setFilemasks( new String[] { null, null } );
+    jobEntry.setArgFromPrevious( false );
+
+    jobEntry.execute( new Result(), 0 );
+
+    verify( jobEntry ).processFile( eq( PATH_TO_FILE ), anyString(), any( Job.class ) );
+  }
+
+  @Test
   public void specifyingTheSamePath_WithDifferentWildcards() throws Exception {
     final String fileExtensionTxt = ".txt";
     final String fileExtensionXml = ".xml";
@@ -132,4 +149,7 @@ public class JobEntryDeleteFilesTest {
     return new RowMetaAndData( meta, data );
   }
 
+  private String asVariable( String variable ) {
+    return "${" + variable + "}";
+  }
 }

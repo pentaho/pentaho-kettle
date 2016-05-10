@@ -207,7 +207,7 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
     Multimap<String, String> pathToMaskMap = populateDataForJobExecution( resultRows );
 
     for ( Map.Entry<String, String> pathToMask : pathToMaskMap.entries() ) {
-      final String filePath = pathToMask.getKey();
+      final String filePath = environmentSubstitute( pathToMask.getKey() );
       if ( filePath.trim().isEmpty() ) {
         // Relative paths are permitted, and providing an empty path means deleting all files inside a root pdi-folder.
         // It is much more likely to be a mistake than a desirable action, so we don't delete anything (see PDI-15181)
@@ -215,7 +215,7 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
           logDetailed( BaseMessages.getString( PKG, "JobEntryDeleteFiles.NoPathProvided" ) );
         }
       } else {
-        final String fileMask = pathToMask.getValue();
+        final String fileMask = environmentSubstitute( pathToMask.getValue() );
 
         if ( parentJob.isStopped() ) {
           break;
@@ -282,54 +282,50 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
     return pathToMaskMap;
   }
 
-  boolean processFile( String inputFileName, String inputWildcard, Job parentJob ) {
-    boolean rcode = false;
+  boolean processFile( String path, String wildcard, Job parentJob ) {
+    boolean isDeleted = false;
     FileObject fileFolder = null;
-    String realFileFolderName = environmentSubstitute( inputFileName );
-    String realWildCard = environmentSubstitute( inputWildcard );
 
     try {
-      fileFolder = KettleVFS.getFileObject( realFileFolderName, this );
+      fileFolder = KettleVFS.getFileObject( path, this );
 
       if ( fileFolder.exists() ) {
-        // the file or folder exists
         if ( fileFolder.getType() == FileType.FOLDER ) {
-          // It's a folder
-          if ( log.isDetailed() ) {
-            logDetailed( BaseMessages.getString( PKG, "JobEntryDeleteFiles.ProcessingFolder", realFileFolderName ) );
-            // Delete Files
-          }
-
-          int Nr = fileFolder.delete( new TextFileSelector( fileFolder.toString(), realWildCard, parentJob ) );
 
           if ( log.isDetailed() ) {
-            logDetailed( BaseMessages.getString( PKG, "JobEntryDeleteFiles.TotalDeleted", String.valueOf( Nr ) ) );
+            logDetailed( BaseMessages.getString( PKG, "JobEntryDeleteFiles.ProcessingFolder", path ) );
           }
-          rcode = true;
+
+          int totalDeleted = fileFolder.delete( new TextFileSelector( fileFolder.toString(), wildcard, parentJob ) );
+
+          if ( log.isDetailed() ) {
+            logDetailed(
+              BaseMessages.getString( PKG, "JobEntryDeleteFiles.TotalDeleted", String.valueOf( totalDeleted ) ) );
+          }
+          isDeleted = true;
         } else {
-          // It's a file
+
           if ( log.isDetailed() ) {
-            logDetailed( BaseMessages.getString( PKG, "JobEntryDeleteFiles.ProcessingFile", realFileFolderName ) );
+            logDetailed( BaseMessages.getString( PKG, "JobEntryDeleteFiles.ProcessingFile", path ) );
           }
-          boolean deleted = fileFolder.delete();
-          if ( !deleted ) {
-            logError( BaseMessages.getString( PKG, "JobEntryDeleteFiles.CouldNotDeleteFile", realFileFolderName ) );
+          isDeleted = fileFolder.delete();
+          if ( !isDeleted ) {
+            logError( BaseMessages.getString( PKG, "JobEntryDeleteFiles.CouldNotDeleteFile", path ) );
           } else {
             if ( log.isBasic() ) {
-              logBasic( BaseMessages.getString( PKG, "JobEntryDeleteFiles.FileDeleted", inputFileName ) );
+              logBasic( BaseMessages.getString( PKG, "JobEntryDeleteFiles.FileDeleted", path ) );
             }
-            rcode = true;
           }
         }
       } else {
         // File already deleted, no reason to try to delete it
         if ( log.isBasic() ) {
-          logBasic( BaseMessages.getString( PKG, "JobEntryDeleteFiles.FileAlreadyDeleted", realFileFolderName ) );
+          logBasic( BaseMessages.getString( PKG, "JobEntryDeleteFiles.FileAlreadyDeleted", path ) );
         }
-        rcode = true;
+        isDeleted = true;
       }
     } catch ( Exception e ) {
-      logError( BaseMessages.getString( PKG, "JobEntryDeleteFiles.CouldNotProcess", realFileFolderName, e
+      logError( BaseMessages.getString( PKG, "JobEntryDeleteFiles.CouldNotProcess", path, e
         .getMessage() ), e );
     } finally {
       if ( fileFolder != null ) {
@@ -341,7 +337,7 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
       }
     }
 
-    return rcode;
+    return isDeleted;
   }
 
   private class TextFileSelector implements FileSelector {
@@ -411,7 +407,7 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
    *
    * @param selectedfile
    * @param wildcard
-   * @return True if the selectedfile matches the inputWildcard
+   * @return True if the selectedfile matches the wildcard
    **********************************************************/
   private boolean GetFileWildcard( String selectedfile, String wildcard ) {
     boolean getIt = true;
