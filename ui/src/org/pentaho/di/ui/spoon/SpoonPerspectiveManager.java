@@ -51,6 +51,7 @@ import org.pentaho.ui.xul.impl.XulEventHandler;
 import org.pentaho.ui.xul.swt.tags.SwtDeck;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -94,6 +95,8 @@ public class SpoonPerspectiveManager {
   private String startupPerspective = null;
 
   private final LogChannelInterface log = new LogChannel( this );
+
+  private String[] defaultDisabled = new String[] { "schedulerPerspective" };
 
   public String getStartupPerspective() {
     return startupPerspective;
@@ -408,10 +411,10 @@ public class SpoonPerspectiveManager {
       @Override public void widgetSelected( SelectionEvent e ) {
         Menu menu = new Menu( shell );
         for ( final PerspectiveData perspectiveData : perspectiveList ) {
-          if ( perspectiveData.isHidden() == true ) {
-            continue;
-          }
           MenuItem item = new MenuItem( menu, SWT.CHECK );
+          if ( perspectiveData.isHidden() ) {
+            item.setEnabled( false );
+          }
           if ( activePerspective.getId().equals( perspectiveData.getId() ) ) {
             item.setSelection( true );
           }
@@ -439,7 +442,11 @@ public class SpoonPerspectiveManager {
         continue;
       }
       String name = per.getDisplayName( LanguageChoice.getInstance().getDefaultLocale() );
-      perspectiveList.add( new PerspectiveData( name, per.getId() ) );
+      PerspectiveData perspectiveData = new PerspectiveData( name, per.getId() );
+      if ( Arrays.asList( defaultDisabled ).contains( per.getId() ) ) {
+        perspectiveData.setHidden( true );
+      }
+      perspectiveList.add( perspectiveData );
 
       XulVbox box = deck.createVBoxCard();
       box.setId( "perspective-" + per.getId() );
