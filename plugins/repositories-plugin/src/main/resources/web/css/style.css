@@ -408,9 +408,17 @@ table {
 
 table,
 td {
-  border-bottom: 1px solid #CCCCCC;
+  border: 1px solid #CCCCCC;
   border-collapse: collapse;
   cursor: pointer;
+}
+
+table#repoMngTable,
+table#repoMngTable td {
+  border-left: none;
+  border-top: none;
+  border-right: none;
+  border-bottom: 1px solid #CCCCCC !important;
 }
 
 .table_border {
@@ -422,7 +430,7 @@ td {
 }
 
 #table-scroll {
-  height:385px;
+  height:382px;
   overflow:auto; 
 }
 
