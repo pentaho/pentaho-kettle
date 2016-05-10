@@ -167,7 +167,7 @@ a:visited {
 button {
   outline: none;
   height: 36px;
-  border-radius: 3px;
+  border-radius: 4px;
   padding: 0px 20px 0px 20px;
   border: none;
   font-size: 14px;
@@ -176,6 +176,7 @@ button {
 button.standard:enabled {
   background-color: #005EAA;
   color: #FFFFFF;
+  border: 1px solid #005EAA;
   cursor: pointer;
 }
 
@@ -183,6 +184,7 @@ button.standard:hover,
 button.standard:active {
   background-color: #0F2B5B;
   color: #FFFFFF;
+  border: 1px solid #0F2B5B;
 }
 
 button.secondary:enabled {
@@ -221,8 +223,12 @@ button.defaultBtn {
   color: #FFFFFF;
 }
 
+button.invisible {
+  visibility: hidden;
+}
+
 #btnHelp {
-  margin: 2px 0px 0px 5px;
+  margin: 8px 0px 0px 4px;
 }
 
 #browse {
@@ -245,12 +251,22 @@ input[type="password"],
 textarea,
 #connectionDD {
   height: 36px;
-  width: 370px;
   padding-left: 5px;
-  border-radius: 3px;
+  border-radius: 4px;
   border: 1px solid #CCCCCC;
   font-size: 14px;
   color: #333333;
+  font-family: OpenSansRegular;
+}
+
+input[type="text"],
+input[type="password"],
+#connectionDD {
+  width: 370px;
+}
+
+textarea {
+  width: 366px;
 }
 
 input[type="text"]:focus,
@@ -261,11 +277,80 @@ select:focus {
   border: 1px solid #005EAA;
 }
 
+/* The actual checkbox */
+input[type="checkbox"]:checked + label::after {
+   content: '';
+   position: absolute;
+   width: 6px;
+   height: 4px;
+   background: rgba(0, 0, 0, 0);
+   top: 4px;
+   left: 7px;
+   border: 3px solid white;
+   border-top: none;
+   border-right: none;
+   -webkit-transform: rotate(-45deg);
+   -moz-transform: rotate(-45deg);
+   -o-transform: rotate(-45deg);
+   -ms-transform: rotate(-45deg);
+   transform: rotate(-45deg);
+}
+
+/* Move checkbox off screen */
 input[type="checkbox"] {
-  transform: scale(1.5);
-  -ms-transform: scale(1.5);
-  -webkit-transform: scale(1.5);
-  padding: 10px;
+    position: absolute;
+    left: -999px;
+}
+
+input[type="checkbox"] + label {
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+/* New checkbox unchecked */
+input[type="checkbox"] + label::before {
+   content: "";
+   display: inline-block;
+   vertical-align: -25%;
+   height: 20px;
+   width: 20px;
+   background-color: white;
+   border: 1px solid #999999;
+   border-radius: 4px;
+   margin-right: 0.5px;
+}
+
+/* New checkbox checked */
+input[type="checkbox"]:checked + label::before {
+   content: "";
+   display: inline-block;
+   vertical-align: -25%;
+   height: 20px;
+   width: 20px;
+   background-color: #0BB10F;
+   border: 1px solid #999999;
+   border-radius: 4px;
+   margin-right: 0.5px;
+}
+
+/* position div that actually contains checkbox label */
+.checkbox-label {
+  margin-left:30px;
+  position:relative;
+  width:300px;
+  font-family: OpenSansRegular;
+  color: #999999;
+  font-size: 14px;
+}
+
+#dontModDiv,
+#makeDefaultDiv {
+  top:-21px;
+}
+
+#showHiddenDiv {
+  top:-30px;
 }
 
 input#location {
@@ -297,7 +382,7 @@ select {
 #dbDiv {
   border: 1px solid #CCCCCC;
   border-collapse: collapse;
-  border-radius: 3px;
+  border-radius: 4px;
   height: 200px;
   width: 386px;
   overflow-y: auto;
@@ -323,9 +408,22 @@ table {
 
 table,
 td {
-  border: 1px solid #CCCCCC;
+  border-bottom: 1px solid #CCCCCC;
   border-collapse: collapse;
   cursor: pointer;
+}
+
+.table_border {
+  border: 1px solid #CCCCCC;
+}
+
+#table-wrapper {
+  position:relative;
+}
+
+#table-scroll {
+  height:385px;
+  overflow:auto; 
 }
 
 td.bullet {
@@ -354,7 +452,7 @@ tr.active td {
 }
 
 td button.activate {
-  background-color: green !important;
+  background-color: #00CC66 !important;
   color: #FFFFFF !important;
 }
 
@@ -420,3 +518,9 @@ hr {
 .hidden {
   visibility: hidden;
 }
+
+.helpImg {
+  position: relative;
+  top: 8px;
+}
+

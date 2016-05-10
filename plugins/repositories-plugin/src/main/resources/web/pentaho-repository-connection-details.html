@@ -1,6 +1,6 @@
 <div class="main_div">
   <div class="title_text margin_bottom_30">Connection Details</div>
-  <div class="middle_div">
+  <div class="middle_div margin_bottom_10">
     <div class="margin_bottom_15">
       <label for="displayName" class="margin_bottom_5 block text_left">Display Name</label>
       <input id="displayName" class="block" type="text" size="50" ng-model="model.displayName" />
@@ -13,8 +13,12 @@
       <label for="description" class="margin_bottom_5 block text_left">Description</label>
       <textarea id="description" class="block" rows="4" cols="50" ng-model="model.description"></textarea>
     </div>
-    <div class="text_left">
-      <input id="makeDefault" type="checkbox" ng-model="model.isDefault" /> <label for="makeDefault">Make default-launch on startup</label>
+    <div class="text_left checkbox-control">
+      <input id="makeDefault" type="checkbox" ng-checked="model.isDefault" />
+      <label for="makeDefault"></label>
+    </div>
+    <div id="makeDefaultDiv" class="checkbox-label text_left">
+      Make default-launch on startup
     </div>
   </div>
   <div class="bottom">
@@ -22,8 +26,8 @@
       <hr />
     </div>
     <div>
-      <img class="left" alt="" src="images/u42.png" /><a id="btnHelp" class="left" href="">Help</a>
-      <button id="finish" class="right margin_left_10 secondary" type="button" ng-disabled="!canFinish()" ng-click="finish()">Finish</button>
+      <img class="left helpImg" alt="" src="images/u42.png" /><a id="btnHelp" class="left" href="">Help</a>
+      <button id="finish" class="right margin_left_10 standard" type="button" ng-disabled="!canFinish()" ng-click="finish()">Finish</button>
       <button class="right secondary" type="button" ng-click="back()">Back</button>
     </div>
   </div>

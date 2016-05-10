@@ -124,10 +124,12 @@ public class RepositoryConnectController {
         String name = repositoriesMeta.getRepository( i ).getName();
         String description = repositoriesMeta.getRepository( i ).getDescription();
         String id = repositoriesMeta.getRepository( i ).getId();
+        Boolean isDefault = Boolean.valueOf( repositoriesMeta.getRepository( i ).isDefault() );
         JSONObject repoJSON = new JSONObject();
         repoJSON.put( "id", id );
         repoJSON.put( "name", name );
         repoJSON.put( "description", description );
+        repoJSON.put( "isDefault", isDefault );
         list.add( repoJSON );
       }
     }
@@ -195,7 +197,17 @@ public class RepositoryConnectController {
   }
 
   public boolean setDefaultRepository( String name ) {
-    //TODO: Will be implemented in a future story
+    RepositoryMeta repositoryMeta = repositoriesMeta.findRepository( name );
+    int index = repositoriesMeta.indexOfRepository( repositoryMeta );
+    for ( int i = 0; i < repositoriesMeta.nrRepositories(); i++ ) {
+      repositoriesMeta.getRepository( i ).setDefault( false );
+    }
+    repositoriesMeta.getRepository( index ).setDefault( true );
+    try {
+      repositoriesMeta.writeData();
+    } catch ( KettleException ke ) {
+      log.logError( "Unable to set default repository", ke );
+    }
     return true;
   }
 
