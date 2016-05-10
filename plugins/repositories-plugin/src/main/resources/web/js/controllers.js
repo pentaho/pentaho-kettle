@@ -250,7 +250,14 @@ define(
         repositoriesModel.selectedRepository = repository;
       }
       $scope.setDefault = function(repository) {
-        setDefaultRepository(repository);
+        setDefaultRepository(repository.name);
+        for ( i = 0; i < repositoriesModel.repositories.length; i++) {
+          if ( repositoriesModel.repositories[i].name == repository.name) {
+            repositoriesModel.repositories[i].isDefault = true;
+          } else {
+            repositoriesModel.repositories[i].isDefault = false;
+          }
+        }
       }
       $scope.edit = function(repository) {
       }

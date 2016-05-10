@@ -47,7 +47,7 @@ define( [
       this.location = "";
       this.doNotModify = false;
       this.showHiddenFolders = false;
-      this.description = "Kettle file repository";
+      this.description = "Kettle File Repository";
       this.isDefault = false;
     });
 
@@ -55,7 +55,7 @@ define( [
       this.databases = JSON.parse(getDatabases());
       this.displayName = "";
       this.databaseConnection = "None";
-      this.description = "Kettle database repository";
+      this.description = "Kettle Database Repository";
       this.isDefault = false;
       this.selectedDatabase = null;
     });
