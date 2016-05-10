@@ -6,7 +6,7 @@
   <parent>
     <groupId>org.pentaho</groupId>
     <artifactId>pentaho-ce-jar-parent-pom</artifactId>
-    <version>1.1.7</version>
+    <version>1.1.9</version>
   </parent>
 
   <groupId>pentaho-kettle</groupId>
@@ -197,14 +197,6 @@
           </instructions>
         </configuration>
       </plugin>
-          <plugin>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.2</version>
-        <configuration>
-            <source>1.8</source>
-            <target>1.8</target>
-        </configuration>
-    </plugin>
     </plugins>
   </build>
 </project>
