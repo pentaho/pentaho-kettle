@@ -4,7 +4,7 @@
   <div class="middle_div">
     <div id="dbDiv" class="margin_bottom_20 text_left">
       <!-- This div must be repeatable -->
-      <div ng-repeat="database in model.databases" class="db_list_items" ng-class="{active : database == model.selectedDatabase}" ng-click="selectDatabase(database)">{{database.name}}</div>
+      <div ng-repeat="database in model.databases" class="db_list_items" ng-class="{active : database == model.selectedDatabase || model.databases.length == 1}" ng-click="selectDatabase(database)">{{database.name}}</div>
     </div>
     <div>
       <button id="delete" class="right margin_left_10 secondary"
