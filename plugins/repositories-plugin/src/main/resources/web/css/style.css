@@ -243,6 +243,10 @@ button.invisible {
   background-position: 353px center;
 }
 
+#connectionDD:hover {
+  border: 1px solid #005EAA;
+}
+
 /*
 * INPUTS
 */
@@ -430,13 +434,14 @@ table#repoMngTable td {
 }
 
 #table-scroll {
-  height:382px;
+  height:380px;
   overflow:auto; 
 }
 
 td.bullet {
   border-right: none;
   width: 7px;
+  height: 95px;
   padding: 0px;
 }
 
@@ -507,6 +512,10 @@ img.middle {
   max-height: 70px;
 }
 
+#pentaho_repo_img {
+  width: 380px;
+}
+
 hr {
   height: 1px;
   background-color: #CCCCCC;
@@ -531,4 +540,3 @@ hr {
   position: relative;
   top: 8px;
 }
-
