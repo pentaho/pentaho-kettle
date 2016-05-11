@@ -1,5 +1,5 @@
 /*!
- * Copyright 2010 - 2015 Pentaho Corporation.  All rights reserved.
+ * Copyright 2010 - 2016 Pentaho Corporation.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,9 +18,19 @@ package org.pentaho.di.repository.pur;
 
 import static org.mockito.Mockito.mock;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
+import org.pentaho.di.core.KettleEnvironment;
 
 public class PurRepositoryConnectorTest {
+
+  @BeforeClass
+  public static void setUpClass() throws Exception {
+    if ( !KettleEnvironment.isInitialized() ) {
+      KettleEnvironment.init();
+    }
+  }
+
   @Test
   public void testPDI12439PurRepositoryConnectorDoesntNPEAfterMultipleDisconnects() {
     PurRepository mockPurRepository = mock( PurRepository.class );
