@@ -78,33 +78,27 @@ import org.xml.sax.InputSource;
  *
  */
 public class XMLHandler {
+  //TODO Change impl for some standard XML processing (like StAX, for example) because ESAPI has charset processing issues.
+
   private static XMLHandlerCache cache = XMLHandlerCache.getInstance();
   private static final SimpleDateFormat simpleDateFormat = new SimpleDateFormat( ValueMeta.DEFAULT_DATE_FORMAT_MASK );
   private static final SimpleDateFormat simpleTimeStampFormat = new SimpleDateFormat( ValueMeta.DEFAULT_TIMESTAMP_FORMAT_MASK );
   /**
    * The header string to specify encoding in UTF-8 for XML files
    *
-   * Implementation should be changed for some standard XML processing (like StAX, for example) because ESAPI has issues
-   * with charset processing.
-   * 
    * @return The XML header.
    */
-  @Deprecated
   public static String getXMLHeader() {
     return getXMLHeader( Const.XML_ENCODING );
   }
 
   /**
    * The header string to specify encoding in an XML file
-   *
-   * Implementation should be changed for some standard XML processing (like StAX, for example) because ESAPI has issues
-   * with charset processing.
    * 
    * @param encoding
    *          The desired encoding to use in the XML file
    * @return The XML header.
    */
-  @Deprecated
   public static String getXMLHeader( String encoding ) {
     return "<?xml version=\"1.0\" encoding=\"" + encoding + "\"?>" + Const.CR;
   }
@@ -765,9 +759,6 @@ public class XMLHandler {
 
   /**
    * Build an XML string for a certain tag String value
-   * 
-   * Implementation should be changed for some standard XML processing (like StAX, for example) because ESAPI has issues
-   * with charset processing.
    *
    * @param tag
    *          The XML tag
@@ -777,7 +768,6 @@ public class XMLHandler {
    *          true if a carriage return is desired after the ending tag.
    * @return The XML String for the tag.
    */
-  @Deprecated
   public static String addTagValue( String tag, String val, boolean cr, String... attributes ) {
     StringBuilder value = new StringBuilder( "<" );
     Encoder encoder = ESAPI.encoder();
@@ -806,11 +796,6 @@ public class XMLHandler {
     return value.toString();
   }
 
-  /**
-   * Implementation should be changed for some standard XML processing (like StAX, for example) because ESAPI has issues
-   * with charset processing.
-   */
-  @Deprecated
   public static void appendReplacedChars( StringBuilder value, String string ) {
     Encoder encoder = ESAPI.encoder();
     value.append( encoder.encodeForXML( string ) );
