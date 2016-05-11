@@ -23,6 +23,7 @@
 package org.pentaho.di.ui.repo;
 
 import org.codehaus.jackson.map.ObjectMapper;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.BrowserFunction;
 import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Shell;
@@ -47,6 +48,7 @@ public class RepositoryDialog extends ThinDialog {
 
   private static final int WIDTH = 630;
   private static final int HEIGHT = 630;
+  private static final int OPTIONS = SWT.APPLICATION_MODAL | SWT.DIALOG_TRIM;
   private static final String CREATION_TITLE = "New Repository Connection";
   private static final String CREATION_WEB_CLIENT_PATH = "/repositories/web/index.html";
   private static final String MANAGER_TITLE = "Repository Manager";
@@ -177,17 +179,17 @@ public class RepositoryDialog extends ThinDialog {
   }
 
   public void openManager() {
-    super.createDialog( MANAGER_TITLE, getRepoURL( MANAGER_WEB_CLIENT_PATH ) );
+    super.createDialog( MANAGER_TITLE, getRepoURL( MANAGER_WEB_CLIENT_PATH ), OPTIONS );
     open();
   }
 
   public void openCreation() {
-    super.createDialog( CREATION_TITLE, getRepoURL( CREATION_WEB_CLIENT_PATH ) );
+    super.createDialog( CREATION_TITLE, getRepoURL( CREATION_WEB_CLIENT_PATH ), OPTIONS );
     open();
   }
 
   public void openLogin( RepositoryMeta repositoryMeta ) {
-    super.createDialog( LOGIN_TITLE, getRepoURL( LOGIN_WEB_CLIENT_PATH ) );
+    super.createDialog( LOGIN_TITLE, getRepoURL( LOGIN_WEB_CLIENT_PATH ), OPTIONS );
     open( repositoryMeta );
   }
 

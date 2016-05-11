@@ -49,12 +49,12 @@ public class ThinDialog extends Dialog {
     this.height = height;
   }
 
-  public void createDialog( String title, String url ) {
+  public void createDialog( String title, String url, int options ) {
 
     Shell parent = getParent();
     display = parent.getDisplay();
 
-    dialog = new Shell( parent );
+    dialog = new Shell( parent, options );
     dialog.setText( title );
     dialog.setSize( width, height );
     dialog.setLayout( new FillLayout() );
