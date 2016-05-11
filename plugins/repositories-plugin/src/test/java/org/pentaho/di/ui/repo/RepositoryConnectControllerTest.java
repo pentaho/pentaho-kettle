@@ -148,7 +148,9 @@ public class RepositoryConnectControllerTest {
 
     String repositories = controller.getRepositories();
 
-    assertEquals( "[{\"name\":\"PLUGIN NAME\",\"description\":\"PLUGIN DESCRIPTION\",\"id\":\"ID\"}]", repositories );
+    assertEquals(
+      "[{\"isDefault\":false,\"name\":\"PLUGIN NAME\",\"description\":\"PLUGIN DESCRIPTION\",\"id\":\"ID\"}]",
+      repositories );
   }
 
   @Test
@@ -175,12 +177,12 @@ public class RepositoryConnectControllerTest {
 
   @Test
   public void testDeleteRepository() throws Exception {
-    String repositoryName = REPOSITORY_NAME;
     int index = 1;
-    when( repositoriesMeta.findRepository( repositoryName ) ).thenReturn( repositoryMeta );
+    when( repositoriesMeta.findRepository( REPOSITORY_NAME ) ).thenReturn( repositoryMeta );
     when( repositoriesMeta.indexOfRepository( repositoryMeta ) ).thenReturn( index );
+    when( repositoriesMeta.getRepository( index ) ).thenReturn( repositoryMeta );
 
-    boolean result = controller.deleteRepository( repositoryName );
+    boolean result = controller.deleteRepository( REPOSITORY_NAME );
 
     assertEquals( true, result );
     verify( repositoriesMeta ).removeRepository( index );
@@ -189,6 +191,10 @@ public class RepositoryConnectControllerTest {
 
   @Test
   public void testSetDefaultRepository() {
+    int index = 1;
+    when( repositoriesMeta.findRepository( REPOSITORY_NAME ) ).thenReturn( repositoryMeta );
+    when( repositoriesMeta.indexOfRepository( repositoryMeta ) ).thenReturn( index );
+
     boolean result = controller.setDefaultRepository( REPOSITORY_NAME );
     assertEquals( true, result );
   }
