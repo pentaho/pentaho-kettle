@@ -1,5 +1,5 @@
 /*!
- * Copyright 2010 - 2015 Pentaho Corporation.  All rights reserved.
+ * Copyright 2010 - 2016 Pentaho Corporation.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,7 +58,7 @@ import org.pentaho.platform.repository2.unified.webservices.RepositoryFileTreeDt
  */
 public class UnifiedRepositoryPurgeServiceTest {
 
-  private final static String[][] versionData = new String[][] {
+  private static final String[][] versionData = new String[][] {
     { "100", "1", "01/01/2000", "Bugs Bunny", "original", "1.0" },
     { "101", "1", "01/01/2002", "Bugs Bunny", "1st change", "1.1" },
     { "102", "1", "01/01/2004", "Micky Mouse", "2nd change", "1.2" },
@@ -70,9 +70,9 @@ public class UnifiedRepositoryPurgeServiceTest {
     { "202", "2", "01/01/2005", "Fred Flintstone", "2nd change", "1.2" },
     { "203", "2", "01/01/2013", "Barny Rubble", "3rd change", "1.3" }, };
 
-  private final static DateFormat DATE_FORMAT = new SimpleDateFormat( "MM/dd/yyyy" );
+  private static final DateFormat DATE_FORMAT = new SimpleDateFormat( "MM/dd/yyyy" );
 
-  private final static String treeResponse =
+  private static final String treeResponse =
       "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>"
           + "<repositoryFileTreeDto><children><children><file><folder>false</folder><hidden>false</hidden><id>1</id><locked>false</locked><name>file1.ktr</name><ownerType>-1</ownerType><path>/home/joe/file1.ktr</path><versionId>1.5</versionId><versioned>true</versioned></file></children>"
           + "<children><children><file><folder>false</folder><hidden>false</hidden><id>2</id><locked>false</locked><name>file2.ktr</name><ownerType>-1</ownerType><path>/home/joe/newdirTest/file2.ktr</path><versionId>1.3</versionId><versioned>true</versioned></file></children>"
@@ -148,6 +148,21 @@ public class UnifiedRepositoryPurgeServiceTest {
     purgeService.deleteVersion( element1, versionId );
 
     verify( mockRepo, times( 1 ) ).deleteFileAtVersion( fileId, versionId );
+    verify( mockRepo, never() ).deleteFileAtVersion( eq( "2" ), anyString() );
+  }
+
+  @Test
+  public void keepNumberOfVersions0Test() throws KettleException {
+    IUnifiedRepository mockRepo = mock( IUnifiedRepository.class );
+    final HashMap<String, List<VersionSummary>> versionListMap = processVersionMap( mockRepo );
+
+    UnifiedRepositoryPurgeService purgeService = new UnifiedRepositoryPurgeService( mockRepo );
+    String fileId = "1";
+    int versionCount = 0;
+
+    purgeService.keepNumberOfVersions( element1, versionCount );
+
+    verifyVersionCountDeletion( versionListMap, mockRepo, fileId, versionCount );
     verify( mockRepo, never() ).deleteFileAtVersion( eq( "2" ), anyString() );
   }
 
@@ -242,9 +257,17 @@ public class UnifiedRepositoryPurgeServiceTest {
 
     // Since each tree call delivers the same mock tree, we expect the files to get deleted once per folder.
     String fileId = "1";
+    String fileLastRevision = "105";
     List<VersionSummary> list = versionListMap.get( fileId );
     for ( VersionSummary sum : list ) {
-      verify( mockRepo, times( 4 ) ).deleteFileAtVersion( fileId, sum.getId() );
+      final int expectedTimes;
+      if ( !fileLastRevision.equals( sum.getId() ) ) {
+        expectedTimes = 4;
+      } else {
+        expectedTimes = 0;
+      }
+      verify( mockRepo, times( expectedTimes ) ).deleteFileAtVersion( fileId, sum.getId() );
+      verify( UnifiedRepositoryPurgeService.getRepoWs(), times( 4 ) ).deleteFileWithPermanentFlag( eq( fileId ), eq( true ), anyString() );
     }
   }
 
