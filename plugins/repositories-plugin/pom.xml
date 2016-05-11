@@ -119,13 +119,6 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>pentaho</groupId>
-      <artifactId>common-ui</artifactId>
-      <version>${project.version}</version>
-      <type>zip</type>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
       <groupId>org.apache.karaf.kar</groupId>
       <artifactId>org.apache.karaf.kar.core</artifactId>
       <version>3.0.3</version>

@@ -197,12 +197,11 @@ public class RepositoryConnectController {
   }
 
   public boolean setDefaultRepository( String name ) {
-    RepositoryMeta repositoryMeta = repositoriesMeta.findRepository( name );
-    int index = repositoriesMeta.indexOfRepository( repositoryMeta );
     for ( int i = 0; i < repositoriesMeta.nrRepositories(); i++ ) {
       repositoriesMeta.getRepository( i ).setDefault( false );
     }
-    repositoriesMeta.getRepository( index ).setDefault( true );
+    RepositoryMeta repositoryMeta = repositoriesMeta.findRepository( name );
+    repositoryMeta.setDefault( true );
     try {
       repositoriesMeta.writeData();
     } catch ( KettleException ke ) {
