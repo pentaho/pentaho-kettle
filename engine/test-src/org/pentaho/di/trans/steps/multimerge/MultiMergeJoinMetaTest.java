@@ -24,6 +24,8 @@ package org.pentaho.di.trans.steps.multimerge;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertNull;
 
+import java.util.Arrays;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.Assert;
@@ -58,5 +60,21 @@ public class MultiMergeJoinMetaTest {
     Assert.assertTrue( xml.contains( "step0" ) );
     Assert.assertTrue( xml.contains( "step1" ) );
 
+  }
+  
+  @Test
+  public void cloneTest() throws Exception {
+    MultiMergeJoinMeta meta = new MultiMergeJoinMeta();
+    meta.allocateKeys( 2 );
+    meta.allocateInputSteps( 3 );
+    meta.setKeyFields( new String[] { "key1", "key2" } );
+    meta.setInputSteps( new String[] { "step1", "step2", "step3" } );
+    // scalars should be cloned using super.clone() - makes sure they're calling super.clone()
+    meta.setJoinType( "INNER" );
+    MultiMergeJoinMeta aClone = (MultiMergeJoinMeta)meta.clone();
+    Assert.assertFalse(aClone == meta );
+    Assert.assertTrue( Arrays.equals( meta.getKeyFields(), aClone.getKeyFields() ) );
+    Assert.assertTrue( Arrays.equals( meta.getInputSteps(), aClone.getInputSteps() ) );
+    Assert.assertEquals( meta.getJoinType(), aClone.getJoinType() );
   }
 }
