@@ -1,21 +1,21 @@
-<div class="main_div" ng-show="model.databases.length">
+<div class="main_div" ng-show="databases.length">
   <div class="title_text margin_bottom_30">Select a database
     connection</div>
   <div class="middle_div">
     <div id="dbDiv" class="margin_bottom_20 text_left">
       <!-- This div must be repeatable -->
-      <div ng-repeat="database in model.databases" class="db_list_items" ng-class="{active : database == model.selectedDatabase || model.databases.length == 1}" ng-click="selectDatabase(database)">{{database.name}}</div>
+      <div ng-repeat="database in databases" class="db_list_items" ng-class="{active : database == selectedDatabase}" ng-click="selectDatabase(database)">{{database.name}}</div>
     </div>
     <div>
       <button id="delete" class="right margin_left_10 secondary"
-          type="button">Delete</button>
+          type="button" ng-click="deleteConnection()">Delete</button>
       <button id="edit" class="right margin_left_10 secondary"
-          type="button">Edit</button>
+          type="button" ng-click="editConnection()">Edit</button>
       <button id="new" class="right secondary" type="button" ng-click="createNewConnection()">New</button>
     </div>
   </div>
 </div>
-<div class="main_div" ng-hide="model.databases.length">
+<div class="main_div" ng-hide="databases.length">
   <div class="title_text margin_bottom_30">Select a database
     connection</div>
   <div class="middle_div">
@@ -32,8 +32,7 @@
     <hr />
   </div>
   <div>
-    <img class="left helpImg" alt="" src="images/u42.png" /><a id="btnHelp"
-      class="left" href="">Help</a>
+    <img class="left helpImg" alt="" src="images/u42.png" /><a id="btnHelp" class="left" ng-click="help()">Help</a>
     <button class="right standard" type="button" ng-click="back()">Back</button>
   </div>
 </div>

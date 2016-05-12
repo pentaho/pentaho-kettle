@@ -27,6 +27,7 @@ import java.util.Properties;
 import junit.framework.Assert;
 
 import org.dom4j.Document;
+import org.json.simple.JSONObject;
 import org.junit.After;
 import org.junit.Test;
 import org.pentaho.di.core.Const;
@@ -204,10 +205,6 @@ public class RepositorySyncWebServiceTest implements Serializable {
       } catch ( Exception e ) {
         throw new KettleException( "Unable to load Kettle database repository meta object", e );
       }
-    }
-
-    @Override public void populate( Map<String, Object> map, RepositoriesMeta repositoriesMeta ) {
-
     }
   }
 

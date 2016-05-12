@@ -25,6 +25,7 @@ package org.pentaho.di.repository.kdr;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.when;
 
+import org.json.simple.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -41,6 +42,10 @@ import java.util.Map;
  */
 @RunWith( MockitoJUnitRunner.class )
 public class KettleDatabaseRepositoryMetaTest {
+
+  public static final String JSON_OUTPUT =
+    "{\"isDefault\":true,\"displayName\":\"Name\",\"description\":\"Description\","
+      + "\"databaseConnection\":\"Database Connection\",\"id\":\"KettleDatabaseRepository\"}";
 
   @Mock
   RepositoriesMeta repositoriesMeta;
@@ -76,6 +81,20 @@ public class KettleDatabaseRepositoryMetaTest {
     assertEquals( DESCRIPTION, kettleDatabaseRepositoryMeta.getDescription() );
     assertEquals( DATABASE_CONNECTION, kettleDatabaseRepositoryMeta.getConnection().getName() );
     assertEquals( true, kettleDatabaseRepositoryMeta.isDefault() );
+  }
+
+  @Test
+  public void testToJSONString() {
+    when( databaseMeta.getName() ).thenReturn( DATABASE_CONNECTION );
+
+    kettleDatabaseRepositoryMeta.setName( NAME );
+    kettleDatabaseRepositoryMeta.setDescription( DESCRIPTION );
+    kettleDatabaseRepositoryMeta.setConnection( databaseMeta );
+    kettleDatabaseRepositoryMeta.setDefault( true );
+
+    JSONObject json = kettleDatabaseRepositoryMeta.toJSONObject();
+
+    assertEquals( JSON_OUTPUT, json.toString() );
   }
 
 }

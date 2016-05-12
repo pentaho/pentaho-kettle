@@ -22,6 +22,7 @@
 
 package org.pentaho.di.repository.filerep;
 
+import org.json.simple.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -43,6 +44,9 @@ public class KettleFileRepositoryMetaTest {
   public static final String NAME = "Name";
   public static final String DESCRIPTION = "Description";
   public static final String THIS_IS_THE_PATH = "/this/is/the/path";
+  public static final String JSON_OUTPUT = "{\"isDefault\":true,\"displayName\":\"Name\",\"showHiddenFolders\":true,"
+    + "\"description\":\"Description\",\"location\":\"\\/this\\/is\\/the\\/path\",\"id\":\"KettleFileRepository\","
+    + "\"doNotModify\":true}";
 
   @Mock
   private RepositoriesMeta repositoriesMeta;
@@ -72,6 +76,20 @@ public class KettleFileRepositoryMetaTest {
     assertEquals( THIS_IS_THE_PATH, kettleFileRepositoryMeta.getBaseDirectory() );
     assertEquals( true, kettleFileRepositoryMeta.isReadOnly() );
     assertEquals( true, kettleFileRepositoryMeta.isDefault() );
+  }
+
+  @Test
+  public void testToJSONString() {
+    kettleFileRepositoryMeta.setName( NAME );
+    kettleFileRepositoryMeta.setHidingHiddenFiles( true );
+    kettleFileRepositoryMeta.setDescription( DESCRIPTION );
+    kettleFileRepositoryMeta.setBaseDirectory( THIS_IS_THE_PATH );
+    kettleFileRepositoryMeta.setReadOnly( true );
+    kettleFileRepositoryMeta.setDefault( true );
+
+    JSONObject json = kettleFileRepositoryMeta.toJSONObject();
+
+    assertEquals( JSON_OUTPUT, json.toString() );
   }
 
 }

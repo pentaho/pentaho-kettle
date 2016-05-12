@@ -36,28 +36,47 @@ define( [
     });
 
     repoConnectionApp.service("pentahoRepositoryModel",function() {
-      this.displayName = "";
-      this.url = getDefaultUrl();
-      this.description = "Pentaho repository | " + getDefaultUrl();
-      this.isDefault = false;
+      this.default = {
+        displayName: "",
+        url: getDefaultUrl(),
+        description: "Pentaho repository | " + getDefaultUrl(),
+        isDefault: false
+      };
+      this.model = {};
+      this.reset = function() {
+        angular.copy(this.default, this.model);
+      }
+      this.reset();
     });
 
     repoConnectionApp.service("kettleFileRepositoryModel", function() {
-      this.displayName = "";
-      this.location = "";
-      this.doNotModify = false;
-      this.showHiddenFolders = false;
-      this.description = "Kettle File Repository";
-      this.isDefault = false;
+      this.default = {
+        displayName: "",
+        location: "",
+        doNotModify: false,
+        showHiddenFolders: false,
+        description: "Kettle file repository",
+        isDefault: false
+      }
+      this.model = {};
+      this.reset = function() {
+        angular.copy(this.default, this.model);
+      }
+      this.reset();
     });
 
     repoConnectionApp.service("kettleDatabaseRepositoryModel", function() {
-      this.databases = JSON.parse(getDatabases());
-      this.displayName = "";
-      this.databaseConnection = "None";
-      this.description = "Kettle Database Repository";
-      this.isDefault = false;
-      this.selectedDatabase = null;
+      this.default = {
+        displayName: "",
+        databaseConnection: "None",
+        description: "Kettle database repository",
+        isDefault: false
+      };
+      this.model = {};
+      this.reset = function() {
+        angular.copy(this.default, this.model);
+      }
+      this.reset();
     });
 
     repoConnectionApp.service("repositoryConnectModel", function() {

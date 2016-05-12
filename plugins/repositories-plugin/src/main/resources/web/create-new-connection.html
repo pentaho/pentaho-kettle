@@ -1,5 +1,5 @@
 <div class="main_div">
-  <div id="table-wrapper" class="primary_text" style="margin-bottom:270px">
+  <div id="table-wrapper" class="primary_text margin_bottom_60">
     <div id="table-scroll">
       <table id="reposTable" class="text_left">
         <tr ng-repeat="repositoryType in model.repositoryTypes" ng-class="{active : repositoryType == model.selectedRepositoryType}">
@@ -12,15 +12,15 @@
       </table>
     </div>
   </div>
-  <div class="margin_bottom_30">
-    <a ng-click="backFade()" style="cursor:pointer">Pentaho Repository</a>
+  <div>
+    <a ng-click="backFade()" style="cursor:pointer" href="#/pentaho-repository">Pentaho Repository</a>
   </div>
   <div class="bottom">
     <div class="margin_bottom_20">
       <hr />
     </div>
     <div>
-      <img class="left helpImg" alt="" src="images/u42.png" /><a id="btnHelp" class="left" href="">Help</a>
+      <img class="left helpImg" alt="" src="images/u42.png" /><a id="btnHelp" class="left" ng-click="help()">Help</a>
       <button id="btnClose" class="right margin_left_10 secondary" type="button" ng-click="close()">Close</button>
       <button id="btnGetStarted" class="right standard" type="button" ng-disabled="!model.selectedRepositoryType" ng-click="getStarted(model.selectedRepositoryType)">Get Started</button>
     </div>

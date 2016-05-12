@@ -30,9 +30,11 @@ import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
 import org.pentaho.di.ui.core.dialog.ThinDialog;
+import org.pentaho.di.ui.util.HelpUtils;
 import org.pentaho.platform.settings.ServerPort;
 import org.pentaho.platform.settings.ServerPortRegistry;
 
@@ -43,8 +45,11 @@ import java.util.HashMap;
  */
 public class RepositoryDialog extends ThinDialog {
 
+  public static final String HELP_URL = "https://help.pentaho.com/Documentation/7.0/0L0/0Y0/040";
   private LogChannelInterface log =
     KettleLogStore.getLogChannelInterfaceFactory().create( RepositoryDialog.class );
+
+  private static Class<?> PKG = RepositoryConnectMenu.class;
 
   private static final int WIDTH = 630;
   private static final int HEIGHT = 630;
@@ -54,8 +59,10 @@ public class RepositoryDialog extends ThinDialog {
   private static final String MANAGER_TITLE = "Repository Manager";
   private static final String MANAGER_WEB_CLIENT_PATH = "/repositories/web/index.html#repository-manager";
   private static final String LOGIN_TITLE = "Login to Repository";
-  private static final String LOGIN_WEB_CLIENT_PATH = "/repositories/web/index.html#pentaho-repository-connect";
+  private static final String LOGIN_WEB_CLIENT_PATH = "/repositories/web/index.html#repository-connect";
   private static final String OSGI_SERVICE_PORT = "OSGI_SERVICE_PORT";
+
+
   private RepositoryConnectController controller;
   private Shell shell;
 
@@ -76,6 +83,14 @@ public class RepositoryDialog extends ThinDialog {
         browser.dispose();
         dialog.close();
         dialog.dispose();
+        return true;
+      }
+    };
+
+    new BrowserFunction( browser, "help" ) {
+      @Override public Object function( Object[] objects ) {
+        HelpUtils.openHelpDialog( shell, BaseMessages.getString( PKG, "RepositoryDialog.Dialog.Tile" ), HELP_URL,
+          BaseMessages.getString( PKG, "RepositoryDialog.Dialog.Header" ) );
         return true;
       }
     };
@@ -156,6 +171,23 @@ public class RepositoryDialog extends ThinDialog {
       }
     };
 
+    new BrowserFunction( browser, "editDatabaseConnection" ) {
+      @Override public Object function( Object[] objects ) {
+        DatabaseMeta databaseMeta = controller.getDatabase( (String) objects[ 0 ] );
+        DatabaseDialog databaseDialog = new DatabaseDialog( shell, databaseMeta );
+        databaseDialog.open();
+        controller.save();
+        return databaseMeta.getName();
+      }
+    };
+
+    new BrowserFunction( browser, "deleteDatabaseConnection" ) {
+      @Override public Object function( Object[] objects ) {
+        controller.removeDatabase( (String) objects[ 0 ] );
+        return true;
+      }
+    };
+
     new BrowserFunction( browser, "reset" ) {
       @Override public Object function( Object[] objects ) {
         controller.setCurrentRepository( null );
@@ -166,6 +198,12 @@ public class RepositoryDialog extends ThinDialog {
     new BrowserFunction( browser, "getDefaultUrl" ) {
       @Override public Object function( Object[] objects ) {
         return controller.getDefaultUrl();
+      }
+    };
+
+    new BrowserFunction( browser, "loadRepository" ) {
+      @Override public Object function( Object[] objects ) {
+        return controller.getRepository( (String) objects[ 0 ] );
       }
     };
 

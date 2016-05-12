@@ -383,6 +383,10 @@ select {
   font-style: italic;
 }
 
+.italic {
+  font-style: italic;
+}
+
 #dbDiv {
   border: 1px solid #CCCCCC;
   border-collapse: collapse;
