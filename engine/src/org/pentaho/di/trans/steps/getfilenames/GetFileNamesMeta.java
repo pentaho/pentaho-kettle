@@ -389,7 +389,6 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface 
     System.arraycopy( fileMask, 0, retval.fileMask, 0, nrfiles );
     System.arraycopy( excludeFileMask, 0, retval.excludeFileMask, 0, nrfiles );
     System.arraycopy( fileRequired, 0, retval.fileRequired, 0, nrfiles );
-    System.arraycopy( fileName, 0, retval.fileName, 0, nrfiles );
     System.arraycopy( includeSubFolders, 0, retval.includeSubFolders, 0, nrfiles );
 
     return retval;
