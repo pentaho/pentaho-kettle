@@ -44,41 +44,33 @@ function(angular) {
         templateUrl: 'pentaho-repository.html',
         controller: 'PentahoRepositoryController'
       }).
-      when('/create-new-connection', {
-        templateUrl: 'create-new-connection.html',
-        controller: 'CreateNewConnectionController'
-      }).
       when('/pentaho-repository-connection-details', {
         templateUrl: 'pentaho-repository-connection-details.html',
         controller: 'PentahoRepositoryController'
       }).
       when('/pentaho-repository-creation-success', {
         templateUrl: 'creation-success.html',
-        controller: 'PentahoRepositoryCreationSuccessController'
+        controller: 'PentahoRepositoryController'
       }).
       when('/pentaho-repository-creation-failure', {
         templateUrl: 'creation-failure.html',
-        controller: 'PentahoRepositoryCreationFailureController'
-      }).
-      when('/pentaho-repository-connect', {
-        templateUrl: 'pentaho-repository-connect.html',
-        controller: 'PentahoRepositoryConnectController'
+        controller: 'PentahoRepositoryController'
       }).
       when('/kettle-file-repository-details', {
         templateUrl: 'kettle-file-repository-details.html',
-        controller: 'KettleFileRepositoryDetailsController'
+        controller: 'KettleFileRepositoryController'
       }).
       when('/kettle-file-repository-creation-success', {
         templateUrl: 'creation-success.html',
-        controller: 'KettleFileRepositoryCreationSuccessController'
+        controller: 'KettleFileRepositoryController'
       }).
       when('/kettle-file-repository-creation-failure', {
         templateUrl: 'creation-failure.html',
-        controller: 'KettleFileRepositoryCreationFailureController'
+        controller: 'KettleFileRepositoryController'
       }).
       when('/kettle-database-repository-details', {
         templateUrl: 'kettle-database-repository-details.html',
-        controller: 'KettleDatabaseRepositoryDetailsController'
+        controller: 'KettleDatabaseRepositoryController'
       }).
       when('/kettle-database-repository-select', {
         templateUrl: 'kettle-database-repository-select.html',
@@ -86,15 +78,19 @@ function(angular) {
       }).
       when('/kettle-database-repository-creation-success', {
         templateUrl: 'creation-success.html',
-        controller: 'KettleDatabaseRepositoryCreationSuccessController'
+        controller: 'KettleDatabaseRepositoryController'
       }).
       when('/kettle-database-repository-creation-failure', {
         templateUrl: 'creation-failure.html',
-        controller: 'KettleDatabaseRepositoryCreationFailureController'
+        controller: 'KettleDatabaseRepositoryController'
       }).
-      when('/kettle-database-connection', {
+      when('/create-new-connection', {
+        templateUrl: 'create-new-connection.html',
+        controller: 'CreateNewConnectionController'
+      }).
+      when('/repository-connect', {
         templateUrl: 'pentaho-repository-connect.html',
-        controller: 'KettleDatabaseRepositoryConnectController'
+        controller: 'RepositoryConnectController'
       }).
       when('/repository-manager', {
         templateUrl: 'repository-manager.html',
@@ -109,14 +105,12 @@ function(angular) {
     $rootScope.$on('$routeChangeStart', function() {
         $rootScope.back = function() {
             $rootScope.slide = 'to-right';
-            $window.history.back();
         }
         $rootScope.next = function() {
             $rootScope.slide = 'to-left';
         }
         $rootScope.backFade = function() {
             $rootScope.slide = 'back-fade';
-            $window.history.back();
         }
         $rootScope.nextFade = function() {
             $rootScope.slide = 'next-fade';
@@ -184,6 +178,17 @@ function(angular) {
         $(element).animate({
           opacity: 0
         }, 600)
+      }
+    }
+  }]);
+
+  repoConnectionApp.directive('setFocus', ['$timeout', function($timeout) {
+    return {
+      restrict: 'A',
+      link : function($scope, $element) {
+        $timeout(function() {
+          $element[0].focus();
+        }, 600);
       }
     }
   }]);

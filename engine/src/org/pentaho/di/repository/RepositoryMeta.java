@@ -25,6 +25,7 @@ package org.pentaho.di.repository;
 import java.util.List;
 import java.util.Map;
 
+import org.json.simple.JSONObject;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.w3c.dom.Node;
@@ -95,5 +96,7 @@ public interface RepositoryMeta {
   public RepositoryMeta clone();
 
   public abstract void populate( Map<String, Object> properties, RepositoriesMeta repositoriesMeta );
+
+  public abstract JSONObject toJSONObject();
 
 }

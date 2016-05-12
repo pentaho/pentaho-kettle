@@ -25,6 +25,7 @@ package org.pentaho.di.repository.filerep;
 import java.util.List;
 import java.util.Map;
 
+import org.json.simple.JSONObject;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -36,6 +37,9 @@ import org.w3c.dom.Node;
 
 public class KettleFileRepositoryMeta extends BaseRepositoryMeta implements RepositoryMeta {
 
+  public static final String SHOW_HIDDEN_FOLDERS = "showHiddenFolders";
+  public static final String LOCATION = "location";
+  public static final String DO_NOT_MODIFY = "doNotModify";
   public static String REPOSITORY_TYPE_ID = "KettleFileRepository";
 
   private String baseDirectory;
@@ -150,19 +154,23 @@ public class KettleFileRepositoryMeta extends BaseRepositoryMeta implements Repo
   }
 
   @Override public void populate( Map<String, Object> properties, RepositoriesMeta repositoriesMeta ) {
-    String displayName = (String) properties.get( "displayName" );
-    Boolean showHiddenFolders = (Boolean) properties.get( "showHiddenFolders" );
-    String description = (String) properties.get( "description" );
-    String location = (String) properties.get( "location" );
-    Boolean doNotModify = (Boolean) properties.get( "doNotModify" );
-    Boolean isDefault = (Boolean) properties.get( "isDefault" );
+    super.populate( properties, repositoriesMeta );
+    Boolean showHiddenFolders = (Boolean) properties.get( SHOW_HIDDEN_FOLDERS );
+    String location = (String) properties.get( LOCATION );
+    Boolean doNotModify = (Boolean) properties.get( DO_NOT_MODIFY );
 
-    setName( displayName );
     setHidingHiddenFiles( showHiddenFolders );
-    setDescription( description );
     setBaseDirectory( location );
     setReadOnly( doNotModify );
-    setDefault( isDefault );
+  }
+
+  @SuppressWarnings( "unchecked" )
+  @Override public JSONObject toJSONObject() {
+    JSONObject object = super.toJSONObject();
+    object.put( SHOW_HIDDEN_FOLDERS, isHidingHiddenFiles() );
+    object.put( LOCATION, getBaseDirectory() );
+    object.put( DO_NOT_MODIFY, isReadOnly() );
+    return object;
   }
 
   /**

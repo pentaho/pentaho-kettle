@@ -23,7 +23,9 @@
 package org.pentaho.di.repository;
 
 import java.util.List;
+import java.util.Map;
 
+import org.json.simple.JSONObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
@@ -31,6 +33,11 @@ import org.pentaho.di.core.xml.XMLHandler;
 import org.w3c.dom.Node;
 
 public class BaseRepositoryMeta {
+
+  public static final String ID = "id";
+  public static final String DISPLAY_NAME = "displayName";
+  public static final String DESCRIPTION = "description";
+  public static final String IS_DEFAULT = "isDefault";
 
   protected String id;
   protected String name;
@@ -213,5 +220,25 @@ public class BaseRepositoryMeta {
   public void setDefault( Boolean isDefault ) {
     this.isDefault = isDefault;
   }
+
+  @SuppressWarnings( "unchecked" )
+  public JSONObject toJSONObject() {
+    JSONObject jsonObject = new JSONObject();
+    jsonObject.put( ID, getId() );
+    jsonObject.put( DISPLAY_NAME, getName() );
+    jsonObject.put( DESCRIPTION, getDescription() );
+    jsonObject.put( IS_DEFAULT, isDefault() );
+    return jsonObject;
+  }
+
+  public void populate( Map<String, Object> properties, RepositoriesMeta repositoriesMeta ) {
+    String displayName = (String) properties.get( DISPLAY_NAME );
+    String description = (String) properties.get( DESCRIPTION );
+    Boolean isDefault = (Boolean) properties.get( IS_DEFAULT );
+    setName( displayName );
+    setDescription( description );
+    setDefault( isDefault );
+  }
+
 
 }

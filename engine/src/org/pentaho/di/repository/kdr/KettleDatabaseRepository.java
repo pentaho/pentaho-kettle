@@ -214,6 +214,11 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
   }
 
   @Override public boolean test() {
+    try {
+      getDatabase().connect();
+    } catch ( KettleDatabaseException kde ) {
+      return false;
+    }
     return true;
   }
 

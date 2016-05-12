@@ -31,59 +31,160 @@ define(
 
     var repoConnectionAppControllers = angular.module('repoConnectionAppControllers', []);
 
-    repoConnectionAppControllers.controller("PentahoRepositoryController", function($scope, $location, $rootScope, pentahoRepositoryModel) {
-      $scope.model = pentahoRepositoryModel;
-
+    repoConnectionAppControllers.controller("PentahoRepositoryController", function($scope, $location, $rootScope, pentahoRepositoryModel, repositoryTypesModel) {
+      $scope.model = pentahoRepositoryModel.model;
+      $scope.getStarted = function() {
+        pentahoRepositoryModel.reset();
+        $location.path("/pentaho-repository-connection-details");
+        $rootScope.next();
+      }
+      $scope.otherRepositories = function() {
+        repositoryTypesModel.selectedRepositoryType = null;
+        $rootScope.nextFade();
+      }
       $scope.canFinish = function() {
-        if (pentahoRepositoryModel.displayName == "" || pentahoRepositoryModel.url == "") {
+        if (this.model.displayName == "" || this.model.url == "") {
           return false;
         }
         return true;
       }
       $scope.finish = function() {
-        if (createRepository("PentahoEnterpriseRepository", JSON.stringify(pentahoRepositoryModel))) {
+        if (createRepository("PentahoEnterpriseRepository", JSON.stringify(this.model))) {
           $location.path("/pentaho-repository-creation-success")
         } else {
           $location.path("/pentaho-repository-creation-failure")
         }
         $rootScope.next();
       };
+      $scope.connect = function() {
+       $location.path("/repository-connect");
+       $rootScope.next();
+      }
+      $scope.createNewConnection = function() {
+       $location.path("/pentaho-repository");
+       $rootScope.next();
+       reset();
+      }
+      $scope.changeSettings = function() {
+        $location.path("/pentaho-repository-connection-details");
+        $rootScope.back();
+      }
+      $scope.back = function() {
+        if (this.model.id) {
+          $location.path("/repository-manager");
+        } else {
+          $location.path("/pentaho-repository");
+        }
+        $rootScope.back();
+      }
       $scope.close = function() {
         close();
-      };
+      }
+      $scope.help = function() {
+        help();
+      }
+      $scope.successText = "Your connection was created and is ready to use.";
     });
 
-    repoConnectionAppControllers.controller("PentahoRepositoryCreationSuccessController", function($scope, $location, $rootScope) {
-       $scope.createNewConnection = function() {
-         $location.path("/pentaho-repository");
-         $rootScope.next();
-         reset();
-       }
-       $scope.connect = function() {
-         $location.path("/pentaho-repository-connect");
-         $rootScope.next();
-       }
-       $scope.close = function() {
-         close();
-       }
-       $scope.successText = "Your connection was created and is ready to use.";
+    repoConnectionAppControllers.controller("KettleFileRepositoryController", function($scope, $rootScope, $location, kettleFileRepositoryModel) {
+      $scope.model = kettleFileRepositoryModel.model;
+      $scope.selectLocation = function() {
+        this.model.location = selectLocation();
+      }
+      $scope.canFinish = function() {
+        if (this.model.displayName == "" || this.model.location == "") {
+          return false;
+        }
+        return true;
+      }
+      $scope.finish = function() {
+        if (createRepository("KettleFileRepository", JSON.stringify(this.model))) {
+          $location.path("/kettle-file-repository-creation-success")
+        } else {
+          $location.path("/kettle-file-repository-creation-failure")
+        }
+        $rootScope.next();
+      }
+      $scope.createNewConnection = function() {
+        $location.path("/pentaho-repository");
+        $rootScope.next();
+        reset();
+      }
+      $scope.connect = function() {
+        connectToRepository();
+      }
+      $scope.changeSettings = function() {
+        $location.path("/kettle-file-repository-details");
+        $rootScope.back();
+      }
+      $scope.back = function() {
+        if (this.model.id) {
+          $location.path("/repository-manager");
+        } else {
+          $location.path("/create-new-connection");
+        }
+        $rootScope.back();
+      }
+      $scope.close = function() {
+       close();
+      }
+      $scope.help = function() {
+        help();
+      }
+      $scope.successText = "Your Kettle file repository was created and is ready to use.";
     });
 
-    repoConnectionAppControllers.controller("PentahoRepositoryCreationFailureController", function($scope, $location, $rootScope) {
-       $scope.createNewConnection = function() {
-         $location.path("/pentaho-repository");
-         $rootScope.next();
-         reset();
-       }
-       $scope.back = function() {
-         $rootScope.back();
-       }
-       $scope.close = function() {
-         close();
-       }
+    repoConnectionAppControllers.controller("KettleDatabaseRepositoryController", function($scope, $rootScope, $location, kettleDatabaseRepositoryModel) {
+      $scope.model = kettleDatabaseRepositoryModel.model;
+      $scope.selectDatabase = function() {
+        $location.path("/kettle-database-repository-select")
+        $rootScope.next();
+      }
+      $scope.canFinish = function() {
+        if (this.model.displayName == "" || this.model.databaseConnection == "None") {
+          return false;
+        }
+        return true;
+      }
+      $scope.finish = function() {
+        if (createRepository("KettleDatabaseRepository", JSON.stringify(this.model))) {
+          $location.path("/kettle-database-repository-creation-success")
+        } else {
+          $location.path("/kettle-database-repository-creation-failure")
+        }
+        $rootScope.next();
+      }
+      $scope.createNewConnection = function() {
+        $location.path("/pentaho-repository");
+        $rootScope.next();
+        reset();
+      }
+      $scope.connect = function() {
+        $location.path("/repository-connect");
+        $rootScope.next();
+      }
+      $scope.changeSettings = function() {
+        $location.path("/kettle-database-repository-details");
+        $rootScope.back();
+      }
+      $scope.back = function() {
+        if (this.model.id) {
+          $location.path("/repository-manager");
+        } else {
+          $location.path("/create-new-connection");
+        }
+        $rootScope.back();
+      }
+      $scope.close = function() {
+       close();
+      }
+      $scope.help = function() {
+        help();
+      }
+      $scope.successText = "Your Kettle database repository was created and is ready to use.";
     });
 
-    repoConnectionAppControllers.controller("CreateNewConnectionController", function($scope, $location, $rootScope, repositoryTypesModel) {
+    repoConnectionAppControllers.controller("CreateNewConnectionController", function($scope, $location, $rootScope, repositoryTypesModel, kettleDatabaseRepositoryModel, kettleFileRepositoryModel) {
       $scope.model = repositoryTypesModel;
       $scope.selectRepositoryType = function(repositoryType) {
         repositoryTypesModel.selectedRepositoryType = repositoryType;
@@ -93,166 +194,87 @@ define(
       };
       $scope.getStarted = function(repositoryType) {
         if (repositoryType.id == "KettleFileRepository") {
+          kettleFileRepositoryModel.reset();
           $location.path("/kettle-file-repository-details");
           $rootScope.next();
         }
         if (repositoryType.id == "KettleDatabaseRepository") {
+          kettleDatabaseRepositoryModel.reset();
           $location.path("/kettle-database-repository-details");
           $rootScope.next();
         }
       }
-    })
-
-    repoConnectionAppControllers.controller("KettleFileRepositoryDetailsController", function($scope, $rootScope, $location, kettleFileRepositoryModel) {
-      $scope.model = kettleFileRepositoryModel;
-      $scope.selectLocation = function() {
-        kettleFileRepositoryModel.location = selectLocation();
-      }
-      $scope.back = function() {
-        $rootScope.back();
-      }
-      $scope.canFinish = function() {
-        if (kettleFileRepositoryModel.displayName == "" || kettleFileRepositoryModel.location == "") {
-          return false;
-        }
-        return true;
-      }
-      $scope.finish = function() {
-        if (createRepository("KettleFileRepository", JSON.stringify(kettleFileRepositoryModel))) {
-          $location.path("/kettle-file-repository-creation-success")
-        } else {
-          $location.path("/kettle-file-repository-creation-failure")
-        }
-        $rootScope.next();
-      }
-    });
-
-    repoConnectionAppControllers.controller("KettleFileRepositoryCreationSuccessController", function($scope, $rootScope, $location) {
-      $scope.createNewConnection = function() {
-        $location.path("/pentaho-repository");
-        $rootScope.next();
-        reset();
-      }
-      $scope.connect = function() {
-        connectToRepository();
-      }
-      $scope.close = function() {
-        close();
-      }
-      $scope.successText = "Your Kettle file repository was created and is ready to use.";
-    });
-
-    repoConnectionAppControllers.controller("KettleFileRepositoryCreationFailureController", function($scope, $location, $rootScope) {
-       $scope.createNewConnection = function() {
-         $location.path("/pentaho-repository");
-         $rootScope.next();
-         reset();
-       }
-       $scope.back = function() {
-         $rootScope.back();
-       }
-       $scope.close = function() {
-         close();
-       }
-    });
-
-    repoConnectionAppControllers.controller("KettleDatabaseRepositoryDetailsController", function($scope, $rootScope, $location, kettleDatabaseRepositoryModel) {
-      $scope.model = kettleDatabaseRepositoryModel;
-      $scope.selectDatabase = function() {
-        $location.path("/kettle-database-repository-select")
-        $rootScope.next();
-      }
-
-      $scope.back = function() {
-        $rootScope.back();
-      }
-      $scope.canFinish = function() {
-        if (kettleDatabaseRepositoryModel.displayName == "" || kettleDatabaseRepositoryModel.databaseConnection == "None") {
-          return false;
-        }
-        return true;
-      }
-      $scope.finish = function() {
-        if (createRepository("KettleDatabaseRepository", JSON.stringify(kettleDatabaseRepositoryModel))) {
-          $location.path("/kettle-database-repository-creation-success")
-        } else {
-          $location.path("/kettle-database-repository-creation-failure")
-        }
-        $rootScope.next();
+      $scope.help = function() {
+        help();
       }
     });
 
     repoConnectionAppControllers.controller("KettleDatabaseRepositorySelectController", function($scope, $rootScope, $location, kettleDatabaseRepositoryModel) {
-      $scope.model = kettleDatabaseRepositoryModel;
+      $scope.model = kettleDatabaseRepositoryModel.model;
+      $scope.databases = JSON.parse(getDatabases());
       $scope.selectDatabase = function(database) {
-        kettleDatabaseRepositoryModel.selectedDatabase = database;
-        kettleDatabaseRepositoryModel.databaseConnection = database.name;
+        $scope.selectedDatabase = database;
+        if (database == null) {
+          $scope.model.databaseConnection = "None";
+        } else {
+          $scope.model.databaseConnection = database.name;
+        }
+      }
+      function updateSelected(dbName) {
+        for (var i = 0; i < $scope.databases.length; i++) {
+          if ($scope.databases[i].name == dbName) {
+            $scope.selectDatabase($scope.databases[i]);
+          }
+        }
+      }
+      function defaultSelect() {
+        if ($scope.databases.length == 1) {
+          $scope.selectDatabase($scope.databases[0]);
+        } else {
+          $scope.selectDatabase(null);
+        }
+      }
+      if ($scope.model.databaseConnection) {
+        updateSelected($scope.model.databaseConnection);
+      } else {
+        defaultSelect();
       }
       $scope.createNewConnection = function() {
         createNewConnection();
-        kettleDatabaseRepositoryModel.databases = JSON.parse(getDatabases());
+        $scope.databases = JSON.parse(getDatabases());
+        updateSelected($scope.model.databaseConnection);
+      }
+      $scope.editConnection = function() {
+        var dbName = editDatabaseConnection(this.selectedDatabase.name);
+        $scope.databases = JSON.parse(getDatabases());
+        updateSelected(dbName);
+      }
+      $scope.deleteConnection = function() {
+        deleteDatabaseConnection(this.selectedDatabase.name);
+        $scope.databases = JSON.parse(getDatabases());
+        defaultSelect();
+      }
+      $scope.back = function() {
+        $location.path("/kettle-database-repository-details");
+        $rootScope.back();
       }
       $scope.close = function() {
         close();
       }
-    });
-
-    repoConnectionAppControllers.controller("KettleDatabaseRepositoryCreationSuccessController", function($scope, $rootScope, $location) {
-      $scope.createNewConnection = function() {
-        $location.path("/pentaho-repository");
-        $rootScope.next();
-        reset();
-      }
-      $scope.connect = function() {
-        $location.path("/pentaho-repository-connect");
-        $rootScope.next();
-      }
-      $scope.close = function() {
-        close();
-      }
-      $scope.successText = "Your Kettle database repository was created and is ready to use.";
-    });
-
-    repoConnectionAppControllers.controller("KettleDatabaseRepositoryCreationFailureController", function($scope, $location, $rootScope) {
-       $scope.createNewConnection = function() {
-         $location.path("/pentaho-repository");
-         $rootScope.next();
-         reset();
-       }
-       $scope.back = function() {
-         $rootScope.back();
-       }
-       $scope.close = function() {
-         close();
-       }
-    });
-
-    repoConnectionAppControllers.controller("KettleDatabaseRepositoryConnectController", function($scope) {
-      $scope.username = "";
-      $scope.password = "";
-      $scope.canConnect = function() {
-        if (this.username == "" || this.password == "") {
-          return false;
-        }
-        return true;
-      }
-
-      $scope.connect = function() {
-        if (loginToRepository(this.username, this.password)) {
-          close();
-        }
+      $scope.help = function() {
+        help();
       }
     });
 
-    repoConnectionAppControllers.controller("RepositoryManagerController", function($scope, $rootScope, $location, repositoriesModel) {
+    repoConnectionAppControllers.controller("RepositoryManagerController", function($scope, $rootScope, $location, repositoriesModel, pentahoRepositoryModel, kettleFileRepositoryModel, kettleDatabaseRepositoryModel) {
       $scope.model = repositoriesModel;
       $scope.selectRepository = function(repository) {
         repositoriesModel.selectedRepository = repository;
       }
       $scope.setDefault = function(repository) {
-        setDefaultRepository(repository.name);
+        setDefaultRepository(repository.displayName);
         for ( i = 0; i < repositoriesModel.repositories.length; i++) {
-          if ( repositoriesModel.repositories[i].name == repository.name) {
+          if ( repositoriesModel.repositories[i].displayName == repository.displayName) {
             repositoriesModel.repositories[i].isDefault = true;
           } else {
             repositoriesModel.repositories[i].isDefault = false;
@@ -260,12 +282,25 @@ define(
         }
       }
       $scope.edit = function(repository) {
+        var repositoryString = loadRepository(repository.displayName);
+        var repository = JSON.parse(repositoryString);
+        if (repository.id == "KettleFileRepository") {
+          kettleFileRepositoryModel.model = repository;
+          $location.path("/kettle-file-repository-details");
+        } else if (repository.id == "KettleDatabaseRepository") {
+          kettleDatabaseRepositoryModel.model = repository;
+          $location.path("/kettle-database-repository-details");
+        } else {
+          pentahoRepositoryModel.model = repository;
+          $location.path("/pentaho-repository-connection-details");
+        }
+        $rootScope.next();
       }
       $scope.delete = function(repository) {
-        deleteRepository(repository.name);
-        for ( i = 0; i < repositoriesModel.repositories.length; i++) {
-          if ( repositoriesModel.repositories[i].name == repository.name) {
-            repositoriesModel.repositories.splice(i, 1);
+        deleteRepository(repository.displayName);
+        for ( i = 0; i < this.model.repositories.length; i++) {
+          if ( this.model.repositories[i].displayName == repository.displayName) {
+            this.model.repositories.splice(i, 1);
           }
         }
       }
@@ -276,19 +311,22 @@ define(
       $scope.close = function() {
         close();
       }
+      $scope.help = function() {
+        help();
+      }
     });
 
-    repoConnectionAppControllers.controller("PentahoRepositoryConnectController", function($scope, repositoryConnectModel) {
+    repoConnectionAppControllers.controller("RepositoryConnectController", function($scope, repositoryConnectModel) {
       $scope.model = repositoryConnectModel;
       $scope.canConnect = function() {
-        if (repositoryConnectModel.username == "" || repositoryConnectModel.password == "") {
+        if (this.model.username == "" || this.model.password == "") {
           return false;
         }
         return true;
       }
 
       $scope.connect = function() {
-        if (loginToRepository(repositoryConnectModel.username, repositoryConnectModel.password)) {
+        if (loginToRepository(this.model.username, this.model.password)) {
           close();
         }
       }

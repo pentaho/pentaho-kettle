@@ -22,6 +22,7 @@
 
 package org.pentaho.di.ui.repo;
 
+import org.json.simple.JSONObject;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -38,7 +39,7 @@ import org.pentaho.di.repository.AbstractRepository;
 import org.pentaho.di.repository.RepositoriesMeta;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryMeta;
-import org.pentaho.di.ui.spoon.Spoon;
+import org.pentaho.di.repository.filerep.KettleFileRepositoryMeta;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -60,6 +61,8 @@ public class RepositoryConnectControllerTest {
   public static final String PLUGIN_DESCRIPTION = "PLUGIN DESCRIPTION";
   public static final String DATABASE_NAME = "DATABASE NAME";
   public static final String REPOSITORY_NAME = "Repository Name";
+  public static final String REPOSITORY_ID = "Repository ID";
+  public static final String REPOSITORY_DESCRIPTION = "Repository Description";
 
   @Mock
   RepositoriesMeta repositoriesMeta;
@@ -146,10 +149,19 @@ public class RepositoryConnectControllerTest {
     when( repositoriesMeta.nrRepositories() ).thenReturn( 1 );
     when( repositoriesMeta.getRepository( 0 ) ).thenReturn( repositoryMeta );
 
+    JSONObject json = new JSONObject();
+    json.put( "displayName", REPOSITORY_NAME );
+    json.put( "isDefault", false );
+    json.put( "description", REPOSITORY_DESCRIPTION );
+    json.put( "id", REPOSITORY_ID );
+
+    when( repositoryMeta.toJSONObject() ).thenReturn( json );
+
     String repositories = controller.getRepositories();
 
     assertEquals(
-      "[{\"isDefault\":false,\"name\":\"PLUGIN NAME\",\"description\":\"PLUGIN DESCRIPTION\",\"id\":\"ID\"}]",
+      "[{\"isDefault\":false,\"displayName\":\"Repository Name\",\"description\":\"Repository Description\","
+        + "\"id\":\"Repository ID\"}]",
       repositories );
   }
 
@@ -211,5 +223,21 @@ public class RepositoryConnectControllerTest {
   public void testGetDefaultUrl() throws Exception {
     String defaultUrl = controller.getDefaultUrl();
     assertNotNull( defaultUrl );
+  }
+
+  @Test
+  public void testGetRepository() throws Exception {
+    KettleFileRepositoryMeta kettleFileRepositoryMeta = new KettleFileRepositoryMeta();
+    kettleFileRepositoryMeta.setId( REPOSITORY_ID );
+    kettleFileRepositoryMeta.setDescription( REPOSITORY_DESCRIPTION );
+    kettleFileRepositoryMeta.setName( REPOSITORY_NAME );
+
+    when( repositoriesMeta.findRepository( REPOSITORY_NAME ) ).thenReturn( kettleFileRepositoryMeta );
+
+    String output = controller.getRepository( REPOSITORY_NAME );
+
+    assertEquals( true, output.contains( REPOSITORY_ID ) );
+    assertEquals( true, output.contains( REPOSITORY_DESCRIPTION ) );
+    assertEquals( true, output.contains( REPOSITORY_NAME ) );
   }
 }

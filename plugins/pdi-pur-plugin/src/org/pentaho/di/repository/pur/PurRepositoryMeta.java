@@ -19,6 +19,7 @@ package org.pentaho.di.repository.pur;
 import java.util.List;
 import java.util.Map;
 
+import org.json.simple.JSONObject;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -31,6 +32,8 @@ import org.w3c.dom.Node;
 public class PurRepositoryMeta extends BaseRepositoryMeta implements RepositoryMeta, java.io.Serializable {
 
   private static final long serialVersionUID = -2456840196232185649L; /* EESOURCE: UPDATE SERIALVERUID */
+
+  public static final String URL = "url";
 
   /** The id as specified in the repository plugin meta, used for backward compatibility only */
   public static String REPOSITORY_TYPE_ID = "PentahoEnterpriseRepository";
@@ -145,16 +148,16 @@ public class PurRepositoryMeta extends BaseRepositoryMeta implements RepositoryM
   }
 
   @Override public void populate( Map<String, Object> properties, RepositoriesMeta repositoriesMeta ) {
-    String displayName = (String) properties.get( "displayName" );
-    String url = (String) properties.get( "url" );
-    String description = (String) properties.get( "description" );
-    Boolean isDefault = (Boolean) properties.get( "isDefault" );
-
+    super.populate( properties, repositoriesMeta );
+    String url = (String) properties.get( URL );
     PurRepositoryLocation purRepositoryLocation = new PurRepositoryLocation( url );
-
-    setName( displayName );
     setRepositoryLocation( purRepositoryLocation );
-    setDescription( description );
-    setDefault( isDefault );
+  }
+
+  @SuppressWarnings( "unchecked" )
+  @Override public JSONObject toJSONObject() {
+    JSONObject object = super.toJSONObject();
+    object.put( URL, getRepositoryLocation().getUrl() );
+    return object;
   }
 }

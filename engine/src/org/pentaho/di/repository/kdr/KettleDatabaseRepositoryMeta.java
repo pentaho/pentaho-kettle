@@ -25,6 +25,7 @@ package org.pentaho.di.repository.kdr;
 import java.util.List;
 import java.util.Map;
 
+import org.json.simple.JSONObject;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -38,6 +39,10 @@ import org.w3c.dom.Node;
  * Created on 31-mar-2004
  */
 public class KettleDatabaseRepositoryMeta extends BaseRepositoryMeta implements RepositoryMeta {
+
+  public static final String ID = "id";
+  public static final String DATABASE_CONNECTION = "databaseConnection";
+
   /** The id as specified in the repository plugin meta, used for backward compatibility only */
   public static String REPOSITORY_TYPE_ID = "KettleDatabaseRepository";
 
@@ -156,17 +161,20 @@ public class KettleDatabaseRepositoryMeta extends BaseRepositoryMeta implements 
   }
 
   @Override public void populate( Map<String, Object> properties, RepositoriesMeta repositoriesMeta ) {
-    String displayName = (String) properties.get( "displayName" );
-    String description = (String) properties.get( "description" );
-    String databaseConnection = (String) properties.get( "databaseConnection" );
-    Boolean isDefault = (Boolean) properties.get( "isDefault" );
+    super.populate( properties, repositoriesMeta );
+    String databaseConnection = (String) properties.get( DATABASE_CONNECTION );
 
     DatabaseMeta databaseMeta = repositoriesMeta.searchDatabase( databaseConnection );
     if ( databaseMeta != null ) {
       setConnection( databaseMeta );
     }
-    setName( displayName );
-    setDescription( description );
-    setDefault( isDefault );
   }
+
+  @SuppressWarnings( "unchecked" )
+  @Override public JSONObject toJSONObject() {
+    JSONObject object = super.toJSONObject();
+    object.put( DATABASE_CONNECTION, databaseMeta != null ? databaseMeta.getName() : "" );
+    return object;
+  }
+
 }

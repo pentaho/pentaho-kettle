@@ -185,7 +185,8 @@
           <instructions>
             <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
-            <Export-Package>org.pentaho.di.ui.thin,org.pentaho.di.ui.repo</Export-Package>
+            <Export-Package>org.pentaho.di.ui.repo</Export-Package>
+            <Import-Package>org.json.simple; version="[1.1.0,1.1.1)", *</Import-Package>
             <Private-Package></Private-Package>
           </instructions>
         </configuration>

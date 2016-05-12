@@ -121,19 +121,31 @@ public class RepositoryConnectController {
     JSONArray list = new JSONArray();
     if ( repositoriesMeta != null ) {
       for ( int i = 0; i < repositoriesMeta.nrRepositories(); i++ ) {
-        String name = repositoriesMeta.getRepository( i ).getName();
-        String description = repositoriesMeta.getRepository( i ).getDescription();
-        String id = repositoriesMeta.getRepository( i ).getId();
-        Boolean isDefault = Boolean.valueOf( repositoriesMeta.getRepository( i ).isDefault() );
-        JSONObject repoJSON = new JSONObject();
-        repoJSON.put( "id", id );
-        repoJSON.put( "name", name );
-        repoJSON.put( "description", description );
-        repoJSON.put( "isDefault", isDefault );
-        list.add( repoJSON );
+        list.add( repositoriesMeta.getRepository( i ).toJSONObject() );
       }
     }
     return list.toString();
+  }
+
+  public String getRepository( String name ) {
+    RepositoryMeta repositoryMeta = repositoriesMeta.findRepository( name );
+    if ( repositoryMeta != null ) {
+      currentRepository = repositoryMeta;
+      return repositoryMeta.toJSONObject().toString();
+    }
+    return "";
+  }
+
+  public DatabaseMeta getDatabase( String name ) {
+    return repositoriesMeta.searchDatabase( name );
+  }
+
+  public void removeDatabase( String name ) {
+    int index = repositoriesMeta.indexOfDatabase( repositoriesMeta.searchDatabase( name ) );
+    if ( index != -1 ) {
+      repositoriesMeta.removeDatabase( index );
+    }
+    save();
   }
 
   @SuppressWarnings( "unchecked" )
@@ -179,21 +191,13 @@ public class RepositoryConnectController {
     RepositoryMeta repositoryMeta = repositoriesMeta.findRepository( name );
     int index = repositoriesMeta.indexOfRepository( repositoryMeta );
     repositoriesMeta.removeRepository( index );
-    try {
-      repositoriesMeta.writeData();
-    } catch ( KettleException ke ) {
-      log.logError( "Unable to write to repositories", ke );
-    }
+    save();
     return true;
   }
 
   public void addDatabase( DatabaseMeta databaseMeta ) {
     repositoriesMeta.addDatabase( databaseMeta );
-    try {
-      repositoriesMeta.writeData();
-    } catch ( KettleException ke ) {
-      log.logError( "Unable to write to repositories", ke );
-    }
+    save();
   }
 
   public boolean setDefaultRepository( String name ) {
@@ -217,5 +221,13 @@ public class RepositoryConnectController {
 
   public void setCurrentRepository( RepositoryMeta repositoryMeta ) {
     this.currentRepository = repositoryMeta;
+  }
+
+  public void save() {
+    try {
+      repositoriesMeta.writeData();
+    } catch ( KettleException ke ) {
+      log.logError( "Unable to write to repositories", ke );
+    }
   }
 }
