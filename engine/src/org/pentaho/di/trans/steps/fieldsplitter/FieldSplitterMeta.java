@@ -342,7 +342,6 @@ public class FieldSplitterMeta extends BaseStepMeta implements StepMetaInterface
     System.arraycopy( fieldNullIf, 0, retval.fieldNullIf, 0, nrfields );
     System.arraycopy( fieldIfNull, 0, retval.fieldIfNull, 0, nrfields );
     System.arraycopy( fieldTrimType, 0, retval.fieldTrimType, 0, nrfields );
-    System.arraycopy( fieldName, 0, retval.fieldName, 0, nrfields );
 
     return retval;
   }
