@@ -7,9 +7,9 @@
       <div ng-repeat="database in databases" class="db_list_items" ng-class="{active : database == selectedDatabase}" ng-click="selectDatabase(database)">{{database.name}}</div>
     </div>
     <div>
-      <button id="delete" class="right margin_left_10 secondary"
+      <button id="delete" class="right margin_left_10 secondary" ng-class="{invisible : !model.selectedDatabase || model.databases.length == 0}"
           type="button" ng-click="deleteConnection()">Delete</button>
-      <button id="edit" class="right margin_left_10 secondary"
+      <button id="edit" class="right margin_left_10 secondary" ng-class="{invisible : !model.selectedDatabase || model.databases.length == 0}"
           type="button" ng-click="editConnection()">Edit</button>
       <button id="new" class="right secondary" type="button" ng-click="createNewConnection()">New</button>
     </div>

@@ -164,7 +164,7 @@ a:visited {
 /*
 * BUTTONS
 */
-button {
+button:not(.defaultBtn) {
   outline: none;
   height: 36px;
   border-radius: 4px;
@@ -217,8 +217,11 @@ button#connect {
 }
 
 button.defaultBtn {
-  height: 20px !important;
-  border-radius: 10px;
+  outline: none;
+  border: none;
+  font-size: 14px;
+  padding: 5px 10px 5px 10px;
+  border-radius: 15px;
   background-color: #FFFFFF;
   color: #FFFFFF;
 }
@@ -281,15 +284,15 @@ select:focus {
   border: 1px solid #005EAA;
 }
 
-/* The actual checkbox */
+/* The actual checkmark */
 input[type="checkbox"]:checked + label::after {
    content: '';
    position: absolute;
-   width: 6px;
+   width: 9px;
    height: 4px;
    background: rgba(0, 0, 0, 0);
    top: 4px;
-   left: 7px;
+   left: 5px;
    border: 3px solid white;
    border-top: none;
    border-right: none;
@@ -332,8 +335,8 @@ input[type="checkbox"]:checked + label::before {
    vertical-align: -25%;
    height: 20px;
    width: 20px;
-   background-color: #0BB10F;
-   border: 1px solid #999999;
+   background-color: #00CC66;
+   border: 1px solid #00CC66;
    border-radius: 4px;
    margin-right: 0.5px;
 }
