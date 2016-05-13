@@ -35,7 +35,7 @@ public class SingleThreaderMetaTest {
     meta.setParameterValues( new String[] { "pvalue1", "pvalue2" } );
     // scalars should be cloned using super.clone() - makes sure they're calling super.clone()
     meta.setTransName( "testTransName" );
-    SingleThreaderMeta aClone = (SingleThreaderMeta)meta.clone();
+    SingleThreaderMeta aClone = (SingleThreaderMeta) meta.clone();
     assertFalse( aClone == meta );
     assertTrue( Arrays.equals( meta.getParameters(), aClone.getParameters() ) );
     assertTrue( Arrays.equals( meta.getParameterValues(), aClone.getParameterValues() ) );

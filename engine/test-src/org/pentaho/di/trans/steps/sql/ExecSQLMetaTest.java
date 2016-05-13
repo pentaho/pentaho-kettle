@@ -35,7 +35,7 @@ public class ExecSQLMetaTest {
     meta.setArguments( new String[] { "arg1", "arg2" } );
     // scalars should be cloned using super.clone() - makes sure they're calling super.clone()
     meta.setSql( "SeLeCt * from foo where bar = ? or bar = ?" );
-    ExecSQLMeta aClone = (ExecSQLMeta)meta.clone();
+    ExecSQLMeta aClone = (ExecSQLMeta) meta.clone();
     assertFalse( aClone == meta );
     assertTrue( Arrays.equals( meta.getArguments(), aClone.getArguments() ) );
     assertEquals( meta.getSql(), aClone.getSql() );

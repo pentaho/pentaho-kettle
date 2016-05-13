@@ -32,12 +32,12 @@ public class ParGzipCsvInputMetaTest {
   public void cloneTest() throws Exception {
     ParGzipCsvInputMeta meta = new ParGzipCsvInputMeta();
     meta.allocate( 2 );
-    TextFileInputField tfi1 = new TextFileInputField("fieldname1", 0, 10 );
-    TextFileInputField tfi2 = new TextFileInputField("fieldname2", 15, 30 );
+    TextFileInputField tfi1 = new TextFileInputField( "fieldname1", 0, 10 );
+    TextFileInputField tfi2 = new TextFileInputField( "fieldname2", 15, 30 );
     meta.setInputFields( new TextFileInputField[] { tfi1, tfi2 } );
     // scalars should be cloned using super.clone() - makes sure they're calling super.clone()
     meta.setFilename( "aFileName" );
-    ParGzipCsvInputMeta aClone = (ParGzipCsvInputMeta)meta.clone();
+    ParGzipCsvInputMeta aClone = (ParGzipCsvInputMeta) meta.clone();
     assertFalse( aClone == meta );
     TextFileInputField[] ctfi = aClone.getInputFields();
     assertTrue( ctfi[0].getName().equals( tfi1.getName() ) );

@@ -42,8 +42,7 @@ public class MemoryGroupByMetaTest {
     assertTrue( Arrays.equals( meta.getAggregateField(), aClone.getAggregateField() ) );
     assertTrue( Arrays.equals( meta.getSubjectField(), aClone.getSubjectField() ) );
     assertTrue( Arrays.equals( meta.getAggregateType(), aClone.getAggregateType() ) );
-    assertTrue( Arrays.equals( meta.getValueField(), aClone.getValueField() ) );    
+    assertTrue( Arrays.equals( meta.getValueField(), aClone.getValueField() ) );
   }
 
-  
 }

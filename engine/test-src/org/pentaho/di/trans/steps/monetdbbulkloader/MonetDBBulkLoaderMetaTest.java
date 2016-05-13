@@ -153,7 +153,7 @@ public class MonetDBBulkLoaderMetaTest {
     assertTrue( Arrays.equals( meta.getFieldFormatOk(), aClone.getFieldFormatOk() ) );
     assertEquals( meta.getLogFile(), aClone.getLogFile() );
   }
-  
+
   @Test
   public void testInjection() {
 

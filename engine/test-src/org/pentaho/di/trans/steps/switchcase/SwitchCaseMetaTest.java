@@ -128,7 +128,7 @@ public class SwitchCaseMetaTest {
     meta.setCaseTargets( targets );
     // scalars should be cloned using super.clone() - makes sure they're calling super.clone()
     meta.setCaseValueGroup( "somevaluegroup" );
-    SwitchCaseMeta aClone = (SwitchCaseMeta)meta.clone();
+    SwitchCaseMeta aClone = (SwitchCaseMeta) meta.clone();
     assertFalse( aClone == meta );
     List<SwitchCaseTarget> cloneTargets = aClone.getCaseTargets();
     assertEquals( meta.getCaseTargets().size(), cloneTargets.size() );
@@ -142,5 +142,5 @@ public class SwitchCaseMetaTest {
     assertEquals( st2.caseValue, cl2.caseValue );
     assertEquals( meta.getCaseValueGroup(), aClone.getCaseValueGroup() );
   }
-  
+
 }

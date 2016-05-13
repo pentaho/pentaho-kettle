@@ -56,8 +56,8 @@ public class AccessInputMetaTest {
     meta.setExcludeFileMask( new String[] { "exmask1", "exmask2", "exmask3" } );
     meta.setFileRequired( new String[] { "false", "true", "false" } );
     meta.setIncludeSubFolders( new String[] { "true", "false", "true" } );
-    AccessInputField f1 = new AccessInputField("field1");
-    AccessInputField f2 = new AccessInputField("field2");
+    AccessInputField f1 = new AccessInputField( "field1" );
+    AccessInputField f2 = new AccessInputField( "field2" );
     meta.setInputFields( new AccessInputField[] { f1, f2 } );
     // scalars should be cloned using super.clone() - makes sure they're calling super.clone()
     meta.setFilenameField( "aFileNameField" );
@@ -73,7 +73,7 @@ public class AccessInputMetaTest {
     assertEquals( f2.getName(), clFields[1].getName() );
     assertEquals( meta.getFilenameField(), aClone.getFilenameField() );
   }
-  
+
   @Test
   public void testRoundTrip() throws KettleException {
     List<String> attributes = Arrays.asList( "includeFilename", "filenameField", "includeTablename",
