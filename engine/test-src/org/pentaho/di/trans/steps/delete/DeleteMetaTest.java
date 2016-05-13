@@ -22,6 +22,7 @@
 
 package org.pentaho.di.trans.steps.delete;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,6 +33,7 @@ import static org.junit.Assert.*;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
+import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
@@ -93,4 +95,27 @@ public class DeleteMetaTest {
     }
   }
 
+  @Test
+  public void cloneTest() throws Exception {
+    DeleteMeta meta = new DeleteMeta();
+    meta.allocate( 2 );
+    meta.setKeyStream( new String[] { "aa", "bb" } );
+    meta.setKeyLookup( new String[] { "cc", "dd" } );
+    meta.setKeyCondition( new String[] { "ee", "ff" } );
+    meta.setKeyStream2( new String[] { "gg", "hh" } );
+    meta.setCommitSize( "15" );
+    meta.setSchemaName( "aSchema" );
+    meta.setTableName( "tableName" );
+    DeleteMeta aClone = (DeleteMeta) meta.clone();
+    assertFalse( aClone == meta );
+    assertTrue( Arrays.equals( meta.getKeyStream(), aClone.getKeyStream() ) );
+    assertTrue( Arrays.equals( meta.getKeyLookup(), aClone.getKeyLookup() ) );
+    assertTrue( Arrays.equals( meta.getKeyCondition(), aClone.getKeyCondition() ) );
+    assertTrue( Arrays.equals( meta.getKeyStream2(), aClone.getKeyStream2() ) );
+    Variables space = new Variables();
+    assertEquals( meta.getCommitSize( space ), aClone.getCommitSize( space ) );
+    assertEquals( meta.getSchemaName(), aClone.getSchemaName() );
+    assertEquals( meta.getTableName(), aClone.getTableName() );
+    assertEquals( meta.getXML(), aClone.getXML() );
+  }
 }

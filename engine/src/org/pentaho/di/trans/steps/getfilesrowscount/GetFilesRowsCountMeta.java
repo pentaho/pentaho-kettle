@@ -141,8 +141,8 @@ public class GetFilesRowsCountMeta extends BaseStepMeta implements StepMetaInter
   }
 
   /**
-   * @param isaddresult
-   *          The isaddresult to set.
+   * @param smartCount
+   *          The smartCount to set.
    */
   public void setSmartCount( boolean smartCount ) {
     this.smartCount = smartCount;
@@ -150,8 +150,17 @@ public class GetFilesRowsCountMeta extends BaseStepMeta implements StepMetaInter
 
   /**
    * @return Returns the excludeFileMask.
+   * Deprecated due to typo
    */
+  @Deprecated
   public String[] getExludeFileMask() {
+    return excludeFileMask;
+  }
+
+  /**
+   * @return Returns the excludeFileMask.
+   */
+  public String[] getExcludeFileMask() {
     return excludeFileMask;
   }
 
@@ -179,8 +188,17 @@ public class GetFilesRowsCountMeta extends BaseStepMeta implements StepMetaInter
 
   /**
    * @return Returns the output filename_Field.
+   * Deprecated due to typo
    */
+  @Deprecated
   public String setOutputFilenameField() {
+    return outputFilenameField;
+  }
+
+  /**
+   * @return Returns the output filename_Field.
+   */
+  public String getOutputFilenameField() {
     return outputFilenameField;
   }
 
@@ -408,7 +426,7 @@ public class GetFilesRowsCountMeta extends BaseStepMeta implements StepMetaInter
 
       smartCount = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "smartCount" ) );
 
-      String addresult = XMLHandler.getTagValue( stepnode, "addresult" );
+      String addresult = XMLHandler.getTagValue( stepnode, "isaddresult" );
       if ( Const.isEmpty( addresult ) ) {
         isaddresult = true;
       } else {

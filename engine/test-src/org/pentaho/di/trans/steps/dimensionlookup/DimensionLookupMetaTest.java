@@ -22,12 +22,14 @@
 
 package org.pentaho.di.trans.steps.dimensionlookup;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
+
+import java.util.Arrays;
 
 import org.apache.commons.lang.StringUtils;
 import org.junit.Assert;
@@ -176,5 +178,52 @@ public class DimensionLookupMetaTest {
     assertEquals( "s5", dimensionLookupMeta.getStreamFields().get( 1 ) );
     assertEquals( "s6", dimensionLookupMeta.getStreamFields().get( 2 ) );
     assertEquals( "ks1", dimensionLookupMeta.getStreamFields().get( 3 ) );
+  }
+
+  @Test
+  public void cloneTest() throws Exception {
+    DimensionLookupMeta meta = new DimensionLookupMeta();
+    meta.allocate( 2, 2 );
+    meta.setKeyStream( new String[] { "aa", "bb" } );
+    meta.setKeyLookup( new String[] { "cc", "dd" } );
+    meta.setFieldStream( new String[] { "ee", "ff" } );
+    meta.setFieldLookup( new String[] { "gg", "hh" } );
+    meta.setFieldUpdate( new int[] { 10, 50 } );
+    meta.setCacheSize( 16 );
+    meta.setCommitSize( 23 );
+    meta.setDateField( "dateField" );
+    meta.setDateFrom( "dateFrom" );
+    meta.setKeyField( "keyField" );
+    meta.setKeyRename( "keyRename" );
+    meta.setMaxYear( 15 );
+    meta.setMinYear( 12 );
+    meta.setSchemaName( "schemaName" );
+    meta.setSequenceName( "sequenceName" );
+    meta.setStartDateFieldName( "startDateFieldName" );
+    meta.setTableName( "tablename" );
+    meta.setTechKeyCreation( "techKeyCreation" );
+    meta.setVersionField( "versionField" );
+    DimensionLookupMeta aClone = (DimensionLookupMeta) meta.clone();
+    assertFalse( aClone == meta );
+    assertTrue( Arrays.equals( meta.getKeyStream(), aClone.getKeyStream() ) );
+    assertTrue( Arrays.equals( meta.getKeyLookup(), aClone.getKeyLookup() ) );
+    assertTrue( Arrays.equals( meta.getFieldStream(), aClone.getFieldStream() ) );
+    assertTrue( Arrays.equals( meta.getFieldLookup(), aClone.getFieldLookup() ) );
+    assertTrue( Arrays.equals( meta.getFieldUpdate(), aClone.getFieldUpdate() ) );
+    assertEquals( meta.getCacheSize(), aClone.getCacheSize() );
+    assertEquals( meta.getCommitSize(), aClone.getCommitSize() );
+    assertEquals( meta.getDateField(), aClone.getDateField() );
+    assertEquals( meta.getDateFrom(), aClone.getDateFrom() );
+    assertEquals( meta.getKeyField(), aClone.getKeyField() );
+    assertEquals( meta.getKeyRename(), aClone.getKeyRename() );
+    assertEquals( meta.getMaxYear(), aClone.getMaxYear() );
+    assertEquals( meta.getMinYear(), aClone.getMinYear() );
+    assertEquals( meta.getSchemaName(), aClone.getSchemaName() );
+    assertEquals( meta.getSequenceName(), aClone.getSequenceName() );
+    assertEquals( meta.getStartDateFieldName(), aClone.getStartDateFieldName() );
+    assertEquals( meta.getTableName(), aClone.getTableName() );
+    assertEquals( meta.getTechKeyCreation(), aClone.getTechKeyCreation() );
+    assertEquals( meta.getVersionField(), aClone.getVersionField() );
+    assertEquals( meta.getXML(), aClone.getXML() );
   }
 }

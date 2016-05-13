@@ -36,6 +36,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import static org.junit.Assert.*;
 
 public class ExcelInputMetaTest {
   LoadSaveTester loadSaveTester;
@@ -123,4 +124,65 @@ public class ExcelInputMetaTest {
       return true;
     }
   }
+
+  @Test
+  public void cloneTest() throws Exception {
+    ExcelInputMeta meta = new ExcelInputMeta();
+    meta.allocate( 2, 2, 2 );
+    meta.setSheetName( new String[] { "aa", "bb" } );
+    meta.setFileName( new String[] { "cc", "dd" } );
+    meta.setFileMask( new String[] { "ee", "ff" } );
+    meta.setExcludeFileMask( new String[] { "gg", "hh" } );
+    meta.setFileRequired( new String[] { "ii", "jj" } );
+    meta.setIncludeSubFolders( new String[] { "kk", "ll" } );
+    meta.setStartRow( new int[] { 10, 50 } );
+    meta.setStartColumn( new int[] { 3, 5 } );
+    meta.setSpreadSheetType( SpreadSheetType.POI );
+    ExcelInputField if1 = new ExcelInputField();
+    if1.setCurrencySymbol( "$" );
+    if1.setFormat( "format" );
+    if1.setGroupSymbol( "x" );
+    if1.setLength( 5 );
+    if1.setName( "fieldname" );
+    if1.setPrecision( 5 );
+    if1.setTrimType( 1 );
+    if1.setType( 1 );
+
+    ExcelInputField if2 = new ExcelInputField();
+    if2.setCurrencySymbol( "#" );
+    if2.setFormat( "format2" );
+    if2.setGroupSymbol( "x1" );
+    if2.setLength( 9 );
+    if2.setName( "fieldname2" );
+    if2.setPrecision( 3 );
+    if2.setTrimType( 2 );
+    if2.setType( 2 );
+    meta.setField( new ExcelInputField[] { if1, if2 } );
+    ExcelInputMeta aClone = (ExcelInputMeta) meta.clone();
+    assertFalse( aClone == meta );
+    assertTrue( Arrays.equals( meta.getSheetName(), aClone.getSheetName() ) );
+    assertTrue( Arrays.equals( meta.getFileName(), aClone.getFileName() ) );
+    assertTrue( Arrays.equals( meta.getFileMask(), aClone.getFileMask() ) );
+    assertTrue( Arrays.equals( meta.getExcludeFileMask(), aClone.getExcludeFileMask() ) );
+    assertTrue( Arrays.equals( meta.getFileRequired(), aClone.getFileRequired() ) );
+    assertTrue( Arrays.equals( meta.getIncludeSubFolders(), aClone.getIncludeSubFolders() ) );
+    assertTrue( Arrays.equals( meta.getStartRow(), aClone.getStartRow() ) );
+    assertTrue( Arrays.equals( meta.getStartColumn(), aClone.getStartColumn() ) );
+    ExcelInputField[] clonedFields = aClone.getField();
+    assertEquals( meta.getField().length, clonedFields.length );
+    ExcelInputField cif1 = clonedFields[0];
+    ExcelInputField cif2 = clonedFields[1];
+    assertFalse( if1 == cif1 );
+    assertFalse( if2 == cif2 );
+    assertEquals( if1.toString(), cif1.toString() );
+    assertEquals( if2.toString(), cif2.toString() );
+    assertEquals( if1.getTrimType(), cif1.getTrimType() );
+    assertEquals( if2.getTrimType(), cif2.getTrimType() );
+    assertEquals( if1.getGroupSymbol(), cif1.getGroupSymbol() );
+    assertEquals( if2.getGroupSymbol(), cif2.getGroupSymbol() );
+    assertEquals( if1.getFormat(), cif1.getFormat() );
+    assertEquals( if2.getFormat(), cif2.getFormat() );
+    assertEquals( meta.getXML(), aClone.getXML() );
+  }
+
 }

@@ -58,9 +58,8 @@ public class DatabaseLookupMetaTest {
 
     databaseLookupMeta.getFields( row, "", info, null, null, null, null );
 
-    List<ValueMetaInterface> expectedRow =
-        Arrays.asList( new ValueMetaInterface[] {
-         new ValueMetaString( "value" ), new ValueMetaString( "v1" ), new ValueMetaString( "v2" ), } );
+    List<ValueMetaInterface> expectedRow = Arrays.asList( new ValueMetaInterface[] { new ValueMetaString( "value" ), 
+      new ValueMetaString( "v1" ), new ValueMetaString( "v2" ), } );
     assertEquals( 3, row.getValueMetaList().size() );
     for ( int i = 0; i < 3; i++ ) {
       assertEquals( expectedRow.get( i ).getName(), row.getValueMetaList().get( i ).getName() );
@@ -85,5 +84,32 @@ public class DatabaseLookupMetaTest {
     assertEquals( "s4", databaseLookupMeta.getStreamFields().get( 0 ) );
     assertEquals( "s5", databaseLookupMeta.getStreamFields().get( 1 ) );
     assertEquals( "s6", databaseLookupMeta.getStreamFields().get( 2 ) );
+  }
+
+  @Test
+  public void cloneTest() throws Exception {
+    DatabaseLookupMeta meta = new DatabaseLookupMeta();
+    meta.allocate( 2, 2 );
+    meta.setStreamKeyField1( new String[] { "aa", "bb" } );
+    meta.setTableKeyField( new String[] { "cc", "dd" } );
+    meta.setKeyCondition( new String[] { "ee", "ff" } );
+    meta.setStreamKeyField2( new String[] { "gg", "hh" } );
+    meta.setReturnValueField( new String[] { "ii", "jj" } );
+    meta.setReturnValueNewName( new String[] { "kk", "ll" } );
+    meta.setReturnValueDefault( new String[] { "mm", "nn" } );
+    meta.setReturnValueDefaultType( new int[] { 10, 50 } );
+    meta.setOrderByClause( "FOO DESC" );
+    DatabaseLookupMeta aClone = (DatabaseLookupMeta) meta.clone();
+    assertFalse( aClone == meta );
+    assertTrue( Arrays.equals( meta.getStreamKeyField1(), aClone.getStreamKeyField1() ) );
+    assertTrue( Arrays.equals( meta.getTableKeyField(), aClone.getTableKeyField() ) );
+    assertTrue( Arrays.equals( meta.getKeyCondition(), aClone.getKeyCondition() ) );
+    assertTrue( Arrays.equals( meta.getStreamKeyField2(), aClone.getStreamKeyField2() ) );
+    assertTrue( Arrays.equals( meta.getReturnValueField(), aClone.getReturnValueField() ) );
+    assertTrue( Arrays.equals( meta.getReturnValueNewName(), aClone.getReturnValueNewName() ) );
+    assertTrue( Arrays.equals( meta.getReturnValueDefault(), aClone.getReturnValueDefault() ) );
+    assertTrue( Arrays.equals( meta.getReturnValueDefaultType(), aClone.getReturnValueDefaultType() ) );
+    assertEquals( meta.getOrderByClause(), aClone.getOrderByClause() );
+    assertEquals( meta.getXML(), aClone.getXML() );
   }
 }

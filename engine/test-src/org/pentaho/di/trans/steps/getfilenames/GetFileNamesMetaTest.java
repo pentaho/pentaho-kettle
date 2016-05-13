@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Random;
 
 import org.junit.Test;
+import static org.junit.Assert.*;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.fileinput.FileInputList;
 import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
@@ -134,5 +135,29 @@ public class GetFileNamesMetaTest {
     public boolean validateTestObject( String testObject, Object actual ) {
       return testObject.equals( actual );
     }
+  }
+
+  @Test
+  public void cloneTest() throws Exception {
+    GetFileNamesMeta meta = new GetFileNamesMeta();
+    meta.allocate( 2 );
+    meta.setFileName( new String[] { "aa", "bb" } );
+    meta.setFileMask( new String[] { "cc", "dd" } );
+    meta.setExcludeFileMask( new String[] { "ee", "ff" } );
+    meta.setFileRequired( new String[] { "gg", "hh" } );
+    meta.setIncludeSubFolders( new String[] { "ii", "jj" } );
+    meta.setDynamicExcludeWildcardField( "dynamicExcludeWildcardField" );
+    meta.setDynamicFilenameField( "dynamicFilenameField" );
+    meta.setDynamicWildcardField( "dynamicWildcardField" );
+    meta.setRowNumberField( "rowNumberField" );
+    meta.setFilterFileType( FileInputList.FileTypeFilter.ONLY_FILES );
+    GetFileNamesMeta aClone = (GetFileNamesMeta) meta.clone();
+    assertFalse( aClone == meta );
+    assertTrue( Arrays.equals( meta.getFileName(), aClone.getFileName() ) );
+    assertTrue( Arrays.equals( meta.getFileMask(), aClone.getFileMask() ) );
+    assertTrue( Arrays.equals( meta.getExcludeFileMask(), aClone.getExcludeFileMask() ) );
+    assertTrue( Arrays.equals( meta.getFileRequired(), aClone.getFileRequired() ) );
+    assertTrue( Arrays.equals( meta.getIncludeSubFolders(), aClone.getIncludeSubFolders() ) );
+    assertEquals( meta.getXML(), aClone.getXML() );
   }
 }
