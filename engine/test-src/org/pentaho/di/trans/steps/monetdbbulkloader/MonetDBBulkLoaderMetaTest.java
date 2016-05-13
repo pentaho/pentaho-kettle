@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2014 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -34,6 +34,7 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepInjectionMetaEntry;
 import org.pentaho.di.trans.step.StepMeta;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -134,6 +135,23 @@ public class MonetDBBulkLoaderMetaTest {
       fail( e.getMessage() );
     }
 
+  }
+
+  @Test
+  public void cloneTest() throws Exception {
+    MonetDBBulkLoaderMeta meta = new MonetDBBulkLoaderMeta();
+    meta.allocate( 2 );
+    meta.setFieldTable( new String[] { "Table1", "Table2" } );
+    meta.setFieldStream( new String[] { "Stream1", "Stream2" } );
+    meta.setFieldFormatOk( new boolean[] { false, true } );
+    // scalars should be cloned using super.clone() - makes sure they're calling super.clone()
+    meta.setLogFile( "somelogfile" );
+    MonetDBBulkLoaderMeta aClone = (MonetDBBulkLoaderMeta) meta.clone();
+    assertFalse( aClone == meta );
+    assertTrue( Arrays.equals( meta.getFieldTable(), aClone.getFieldTable() ) );
+    assertTrue( Arrays.equals( meta.getFieldStream(), aClone.getFieldStream() ) );
+    assertTrue( Arrays.equals( meta.getFieldFormatOk(), aClone.getFieldFormatOk() ) );
+    assertEquals( meta.getLogFile(), aClone.getLogFile() );
   }
 
   @Test

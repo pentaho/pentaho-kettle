@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,6 +22,7 @@
 
 package org.pentaho.di.trans.steps.switchcase;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -37,6 +38,7 @@ import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
 import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidatorFactory;
 import org.pentaho.di.trans.steps.loadsave.validator.ListLoadSaveValidator;
+import static org.junit.Assert.*;
 
 /**
  * @author nhudak
@@ -108,6 +110,37 @@ public class SwitchCaseMetaTest {
   @Test
   public void testLoadSaveRepo() throws KettleException {
     loadSaveTester.testRepoRoundTrip();
+  }
+
+  @Test
+  public void cloneTest() throws Exception {
+    SwitchCaseMeta meta = new SwitchCaseMeta();
+    meta.allocate();
+    List<SwitchCaseTarget> targets = new ArrayList<SwitchCaseTarget>();
+    SwitchCaseTarget st1 = new SwitchCaseTarget();
+    st1.caseTargetStepname = "step1";
+    st1.caseValue = "value1";
+    SwitchCaseTarget st2 = new SwitchCaseTarget();
+    st2.caseTargetStepname = "step2";
+    st2.caseValue = "value2";
+    targets.add( st1 );
+    targets.add( st2 );
+    meta.setCaseTargets( targets );
+    // scalars should be cloned using super.clone() - makes sure they're calling super.clone()
+    meta.setCaseValueGroup( "somevaluegroup" );
+    SwitchCaseMeta aClone = (SwitchCaseMeta) meta.clone();
+    assertFalse( aClone == meta );
+    List<SwitchCaseTarget> cloneTargets = aClone.getCaseTargets();
+    assertEquals( meta.getCaseTargets().size(), cloneTargets.size() );
+    SwitchCaseTarget cl1 = cloneTargets.get( 0 );
+    SwitchCaseTarget cl2 = cloneTargets.get( 1 );
+    assertFalse( cl1 == st1 );
+    assertFalse( cl2 == st2 );
+    assertEquals( st1.caseTargetStepname, cl1.caseTargetStepname );
+    assertEquals( st1.caseValue, cl1.caseValue );
+    assertEquals( st2.caseTargetStepname, cl2.caseTargetStepname );
+    assertEquals( st2.caseValue, cl2.caseValue );
+    assertEquals( meta.getCaseValueGroup(), aClone.getCaseValueGroup() );
   }
 
 }

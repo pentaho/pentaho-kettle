@@ -38,12 +38,40 @@ import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
 import org.pentaho.di.trans.steps.loadsave.validator.ArrayLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.StringLoadSaveValidator;
+import static org.junit.Assert.*;
 
 public class AccessInputMetaTest {
 
   @BeforeClass
   public static void setUpBeforeClass() throws KettleException {
     KettleEnvironment.init( false );
+  }
+
+  @Test
+  public void testClone() throws KettleException {
+    AccessInputMeta meta = new AccessInputMeta();
+    meta.allocate( 3, 2 );
+    meta.setFileName( new String[] { "file1", "file2", "file3" } );
+    meta.setFileMask( new String[] { "mask1", "mask2", "mask3" } );
+    meta.setExcludeFileMask( new String[] { "exmask1", "exmask2", "exmask3" } );
+    meta.setFileRequired( new String[] { "false", "true", "false" } );
+    meta.setIncludeSubFolders( new String[] { "true", "false", "true" } );
+    AccessInputField f1 = new AccessInputField( "field1" );
+    AccessInputField f2 = new AccessInputField( "field2" );
+    meta.setInputFields( new AccessInputField[] { f1, f2 } );
+    // scalars should be cloned using super.clone() - makes sure they're calling super.clone()
+    meta.setFilenameField( "aFileNameField" );
+    AccessInputMeta aClone = (AccessInputMeta) meta.clone();
+    assertFalse( aClone == meta ); // makes sure they're not the same object
+    assertTrue( Arrays.equals( aClone.getFileName(), meta.getFileName() ) );
+    assertTrue( Arrays.equals( aClone.getFileMask(), meta.getFileMask() ) );
+    assertTrue( Arrays.equals( aClone.getExcludeFileMask(), meta.getExcludeFileMask() ) );
+    assertTrue( Arrays.equals( aClone.getFileRequired(), meta.getFileRequired() ) );
+    assertTrue( Arrays.equals( aClone.getIncludeSubFolders(), meta.getIncludeSubFolders() ) );
+    AccessInputField[] clFields = aClone.getInputFields();
+    assertEquals( f1.getName(), clFields[0].getName() );
+    assertEquals( f2.getName(), clFields[1].getName() );
+    assertEquals( meta.getFilenameField(), aClone.getFilenameField() );
   }
 
   @Test
