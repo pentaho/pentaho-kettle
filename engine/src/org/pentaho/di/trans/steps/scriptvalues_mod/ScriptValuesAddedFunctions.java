@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -1807,29 +1807,29 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
       throw Context.reportRuntimeError( "The function call setVariable requires 3 arguments." );
     }
 
-      Object stepObject = Context.jsToJava( actualObject.get( "_step_", actualObject ), StepInterface.class );
-      if ( stepObject instanceof StepInterface ) {
-        StepInterface step = (StepInterface) stepObject;
-        Trans trans = step.getTrans();
-        final String variableName = Context.toString( arguments[ 0 ] );
-        final String variableValue = Context.toString( arguments[ 1 ] );
-        final VariableScope variableScope = getVariableScope( Context.toString( arguments[ 2 ] ) );
+    Object stepObject = Context.jsToJava( actualObject.get( "_step_", actualObject ), StepInterface.class );
+    if ( stepObject instanceof StepInterface ) {
+      StepInterface step = (StepInterface) stepObject;
+      Trans trans = step.getTrans();
+      final String variableName = Context.toString( arguments[ 0 ] );
+      final String variableValue = Context.toString( arguments[ 1 ] );
+      final VariableScope variableScope = getVariableScope( Context.toString( arguments[ 2 ] ) );
 
-        switch( variableScope ) {
-          case PARENT:
-            setParentScopeVariable( trans, variableName, variableValue );
-            break;
-          case GRAND_PARENT:
-            setGrandParentScopeVariable( trans, variableName, variableValue );
-            break;
-          case ROOT:
-            setRootScopeVariable( trans, variableName, variableValue );
-            break;
-          case SYSTEM:
-            setSystemScopeVariable( trans, variableName, variableValue );
-            break;
-        }
+      switch ( variableScope ) {
+        case PARENT:
+          setParentScopeVariable( trans, variableName, variableValue );
+          break;
+        case GRAND_PARENT:
+          setGrandParentScopeVariable( trans, variableName, variableValue );
+          break;
+        case ROOT:
+          setRootScopeVariable( trans, variableName, variableValue );
+          break;
+        case SYSTEM:
+          setSystemScopeVariable( trans, variableName, variableValue );
+          break;
       }
+    }
   }
 
   static void setRootScopeVariable( Trans trans, String variableName, String variableValue ) {
@@ -1859,7 +1859,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
     }
   }
 
-   static void setGrandParentScopeVariable( Trans trans, String variableName, String variableValue ) {
+  static void setGrandParentScopeVariable( Trans trans, String variableName, String variableValue ) {
     trans.setVariable( variableName, variableValue );
 
     VariableSpace parentSpace = trans.getParentVariableSpace();
@@ -1874,7 +1874,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 
 
   static VariableScope getVariableScope( String codeOfScope ) {
-    switch( codeOfScope ) {
+    switch ( codeOfScope ) {
       case "s":
         return VariableScope.SYSTEM;
       case "r":
