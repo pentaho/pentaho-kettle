@@ -123,7 +123,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
 
   private static int getNumberOfSlaveServerRetries() {
     try {
-      return Integer.parseInt(Const.NVL(System.getProperty( "KETTLE_CARTE_RETRIES" ), "0" ) );
+      return Integer.parseInt( Const.NVL( System.getProperty( "KETTLE_CARTE_RETRIES" ), "0" ) );
     } catch ( Exception e ) {
       return 0;
     }
@@ -131,7 +131,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
 
   public static int getBackoffIncrements() {
     try {
-      return Integer.parseInt(Const.NVL(System.getProperty( "KETTLE_CARTE_RETRY_BACKOFF_INCREMENTS" ), "1000" ) );
+      return Integer.parseInt( Const.NVL( System.getProperty( "KETTLE_CARTE_RETRY_BACKOFF_INCREMENTS" ), "1000" ) );
     } catch ( Exception e ) {
       return 1000;
     }
