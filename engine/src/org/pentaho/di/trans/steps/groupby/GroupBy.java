@@ -413,7 +413,7 @@ public class GroupBy extends BaseStep implements StepInterface {
 
   }
 
-  // Is the row r of the same group as previous?
+  // Is the row row of the same group as previous?
   private boolean sameGroup( Object[] previous, Object[] r ) throws KettleValueException {
     return data.inputRowMeta.compare( previous, r, data.groupnrs ) == 0;
   }
@@ -421,12 +421,12 @@ public class GroupBy extends BaseStep implements StepInterface {
   /**
    * used for junits in GroupByAggregationNullsTest
    *
-   * @param r
+   * @param row
    * @throws KettleValueException
    */
-  @SuppressWarnings( "unchecked" ) void calcAggregate( Object[] r ) throws KettleValueException {
+  @SuppressWarnings( "unchecked" ) void calcAggregate( Object[] row ) throws KettleValueException {
     for ( int i = 0; i < data.subjectnrs.length; i++ ) {
-      Object subj = r[ data.subjectnrs[ i ] ];
+      Object subj = row[ data.subjectnrs[ i ] ];
       ValueMetaInterface subjMeta = data.inputRowMeta.getValueMeta( data.subjectnrs[ i ] );
       Object value = data.agg[ i ];
       ValueMetaInterface valueMeta = data.aggMeta.getValueMeta( i );
@@ -685,9 +685,13 @@ public class GroupBy extends BaseStep implements StepInterface {
    * @throws KettleValueException
    */
   Object[] getAggregateResult() throws KettleValueException {
+
+    if (data.subjectnrs == null) {
+      return new Object[0];
+    }
+
     Object[] result = new Object[ data.subjectnrs.length ];
 
-    if ( data.subjectnrs != null ) {
       for ( int i = 0; i < data.subjectnrs.length; i++ ) {
         Object ag = data.agg[ i ];
         switch ( meta.getAggregateType()[ i ] ) {
@@ -741,7 +745,7 @@ public class GroupBy extends BaseStep implements StepInterface {
         }
         result[ i ] = ag;
       }
-    }
+
     return result;
 
   }
@@ -754,8 +758,8 @@ public class GroupBy extends BaseStep implements StepInterface {
           data.tempFile =
             File.createTempFile(
               meta.getPrefix(), ".tmp", new File( environmentSubstitute( meta.getDirectory() ) ) );
-          data.fos = new FileOutputStream( data.tempFile );
-          data.dos = new DataOutputStream( data.fos );
+          data.fosToTempFile = new FileOutputStream( data.tempFile );
+          data.dosToTempFile = new DataOutputStream( data.fosToTempFile );
           data.firstRead = true;
         } catch ( IOException e ) {
           throw new KettleFileException( BaseMessages.getString(
@@ -764,7 +768,7 @@ public class GroupBy extends BaseStep implements StepInterface {
       }
       // OK, save the oldest rows to disk!
       Object[] oldest = data.bufferList.get( 0 );
-      data.inputRowMeta.writeData( data.dos, oldest );
+      data.inputRowMeta.writeData( data.dosToTempFile, oldest );
       data.bufferList.remove( 0 );
       data.rowsOnFile++;
     }
@@ -775,8 +779,8 @@ public class GroupBy extends BaseStep implements StepInterface {
       if ( data.firstRead ) {
         // Open the inputstream first...
         try {
-          data.fis = new FileInputStream( data.tempFile );
-          data.dis = new DataInputStream( data.fis );
+          data.fisToTmpFile = new FileInputStream( data.tempFile );
+          data.disToTmpFile = new DataInputStream( data.fisToTmpFile );
           data.firstRead = false;
         } catch ( IOException e ) {
           throw new KettleFileException( BaseMessages.getString(
@@ -787,7 +791,7 @@ public class GroupBy extends BaseStep implements StepInterface {
       // Read one row from the file!
       Object[] row;
       try {
-        row = data.inputRowMeta.readData( data.dis );
+        row = data.inputRowMeta.readData( data.disToTmpFile );
       } catch ( SocketTimeoutException e ) {
         throw new KettleFileException( e ); // Shouldn't happen on files
       }
@@ -807,34 +811,34 @@ public class GroupBy extends BaseStep implements StepInterface {
 
   private void closeOutput() throws KettleFileException {
     try {
-      if ( data.dos != null ) {
-        data.dos.close();
-        data.dos = null;
+      if ( data.dosToTempFile != null ) {
+        data.dosToTempFile.close();
+        data.dosToTempFile = null;
       }
-      if ( data.fos != null ) {
-        data.fos.close();
-        data.fos = null;
+      if ( data.fosToTempFile != null ) {
+        data.fosToTempFile.close();
+        data.fosToTempFile = null;
       }
       data.firstRead = true;
     } catch ( IOException e ) {
       throw new KettleFileException(
-        BaseMessages.getString( PKG, "GroupBy.Exception.UnableToCloseInputStream" ), e );
+        BaseMessages.getString( PKG, "GroupBy.Exception.UnableToCloseInputStream", data.tempFile.getPath() ), e );
     }
   }
 
   private void closeInput() throws KettleFileException {
     try {
-      if ( data.fis != null ) {
-        data.fis.close();
-        data.fis = null;
+      if ( data.fisToTmpFile != null ) {
+        data.fisToTmpFile.close();
+        data.fisToTmpFile = null;
       }
-      if ( data.dis != null ) {
-        data.dis.close();
-        data.dis = null;
+      if ( data.disToTmpFile != null ) {
+        data.disToTmpFile.close();
+        data.disToTmpFile = null;
       }
     } catch ( IOException e ) {
       throw new KettleFileException(
-        BaseMessages.getString( PKG, "GroupBy.Exception.UnableToCloseInputStream" ), e );
+        BaseMessages.getString( PKG, "GroupBy.Exception.UnableToCloseInputStream", data.tempFile.getPath() ), e );
     }
   }
 
@@ -854,7 +858,19 @@ public class GroupBy extends BaseStep implements StepInterface {
 
   public void dispose( StepMetaInterface smi, StepDataInterface sdi ) {
     if ( data.tempFile != null ) {
-      data.tempFile.delete();
+      try {
+        closeInput();
+        closeOutput();
+      } catch ( KettleFileException e ) {
+        log.logError( e.getLocalizedMessage() );
+      }
+
+      boolean tempFileDeleted = data.tempFile.delete();
+
+      if ( !tempFileDeleted && log.isDetailed() ) {
+        log.logDetailed(
+          BaseMessages.getString( PKG, "GroupBy.Exception.UnableToDeleteTemporaryFile", data.tempFile.getPath() ) );
+      }
     }
 
     super.dispose( smi, sdi );

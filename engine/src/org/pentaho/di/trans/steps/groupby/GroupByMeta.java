@@ -407,13 +407,13 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface {
     aggregateIgnored = false;
     aggregateIgnoredField = null;
 
-    int sizegroup = 0;
-    int nrfields = 0;
+    int sizeGroup = 0;
+    int numberOfFields = 0;
 
-    allocate( sizegroup, nrfields );
+    allocate( sizeGroup, numberOfFields );
   }
 
-  public void getFields( RowMetaInterface r, String origin, RowMetaInterface[] info, StepMeta nextStep,
+  public void getFields( RowMetaInterface rowMeta, String origin, RowMetaInterface[] info, StepMeta nextStep,
                          VariableSpace space, Repository repository, IMetaStore metaStore ) {
     // re-assemble a new row of metadata
     //
@@ -423,7 +423,7 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface {
       // Add the grouping fields in the correct order...
       //
       for ( int i = 0; i < groupField.length; i++ ) {
-        ValueMetaInterface valueMeta = r.searchValueMeta( groupField[ i ] );
+        ValueMetaInterface valueMeta = rowMeta.searchValueMeta( groupField[ i ] );
         if ( valueMeta != null ) {
           fields.addValueMeta( valueMeta );
         }
@@ -431,16 +431,16 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface {
     } else {
       // Add all the original fields from the incoming row meta
       //
-      fields.addRowMeta( r );
+      fields.addRowMeta( rowMeta );
     }
 
     // Re-add aggregates
     //
     for ( int i = 0; i < subjectField.length; i++ ) {
-      ValueMetaInterface subj = r.searchValueMeta( subjectField[ i ] );
+      ValueMetaInterface subj = rowMeta.searchValueMeta( subjectField[ i ] );
       if ( subj != null || aggregateType[ i ] == TYPE_GROUP_COUNT_ANY ) {
-        String value_name = aggregateField[ i ];
-        int value_type = ValueMetaInterface.TYPE_NONE;
+        String valueName = aggregateField[ i ];
+        int valueType = ValueMetaInterface.TYPE_NONE;
         int length = -1;
         int precision = -1;
 
@@ -455,23 +455,23 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface {
           case TYPE_GROUP_LAST_INCL_NULL:
           case TYPE_GROUP_MIN:
           case TYPE_GROUP_MAX:
-            value_type = subj.getType();
+            valueType = subj.getType();
             break;
           case TYPE_GROUP_COUNT_DISTINCT:
           case TYPE_GROUP_COUNT_ANY:
           case TYPE_GROUP_COUNT_ALL:
-            value_type = ValueMetaInterface.TYPE_INTEGER;
+            valueType = ValueMetaInterface.TYPE_INTEGER;
             break;
           case TYPE_GROUP_CONCAT_COMMA:
-            value_type = ValueMetaInterface.TYPE_STRING;
+            valueType = ValueMetaInterface.TYPE_STRING;
             break;
           case TYPE_GROUP_STANDARD_DEVIATION:
           case TYPE_GROUP_MEDIAN:
           case TYPE_GROUP_PERCENTILE:
-            value_type = ValueMetaInterface.TYPE_NUMBER;
+            valueType = ValueMetaInterface.TYPE_NUMBER;
             break;
           case TYPE_GROUP_CONCAT_STRING:
-            value_type = ValueMetaInterface.TYPE_STRING;
+            valueType = ValueMetaInterface.TYPE_STRING;
             break;
           default:
             break;
@@ -479,8 +479,8 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface {
 
         // Change type from integer to number in case off averages for cumulative average
         //
-        if ( aggregateType[ i ] == TYPE_GROUP_CUMULATIVE_AVERAGE && value_type == ValueMetaInterface.TYPE_INTEGER ) {
-          value_type = ValueMetaInterface.TYPE_NUMBER;
+        if ( aggregateType[ i ] == TYPE_GROUP_CUMULATIVE_AVERAGE && valueType == ValueMetaInterface.TYPE_INTEGER ) {
+          valueType = ValueMetaInterface.TYPE_NUMBER;
           precision = -1;
           length = -1;
         } else if ( aggregateType[ i ] == TYPE_GROUP_COUNT_ALL
@@ -488,17 +488,17 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface {
           length = ValueMetaInterface.DEFAULT_INTEGER_LENGTH;
           precision = 0;
         } else if ( aggregateType[ i ] == TYPE_GROUP_SUM
-            && value_type != ValueMetaInterface.TYPE_INTEGER && value_type != ValueMetaInterface.TYPE_NUMBER
-            && value_type != ValueMetaInterface.TYPE_BIGNUMBER ) {
+            && valueType != ValueMetaInterface.TYPE_INTEGER && valueType != ValueMetaInterface.TYPE_NUMBER
+            && valueType != ValueMetaInterface.TYPE_BIGNUMBER ) {
           // If it ain't numeric, we change it to Number
           //
-          value_type = ValueMetaInterface.TYPE_NUMBER;
+          valueType = ValueMetaInterface.TYPE_NUMBER;
           precision = -1;
           length = -1;
         }
 
-        if ( value_type != ValueMetaInterface.TYPE_NONE ) {
-          ValueMetaInterface v = new ValueMeta( value_name, value_type );
+        if ( valueType != ValueMetaInterface.TYPE_NONE ) {
+          ValueMetaInterface v = new ValueMeta( valueName, valueType );
           v.setOrigin( origin );
           v.setLength( length, precision );
           fields.addValueMeta( v );
@@ -519,8 +519,8 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface {
 
     // Now that we have all the fields we want, we should clear the original row and replace the values...
     //
-    r.clear();
-    r.addRowMeta( fields );
+    rowMeta.clear();
+    rowMeta.addRowMeta( fields );
   }
 
   public String getXML() {
