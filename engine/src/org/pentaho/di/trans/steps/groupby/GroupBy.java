@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -192,8 +192,8 @@ public class GroupBy extends BaseStep implements StepInterface {
       data.groupAggMeta.addRowMeta( data.aggMeta );
     }
 
-    if ( r == null ) // no more input to be expected... (or none received in the first place)
-    {
+    if ( r == null ) {
+      // no more input to be expected... (or none received in the first place)
       handleLastOfGroup();
       setOutputDone();
       return false;
@@ -686,65 +686,65 @@ public class GroupBy extends BaseStep implements StepInterface {
    */
   Object[] getAggregateResult() throws KettleValueException {
 
-    if (data.subjectnrs == null) {
-      return new Object[0];
+    if ( data.subjectnrs == null ) {
+      return new Object[ 0 ];
     }
 
     Object[] result = new Object[ data.subjectnrs.length ];
 
-      for ( int i = 0; i < data.subjectnrs.length; i++ ) {
-        Object ag = data.agg[ i ];
-        switch ( meta.getAggregateType()[ i ] ) {
-          case GroupByMeta.TYPE_GROUP_SUM:
-            break;
-          case GroupByMeta.TYPE_GROUP_AVERAGE:
-            ag =
-              ValueDataUtil.divide( data.aggMeta.getValueMeta( i ), ag, new ValueMeta(
-                "c", ValueMetaInterface.TYPE_INTEGER ), new Long( data.counts[ i ] ) );
-            break;
-          case GroupByMeta.TYPE_GROUP_MEDIAN:
-          case GroupByMeta.TYPE_GROUP_PERCENTILE:
-            double percentile = 50.0;
-            if ( meta.getAggregateType()[ i ] == GroupByMeta.TYPE_GROUP_PERCENTILE ) {
-              percentile = Double.parseDouble( meta.getValueField()[ i ] );
-            }
-            @SuppressWarnings( "unchecked" )
-            List<Double> valuesList = (List<Double>) data.agg[ i ];
-            double[] values = new double[ valuesList.size() ];
-            for ( int v = 0; v < values.length; v++ ) {
-              values[ v ] = valuesList.get( v );
-            }
-            ag = new Percentile().evaluate( values, percentile );
-            break;
-          case GroupByMeta.TYPE_GROUP_COUNT_ANY:
-          case GroupByMeta.TYPE_GROUP_COUNT_ALL:
-            ag = new Long( data.counts[ i ] );
-            break;
-          case GroupByMeta.TYPE_GROUP_COUNT_DISTINCT:
-            break;
-          case GroupByMeta.TYPE_GROUP_MIN:
-            break;
-          case GroupByMeta.TYPE_GROUP_MAX:
-            break;
-          case GroupByMeta.TYPE_GROUP_STANDARD_DEVIATION:
-            double sum = (Double) ag / data.counts[ i ];
-            ag = Double.valueOf( Math.sqrt( sum ) );
-            break;
-          case GroupByMeta.TYPE_GROUP_CONCAT_COMMA:
-          case GroupByMeta.TYPE_GROUP_CONCAT_STRING:
-            ag = ( (StringBuilder) ag ).toString();
-            break;
-          default:
-            break;
-        }
-        if ( ag == null && allNullsAreZero ) {
-          // PDI-10250, 6960 seems all rows for min function was nulls...
-          // get output subject meta based on original subject meta calculation
-          ValueMetaInterface vm = data.aggMeta.getValueMeta( i );
-          ag = ValueDataUtil.getZeroForValueMetaType( vm );
-        }
-        result[ i ] = ag;
+    for ( int i = 0; i < data.subjectnrs.length; i++ ) {
+      Object ag = data.agg[ i ];
+      switch ( meta.getAggregateType()[ i ] ) {
+        case GroupByMeta.TYPE_GROUP_SUM:
+          break;
+        case GroupByMeta.TYPE_GROUP_AVERAGE:
+          ag =
+            ValueDataUtil.divide( data.aggMeta.getValueMeta( i ), ag, new ValueMeta(
+              "c", ValueMetaInterface.TYPE_INTEGER ), new Long( data.counts[ i ] ) );
+          break;
+        case GroupByMeta.TYPE_GROUP_MEDIAN:
+        case GroupByMeta.TYPE_GROUP_PERCENTILE:
+          double percentile = 50.0;
+          if ( meta.getAggregateType()[ i ] == GroupByMeta.TYPE_GROUP_PERCENTILE ) {
+            percentile = Double.parseDouble( meta.getValueField()[ i ] );
+          }
+          @SuppressWarnings( "unchecked" )
+          List<Double> valuesList = (List<Double>) data.agg[ i ];
+          double[] values = new double[ valuesList.size() ];
+          for ( int v = 0; v < values.length; v++ ) {
+            values[ v ] = valuesList.get( v );
+          }
+          ag = new Percentile().evaluate( values, percentile );
+          break;
+        case GroupByMeta.TYPE_GROUP_COUNT_ANY:
+        case GroupByMeta.TYPE_GROUP_COUNT_ALL:
+          ag = new Long( data.counts[ i ] );
+          break;
+        case GroupByMeta.TYPE_GROUP_COUNT_DISTINCT:
+          break;
+        case GroupByMeta.TYPE_GROUP_MIN:
+          break;
+        case GroupByMeta.TYPE_GROUP_MAX:
+          break;
+        case GroupByMeta.TYPE_GROUP_STANDARD_DEVIATION:
+          double sum = (Double) ag / data.counts[ i ];
+          ag = Double.valueOf( Math.sqrt( sum ) );
+          break;
+        case GroupByMeta.TYPE_GROUP_CONCAT_COMMA:
+        case GroupByMeta.TYPE_GROUP_CONCAT_STRING:
+          ag = ( (StringBuilder) ag ).toString();
+          break;
+        default:
+          break;
       }
+      if ( ag == null && allNullsAreZero ) {
+        // PDI-10250, 6960 seems all rows for min function was nulls...
+        // get output subject meta based on original subject meta calculation
+        ValueMetaInterface vm = data.aggMeta.getValueMeta( i );
+        ag = ValueDataUtil.getZeroForValueMetaType( vm );
+      }
+      result[ i ] = ag;
+    }
 
     return result;
 
