@@ -37,6 +37,8 @@ import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.PrimitiveBooleanArrayLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.StringLoadSaveValidator;
 
+import static org.junit.Assert.*;
+
 public class GetRepositoryNamesMetaTest {
 
   @Test
@@ -91,4 +93,5 @@ public class GetRepositoryNamesMetaTest {
     }
 
   }
+
 }

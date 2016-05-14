@@ -246,13 +246,14 @@ public class DataGridMeta extends BaseStepMeta implements StepMetaInterface {
     System.arraycopy( fieldPrecision, 0, retval.fieldPrecision, 0, nrfields );
     System.arraycopy( setEmptyString, 0, retval.setEmptyString, 0, nrfields );
 
-    retval.setDataLines( new ArrayList<List<String>>() );
-    for ( List<String> line : dataLines ) {
-      List<String> newLine = new ArrayList<String>();
-      newLine.addAll( line );
-      retval.getDataLines().add( newLine );
+    if ( dataLines != null ) {
+      retval.setDataLines( new ArrayList<List<String>>() );
+      for ( List<String> line : dataLines ) {
+        List<String> newLine = new ArrayList<String>();
+        newLine.addAll( line );
+        retval.getDataLines().add( newLine );
+      }
     }
-
     return retval;
   }
 

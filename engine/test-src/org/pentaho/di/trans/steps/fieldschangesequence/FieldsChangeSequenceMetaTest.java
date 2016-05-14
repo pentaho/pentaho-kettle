@@ -30,6 +30,7 @@ import java.util.Map;
 import org.junit.Test;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
+import static org.junit.Assert.*;
 
 public class FieldsChangeSequenceMetaTest {
 
@@ -52,5 +53,16 @@ public class FieldsChangeSequenceMetaTest {
     LoadSaveTester loadSaveTester = new LoadSaveTester( FieldsChangeSequenceMeta.class, attributes, getterMap, setterMap );
     loadSaveTester.testRepoRoundTrip();
     loadSaveTester.testXmlRoundTrip();
+  }
+
+  @Test
+  public void cloneTest() throws Exception {
+    FieldsChangeSequenceMeta meta = new FieldsChangeSequenceMeta();
+    meta.allocate( 2 );
+    meta.setFieldName( new String[] { "aa", "bb" } );
+    FieldsChangeSequenceMeta aClone = (FieldsChangeSequenceMeta) meta.clone();
+    assertFalse( aClone == meta );
+    assertArrayEquals( meta.getFieldName(), aClone.getFieldName() );
+    assertEquals( meta.getXML(), aClone.getXML() );
   }
 }

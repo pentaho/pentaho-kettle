@@ -408,11 +408,20 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface {
 
   /**
    * @return Returns the excludeFileMask.
+   * Deprecated due to typo
    */
+  @Deprecated
   public String[] getExludeFileMask() {
-    return excludeFileMask;
+    return getExcludeFileMask();
   }
 
+  /**
+   * @return Returns the excludeFileMask.
+   */
+  public String[] getExcludeFileMask() {
+    return excludeFileMask;
+  }
+  
   /**
    * @param excludeFileMask
    *          The excludeFileMask to set.

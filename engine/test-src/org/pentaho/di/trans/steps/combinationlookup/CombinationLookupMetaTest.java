@@ -23,6 +23,7 @@
 package org.pentaho.di.trans.steps.combinationlookup;
 
 import org.junit.Test;
+import java.util.Arrays;
 import org.mockito.Mockito;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.exception.KettleDatabaseException;
@@ -63,5 +64,22 @@ public class CombinationLookupMetaTest {
     assertEquals( "s4", combinationLookupMeta.getStreamFields().get( 0 ) );
     assertEquals( "s5", combinationLookupMeta.getStreamFields().get( 1 ) );
     assertEquals( "s6", combinationLookupMeta.getStreamFields().get( 2 ) );
+  }
+
+  @Test
+  public void cloneTest() throws Exception {
+    CombinationLookupMeta meta = new CombinationLookupMeta();
+    meta.allocate( 2 );
+    meta.setKeyField( new String[] { "keyfield1", "keyfield2" } );
+    meta.setKeyLookup( new String[] { "lookupfield1", "lookupfield2" } );
+    meta.setHashField( "ahashfield" );
+    meta.setLastUpdateField( "lastupdatefield" );
+    CombinationLookupMeta aClone = (CombinationLookupMeta) meta.clone();
+    assertFalse( aClone == meta );
+    assertTrue( Arrays.equals( meta.getKeyField(), aClone.getKeyField() ) );
+    assertTrue( Arrays.equals( meta.getKeyLookup(), aClone.getKeyLookup() ) );
+    assertEquals( meta.getHashField(), aClone.getHashField() );
+    assertEquals( meta.getLastUpdateField(), aClone.getLastUpdateField() );
+    assertEquals( meta.getXML(), aClone.getXML() );
   }
 }

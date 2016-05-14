@@ -72,6 +72,7 @@ public class AccessInputMetaTest {
     assertEquals( f1.getName(), clFields[0].getName() );
     assertEquals( f2.getName(), clFields[1].getName() );
     assertEquals( meta.getFilenameField(), aClone.getFilenameField() );
+    assertEquals( meta.getXML(), aClone.getXML() );
   }
 
   @Test
