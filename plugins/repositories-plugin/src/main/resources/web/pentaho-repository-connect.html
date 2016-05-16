@@ -1,9 +1,21 @@
+<div class="error-message" ng-show="model.hasError">
+  <div class="error-message-icon">
+    <img src="images/caution.svg" />
+  </div>
+  <div class="error-message-text">
+    {{model.errorMessage}}
+  </div>
+  <div class="error-message-close" ng-click="model.hasError=false">
+    <img src="images/close_notif.svg" />
+  </div>
+</div>
 <div class="main_div">
   <div class="header" style="margin-bottom:37px;margin-top:77px;">
     <img id="pentaho-img" alt="" src="images/u135.png" />
   </div>
   <div class="title_text" style="margin-bottom:34px;">Repository Connection</div>
   <div class="middle_div2">
+    <form>
     <div style="margin-bottom:18px;">
       <label for="userName" class="margin_bottom_5 block text_left">User Name</label>
       <input set-focus id="userName" class="block repo_conn_txt" type="text" ng-model="model.username" />
@@ -13,7 +25,8 @@
       <input id="password" class="block repo_conn_txt" type="password" ng-model="model.password" />
     </div>
     <div>
-      <button id="connect" class="standard" type="button" ng-disabled="!canConnect()" ng-click="connect()">Connect</button>
+      <button id="connect" class="standard" type="submit" ng-disabled="!canConnect()" ng-click="connect()">Connect</button>
     </div>
+    </form>
   </div>
 </div>

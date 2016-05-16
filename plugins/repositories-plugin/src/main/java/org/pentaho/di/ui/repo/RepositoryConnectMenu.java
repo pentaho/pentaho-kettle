@@ -121,10 +121,11 @@ public class RepositoryConnectMenu {
         if ( repositoriesMeta != null ) {
           for ( int i = 0; i < repositoriesMeta.nrRepositories(); i++ ) {
             MenuItem item = new MenuItem( connectionMenu, SWT.CHECK );
+            item.setText( repositoriesMeta.getRepository( i ).getName() );
             if ( spoon.rep != null && spoon.rep.getName().equals( repositoriesMeta.getRepository( i ).getName() ) ) {
               item.setSelection( true );
+              continue;
             }
-            item.setText( repositoriesMeta.getRepository( i ).getName() );
             item.addSelectionListener( new SelectionAdapter() {
               @Override public void widgetSelected( SelectionEvent selectionEvent ) {
                 String repoName = ( (MenuItem) selectionEvent.widget ).getText();

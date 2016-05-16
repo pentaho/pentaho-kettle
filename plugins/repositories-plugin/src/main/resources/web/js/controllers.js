@@ -326,7 +326,11 @@ define(
       }
 
       $scope.connect = function() {
-        if (loginToRepository(this.model.username, this.model.password)) {
+        this.model.hasError = false;
+        var response = JSON.parse(loginToRepository(this.model.username, this.model.password));
+        this.model.errorMessage = response.errorMessage;
+        this.model.hasError = response.success == false;
+        if (response.success == true) {
           close();
         }
       }

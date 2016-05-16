@@ -231,6 +231,7 @@ button.invisible {
 }
 
 #btnHelp {
+  cursor: pointer;
   margin: 8px 0px 0px 4px;
 }
 
@@ -441,7 +442,7 @@ table#repoMngTable td {
 }
 
 #table-scroll {
-  height:380px;
+  height:300px;
   overflow:auto; 
 }
 
@@ -546,4 +547,58 @@ hr {
 .helpImg {
   position: relative;
   top: 8px;
+}
+
+.error-message-icon {
+  width: 32px;
+  height: 28px;
+  float: left;
+  margin-top: 15px;
+  margin-left: 15px;
+}
+
+.error-message {
+  border: 1px solid #f3E085;
+  background-color: #fcf8e3;
+  width: 580px;
+  height: 63px;
+  border-radius: 5px;
+  position: absolute;
+  top: 10px;
+  left: 23px;
+}
+
+.error-message-text {
+  width: 460px;
+  float: left;
+  margin-top: 13px;
+  margin-left: 15px;
+  text-align: left;
+  font-size: 14px;
+}
+
+.error-message-close {
+  width: 14px;
+  height: 14px;
+  float: right;
+  margin-right: 10px;
+  margin-top: 10px;
+}
+
+.error-message.ng-hide {
+  top: -63px;
+  opacity: 0;
+}
+
+.error-message.ng-hide-remove,
+.error-message.ng-hide-add {
+  display: block !important;
+}
+
+.error-message.ng-hide-remove {
+  transition: all linear 600ms;
+}
+
+.error-message.ng-hide-add {
+  transition: all linear 600ms;
 }
