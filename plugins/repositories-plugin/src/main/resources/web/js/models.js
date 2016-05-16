@@ -80,6 +80,8 @@ define( [
     });
 
     repoConnectionApp.service("repositoryConnectModel", function() {
+      this.hasError = false;
+      this.errorMessage = "";
       this.username = "";
       this.password = "";
     });

@@ -166,7 +166,9 @@ public class RepositoryDialog extends ThinDialog {
         DatabaseDialog databaseDialog = new DatabaseDialog( shell, new DatabaseMeta() );
         databaseDialog.open();
         DatabaseMeta databaseMeta = databaseDialog.getDatabaseMeta();
-        controller.addDatabase( databaseMeta );
+        if ( databaseMeta != null ) {
+          controller.addDatabase( databaseMeta );
+        }
         return true;
       }
     };
