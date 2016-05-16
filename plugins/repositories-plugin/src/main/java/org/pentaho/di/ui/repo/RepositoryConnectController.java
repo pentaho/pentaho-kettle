@@ -202,7 +202,8 @@ public class RepositoryConnectController {
     RepositoryMeta repositoryMeta = repositoriesMeta.findRepository( name );
     int index = repositoriesMeta.indexOfRepository( repositoryMeta );
     if ( index != -1 ) {
-      if ( spoon != null && spoon.getRepositoryName().equals( repositoryMeta.getName() ) ) {
+      if ( spoon != null && spoon.getRepositoryName() != null && spoon.getRepositoryName()
+        .equals( repositoryMeta.getName() ) ) {
         spoon.closeRepository();
       }
       repositoriesMeta.removeRepository( index );
