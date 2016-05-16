@@ -6,11 +6,12 @@
         <tr ng-repeat="repository in model.repositories" ng-class="{active : repository === model.selectedRepository}"  ng-click="selectRepository(repository)">
           <td class="bullet" />
           <td class="repo_type text_left">
-            <div class="margin_bottom_10">{{repository.displayName}}</div>
-            <div>{{repository.description}}</div>
+            <div class="margin_bottom_10 repoType">{{repository.displayName}}</div>
+            <div id="repoDesc">{{repository.description}}</div>
           </td>
           <td class="default">
-            <button class="defaultBtn" ng-click="setDefault(repository)" ng-class="{activate : repository.isDefault == true}">Set Default</button>
+            <button class="defaultBtn" ng-click="setDefault(repository)" ng-show="repository.isDefault == false" >Set Default</button>
+            <button class="defaultBtn activate" ng-show="repository.isDefault == true">Default</button>
           </td>
         </tr>
       </table>

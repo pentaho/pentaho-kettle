@@ -40,7 +40,7 @@
 * BODY and MAIN DIVS
 */
 body {
-  font-family: OpenSansLight, Helvetica, Arial, Sans serif;
+  font-family: OpenSansRegular;
   overflow: hidden;
   margin: 0px;
 }
@@ -72,11 +72,13 @@ body {
 * TEXTS
 */
 .header {
+  font-family: OpenSansLight;
   font-size: 44px;
   color: #005EAA;
 }
 
 .title_text {
+  font-family: OpenSansLight;
   font-size: 24px;
   color: #333333;
 }
@@ -169,7 +171,6 @@ button:not(.defaultBtn) {
   height: 36px;
   border-radius: 4px;
   padding: 0px 20px 0px 20px;
-  border: none;
   font-size: 14px;
 }
 
@@ -226,6 +227,14 @@ button.defaultBtn {
   color: #FFFFFF;
 }
 
+button#delete, button#edit {
+  visibility: hidden;
+}
+
+button.visible {
+  visibility: visible !important;
+}
+
 button.invisible {
   visibility: hidden;
 }
@@ -237,6 +246,7 @@ button.invisible {
 
 #browse {
   height: 40px !important;
+  border-radius: 0px 4px 4px 0px !important;
 }
 
 #connectionDD {
@@ -348,7 +358,7 @@ input[type="checkbox"]:checked + label::before {
   position:relative;
   width:300px;
   font-family: OpenSansRegular;
-  color: #999999;
+  color: #666666;
   font-size: 14px;
 }
 
@@ -363,6 +373,7 @@ input[type="checkbox"]:checked + label::before {
 
 input#location {
   width: 280px !important;
+  border-radius: 4px 0px 0px 4px !important;
 }
 
 textarea#description {
@@ -442,7 +453,7 @@ table#repoMngTable td {
 }
 
 #table-scroll {
-  height:300px;
+  height: 285px;
   overflow:auto; 
 }
 
@@ -477,13 +488,8 @@ td button.activate {
   color: #FFFFFF !important;
 }
 
-tr.active>td.repo_type>div:nth-child(1) {
-  font-size: 24px;
-}
-
 tr:not(.active)>td.repo_type>div:nth-child(1){
-  font-size: 24px;
-  color: #333333;
+  color: #2873B0;
 }
 
 tr:hover td.bullet {
@@ -502,6 +508,18 @@ tr.active:not(:hover) td button.defaultBtn {
   background: #005EAA;
 }
 
+#repoDesc {
+  white-space: nowrap;
+  width: 400px; 
+  overflow: hidden;
+  text-overflow: ellipsis !important;
+}
+
+.repoType {
+  font-family: OpenSansLight;
+  font-size: 24px;
+}
+
 /*
 * MISC
 */
@@ -518,10 +536,6 @@ img.middle {
   width: auto;
   max-width: 272px;
   max-height: 70px;
-}
-
-#pentaho_repo_img {
-  width: 380px;
 }
 
 hr {
