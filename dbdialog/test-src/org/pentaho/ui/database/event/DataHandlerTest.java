@@ -244,7 +244,7 @@ public class DataHandlerTest {
     assertEquals( dbMeta, dataHandler.getData() );
     assertNotSame( initialDbMeta, dataHandler.getData() );
     assertFalse( props.containsKey( BaseDatabaseMeta.ATTRIBUTE_PREFIX_EXTRA_OPTION + "KettleThin.webappname" ) );
-    assertTrue( props.get( "WEB_APPLICATION_NAME" ).equals( "foo" ) );
+    verify( dbMeta ).setDBName( "foo" );
 
     dataHandler.setData( null );
     assertEquals( dbMeta, dataHandler.getData() );

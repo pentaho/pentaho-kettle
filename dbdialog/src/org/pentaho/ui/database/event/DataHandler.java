@@ -789,7 +789,7 @@ public class DataHandler extends AbstractXulEventHandler {
     }
 
     if ( meta.getAttributes().containsKey( EXTRA_OPTION_WEB_APPLICATION_NAME ) ) {
-      meta.getAttributes().put( WEB_APPLICATION_NAME, meta.getAttributes().get( EXTRA_OPTION_WEB_APPLICATION_NAME ) );
+      meta.setDBName( (String) meta.getAttributes().get( EXTRA_OPTION_WEB_APPLICATION_NAME ) );
       meta.getAttributes().remove( EXTRA_OPTION_WEB_APPLICATION_NAME );
       meta.setChanged();
     }
@@ -1274,7 +1274,7 @@ public class DataHandler extends AbstractXulEventHandler {
     }
 
     if ( webAppName != null ) {
-      meta.getAttributes().put( WEB_APPLICATION_NAME, webAppName.getValue() );
+      meta.setDBName( webAppName.getValue() );
     }
   }
 
@@ -1366,10 +1366,10 @@ public class DataHandler extends AbstractXulEventHandler {
     }
 
     if ( webAppName != null ) {
-      if ( databaseMeta != null && databaseMeta.getAttributes().containsKey( WEB_APPLICATION_NAME ) ) {
-        webAppName.setValue( databaseMeta.getAttributes().getProperty( WEB_APPLICATION_NAME ) );
-      } else {
+      if ( Const.isEmpty( meta.getDatabaseName() ) ) {
         webAppName.setValue( "pentaho-di" );
+      } else {
+        webAppName.setValue( meta.getDatabaseName() );
       }
     }
   }
