@@ -3,13 +3,12 @@
     connection</div>
   <div class="middle_div">
     <div id="dbDiv" class="margin_bottom_20 text_left">
-      <!-- This div must be repeatable -->
-      <div ng-repeat="database in databases" class="db_list_items" ng-class="{active : database == selectedDatabase}" ng-click="selectDatabase(database)">{{database.name}}</div>
+      <div ng-repeat="database in databases" class="db_list_items" ng-class="{active : database == selectedDatabase || databases.length == 1}" ng-click="selectDatabase(database)">{{database.name}}</div>
     </div>
     <div>
-      <button id="delete" class="right margin_left_10 secondary" ng-class="{invisible : !selectedDatabase || databases.length == 0}"
+      <button id="delete" class="right margin_left_10 secondary" ng-class="{visible : selectedDatabase || databases.length == 1}"
           type="button" ng-click="deleteConnection()">Delete</button>
-      <button id="edit" class="right margin_left_10 secondary" ng-class="{invisible : !selectedDatabase || databases.length == 0}"
+      <button id="edit" class="right margin_left_10 secondary" ng-class="{visible : selectedDatabase || databases.length == 1}"
           type="button" ng-click="editConnection()">Edit</button>
       <button id="new" class="right secondary" type="button" ng-click="createNewConnection()">New</button>
     </div>
