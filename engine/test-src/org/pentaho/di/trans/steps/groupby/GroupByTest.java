@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,15 +22,19 @@
 
 package org.pentaho.di.trans.steps.groupby;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
-
-import junit.framework.TestCase;
 
 import org.junit.After;
 import org.junit.Before;
@@ -48,16 +52,17 @@ import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
 import org.pentaho.metastore.api.IMetaStore;
 
-public class GroupByTest extends TestCase {
+public class GroupByTest  {
   private StepMockHelper<GroupByMeta, GroupByData> mockHelper;
 
   @Before
   public void setUp() throws Exception {
     mockHelper =
-      new StepMockHelper<GroupByMeta, GroupByData>( "Group By", GroupByMeta.class, GroupByData.class );
+      new StepMockHelper<>( "Group By", GroupByMeta.class, GroupByData.class );
     when( mockHelper.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) ).thenReturn(
       mockHelper.logChannelInterface );
     when( mockHelper.trans.isRunning() ).thenReturn( true );
@@ -153,5 +158,25 @@ public class GroupByTest extends TestCase {
     assertTrue( outputFields.getValueMeta( 7 ).getName().equals( "concat_comma_field" ) );
     assertTrue( outputFields.getValueMeta( 8 ).getType() == ValueMeta.TYPE_STRING );
     assertTrue( outputFields.getValueMeta( 8 ).getName().equals( "concat_custom_field" ) );
+  }
+
+
+  @Test
+  public void testTempFileIsDeleted_AfterCallingDisposeMethod() throws Exception {
+    GroupByData groupByData = new GroupByData();
+    groupByData.tempFile = File.createTempFile( "test", ".txt" );
+
+    // emulate connections to file are opened
+    groupByData.fosToTempFile = new FileOutputStream( groupByData.tempFile );
+    groupByData.fisToTmpFile = new FileInputStream( groupByData.tempFile );
+
+    GroupBy groupBySpy = Mockito.spy( new GroupBy( mockHelper.stepMeta, groupByData, 0,
+      mockHelper.transMeta, mockHelper.trans ) );
+
+    assertTrue( groupByData.tempFile.exists() );
+    groupBySpy.dispose( mock( StepMetaInterface.class ), groupByData );
+    // check file is deleted
+    assertFalse( groupByData.tempFile.exists() );
+
   }
 }
