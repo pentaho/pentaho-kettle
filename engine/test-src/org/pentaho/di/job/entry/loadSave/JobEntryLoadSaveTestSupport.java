@@ -68,15 +68,9 @@ public abstract class JobEntryLoadSaveTestSupport<T extends JobEntryInterface> {
   }
 
   @Test
-  public void xmlSerialization() throws Exception {
-    tester.testXmlRoundTrip();
+  public void testSerialization() throws KettleException {
+    tester.testSerialization();
   }
-
-  @Test
-  public void repositorySerialization() throws Exception {
-    tester.testRepoRoundTrip();
-  }
-
 
   protected abstract Class<T> getJobEntryClass();
 

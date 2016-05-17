@@ -28,12 +28,14 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.steps.loadsave.MemoryRepository;
+import org.pentaho.di.trans.steps.loadsave.initializer.JobEntryInitializer;
 import org.pentaho.di.trans.steps.loadsave.validator.DatabaseMetaLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidatorFactory;
@@ -44,9 +46,19 @@ public class LoadSaveTester<T extends JobEntryInterface> extends LoadSaveBase<T>
                          List<String> xmlAttributes, List<String> repoAttributes, Map<String, String> getterMap,
                          Map<String, String> setterMap,
                          Map<String, FieldLoadSaveValidator<?>> fieldLoadSaveValidatorAttributeMap,
-                         Map<String, FieldLoadSaveValidator<?>> fieldLoadSaveValidatorTypeMap ) {
+                         Map<String, FieldLoadSaveValidator<?>> fieldLoadSaveValidatorTypeMap,
+                         JobEntryInitializer<T> jobEntryInitializer ) {
     super( clazz, commonAttributes, xmlAttributes, repoAttributes, getterMap, setterMap,
       fieldLoadSaveValidatorAttributeMap, fieldLoadSaveValidatorTypeMap );
+  }
+
+  public LoadSaveTester( Class<T> clazz, List<String> commonAttributes,
+                         List<String> xmlAttributes, List<String> repoAttributes, Map<String, String> getterMap,
+                         Map<String, String> setterMap,
+                         Map<String, FieldLoadSaveValidator<?>> fieldLoadSaveValidatorAttributeMap,
+                         Map<String, FieldLoadSaveValidator<?>> fieldLoadSaveValidatorTypeMap ) {
+    this( clazz, commonAttributes, xmlAttributes, repoAttributes, getterMap, setterMap,
+      fieldLoadSaveValidatorAttributeMap, fieldLoadSaveValidatorTypeMap, null );
   }
 
   public LoadSaveTester( Class<T> clazz, List<String> commonAttributes,
@@ -105,9 +117,17 @@ public class LoadSaveTester<T extends JobEntryInterface> extends LoadSaveBase<T>
     }
   }
 
-  @SuppressWarnings( "unchecked" )
+  public void testSerialization() throws KettleException {
+    testXmlRoundTrip();
+    testRepoRoundTrip();
+  }
+
+  @SuppressWarnings( "deprecation" )
   public void testXmlRoundTrip() throws KettleException {
     T metaToSave = createMeta();
+    if ( initializer != null ) {
+      initializer.modify( metaToSave );
+    }
     Map<String, FieldLoadSaveValidator<?>> validatorMap =
         createValidatorMapAndInvokeSetters( xmlAttributes, metaToSave );
     T metaLoaded = createMeta();
@@ -116,13 +136,15 @@ public class LoadSaveTester<T extends JobEntryInterface> extends LoadSaveBase<T>
     metaLoaded.loadXML( XMLHandler.getSubNode( XMLHandler.loadXMLFile( is, null, false, false ), "step" ), databases, null, null, null );
     validateLoadedMeta( xmlAttributes, validatorMap, metaToSave, metaLoaded );
 
-    // Test clone() method
-    metaLoaded = (T) metaToSave.clone();
-    validateLoadedMeta( xmlAttributes, validatorMap, metaToSave, metaLoaded );
+    testClone();
   }
 
+  @SuppressWarnings( "deprecation" )
   public void testRepoRoundTrip() throws KettleException {
     T metaToSave = createMeta();
+    if ( initializer != null ) {
+      initializer.modify( metaToSave );
+    }
     Map<String, FieldLoadSaveValidator<?>> validatorMap =
         createValidatorMapAndInvokeSetters( repoAttributes, metaToSave );
     T metaLoaded = createMeta();
@@ -130,5 +152,19 @@ public class LoadSaveTester<T extends JobEntryInterface> extends LoadSaveBase<T>
     metaToSave.saveRep( rep, null, null );
     metaLoaded.loadRep( rep, null, null, databases, null );
     validateLoadedMeta( repoAttributes, validatorMap, metaToSave, metaLoaded );
+  }
+
+  @SuppressWarnings( "deprecation" )
+  protected void testClone() {
+    T metaToSave = createMeta();
+    if ( initializer != null ) {
+      initializer.modify( metaToSave );
+    }
+    Map<String, FieldLoadSaveValidator<?>> validatorMap =
+        createValidatorMapAndInvokeSetters( xmlAttributes, metaToSave );
+
+    @SuppressWarnings( "unchecked" )
+    T metaLoaded = (T) metaToSave.clone();
+    validateLoadedMeta( xmlAttributes, validatorMap, metaToSave, metaLoaded );
   }
 }
