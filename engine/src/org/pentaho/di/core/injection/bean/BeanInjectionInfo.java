@@ -101,10 +101,12 @@ public class BeanInjectionInfo {
     if ( StringUtils.isBlank( metaInj.name() ) ) {
       throw new RuntimeException( "Property name shouldn't be blank in the " + clazz );
     }
-    if ( properties.containsKey( metaInj.name() ) ) {
-      throw new RuntimeException( "Property '" + metaInj.name() + "' already defined for " + clazz );
+
+    String propertyName = calcPropertyName( metaInj, leaf );
+    if ( properties.containsKey( propertyName ) ) {
+      throw new RuntimeException( "Property '" + propertyName + "' already defined for " + clazz );
     }
-    Property prop = new Property( metaInj.name(), metaInj.group(), leaf.createCallStack() );
+    Property prop = new Property( propertyName, metaInj.group(), leaf.createCallStack() );
     properties.put( prop.name, prop );
     Group gr = groupsMap.get( metaInj.group() );
     if ( gr == null ) {
@@ -129,6 +131,21 @@ public class BeanInjectionInfo {
       }
     }
     return description;
+  }
+
+  private String calcPropertyName( Injection metaInj, BeanLevelInfo leaf ) {
+    String name = metaInj.name();
+    while ( leaf != null ) {
+      if ( StringUtils.isNotBlank( leaf.prefix ) ) {
+        name = leaf.prefix + '.' + name;
+      }
+      leaf = leaf.parent;
+    }
+    if ( !name.equals( metaInj.name() ) && !metaInj.group().isEmpty() ) {
+      // group exist with prefix
+      throw new RuntimeException( "Group shouldn't be declared with prefix in " + clazz );
+    }
+    return name;
   }
 
   public class Property {

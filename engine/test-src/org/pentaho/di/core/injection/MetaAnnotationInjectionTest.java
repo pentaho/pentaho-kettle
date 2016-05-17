@@ -32,11 +32,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.injection.bean.BeanInjectionInfo;
 import org.pentaho.di.core.injection.bean.BeanInjector;
+import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.value.ValueMetaString;
 
@@ -47,6 +49,11 @@ public class MetaAnnotationInjectionTest {
   private static final String COMPLEX_NAME = "COMPLEX_NAME";
 
   private static final String TEST_NAME = "TEST_NAME";
+
+  @Before
+  public void before() {
+    KettleLogStore.init();
+  }
 
   @Test
   public void testInjectionDescription() throws Exception {
@@ -147,6 +154,17 @@ public class MetaAnnotationInjectionTest {
       new BeanInjectionInfo( MetaBeanWrong5.class );
       fail();
     } catch ( Exception ex ) {
+    }
+    try {
+      new BeanInjectionInfo( MetaBeanWrong6.class );
+      fail();
+    } catch ( Exception ex ) {
+    }
+    try {
+      new BeanInjectionInfo( MetaBeanWrong7.class );
+      fail();
+    } catch ( Exception ex ) {
+      ex.printStackTrace();
     }
   }
 
