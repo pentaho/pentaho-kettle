@@ -54,6 +54,9 @@ define(
         } else {
           $location.path("/pentaho-repository-creation-failure")
         }
+        if(this.model.isDefault) {
+          setDefaultRepository(this.model.displayName);
+        }
         $rootScope.next();
       };
       $scope.connect = function() {
@@ -103,6 +106,9 @@ define(
         } else {
           $location.path("/kettle-file-repository-creation-failure")
         }
+        if(this.model.isDefault) {
+          setDefaultRepository(this.model.displayName);
+        }
         $rootScope.next();
       }
       $scope.createNewConnection = function() {
@@ -151,6 +157,9 @@ define(
           $location.path("/kettle-database-repository-creation-success")
         } else {
           $location.path("/kettle-database-repository-creation-failure")
+        }
+        if(this.model.isDefault) {
+          setDefaultRepository(this.model.displayName);
         }
         $rootScope.next();
       }
