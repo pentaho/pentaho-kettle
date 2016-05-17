@@ -2,7 +2,7 @@
   <div class="title_text margin_bottom_30">Select a database
     connection</div>
   <div class="middle_div">
-    <div id="dbDiv" class="margin_bottom_20 text_left">
+    <div id="dbDiv" class="margin_bottom_20 text_left right">
       <div ng-repeat="database in databases" class="db_list_items" ng-class="{active : database == selectedDatabase || databases.length == 1}" ng-click="selectDatabase(database)">{{database.name}}</div>
     </div>
     <div>

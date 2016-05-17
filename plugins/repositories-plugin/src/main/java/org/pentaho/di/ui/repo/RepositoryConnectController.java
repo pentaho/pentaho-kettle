@@ -220,11 +220,13 @@ public class RepositoryConnectController {
   }
 
   public boolean setDefaultRepository( String name ) {
-    for ( int i = 0; i < repositoriesMeta.nrRepositories(); i++ ) {
-      repositoriesMeta.getRepository( i ).setDefault( false );
-    }
     RepositoryMeta repositoryMeta = repositoriesMeta.findRepository( name );
-    repositoryMeta.setDefault( true );
+    if ( repositoryMeta != null ) {
+      for ( int i = 0; i < repositoriesMeta.nrRepositories(); i++ ) {
+        repositoriesMeta.getRepository( i ).setDefault( false );
+      }
+      repositoryMeta.setDefault( true );
+    }
     try {
       repositoriesMeta.writeData();
     } catch ( KettleException ke ) {
