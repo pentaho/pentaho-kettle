@@ -22,31 +22,8 @@
 
 package org.pentaho.di.core.injection;
 
-public class MetaBeanLevel2 extends MetaBeanLevel2Base {
-
-  @Injection( name = "SEPARATOR" )
-  private String separator;
-
-  @InjectionDeep
-  private MetaBeanLevel3[] files;
-
-  @InjectionDeep( prefix = "SECOND" )
-  private MetaBeanLevel4 filesSecond;
-  @InjectionDeep( prefix = "THIRD" )
-  private MetaBeanLevel4 filesThird;
-
-  @Injection( name = "FILENAME_ARRAY" )
-  private String[] filenames;
-
-  public String[] getFilenames() {
-    return filenames;
-  }
-
-  public String getSeparator() {
-    return separator;
-  }
-
-  public MetaBeanLevel3[] getFiles() {
-    return files;
-  }
+@InjectionSupported( localizationPrefix = "", groups = { "ONE" } )
+public class MetaBeanWrong7 {
+  @InjectionDeep( prefix = "PREFIX" )
+  MetaBeanWrong7Inc base;
 }
