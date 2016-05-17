@@ -1243,6 +1243,13 @@ public interface ValueMetaInterface extends Cloneable {
   public Object getNativeDataType( Object object ) throws KettleValueException;
 
   /**
+   * Return the Java class that represents the "native" storage type of this ValueMeta
+   * 
+   * @return A Java class 
+   */
+  public Class<?> getNativeDataTypeClass() throws KettleValueException;
+
+  /**
    * Ask for suggestions as to how this plugin data type should be represented in the specified database interface
    *
    * @param databaseInterface

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -26,6 +26,7 @@ import java.util.List;
 
 import org.codehaus.janino.ExpressionEvaluator;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
 
@@ -45,7 +46,7 @@ public class JaninoData extends BaseStepData implements StepDataInterface {
   public static final int RETURN_TYPE_BOOLEAN = 7;
 
   public RowMetaInterface outputRowMeta;
-  public int[] returnType;
+  public ValueMetaInterface[] returnType;
   public int[] replaceIndex;
 
   public ExpressionEvaluator[] expressionEvaluators;
