@@ -6,7 +6,7 @@
         <tr ng-repeat="repository in model.repositories" ng-class="{active : repository === model.selectedRepository}"  ng-click="selectRepository(repository)">
           <td class="bullet" />
           <td class="repo_type text_left">
-            <div class="margin_bottom_10 repoType">{{repository.displayName}}</div>
+            <div class="repoType">{{repository.displayName}}</div>
             <div id="repoDesc">{{repository.description}}</div>
           </td>
           <td class="default">

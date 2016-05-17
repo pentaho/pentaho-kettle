@@ -220,7 +220,7 @@ button#connect {
 button.defaultBtn {
   outline: none;
   border: none;
-  font-size: 14px;
+  font-size: 12px;
   padding: 5px 10px 5px 10px;
   border-radius: 15px;
   background-color: #FFFFFF;
@@ -453,19 +453,19 @@ table#repoMngTable td {
 }
 
 #table-scroll {
-  height: 285px;
+  height: 304px;
   overflow:auto; 
 }
 
 td.bullet {
   border-right: none;
   width: 7px;
-  height: 95px;
+  height: 75px;
   padding: 0px;
 }
 
 td.repo_type {
-  padding: 15px 15px 15px 10px;
+  padding-left: 10px;
   border-left: none;
   border-right: none;
 }
@@ -513,6 +513,12 @@ tr.active:not(:hover) td button.defaultBtn {
   width: 400px; 
   overflow: hidden;
   text-overflow: ellipsis !important;
+  font-size: 14px;
+  color: #333333;
+}
+
+tr.active #repoDesc {
+  color: #ffffff;
 }
 
 .repoType {
