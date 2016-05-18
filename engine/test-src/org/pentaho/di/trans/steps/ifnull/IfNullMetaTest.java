@@ -84,7 +84,6 @@ public class IfNullMetaTest {
     };
     FieldLoadSaveValidator<String[]> stringArrayLoadSaveValidator =
         new ArrayLoadSaveValidator<String>( new StringLoadSaveValidator(), 3 );
-
     Map<String, FieldLoadSaveValidator<?>> attrValidatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();
     attrValidatorMap.put( "fieldName", stringArrayLoadSaveValidator );
     attrValidatorMap.put( "replaceValue", stringArrayLoadSaveValidator );
