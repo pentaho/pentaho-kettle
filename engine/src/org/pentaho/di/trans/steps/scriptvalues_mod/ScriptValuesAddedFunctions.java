@@ -77,8 +77,9 @@ import org.pentaho.di.core.gui.SpoonInterface;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.util.EnvUtil;
-import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
+import org.pentaho.di.job.Job;
+import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.steps.loadfileinput.LoadFileInput;
 
@@ -1807,52 +1808,68 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
           sArg2 = Context.toString( ArgList[1] );
           sArg3 = Context.toString( ArgList[2] );
 
-          if ( "s".equals( sArg3 ) ) {
-            // System wide properties
-            System.setProperty( sArg1, sArg2 );
+          Job parentJob = null;
 
-            // Set also all the way to the root as else we will take
-            // stale values
-            scm.setVariable( sArg1, sArg2 );
+          // variables are always set in the step and in the hosting transformation
+          scm.setVariable( sArg1, sArg2 );
+          Trans trans = scm.getTrans();
+          if ( trans != null ) {
+            trans.setVariable( sArg1, sArg2 );
 
-            VariableSpace parentSpace = scm.getParentVariableSpace();
-            while ( parentSpace != null ) {
-              parentSpace.setVariable( sArg1, sArg2 );
-              parentSpace = parentSpace.getParentVariableSpace();
+            // Set the variable in a potential parent transformation (in case of sub-transformation)
+            while ( trans.getParentTrans() != null ) {
+              trans = trans.getParentTrans();
+              trans.setVariable( sArg1, sArg2 );
             }
-          } else if ( "r".equals( sArg3 ) ) {
-            // Upto the root... this should be the default.
-            scm.setVariable( sArg1, sArg2 );
-
-            VariableSpace parentSpace = scm.getParentVariableSpace();
-            while ( parentSpace != null ) {
-              parentSpace.setVariable( sArg1, sArg2 );
-              parentSpace = parentSpace.getParentVariableSpace();
-            }
-          } else if ( "p".equals( sArg3 ) ) {
-            // Upto the parent
-            scm.setVariable( sArg1, sArg2 );
-
-            VariableSpace parentSpace = scm.getParentVariableSpace();
-            if ( parentSpace != null ) {
-              parentSpace.setVariable( sArg1, sArg2 );
-            }
-          } else if ( "g".equals( sArg3 ) ) {
-            // Upto the grand parent
-            scm.setVariable( sArg1, sArg2 );
-
-            VariableSpace parentSpace = scm.getParentVariableSpace();
-            if ( parentSpace != null ) {
-              parentSpace.setVariable( sArg1, sArg2 );
-              VariableSpace grandParentSpace = parentSpace.getParentVariableSpace();
-              if ( grandParentSpace != null ) {
-                grandParentSpace.setVariable( sArg1, sArg2 );
-              }
-            }
-          } else {
-            throw Context.reportRuntimeError( "The argument type of function call "
-              + "setVariable should either be \"s\", \"r\", \"p\", or \"g\"." );
+            parentJob = trans.getParentJob();
           }
+
+          switch ( sArg3 ) {
+            case "s":
+              System.setProperty( sArg1, sArg2 );
+
+              // Set the variable up to job hierarchy.
+              while ( parentJob != null ) {
+                parentJob.setVariable( sArg1, sArg2 );
+                parentJob = parentJob.getParentJob();
+              }
+              break;
+
+            case "r":
+              // Set the variable up to job hierarchy.
+              while ( parentJob != null ) {
+                parentJob.setVariable( sArg1, sArg2 );
+                parentJob = parentJob.getParentJob();
+              }
+              break;
+
+            case "g":
+              Job gpJob = null;
+
+              // Set the variable on the parent job
+              if ( parentJob != null ) {
+                parentJob.setVariable( sArg1, sArg2 );
+                gpJob = parentJob.getParentJob();
+              }
+
+              // Set the variable on the grand-parent job
+              if ( gpJob != null ) {
+                gpJob.setVariable( sArg1, sArg2 );
+              }
+              break;
+
+            case "p":
+              // Set the variable on the parent job
+              if ( parentJob != null ) {
+                parentJob.setVariable( sArg1, sArg2 );
+              }
+              break;
+
+            default:
+              throw Context.reportRuntimeError( "The argument type of function call "
+                      + "setVariable should either be \"s\", \"r\", \"p\", or \"g\"." );
+          }
+
         }
         // Ignore else block for now... if we're executing via the Test Button
 
