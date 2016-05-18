@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -414,8 +414,17 @@ public class LDAPOutputMeta extends BaseStepMeta implements LdapMeta {
 
   /**
    * @return Returns the input useAuthentication.
+   * Deprecated as it doesn't follow standards
    */
+  @Deprecated
   public boolean UseAuthentication() {
+    return useAuthentication;
+  }
+
+  /**
+   * @return Returns the input useAuthentication.
+   */
+  public boolean getUseAuthentication() {
     return useAuthentication;
   }
 
