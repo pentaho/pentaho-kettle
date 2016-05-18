@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -276,7 +276,8 @@ public class JobEntryFilesExistDialog extends JobEntryDialog implements JobEntry
     fdlFields.top = new FormAttachment( wFilename, margin );
     wlFields.setLayoutData( fdlFields );
 
-    int rows = jobEntry.arguments == null ? 1 : ( jobEntry.arguments.length == 0 ? 0 : jobEntry.arguments.length );
+    int rows = jobEntry.getArguments() == null ? 1
+      : ( jobEntry.getArguments().length == 0 ? 0 : jobEntry.getArguments().length );
 
     final int FieldsRows = rows;
 
@@ -413,11 +414,11 @@ public class JobEntryFilesExistDialog extends JobEntryDialog implements JobEntry
       wName.setText( jobEntry.getName() );
     }
 
-    if ( jobEntry.arguments != null ) {
-      for ( int i = 0; i < jobEntry.arguments.length; i++ ) {
+    if ( jobEntry.getArguments() != null ) {
+      for ( int i = 0; i < jobEntry.getArguments().length; i++ ) {
         TableItem ti = wFields.table.getItem( i );
-        if ( jobEntry.arguments[i] != null ) {
-          ti.setText( 1, jobEntry.arguments[i] );
+        if ( jobEntry.getArguments()[i] != null ) {
+          ti.setText( 1, jobEntry.getArguments()[i] );
         }
       }
       wFields.setRowNums();
@@ -457,15 +458,16 @@ public class JobEntryFilesExistDialog extends JobEntryDialog implements JobEntry
         nr++;
       }
     }
-    jobEntry.arguments = new String[nr];
+    String[] arguments = new String[nr];
     nr = 0;
     for ( int i = 0; i < nritems; i++ ) {
       String arg = wFields.getNonEmpty( i ).getText( 1 );
       if ( arg != null && arg.length() != 0 ) {
-        jobEntry.arguments[nr] = arg;
+        arguments[nr] = arg;
         nr++;
       }
     }
+    jobEntry.setArguments( arguments );
 
     dispose();
   }

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -721,7 +721,7 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
     /**********************************************************
      *
      * @param selectedfile
-     * @param wildcard
+     * @param sourceWildcard
      * @return True if the selectedfile matches the wildcard
      **********************************************************/
     private boolean GetFileWildcard( String selectedfile ) {

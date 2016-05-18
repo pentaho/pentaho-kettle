@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -348,18 +348,18 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
         Const.NVL(
           rep.getJobEntryAttributeString( id_jobentry, "protocol" ), MailConnectionMeta.PROTOCOL_STRING_POP3 );
 
-      String sv = rep.getStepAttributeString( id_jobentry, "savemessage" );
+      String sv = rep.getJobEntryAttributeString( id_jobentry, "savemessage" );
       if ( Const.isEmpty( sv ) ) {
         savemessage = true;
       } else {
-        savemessage = rep.getStepAttributeBoolean( id_jobentry, "savemessage" );
+        savemessage = rep.getJobEntryAttributeBoolean( id_jobentry, "savemessage" );
       }
 
-      String sa = rep.getStepAttributeString( id_jobentry, "saveattachment" );
+      String sa = rep.getJobEntryAttributeString( id_jobentry, "saveattachment" );
       if ( Const.isEmpty( sa ) ) {
         saveattachment = true;
       } else {
-        saveattachment = rep.getStepAttributeBoolean( id_jobentry, "saveattachment" );
+        saveattachment = rep.getJobEntryAttributeBoolean( id_jobentry, "saveattachment" );
       }
 
       usedifferentfolderforattachment =
