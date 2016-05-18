@@ -37,6 +37,7 @@ import org.pentaho.di.repository.AbstractRepository;
 import org.pentaho.di.repository.RepositoriesMeta;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryMeta;
+import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.spoon.Spoon;
 
 import java.util.List;
@@ -61,11 +62,14 @@ public class RepositoryConnectController {
   private RepositoriesMeta repositoriesMeta;
   private PluginRegistry pluginRegistry;
   private Spoon spoon;
+  private PropsUI propsUI;
 
-  public RepositoryConnectController( PluginRegistry pluginRegistry, Spoon spoon, RepositoriesMeta repositoriesMeta ) {
+  public RepositoryConnectController( PluginRegistry pluginRegistry, Spoon spoon, RepositoriesMeta repositoriesMeta,
+                                      PropsUI propsUI ) {
     this.pluginRegistry = pluginRegistry;
     this.spoon = spoon;
     this.repositoriesMeta = repositoriesMeta;
+    this.propsUI = propsUI;
     try {
       repositoriesMeta.readData();
     } catch ( KettleException ke ) {
@@ -74,7 +78,7 @@ public class RepositoryConnectController {
   }
 
   public RepositoryConnectController() {
-    this( PluginRegistry.getInstance(), Spoon.getInstance(), new RepositoriesMeta() );
+    this( PluginRegistry.getInstance(), Spoon.getInstance(), new RepositoriesMeta(), PropsUI.getInstance() );
   }
 
   @SuppressWarnings( "unchecked" )
@@ -182,6 +186,7 @@ public class RepositoryConnectController {
         pluginRegistry.loadClass( RepositoryPluginType.class, repositoryMeta.getId(), Repository.class );
       repository.init( repositoryMeta );
       repository.connect( username, password );
+      propsUI.setLastRepositoryLogin( username );
       if ( spoon != null ) {
         spoon.setRepository( repository );
       }
@@ -238,6 +243,10 @@ public class RepositoryConnectController {
   public String getDefaultUrl() {
     ResourceBundle resourceBundle = PropertyResourceBundle.getBundle( PKG.getPackage().getName() + ".plugin" );
     return resourceBundle.getString( DEFAULT_URL );
+  }
+
+  public String getCurrentUser() {
+    return propsUI.getLastRepositoryLogin();
   }
 
   public void setCurrentRepository( RepositoryMeta repositoryMeta ) {
