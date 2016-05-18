@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -35,7 +35,6 @@ import java.math.BigDecimal;
 
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
-import static org.pentaho.di.trans.TransTestingUtil.assertResult;
 
 /**
  * @author Andrey Khayrutdinov
@@ -76,6 +75,6 @@ public class ScriptValuesModTest {
 
     Object[] expectedRow = { BigDecimal.TEN, new BigDecimal( "10.5" ) };
     Object[] row = TransTestingUtil.execute( step, meta, data, 1, false ).get( 0 );
-    assertResult( expectedRow, row );
+    TransTestingUtil.assertResult( expectedRow, row );
   }
 }

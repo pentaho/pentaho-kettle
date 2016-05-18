@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,29 +22,18 @@
 
 package org.pentaho.di.trans.steps.calculator;
 
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.pentaho.di.core.row.ValueMetaInterface.TYPE_BIGNUMBER;
-import static org.pentaho.di.core.row.ValueMetaInterface.TYPE_INTEGER;
-import static org.pentaho.di.core.row.ValueMetaInterface.TYPE_NUMBER;
-import static org.pentaho.di.trans.steps.calculator.CalculatorMetaFunction.CALC_ROUND_1;
-import static org.pentaho.di.trans.steps.calculator.CalculatorMetaFunction.CALC_ROUND_2;
-import static org.pentaho.di.trans.steps.calculator.CalculatorMetaFunction.CALC_ROUND_CUSTOM_1;
-import static org.pentaho.di.trans.steps.calculator.CalculatorMetaFunction.CALC_ROUND_CUSTOM_2;
-import static org.pentaho.di.trans.steps.calculator.CalculatorMetaFunction.CALC_ROUND_STD_1;
-import static org.pentaho.di.trans.steps.calculator.CalculatorMetaFunction.CALC_ROUND_STD_2;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
-
-import junit.framework.Assert;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -54,7 +43,6 @@ import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
-import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -65,6 +53,8 @@ import org.pentaho.di.core.row.value.ValueMetaNumber;
 import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.trans.step.RowAdapter;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
+
+import junit.framework.Assert;
 
 /**
  * Unit tests for calculator step
@@ -492,13 +482,13 @@ public class CalculatorUnitTest {
     final String fieldValue = "Value";
     final ValueMetaInterface valueMeta;
     switch ( valueDataType ) {
-      case TYPE_BIGNUMBER:
+      case ValueMetaInterface.TYPE_BIGNUMBER:
         valueMeta = new ValueMetaBigNumber( fieldValue );
         break;
-      case TYPE_NUMBER:
+      case ValueMetaInterface.TYPE_NUMBER:
         valueMeta = new ValueMetaNumber( fieldValue );
         break;
-      case TYPE_INTEGER:
+      case ValueMetaInterface.TYPE_INTEGER:
         valueMeta = new ValueMetaInteger( fieldValue );
         break;
       default:
@@ -587,65 +577,65 @@ public class CalculatorUnitTest {
       final Long precision, final Long roundingMode ) throws KettleException {
     {
       final double resultValue = expectedResult.doubleValue();
-      assertRoundGeneral( resultValue, calcFunction, value.doubleValue(), precision, roundingMode, TYPE_NUMBER,
-          TYPE_NUMBER );
+      assertRoundGeneral( resultValue, calcFunction, value.doubleValue(), precision, roundingMode, ValueMetaInterface.TYPE_NUMBER,
+          ValueMetaInterface.TYPE_NUMBER );
       assertRoundGeneral( resultValue, calcFunction, new BigDecimal( String.valueOf( value.doubleValue() ) ),
-          precision, roundingMode, TYPE_BIGNUMBER, TYPE_NUMBER );
+          precision, roundingMode, ValueMetaInterface.TYPE_BIGNUMBER, ValueMetaInterface.TYPE_NUMBER );
       if ( isInt( value ) ) {
-        assertRoundGeneral( resultValue, calcFunction, value.longValue(), precision, roundingMode, TYPE_INTEGER,
-            TYPE_NUMBER );
+        assertRoundGeneral( resultValue, calcFunction, value.longValue(), precision, roundingMode, ValueMetaInterface.TYPE_INTEGER,
+            ValueMetaInterface.TYPE_NUMBER );
       }
     }
     {
       final BigDecimal resultValue = BigDecimal.valueOf( expectedResult.doubleValue() );
-      assertRoundGeneral( resultValue, calcFunction, value.doubleValue(), precision, roundingMode, TYPE_NUMBER,
-          TYPE_BIGNUMBER );
+      assertRoundGeneral( resultValue, calcFunction, value.doubleValue(), precision, roundingMode, ValueMetaInterface.TYPE_NUMBER,
+          ValueMetaInterface.TYPE_BIGNUMBER );
       assertRoundGeneral( resultValue, calcFunction, new BigDecimal( String.valueOf( value.doubleValue() ) ),
-          precision, roundingMode, TYPE_BIGNUMBER, TYPE_BIGNUMBER );
+          precision, roundingMode, ValueMetaInterface.TYPE_BIGNUMBER, ValueMetaInterface.TYPE_BIGNUMBER );
       if ( isInt( value ) ) {
-        assertRoundGeneral( resultValue, calcFunction, value.longValue(), precision, roundingMode, TYPE_INTEGER,
-            TYPE_BIGNUMBER );
+        assertRoundGeneral( resultValue, calcFunction, value.longValue(), precision, roundingMode, ValueMetaInterface.TYPE_INTEGER,
+            ValueMetaInterface.TYPE_BIGNUMBER );
       }
     }
     if ( isInt( expectedResult ) ) {
       final Long resultValue = expectedResult.longValue();
-      assertRoundGeneral( resultValue, calcFunction, value.doubleValue(), precision, roundingMode, TYPE_NUMBER,
-          TYPE_INTEGER );
+      assertRoundGeneral( resultValue, calcFunction, value.doubleValue(), precision, roundingMode, ValueMetaInterface.TYPE_NUMBER,
+          ValueMetaInterface.TYPE_INTEGER );
       assertRoundGeneral( resultValue, calcFunction, new BigDecimal( String.valueOf( value.doubleValue() ) ),
-          precision, roundingMode, TYPE_BIGNUMBER, TYPE_INTEGER );
+          precision, roundingMode, ValueMetaInterface.TYPE_BIGNUMBER, ValueMetaInterface.TYPE_INTEGER );
       if ( isInt( value ) ) {
-        assertRoundGeneral( resultValue, calcFunction, value.longValue(), precision, roundingMode, TYPE_INTEGER,
-            TYPE_INTEGER );
+        assertRoundGeneral( resultValue, calcFunction, value.longValue(), precision, roundingMode, ValueMetaInterface.TYPE_INTEGER,
+            ValueMetaInterface.TYPE_INTEGER );
       }
     }
   }
 
   public void assertRound1( final Number expectedResult, final Number value ) throws KettleException {
-    assertRoundEveryDataType( expectedResult, CALC_ROUND_1, value, null, null );
+    assertRoundEveryDataType( expectedResult, CalculatorMetaFunction.CALC_ROUND_1, value, null, null );
   }
 
   public void assertRound2( final Number expectedResult, final Number value, final long precision )
     throws KettleException {
-    assertRoundEveryDataType( expectedResult, CALC_ROUND_2, value, precision, null );
+    assertRoundEveryDataType( expectedResult, CalculatorMetaFunction.CALC_ROUND_2, value, precision, null );
   }
 
   public void assertRoundStd1( final Number expectedResult, final Number value ) throws KettleException {
-    assertRoundEveryDataType( expectedResult, CALC_ROUND_STD_1, value, null, null );
+    assertRoundEveryDataType( expectedResult, CalculatorMetaFunction.CALC_ROUND_STD_1, value, null, null );
   }
 
   public void assertRoundStd2( final Number expectedResult, final Number value, final long precision )
     throws KettleException {
-    assertRoundEveryDataType( expectedResult, CALC_ROUND_STD_2, value, precision, null );
+    assertRoundEveryDataType( expectedResult, CalculatorMetaFunction.CALC_ROUND_STD_2, value, precision, null );
   }
 
   public void assertRoundCustom1( final Number expectedResult, final Number value, final long roundingMode )
     throws KettleException {
-    assertRoundEveryDataType( expectedResult, CALC_ROUND_CUSTOM_1, value, null, roundingMode );
+    assertRoundEveryDataType( expectedResult, CalculatorMetaFunction.CALC_ROUND_CUSTOM_1, value, null, roundingMode );
   }
 
   public void assertRoundCustom2( final Number expectedResult, final Number value, final long precision,
       final long roundingMode ) throws KettleException {
-    assertRoundEveryDataType( expectedResult, CALC_ROUND_CUSTOM_2, value, precision, roundingMode );
+    assertRoundEveryDataType( expectedResult, CalculatorMetaFunction.CALC_ROUND_CUSTOM_2, value, precision, roundingMode );
   }
 
   /**
@@ -678,13 +668,13 @@ public class CalculatorUnitTest {
   private String getKettleTypeName( int kettleNumberDataType ) {
     final String kettleNumberDataTypeName;
     switch ( kettleNumberDataType ) {
-      case TYPE_BIGNUMBER:
+      case ValueMetaInterface.TYPE_BIGNUMBER:
         kettleNumberDataTypeName = "BigNumber(" + kettleNumberDataType + ")";
         break;
-      case TYPE_NUMBER:
+      case ValueMetaInterface.TYPE_NUMBER:
         kettleNumberDataTypeName = "Number(" + kettleNumberDataType + ")";
         break;
-      case TYPE_INTEGER:
+      case ValueMetaInterface.TYPE_INTEGER:
         kettleNumberDataTypeName = "Integer(" + kettleNumberDataType + ")";
         break;
       default:

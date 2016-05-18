@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,7 +27,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.pentaho.di.core.util.Assert.assertTrue;
+import org.pentaho.di.core.util.Assert;
 
 import java.util.*;
 
@@ -176,9 +176,9 @@ public class RestIT {
     rest.init( stepMockHelper.processRowsStepMetaInterface, data );
     data.resultFieldName = "ResultFieldName";
     data.resultCodeFieldName = "ResultCodeFieldName";
-    assertTrue( rest.processRow( stepMockHelper.processRowsStepMetaInterface, data ) );
+    Assert.assertTrue( rest.processRow( stepMockHelper.processRowsStepMetaInterface, data ) );
     Object[] out = ( (RestHandler) rest ).getOutputRow();
-    assertTrue( meta.equals( out, expectedRow, index ) );
+    Assert.assertTrue( meta.equals( out, expectedRow, index ) );
   }
 
   @Test
@@ -204,9 +204,9 @@ public class RestIT {
     rest.init( stepMockHelper.processRowsStepMetaInterface, data );
     data.resultFieldName = "ResultFieldName";
     data.resultCodeFieldName = "ResultCodeFieldName";
-    assertTrue( rest.processRow( stepMockHelper.processRowsStepMetaInterface, data ) );
+    Assert.assertTrue( rest.processRow( stepMockHelper.processRowsStepMetaInterface, data ) );
     Object[] out = ( (RestHandler) rest ).getOutputRow();
-    assertTrue( meta.equals( out, expectedRow, index ) );
+    Assert.assertTrue( meta.equals( out, expectedRow, index ) );
   }
 
 

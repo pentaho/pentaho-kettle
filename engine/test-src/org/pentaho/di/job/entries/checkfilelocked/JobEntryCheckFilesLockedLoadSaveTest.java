@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2014 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -26,7 +26,7 @@ import org.pentaho.di.job.entry.loadSave.JobEntryLoadSaveTestSupport;
 
 import java.util.List;
 
-import static java.util.Arrays.asList;
+import java.util.Arrays;
 
 public class JobEntryCheckFilesLockedLoadSaveTest extends JobEntryLoadSaveTestSupport<JobEntryCheckFilesLocked> {
   @Override protected Class<JobEntryCheckFilesLocked> getJobEntryClass() {
@@ -34,6 +34,6 @@ public class JobEntryCheckFilesLockedLoadSaveTest extends JobEntryLoadSaveTestSu
   }
 
   @Override protected List<String> listCommonAttributes() {
-    return asList( "argFromPrevious", "includeSubfolders" );
+    return Arrays.asList( "argFromPrevious", "includeSubfolders" );
   }
 }

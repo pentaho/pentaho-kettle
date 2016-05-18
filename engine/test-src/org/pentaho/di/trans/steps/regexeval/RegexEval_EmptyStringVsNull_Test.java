@@ -37,7 +37,7 @@ import org.pentaho.test.util.FieldAccessor;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import static java.util.Arrays.asList;
+import java.util.Arrays;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
@@ -55,7 +55,7 @@ public class RegexEval_EmptyStringVsNull_Test {
 
   @Test
   public void emptyAndNullsAreNotDifferent() throws Exception {
-    List<Object[]> expected = asList(
+    List<Object[]> expected = Arrays.asList(
       new Object[] { false, "" },
       new Object[] { false, "" },
       new Object[] { false, null }
@@ -66,7 +66,7 @@ public class RegexEval_EmptyStringVsNull_Test {
 
   @Test
   public void emptyAndNullsAreDifferent() throws Exception {
-    List<Object[]> expected = asList(
+    List<Object[]> expected = Arrays.asList(
       new Object[] { false, "" },
       new Object[] { false, "" },
       new Object[] { false, null }

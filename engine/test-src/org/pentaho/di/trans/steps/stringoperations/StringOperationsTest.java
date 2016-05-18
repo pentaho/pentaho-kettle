@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,7 +24,6 @@ package org.pentaho.di.trans.steps.stringoperations;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
-import static org.pentaho.di.trans.steps.stringoperations.StringOperationsMeta.*;
 
 import junit.framework.Assert;
 
@@ -77,15 +76,15 @@ public class StringOperationsTest {
     StringOperationsMeta meta = mock( StringOperationsMeta.class );
     doReturn( new String[] { "Value" } ).when( meta ).getFieldInStream();
     doReturn( new String[] { "" } ).when( meta ).getFieldOutStream();
-    doReturn( new int[] { TRIM_BOTH } ).when( meta ).getTrimType();
-    doReturn( new int[] { LOWER_UPPER_NONE } ).when( meta ).getLowerUpper();
-    doReturn( new int[] { PADDING_NONE } ).when( meta ).getPaddingType();
+    doReturn( new int[] { StringOperationsMeta.TRIM_BOTH } ).when( meta ).getTrimType();
+    doReturn( new int[] { StringOperationsMeta.LOWER_UPPER_NONE } ).when( meta ).getLowerUpper();
+    doReturn( new int[] { StringOperationsMeta.PADDING_NONE } ).when( meta ).getPaddingType();
     doReturn( new String[] { "" } ).when( meta ).getPadChar();
     doReturn( new String[] { "" } ).when( meta ).getPadLen();
-    doReturn( new int[] { INIT_CAP_NO } ).when( meta ).getInitCap();
-    doReturn( new int[] { MASK_NONE } ).when( meta ).getMaskXML();
-    doReturn( new int[] { DIGITS_NONE } ).when( meta ).getDigits();
-    doReturn( new int[] { REMOVE_SPECIAL_CHARACTERS_NONE } ).when( meta ).getRemoveSpecialCharacters();
+    doReturn( new int[] { StringOperationsMeta.INIT_CAP_NO } ).when( meta ).getInitCap();
+    doReturn( new int[] { StringOperationsMeta.MASK_NONE } ).when( meta ).getMaskXML();
+    doReturn( new int[] { StringOperationsMeta.DIGITS_NONE } ).when( meta ).getDigits();
+    doReturn( new int[] { StringOperationsMeta.REMOVE_SPECIAL_CHARACTERS_NONE } ).when( meta ).getRemoveSpecialCharacters();
 
     return meta;
   }

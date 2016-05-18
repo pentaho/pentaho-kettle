@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -154,11 +154,38 @@ public class PGBulkLoaderMeta extends BaseStepMeta implements StepMetaInjectionI
     this.tableName = tableName;
   }
 
+  /**
+   * 
+   * @return PSQL Path
+   * @deprecated doesn't follow naming standards - use getPsqlPath
+   */
+  @Deprecated
   public String getPsqlpath() {
     return PsqlPath;
   }
 
+  /**
+   * Gets the PostgreSQL path
+   */
+  public String getPsqlPath() {
+    return PsqlPath;
+  }
+
+  /**
+   * 
+   * @param PSQL Path
+   * @deprecated doesn't follow naming standards - use setPsqlPath
+   */
+  @Deprecated
   public void setPsqlpath( String PsqlPath ) {
+    this.PsqlPath = PsqlPath;
+  }
+
+  /**
+   * Sets the PostgreSQL path
+   * @param PsqlPath
+   */
+  public void setPsqlPath( String PsqlPath ) {
     this.PsqlPath = PsqlPath;
   }
 
@@ -687,6 +714,10 @@ public class PGBulkLoaderMeta extends BaseStepMeta implements StepMetaInjectionI
   }
 
   public void setStopOnError( Boolean value ) {
+    this.stopOnError = value;
+  }
+
+  public void setStopOnError( boolean value ) {
     this.stopOnError = value;
   }
 

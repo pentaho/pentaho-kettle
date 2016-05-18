@@ -299,7 +299,7 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface 
   public String[] getExcludeFileMask() {
     return excludeFileMask;
   }
-  
+
   /**
    * @param fileRequired
    *          The fileRequired to set.

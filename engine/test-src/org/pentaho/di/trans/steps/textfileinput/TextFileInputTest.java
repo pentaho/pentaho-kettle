@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -21,6 +21,8 @@
  ******************************************************************************/
 
 package org.pentaho.di.trans.steps.textfileinput;
+
+import static org.junit.Assert.assertEquals;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -44,9 +46,6 @@ import org.pentaho.di.trans.TransTestingUtil;
 import org.pentaho.di.trans.step.errorhandling.FileErrorHandler;
 import org.pentaho.di.trans.steps.StepMockUtil;
 import org.pentaho.di.utils.TestUtils;
-
-import static org.junit.Assert.*;
-import static org.pentaho.di.trans.TransTestingUtil.assertResult;
 
 /**
  * @deprecated replaced by implementation in the ...steps.fileinput.text package
@@ -148,8 +147,8 @@ public class TextFileInputTest {
 
     TextFileInput input = StepMockUtil.getStep( TextFileInput.class, TextFileInputMeta.class, "test" );
     List<Object[]> output = TransTestingUtil.execute( input, meta, data, 2, false );
-    assertResult( new Object[] { "r1c1", "r1c2" }, output.get( 0 ) );
-    assertResult( new Object[] { "r2c1", "r2c2" }, output.get( 1 ) );
+    TransTestingUtil.assertResult( new Object[] { "r1c1", "r1c2" }, output.get( 0 ) );
+    TransTestingUtil.assertResult( new Object[] { "r2c1", "r2c2" }, output.get( 1 ) );
 
     deleteVfsFile( virtualFile );
   }
@@ -189,8 +188,8 @@ public class TextFileInputTest {
 
     TextFileInput input = StepMockUtil.getStep( TextFileInput.class, TextFileInputMeta.class, "test" );
     List<Object[]> output = TransTestingUtil.execute( input, meta, data, 2, false );
-    assertResult( new Object[] { "1", "1", "1" }, output.get( 0 ) );
-    assertResult( new Object[] { "2", "1", "2" }, output.get( 1 ) );
+    TransTestingUtil.assertResult( new Object[] { "1", "1", "1" }, output.get( 0 ) );
+    TransTestingUtil.assertResult( new Object[] { "2", "1", "2" }, output.get( 1 ) );
 
     deleteVfsFile( virtualFile );
   }

@@ -2,7 +2,7 @@
 *
 * Pentaho Data Integration
 *
-* Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+* Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
 *
 *******************************************************************************
 *
@@ -22,7 +22,7 @@
 
 package org.pentaho.di.job.entries.ftpput;
 
-import static java.util.Arrays.asList;
+import java.util.Arrays;
 
 import java.util.List;
 import java.util.Map;
@@ -46,7 +46,7 @@ public class JobEntryFTPPUTLoadSaveTest extends JobEntryLoadSaveTestSupport<JobE
 
   @Override
   protected List<String> listCommonAttributes() {
-    return asList( "servername", "serverport", "username", "password", "remoteDirectory", "localDirectory",
+    return Arrays.asList( "servername", "serverport", "username", "password", "remoteDirectory", "localDirectory",
       "wildcard", "binary", "timeout", "remove", "only_new", "active", "control_encoding", "proxy_host", "proxy_port",
       "proxy_username", "proxy_password", "socksproxy_host", "socksproxy_port", "socksproxy_username",
       "socksproxy_password" );
