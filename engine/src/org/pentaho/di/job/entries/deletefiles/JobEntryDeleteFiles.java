@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -206,7 +206,7 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
     Multimap<String, String> pathToMaskMap = populateDataForJobExecution( resultRows );
 
     for ( Map.Entry<String, String> pathToMask : pathToMaskMap.entries() ) {
-      final String filePath = environmentSubstitute( pathToMask.getKey() );;
+      final String filePath = environmentSubstitute( pathToMask.getKey() );
       if ( filePath.trim().isEmpty() ) {
         // Relative paths are permitted, and providing an empty path means deleting all files inside a root pdi-folder.
         // It is much more likely to be a mistake than a desirable action, so we don't delete anything (see PDI-15181)
@@ -254,7 +254,7 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
     Multimap<String, String> pathToMaskMap = ArrayListMultimap.create();
     if ( argFromPrevious && rowsFromPreviousMeta != null ) {
       for ( RowMetaAndData resultRow : rowsFromPreviousMeta ) {
-        if (resultRow.size() < 2){
+        if ( resultRow.size() < 2 ) {
           logError( BaseMessages.getString(
             PKG, "JobDeleteFiles.Error.InvalidNumberOfRowsFromPrevMeta", resultRow.size() ) );
           return pathToMaskMap;
