@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,6 +22,18 @@
 
 package org.pentaho.di.repository.kdr.delegates;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.di.core.ProgressMonitorListener;
@@ -31,21 +43,6 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.repository.LongObjectId;
 import org.pentaho.di.repository.kdr.KettleDatabaseRepository;
-
-import java.sql.ResultSet;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import static java.lang.String.format;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static org.pentaho.di.repository.kdr.delegates.KettleDatabaseRepositoryConnectionDelegate
-  .createIdsWithValuesQuery;
 
 /**
  */
@@ -70,11 +67,13 @@ public class KettleDatabaseRepositoryConnectionDelegateUnitTest {
     final String table = "table";
     final String id = "id";
     final String lookup = "lookup";
-    final String expectedTemplate = format( "select %s from %s where %s in ", id, table, lookup ) + "(%s)";
+    final String expectedTemplate = String.format( "select %s from %s where %s in ", id, table, lookup ) + "(%s)";
 
-    assertTrue( format( expectedTemplate, "?" ).equalsIgnoreCase( createIdsWithValuesQuery( table, id, lookup, 1 ) ) );
+    assertTrue( String.format( expectedTemplate, "?" ).equalsIgnoreCase(
+        KettleDatabaseRepositoryConnectionDelegate.createIdsWithValuesQuery( table, id, lookup, 1 ) ) );
     assertTrue(
-      format( expectedTemplate, "?,?" ).equalsIgnoreCase( createIdsWithValuesQuery( table, id, lookup, 2 ) ) );
+        String.format( expectedTemplate, "?,?" ).equalsIgnoreCase(
+          KettleDatabaseRepositoryConnectionDelegate.createIdsWithValuesQuery( table, id, lookup, 2 ) ) );
   }
 
   @Test

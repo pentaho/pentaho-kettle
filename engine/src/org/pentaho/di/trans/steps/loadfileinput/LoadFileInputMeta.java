@@ -285,9 +285,17 @@ public class LoadFileInputMeta extends BaseStepMeta implements StepMetaInterface
   }
 
   /**
+   * @deprecated typo in method name
+   */
+  @Deprecated
+  public String[] getExludeFileMask() {
+    return excludeFileMask;
+  }
+
+  /**
    * @return Returns the excludeFileMask.
    */
-  public String[] getExludeFileMask() {
+  public String[] getExcludeFileMask() {
     return excludeFileMask;
   }
 
@@ -300,9 +308,17 @@ public class LoadFileInputMeta extends BaseStepMeta implements StepMetaInterface
   }
 
   /**
+   * @deprecated doesn't following naming standards
+   */
+  @Deprecated
+  public boolean addResultFile() {
+    return addresultfile;
+  }
+
+  /**
    * @return the add result filesname flag
    */
-  public boolean addResultFile() {
+  public boolean getAddResultFile() {
     return addresultfile;
   }
 
@@ -354,15 +370,30 @@ public class LoadFileInputMeta extends BaseStepMeta implements StepMetaInterface
   }
 
   /************************************
-   * get et set IsInFields
+   * get / set fileInFields
    *************************************/
   /**  */
+  public boolean getFileInFields() {
+    return fileinfield;
+  }
+
+  /************************************
+   * @deprecated doesn't follow standard naming
+   *************************************/
+  @Deprecated
   public boolean getIsInFields() {
     return fileinfield;
   }
 
-  /**  */
+  /**
+   * @deprecated doesn't follow standard naming 
+   */
+  @Deprecated
   public void setIsInFields( boolean IsInFields ) {
+    this.fileinfield = IsInFields;
+  }
+
+  public void setFileInFields( boolean IsInFields ) {
     this.fileinfield = IsInFields;
   }
 
@@ -445,8 +476,18 @@ public class LoadFileInputMeta extends BaseStepMeta implements StepMetaInterface
 
   /**
    * @return Returns the includeFilename.
+   * @deprecated doesn't follow standard naming
    */
+  @Deprecated
   public boolean includeFilename() {
+    return includeFilename;
+  }
+
+  /**
+   * @return Returns the includeFilename.
+   * 
+   */
+  public boolean getIncludeFilename() {
     return includeFilename;
   }
 
@@ -460,8 +501,17 @@ public class LoadFileInputMeta extends BaseStepMeta implements StepMetaInterface
 
   /**
    * @return Returns the includeRowNumber.
+   * @deprecated doesn't follow standard naming
    */
+  @Deprecated
   public boolean includeRowNumber() {
+    return includeRowNumber;
+  }
+
+  /**
+   * @return Returns the includeRowNumber.
+   */
+  public boolean getIncludeRowNumber() {
     return includeRowNumber;
   }
 
@@ -855,6 +905,7 @@ public class LoadFileInputMeta extends BaseStepMeta implements StepMetaInterface
       hiddenFieldName = rep.getStepAttributeString( id_step, HIDDEN_FIELD_NAME );
       lastModificationTimeFieldName = rep.getStepAttributeString( id_step, LAST_MODIFICATION_TIME_FIELD_NAME );
       rootUriNameFieldName = rep.getStepAttributeString( id_step, ROOT_URI_NAME_FIELD_NAME );
+      uriNameFieldName = rep.getStepAttributeString(  id_step, URI_NAME_FIELD_NAME );
       extensionFieldName = rep.getStepAttributeString( id_step, EXTENSION_FIELD_NAME );
 
     } catch ( Exception e ) {

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -28,8 +28,7 @@ import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.pentaho.di.core.row.ValueMetaInterface.STORAGE_TYPE_BINARY_STRING;
-import static org.pentaho.di.core.row.ValueMetaInterface.STORAGE_TYPE_NORMAL;
+import org.pentaho.di.core.row.ValueMetaInterface;
 import junit.framework.Assert;
 
 import org.junit.Before;
@@ -80,7 +79,7 @@ public class StreamLookupTest {
   }
 
   private RowSet mockLookupRowSet( boolean binary ) {
-    final int storageType = binary ? STORAGE_TYPE_BINARY_STRING : STORAGE_TYPE_NORMAL;
+    final int storageType = binary ? ValueMetaInterface.STORAGE_TYPE_BINARY_STRING : ValueMetaInterface.STORAGE_TYPE_NORMAL;
     Object[][] data = { { "Value1", "1" }, { "Value2", "2" } };
 
     if ( binary ) {
@@ -108,7 +107,7 @@ public class StreamLookupTest {
   }
 
   private RowSet mockDataRowSet( boolean binary ) {
-    final int storageType = binary ? STORAGE_TYPE_BINARY_STRING : STORAGE_TYPE_NORMAL;
+    final int storageType = binary ? ValueMetaInterface.STORAGE_TYPE_BINARY_STRING : ValueMetaInterface.STORAGE_TYPE_NORMAL;
     Object[][] data = { { "Name1", "1" }, { "Name2", "2" } };
 
     if ( binary ) {

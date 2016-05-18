@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,7 +27,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.pentaho.di.core.util.Assert.assertTrue;
+import org.pentaho.di.core.util.Assert;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -118,12 +118,12 @@ public class HTTPPOSTIT {
 
 
     @Override
-    protected int requestStatusCode( PostMethod post, HostConfiguration hostConfiguration, HttpClient httpPostClient)
+    protected int requestStatusCode( PostMethod post, HostConfiguration hostConfiguration, HttpClient httpPostClient )
             throws IOException {
       if ( override ) {
         return 402;
       } else {
-        return super.requestStatusCode( post, hostConfiguration, httpPostClient);
+        return super.requestStatusCode( post, hostConfiguration, httpPostClient );
       }
 
     }
@@ -199,9 +199,9 @@ public class HTTPPOSTIT {
     when( stepMockHelper.processRowsStepMetaInterface.getResultCodeFieldName() ).thenReturn( "ResultCodeFieldName" );
     when( stepMockHelper.processRowsStepMetaInterface.getFieldName() ).thenReturn( "ResultFieldName" );
     HTTPPOST.init( stepMockHelper.processRowsStepMetaInterface, data );
-    assertTrue( HTTPPOST.processRow( stepMockHelper.processRowsStepMetaInterface, data ) );
+    Assert.assertTrue( HTTPPOST.processRow( stepMockHelper.processRowsStepMetaInterface, data ) );
     Object[] out = ( (HTTPPOSTHandler) HTTPPOST ).getOutputRow();
-    assertTrue( meta.equals( out, expectedRow, index ) );
+    Assert.assertTrue( meta.equals( out, expectedRow, index ) );
   }
 
   @Test
@@ -228,9 +228,9 @@ public class HTTPPOSTIT {
     when( stepMockHelper.processRowsStepMetaInterface.getResponseHeaderFieldName() ).thenReturn(
             "ResponseHeaderFieldName" );
     HTTPPOST.init( stepMockHelper.processRowsStepMetaInterface, data );
-    assertTrue( HTTPPOST.processRow( stepMockHelper.processRowsStepMetaInterface, data ) );
+    Assert.assertTrue( HTTPPOST.processRow( stepMockHelper.processRowsStepMetaInterface, data ) );
     Object[] out = ( (HTTPPOSTHandler) HTTPPOST ).getOutputRow();
-    assertTrue( meta.equals( out, expectedRow, index ) );
+    Assert.assertTrue( meta.equals( out, expectedRow, index ) );
   }
 
 

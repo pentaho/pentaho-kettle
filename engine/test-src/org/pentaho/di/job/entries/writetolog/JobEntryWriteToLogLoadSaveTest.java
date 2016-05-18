@@ -2,7 +2,7 @@
 *
 * Pentaho Data Integration
 *
-* Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+* Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
 *
 *******************************************************************************
 *
@@ -22,7 +22,7 @@
 
 package org.pentaho.di.job.entries.writetolog;
 
-import static java.util.Arrays.asList;
+import java.util.Arrays;
 
 import java.util.EnumSet;
 import java.util.List;
@@ -43,7 +43,7 @@ public class JobEntryWriteToLogLoadSaveTest extends JobEntryLoadSaveTestSupport<
 
   @Override
   protected List<String> listCommonAttributes() {
-    return asList(
+    return Arrays.asList(
       "logmessage",
       "loglevel",
       "logsubject" );

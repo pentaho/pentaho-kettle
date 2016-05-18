@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -31,7 +31,7 @@ import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
 
-import static java.util.Collections.singletonList;
+import java.util.Collections;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Mockito.when;
@@ -70,7 +70,7 @@ public class CloneRowTest {
 
     RowSet inputRowSet = stepMockHelper.getMockInputRowSet( new Integer[]{ null } );
     when( inputRowSet.getRowMeta() ).thenReturn( inputRowMeta );
-    step.setInputRowSets( singletonList( inputRowSet ) );
+    step.setInputRowSets( Collections.singletonList( inputRowSet ) );
 
     when( stepMockHelper.processRowsStepMetaInterface.isNrCloneInField() ).thenReturn( true );
     when( stepMockHelper.processRowsStepMetaInterface.getNrCloneField() ).thenReturn( "field" );

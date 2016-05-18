@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -58,7 +58,7 @@ public class DatabaseLookupMetaTest {
 
     databaseLookupMeta.getFields( row, "", info, null, null, null, null );
 
-    List<ValueMetaInterface> expectedRow = Arrays.asList( new ValueMetaInterface[] { new ValueMetaString( "value" ), 
+    List<ValueMetaInterface> expectedRow = Arrays.asList( new ValueMetaInterface[] { new ValueMetaString( "value" ),
       new ValueMetaString( "v1" ), new ValueMetaString( "v2" ), } );
     assertEquals( 3, row.getValueMetaList().size() );
     for ( int i = 0; i < 3; i++ ) {

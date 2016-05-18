@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,7 +24,7 @@ package org.pentaho.di.trans.steps.http;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
-import static org.pentaho.di.core.util.Assert.assertTrue;
+import org.pentaho.di.core.util.Assert;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.InetSocketAddress;
@@ -111,12 +111,12 @@ public class HTTPIT {
 
 
     @Override
-    protected int requestStatusCode( HttpMethod method, HostConfiguration hostConfiguration, HttpClient httpClient)
+    protected int requestStatusCode( HttpMethod method, HostConfiguration hostConfiguration, HttpClient httpClient )
       throws IOException {
       if ( override ) {
         return 402;
       } else {
-        return super.requestStatusCode( method, hostConfiguration, httpClient);
+        return super.requestStatusCode( method, hostConfiguration, httpClient );
       }
     }
 
@@ -194,9 +194,9 @@ public class HTTPIT {
     when( stepMockHelper.processRowsStepMetaInterface.getResultCodeFieldName() ).thenReturn( "ResultCodeFieldName" );
     when( stepMockHelper.processRowsStepMetaInterface.getFieldName() ).thenReturn( "ResultFieldName" );
     http.init( stepMockHelper.processRowsStepMetaInterface, data );
-    assertTrue( http.processRow( stepMockHelper.processRowsStepMetaInterface, data ) );
+    Assert.assertTrue( http.processRow( stepMockHelper.processRowsStepMetaInterface, data ) );
     Object[] out = ( (HTTPHandler) http ).getOutputRow();
-    assertTrue( meta.equals( out, expectedRow, index ) );
+    Assert.assertTrue( meta.equals( out, expectedRow, index ) );
   }
 
   @Test
@@ -223,9 +223,9 @@ public class HTTPIT {
     when( stepMockHelper.processRowsStepMetaInterface.getResponseHeaderFieldName() ).thenReturn(
       "ResponseHeaderFieldName" );
     http.init( stepMockHelper.processRowsStepMetaInterface, data );
-    assertTrue( http.processRow( stepMockHelper.processRowsStepMetaInterface, data ) );
+    Assert.assertTrue( http.processRow( stepMockHelper.processRowsStepMetaInterface, data ) );
     Object[] out = ( (HTTPHandler) http ).getOutputRow();
-    assertTrue( meta.equals( out, expectedRow, index ) );
+    Assert.assertTrue( meta.equals( out, expectedRow, index ) );
 
   }
 

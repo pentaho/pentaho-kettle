@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,7 +22,7 @@
 
 package org.pentaho.di.trans.steps.mailinput;
 
-import static org.mockito.AdditionalMatchers.aryEq;
+import org.mockito.AdditionalMatchers;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
@@ -152,11 +152,11 @@ public class ParseMailInputTest {
     Header ex2 = new Header( HDR_EX2, HDR_EX2V );
 
     // for fixed [PDI-6532]
-    when( message.getMatchingHeaders( aryEq( new String[] { HDR_EX1 } ) ) ).thenReturn(
+    when( message.getMatchingHeaders( AdditionalMatchers.aryEq( new String[] { HDR_EX1 } ) ) ).thenReturn(
       getEnum( new Header[] { ex1 } ) );
-    when( message.getMatchingHeaders( aryEq( new String[] { HDR_EX2 } ) ) ).thenReturn(
+    when( message.getMatchingHeaders( AdditionalMatchers.aryEq( new String[] { HDR_EX2 } ) ) ).thenReturn(
       getEnum( new Header[] { ex2 } ) );
-    when( message.getMatchingHeaders( aryEq( new String[] { HDR_EX1, HDR_EX2 } ) ) ).thenReturn(
+    when( message.getMatchingHeaders( AdditionalMatchers.aryEq( new String[] { HDR_EX1, HDR_EX2 } ) ) ).thenReturn(
       getEnum( new Header[] { ex1, ex2 } ) );
 
     // for previous implementation

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -34,7 +34,7 @@ import org.pentaho.di.trans.steps.mapping.MappingValueRename;
 import java.util.Arrays;
 import java.util.List;
 
-import static java.util.Collections.singletonList;
+import java.util.Collections;
 import static org.junit.Assert.*;
 
 /**
@@ -75,7 +75,7 @@ public class MappingInputMeta_GetFields_Test {
 
   private static Object[] simpleRename() {
     RowMeta inputRowMeta = createRowMeta( "field1", "field2" );
-    List<MappingValueRename> renames = singletonList( new MappingValueRename( "field2", "renamed" ) );
+    List<MappingValueRename> renames = Collections.singletonList( new MappingValueRename( "field2", "renamed" ) );
     String[] fields = new String[] { "field1", "renamed" };
     String[] expected = new String[] { "field1", "renamed" };
 
@@ -84,7 +84,7 @@ public class MappingInputMeta_GetFields_Test {
 
   private static Object[] renameAndSort() {
     RowMeta inputRowMeta = createRowMeta( "field1", "field2", "2", "1" );
-    List<MappingValueRename> renames = singletonList( new MappingValueRename( "field2", "renamed" ) );
+    List<MappingValueRename> renames = Collections.singletonList( new MappingValueRename( "field2", "renamed" ) );
     String[] fields = new String[] { "field1", "renamed" };
     String[] expected = new String[] { "field1", "renamed", "1", "2" };
 
@@ -108,7 +108,7 @@ public class MappingInputMeta_GetFields_Test {
 
   private static Object[] alreadyRenamed() {
     RowMeta inputRowMeta = createRowMeta( "field1", "renamed" );
-    List<MappingValueRename> renames = singletonList( new MappingValueRename( "field2", "renamed" ) );
+    List<MappingValueRename> renames = Collections.singletonList( new MappingValueRename( "field2", "renamed" ) );
     String[] fields = new String[] { "field1", "renamed" };
     String[] expected = new String[] { "field1", "renamed" };
 

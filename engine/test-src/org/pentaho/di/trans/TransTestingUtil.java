@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -31,9 +31,8 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 import java.util.ArrayList;
 import java.util.List;
 
-import static java.util.Collections.singletonList;
+import java.util.Collections;
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertNull;
 
 /**
  * @author Andrey Khayrutdinov
@@ -46,7 +45,7 @@ public class TransTestingUtil {
                                         int expectedRowsAmount,
                                         boolean checkIsDone ) throws Exception {
     RowSet output = new BlockingRowSet( Math.max( 1, expectedRowsAmount ) );
-    step.setOutputRowSets( singletonList( output ) );
+    step.setOutputRowSets( Collections.singletonList( output ) );
 
     int i = 0;
     List<Object[]> result = new ArrayList<>( expectedRowsAmount );

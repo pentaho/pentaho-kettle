@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -76,8 +76,11 @@ public class TextFileInputContentParsingTest extends BaseTextParsingTest {
 
     process();
 
-    check( new Object[][] { { "Field 1", "Field 2", "Field 3" }, { "first", "1", "1.1" }, { "second", "2", "2.2" }, {
-                             "third", "3", "3.3" } } );
+    check( new Object[][] {
+      { "Field 1", "Field 2", "Field 3" },
+      { "first", "1", "1.1" },
+      { "second", "2", "2.2" },
+      { "third", "3", "3.3" } } );
   }
 
   @Test
@@ -132,8 +135,7 @@ public class TextFileInputContentParsingTest extends BaseTextParsingTest {
 
     process();
 
-    check( new Object[][] { { "first  ", "1      ", "1.1" }, { "second ", "2      ", "2.2" }, { "third  ", "3      ",
-                             "3.3" } } );
+    check( new Object[][] { { "first  ", "1      ", "1.1" }, { "second ", "2      ", "2.2" }, { "third  ", "3      ", "3.3" } } );
   }
 
   @Test

@@ -36,7 +36,7 @@ import org.pentaho.test.util.FieldAccessor;
 
 import java.util.List;
 
-import static java.util.Arrays.asList;
+import java.util.Arrays;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
@@ -54,7 +54,7 @@ public class FieldSplitter_EmptyStringVsNull_Test {
 
   @Test
   public void emptyAndNullsAreNotDifferent() throws Exception {
-    List<Object[]> expected = asList(
+    List<Object[]> expected = Arrays.asList(
       new Object[] { "a", "", "a" },
       new Object[] { "b", null, "b" },
       new Object[] { null }
@@ -65,7 +65,7 @@ public class FieldSplitter_EmptyStringVsNull_Test {
 
   @Test
   public void emptyAndNullsAreDifferent() throws Exception {
-    List<Object[]> expected = asList(
+    List<Object[]> expected = Arrays.asList(
       new Object[] { "a", "", "a" },
       new Object[] { "b", "", "b" },
       new Object[] { null }

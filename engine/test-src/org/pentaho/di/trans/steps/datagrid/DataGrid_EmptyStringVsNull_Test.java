@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -35,7 +35,7 @@ import org.pentaho.test.util.FieldAccessor;
 
 import java.util.List;
 
-import static java.util.Arrays.asList;
+import java.util.Arrays;
 import static org.mockito.Mockito.when;
 
 /**
@@ -51,7 +51,7 @@ public class DataGrid_EmptyStringVsNull_Test {
 
   @Test
   public void emptyAndNullsAreNotDifferent() throws Exception {
-    List<Object[]> expected = asList(
+    List<Object[]> expected = Arrays.asList(
       new Object[] { "", "", null },
       new Object[] { null, "", null },
       new Object[] { null, "", null }
@@ -62,7 +62,7 @@ public class DataGrid_EmptyStringVsNull_Test {
 
   @Test
   public void emptyAndNullsAreDifferent() throws Exception {
-    List<Object[]> expected = asList(
+    List<Object[]> expected = Arrays.asList(
       new Object[] { "", "", null },
       new Object[] { "", "", null },
       new Object[] { null, "", null }
@@ -90,10 +90,10 @@ public class DataGrid_EmptyStringVsNull_Test {
     meta.setFieldType( new String[] { stringType, stringType, numberType } );
     meta.setEmptyString( new boolean[] { false, true, false } );
 
-    List<List<String>> dataRows = asList(
-      asList( " ", " ", " " ),
-      asList( "", "", "" ),
-      asList( (String) null, null, null )
+    List<List<String>> dataRows = Arrays.asList(
+      Arrays.asList( " ", " ", " " ),
+      Arrays.asList( "", "", "" ),
+      Arrays.asList( (String) null, null, null )
     );
     meta.setDataLines( dataRows );
 

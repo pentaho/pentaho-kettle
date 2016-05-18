@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -31,11 +31,11 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.StepMockUtil;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
 
-import static java.util.Arrays.asList;
-import static java.util.Collections.singletonList;
+import java.util.Arrays;
+import java.util.Collections;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.junit.matchers.JUnitMatchers.hasItems;
+import org.junit.matchers.JUnitMatchers;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -60,19 +60,19 @@ public class MappingUnitTest {
   public void pickupTargetStepsFor_OutputIsNotDefined() throws Exception {
     StepMeta singleMeta = new StepMeta( "single", null );
     StepMeta copiedMeta = new StepMeta( "copied", null );
-    when( mockHelper.transMeta.findNextSteps( mockHelper.stepMeta ) ).thenReturn( asList( singleMeta, copiedMeta ) );
+    when( mockHelper.transMeta.findNextSteps( mockHelper.stepMeta ) ).thenReturn( Arrays.asList( singleMeta, copiedMeta ) );
 
     StepInterface single = mock( StepInterface.class );
-    when( mockHelper.trans.findStepInterfaces( "single" ) ).thenReturn( singletonList( single ) );
+    when( mockHelper.trans.findStepInterfaces( "single" ) ).thenReturn( Collections.singletonList( single ) );
 
     StepInterface copy1 = mock( StepInterface.class );
     StepInterface copy2 = mock( StepInterface.class );
-    when( mockHelper.trans.findStepInterfaces( "copied" ) ).thenReturn( asList( copy1, copy2 ) );
+    when( mockHelper.trans.findStepInterfaces( "copied" ) ).thenReturn( Arrays.asList( copy1, copy2 ) );
 
     MappingIODefinition definition = new MappingIODefinition( null, null );
     StepInterface[] targetSteps = mapping.pickupTargetStepsFor( definition );
 
-    assertThat( asList( targetSteps ), hasItems( is( single ), is( copy1 ), is( copy2 ) ) );
+    assertThat( Arrays.asList( targetSteps ), JUnitMatchers.hasItems( is( single ), is( copy1 ), is( copy2 ) ) );
   }
 
   @SuppressWarnings( "unchecked" )
@@ -80,12 +80,12 @@ public class MappingUnitTest {
   public void pickupTargetStepsFor_OutputIsDefined() throws Exception {
     StepInterface copy1 = mock( StepInterface.class );
     StepInterface copy2 = mock( StepInterface.class );
-    when( mockHelper.trans.findStepInterfaces( "copied" ) ).thenReturn( asList( copy1, copy2 ) );
+    when( mockHelper.trans.findStepInterfaces( "copied" ) ).thenReturn( Arrays.asList( copy1, copy2 ) );
 
     MappingIODefinition definition = new MappingIODefinition( null, "copied" );
     StepInterface[] targetSteps = mapping.pickupTargetStepsFor( definition );
 
-    assertThat( asList( targetSteps ), hasItems( is( copy1 ), is( copy2 ) ) );
+    assertThat( Arrays.asList( targetSteps ), JUnitMatchers.hasItems( is( copy1 ), is( copy2 ) ) );
   }
 
   @Test( expected = KettleException.class )
