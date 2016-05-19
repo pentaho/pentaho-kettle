@@ -111,7 +111,10 @@ public class JsonInput extends BaseFileInputStep<JsonInputMeta, JsonInputData> i
       }
 
       // filter out rows that only contain null
-      int start = meta.isRemoveSourceField() ? 0 : 1;
+      int start = 0;
+      if ( meta.isInFields() && !meta.isRemoveSourceField() ) {
+        start = 1;
+      }
       boolean hasValues = false;
       for ( int i = start; i < outRow.length; i++ ) {
         if ( outRow[ i ] != null ) {

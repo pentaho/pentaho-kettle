@@ -103,29 +103,24 @@ public class JsonInputMetaTest {
 
   @Mock
   JsonInputField inputField;
-  
   @Before
   public void setup() {
     jsonInputMeta = new JsonInputMeta();
     jsonInputMeta.setInputFiles( inputFiles );
     jsonInputMeta.setInputFields( new JsonInputField[] { inputField } );
-
-
     inputFiles.fileRequired = new String[] { " " };
     inputFiles.includeSubFolders = new String[] { " " };
-
     jsonInputMeta.setFileName( new String[] { "file.json" } );
     jsonInputMeta.setFileMask( new String[] { "" } );
     jsonInputMeta.setExcludeFileMask( new String[] { "" } );
     jsonInputMeta.setFileRequired( new String[] { "" } );
     jsonInputMeta.setIncludeSubFolders( new String[] { "" } );
-
     jsonInputMeta.setIncludeFilename( true );
     jsonInputMeta.setFilenameField( "filename" );
     jsonInputMeta.setReadUrl( true );
     jsonInputMeta.setRemoveSourceField( true );
   }
-   @Test
+  @Test
   public void verifyReadingRepoSetsAcceptFilenames() throws Exception {
     ObjectId objectId = new ObjectId() {
       @Override
@@ -138,7 +133,6 @@ public class JsonInputMetaTest {
     Assert.assertTrue( jsonInputMeta.isInFields() );
     Assert.assertTrue( jsonInputMeta.inputFiles.acceptingFilenames );
   }
-  
   @Test
   public void getFieldsRemoveSourceField() throws Exception {
     RowMetaInterface[] info = new RowMetaInterface[1];
@@ -148,11 +142,11 @@ public class JsonInputMetaTest {
     jsonInputMeta.setFieldValue( DATA );
     jsonInputMeta.setInFields( true );
 
-    when( rowMeta.indexOfValue( DATA ) ).thenReturn( 0 );
+    Mockito.when( rowMeta.indexOfValue( DATA ) ).thenReturn( 0 );
 
     jsonInputMeta.getFields( rowMeta, NAME, info, nextStep, space, repository, metaStore );
 
-    verify( rowMeta ).removeValueMeta( 0 );
+    Mockito.verify( rowMeta ).removeValueMeta( 0 );
   }
 
   @Test

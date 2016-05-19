@@ -213,6 +213,24 @@ public class JsonInputTest {
   }
 
   @Test
+  public void testSingleField() throws Exception {
+    JsonInputField isbn = new JsonInputField( "isbn" );
+    isbn.setPath( "$..book[?(@.isbn)].isbn" );
+    isbn.setType( ValueMetaInterface.TYPE_STRING );
+
+    JsonInputMeta meta = createSimpleMeta( "json", isbn );
+    JsonInput jsonInput = createJsonInput( "json", meta, new Object[] { getBasicTestJson() } );
+    RowComparatorListener rowComparator = new RowComparatorListener(
+      new Object[] { null, "0-553-21311-3" },
+      new Object[] { null, "0-395-19395-8" } );
+    rowComparator.setComparator( 0, null );
+    jsonInput.addRowListener( rowComparator );
+    processRows( jsonInput, 3 );
+    Assert.assertEquals( "error", 0, jsonInput.getErrors() );
+    Assert.assertEquals( "lines written", 2, jsonInput.getLinesWritten() );
+  }
+
+  @Test
   public void testDualExp() throws Exception {
     JsonInputField isbn = new JsonInputField( "isbn" );
     isbn.setPath( "$..book[?(@.isbn)].isbn" );
@@ -359,7 +377,6 @@ public class JsonInputTest {
     final String input = getBasicTestJson();
     meta.setIgnoreMissingPath( true );
     meta.setRemoveSourceField( true );
-    final String input = getBasicTestJson();
 
     JsonInput jsonInput = createJsonInput( "json", meta, new Object[] { input }, new Object[] { input } );
     processRows( jsonInput, 7 );
@@ -493,20 +510,18 @@ public class JsonInputTest {
     mushroom.setType( ValueMetaInterface.TYPE_STRING );
 
     JsonInputMeta meta = createSimpleMeta( "json", badger, mushroom );
-    meta.setDefaultPathLeafToNull( true );
     meta.setRemoveSourceField( true );
 
     JsonInput jsonInput = createJsonInput( "json", meta, new Object[] { input } );
     RowComparatorListener rowComparator = new RowComparatorListener(
-        new Object[] { null, null },
         new Object[] { 1L, null },
         new Object[] { 2L, null },
         new Object[] { 3L, 1L } );
     jsonInput.addRowListener( rowComparator );
 
-    processRows( jsonInput, 5 );
+    processRows( jsonInput, 4 );
     Assert.assertEquals( out.toString(), 0, jsonInput.getErrors() );
-    Assert.assertEquals( "rows written", 4, jsonInput.getLinesWritten() );
+    Assert.assertEquals( "rows written", 3, jsonInput.getLinesWritten() );
   }
 
   @Test
@@ -527,7 +542,6 @@ public class JsonInputTest {
     mushroom.setType( ValueMetaInterface.TYPE_INTEGER );
 
     JsonInputMeta meta = createSimpleMeta( "json", badger, mushroom );
-    meta.setDefaultPathLeafToNull( true );
     meta.setRemoveSourceField( true );
 
     JsonInput jsonInput = createJsonInput( "json", meta, new Object[] { input } );
@@ -668,7 +682,7 @@ public class JsonInputTest {
       JsonInput jsonInput = createJsonInput( meta );
       processRows( jsonInput, 5 );
       disposeJsonInput( jsonInput );
-      assertEquals( err.toString(), 2, jsonInput.getErrors() );
+      Assert.assertEquals( err.toString(), 2, jsonInput.getErrors() );
     } finally {
       deleteFiles();
     }
@@ -713,7 +727,7 @@ public class JsonInputTest {
 
       processRows( jsonInput, 5 );
       disposeJsonInput( jsonInput );
-      assertEquals( err.toString(), 0, jsonInput.getErrors() );
+      Assert.assertEquals( err.toString(), 0, jsonInput.getErrors() );
     } finally {
       deleteFiles();
     }
