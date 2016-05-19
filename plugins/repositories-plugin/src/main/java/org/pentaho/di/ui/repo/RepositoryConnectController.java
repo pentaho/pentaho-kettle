@@ -190,6 +190,7 @@ public class RepositoryConnectController {
         propsUI.setLastRepositoryLogin( username );
       }
       if ( spoon != null ) {
+        spoon.closeAllJobsAndTransformations();
         spoon.setRepository( repository );
       }
       jsonObject.put( "success", true );
@@ -228,10 +229,10 @@ public class RepositoryConnectController {
 
   public boolean setDefaultRepository( String name ) {
     RepositoryMeta repositoryMeta = repositoriesMeta.findRepository( name );
+    for ( int i = 0; i < repositoriesMeta.nrRepositories(); i++ ) {
+      repositoriesMeta.getRepository( i ).setDefault( false );
+    }
     if ( repositoryMeta != null ) {
-      for ( int i = 0; i < repositoriesMeta.nrRepositories(); i++ ) {
-        repositoriesMeta.getRepository( i ).setDefault( false );
-      }
       repositoryMeta.setDefault( true );
     }
     try {

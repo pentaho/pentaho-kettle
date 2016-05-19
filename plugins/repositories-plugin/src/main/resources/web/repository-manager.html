@@ -10,8 +10,8 @@
             <div id="repoDesc">{{repository.description}}</div>
           </td>
           <td class="default">
-            <button class="defaultBtn" ng-click="setDefault(repository)" ng-show="repository.isDefault == false" >Set Default</button>
-            <button class="defaultBtn activate" ng-show="repository.isDefault == true">Default</button>
+            <button class="defaultBtn" ng-click="setDefault(repository.displayName)" ng-show="repository.isDefault == false" >Set Default</button>
+            <button class="defaultBtn activate" ng-click="setDefault(null)" ng-show="repository.isDefault == true">Default</button>
           </td>
         </tr>
       </table>
