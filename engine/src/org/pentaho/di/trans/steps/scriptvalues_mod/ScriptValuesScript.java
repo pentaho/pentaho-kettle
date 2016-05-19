@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -97,6 +97,10 @@ public class ScriptValuesScript {
 
   public boolean isActive() {
     return bScriptActive;
+  }
+
+  public String toString() {
+    return String.format( "ScriptValuesScript: (%d, %s, %s)", iScriptType, sScriptName, sScript );
   }
 
 }

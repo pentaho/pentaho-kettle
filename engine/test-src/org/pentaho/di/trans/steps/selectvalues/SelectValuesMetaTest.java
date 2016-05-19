@@ -71,8 +71,7 @@ public class SelectValuesMetaTest {
             new HashMap<String, String>(), new HashMap<String, FieldLoadSaveValidator<?>>(),
             fieldLoadSaveValidatorTypeMap );
 
-    tester.testRepoRoundTrip();
-    tester.testXmlRoundTrip();
+    tester.testSerialization();
   }
 
   @Test
