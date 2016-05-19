@@ -49,15 +49,17 @@ public class DefaultFieldLoadSaveValidatorFactory implements FieldLoadSaveValida
       new StringLoadSaveValidator() ) {
     } );
     registerValidator( String[].class.getCanonicalName(), new ArrayLoadSaveValidator<String>(
-        new StringLoadSaveValidator() ) );
+      new StringLoadSaveValidator() ) );
     registerValidator( boolean[].class.getCanonicalName(), new PrimitiveBooleanArrayLoadSaveValidator(
-        new BooleanLoadSaveValidator() ) );
+      new BooleanLoadSaveValidator() ) );
     registerValidator( Boolean[].class.getCanonicalName(), new ArrayLoadSaveValidator<Boolean>(
-        new BooleanLoadSaveValidator() ) );
+      new BooleanLoadSaveValidator() ) );
     registerValidator( int[].class.getCanonicalName(), new PrimitiveIntArrayLoadSaveValidator(
-        new IntLoadSaveValidator() ) );
+      new IntLoadSaveValidator() ) );
     registerValidator( Locale.class.getCanonicalName(), new LocaleLoadSaveValidator() );
     registerValidator( DatabaseMeta.class.getCanonicalName(), new DatabaseMetaLoadSaveValidator() );
+    registerValidator( DatabaseMeta[].class.getCanonicalName(), new ArrayLoadSaveValidator<DatabaseMeta>(
+      new DatabaseMetaLoadSaveValidator() ) );
   }
 
   public void registerValidator( String typeString, FieldLoadSaveValidator<?> validator ) {

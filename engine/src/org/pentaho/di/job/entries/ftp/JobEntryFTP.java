@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -372,16 +372,16 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
       movetodirectory = rep.getJobEntryAttributeString( id_jobentry, "movetodirectory" );
 
       adddate = rep.getJobEntryAttributeBoolean( id_jobentry, "adddate" );
-      addtime = rep.getJobEntryAttributeBoolean( id_jobentry, "adddate" );
+      addtime = rep.getJobEntryAttributeBoolean( id_jobentry, "addtime" );
       SpecifyFormat = rep.getJobEntryAttributeBoolean( id_jobentry, "SpecifyFormat" );
       date_time_format = rep.getJobEntryAttributeString( id_jobentry, "date_time_format" );
       AddDateBeforeExtension = rep.getJobEntryAttributeBoolean( id_jobentry, "AddDateBeforeExtension" );
 
-      String addToResult = rep.getStepAttributeString( id_jobentry, "add_to_result_filenames" );
+      String addToResult = rep.getJobEntryAttributeString( id_jobentry, "isaddresult" );
       if ( Const.isEmpty( addToResult ) ) {
         isaddresult = true;
       } else {
-        isaddresult = rep.getStepAttributeBoolean( id_jobentry, "add_to_result_filenames" );
+        isaddresult = rep.getJobEntryAttributeBoolean( id_jobentry, "isaddresult" );
       }
 
       createmovefolder = rep.getJobEntryAttributeBoolean( id_jobentry, "createmovefolder" );

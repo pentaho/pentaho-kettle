@@ -27,7 +27,6 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.trans.steps.loadsave.getter.Getter;
 import org.pentaho.di.trans.steps.loadsave.initializer.InitializerInterface;
 import org.pentaho.di.trans.steps.loadsave.setter.Setter;
-import org.pentaho.di.trans.steps.loadsave.validator.DatabaseMetaLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.DefaultFieldLoadSaveValidatorFactory;
 import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidatorFactory;
@@ -105,8 +104,10 @@ abstract class LoadSaveBase<T> {
         Object testValue = validator.getTestObject();
         //noinspection unchecked
         setter.set( metaToSave, testValue );
-        if ( validator instanceof DatabaseMetaLoadSaveValidator ) {
+        if ( testValue instanceof DatabaseMeta ) {
           addDatabase( (DatabaseMeta) testValue );
+        } else if ( testValue instanceof DatabaseMeta[] ) {
+          addDatabase( (DatabaseMeta[]) testValue );
         }
       } catch ( Exception e ) {
         throw new RuntimeException( "Unable to invoke setter for " + attribute, e );
@@ -163,6 +164,14 @@ abstract class LoadSaveBase<T> {
   private void addDatabase( DatabaseMeta db ) {
     if ( !databases.contains( db ) ) {
       databases.add( db );
+    }
+  }
+
+  private void addDatabase( DatabaseMeta[] db ) {
+    if ( db != null ) {
+      for ( DatabaseMeta meta : db ) {
+        addDatabase( meta );
+      }
     }
   }
 }

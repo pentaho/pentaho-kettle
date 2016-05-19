@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -275,7 +275,16 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
     script = null;
   }
 
+  /**
+   * @deprecated use {@link #setFilename(String)} instead
+   * @param n
+   */
+  @Deprecated
   public void setFileName( String n ) {
+    filename = n;
+  }
+
+  public void setFilename( String n ) {
     filename = n;
   }
 

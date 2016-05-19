@@ -120,6 +120,7 @@ public class LoadSaveTester<T extends JobEntryInterface> extends LoadSaveBase<T>
   public void testSerialization() throws KettleException {
     testXmlRoundTrip();
     testRepoRoundTrip();
+    testClone();
   }
 
   @SuppressWarnings( "deprecation" )
@@ -135,8 +136,6 @@ public class LoadSaveTester<T extends JobEntryInterface> extends LoadSaveBase<T>
     InputStream is = new ByteArrayInputStream( xml.getBytes() );
     metaLoaded.loadXML( XMLHandler.getSubNode( XMLHandler.loadXMLFile( is, null, false, false ), "step" ), databases, null, null, null );
     validateLoadedMeta( xmlAttributes, validatorMap, metaToSave, metaLoaded );
-
-    testClone();
   }
 
   @SuppressWarnings( "deprecation" )

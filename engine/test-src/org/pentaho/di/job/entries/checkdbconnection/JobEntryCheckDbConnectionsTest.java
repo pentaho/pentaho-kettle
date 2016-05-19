@@ -54,9 +54,9 @@ public class JobEntryCheckDbConnectionsTest {
     meta.setLogLevel( LogLevel.BASIC );
 
     DatabaseMeta db = new DatabaseMeta( "InMemory H2", "H2", null, null, "myDb", "-1", null, null );
-    meta.connections = new DatabaseMeta[]{ db };
-    meta.waittimes = new int[]{ JobEntryCheckDbConnections.UNIT_TIME_MILLI_SECOND };
-    meta.waitfors = new String[]{ String.valueOf( waitMilliseconds ) };
+    meta.setConnections( new DatabaseMeta[]{ db } );
+    meta.setWaittimes( new int[]{ JobEntryCheckDbConnections.UNIT_TIME_MILLI_SECOND } );
+    meta.setWaitfors( new String[]{ String.valueOf( waitMilliseconds ) } );
     Result result = meta.execute( new Result(), 0 );
     Assert.assertTrue( result.getResult() );
   }
