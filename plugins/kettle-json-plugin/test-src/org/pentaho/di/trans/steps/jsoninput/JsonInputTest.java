@@ -216,6 +216,24 @@ public class JsonInputTest {
   }
 
   @Test
+  public void testSingleField() throws Exception {
+    JsonInputField isbn = new JsonInputField( "isbn" );
+    isbn.setPath( "$..book[?(@.isbn)].isbn" );
+    isbn.setType( ValueMetaInterface.TYPE_STRING );
+
+    JsonInputMeta meta = createSimpleMeta( "json", isbn );
+    JsonInput jsonInput = createJsonInput( "json", meta, new Object[] { getBasicTestJson() } );
+    RowComparatorListener rowComparator = new RowComparatorListener(
+      new Object[] { null, "0-553-21311-3" },
+      new Object[] { null, "0-395-19395-8" } );
+    rowComparator.setComparator( 0, null );
+    jsonInput.addRowListener( rowComparator );
+    processRows( jsonInput, 3 );
+    Assert.assertEquals( "error", 0, jsonInput.getErrors() );
+    Assert.assertEquals( "lines written", 2, jsonInput.getLinesWritten() );
+  }
+
+  @Test
   public void testDualExp() throws Exception {
     JsonInputField isbn = new JsonInputField( "isbn" );
     isbn.setPath( "$..book[?(@.isbn)].isbn" );
