@@ -1,3 +1,14 @@
+<div class="error-message" ng-if="model.hasError">
+  <div class="error-message-icon">
+    <img src="images/caution.svg" />
+  </div>
+  <div class="error-message-text">
+    {{model.errorMessage}}
+  </div>
+  <div class="error-message-close" ng-click="model.hasError=false">
+    <img src="images/close_notif.svg" />
+  </div>
+</div>
 <div class="main_div">
   <div class="title_text margin_bottom_30">Repository Details</div>
   <div class="middle_div">

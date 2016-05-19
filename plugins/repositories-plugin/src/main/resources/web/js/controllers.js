@@ -48,7 +48,23 @@ define(
         }
         return true;
       }
+      function checkDuplicate() {
+        repositories = JSON.parse(getRepositories());
+        $scope.model.hasError = false;
+        $scope.model.errorMessage = "";
+        for(var i = 0; i < repositories.length; i++){
+          if( repositories[i].displayName == $scope.model.displayName ){
+            $scope.model.hasError = true;
+            $scope.model.errorMessage = "Cannot create repository. Display Name [" + $scope.model.displayName + "] is already being used.";
+            break;
+          }
+        }
+      }
       $scope.finish = function() {
+        checkDuplicate();
+        if( this.model.hasError ){
+          return;
+        }
         if (createRepository("PentahoEnterpriseRepository", JSON.stringify(this.model))) {
           $location.path("/pentaho-repository-creation-success")
         } else {
@@ -100,7 +116,23 @@ define(
         }
         return true;
       }
+      function checkDuplicate() {
+        repositories = JSON.parse(getRepositories());
+        $scope.model.hasError = false;
+        $scope.model.errorMessage = "";
+        for(var i = 0; i < repositories.length; i++){
+          if( repositories[i].displayName == $scope.model.displayName ){
+            $scope.model.hasError = true;
+            $scope.model.errorMessage = "Cannot create repository. Display Name [" + $scope.model.displayName + "] is already being used.";
+            break;
+          }
+        }
+      }
       $scope.finish = function() {
+        checkDuplicate();
+        if( this.model.hasError ){
+          return;
+        }
         if (createRepository("KettleFileRepository", JSON.stringify(this.model))) {
           $location.path("/kettle-file-repository-creation-success")
         } else {
@@ -152,7 +184,23 @@ define(
         }
         return true;
       }
+      function checkDuplicate() {
+        repositories = JSON.parse(getRepositories());
+        $scope.model.hasError = false;
+        $scope.model.errorMessage = "";
+        for(var i = 0; i < repositories.length; i++){
+          if( repositories[i].displayName == $scope.model.displayName ){
+            $scope.model.hasError = true;
+            $scope.model.errorMessage = "Cannot create repository. Display Name [" + $scope.model.displayName + "] is already being used.";
+            break;
+          }
+        }
+      }
       $scope.finish = function() {
+        checkDuplicate();
+        if( this.model.hasError ){
+          return;
+        }
         if (createRepository("KettleDatabaseRepository", JSON.stringify(this.model))) {
           $location.path("/kettle-database-repository-creation-success")
         } else {
@@ -228,6 +276,9 @@ define(
         } else {
           $scope.model.databaseConnection = database.name;
         }
+      }
+      if( $scope.databases.length == 1 ){
+        $scope.selectDatabase( $scope.databases[0] );
       }
       function updateSelected(dbName) {
         for (var i = 0; i < $scope.databases.length; i++) {
