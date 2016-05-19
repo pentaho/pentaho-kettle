@@ -21,6 +21,8 @@
  ******************************************************************************/
 package org.pentaho.di.trans.steps.ifnull;
 
+import static org.junit.Assert.*;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -99,12 +101,24 @@ public class IfNullMetaTest {
   }
 
   @Test
-  public void testLoadSaveXML() throws KettleException {
-    loadSaveTester.testXmlRoundTrip();
+  public void testLoadSave() throws KettleException {
+    loadSaveTester.testSerialization();
   }
 
   @Test
-  public void testLoadSaveRepo() throws KettleException {
-    loadSaveTester.testRepoRoundTrip();
+  public void testSetDefault() throws Exception {
+    IfNullMeta inm = new IfNullMeta();
+    inm.setDefault();
+    assertTrue( ( inm.getTypeName() != null ) && ( inm.getTypeName().length == 0 ) );
+    assertTrue( ( inm.getTypeReplaceValue() != null ) && ( inm.getTypeReplaceValue().length == 0 ) );
+    assertTrue( ( inm.getTypeReplaceMask() != null ) && ( inm.getTypeReplaceMask().length == 0 ) );
+    assertTrue( ( inm.isSetTypeEmptyString() != null ) && ( inm.isSetTypeEmptyString().length == 0 ) );
+    assertTrue( ( inm.getFieldName() != null ) && ( inm.getFieldName().length == 0 ) );
+    assertTrue( ( inm.getReplaceValue() != null ) && ( inm.getReplaceValue().length == 0 ) );
+    assertTrue( ( inm.getReplaceMask() != null ) && ( inm.getReplaceMask().length == 0 ) );
+    assertTrue( ( inm.isSetEmptyString() != null ) && ( inm.isSetEmptyString().length == 0 ) );
+    assertFalse( inm.isSelectFields() );
+    assertFalse( inm.isSelectValuesType() );
   }
+
 }
