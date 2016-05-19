@@ -90,6 +90,7 @@ define( [
       this.errorMessage = "";
       this.username = "";
       this.password = "";
+      this.currentRepositoryName = "";
     });
 
 });

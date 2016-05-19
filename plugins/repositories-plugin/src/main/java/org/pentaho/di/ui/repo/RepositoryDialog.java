@@ -203,6 +203,13 @@ public class RepositoryDialog extends ThinDialog {
       }
     };
 
+    new BrowserFunction( browser, "getCurrentRepository" ) {
+      @Override
+      public Object function( Object[] objects ) {
+        return controller.getCurrentRepository().getName();
+      }
+    };
+
     new BrowserFunction( browser, "getDefaultUrl" ) {
       @Override public Object function( Object[] objects ) {
         return controller.getDefaultUrl();
