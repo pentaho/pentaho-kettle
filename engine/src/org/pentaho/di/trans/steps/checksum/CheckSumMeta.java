@@ -22,6 +22,7 @@
 
 package org.pentaho.di.trans.steps.checksum;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.pentaho.di.core.CheckResult;
@@ -98,10 +99,19 @@ public class CheckSumMeta extends BaseStepMeta implements StepMetaInterface {
     super(); // allocate BaseStepMeta
   }
 
+  // TODO Deprecate one of these setCheckSumType methods
   public void setCheckSumType( int i ) {
     checksumtype = checksumtypeCodes[i];
   }
 
+  public void setCheckSumType( String type ) {
+    if ( Arrays.asList( checksumtypeCodes ).contains( type ) ) {
+      checksumtype = type;
+    } else {
+      checksumtype = checksumtypeCodes[0];
+    }
+    
+  }
   public int getTypeByDesc() {
     if ( checksumtype == null ) {
       return 0;

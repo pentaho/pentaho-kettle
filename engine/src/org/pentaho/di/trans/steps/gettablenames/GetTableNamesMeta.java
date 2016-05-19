@@ -154,7 +154,12 @@ public class GetTableNamesMeta extends BaseStepMeta implements StepMetaInterface
    * @param issystemobjectfieldname
    *          The issystemobjectfieldname to set.
    */
+  // TODO deprecate one of these
   public void setIsSystemObjectFieldName( String issystemobjectfieldname ) {
+    this.issystemobjectfieldname = issystemobjectfieldname;
+  }
+
+  public void setSystemObjectFieldName( String issystemobjectfieldname ) {
     this.issystemobjectfieldname = issystemobjectfieldname;
   }
 

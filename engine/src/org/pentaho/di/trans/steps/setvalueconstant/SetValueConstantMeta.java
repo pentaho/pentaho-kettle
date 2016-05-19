@@ -137,9 +137,14 @@ public class SetValueConstantMeta extends BaseStepMeta implements StepMetaInterf
   }
 
   /**
+   * @deprecated use {@link #isEmptyString()} instead
    * @return the setEmptyString
    */
   public boolean[] isSetEmptyString() {
+    return isEmptyString();
+  }
+
+  public boolean[] isEmptyString() {
     return setEmptyString;
   }
 

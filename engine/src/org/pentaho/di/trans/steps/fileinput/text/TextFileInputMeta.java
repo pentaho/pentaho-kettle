@@ -192,6 +192,7 @@ public class TextFileInputMeta extends BaseFileInputStepMeta implements StepMeta
     public void setDateFormatLocale( String locale ) {
       this.dateFormatLocale = new Locale( locale );
     }
+    
   }
 
   /** The filters to use... */
@@ -433,9 +434,6 @@ public class TextFileInputMeta extends BaseFileInputStepMeta implements StepMeta
     for ( int i = 0; i < nrfilters; i++ ) {
       retval.filter[i] = (TextFileFilter) filter[i].clone();
     }
-
-    retval.content.dateFormatLocale = (Locale) content.dateFormatLocale.clone();
-    retval.content.fileCompression = content.fileCompression;
 
     return retval;
   }

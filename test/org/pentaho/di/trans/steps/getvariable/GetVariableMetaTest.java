@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,11 +22,24 @@
 
 package org.pentaho.di.trans.steps.getvariable;
 
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+
 import org.junit.Test;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.trans.TransformationTestCase;
+import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
+import org.pentaho.di.trans.steps.loadsave.validator.ArrayLoadSaveValidator;
+import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
+import org.pentaho.di.trans.steps.loadsave.validator.IntLoadSaveValidator;
+import org.pentaho.di.trans.steps.loadsave.validator.PrimitiveIntArrayLoadSaveValidator;
+import org.pentaho.di.trans.steps.loadsave.validator.StringLoadSaveValidator;
 
 public class GetVariableMetaTest extends TransformationTestCase {
 
@@ -39,14 +52,14 @@ public class GetVariableMetaTest extends TransformationTestCase {
     GetVariableMeta gvm = new GetVariableMeta();
     gvm.allocate( 1 );
     String[] fieldName = { "Test" };
-    int[] fieldType = { ValueMeta.getType( "Number" ) };
+    int[] fieldType = { ValueMetaFactory.getIdForValueMeta( "Number" ) };
     String[] varString = { "${testVariable}" };
     int[] fieldLength = { 1 };
     int[] fieldPrecision = { 2 };
     String[] currency = { "$" };
     String[] decimal = { "." };
     String[] group = { "TestGroup" };
-    int[] trimType = { ValueMeta.getTrimTypeByDesc( "none" ) };
+    int[] trimType = { ValueMetaString.getTrimTypeByDesc( "none" ) };
 
     gvm.setFieldName( fieldName );
     gvm.setFieldType( fieldType );
@@ -102,4 +115,37 @@ public class GetVariableMetaTest extends TransformationTestCase {
     assertNotNull( gvm.getTrimType() );
   }
 
+  @Test
+  public void testLoadSave() throws KettleException {
+    List<String> attributes = Arrays.asList( "FieldName", "VariableString", "FieldType", "FieldFormat", "Currency",
+      "Decimal", "Group", "FieldLength", "FieldPrecision", "TrimType" );
+
+    int copies = new Random().nextInt( 20 ) + 1;
+    FieldLoadSaveValidator<?> stringArrayValidator =
+      new ArrayLoadSaveValidator<String>( new StringLoadSaveValidator(), copies );
+    FieldLoadSaveValidator<?> intArrayValidator =
+      new PrimitiveIntArrayLoadSaveValidator( new IntLoadSaveValidator(), copies );
+    FieldLoadSaveValidator<?> fieldTypeArrayValidator = new PrimitiveIntArrayLoadSaveValidator(
+      new IntLoadSaveValidator( ValueMetaFactory.getAllValueMetaNames().length ), copies );
+    FieldLoadSaveValidator<?> trimTypeArrayValidator = new PrimitiveIntArrayLoadSaveValidator(
+        new IntLoadSaveValidator( ValueMetaString.trimTypeCode.length ), copies );
+
+    Map<String, FieldLoadSaveValidator<?>> attributeMap = new HashMap<String, FieldLoadSaveValidator<?>>();
+    attributeMap.put( "FieldName", stringArrayValidator );
+    attributeMap.put( "VariableString", stringArrayValidator );
+    attributeMap.put( "FieldType", fieldTypeArrayValidator );
+    attributeMap.put( "FieldFormat", stringArrayValidator );
+    attributeMap.put( "Currency", stringArrayValidator );
+    attributeMap.put( "Decimal", stringArrayValidator );
+    attributeMap.put( "Group", stringArrayValidator );
+    attributeMap.put( "FieldLength", intArrayValidator );
+    attributeMap.put( "FieldPrecision", intArrayValidator );
+    attributeMap.put( "TrimType", trimTypeArrayValidator );
+
+    LoadSaveTester loadSaveTester = new LoadSaveTester( GetVariableMeta.class, attributes,
+      new HashMap<String, String>(), new HashMap<String, String>(), attributeMap,
+      new HashMap<String, FieldLoadSaveValidator<?>>() );
+
+    loadSaveTester.testSerialization();
+  }
 }

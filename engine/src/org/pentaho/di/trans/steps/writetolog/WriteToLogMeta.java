@@ -22,6 +22,7 @@
 
 package org.pentaho.di.trans.steps.writetolog;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.pentaho.di.core.CheckResult;
@@ -74,6 +75,11 @@ public class WriteToLogMeta extends BaseStepMeta implements StepMetaInterface {
 
   public WriteToLogMeta() {
     super(); // allocate BaseStepMeta
+  }
+
+  // For testing purposes only
+  public int getLogLevel() {
+    return Arrays.asList( logLevelCodes ).indexOf( loglevel );
   }
 
   public void setLogLevel( int i ) {
@@ -139,11 +145,29 @@ public class WriteToLogMeta extends BaseStepMeta implements StepMetaInterface {
     this.fieldName = fieldName;
   }
 
+  /**
+   * @deprecated use {@link #isDisplayHeader()} instead
+   * @return
+   */
+  @Deprecated
   public boolean isdisplayHeader() {
+    return isDisplayHeader();
+  }
+
+  public boolean isDisplayHeader() {
     return displayHeader;
   }
 
+  /**
+   * @deprecated use {@link #setDisplayHeader(boolean)} instead
+   * @param displayheader
+   */
+  @Deprecated
   public void setdisplayHeader( boolean displayheader ) {
+    setDisplayHeader( displayheader );
+  }
+
+  public void setDisplayHeader( boolean displayheader ) {
     this.displayHeader = displayheader;
   }
 
@@ -241,6 +265,10 @@ public class WriteToLogMeta extends BaseStepMeta implements StepMetaInterface {
       loglevel = rep.getStepAttributeString( id_step, "loglevel" );
       displayHeader = rep.getStepAttributeBoolean( id_step, "displayHeader" );
 
+      limitRows = rep.getStepAttributeBoolean( id_step, "limitRows" );
+      String limitRowsNumberString = rep.getStepAttributeString( id_step, "limitRowsNumber" );
+      limitRowsNumber = Const.toInt( limitRowsNumberString, 5 );
+
       logmessage = rep.getStepAttributeString( id_step, "logmessage" );
       limitRows = rep.getStepAttributeBoolean( id_step, "limitRows" );
       limitRowsNumber = (int) rep.getStepAttributeInteger( id_step, "limitRowsNumber" );
@@ -261,6 +289,8 @@ public class WriteToLogMeta extends BaseStepMeta implements StepMetaInterface {
     try {
       rep.saveStepAttribute( id_transformation, id_step, "loglevel", loglevel );
       rep.saveStepAttribute( id_transformation, id_step, "displayHeader", displayHeader );
+      rep.saveStepAttribute( id_transformation, id_step, "limitRows", limitRows );
+      rep.saveStepAttribute( id_transformation, id_step, "limitRowsNumber", limitRowsNumber );
 
       rep.saveStepAttribute( id_transformation, id_step, "logmessage", logmessage );
       rep.saveStepAttribute( id_transformation, id_step, "limitRows", limitRows );

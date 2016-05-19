@@ -19,11 +19,8 @@
  * limitations under the License.
  *
  ******************************************************************************/
-package org.pentaho.di.trans.steps.constant;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+package org.pentaho.di.trans.steps.constant;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -36,7 +33,6 @@ import org.junit.Test;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.plugins.PluginRegistry;
-import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
 import org.pentaho.di.trans.steps.loadsave.initializer.InitializerInterface;
 import org.pentaho.di.trans.steps.loadsave.validator.ArrayLoadSaveValidator;
@@ -47,8 +43,8 @@ import org.pentaho.di.trans.steps.loadsave.validator.PrimitiveBooleanArrayLoadSa
 import org.pentaho.di.trans.steps.loadsave.validator.PrimitiveIntArrayLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.StringLoadSaveValidator;
 
-public class ConstantMetaTest implements InitializerInterface<StepMetaInterface> {
-  LoadSaveTester loadSaveTester;
+public class ConstantMetaTest implements InitializerInterface<ConstantMeta> {
+  LoadSaveTester<ConstantMeta> loadSaveTester;
   Class<ConstantMeta> testMetaClass = ConstantMeta.class;
 
   @Before
@@ -92,13 +88,13 @@ public class ConstantMetaTest implements InitializerInterface<StepMetaInterface>
     Map<String, FieldLoadSaveValidator<?>> typeValidatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();
 
     loadSaveTester =
-        new LoadSaveTester( testMetaClass, attributes, new ArrayList<String>(), new ArrayList<String>(),
-            getterMap, setterMap, attrValidatorMap, typeValidatorMap, this );
+      new LoadSaveTester<ConstantMeta>( testMetaClass, attributes, new ArrayList<String>(), new ArrayList<String>(),
+        getterMap, setterMap, attrValidatorMap, typeValidatorMap, this );
   }
 
   // Call the allocate method on the LoadSaveTester meta class
   @Override
-  public void modify( StepMetaInterface someMeta ) {
+  public void modify( ConstantMeta someMeta ) {
     if ( someMeta instanceof ConstantMeta ) {
       ( (ConstantMeta) someMeta ).allocate( 5 );
     }
@@ -107,35 +103,5 @@ public class ConstantMetaTest implements InitializerInterface<StepMetaInterface>
   @Test
   public void testSerialization() throws KettleException {
     loadSaveTester.testSerialization();
-  }
-
-
-  @Test
-  public void cloneTest() throws Exception {
-    ConstantMeta meta = new ConstantMeta();
-    meta.allocate( 2 );
-    meta.setFieldName( new String[] { "fieldname1", "fieldname2" } );
-    meta.setFieldType( new String[] { "fieldtype1", "fieldtype2" } );
-    meta.setFieldFormat( new String[] { "fieldformat1", "fieldformat2" } );
-    meta.setFieldLength( new int[] { 10, 20 } );
-    meta.setFieldPrecision( new int[] { 3, 5 } );
-    meta.setCurrency( new String[] { "currency1", "currency2" } );
-    meta.setDecimal( new String[] { "decimal1", "decimal2" } );
-    meta.setGroup( new String[] { "group1", "group2" } );
-    meta.setValue( new String[] { "value1", "value2" } );
-    meta.setEmptyString( new boolean[] { false, true } );
-    ConstantMeta aClone = (ConstantMeta) meta.clone();
-    assertFalse( aClone == meta );
-    assertTrue( Arrays.equals( meta.getFieldName(), aClone.getFieldName() ) );
-    assertTrue( Arrays.equals( meta.getFieldType(), aClone.getFieldType() ) );
-    assertTrue( Arrays.equals( meta.getFieldFormat(), aClone.getFieldFormat() ) );
-    assertTrue( Arrays.equals( meta.getFieldLength(), aClone.getFieldLength() ) );
-    assertTrue( Arrays.equals( meta.getFieldPrecision(), aClone.getFieldPrecision() ) );
-    assertTrue( Arrays.equals( meta.getCurrency(), aClone.getCurrency() ) );
-    assertTrue( Arrays.equals( meta.getDecimal(), aClone.getDecimal() ) );
-    assertTrue( Arrays.equals( meta.getGroup(), aClone.getGroup() ) );
-    assertTrue( Arrays.equals( meta.getValue(), aClone.getValue() ) );
-    assertTrue( Arrays.equals( meta.isSetEmptyString(), aClone.isSetEmptyString() ) );
-    assertEquals( meta.getXML(), aClone.getXML() );
   }
 }

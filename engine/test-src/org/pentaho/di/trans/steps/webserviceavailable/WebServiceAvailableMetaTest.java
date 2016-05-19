@@ -20,7 +20,7 @@
  *
  ******************************************************************************/
 
-package org.pentaho.di.trans.steps.propertyoutput;
+package org.pentaho.di.trans.steps.webserviceavailable;
 
 import java.util.Arrays;
 import java.util.List;
@@ -29,21 +29,14 @@ import org.junit.Test;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
 
-public class PropertyOutputMetaTest {
+public class WebServiceAvailableMetaTest {
+
   @Test
-  public void testSerialization() throws KettleException {
-    List<String> attributes = Arrays.asList( "KeyField", "ValueField", "Comment", "FileNameInField",
-      "FileNameField", "FileName", "Extension", "StepNrInFilename",
-      //
-      // Note - "partNrInFilename" not included above because while it seems to be serialized/deserialized in the meta,
-      // there are no getters/setters and it's a private variable. Also, it's not included in the dialog. So it is
-      // always serialized/deserialized as "false" (N).
-      // MB - 5/2016
-      "DateInFilename", "TimeInFilename", "CreateParentFolder", "AddToResult", "Append" );
+  public void testLoadSave() throws KettleException {
+    List<String> attributes = Arrays.asList( "URLField", "ConnectTimeOut", "ReadTimeOut", "ResultFieldName" );
 
-    LoadSaveTester<PropertyOutputMeta> tester = new LoadSaveTester<PropertyOutputMeta>(
-        PropertyOutputMeta.class, attributes );
+    LoadSaveTester loadSaveTester = new LoadSaveTester( WebServiceAvailableMeta.class, attributes );
 
-    tester.testSerialization();
+    loadSaveTester.testSerialization();
   }
 }

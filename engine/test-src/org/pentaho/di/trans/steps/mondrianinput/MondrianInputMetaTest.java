@@ -19,30 +19,33 @@
  * limitations under the License.
  *
  ******************************************************************************/
-package org.pentaho.di.trans.steps.mondrianinput;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
+package org.pentaho.di.trans.steps.mondrianinput;
+
+import java.util.Arrays;
+import java.util.List;
+
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
 
 public class MondrianInputMetaTest {
 
-  @Test
-  public void testStepMeta() throws KettleException {
-    KettleEnvironment.init();
-    PluginRegistry.init( true );
-    List<String> attributes = Arrays.asList( "databaseMeta", "SQL", "catalog", "role" );
-
-    Map<String, String> getterMap = new HashMap<String, String>();
-    Map<String, String> setterMap = new HashMap<String, String>();
-    LoadSaveTester loadSaveTester = new LoadSaveTester( MondrianInputMeta.class, attributes, getterMap, setterMap );
-    loadSaveTester.testSerialization();
+  @BeforeClass
+  public static void setUpBeforeClass() throws KettleException {
+    KettleEnvironment.init( false );
   }
 
+  @Test
+  public void testLoadSave() throws KettleException {
+    List<String> attributes = Arrays.asList( "DatabaseMeta", "SQL", "Catalog", "Role",
+      "VariableReplacementActive" );
+
+    LoadSaveTester<MondrianInputMeta> loadSaveTester =
+      new LoadSaveTester<MondrianInputMeta>( MondrianInputMeta.class, attributes );
+
+    loadSaveTester.testSerialization();
+  }
 }

@@ -25,7 +25,7 @@ package org.pentaho.di.trans.steps.textfileinput;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.junit.Before;
 import org.junit.Test;
-import org.pentaho.di.job.entry.loadSave.TransStepLoadSaveTester;
+import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
 import org.pentaho.di.trans.steps.loadsave.validator.ArrayLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
 
@@ -45,7 +45,7 @@ import static org.junit.Assert.assertTrue;
  */
 public class TextFileInputMetaLoadSaveTest {
 
-  private TransStepLoadSaveTester<TextFileInputMeta> tester;
+  private LoadSaveTester tester;
 
   @Before
   public void setUp() throws Exception {
@@ -148,18 +148,13 @@ public class TextFileInputMetaLoadSaveTest {
     assertTrue( !commonAttributes.isEmpty() || !( xmlAttributes.isEmpty() || repoAttributes.isEmpty() ) );
 
     tester =
-        new TransStepLoadSaveTester<TextFileInputMeta>( TextFileInputMeta.class, commonAttributes, xmlAttributes,
+        new LoadSaveTester( TextFileInputMeta.class, commonAttributes, xmlAttributes,
             repoAttributes, getters, setters, attributeValidators, typeValidators );
   }
 
   @Test
-  public void xmlSerialization() throws Exception {
-    tester.testXmlRoundTrip();
-  }
-
-  @Test
-  public void repositorySerialization() throws Exception {
-    tester.testRepoRoundTrip();
+  public void testSerialization() throws Exception {
+    tester.testSerialization();
   }
 
 

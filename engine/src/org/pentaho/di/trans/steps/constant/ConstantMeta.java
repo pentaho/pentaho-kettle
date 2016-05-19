@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -61,7 +61,7 @@ public class ConstantMeta extends BaseStepMeta implements StepMetaInterface {
   private String[] currency;
   private String[] decimal;
   private String[] group;
-  private String[] value;
+  private String[] value; // Null-if
 
   private String[] fieldName;
   private String[] fieldType;
@@ -182,9 +182,15 @@ public class ConstantMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   /**
+   * @deprecated use {@link #isEmptyString()} instead
    * @return the setEmptyString
    */
+  @Deprecated
   public boolean[] isSetEmptyString() {
+    return setEmptyString;
+  }
+
+  public boolean[] isEmptyString() {
     return setEmptyString;
   }
 

@@ -32,7 +32,6 @@ import org.junit.Test;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.plugins.PluginRegistry;
-import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
 import org.pentaho.di.trans.steps.loadsave.initializer.InitializerInterface;
 import org.pentaho.di.trans.steps.loadsave.validator.ArrayLoadSaveValidator;
@@ -41,8 +40,8 @@ import org.pentaho.di.trans.steps.loadsave.validator.IntLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.StringLoadSaveValidator;
 
 
-public class CheckSumMetaTest implements InitializerInterface<StepMetaInterface> {
-  LoadSaveTester loadSaveTester;
+public class CheckSumMetaTest implements InitializerInterface<CheckSumMeta> {
+  LoadSaveTester<CheckSumMeta> loadSaveTester;
   Class<CheckSumMeta> testMetaClass = CheckSumMeta.class;
 
   @Before
@@ -73,13 +72,13 @@ public class CheckSumMetaTest implements InitializerInterface<StepMetaInterface>
     Map<String, FieldLoadSaveValidator<?>> typeValidatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();
 
     loadSaveTester =
-        new LoadSaveTester( testMetaClass, attributes, new ArrayList<String>(), new ArrayList<String>(),
-            getterMap, setterMap, attrValidatorMap, typeValidatorMap, this );
+      new LoadSaveTester<CheckSumMeta>( testMetaClass, attributes, new ArrayList<String>(), new ArrayList<String>(),
+        getterMap, setterMap, attrValidatorMap, typeValidatorMap, this );
   }
 
   // Call the allocate method on the LoadSaveTester meta class
   @Override
-  public void modify( StepMetaInterface someMeta ) {
+  public void modify( CheckSumMeta someMeta ) {
     if ( someMeta instanceof CheckSumMeta ) {
       ( (CheckSumMeta) someMeta ).allocate( 5 );
     }
@@ -89,5 +88,4 @@ public class CheckSumMetaTest implements InitializerInterface<StepMetaInterface>
   public void testSerialization() throws KettleException {
     loadSaveTester.testSerialization();
   }
-  // Note - cloneTest removed because the LoadSaveTester includes a clone test.
 }
