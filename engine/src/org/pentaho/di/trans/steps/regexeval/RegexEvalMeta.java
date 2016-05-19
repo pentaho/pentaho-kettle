@@ -255,6 +255,10 @@ public class RegexEvalMeta extends BaseStepMeta implements StepMetaInterface {
     return fieldName;
   }
 
+  public void setFieldName( String[] value ) {
+    this.fieldName = value;
+  }
+
   public int[] getFieldType() {
     return fieldType;
   }
@@ -513,6 +517,7 @@ public class RegexEvalMeta extends BaseStepMeta implements StepMetaInterface {
         retval.append( "        " ).append( XMLHandler.addTagValue( "ifnull", fieldIfNull[i] ) );
         retval.append( "        " ).append(
           XMLHandler.addTagValue( "trimtype", ValueMeta.getTrimTypeCode( fieldTrimType[i] ) ) );
+        retval.append( "        " ).append( XMLHandler.addTagValue( "currency", fieldCurrency[i] ) );
         retval.append( "      </field>" ).append( Const.CR );
       }
     }
@@ -552,6 +557,7 @@ public class RegexEvalMeta extends BaseStepMeta implements StepMetaInterface {
         fieldPrecision[i] = (int) rep.getStepAttributeInteger( id_step, i, "field_precision" );
         fieldNullIf[i] = rep.getStepAttributeString( id_step, i, "field_nullif" );
         fieldIfNull[i] = rep.getStepAttributeString( id_step, i, "field_ifnull" );
+        fieldCurrency[i] = rep.getStepAttributeString( id_step, i, "field_currency" );
         fieldTrimType[i] =
           ValueMeta.getTrimTypeByCode( rep.getStepAttributeString( id_step, i, "field_trimtype" ) );
       }
@@ -577,6 +583,7 @@ public class RegexEvalMeta extends BaseStepMeta implements StepMetaInterface {
           rep.saveStepAttribute( id_transformation, id_step, i, "field_precision", fieldPrecision[i] );
           rep.saveStepAttribute( id_transformation, id_step, i, "field_nullif", fieldNullIf[i] );
           rep.saveStepAttribute( id_transformation, id_step, i, "field_ifnull", fieldIfNull[i] );
+          rep.saveStepAttribute( id_transformation, id_step, i, "field_currency", fieldCurrency[i] );
           rep.saveStepAttribute( id_transformation, id_step, i, "field_trimtype", ValueMeta
             .getTrimTypeCode( fieldTrimType[i] ) );
         }

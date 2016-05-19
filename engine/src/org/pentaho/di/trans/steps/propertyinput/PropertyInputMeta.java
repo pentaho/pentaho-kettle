@@ -64,19 +64,27 @@ public class PropertyInputMeta extends BaseStepMeta implements StepMetaInterface
 
   public static final String[] RequiredFilesDesc = new String[] {
     BaseMessages.getString( PKG, "System.Combo.No" ), BaseMessages.getString( PKG, "System.Combo.Yes" ) };
+
   public static final String[] RequiredFilesCode = new String[] { "N", "Y" };
 
   public static final String DEFAULT_ENCODING = "UTF-8";
 
-  private String encoding;
+  private static final String YES = "Y";
 
-  private String fileType;
+  public static final String[] type_trim_code = { "none", "left", "right", "both" };
+
+  public static final String[] column_code = { "key", "value" };
+
   public static final String[] fileTypeDesc = new String[] {
     BaseMessages.getString( PKG, "PropertyInputMeta.FileType.Property" ),
     BaseMessages.getString( PKG, "PropertyInputMeta.FileType.Ini" ) };
   public static final String[] fileTypeCode = new String[] { "property", "ini" };
   public static final int FILE_TYPE_PROPERTY = 0;
   public static final int FILE_TYPE_INI = 1;
+
+  private String encoding;
+
+  private String fileType;
 
   /** Array of filenames */
   private String[] fileName;
@@ -123,12 +131,6 @@ public class PropertyInputMeta extends BaseStepMeta implements StepMetaInterface
   private boolean isaddresult;
 
   private String dynamicFilenameField;
-
-  private static final String YES = "Y";
-
-  public static final String[] type_trim_code = { "none", "left", "right", "both" };
-
-  public static final String[] column_code = { "key", "value" };
 
   /** Flag indicating that a INI file section field should be included in the output */
   private boolean includeIniSection;
@@ -258,7 +260,7 @@ public class PropertyInputMeta extends BaseStepMeta implements StepMetaInterface
   }
 
   /**
-   * @return Returns the uriNameFieldName.
+   * @return Returns the rootUriNameFieldName.
    */
   public String getRootUriField() {
     return rootUriNameFieldName;
@@ -311,8 +313,17 @@ public class PropertyInputMeta extends BaseStepMeta implements StepMetaInterface
 
   /**
    * @return Returns the excludeFileMask.
+   * @deprecated due to typo
    */
+  @Deprecated
   public String[] getExludeFileMask() {
+    return excludeFileMask;
+  }
+
+  /**
+   * @return Returns the excludeFileMask.
+   */
+  public String[] getExcludeFileMask() {
     return excludeFileMask;
   }
 
@@ -1048,6 +1059,7 @@ public class PropertyInputMeta extends BaseStepMeta implements StepMetaInterface
       pathFieldName = rep.getStepAttributeString( id_step, "pathFieldName" );
       hiddenFieldName = rep.getStepAttributeString( id_step, "hiddenFieldName" );
       lastModificationTimeFieldName = rep.getStepAttributeString( id_step, "lastModificationTimeFieldName" );
+      uriNameFieldName = rep.getStepAttributeString( id_step, "uriNameFieldName" );
       rootUriNameFieldName = rep.getStepAttributeString( id_step, "rootUriNameFieldName" );
       extensionFieldName = rep.getStepAttributeString( id_step, "extensionFieldName" );
       sizeFieldName = rep.getStepAttributeString( id_step, "sizeFieldName" );
@@ -1074,6 +1086,7 @@ public class PropertyInputMeta extends BaseStepMeta implements StepMetaInterface
       rep.saveStepAttribute( id_transformation, id_step, "limit", rowLimit );
       rep.saveStepAttribute( id_transformation, id_step, "reset_rownumber", resetRowNumber );
       rep.saveStepAttribute( id_transformation, id_step, "resolve_value_variable", resolvevaluevariable );
+      rep.saveStepAttribute( id_transformation, id_step, "sizeFieldName", sizeFieldName );
 
       for ( int i = 0; i < fileName.length; i++ ) {
         rep.saveStepAttribute( id_transformation, id_step, i, "file_name", fileName[i] );

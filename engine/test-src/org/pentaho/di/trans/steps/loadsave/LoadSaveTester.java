@@ -38,7 +38,7 @@ import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.loadsave.getter.Getter;
-import org.pentaho.di.trans.steps.loadsave.initializer.StepMetaInitializer;
+import org.pentaho.di.trans.steps.loadsave.initializer.InitializerInterface;
 import org.pentaho.di.trans.steps.loadsave.setter.Setter;
 import org.pentaho.di.trans.steps.loadsave.validator.DatabaseMetaLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.DefaultFieldLoadSaveValidatorFactory;
@@ -54,19 +54,19 @@ public class LoadSaveTester {
   private final JavaBeanManipulator<? extends StepMetaInterface> manipulator;
   private final FieldLoadSaveValidatorFactory fieldLoadSaveValidatorFactory;
   private final List<DatabaseMeta> databases;
-  private final StepMetaInitializer<?> stepMetaInitializer;
+  private final InitializerInterface<StepMetaInterface> metaInitializerInterface;
 
   public LoadSaveTester( Class<? extends StepMetaInterface> clazz, List<String> commonAttributes,
     List<String> xmlAttributes, List<String> repoAttributes, Map<String, String> getterMap,
     Map<String, String> setterMap, Map<String, FieldLoadSaveValidator<?>> fieldLoadSaveValidatorAttributeMap,
     Map<String, FieldLoadSaveValidator<?>> fieldLoadSaveValidatorTypeMap,
-    StepMetaInitializer<?> stepMetaInitializer ) {
+    InitializerInterface<StepMetaInterface> metaInitializerIFace ) {
     this.clazz = clazz;
     this.xmlAttributes = new ArrayList<String>( commonAttributes );
     this.xmlAttributes.addAll( xmlAttributes );
     this.repoAttributes = new ArrayList<String>( commonAttributes );
     this.repoAttributes.addAll( commonAttributes );
-    this.stepMetaInitializer = stepMetaInitializer;
+    this.metaInitializerInterface = metaInitializerIFace;
     List<String> combinedAttributes = new ArrayList<String>( commonAttributes );
     combinedAttributes.addAll( repoAttributes );
     combinedAttributes.addAll( xmlAttributes );
@@ -204,8 +204,8 @@ public class LoadSaveTester {
 
   protected void testClone() throws KettleException {
     StepMetaInterface metaToSave = createMeta();
-    if ( stepMetaInitializer != null ) {
-      stepMetaInitializer.modify( metaToSave );
+    if ( metaInitializerInterface != null ) {
+      metaInitializerInterface.modify( metaToSave );
     }
     Map<String, FieldLoadSaveValidator<?>> validatorMap =
       createValidatorMapAndInvokeSetters( xmlAttributes, metaToSave );
@@ -225,8 +225,8 @@ public class LoadSaveTester {
   // TODO Change method visibility to protected
   public void testXmlRoundTrip() throws KettleException {
     StepMetaInterface metaToSave = createMeta();
-    if ( stepMetaInitializer != null ) {
-      stepMetaInitializer.modify( metaToSave );
+    if ( metaInitializerInterface != null ) {
+      metaInitializerInterface.modify( metaToSave );
     }
     Map<String, FieldLoadSaveValidator<?>> validatorMap =
       createValidatorMapAndInvokeSetters( xmlAttributes, metaToSave );
@@ -251,8 +251,8 @@ public class LoadSaveTester {
   // TODO Change method visibility to protected
   public void testRepoRoundTrip() throws KettleException {
     StepMetaInterface metaToSave = createMeta();
-    if ( stepMetaInitializer != null ) {
-      stepMetaInitializer.modify( metaToSave );
+    if ( metaInitializerInterface != null ) {
+      metaInitializerInterface.modify( metaToSave );
     }
     Map<String, FieldLoadSaveValidator<?>> validatorMap =
       createValidatorMapAndInvokeSetters( repoAttributes, metaToSave );
@@ -265,8 +265,8 @@ public class LoadSaveTester {
 
   protected void testMixedXmlRepoRoundTrip() throws KettleException {
     StepMetaInterface metaToSave = createMeta();
-    if ( stepMetaInitializer != null ) {
-      stepMetaInitializer.modify( metaToSave );
+    if ( metaInitializerInterface != null ) {
+      metaInitializerInterface.modify( metaToSave );
     }
     Map<String, FieldLoadSaveValidator<?>> validatorMap =
       createValidatorMapAndInvokeSetters( repoAttributes, metaToSave );

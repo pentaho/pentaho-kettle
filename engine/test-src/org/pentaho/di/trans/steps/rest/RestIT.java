@@ -150,7 +150,21 @@ public class RestIT {
 
   @After
   public void tearDown() throws Exception {
-    server.stop( 0 );
+    try {
+      server.stop( 0 );
+    } catch (NullPointerException ex) {
+      // This is only here because everything blows up due to the version
+      // of Java we're running -vs- the version of ASM we rely on thanks to the
+      // version of Jetty we need. When we upgrade to Jetty 8, this NPE will go away.
+      // I'm only catching the NPE to allow the test to work as much as it can with
+      // the version of Jetty we use.
+      // Makes me wonder if we can change the version of jetty used in test cases to
+      // the later one to avoid this before we have to go and change the version of
+      // Jetty for the rest of the platform.
+      //
+      // MB - 5/2016
+      org.junit.Assert.assertTrue( System.getProperty( "java.version").startsWith( "1.8" ) );
+    }
   }
 
   @Test
