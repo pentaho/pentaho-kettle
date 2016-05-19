@@ -331,10 +331,10 @@ define(
       $scope.selectRepository = function(repository) {
         repositoriesModel.selectedRepository = repository;
       }
-      $scope.setDefault = function(repository) {
-        setDefaultRepository(repository.displayName);
+      $scope.setDefault = function(name) {
+        setDefaultRepository(name);
         for ( i = 0; i < repositoriesModel.repositories.length; i++) {
-          if ( repositoriesModel.repositories[i].displayName == repository.displayName) {
+          if ( repositoriesModel.repositories[i].displayName == name) {
             repositoriesModel.repositories[i].isDefault = true;
           } else {
             repositoriesModel.repositories[i].isDefault = false;
