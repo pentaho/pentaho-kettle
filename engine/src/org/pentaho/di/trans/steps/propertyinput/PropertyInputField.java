@@ -84,6 +84,11 @@ public class PropertyInputField implements Cloneable {
     this.precision = -1;
     this.repeat = false;
   }
+  public String toString() {
+    return String.format( "PropertyInputField: (%s, %d, %d, %d, %s, %d, %d, %s, %s, %s, %b)",
+        name, column, type, length, format, trimtype, precision,
+        currencySymbol, decimalSymbol, groupSymbol, repeat );
+  }
 
   public PropertyInputField() {
     this( null );
