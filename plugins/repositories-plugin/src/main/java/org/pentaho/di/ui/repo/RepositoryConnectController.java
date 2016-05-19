@@ -186,7 +186,9 @@ public class RepositoryConnectController {
         pluginRegistry.loadClass( RepositoryPluginType.class, repositoryMeta.getId(), Repository.class );
       repository.init( repositoryMeta );
       repository.connect( username, password );
-      propsUI.setLastRepositoryLogin( username );
+      if ( username != null ) {
+        propsUI.setLastRepositoryLogin( username );
+      }
       if ( spoon != null ) {
         spoon.setRepository( repository );
       }
