@@ -197,6 +197,12 @@ public class RepositoryDialog extends ThinDialog {
       }
     };
 
+    new BrowserFunction( browser, "getCurrentUser" ) {
+      @Override public Object function( Object[] objects ) {
+        return controller.getCurrentUser();
+      }
+    };
+
     new BrowserFunction( browser, "getDefaultUrl" ) {
       @Override public Object function( Object[] objects ) {
         return controller.getDefaultUrl();

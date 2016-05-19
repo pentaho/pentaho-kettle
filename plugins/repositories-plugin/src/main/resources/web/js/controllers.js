@@ -327,6 +327,7 @@ define(
 
     repoConnectionAppControllers.controller("RepositoryConnectController", function($scope, repositoryConnectModel) {
       $scope.model = repositoryConnectModel;
+      $scope.model.username = getCurrentUser();
       $scope.canConnect = function() {
         if (this.model.username == "" || this.model.password == "") {
           return false;
