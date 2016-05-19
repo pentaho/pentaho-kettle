@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -492,18 +492,18 @@ public class RssOutputMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   /**
-   * @return Returns the ChannelItemFields (names in the stream).
+   * @return Returns the ItemCustomFields (names in the stream).
    */
   public String[] getItemCustomFields() {
     return ItemCustomFields;
   }
 
   /**
-   * @param getChannelCustomTags
-   *          The getChannelCustomTags to set.
+   * @param value
+   *          The ItemCustomFields to set.
    */
-  public void setItemCustomFields( String[] ItemCustomTags ) {
-    this.ItemCustomTags = ItemCustomTags;
+  public void setItemCustomFields( String[] value ) {
+    this.ItemCustomFields = value;
   }
 
   /**
@@ -519,6 +519,14 @@ public class RssOutputMeta extends BaseStepMeta implements StepMetaInterface {
    */
   public void setCreateParentFolder( boolean createparentfolder ) {
     this.createparentfolder = createparentfolder;
+  }
+
+  public boolean isPartNrInFilename() {
+    return partNrInFilename;
+  }
+
+  public void setPartNrInFilename( boolean value ) {
+    partNrInFilename = value;
   }
 
   public String[] getFiles( VariableSpace space ) throws KettleStepException {

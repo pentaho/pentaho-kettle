@@ -134,7 +134,6 @@ public class ReplaceStringMetaTest {
       new LoadSaveTester( ReplaceStringMeta.class, attributes, getterMap, setterMap,
         fieldLoadSaveValidatorAttributeMap, new HashMap<String, FieldLoadSaveValidator<?>>() );
 
-    loadSaveTester.testRepoRoundTrip();
-    loadSaveTester.testXmlRoundTrip();
+    loadSaveTester.testSerialization();
   }
 }
