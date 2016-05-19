@@ -239,7 +239,10 @@ public class LoadFileInputMetaTest {
         return false;
       }
       LoadFileInputField actual = (LoadFileInputField) actualObj;
-      return ( actual.getXML().equals( testObject.getXML() ) );
+      boolean tst1 =  ( actual.getXML().equals( testObject.getXML() ) );
+      LoadFileInputField aClone = (LoadFileInputField) testObject.clone();
+      boolean tst2 = ( actual.getXML().equals( aClone.getXML() ) );
+      return ( tst1 && tst2 );
     }
   }
 
