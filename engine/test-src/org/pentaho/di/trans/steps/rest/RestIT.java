@@ -152,7 +152,7 @@ public class RestIT {
   public void tearDown() throws Exception {
     try {
       server.stop( 0 );
-    } catch (NullPointerException ex) {
+    } catch ( NullPointerException ex ) {
       // This is only here because everything blows up due to the version
       // of Java we're running -vs- the version of ASM we rely on thanks to the
       // version of Jetty we need. When we upgrade to Jetty 8, this NPE will go away.
@@ -163,7 +163,7 @@ public class RestIT {
       // Jetty for the rest of the platform.
       //
       // MB - 5/2016
-      org.junit.Assert.assertTrue( System.getProperty( "java.version").startsWith( "1.8" ) );
+      org.junit.Assert.assertTrue( System.getProperty( "java.version" ).startsWith( "1.8" ) );
     }
   }
 
