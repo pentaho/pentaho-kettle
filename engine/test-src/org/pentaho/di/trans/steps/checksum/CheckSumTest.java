@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,18 +22,23 @@
 
 package org.pentaho.di.trans.steps.checksum;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import junit.framework.TestCase;
-
+import org.junit.BeforeClass;
+import org.junit.Test;
 import org.pentaho.di.core.KettleEnvironment;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.trans.RowProducer;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransHopMeta;
@@ -44,11 +49,14 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.dummytrans.DummyTransMeta;
 
-public class CheckSumTest extends TestCase {
+public class CheckSumTest {
+
+  @BeforeClass
+  public static void setUpBeforeClass() throws KettleException {
+    KettleEnvironment.init();
+  }
 
   private Trans buildHexadecimalChecksumTrans( int checkSumType, boolean compatibilityMode ) throws Exception {
-    KettleEnvironment.init();
-
     // Create a new transformation...
     TransMeta transMeta = new TransMeta();
     transMeta.setName( getClass().getName() );
@@ -84,7 +92,7 @@ public class CheckSumTest extends TestCase {
 
   private RowMeta createStringRowMeta() throws Exception {
     RowMeta rowMeta = new RowMeta();
-    ValueMeta meta = new ValueMeta( "test", ValueMeta.TYPE_STRING );
+    ValueMetaInterface meta = new ValueMetaString( "test" );
     rowMeta.addValueMeta( meta );
     return rowMeta;
   }
@@ -157,27 +165,49 @@ public class CheckSumTest extends TestCase {
     return listener;
   }
 
+  @Test
   public void testHexOutput_md5() throws Exception {
     MockRowListener results = executeHexTest( 2, false, "xyz" );
     assertEquals( 1, results.getWritten().size() );
     assertEquals( "d16fb36f0911f878998c136191af705e", results.getWritten().get( 0 )[1] );
   }
 
+  @Test
   public void testHexOutput_md5_compatibilityMode() throws Exception {
     MockRowListener results = executeHexTest( 2, true, "xyz" );
     assertEquals( 1, results.getWritten().size() );
     assertEquals( "FD6FFD6F0911FD78FDFD1361FDFD705E", results.getWritten().get( 0 )[1] );
   }
 
+  @Test
   public void testHexOutput_sha1() throws Exception {
     MockRowListener results = executeHexTest( 3, false, "xyz" );
     assertEquals( 1, results.getWritten().size() );
     assertEquals( "66b27417d37e024c46526c2f6d358a754fc552f3", results.getWritten().get( 0 )[1] );
   }
 
+  @Test
   public void testHexOutput_sha1_compatibilityMode() throws Exception {
     MockRowListener results = executeHexTest( 3, true, "xyz" );
     assertEquals( 1, results.getWritten().size() );
     assertEquals( "66FD7417FD7E024C46526C2F6D35FD754FFD52FD", results.getWritten().get( 0 )[1] );
+  }
+
+  @Test
+  public void testHexOutput_sha256() throws Exception {
+    MockRowListener results = executeHexTest( 4, false, "xyz" );
+    assertEquals( 1, results.getWritten().size() );
+    assertEquals( "3608bca1e44ea6c4d268eb6db02260269892c0b42b86bbf1e77a6fa16c3c9282",
+      results.getWritten().get( 0 )[1] );
+  }
+
+  @Test
+  public void testHexOutput_sha256_compatibilityMode() throws Exception {
+    try {
+      executeHexTest( 4, true, "xyz" );
+      fail();
+    } catch ( KettleException e ) {
+      // expected, SHA-256 is not supported for compatibility mode
+    }
   }
 }
