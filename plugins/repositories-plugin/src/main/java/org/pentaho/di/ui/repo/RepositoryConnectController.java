@@ -255,6 +255,10 @@ public class RepositoryConnectController {
     this.currentRepository = repositoryMeta;
   }
 
+  public RepositoryMeta getCurrentRepository() {
+    return this.currentRepository;
+  }
+
   public void save() {
     try {
       repositoriesMeta.writeData();
