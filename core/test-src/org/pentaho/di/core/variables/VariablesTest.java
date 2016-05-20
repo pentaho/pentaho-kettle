@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,18 +22,22 @@
 
 package org.pentaho.di.core.variables;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.doCallRealMethod;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
-import java.util.Map;
-
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.*;
 
 /**
  * Variables tests.
@@ -43,9 +47,11 @@ import org.mockito.stubbing.Answer;
  */
 public class VariablesTest {
 
+  private Variables variables = new Variables();
+
   /**
-   * Test for PDI-12893 issue. 
-   * Checks if an ConcurrentModificationException while iterating over the System properties is occurred.  
+   * Test for PDI-12893 issue.  Checks if an ConcurrentModificationException while iterating over the System properties
+   * is occurred.
    */
   @Test
   public void testinItializeVariablesFrom() {
@@ -65,9 +71,9 @@ public class VariablesTest {
           modifySystemproperties();
         }
 
-        if ( invocation.getArguments()[1] != null ) {
-          propertiesMock.put( (String) invocation.getArguments()[0], System.getProperties().getProperty(
-              (String) invocation.getArguments()[1] ) );
+        if ( invocation.getArguments()[ 1 ] != null ) {
+          propertiesMock.put( (String) invocation.getArguments()[ 0 ], System.getProperties().getProperty(
+            (String) invocation.getArguments()[ 1 ] ) );
         }
         return propertiesMock;
       }
@@ -87,6 +93,41 @@ public class VariablesTest {
       }
     } );
     thread.start();
+  }
+
+  /**
+   * Spawns 20 threads that modify variables to test concurrent modification error fix.
+   *
+   * @throws Exception
+   */
+  @Test
+  public void testConcurrentModification() throws Exception {
+
+    int threads = 20;
+    List<Callable<Boolean>> callables = new ArrayList<Callable<Boolean>>();
+    for ( int i = 0; i < threads; i++ ) {
+      callables.add( newCallable() );
+    }
+
+    // Assert threads ran successfully.
+    for ( Future<Boolean> result : Executors.newFixedThreadPool( 5 ).invokeAll( callables ) ) {
+      assertTrue( result.get() );
+    }
+  }
+
+  // Note:  Not using lambda so this can be ported to older version compatible with 1.7
+  private Callable newCallable() {
+    return new Callable<Boolean>() {
+      @Override
+      public Boolean call() throws Exception {
+        for ( int i = 0; i < 300; i++ ) {
+          String key = "key" + i;
+          variables.setVariable( key, "value" );
+          assertEquals( variables.environmentSubstitute( "${" + key + "}" ), "value" );
+        }
+        return true;
+      }
+    };
   }
 
 }
