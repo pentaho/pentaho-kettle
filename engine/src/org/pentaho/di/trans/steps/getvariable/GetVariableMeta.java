@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -31,6 +31,8 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.injection.Injection;
+import org.pentaho.di.core.injection.InjectionSupported;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
@@ -53,22 +55,33 @@ import org.w3c.dom.Node;
 /*
  * Created on 05-aug-2003
  */
+@InjectionSupported( localizationPrefix = "GetVariable.Injection.", groups = { "FIELDS" } )
 public class GetVariableMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = GetVariableMeta.class; // for i18n purposes, needed by Translator2!!
 
+  @Injection( name = "FIELDNAME", group = "FIELDS" )
   private String[] fieldName;
+  @Injection( name = "VARIABLE", group = "FIELDS" )
   private String[] variableString;
 
+  @Injection( name = "FIELDTYPE", group = "FIELDS" )
   private int[] fieldType;
 
+  @Injection( name = "FIELDFORMAT", group = "FIELDS" )
   private String[] fieldFormat;
+  @Injection( name = "FIELDLENGTH", group = "FIELDS" )
   private int[] fieldLength;
+  @Injection( name = "FIELDPRECISION", group = "FIELDS" )
   private int[] fieldPrecision;
 
+  @Injection( name = "CURRENCY", group = "FIELDS" )
   private String[] currency;
+  @Injection( name = "DECIMAL", group = "FIELDS" )
   private String[] decimal;
+  @Injection( name = "GROUP", group = "FIELDS" )
   private String[] group;
 
+  @Injection( name = "TRIMTYPE", group = "FIELDS" )
   private int[] trimType;
 
   public GetVariableMeta() {
