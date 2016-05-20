@@ -34,17 +34,12 @@ public class ScriptValuesScript {
   private String sScriptName;
   private String sScript;
 
-  // private Date dModDate;
-  // private Date dFirstDate;
-
   public ScriptValuesScript( int iScriptType, String sScriptName, String sScript ) {
     super();
     this.iScriptType = iScriptType;
     this.sScriptName = sScriptName;
     this.sScript = sScript;
     bScriptActive = true;
-    // dModDate = new Date();
-    // dFirstDate = new Date();
   }
 
   public int getScriptType() {
@@ -99,8 +94,8 @@ public class ScriptValuesScript {
     return bScriptActive;
   }
 
+  @Override
   public String toString() {
-    return String.format( "ScriptValuesScript: (%d, %s, %s)", iScriptType, sScriptName, sScript );
+    return String.format( "ScriptValuesScript: (%d, %s, %s, %b)", getScriptType(), getScriptName(), getScript(), isActive() );
   }
-
 }
