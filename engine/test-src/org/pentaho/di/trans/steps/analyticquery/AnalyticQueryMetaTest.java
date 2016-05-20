@@ -63,7 +63,6 @@ public class AnalyticQueryMetaTest {
 
     LoadSaveTester loadSaveTester =
       new LoadSaveTester( AnalyticQueryMeta.class, attributes, getterMap, setterMap, fieldValidators, typeValidators );
-    loadSaveTester.testXmlRoundTrip();
-    loadSaveTester.testRepoRoundTrip();
+    loadSaveTester.testSerialization();
   }
 }

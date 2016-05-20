@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -57,7 +57,6 @@ public class BlockingStepMetaTest {
     setterMap.put( "compress", "setCompress" );
 
     LoadSaveTester loadSaveTester = new LoadSaveTester( BlockingStepMeta.class, attributes, getterMap, setterMap );
-    loadSaveTester.testRepoRoundTrip();
-    loadSaveTester.testXmlRoundTrip();
+    loadSaveTester.testSerialization();
   }
 }
