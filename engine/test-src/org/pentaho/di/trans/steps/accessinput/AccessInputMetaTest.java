@@ -100,8 +100,7 @@ public class AccessInputMetaTest {
 
     LoadSaveTester loadSaveTester =
       new LoadSaveTester( AccessInputMeta.class, attributes, getterMap, setterMap, fieldValidators, typeValidators );
-    loadSaveTester.testXmlRoundTrip();
-    loadSaveTester.testRepoRoundTrip();
+    loadSaveTester.testSerialization();
   }
 
   public class FileRequiredLoadSaveValidator implements FieldLoadSaveValidator<String> {

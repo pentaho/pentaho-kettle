@@ -19,9 +19,8 @@
  * limitations under the License.
  *
  ******************************************************************************/
-package org.pentaho.di.trans.steps.checksum;
+package org.pentaho.di.trans.steps.accessoutput;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -32,62 +31,33 @@ import org.junit.Test;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.plugins.PluginRegistry;
-import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
-import org.pentaho.di.trans.steps.loadsave.initializer.InitializerInterface;
-import org.pentaho.di.trans.steps.loadsave.validator.ArrayLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
-import org.pentaho.di.trans.steps.loadsave.validator.IntLoadSaveValidator;
-import org.pentaho.di.trans.steps.loadsave.validator.StringLoadSaveValidator;
 
-
-public class CheckSumMetaTest implements InitializerInterface<StepMetaInterface> {
+public class AccessOutputMetaTest {
   LoadSaveTester loadSaveTester;
-  Class<CheckSumMeta> testMetaClass = CheckSumMeta.class;
+  Class<AccessOutputMeta> testMetaClass = AccessOutputMeta.class;
 
   @Before
   public void setUpLoadSave() throws Exception {
     KettleEnvironment.init();
     PluginRegistry.init( true );
     List<String> attributes =
-        Arrays.asList( "fieldName", "resultFieldName", "checkSumType", "compatibilityMode", "resultType" );
+        Arrays.asList( "filename", "fileCreated", "tablename", "tableCreated", "tableTruncated", "commitSize", "addToResultFiles", "DoNotOpenNewFileInit" );
 
-    Map<String, String> getterMap = new HashMap<String, String>() {
-      {
-        put( "checkSumType", "getTypeByDesc" );
-      }
-    };
-    Map<String, String> setterMap = new HashMap<String, String>() {
-      {
-        put( "checkSumType", "setCheckSumType" );
-      }
-    };
-    FieldLoadSaveValidator<String[]> stringArrayLoadSaveValidator =
-        new ArrayLoadSaveValidator<String>( new StringLoadSaveValidator(), 5 );
+    Map<String, String> getterMap = new HashMap<String, String>();
+    Map<String, String> setterMap = new HashMap<String, String>();
 
     Map<String, FieldLoadSaveValidator<?>> attrValidatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();
-    attrValidatorMap.put( "fieldName", stringArrayLoadSaveValidator );
-    attrValidatorMap.put( "checkSumType", new IntLoadSaveValidator( CheckSumMeta.checksumtypeCodes.length ) );
-    attrValidatorMap.put( "resultType", new IntLoadSaveValidator( CheckSumMeta.resultTypeCode.length ) );
 
     Map<String, FieldLoadSaveValidator<?>> typeValidatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();
 
     loadSaveTester =
-        new LoadSaveTester( testMetaClass, attributes, new ArrayList<String>(), new ArrayList<String>(),
-            getterMap, setterMap, attrValidatorMap, typeValidatorMap, this );
-  }
-
-  // Call the allocate method on the LoadSaveTester meta class
-  @Override
-  public void modify( StepMetaInterface someMeta ) {
-    if ( someMeta instanceof CheckSumMeta ) {
-      ( (CheckSumMeta) someMeta ).allocate( 5 );
-    }
+        new LoadSaveTester( testMetaClass, attributes, getterMap, setterMap, attrValidatorMap, typeValidatorMap );
   }
 
   @Test
   public void testSerialization() throws KettleException {
     loadSaveTester.testSerialization();
   }
-  // Note - cloneTest removed because the LoadSaveTester includes a clone test.
 }

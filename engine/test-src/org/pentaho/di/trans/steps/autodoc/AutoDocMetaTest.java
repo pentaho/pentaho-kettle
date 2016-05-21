@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -63,12 +63,7 @@ public class AutoDocMetaTest {
   }
 
   @Test
-  public void testLoadSaveXML() throws KettleException {
-    loadSaveTester.testXmlRoundTrip();
-  }
-
-  @Test
-  public void testLoadSaveRepo() throws KettleException {
-    loadSaveTester.testRepoRoundTrip();
+  public void testSerialization() throws KettleException {
+    loadSaveTester.testSerialization();
   }
 }

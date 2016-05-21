@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -26,14 +26,11 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
-import java.util.UUID;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
 import org.pentaho.di.trans.steps.loadsave.validator.ArrayLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
@@ -130,50 +127,6 @@ public class TextFileOutputMetaTest {
         new LoadSaveTester( TextFileOutputMeta.class, attributes, getterMap, setterMap,
             fieldLoadSaveValidatorAttributeMap, new HashMap<String, FieldLoadSaveValidator<?>>() );
 
-    loadSaveTester.testRepoRoundTrip();
-    loadSaveTester.testXmlRoundTrip();
-  }
-
-  public class TextFileFieldLoadSaveValidator implements FieldLoadSaveValidator<TextFileField> {
-    Random rand = new Random();
-
-    @Override
-    public TextFileField getTestObject() {
-      String name = UUID.randomUUID().toString();
-      int type =
-          ValueMetaFactory.getIdForValueMeta( ValueMetaFactory.getValueMetaNames()[rand.nextInt( ValueMetaFactory
-              .getValueMetaNames().length )] );
-      String format = UUID.randomUUID().toString();
-      int length = Math.abs( rand.nextInt() );
-      int precision = Math.abs( rand.nextInt() );
-      String currencySymbol = UUID.randomUUID().toString();
-      String decimalSymbol = UUID.randomUUID().toString();
-      String groupSymbol = UUID.randomUUID().toString();
-      String nullString = UUID.randomUUID().toString();
-
-      return new TextFileField( name, type, format, length, precision, currencySymbol, decimalSymbol, groupSymbol,
-          nullString );
-    }
-
-    @Override
-    public boolean validateTestObject( TextFileField testObject, Object actual ) {
-      if ( !( actual instanceof TextFileField ) || testObject.compare( actual ) != 0 ) {
-        return false;
-      }
-      TextFileField act = (TextFileField) actual;
-      if ( testObject.getName().equals( act.getName() )
-          && testObject.getType() == act.getType()
-          && testObject.getFormat().equals( act.getFormat() )
-          && testObject.getLength() == act.getLength()
-          && testObject.getPrecision() == act.getPrecision()
-          && testObject.getCurrencySymbol().equals( act.getCurrencySymbol() )
-          && testObject.getDecimalSymbol().equals( act.getDecimalSymbol() )
-          && testObject.getGroupingSymbol().equals( act.getGroupingSymbol() )
-          && testObject.getNullString().equals( act.getNullString() ) ) {
-        return true;
-      } else {
-        return false;
-      }
-    }
+    loadSaveTester.testSerialization();
   }
 }

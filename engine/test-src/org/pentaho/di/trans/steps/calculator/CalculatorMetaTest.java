@@ -19,17 +19,15 @@
  * limitations under the License.
  *
  ******************************************************************************/
-package org.pentaho.di.trans.steps.blockuntilstepsfinish;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+package org.pentaho.di.trans.steps.calculator;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
+import java.util.UUID;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -41,28 +39,34 @@ import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
 import org.pentaho.di.trans.steps.loadsave.initializer.InitializerInterface;
 import org.pentaho.di.trans.steps.loadsave.validator.ArrayLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
-import org.pentaho.di.trans.steps.loadsave.validator.StringLoadSaveValidator;
 
-public class BlockUntilStepsFinishMetaTest implements InitializerInterface<StepMetaInterface> {
+public class CalculatorMetaTest implements InitializerInterface<StepMetaInterface> {
   LoadSaveTester loadSaveTester;
-  Class<BlockUntilStepsFinishMeta> testMetaClass = BlockUntilStepsFinishMeta.class;
+  Class<CalculatorMeta> testMetaClass = CalculatorMeta.class;
 
   @Before
   public void setUpLoadSave() throws Exception {
     KettleEnvironment.init();
     PluginRegistry.init( true );
     List<String> attributes =
-        Arrays.asList( "stepName", "stepCopyNr" );
+        Arrays.asList( "calculation" );
 
-    Map<String, String> getterMap = new HashMap<String, String>();
-    Map<String, String> setterMap = new HashMap<String, String>();
-    FieldLoadSaveValidator<String[]> stringArrayLoadSaveValidator =
-        new ArrayLoadSaveValidator<String>( new StringLoadSaveValidator(), 5 );
+    Map<String, String> getterMap = new HashMap<String, String>() {
+      {
+        put( "calculation", "getCalculation" );
+      }
+    };
+    Map<String, String> setterMap = new HashMap<String, String>() {
+      {
+        put( "calculation", "setCalculation" );
+      }
+    };
+    FieldLoadSaveValidator<CalculatorMetaFunction[]> calculationMetaFunctionArrayLoadSaveValidator =
+        new ArrayLoadSaveValidator<CalculatorMetaFunction>( new CalculatorMetaFunctionLoadSaveValidator(), 5 );
 
 
     Map<String, FieldLoadSaveValidator<?>> attrValidatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();
-    attrValidatorMap.put( "stepName", stringArrayLoadSaveValidator );
-    attrValidatorMap.put( "stepCopyNr", stringArrayLoadSaveValidator );
+    attrValidatorMap.put( "calculation", calculationMetaFunctionArrayLoadSaveValidator );
 
     Map<String, FieldLoadSaveValidator<?>> typeValidatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();
 
@@ -74,8 +78,8 @@ public class BlockUntilStepsFinishMetaTest implements InitializerInterface<StepM
   // Call the allocate method on the LoadSaveTester meta class
   @Override
   public void modify( StepMetaInterface someMeta ) {
-    if ( someMeta instanceof BlockUntilStepsFinishMeta ) {
-      ( (BlockUntilStepsFinishMeta) someMeta ).allocate( 5 );
+    if ( someMeta instanceof CalculatorMeta ) {
+      ( (CalculatorMeta) someMeta ).allocate( 5 );
     }
   }
 
@@ -84,17 +88,36 @@ public class BlockUntilStepsFinishMetaTest implements InitializerInterface<StepM
     loadSaveTester.testSerialization();
   }
 
-  @Test
-  public void cloneTest() throws Exception {
-    BlockUntilStepsFinishMeta meta = new BlockUntilStepsFinishMeta();
-    meta.allocate( 2 );
-    meta.setStepName( new String[] { "step1", "step2" } );
-    meta.setStepCopyNr( new String[] { "copy1", "copy2" } );
-    BlockUntilStepsFinishMeta aClone = (BlockUntilStepsFinishMeta) meta.clone();
-    assertFalse( aClone == meta );
-    assertTrue( Arrays.equals( meta.getStepName(), aClone.getStepName() ) );
-    assertTrue( Arrays.equals( meta.getStepCopyNr(), aClone.getStepCopyNr() ) );
-    assertEquals( meta.getXML(), aClone.getXML() );
+  public class CalculatorMetaFunctionLoadSaveValidator implements FieldLoadSaveValidator<CalculatorMetaFunction> {
+    final Random rand = new Random();
+    @Override
+    public CalculatorMetaFunction getTestObject() {
+      CalculatorMetaFunction rtn = new CalculatorMetaFunction();
+      rtn.setCalcType( rand.nextInt( CalculatorMetaFunction.calc_desc.length ) );
+      rtn.setConversionMask( UUID.randomUUID().toString() );
+      rtn.setCurrencySymbol( UUID.randomUUID().toString() );
+      rtn.setDecimalSymbol( UUID.randomUUID().toString() );
+      rtn.setFieldA( UUID.randomUUID().toString() );
+      rtn.setFieldB( UUID.randomUUID().toString() );
+      rtn.setFieldC( UUID.randomUUID().toString() );
+      rtn.setFieldName( UUID.randomUUID().toString() );
+      rtn.setGroupingSymbol( UUID.randomUUID().toString() );
+      rtn.setValueLength( rand.nextInt( 50 ) );
+      rtn.setValuePrecision( rand.nextInt( 9 ) );
+      rtn.setValueType( rand.nextInt( 7 ) + 1 );
+      rtn.setRemovedFromResult( rand.nextBoolean() );
+      return rtn;
+    }
+
+    @Override
+    public boolean validateTestObject( CalculatorMetaFunction testObject, Object actual ) {
+      if ( !( actual instanceof  CalculatorMetaFunction ) ) {
+        return false;
+      }
+      CalculatorMetaFunction actualInput = (CalculatorMetaFunction) actual;
+      return ( testObject.getXML().equals( actualInput.getXML() ) );
+    }
   }
+
 
 }

@@ -55,7 +55,6 @@ public class AddSequenceMetaTest {
 
     LoadSaveTester loadSaveTester =
       new LoadSaveTester( AddSequenceMeta.class, attributes, getterMap, setterMap, fieldValidators, typeValidators );
-    loadSaveTester.testXmlRoundTrip();
-    loadSaveTester.testRepoRoundTrip();
+    loadSaveTester.testSerialization();
   }
 }

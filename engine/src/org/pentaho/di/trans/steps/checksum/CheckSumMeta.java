@@ -59,24 +59,12 @@ import org.w3c.dom.Node;
 public class CheckSumMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = CheckSumMeta.class; // for i18n purposes, needed by Translator2!!
 
-  /** by which fields to display? */
-  private String[] fieldName;
-
-  private String resultfieldName;
-
   public static final String TYPE_CRC32 = "CRC32";
   public static final String TYPE_ADLER32 = "ADLER32";
   public static final String TYPE_MD5 = "MD5";
   public static final String TYPE_SHA1 = "SHA-1";
 
   public static String[] checksumtypeCodes = { TYPE_CRC32, TYPE_ADLER32, TYPE_MD5, TYPE_SHA1 };
-
-  private String checksumtype;
-
-  private boolean compatibilityMode;
-
-  /** result type */
-  private int resultType;
 
   /**
    * The result type description
@@ -93,6 +81,18 @@ public class CheckSumMeta extends BaseStepMeta implements StepMetaInterface {
   public static final int result_TYPE_STRING = 0;
   public static final int result_TYPE_HEXADECIMAL = 1;
   public static final int result_TYPE_BINARY = 2;
+
+  /** by which fields to display? */
+  private String[] fieldName;
+
+  private String resultfieldName;
+
+  private String checksumtype;
+
+  private boolean compatibilityMode;
+
+  /** result type */
+  private int resultType;
 
   public CheckSumMeta() {
     super(); // allocate BaseStepMeta
@@ -180,10 +180,12 @@ public class CheckSumMeta extends BaseStepMeta implements StepMetaInterface {
     this.resultfieldName = resultfieldName;
   }
 
+  @Override
   public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     readData( stepnode );
   }
 
+  @Override
   public Object clone() {
     CheckSumMeta retval = (CheckSumMeta) super.clone();
 
@@ -249,6 +251,7 @@ public class CheckSumMeta extends BaseStepMeta implements StepMetaInterface {
     return resultTypeCode[i];
   }
 
+  @Override
   public String getXML() {
     StringBuilder retval = new StringBuilder( 200 );
     retval.append( "      " ).append( XMLHandler.addTagValue( "checksumtype", checksumtype ) );
@@ -267,6 +270,7 @@ public class CheckSumMeta extends BaseStepMeta implements StepMetaInterface {
     return retval.toString();
   }
 
+  @Override
   public void setDefault() {
     resultfieldName = null;
     checksumtype = checksumtypeCodes[0];
@@ -280,6 +284,7 @@ public class CheckSumMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
+  @Override
   public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
       checksumtype = rep.getStepAttributeString( id_step, "checksumtype" );
@@ -300,6 +305,7 @@ public class CheckSumMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
+  @Override
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       rep.saveStepAttribute( id_transformation, id_step, "checksumtype", checksumtype );
@@ -316,6 +322,7 @@ public class CheckSumMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
+  @Override
   public void getFields( RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info, StepMeta nextStep,
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     // Output field (String)
@@ -338,6 +345,7 @@ public class CheckSumMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
+  @Override
   public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
     RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
@@ -410,15 +418,18 @@ public class CheckSumMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
+  @Override
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta tr,
     Trans trans ) {
     return new CheckSum( stepMeta, stepDataInterface, cnr, tr, trans );
   }
 
+  @Override
   public StepDataInterface getStepData() {
     return new CheckSumData();
   }
 
+  @Override
   public boolean supportsErrorHandling() {
     return true;
   }
