@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -57,6 +57,8 @@ class BeanLevelInfo {
   public InjectionTypeConverter converter;
   /** False if source empty value shoudn't affect on target field. */
   public boolean convertEmpty;
+  /** Name prefix on the path. */
+  public String prefix;
 
   public void init( BeanInjectionInfo info ) {
     introspect( info, leafClass );
@@ -100,7 +102,7 @@ class BeanLevelInfo {
       if ( f.getType().isArray() ) {
         leaf.dim = DIMENSION.ARRAY;
         leaf.leafClass = f.getType().getComponentType();
-      } else if ( List.class.isAssignableFrom( f.getType() ) ) {
+      } else if ( List.class.equals( f.getType() ) ) {
         leaf.dim = DIMENSION.LIST;
         Type fieldType = f.getGenericType();
         Type listType = ( (ParameterizedType) fieldType ).getActualTypeArguments()[0];
@@ -123,6 +125,7 @@ class BeanLevelInfo {
         info.addInjectionProperty( annotationInjection, leaf );
       } else if ( annotationInjectionDeep != null ) {
         // introspect deeper
+        leaf.prefix = annotationInjectionDeep.prefix();
         leaf.init( info );
       }
     }
