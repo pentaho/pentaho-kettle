@@ -199,7 +199,7 @@
     <dependency org="org.codehaus.enunciate" name="enunciate-core-annotations" rev="1.27"   transitive="false" />
 
     <dependency org="org.codehaus.jackson" name="jackson-xc" rev="1.9.3" transitive="false"/>
-    <dependency org="com.sun.jersey.contribs" name="jersey-multipart" rev="1.19.1" transitive="false"/>
+    <dependency org="com.sun.jersey.contribs" name="jersey-multipart" rev="1.16" transitive="false"/>
 
     <!-- Salesforce plugin dependency -->
     <dependency org="pentaho"         name="salesforce-partner" rev="24.0"/>
