@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -103,8 +103,7 @@ public class GetFileNamesMetaTest {
       new LoadSaveTester( GetFileNamesMeta.class, attributes, getterMap, setterMap,
           fieldLoadSaveValidatorAttributeMap, new HashMap<String, FieldLoadSaveValidator<?>>() );
 
-    loadSaveTester.testRepoRoundTrip();
-    loadSaveTester.testXmlRoundTrip();
+    loadSaveTester.testSerialization();
   }
 
   public class FileTypeFilterLoadSaveValidator implements FieldLoadSaveValidator<FileInputList.FileTypeFilter> {
@@ -137,27 +136,6 @@ public class GetFileNamesMetaTest {
     }
   }
 
-  @Test
-  public void cloneTest() throws Exception {
-    GetFileNamesMeta meta = new GetFileNamesMeta();
-    meta.allocate( 2 );
-    meta.setFileName( new String[] { "aa", "bb" } );
-    meta.setFileMask( new String[] { "cc", "dd" } );
-    meta.setExcludeFileMask( new String[] { "ee", "ff" } );
-    meta.setFileRequired( new String[] { "gg", "hh" } );
-    meta.setIncludeSubFolders( new String[] { "ii", "jj" } );
-    meta.setDynamicExcludeWildcardField( "dynamicExcludeWildcardField" );
-    meta.setDynamicFilenameField( "dynamicFilenameField" );
-    meta.setDynamicWildcardField( "dynamicWildcardField" );
-    meta.setRowNumberField( "rowNumberField" );
-    meta.setFilterFileType( FileInputList.FileTypeFilter.ONLY_FILES );
-    GetFileNamesMeta aClone = (GetFileNamesMeta) meta.clone();
-    assertFalse( aClone == meta );
-    assertTrue( Arrays.equals( meta.getFileName(), aClone.getFileName() ) );
-    assertTrue( Arrays.equals( meta.getFileMask(), aClone.getFileMask() ) );
-    assertTrue( Arrays.equals( meta.getExcludeFileMask(), aClone.getExcludeFileMask() ) );
-    assertTrue( Arrays.equals( meta.getFileRequired(), aClone.getFileRequired() ) );
-    assertTrue( Arrays.equals( meta.getIncludeSubFolders(), aClone.getIncludeSubFolders() ) );
-    assertEquals( meta.getXML(), aClone.getXML() );
-  }
+  // cloneTest() removed as it's now covered by the load/save tester.
+
 }

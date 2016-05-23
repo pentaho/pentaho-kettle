@@ -21,16 +21,14 @@
  ******************************************************************************/
 package org.pentaho.di.trans.steps.fuzzymatch;
 
-import org.junit.Before;
-import org.junit.Test;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-import static org.junit.Assert.*;
-
+import org.junit.Before;
+import org.junit.Test;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
 import org.pentaho.di.trans.steps.loadsave.validator.ArrayLoadSaveValidator;
@@ -95,44 +93,11 @@ public class FuzzyMatchMetaTest {
   }
 
   @Test
-  public void testLoadSaveXML() throws KettleException {
-    loadSaveTester.testXmlRoundTrip();
+  public void testSerialization() throws KettleException {
+    loadSaveTester.testSerialization();
   }
 
-  @Test
-  public void testLoadSaveRepo() throws KettleException {
-    loadSaveTester.testRepoRoundTrip();
-  }
-
-  @Test
-  public void cloneTest() throws Exception {
-    FuzzyMatchMeta meta = new FuzzyMatchMeta();
-    meta.allocate( 2 );
-    meta.setValue( new String[] { "aa", "bb" } );
-    meta.setValueName( new String[] { "cc", "dd" } );
-    meta.setAlgorithmType( 1 );
-    meta.setCaseSensitive( true );
-    meta.setLookupField( "lookupfield" );
-    meta.setMainStreamField( "mainstreamfield" );
-    meta.setMaximalValue( "maximalValue" );
-    meta.setMinimalValue( "minimalValue" );
-    meta.setOutputMatchField( "outputmatchfield" );
-    meta.setOutputValueField( "outputvaluefield" );
-    meta.setSeparator( ";" );
-    FuzzyMatchMeta aClone = (FuzzyMatchMeta) meta.clone();
-    assertFalse( aClone == meta );
-    assertTrue( Arrays.equals( meta.getValue(), aClone.getValue() ) );
-    assertTrue( Arrays.equals( meta.getValueName(), aClone.getValueName() ) );
-    assertEquals( meta.getAlgorithmType(), aClone.getAlgorithmType() );
-    assertEquals( meta.isCaseSensitive(), aClone.isCaseSensitive() );
-    assertEquals( meta.getLookupField(), aClone.getLookupField() );
-    assertEquals( meta.getMainStreamField(), aClone.getMainStreamField() );
-    assertEquals( meta.getMaximalValue(), aClone.getMaximalValue() );
-    assertEquals( meta.getMinimalValue(), aClone.getMinimalValue() );
-    assertEquals( meta.getOutputMatchField(), aClone.getOutputMatchField() );
-    assertEquals( meta.getOutputValueField(), aClone.getOutputValueField() );
-    assertEquals( meta.getXML(), aClone.getXML() );
-  }
+  // Clone test removed as it's covered by the load/save tester now.
 
   public class AlgorithmLoadSaveValidator implements FieldLoadSaveValidator<Integer> {
     final Random rand = new Random();

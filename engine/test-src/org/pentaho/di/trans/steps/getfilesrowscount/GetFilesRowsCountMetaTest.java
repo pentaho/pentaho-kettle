@@ -22,10 +22,6 @@
 
 package org.pentaho.di.trans.steps.getfilesrowscount;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -35,12 +31,14 @@ import java.util.Random;
 import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
+import org.pentaho.di.trans.steps.loadsave.initializer.InitializerInterface;
 import org.pentaho.di.trans.steps.loadsave.validator.ArrayLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.StringLoadSaveValidator;
 
-public class GetFilesRowsCountMetaTest {
+public class GetFilesRowsCountMetaTest implements InitializerInterface<StepMetaInterface> {
 
   LoadSaveTester loadSaveTester;
 
@@ -99,42 +97,23 @@ public class GetFilesRowsCountMetaTest {
     attrValidatorMap.put( "excludeFileMask", stringArrayLoadSaveValidator );
     Map<String, FieldLoadSaveValidator<?>> typeValidatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();
 
-    loadSaveTester = new LoadSaveTester( GetFilesRowsCountMetaMock.class, attributes, getterMap, setterMap, attrValidatorMap, typeValidatorMap );
+    loadSaveTester = new LoadSaveTester( GetFilesRowsCountMeta.class, attributes, getterMap, setterMap, attrValidatorMap, typeValidatorMap );
+  }
 
+  // Call the allocate method on the LoadSaveTester meta class
+  @Override
+  public void modify( StepMetaInterface someMeta ) {
+    if ( someMeta instanceof GetFilesRowsCountMeta ) {
+      ( (GetFilesRowsCountMeta) someMeta ).allocate( 5 );
+    }
   }
 
   @Test
   public void testLoadSaveXML() throws KettleException {
-    loadSaveTester.testXmlRoundTrip();
+    loadSaveTester.testSerialization();
   }
 
-  @Test
-  public void testLoadSaveRepo() throws KettleException {
-    loadSaveTester.testRepoRoundTrip();
-  }
-  @Test
-  public void testClone() throws Exception {
-    GetFilesRowsCountMeta meta = new GetFilesRowsCountMeta();
-    meta.allocate( 2 );
-    meta.setFileName( new String[] { "field1", "field2" } );
-    meta.setFileMask( new String[] { "mask1", "mask2" } );
-    meta.setFileRequired( new String[] { "Y", "Y" } );
-    meta.setIncludeSubFolders( new String[] { "N", "N" } );
-    meta.setExcludeFileMask( new String[] { "excludemask1", "excludemask2" } );
-
-    GetFilesRowsCountMeta cloned = (GetFilesRowsCountMeta) meta.clone();
-    assertFalse( cloned.getFileName() == meta.getFileName() );
-    assertTrue( Arrays.equals( cloned.getFileName(), meta.getFileName() ) );
-    assertFalse( cloned.getFileMask() == meta.getFileMask() );
-    assertTrue( Arrays.equals( cloned.getFileMask(), meta.getFileMask() ) );
-    assertFalse( cloned.getFileRequired() == meta.getFileRequired() );
-    assertTrue( Arrays.equals( cloned.getFileRequired(), meta.getFileRequired() ) );
-    assertFalse( cloned.getIncludeSubFolders() == meta.getIncludeSubFolders() );
-    assertTrue( Arrays.equals( cloned.getIncludeSubFolders(), meta.getIncludeSubFolders() ) );
-    assertFalse( cloned.getExludeFileMask() == meta.getExludeFileMask() );
-    assertTrue( Arrays.equals( cloned.getExludeFileMask(), meta.getExludeFileMask() ) );
-    assertEquals( meta.getXML(), cloned.getXML() );
-  }
+  // Note - cloneTest() removed as it's now covered by the load/save tester.
 
   public class YNLoadSaveValidator implements FieldLoadSaveValidator<String> {
     Random r = new Random();
