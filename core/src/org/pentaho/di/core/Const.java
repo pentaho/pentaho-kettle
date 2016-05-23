@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,6 +22,16 @@
  ******************************************************************************/
 
 package org.pentaho.di.core;
+
+import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.text.StrBuilder;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.util.EnvUtil;
+import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.laf.BasePropertyHandler;
+import org.pentaho.di.version.BuildVersion;
 
 import java.awt.Font;
 import java.awt.GraphicsEnvironment;
@@ -726,7 +736,7 @@ public class Const {
     "KETTLE_COMPATIBILITY_TEXT_FILE_OUTPUT_APPEND_NO_HEADER";
 
   /**
-   * You can use this variable to speed up hostname lookup. 
+   * You can use this variable to speed up hostname lookup.
    * Hostname lookup is performed by Kettle so that it is capable of logging the server on which a job or transformation is executed.
    */
   public static final String KETTLE_SYSTEM_HOSTNAME = "KETTLE_SYSTEM_HOSTNAME";
@@ -2246,6 +2256,30 @@ public class Const {
    *         is null.
    */
   public static String[] splitString( String stringToSplit, String delimiter, String enclosure ) {
+    return splitString( stringToSplit, delimiter, enclosure, false );
+  }
+
+  /**
+   * Split the given string using the given delimiter and enclosure strings.
+   *
+   * The delimiter and enclosures are not regular expressions (regexes); rather they are literal strings that will be
+   * quoted so as not to be treated like regexes.
+   *
+   * This method expects that the data contains an even number of enclosure strings in the input; otherwise the results
+   * are undefined
+   *
+   * @param stringToSplit
+   *          the String to split
+   * @param delimiter
+   *          the delimiter string
+   * @param enclosure
+   *          the enclosure string
+   * @param removeEnclosure
+   *          removes enclosure from split result
+   * @return an array of strings split on the delimiter (ignoring those in enclosures), or null if the string to split
+   *         is null.
+   */
+  public static String[] splitString( String stringToSplit, String delimiter, String enclosure, boolean removeEnclosure ) {
 
     ArrayList<String> splitList = null;
 
@@ -2311,7 +2345,13 @@ public class Const {
             addSplit = oddNumberOfEnclosures;
           }
           if ( addSplit ) {
-            splitList.add( concatSplit.toString() );
+            String splitResult = concatSplit.toString();
+            //remove enclosure from resulting split
+            if ( removeEnclosure ) {
+              splitResult = removeEnclosure( splitResult, enclosure );
+            }
+
+            splitList.add( splitResult );
             concatSplit = null;
             addSplit = false;
           }
@@ -2321,6 +2361,20 @@ public class Const {
 
     // Return list as array
     return splitList.toArray( new String[splitList.size()] );
+  }
+
+  private static String removeEnclosure( String stringToSplit, String enclosure ) {
+
+    int firstIndex = stringToSplit.indexOf( enclosure );
+    int lastIndex = stringToSplit.lastIndexOf( enclosure );
+    if ( firstIndex == lastIndex ) {
+      return stringToSplit;
+    }
+    StrBuilder strBuilder = new StrBuilder( stringToSplit );
+    strBuilder.replace( firstIndex, enclosure.length() + firstIndex, "" );
+    strBuilder.replace( lastIndex - enclosure.length(), lastIndex, "" );
+
+    return strBuilder.toString();
   }
 
   /**
