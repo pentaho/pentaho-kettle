@@ -22,12 +22,9 @@
 
 package org.pentaho.di.trans.steps.jsoninput;
 
-import java.io.BufferedInputStream;
-import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.BitSet;
 import java.util.Iterator;
-import java.util.List;
 
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -43,17 +40,10 @@ public class JsonInputData extends BaseFileInputStepData implements StepDataInte
   public Object[] previousRow;
   public RowMetaInterface inputRowMeta;
 
-  @Deprecated
-  // is this used?
-  public int nr_repeats;
+  public boolean hasFirstRow;
 
   public int nrInputFields;
 
-  @Deprecated
-  public int recordnr;
-
-  @Deprecated
-  public int nrrecords;
   /**
    * last row read
    */
@@ -62,31 +52,11 @@ public class JsonInputData extends BaseFileInputStepData implements StepDataInte
 
   public int filenr;
 
-  @Deprecated //used?
-  public FileInputStream fr;
-  @Deprecated //used?
-  public BufferedInputStream is;
-
-  @Deprecated //used?
-  public String itemElement;
-  @Deprecated //used?
-  public int itemCount;
-  @Deprecated //used?
-  public int itemPosition;
-
   /**
    * output row counter
    */
   public long rownr;
   public int indexSourceField;
-
-  @Deprecated
-  public JsonReader jsonReader;
-  @Deprecated
-  public List<NJSONArray> resultList;
-
-  @Deprecated
-  public String stringToParse;
 
   public Iterator<InputStream> inputs;
   public IJsonReader reader;
@@ -99,13 +69,9 @@ public class JsonInputData extends BaseFileInputStepData implements StepDataInte
     previousRow = null;
     filenr = 0;
 
-    fr = null;
-    is = null;
     indexSourceField = -1;
 
     nrInputFields = -1;
-    recordnr = 0;
-    nrrecords = 0;
 
     readrow = null;
     totalpreviousfields = 0;
