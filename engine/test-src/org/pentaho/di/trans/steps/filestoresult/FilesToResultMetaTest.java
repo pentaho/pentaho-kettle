@@ -56,7 +56,6 @@ public class FilesToResultMetaTest {
     LoadSaveTester loadSaveTester =
       new LoadSaveTester( FilesToResultMeta.class, attributes, getterMap, setterMap,
         fieldLoadSaveValidatorAttributeMap, new HashMap<String, FieldLoadSaveValidator<?>>() );
-    loadSaveTester.testRepoRoundTrip();
-    loadSaveTester.testXmlRoundTrip();
+    loadSaveTester.testSerialization();
   }
 }
