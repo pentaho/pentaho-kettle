@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -371,6 +371,12 @@ public class IfNullMeta extends BaseStepMeta implements StepMetaInterface {
     int nrfields = 0;
     int nrtypes = 0;
     allocate( nrtypes, nrfields );
+    /*
+     * Code will never execute. nrfields and nrtypes
+     * are both zero above. so for-next is skipped on both.
+     * 
+     * MB - 5/2016
+     * 
     for ( int i = 0; i < nrtypes; i++ ) {
       typeName[i] = "typename" + i;
       typereplaceValue[i] = "typevalue" + i;
@@ -383,6 +389,7 @@ public class IfNullMeta extends BaseStepMeta implements StepMetaInterface {
       replaceMask[i] = "mask" + i;
       setEmptyString[i] = false;
     }
+    */
   }
 
   public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {

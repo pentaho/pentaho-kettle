@@ -1,3 +1,14 @@
+<!--<div class="error-message" ng-if="model.hasError">-->
+  <!--<div class="error-message-icon">-->
+    <!--<img src="images/caution.svg" />-->
+  <!--</div>-->
+  <!--<div class="error-message-text">-->
+    <!--{{model.errorMessage}}-->
+  <!--</div>-->
+  <!--<div class="error-message-close" ng-click="model.hasError=false">-->
+    <!--<img src="images/close_notif.svg" />-->
+  <!--</div>-->
+<!--</div>-->
 <div class="main_div">
   <div class="title_text margin_bottom_30">Connection Details</div>
   <div class="middle_div margin_bottom_10">
@@ -14,7 +25,7 @@
       <textarea id="description" class="block" rows="4" cols="50" ng-model="model.description"></textarea>
     </div>
     <div class="text_left checkbox-control">
-      <input id="makeDefault" type="checkbox" ng-checked="model.isDefault" />
+      <input id="makeDefault" type="checkbox" ng-model="model.isDefault" />
       <label for="makeDefault"></label>
     </div>
     <div id="makeDefaultDiv" class="checkbox-label text_left">

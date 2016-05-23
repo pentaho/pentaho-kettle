@@ -23,7 +23,8 @@
 package org.pentaho.di.trans.steps.janino;
 
 import junit.framework.TestCase;
-import org.pentaho.di.core.row.ValueMeta;
+
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.trans.step.StepInjectionMetaEntry;
 import org.pentaho.di.trans.step.StepInjectionUtil;
 
@@ -94,7 +95,7 @@ public class JaninoMetaInjectionTest extends TestCase {
     // CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < NR_FIELDS; i++ ) {
       meta.getFormula()[i] = new JaninoMetaFunction( NEW_FIELDNAME + i, JAVA_EXPRESSION + i,
-        ValueMeta.getType( VALUE_TYPE ), LENGTH + i, PRECISION + i, REPLACE_VALUE + i );
+        ValueMetaFactory.getIdForValueMeta( VALUE_TYPE ), LENGTH + i, PRECISION + i, REPLACE_VALUE + i );
     }
 
     return meta;

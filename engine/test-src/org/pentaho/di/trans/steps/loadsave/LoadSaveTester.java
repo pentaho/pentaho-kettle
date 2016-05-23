@@ -38,6 +38,7 @@ import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.loadsave.getter.Getter;
+import org.pentaho.di.trans.steps.loadsave.initializer.InitializerInterface;
 import org.pentaho.di.trans.steps.loadsave.setter.Setter;
 import org.pentaho.di.trans.steps.loadsave.validator.DatabaseMetaLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.DefaultFieldLoadSaveValidatorFactory;
@@ -53,16 +54,19 @@ public class LoadSaveTester {
   private final JavaBeanManipulator<? extends StepMetaInterface> manipulator;
   private final FieldLoadSaveValidatorFactory fieldLoadSaveValidatorFactory;
   private final List<DatabaseMeta> databases;
+  private final InitializerInterface<StepMetaInterface> metaInitializerInterface;
 
   public LoadSaveTester( Class<? extends StepMetaInterface> clazz, List<String> commonAttributes,
     List<String> xmlAttributes, List<String> repoAttributes, Map<String, String> getterMap,
     Map<String, String> setterMap, Map<String, FieldLoadSaveValidator<?>> fieldLoadSaveValidatorAttributeMap,
-    Map<String, FieldLoadSaveValidator<?>> fieldLoadSaveValidatorTypeMap ) {
+    Map<String, FieldLoadSaveValidator<?>> fieldLoadSaveValidatorTypeMap,
+    InitializerInterface<StepMetaInterface> metaInitializerIFace ) {
     this.clazz = clazz;
     this.xmlAttributes = new ArrayList<String>( commonAttributes );
     this.xmlAttributes.addAll( xmlAttributes );
     this.repoAttributes = new ArrayList<String>( commonAttributes );
     this.repoAttributes.addAll( commonAttributes );
+    this.metaInitializerInterface = metaInitializerIFace;
     List<String> combinedAttributes = new ArrayList<String>( commonAttributes );
     combinedAttributes.addAll( repoAttributes );
     combinedAttributes.addAll( xmlAttributes );
@@ -75,6 +79,14 @@ public class LoadSaveTester {
     fieldLoadSaveValidatorFactory =
       new DefaultFieldLoadSaveValidatorFactory( fieldLoadSaveValidatorMethodMap, fieldLoadSaveValidatorTypeMap );
     databases = new ArrayList<DatabaseMeta>();
+  }
+
+  public LoadSaveTester( Class<? extends StepMetaInterface> clazz, List<String> commonAttributes,
+      List<String> xmlAttributes, List<String> repoAttributes, Map<String, String> getterMap,
+      Map<String, String> setterMap, Map<String, FieldLoadSaveValidator<?>> fieldLoadSaveValidatorAttributeMap,
+      Map<String, FieldLoadSaveValidator<?>> fieldLoadSaveValidatorTypeMap ) {
+    this( clazz, commonAttributes, xmlAttributes, repoAttributes, getterMap, setterMap,
+      fieldLoadSaveValidatorAttributeMap, fieldLoadSaveValidatorTypeMap, null );
   }
 
   public LoadSaveTester( Class<? extends StepMetaInterface> clazz, List<String> commonAttributes,
@@ -183,8 +195,39 @@ public class LoadSaveTester {
     }
   }
 
+  public void testSerialization() throws KettleException {
+    testXmlRoundTrip();
+    testRepoRoundTrip();
+    testClone();
+    testMixedXmlRepoRoundTrip();
+  }
+
+  protected void testClone() throws KettleException {
+    StepMetaInterface metaToSave = createMeta();
+    if ( metaInitializerInterface != null ) {
+      metaInitializerInterface.modify( metaToSave );
+    }
+    Map<String, FieldLoadSaveValidator<?>> validatorMap =
+      createValidatorMapAndInvokeSetters( xmlAttributes, metaToSave );
+
+    StepMetaInterface metaLoaded = (StepMetaInterface) metaToSave.clone();
+    validateLoadedMeta( xmlAttributes, validatorMap, metaToSave, metaLoaded );
+    validateLoadedMeta( repoAttributes, validatorMap, metaToSave, metaLoaded );
+  }
+
+  /**
+   * @deprecated the {@link #testSerialization()} method should be used instead,
+   *             as additional tests may be added in the future to cover other
+   *             topics related to step serialization
+   * @throws KettleException
+   */
+  @Deprecated
+  // TODO Change method visibility to protected
   public void testXmlRoundTrip() throws KettleException {
     StepMetaInterface metaToSave = createMeta();
+    if ( metaInitializerInterface != null ) {
+      metaInitializerInterface.modify( metaToSave );
+    }
     Map<String, FieldLoadSaveValidator<?>> validatorMap =
       createValidatorMapAndInvokeSetters( xmlAttributes, metaToSave );
     StepMetaInterface metaLoaded = createMeta();
@@ -194,13 +237,23 @@ public class LoadSaveTester {
       databases, (IMetaStore) null );
     validateLoadedMeta( xmlAttributes, validatorMap, metaToSave, metaLoaded );
 
-    // Test clone() method
-    metaLoaded = (StepMetaInterface) metaToSave.clone();
-    validateLoadedMeta( xmlAttributes, validatorMap, metaToSave, metaLoaded );
+    // TODO Remove after method visibility changed, it should be called in testSerialization
+    testClone();
   }
 
+  /**
+   * @deprecated the {@link #testSerialization()} method should be used instead,
+   *             as additional tests may be added in the future to cover other
+   *             topics related to step serialization
+   * @throws KettleException
+   */
+  @Deprecated
+  // TODO Change method visibility to protected
   public void testRepoRoundTrip() throws KettleException {
     StepMetaInterface metaToSave = createMeta();
+    if ( metaInitializerInterface != null ) {
+      metaInitializerInterface.modify( metaToSave );
+    }
     Map<String, FieldLoadSaveValidator<?>> validatorMap =
       createValidatorMapAndInvokeSetters( repoAttributes, metaToSave );
     StepMetaInterface metaLoaded = createMeta();
@@ -210,11 +263,28 @@ public class LoadSaveTester {
     validateLoadedMeta( repoAttributes, validatorMap, metaToSave, metaLoaded );
   }
 
-  public List<DatabaseMeta> getDatabases() {
-    return databases;
+  protected void testMixedXmlRepoRoundTrip() throws KettleException {
+    StepMetaInterface metaToSave = createMeta();
+    if ( metaInitializerInterface != null ) {
+      metaInitializerInterface.modify( metaToSave );
+    }
+    Map<String, FieldLoadSaveValidator<?>> validatorMap =
+      createValidatorMapAndInvokeSetters( repoAttributes, metaToSave );
+    StepMetaInterface metaRepoLoaded = createMeta();
+    Repository rep = new MemoryRepository();
+    metaToSave.saveRep( rep, null, null, null );
+    metaRepoLoaded.readRep( rep, (IMetaStore) null, null, databases );
+
+    String xml = "<step>" + metaRepoLoaded.getXML() + "</step>";
+    InputStream is = new ByteArrayInputStream( xml.getBytes() );
+    StepMetaInterface metaXMLLoaded = createMeta();
+    metaXMLLoaded.loadXML( XMLHandler.getSubNode( XMLHandler.loadXMLFile( is, null, false, false ), "step" ),
+      databases, (IMetaStore) null );
+
+    validateLoadedMeta( xmlAttributes, validatorMap, metaToSave, metaXMLLoaded );
   }
 
-  public void addDatabase( DatabaseMeta db ) {
+  protected void addDatabase( DatabaseMeta db ) {
     if ( !databases.contains( db ) ) {
       databases.add( db );
     }

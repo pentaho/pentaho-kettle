@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -59,7 +59,7 @@ public class JobEntryFilesExist extends JobEntryBase implements Cloneable, JobEn
 
   private String filename; // TODO: looks like it is not used: consider deleting
 
-  public String[] arguments;
+  private String[] arguments;
 
   public JobEntryFilesExist( String n ) {
     super( n, "" );
@@ -170,6 +170,14 @@ public class JobEntryFilesExist extends JobEntryBase implements Cloneable, JobEn
 
   public String getFilename() {
     return filename;
+  }
+
+  public String[] getArguments() {
+    return arguments;
+  }
+
+  public void setArguments( String[] arguments ) {
+    this.arguments = arguments;
   }
 
   public Result execute( Result previousResult, int nr ) {

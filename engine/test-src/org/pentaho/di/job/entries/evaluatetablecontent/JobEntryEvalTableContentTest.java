@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -181,9 +181,9 @@ public class JobEntryEvalTableContentTest {
 
   @Test
   public void testNrErrorsFailureNewBehavior() throws Exception {
-    entry.limit = "1";
-    entry.successCondition = JobEntryEvalTableContent.SUCCESS_CONDITION_ROWS_COUNT_EQUAL;
-    entry.tablename = "table";
+    entry.setLimit( "1" );
+    entry.setSuccessCondition( JobEntryEvalTableContent.SUCCESS_CONDITION_ROWS_COUNT_EQUAL );
+    entry.setTablename( "table" );
 
     Result res = entry.execute( new Result(), 0 );
 
@@ -194,9 +194,9 @@ public class JobEntryEvalTableContentTest {
 
   @Test
   public void testNrErrorsFailureOldBehavior() throws Exception {
-    entry.limit = "1";
-    entry.successCondition = JobEntryEvalTableContent.SUCCESS_CONDITION_ROWS_COUNT_EQUAL;
-    entry.tablename = "table";
+    entry.setLimit( "1" );
+    entry.setSuccessCondition( JobEntryEvalTableContent.SUCCESS_CONDITION_ROWS_COUNT_EQUAL );
+    entry.setTablename( "table" );
 
     entry.setVariable( Const.KETTLE_COMPATIBILITY_SET_ERROR_ON_SPECIFIC_JOB_ENTRIES, "Y" );
 
@@ -209,9 +209,9 @@ public class JobEntryEvalTableContentTest {
 
   @Test
   public void testNrErrorsSuccess() throws Exception {
-    entry.limit = "5";
-    entry.successCondition = JobEntryEvalTableContent.SUCCESS_CONDITION_ROWS_COUNT_EQUAL;
-    entry.tablename = "table";
+    entry.setLimit( "5" );
+    entry.setSuccessCondition( JobEntryEvalTableContent.SUCCESS_CONDITION_ROWS_COUNT_EQUAL );
+    entry.setTablename( "table" );
 
     Result res = entry.execute( new Result(), 0 );
 
@@ -229,10 +229,10 @@ public class JobEntryEvalTableContentTest {
 
   @Test
   public void testNrErrorsNoCustomSql() throws Exception {
-    entry.limit = "5";
-    entry.successCondition = JobEntryEvalTableContent.SUCCESS_CONDITION_ROWS_COUNT_EQUAL;
-    entry.iscustomSQL = true;
-    entry.customSQL = null;
+    entry.setLimit( "5" );
+    entry.setSuccessCondition( JobEntryEvalTableContent.SUCCESS_CONDITION_ROWS_COUNT_EQUAL );
+    entry.setUseCustomSQL( true );
+    entry.setCustomSQL( null );
 
     Result res = entry.execute( new Result(), 0 );
 

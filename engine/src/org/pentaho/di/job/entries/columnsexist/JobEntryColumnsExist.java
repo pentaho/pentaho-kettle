@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -63,7 +63,7 @@ public class JobEntryColumnsExist extends JobEntryBase implements Cloneable, Job
   private String schemaname;
   private String tablename;
   private DatabaseMeta connection;
-  public String[] arguments;
+  private String[] arguments;
 
   public JobEntryColumnsExist( String n ) {
     super( n, "" );
@@ -196,6 +196,14 @@ public class JobEntryColumnsExist extends JobEntryBase implements Cloneable, Job
 
   public String getSchemaname() {
     return schemaname;
+  }
+
+  public String[] getArguments() {
+    return arguments;
+  }
+
+  public void setArguments( String[] arguments ) {
+    this.arguments = arguments;
   }
 
   public void setDatabase( DatabaseMeta database ) {

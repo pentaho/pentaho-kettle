@@ -166,7 +166,9 @@ public class RepositoryDialog extends ThinDialog {
         DatabaseDialog databaseDialog = new DatabaseDialog( shell, new DatabaseMeta() );
         databaseDialog.open();
         DatabaseMeta databaseMeta = databaseDialog.getDatabaseMeta();
-        controller.addDatabase( databaseMeta );
+        if ( databaseMeta != null ) {
+          controller.addDatabase( databaseMeta );
+        }
         return true;
       }
     };
@@ -192,6 +194,19 @@ public class RepositoryDialog extends ThinDialog {
       @Override public Object function( Object[] objects ) {
         controller.setCurrentRepository( null );
         return true;
+      }
+    };
+
+    new BrowserFunction( browser, "getCurrentUser" ) {
+      @Override public Object function( Object[] objects ) {
+        return controller.getCurrentUser();
+      }
+    };
+
+    new BrowserFunction( browser, "getCurrentRepository" ) {
+      @Override
+      public Object function( Object[] objects ) {
+        return controller.getCurrentRepository().getName();
       }
     };
 

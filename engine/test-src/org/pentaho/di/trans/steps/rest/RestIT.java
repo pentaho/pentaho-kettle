@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,7 +27,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.pentaho.di.core.util.Assert.assertTrue;
+import org.pentaho.di.core.util.Assert;
 
 import java.util.*;
 
@@ -49,10 +49,6 @@ import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
-import org.pentaho.di.trans.steps.loadsave.validator.ArrayLoadSaveValidator;
-import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
-import org.pentaho.di.trans.steps.loadsave.validator.StringLoadSaveValidator;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
 
 import com.sun.jersey.api.container.httpserver.HttpServerFactory;
@@ -154,7 +150,21 @@ public class RestIT {
 
   @After
   public void tearDown() throws Exception {
-    server.stop( 0 );
+    try {
+      server.stop( 0 );
+    } catch ( NullPointerException ex ) {
+      // This is only here because everything blows up due to the version
+      // of Java we're running -vs- the version of ASM we rely on thanks to the
+      // version of Jetty we need. When we upgrade to Jetty 8, this NPE will go away.
+      // I'm only catching the NPE to allow the test to work as much as it can with
+      // the version of Jetty we use.
+      // Makes me wonder if we can change the version of jetty used in test cases to
+      // the later one to avoid this before we have to go and change the version of
+      // Jetty for the rest of the platform.
+      //
+      // MB - 5/2016
+      org.junit.Assert.assertTrue( System.getProperty( "java.version" ).startsWith( "1.8" ) );
+    }
   }
 
   @Test
@@ -176,9 +186,9 @@ public class RestIT {
     rest.init( stepMockHelper.processRowsStepMetaInterface, data );
     data.resultFieldName = "ResultFieldName";
     data.resultCodeFieldName = "ResultCodeFieldName";
-    assertTrue( rest.processRow( stepMockHelper.processRowsStepMetaInterface, data ) );
+    Assert.assertTrue( rest.processRow( stepMockHelper.processRowsStepMetaInterface, data ) );
     Object[] out = ( (RestHandler) rest ).getOutputRow();
-    assertTrue( meta.equals( out, expectedRow, index ) );
+    Assert.assertTrue( meta.equals( out, expectedRow, index ) );
   }
 
   @Test
@@ -204,39 +214,8 @@ public class RestIT {
     rest.init( stepMockHelper.processRowsStepMetaInterface, data );
     data.resultFieldName = "ResultFieldName";
     data.resultCodeFieldName = "ResultCodeFieldName";
-    assertTrue( rest.processRow( stepMockHelper.processRowsStepMetaInterface, data ) );
+    Assert.assertTrue( rest.processRow( stepMockHelper.processRowsStepMetaInterface, data ) );
     Object[] out = ( (RestHandler) rest ).getOutputRow();
-    assertTrue( meta.equals( out, expectedRow, index ) );
-  }
-
-
-  @Test
-  public void testLoadSaveRoundTrip() throws KettleException {
-    List<String> attributes =
-        Arrays.asList( "applicationType", "method", "url", "urlInField", "dynamicMethod", "methodFieldName",
-            "urlField", "bodyField", "httpLogin", "httpPassword", "proxyHost", "proxyPort", "preemptive",
-            "trustStoreFile", "trustStorePassword", "headerField", "headerName", "parameterField", "parameterName",
-            "matrixParameterField", "matrixParameterName", "fieldName", "resultCodeFieldName", "responseTimeFieldName",
-            "responseHeaderFieldName" );
-
-    Map<String, FieldLoadSaveValidator<?>> fieldLoadSaveValidatorAttributeMap =
-        new HashMap<String, FieldLoadSaveValidator<?>>();
-
-    // Arrays need to be consistent length
-    FieldLoadSaveValidator<String[]> stringArrayLoadSaveValidator =
-        new ArrayLoadSaveValidator<String>( new StringLoadSaveValidator(), 25 );
-    fieldLoadSaveValidatorAttributeMap.put( "headerField", stringArrayLoadSaveValidator );
-    fieldLoadSaveValidatorAttributeMap.put( "headerName", stringArrayLoadSaveValidator );
-    fieldLoadSaveValidatorAttributeMap.put( "parameterField", stringArrayLoadSaveValidator );
-    fieldLoadSaveValidatorAttributeMap.put( "parameterName", stringArrayLoadSaveValidator );
-    fieldLoadSaveValidatorAttributeMap.put( "matrixParameterField", stringArrayLoadSaveValidator );
-    fieldLoadSaveValidatorAttributeMap.put( "matrixParameterName", stringArrayLoadSaveValidator );
-
-    LoadSaveTester loadSaveTester =
-        new LoadSaveTester( RestMeta.class, attributes, new HashMap<String, String>(), new HashMap<String, String>(),
-            fieldLoadSaveValidatorAttributeMap, new HashMap<String, FieldLoadSaveValidator<?>>() );
-
-    loadSaveTester.testRepoRoundTrip();
-    loadSaveTester.testXmlRoundTrip();
+    Assert.assertTrue( meta.equals( out, expectedRow, index ) );
   }
 }

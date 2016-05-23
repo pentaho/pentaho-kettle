@@ -48,11 +48,30 @@ define(
         }
         return true;
       }
+      function checkDuplicate() {
+        repositories = JSON.parse(getRepositories());
+        $scope.model.hasError = false;
+        $scope.model.errorMessage = "";
+        for(var i = 0; i < repositories.length; i++){
+          if( repositories[i].displayName == $scope.model.displayName ){
+            $scope.model.hasError = true;
+            $scope.model.errorMessage = "Cannot create repository. Display Name [" + $scope.model.displayName + "] is already being used.";
+            break;
+          }
+        }
+      }
       $scope.finish = function() {
+        checkDuplicate();
+        if( this.model.hasError ){
+          return;
+        }
         if (createRepository("PentahoEnterpriseRepository", JSON.stringify(this.model))) {
           $location.path("/pentaho-repository-creation-success")
         } else {
           $location.path("/pentaho-repository-creation-failure")
+        }
+        if(this.model.isDefault) {
+          setDefaultRepository(this.model.displayName);
         }
         $rootScope.next();
       };
@@ -97,11 +116,30 @@ define(
         }
         return true;
       }
+      function checkDuplicate() {
+        repositories = JSON.parse(getRepositories());
+        $scope.model.hasError = false;
+        $scope.model.errorMessage = "";
+        for(var i = 0; i < repositories.length; i++){
+          if( repositories[i].displayName == $scope.model.displayName ){
+            $scope.model.hasError = true;
+            $scope.model.errorMessage = "Cannot create repository. Display Name [" + $scope.model.displayName + "] is already being used.";
+            break;
+          }
+        }
+      }
       $scope.finish = function() {
+        checkDuplicate();
+        if( this.model.hasError ){
+          return;
+        }
         if (createRepository("KettleFileRepository", JSON.stringify(this.model))) {
           $location.path("/kettle-file-repository-creation-success")
         } else {
           $location.path("/kettle-file-repository-creation-failure")
+        }
+        if(this.model.isDefault) {
+          setDefaultRepository(this.model.displayName);
         }
         $rootScope.next();
       }
@@ -146,11 +184,30 @@ define(
         }
         return true;
       }
+      function checkDuplicate() {
+        repositories = JSON.parse(getRepositories());
+        $scope.model.hasError = false;
+        $scope.model.errorMessage = "";
+        for(var i = 0; i < repositories.length; i++){
+          if( repositories[i].displayName == $scope.model.displayName ){
+            $scope.model.hasError = true;
+            $scope.model.errorMessage = "Cannot create repository. Display Name [" + $scope.model.displayName + "] is already being used.";
+            break;
+          }
+        }
+      }
       $scope.finish = function() {
+        checkDuplicate();
+        if( this.model.hasError ){
+          return;
+        }
         if (createRepository("KettleDatabaseRepository", JSON.stringify(this.model))) {
           $location.path("/kettle-database-repository-creation-success")
         } else {
           $location.path("/kettle-database-repository-creation-failure")
+        }
+        if(this.model.isDefault) {
+          setDefaultRepository(this.model.displayName);
         }
         $rootScope.next();
       }
@@ -220,6 +277,9 @@ define(
           $scope.model.databaseConnection = database.name;
         }
       }
+      if( $scope.databases.length == 1 ){
+        $scope.selectDatabase( $scope.databases[0] );
+      }
       function updateSelected(dbName) {
         for (var i = 0; i < $scope.databases.length; i++) {
           if ($scope.databases[i].name == dbName) {
@@ -271,10 +331,10 @@ define(
       $scope.selectRepository = function(repository) {
         repositoriesModel.selectedRepository = repository;
       }
-      $scope.setDefault = function(repository) {
-        setDefaultRepository(repository.displayName);
+      $scope.setDefault = function(name) {
+        setDefaultRepository(name);
         for ( i = 0; i < repositoriesModel.repositories.length; i++) {
-          if ( repositoriesModel.repositories[i].displayName == repository.displayName) {
+          if ( repositoriesModel.repositories[i].displayName == name) {
             repositoriesModel.repositories[i].isDefault = true;
           } else {
             repositoriesModel.repositories[i].isDefault = false;
@@ -318,6 +378,8 @@ define(
 
     repoConnectionAppControllers.controller("RepositoryConnectController", function($scope, repositoryConnectModel) {
       $scope.model = repositoryConnectModel;
+      $scope.model.username = getCurrentUser();
+      $scope.model.currentRepositoryName = getCurrentRepository();
       $scope.canConnect = function() {
         if (this.model.username == "" || this.model.password == "") {
           return false;
@@ -326,7 +388,11 @@ define(
       }
 
       $scope.connect = function() {
-        if (loginToRepository(this.model.username, this.model.password)) {
+        this.model.hasError = false;
+        var response = JSON.parse(loginToRepository(this.model.username, this.model.password));
+        this.model.errorMessage = response.errorMessage;
+        this.model.hasError = response.success == false;
+        if (response.success == true) {
           close();
         }
       }

@@ -24,6 +24,7 @@ package org.pentaho.di.core.row.value;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -37,6 +38,7 @@ import org.junit.Test;
 import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettlePluginException;
+import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.ValueMetaInterface;
 
 public class ValueMetaFactoryTest {
@@ -415,5 +417,19 @@ public class ValueMetaFactoryTest {
     assertEquals( null, ValueMetaFactory.guessValueMetaInterface( new Float( 1.0 ) ) );
     assertEquals( null, ValueMetaFactory.guessValueMetaInterface( new StringBuilder() ) );
     assertEquals( null, ValueMetaFactory.guessValueMetaInterface( (byte) 1 ) );
+  }
+
+  @Test
+  public void testGetNativeDataTypeClass() throws KettlePluginException {
+    for ( String valueMetaName : ValueMetaFactory.getValueMetaNames() ) {
+      int valueMetaID = ValueMetaFactory.getIdForValueMeta( valueMetaName );
+      ValueMetaInterface valueMeta = ValueMetaFactory.createValueMeta( valueMetaID );
+      try {
+        Class<?> clazz = valueMeta.getNativeDataTypeClass();
+        assertNotNull( clazz );
+      } catch ( KettleValueException kve ) {
+        fail( valueMetaName + " should implement getNativeDataTypeClass()" );
+      }
+    }
   }
 }

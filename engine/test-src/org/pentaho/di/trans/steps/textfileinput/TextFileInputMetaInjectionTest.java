@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -36,9 +36,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-import static java.util.Arrays.asList;
+import java.util.Arrays;
 import static org.junit.Assert.*;
-import static org.pentaho.di.core.row.ValueMetaInterface.TYPE_NONE;
+import org.pentaho.di.core.row.ValueMetaInterface;
 import static org.pentaho.di.trans.steps.textfileinput.TextFileInputMetaInjection.Entry.*;
 
 /**
@@ -75,7 +75,7 @@ public class TextFileInputMetaInjectionTest {
     List<StepInjectionMetaEntry> result = new ArrayList<StepInjectionMetaEntry>( entries.length );
     for ( TextFileInputMetaInjection.Entry entry : entries ) {
       StepInjectionMetaEntry injectionEntry = StepInjectionUtil.getEntry( entry );
-      if ( entry.getValueType() != TYPE_NONE ) {
+      if ( entry.getValueType() != ValueMetaInterface.TYPE_NONE ) {
         injectionEntry.setValue( generators.get( entry ).generateValue() );
       }
       result.add( injectionEntry );
@@ -88,7 +88,7 @@ public class TextFileInputMetaInjectionTest {
       Generator<?>>( TextFileInputMetaInjection.Entry.class );
 
     Generator<String> stringGenerator = new ValidatorAdapter<String>( new StringLoadSaveValidator() );
-    List<TextFileInputMetaInjection.Entry> stringEntries = asList(
+    List<TextFileInputMetaInjection.Entry> stringEntries = Arrays.asList(
       FILE_TYPE, SEPARATOR, ENCLOSURE, ESCAPE_CHAR, COMPRESSION_TYPE, FILENAME_FIELD, ROW_NUMBER_FIELD,
       FILE_FORMAT, ENCODING, ACCEPT_FILE_STEP, ACCEPT_FILE_FIELD, FILE_SHORT_FILE_FIELDNAME, FILE_PATH_FIELDNAME,
       FILE_LAST_MODIFICATION_FIELDNAME, FILE_URI_FIELDNAME, FILE_EXTENSION_FIELDNAME, FILE_SIZE_FIELDNAME,
@@ -101,7 +101,7 @@ public class TextFileInputMetaInjectionTest {
     }
 
     Generator<String> intGenerator = new ValidatorAdapter<Integer>( new IntLoadSaveValidator() );
-    List<TextFileInputMetaInjection.Entry> intEntries = asList(
+    List<TextFileInputMetaInjection.Entry> intEntries = Arrays.asList(
       NR_HEADER_LINES, NR_FOOTER_LINES, NR_WRAPS, NR_DOC_HEADER_LINES, NR_LINES_PER_PAGE, ROW_LIMIT
     );
     for ( TextFileInputMetaInjection.Entry entry : intEntries ) {
@@ -109,7 +109,7 @@ public class TextFileInputMetaInjectionTest {
     }
 
     Generator<String> yesNoGenerator = new YesNoGenerator();
-    List<TextFileInputMetaInjection.Entry> yesNoEntries = asList(
+    List<TextFileInputMetaInjection.Entry> yesNoEntries = Arrays.asList(
       BREAK_IN_ENCLOSURE, HEADER_PRESENT, HAS_FOOTER, HAS_WRAPPED_LINES, HAS_PAGED_LAYOUT, NO_EMPTY_LINES,
       INCLUDE_FILENAME, INCLUDE_ROW_NUMBER, ROW_NUMBER_BY_FILE, DATE_FORMAT_LENIENT, ACCEPT_FILE_NAMES,
       PASS_THROUGH_FIELDS, ADD_FILES_TO_RESULT, FILE_HIDDEN_FIELDNAME, SKIP_BAD_FILES, IGNORE_ERRORS,

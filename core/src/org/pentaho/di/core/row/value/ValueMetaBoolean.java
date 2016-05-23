@@ -39,4 +39,9 @@ public class ValueMetaBoolean extends ValueMetaBase implements ValueMetaInterfac
   public Object getNativeDataType( Object object ) throws KettleValueException {
     return getBoolean( object );
   }
+
+  @Override
+  public Class<?> getNativeDataTypeClass() throws KettleValueException {
+    return Boolean.class;
+  }
 }

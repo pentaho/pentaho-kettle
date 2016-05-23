@@ -40,7 +40,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
-import static java.util.Collections.singletonList;
+import java.util.Collections;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
@@ -128,6 +128,6 @@ public class SelectValues_LocaleHandling_Test {
     stepData.firstmetadata = true;
 
     List<Object[]> execute = TransTestingUtil.execute( step, stepMeta, stepData, 1, true );
-    TransTestingUtil.assertResult( execute, singletonList( new Object[] { expectedWeekNumber } ) );
+    TransTestingUtil.assertResult( execute, Collections.singletonList( new Object[] { expectedWeekNumber } ) );
   }
 }

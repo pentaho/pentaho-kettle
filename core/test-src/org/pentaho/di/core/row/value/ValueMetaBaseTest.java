@@ -599,6 +599,19 @@ public class ValueMetaBaseTest {
     return cal.getTime();
   }
 
+  @Test
+  public void testGetNativeDataTypeClass() {
+    ValueMetaInterface base = new ValueMetaBase();
+    Class<?> clazz = null;
+    try {
+      clazz = base.getNativeDataTypeClass();
+      Assert.fail();
+    } catch ( KettleValueException expected ) {
+      // ValueMetaBase should throw an exception, as all sub-classes should override
+      Assert.assertNull( clazz );
+    }
+  }
+
   private class StoreLoggingEventListener implements KettleLoggingEventListener {
 
     private List<KettleLoggingEvent> events = new ArrayList<>();

@@ -40,7 +40,7 @@
 * BODY and MAIN DIVS
 */
 body {
-  font-family: OpenSansLight, Helvetica, Arial, Sans serif;
+  font-family: OpenSansRegular;
   overflow: hidden;
   margin: 0px;
 }
@@ -72,11 +72,13 @@ body {
 * TEXTS
 */
 .header {
+  font-family: OpenSansLight;
   font-size: 44px;
   color: #005EAA;
 }
 
 .title_text {
+  font-family: OpenSansLight;
   font-size: 24px;
   color: #333333;
 }
@@ -169,7 +171,6 @@ button:not(.defaultBtn) {
   height: 36px;
   border-radius: 4px;
   padding: 0px 20px 0px 20px;
-  border: none;
   font-size: 14px;
 }
 
@@ -219,11 +220,19 @@ button#connect {
 button.defaultBtn {
   outline: none;
   border: none;
-  font-size: 14px;
+  font-size: 12px;
   padding: 5px 10px 5px 10px;
   border-radius: 15px;
   background-color: #FFFFFF;
   color: #FFFFFF;
+}
+
+button#delete, button#edit {
+  visibility: hidden;
+}
+
+button.visible {
+  visibility: visible !important;
 }
 
 button.invisible {
@@ -231,11 +240,13 @@ button.invisible {
 }
 
 #btnHelp {
+  cursor: pointer;
   margin: 8px 0px 0px 4px;
 }
 
 #browse {
   height: 40px !important;
+  border-radius: 0px 4px 4px 0px !important;
 }
 
 #connectionDD {
@@ -347,7 +358,7 @@ input[type="checkbox"]:checked + label::before {
   position:relative;
   width:300px;
   font-family: OpenSansRegular;
-  color: #999999;
+  color: #666666;
   font-size: 14px;
 }
 
@@ -362,6 +373,7 @@ input[type="checkbox"]:checked + label::before {
 
 input#location {
   width: 280px !important;
+  border-radius: 4px 0px 0px 4px !important;
 }
 
 textarea#description {
@@ -441,19 +453,19 @@ table#repoMngTable td {
 }
 
 #table-scroll {
-  height:380px;
+  height: 304px;
   overflow:auto; 
 }
 
 td.bullet {
   border-right: none;
   width: 7px;
-  height: 95px;
+  height: 75px;
   padding: 0px;
 }
 
 td.repo_type {
-  padding: 15px 15px 15px 10px;
+  padding-left: 10px;
   border-left: none;
   border-right: none;
 }
@@ -476,13 +488,8 @@ td button.activate {
   color: #FFFFFF !important;
 }
 
-tr.active>td.repo_type>div:nth-child(1) {
-  font-size: 24px;
-}
-
 tr:not(.active)>td.repo_type>div:nth-child(1){
-  font-size: 24px;
-  color: #333333;
+  color: #2873B0;
 }
 
 tr:hover td.bullet {
@@ -501,6 +508,24 @@ tr.active:not(:hover) td button.defaultBtn {
   background: #005EAA;
 }
 
+#repoDesc {
+  white-space: nowrap;
+  width: 400px; 
+  overflow: hidden;
+  text-overflow: ellipsis !important;
+  font-size: 14px;
+  color: #333333;
+}
+
+tr.active #repoDesc {
+  color: #ffffff;
+}
+
+.repoType {
+  font-family: OpenSansLight;
+  font-size: 24px;
+}
+
 /*
 * MISC
 */
@@ -517,10 +542,6 @@ img.middle {
   width: auto;
   max-width: 272px;
   max-height: 70px;
-}
-
-#pentaho_repo_img {
-  width: 380px;
 }
 
 hr {
@@ -546,4 +567,58 @@ hr {
 .helpImg {
   position: relative;
   top: 8px;
+}
+
+.error-message-icon {
+  width: 32px;
+  height: 28px;
+  float: left;
+  margin-top: 15px;
+  margin-left: 15px;
+}
+
+.error-message {
+  border: 1px solid #f3E085;
+  background-color: #fcf8e3;
+  width: 580px;
+  height: 63px;
+  border-radius: 5px;
+  position: absolute;
+  top: 10px;
+  left: 23px;
+}
+
+.error-message-text {
+  width: 460px;
+  float: left;
+  margin-top: 13px;
+  margin-left: 15px;
+  text-align: left;
+  font-size: 14px;
+}
+
+.error-message-close {
+  width: 14px;
+  height: 14px;
+  float: right;
+  margin-right: 10px;
+  margin-top: 10px;
+}
+
+.error-message.ng-hide {
+  top: -63px;
+  opacity: 0;
+}
+
+.error-message.ng-hide-remove,
+.error-message.ng-hide-add {
+  display: block !important;
+}
+
+.error-message.ng-hide-remove {
+  transition: all linear 600ms;
+}
+
+.error-message.ng-hide-add {
+  transition: all linear 600ms;
 }

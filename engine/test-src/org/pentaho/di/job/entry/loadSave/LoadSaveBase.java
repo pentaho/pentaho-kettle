@@ -25,8 +25,8 @@ package org.pentaho.di.job.entry.loadSave;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.trans.steps.loadsave.getter.Getter;
+import org.pentaho.di.trans.steps.loadsave.initializer.InitializerInterface;
 import org.pentaho.di.trans.steps.loadsave.setter.Setter;
-import org.pentaho.di.trans.steps.loadsave.validator.DatabaseMetaLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.DefaultFieldLoadSaveValidatorFactory;
 import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidatorFactory;
@@ -49,17 +49,20 @@ abstract class LoadSaveBase<T> {
   final JavaBeanManipulator<T> manipulator;
   final FieldLoadSaveValidatorFactory fieldLoadSaveValidatorFactory;
   final List<DatabaseMeta> databases;
+  final InitializerInterface<T> initializer;
 
   public LoadSaveBase( Class<T> clazz,
                        List<String> commonAttributes, List<String> xmlAttributes, List<String> repoAttributes,
                        Map<String, String> getterMap, Map<String, String> setterMap,
                        Map<String, FieldLoadSaveValidator<?>> fieldLoadSaveValidatorAttributeMap,
-                       Map<String, FieldLoadSaveValidator<?>> fieldLoadSaveValidatorTypeMap ) {
+                       Map<String, FieldLoadSaveValidator<?>> fieldLoadSaveValidatorTypeMap,
+                       InitializerInterface<T> initializer ) {
     this.clazz = clazz;
     this.xmlAttributes = concat( commonAttributes, xmlAttributes );
     this.repoAttributes = concat( commonAttributes, repoAttributes );
     this.manipulator =
       new JavaBeanManipulator<T>( clazz, concat( this.xmlAttributes, repoAttributes ), getterMap, setterMap );
+    this.initializer = initializer;
 
     Map<Getter<?>, FieldLoadSaveValidator<?>> fieldLoadSaveValidatorMethodMap =
       new HashMap<Getter<?>, FieldLoadSaveValidator<?>>( fieldLoadSaveValidatorAttributeMap.size() );
@@ -69,6 +72,15 @@ abstract class LoadSaveBase<T> {
     this.fieldLoadSaveValidatorFactory =
       new DefaultFieldLoadSaveValidatorFactory( fieldLoadSaveValidatorMethodMap, fieldLoadSaveValidatorTypeMap );
     databases = new ArrayList<DatabaseMeta>();
+  }
+
+  public LoadSaveBase( Class<T> clazz,
+      List<String> commonAttributes, List<String> xmlAttributes, List<String> repoAttributes,
+      Map<String, String> getterMap, Map<String, String> setterMap,
+      Map<String, FieldLoadSaveValidator<?>> fieldLoadSaveValidatorAttributeMap,
+      Map<String, FieldLoadSaveValidator<?>> fieldLoadSaveValidatorTypeMap ) {
+    this( clazz, commonAttributes, xmlAttributes, repoAttributes, getterMap, setterMap,
+      fieldLoadSaveValidatorAttributeMap, fieldLoadSaveValidatorTypeMap, null );
   }
 
   public T createMeta() {
@@ -82,6 +94,7 @@ abstract class LoadSaveBase<T> {
   Map<String, FieldLoadSaveValidator<?>> createValidatorMapAndInvokeSetters( List<String> attributes,
                                                                              T metaToSave ) {
     Map<String, FieldLoadSaveValidator<?>> validatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();
+    databases.clear();
     for ( String attribute : attributes ) {
       Getter<?> getter = manipulator.getGetter( attribute );
       @SuppressWarnings( "rawtypes" )
@@ -91,8 +104,10 @@ abstract class LoadSaveBase<T> {
         Object testValue = validator.getTestObject();
         //noinspection unchecked
         setter.set( metaToSave, testValue );
-        if ( validator instanceof DatabaseMetaLoadSaveValidator ) {
+        if ( testValue instanceof DatabaseMeta ) {
           addDatabase( (DatabaseMeta) testValue );
+        } else if ( testValue instanceof DatabaseMeta[] ) {
+          addDatabase( (DatabaseMeta[]) testValue );
         }
       } catch ( Exception e ) {
         throw new RuntimeException( "Unable to invoke setter for " + attribute, e );
@@ -149,6 +164,14 @@ abstract class LoadSaveBase<T> {
   private void addDatabase( DatabaseMeta db ) {
     if ( !databases.contains( db ) ) {
       databases.add( db );
+    }
+  }
+
+  private void addDatabase( DatabaseMeta[] db ) {
+    if ( db != null ) {
+      for ( DatabaseMeta meta : db ) {
+        addDatabase( meta );
+      }
     }
   }
 }

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -39,7 +39,6 @@ import java.util.Date;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
-import static org.pentaho.di.core.util.JavaScriptUtils.*;
 
 /**
  * A set of tests for {@linkplain JavaScriptUtils} class.
@@ -85,33 +84,33 @@ public class JavaScriptUtilsTest {
 
   @Test
   public void jsToNumber_Undefined() throws Exception {
-    assertNull( jsToNumber( null, UNDEFINED ) );
+    assertNull( JavaScriptUtils.jsToNumber( null, UNDEFINED ) );
   }
 
   @Test
   public void jsToNumber_NativeJavaObject_Double() throws Exception {
     Scriptable value = getDoubleValue();
-    Number number = jsToNumber( value, JAVA_OBJECT );
+    Number number = JavaScriptUtils.jsToNumber( value, JAVA_OBJECT );
     assertEquals( 1.0, number.doubleValue(), 1e-6 );
   }
 
   @Test
   public void jsToNumber_NativeJavaObject_Int() throws Exception {
     Scriptable value = getIntValue();
-    Number number = jsToNumber( value, JAVA_OBJECT );
+    Number number = JavaScriptUtils.jsToNumber( value, JAVA_OBJECT );
     assertEquals( 1.0, number.doubleValue(), 1e-6 );
   }
 
   @Test
   public void jsToNumber_NativeNumber() throws Exception {
     Scriptable value = Context.toObject( 1.0, scope );
-    Number number = jsToNumber( value, NATIVE_NUMBER );
+    Number number = JavaScriptUtils.jsToNumber( value, NATIVE_NUMBER );
     assertEquals( 1.0, number.doubleValue(), 1e-6 );
   }
 
   @Test
   public void jsToNumber_JavaNumber() throws Exception {
-    Number number = jsToNumber( 1.0, Double.class.getName() );
+    Number number = JavaScriptUtils.jsToNumber( 1.0, Double.class.getName() );
     assertEquals( 1.0, number.doubleValue(), 1e-6 );
   }
 
@@ -119,7 +118,7 @@ public class JavaScriptUtilsTest {
 
   @Test
   public void jsToInteger_Undefined() throws Exception {
-    assertNull( jsToInteger( null, Undefined.class ) );
+    assertNull( JavaScriptUtils.jsToInteger( null, Undefined.class ) );
   }
 
   @Test
@@ -127,126 +126,126 @@ public class JavaScriptUtilsTest {
     Number[] naturalNumbers = new Number[] { (byte) 1, (short) 1, 1, (long) 1 };
 
     for ( Number number : naturalNumbers ) {
-      assertEquals( Long.valueOf( 1 ), jsToInteger( number, number.getClass() ) );
+      assertEquals( Long.valueOf( 1 ), JavaScriptUtils.jsToInteger( number, number.getClass() ) );
     }
   }
 
   @Test
   public void jsToInteger_String() throws Exception {
-    assertEquals( Long.valueOf( 1 ), jsToInteger( "1", String.class ) );
+    assertEquals( Long.valueOf( 1 ), JavaScriptUtils.jsToInteger( "1", String.class ) );
   }
 
   @Test( expected = NumberFormatException.class )
   public void jsToInteger_String_Unparseable() throws Exception {
-    jsToInteger( "q", String.class );
+    JavaScriptUtils.jsToInteger( "q", String.class );
   }
 
   @Test
   public void jsToInteger_Double() throws Exception {
-    assertEquals( Long.valueOf( 1 ), jsToInteger( 1.0, Double.class ) );
+    assertEquals( Long.valueOf( 1 ), JavaScriptUtils.jsToInteger( 1.0, Double.class ) );
   }
 
   @Test
   public void jsToInteger_NativeJavaObject_Int() throws Exception {
     Scriptable value = getIntValue();
-    assertEquals( Long.valueOf( 1 ), jsToInteger( value, NativeJavaObject.class ) );
+    assertEquals( Long.valueOf( 1 ), JavaScriptUtils.jsToInteger( value, NativeJavaObject.class ) );
   }
 
   @Test
   public void jsToInteger_NativeJavaObject_Double() throws Exception {
     Scriptable value = getDoubleValue();
-    assertEquals( Long.valueOf( 1 ), jsToInteger( value, NativeJavaObject.class ) );
+    assertEquals( Long.valueOf( 1 ), JavaScriptUtils.jsToInteger( value, NativeJavaObject.class ) );
   }
 
   @Test
   public void jsToInteger_Other_Int() throws Exception {
-    assertEquals( Long.valueOf( 1 ), jsToInteger( 1, getClass() ) );
+    assertEquals( Long.valueOf( 1 ), JavaScriptUtils.jsToInteger( 1, getClass() ) );
   }
 
   @Test( expected = NumberFormatException.class )
   public void jsToInteger_Other_String() throws Exception {
-    jsToInteger( "qwerty", getClass() );
+    JavaScriptUtils.jsToInteger( "qwerty", getClass() );
   }
 
   // jsToString tests
 
   @Test
   public void jsToString_Undefined() throws Exception {
-    assertEquals( "null", jsToString( null, UNDEFINED ) );
+    assertEquals( "null", JavaScriptUtils.jsToString( null, UNDEFINED ) );
   }
 
   @Test
   public void jsToString_NativeJavaObject_Int() throws Exception {
-    assertEquals( "1", jsToString( getIntValue(), JAVA_OBJECT ).trim() );
+    assertEquals( "1", JavaScriptUtils.jsToString( getIntValue(), JAVA_OBJECT ).trim() );
   }
 
   @Test
   public void jsToString_NativeJavaObject_Double() throws Exception {
-    assertEquals( "1.0", jsToString( getDoubleValue(), JAVA_OBJECT ).trim() );
+    assertEquals( "1.0", JavaScriptUtils.jsToString( getDoubleValue(), JAVA_OBJECT ).trim() );
   }
 
   @Test
   public void jsToString_String() throws Exception {
-    assertEquals( "qwerty", jsToString( "qwerty", String.class.getName() ) );
+    assertEquals( "qwerty", JavaScriptUtils.jsToString( "qwerty", String.class.getName() ) );
   }
 
   // jsToDate tests
 
   @Test
   public void jsToDate_Undefined() throws Exception {
-    assertNull( jsToDate( null, UNDEFINED ) );
+    assertNull( JavaScriptUtils.jsToDate( null, UNDEFINED ) );
   }
 
   @Test
   public void jsToDate_NativeDate() throws Exception {
     Date date = new Date( 1 );
     Scriptable value = ctx.newObject( scope, "Date", new Object[] { date.getTime() } );
-    assertEquals( date, jsToDate( value, "org.mozilla.javascript.NativeDate" ) );
+    assertEquals( date, JavaScriptUtils.jsToDate( value, "org.mozilla.javascript.NativeDate" ) );
   }
 
   @Test
   public void jsToDate_NativeJavaObject() throws Exception {
     Scriptable value = getIntValue();
-    assertEquals( new Date( 1 ), jsToDate( value, JAVA_OBJECT ) );
+    assertEquals( new Date( 1 ), JavaScriptUtils.jsToDate( value, JAVA_OBJECT ) );
   }
 
   @Test
   public void jsToDate_Double() throws Exception {
-    assertEquals( new Date( 1 ), jsToDate( 1.0, Double.class.getName() ) );
+    assertEquals( new Date( 1 ), JavaScriptUtils.jsToDate( 1.0, Double.class.getName() ) );
   }
 
   @Test
   public void jsToDate_String() throws Exception {
-    assertEquals( new Date( 1 ), jsToDate( "1.0", String.class.getName() ) );
+    assertEquals( new Date( 1 ), JavaScriptUtils.jsToDate( "1.0", String.class.getName() ) );
   }
 
   @Test( expected = NumberFormatException.class )
   public void jsToDate_String_Unparseable() throws Exception {
-    jsToDate( "qwerty", String.class.getName() );
+    JavaScriptUtils.jsToDate( "qwerty", String.class.getName() );
   }
 
   // jsToBigNumber tests
 
   @Test
   public void jsToBigNumber_Undefined() throws Exception {
-    assertNull( jsToBigNumber( null, UNDEFINED ) );
+    assertNull( JavaScriptUtils.jsToBigNumber( null, UNDEFINED ) );
   }
 
   @Test
   public void jsToBigNumber_NativeNumber() throws Exception {
     Scriptable value = Context.toObject( 1.0, scope );
-    BigDecimal number = jsToBigNumber( value, NATIVE_NUMBER );
+    BigDecimal number = JavaScriptUtils.jsToBigNumber( value, NATIVE_NUMBER );
     assertEquals( 1.0, number.doubleValue(), 1e-6 );
   }
 
   @Test
   public void jsToBigNumber_NativeJavaObject_Int() throws Exception {
-    assertEquals( 1.0, jsToBigNumber( getIntValue(), JAVA_OBJECT ).doubleValue(), 1e-6 );
+    assertEquals( 1.0, JavaScriptUtils.jsToBigNumber( getIntValue(), JAVA_OBJECT ).doubleValue(), 1e-6 );
   }
 
   @Test
   public void jsToBigNumber_NativeJavaObject_Double() throws Exception {
-    assertEquals( 1.0, jsToBigNumber( getDoubleValue(), JAVA_OBJECT ).doubleValue(), 1e-6 );
+    assertEquals( 1.0, JavaScriptUtils.jsToBigNumber( getDoubleValue(), JAVA_OBJECT ).doubleValue(), 1e-6 );
   }
 
   @Test
@@ -254,7 +253,7 @@ public class JavaScriptUtilsTest {
     Value value = new Value();
     value.setValue( BigDecimal.ONE );
     Scriptable object = Context.toObject( value, scope );
-    assertEquals( 1.0, jsToBigNumber( object, JAVA_OBJECT ).doubleValue(), 1e-6 );
+    assertEquals( 1.0, JavaScriptUtils.jsToBigNumber( object, JAVA_OBJECT ).doubleValue(), 1e-6 );
   }
 
   @Test
@@ -262,43 +261,43 @@ public class JavaScriptUtilsTest {
     Number[] naturalNumbers = new Number[] { (byte) 1, (short) 1, 1, (long) 1 };
 
     for ( Number number : naturalNumbers ) {
-      assertEquals( 1.0, jsToBigNumber( number, number.getClass().getName() ).doubleValue(), 1e-6 );
+      assertEquals( 1.0, JavaScriptUtils.jsToBigNumber( number, number.getClass().getName() ).doubleValue(), 1e-6 );
     }
   }
 
   @Test
   public void jsToBigNumber_Double() throws Exception {
-    assertEquals( 1.0, jsToBigNumber( 1.0, Double.class.getName() ).doubleValue(), 1e-6 );
+    assertEquals( 1.0, JavaScriptUtils.jsToBigNumber( 1.0, Double.class.getName() ).doubleValue(), 1e-6 );
   }
 
   @Test
   public void jsToBigNumber_String() throws Exception {
-    assertEquals( 1.0, jsToBigNumber( "1", String.class.getName() ).doubleValue(), 1e-6 );
+    assertEquals( 1.0, JavaScriptUtils.jsToBigNumber( "1", String.class.getName() ).doubleValue(), 1e-6 );
   }
 
   @Test( expected = RuntimeException.class )
   public void jsToBigNumber_UnknownClass() throws Exception {
-    jsToBigNumber( "1", "qwerty" );
+    JavaScriptUtils.jsToBigNumber( "1", "qwerty" );
   }
 
   // convertFromJs tests
 
   @Test( expected = RuntimeException.class )
   public void convertFromJs_TypeNone() throws Exception {
-    convertFromJs( null, ValueMetaInterface.TYPE_NONE, "qwerty" );
+    JavaScriptUtils.convertFromJs( null, ValueMetaInterface.TYPE_NONE, "qwerty" );
   }
 
   @Test
   public void convertFromJs_TypeBoolean() throws Exception {
     Object o = new Object();
-    Object o2 = convertFromJs( o, ValueMetaInterface.TYPE_BOOLEAN, "qwerty" );
+    Object o2 = JavaScriptUtils.convertFromJs( o, ValueMetaInterface.TYPE_BOOLEAN, "qwerty" );
     assertEquals( o, o2 );
   }
 
   @Test
   public void convertFromJs_TypeBinary() throws Exception {
     byte[] bytes = new byte[] { 0, 1 };
-    Object converted = convertFromJs( bytes, ValueMetaInterface.TYPE_BINARY, "qwerty" );
+    Object converted = JavaScriptUtils.convertFromJs( bytes, ValueMetaInterface.TYPE_BINARY, "qwerty" );
     assertThat( converted, is( instanceOf( byte[].class ) ) );
     assertArrayEquals( bytes, (byte[]) converted );
   }
