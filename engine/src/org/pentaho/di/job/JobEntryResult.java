@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -89,6 +89,14 @@ public class JobEntryResult implements Cloneable, Comparator<JobEntryResult>, Co
     this.jobEntryFilename = jobEntryFilename;
   }
 
+  /**
+   * @deprecated use {@link #JobEntryResult(Result, String, String, String, String, int, String)}
+   *
+   * @param result
+   * @param comment
+   * @param reason
+   * @param copy
+   */
   @Deprecated
   public JobEntryResult( Result result, String comment, String reason, JobEntryCopy copy ) {
 
@@ -97,6 +105,7 @@ public class JobEntryResult implements Cloneable, Comparator<JobEntryResult>, Co
       .getEntry().getFilename() : null ) );
   }
 
+  @Override
   public Object clone() {
     try {
       JobEntryResult jobEntryResult = (JobEntryResult) super.clone();
@@ -216,6 +225,7 @@ public class JobEntryResult implements Cloneable, Comparator<JobEntryResult>, Co
     this.jobEntryNr = jobEntryNr;
   }
 
+  @Override
   public int compare( JobEntryResult one, JobEntryResult two ) {
     if ( one == null && two != null ) {
       return -1;
@@ -243,6 +253,7 @@ public class JobEntryResult implements Cloneable, Comparator<JobEntryResult>, Co
     return Integer.valueOf( one.getJobEntryNr() ).compareTo( Integer.valueOf( two.getJobEntryNr() ) );
   }
 
+  @Override
   public int compareTo( JobEntryResult two ) {
     return compare( this, two );
   }

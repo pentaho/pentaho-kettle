@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -203,6 +203,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
    * @return the object id
    * @see org.pentaho.di.core.CheckResultSourceInterface#getObjectId()
    */
+  @Override
   public ObjectId getObjectId() {
     return id;
   }
@@ -233,6 +234,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
    * @return the name of the job entry
    * @see org.pentaho.di.core.CheckResultSourceInterface#getName()
    */
+  @Override
   public String getName() {
     return name;
   }
@@ -253,6 +255,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
    * @return the description of the job entry
    * @see org.pentaho.di.core.CheckResultSourceInterface#getDescription()
    */
+  @Override
   public String getDescription() {
     return description;
   }
@@ -433,6 +436,14 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
     }
   }
 
+  /**
+   * @deprecated use {@link #loadXML(Node, List, List, Repository, IMetaStore)}
+   * @param entrynode
+   * @param databases
+   * @param slaveServers
+   * @param repository
+   * @throws KettleXMLException
+   */
   @Deprecated
   public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers,
     Repository repository ) throws KettleXMLException {
@@ -459,6 +470,8 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
    * This method is called by PDI whenever a job entry needs to read its configuration from a PDI repository. For
    * JobEntryBase, this method performs no operations.
    *
+   * @deprecated use {@link #loadRep(Repository, IMetaStore, ObjectId, List, List)}
+   *
    * @param rep
    *          the repository object
    * @param id_jobentry
@@ -484,6 +497,8 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
   /**
    * This method is called by PDI whenever a job entry needs to save its settings to a PDI repository. For JobEntryBase,
    * this method performs no operations.
+   *
+   * @deprecated use {@link #saveRep(Repository, IMetaStore, ObjectId)}
    *
    * @param rep
    *          the repository object
@@ -514,6 +529,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
    *
    * @return a clone of the object
    */
+  @Override
   public Object clone() {
     JobEntryBase je;
     try {
@@ -529,6 +545,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
    *
    * @see java.lang.Object#toString()
    */
+  @Override
   public String toString() {
     return name;
   }
@@ -565,6 +582,8 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
   /**
    * Gets the SQL statements needed by this job entry to execute successfully.
    *
+   * @deprecated use {@link #getSQLStatements(Repository, IMetaStore, VariableSpace)}
+   *
    * @param repository
    *          the repository
    * @return a list of SQL statements
@@ -579,6 +598,8 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
   /**
    * Gets the SQL statements needed by this job entry to execute successfully, given a set of variables. For
    * JobEntryBase, this method returns an empty list.
+   *
+   * @deprecated use {@link #getSQLStatements(Repository, IMetaStore, VariableSpace)}
    *
    * @param repository
    *          the repository object
@@ -615,6 +636,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
    * @return null
    * @see org.pentaho.di.core.logging.LoggingObjectInterface#getFilename()
    */
+  @Override
   public String getFilename() {
     return null;
   }
@@ -644,6 +666,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
    *
    * @see org.pentaho.di.core.variables.VariableSpace#copyVariablesFrom(org.pentaho.di.core.variables.VariableSpace)
    */
+  @Override
   public void copyVariablesFrom( VariableSpace space ) {
     variables.copyVariablesFrom( space );
   }
@@ -654,6 +677,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
    * @return the string with any environment variables resolved and substituted
    * @see org.pentaho.di.core.variables.VariableSpace#environmentSubstitute(java.lang.String)
    */
+  @Override
   public String environmentSubstitute( String aString ) {
     return variables.environmentSubstitute( aString );
   }
@@ -664,10 +688,12 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
    *
    * @see org.pentaho.di.core.variables.VariableSpace#environmentSubstitute(java.lang.String[])
    */
+  @Override
   public String[] environmentSubstitute( String[] aString ) {
     return variables.environmentSubstitute( aString );
   }
 
+  @Override
   public String fieldSubstitute( String aString, RowMetaInterface rowMeta, Object[] rowData ) throws KettleValueException {
     return variables.fieldSubstitute( aString, rowMeta, rowData );
   }
@@ -678,6 +704,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
    * @return the parent variable space
    * @see org.pentaho.di.core.variables.VariableSpace#getParentVariableSpace()
    */
+  @Override
   public VariableSpace getParentVariableSpace() {
     return variables.getParentVariableSpace();
   }
@@ -688,6 +715,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
    * @see org.pentaho.di.core.variables.VariableSpace#setParentVariableSpace(
    *   org.pentaho.di.core.variables.VariableSpace)
    */
+  @Override
   public void setParentVariableSpace( VariableSpace parent ) {
     variables.setParentVariableSpace( parent );
   }
@@ -698,6 +726,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
    * @return the value of the specified variable, or returns a default value if no such variable exists
    * @see org.pentaho.di.core.variables.VariableSpace#getVariable(java.lang.String, java.lang.String)
    */
+  @Override
   public String getVariable( String variableName, String defaultValue ) {
     return variables.getVariable( variableName, defaultValue );
   }
@@ -708,6 +737,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
    * @return the value of the specified variable, or returns a default value if no such variable exists
    * @see org.pentaho.di.core.variables.VariableSpace#getVariable(java.lang.String)
    */
+  @Override
   public String getVariable( String variableName ) {
     return variables.getVariable( variableName );
   }
@@ -722,6 +752,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
    * @return a boolean representation of the specified variable after performing any necessary substitution
    * @see org.pentaho.di.core.variables.VariableSpace#getBooleanValueOfVariable(java.lang.String, boolean)
    */
+  @Override
   public boolean getBooleanValueOfVariable( String variableName, boolean defaultValue ) {
     if ( !Const.isEmpty( variableName ) ) {
       String value = environmentSubstitute( variableName );
@@ -738,6 +769,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
    * @see org.pentaho.di.core.variables.VariableSpace#initializeVariablesFrom(
    *   org.pentaho.di.core.variables.VariableSpace)
    */
+  @Override
   public void initializeVariablesFrom( VariableSpace parent ) {
     variables.initializeVariablesFrom( parent );
   }
@@ -748,6 +780,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
    * @return a list of variable names
    * @see org.pentaho.di.core.variables.VariableSpace#listVariables()
    */
+  @Override
   public String[] listVariables() {
     return variables.listVariables();
   }
@@ -757,6 +790,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
    *
    * @see org.pentaho.di.core.variables.VariableSpace#setVariable(java.lang.String, java.lang.String)
    */
+  @Override
   public void setVariable( String variableName, String variableValue ) {
     variables.setVariable( variableName, variableValue );
   }
@@ -767,6 +801,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
    *
    * @see org.pentaho.di.core.variables.VariableSpace#shareVariablesWith(org.pentaho.di.core.variables.VariableSpace)
    */
+  @Override
   public void shareVariablesWith( VariableSpace space ) {
     variables = space;
   }
@@ -778,6 +813,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
    *
    * @see org.pentaho.di.core.variables.VariableSpace#injectVariables(java.util.Map)
    */
+  @Override
   public void injectVariables( Map<String, String> prop ) {
     variables.injectVariables( prop );
   }
@@ -789,7 +825,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
    *          CheckResults from checking the job entry
    * @param jobMeta
    *          JobMeta information letting threading back to the JobMeta possible
-   * @deprecated
+   * @deprecated use {@link #check(List, JobMeta, VariableSpace, Repository, IMetaStore)}
    */
   @Deprecated
   public void check( List<CheckResultInterface> remarks, JobMeta jobMeta ) {
@@ -842,7 +878,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
    * @return The filename for this object. (also contained in the definitions map)
    * @throws KettleException
    *           in case something goes wrong during the export
-   * @deprecated in favor of the same method with a meta store argument
+   * @deprecated use {@link #exportResources(VariableSpace, Map, ResourceNamingInterface, Repository, IMetaStore)}
    */
   @Deprecated
   public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
@@ -897,8 +933,9 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
   /**
    * Gets the plugin id.
    *
-   * @deprecated in favor of getPluginId()
+   * @deprecated use {@link #getPluginId()}
    */
+  @Override
   @Deprecated
   public String getTypeId() {
     return getPluginId();
@@ -907,7 +944,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
   /**
    * Sets the plugin id.
    *
-   * @deprecated in favor of setPluginId()
+   * @deprecated use {@link #setPluginId(String)}
    */
   @Deprecated
   public void setTypeId( String typeId ) {
@@ -939,6 +976,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
    * @return the holder type for the job entry
    * @see org.pentaho.di.resource.ResourceHolderInterface#getHolderType()
    */
+  @Override
   public String getHolderType() {
     return "JOBENTRY";
   }
@@ -1188,6 +1226,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
    * @return the log channel id
    * @see org.pentaho.di.core.logging.LoggingObjectInterface#getLogChannelId()
    */
+  @Override
   public String getLogChannelId() {
     return log.getLogChannelId();
   }
@@ -1198,6 +1237,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
    * @return the object name
    * @see org.pentaho.di.core.logging.LoggingObjectInterface#getObjectName()
    */
+  @Override
   public String getObjectName() {
     return getName();
   }
@@ -1208,6 +1248,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
    * @return a string identifying a copy in a series of steps
    * @see org.pentaho.di.core.logging.LoggingObjectInterface#getObjectCopy()
    */
+  @Override
   public String getObjectCopy() {
     return null;
   }
@@ -1217,6 +1258,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
    *
    * @see org.pentaho.di.core.logging.LoggingObjectInterface#getObjectRevision()
    */
+  @Override
   public ObjectRevision getObjectRevision() {
     return null;
   }
@@ -1227,6 +1269,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
    * @return the logging object type
    * @see org.pentaho.di.core.logging.LoggingObjectInterface#getObjectType()
    */
+  @Override
   public LoggingObjectType getObjectType() {
     return LoggingObjectType.JOBENTRY;
   }
@@ -1237,6 +1280,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
    * @return the logging object interface's parent
    * @see org.pentaho.di.core.logging.LoggingObjectInterface#getParent()
    */
+  @Override
   public LoggingObjectInterface getParent() {
     return parentJob;
   }
@@ -1247,6 +1291,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
    * @return null
    * @see org.pentaho.di.core.logging.LoggingObjectInterface#getRepositoryDirectory()
    */
+  @Override
   public RepositoryDirectory getRepositoryDirectory() {
     return null;
   }
@@ -1256,6 +1301,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
    *
    * @see org.pentaho.di.core.logging.LoggingObjectInterface#getLogLevel()
    */
+  @Override
   public LogLevel getLogLevel() {
     return logLevel;
   }
@@ -1276,6 +1322,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
    *
    * @return the container object id
    */
+  @Override
   public String getContainerObjectId() {
     return containerObjectId;
   }
@@ -1295,6 +1342,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
    *
    * @return null
    */
+  @Override
   public Date getRegistrationDate() {
     return null;
   }
@@ -1335,6 +1383,8 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
 
   /**
    * Load the referenced object
+   *
+   * @deprecated use {@link #loadReferencedObject(int, Repository, IMetaStore, VariableSpace)}
    *
    * @param index
    *          the referenced object index to load (in case there are multiple references)
