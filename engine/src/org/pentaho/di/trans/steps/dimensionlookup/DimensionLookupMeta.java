@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -209,6 +209,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
   /**
    * @return Returns the tablename.
    */
+  @Override
   public String getTableName() {
     return tableName;
   }
@@ -224,6 +225,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
   /**
    * @return Returns the database.
    */
+  @Override
   public DatabaseMeta getDatabaseMeta() {
     return databaseMeta;
   }
@@ -510,6 +512,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
     this.versionField = versionField;
   }
 
+  @Override
   public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     readData( stepnode, databases );
   }
@@ -523,6 +526,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
     fieldUpdate = new int[nrfields];
   }
 
+  @Override
   public Object clone() {
     DimensionLookupMeta retval = (DimensionLookupMeta) super.clone();
 
@@ -630,6 +634,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
     }
   }
 
+  @Override
   public void setDefault() {
     int nrkeys, nrfields;
 
@@ -674,6 +679,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
     preloadingCache = false;
   }
 
+  @Override
   public void getFields( RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep,
       VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
 
@@ -754,6 +760,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
     }
   }
 
+  @Override
   public String getXML() {
     StringBuilder retval = new StringBuilder( 512 );
 
@@ -813,6 +820,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
     retval.append( "      " ).append(
         XMLHandler.addTagValue( "start_date_alternative", getStartDateAlternativeCode( startDateAlternative ) ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "start_date_field_name", startDateFieldName ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "useBatch", useBatchUpdate ) );
 
     return retval.toString();
   }
@@ -885,6 +893,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 
       cacheSize = Const.toInt( XMLHandler.getTagValue( stepnode, "cache_size" ), -1 );
       preloadingCache = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "preload_cache" ) );
+      useBatchUpdate = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "useBatch" ) );
 
       usingStartDateAlternative =
         "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "use_start_date_alternative" ) );
@@ -897,6 +906,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
     }
   }
 
+  @Override
   public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
       databaseMeta = rep.loadDatabaseMetaFromStepAttribute( id_step, "id_connection", databases );
@@ -931,13 +941,15 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
       autoIncrement = rep.getStepAttributeBoolean( id_step, "use_autoinc" );
       versionField = rep.getStepAttributeString( id_step, "version_field" );
       techKeyCreation = rep.getStepAttributeString( id_step, "creation_method" );
-
-      sequenceName = rep.getStepAttributeString( id_step, "sequence" );
+      if ( update ) { // symmetry with readData above ...
+        sequenceName = rep.getStepAttributeString( id_step, "sequence" );
+      }
       minYear = (int) rep.getStepAttributeInteger( id_step, "min_year" );
       maxYear = (int) rep.getStepAttributeInteger( id_step, "max_year" );
 
       cacheSize = (int) rep.getStepAttributeInteger( id_step, "cache_size" );
       preloadingCache = rep.getStepAttributeBoolean( id_step, "preload_cache" );
+      useBatchUpdate = rep.getStepAttributeBoolean( id_step, "useBatch" );
 
       usingStartDateAlternative = rep.getStepAttributeBoolean( id_step, "use_start_date_alternative" );
       startDateAlternative =
@@ -949,6 +961,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
     }
   }
 
+  @Override
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       rep.saveStepAttribute( id_transformation, id_step, "schema", schemaName );
@@ -990,6 +1003,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 
       rep.saveStepAttribute( id_transformation, id_step, "cache_size", cacheSize );
       rep.saveStepAttribute( id_transformation, id_step, "preload_cache", preloadingCache );
+      rep.saveStepAttribute( id_transformation, id_step, "useBatch", useBatchUpdate );
 
       rep.saveStepAttribute( id_transformation, id_step, "use_start_date_alternative", usingStartDateAlternative );
       rep
@@ -1035,6 +1049,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
     return mincal.getTime();
   }
 
+  @Override
   public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
       RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
       Repository repository, IMetaStore metaStore ) {
@@ -1473,6 +1488,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
     }
   }
 
+  @Override
   public RowMetaInterface getTableFields() {
     RowMetaInterface fields = null;
     if ( databaseMeta != null ) {
@@ -1490,6 +1506,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
     return fields;
   }
 
+  @Override
   public SQLStatement getSQLStatements( TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
       Repository repository, IMetaStore metaStore ) {
     SQLStatement retval = new SQLStatement( stepMeta.getName(), databaseMeta, null ); // default: nothing to do!
@@ -1672,6 +1689,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
     return retval;
   }
 
+  @Override
   public void analyseImpact( List<DatabaseImpact> impact, TransMeta transMeta, StepMeta stepMeta,
       RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, Repository repository,
       IMetaStore metaStore ) {
@@ -1729,15 +1747,18 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
     }
   }
 
+  @Override
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta tr,
       Trans trans ) {
     return new DimensionLookup( stepMeta, stepDataInterface, cnr, tr, trans );
   }
 
+  @Override
   public StepDataInterface getStepData() {
     return new DimensionLookupData();
   }
 
+  @Override
   public DatabaseMeta[] getUsedDatabaseConnections() {
     if ( databaseMeta != null ) {
       return new DatabaseMeta[] { databaseMeta };
@@ -1749,6 +1770,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
   /**
    * @return the schemaName
    */
+  @Override
   public String getSchemaName() {
     return schemaName;
   }

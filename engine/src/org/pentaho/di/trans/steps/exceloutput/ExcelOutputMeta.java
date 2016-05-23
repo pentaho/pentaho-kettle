@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -372,7 +372,7 @@ public class ExcelOutputMeta extends BaseStepMeta implements StepMetaInterface {
 
   /** Flag : auto size columns? */
   @Injection( name = "AUTOSIZE_COLUMNS", group = "CONTENT" )
-  private boolean autosizecolums;
+  private boolean autoSizeColumns;
 
   /** Flag : write null field values as blank Excel cells? */
   @Injection( name = "NULL_AS_BLANK", group = "CONTENT" )
@@ -488,18 +488,37 @@ public class ExcelOutputMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   /**
-   * @return Returns the autosizecolums.
+   * @return Returns the autosizecolumns.
    */
+  public boolean isAutoSizeColumns() {
+    return autoSizeColumns;
+  }
+
+  /**
+   * @param autosizecolumns
+   *          The autosizecolumns to set.
+   */
+  public void setAutoSizeColumns( boolean autosizecolums ) {
+    this.autoSizeColumns = autosizecolums;
+  }
+
+  /**
+   * @return Returns the autosizecolums.
+   * @deprecated due to typo
+   */
+  @Deprecated
   public boolean isAutoSizeColums() {
-    return autosizecolums;
+    return autoSizeColumns;
   }
 
   /**
    * @param autosizecolums
    *          The autosizecolums to set.
+   * @deprecated due to typo
    */
+  @Deprecated
   public void setAutoSizeColums( boolean autosizecolums ) {
-    this.autosizecolums = autosizecolums;
+    this.autoSizeColumns = autosizecolums;
   }
 
   public void setTempDirectory( String directory ) {
@@ -766,6 +785,7 @@ public class ExcelOutputMeta extends BaseStepMeta implements StepMetaInterface {
     this.append = append;
   }
 
+  @Override
   public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     readData( stepnode );
   }
@@ -774,6 +794,7 @@ public class ExcelOutputMeta extends BaseStepMeta implements StepMetaInterface {
     outputFields = new ExcelField[nrfields];
   }
 
+  @Override
   public Object clone() {
     ExcelOutputMeta retval = (ExcelOutputMeta) super.clone();
     int nrfields = outputFields.length;
@@ -817,7 +838,7 @@ public class ExcelOutputMeta extends BaseStepMeta implements StepMetaInterface {
       usetempfiles = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "usetempfiles" ) );
 
       tempdirectory = XMLHandler.getTagValue( stepnode, "file", "tempdirectory" );
-      autosizecolums = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "autosizecolums" ) );
+      autoSizeColumns = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "autosizecolums" ) );
       nullIsBlank = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "nullisblank" ) );
       protectsheet = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "protect_sheet" ) );
       password = Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue( stepnode, "file", "password" ) );
@@ -891,6 +912,7 @@ public class ExcelOutputMeta extends BaseStepMeta implements StepMetaInterface {
     return nl;
   }
 
+  @Override
   public void setDefault() {
     usetempfiles = false;
     tempdirectory = null;
@@ -911,7 +933,7 @@ public class ExcelOutputMeta extends BaseStepMeta implements StepMetaInterface {
     row_font_color = FONT_COLOR_BLACK;
     row_background_color = FONT_COLOR_NONE;
 
-    autosizecolums = false;
+    autoSizeColumns = false;
     headerEnabled = true;
     footerEnabled = false;
     fileName = "file";
@@ -1016,6 +1038,7 @@ public class ExcelOutputMeta extends BaseStepMeta implements StepMetaInterface {
     return retval;
   }
 
+  @Override
   public void getFields( RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep,
     VariableSpace space, Repository repository, IMetaStore metaStore ) {
     if ( r == null ) {
@@ -1025,6 +1048,7 @@ public class ExcelOutputMeta extends BaseStepMeta implements StepMetaInterface {
     // No values are added to the row in this type of step
   }
 
+  @Override
   public String getXML() {
     StringBuilder retval = new StringBuilder( 800 );
 
@@ -1045,7 +1069,7 @@ public class ExcelOutputMeta extends BaseStepMeta implements StepMetaInterface {
     retval.append( "      " ).append( XMLHandler.addTagValue( "SpecifyFormat", SpecifyFormat ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "date_time_format", date_time_format ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "sheetname", sheetname ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "autosizecolums", autosizecolums ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "autosizecolums", autoSizeColumns ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "nullisblank", nullIsBlank ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "protect_sheet", protectsheet ) );
     retval.append( "      " ).append(
@@ -1101,6 +1125,7 @@ public class ExcelOutputMeta extends BaseStepMeta implements StepMetaInterface {
     return retval.toString();
   }
 
+  @Override
   public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
       headerEnabled = rep.getStepAttributeBoolean( id_step, "header" );
@@ -1128,7 +1153,7 @@ public class ExcelOutputMeta extends BaseStepMeta implements StepMetaInterface {
       SpecifyFormat = rep.getStepAttributeBoolean( id_step, "SpecifyFormat" );
       date_time_format = rep.getStepAttributeString( id_step, "date_time_format" );
 
-      autosizecolums = rep.getStepAttributeBoolean( id_step, "autosizecolums" );
+      autoSizeColumns = rep.getStepAttributeBoolean( id_step, "autosizecolums" );
       nullIsBlank = rep.getStepAttributeBoolean( id_step, "nullisblank" );
       protectsheet = rep.getStepAttributeBoolean( id_step, "protect_sheet" );
       password = Encr.decryptPasswordOptionallyEncrypted( rep.getStepAttributeString( id_step, "password" ) );
@@ -1220,6 +1245,7 @@ public class ExcelOutputMeta extends BaseStepMeta implements StepMetaInterface {
     return font_color_code[i];
   }
 
+  @Override
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       rep.saveStepAttribute( id_transformation, id_step, "header", headerEnabled );
@@ -1239,7 +1265,7 @@ public class ExcelOutputMeta extends BaseStepMeta implements StepMetaInterface {
       rep.saveStepAttribute( id_transformation, id_step, "date_time_format", date_time_format );
       rep.saveStepAttribute( id_transformation, id_step, "tempdirectory", tempdirectory );
       rep.saveStepAttribute( id_transformation, id_step, "usetempfiles", usetempfiles );
-      rep.saveStepAttribute( id_transformation, id_step, "autosizecolums", autosizecolums );
+      rep.saveStepAttribute( id_transformation, id_step, "autosizecolums", autoSizeColumns );
       rep.saveStepAttribute( id_transformation, id_step, "nullisblank", nullIsBlank );
       rep.saveStepAttribute( id_transformation, id_step, "protect_sheet", protectsheet );
       rep.saveStepAttribute( id_transformation, id_step, "password", Encr
@@ -1286,6 +1312,7 @@ public class ExcelOutputMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
+  @Override
   public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
     RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
@@ -1352,6 +1379,7 @@ public class ExcelOutputMeta extends BaseStepMeta implements StepMetaInterface {
    *
    * @return the filename of the exported resource
    */
+  @Override
   public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
     ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore ) throws KettleException {
     try {
@@ -1369,15 +1397,18 @@ public class ExcelOutputMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
+  @Override
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
     TransMeta transMeta, Trans trans ) {
     return new ExcelOutput( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 
+  @Override
   public StepDataInterface getStepData() {
     return new ExcelOutputData();
   }
 
+  @Override
   public String[] getUsedLibraries() {
     return new String[] { "jxl.jar", };
   }

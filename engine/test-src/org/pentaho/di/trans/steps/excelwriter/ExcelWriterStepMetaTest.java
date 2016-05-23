@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -136,8 +136,7 @@ public class ExcelWriterStepMetaTest {
 
     LoadSaveTester loadSaveTester = new LoadSaveTester( ExcelWriterStepMeta.class, attributes, getterMap, setterMap,
       new HashMap<String, FieldLoadSaveValidator<?>>(), fieldLoadSaveValidatorTypeMap );
-    loadSaveTester.testRepoRoundTrip();
-    loadSaveTester.testXmlRoundTrip();
+    loadSaveTester.testSerialization();
   }
 
   public class ExcelWriterStepFieldLoadSaveValidator implements FieldLoadSaveValidator<ExcelWriterStepField> {
