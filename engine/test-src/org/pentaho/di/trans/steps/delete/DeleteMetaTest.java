@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,23 +22,77 @@
 
 package org.pentaho.di.trans.steps.delete;
 
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
 import org.pentaho.di.core.KettleEnvironment;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
-import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
+import org.pentaho.di.trans.steps.loadsave.initializer.InitializerInterface;
+import org.pentaho.di.trans.steps.loadsave.validator.ArrayLoadSaveValidator;
+import org.pentaho.di.trans.steps.loadsave.validator.DatabaseMetaLoadSaveValidator;
+import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
+import org.pentaho.di.trans.steps.loadsave.validator.StringLoadSaveValidator;
 
-public class DeleteMetaTest {
+
+public class DeleteMetaTest implements InitializerInterface<StepMetaInterface> {
+  LoadSaveTester loadSaveTester;
+  Class<DeleteMeta> testMetaClass = DeleteMeta.class;
+
+  @Before
+  public void setUpLoadSave() throws Exception {
+    KettleEnvironment.init();
+    PluginRegistry.init( true );
+    List<String> attributes =
+        Arrays.asList( "schemaName", "tableName", "commitSize", "databaseMeta", "keyStream", "keyLookup", "keyCondition", "keyStream2" );
+
+    Map<String, String> getterMap = new HashMap<String, String>();
+    Map<String, String> setterMap = new HashMap<String, String>();
+    FieldLoadSaveValidator<String[]> stringArrayLoadSaveValidator =
+        new ArrayLoadSaveValidator<String>( new StringLoadSaveValidator(), 5 );
+
+    Map<String, FieldLoadSaveValidator<?>> attrValidatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();
+    attrValidatorMap.put( "keyStream", stringArrayLoadSaveValidator );
+    attrValidatorMap.put( "keyLookup", stringArrayLoadSaveValidator );
+    attrValidatorMap.put( "keyCondition", stringArrayLoadSaveValidator );
+    attrValidatorMap.put( "keyStream2", stringArrayLoadSaveValidator );
+    attrValidatorMap.put( "databaseMeta", new DatabaseMetaLoadSaveValidator() );
+
+    Map<String, FieldLoadSaveValidator<?>> typeValidatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();
+
+    loadSaveTester =
+        new LoadSaveTester( testMetaClass, attributes, new ArrayList<String>(), new ArrayList<String>(),
+            getterMap, setterMap, attrValidatorMap, typeValidatorMap, this );
+  }
+
+  // Call the allocate method on the LoadSaveTester meta class
+  @Override
+  public void modify( StepMetaInterface someMeta ) {
+    if ( someMeta instanceof DeleteMeta ) {
+      ( (DeleteMeta) someMeta ).allocate( 5 );
+    }
+  }
+
+  @Test
+  public void testSerialization() throws KettleException {
+    loadSaveTester.testSerialization();
+  }
+
 
   private StepMeta stepMeta;
   private Delete del;
@@ -93,29 +147,5 @@ public class DeleteMetaTest {
       fail();
     } catch ( Exception ex ) {
     }
-  }
-
-  @Test
-  public void cloneTest() throws Exception {
-    DeleteMeta meta = new DeleteMeta();
-    meta.allocate( 2 );
-    meta.setKeyStream( new String[] { "aa", "bb" } );
-    meta.setKeyLookup( new String[] { "cc", "dd" } );
-    meta.setKeyCondition( new String[] { "ee", "ff" } );
-    meta.setKeyStream2( new String[] { "gg", "hh" } );
-    meta.setCommitSize( "15" );
-    meta.setSchemaName( "aSchema" );
-    meta.setTableName( "tableName" );
-    DeleteMeta aClone = (DeleteMeta) meta.clone();
-    assertFalse( aClone == meta );
-    assertTrue( Arrays.equals( meta.getKeyStream(), aClone.getKeyStream() ) );
-    assertTrue( Arrays.equals( meta.getKeyLookup(), aClone.getKeyLookup() ) );
-    assertTrue( Arrays.equals( meta.getKeyCondition(), aClone.getKeyCondition() ) );
-    assertTrue( Arrays.equals( meta.getKeyStream2(), aClone.getKeyStream2() ) );
-    Variables space = new Variables();
-    assertEquals( meta.getCommitSize( space ), aClone.getCommitSize( space ) );
-    assertEquals( meta.getSchemaName(), aClone.getSchemaName() );
-    assertEquals( meta.getTableName(), aClone.getTableName() );
-    assertEquals( meta.getXML(), aClone.getXML() );
   }
 }

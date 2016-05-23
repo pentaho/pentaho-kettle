@@ -43,7 +43,6 @@ public class DetectLastRowMetaTest {
     setterMap.put( "resultfieldname", "setResultFieldName" );
 
     LoadSaveTester loadSaveTester = new LoadSaveTester( DetectLastRowMeta.class, attributes, getterMap, setterMap );
-    loadSaveTester.testRepoRoundTrip();
-    loadSaveTester.testXmlRoundTrip();
+    loadSaveTester.testSerialization();
   }
 }

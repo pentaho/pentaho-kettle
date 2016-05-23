@@ -46,7 +46,6 @@ public class DelayMetaTest {
     setterMap.put( "scaletime", "setScaleTimeCode" );
 
     LoadSaveTester loadSaveTester = new LoadSaveTester( DelayMeta.class, attributes, getterMap, setterMap );
-    loadSaveTester.testRepoRoundTrip();
-    loadSaveTester.testXmlRoundTrip();
+    loadSaveTester.testSerialization();
   }
 }
