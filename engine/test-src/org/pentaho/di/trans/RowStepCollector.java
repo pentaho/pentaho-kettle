@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -46,14 +46,17 @@ public class RowStepCollector implements RowListener {
     rowsError = new ArrayList<RowMetaAndData>();
   }
 
+  @Override
   public void rowReadEvent( RowMetaInterface rowMeta, Object[] row ) {
     rowsRead.add( new RowMetaAndData( rowMeta, row ) );
   }
 
+  @Override
   public void rowWrittenEvent( RowMetaInterface rowMeta, Object[] row ) {
     rowsWritten.add( new RowMetaAndData( rowMeta, row ) );
   }
 
+  @Override
   public void errorRowWrittenEvent( RowMetaInterface rowMeta, Object[] row ) {
     rowsError.add( new RowMetaAndData( rowMeta, row ) );
   }
