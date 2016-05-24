@@ -22,6 +22,7 @@
 
 package org.pentaho.di.trans.steps.getfilesrowscount;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -97,7 +98,9 @@ public class GetFilesRowsCountMetaTest implements InitializerInterface<StepMetaI
     attrValidatorMap.put( "excludeFileMask", stringArrayLoadSaveValidator );
     Map<String, FieldLoadSaveValidator<?>> typeValidatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();
 
-    loadSaveTester = new LoadSaveTester( GetFilesRowsCountMeta.class, attributes, getterMap, setterMap, attrValidatorMap, typeValidatorMap );
+    loadSaveTester =
+        new LoadSaveTester( GetFilesRowsCountMeta.class, attributes, new ArrayList<String>(), new ArrayList<String>(),
+            getterMap, setterMap, attrValidatorMap, typeValidatorMap, this );
   }
 
   // Call the allocate method on the LoadSaveTester meta class

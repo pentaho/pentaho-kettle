@@ -25,6 +25,7 @@ package org.pentaho.di.trans.steps.loadfileinput;
 import static org.junit.Assert.assertEquals;
 
 import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -39,7 +40,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
+import org.pentaho.di.trans.steps.loadsave.initializer.InitializerInterface;
 import org.pentaho.di.trans.steps.loadsave.validator.ArrayLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.StringLoadSaveValidator;
@@ -51,7 +54,7 @@ import org.xml.sax.InputSource;
 /**
  * User: Dzmitry Stsiapanau Date: 12/17/13 Time: 3:11 PM
  */
-public class LoadFileInputMetaTest {
+public class LoadFileInputMetaTest implements InitializerInterface<StepMetaInterface> {
   LoadSaveTester loadSaveTester;
 
   String xmlOrig = "    " + "<include>N</include>\n" + "    <include_field/>\n" + "    <rownum>N</rownum>\n"
@@ -201,10 +204,20 @@ public class LoadFileInputMetaTest {
     attrValidatorMap.put( "inputFields", lfifArrayLoadSaveValidator );
 
     Map<String, FieldLoadSaveValidator<?>> typeValidatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();
-    // typeValidatorMap.put( int[].class.getCanonicalName(), new PrimitiveIntArrayLoadSaveValidator( new IntLoadSaveValidator(), 3 ) );
 
-    loadSaveTester = new LoadSaveTester( MockLoadFileInputMeta.class, attributes, getterMap, setterMap, attrValidatorMap, typeValidatorMap );
+    loadSaveTester =
+        new LoadSaveTester( LoadFileInputMeta.class, attributes, new ArrayList<String>(), new ArrayList<String>(),
+            getterMap, setterMap, attrValidatorMap, typeValidatorMap, this );
   }
+
+  // Call the allocate method on the LoadSaveTester meta class
+  @Override
+  public void modify( StepMetaInterface someMeta ) {
+    if ( someMeta instanceof LoadFileInputMeta ) {
+      ( (LoadFileInputMeta) someMeta ).allocate( 5, 5 );
+    }
+  }
+
 
   @Test
   public void testSerialization() throws KettleException {
