@@ -25,6 +25,7 @@ package org.pentaho.di.ui.repo;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.BrowserFunction;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -34,6 +35,7 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
 import org.pentaho.di.ui.core.dialog.ThinDialog;
+import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.util.HelpUtils;
 import org.pentaho.platform.settings.ServerPort;
 import org.pentaho.platform.settings.ServerPortRegistry;
@@ -61,6 +63,7 @@ public class RepositoryDialog extends ThinDialog {
   private static final String LOGIN_TITLE = "Login to Repository";
   private static final String LOGIN_WEB_CLIENT_PATH = "/repositories/web/index.html#repository-connect";
   private static final String OSGI_SERVICE_PORT = "OSGI_SERVICE_PORT";
+  private static final Image LOGO = GUIResource.getInstance().getImageLogoSmall();
 
 
   private RepositoryConnectController controller;
@@ -206,7 +209,7 @@ public class RepositoryDialog extends ThinDialog {
     new BrowserFunction( browser, "getCurrentRepository" ) {
       @Override
       public Object function( Object[] objects ) {
-        return controller.getCurrentRepository().getName();
+        return controller.getCurrentRepository() != null ? controller.getCurrentRepository().getName( ) : "";
       }
     };
 
@@ -232,17 +235,17 @@ public class RepositoryDialog extends ThinDialog {
   }
 
   public void openManager() {
-    super.createDialog( MANAGER_TITLE, getRepoURL( MANAGER_WEB_CLIENT_PATH ), OPTIONS );
+    super.createDialog( MANAGER_TITLE, getRepoURL( MANAGER_WEB_CLIENT_PATH ), OPTIONS, LOGO );
     open();
   }
 
   public void openCreation() {
-    super.createDialog( CREATION_TITLE, getRepoURL( CREATION_WEB_CLIENT_PATH ), OPTIONS );
+    super.createDialog( CREATION_TITLE, getRepoURL( CREATION_WEB_CLIENT_PATH ), OPTIONS, LOGO );
     open();
   }
 
   public void openLogin( RepositoryMeta repositoryMeta ) {
-    super.createDialog( LOGIN_TITLE, getRepoURL( LOGIN_WEB_CLIENT_PATH ), OPTIONS );
+    super.createDialog( LOGIN_TITLE, getRepoURL( LOGIN_WEB_CLIENT_PATH ), OPTIONS, LOGO );
     open( repositoryMeta );
   }
 
