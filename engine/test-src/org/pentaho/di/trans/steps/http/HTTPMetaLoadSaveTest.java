@@ -19,7 +19,8 @@
  * limitations under the License.
  *
  ******************************************************************************/
-package org.pentaho.di.trans.steps.filterrows;
+
+package org.pentaho.di.trans.steps.http;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -32,35 +33,42 @@ import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
-import org.pentaho.di.trans.steps.loadsave.validator.ConditionLoadSaveValidator;
+import org.pentaho.di.trans.steps.loadsave.validator.ArrayLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
+import org.pentaho.di.trans.steps.loadsave.validator.StringLoadSaveValidator;
 
-public class FilterRowsMetaTest {
+public class HTTPMetaLoadSaveTest {
+
   LoadSaveTester loadSaveTester;
-  Class<FilterRowsMeta> testMetaClass = FilterRowsMeta.class;
 
   @Before
-  public void setUpLoadSave() throws Exception {
+  public void testLoadSaveRoundTrip() throws Exception {
     KettleEnvironment.init();
     PluginRegistry.init( true );
     List<String> attributes =
-        Arrays.asList( "condition" );
+        Arrays.asList( "url", "urlInField", "urlField", "encoding", "httpLogin", "httpPassword", "proxyHost",
+            "proxyPort", "socketTimeout", "connectionTimeout", "closeIdleConnectionsTime", "argumentField",
+            "argumentParameter", "headerField", "headerParameter", "fieldName", "resultCodeFieldName",
+            "responseTimeFieldName", "responseHeaderFieldName" );
+    Map<String, FieldLoadSaveValidator<?>> fieldLoadSaveValidatorAttributeMap =
+        new HashMap<String, FieldLoadSaveValidator<?>>();
 
-    Map<String, String> getterMap = new HashMap<String, String>();
-    Map<String, String> setterMap = new HashMap<String, String>();
-
-    Map<String, FieldLoadSaveValidator<?>> attrValidatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();
-    attrValidatorMap.put( "condition", new ConditionLoadSaveValidator() );
-
-    Map<String, FieldLoadSaveValidator<?>> typeValidatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();
+    //Arrays need to be consistent length
+    FieldLoadSaveValidator<String[]> stringArrayLoadSaveValidator =
+        new ArrayLoadSaveValidator<String>( new StringLoadSaveValidator(), 25 );
+    fieldLoadSaveValidatorAttributeMap.put( "argumentField", stringArrayLoadSaveValidator );
+    fieldLoadSaveValidatorAttributeMap.put( "argumentParameter", stringArrayLoadSaveValidator );
+    fieldLoadSaveValidatorAttributeMap.put( "headerField", stringArrayLoadSaveValidator );
+    fieldLoadSaveValidatorAttributeMap.put( "headerParameter", stringArrayLoadSaveValidator );
 
     loadSaveTester =
-        new LoadSaveTester( testMetaClass, attributes, getterMap, setterMap, attrValidatorMap, typeValidatorMap );
-  }
+        new LoadSaveTester( HTTPMeta.class, attributes, new HashMap<String, String>(),
+            new HashMap<String, String>(), fieldLoadSaveValidatorAttributeMap,
+            new HashMap<String, FieldLoadSaveValidator<?>>() );
 
+  }
   @Test
   public void testSerialization() throws KettleException {
     loadSaveTester.testSerialization();
   }
-
 }

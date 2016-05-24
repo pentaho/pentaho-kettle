@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  ******************************************************************************/
-package org.pentaho.di.trans.steps.filterrows;
+package org.pentaho.di.trans.steps.javafilter;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -32,12 +32,11 @@ import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
-import org.pentaho.di.trans.steps.loadsave.validator.ConditionLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
 
-public class FilterRowsMetaTest {
+public class JavaFilterMetaTest {
   LoadSaveTester loadSaveTester;
-  Class<FilterRowsMeta> testMetaClass = FilterRowsMeta.class;
+  Class<JavaFilterMeta> testMetaClass = JavaFilterMeta.class;
 
   @Before
   public void setUpLoadSave() throws Exception {
@@ -50,8 +49,6 @@ public class FilterRowsMetaTest {
     Map<String, String> setterMap = new HashMap<String, String>();
 
     Map<String, FieldLoadSaveValidator<?>> attrValidatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();
-    attrValidatorMap.put( "condition", new ConditionLoadSaveValidator() );
-
     Map<String, FieldLoadSaveValidator<?>> typeValidatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();
 
     loadSaveTester =
@@ -62,5 +59,4 @@ public class FilterRowsMetaTest {
   public void testSerialization() throws KettleException {
     loadSaveTester.testSerialization();
   }
-
 }

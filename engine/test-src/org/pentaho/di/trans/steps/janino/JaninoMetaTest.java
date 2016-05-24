@@ -64,8 +64,7 @@ public class JaninoMetaTest {
       new LoadSaveTester( JaninoMeta.class, attributes, new HashMap<String, String>(), new HashMap<String, String>(),
           fieldLoadSaveValidatorAttributeMap, new HashMap<String, FieldLoadSaveValidator<?>>() );
 
-    loadSaveTester.testRepoRoundTrip();
-    loadSaveTester.testXmlRoundTrip();
+    loadSaveTester.testSerialization();
   }
 
   public class JaninoMetaFunctionFieldLoadSaveValidator implements FieldLoadSaveValidator<JaninoMetaFunction> {
@@ -83,7 +82,7 @@ public class JaninoMetaTest {
 
     @Override
     public boolean validateTestObject( JaninoMetaFunction testObject, Object actual ) {
-      return testObject.equals( (JaninoMetaFunction) actual );
+      return testObject.equals( actual );
     }
   }
 }
