@@ -43,6 +43,7 @@ import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
 import org.pentaho.di.trans.steps.loadsave.validator.ArrayLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.StringLoadSaveValidator;
+import org.pentaho.di.trans.steps.loadsave.validator.YNLoadSaveValidator;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
@@ -206,13 +207,8 @@ public class LoadFileInputMetaTest {
   }
 
   @Test
-  public void testLoadSaveXML() throws KettleException {
-    loadSaveTester.testXmlRoundTrip();
-  }
-
-  @Test
-  public void testLoadSaveRepo() throws KettleException {
-    loadSaveTester.testRepoRoundTrip();
+  public void testSerialization() throws KettleException {
+    loadSaveTester.testSerialization();
   }
 
   public class LoadFileInputFieldLoadSaveValidator implements FieldLoadSaveValidator<LoadFileInputField> {
@@ -243,22 +239,6 @@ public class LoadFileInputMetaTest {
       LoadFileInputField aClone = (LoadFileInputField) testObject.clone();
       boolean tst2 = ( actual.getXML().equals( aClone.getXML() ) );
       return ( tst1 && tst2 );
-    }
-  }
-
-  public class YNLoadSaveValidator implements FieldLoadSaveValidator<String> {
-    Random r = new Random();
-
-    @Override
-    public String getTestObject() {
-      boolean ltr = r.nextBoolean();
-      String letter = ltr ? "Y" : "N";
-      return letter;
-    }
-
-    @Override
-    public boolean validateTestObject( String test, Object actual ) {
-      return test.equals( actual );
     }
   }
 

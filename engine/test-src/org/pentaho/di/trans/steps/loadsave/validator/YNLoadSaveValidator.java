@@ -19,19 +19,22 @@
  * limitations under the License.
  *
  ******************************************************************************/
+package org.pentaho.di.trans.steps.loadsave.validator;
 
-package org.pentaho.di.trans.steps.ldifinput;
+import java.util.Random;
 
-public class MockLDIFInputMeta extends LDIFInputMeta {
+public class YNLoadSaveValidator implements FieldLoadSaveValidator<String> {
+  Random r = new Random();
 
-
-  /**
-   * This is only here because the allocate method must be called or
-   * loadSaveTester bombs.
-   */
-  public MockLDIFInputMeta() {
-    super();
-    this.allocate( 5, 5 );
+  @Override
+  public String getTestObject() {
+    boolean ltr = r.nextBoolean();
+    String letter = ltr ? "Y" : "N";
+    return letter;
   }
 
+  @Override
+  public boolean validateTestObject( String test, Object actual ) {
+    return test.equals( actual );
+  }
 }

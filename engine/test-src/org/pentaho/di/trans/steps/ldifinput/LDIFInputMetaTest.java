@@ -22,6 +22,7 @@
 
 package org.pentaho.di.trans.steps.ldifinput;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -32,12 +33,15 @@ import java.util.UUID;
 import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
+import org.pentaho.di.trans.steps.loadsave.initializer.InitializerInterface;
 import org.pentaho.di.trans.steps.loadsave.validator.ArrayLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.StringLoadSaveValidator;
+import org.pentaho.di.trans.steps.loadsave.validator.YNLoadSaveValidator;
 
-public class LDIFInputMetaTest {
+public class LDIFInputMetaTest implements InitializerInterface<StepMetaInterface> {
   LoadSaveTester loadSaveTester;
 
   @Before
@@ -118,28 +122,35 @@ public class LDIFInputMetaTest {
     FieldLoadSaveValidator<LDIFInputField[]> liflsv =
         new ArrayLoadSaveValidator<LDIFInputField>( new LDIFInputFieldLoadSaveValidator(), 5 );
 
+    FieldLoadSaveValidator<String[]> YNArrayLoadSaveValidator =
+        new ArrayLoadSaveValidator<String>( new YNLoadSaveValidator(), 5 );
+
     Map<String, FieldLoadSaveValidator<?>> attrValidatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();
     attrValidatorMap.put( "fileName", stringArrayLoadSaveValidator );
     attrValidatorMap.put( "fileMask", stringArrayLoadSaveValidator );
     attrValidatorMap.put( "excludeFileMask", stringArrayLoadSaveValidator );
-    attrValidatorMap.put( "fileRequired", stringArrayLoadSaveValidator );
+    attrValidatorMap.put( "fileRequired", YNArrayLoadSaveValidator );
     attrValidatorMap.put( "includeSubFolders", stringArrayLoadSaveValidator );
     attrValidatorMap.put(  "inputFields", liflsv );
 
     Map<String, FieldLoadSaveValidator<?>> typeValidatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();
-    // typeValidatorMap.put( boolean[].class.getCanonicalName(), new PrimitiveBooleanArrayLoadSaveValidator( new BooleanLoadSaveValidator(), 5 ) );
 
-    loadSaveTester = new LoadSaveTester( MockLDIFInputMeta.class, attributes, getterMap, setterMap, attrValidatorMap, typeValidatorMap );
+    loadSaveTester =
+        new LoadSaveTester( LDIFInputMeta.class, attributes, new ArrayList<String>(), new ArrayList<String>(),
+            getterMap, setterMap, attrValidatorMap, typeValidatorMap, this );
+  }
+
+  // Call the allocate method on the LoadSaveTester meta class
+  @Override
+  public void modify( StepMetaInterface someMeta ) {
+    if ( someMeta instanceof LDIFInputMeta ) {
+      ( (LDIFInputMeta) someMeta ).allocate( 5, 5 );
+    }
   }
 
   @Test
-  public void testLoadSaveXML() throws KettleException {
-    loadSaveTester.testXmlRoundTrip();
-  }
-
-  @Test
-  public void testLoadSaveRepo() throws KettleException {
-    loadSaveTester.testRepoRoundTrip();
+  public void testSerialization() throws KettleException {
+    loadSaveTester.testSerialization();
   }
 
   public class LDIFInputFieldLoadSaveValidator implements FieldLoadSaveValidator<LDIFInputField> {
@@ -171,5 +182,4 @@ public class LDIFInputMetaTest {
       return ( testObject.getXML().equals( actualInput.getXML() ) );
     }
   }
-
 }

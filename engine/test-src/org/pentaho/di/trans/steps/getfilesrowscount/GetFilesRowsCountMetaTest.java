@@ -26,7 +26,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -37,6 +36,7 @@ import org.pentaho.di.trans.steps.loadsave.initializer.InitializerInterface;
 import org.pentaho.di.trans.steps.loadsave.validator.ArrayLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.StringLoadSaveValidator;
+import org.pentaho.di.trans.steps.loadsave.validator.YNLoadSaveValidator;
 
 public class GetFilesRowsCountMetaTest implements InitializerInterface<StepMetaInterface> {
 
@@ -114,20 +114,4 @@ public class GetFilesRowsCountMetaTest implements InitializerInterface<StepMetaI
   }
 
   // Note - cloneTest() removed as it's now covered by the load/save tester.
-
-  public class YNLoadSaveValidator implements FieldLoadSaveValidator<String> {
-    Random r = new Random();
-
-    @Override
-    public String getTestObject() {
-      boolean ltr = r.nextBoolean();
-      String letter = ltr ? "Y" : "N";
-      return letter;
-    }
-
-    @Override
-    public boolean validateTestObject( String test, Object actual ) {
-      return test.equals( actual );
-    }
-  }
 }
