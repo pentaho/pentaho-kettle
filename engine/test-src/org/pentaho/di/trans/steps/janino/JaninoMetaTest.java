@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -64,8 +64,7 @@ public class JaninoMetaTest {
       new LoadSaveTester( JaninoMeta.class, attributes, new HashMap<String, String>(), new HashMap<String, String>(),
           fieldLoadSaveValidatorAttributeMap, new HashMap<String, FieldLoadSaveValidator<?>>() );
 
-    loadSaveTester.testRepoRoundTrip();
-    loadSaveTester.testXmlRoundTrip();
+    loadSaveTester.testSerialization();
   }
 
   public class JaninoMetaFunctionFieldLoadSaveValidator implements FieldLoadSaveValidator<JaninoMetaFunction> {
@@ -83,7 +82,7 @@ public class JaninoMetaTest {
 
     @Override
     public boolean validateTestObject( JaninoMetaFunction testObject, Object actual ) {
-      return testObject.equals( (JaninoMetaFunction) actual );
+      return testObject.equals( actual );
     }
   }
 }

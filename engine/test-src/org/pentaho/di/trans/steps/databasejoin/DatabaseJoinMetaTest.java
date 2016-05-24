@@ -21,24 +21,68 @@
  ******************************************************************************/
 package org.pentaho.di.trans.steps.databasejoin;
 
-import org.junit.Test;
+import java.util.ArrayList;
 import java.util.Arrays;
-import static org.junit.Assert.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-public class DatabaseJoinMetaTest {
+import org.junit.Before;
+import org.junit.Test;
+import org.pentaho.di.core.KettleEnvironment;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.plugins.PluginRegistry;
+import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
+import org.pentaho.di.trans.steps.loadsave.initializer.InitializerInterface;
+import org.pentaho.di.trans.steps.loadsave.validator.ArrayLoadSaveValidator;
+import org.pentaho.di.trans.steps.loadsave.validator.DatabaseMetaLoadSaveValidator;
+import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
+import org.pentaho.di.trans.steps.loadsave.validator.NonZeroIntLoadSaveValidator;
+import org.pentaho.di.trans.steps.loadsave.validator.PrimitiveIntArrayLoadSaveValidator;
+import org.pentaho.di.trans.steps.loadsave.validator.StringLoadSaveValidator;
+
+public class DatabaseJoinMetaTest implements InitializerInterface<StepMetaInterface> {
+  LoadSaveTester loadSaveTester;
+  Class<DatabaseJoinMeta> testMetaClass = DatabaseJoinMeta.class;
+
+  @Before
+  public void setUpLoadSave() throws Exception {
+    KettleEnvironment.init();
+    PluginRegistry.init( true );
+    List<String> attributes =
+        Arrays.asList( "sql", "rowLimit", "outerJoin", "variableReplace", "databaseMeta", "parameterField", "parameterType" );
+
+    Map<String, String> getterMap = new HashMap<String, String>();
+    Map<String, String> setterMap = new HashMap<String, String>();
+
+    Map<String, FieldLoadSaveValidator<?>> attrValidatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();
+
+    attrValidatorMap.put( "parameterField", new ArrayLoadSaveValidator<String>( new StringLoadSaveValidator(), 5 ) );
+
+    attrValidatorMap.put( "parameterType", new PrimitiveIntArrayLoadSaveValidator( new NonZeroIntLoadSaveValidator( 7 ), 5 ) );
+
+    attrValidatorMap.put( "databaseMeta", new DatabaseMetaLoadSaveValidator() );
+
+    Map<String, FieldLoadSaveValidator<?>> typeValidatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();
+
+    loadSaveTester =
+        new LoadSaveTester( testMetaClass, attributes, new ArrayList<String>(), new ArrayList<String>(),
+            getterMap, setterMap, attrValidatorMap, typeValidatorMap, this );
+  }
+
+  // Call the allocate method on the LoadSaveTester meta class
+  @Override
+  public void modify( StepMetaInterface someMeta ) {
+    if ( someMeta instanceof DatabaseJoinMeta ) {
+      ( (DatabaseJoinMeta) someMeta ).allocate( 5 );
+    }
+  }
 
   @Test
-  public void cloneTest() throws Exception {
-    DatabaseJoinMeta meta = new DatabaseJoinMeta();
-    meta.allocate( 2 );
-    meta.setParameterType( new int[] { 10, 50 } );
-    meta.setParameterField( new String[] { "ee", "ff" } );
-    meta.setSql( "SELECT * FROM FOO AS BAR" );
-    DatabaseJoinMeta aClone = (DatabaseJoinMeta) meta.clone();
-    assertFalse( aClone == meta );
-    assertTrue( Arrays.equals( meta.getParameterField(), aClone.getParameterField() ) );
-    assertTrue( Arrays.equals( meta.getParameterType(), aClone.getParameterType() ) );
-    assertEquals( meta.getSql(), aClone.getSql() );
-    assertEquals( meta.getXML(), aClone.getXML() );
+  public void testSerialization() throws KettleException {
+    loadSaveTester.testSerialization();
   }
+
+  // Note - cloneTest() removed because the load/save tester has a comprehensive clone test.
 }

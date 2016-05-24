@@ -108,6 +108,7 @@ public class MailInputMeta extends BaseStepMeta implements StepMetaInterface {
     super(); // allocate BaseStepMeta
   }
 
+  @Override
   public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     readData( stepnode );
   }
@@ -116,6 +117,7 @@ public class MailInputMeta extends BaseStepMeta implements StepMetaInterface {
     inputFields = new MailInputField[nrfields];
   }
 
+  @Override
   public Object clone() {
     MailInputMeta retval = (MailInputMeta) super.clone();
     int nrFields = inputFields.length;
@@ -162,7 +164,8 @@ public class MailInputMeta extends BaseStepMeta implements StepMetaInterface {
     includesubfolders = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "includesubfolders" ) );
     usedynamicfolder = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "usedynamicfolder" ) );
     folderfield = XMLHandler.getTagValue( stepnode, "folderfield" );
-
+    proxyusername = XMLHandler.getTagValue( stepnode, "proxyusername" );
+    useproxy = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "useproxy" ) );
     useBatch = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, Tags.USE_BATCH ) );
     try {
       batchSize = Integer.parseInt( XMLHandler.getTagValue( stepnode, Tags.BATCH_SIZE ) );
@@ -171,7 +174,7 @@ public class MailInputMeta extends BaseStepMeta implements StepMetaInterface {
     }
     start = XMLHandler.getTagValue( stepnode, Tags.START_MSG );
     end = XMLHandler.getTagValue( stepnode, Tags.END_MSG );
-    stopOnError = "Y".equalsIgnoreCase( XMLHandler.getTagAttribute( stepnode, Tags.STOP_ON_ERROR ) );
+    stopOnError = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, Tags.STOP_ON_ERROR ) );
 
     rowlimit = XMLHandler.getTagValue( stepnode, "rowlimit" );
     Node fields = XMLHandler.getSubNode( stepnode, "fields" );
@@ -186,6 +189,7 @@ public class MailInputMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
+  @Override
   public void setDefault() {
     servername = null;
     username = null;
@@ -231,6 +235,7 @@ public class MailInputMeta extends BaseStepMeta implements StepMetaInterface {
 
   }
 
+  @Override
   public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
       servername = rep.getStepAttributeString( id_step, "servername" );
@@ -301,6 +306,7 @@ public class MailInputMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
+  @Override
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
 
@@ -365,6 +371,7 @@ public class MailInputMeta extends BaseStepMeta implements StepMetaInterface {
     static final String STOP_ON_ERROR = "stopOnError";
   }
 
+  @Override
   public String getXML() {
     StringBuilder retval = new StringBuilder();
     String tab = "      ";
@@ -423,6 +430,7 @@ public class MailInputMeta extends BaseStepMeta implements StepMetaInterface {
     return retval.toString();
   }
 
+  @Override
   public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
     RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
@@ -713,15 +721,18 @@ public class MailInputMeta extends BaseStepMeta implements StepMetaInterface {
     this.password = password;
   }
 
+  @Override
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta tr,
     Trans trans ) {
     return new MailInput( stepMeta, stepDataInterface, cnr, tr, trans );
   }
 
+  @Override
   public StepDataInterface getStepData() {
     return new MailInputData();
   }
 
+  @Override
   public void getFields( RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep,
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     int i;

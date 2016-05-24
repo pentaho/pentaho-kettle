@@ -22,21 +22,90 @@
 
 package org.pentaho.di.trans.steps.databaselookup;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.pentaho.di.core.KettleEnvironment;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
+import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaString;
+import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
+import org.pentaho.di.trans.steps.loadsave.initializer.InitializerInterface;
+import org.pentaho.di.trans.steps.loadsave.validator.ArrayLoadSaveValidator;
+import org.pentaho.di.trans.steps.loadsave.validator.DatabaseMetaLoadSaveValidator;
+import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
+import org.pentaho.di.trans.steps.loadsave.validator.NonZeroIntLoadSaveValidator;
+import org.pentaho.di.trans.steps.loadsave.validator.PrimitiveIntArrayLoadSaveValidator;
+import org.pentaho.di.trans.steps.loadsave.validator.StringLoadSaveValidator;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
-public class DatabaseLookupMetaTest {
+public class DatabaseLookupMetaTest implements InitializerInterface<StepMetaInterface> {
+  LoadSaveTester loadSaveTester;
+  Class<DatabaseLookupMeta> testMetaClass = DatabaseLookupMeta.class;
+
+  @Before
+  public void setUpLoadSave() throws Exception {
+    KettleEnvironment.init();
+    PluginRegistry.init( true );
+    List<String> attributes =
+        Arrays.asList( "schemaName", "tablename", "databaseMeta", "orderByClause", "cached",
+            "cacheSize", "loadingAllDataInCache", "failingOnMultipleResults", "eatingRowOnLookupFailure",
+            "streamKeyField1", "streamKeyField2", "keyCondition", "tableKeyField", "returnValueField",
+            "returnValueNewName", "returnValueDefault", "returnValueDefaultType" );
+
+    Map<String, String> getterMap = new HashMap<String, String>();
+    Map<String, String> setterMap = new HashMap<String, String>();
+
+    FieldLoadSaveValidator<String[]> stringArrayLoadSaveValidator =
+        new ArrayLoadSaveValidator<String>( new StringLoadSaveValidator(), 5 );
+
+    Map<String, FieldLoadSaveValidator<?>> attrValidatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();
+    attrValidatorMap.put( "streamKeyField1", stringArrayLoadSaveValidator );
+    attrValidatorMap.put( "streamKeyField2", stringArrayLoadSaveValidator );
+    attrValidatorMap.put( "keyCondition", stringArrayLoadSaveValidator );
+    attrValidatorMap.put( "tableKeyField", stringArrayLoadSaveValidator );
+    attrValidatorMap.put( "returnValueField", stringArrayLoadSaveValidator );
+    attrValidatorMap.put( "returnValueNewName", stringArrayLoadSaveValidator );
+    attrValidatorMap.put( "returnValueDefault", stringArrayLoadSaveValidator );
+    attrValidatorMap.put( "returnValueDefaultType",
+         new PrimitiveIntArrayLoadSaveValidator( new NonZeroIntLoadSaveValidator( 7 ), 5 ) );
+
+    attrValidatorMap.put( "databaseMeta", new DatabaseMetaLoadSaveValidator() );
+
+    Map<String, FieldLoadSaveValidator<?>> typeValidatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();
+
+    loadSaveTester =
+        new LoadSaveTester( testMetaClass, attributes, new ArrayList<String>(), new ArrayList<String>(),
+            getterMap, setterMap, attrValidatorMap, typeValidatorMap, this );
+  }
+
+  // Call the allocate method on the LoadSaveTester meta class
+  @Override
+  public void modify( StepMetaInterface someMeta ) {
+    if ( someMeta instanceof DatabaseLookupMeta ) {
+      ( (DatabaseLookupMeta) someMeta ).allocate( 5, 5 );
+    }
+  }
+
+  @Test
+  public void testSerialization() throws KettleException {
+    loadSaveTester.testSerialization();
+  }
 
   private DatabaseLookupMeta databaseLookupMeta = new DatabaseLookupMeta();
 

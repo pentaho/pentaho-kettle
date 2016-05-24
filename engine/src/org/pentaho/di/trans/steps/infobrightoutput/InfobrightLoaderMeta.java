@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -78,6 +78,7 @@ public class InfobrightLoaderMeta extends TableOutputMeta implements StepMetaInt
    * @see org.pentaho.di.trans.step.StepMetaInterface#getStep(org.pentaho.di.trans.step.StepMeta,
    *      org.pentaho.di.trans.step.StepDataInterface, int, org.pentaho.di.trans.TransMeta, org.pentaho.di.trans.Trans)
    */
+  @Override
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta tr,
     Trans trans ) {
     InfobrightLoader loader = new InfobrightLoader( stepMeta, stepDataInterface, cnr, tr, trans );
@@ -89,6 +90,7 @@ public class InfobrightLoaderMeta extends TableOutputMeta implements StepMetaInt
    *
    * @see org.pentaho.di.trans.step.StepMetaInterface#getStepData()
    */
+  @Override
   public StepDataInterface getStepData() {
     return new InfobrightLoaderData();
   }
@@ -98,6 +100,7 @@ public class InfobrightLoaderMeta extends TableOutputMeta implements StepMetaInt
    *
    * @see org.pentaho.di.trans.step.BaseStepMeta#clone()
    */
+  @Override
   public Object clone() {
     InfobrightLoaderMeta retval = (InfobrightLoaderMeta) super.clone();
     return retval;
@@ -111,6 +114,11 @@ public class InfobrightLoaderMeta extends TableOutputMeta implements StepMetaInt
     this.dataFormat = dataFormat;
   }
 
+  public DataFormat getDataFormat() {
+    return this.dataFormat;
+  }
+
+  @Override
   public void setDefault() {
     this.dataFormat = DataFormat.TXT_VARIABLE; // default for ICE
     // this.dataFormat = DataFormat.BINARY; // default for IEE

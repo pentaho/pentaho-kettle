@@ -104,8 +104,6 @@ public class LDAPOutputMetaTest {
     attrValidatorMap.put( "operationType", new IntLoadSaveValidator( 5 ) );
 
     Map<String, FieldLoadSaveValidator<?>> typeValidatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();
-    // typeValidatorMap.put( int[].class.getCanonicalName(), new PrimitiveIntArrayLoadSaveValidator( new IntLoadSaveValidator(), 3 ) );
-    // typeValidatorMap.put( boolean[].class.getCanonicalName(), new PrimitiveBooleanArrayLoadSaveValidator( new BooleanLoadSaveValidator(), 3 ) );
 
     loadSaveTester = new LoadSaveTester( LDAPOutputMeta.class, attributes, getterMap, setterMap, attrValidatorMap, typeValidatorMap );
 
@@ -117,13 +115,8 @@ public class LDAPOutputMetaTest {
   }
 
   @Test
-  public void testLoadSaveXML() throws KettleException {
-    loadSaveTester.testXmlRoundTrip();
-  }
-
-  @Test
-  public void testLoadSaveRepo() throws KettleException {
-    loadSaveTester.testRepoRoundTrip();
+  public void testSerialization() throws KettleException {
+    loadSaveTester.testSerialization();
   }
 
 }

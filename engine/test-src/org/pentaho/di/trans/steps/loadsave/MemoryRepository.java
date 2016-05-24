@@ -569,14 +569,14 @@ public class MemoryRepository extends AbstractRepository {
   @Override
   public void saveConditionStepAttribute( ObjectId id_transformation, ObjectId id_step, String code, Condition condition )
     throws KettleException {
-    // TODO Auto-generated method stub
-
+    this.saveStepAttribute( id_transformation, id_step, code, condition.getXML() );
   }
 
   @Override
   public Condition loadConditionFromStepAttribute( ObjectId id_step, String code ) throws KettleException {
     // TODO Auto-generated method stub
-    return null;
+    String tmp = this.getStepAttributeString( id_step, code );
+    return new Condition( tmp );
   }
 
   @Override

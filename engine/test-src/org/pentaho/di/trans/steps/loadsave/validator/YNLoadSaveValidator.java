@@ -19,18 +19,22 @@
  * limitations under the License.
  *
  ******************************************************************************/
-package org.pentaho.di.trans.steps.getfilesrowscount;
+package org.pentaho.di.trans.steps.loadsave.validator;
 
-public class GetFilesRowsCountMetaMock extends GetFilesRowsCountMeta {
-  /*
-   * This is required because of how the method fileRequired works. Unfortunately,
-   * that method doesn't simply accept the setter. Rather, it's expecting the
-   * receiving array to have already been allocated (which it won't have been
-   * for the load/save tester). This subclass simply calls allocate which
-   * avoids the NPE. 
-   */
-  public GetFilesRowsCountMetaMock( ) {
-    super();
-    this.allocate( 5 );
+import java.util.Random;
+
+public class YNLoadSaveValidator implements FieldLoadSaveValidator<String> {
+  Random r = new Random();
+
+  @Override
+  public String getTestObject() {
+    boolean ltr = r.nextBoolean();
+    String letter = ltr ? "Y" : "N";
+    return letter;
+  }
+
+  @Override
+  public boolean validateTestObject( String test, Object actual ) {
+    return test.equals( actual );
   }
 }

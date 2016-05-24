@@ -27,15 +27,10 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import org.pentaho.di.core.util.Assert;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.InetSocketAddress;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HostConfiguration;
@@ -55,16 +50,11 @@ import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaInteger;
 import org.pentaho.di.core.row.value.ValueMetaString;
+import org.pentaho.di.core.util.Assert;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
-import org.pentaho.di.trans.steps.loadsave.validator.ArrayLoadSaveValidator;
-import org.pentaho.di.trans.steps.loadsave.validator.BooleanLoadSaveValidator;
-import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
-import org.pentaho.di.trans.steps.loadsave.validator.PrimitiveBooleanArrayLoadSaveValidator;
-import org.pentaho.di.trans.steps.loadsave.validator.StringLoadSaveValidator;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
 
 import com.sun.net.httpserver.HttpExchange;
@@ -101,11 +91,11 @@ public class HTTPPOSTIT {
      * putRow is used to copy a row, to the alternate rowset(s) This should get priority over everything else!
      * (synchronized) If distribute is true, a row is copied only once to the output rowsets, otherwise copies are sent
      * to each rowset!
-     * 
+     *
      * @param row
      *          The row to put to the destination rowset(s).
      * @throws org.pentaho.di.core.exception.KettleStepException
-     * 
+     *
      */
     @Override
     public void putRow( RowMetaInterface rowMeta, Object[] row ) throws KettleStepException {
@@ -246,34 +236,4 @@ public class HTTPPOSTIT {
     httpServer.start();
   }
 
-  @Test
-  public void testLoadSaveRoundTrip() throws KettleException {
-    List<String> attributes =
-        Arrays.asList( "postAFile", "encoding", "url", "urlInField", "urlField", "requestEntity", "httpLogin",
-            "httpPassword", "proxyHost", "proxyPort", "socketTimeout", "connectionTimeout",
-            "closeIdleConnectionsTime", "argumentField", "argumentParameter", "argumentHeader", "queryField",
-            "queryParameter", "fieldName", "resultCodeFieldName", "responseTimeFieldName", "responseHeaderFieldName" );
-
-    Map<String, FieldLoadSaveValidator<?>> fieldLoadSaveValidatorAttributeMap =
-        new HashMap<String, FieldLoadSaveValidator<?>>();
-
-    //Arrays need to be consistent length
-    FieldLoadSaveValidator<String[]> stringArrayLoadSaveValidator =
-        new ArrayLoadSaveValidator<String>( new StringLoadSaveValidator(), 25 );
-    FieldLoadSaveValidator<boolean[]> booleanArrayLoadSaveValidator =
-        new PrimitiveBooleanArrayLoadSaveValidator( new BooleanLoadSaveValidator(), 25 );
-    fieldLoadSaveValidatorAttributeMap.put( "argumentField", stringArrayLoadSaveValidator );
-    fieldLoadSaveValidatorAttributeMap.put( "argumentParameter", stringArrayLoadSaveValidator );
-    fieldLoadSaveValidatorAttributeMap.put( "argumentHeader", booleanArrayLoadSaveValidator );
-    fieldLoadSaveValidatorAttributeMap.put( "queryField", stringArrayLoadSaveValidator );
-    fieldLoadSaveValidatorAttributeMap.put( "queryParameter", stringArrayLoadSaveValidator );
-
-    LoadSaveTester loadSaveTester =
-        new LoadSaveTester( HTTPPOSTMeta.class, attributes, new HashMap<String, String>(),
-            new HashMap<String, String>(), fieldLoadSaveValidatorAttributeMap,
-            new HashMap<String, FieldLoadSaveValidator<?>>() );
-
-    loadSaveTester.testRepoRoundTrip();
-    loadSaveTester.testXmlRoundTrip();
-  }
 }
