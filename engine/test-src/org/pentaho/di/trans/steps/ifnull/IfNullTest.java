@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,7 +27,6 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
-import junit.framework.Assert;
 
 import org.junit.After;
 import org.junit.Before;
@@ -46,9 +45,12 @@ import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.steps.ifnull.IfNullMeta.Fields;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
 import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.test.util.FieldAccessor;
+
+import junit.framework.Assert;
 
 /**
  * Tests for IfNull step
@@ -84,13 +86,22 @@ public class IfNullTest {
 
   private IfNullMeta mockProcessRowMeta() throws KettleStepException {
     IfNullMeta processRowMeta = smh.processRowsStepMetaInterface;
-    doReturn( new String[] { "null-field", "empty-field", "space-field" } ).when( processRowMeta ).getFieldName();
+    doReturn( createFields( "null-field", "empty-field", "space-field" ) ).when( processRowMeta ).getFields();
     doReturn( "replace-value" ).when( processRowMeta ).getReplaceAllByValue();
-    doCallRealMethod().when( processRowMeta ).getFields( any( RowMetaInterface.class ), anyString(),
-        any( RowMetaInterface[].class ), any( StepMeta.class ), any( VariableSpace.class ), any( Repository.class ),
-        any( IMetaStore.class ) );
-
+    doCallRealMethod().when( processRowMeta ).getFields( any( RowMetaInterface.class ), anyString(), any(
+        RowMetaInterface[].class ), any( StepMeta.class ), any( VariableSpace.class ), any( Repository.class ), any(
+            IMetaStore.class ) );
     return processRowMeta;
+  }
+
+  private static Fields[] createFields( String... fieldNames ) {
+    Fields[] fields = new Fields[fieldNames.length];
+    for ( int i = 0; i < fields.length; i++ ) {
+      Fields currentField = new Fields();
+      currentField.setFieldName( fieldNames[i] );
+      fields[i] = currentField;
+    }
+    return fields;
   }
 
   private RowMeta buildInputRowMeta( ValueMetaInterface... valueMetaInterface ) {
