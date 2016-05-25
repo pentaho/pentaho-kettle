@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -300,7 +300,7 @@ public class TextFileInputMeta extends BaseFileInputStepMeta implements StepMeta
         Node excludefilemasknode = XMLHandler.getSubNodeByNr( filenode, "exclude_filemask", i );
         Node fileRequirednode = XMLHandler.getSubNodeByNr( filenode, "file_required", i );
         Node includeSubFoldersnode = XMLHandler.getSubNodeByNr( filenode, "include_subfolders", i );
-        inputFiles.fileName[i] = loadSource( filenode, filenamenode, i, metaStore );
+        inputFiles.fileName[i] = loadSource( filenode, filenamenode, i );
         inputFiles.fileMask[i] = XMLHandler.getNodeValue( filemasknode );
         inputFiles.excludeFileMask[i] = XMLHandler.getNodeValue( excludefilemasknode );
         inputFiles.fileRequired[i] = XMLHandler.getNodeValue( fileRequirednode );
@@ -1252,7 +1252,7 @@ public class TextFileInputMeta extends BaseFileInputStepMeta implements StepMeta
     setFileName( fileName );
   }
 
-  protected String loadSource( Node filenode, Node filenamenode, int i, IMetaStore metaStore ) {
+  protected String loadSource( Node filenode, Node filenamenode, int i ) {
     return XMLHandler.getNodeValue( filenamenode );
   }
 
@@ -1300,17 +1300,5 @@ public class TextFileInputMeta extends BaseFileInputStepMeta implements StepMeta
    */
   public String getAcceptingField() {
     return inputFiles.acceptingField;
-  }
-
-  public String[] getFilePaths( VariableSpace space ) {
-    return FileInputList.createFilePathList(
-        space, inputFiles.fileName, inputFiles.fileMask, inputFiles.excludeFileMask,
-        inputFiles.fileRequired, includeSubFolderBoolean() );
-  }
-
-  public FileInputList getTextFileList( VariableSpace space ) {
-    return FileInputList.createFileList(
-        space, inputFiles.fileName, inputFiles.fileMask, inputFiles.excludeFileMask,
-        inputFiles.fileRequired, includeSubFolderBoolean() );
   }
 }
