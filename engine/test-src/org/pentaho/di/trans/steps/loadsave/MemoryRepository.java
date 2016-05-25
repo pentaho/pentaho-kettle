@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2014 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -202,7 +202,7 @@ public class MemoryRepository extends AbstractRepository {
 
   @Override
   public boolean
-  exists( String name, RepositoryDirectoryInterface repositoryDirectory, RepositoryObjectType objectType )
+    exists( String name, RepositoryDirectoryInterface repositoryDirectory, RepositoryObjectType objectType )
     throws KettleException {
     // TODO Auto-generated method stub
     return false;
@@ -569,7 +569,7 @@ public class MemoryRepository extends AbstractRepository {
 
   @Override
   public void
-  saveConditionStepAttribute( ObjectId id_transformation, ObjectId id_step, String code, Condition condition )
+    saveConditionStepAttribute( ObjectId id_transformation, ObjectId id_step, String code, Condition condition )
     throws KettleException {
     // TODO Auto-generated method stub
 

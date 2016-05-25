@@ -22,6 +22,7 @@
 
 package org.pentaho.di.job.entry.loadSave;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
@@ -35,8 +36,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import static org.junit.Assert.assertTrue;
 
 /**
  * @author Andrey Khayrutdinov
@@ -61,7 +60,7 @@ public abstract class JobEntryLoadSaveTestSupport<T extends JobEntryInterface> {
     Map<String, FieldLoadSaveValidator<?>> attributeValidators = createAttributeValidatorsMap();
     Map<String, FieldLoadSaveValidator<?>> typeValidators = createTypeValidatorsMap();
 
-    assertTrue( !commonAttributes.isEmpty() || !( xmlAttributes.isEmpty() || repoAttributes.isEmpty() ) );
+    Assert.assertTrue( !commonAttributes.isEmpty() || !( xmlAttributes.isEmpty() || repoAttributes.isEmpty() ) );
 
     tester = new LoadSaveTester<T>( getJobEntryClass(), commonAttributes, xmlAttributes, repoAttributes, getters, setters,
       attributeValidators, typeValidators );
