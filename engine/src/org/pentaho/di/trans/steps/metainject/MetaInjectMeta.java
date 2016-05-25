@@ -199,7 +199,7 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface, S
     retval.append( "    " ).append( XMLHandler.addTagValue( TARGET_FILE, targetFile ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( NO_EXECUTION, noExecution ) );
 
-    if ( streamSourceStepname == null ) {
+    if ( ( streamSourceStepname == null ) &&  ( streamSourceStep != null ) ) {
       streamSourceStepname = streamSourceStep.getName();
     }
     retval.append( "    " ).append( XMLHandler.addTagValue( STREAM_SOURCE_STEP, streamSourceStepname ) );
