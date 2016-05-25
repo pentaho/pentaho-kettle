@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2014 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -46,6 +46,7 @@ import org.pentaho.di.repository.IRepositoryExporter;
 import org.pentaho.di.repository.IRepositoryImporter;
 import org.pentaho.di.repository.IRepositoryService;
 import org.pentaho.di.repository.IUser;
+import org.pentaho.di.repository.LongObjectId;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryElementInterface;
@@ -201,7 +202,7 @@ public class MemoryRepository extends AbstractRepository {
 
   @Override
   public boolean
-  exists( String name, RepositoryDirectoryInterface repositoryDirectory, RepositoryObjectType objectType )
+    exists( String name, RepositoryDirectoryInterface repositoryDirectory, RepositoryObjectType objectType )
     throws KettleException {
     // TODO Auto-generated method stub
     return false;
@@ -568,7 +569,7 @@ public class MemoryRepository extends AbstractRepository {
 
   @Override
   public void
-  saveConditionStepAttribute( ObjectId id_transformation, ObjectId id_step, String code, Condition condition )
+    saveConditionStepAttribute( ObjectId id_transformation, ObjectId id_step, String code, Condition condition )
     throws KettleException {
     // TODO Auto-generated method stub
 
@@ -682,29 +683,53 @@ public class MemoryRepository extends AbstractRepository {
   @Override
   public DatabaseMeta loadDatabaseMetaFromStepAttribute( ObjectId id_step, String code, List<DatabaseMeta> databases )
     throws KettleException {
-    // TODO Auto-generated method stub
-    return null;
+    long id_database = getStepAttributeInteger( id_step, code );
+    if ( id_database <= 0 ) {
+      return null;
+    }
+    return DatabaseMeta.findDatabase( databases, new LongObjectId( id_database ) );
   }
 
   @Override
   public void saveDatabaseMetaStepAttribute( ObjectId id_transformation, ObjectId id_step, String code,
       DatabaseMeta database ) throws KettleException {
-    // TODO Auto-generated method stub
-
+    ObjectId id = null;
+    if ( database != null ) {
+      id = database.getObjectId();
+      Long id_database = id == null ? Long.valueOf( -1L ) : new LongObjectId( id ).longValue();
+      saveStepAttribute( id_transformation, id_step, code, id_database );
+    }
   }
 
   @Override
   public DatabaseMeta loadDatabaseMetaFromJobEntryAttribute( ObjectId id_jobentry, String nameCode, int nr,
       String idCode, List<DatabaseMeta> databases ) throws KettleException {
-    // TODO Auto-generated method stub
-    return null;
+    long id_database = getJobEntryAttributeInteger( id_jobentry, nr, idCode );
+    if ( id_database <= 0 ) {
+      String name = getJobEntryAttributeString( id_jobentry, nr, nameCode );
+      if ( name == null ) {
+        return null;
+      }
+      return DatabaseMeta.findDatabase( databases, name );
+    }
+    return DatabaseMeta.findDatabase( databases, new LongObjectId( id_database ) );
   }
 
   @Override
   public void saveDatabaseMetaJobEntryAttribute( ObjectId id_job, ObjectId id_jobentry, int nr, String nameCode,
       String idCode, DatabaseMeta database ) throws KettleException {
-    // TODO Auto-generated method stub
+    ObjectId id = null;
+    if ( database != null ) {
+      id = database.getObjectId();
+      Long id_database = id == null ? Long.valueOf( -1L ) : new LongObjectId( id ).longValue();
 
+      // Save both the ID and the name of the database connection...
+      //
+      saveJobEntryAttribute( id_job, id_jobentry, nr, idCode, id_database );
+      saveJobEntryAttribute( id_job, id_jobentry, nr, nameCode, id_database );
+
+      insertJobEntryDatabase( id_job, id_jobentry, id );
+    }
   }
 
   @Override

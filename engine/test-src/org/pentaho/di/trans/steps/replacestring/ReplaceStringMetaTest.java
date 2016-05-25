@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,17 +22,15 @@
 
 package org.pentaho.di.trans.steps.replacestring;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
-
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Mockito;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -44,6 +42,7 @@ import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
 import org.pentaho.di.trans.steps.loadsave.validator.ArrayLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.BooleanLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
+import org.pentaho.di.trans.steps.loadsave.validator.IntLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.PrimitiveBooleanArrayLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.PrimitiveIntegerArrayLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.StringLoadSaveValidator;
@@ -54,56 +53,27 @@ public class ReplaceStringMetaTest {
   private static final String FIELD_NAME = "test";
   private static final String ENCODING_NAME = "UTF-8";
 
-  public class UseRegExLoadSaveValidator implements FieldLoadSaveValidator<Integer> {
-    public Integer getTestObject() {
-      return new Random().nextInt( ReplaceStringMeta.useRegExCode.length );
-    }
-
-    public boolean validateTestObject( Integer testObject, Object actual ) {
-      return testObject.equals( actual );
-    }
-  }
-  public class WholeWordLoadSaveValidator implements FieldLoadSaveValidator<Integer> {
-    public Integer getTestObject() {
-      return new Random().nextInt( ReplaceStringMeta.wholeWordCode.length );
-    }
-
-    public boolean validateTestObject( Integer testObject, Object actual ) {
-      return testObject.equals( actual );
-    }
-  }
-
-  public class CaseSensitiveLoadSaveValidator implements FieldLoadSaveValidator<Integer> {
-    public Integer getTestObject() {
-      return new Random().nextInt( ReplaceStringMeta.caseSensitiveCode.length );
-    }
-
-    public boolean validateTestObject( Integer testObject, Object actual ) {
-      return testObject.equals( actual );
-    }
-  }
-
   @Test
   public void testGetFields() throws KettleStepException {
     ReplaceStringMeta meta = new ReplaceStringMeta();
     meta.setFieldInStream( new String[] { FIELD_NAME } );
     meta.setFieldOutStream( new String[] { FIELD_NAME } );
 
-    ValueMetaInterface inputFieldMeta = mock( ValueMetaInterface.class );
-    when( inputFieldMeta.getStringEncoding() ).thenReturn( ENCODING_NAME );
+    ValueMetaInterface inputFieldMeta = Mockito.mock( ValueMetaInterface.class );
+    Mockito.when( inputFieldMeta.getStringEncoding() ).thenReturn( ENCODING_NAME );
 
-    RowMetaInterface inputRowMeta = mock( RowMetaInterface.class );
-    when( inputRowMeta.searchValueMeta( anyString() ) ).thenReturn( inputFieldMeta );
+    RowMetaInterface inputRowMeta = Mockito.mock( RowMetaInterface.class );
+    Mockito.when( inputRowMeta.searchValueMeta( Mockito.anyString() ) ).thenReturn( inputFieldMeta );
 
-    StepMeta nextStep = mock( StepMeta.class );
-    VariableSpace space = mock( VariableSpace.class );
-    Repository repository = mock( Repository.class );
-    IMetaStore metaStore = mock( IMetaStore.class );
+    StepMeta nextStep = Mockito.mock( StepMeta.class );
+    VariableSpace space = Mockito.mock( VariableSpace.class );
+    Repository repository = Mockito.mock( Repository.class );
+    IMetaStore metaStore = Mockito.mock( IMetaStore.class );
     meta.getFields( inputRowMeta, "test", null, nextStep, space, repository, metaStore );
 
     ArgumentCaptor<ValueMetaInterface> argument = ArgumentCaptor.forClass( ValueMetaInterface.class );
-    verify( inputRowMeta ).addValueMeta( argument.capture() );
-    assertEquals( ENCODING_NAME, argument.getValue().getStringEncoding() );
+    Mockito.verify( inputRowMeta ).addValueMeta( argument.capture() );
+    Assert.assertEquals( ENCODING_NAME, argument.getValue().getStringEncoding() );
   }
 
   @Test
@@ -140,11 +110,14 @@ public class ReplaceStringMetaTest {
     FieldLoadSaveValidator<boolean[]> booleanArrayLoadSaveValidator =
       new PrimitiveBooleanArrayLoadSaveValidator( new BooleanLoadSaveValidator(), 25 );
     FieldLoadSaveValidator<int[]> useRegExArrayLoadSaveValidator =
-      new PrimitiveIntegerArrayLoadSaveValidator( new UseRegExLoadSaveValidator(), 25 );
+      new PrimitiveIntegerArrayLoadSaveValidator(
+        new IntLoadSaveValidator( ReplaceStringMeta.useRegExCode.length ), 25 );
     FieldLoadSaveValidator<int[]> wholeWordArrayLoadSaveValidator =
-      new PrimitiveIntegerArrayLoadSaveValidator( new WholeWordLoadSaveValidator(), 25 );
+      new PrimitiveIntegerArrayLoadSaveValidator(
+        new IntLoadSaveValidator( ReplaceStringMeta.wholeWordCode.length ), 25 );
     FieldLoadSaveValidator<int[]> caseSensitiveArrayLoadSaveValidator =
-      new PrimitiveIntegerArrayLoadSaveValidator( new CaseSensitiveLoadSaveValidator(), 25 );
+      new PrimitiveIntegerArrayLoadSaveValidator(
+        new IntLoadSaveValidator( ReplaceStringMeta.caseSensitiveCode.length ), 25 );
 
     fieldLoadSaveValidatorAttributeMap.put( "in_stream_name", stringArrayLoadSaveValidator );
     fieldLoadSaveValidatorAttributeMap.put( "out_stream_name", stringArrayLoadSaveValidator );

@@ -20,46 +20,42 @@
  *
  ******************************************************************************/
 
-package org.pentaho.di.trans.steps.randomvalue;
+package org.pentaho.di.trans.steps.addsequence;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
+import org.junit.BeforeClass;
 import org.junit.Test;
+import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
-import org.pentaho.di.trans.steps.loadsave.validator.ArrayLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
-import org.pentaho.di.trans.steps.loadsave.validator.IntLoadSaveValidator;
-import org.pentaho.di.trans.steps.loadsave.validator.PrimitiveIntArrayLoadSaveValidator;
-import org.pentaho.di.trans.steps.loadsave.validator.StringLoadSaveValidator;
 
-public class RandomValueMetaTest {
+public class AddSequenceMetaTest {
+
+  @BeforeClass
+  public static void setUpBeforeClass() throws KettleException {
+    KettleEnvironment.init( false );
+  }
 
   @Test
-  public void testStepMeta() throws KettleException {
-    List<String> attributes = Arrays.asList( "name", "type" );
+  public void testRoundTrip() throws KettleException {
+    List<String> attributes = Arrays.asList( "valuename", "useDatabase", "database", "schemaName", "sequenceName",
+      "useCounter", "counterName", "startAt", "incrementBy", "maxValue" );
 
     Map<String, String> getterMap = new HashMap<String, String>();
-    getterMap.put( "name", "getFieldName" );
-    getterMap.put( "type", "getFieldType" );
-
     Map<String, String> setterMap = new HashMap<String, String>();
-    setterMap.put( "name", "setFieldName" );
-    setterMap.put( "type", "setFieldType" );
+    getterMap.put( "useDatabase", "isDatabaseUsed" );
+    getterMap.put( "useCounter", "isCounterUsed" );
 
-    Map<String, FieldLoadSaveValidator<?>> fieldLoadSaveValidatorAttributeMap =
-      new HashMap<String, FieldLoadSaveValidator<?>>();
-    fieldLoadSaveValidatorAttributeMap.put( "name",
-      new ArrayLoadSaveValidator<String>( new StringLoadSaveValidator(), 25 ) );
-    fieldLoadSaveValidatorAttributeMap.put( "type",
-      new PrimitiveIntArrayLoadSaveValidator( new IntLoadSaveValidator( RandomValueMeta.functions.length ), 25 ) );
+    Map<String, FieldLoadSaveValidator<?>> typeValidators = new HashMap<String, FieldLoadSaveValidator<?>>();
+    Map<String, FieldLoadSaveValidator<?>> fieldValidators = new HashMap<String, FieldLoadSaveValidator<?>>();
 
-    LoadSaveTester loadSaveTester = new LoadSaveTester( RandomValueMeta.class, attributes, getterMap, setterMap,
-      fieldLoadSaveValidatorAttributeMap, new HashMap<String, FieldLoadSaveValidator<?>>() );
-    loadSaveTester.testRepoRoundTrip();
+    LoadSaveTester loadSaveTester =
+      new LoadSaveTester( AddSequenceMeta.class, attributes, getterMap, setterMap, fieldValidators, typeValidators );
     loadSaveTester.testXmlRoundTrip();
+    loadSaveTester.testRepoRoundTrip();
   }
 }
