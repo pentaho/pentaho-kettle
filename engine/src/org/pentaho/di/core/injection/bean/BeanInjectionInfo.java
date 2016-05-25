@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -113,24 +113,6 @@ public class BeanInjectionInfo {
     gr.groupProperties.add( prop );
   }
 
-  public String getDescription( String name ) {
-    String description = BaseMessages.getString( clazz, clazzAnnotation.localizationPrefix() + name );
-    if ( description != null && description.startsWith( "!" ) && description.endsWith( "!" ) ) {
-      Class baseClass = clazz.getSuperclass();
-      while ( baseClass != null ) {
-        InjectionSupported baseAnnotation = (InjectionSupported) baseClass.getAnnotation( InjectionSupported.class );
-        if ( baseAnnotation != null ) {
-          description = BaseMessages.getString( baseClass, baseAnnotation.localizationPrefix() + name );
-          if ( description != null && !description.startsWith( "!" ) && !description.endsWith( "!" ) ) {
-            return description;
-          }
-        }
-        baseClass = baseClass.getSuperclass();
-      }
-    }
-    return description;
-  }
-
   public class Property {
     private final String name;
     private final String groupName;
@@ -159,7 +141,7 @@ public class BeanInjectionInfo {
     }
 
     public String getDescription() {
-      return BeanInjectionInfo.this.getDescription( name );
+      return BaseMessages.getString( clazz, clazzAnnotation.localizationPrefix() + name );
     }
   }
 
@@ -180,7 +162,7 @@ public class BeanInjectionInfo {
     }
 
     public String getDescription() {
-      return BeanInjectionInfo.this.getDescription( name );
+      return BaseMessages.getString( clazz, clazzAnnotation.localizationPrefix() + name );
     }
   }
 }
