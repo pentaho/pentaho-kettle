@@ -55,7 +55,6 @@ public class SplitFieldToRowsMetaTest {
     LoadSaveTester loadSaveTester = new LoadSaveTester(
       SplitFieldToRowsMeta.class, attributes, getterMap, setterMap,
       new HashMap<String, FieldLoadSaveValidator<?>>(), new HashMap<String, FieldLoadSaveValidator<?>>() );
-    loadSaveTester.testRepoRoundTrip();
-    loadSaveTester.testXmlRoundTrip();
+    loadSaveTester.testSerialization();
   }
 }
