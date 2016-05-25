@@ -492,6 +492,7 @@ public class TransMeta extends AbstractMeta
    * @return 0 if the two transformations are equal, 1 or -1 depending on the values (see description above)
    *
    */
+  @Override
   public int compare( TransMeta t1, TransMeta t2 ) {
     // If we don't have a filename, the transformation comes from a repository
     //
@@ -568,6 +569,7 @@ public class TransMeta extends AbstractMeta
    * @see #compare(TransMeta, TransMeta)
    * @see java.lang.Comparable#compareTo(java.lang.Object)
    */
+  @Override
   public int compareTo( TransMeta o ) {
     return compare( this, o );
   }
@@ -583,6 +585,7 @@ public class TransMeta extends AbstractMeta
    * @see #compare(TransMeta, TransMeta)
    * @see java.lang.Object#equals(java.lang.Object)
    */
+  @Override
   public boolean equals( Object obj ) {
     if ( !( obj instanceof TransMeta ) ) {
       return false;
@@ -1495,7 +1498,7 @@ public class TransMeta extends AbstractMeta
    * @param stepMeta
    *          The originating step
    * @return The number of succeeding steps.
-   * @deprecated just get the next steps as an array
+   * @deprecated use {@link #getNextSteps(StepMeta)}
    */
   @Deprecated
   public int findNrNextSteps( StepMeta stepMeta ) {
@@ -1519,7 +1522,7 @@ public class TransMeta extends AbstractMeta
    * @param nr
    *          The location
    * @return The step found.
-   * @deprecated just get the next steps as an array
+   * @deprecated use {@link #getNextSteps(StepMeta)}
    */
   @Deprecated
   public StepMeta findNextStep( StepMeta stepMeta, int nr ) {
@@ -2281,6 +2284,7 @@ public class TransMeta extends AbstractMeta
    * @return the file type
    * @see org.pentaho.di.core.EngineMetaInterface#getFileType()
    */
+  @Override
   public String getFileType() {
     return LastUsedFile.FILE_TYPE_TRANSFORMATION;
   }
@@ -2291,6 +2295,7 @@ public class TransMeta extends AbstractMeta
    * @return the filter names
    * @see org.pentaho.di.core.EngineMetaInterface#getFilterNames()
    */
+  @Override
   public String[] getFilterNames() {
     return Const.getTransformationFilterNames();
   }
@@ -2302,6 +2307,7 @@ public class TransMeta extends AbstractMeta
    * @return the filter extensions
    * @see org.pentaho.di.core.EngineMetaInterface#getFilterExtensions()
    */
+  @Override
   public String[] getFilterExtensions() {
     return Const.STRING_TRANS_FILTER_EXT;
   }
@@ -2313,6 +2319,7 @@ public class TransMeta extends AbstractMeta
    * @return the default extension
    * @see org.pentaho.di.core.EngineMetaInterface#getDefaultExtension()
    */
+  @Override
   public String getDefaultExtension() {
     return Const.STRING_TRANS_DEFAULT_EXT;
   }
@@ -2325,6 +2332,7 @@ public class TransMeta extends AbstractMeta
    *           if any errors occur during generation of the XML
    * @see org.pentaho.di.core.xml.XMLInterface#getXML()
    */
+  @Override
   public String getXML() throws KettleException {
     return getXML( true, true, true, true, true );
   }
@@ -4026,6 +4034,7 @@ public class TransMeta extends AbstractMeta
 
     Collections.sort( steps, new Comparator<StepMeta>() {
 
+      @Override
       public int compare( StepMeta o1, StepMeta o2 ) {
 
         Map<StepMeta, Boolean> beforeMap = stepMap.get( o1 );
@@ -5443,6 +5452,7 @@ public class TransMeta extends AbstractMeta
    * @see org.pentaho.di.core.EngineMetaInterface#saveSharedObjects()
    * @see org.pentaho.di.shared.SharedObjects#saveToFile()
    */
+  @Override
   public void saveSharedObjects() throws KettleException {
     try {
       // Save the meta store shared objects...
@@ -5533,6 +5543,7 @@ public class TransMeta extends AbstractMeta
    * @param var
    *          the new internal kettle variables
    */
+  @Override
   public void setInternalKettleVariables( VariableSpace var ) {
     setInternalFilenameKettleVariables( var );
     setInternalNameKettleVariable( var );
@@ -5578,6 +5589,7 @@ public class TransMeta extends AbstractMeta
    * @param var
    *          the new internal name kettle variable
    */
+  @Override
   protected void setInternalNameKettleVariable( VariableSpace var ) {
     // The name of the transformation
     //
@@ -5590,6 +5602,7 @@ public class TransMeta extends AbstractMeta
    * @param var
    *          the new internal filename kettle variables
    */
+  @Override
   protected void setInternalFilenameKettleVariables( VariableSpace var ) {
     // If we have a filename that's defined, set variables. If not, clear them.
     //
@@ -5724,6 +5737,7 @@ public class TransMeta extends AbstractMeta
    *
    * @return the filename of the exported resource
    */
+  @Override
   public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
       ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore ) throws KettleException {
 
@@ -5958,6 +5972,7 @@ public class TransMeta extends AbstractMeta
    * @return the repository element type
    * @see org.pentaho.di.repository.RepositoryElementInterface#getRepositoryElementType()
    */
+  @Override
   public RepositoryObjectType getRepositoryElementType() {
     return REPOSITORY_ELEMENT_TYPE;
   }
@@ -5977,6 +5992,7 @@ public class TransMeta extends AbstractMeta
    * @return the log channel ID
    * @see org.pentaho.di.core.logging.LoggingObjectInterface#getLogChannelId()
    */
+  @Override
   public String getLogChannelId() {
     return log.getLogChannelId();
   }
@@ -5987,6 +6003,7 @@ public class TransMeta extends AbstractMeta
    * @return the object type
    * @see org.pentaho.di.core.logging.LoggingObjectInterface#getObjectType()
    */
+  @Override
   public LoggingObjectType getObjectType() {
     return LoggingObjectType.TRANSMETA;
   }
@@ -6251,6 +6268,7 @@ public class TransMeta extends AbstractMeta
     }
   }
 
+  @Override
   public boolean hasMissingPlugins() {
     return missingTrans != null && !missingTrans.isEmpty();
   }

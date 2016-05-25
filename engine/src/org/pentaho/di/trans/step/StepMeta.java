@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -193,6 +193,7 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
     this( (String) null, (String) null, (StepMetaInterface) null );
   }
 
+  @Override
   public String getXML() throws KettleException {
     return getXML( true );
   }
@@ -263,7 +264,7 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
    *          A list of databases
    * @param counters
    *          A map with all defined counters.
-   * @deprecated
+   * @deprecated use {@link #StepMeta(Node, List, IMetaStore)}
    */
   @Deprecated
   public StepMeta( Node stepnode, List<DatabaseMeta> databases, Map<String, Counter> counters )
@@ -295,7 +296,7 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
       PluginInterface sp = registry.findPluginWithId( StepPluginType.class, stepid );
 
       if ( sp == null ) {
-        setStepMetaInterface( (StepMetaInterface) new MissingTrans( stepname, stepid ) );
+        setStepMetaInterface( new MissingTrans( stepname, stepid ) );
       } else {
         setStepMetaInterface( (StepMetaInterface) registry.loadClass( sp ) );
       }
@@ -417,6 +418,7 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
     }
   }
 
+  @Override
   public ObjectId getObjectId() {
     return id;
   }
@@ -513,6 +515,7 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
    *
    * @return true if the two steps are equal.
    */
+  @Override
   public boolean equals( Object obj ) {
     if ( obj == null ) {
       return false;
@@ -522,10 +525,12 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
     return getName().equalsIgnoreCase( stepMeta.getName() );
   }
 
+  @Override
   public int hashCode() {
     return stepname.hashCode();
   }
 
+  @Override
   public int compareTo( StepMeta o ) {
     return toString().compareTo( o.toString() );
   }
@@ -557,6 +562,7 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
     return false;
   }
 
+  @Override
   public Object clone() {
     StepMeta stepMeta = new StepMeta();
     stepMeta.replaceMeta( this );
@@ -651,6 +657,7 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
     return stepid;
   }
 
+  @Override
   public String getName() {
     return stepname;
   }
@@ -659,6 +666,7 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
     stepname = sname;
   }
 
+  @Override
   public String getDescription() {
     return description;
   }
@@ -667,6 +675,7 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
     this.description = description;
   }
 
+  @Override
   public void setSelected( boolean sel ) {
     selected = sel;
   }
@@ -675,6 +684,7 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
     selected = !selected;
   }
 
+  @Override
   public boolean isSelected() {
     return selected;
   }
@@ -696,6 +706,7 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
     setObjectId( id_step );
   }
 
+  @Override
   public void setLocation( int x, int y ) {
     int nx = ( x >= 0 ? x : 0 );
     int ny = ( y >= 0 ? y : 0 );
@@ -707,6 +718,7 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
     location = loc;
   }
 
+  @Override
   public void setLocation( Point loc ) {
     if ( loc != null && !loc.equals( location ) ) {
       setChanged();
@@ -714,10 +726,20 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
     location = loc;
   }
 
+  @Override
   public Point getLocation() {
     return location;
   }
 
+  /**
+   * @deprecated use {@link #check(List, TransMeta, RowMetaInterface, String[], String[], RowMetaInterface, VariableSpace, Repository, IMetaStore)}
+   * @param remarks
+   * @param transMeta
+   * @param prev
+   * @param input
+   * @param output
+   * @param info
+   */
   @Deprecated
   public void check( List<CheckResultInterface> remarks, TransMeta transMeta, RowMetaInterface prev, String[] input,
       String[] output, RowMetaInterface info ) {
@@ -731,6 +753,7 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
     stepMetaInterface.check( remarks, transMeta, this, prev, input, output, info, space, repository, metaStore );
   }
 
+  @Override
   public String toString() {
     if ( getName() == null ) {
       return getClass().getName();
@@ -879,6 +902,7 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
   /**
    * Support for CheckResultSourceInterface
    */
+  @Override
   public String getTypeId() {
     return this.getStepID();
   }
@@ -916,12 +940,22 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
     return stepMetaInterface.getResourceDependencies( transMeta, this );
   }
 
+  /**
+   * @deprecated use {@link #exportResources(VariableSpace, Map, ResourceNamingInterface, Repository, IMetaStore)}
+   * @param space
+   * @param definitions
+   * @param resourceNamingInterface
+   * @param repository
+   * @return
+   * @throws KettleException
+   */
   @Deprecated
   public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
       ResourceNamingInterface resourceNamingInterface, Repository repository ) throws KettleException {
     return exportResources( space, definitions, resourceNamingInterface, repository, repository.getMetaStore() );
   }
 
+  @Override
   @SuppressWarnings( "deprecation" )
   public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
       ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore )
@@ -996,6 +1030,7 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
     return false;
   }
 
+  @Override
   public String getHolderType() {
     return "STEP";
   }
