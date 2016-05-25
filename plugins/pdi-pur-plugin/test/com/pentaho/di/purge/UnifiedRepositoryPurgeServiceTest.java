@@ -16,16 +16,6 @@
  */
 package com.pentaho.di.purge;
 
-import static org.junit.Assert.fail;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import java.io.ByteArrayInputStream;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -40,8 +30,11 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Matchers;
+import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.pentaho.di.core.exception.KettleException;
@@ -84,10 +77,10 @@ public class UnifiedRepositoryPurgeServiceTest {
 
   static {
     // Setup a mocked RepositoryElementInterface so alternate methods can be called for maximum code coverage
-    element1 = mock( RepositoryElementInterface.class );
-    ObjectId mockObjectId1 = mock( ObjectId.class );
-    when( mockObjectId1.getId() ).thenReturn( "1" );
-    when( element1.getObjectId() ).thenReturn( mockObjectId1 );
+    element1 = Mockito.mock( RepositoryElementInterface.class );
+    ObjectId mockObjectId1 = Mockito.mock( ObjectId.class );
+    Mockito.when( mockObjectId1.getId() ).thenReturn( "1" );
+    Mockito.when( element1.getObjectId() ).thenReturn( mockObjectId1 );
   }
 
   private HashMap<String, List<VersionSummary>> processVersionMap( IUnifiedRepository mockRepo ) {
@@ -115,7 +108,7 @@ public class UnifiedRepositoryPurgeServiceTest {
     versionListMap.put( fileId, mockVersionList );
 
     final ArgumentCaptor<String> fileIdArgument = ArgumentCaptor.forClass( String.class );
-    when( mockRepo.getVersionSummaries( fileIdArgument.capture() ) ).thenAnswer( new Answer<List<VersionSummary>>() {
+    Mockito.when( mockRepo.getVersionSummaries( fileIdArgument.capture() ) ).thenAnswer( new Answer<List<VersionSummary>>() {
       public List<VersionSummary> answer( InvocationOnMock invocation ) throws Throwable {
         return versionListMap.get( fileIdArgument.getValue() );
       }
@@ -126,7 +119,7 @@ public class UnifiedRepositoryPurgeServiceTest {
 
   @Test
   public void deleteAllVersionsTest() throws KettleException {
-    IUnifiedRepository mockRepo = mock( IUnifiedRepository.class );
+    IUnifiedRepository mockRepo = Mockito.mock( IUnifiedRepository.class );
     final HashMap<String, List<VersionSummary>> versionListMap = processVersionMap( mockRepo );
 
     UnifiedRepositoryPurgeService purgeService = new UnifiedRepositoryPurgeService( mockRepo );
@@ -134,12 +127,12 @@ public class UnifiedRepositoryPurgeServiceTest {
     purgeService.deleteAllVersions( element1 );
 
     verifyAllVersionsDeleted( versionListMap, mockRepo, "1" );
-    verify( mockRepo, never() ).deleteFileAtVersion( eq( "2" ), anyString() );
+    Mockito.verify( mockRepo, Mockito.never() ).deleteFileAtVersion( Matchers.eq( "2" ), Matchers.anyString() );
   }
 
   @Test
   public void deleteVersionTest() throws KettleException {
-    IUnifiedRepository mockRepo = mock( IUnifiedRepository.class );
+    IUnifiedRepository mockRepo = Mockito.mock( IUnifiedRepository.class );
     final HashMap<String, List<VersionSummary>> versionListMap = processVersionMap( mockRepo );
 
     UnifiedRepositoryPurgeService purgeService = new UnifiedRepositoryPurgeService( mockRepo );
@@ -147,13 +140,13 @@ public class UnifiedRepositoryPurgeServiceTest {
     String versionId = "103";
     purgeService.deleteVersion( element1, versionId );
 
-    verify( mockRepo, times( 1 ) ).deleteFileAtVersion( fileId, versionId );
-    verify( mockRepo, never() ).deleteFileAtVersion( eq( "2" ), anyString() );
+    Mockito.verify( mockRepo, Mockito.times( 1 ) ).deleteFileAtVersion( fileId, versionId );
+    Mockito.verify( mockRepo, Mockito.never() ).deleteFileAtVersion( Matchers.eq( "2" ), Matchers.anyString() );
   }
 
   @Test
   public void keepNumberOfVersions0Test() throws KettleException {
-    IUnifiedRepository mockRepo = mock( IUnifiedRepository.class );
+    IUnifiedRepository mockRepo = Mockito.mock( IUnifiedRepository.class );
     final HashMap<String, List<VersionSummary>> versionListMap = processVersionMap( mockRepo );
 
     UnifiedRepositoryPurgeService purgeService = new UnifiedRepositoryPurgeService( mockRepo );
@@ -163,12 +156,12 @@ public class UnifiedRepositoryPurgeServiceTest {
     purgeService.keepNumberOfVersions( element1, versionCount );
 
     verifyVersionCountDeletion( versionListMap, mockRepo, fileId, versionCount );
-    verify( mockRepo, never() ).deleteFileAtVersion( eq( "2" ), anyString() );
+    Mockito.verify( mockRepo, Mockito.never() ).deleteFileAtVersion( Matchers.eq( "2" ), Matchers.anyString() );
   }
 
   @Test
   public void keepNumberOfVersionsTest() throws KettleException {
-    IUnifiedRepository mockRepo = mock( IUnifiedRepository.class );
+    IUnifiedRepository mockRepo = Mockito.mock( IUnifiedRepository.class );
     final HashMap<String, List<VersionSummary>> versionListMap = processVersionMap( mockRepo );
 
     UnifiedRepositoryPurgeService purgeService = new UnifiedRepositoryPurgeService( mockRepo );
@@ -178,12 +171,12 @@ public class UnifiedRepositoryPurgeServiceTest {
     purgeService.keepNumberOfVersions( element1, versionCount );
 
     verifyVersionCountDeletion( versionListMap, mockRepo, fileId, versionCount );
-    verify( mockRepo, never() ).deleteFileAtVersion( eq( "2" ), anyString() );
+    Mockito.verify( mockRepo, Mockito.never() ).deleteFileAtVersion( Matchers.eq( "2" ), Matchers.anyString() );
   }
 
   @Test
   public void deleteVersionsBeforeDate() throws KettleException {
-    IUnifiedRepository mockRepo = mock( IUnifiedRepository.class );
+    IUnifiedRepository mockRepo = Mockito.mock( IUnifiedRepository.class );
     final HashMap<String, List<VersionSummary>> versionListMap = processVersionMap( mockRepo );
 
     UnifiedRepositoryPurgeService purgeService = new UnifiedRepositoryPurgeService( mockRepo );
@@ -193,12 +186,12 @@ public class UnifiedRepositoryPurgeServiceTest {
     purgeService.deleteVersionsBeforeDate( element1, beforeDate );
 
     verifyDateBeforeDeletion( versionListMap, mockRepo, fileId, beforeDate );
-    verify( mockRepo, never() ).deleteFileAtVersion( eq( "2" ), anyString() );
+    Mockito.verify( mockRepo, Mockito.never() ).deleteFileAtVersion( Matchers.eq( "2" ), Matchers.anyString() );
   }
 
   @Test
   public void doPurgeUtilPurgeFileTest() throws PurgeDeletionException {
-    IUnifiedRepository mockRepo = mock( IUnifiedRepository.class );
+    IUnifiedRepository mockRepo = Mockito.mock( IUnifiedRepository.class );
     final HashMap<String, List<VersionSummary>> versionListMap = processVersionMap( mockRepo );
     UnifiedRepositoryPurgeService purgeService = getPurgeService( mockRepo );
 
@@ -209,15 +202,15 @@ public class UnifiedRepositoryPurgeServiceTest {
 
     verifyAllVersionsDeleted( versionListMap, mockRepo, "1" );
     verifyAllVersionsDeleted( versionListMap, mockRepo, "2" );
-    verify( UnifiedRepositoryPurgeService.getRepoWs(), times( 1 ) ).deleteFileWithPermanentFlag( eq( "1" ), eq( true ),
-        anyString() );
-    verify( UnifiedRepositoryPurgeService.getRepoWs(), times( 1 ) ).deleteFileWithPermanentFlag( eq( "2" ), eq( true ),
-        anyString() );
+    Mockito.verify( UnifiedRepositoryPurgeService.getRepoWs(), Mockito.times( 1 ) ).deleteFileWithPermanentFlag( Matchers.eq( "1" ), Matchers.eq( true ),
+        Matchers.anyString() );
+    Mockito.verify( UnifiedRepositoryPurgeService.getRepoWs(), Mockito.times( 1 ) ).deleteFileWithPermanentFlag( Matchers.eq( "2" ), Matchers.eq( true ),
+        Matchers.anyString() );
   }
 
   @Test
   public void doPurgeUtilVersionCountTest() throws PurgeDeletionException {
-    IUnifiedRepository mockRepo = mock( IUnifiedRepository.class );
+    IUnifiedRepository mockRepo = Mockito.mock( IUnifiedRepository.class );
     final HashMap<String, List<VersionSummary>> versionListMap = processVersionMap( mockRepo );
     UnifiedRepositoryPurgeService purgeService = getPurgeService( mockRepo );
 
@@ -232,7 +225,7 @@ public class UnifiedRepositoryPurgeServiceTest {
 
   @Test
   public void doPurgeUtilDateBeforeTest() throws PurgeDeletionException {
-    IUnifiedRepository mockRepo = mock( IUnifiedRepository.class );
+    IUnifiedRepository mockRepo = Mockito.mock( IUnifiedRepository.class );
     final HashMap<String, List<VersionSummary>> versionListMap = processVersionMap( mockRepo );
     UnifiedRepositoryPurgeService purgeService = getPurgeService( mockRepo );
 
@@ -246,7 +239,7 @@ public class UnifiedRepositoryPurgeServiceTest {
 
   @Test
   public void doPurgeUtilSharedObjectsTest() throws PurgeDeletionException {
-    IUnifiedRepository mockRepo = mock( IUnifiedRepository.class );
+    IUnifiedRepository mockRepo = Mockito.mock( IUnifiedRepository.class );
     final HashMap<String, List<VersionSummary>> versionListMap = processVersionMap( mockRepo );
     UnifiedRepositoryPurgeService purgeService = getPurgeService( mockRepo );
 
@@ -266,8 +259,8 @@ public class UnifiedRepositoryPurgeServiceTest {
       } else {
         expectedTimes = 0;
       }
-      verify( mockRepo, times( expectedTimes ) ).deleteFileAtVersion( fileId, sum.getId() );
-      verify( UnifiedRepositoryPurgeService.getRepoWs(), times( 4 ) ).deleteFileWithPermanentFlag( eq( fileId ), eq( true ), anyString() );
+      Mockito.verify( mockRepo, Mockito.times( expectedTimes ) ).deleteFileAtVersion( fileId, sum.getId() );
+      Mockito.verify( UnifiedRepositoryPurgeService.getRepoWs(), Mockito.times( 4 ) ).deleteFileWithPermanentFlag( Matchers.eq( fileId ), Matchers.eq( true ), Matchers.anyString() );
     }
   }
 
@@ -275,7 +268,7 @@ public class UnifiedRepositoryPurgeServiceTest {
   private static UnifiedRepositoryPurgeService getPurgeService( IUnifiedRepository mockRepo ) {
 
     UnifiedRepositoryPurgeService purgeService = new UnifiedRepositoryPurgeService( mockRepo );
-    DefaultUnifiedRepositoryWebService mockRepoWs = mock( DefaultUnifiedRepositoryWebService.class );
+    DefaultUnifiedRepositoryWebService mockRepoWs = Mockito.mock( DefaultUnifiedRepositoryWebService.class );
     UnifiedRepositoryPurgeService.repoWs = mockRepoWs;
 
     // Create a mocked tree to be returned
@@ -288,10 +281,10 @@ public class UnifiedRepositoryPurgeServiceTest {
       tree = (RepositoryFileTreeDto) unmarshaller.unmarshal( xml );
     } catch ( JAXBException e ) {
       e.printStackTrace();
-      fail( "Test class has invalid xml representation of tree" );
+      Assert.fail( "Test class has invalid xml representation of tree" );
     }
 
-    when( mockRepoWs.getTreeFromRequest( any( RepositoryRequest.class ) ) ).thenReturn( tree );
+    Mockito.when( mockRepoWs.getTreeFromRequest( Matchers.any( RepositoryRequest.class ) ) ).thenReturn( tree );
     return purgeService;
   }
 
@@ -301,7 +294,7 @@ public class UnifiedRepositoryPurgeServiceTest {
     int i = 1;
     for ( VersionSummary sum : list ) {
       if ( i < list.size() ) {
-        verify( mockRepo, times( 1 ) ).deleteFileAtVersion( fileId, sum.getId() );
+        Mockito.verify( mockRepo, Mockito.times( 1 ) ).deleteFileAtVersion( fileId, sum.getId() );
       }
       i++;
     }
@@ -313,7 +306,7 @@ public class UnifiedRepositoryPurgeServiceTest {
     int i = 1;
     for ( VersionSummary sum : list ) {
       if ( i <= list.size() - versionCount ) {
-        verify( mockRepo, times( 1 ) ).deleteFileAtVersion( fileId, sum.getId() );
+        Mockito.verify( mockRepo, Mockito.times( 1 ) ).deleteFileAtVersion( fileId, sum.getId() );
       }
       i++;
     }
@@ -325,9 +318,9 @@ public class UnifiedRepositoryPurgeServiceTest {
     List<VersionSummary> list = versionListMap.get( fileId );
     for ( VersionSummary sum : list ) {
       if ( beforeDate.after( sum.getDate() ) && !sum.getId().equals( list.get( list.size() - 1 ).getId() ) ) {
-        verify( mockRepo, times( 1 ) ).deleteFileAtVersion( fileId, sum.getId() );
+        Mockito.verify( mockRepo, Mockito.times( 1 ) ).deleteFileAtVersion( fileId, sum.getId() );
       } else {
-        verify( mockRepo, never() ).deleteFileAtVersion( fileId, sum.getId() );
+        Mockito.verify( mockRepo, Mockito.never() ).deleteFileAtVersion( fileId, sum.getId() );
       }
     }
   }
@@ -337,7 +330,7 @@ public class UnifiedRepositoryPurgeServiceTest {
     try {
       date = DATE_FORMAT.parse( dateString );
     } catch ( ParseException e ) {
-      fail( "Bad Date format in test class" );
+      Assert.fail( "Bad Date format in test class" );
     }
     return date;
   }
