@@ -67,8 +67,7 @@ public class OlapInputMetaTest {
 
     LoadSaveTester loadSaveTester = new LoadSaveTester( OlapInputMeta.class, attributes, getterMap, setterMap );
 
-    loadSaveTester.testRepoRoundTrip();
-    loadSaveTester.testXmlRoundTrip();
+    loadSaveTester.testSerialization();
   }
 
   @Test

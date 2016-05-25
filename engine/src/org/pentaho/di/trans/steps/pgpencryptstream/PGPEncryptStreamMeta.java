@@ -80,8 +80,16 @@ public class PGPEncryptStreamMeta extends BaseStepMeta implements StepMetaInterf
     super(); // allocate BaseStepMeta
   }
 
-  public void setGPGPLocation( String gpglocation ) {
-    this.gpglocation = gpglocation;
+  /**
+   * @deprecated - typo
+   */
+  @Deprecated
+  public void setGPGPLocation( String value ) {
+    this.setGPGLocation( value );
+  }
+
+  public void setGPGLocation( String value ) {
+    this.gpglocation = value;
   }
 
   public String getGPGLocation() {
@@ -141,11 +149,19 @@ public class PGPEncryptStreamMeta extends BaseStepMeta implements StepMetaInterf
   }
 
   /**
+   * @deprecated - typo
+   */
+  @Deprecated
+  public void setResultfieldname( String value ) {
+    this.setResultFieldName( value );
+  }
+
+  /**
    * @param resultfieldname
    *          The resultfieldname to set.
    */
-  public void setResultfieldname( String resultfieldname ) {
-    this.resultfieldname = resultfieldname;
+  public void setResultFieldName( String value ) {
+    this.resultfieldname = value;
   }
 
   /**
@@ -163,16 +179,19 @@ public class PGPEncryptStreamMeta extends BaseStepMeta implements StepMetaInterf
     this.keyname = keyname;
   }
 
+  @Override
   public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     readData( stepnode, databases );
   }
 
+  @Override
   public Object clone() {
     PGPEncryptStreamMeta retval = (PGPEncryptStreamMeta) super.clone();
 
     return retval;
   }
 
+  @Override
   public void setDefault() {
     resultfieldname = "result";
     streamfield = null;
@@ -182,6 +201,7 @@ public class PGPEncryptStreamMeta extends BaseStepMeta implements StepMetaInterf
     keynameFieldName = null;
   }
 
+  @Override
   public void getFields( RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info, StepMeta nextStep,
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     // Output fields (String)
@@ -193,6 +213,7 @@ public class PGPEncryptStreamMeta extends BaseStepMeta implements StepMetaInterf
 
   }
 
+  @Override
   public String getXML() {
     StringBuilder retval = new StringBuilder();
     retval.append( "    " + XMLHandler.addTagValue( "gpglocation", gpglocation ) );
@@ -219,6 +240,7 @@ public class PGPEncryptStreamMeta extends BaseStepMeta implements StepMetaInterf
     }
   }
 
+  @Override
   public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
       gpglocation = rep.getStepAttributeString( id_step, "gpglocation" );
@@ -233,6 +255,7 @@ public class PGPEncryptStreamMeta extends BaseStepMeta implements StepMetaInterf
     }
   }
 
+  @Override
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       rep.saveStepAttribute( id_transformation, id_step, "gpglocation", gpglocation );
@@ -248,6 +271,7 @@ public class PGPEncryptStreamMeta extends BaseStepMeta implements StepMetaInterf
     }
   }
 
+  @Override
   public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
     RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
@@ -305,15 +329,18 @@ public class PGPEncryptStreamMeta extends BaseStepMeta implements StepMetaInterf
 
   }
 
+  @Override
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
     TransMeta transMeta, Trans trans ) {
     return new PGPEncryptStream( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 
+  @Override
   public StepDataInterface getStepData() {
     return new PGPEncryptStreamData();
   }
 
+  @Override
   public boolean supportsErrorHandling() {
     return true;
   }

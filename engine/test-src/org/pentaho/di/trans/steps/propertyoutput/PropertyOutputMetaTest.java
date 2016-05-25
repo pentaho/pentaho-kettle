@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  ******************************************************************************/
-package org.pentaho.di.trans.steps.prioritizestreams;
+package org.pentaho.di.trans.steps.propertyoutput;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -32,31 +32,35 @@ import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
-import org.pentaho.di.trans.steps.loadsave.validator.ArrayLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
-import org.pentaho.di.trans.steps.loadsave.validator.StringLoadSaveValidator;
 
-public class PrioritizeStreamsMetaTest {
-  Class<PrioritizeStreamsMeta> testMetaClass = PrioritizeStreamsMeta.class;
-
+public class PropertyOutputMetaTest {
   LoadSaveTester loadSaveTester;
+  Class<PropertyOutputMeta> testMetaClass = PropertyOutputMeta.class;
 
   @Before
-  public void setUp() throws Exception {
+  public void setUpLoadSave() throws Exception {
     KettleEnvironment.init();
     PluginRegistry.init( true );
     List<String> attributes =
-        Arrays.asList( "stepName" );
+        Arrays.asList( "keyField", "valueField", "addToResult", "fileName", "fileNameInField", "fileNameField",
+            "extension", "stepNrInFilename", "dateInFilename", "timeInFilename",
+            "createParentFolder", "comment", "append" );
 
-    Map<String, String> getterMap = new HashMap<String, String>();
+    //
+    // Note - "partNrInFilename" not included above because while it seems to be serialized/deserialized in the meta,
+    // there are no getters/setters and it's a private variable. Also, it's not included in the dialog. So it is
+    // always serialized/deserialized as "false" (N).
+    // MB - 5/2016
+
+    Map<String, String> getterMap = new HashMap<String, String>() {
+      {
+        put( "addToResult", "addToResult" );
+      }
+    };
     Map<String, String> setterMap = new HashMap<String, String>();
 
-    FieldLoadSaveValidator<String[]> stringArrayLoadSaveValidator =
-        new ArrayLoadSaveValidator<String>( new StringLoadSaveValidator(), 5 );
-
     Map<String, FieldLoadSaveValidator<?>> attrValidatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();
-    attrValidatorMap.put( "stepName", stringArrayLoadSaveValidator );
-
     Map<String, FieldLoadSaveValidator<?>> typeValidatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();
 
     loadSaveTester =
@@ -67,4 +71,5 @@ public class PrioritizeStreamsMetaTest {
   public void testSerialization() throws KettleException {
     loadSaveTester.testSerialization();
   }
+
 }
