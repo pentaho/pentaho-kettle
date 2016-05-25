@@ -127,7 +127,7 @@ public class ExcelInputMetaTest {
 
     @Override
     public boolean validateTestObject( ExcelInputField testObject, Object actual ) {
-      if ( !( actual instanceof ExcelInputField) ) {
+      if ( !( actual instanceof ExcelInputField ) ) {
         return false;
       }
       ExcelInputField another = (ExcelInputField) actual;
