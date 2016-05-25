@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  ******************************************************************************/
-package org.pentaho.di.trans.steps.prioritizestreams;
+package org.pentaho.di.trans.steps.simplemapping;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -32,30 +32,32 @@ import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
-import org.pentaho.di.trans.steps.loadsave.validator.ArrayLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
-import org.pentaho.di.trans.steps.loadsave.validator.StringLoadSaveValidator;
+import org.pentaho.di.trans.steps.loadsave.validator.MappingIODefinitionLoadSaveValidator;
+import org.pentaho.di.trans.steps.loadsave.validator.MappingParametersLoadSaveValidator;
+import org.pentaho.di.trans.steps.loadsave.validator.ObjectIdLoadSaveValidator;
+import org.pentaho.di.trans.steps.loadsave.validator.ObjectLocationSpecificationMethodLoadSaveValidator;
 
-public class PrioritizeStreamsMetaTest {
-  Class<PrioritizeStreamsMeta> testMetaClass = PrioritizeStreamsMeta.class;
-
+public class SimpleMappingMetaTest {
   LoadSaveTester loadSaveTester;
+  Class<SimpleMappingMeta> testMetaClass = SimpleMappingMeta.class;
 
   @Before
-  public void setUp() throws Exception {
+  public void setUpLoadSave() throws Exception {
     KettleEnvironment.init();
     PluginRegistry.init( true );
     List<String> attributes =
-        Arrays.asList( "stepName" );
+        Arrays.asList( "transName", "fileName", "directoryPath", "transObjectId", "specificationMethod", "inputMapping", "outputMapping", "mappingParameters" );
 
     Map<String, String> getterMap = new HashMap<String, String>();
     Map<String, String> setterMap = new HashMap<String, String>();
 
-    FieldLoadSaveValidator<String[]> stringArrayLoadSaveValidator =
-        new ArrayLoadSaveValidator<String>( new StringLoadSaveValidator(), 5 );
-
     Map<String, FieldLoadSaveValidator<?>> attrValidatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();
-    attrValidatorMap.put( "stepName", stringArrayLoadSaveValidator );
+    attrValidatorMap.put( "transObjectId", new ObjectIdLoadSaveValidator() );
+    attrValidatorMap.put( "specificationMethod", new ObjectLocationSpecificationMethodLoadSaveValidator() );
+    attrValidatorMap.put( "inputMapping", new MappingIODefinitionLoadSaveValidator() );
+    attrValidatorMap.put( "outputMapping", new MappingIODefinitionLoadSaveValidator() );
+    attrValidatorMap.put( "mappingParameters", new MappingParametersLoadSaveValidator() );
 
     Map<String, FieldLoadSaveValidator<?>> typeValidatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();
 
@@ -67,4 +69,5 @@ public class PrioritizeStreamsMetaTest {
   public void testSerialization() throws KettleException {
     loadSaveTester.testSerialization();
   }
+
 }

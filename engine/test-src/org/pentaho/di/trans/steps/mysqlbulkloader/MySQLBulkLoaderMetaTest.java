@@ -95,7 +95,6 @@ public class MySQLBulkLoaderMetaTest {
       new LoadSaveTester( MySQLBulkLoaderMeta.class, attributes, getterMap, setterMap,
         fieldLoadSaveValidatorAttributeMap, new HashMap<String, FieldLoadSaveValidator<?>>() );
 
-    loadSaveTester.testXmlRoundTrip();
-    loadSaveTester.testRepoRoundTrip();
+    loadSaveTester.testSerialization();
   }
 }

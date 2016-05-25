@@ -21,13 +21,10 @@
  ******************************************************************************/
 package org.pentaho.di.trans.steps.mapping;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
-import java.util.UUID;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -37,6 +34,8 @@ import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
 import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.ListLoadSaveValidator;
+import org.pentaho.di.trans.steps.loadsave.validator.MappingIODefinitionLoadSaveValidator;
+import org.pentaho.di.trans.steps.loadsave.validator.MappingParametersLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.ObjectIdLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.ObjectLocationSpecificationMethodLoadSaveValidator;
 
@@ -71,60 +70,4 @@ public class MappingMetaTest {
     loadSaveTester.testSerialization();
   }
 
-  public class MappingIODefinitionLoadSaveValidator implements FieldLoadSaveValidator<MappingIODefinition> {
-    final Random rand = new Random();
-    @Override
-    public MappingIODefinition getTestObject() {
-      MappingIODefinition rtn = new MappingIODefinition();
-      rtn.setDescription( UUID.randomUUID().toString() );
-      rtn.setInputStepname( UUID.randomUUID().toString() );
-      rtn.setMainDataPath( rand.nextBoolean() );
-      rtn.setOutputStepname( UUID.randomUUID().toString() );
-      rtn.setRenamingOnOutput( rand.nextBoolean() );
-      List<MappingValueRename> renames = new ArrayList<MappingValueRename>() {
-        {
-          add( new MappingValueRename( UUID.randomUUID().toString(), UUID.randomUUID().toString() ) );
-          add( new MappingValueRename( UUID.randomUUID().toString(), UUID.randomUUID().toString() ) );
-          add( new MappingValueRename( UUID.randomUUID().toString(), UUID.randomUUID().toString() ) );
-        }
-      };
-      rtn.setValueRenames( renames );
-      return rtn;
-    }
-
-    @Override
-    public boolean validateTestObject( MappingIODefinition testObject, Object actual ) {
-      if ( !( actual instanceof MappingIODefinition ) ) {
-        return false;
-      }
-      MappingIODefinition actualInput = (MappingIODefinition) actual;
-      return ( testObject.getXML().equals( actualInput.getXML() ) );
-    }
-  }
-
-  // MappingParametersLoadSaveValidator
-  public class MappingParametersLoadSaveValidator implements FieldLoadSaveValidator<MappingParameters> {
-    final Random rand = new Random();
-    @Override
-    public MappingParameters getTestObject() {
-      MappingParameters rtn = new MappingParameters();
-      rtn.setVariable( new String[] {
-        UUID.randomUUID().toString(), UUID.randomUUID().toString(), UUID.randomUUID().toString()
-      } );
-      rtn.setInputField( new String[] {
-        UUID.randomUUID().toString(), UUID.randomUUID().toString(), UUID.randomUUID().toString()
-      } );
-      rtn.setInheritingAllVariables( rand.nextBoolean() );
-      return rtn;
-    }
-
-    @Override
-    public boolean validateTestObject( MappingParameters testObject, Object actual ) {
-      if ( !( actual instanceof MappingParameters ) ) {
-        return false;
-      }
-      MappingParameters actualInput = (MappingParameters) actual;
-      return ( testObject.getXML().equals( actualInput.getXML() ) );
-    }
-  }
 }

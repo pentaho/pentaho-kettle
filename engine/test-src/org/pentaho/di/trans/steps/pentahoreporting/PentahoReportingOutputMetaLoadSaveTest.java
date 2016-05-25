@@ -19,12 +19,13 @@
  * limitations under the License.
  *
  ******************************************************************************/
-package org.pentaho.di.trans.steps.prioritizestreams;
+package org.pentaho.di.trans.steps.pentahoreporting;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -32,30 +33,29 @@ import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
-import org.pentaho.di.trans.steps.loadsave.validator.ArrayLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
+import org.pentaho.di.trans.steps.loadsave.validator.MapLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.StringLoadSaveValidator;
+import org.pentaho.di.trans.steps.pentahoreporting.PentahoReportingOutputMeta.ProcessorType;
 
-public class PrioritizeStreamsMetaTest {
-  Class<PrioritizeStreamsMeta> testMetaClass = PrioritizeStreamsMeta.class;
-
+public class PentahoReportingOutputMetaLoadSaveTest {
   LoadSaveTester loadSaveTester;
+  Class<PentahoReportingOutputMeta> testMetaClass = PentahoReportingOutputMeta.class;
 
   @Before
-  public void setUp() throws Exception {
+  public void setUpLoadSave() throws Exception {
     KettleEnvironment.init();
     PluginRegistry.init( true );
     List<String> attributes =
-        Arrays.asList( "stepName" );
+        Arrays.asList( "inputFileField", "outputFileField", "parameterFieldMap", "outputProcessorType" );
 
     Map<String, String> getterMap = new HashMap<String, String>();
     Map<String, String> setterMap = new HashMap<String, String>();
 
-    FieldLoadSaveValidator<String[]> stringArrayLoadSaveValidator =
-        new ArrayLoadSaveValidator<String>( new StringLoadSaveValidator(), 5 );
-
     Map<String, FieldLoadSaveValidator<?>> attrValidatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();
-    attrValidatorMap.put( "stepName", stringArrayLoadSaveValidator );
+    attrValidatorMap.put( "parameterFieldMap",
+        new MapLoadSaveValidator<String, String>( new StringLoadSaveValidator(), new StringLoadSaveValidator(), 5 ) );
+    attrValidatorMap.put( "outputProcessorType", new ProcessorTypeLoadSaveValidator() );
 
     Map<String, FieldLoadSaveValidator<?>> typeValidatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();
 
@@ -67,4 +67,23 @@ public class PrioritizeStreamsMetaTest {
   public void testSerialization() throws KettleException {
     loadSaveTester.testSerialization();
   }
+
+  public class ProcessorTypeLoadSaveValidator implements FieldLoadSaveValidator<ProcessorType> {
+    final Random rand = new Random();
+    @Override
+    public ProcessorType getTestObject() {
+      ProcessorType[] vals = ProcessorType.values();
+      return vals[ rand.nextInt( vals.length ) ];
+    }
+
+    @Override
+    public boolean validateTestObject( ProcessorType testObject, Object actual ) {
+      if ( !( actual instanceof ProcessorType ) ) {
+        return false;
+      }
+      ProcessorType another = (ProcessorType) actual;
+      return testObject.equals( another );
+    }
+  }
+
 }

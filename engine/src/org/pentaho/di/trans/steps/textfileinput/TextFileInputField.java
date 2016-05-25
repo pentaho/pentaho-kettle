@@ -44,6 +44,7 @@ import org.pentaho.di.core.row.ValueMetaInterface;
  *
  * @deprecated replaced by implementation in the ...steps.fileinput.text package
  */
+@Deprecated
 public class TextFileInputField implements Cloneable, TextFileInputFieldInterface {
 
   @Injection( name = "INPUT_NAME", group = "INPUT_FIELDS" )
@@ -134,6 +135,7 @@ public class TextFileInputField implements Cloneable, TextFileInputFieldInterfac
     return position - field.getPosition();
   }
 
+  @Override
   public int compareTo( TextFileInputFieldInterface field ) {
     return position - field.getPosition();
   }
@@ -144,6 +146,7 @@ public class TextFileInputField implements Cloneable, TextFileInputFieldInterfac
     return ( position == field.getPosition() );
   }
 
+  @Override
   public Object clone() {
     try {
       Object retval = super.clone();
@@ -153,6 +156,7 @@ public class TextFileInputField implements Cloneable, TextFileInputFieldInterfac
     }
   }
 
+  @Override
   public int getPosition() {
     return position;
   }
@@ -161,14 +165,17 @@ public class TextFileInputField implements Cloneable, TextFileInputFieldInterfac
     this.position = position;
   }
 
+  @Override
   public int getLength() {
     return length;
   }
 
+  @Override
   public void setLength( int length ) {
     this.length = length;
   }
 
+  @Override
   public String getName() {
     return name;
   }
@@ -211,6 +218,10 @@ public class TextFileInputField implements Cloneable, TextFileInputFieldInterfac
 
   public void setSamples( String[] samples ) {
     this.samples = samples;
+  }
+
+  public String[] getSamples( ) {
+    return this.samples;
   }
 
   public int getTrimType() {
@@ -289,6 +300,7 @@ public class TextFileInputField implements Cloneable, TextFileInputFieldInterfac
     this.ifNullValue = ifNullValue;
   }
 
+  @Override
   public String toString() {
     return name + "@" + position + ":" + length;
   }
@@ -616,6 +628,7 @@ public class TextFileInputField implements Cloneable, TextFileInputFieldInterfac
     }
   }
 
+  @Override
   public TextFileInputFieldInterface createNewInstance( String newFieldname, int x, int newlength ) {
     return new TextFileInputField( newFieldname, x, newlength );
   }

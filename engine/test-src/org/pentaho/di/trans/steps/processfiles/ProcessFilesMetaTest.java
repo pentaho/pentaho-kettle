@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  ******************************************************************************/
-package org.pentaho.di.trans.steps.prioritizestreams;
+package org.pentaho.di.trans.steps.processfiles;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -32,30 +32,33 @@ import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
-import org.pentaho.di.trans.steps.loadsave.validator.ArrayLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
-import org.pentaho.di.trans.steps.loadsave.validator.StringLoadSaveValidator;
+import org.pentaho.di.trans.steps.loadsave.validator.IntLoadSaveValidator;
 
-public class PrioritizeStreamsMetaTest {
-  Class<PrioritizeStreamsMeta> testMetaClass = PrioritizeStreamsMeta.class;
-
+public class ProcessFilesMetaTest {
   LoadSaveTester loadSaveTester;
+  Class<ProcessFilesMeta> testMetaClass = ProcessFilesMeta.class;
 
   @Before
-  public void setUp() throws Exception {
+  public void setUpLoadSave() throws Exception {
     KettleEnvironment.init();
     PluginRegistry.init( true );
     List<String> attributes =
-        Arrays.asList( "stepName" );
+        Arrays.asList( "addTargetFileNametoResult", "overwriteTargetFile", "createParentFolder", "dynamicSourceFileNameField", "dynamicTargetFileNameField", "operationType", "simulate" );
 
-    Map<String, String> getterMap = new HashMap<String, String>();
-    Map<String, String> setterMap = new HashMap<String, String>();
-
-    FieldLoadSaveValidator<String[]> stringArrayLoadSaveValidator =
-        new ArrayLoadSaveValidator<String>( new StringLoadSaveValidator(), 5 );
+    Map<String, String> getterMap = new HashMap<String, String>() {
+      {
+        put( "addTargetFileNametoResult", "isaddTargetFileNametoResult" );
+      }
+    };
+    Map<String, String> setterMap = new HashMap<String, String>() {
+      {
+        put( "addTargetFileNametoResult", "setaddTargetFileNametoResult" );
+      }
+    };
 
     Map<String, FieldLoadSaveValidator<?>> attrValidatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();
-    attrValidatorMap.put( "stepName", stringArrayLoadSaveValidator );
+    attrValidatorMap.put( "operationType", new IntLoadSaveValidator( ProcessFilesMeta.operationTypeDesc.length ) );
 
     Map<String, FieldLoadSaveValidator<?>> typeValidatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();
 
@@ -67,4 +70,5 @@ public class PrioritizeStreamsMetaTest {
   public void testSerialization() throws KettleException {
     loadSaveTester.testSerialization();
   }
+
 }

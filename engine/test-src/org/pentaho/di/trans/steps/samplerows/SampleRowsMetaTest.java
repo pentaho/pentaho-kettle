@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  ******************************************************************************/
-package org.pentaho.di.trans.steps.prioritizestreams;
+package org.pentaho.di.trans.steps.samplerows;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -32,39 +32,27 @@ import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
-import org.pentaho.di.trans.steps.loadsave.validator.ArrayLoadSaveValidator;
-import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
-import org.pentaho.di.trans.steps.loadsave.validator.StringLoadSaveValidator;
 
-public class PrioritizeStreamsMetaTest {
-  Class<PrioritizeStreamsMeta> testMetaClass = PrioritizeStreamsMeta.class;
-
+public class SampleRowsMetaTest {
   LoadSaveTester loadSaveTester;
+  Class<SampleRowsMeta> testMetaClass = SampleRowsMeta.class;
 
   @Before
-  public void setUp() throws Exception {
+  public void setUpLoadSave() throws Exception {
     KettleEnvironment.init();
     PluginRegistry.init( true );
     List<String> attributes =
-        Arrays.asList( "stepName" );
+        Arrays.asList( "linesRange", "lineNumberField" );
 
-    Map<String, String> getterMap = new HashMap<String, String>();
-    Map<String, String> setterMap = new HashMap<String, String>();
-
-    FieldLoadSaveValidator<String[]> stringArrayLoadSaveValidator =
-        new ArrayLoadSaveValidator<String>( new StringLoadSaveValidator(), 5 );
-
-    Map<String, FieldLoadSaveValidator<?>> attrValidatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();
-    attrValidatorMap.put( "stepName", stringArrayLoadSaveValidator );
-
-    Map<String, FieldLoadSaveValidator<?>> typeValidatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();
+    Map<String, String> aMap = new HashMap<String, String>();
 
     loadSaveTester =
-        new LoadSaveTester( testMetaClass, attributes, getterMap, setterMap, attrValidatorMap, typeValidatorMap );
+        new LoadSaveTester( testMetaClass, attributes, aMap, aMap );
   }
 
   @Test
   public void testSerialization() throws KettleException {
     loadSaveTester.testSerialization();
   }
+
 }
