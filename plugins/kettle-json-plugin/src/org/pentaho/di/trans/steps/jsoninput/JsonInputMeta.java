@@ -135,7 +135,7 @@ public class JsonInputMeta extends BaseFileInputStepMeta implements StepMetaInte
 
     public void getFields( RowMetaInterface r, String name, RowMetaInterface[] info,
         VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
-      // TextFileInput is the same, this can be refactored further 
+      // TextFileInput is the same, this can be refactored further
       if ( shortFilenameField != null ) {
         ValueMetaInterface v =
           new ValueMetaString( space.environmentSubstitute( shortFilenameField ) );
@@ -387,6 +387,7 @@ public class JsonInputMeta extends BaseFileInputStepMeta implements StepMetaInte
   /**
    * @deprecated use {@link#getExcludeFileMask()}
    */
+  @Deprecated
   public String[] getExludeFileMask() {
     return getExcludeFileMask();
   }
@@ -558,6 +559,7 @@ public class JsonInputMeta extends BaseFileInputStepMeta implements StepMetaInte
     return inputFiles.includeSubFolders;
   }
 
+  @Override
   public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     readData( stepnode );
   }
@@ -565,12 +567,15 @@ public class JsonInputMeta extends BaseFileInputStepMeta implements StepMetaInte
   @Override
   public JsonInputMeta clone() {
     JsonInputMeta clone = (JsonInputMeta) super.clone();
-    // comp classes handled by super
+    clone.setFileName( getFileName() );
+    clone.setFileMask( getFileMask() );
+    clone.setExcludeFileMask( getExcludeFileMask() );
     return clone;
   }
 
+  @Override
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 400 );
+    StringBuilder retval = new StringBuilder( 400 );
 
     retval.append( "    " ).append( XMLHandler.addTagValue( "include", includeFilename ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "include_field", filenameField ) );
@@ -633,6 +638,7 @@ public class JsonInputMeta extends BaseFileInputStepMeta implements StepMetaInte
     }
   }
 
+  @Override
   public String getRequiredFilesCode( String tt ) {
     if ( tt == null ) {
       return RequiredFilesCode[0];
@@ -714,6 +720,7 @@ public class JsonInputMeta extends BaseFileInputStepMeta implements StepMetaInte
     getInputFiles().allocate( nrfiles, nrfields );
   }
 
+  @Override
   public void setDefault() {
     additionalFileOutputFields = new AdditionalFileOutputFields();
 
@@ -785,6 +792,7 @@ public class JsonInputMeta extends BaseFileInputStepMeta implements StepMetaInte
     additionalFileOutputFields.getFields( rowMeta, name, info, space, repository, metaStore );
   }
 
+  @Override
   public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
     throws KettleException {
 
@@ -847,6 +855,7 @@ public class JsonInputMeta extends BaseFileInputStepMeta implements StepMetaInte
       setPathField( rep.getStepAttributeString( id_step, "pathFieldName" ) );
       setIsHiddenField( rep.getStepAttributeString( id_step, "hiddenFieldName" ) );
       setLastModificationDateField( rep.getStepAttributeString( id_step, "lastModificationTimeFieldName" ) );
+      setUriField( rep.getStepAttributeString( id_step, "uriNameFieldName" ) );
       setRootUriField( rep.getStepAttributeString( id_step, "rootUriNameFieldName" ) );
       setExtensionField( rep.getStepAttributeString( id_step, "extensionFieldName" ) );
       setSizeField( rep.getStepAttributeString( id_step, "sizeFieldName" ) );
@@ -856,6 +865,7 @@ public class JsonInputMeta extends BaseFileInputStepMeta implements StepMetaInte
     }
   }
 
+  @Override
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
     throws KettleException {
     try {
@@ -910,6 +920,7 @@ public class JsonInputMeta extends BaseFileInputStepMeta implements StepMetaInte
       rep.saveStepAttribute( id_transformation, id_step, "uriNameFieldName", getUriField() );
       rep.saveStepAttribute( id_transformation, id_step, "rootUriNameFieldName", getRootUriField() );
       rep.saveStepAttribute( id_transformation, id_step, "extensionFieldName", getExtensionField() );
+      rep.saveStepAttribute( id_transformation, id_step, "sizeFieldName", getSizeField() );
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString(
         PKG, "JsonInputMeta.Exception.ErrorSavingToRepository", "" + id_step ), e );
@@ -921,6 +932,7 @@ public class JsonInputMeta extends BaseFileInputStepMeta implements StepMetaInte
       space, getFileName(), getFileMask(), getExcludeFileMask(), getFileRequired(), includeSubFolderBoolean() );
   }
 
+  @Override
   public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
       String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
       IMetaStore metaStore ) {
@@ -977,15 +989,18 @@ public class JsonInputMeta extends BaseFileInputStepMeta implements StepMetaInte
     }
   }
 
+  @Override
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta tr,
       Trans trans ) {
     return new JsonInput( stepMeta, stepDataInterface, cnr, tr, trans );
   }
 
+  @Override
   public StepDataInterface getStepData() {
     return new JsonInputData();
   }
 
+  @Override
   public boolean supportsErrorHandling() {
     return true;
   }
@@ -1007,6 +1022,7 @@ public class JsonInputMeta extends BaseFileInputStepMeta implements StepMetaInte
    *
    * @return the filename of the exported resource
    */
+  @Override
   public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
     ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore ) throws KettleException {
     try {
