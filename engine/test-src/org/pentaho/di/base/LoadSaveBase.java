@@ -20,14 +20,13 @@
  *
  ******************************************************************************/
 
-package org.pentaho.di.job.entry.loadSave;
+package org.pentaho.di.base;
 
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.trans.steps.loadsave.getter.Getter;
 import org.pentaho.di.trans.steps.loadsave.initializer.InitializerInterface;
 import org.pentaho.di.trans.steps.loadsave.setter.Setter;
-import org.pentaho.di.trans.steps.loadsave.validator.DatabaseMetaLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.DefaultFieldLoadSaveValidatorFactory;
 import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidatorFactory;
@@ -42,15 +41,15 @@ import java.util.Map;
 /**
  * @author Andrey Khayrutdinov
  */
-abstract class LoadSaveBase<T> {
+public abstract class LoadSaveBase<T> {
 
   final Class<T> clazz;
-  final List<String> xmlAttributes;
-  final List<String> repoAttributes;
-  final JavaBeanManipulator<T> manipulator;
-  final FieldLoadSaveValidatorFactory fieldLoadSaveValidatorFactory;
-  final List<DatabaseMeta> databases;
-  final InitializerInterface<T> initializer;
+  protected final List<String> xmlAttributes;
+  protected final List<String> repoAttributes;
+  protected final JavaBeanManipulator<T> manipulator;
+  protected final FieldLoadSaveValidatorFactory fieldLoadSaveValidatorFactory;
+  protected final List<DatabaseMeta> databases;
+  protected final InitializerInterface<T> initializer;
 
   public LoadSaveBase( Class<T> clazz,
                        List<String> commonAttributes, List<String> xmlAttributes, List<String> repoAttributes,
@@ -84,6 +83,11 @@ abstract class LoadSaveBase<T> {
       fieldLoadSaveValidatorAttributeMap, fieldLoadSaveValidatorTypeMap, null );
   }
 
+  public LoadSaveBase( Class<T> clazz, List<String> commonAttributes ) {
+    this( clazz, commonAttributes, new ArrayList<String>(), new ArrayList<String>(),
+      new HashMap<String, String>(), new HashMap<String, String>(),
+      new HashMap<String, FieldLoadSaveValidator<?>>(), new HashMap<String, FieldLoadSaveValidator<?>>() );
+  }
   public T createMeta() {
     try {
       return clazz.newInstance();
@@ -92,7 +96,8 @@ abstract class LoadSaveBase<T> {
     }
   }
 
-  Map<String, FieldLoadSaveValidator<?>> createValidatorMapAndInvokeSetters( List<String> attributes,
+  @SuppressWarnings( { "unchecked" } )
+  protected Map<String, FieldLoadSaveValidator<?>> createValidatorMapAndInvokeSetters( List<String> attributes,
                                                                              T metaToSave ) {
     Map<String, FieldLoadSaveValidator<?>> validatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();
     databases.clear();
@@ -103,10 +108,12 @@ abstract class LoadSaveBase<T> {
       FieldLoadSaveValidator<?> validator = fieldLoadSaveValidatorFactory.createValidator( getter );
       try {
         Object testValue = validator.getTestObject();
-        //noinspection unchecked
+        //no-inspection unchecked
         setter.set( metaToSave, testValue );
-        if ( validator instanceof DatabaseMetaLoadSaveValidator ) {
+        if ( testValue instanceof DatabaseMeta ) {
           addDatabase( (DatabaseMeta) testValue );
+        } else if ( testValue instanceof DatabaseMeta[] ) {
+          addDatabase( (DatabaseMeta[]) testValue );
         }
       } catch ( Exception e ) {
         throw new RuntimeException( "Unable to invoke setter for " + attribute, e );
@@ -116,7 +123,7 @@ abstract class LoadSaveBase<T> {
     return validatorMap;
   }
 
-  void validateLoadedMeta( List<String> attributes, Map<String, FieldLoadSaveValidator<?>> validatorMap,
+  protected void validateLoadedMeta( List<String> attributes, Map<String, FieldLoadSaveValidator<?>> validatorMap,
                            T metaSaved, T metaLoaded ) {
     for ( String attribute : attributes ) {
       try {
@@ -160,9 +167,17 @@ abstract class LoadSaveBase<T> {
     return result;
   }
 
-  private void addDatabase( DatabaseMeta db ) {
+  protected void addDatabase( DatabaseMeta db ) {
     if ( !databases.contains( db ) ) {
       databases.add( db );
+    }
+  }
+
+  protected void addDatabase( DatabaseMeta[] db ) {
+    if ( db != null ) {
+      for ( DatabaseMeta meta : db ) {
+        addDatabase( meta );
+      }
     }
   }
 }

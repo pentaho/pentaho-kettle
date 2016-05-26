@@ -19,57 +19,31 @@
  * limitations under the License.
  *
  ******************************************************************************/
+
 package org.pentaho.di.trans.steps.propertyoutput;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import org.junit.Before;
 import org.junit.Test;
-import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
-import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
 
 public class PropertyOutputMetaTest {
-  LoadSaveTester loadSaveTester;
-  Class<PropertyOutputMeta> testMetaClass = PropertyOutputMeta.class;
-
-  @Before
-  public void setUpLoadSave() throws Exception {
-    KettleEnvironment.init();
-    PluginRegistry.init( true );
-    List<String> attributes =
-        Arrays.asList( "keyField", "valueField", "addToResult", "fileName", "fileNameInField", "fileNameField",
-            "extension", "stepNrInFilename", "dateInFilename", "timeInFilename",
-            "createParentFolder", "comment", "append" );
-
-    //
-    // Note - "partNrInFilename" not included above because while it seems to be serialized/deserialized in the meta,
-    // there are no getters/setters and it's a private variable. Also, it's not included in the dialog. So it is
-    // always serialized/deserialized as "false" (N).
-    // MB - 5/2016
-
-    Map<String, String> getterMap = new HashMap<String, String>() {
-      {
-        put( "addToResult", "addToResult" );
-      }
-    };
-    Map<String, String> setterMap = new HashMap<String, String>();
-
-    Map<String, FieldLoadSaveValidator<?>> attrValidatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();
-    Map<String, FieldLoadSaveValidator<?>> typeValidatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();
-
-    loadSaveTester =
-        new LoadSaveTester( testMetaClass, attributes, getterMap, setterMap, attrValidatorMap, typeValidatorMap );
-  }
-
   @Test
   public void testSerialization() throws KettleException {
-    loadSaveTester.testSerialization();
-  }
+    List<String> attributes = Arrays.asList( "KeyField", "ValueField", "Comment", "FileNameInField",
+      "FileNameField", "FileName", "Extension", "StepNrInFilename",
+      //
+      // Note - "partNrInFilename" not included above because while it seems to be serialized/deserialized in the meta,
+      // there are no getters/setters and it's a private variable. Also, it's not included in the dialog. So it is
+      // always serialized/deserialized as "false" (N).
+      // MB - 5/2016
+      "DateInFilename", "TimeInFilename", "CreateParentFolder", "AddToResult", "Append" );
 
+    LoadSaveTester<PropertyOutputMeta> tester = new LoadSaveTester<PropertyOutputMeta>(
+        PropertyOutputMeta.class, attributes );
+
+    tester.testSerialization();
+  }
 }

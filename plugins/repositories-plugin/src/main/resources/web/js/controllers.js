@@ -31,7 +31,7 @@ define(
 
     var repoConnectionAppControllers = angular.module('repoConnectionAppControllers', []);
 
-    repoConnectionAppControllers.controller("PentahoRepositoryController", function($scope, $location, $rootScope, pentahoRepositoryModel, repositoryTypesModel) {
+    repoConnectionAppControllers.controller("PentahoRepositoryController", function($scope, $location, $rootScope, $filter, pentahoRepositoryModel, repositoryTypesModel) {
       $scope.model = pentahoRepositoryModel.model;
       $scope.getStarted = function() {
         pentahoRepositoryModel.reset();
@@ -48,7 +48,25 @@ define(
         }
         return true;
       }
+      function checkDuplicate() {
+        repositories = JSON.parse(getRepositories());
+        $scope.model.hasError = false;
+        $scope.model.errorMessage = "";
+        for(var i = 0; i < repositories.length; i++){
+          if( $filter('lowercase')(repositories[i].displayName) == $filter('lowercase')($scope.model.displayName) ){
+            $scope.model.hasError = true;
+            $scope.model.errorMessage = "A repository connection with that name already exists. Please enter a different name.";
+            break;
+          }
+        }
+      }
       $scope.finish = function() {
+        if( this.model.displayName != getCurrentRepository() ) {
+          checkDuplicate();
+          if( this.model.hasError ){
+            return;
+          }
+        }
         if (createRepository("PentahoEnterpriseRepository", JSON.stringify(this.model))) {
           $location.path("/pentaho-repository-creation-success")
         } else {
@@ -89,7 +107,7 @@ define(
       $scope.successText = "Your connection was created and is ready to use.";
     });
 
-    repoConnectionAppControllers.controller("KettleFileRepositoryController", function($scope, $rootScope, $location, kettleFileRepositoryModel) {
+    repoConnectionAppControllers.controller("KettleFileRepositoryController", function($scope, $rootScope, $location, $filter, kettleFileRepositoryModel) {
       $scope.model = kettleFileRepositoryModel.model;
       $scope.selectLocation = function() {
         this.model.location = selectLocation();
@@ -100,7 +118,25 @@ define(
         }
         return true;
       }
+      function checkDuplicate() {
+        repositories = JSON.parse(getRepositories());
+        $scope.model.hasError = false;
+        $scope.model.errorMessage = "";
+        for(var i = 0; i < repositories.length; i++){
+          if( $filter('lowercase')(repositories[i].displayName) == $filter('lowercase')($scope.model.displayName) ){
+            $scope.model.hasError = true;
+            $scope.model.errorMessage = "A repository connection with that name already exists. Please enter a different name.";
+            break;
+          }
+        }
+      }
       $scope.finish = function() {
+        if( this.model.displayName != getCurrentRepository() ) {
+          checkDuplicate();
+          if( this.model.hasError ){
+            return;
+          }
+        }
         if (createRepository("KettleFileRepository", JSON.stringify(this.model))) {
           $location.path("/kettle-file-repository-creation-success")
         } else {
@@ -140,7 +176,7 @@ define(
       $scope.successText = "Your Kettle file repository was created and is ready to use.";
     });
 
-    repoConnectionAppControllers.controller("KettleDatabaseRepositoryController", function($scope, $rootScope, $location, kettleDatabaseRepositoryModel) {
+    repoConnectionAppControllers.controller("KettleDatabaseRepositoryController", function($scope, $rootScope, $location, $filter, kettleDatabaseRepositoryModel) {
       $scope.model = kettleDatabaseRepositoryModel.model;
       $scope.selectDatabase = function() {
         $location.path("/kettle-database-repository-select")
@@ -152,7 +188,25 @@ define(
         }
         return true;
       }
+      function checkDuplicate() {
+        repositories = JSON.parse(getRepositories());
+        $scope.model.hasError = false;
+        $scope.model.errorMessage = "";
+        for(var i = 0; i < repositories.length; i++){
+          if( $filter('lowercase')(repositories[i].displayName) == $filter('lowercase')($scope.model.displayName) ){
+            $scope.model.hasError = true;
+            $scope.model.errorMessage = "A repository connection with that name already exists. Please enter a different name.";
+            break;
+          }
+        }
+      }
       $scope.finish = function() {
+        if( this.model.displayName != getCurrentRepository() ) {
+          checkDuplicate();
+          if( this.model.hasError ){
+            return;
+          }
+        }
         if (createRepository("KettleDatabaseRepository", JSON.stringify(this.model))) {
           $location.path("/kettle-database-repository-creation-success")
         } else {
@@ -229,6 +283,9 @@ define(
           $scope.model.databaseConnection = database.name;
         }
       }
+      if( $scope.databases.length == 1 ){
+        $scope.selectDatabase( $scope.databases[0] );
+      }
       function updateSelected(dbName) {
         for (var i = 0; i < $scope.databases.length; i++) {
           if ($scope.databases[i].name == dbName) {
@@ -280,10 +337,10 @@ define(
       $scope.selectRepository = function(repository) {
         repositoriesModel.selectedRepository = repository;
       }
-      $scope.setDefault = function(repository) {
-        setDefaultRepository(repository.displayName);
+      $scope.setDefault = function(name) {
+        setDefaultRepository(name);
         for ( i = 0; i < repositoriesModel.repositories.length; i++) {
-          if ( repositoriesModel.repositories[i].displayName == repository.displayName) {
+          if ( repositoriesModel.repositories[i].displayName == name) {
             repositoriesModel.repositories[i].isDefault = true;
           } else {
             repositoriesModel.repositories[i].isDefault = false;
@@ -327,6 +384,8 @@ define(
 
     repoConnectionAppControllers.controller("RepositoryConnectController", function($scope, repositoryConnectModel) {
       $scope.model = repositoryConnectModel;
+      $scope.model.username = getCurrentUser();
+      $scope.model.currentRepositoryName = getCurrentRepository();
       $scope.canConnect = function() {
         if (this.model.username == "" || this.model.password == "") {
           return false;

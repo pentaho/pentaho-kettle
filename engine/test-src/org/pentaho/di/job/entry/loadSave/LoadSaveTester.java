@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.pentaho.di.base.LoadSaveBase;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -38,7 +39,6 @@ import org.pentaho.di.trans.steps.loadsave.MemoryRepository;
 import org.pentaho.di.trans.steps.loadsave.initializer.JobEntryInitializer;
 import org.pentaho.di.trans.steps.loadsave.validator.DatabaseMetaLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
-import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidatorFactory;
 
 public class LoadSaveTester<T extends JobEntryInterface> extends LoadSaveBase<T> {
 
@@ -82,11 +82,7 @@ public class LoadSaveTester<T extends JobEntryInterface> extends LoadSaveBase<T>
       new HashMap<String, FieldLoadSaveValidator<?>>(), new HashMap<String, FieldLoadSaveValidator<?>>() );
   }
 
-  public FieldLoadSaveValidatorFactory getFieldLoadSaveValidatorFactory() {
-    return fieldLoadSaveValidatorFactory;
-  }
-
-  void validateLoadedMeta( List<String> attributes, Map<String, FieldLoadSaveValidator<?>> validatorMap,
+  protected void validateLoadedMeta( List<String> attributes, Map<String, FieldLoadSaveValidator<?>> validatorMap,
       T metaSaved, T metaLoaded ) {
     super.validateLoadedMeta( attributes, validatorMap, metaSaved, metaLoaded );
     boolean checkDatabases = false;
@@ -120,6 +116,7 @@ public class LoadSaveTester<T extends JobEntryInterface> extends LoadSaveBase<T>
   public void testSerialization() throws KettleException {
     testXmlRoundTrip();
     testRepoRoundTrip();
+    testClone();
   }
 
   @SuppressWarnings( "deprecation" )
@@ -135,8 +132,6 @@ public class LoadSaveTester<T extends JobEntryInterface> extends LoadSaveBase<T>
     InputStream is = new ByteArrayInputStream( xml.getBytes() );
     metaLoaded.loadXML( XMLHandler.getSubNode( XMLHandler.loadXMLFile( is, null, false, false ), "step" ), databases, null, null, null );
     validateLoadedMeta( xmlAttributes, validatorMap, metaToSave, metaLoaded );
-
-    testClone();
   }
 
   @SuppressWarnings( "deprecation" )

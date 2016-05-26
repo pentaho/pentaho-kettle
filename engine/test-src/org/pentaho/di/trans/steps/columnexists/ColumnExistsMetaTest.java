@@ -19,68 +19,33 @@
  * limitations under the License.
  *
  ******************************************************************************/
+
 package org.pentaho.di.trans.steps.columnexists;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
-import org.pentaho.di.trans.steps.loadsave.validator.DatabaseMetaLoadSaveValidator;
-import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
-
 
 public class ColumnExistsMetaTest {
-  LoadSaveTester loadSaveTester;
-  Class<ColumnExistsMeta> testMetaClass = ColumnExistsMeta.class;
 
-  @Before
-  public void setUpLoadSave() throws Exception {
-    KettleEnvironment.init();
-    PluginRegistry.init( true );
-    List<String> attributes =
-        Arrays.asList( "schemaname", "tablename", "tablenamefield", "columnnamefield", "resultfieldname", "istablenameInfield", "database" );
-
-    Map<String, String> getterMap = new HashMap<String, String>() {
-      {
-        put( "schemaname", "getSchemaname" );
-        put( "tablename", "getTablename" );
-        put( "tablenamefield", "getDynamicTablenameField" );
-        put( "columnnamefield", "getDynamicColumnnameField" );
-        put( "resultfieldname", "getResultFieldName" );
-        put( "istablenameInfield", "isTablenameInField" );
-        put( "database", "getDatabase" );
-      }
-    };
-    Map<String, String> setterMap = new HashMap<String, String>() {
-      {
-        put( "schemaname", "setSchemaname" );
-        put( "tablename", "setTablename" );
-        put( "tablenamefield", "setDynamicTablenameField" );
-        put( "columnnamefield", "setDynamicColumnnameField" );
-        put( "resultfieldname", "setResultFieldName" );
-        put( "istablenameInfield", "setTablenameInField" );
-        put( "database", "setDatabase" );
-      }
-    };
-
-    Map<String, FieldLoadSaveValidator<?>> attrValidatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();
-    attrValidatorMap.put( "database", new DatabaseMetaLoadSaveValidator() );
-
-    Map<String, FieldLoadSaveValidator<?>> typeValidatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();
-
-    loadSaveTester =
-        new LoadSaveTester( testMetaClass, attributes, getterMap, setterMap, attrValidatorMap, typeValidatorMap );
+  @BeforeClass
+  public static void setUpBeforeClass() throws KettleException {
+    KettleEnvironment.init( false );
   }
 
   @Test
-  public void testSerialization() throws KettleException {
+  public void testLoadSave() throws KettleException {
+    List<String> attributes = Arrays.asList( "database", "tablename", "schemaname", "tablenameInField",
+      "dynamicTablenameField", "dynamicColumnnameField", "resultFieldName" );
+
+    LoadSaveTester<ColumnExistsMeta> loadSaveTester =
+      new LoadSaveTester<ColumnExistsMeta>( ColumnExistsMeta.class, attributes );
+
     loadSaveTester.testSerialization();
   }
 }

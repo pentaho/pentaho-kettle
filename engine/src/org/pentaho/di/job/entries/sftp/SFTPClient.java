@@ -27,7 +27,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetAddress;
 
-import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileType;
 import org.apache.commons.vfs2.FileUtil;
@@ -36,6 +35,7 @@ import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.exception.KettleJobException;
 import org.pentaho.di.core.vfs.KettleVFS;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.ChannelSftp.LsEntry;
@@ -243,6 +243,12 @@ public class SFTPClient {
     }
   }
 
+  /**
+   * @deprecated use {@link #get(FileObject, String)}
+   * @param localFilePath
+   * @param remoteFile
+   * @throws KettleJobException
+   */
   @Deprecated
   public void get( String localFilePath, String remoteFile ) throws KettleJobException {
     int mode = ChannelSftp.OVERWRITE;

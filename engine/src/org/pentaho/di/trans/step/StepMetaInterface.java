@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -183,7 +183,7 @@ public interface StepMetaInterface {
    *          the space The variable space to use to replace variables
    * @throws KettleStepException
    *           the kettle step exception
-   * @deprecated in favor of the getFields method with repository and metastore arguments
+   * @deprecated use {@link #getFields(RowMetaInterface, String, RowMetaInterface[], StepMeta, VariableSpace, Repository, IMetaStore)}
    */
   @Deprecated
   public void getFields( RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info, StepMeta nextStep,
@@ -232,7 +232,7 @@ public interface StepMetaInterface {
    *          Counters to reference.
    * @throws KettleXMLException
    *           When an unexpected XML error occurred. (malformed etc.)
-   * @deprecated
+   * @deprecated use {@link #loadXML(Node, List, IMetaStore)}
    */
   @Deprecated
   public void loadXML( Node stepnode, List<DatabaseMeta> databases, Map<String, Counter> counters ) throws KettleXMLException;
@@ -262,7 +262,7 @@ public interface StepMetaInterface {
    *          The step ID
    * @throws KettleException
    *           When an unexpected error occurred (database, network, etc)
-   * @deprecated
+   * @deprecated use {@link #saveRep(Repository, IMetaStore, ObjectId, ObjectId)}
    */
   @Deprecated
   public void saveRep( Repository rep, ObjectId id_transformation, ObjectId id_step ) throws KettleException;
@@ -296,7 +296,7 @@ public interface StepMetaInterface {
    *          The counters to reference
    * @throws KettleException
    *           When an unexpected error occurred (database, network, etc)
-   * @deprecated
+   * @deprecated use {@link #readRep(Repository, IMetaStore, ObjectId, List)}
    */
   @Deprecated
   public void readRep( Repository rep, ObjectId id_step, List<DatabaseMeta> databases,
@@ -333,7 +333,7 @@ public interface StepMetaInterface {
    *          The output step names
    * @param info
    *          The fields that are used as information by the step
-   * @deprecated in favor of the check() method with repository and metaStore arguments.
+   * @deprecated use {@link #check(List, TransMeta, StepMeta, RowMetaInterface, String[], String[], RowMetaInterface, VariableSpace, Repository, IMetaStore)}
    */
   @Deprecated
   public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
@@ -439,7 +439,7 @@ public interface StepMetaInterface {
    *          The output step names
    * @param info
    *          The fields used as information by this step
-   * @deprecated in favor of the analyseImpact method with repository and metaStore arguments.
+   * @deprecated use {@link #analyseImpact(List, TransMeta, StepMeta, RowMetaInterface, String[], String[], RowMetaInterface, Repository, IMetaStore)}
    */
   @Deprecated
   public void analyseImpact( List<DatabaseImpact> impact, TransMeta transMeta, StepMeta stepMeta,
@@ -484,7 +484,7 @@ public interface StepMetaInterface {
    *          StepMeta object containing the complete step
    * @param prev
    *          Row containing meta-data for the input fields (no data)
-   * @deprecated in favor of the getSQLStatements method with repository and metaStore arguments.
+   * @deprecated use {@link #getSQLStatements(TransMeta, StepMeta, RowMetaInterface, Repository, IMetaStore)}
    */
   @Deprecated
   public SQLStatement getSQLStatements( TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev ) throws KettleStepException;
@@ -574,7 +574,7 @@ public interface StepMetaInterface {
    *          The repository to optionally load other resources from (to be converted to XML)
    *
    * @return the filename of the exported resource
-   * @deprecated in favor of the same method with a IMetaStore argument.
+   * @deprecated use {@link #exportResources(VariableSpace, Map, ResourceNamingInterface, Repository, IMetaStore)}
    */
   @Deprecated
   public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
@@ -647,6 +647,7 @@ public interface StepMetaInterface {
    *         method will return null if the interface is not available for this step.
    * @deprecated Use annotation-based injection instead
    */
+  @Deprecated
   public StepMetaInjectionInterface getStepMetaInjectionInterface();
 
   /**

@@ -19,44 +19,25 @@
  * limitations under the License.
  *
  ******************************************************************************/
+
 package org.pentaho.di.trans.steps.creditcardvalidator;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Arrays;
+import java.util.List;
 
-import org.junit.Before;
 import org.junit.Test;
-import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
-import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
 
 public class CreditCardValidatorMetaTest {
-  LoadSaveTester loadSaveTester;
-  Class<CreditCardValidatorMeta> testMetaClass = CreditCardValidatorMeta.class;
-
-  @Before
-  public void setUpLoadSave() throws Exception {
-    KettleEnvironment.init();
-    PluginRegistry.init( true );
-    ArrayList<String> attributes = new ArrayList<String>() {
-      {
-        add( "dynamicField" );
-        add( "cardType" );
-        add( "notValidMsg" );
-        add( "resultFieldName" );
-        add( "onlyDigits" );
-      }
-    };
-
-    loadSaveTester = new LoadSaveTester( testMetaClass, attributes,
-      new HashMap<String, String>(), new HashMap<String, String>(),
-      new HashMap<String, FieldLoadSaveValidator<?>>(),  new HashMap<String, FieldLoadSaveValidator<?>>() );
-  }
 
   @Test
-  public void testSerialization() throws KettleException {
+  public void testLoadSave() throws KettleException {
+    List<String> attributes =
+      Arrays.asList( "DynamicField", "ResultFieldName", "CardType", "OnlyDigits", "NotValidMsg" );
+    LoadSaveTester<CreditCardValidatorMeta> loadSaveTester =
+      new LoadSaveTester<CreditCardValidatorMeta>( CreditCardValidatorMeta.class, attributes );
+
     loadSaveTester.testSerialization();
   }
 }

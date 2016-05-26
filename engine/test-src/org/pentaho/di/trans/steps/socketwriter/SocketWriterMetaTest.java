@@ -19,44 +19,24 @@
  * limitations under the License.
  *
  ******************************************************************************/
+
 package org.pentaho.di.trans.steps.socketwriter;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import org.junit.Before;
 import org.junit.Test;
-import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
-import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
 
 public class SocketWriterMetaTest {
-  LoadSaveTester loadSaveTester;
-  Class<SocketWriterMeta> testMetaClass = SocketWriterMeta.class;
-
-  @Before
-  public void setUpLoadSave() throws Exception {
-    KettleEnvironment.init();
-    PluginRegistry.init( true );
-    List<String> attributes =
-        Arrays.asList( "port", "bufferSize", "flushInterval", "compressed" );
-
-    Map<String, String> getterMap = new HashMap<String, String>();
-    Map<String, String> setterMap = new HashMap<String, String>();
-    Map<String, FieldLoadSaveValidator<?>> attrValidatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();
-    Map<String, FieldLoadSaveValidator<?>> typeValidatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();
-
-    loadSaveTester =
-        new LoadSaveTester( testMetaClass, attributes, getterMap, setterMap, attrValidatorMap, typeValidatorMap );
-  }
 
   @Test
-  public void testSerialization() throws KettleException {
+  public void testLoadSave() throws KettleException {
+    List<String> attributes = Arrays.asList( "Port", "BufferSize", "FlushInterval", "Compressed" );
+
+    LoadSaveTester loadSaveTester = new LoadSaveTester( SocketWriterMeta.class, attributes );
+
     loadSaveTester.testSerialization();
   }
-
 }

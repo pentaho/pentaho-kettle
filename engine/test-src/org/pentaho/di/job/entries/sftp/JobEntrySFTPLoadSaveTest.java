@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -20,46 +20,26 @@
  *
  ******************************************************************************/
 
-package org.pentaho.di.trans.steps.jsoninput;
+package org.pentaho.di.job.entries.sftp;
 
-import org.json.simple.JSONArray;
-import org.pentaho.di.core.exception.KettleException;
+import java.util.Arrays;
+import java.util.List;
 
-@Deprecated
-public class NJSONArray {
+import org.pentaho.di.job.entry.loadSave.JobEntryLoadSaveTestSupport;
 
-  private JSONArray a;
-  private boolean nullValue;
+public class JobEntrySFTPLoadSaveTest extends JobEntryLoadSaveTestSupport<JobEntrySFTP> {
 
-  public NJSONArray() throws KettleException {
-    this.a = new JSONArray();
-    setNull( false );
+  @Override
+  protected Class<JobEntrySFTP> getJobEntryClass() {
+    return JobEntrySFTP.class;
   }
 
-  public NJSONArray( JSONArray ja ) throws KettleException {
-    this.a = ja;
-    setNull( ja == null );
-  }
-
-  public void setNull( boolean value ) {
-    this.nullValue = value;
-  }
-
-  public boolean isNull() {
-    return this.nullValue;
-  }
-
-  public JSONArray getJSONArray() {
-    return this.a;
-  }
-
-  @SuppressWarnings( "unchecked" )
-  public void add( Object value ) {
-    this.a.add( value );
-  }
-
-  public int size() {
-    return this.a.size();
+  @Override
+  protected List<String> listCommonAttributes() {
+    return Arrays.asList( new String[] { "serverName", "serverPort", "userName", "password", "scpDirectory",
+      "targetDirectory", "wildcard", "remove", "addToResult", "createTargetFolder", "copyPrevious",
+      "useKeyFile", "keyFilename", "keyPassPhrase", "compression", "proxyType", "proxyHost", "proxyPort",
+      "proxyUsername", "proxyPassword" } );
   }
 
 }

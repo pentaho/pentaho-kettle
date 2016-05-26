@@ -40,6 +40,7 @@ import org.pentaho.di.repository.RepositoriesMeta;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.repository.filerep.KettleFileRepositoryMeta;
+import org.pentaho.di.ui.core.PropsUI;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -82,6 +83,9 @@ public class RepositoryConnectControllerTest {
   @Mock
   DatabaseMeta databaseMeta;
 
+  @Mock
+  PropsUI propsUI;
+
   private RepositoryConnectController controller;
 
   @BeforeClass
@@ -93,7 +97,7 @@ public class RepositoryConnectControllerTest {
 
   @Before
   public void setUp() {
-    controller = new RepositoryConnectController( pluginRegistry, null, repositoriesMeta );
+    controller = new RepositoryConnectController( pluginRegistry, null, repositoriesMeta, propsUI );
 
     when( pluginInterface.getName() ).thenReturn( PLUGIN_NAME );
     when( pluginInterface.getIds() ).thenReturn( new String[] { ID } );

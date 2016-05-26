@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -104,17 +104,13 @@ public class JobEntryFTPSGet extends JobEntryBase implements Cloneable, JobEntry
 
   private int connectionType;
 
-  public int ifFileExistsSkip = 0;
-  public String SifFileExistsSkip = "ifFileExistsSkip";
+  public static final String[] FILE_EXISTS_ACTIONS =
+    new String[] { "ifFileExistsSkip", "ifFileExistsCreateUniq", "ifFileExistsFail" };
+  public static final int ifFileExistsSkip = 0;
+  public static final int ifFileExistsCreateUniq = 1;
+  public static final int ifFileExistsFail = 2;
 
-  public int ifFileExistsCreateUniq = 1;
-  public String SifFileExistsCreateUniq = "ifFileExistsCreateUniq";
-
-  public int ifFileExistsFail = 2;
-  public String SifFileExistsFail = "ifFileExistsFail";
-
-  public int ifFileExists;
-  public String SifFileExists;
+  private int ifFileExists;
 
   public String SUCCESS_IF_AT_LEAST_X_FILES_DOWNLOADED = "success_when_at_least";
   public String SUCCESS_IF_ERRORS_LESS = "success_if_errors_less";
@@ -138,8 +134,7 @@ public class JobEntryFTPSGet extends JobEntryBase implements Cloneable, JobEntry
     nr_limit = "10";
     port = "21";
     success_condition = SUCCESS_IF_NO_ERRORS;
-    ifFileExists = ifFileExistsSkip;
-    SifFileExists = SifFileExistsSkip;
+    ifFileExists = 0;
 
     serverName = null;
     movefiles = false;
@@ -196,7 +191,7 @@ public class JobEntryFTPSGet extends JobEntryBase implements Cloneable, JobEntry
     retval.append( "      " ).append(
       XMLHandler.addTagValue( "proxy_password", Encr.encryptPasswordIfNotUsingVariables( proxyPassword ) ) );
 
-    retval.append( "      " ).append( XMLHandler.addTagValue( "ifFileExists", SifFileExists ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "ifFileExists", getFileExistsAction( ifFileExists ) ) );
 
     retval.append( "      " ).append( XMLHandler.addTagValue( "nr_limit", nr_limit ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "success_condition", success_condition ) );
@@ -249,18 +244,7 @@ public class JobEntryFTPSGet extends JobEntryBase implements Cloneable, JobEntry
       proxyPassword =
         Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue( entrynode, "proxy_password" ) );
 
-      SifFileExists = XMLHandler.getTagValue( entrynode, "ifFileExists" );
-      if ( Const.isEmpty( SifFileExists ) ) {
-        ifFileExists = ifFileExistsSkip;
-      } else {
-        if ( SifFileExists.equals( SifFileExistsCreateUniq ) ) {
-          ifFileExists = ifFileExistsCreateUniq;
-        } else if ( SifFileExists.equals( SifFileExistsFail ) ) {
-          ifFileExists = ifFileExistsFail;
-        } else {
-          ifFileExists = ifFileExistsSkip;
-        }
-      }
+      ifFileExists = getFileExistsIndex( XMLHandler.getTagValue( entrynode, "ifFileExists" ) );
       nr_limit = XMLHandler.getTagValue( entrynode, "nr_limit" );
       success_condition =
         Const.NVL( XMLHandler.getTagValue( entrynode, "success_condition" ), SUCCESS_IF_NO_ERRORS );
@@ -298,11 +282,11 @@ public class JobEntryFTPSGet extends JobEntryBase implements Cloneable, JobEntry
       date_time_format = rep.getJobEntryAttributeString( id_jobentry, "date_time_format" );
       AddDateBeforeExtension = rep.getJobEntryAttributeBoolean( id_jobentry, "AddDateBeforeExtension" );
 
-      String addToResult = rep.getStepAttributeString( id_jobentry, "add_to_result_filenames" );
+      String addToResult = rep.getJobEntryAttributeString( id_jobentry, "isaddresult" );
       if ( Const.isEmpty( addToResult ) ) {
         isaddresult = true;
       } else {
-        isaddresult = rep.getStepAttributeBoolean( id_jobentry, "add_to_result_filenames" );
+        isaddresult = rep.getJobEntryAttributeBoolean( id_jobentry, "isaddresult" );
       }
 
       createmovefolder = rep.getJobEntryAttributeBoolean( id_jobentry, "createmovefolder" );
@@ -314,18 +298,7 @@ public class JobEntryFTPSGet extends JobEntryBase implements Cloneable, JobEntry
         Encr
           .decryptPasswordOptionallyEncrypted( rep.getJobEntryAttributeString( id_jobentry, "proxy_password" ) );
 
-      SifFileExists = rep.getJobEntryAttributeString( id_jobentry, "ifFileExists" );
-      if ( Const.isEmpty( SifFileExists ) ) {
-        ifFileExists = ifFileExistsSkip;
-      } else {
-        if ( SifFileExists.equals( SifFileExistsCreateUniq ) ) {
-          ifFileExists = ifFileExistsCreateUniq;
-        } else if ( SifFileExists.equals( SifFileExistsFail ) ) {
-          ifFileExists = ifFileExistsFail;
-        } else {
-          ifFileExists = ifFileExistsSkip;
-        }
-      }
+      ifFileExists = getFileExistsIndex( rep.getJobEntryAttributeString( id_jobentry, "ifFileExists" ) );
       nr_limit = rep.getJobEntryAttributeString( id_jobentry, "nr_limit" );
       success_condition =
         Const.NVL( rep.getJobEntryAttributeString( id_jobentry, "success_condition" ), SUCCESS_IF_NO_ERRORS );
@@ -371,7 +344,7 @@ public class JobEntryFTPSGet extends JobEntryBase implements Cloneable, JobEntry
       rep.saveJobEntryAttribute( id_job, getObjectId(), "proxy_username", proxyUsername );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "proxy_password", Encr
         .encryptPasswordIfNotUsingVariables( proxyPassword ) );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "ifFileExists", SifFileExists );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), "ifFileExists", getFileExistsAction( ifFileExists ) );
 
       rep.saveJobEntryAttribute( id_job, getObjectId(), "nr_limit", nr_limit );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "success_condition", success_condition );
@@ -711,6 +684,34 @@ public class JobEntryFTPSGet extends JobEntryBase implements Cloneable, JobEntry
     this.proxyUsername = proxyUsername;
   }
 
+  public int getIfFileExists() {
+    return ifFileExists;
+  }
+
+  public void setIfFileExists( int ifFileExists ) {
+    this.ifFileExists = ifFileExists;
+  }
+
+  public static String getFileExistsAction( int actionId ) {
+    if ( actionId < 0 || actionId >= FILE_EXISTS_ACTIONS.length ) {
+      return FILE_EXISTS_ACTIONS[0];
+    }
+    return FILE_EXISTS_ACTIONS[actionId];
+  }
+
+  public static int getFileExistsIndex( String desc ) {
+    int result = 0;
+    if ( Const.isEmpty( desc ) ) {
+      return result;
+    }
+    for ( int i = 0; i < FILE_EXISTS_ACTIONS.length; i++ ) {
+      if ( desc.equalsIgnoreCase( FILE_EXISTS_ACTIONS[i] ) ) {
+        result = i;
+        break;
+      }
+    }
+    return result;
+  }
   public Result execute( Result previousResult, int nr ) throws KettleException {
     // LogWriter log = LogWriter.getInstance();
     logBasic( BaseMessages.getString( PKG, "JobEntryFTPS.Started", serverName ) );

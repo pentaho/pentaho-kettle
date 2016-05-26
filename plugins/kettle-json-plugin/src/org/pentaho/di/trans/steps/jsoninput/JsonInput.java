@@ -111,7 +111,10 @@ public class JsonInput extends BaseFileInputStep<JsonInputMeta, JsonInputData> i
       }
 
       // filter out rows that only contain null
-      int start = meta.isRemoveSourceField() ? 0 : 1;
+      int start = 0;
+      if ( meta.isInFields() && !meta.isRemoveSourceField() ) {
+        start = 1;
+      }
       boolean hasValues = false;
       for ( int i = start; i < outRow.length; i++ ) {
         if ( outRow[ i ] != null ) {
@@ -163,6 +166,11 @@ public class JsonInput extends BaseFileInputStep<JsonInputMeta, JsonInputData> i
     } else {
       data.readrow = getRow();
       data.inputRowMeta = getInputRowMeta();
+      if ( data.inputRowMeta == null ) {
+        data.hasFirstRow = false;
+        return;
+      }
+      data.hasFirstRow = true;
       data.outputRowMeta = data.inputRowMeta.clone();
 
       // Check if source field is provided
@@ -317,6 +325,9 @@ public class JsonInput extends BaseFileInputStep<JsonInputMeta, JsonInputData> i
    * get final row for output
    */
   private Object[] getOneOutputRow() throws KettleException {
+    if ( meta.isInFields() && !data.hasFirstRow ) {
+      return null;
+    }
     Object[] rawReaderRow = null;
     while ( ( rawReaderRow = data.readerRowSet.getRow() ) == null ) {
       if ( data.inputs.hasNext() && data.readerRowSet.isDone() ) {
@@ -444,6 +455,7 @@ public class JsonInput extends BaseFileInputStep<JsonInputMeta, JsonInputData> i
     data.reader.setIgnoreMissingPath( meta.isIgnoreMissingPath() );
   }
 
+  @Override
   public void dispose( StepMetaInterface smi, StepDataInterface sdi ) {
     meta = (JsonInputMeta) smi;
     data = (JsonInputData) sdi;

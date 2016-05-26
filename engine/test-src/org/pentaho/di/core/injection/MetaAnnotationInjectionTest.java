@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -64,6 +64,7 @@ public class MetaAnnotationInjectionTest {
     assertTrue( ri.getProperties().containsKey( "FIRST" ) );
 
     assertEquals( "FILENAME_LINES", ri.getProperties().get( "FILENAME" ).getGroupName() );
+    assertEquals( "!DESCRIPTION!", ri.getDescription( "DESCRIPTION" ) );
   }
 
   @Test

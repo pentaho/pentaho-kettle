@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -1431,7 +1431,7 @@ public class JobEntryFTPSGetDialog extends JobEntryDialog implements JobEntryDia
     wProxyUsername.setText( Const.NVL( jobEntry.getProxyUsername(), "" ) );
     wProxyPassword.setText( Const.NVL( jobEntry.getProxyPassword(), "" ) );
 
-    wIfFileExists.select( jobEntry.ifFileExists );
+    wIfFileExists.select( jobEntry.getIfFileExists() );
 
     wNrErrorsLessThan.setText( Const.NVL( jobEntry.getLimit(), "10" ) );
 
@@ -1497,16 +1497,8 @@ public class JobEntryFTPSGetDialog extends JobEntryDialog implements JobEntryDia
     jobEntry.setProxyUsername( wProxyUsername.getText() );
     jobEntry.setProxyPassword( wProxyPassword.getText() );
 
-    if ( wIfFileExists.getSelectionIndex() == 1 ) {
-      jobEntry.ifFileExists = jobEntry.ifFileExistsCreateUniq;
-      jobEntry.SifFileExists = jobEntry.SifFileExistsCreateUniq;
-    } else if ( wIfFileExists.getSelectionIndex() == 2 ) {
-      jobEntry.ifFileExists = jobEntry.ifFileExistsFail;
-      jobEntry.SifFileExists = jobEntry.SifFileExistsFail;
-    } else {
-      jobEntry.ifFileExists = jobEntry.ifFileExistsSkip;
-      jobEntry.SifFileExists = jobEntry.SifFileExistsSkip;
-    }
+    int index = wIfFileExists.getSelectionIndex();
+    jobEntry.setIfFileExists( index );
 
     jobEntry.setLimit( wNrErrorsLessThan.getText() );
 
