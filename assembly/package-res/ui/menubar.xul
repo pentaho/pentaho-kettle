@@ -147,10 +147,6 @@
         </menu>
         <menu id="repository" label="${Spoon.Menu.Repository}">
           <menupopup id="repository-popup">
-            <menuitem id="repository-connect" acceltext="CTRL-R" accesskey="ctrl-r"
-              label="${Spoon.Menu.Repository.ConnectToRepository}" command="spoon.openRepository()" />
-            <menuitem id="repository-disconnect" acceltext="CTRL-D" accesskey="ctrl-d" disabled="true"
-              label="${Spoon.Menu.Repository.DisconnectRepository}" command="spoon.closeRepository()" />
             <menuitem id="repository-explore" acceltext="CTRL-E" accesskey="ctrl-e" disabled="true"
               label="${Spoon.Menu.Repository.ExploreRepository}" command="spoon.exploreRepository()" />
             <menuseparator />
