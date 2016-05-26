@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -244,10 +244,12 @@ public class XBaseInputMeta extends BaseStepMeta implements StepMetaInterface {
     this.includeFilename = includeFilename;
   }
 
+  @Override
   public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     readData( stepnode );
   }
 
+  @Override
   public Object clone() {
     XBaseInputMeta retval = (XBaseInputMeta) super.clone();
     return retval;
@@ -274,6 +276,7 @@ public class XBaseInputMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
+  @Override
   public void setDefault() {
     dbfFileName = null;
     rowLimit = 0;
@@ -288,6 +291,7 @@ public class XBaseInputMeta extends BaseStepMeta implements StepMetaInterface {
     return null;
   }
 
+  @Override
   public void searchInfoAndTargetSteps( List<StepMeta> steps ) {
     acceptingStep = StepMeta.findStep( steps, acceptingStepName );
   }
@@ -352,6 +356,7 @@ public class XBaseInputMeta extends BaseStepMeta implements StepMetaInterface {
     row.addRowMeta( getOutputFields( fileList, name ) );
   }
 
+  @Override
   public String getXML() {
     StringBuilder retval = new StringBuilder();
 
@@ -366,12 +371,16 @@ public class XBaseInputMeta extends BaseStepMeta implements StepMetaInterface {
 
     retval.append( "    " + XMLHandler.addTagValue( "accept_filenames", acceptingFilenames ) );
     retval.append( "    " + XMLHandler.addTagValue( "accept_field", acceptingField ) );
+    if ( ( acceptingStepName == null ) && ( acceptingStep != null ) ) {
+      acceptingStepName = acceptingStep.getName();
+    }
     retval.append( "    "
-      + XMLHandler.addTagValue( "accept_stepname", ( acceptingStep != null ? acceptingStep.getName() : "" ) ) );
+      + XMLHandler.addTagValue( "accept_stepname", acceptingStepName ) );
 
     return retval.toString();
   }
 
+  @Override
   public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
       dbfFileName = rep.getStepAttributeString( id_step, "file_dbf" );
@@ -393,6 +402,7 @@ public class XBaseInputMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
+  @Override
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       rep.saveStepAttribute( id_transformation, id_step, "file_dbf", dbfFileName );
@@ -406,8 +416,11 @@ public class XBaseInputMeta extends BaseStepMeta implements StepMetaInterface {
 
       rep.saveStepAttribute( id_transformation, id_step, "accept_filenames", acceptingFilenames );
       rep.saveStepAttribute( id_transformation, id_step, "accept_field", acceptingField );
-      rep.saveStepAttribute( id_transformation, id_step, "accept_stepname", ( acceptingStep != null
-        ? acceptingStep.getName() : "" ) );
+      if ( ( acceptingStepName == null ) && ( acceptingStep != null ) ) {
+        acceptingStepName = acceptingStep.getName();
+      }
+      rep.saveStepAttribute( id_transformation, id_step, "accept_stepname", acceptingStepName );
+
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString(
         PKG, "XBaseInputMeta.Exception.UnableToSaveMetaDataToRepository" )
@@ -415,6 +428,7 @@ public class XBaseInputMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
+  @Override
   public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
     RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
@@ -474,11 +488,13 @@ public class XBaseInputMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
+  @Override
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta tr,
     Trans trans ) {
     return new XBaseInput( stepMeta, stepDataInterface, cnr, tr, trans );
   }
 
+  @Override
   public StepDataInterface getStepData() {
     return new XBaseInputData();
   }
@@ -493,6 +509,7 @@ public class XBaseInputMeta extends BaseStepMeta implements StepMetaInterface {
       space, new String[] { dbfFileName }, new String[] { null }, new String[] { null }, new String[] { "N" } );
   }
 
+  @Override
   public String[] getUsedLibraries() {
     return new String[] { "javadbf.jar", };
   }
@@ -529,6 +546,7 @@ public class XBaseInputMeta extends BaseStepMeta implements StepMetaInterface {
    *
    * @return the filename of the exported resource
    */
+  @Override
   public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
     ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore ) throws KettleException {
     try {
