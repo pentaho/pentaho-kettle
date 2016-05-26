@@ -30,6 +30,8 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.injection.Injection;
+import org.pentaho.di.core.injection.InjectionSupported;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -47,40 +49,54 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
+@InjectionSupported( localizationPrefix = "IfNull.Injection.", groups = { "GLOBAL_GROUP", "FIELD_GROUP", "VALUE_GROUP" } )
 public class IfNullMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = IfNullMeta.class; // for i18n purposes, needed by Translator2!!
 
   /** which fields to display? */
+  @Injection( name = "FIELDNAME", group = "FIELD_GROUP" )
   private String[] fieldName;
 
   /** by which value we replace */
+  @Injection( name = "REPLACEVALUE", group = "GLOBAL_GROUP" )
   private String[] replaceValue;
 
   /** which types to display? */
+  @Injection( name = "TYPENAME", group = "VALUE_GROUP" )
   private String[] typeName;
 
   /** by which value we replace */
+  @Injection( name = "TYPEREPLACEVALUE", group = "VALUE_GROUP" )
   private String[] typereplaceValue;
 
+  @Injection( name = "TYPEREPLACEMASK", group = "VALUE_GROUP" )
   private String[] typereplaceMask;
 
+  @Injection( name = "REPLACEMASK", group = "GLOBAL_GROUP" )
   private String[] replaceMask;
 
   /** Flag : set empty string for type **/
+  @Injection( name = "SETTYPEEMPTYSTRING", group = "FIELD_GROUP" )
   private boolean[] setTypeEmptyString;
 
   /** Flag : set empty string **/
+  @Injection( name = "SETEMPTYSTRING", group = "VALUE_GROUP" )
   private boolean[] setEmptyString;
 
+  @Injection( name = "SELECTFIELDS", group = "GLOBAL_GROUP" )
   private boolean selectFields;
 
+  @Injection( name = "SELECTVALUESTYPE", group = "GLOBAL_GROUP" )
   private boolean selectValuesType;
 
+  @Injection( name = "REPLACEALLBYVALUE", group = "FIELD_GROUP" )
   private String replaceAllByValue;
 
+  @Injection( name = "REPLACEALLMASK", group = "FIELD_GROUP" )
   private String replaceAllMask;
 
   /** The flag to set auto commit on or off on the connection */
+  @Injection( name = "SETEMPTYSTRINGALL", group = "GLOBAL_GROUP" )
   private boolean setEmptyStringAll;
 
   public IfNullMeta() {
@@ -312,7 +328,7 @@ public class IfNullMeta extends BaseStepMeta implements StepMetaInterface {
         typereplaceValue[i] = XMLHandler.getTagValue( tnode, "value" );
         typereplaceMask[i] = XMLHandler.getTagValue( tnode, "mask" );
         String typeemptyString = XMLHandler.getTagValue( tnode, "set_type_empty_string" );
-        setTypeEmptyString[ i ] = !Const.isEmpty( typeemptyString ) && "Y".equalsIgnoreCase( typeemptyString );
+        setTypeEmptyString[i] = !Const.isEmpty( typeemptyString ) && "Y".equalsIgnoreCase( typeemptyString );
       }
       for ( int i = 0; i < nrfields; i++ ) {
         Node fnode = XMLHandler.getSubNodeByNr( fields, "field", i );
@@ -372,27 +388,19 @@ public class IfNullMeta extends BaseStepMeta implements StepMetaInterface {
     int nrtypes = 0;
     allocate( nrtypes, nrfields );
     /*
-     * Code will never execute. nrfields and nrtypes
-     * are both zero above. so for-next is skipped on both.
+     * Code will never execute. nrfields and nrtypes are both zero above. so for-next is skipped on both.
      * 
      * MB - 5/2016
      * 
-    for ( int i = 0; i < nrtypes; i++ ) {
-      typeName[i] = "typename" + i;
-      typereplaceValue[i] = "typevalue" + i;
-      typereplaceMask[i] = "typemask" + i;
-      setTypeEmptyString[i] = false;
-    }
-    for ( int i = 0; i < nrfields; i++ ) {
-      fieldName[i] = "field" + i;
-      replaceValue[i] = "value" + i;
-      replaceMask[i] = "mask" + i;
-      setEmptyString[i] = false;
-    }
-    */
+     * for ( int i = 0; i < nrtypes; i++ ) { typeName[i] = "typename" + i; typereplaceValue[i] = "typevalue" + i;
+     * typereplaceMask[i] = "typemask" + i; setTypeEmptyString[i] = false; } for ( int i = 0; i < nrfields; i++ ) {
+     * fieldName[i] = "field" + i; replaceValue[i] = "value" + i; replaceMask[i] = "mask" + i; setEmptyString[i] =
+     * false; }
+     */
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
+    throws KettleException {
     try {
       replaceAllByValue = rep.getStepAttributeString( id_step, "replaceAllByValue" );
       replaceAllMask = rep.getStepAttributeString( id_step, "replaceAllMask" );
@@ -422,7 +430,8 @@ public class IfNullMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
+    throws KettleException {
     try {
       rep.saveStepAttribute( id_transformation, id_step, "replaceAllByValue", replaceAllByValue );
       rep.saveStepAttribute( id_transformation, id_step, "replaceAllMask", replaceAllMask );
@@ -448,19 +457,19 @@ public class IfNullMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
-    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
-    Repository repository, IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
+      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
+      IMetaStore metaStore ) {
     CheckResult cr;
     if ( prev == null || prev.size() == 0 ) {
       cr =
-        new CheckResult( CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString(
-          PKG, "IfNullMeta.CheckResult.NotReceivingFields" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString( PKG,
+              "IfNullMeta.CheckResult.NotReceivingFields" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-        new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
-          PKG, "IfNullMeta.CheckResult.StepRecevingData", prev.size() + "" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
+              "IfNullMeta.CheckResult.StepRecevingData", prev.size() + "" ), stepMeta );
       remarks.add( cr );
 
       String error_message = "";
@@ -482,13 +491,13 @@ public class IfNullMeta extends BaseStepMeta implements StepMetaInterface {
       } else {
         if ( fieldName.length > 0 ) {
           cr =
-            new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
-              PKG, "IfNullMeta.CheckResult.AllFieldsFound" ), stepMeta );
+              new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
+                  "IfNullMeta.CheckResult.AllFieldsFound" ), stepMeta );
           remarks.add( cr );
         } else {
           cr =
-            new CheckResult( CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString(
-              PKG, "IfNullMeta.CheckResult.NoFieldsEntered" ), stepMeta );
+              new CheckResult( CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString( PKG,
+                  "IfNullMeta.CheckResult.NoFieldsEntered" ), stepMeta );
           remarks.add( cr );
         }
       }
@@ -498,19 +507,19 @@ public class IfNullMeta extends BaseStepMeta implements StepMetaInterface {
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-        new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
-          PKG, "IfNullMeta.CheckResult.StepRecevingData2" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
+              "IfNullMeta.CheckResult.StepRecevingData2" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-        new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
-          PKG, "IfNullMeta.CheckResult.NoInputReceivedFromOtherSteps" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
+              "IfNullMeta.CheckResult.NoInputReceivedFromOtherSteps" ), stepMeta );
       remarks.add( cr );
     }
   }
 
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta tr,
-    Trans trans ) {
+      Trans trans ) {
     return new IfNull( stepMeta, stepDataInterface, cnr, tr, trans );
   }
 
