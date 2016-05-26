@@ -87,23 +87,29 @@ public class AccessInputMetaTest {
     Map<String, String> getterMap = new HashMap<String, String>();
     Map<String, String> setterMap = new HashMap<String, String>();
 
+    FieldLoadSaveValidator<?> stringArrayValidator =
+      new ArrayLoadSaveValidator<String>( new StringLoadSaveValidator(), 50 );
+    FieldLoadSaveValidator<?> fileRequiredArrayValidator =
+      new ArrayLoadSaveValidator<String>( new FileRequiredLoadSaveValidator(), 50 );
+    FieldLoadSaveValidator<?> inputFieldArrayValidator =
+      new ArrayLoadSaveValidator<AccessInputField>( new AccessInputFieldLoadSaveValidator(), 100 );
+
     Map<String, FieldLoadSaveValidator<?>> typeValidators = new HashMap<String, FieldLoadSaveValidator<?>>();
     Map<String, FieldLoadSaveValidator<?>> fieldValidators = new HashMap<String, FieldLoadSaveValidator<?>>();
-    fieldValidators.put( "fileName", new ArrayLoadSaveValidator<String>( new StringLoadSaveValidator(), 50 ) );
-    fieldValidators.put( "fileMask", new ArrayLoadSaveValidator<String>( new StringLoadSaveValidator(), 50 ) );
-    fieldValidators.put( "excludeFileMask", new ArrayLoadSaveValidator<String>( new StringLoadSaveValidator(), 50 ) );
-    fieldValidators.put( "fileRequired",
-      new ArrayLoadSaveValidator<String>( new FileRequiredLoadSaveValidator(), 50 ) );
-    fieldValidators.put( "includeSubFolders", new ArrayLoadSaveValidator<String>( new StringLoadSaveValidator(), 50 ) );
-    fieldValidators.put( "inputFields",
-      new ArrayLoadSaveValidator<AccessInputField>( new AccessInputFieldLoadSaveValidator(), 100 ) );
+    fieldValidators.put( "fileName", stringArrayValidator );
+    fieldValidators.put( "fileMask", stringArrayValidator );
+    fieldValidators.put( "excludeFileMask", stringArrayValidator );
+    fieldValidators.put( "fileRequired", fileRequiredArrayValidator );
+    fieldValidators.put( "includeSubFolders", stringArrayValidator );
+    fieldValidators.put( "inputFields", inputFieldArrayValidator );
 
-    LoadSaveTester loadSaveTester =
-      new LoadSaveTester( AccessInputMeta.class, attributes, getterMap, setterMap, fieldValidators, typeValidators );
+    LoadSaveTester<AccessInputMeta> loadSaveTester = new LoadSaveTester<AccessInputMeta>(
+      AccessInputMeta.class, attributes, getterMap, setterMap, fieldValidators, typeValidators );
+
     loadSaveTester.testSerialization();
   }
 
-  public class FileRequiredLoadSaveValidator implements FieldLoadSaveValidator<String> {
+  public static class FileRequiredLoadSaveValidator implements FieldLoadSaveValidator<String> {
     final Random rand = new Random();
     @Override
     public String getTestObject() {
@@ -116,7 +122,7 @@ public class AccessInputMetaTest {
     }
   }
 
-  public class AccessInputFieldLoadSaveValidator implements FieldLoadSaveValidator<AccessInputField> {
+  public static class AccessInputFieldLoadSaveValidator implements FieldLoadSaveValidator<AccessInputField> {
     final Random rand = new Random();
     @Override
     public AccessInputField getTestObject() {

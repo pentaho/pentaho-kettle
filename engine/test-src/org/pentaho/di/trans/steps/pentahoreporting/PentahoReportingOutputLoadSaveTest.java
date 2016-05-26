@@ -20,7 +20,7 @@
  *
  ******************************************************************************/
 
-package org.pentaho.di.trans.steps.processfiles;
+package org.pentaho.di.trans.steps.pentahoreporting;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -30,24 +30,29 @@ import java.util.Map;
 import org.junit.Test;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
+import org.pentaho.di.trans.steps.loadsave.validator.EnumLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
-import org.pentaho.di.trans.steps.loadsave.validator.IntLoadSaveValidator;
+import org.pentaho.di.trans.steps.loadsave.validator.MapLoadSaveValidator;
+import org.pentaho.di.trans.steps.loadsave.validator.StringLoadSaveValidator;
+import org.pentaho.di.trans.steps.pentahoreporting.PentahoReportingOutputMeta.ProcessorType;
 
-public class ProcessFilesMetaTest {
+public class PentahoReportingOutputLoadSaveTest {
   @Test
   public void testSerialization() throws KettleException {
-    List<String> attributes = Arrays.asList( "DynamicSourceFileNameField", "DynamicTargetFileNameField",
-      "OperationType", "AddTargetFileNameToResult", "OverwriteTargetFile", "CreateParentFolder",
-      "Simulate" );
+    List<String> attributes = Arrays.asList( "InputFileField", "OutputFileField","ParameterFieldMap",
+      "OutputProcessorType" );
     Map<String, String> getterMap = new HashMap<String, String>();
     Map<String, String> setterMap = new HashMap<String, String>();
 
     Map<String, FieldLoadSaveValidator<?>> attributeMap = new HashMap<String, FieldLoadSaveValidator<?>>();
-    attributeMap.put( "OperationType", new IntLoadSaveValidator( ProcessFilesMeta.operationTypeCode.length ) );
+    attributeMap.put( "ParameterFieldMap", new MapLoadSaveValidator<String, String>(
+      new StringLoadSaveValidator(), new StringLoadSaveValidator() ) );
     Map<String, FieldLoadSaveValidator<?>> typeMap = new HashMap<String, FieldLoadSaveValidator<?>>();
+    typeMap.put( ProcessorType.class.getCanonicalName(),
+      new EnumLoadSaveValidator<ProcessorType>( ProcessorType.class ) );
 
-    LoadSaveTester<ProcessFilesMeta> tester = new LoadSaveTester<ProcessFilesMeta>(
-      ProcessFilesMeta.class, attributes, getterMap, setterMap, attributeMap, typeMap );
+    LoadSaveTester<PentahoReportingOutputMeta> tester = new LoadSaveTester<PentahoReportingOutputMeta>(
+      PentahoReportingOutputMeta.class, attributes, getterMap, setterMap, attributeMap, typeMap );
 
     tester.testSerialization();
   }

@@ -19,6 +19,7 @@
  * limitations under the License.
  *
  ******************************************************************************/
+
 package org.pentaho.di.trans.steps.blockuntilstepsfinish;
 
 import static org.junit.Assert.assertEquals;
@@ -36,15 +37,14 @@ import org.junit.Test;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.plugins.PluginRegistry;
-import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
 import org.pentaho.di.trans.steps.loadsave.initializer.InitializerInterface;
 import org.pentaho.di.trans.steps.loadsave.validator.ArrayLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.StringLoadSaveValidator;
 
-public class BlockUntilStepsFinishMetaTest implements InitializerInterface<StepMetaInterface> {
-  LoadSaveTester loadSaveTester;
+public class BlockUntilStepsFinishMetaTest implements InitializerInterface<BlockUntilStepsFinishMeta> {
+  LoadSaveTester<BlockUntilStepsFinishMeta> loadSaveTester;
   Class<BlockUntilStepsFinishMeta> testMetaClass = BlockUntilStepsFinishMeta.class;
 
   @Before
@@ -52,13 +52,12 @@ public class BlockUntilStepsFinishMetaTest implements InitializerInterface<StepM
     KettleEnvironment.init();
     PluginRegistry.init( true );
     List<String> attributes =
-        Arrays.asList( "stepName", "stepCopyNr" );
+      Arrays.asList( "stepName", "stepCopyNr" );
 
     Map<String, String> getterMap = new HashMap<String, String>();
     Map<String, String> setterMap = new HashMap<String, String>();
     FieldLoadSaveValidator<String[]> stringArrayLoadSaveValidator =
-        new ArrayLoadSaveValidator<String>( new StringLoadSaveValidator(), 5 );
-
+      new ArrayLoadSaveValidator<String>( new StringLoadSaveValidator(), 5 );
 
     Map<String, FieldLoadSaveValidator<?>> attrValidatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();
     attrValidatorMap.put( "stepName", stringArrayLoadSaveValidator );
@@ -67,13 +66,13 @@ public class BlockUntilStepsFinishMetaTest implements InitializerInterface<StepM
     Map<String, FieldLoadSaveValidator<?>> typeValidatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();
 
     loadSaveTester =
-        new LoadSaveTester( testMetaClass, attributes, new ArrayList<String>(), new ArrayList<String>(),
-            getterMap, setterMap, attrValidatorMap, typeValidatorMap, this );
+      new LoadSaveTester<BlockUntilStepsFinishMeta>( testMetaClass, attributes, new ArrayList<String>(),
+        new ArrayList<String>(), getterMap, setterMap, attrValidatorMap, typeValidatorMap, this );
   }
 
   // Call the allocate method on the LoadSaveTester meta class
   @Override
-  public void modify( StepMetaInterface someMeta ) {
+  public void modify( BlockUntilStepsFinishMeta someMeta ) {
     if ( someMeta instanceof BlockUntilStepsFinishMeta ) {
       ( (BlockUntilStepsFinishMeta) someMeta ).allocate( 5 );
     }
@@ -96,5 +95,4 @@ public class BlockUntilStepsFinishMetaTest implements InitializerInterface<StepM
     assertTrue( Arrays.equals( meta.getStepCopyNr(), aClone.getStepCopyNr() ) );
     assertEquals( meta.getXML(), aClone.getXML() );
   }
-
 }

@@ -95,10 +95,16 @@ public class MailValidatorMeta extends BaseStepMeta implements StepMetaInterface
   }
 
   /**
+   * @deprecated use {@link #setEmailField(String)} instead
    * @param emailfield
    *          The emailfield to set.
    */
+  @Deprecated
   public void setEmailfield( String emailfield ) {
+    setEmailField( emailfield );
+  }
+
+  public void setEmailField( String emailfield ) {
     this.emailfield = emailfield;
   }
 
@@ -126,16 +132,28 @@ public class MailValidatorMeta extends BaseStepMeta implements StepMetaInterface
   }
 
   /**
+   * @deprecated use {@link #getEmailValideMsg()} instead
    * @return Returns the emailValideMsg.
    */
+  @Deprecated
   public String getEMailValideMsg() {
+    return getEmailValideMsg();
+  }
+
+  public String getEmailValideMsg() {
     return emailValideMsg;
   }
 
   /**
+   * @deprecated use {@link #getEmailNotValideMsg()} instead
    * @return Returns the emailNotValideMsg.
    */
+  @Deprecated
   public String getEMailNotValideMsg() {
+    return getEmailNotValideMsg();
+  }
+
+  public String getEmailNotValideMsg() {
     return emailNotValideMsg;
   }
 
@@ -185,17 +203,29 @@ public class MailValidatorMeta extends BaseStepMeta implements StepMetaInterface
   }
 
   /**
+   * @deprecated use {@link #getEmailSender()} instead
    * @return Returns the emailSender.
    */
+  @Deprecated
   public String geteMailSender() {
+    return getEmailSender();
+  }
+
+  public String getEmailSender() {
     return emailSender;
   }
 
   /**
+   * @deprecated use {@link #setEmailSender(String)} instead
    * @param emailSender
    *          The emailSender to set.
    */
+  @Deprecated
   public void seteMailSender( String emailSender ) {
+    setEmailSender( emailSender );
+  }
+
+  public void setEmailSender( String emailSender ) {
     this.emailSender = emailSender;
   }
 
@@ -215,17 +245,29 @@ public class MailValidatorMeta extends BaseStepMeta implements StepMetaInterface
   }
 
   /**
+   * @deprecated use {@link #isDynamicDefaultSMTP()} instead
    * @return Returns the isdynamicDefaultSMTP.
    */
+  @Deprecated
   public boolean isdynamicDefaultSMTP() {
+    return isDynamicDefaultSMTP();
+  }
+
+  public boolean isDynamicDefaultSMTP() {
     return isdynamicDefaultSMTP;
   }
 
   /**
+   * @deprecated use {@link #setDynamicDefaultSMTP(boolean)} instead
    * @param isdynamicDefaultSMTP
    *          The isdynamicDefaultSMTP to set.
    */
+  @Deprecated
   public void setdynamicDefaultSMTP( boolean isdynamicDefaultSMTP ) {
+    setDynamicDefaultSMTP( isdynamicDefaultSMTP );
+  }
+
+  public void setDynamicDefaultSMTP( boolean isdynamicDefaultSMTP ) {
     this.isdynamicDefaultSMTP = isdynamicDefaultSMTP;
   }
 

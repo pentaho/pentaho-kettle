@@ -19,64 +19,27 @@
  * limitations under the License.
  *
  ******************************************************************************/
+
 package org.pentaho.di.trans.steps.mailvalidator;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import org.junit.Before;
 import org.junit.Test;
-import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
-import org.pentaho.di.trans.steps.loadsave.validator.ArrayLoadSaveValidator;
-import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
-import org.pentaho.di.trans.steps.loadsave.validator.StringLoadSaveValidator;
 
 public class MailValidatorMetaTest {
-  LoadSaveTester loadSaveTester;
-  Class<MailValidatorMeta> testMetaClass = MailValidatorMeta.class;
-
-  @Before
-  public void setUpLoadSave() throws Exception {
-    KettleEnvironment.init();
-    PluginRegistry.init( true );
-    List<String> attributes =
-        Arrays.asList( "emailField", "ResultAsString", "SMTPCheck", "eMailValideMsg", "eMailNotValideMsg",
-            "errorsField", "timeOut", "defaultSMTP", "emailSender", "defaultSMTPField", "isdynamicDefaultSMTP",
-            "resultFieldName" );
-
-    Map<String, String> getterMap = new HashMap<String, String>() {
-      {
-        put( "emailSender", "geteMailSender" );
-        put( "isdynamicDefaultSMTP", "isdynamicDefaultSMTP" );
-      }
-    };
-    Map<String, String> setterMap = new HashMap<String, String>() {
-      {
-        put( "emailField", "setEmailfield" );
-        put( "eMailValideMsg", "setEmailValideMsg" );
-        put( "eMailNotValideMsg", "setEmailNotValideMsg" );
-        put( "emailSender", "seteMailSender" );
-        put( "isdynamicDefaultSMTP", "setdynamicDefaultSMTP" );
-      }
-    };
-    FieldLoadSaveValidator<String[]> stringArrayLoadSaveValidator =
-        new ArrayLoadSaveValidator<String>( new StringLoadSaveValidator(), 5 );
-
-
-    Map<String, FieldLoadSaveValidator<?>> attrValidatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();
-    Map<String, FieldLoadSaveValidator<?>> typeValidatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();
-
-    loadSaveTester =
-        new LoadSaveTester( testMetaClass, attributes, getterMap, setterMap, attrValidatorMap, typeValidatorMap );
-  }
 
   @Test
-  public void testSerialization() throws KettleException {
+  public void testLoadSave() throws KettleException {
+    List<String> attributes = Arrays.asList( "EmailField", "ResultFieldName", "ResultAsString", "SMTPCheck",
+      "EmailValideMsg", "EmailNotValideMsg", "ErrorsField", "TimeOut", "DefaultSMTP", "EmailSender",
+      "DefaultSMTPField", "DynamicDefaultSMTP" );
+
+    LoadSaveTester<MailValidatorMeta> loadSaveTester =
+      new LoadSaveTester<MailValidatorMeta>( MailValidatorMeta.class, attributes );
+
     loadSaveTester.testSerialization();
   }
 }
