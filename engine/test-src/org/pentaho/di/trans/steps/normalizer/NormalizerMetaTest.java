@@ -51,13 +51,12 @@ public class NormalizerMetaTest {
     fieldLoadSaveValidatorTypeMap.put( NormaliserField[].class.getCanonicalName(),
         new ArrayLoadSaveValidator<NormaliserField>( new NormaliserFieldLoadSaveValidator( testField ), 50 ) );
 
-    LoadSaveTester tester =
-        new LoadSaveTester( NormaliserMeta.class, attributes, new HashMap<String, String>(),
+    LoadSaveTester<NormaliserMeta> tester =
+        new LoadSaveTester<NormaliserMeta>( NormaliserMeta.class, attributes, new HashMap<String, String>(),
             new HashMap<String, String>(), new HashMap<String, FieldLoadSaveValidator<?>>(),
             fieldLoadSaveValidatorTypeMap );
 
-    tester.testRepoRoundTrip();
-    tester.testXmlRoundTrip();
+    tester.testSerialization();
   }
 
   public static class NormaliserFieldLoadSaveValidator implements FieldLoadSaveValidator<NormaliserField> {
