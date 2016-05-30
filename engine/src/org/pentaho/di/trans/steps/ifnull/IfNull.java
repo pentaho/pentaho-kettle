@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -83,33 +83,36 @@ public class IfNull extends BaseStep implements StepInterface {
 
       if ( meta.isSelectFields() ) {
         // Consider only selected fields
-        if ( meta.getFieldName() != null && meta.getFieldName().length > 0 ) {
-          data.fieldnrs = new int[meta.getFieldName().length];
-          data.defaultValues = new String[meta.getFieldName().length];
-          data.defaultMasks = new String[meta.getFieldName().length];
-          data.setEmptyString = new boolean[meta.getFieldName().length];
+        if ( meta.getFields() != null && meta.getFields().length > 0 ) {
+          int fieldsLength = meta.getFields().length;
+          data.fieldnrs = new int[fieldsLength];
+          data.defaultValues = new String[fieldsLength];
+          data.defaultMasks = new String[fieldsLength];
+          data.setEmptyString = new boolean[fieldsLength];
 
-          for ( int i = 0; i < meta.getFieldName().length; i++ ) {
-            data.fieldnrs[i] = data.outputRowMeta.indexOfValue( meta.getFieldName()[i] );
+          for ( int i = 0; i < meta.getFields().length; i++ ) {
+            data.fieldnrs[i] = data.outputRowMeta.indexOfValue( meta.getFields()[i].getFieldName() );
             if ( data.fieldnrs[i] < 0 ) {
-              logError( BaseMessages.getString( PKG, "IfNull.Log.CanNotFindField", meta.getFieldName()[i] ) );
-              throw new KettleException( BaseMessages.getString( PKG, "IfNull.Log.CanNotFindField", meta
-                .getFieldName()[i] ) );
+              logError( BaseMessages.getString( PKG, "IfNull.Log.CanNotFindField", meta.getFields()[i]
+                  .getFieldName() ) );
+              throw new KettleException( BaseMessages.getString( PKG, "IfNull.Log.CanNotFindField", meta.getFields()[i]
+                  .getFieldName() ) );
             }
-            data.defaultValues[i] = environmentSubstitute( meta.getReplaceValue()[i] );
-            data.defaultMasks[i] = environmentSubstitute( meta.getReplaceMask()[i] );
-            data.setEmptyString[i] = meta.isSetEmptyString()[i];
+            data.defaultValues[i] = environmentSubstitute( meta.getFields()[i].getReplaceValue() );
+            data.defaultMasks[i] = environmentSubstitute( meta.getFields()[i].getReplaceMask() );
+            data.setEmptyString[i] = meta.getFields()[i].isSetEmptyString();
           }
         } else {
           throw new KettleException( BaseMessages.getString( PKG, "IfNull.Log.SelectFieldsEmpty" ) );
         }
       } else if ( meta.isSelectValuesType() ) {
         // Consider only select value types
-        if ( meta.getTypeName() != null && meta.getTypeName().length > 0 ) {
+        if ( meta.getValueTypes() != null && meta.getValueTypes().length > 0 ) {
           // return the real default values
-          data.defaultValues = new String[meta.getTypeName().length];
-          data.defaultMasks = new String[meta.getTypeName().length];
-          data.setEmptyString = new boolean[meta.getTypeName().length];
+          int typeLength = meta.getValueTypes().length;
+          data.defaultValues = new String[typeLength];
+          data.defaultMasks = new String[typeLength];
+          data.setEmptyString = new boolean[typeLength];
 
           // return all type codes
           HashSet<String> AlllistTypes = new HashSet<String>();
@@ -117,16 +120,16 @@ public class IfNull extends BaseStep implements StepInterface {
             AlllistTypes.add( ValueMetaInterface.typeCodes[i] );
           }
 
-          for ( int i = 0; i < meta.getTypeName().length; i++ ) {
-            if ( !AlllistTypes.contains( meta.getTypeName()[i] ) ) {
+          for ( int i = 0; i < meta.getValueTypes().length; i++ ) {
+            if ( !AlllistTypes.contains( meta.getValueTypes()[i].getTypeName() ) ) {
               throw new KettleException( BaseMessages.getString( PKG, "IfNull.Log.CanNotFindValueType", meta
-                .getTypeName()[i] ) );
+                  .getValueTypes()[i].getTypeName() ) );
             }
 
-            data.ListTypes.put( meta.getTypeName()[i], i );
-            data.defaultValues[i] = environmentSubstitute( meta.getTypeReplaceValue()[i] );
-            data.defaultMasks[i] = environmentSubstitute( meta.getTypeReplaceMask()[i] );
-            data.setEmptyString[i] = meta.isSetTypeEmptyString()[i];
+            data.ListTypes.put( meta.getValueTypes()[i].getTypeName(), i );
+            data.defaultValues[i] = environmentSubstitute( meta.getValueTypes()[i].getTypereplaceValue() );
+            data.defaultMasks[i] = environmentSubstitute( meta.getValueTypes()[i].getTypereplaceMask() );
+            data.setEmptyString[i] = meta.getValueTypes()[i].isSetTypeEmptyString();
           }
 
           HashSet<Integer> fieldsSelectedIndex = new HashSet<Integer>();

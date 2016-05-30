@@ -30,6 +30,9 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.injection.Injection;
+import org.pentaho.di.core.injection.InjectionDeep;
+import org.pentaho.di.core.injection.InjectionSupported;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -47,40 +50,146 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
+@InjectionSupported( localizationPrefix = "IfNull.Injection.", groups = { "FIELDS", "VALUE_TYPES" } )
 public class IfNullMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = IfNullMeta.class; // for i18n purposes, needed by Translator2!!
 
-  /** which fields to display? */
-  private String[] fieldName;
+  public static class Fields implements Cloneable {
 
-  /** by which value we replace */
-  private String[] replaceValue;
+    /** which fields to display? */
+    @Injection( name = "FIELD_NAME", group = "FIELDS" )
+    private String fieldName;
 
-  /** which types to display? */
-  private String[] typeName;
+    /** by which value we replace */
+    @Injection( name = "REPLACE_VALUE", group = "FIELDS" )
+    private String replaceValue;
 
-  /** by which value we replace */
-  private String[] typereplaceValue;
+    @Injection( name = "REPLACE_MASK", group = "FIELDS" )
+    private String replaceMask;
 
-  private String[] typereplaceMask;
+    /** Flag : set empty string **/
+    @Injection( name = "SET_EMPTY_STRING", group = "FIELDS" )
+    private boolean setEmptyString;
 
-  private String[] replaceMask;
+    public String getFieldName() {
+      return fieldName;
+    }
 
-  /** Flag : set empty string for type **/
-  private boolean[] setTypeEmptyString;
+    public void setFieldName( String fieldName ) {
+      this.fieldName = fieldName;
+    }
 
-  /** Flag : set empty string **/
-  private boolean[] setEmptyString;
+    public String getReplaceValue() {
+      return replaceValue;
+    }
 
+    public void setReplaceValue( String replaceValue ) {
+      this.replaceValue = replaceValue;
+    }
+
+    public String getReplaceMask() {
+      return replaceMask;
+    }
+
+    public void setReplaceMask( String replaceMask ) {
+      this.replaceMask = replaceMask;
+    }
+
+    public boolean isSetEmptyString() {
+      return setEmptyString;
+    }
+
+    public void setEmptyString( boolean setEmptyString ) {
+      this.setEmptyString = setEmptyString;
+    }
+
+    public Fields clone() {
+      try {
+        return (Fields) super.clone();
+      } catch ( CloneNotSupportedException e ) {
+        throw new RuntimeException( e );
+      }
+    }
+  }
+
+  public static class ValueTypes implements Cloneable {
+
+    /** which types to display? */
+    @Injection( name = "TYPE_NAME", group = "VALUE_TYPES" )
+    private String typeName;
+
+    /** by which value we replace */
+    @Injection( name = "TYPE_REPLACE_VALUE", group = "VALUE_TYPES" )
+    private String typereplaceValue;
+
+    @Injection( name = "TYPE_REPLACE_MASK", group = "VALUE_TYPES" )
+    private String typereplaceMask;
+
+    /** Flag : set empty string for type **/
+    @Injection( name = "SET_TYPE_EMPTY_STRING", group = "VALUE_TYPES" )
+    private boolean setTypeEmptyString;
+
+    public String getTypeName() {
+      return typeName;
+    }
+
+    public void setTypeName( String typeName ) {
+      this.typeName = typeName;
+    }
+
+    public String getTypereplaceValue() {
+      return typereplaceValue;
+    }
+
+    public void setTypereplaceValue( String typereplaceValue ) {
+      this.typereplaceValue = typereplaceValue;
+    }
+
+    public String getTypereplaceMask() {
+      return typereplaceMask;
+    }
+
+    public void setTypereplaceMask( String typereplaceMask ) {
+      this.typereplaceMask = typereplaceMask;
+    }
+
+    public boolean isSetTypeEmptyString() {
+      return setTypeEmptyString;
+    }
+
+    public void setTypeEmptyString( boolean setTypeEmptyString ) {
+      this.setTypeEmptyString = setTypeEmptyString;
+    }
+
+    public ValueTypes clone() {
+      try {
+        return (ValueTypes) super.clone();
+      } catch ( CloneNotSupportedException e ) {
+        throw new RuntimeException( e );
+      }
+    }
+  }
+
+  @InjectionDeep
+  private Fields[] fields;
+
+  @InjectionDeep
+  private ValueTypes[] valueTypes;
+
+  @Injection( name = "SELECT_FIELDS" )
   private boolean selectFields;
 
+  @Injection( name = "SELECT_VALUES_TYPE" )
   private boolean selectValuesType;
 
+  @Injection( name = "REPLACE_ALL_BY_VALUE" )
   private String replaceAllByValue;
 
+  @Injection( name = "REPLACE_ALL_MASK" )
   private String replaceAllMask;
 
   /** The flag to set auto commit on or off on the connection */
+  @Injection( name = "SET_EMPTY_STRING_ALL" )
   private boolean setEmptyStringAll;
 
   public IfNullMeta() {
@@ -106,156 +215,33 @@ public class IfNullMeta extends BaseStepMeta implements StepMetaInterface {
     readData( stepnode, databases );
   }
 
-  /**
-   * @return the setEmptyString
-   */
-  public boolean[] isSetEmptyString() {
-    return setEmptyString;
-  }
-
-  /**
-   * @param setEmptyString
-   *          the setEmptyString to set
-   */
-  public void setEmptyString( boolean[] setEmptyString ) {
-    this.setEmptyString = setEmptyString;
-  }
-
-  /**
-   * @return the setTypeEmptyString
-   */
-  public boolean[] isSetTypeEmptyString() {
-    return setTypeEmptyString;
-  }
-
-  /**
-   * @param setTypeEmptyString
-   *          the setTypeEmptyString to set
-   */
-  public void setTypeEmptyString( boolean[] setTypeEmptyString ) {
-    this.setTypeEmptyString = setTypeEmptyString;
-  }
-
   public Object clone() {
     IfNullMeta retval = (IfNullMeta) super.clone();
 
-    int nrTypes = typeName.length;
-    int nrfields = fieldName.length;
+    int nrTypes = valueTypes.length;
+    int nrfields = fields.length;
     retval.allocate( nrTypes, nrfields );
 
-    System.arraycopy( typeName, 0, retval.typeName, 0, nrTypes );
-    System.arraycopy( typereplaceValue, 0, retval.typereplaceValue, 0, nrTypes );
-    System.arraycopy( typereplaceMask, 0, retval.typereplaceMask, 0, nrTypes );
-    System.arraycopy( setTypeEmptyString, 0, retval.setTypeEmptyString, 0, nrTypes );
+    for ( int i = 0; i < nrTypes; i++ ) {
+      retval.getValueTypes()[i] = valueTypes[i].clone();
+    }
 
-    System.arraycopy( fieldName, 0, retval.fieldName, 0, nrfields );
-    System.arraycopy( replaceValue, 0, retval.replaceValue, 0, nrfields );
-    System.arraycopy( replaceMask, 0, retval.replaceMask, 0, nrfields );
-    System.arraycopy( setEmptyString, 0, retval.setEmptyString, 0, nrfields );
+    for ( int i = 0; i < nrfields; i++ ) {
+      retval.getFields()[i] = fields[i].clone();
+    }
 
     return retval;
   }
 
   public void allocate( int nrtypes, int nrfields ) {
-    typeName = new String[nrtypes];
-    typereplaceValue = new String[nrtypes];
-    typereplaceMask = new String[nrtypes];
-    setTypeEmptyString = new boolean[nrtypes];
-
-    fieldName = new String[nrfields];
-    replaceValue = new String[nrfields];
-    replaceMask = new String[nrfields];
-    setEmptyString = new boolean[nrfields];
-  }
-
-  /**
-   * @return Returns the fieldName.
-   */
-  public String[] getFieldName() {
-    return fieldName;
-  }
-
-  /**
-   * @param fieldName
-   *          The fieldName to set.
-   */
-  public void setFieldName( String[] fieldName ) {
-    this.fieldName = fieldName;
-  }
-
-  /**
-   * @return Returns the fieldName.
-   */
-  public String[] getTypeName() {
-    return typeName;
-  }
-
-  /**
-   * @param typeName
-   *          The typeName to set.
-   */
-  public void setTypeName( String[] typeName ) {
-    this.typeName = typeName;
-  }
-
-  /**
-   * @return Returns the replaceValue.
-   */
-  public String[] getReplaceValue() {
-    return replaceValue;
-  }
-
-  /**
-   * @param replaceValue
-   *          The replaceValue to set.
-   */
-  public void setReplaceValue( String[] replaceValue ) {
-    this.replaceValue = replaceValue;
-  }
-
-  /**
-   * @return Returns the typereplaceValue.
-   */
-  public String[] getTypeReplaceValue() {
-    return typereplaceValue;
-  }
-
-  /**
-   * @return Returns the typereplaceMask.
-   */
-  public String[] getTypeReplaceMask() {
-    return typereplaceMask;
-  }
-
-  /**
-   * @return Returns the replaceMask.
-   */
-  public String[] getReplaceMask() {
-    return replaceMask;
-  }
-
-  /**
-   * @param typereplaceMask
-   *          The typereplaceMask to set.
-   */
-  public void setTypeReplaceMask( String[] typereplaceMask ) {
-    this.typereplaceMask = typereplaceMask;
-  }
-
-  /**
-   * @param replaceMask
-   *          The replaceMask to set.
-   */
-  public void setReplaceMask( String[] replaceMask ) {
-    this.replaceMask = replaceMask;
-  }
-
-  /**
-   * @param typereplaceValue
-   *          The typereplaceValue to set.
-   */
-  public void setTypeReplaceValue( String[] typereplaceValue ) {
-    this.typereplaceValue = typereplaceValue;
+    valueTypes = new ValueTypes[nrtypes];
+    for ( int i = 0; i < nrtypes; i++ ) {
+      valueTypes[i] = new ValueTypes();
+    }
+    fields = new Fields[nrfields];
+    for ( int i = 0; i < nrfields; i++ ) {
+      fields[i] = new Fields();
+    }
   }
 
   public boolean isSelectFields() {
@@ -290,6 +276,22 @@ public class IfNullMeta extends BaseStepMeta implements StepMetaInterface {
     return replaceAllMask;
   }
 
+  public Fields[] getFields() {
+    return fields;
+  }
+
+  public void setFields( Fields[] fields ) {
+    this.fields = fields;
+  }
+
+  public ValueTypes[] getValueTypes() {
+    return valueTypes;
+  }
+
+  public void setValueTypes( ValueTypes[] valueTypes ) {
+    this.valueTypes = valueTypes;
+  }
+
   private void readData( Node stepnode, List<? extends SharedObjectInterface> databases ) throws KettleXMLException {
     try {
       selectFields = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "selectFields" ) );
@@ -301,26 +303,27 @@ public class IfNullMeta extends BaseStepMeta implements StepMetaInterface {
 
       Node types = XMLHandler.getSubNode( stepnode, "valuetypes" );
       int nrtypes = XMLHandler.countNodes( types, "valuetype" );
-      Node fields = XMLHandler.getSubNode( stepnode, "fields" );
-      int nrfields = XMLHandler.countNodes( fields, "field" );
+      Node fieldNodes = XMLHandler.getSubNode( stepnode, "fields" );
+      int nrfields = XMLHandler.countNodes( fieldNodes, "field" );
 
       allocate( nrtypes, nrfields );
 
       for ( int i = 0; i < nrtypes; i++ ) {
         Node tnode = XMLHandler.getSubNodeByNr( types, "valuetype", i );
-        typeName[i] = XMLHandler.getTagValue( tnode, "name" );
-        typereplaceValue[i] = XMLHandler.getTagValue( tnode, "value" );
-        typereplaceMask[i] = XMLHandler.getTagValue( tnode, "mask" );
+        valueTypes[i].setTypeName( XMLHandler.getTagValue( tnode, "name" ) );
+        valueTypes[i].setTypereplaceValue( XMLHandler.getTagValue( tnode, "value" ) );
+        valueTypes[i].setTypereplaceMask( XMLHandler.getTagValue( tnode, "mask" ) );
         String typeemptyString = XMLHandler.getTagValue( tnode, "set_type_empty_string" );
-        setTypeEmptyString[ i ] = !Const.isEmpty( typeemptyString ) && "Y".equalsIgnoreCase( typeemptyString );
+        valueTypes[i].setTypeEmptyString( !Const.isEmpty( typeemptyString ) && "Y".equalsIgnoreCase(
+            typeemptyString ) );
       }
       for ( int i = 0; i < nrfields; i++ ) {
-        Node fnode = XMLHandler.getSubNodeByNr( fields, "field", i );
-        fieldName[i] = XMLHandler.getTagValue( fnode, "name" );
-        replaceValue[i] = XMLHandler.getTagValue( fnode, "value" );
-        replaceMask[i] = XMLHandler.getTagValue( fnode, "mask" );
+        Node fnode = XMLHandler.getSubNodeByNr( fieldNodes, "field", i );
+        fields[i].setFieldName( XMLHandler.getTagValue( fnode, "name" ) );
+        fields[i].setReplaceValue( XMLHandler.getTagValue( fnode, "value" ) );
+        fields[i].setReplaceMask( XMLHandler.getTagValue( fnode, "mask" ) );
         String emptyString = XMLHandler.getTagValue( fnode, "set_empty_string" );
-        setEmptyString[i] = !Const.isEmpty( emptyString ) && "Y".equalsIgnoreCase( emptyString );
+        fields[i].setEmptyString( !Const.isEmpty( emptyString ) && "Y".equalsIgnoreCase( emptyString ) );
       }
     } catch ( Exception e ) {
       throw new KettleXMLException( "It was not possibke to load the IfNull metadata from XML", e );
@@ -337,23 +340,24 @@ public class IfNullMeta extends BaseStepMeta implements StepMetaInterface {
     retval.append( "      " + XMLHandler.addTagValue( "setEmptyStringAll", setEmptyStringAll ) );
 
     retval.append( "    <valuetypes>" + Const.CR );
-    for ( int i = 0; i < typeName.length; i++ ) {
+    for ( int i = 0; i < valueTypes.length; i++ ) {
       retval.append( "      <valuetype>" + Const.CR );
-      retval.append( "        " + XMLHandler.addTagValue( "name", typeName[i] ) );
-      retval.append( "        " + XMLHandler.addTagValue( "value", typereplaceValue[i] ) );
-      retval.append( "        " + XMLHandler.addTagValue( "mask", typereplaceMask[i] ) );
-      retval.append( "        " + XMLHandler.addTagValue( "set_type_empty_string", setTypeEmptyString[i] ) );
+      retval.append( "        " + XMLHandler.addTagValue( "name", valueTypes[i].getTypeName() ) );
+      retval.append( "        " + XMLHandler.addTagValue( "value", valueTypes[i].getTypereplaceValue() ) );
+      retval.append( "        " + XMLHandler.addTagValue( "mask", valueTypes[i].getTypereplaceMask() ) );
+      retval.append( "        " + XMLHandler.addTagValue( "set_type_empty_string", valueTypes[i]
+          .isSetTypeEmptyString() ) );
       retval.append( "        </valuetype>" + Const.CR );
     }
     retval.append( "      </valuetypes>" + Const.CR );
 
     retval.append( "    <fields>" + Const.CR );
-    for ( int i = 0; i < fieldName.length; i++ ) {
+    for ( int i = 0; i < fields.length; i++ ) {
       retval.append( "      <field>" + Const.CR );
-      retval.append( "        " + XMLHandler.addTagValue( "name", fieldName[i] ) );
-      retval.append( "        " + XMLHandler.addTagValue( "value", replaceValue[i] ) );
-      retval.append( "        " + XMLHandler.addTagValue( "mask", replaceMask[i] ) );
-      retval.append( "        " + XMLHandler.addTagValue( "set_empty_string", setEmptyString[i] ) );
+      retval.append( "        " + XMLHandler.addTagValue( "name", fields[i].getFieldName() ) );
+      retval.append( "        " + XMLHandler.addTagValue( "value", fields[i].getReplaceValue() ) );
+      retval.append( "        " + XMLHandler.addTagValue( "mask", fields[i].getReplaceMask() ) );
+      retval.append( "        " + XMLHandler.addTagValue( "set_empty_string", fields[i].isSetEmptyString() ) );
       retval.append( "        </field>" + Const.CR );
     }
     retval.append( "      </fields>" + Const.CR );
@@ -405,17 +409,17 @@ public class IfNullMeta extends BaseStepMeta implements StepMetaInterface {
       allocate( nrtypes, nrfields );
 
       for ( int i = 0; i < nrtypes; i++ ) {
-        typeName[i] = rep.getStepAttributeString( id_step, i, "type_name" );
-        typereplaceValue[i] = rep.getStepAttributeString( id_step, i, "type_replace_value" );
-        typereplaceMask[i] = rep.getStepAttributeString( id_step, i, "type_replace_mask" );
-        setTypeEmptyString[i] = rep.getStepAttributeBoolean( id_step, i, "set_type_empty_string", false );
+        valueTypes[i].setTypeName( rep.getStepAttributeString( id_step, i, "type_name" ) );
+        valueTypes[i].setTypereplaceValue( rep.getStepAttributeString( id_step, i, "type_replace_value" ) );
+        valueTypes[i].setTypereplaceMask( rep.getStepAttributeString( id_step, i, "type_replace_mask" ) );
+        valueTypes[i].setTypeEmptyString( rep.getStepAttributeBoolean( id_step, i, "set_type_empty_string", false ) );
       }
 
       for ( int i = 0; i < nrfields; i++ ) {
-        fieldName[i] = rep.getStepAttributeString( id_step, i, "field_name" );
-        replaceValue[i] = rep.getStepAttributeString( id_step, i, "replace_value" );
-        replaceMask[i] = rep.getStepAttributeString( id_step, i, "replace_mask" );
-        setEmptyString[i] = rep.getStepAttributeBoolean( id_step, i, "set_empty_string", false );
+        fields[i].setFieldName( rep.getStepAttributeString( id_step, i, "field_name" ) );
+        fields[i].setReplaceValue( rep.getStepAttributeString( id_step, i, "replace_value" ) );
+        fields[i].setReplaceMask( rep.getStepAttributeString( id_step, i, "replace_mask" ) );
+        fields[i].setEmptyString( rep.getStepAttributeBoolean( id_step, i, "set_empty_string", false ) );
       }
     } catch ( Exception e ) {
       throw new KettleException( "Unexpected error reading step information from the repository", e );
@@ -430,18 +434,18 @@ public class IfNullMeta extends BaseStepMeta implements StepMetaInterface {
       rep.saveStepAttribute( id_transformation, id_step, "selectValuesType", selectValuesType );
       rep.saveStepAttribute( id_transformation, id_step, "setEmptyStringAll", setEmptyStringAll );
 
-      for ( int i = 0; i < typeName.length; i++ ) {
-        rep.saveStepAttribute( id_transformation, id_step, i, "type_name", typeName[i] );
-        rep.saveStepAttribute( id_transformation, id_step, i, "type_replace_value", typereplaceValue[i] );
-        rep.saveStepAttribute( id_transformation, id_step, i, "type_replace_mask", typereplaceMask[i] );
-        rep.saveStepAttribute( id_transformation, id_step, i, "set_type_empty_string", setTypeEmptyString[i] );
+      for ( int i = 0; i < valueTypes.length; i++ ) {
+        rep.saveStepAttribute( id_transformation, id_step, i, "type_name", valueTypes[i].getTypeName() );
+        rep.saveStepAttribute( id_transformation, id_step, i, "type_replace_value", valueTypes[i].getTypereplaceValue() );
+        rep.saveStepAttribute( id_transformation, id_step, i, "type_replace_mask", valueTypes[i].getTypereplaceMask() );
+        rep.saveStepAttribute( id_transformation, id_step, i, "set_type_empty_string", valueTypes[i].isSetTypeEmptyString() );
       }
 
-      for ( int i = 0; i < fieldName.length; i++ ) {
-        rep.saveStepAttribute( id_transformation, id_step, i, "field_name", fieldName[i] );
-        rep.saveStepAttribute( id_transformation, id_step, i, "replace_value", replaceValue[i] );
-        rep.saveStepAttribute( id_transformation, id_step, i, "replace_mask", replaceMask[i] );
-        rep.saveStepAttribute( id_transformation, id_step, i, "set_empty_string", setEmptyString[i] );
+      for ( int i = 0; i < fields.length; i++ ) {
+        rep.saveStepAttribute( id_transformation, id_step, i, "field_name", fields[i].getFieldName() );
+        rep.saveStepAttribute( id_transformation, id_step, i, "replace_value", fields[i].getReplaceValue() );
+        rep.saveStepAttribute( id_transformation, id_step, i, "replace_mask", fields[i].getReplaceMask() );
+        rep.saveStepAttribute( id_transformation, id_step, i, "set_empty_string", fields[i].isSetEmptyString() );
       }
     } catch ( Exception e ) {
       throw new KettleException( "Unable to save step information to the repository for id_step=" + id_step, e );
@@ -467,10 +471,10 @@ public class IfNullMeta extends BaseStepMeta implements StepMetaInterface {
       boolean error_found = false;
 
       // Starting from selected fields in ...
-      for ( int i = 0; i < fieldName.length; i++ ) {
-        int idx = prev.indexOfValue( fieldName[i] );
+      for ( int i = 0; i < fields.length; i++ ) {
+        int idx = prev.indexOfValue( fields[i].getFieldName() );
         if ( idx < 0 ) {
-          error_message += "\t\t" + fieldName[i] + Const.CR;
+          error_message += "\t\t" + fields[i].getFieldName() + Const.CR;
           error_found = true;
         }
       }
@@ -480,7 +484,7 @@ public class IfNullMeta extends BaseStepMeta implements StepMetaInterface {
         cr = new CheckResult( CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta );
         remarks.add( cr );
       } else {
-        if ( fieldName.length > 0 ) {
+        if ( fields.length > 0 ) {
           cr =
             new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
               PKG, "IfNullMeta.CheckResult.AllFieldsFound" ), stepMeta );
