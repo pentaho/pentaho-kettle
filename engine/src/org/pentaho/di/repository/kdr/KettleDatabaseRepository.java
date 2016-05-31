@@ -49,9 +49,10 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.extension.ExtensionPointHandler;
 import org.pentaho.di.core.extension.KettleExtensionPoint;
 import org.pentaho.di.core.logging.LogChannel;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaAndData;
-import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaDate;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.partition.PartitionSchema;
@@ -683,18 +684,18 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
     ObjectId id = connectionDelegate.getNextLogID();
 
     RowMetaAndData table = new RowMetaAndData();
-    table.addValue( new ValueMeta(
-      KettleDatabaseRepository.FIELD_REPOSITORY_LOG_ID_REPOSITORY_LOG, ValueMetaInterface.TYPE_INTEGER ), id );
-    table.addValue( new ValueMeta(
-      KettleDatabaseRepository.FIELD_REPOSITORY_LOG_REP_VERSION, ValueMetaInterface.TYPE_STRING ), getVersion() );
-    table.addValue( new ValueMeta(
-      KettleDatabaseRepository.FIELD_REPOSITORY_LOG_LOG_DATE, ValueMetaInterface.TYPE_DATE ), new Date() );
+    table.addValue( new ValueMetaInteger(
+      KettleDatabaseRepository.FIELD_REPOSITORY_LOG_ID_REPOSITORY_LOG ), id );
+    table.addValue( new ValueMetaString(
+      KettleDatabaseRepository.FIELD_REPOSITORY_LOG_REP_VERSION ), getVersion() );
+    table.addValue( new ValueMetaDate(
+      KettleDatabaseRepository.FIELD_REPOSITORY_LOG_LOG_DATE ), new Date() );
     table.addValue(
-      new ValueMeta( KettleDatabaseRepository.FIELD_REPOSITORY_LOG_LOG_USER, ValueMetaInterface.TYPE_STRING ),
+      new ValueMetaString( KettleDatabaseRepository.FIELD_REPOSITORY_LOG_LOG_USER ),
       getUserInfo() != null ? getUserInfo().getLogin() : "admin" );
     table.addValue(
-      new ValueMeta(
-        KettleDatabaseRepository.FIELD_REPOSITORY_LOG_OPERATION_DESC, ValueMetaInterface.TYPE_STRING ),
+      new ValueMetaString(
+        KettleDatabaseRepository.FIELD_REPOSITORY_LOG_OPERATION_DESC ),
       description );
 
     connectionDelegate.insertTableRow( KettleDatabaseRepository.TABLE_R_REPOSITORY_LOG, table );
@@ -706,11 +707,11 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
     RowMetaAndData table = new RowMetaAndData();
 
     table.addValue(
-      new ValueMeta(
-        KettleDatabaseRepository.FIELD_TRANS_NOTE_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER ),
+      new ValueMetaInteger(
+        KettleDatabaseRepository.FIELD_TRANS_NOTE_ID_TRANSFORMATION ),
       id_transformation );
-    table.addValue( new ValueMeta(
-      KettleDatabaseRepository.FIELD_TRANS_NOTE_ID_NOTE, ValueMetaInterface.TYPE_INTEGER ), id_note );
+    table.addValue( new ValueMetaInteger(
+      KettleDatabaseRepository.FIELD_TRANS_NOTE_ID_NOTE ), id_note );
 
     connectionDelegate.insertTableRow( KettleDatabaseRepository.TABLE_R_TRANS_NOTE, table );
   }
@@ -719,9 +720,9 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
     RowMetaAndData table = new RowMetaAndData();
 
     table.addValue(
-      new ValueMeta( KettleDatabaseRepository.FIELD_JOB_NOTE_ID_JOB, ValueMetaInterface.TYPE_INTEGER ), id_job );
-    table.addValue( new ValueMeta(
-      KettleDatabaseRepository.FIELD_JOB_NOTE_ID_NOTE, ValueMetaInterface.TYPE_INTEGER ), id_note );
+      new ValueMetaInteger( KettleDatabaseRepository.FIELD_JOB_NOTE_ID_JOB ), id_job );
+    table.addValue( new ValueMetaInteger(
+      KettleDatabaseRepository.FIELD_JOB_NOTE_ID_NOTE ), id_note );
 
     connectionDelegate.insertTableRow( KettleDatabaseRepository.TABLE_R_JOB_NOTE, table );
   }
@@ -734,15 +735,15 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
       RowMetaAndData table = new RowMetaAndData();
 
       table.addValue(
-        new ValueMeta(
-          KettleDatabaseRepository.FIELD_STEP_DATABASE_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER ),
+        new ValueMetaInteger(
+          KettleDatabaseRepository.FIELD_STEP_DATABASE_ID_TRANSFORMATION ),
         id_transformation );
-      table.addValue( new ValueMeta(
-        KettleDatabaseRepository.FIELD_STEP_DATABASE_ID_STEP, ValueMetaInterface.TYPE_INTEGER ), id_step );
+      table.addValue( new ValueMetaInteger(
+        KettleDatabaseRepository.FIELD_STEP_DATABASE_ID_STEP ), id_step );
       table
         .addValue(
-          new ValueMeta(
-            KettleDatabaseRepository.FIELD_STEP_DATABASE_ID_DATABASE, ValueMetaInterface.TYPE_INTEGER ),
+          new ValueMetaInteger(
+            KettleDatabaseRepository.FIELD_STEP_DATABASE_ID_DATABASE ),
           id_database );
 
       connectionDelegate.insertTableRow( KettleDatabaseRepository.TABLE_R_STEP_DATABASE, table );
@@ -757,15 +758,15 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
     if ( check.getInteger( 0 ) == null ) {
       RowMetaAndData table = new RowMetaAndData();
 
-      table.addValue( new ValueMeta(
-        KettleDatabaseRepository.FIELD_JOBENTRY_DATABASE_ID_JOB, ValueMetaInterface.TYPE_INTEGER ), id_job );
+      table.addValue( new ValueMetaInteger(
+        KettleDatabaseRepository.FIELD_JOBENTRY_DATABASE_ID_JOB ), id_job );
       table.addValue(
-        new ValueMeta(
-          KettleDatabaseRepository.FIELD_JOBENTRY_DATABASE_ID_JOBENTRY, ValueMetaInterface.TYPE_INTEGER ),
+        new ValueMetaInteger(
+          KettleDatabaseRepository.FIELD_JOBENTRY_DATABASE_ID_JOBENTRY ),
         id_jobentry );
       table.addValue(
-        new ValueMeta(
-          KettleDatabaseRepository.FIELD_JOBENTRY_DATABASE_ID_DATABASE, ValueMetaInterface.TYPE_INTEGER ),
+        new ValueMetaInteger(
+          KettleDatabaseRepository.FIELD_JOBENTRY_DATABASE_ID_DATABASE ),
         id_database );
 
       connectionDelegate.insertTableRow( KettleDatabaseRepository.TABLE_R_JOBENTRY_DATABASE, table );
@@ -778,17 +779,14 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
 
     RowMetaAndData table = new RowMetaAndData();
 
-    table.addValue( new ValueMeta(
-      KettleDatabaseRepository.FIELD_TRANS_PARTITION_SCHEMA_ID_TRANS_PARTITION_SCHEMA,
-      ValueMetaInterface.TYPE_INTEGER ), id );
+    table.addValue( new ValueMetaInteger(
+      KettleDatabaseRepository.FIELD_TRANS_PARTITION_SCHEMA_ID_TRANS_PARTITION_SCHEMA ), id );
     table.addValue(
-      new ValueMeta(
-        KettleDatabaseRepository.FIELD_TRANS_PARTITION_SCHEMA_ID_TRANSFORMATION,
-        ValueMetaInterface.TYPE_INTEGER ), id_transformation );
+      new ValueMetaInteger(
+        KettleDatabaseRepository.FIELD_TRANS_PARTITION_SCHEMA_ID_TRANSFORMATION ), id_transformation );
     table.addValue(
-      new ValueMeta(
-        KettleDatabaseRepository.FIELD_TRANS_PARTITION_SCHEMA_ID_PARTITION_SCHEMA,
-        ValueMetaInterface.TYPE_INTEGER ), id_partition_schema );
+      new ValueMetaInteger(
+        KettleDatabaseRepository.FIELD_TRANS_PARTITION_SCHEMA_ID_PARTITION_SCHEMA ), id_partition_schema );
 
     connectionDelegate.insertTableRow( KettleDatabaseRepository.TABLE_R_TRANS_PARTITION_SCHEMA, table );
 
@@ -800,13 +798,13 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
 
     RowMetaAndData table = new RowMetaAndData();
 
-    table.addValue( new ValueMeta(
-      KettleDatabaseRepository.FIELD_CLUSTER_SLAVE_ID_CLUSTER_SLAVE, ValueMetaInterface.TYPE_INTEGER ), id );
-    table.addValue( new ValueMeta(
-      KettleDatabaseRepository.FIELD_CLUSTER_SLAVE_ID_CLUSTER, ValueMetaInterface.TYPE_INTEGER ), clusterSchema
+    table.addValue( new ValueMetaInteger(
+      KettleDatabaseRepository.FIELD_CLUSTER_SLAVE_ID_CLUSTER_SLAVE ), id );
+    table.addValue( new ValueMetaInteger(
+      KettleDatabaseRepository.FIELD_CLUSTER_SLAVE_ID_CLUSTER ), clusterSchema
       .getObjectId() );
-    table.addValue( new ValueMeta(
-      KettleDatabaseRepository.FIELD_CLUSTER_SLAVE_ID_SLAVE, ValueMetaInterface.TYPE_INTEGER ), slaveServer
+    table.addValue( new ValueMetaInteger(
+      KettleDatabaseRepository.FIELD_CLUSTER_SLAVE_ID_SLAVE ), slaveServer
       .getObjectId() );
 
     connectionDelegate.insertTableRow( KettleDatabaseRepository.TABLE_R_CLUSTER_SLAVE, table );
@@ -819,14 +817,14 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
 
     RowMetaAndData table = new RowMetaAndData();
 
-    table.addValue( new ValueMeta(
-      KettleDatabaseRepository.FIELD_TRANS_CLUSTER_ID_TRANS_CLUSTER, ValueMetaInterface.TYPE_INTEGER ), id );
+    table.addValue( new ValueMetaInteger(
+      KettleDatabaseRepository.FIELD_TRANS_CLUSTER_ID_TRANS_CLUSTER ), id );
     table.addValue(
-      new ValueMeta(
-        KettleDatabaseRepository.FIELD_TRANS_CLUSTER_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER ),
+      new ValueMetaInteger(
+        KettleDatabaseRepository.FIELD_TRANS_CLUSTER_ID_TRANSFORMATION ),
       id_transformation );
-    table.addValue( new ValueMeta(
-      KettleDatabaseRepository.FIELD_TRANS_CLUSTER_ID_CLUSTER, ValueMetaInterface.TYPE_INTEGER ), id_cluster );
+    table.addValue( new ValueMetaInteger(
+      KettleDatabaseRepository.FIELD_TRANS_CLUSTER_ID_CLUSTER ), id_cluster );
 
     connectionDelegate.insertTableRow( KettleDatabaseRepository.TABLE_R_TRANS_CLUSTER, table );
 
@@ -838,14 +836,14 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
 
     RowMetaAndData table = new RowMetaAndData();
 
-    table.addValue( new ValueMeta(
-      KettleDatabaseRepository.FIELD_TRANS_SLAVE_ID_TRANS_SLAVE, ValueMetaInterface.TYPE_INTEGER ), id );
+    table.addValue( new ValueMetaInteger(
+      KettleDatabaseRepository.FIELD_TRANS_SLAVE_ID_TRANS_SLAVE ), id );
     table.addValue(
-      new ValueMeta(
-        KettleDatabaseRepository.FIELD_TRANS_SLAVE_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER ),
+      new ValueMetaInteger(
+        KettleDatabaseRepository.FIELD_TRANS_SLAVE_ID_TRANSFORMATION ),
       id_transformation );
-    table.addValue( new ValueMeta(
-      KettleDatabaseRepository.FIELD_TRANS_SLAVE_ID_SLAVE, ValueMetaInterface.TYPE_INTEGER ), id_slave );
+    table.addValue( new ValueMetaInteger(
+      KettleDatabaseRepository.FIELD_TRANS_SLAVE_ID_SLAVE ), id_slave );
 
     connectionDelegate.insertTableRow( KettleDatabaseRepository.TABLE_R_TRANS_SLAVE, table );
 
@@ -858,14 +856,13 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
     RowMetaAndData table = new RowMetaAndData();
     table
       .addValue(
-        new ValueMeta(
-          KettleDatabaseRepository.FIELD_TRANS_STEP_CONDITION_ID_TRANSFORMATION,
-          ValueMetaInterface.TYPE_INTEGER ), id_transformation );
-    table.addValue( new ValueMeta(
-      KettleDatabaseRepository.FIELD_TRANS_STEP_CONDITION_ID_STEP, ValueMetaInterface.TYPE_INTEGER ), id_step );
+        new ValueMetaInteger(
+          KettleDatabaseRepository.FIELD_TRANS_STEP_CONDITION_ID_TRANSFORMATION ), id_transformation );
+    table.addValue( new ValueMetaInteger(
+      KettleDatabaseRepository.FIELD_TRANS_STEP_CONDITION_ID_STEP ), id_step );
     table.addValue(
-      new ValueMeta(
-        KettleDatabaseRepository.FIELD_TRANS_STEP_CONDITION_ID_CONDITION, ValueMetaInterface.TYPE_INTEGER ),
+      new ValueMetaInteger(
+        KettleDatabaseRepository.FIELD_TRANS_STEP_CONDITION_ID_CONDITION ),
       id_condition );
 
     connectionDelegate.insertTableRow( tablename, table );

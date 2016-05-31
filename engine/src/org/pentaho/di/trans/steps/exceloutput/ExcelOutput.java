@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -26,6 +26,22 @@ import java.awt.Dimension;
 import java.io.File;
 import java.util.Locale;
 
+import org.apache.commons.vfs2.FileObject;
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.ResultFile;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaString;
+import org.pentaho.di.core.vfs.KettleVFS;
+import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.trans.Trans;
+import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.step.BaseStep;
+import org.pentaho.di.trans.step.StepDataInterface;
+import org.pentaho.di.trans.step.StepInterface;
+import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.step.StepMetaInterface;
+
 import jxl.Workbook;
 import jxl.WorkbookSettings;
 import jxl.format.CellFormat;
@@ -40,22 +56,6 @@ import jxl.write.WritableCellFormat;
 import jxl.write.WritableFont;
 import jxl.write.WritableFont.FontName;
 import jxl.write.WritableImage;
-
-import org.apache.commons.vfs2.FileObject;
-import org.pentaho.di.core.Const;
-import org.pentaho.di.core.ResultFile;
-import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.row.ValueMeta;
-import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.core.vfs.KettleVFS;
-import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.trans.Trans;
-import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.trans.step.BaseStep;
-import org.pentaho.di.trans.step.StepDataInterface;
-import org.pentaho.di.trans.step.StepInterface;
-import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Converts input rows to excel cells and then writes this information to one or more files.
@@ -74,6 +74,7 @@ public class ExcelOutput extends BaseStep implements StepInterface {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
+  @Override
   public boolean processRow( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
     meta = (ExcelOutputMeta) smi;
     data = (ExcelOutputData) sdi;
@@ -449,14 +450,14 @@ public class ExcelOutput extends BaseStep implements StepInterface {
       if ( meta.getOutputFields() != null && meta.getOutputFields().length > 0 ) {
         for ( int i = 0; i < meta.getOutputFields().length; i++ ) {
           String fieldName = meta.getOutputFields()[i].getName();
-          ValueMetaInterface vMeta = new ValueMeta( fieldName, ValueMetaInterface.TYPE_STRING );
+          ValueMetaInterface vMeta = new ValueMetaString( fieldName );
           writeField( fieldName, vMeta, null, i, true );
         }
       } else {
         if ( data.previousMeta != null ) { // Just put all field names in the header/footer
           for ( int i = 0; i < data.previousMeta.size(); i++ ) {
             String fieldName = data.previousMeta.getFieldNames()[i];
-            ValueMetaInterface vMeta = new ValueMeta( fieldName, ValueMetaInterface.TYPE_STRING );
+            ValueMetaInterface vMeta = new ValueMetaString( fieldName );
             writeField( fieldName, vMeta, null, i, true );
           }
         }
@@ -651,6 +652,7 @@ public class ExcelOutput extends BaseStep implements StepInterface {
     return retval;
   }
 
+  @Override
   public boolean init( StepMetaInterface smi, StepDataInterface sdi ) {
     meta = (ExcelOutputMeta) smi;
     data = (ExcelOutputData) sdi;
@@ -712,6 +714,7 @@ public class ExcelOutput extends BaseStep implements StepInterface {
     }
   }
 
+  @Override
   public void dispose( StepMetaInterface smi, StepDataInterface sdi ) {
     meta = (ExcelOutputMeta) smi;
     data = (ExcelOutputData) sdi;

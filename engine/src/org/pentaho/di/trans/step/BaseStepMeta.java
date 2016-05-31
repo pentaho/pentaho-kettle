@@ -46,7 +46,7 @@ import org.pentaho.di.core.logging.LoggingObjectType;
 import org.pentaho.di.core.logging.SimpleLoggingObject;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -917,7 +917,7 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
           String repCode = XMLHandler.getTagValue( node, "repcode" );
           String description = XMLHandler.getTagValue( node, "description" );
           String tooltip = XMLHandler.getTagValue( node, "tooltip" );
-          int valueType = ValueMeta.getType( XMLHandler.getTagValue( node, "valuetype" ) );
+          int valueType = ValueMetaFactory.getIdForValueMeta( XMLHandler.getTagValue( node, "valuetype" ) );
           String parentId = XMLHandler.getTagValue( node, "parentid" );
 
           KettleAttribute attribute =

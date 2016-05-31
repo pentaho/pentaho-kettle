@@ -23,6 +23,7 @@
 package org.pentaho.di.trans.steps.tableoutput;
 
 import com.google.common.base.Preconditions;
+
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -36,8 +37,8 @@ import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -578,7 +579,7 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface, 
     // Just add the returning key field...
     if ( returningGeneratedKeys && generatedKeyField != null && generatedKeyField.length() > 0 ) {
       ValueMetaInterface key =
-          new ValueMeta( space.environmentSubstitute( generatedKeyField ), ValueMetaInterface.TYPE_INTEGER );
+          new ValueMetaInteger( space.environmentSubstitute( generatedKeyField ) );
       key.setOrigin( origin );
       row.addValueMeta( key );
     }

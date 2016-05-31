@@ -50,7 +50,7 @@ import org.pentaho.di.core.plugins.JobEntryPluginType;
 import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -757,7 +757,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
     if ( !Const.isEmpty( variableName ) ) {
       String value = environmentSubstitute( variableName );
       if ( !Const.isEmpty( value ) ) {
-        return ValueMeta.convertStringToBoolean( value );
+        return ValueMetaString.convertStringToBoolean( value );
       }
     }
     return defaultValue;

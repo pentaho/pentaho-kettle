@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,7 +22,7 @@
 
 package org.pentaho.di.trans.steps.excelwriter;
 
-import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 
 public class ExcelWriterStepField implements Cloneable {
   private String name;
@@ -59,6 +59,7 @@ public class ExcelWriterStepField implements Cloneable {
     return name.compareTo( field.getName() );
   }
 
+  @Override
   public boolean equals( Object obj ) {
     ExcelWriterStepField field = (ExcelWriterStepField) obj;
 
@@ -70,6 +71,7 @@ public class ExcelWriterStepField implements Cloneable {
     return equals( obj );
   }
 
+  @Override
   public Object clone() {
     try {
       Object retval = super.clone();
@@ -92,7 +94,7 @@ public class ExcelWriterStepField implements Cloneable {
   }
 
   public String getTypeDesc() {
-    return ValueMeta.getTypeDesc( type );
+    return ValueMetaFactory.getValueMetaName( type );
   }
 
   public void setType( int type ) {
@@ -100,7 +102,7 @@ public class ExcelWriterStepField implements Cloneable {
   }
 
   public void setType( String typeDesc ) {
-    this.type = ValueMeta.getType( typeDesc );
+    this.type = ValueMetaFactory.getIdForValueMeta( typeDesc );
   }
 
   public String getFormat() {
@@ -159,6 +161,7 @@ public class ExcelWriterStepField implements Cloneable {
     this.styleCell = styleCell;
   }
 
+  @Override
   public String toString() {
     return name + ":" + getTypeDesc();
   }

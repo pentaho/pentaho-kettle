@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,8 +22,8 @@
 
 package org.pentaho.di.trans.steps.accessinput;
 
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.i18n.BaseMessages;
 
 /**
@@ -121,6 +121,7 @@ public class AccessInputField implements Cloneable {
     return trimTypeDesc[i];
   }
 
+  @Override
   public Object clone() {
     try {
       AccessInputField retval = (AccessInputField) super.clone();
@@ -160,7 +161,7 @@ public class AccessInputField implements Cloneable {
   }
 
   public String getTypeDesc() {
-    return ValueMeta.getTypeDesc( type );
+    return ValueMetaFactory.getValueMetaName( type );
   }
 
   public void setType( int type ) {

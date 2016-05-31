@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,8 +25,8 @@ package org.pentaho.di.trans.steps.valuemapper;
 import java.util.Hashtable;
 
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
 
@@ -53,7 +53,7 @@ public class ValueMapperData extends BaseStepData implements StepDataInterface {
 
     hashtable = null;
 
-    stringMeta = new ValueMeta( "string", ValueMetaInterface.TYPE_STRING );
+    stringMeta = new ValueMetaString( "string" );
   }
 
 }

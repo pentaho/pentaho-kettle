@@ -33,7 +33,6 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.variables.VariableSpace;
@@ -327,7 +326,7 @@ public class ConstantMeta extends BaseStepMeta implements StepMetaInterface {
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     for ( int i = 0; i < fieldName.length; i++ ) {
       if ( fieldName[i] != null && fieldName[i].length() != 0 ) {
-        int type = ValueMeta.getType( fieldType[i] );
+        int type = ValueMetaFactory.getIdForValueMeta( fieldType[i] );
         if ( type == ValueMetaInterface.TYPE_NONE ) {
           type = ValueMetaInterface.TYPE_STRING;
         }

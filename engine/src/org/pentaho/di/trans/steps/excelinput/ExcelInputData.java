@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -28,8 +28,11 @@ import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.fileinput.FileInputList;
 import org.pentaho.di.core.playlist.FilePlayList;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaBoolean;
+import org.pentaho.di.core.row.value.ValueMetaDate;
+import org.pentaho.di.core.row.value.ValueMetaNumber;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.spreadsheet.KSheet;
 import org.pentaho.di.core.spreadsheet.KWorkbook;
 import org.pentaho.di.trans.step.BaseStepData;
@@ -135,9 +138,9 @@ public class ExcelInputData extends BaseStepData implements StepDataInterface {
     rownr = -1;
     colnr = -1;
 
-    valueMetaString = new ValueMeta( "v", ValueMetaInterface.TYPE_STRING );
-    valueMetaNumber = new ValueMeta( "v", ValueMetaInterface.TYPE_NUMBER );
-    valueMetaDate = new ValueMeta( "v", ValueMetaInterface.TYPE_DATE );
-    valueMetaBoolean = new ValueMeta( "v", ValueMetaInterface.TYPE_BOOLEAN );
+    valueMetaString = new ValueMetaString( "v" );
+    valueMetaNumber = new ValueMetaNumber( "v" );
+    valueMetaDate = new ValueMetaDate( "v" );
+    valueMetaBoolean = new ValueMetaBoolean( "v" );
   }
 }

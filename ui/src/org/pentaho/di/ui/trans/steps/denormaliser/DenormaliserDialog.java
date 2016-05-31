@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -49,8 +49,8 @@ import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
@@ -94,6 +94,7 @@ public class DenormaliserDialog extends BaseStepDialog implements StepDialogInte
     input = (DenormaliserMeta) in;
   }
 
+  @Override
   public String open() {
     Shell parent = getParent();
     Display display = parent.getDisplay();
@@ -103,6 +104,7 @@ public class DenormaliserDialog extends BaseStepDialog implements StepDialogInte
     setShellImage( shell, input );
 
     ModifyListener lsMod = new ModifyListener() {
+      @Override
       public void modifyText( ModifyEvent e ) {
         input.setChanged();
       }
@@ -245,7 +247,7 @@ public class DenormaliserDialog extends BaseStepDialog implements StepDialogInte
           ColumnInfo.COLUMN_TYPE_TEXT, false ),
         new ColumnInfo(
           BaseMessages.getString( PKG, "DenormaliserDialog.ColumnInfo.Type" ),
-          ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getAllTypes(), false ),
+          ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMetaFactory.getAllValueMetaNames(), false ),
         new ColumnInfo(
           BaseMessages.getString( PKG, "DenormaliserDialog.ColumnInfo.Format" ),
           ColumnInfo.COLUMN_TYPE_FORMAT, 4 ),
@@ -303,21 +305,25 @@ public class DenormaliserDialog extends BaseStepDialog implements StepDialogInte
 
     // Add listeners
     lsOK = new Listener() {
+      @Override
       public void handleEvent( Event e ) {
         ok();
       }
     };
     lsGet = new Listener() {
+      @Override
       public void handleEvent( Event e ) {
         get();
       }
     };
     lsGetAgg = new Listener() {
+      @Override
       public void handleEvent( Event e ) {
         getAgg();
       }
     };
     lsCancel = new Listener() {
+      @Override
       public void handleEvent( Event e ) {
         cancel();
       }
@@ -329,6 +335,7 @@ public class DenormaliserDialog extends BaseStepDialog implements StepDialogInte
     wCancel.addListener( SWT.Selection, lsCancel );
 
     lsDef = new SelectionAdapter() {
+      @Override
       public void widgetDefaultSelected( SelectionEvent e ) {
         ok();
       }
@@ -338,6 +345,7 @@ public class DenormaliserDialog extends BaseStepDialog implements StepDialogInte
 
     // Detect X or ALT-F4 or something that kills this window...
     shell.addShellListener( new ShellAdapter() {
+      @Override
       public void shellClosed( ShellEvent e ) {
         cancel();
       }
@@ -520,6 +528,7 @@ public class DenormaliserDialog extends BaseStepDialog implements StepDialogInte
       if ( r != null && !r.isEmpty() ) {
         BaseStepDialog.getFieldsFromPrevious(
           r, wTarget, 2, new int[] {}, new int[] {}, -1, -1, new TableItemInsertListener() {
+            @Override
             public boolean tableItemInserted( TableItem tableItem, ValueMetaInterface v ) {
               if ( Const.indexOfString( v.getName(), groupingFields ) < 0 ) { // Not a grouping field
                 if ( !wKeyField.getText().equalsIgnoreCase( v.getName() ) ) { // Not the key field

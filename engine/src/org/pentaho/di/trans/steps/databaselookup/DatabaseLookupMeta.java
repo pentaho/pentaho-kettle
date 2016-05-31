@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,6 +22,9 @@
 
 package org.pentaho.di.trans.steps.databaselookup;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -34,7 +37,6 @@ import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.variables.VariableSpace;
@@ -53,9 +55,6 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
-
-import java.util.Arrays;
-import java.util.List;
 
 public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterface,
     ProvidesModelerMeta {
@@ -163,6 +162,7 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
   /**
    * @return Returns the database.
    */
+  @Override
   public DatabaseMeta getDatabaseMeta() {
     return databaseMeta;
   }
@@ -344,6 +344,7 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
     this.failingOnMultipleResults = failOnMultipleResults;
   }
 
+  @Override
   public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     streamKeyField1 = null;
     returnValueField = null;
@@ -362,6 +363,7 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
     returnValueDefaultType = new int[nrvalues];
   }
 
+  @Override
   public Object clone() {
     DatabaseLookupMeta retval = (DatabaseLookupMeta) super.clone();
 
@@ -426,7 +428,7 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
         }
         returnValueDefault[i] = XMLHandler.getTagValue( vnode, "default" );
         dtype = XMLHandler.getTagValue( vnode, "type" );
-        returnValueDefaultType[i] = ValueMeta.getType( dtype );
+        returnValueDefaultType[i] = ValueMetaFactory.getIdForValueMeta( dtype );
         if ( returnValueDefaultType[i] < 0 ) {
           // logError("unknown default value type: "+dtype+" for value "+value[i]+", default to type: String!");
           returnValueDefaultType[i] = ValueMetaInterface.TYPE_STRING;
@@ -441,6 +443,7 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
     }
   }
 
+  @Override
   public void setDefault() {
     streamKeyField1 = null;
     returnValueField = null;
@@ -475,6 +478,7 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
     eatingRowOnLookupFailure = false;
   }
 
+  @Override
   public void getFields( RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep,
       VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     if ( Const.isEmpty( info ) || info[0] == null ) { // null or length 0 : no info from database
@@ -501,6 +505,7 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
     }
   }
 
+  @Override
   public String getXML() {
     StringBuilder retval = new StringBuilder( 500 );
 
@@ -532,7 +537,7 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
       retval.append( "        " ).append( XMLHandler.addTagValue( "rename", returnValueNewName[i] ) );
       retval.append( "        " ).append( XMLHandler.addTagValue( "default", returnValueDefault[i] ) );
       retval.append( "        " ).append(
-          XMLHandler.addTagValue( "type", ValueMeta.getTypeDesc( returnValueDefaultType[i] ) ) );
+          XMLHandler.addTagValue( "type", ValueMetaFactory.getValueMetaName( returnValueDefaultType[i] ) ) );
       retval.append( "      </value>" ).append( Const.CR );
     }
 
@@ -541,6 +546,7 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
     return retval.toString();
   }
 
+  @Override
   public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
       databaseMeta = rep.loadDatabaseMetaFromStepAttribute( id_step, "id_connection", databases );
@@ -571,7 +577,7 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
         returnValueNewName[i] = rep.getStepAttributeString( id_step, i, "return_value_rename" );
         returnValueDefault[i] = rep.getStepAttributeString( id_step, i, "return_value_default" );
         returnValueDefaultType[i] =
-          ValueMeta.getType( rep.getStepAttributeString( id_step, i, "return_value_type" ) );
+          ValueMetaFactory.getIdForValueMeta( rep.getStepAttributeString( id_step, i, "return_value_type" ) );
       }
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString(
@@ -579,6 +585,7 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
     }
   }
 
+  @Override
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       rep.saveDatabaseMetaStepAttribute( id_transformation, id_step, "id_connection", databaseMeta );
@@ -602,8 +609,8 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
         rep.saveStepAttribute( id_transformation, id_step, i, "return_value_name", returnValueField[i] );
         rep.saveStepAttribute( id_transformation, id_step, i, "return_value_rename", returnValueNewName[i] );
         rep.saveStepAttribute( id_transformation, id_step, i, "return_value_default", returnValueDefault[i] );
-        rep.saveStepAttribute( id_transformation, id_step, i, "return_value_type", ValueMeta
-            .getTypeDesc( returnValueDefaultType[i] ) );
+        rep.saveStepAttribute( id_transformation, id_step, i, "return_value_type", ValueMetaFactory
+            .getValueMetaName( returnValueDefaultType[i] ) );
       }
 
       // Also, save the step-database relationship!
@@ -618,6 +625,7 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
 
   }
 
+  @Override
   public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
       RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
       Repository repository, IMetaStore metaStore ) {
@@ -763,6 +771,7 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
     }
   }
 
+  @Override
   public RowMetaInterface getTableFields() {
     RowMetaInterface fields = null;
     if ( databaseMeta != null ) {
@@ -784,15 +793,18 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
     return fields;
   }
 
+  @Override
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
       TransMeta transMeta, Trans trans ) {
     return new DatabaseLookup( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 
+  @Override
   public StepDataInterface getStepData() {
     return new DatabaseLookupData();
   }
 
+  @Override
   public void analyseImpact( List<DatabaseImpact> impact, TransMeta transMeta, StepMeta stepinfo,
       RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, Repository repository,
       IMetaStore metaStore ) {
@@ -818,6 +830,7 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
     }
   }
 
+  @Override
   public DatabaseMeta[] getUsedDatabaseConnections() {
     if ( databaseMeta != null ) {
       return new DatabaseMeta[] { databaseMeta };
@@ -844,6 +857,7 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
   /**
    * @return the schemaName
    */
+  @Override
   public String getSchemaName() {
     return schemaName;
   }
@@ -860,6 +874,7 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
     this.schemaName = schemaName;
   }
 
+  @Override
   public boolean supportsErrorHandling() {
     return true;
   }

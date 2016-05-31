@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,8 +23,7 @@
 package org.pentaho.di.trans;
 
 import org.pentaho.di.core.RowMetaAndData;
-import org.pentaho.di.core.row.ValueMeta;
-import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.i18n.BaseMessages;
 
 public class DatabaseImpact {
@@ -128,46 +127,42 @@ public class DatabaseImpact {
   public RowMetaAndData getRow() {
     RowMetaAndData r = new RowMetaAndData();
     r.addValue(
-      new ValueMeta(
-        BaseMessages.getString( PKG, "DatabaseImpact.RowDesc.Label.Type" ), ValueMetaInterface.TYPE_STRING ),
+      new ValueMetaString(
+        BaseMessages.getString( PKG, "DatabaseImpact.RowDesc.Label.Type" ) ),
       getTypeDesc() );
-    r.addValue( new ValueMeta(
-      BaseMessages.getString( PKG, "DatabaseImpact.RowDesc.Label.Transformation" ),
-      ValueMetaInterface.TYPE_STRING ), getTransformationName() );
+    r.addValue( new ValueMetaString(
+      BaseMessages.getString( PKG, "DatabaseImpact.RowDesc.Label.Transformation" ) ), getTransformationName() );
     r.addValue(
-      new ValueMeta(
-        BaseMessages.getString( PKG, "DatabaseImpact.RowDesc.Label.Step" ), ValueMetaInterface.TYPE_STRING ),
+      new ValueMetaString(
+        BaseMessages.getString( PKG, "DatabaseImpact.RowDesc.Label.Step" ) ),
       getStepName() );
     r
       .addValue(
-        new ValueMeta(
-          BaseMessages.getString( PKG, "DatabaseImpact.RowDesc.Label.Database" ),
-          ValueMetaInterface.TYPE_STRING ), getDatabaseName() );
+        new ValueMetaString(
+          BaseMessages.getString( PKG, "DatabaseImpact.RowDesc.Label.Database" ) ), getDatabaseName() );
     r.addValue(
-      new ValueMeta(
-        BaseMessages.getString( PKG, "DatabaseImpact.RowDesc.Label.Table" ), ValueMetaInterface.TYPE_STRING ),
+      new ValueMetaString(
+        BaseMessages.getString( PKG, "DatabaseImpact.RowDesc.Label.Table" ) ),
       getTable() );
     r.addValue(
-      new ValueMeta(
-        BaseMessages.getString( PKG, "DatabaseImpact.RowDesc.Label.Field" ), ValueMetaInterface.TYPE_STRING ),
+      new ValueMetaString(
+        BaseMessages.getString( PKG, "DatabaseImpact.RowDesc.Label.Field" ) ),
       getField() );
     r.addValue(
-      new ValueMeta(
-        BaseMessages.getString( PKG, "DatabaseImpact.RowDesc.Label.Value" ), ValueMetaInterface.TYPE_STRING ),
+      new ValueMetaString(
+        BaseMessages.getString( PKG, "DatabaseImpact.RowDesc.Label.Value" ) ),
       getValue() );
     r.addValue(
-      new ValueMeta(
-        BaseMessages.getString( PKG, "DatabaseImpact.RowDesc.Label.ValueOrigin" ),
-        ValueMetaInterface.TYPE_STRING ), getValueOrigin() );
+      new ValueMetaString(
+        BaseMessages.getString( PKG, "DatabaseImpact.RowDesc.Label.ValueOrigin" ) ), getValueOrigin() );
     r.addValue(
-      new ValueMeta(
-        BaseMessages.getString( PKG, "DatabaseImpact.RowDesc.Label.SQL" ), ValueMetaInterface.TYPE_STRING ),
+      new ValueMetaString(
+        BaseMessages.getString( PKG, "DatabaseImpact.RowDesc.Label.SQL" ) ),
       getSQL() );
     r
       .addValue(
-        new ValueMeta(
-          BaseMessages.getString( PKG, "DatabaseImpact.RowDesc.Label.Remarks" ),
-          ValueMetaInterface.TYPE_STRING ), getRemark() );
+        new ValueMetaString(
+          BaseMessages.getString( PKG, "DatabaseImpact.RowDesc.Label.Remarks" ) ), getRemark() );
 
     return r;
   }

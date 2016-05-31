@@ -33,7 +33,6 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaInteger;
 import org.pentaho.di.core.row.value.ValueMetaString;
@@ -398,7 +397,7 @@ public class HTTPPOSTMeta extends BaseStepMeta implements StepMetaInterface {
     String headerFieldName = space.environmentSubstitute( responseHeaderFieldName );
     if ( !Const.isEmpty( headerFieldName ) ) {
       ValueMetaInterface v =
-        new ValueMeta( headerFieldName, ValueMeta.TYPE_STRING );
+        new ValueMetaString( headerFieldName );
       v.setOrigin( name );
       inputRowMeta.addValueMeta( v );
     }

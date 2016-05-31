@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -32,7 +32,6 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.variables.VariableSpace;
@@ -213,6 +212,7 @@ public class DataGridMeta extends BaseStepMeta implements StepMetaInterface {
     this.dataLines = dataLines;
   }
 
+  @Override
   public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     readData( stepnode );
   }
@@ -229,6 +229,7 @@ public class DataGridMeta extends BaseStepMeta implements StepMetaInterface {
     setEmptyString = new boolean[nrfields];
   }
 
+  @Override
   public Object clone() {
     DataGridMeta retval = (DataGridMeta) super.clone();
 
@@ -315,6 +316,7 @@ public class DataGridMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
+  @Override
   public void setDefault() {
     int i, nrfields = 0;
 
@@ -337,12 +339,13 @@ public class DataGridMeta extends BaseStepMeta implements StepMetaInterface {
     dataLines = new ArrayList<List<String>>();
   }
 
+  @Override
   public void getFields( RowMetaInterface rowMeta, String name, RowMetaInterface[] info, StepMeta nextStep,
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     for ( int i = 0; i < fieldName.length; i++ ) {
       try {
         if ( !Const.isEmpty( fieldName[i] ) ) {
-          int type = ValueMeta.getType( fieldType[i] );
+          int type = ValueMetaFactory.getIdForValueMeta( fieldType[i] );
           if ( type == ValueMetaInterface.TYPE_NONE ) {
             type = ValueMetaInterface.TYPE_STRING;
           }
@@ -363,6 +366,7 @@ public class DataGridMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
+  @Override
   public String getXML() {
     StringBuilder retval = new StringBuilder( 300 );
 
@@ -397,6 +401,7 @@ public class DataGridMeta extends BaseStepMeta implements StepMetaInterface {
     return retval.toString();
   }
 
+  @Override
   public void readRep( Repository rep, IMetaStore metaStore, ObjectId idStep, List<DatabaseMeta> databases ) throws KettleException {
 
     try {
@@ -434,6 +439,7 @@ public class DataGridMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
+  @Override
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId idTransformation, ObjectId idStep ) throws KettleException {
     try {
       for ( int i = 0; i < fieldName.length; i++ ) {
@@ -465,11 +471,13 @@ public class DataGridMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
+  @Override
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
     TransMeta transMeta, Trans trans ) {
     return new DataGrid( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 
+  @Override
   public StepDataInterface getStepData() {
     return new DataGridData();
   }

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -32,8 +32,8 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -76,6 +76,7 @@ public class Edi2XmlMeta extends BaseStepMeta implements StepMetaInterface {
     this.outputField = outputField;
   }
 
+  @Override
   public String getXML() throws KettleValueException {
     StringBuilder retval = new StringBuilder();
 
@@ -85,6 +86,7 @@ public class Edi2XmlMeta extends BaseStepMeta implements StepMetaInterface {
     return retval.toString();
   }
 
+  @Override
   public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
 
     try {
@@ -96,6 +98,7 @@ public class Edi2XmlMeta extends BaseStepMeta implements StepMetaInterface {
 
   }
 
+  @Override
   public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
       inputField = rep.getStepAttributeString( id_step, "inputfield" );
@@ -106,6 +109,7 @@ public class Edi2XmlMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
+  @Override
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       rep.saveStepAttribute( id_transformation, id_step, "inputfield", inputField );
@@ -117,13 +121,14 @@ public class Edi2XmlMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
+  @Override
   public void getFields( RowMetaInterface r, String origin, RowMetaInterface[] info, StepMeta nextStep,
     VariableSpace space, Repository repository, IMetaStore metaStore ) {
 
     ValueMetaInterface extra = null;
 
     if ( !Const.isEmpty( getOutputField() ) ) {
-      extra = new ValueMeta( space.environmentSubstitute( getOutputField() ), ValueMetaInterface.TYPE_STRING );
+      extra = new ValueMetaString( space.environmentSubstitute( getOutputField() ) );
       extra.setOrigin( origin );
       r.addValueMeta( extra );
     } else {
@@ -138,6 +143,7 @@ public class Edi2XmlMeta extends BaseStepMeta implements StepMetaInterface {
 
   }
 
+  @Override
   public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
     RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
@@ -178,21 +184,25 @@ public class Edi2XmlMeta extends BaseStepMeta implements StepMetaInterface {
 
   }
 
+  @Override
   public Object clone() {
     Object retval = super.clone();
     return retval;
   }
 
+  @Override
   public void setDefault() {
     outputField = "edi_xml";
     inputField = "";
   }
 
+  @Override
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
     TransMeta transMeta, Trans disp ) {
     return new Edi2Xml( stepMeta, stepDataInterface, cnr, transMeta, disp );
   }
 
+  @Override
   public StepDataInterface getStepData() {
     return new Edi2XmlData();
   }

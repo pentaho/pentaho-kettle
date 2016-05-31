@@ -24,7 +24,7 @@ package org.pentaho.di.trans.steps.fieldsplitter;
 
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.injection.InjectionTypeConverter;
-import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.value.ValueMetaString;
 
 /**
  * Converter for trim types.
@@ -32,6 +32,6 @@ import org.pentaho.di.core.row.ValueMeta;
 public class TrimTypeConverter extends InjectionTypeConverter {
   @Override
   public int string2intPrimitive( String v ) throws KettleValueException {
-    return ValueMeta.getTrimTypeByCode( v );
+    return ValueMetaString.getTrimTypeByCode( v );
   }
 }

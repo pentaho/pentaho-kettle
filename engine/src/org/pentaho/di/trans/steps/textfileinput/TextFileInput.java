@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -46,8 +46,8 @@ import org.pentaho.di.core.playlist.FilePlayListReplay;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
@@ -75,6 +75,7 @@ import org.pentaho.di.trans.step.errorhandling.FileErrorHandlerMissingFiles;
  *
  * @deprecated replaced by implementation in the ...steps.fileinput.text package
  */
+@Deprecated
 public class TextFileInput extends BaseStep implements StepInterface {
   private static Class<?> PKG = TextFileInputMeta.class; // for i18n purposes, needed by Translator2!!
 
@@ -1219,7 +1220,7 @@ public class TextFileInput extends BaseStep implements StepInterface {
    * @return Index in row meta of value meta with <code>fieldName</code>
    */
   private int addValueMeta( RowMetaInterface rowMeta, String fieldName ) {
-    ValueMetaInterface valueMeta = new ValueMeta( fieldName, ValueMetaInterface.TYPE_STRING );
+    ValueMetaInterface valueMeta = new ValueMetaString( fieldName );
     valueMeta.setOrigin( getStepname() );
     // add if doesn't exist
     int index = -1;

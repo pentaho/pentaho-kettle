@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,8 +27,9 @@ import java.util.List;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaBase;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.trans.step.StepInjectionMetaEntry;
 import org.pentaho.di.trans.step.StepMetaInjectionInterface;
 
@@ -178,13 +179,13 @@ public class AccessInputMetaInjection implements StepMetaInjectionInterface {
                       field.setLength( Const.toInt( value, -1 ) );
                       break;
                     case FIELD_TYPE:
-                      field.setType( ValueMeta.getType( value ) );
+                      field.setType( ValueMetaFactory.getIdForValueMeta( value ) );
                       break;
                     case FIELD_FORMAT:
                       field.setFormat( value );
                       break;
                     case FIELD_TRIM_TYPE:
-                      field.setTrimType( ValueMeta.getTrimTypeByCode( value ) );
+                      field.setTrimType( ValueMetaBase.getTrimTypeByCode( value ) );
                       break;
                     case FIELD_PRECISION:
                       field.setPrecision( Const.toInt( value, -1 ) );
@@ -294,6 +295,7 @@ public class AccessInputMetaInjection implements StepMetaInjectionInterface {
     }
   }
 
+  @Override
   public List<StepInjectionMetaEntry> extractStepMetadataEntries() throws KettleException {
     return null;
   }
