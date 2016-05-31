@@ -605,6 +605,11 @@ public class Const {
   public static final String KETTLE_JOB_LOG_SCHEMA = "KETTLE_JOB_LOG_SCHEMA";
 
   /**
+   * The name of the variable that defines the timer used for detecting slave nodes.
+   */
+  public static final String KETTLE_SLAVE_DETECTION_TIMER = "KETTLE_SLAVE_DETECTION_TIMER";
+
+  /**
    * The name of the variable that defines the logging table for all jobs
    */
   public static final String KETTLE_JOB_LOG_TABLE = "KETTLE_JOB_LOG_TABLE";
