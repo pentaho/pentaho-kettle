@@ -39,8 +39,7 @@ import org.pentaho.di.trans.steps.pentahoreporting.PentahoReportingOutputMeta.Pr
 public class PentahoReportingOutputLoadSaveTest {
   @Test
   public void testSerialization() throws KettleException {
-    List<String> attributes = Arrays.asList( "InputFileField", "OutputFileField","ParameterFieldMap",
-      "OutputProcessorType" );
+    List<String> attributes = Arrays.asList( "InputFileField", "OutputFileField", "ParameterFieldMap", "OutputProcessorType" );
     Map<String, String> getterMap = new HashMap<String, String>();
     Map<String, String> setterMap = new HashMap<String, String>();
 

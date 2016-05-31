@@ -28,6 +28,7 @@ import org.junit.Test;
 import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
 import org.pentaho.di.trans.steps.loadsave.validator.ArrayLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
+import org.pentaho.di.trans.steps.loadsave.validator.TextFileInputFieldValidator;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -43,6 +44,7 @@ import static org.junit.Assert.assertTrue;
  * @author Andrey Khayrutdinov
  * @deprecated replaced by implementation in the ...steps.fileinput.text package
  */
+@Deprecated
 public class TextFileInputMetaLoadSaveTest {
 
   private LoadSaveTester tester;
@@ -155,27 +157,6 @@ public class TextFileInputMetaLoadSaveTest {
   @Test
   public void testSerialization() throws Exception {
     tester.testSerialization();
-  }
-
-
-  private static class TextFileInputFieldValidator implements FieldLoadSaveValidator<TextFileInputField> {
-    @Override public TextFileInputField getTestObject() {
-      return new TextFileInputField( UUID.randomUUID().toString(), new Random().nextInt(), new Random().nextInt() );
-    }
-
-    @Override
-    public boolean validateTestObject( TextFileInputField testObject, Object actual ) {
-      if ( !( actual instanceof TextFileInputField ) ) {
-        return false;
-      }
-
-      TextFileInputField another = (TextFileInputField) actual;
-      return new EqualsBuilder()
-        .append( testObject.getName(), another.getName() )
-        .append( testObject.getLength(), another.getLength() )
-        .append( testObject.getPosition(), another.getPosition() )
-        .isEquals();
-    }
   }
 
   private static class TextFileFilterValidator implements FieldLoadSaveValidator<TextFileFilter> {
