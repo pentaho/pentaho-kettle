@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -50,6 +50,7 @@ import org.pentaho.di.trans.TransPreviewFactory;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.steps.getvariable.GetVariableMeta;
+import org.pentaho.di.trans.steps.getvariable.GetVariableMeta.FieldDefinition;
 import org.pentaho.di.ui.core.dialog.EnterTextDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.dialog.PreviewRowsDialog;
@@ -134,7 +135,7 @@ public class GetVariableDialog extends BaseStepDialog implements StepDialogInter
     fdlFields.top = new FormAttachment( wStepname, margin );
     wlFields.setLayoutData( fdlFields );
 
-    final int FieldsRows = input.getFieldName().length;
+    final int fieldsRows = input.getFieldDefinitions().length;
 
     ColumnInfo[] colinf =
       new ColumnInfo[] {
@@ -168,7 +169,7 @@ public class GetVariableDialog extends BaseStepDialog implements StepDialogInter
 
     wFields =
       new TableView(
-        transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
+        transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, fieldsRows, lsMod, props );
 
     fdFields = new FormData();
     fdFields.left = new FormAttachment( 0, 0 );
@@ -252,20 +253,21 @@ public class GetVariableDialog extends BaseStepDialog implements StepDialogInter
   public void getData() {
     wStepname.setText( stepname );
 
-    for ( int i = 0; i < input.getFieldName().length; i++ ) {
+    for ( int i = 0; i < input.getFieldDefinitions().length; i++ ) {
       TableItem item = wFields.table.getItem( i );
 
       int index = 1;
-      item.setText( index++, Const.NVL( input.getFieldName()[i], "" ) );
-      item.setText( index++, Const.NVL( input.getVariableString()[i], "" ) );
-      item.setText( index++, ValueMeta.getTypeDesc( input.getFieldType()[i] ) );
-      item.setText( index++, Const.NVL( input.getFieldFormat()[i], "" ) );
-      item.setText( index++, input.getFieldLength()[i] < 0 ? "" : ( "" + input.getFieldLength()[i] ) );
-      item.setText( index++, input.getFieldPrecision()[i] < 0 ? "" : ( "" + input.getFieldPrecision()[i] ) );
-      item.setText( index++, Const.NVL( input.getCurrency()[i], "" ) );
-      item.setText( index++, Const.NVL( input.getDecimal()[i], "" ) );
-      item.setText( index++, Const.NVL( input.getGroup()[i], "" ) );
-      item.setText( index++, ValueMeta.getTrimTypeDesc( input.getTrimType()[i] ) );
+      FieldDefinition currentField = input.getFieldDefinitions()[i];
+      item.setText( index++, Const.NVL( currentField.getFieldName(), "" ) );
+      item.setText( index++, Const.NVL( currentField.getVariableString(), "" ) );
+      item.setText( index++, ValueMeta.getTypeDesc( currentField.getFieldType() ) );
+      item.setText( index++, Const.NVL( currentField.getFieldFormat(), "" ) );
+      item.setText( index++, currentField.getFieldLength() < 0 ? "" : ( "" + currentField.getFieldLength() ) );
+      item.setText( index++, currentField.getFieldPrecision() < 0 ? "" : ( "" + currentField.getFieldPrecision() ) );
+      item.setText( index++, Const.NVL( currentField.getCurrency(), "" ) );
+      item.setText( index++, Const.NVL( currentField.getDecimal(), "" ) );
+      item.setText( index++, Const.NVL( currentField.getGroup(), "" ) );
+      item.setText( index++, ValueMeta.getTrimTypeDesc( currentField.getTrimType() ) );
     }
 
     wFields.setRowNums();
@@ -293,17 +295,18 @@ public class GetVariableDialog extends BaseStepDialog implements StepDialogInter
     for ( int i = 0; i < count; i++ ) {
       TableItem item = wFields.getNonEmpty( i );
 
+      FieldDefinition currentField = input.getFieldDefinitions()[i];
       int index = 1;
-      input.getFieldName()[i] = item.getText( index++ );
-      input.getVariableString()[i] = item.getText( index++ );
-      input.getFieldType()[i] = ValueMeta.getType( item.getText( index++ ) );
-      input.getFieldFormat()[i] = item.getText( index++ );
-      input.getFieldLength()[i] = Const.toInt( item.getText( index++ ), -1 );
-      input.getFieldPrecision()[i] = Const.toInt( item.getText( index++ ), -1 );
-      input.getCurrency()[i] = item.getText( index++ );
-      input.getDecimal()[i] = item.getText( index++ );
-      input.getGroup()[i] = item.getText( index++ );
-      input.getTrimType()[i] = ValueMeta.getTrimTypeByDesc( item.getText( index++ ) );
+      currentField.setFieldName( item.getText( index++ ) );
+      currentField.setVariableString( item.getText( index++ ) );
+      currentField.setFieldType( ValueMeta.getType( item.getText( index++ ) ) );
+      currentField.setFieldFormat( item.getText( index++ ) );
+      currentField.setFieldLength( Const.toInt( item.getText( index++ ), -1 ) );
+      currentField.setFieldPrecision( Const.toInt( item.getText( index++ ), -1 ) );
+      currentField.setCurrency( item.getText( index++ ) );
+      currentField.setDecimal( item.getText( index++ ) );
+      currentField.setGroup( item.getText( index++ ) );
+      currentField.setTrimType( ValueMeta.getTrimTypeByDesc( item.getText( index++ ) ) );
     }
   }
 

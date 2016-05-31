@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -88,11 +88,12 @@ public class GetVariable extends BaseStep implements StepInterface {
       // Keep the Object[] for speed. Although this step will always be used in "small" amounts, there's always going to
       // be those cases where performance is required.
       //
-      data.extraData = new Object[meta.getFieldName().length];
-      for ( int i = 0; i < meta.getFieldName().length; i++ ) {
-        String newValue = environmentSubstitute( meta.getVariableString()[i] );
+      int fieldsLength = meta.getFieldDefinitions().length;
+      data.extraData = new Object[fieldsLength];
+      for ( int i = 0; i < fieldsLength; i++ ) {
+        String newValue = environmentSubstitute( meta.getFieldDefinitions()[i].getVariableString() );
         if ( log.isDetailed() ) {
-          logDetailed( "field [" + meta.getFieldName()[i] + "] has value [" + newValue + "]" );
+          logDetailed( "field [" + meta.getFieldDefinitions()[i].getFieldName() + "] has value [" + newValue + "]" );
         }
 
         // Convert the data to the desired data type...
