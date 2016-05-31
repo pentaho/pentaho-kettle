@@ -27,42 +27,44 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
 import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
 import org.pentaho.di.trans.steps.loadsave.validator.ArrayLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
-import org.pentaho.di.trans.steps.loadsave.validator.StringLoadSaveValidator;
+import org.pentaho.di.trans.steps.nullif.NullIfMeta.Field;
 
 public class NullIfMetaTest {
+
   LoadSaveTester loadSaveTester;
 
   @Before
   public void setUp() throws Exception {
 
-    List<String> attributes =
-        Arrays.asList( "fieldName", "fieldValue" );
+    List<String> attributes = Arrays.asList( "fields" );
 
     Map<String, String> getterMap = new HashMap<String, String>() {
       {
-        put( "fieldName", "getFieldName" );
-        put( "fieldValue", "getFieldValue" );
+        put( "fields", "getFields" );
       }
     };
     Map<String, String> setterMap = new HashMap<String, String>() {
       {
-        put( "fieldName", "setFieldName" );
-        put( "fieldValue", "setFieldValue" );
+        put( "fields", "setFields" );
       }
     };
-    FieldLoadSaveValidator<String[]> stringArrayLoadSaveValidator =
-        new ArrayLoadSaveValidator<String>( new StringLoadSaveValidator(), 5 );
-    Map<String, FieldLoadSaveValidator<?>> attrValidatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();
-    attrValidatorMap.put( "fieldName", stringArrayLoadSaveValidator );
-    attrValidatorMap.put( "fieldValue", stringArrayLoadSaveValidator );
-
+    Field field = new Field();
+    field.setFieldName( "fieldName" );
+    field.setFieldValue( "fieldValue" );
+    FieldLoadSaveValidator<Field[]> fieldArrayLoadSaveValidator =
+        new ArrayLoadSaveValidator<Field>( new NullIfFieldLoadSaveValidator( field ), 5 );
     Map<String, FieldLoadSaveValidator<?>> typeValidatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();
+
+    typeValidatorMap.put( Field[].class.getCanonicalName(), fieldArrayLoadSaveValidator );
+    Map<String, FieldLoadSaveValidator<?>> attrValidatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();
+    attrValidatorMap.put( "fields", fieldArrayLoadSaveValidator );
 
     loadSaveTester =
         new LoadSaveTester( NullIfMeta.class, attributes, getterMap, setterMap, attrValidatorMap, typeValidatorMap );
@@ -71,6 +73,25 @@ public class NullIfMetaTest {
   @Test
   public void testSerialization() throws KettleException {
     loadSaveTester.testSerialization();
+  }
+
+  public static class NullIfFieldLoadSaveValidator implements FieldLoadSaveValidator<Field> {
+
+    private final Field defaultValue;
+
+    public NullIfFieldLoadSaveValidator( Field defaultValue ) {
+      this.defaultValue = defaultValue;
+    }
+
+    @Override
+    public Field getTestObject() {
+      return defaultValue;
+    }
+
+    @Override
+    public boolean validateTestObject( Field testObject, Object actual ) {
+      return EqualsBuilder.reflectionEquals( testObject, actual );
+    }
   }
 
 }

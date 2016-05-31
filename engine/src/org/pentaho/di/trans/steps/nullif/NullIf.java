@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -67,13 +67,14 @@ public class NullIf extends BaseStep implements StepInterface {
     if ( first ) {
       first = false;
       data.outputRowMeta = getInputRowMeta().clone();
-      data.keynr = new int[meta.getFieldValue().length];
-      data.nullValue = new Object[meta.getFieldValue().length];
-      data.nullValueMeta = new ValueMetaInterface[meta.getFieldValue().length];
-      for ( int i = 0; i < meta.getFieldValue().length; i++ ) {
-        data.keynr[i] = data.outputRowMeta.indexOfValue( meta.getFieldName()[i] );
+      int fieldsLength = meta.getFields().length;
+      data.keynr = new int[fieldsLength];
+      data.nullValue = new Object[fieldsLength];
+      data.nullValueMeta = new ValueMetaInterface[fieldsLength];
+      for ( int i = 0; i < fieldsLength; i++ ) {
+        data.keynr[i] = data.outputRowMeta.indexOfValue( meta.getFields()[i].getFieldName() );
         if ( data.keynr[i] < 0 ) {
-          logError( BaseMessages.getString( PKG, "NullIf.Log.CouldNotFindFieldInRow", meta.getFieldName()[i] ) );
+          logError( BaseMessages.getString( PKG, "NullIf.Log.CouldNotFindFieldInRow", meta.getFields()[i].getFieldName() ) );
           setErrors( 1 );
           stopAll();
           return false;
@@ -81,8 +82,8 @@ public class NullIf extends BaseStep implements StepInterface {
         data.nullValueMeta[i] = data.outputRowMeta.getValueMeta( data.keynr[i] );
         // convert from input string entered by the user
         data.nullValue[i] =
-          data.nullValueMeta[i].convertData( new ValueMeta( null, ValueMetaInterface.TYPE_STRING ), meta
-            .getFieldValue()[i] );
+            data.nullValueMeta[i].convertData( new ValueMeta( null, ValueMetaInterface.TYPE_STRING ), meta
+                .getFields()[i].getFieldValue() );
       }
     }
 
@@ -91,7 +92,7 @@ public class NullIf extends BaseStep implements StepInterface {
         + data.outputRowMeta.getString( r ) );
     }
 
-    for ( int i = 0; i < meta.getFieldValue().length; i++ ) {
+    for ( int i = 0; i < meta.getFields().length; i++ ) {
       Object field = r[data.keynr[i]];
       if ( field != null && data.nullValueMeta[i].compare( field, data.nullValue[i] ) == 0 ) {
         // OK, this value needs to be set to NULL

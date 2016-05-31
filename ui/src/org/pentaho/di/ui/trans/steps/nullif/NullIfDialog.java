@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -136,7 +136,7 @@ public class NullIfDialog extends BaseStepDialog implements StepDialogInterface 
     wlFields.setLayoutData( fdlFields );
 
     final int FieldsCols = 2;
-    final int FieldsRows = input.getFieldName().length;
+    final int fieldsRows = input.getFields().length;
 
     colinf = new ColumnInfo[FieldsCols];
     colinf[0] =
@@ -150,7 +150,7 @@ public class NullIfDialog extends BaseStepDialog implements StepDialogInterface 
 
     wFields =
       new TableView(
-        transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
+        transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, fieldsRows, lsMod, props );
 
     fdFields = new FormData();
     fdFields.left = new FormAttachment( 0, 0 );
@@ -266,10 +266,10 @@ public class NullIfDialog extends BaseStepDialog implements StepDialogInterface 
   public void getData() {
     wStepname.setText( stepname );
 
-    for ( int i = 0; i < input.getFieldName().length; i++ ) {
+    for ( int i = 0; i < input.getFields().length; i++ ) {
       TableItem item = wFields.table.getItem( i );
-      String name = input.getFieldName()[i];
-      String type = input.getFieldValue()[i];
+      String name = input.getFields()[i].getFieldName();
+      String type = input.getFields()[i].getFieldValue();
 
       if ( name != null ) {
         item.setText( 1, name );
@@ -306,8 +306,8 @@ public class NullIfDialog extends BaseStepDialog implements StepDialogInterface 
     //CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < count; i++ ) {
       TableItem item = wFields.getNonEmpty( i );
-      input.getFieldName()[i] = item.getText( 1 );
-      input.getFieldValue()[i] = item.getText( 2 );
+      input.getFields()[i].setFieldName( item.getText( 1 ) );
+      input.getFields()[i].setFieldValue( item.getText( 2 ) );
     }
     dispose();
   }
