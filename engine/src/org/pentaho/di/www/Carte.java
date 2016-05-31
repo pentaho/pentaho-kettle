@@ -22,13 +22,12 @@
 
 package org.pentaho.di.www;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Properties;
-
+import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.WebResource;
+import com.sun.jersey.api.client.config.ClientConfig;
+import com.sun.jersey.api.client.config.DefaultClientConfig;
+import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
+import com.sun.jersey.api.json.JSONConfiguration;
 import org.apache.commons.cli.BasicParser;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -52,12 +51,11 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.WebResource;
-import com.sun.jersey.api.client.config.ClientConfig;
-import com.sun.jersey.api.client.config.DefaultClientConfig;
-import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
-import com.sun.jersey.api.json.JSONConfiguration;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.List;
+import java.util.Properties;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Carte {
   private static Class<?> PKG = Carte.class; // for i18n purposes, needed by Translator2!!
@@ -83,7 +81,7 @@ public class Carte {
     transformationMap.setSlaveServerConfig( config );
     final JobMap jobMap = CarteSingleton.getInstance().getJobMap();
     jobMap.setSlaveServerConfig( config );
-    List<SlaveServerDetection> detections = Collections.synchronizedList( new ArrayList<SlaveServerDetection>() );
+    List<SlaveServerDetection> detections = new CopyOnWriteArrayList<SlaveServerDetection>();
     SocketRepository socketRepository = CarteSingleton.getInstance().getSocketRepository();
 
     SlaveServer slaveServer = config.getSlaveServer();
