@@ -32,6 +32,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.injection.Injection;
+import org.pentaho.di.core.injection.InjectionDeep;
 import org.pentaho.di.core.injection.InjectionSupported;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -59,63 +60,19 @@ import org.w3c.dom.Node;
 public class GetVariableMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = GetVariableMeta.class; // for i18n purposes, needed by Translator2!!
 
-  @Injection( name = "FIELDNAME", group = "FIELDS" )
-  private String[] fieldName;
-  @Injection( name = "VARIABLE", group = "FIELDS" )
-  private String[] variableString;
-
-  @Injection( name = "FIELDTYPE", group = "FIELDS" )
-  private int[] fieldType;
-
-  @Injection( name = "FIELDFORMAT", group = "FIELDS" )
-  private String[] fieldFormat;
-  @Injection( name = "FIELDLENGTH", group = "FIELDS" )
-  private int[] fieldLength;
-  @Injection( name = "FIELDPRECISION", group = "FIELDS" )
-  private int[] fieldPrecision;
-
-  @Injection( name = "CURRENCY", group = "FIELDS" )
-  private String[] currency;
-  @Injection( name = "DECIMAL", group = "FIELDS" )
-  private String[] decimal;
-  @Injection( name = "GROUP", group = "FIELDS" )
-  private String[] group;
-
-  @Injection( name = "TRIMTYPE", group = "FIELDS" )
-  private int[] trimType;
+  @InjectionDeep
+  private FieldDefinition[] fieldDefinitions;
 
   public GetVariableMeta() {
     super(); // allocate BaseStepMeta
   }
 
-  /**
-   * @return Returns the fieldName.
-   */
-  public String[] getFieldName() {
-    return fieldName;
+  public FieldDefinition[] getFieldDefinitions() {
+    return fieldDefinitions;
   }
 
-  /**
-   * @param fieldName
-   *          The fieldName to set.
-   */
-  public void setFieldName( String[] fieldName ) {
-    this.fieldName = fieldName;
-  }
-
-  /**
-   * @return Returns the strings containing variables.
-   */
-  public String[] getVariableString() {
-    return variableString;
-  }
-
-  /**
-   * @param variableString
-   *          The variable strings to set.
-   */
-  public void setVariableString( String[] variableString ) {
-    this.variableString = variableString;
+  public void setFieldDefinitions( FieldDefinition[] fieldDefinitions ) {
+    this.fieldDefinitions = fieldDefinitions;
   }
 
   public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
@@ -123,40 +80,21 @@ public class GetVariableMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public void allocate( int count ) {
-    fieldName = new String[count];
-    variableString = new String[count];
-
-    fieldType = new int[count];
-
-    fieldFormat = new String[count];
-    fieldLength = new int[count];
-    fieldPrecision = new int[count];
-
-    currency = new String[count];
-    decimal = new String[count];
-    group = new String[count];
-
-    trimType = new int[count];
+    fieldDefinitions = new FieldDefinition[count];
+    for ( int i = 0; i < fieldDefinitions.length; i++ ) {
+      fieldDefinitions[i] = new FieldDefinition();
+    }
   }
 
   public Object clone() {
     GetVariableMeta retval = (GetVariableMeta) super.clone();
 
-    int count = fieldName.length;
+    int count = fieldDefinitions.length;
 
     retval.allocate( count );
-
-    System.arraycopy( fieldName, 0, retval.fieldName, 0, count );
-    System.arraycopy( variableString, 0, retval.variableString, 0, count );
-    System.arraycopy( fieldType, 0, retval.fieldType, 0, count );
-    System.arraycopy( fieldFormat, 0, retval.fieldFormat, 0, count );
-    System.arraycopy( currency, 0, retval.currency, 0, count );
-    System.arraycopy( decimal, 0, retval.decimal, 0, count );
-    System.arraycopy( group, 0, retval.group, 0, count );
-    System.arraycopy( fieldLength, 0, retval.fieldLength, 0, count );
-    System.arraycopy( fieldPrecision, 0, retval.fieldPrecision, 0, count );
-    System.arraycopy( trimType, 0, retval.trimType, 0, count );
-
+    for ( int i = 0; i < count; i++ ) {
+      retval.getFieldDefinitions()[i] = fieldDefinitions[i].clone();
+    }
     return retval;
   }
 
@@ -170,21 +108,21 @@ public class GetVariableMeta extends BaseStepMeta implements StepMetaInterface {
       for ( int i = 0; i < count; i++ ) {
         Node fnode = XMLHandler.getSubNodeByNr( fields, "field", i );
 
-        fieldName[i] = XMLHandler.getTagValue( fnode, "name" );
-        variableString[i] = XMLHandler.getTagValue( fnode, "variable" );
-        fieldType[i] = ValueMeta.getType( XMLHandler.getTagValue( fnode, "type" ) );
-        fieldFormat[i] = XMLHandler.getTagValue( fnode, "format" );
-        currency[i] = XMLHandler.getTagValue( fnode, "currency" );
-        decimal[i] = XMLHandler.getTagValue( fnode, "decimal" );
-        group[i] = XMLHandler.getTagValue( fnode, "group" );
-        fieldLength[i] = Const.toInt( XMLHandler.getTagValue( fnode, "length" ), -1 );
-        fieldPrecision[i] = Const.toInt( XMLHandler.getTagValue( fnode, "precision" ), -1 );
-        trimType[i] = ValueMeta.getTrimTypeByCode( XMLHandler.getTagValue( fnode, "trim_type" ) );
+        fieldDefinitions[i].setFieldName( XMLHandler.getTagValue( fnode, "name" ) );
+        fieldDefinitions[i].setVariableString( XMLHandler.getTagValue( fnode, "variable" ) );
+        fieldDefinitions[i].setFieldType( ValueMeta.getType( XMLHandler.getTagValue( fnode, "type" ) ) );
+        fieldDefinitions[i].setFieldFormat( XMLHandler.getTagValue( fnode, "format" ) );
+        fieldDefinitions[i].setCurrency( XMLHandler.getTagValue( fnode, "currency" ) );
+        fieldDefinitions[i].setDecimal( XMLHandler.getTagValue( fnode, "decimal" ) );
+        fieldDefinitions[i].setGroup( XMLHandler.getTagValue( fnode, "group" ) );
+        fieldDefinitions[i].setFieldLength( Const.toInt( XMLHandler.getTagValue( fnode, "length" ), -1 ) );
+        fieldDefinitions[i].setFieldPrecision( Const.toInt( XMLHandler.getTagValue( fnode, "precision" ), -1 ) );
+        fieldDefinitions[i].setTrimType( ValueMeta.getTrimTypeByCode( XMLHandler.getTagValue( fnode, "trim_type" ) ) );
 
         // Backward compatibility
         //
-        if ( fieldType[i] == ValueMetaInterface.TYPE_NONE ) {
-          fieldType[i] = ValueMetaInterface.TYPE_STRING;
+        if ( fieldDefinitions[i].getFieldType() == ValueMetaInterface.TYPE_NONE ) {
+          fieldDefinitions[i].setFieldType( ValueMetaInterface.TYPE_STRING );
         }
       }
     } catch ( Exception e ) {
@@ -198,19 +136,20 @@ public class GetVariableMeta extends BaseStepMeta implements StepMetaInterface {
     allocate( count );
 
     for ( int i = 0; i < count; i++ ) {
-      fieldName[i] = "field" + i;
-      variableString[i] = "";
+      fieldDefinitions[i].setFieldName( "field" + i );
+      fieldDefinitions[i].setVariableString( "" );
     }
   }
 
   public void getFields( RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info, StepMeta nextStep,
-    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+      VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     // Determine the maximum length...
     //
     int length = -1;
-    for ( int i = 0; i < fieldName.length; i++ ) {
-      if ( variableString[i] != null ) {
-        String string = space.environmentSubstitute( variableString[i] );
+    for ( int i = 0; i < fieldDefinitions.length; i++ ) {
+      String variableString = fieldDefinitions[i].getVariableString();
+      if ( variableString != null ) {
+        String string = space.environmentSubstitute( variableString );
         if ( string.length() > length ) {
           length = string.length();
         }
@@ -218,21 +157,23 @@ public class GetVariableMeta extends BaseStepMeta implements StepMetaInterface {
     }
 
     RowMetaInterface row = new RowMeta();
-    for ( int i = 0; i < fieldName.length; i++ ) {
-      ValueMetaInterface v = new ValueMeta( fieldName[i], fieldType[i] );
-      if ( fieldLength[i] < 0 ) {
+    for ( int i = 0; i < fieldDefinitions.length; i++ ) {
+      ValueMetaInterface v = new ValueMeta( fieldDefinitions[i].getFieldName(), fieldDefinitions[i].getFieldType() );
+      int fieldLength = fieldDefinitions[i].getFieldLength();
+      if ( fieldLength < 0 ) {
         v.setLength( length );
       } else {
-        v.setLength( fieldLength[i] );
+        v.setLength( fieldLength );
       }
-      if ( fieldPrecision[i] >= 0 ) {
-        v.setPrecision( fieldPrecision[i] );
+      int fieldPrecision = fieldDefinitions[i].getFieldPrecision();
+      if ( fieldPrecision >= 0 ) {
+        v.setPrecision( fieldPrecision );
       }
-      v.setConversionMask( fieldFormat[i] );
-      v.setGroupingSymbol( group[i] );
-      v.setDecimalSymbol( decimal[i] );
-      v.setCurrencySymbol( currency[i] );
-      v.setTrimType( trimType[i] );
+      v.setConversionMask( fieldDefinitions[i].getFieldFormat() );
+      v.setGroupingSymbol( fieldDefinitions[i].getGroup() );
+      v.setDecimalSymbol( fieldDefinitions[i].getDecimal() );
+      v.setCurrencySymbol( fieldDefinitions[i].getCurrency() );
+      v.setTrimType( fieldDefinitions[i].getTrimType() );
       v.setOrigin( name );
 
       row.addValueMeta( v );
@@ -245,21 +186,24 @@ public class GetVariableMeta extends BaseStepMeta implements StepMetaInterface {
     StringBuilder retval = new StringBuilder( 300 );
 
     retval.append( "    <fields>" ).append( Const.CR );
-    for ( int i = 0; i < fieldName.length; i++ ) {
-      if ( fieldName[i] != null && fieldName[i].length() != 0 ) {
+    for ( int i = 0; i < fieldDefinitions.length; i++ ) {
+      String fieldName = fieldDefinitions[i].getFieldName();
+      if ( fieldName != null && fieldName.length() != 0 ) {
         retval.append( "      <field>" ).append( Const.CR );
-        retval.append( "        " ).append( XMLHandler.addTagValue( "name", fieldName[i] ) );
-        retval.append( "        " ).append( XMLHandler.addTagValue( "variable", variableString[i] ) );
-        retval
-          .append( "        " ).append( XMLHandler.addTagValue( "type", ValueMeta.getTypeDesc( fieldType[i] ) ) );
-        retval.append( "        " ).append( XMLHandler.addTagValue( "format", fieldFormat[i] ) );
-        retval.append( "        " ).append( XMLHandler.addTagValue( "currency", currency[i] ) );
-        retval.append( "        " ).append( XMLHandler.addTagValue( "decimal", decimal[i] ) );
-        retval.append( "        " ).append( XMLHandler.addTagValue( "group", group[i] ) );
-        retval.append( "        " ).append( XMLHandler.addTagValue( "length", fieldLength[i] ) );
-        retval.append( "        " ).append( XMLHandler.addTagValue( "precision", fieldPrecision[i] ) );
-        retval.append( "        " ).append(
-          XMLHandler.addTagValue( "trim_type", ValueMeta.getTrimTypeCode( trimType[i] ) ) );
+        retval.append( "        " ).append( XMLHandler.addTagValue( "name", fieldName ) );
+        retval.append( "        " ).append( XMLHandler.addTagValue( "variable", fieldDefinitions[i]
+            .getVariableString() ) );
+        retval.append( "        " ).append( XMLHandler.addTagValue( "type", ValueMeta.getTypeDesc( fieldDefinitions[i]
+            .getFieldType() ) ) );
+        retval.append( "        " ).append( XMLHandler.addTagValue( "format", fieldDefinitions[i].getFieldFormat() ) );
+        retval.append( "        " ).append( XMLHandler.addTagValue( "currency", fieldDefinitions[i].getCurrency() ) );
+        retval.append( "        " ).append( XMLHandler.addTagValue( "decimal", fieldDefinitions[i].getDecimal() ) );
+        retval.append( "        " ).append( XMLHandler.addTagValue( "group", fieldDefinitions[i].getGroup() ) );
+        retval.append( "        " ).append( XMLHandler.addTagValue( "length", fieldDefinitions[i].getFieldLength() ) );
+        retval.append( "        " ).append( XMLHandler.addTagValue( "precision", fieldDefinitions[i]
+            .getFieldPrecision() ) );
+        retval.append( "        " ).append( XMLHandler.addTagValue( "trim_type", ValueMeta.getTrimTypeCode(
+            fieldDefinitions[i].getTrimType() ) ) );
 
         retval.append( "      </field>" ).append( Const.CR );
       }
@@ -269,29 +213,32 @@ public class GetVariableMeta extends BaseStepMeta implements StepMetaInterface {
     return retval.toString();
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
+    throws KettleException {
     try {
       int nrfields = rep.countNrStepAttributes( id_step, "field_name" );
 
       allocate( nrfields );
 
       for ( int i = 0; i < nrfields; i++ ) {
-        fieldName[i] = rep.getStepAttributeString( id_step, i, "field_name" );
-        variableString[i] = rep.getStepAttributeString( id_step, i, "field_variable" );
-        fieldType[i] = ValueMeta.getType( rep.getStepAttributeString( id_step, i, "field_type" ) );
+        fieldDefinitions[i].setFieldName( rep.getStepAttributeString( id_step, i, "field_name" ) );
+        fieldDefinitions[i].setVariableString( rep.getStepAttributeString( id_step, i, "field_variable" ) );
+        fieldDefinitions[i].setFieldType( ValueMeta.getType( rep.getStepAttributeString( id_step, i, "field_type" ) ) );
 
-        fieldFormat[i] = rep.getStepAttributeString( id_step, i, "field_format" );
-        currency[i] = rep.getStepAttributeString( id_step, i, "field_currency" );
-        decimal[i] = rep.getStepAttributeString( id_step, i, "field_decimal" );
-        group[i] = rep.getStepAttributeString( id_step, i, "field_group" );
-        fieldLength[i] = (int) rep.getStepAttributeInteger( id_step, i, "field_length" );
-        fieldPrecision[i] = (int) rep.getStepAttributeInteger( id_step, i, "field_precision" );
-        trimType[i] = ValueMeta.getTrimTypeByCode( rep.getStepAttributeString( id_step, i, "field_trim_type" ) );
+        fieldDefinitions[i].setFieldFormat( rep.getStepAttributeString( id_step, i, "field_format" ) );
+        fieldDefinitions[i].setCurrency( rep.getStepAttributeString( id_step, i, "field_currency" ) );
+        fieldDefinitions[i].setDecimal( rep.getStepAttributeString( id_step, i, "field_decimal" ) );
+        fieldDefinitions[i].setGroup( rep.getStepAttributeString( id_step, i, "field_group" ) );
+        fieldDefinitions[i].setFieldLength( (int) rep.getStepAttributeInteger( id_step, i, "field_length" ) );
+        fieldDefinitions[i].setFieldPrecision( (int) rep.getStepAttributeInteger( id_step, i, "field_precision" ) );
+        fieldDefinitions[i].setTrimType( ValueMeta.getTrimTypeByCode( rep.getStepAttributeString( id_step, i,
+            "field_trim_type" ) ) );
 
         // Backward compatibility
         //
-        if ( fieldType[i] == ValueMetaInterface.TYPE_NONE ) {
-          fieldType[i] = ValueMetaInterface.TYPE_STRING;
+        int fieldType = fieldDefinitions[i].getFieldType();
+        if ( fieldType == ValueMetaInterface.TYPE_NONE ) {
+          fieldDefinitions[i].setFieldType( ValueMetaInterface.TYPE_STRING );
         }
       }
 
@@ -300,24 +247,27 @@ public class GetVariableMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
+    throws KettleException {
     try {
 
-      for ( int i = 0; i < fieldName.length; i++ ) {
-        if ( fieldName[i] != null && fieldName[i].length() != 0 ) {
-          rep.saveStepAttribute( id_transformation, id_step, i, "field_name", fieldName[i] );
-          rep.saveStepAttribute( id_transformation, id_step, i, "field_variable", variableString[i] );
-          rep
-            .saveStepAttribute( id_transformation, id_step, i, "field_type", ValueMeta
-              .getTypeDesc( fieldType[i] ) );
-          rep.saveStepAttribute( id_transformation, id_step, i, "field_format", fieldFormat[i] );
-          rep.saveStepAttribute( id_transformation, id_step, i, "field_currency", currency[i] );
-          rep.saveStepAttribute( id_transformation, id_step, i, "field_decimal", decimal[i] );
-          rep.saveStepAttribute( id_transformation, id_step, i, "field_group", group[i] );
-          rep.saveStepAttribute( id_transformation, id_step, i, "field_length", fieldLength[i] );
-          rep.saveStepAttribute( id_transformation, id_step, i, "field_precision", fieldPrecision[i] );
-          rep.saveStepAttribute( id_transformation, id_step, i, "field_trim_type", ValueMeta
-            .getTrimTypeCode( trimType[i] ) );
+      for ( int i = 0; i < fieldDefinitions.length; i++ ) {
+        String fieldName = fieldDefinitions[i].getFieldName();
+        if ( fieldName != null && fieldName.length() != 0 ) {
+          rep.saveStepAttribute( id_transformation, id_step, i, "field_name", fieldName );
+          rep.saveStepAttribute( id_transformation, id_step, i, "field_variable", fieldDefinitions[i]
+              .getVariableString() );
+          rep.saveStepAttribute( id_transformation, id_step, i, "field_type", ValueMeta.getTypeDesc( fieldDefinitions[i]
+              .getFieldType() ) );
+          rep.saveStepAttribute( id_transformation, id_step, i, "field_format", fieldDefinitions[i].getFieldFormat() );
+          rep.saveStepAttribute( id_transformation, id_step, i, "field_currency", fieldDefinitions[i].getCurrency() );
+          rep.saveStepAttribute( id_transformation, id_step, i, "field_decimal", fieldDefinitions[i].getDecimal() );
+          rep.saveStepAttribute( id_transformation, id_step, i, "field_group", fieldDefinitions[i].getGroup() );
+          rep.saveStepAttribute( id_transformation, id_step, i, "field_length", fieldDefinitions[i].getFieldLength() );
+          rep.saveStepAttribute( id_transformation, id_step, i, "field_precision", fieldDefinitions[i]
+              .getFieldPrecision() );
+          rep.saveStepAttribute( id_transformation, id_step, i, "field_trim_type", ValueMeta.getTrimTypeCode(
+              fieldDefinitions[i].getTrimType() ) );
         }
       }
     } catch ( Exception e ) {
@@ -326,29 +276,29 @@ public class GetVariableMeta extends BaseStepMeta implements StepMetaInterface {
 
   }
 
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
-    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
-    Repository repository, IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
+      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
+      IMetaStore metaStore ) {
     // See if we have input streams leading to this step!
     int nrRemarks = remarks.size();
-    for ( int i = 0; i < fieldName.length; i++ ) {
-      if ( Const.isEmpty( variableString[i] ) ) {
+    for ( int i = 0; i < fieldDefinitions.length; i++ ) {
+      if ( Const.isEmpty( fieldDefinitions[i].getVariableString() ) ) {
         CheckResult cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
-            PKG, "GetVariableMeta.CheckResult.VariableNotSpecified", fieldName[i] ), stepMeta );
+            new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
+                "GetVariableMeta.CheckResult.VariableNotSpecified", fieldDefinitions[i].getFieldName() ), stepMeta );
         remarks.add( cr );
       }
     }
     if ( remarks.size() == nrRemarks ) {
       CheckResult cr =
-        new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
-          PKG, "GetVariableMeta.CheckResult.AllVariablesSpecified" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
+              "GetVariableMeta.CheckResult.AllVariablesSpecified" ), stepMeta );
       remarks.add( cr );
     }
   }
 
-  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
-    TransMeta transMeta, Trans trans ) {
+  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta,
+      Trans trans ) {
     return new GetVariable( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 
@@ -356,123 +306,189 @@ public class GetVariableMeta extends BaseStepMeta implements StepMetaInterface {
     return new GetVariableData();
   }
 
-  /**
-   * @return the field type (ValueMetaInterface.TYPE_*)
-   */
-  public int[] getFieldType() {
-    return fieldType;
-  }
+  public static class FieldDefinition implements Cloneable {
 
-  /**
-   * @param fieldType
-   *          the field type to set (ValueMetaInterface.TYPE_*)
-   */
-  public void setFieldType( int[] fieldType ) {
-    this.fieldType = fieldType;
-  }
+    @Injection( name = "FIELDNAME", group = "FIELDS" )
+    private String fieldName;
+    @Injection( name = "VARIABLE", group = "FIELDS" )
+    private String variableString;
 
-  /**
-   * @return the fieldFormat
-   */
-  public String[] getFieldFormat() {
-    return fieldFormat;
-  }
+    @Injection( name = "FIELDTYPE", group = "FIELDS" )
+    private int fieldType;
 
-  /**
-   * @param fieldFormat
-   *          the fieldFormat to set
-   */
-  public void setFieldFormat( String[] fieldFormat ) {
-    this.fieldFormat = fieldFormat;
-  }
+    @Injection( name = "FIELDFORMAT", group = "FIELDS" )
+    private String fieldFormat;
+    @Injection( name = "FIELDLENGTH", group = "FIELDS" )
+    private int fieldLength;
+    @Injection( name = "FIELDPRECISION", group = "FIELDS" )
+    private int fieldPrecision;
 
-  /**
-   * @return the fieldLength
-   */
-  public int[] getFieldLength() {
-    return fieldLength;
-  }
+    @Injection( name = "CURRENCY", group = "FIELDS" )
+    private String currency;
+    @Injection( name = "DECIMAL", group = "FIELDS" )
+    private String decimal;
+    @Injection( name = "GROUP", group = "FIELDS" )
+    private String group;
 
-  /**
-   * @param fieldLength
-   *          the fieldLength to set
-   */
-  public void setFieldLength( int[] fieldLength ) {
-    this.fieldLength = fieldLength;
-  }
+    @Injection( name = "TRIMTYPE", group = "FIELDS" )
+    private int trimType;
 
-  /**
-   * @return the fieldPrecision
-   */
-  public int[] getFieldPrecision() {
-    return fieldPrecision;
-  }
+    /**
+     * @return Returns the fieldName.
+     */
+    public String getFieldName() {
+      return fieldName;
+    }
 
-  /**
-   * @param fieldPrecision
-   *          the fieldPrecision to set
-   */
-  public void setFieldPrecision( int[] fieldPrecision ) {
-    this.fieldPrecision = fieldPrecision;
-  }
+    /**
+     * @param fieldName
+     *          The fieldName to set.
+     */
+    public void setFieldName( String fieldName ) {
+      this.fieldName = fieldName;
+    }
 
-  /**
-   * @return the currency
-   */
-  public String[] getCurrency() {
-    return currency;
-  }
+    /**
+     * @return Returns the strings containing variables.
+     */
+    public String getVariableString() {
+      return variableString;
+    }
 
-  /**
-   * @param currency
-   *          the currency to set
-   */
-  public void setCurrency( String[] currency ) {
-    this.currency = currency;
-  }
+    /**
+     * @param variableString
+     *          The variable strings to set.
+     */
+    public void setVariableString( String variableString ) {
+      this.variableString = variableString;
+    }
 
-  /**
-   * @return the decimal
-   */
-  public String[] getDecimal() {
-    return decimal;
-  }
+    /**
+     * @return the field type (ValueMetaInterface.TYPE_*)
+     */
+    public int getFieldType() {
+      return fieldType;
+    }
 
-  /**
-   * @param decimal
-   *          the decimal to set
-   */
-  public void setDecimal( String[] decimal ) {
-    this.decimal = decimal;
-  }
+    /**
+     * @param fieldType
+     *          the field type to set (ValueMetaInterface.TYPE_*)
+     */
+    public void setFieldType( int fieldType ) {
+      this.fieldType = fieldType;
+    }
 
-  /**
-   * @return the group
-   */
-  public String[] getGroup() {
-    return group;
-  }
+    /**
+     * @return the fieldFormat
+     */
+    public String getFieldFormat() {
+      return fieldFormat;
+    }
 
-  /**
-   * @param group
-   *          the group to set
-   */
-  public void setGroup( String[] group ) {
-    this.group = group;
-  }
+    /**
+     * @param fieldFormat
+     *          the fieldFormat to set
+     */
+    public void setFieldFormat( String fieldFormat ) {
+      this.fieldFormat = fieldFormat;
+    }
 
-  /**
-   * @return the trimType
-   */
-  public int[] getTrimType() {
-    return trimType;
-  }
+    /**
+     * @return the fieldLength
+     */
+    public int getFieldLength() {
+      return fieldLength;
+    }
 
-  /**
-   * @param trimType
-   *          the trimType to set
-   */
-  public void setTrimType( int[] trimType ) {
-    this.trimType = trimType;
+    /**
+     * @param fieldLength
+     *          the fieldLength to set
+     */
+    public void setFieldLength( int fieldLength ) {
+      this.fieldLength = fieldLength;
+    }
+
+    /**
+     * @return the fieldPrecision
+     */
+    public int getFieldPrecision() {
+      return fieldPrecision;
+    }
+
+    /**
+     * @param fieldPrecision
+     *          the fieldPrecision to set
+     */
+    public void setFieldPrecision( int fieldPrecision ) {
+      this.fieldPrecision = fieldPrecision;
+    }
+
+    /**
+     * @return the currency
+     */
+    public String getCurrency() {
+      return currency;
+    }
+
+    /**
+     * @param currency
+     *          the currency to set
+     */
+    public void setCurrency( String currency ) {
+      this.currency = currency;
+    }
+
+    /**
+     * @return the decimal
+     */
+    public String getDecimal() {
+      return decimal;
+    }
+
+    /**
+     * @param decimal
+     *          the decimal to set
+     */
+    public void setDecimal( String decimal ) {
+      this.decimal = decimal;
+    }
+
+    /**
+     * @return the group
+     */
+    public String getGroup() {
+      return group;
+    }
+
+    /**
+     * @param group
+     *          the group to set
+     */
+    public void setGroup( String group ) {
+      this.group = group;
+    }
+
+    /**
+     * @return the trimType
+     */
+    public int getTrimType() {
+      return trimType;
+    }
+
+    /**
+     * @param trimType
+     *          the trimType to set
+     */
+    public void setTrimType( int trimType ) {
+      this.trimType = trimType;
+    }
+
+    public FieldDefinition clone() {
+      try {
+        return (FieldDefinition) super.clone();
+      } catch ( CloneNotSupportedException e ) {
+        throw new RuntimeException( e );
+      }
+    }
   }
 }

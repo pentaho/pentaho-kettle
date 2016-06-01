@@ -36,53 +36,53 @@ public class GetVariableMetaInjectionTest extends BaseMetadataInjectionTest<GetV
   public void test() throws Exception {
     check( "FIELDNAME", new StringGetter() {
       public String get() {
-        return meta.getFieldName()[0];
+        return meta.getFieldDefinitions()[0].getFieldName();
       }
     } );
     check( "VARIABLE", new StringGetter() {
       public String get() {
-        return meta.getVariableString()[0];
+        return meta.getFieldDefinitions()[0].getVariableString();
       }
     } );
     check( "FIELDTYPE", new IntGetter() {
       public int get() {
-        return meta.getFieldType()[0];
+        return meta.getFieldDefinitions()[0].getFieldType();
       }
     } );
     check( "FIELDFORMAT", new StringGetter() {
       public String get() {
-        return meta.getFieldFormat()[0];
+        return meta.getFieldDefinitions()[0].getFieldFormat();
       }
     } );
     check( "FIELDLENGTH", new IntGetter() {
       public int get() {
-        return meta.getFieldLength()[0];
+        return meta.getFieldDefinitions()[0].getFieldLength();
       }
     } );
     check( "FIELDPRECISION", new IntGetter() {
-        public int get() {
-          return meta.getFieldPrecision()[0];
-        }
-      } );
+      public int get() {
+        return meta.getFieldDefinitions()[0].getFieldPrecision();
+      }
+    } );
     check( "CURRENCY", new StringGetter() {
-        public String get() {
-          return meta.getCurrency()[0];
-        }
-      } );
+      public String get() {
+        return meta.getFieldDefinitions()[0].getCurrency();
+      }
+    } );
     check( "DECIMAL", new StringGetter() {
-        public String get() {
-          return meta.getDecimal()[0];
-        }
-      } );
+      public String get() {
+        return meta.getFieldDefinitions()[0].getDecimal();
+      }
+    } );
     check( "GROUP", new StringGetter() {
-        public String get() {
-          return meta.getGroup()[0];
-        }
-      } );
+      public String get() {
+        return meta.getFieldDefinitions()[0].getGroup();
+      }
+    } );
     check( "TRIMTYPE", new IntGetter() {
-        public int get() {
-          return meta.getTrimType()[0];
-        }
-      } );
+      public int get() {
+        return meta.getFieldDefinitions()[0].getTrimType();
+      }
+    } );
   }
 }
