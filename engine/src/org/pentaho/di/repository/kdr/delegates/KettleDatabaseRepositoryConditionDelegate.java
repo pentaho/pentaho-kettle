@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,9 +25,11 @@ package org.pentaho.di.repository.kdr.delegates;
 import org.pentaho.di.core.Condition;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaAndData;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaBoolean;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.repository.LongObjectId;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.kdr.KettleDatabaseRepository;
@@ -122,26 +124,26 @@ public class KettleDatabaseRepositoryConditionDelegate extends KettleDatabaseRep
 
     String tablename = KettleDatabaseRepository.TABLE_R_CONDITION;
     RowMetaAndData table = new RowMetaAndData();
-    table.addValue( new ValueMeta(
-      KettleDatabaseRepository.FIELD_CONDITION_ID_CONDITION, ValueMetaInterface.TYPE_INTEGER ), id );
+    table.addValue( new ValueMetaInteger(
+      KettleDatabaseRepository.FIELD_CONDITION_ID_CONDITION ), id );
     table.addValue(
-      new ValueMeta(
-        KettleDatabaseRepository.FIELD_CONDITION_ID_CONDITION_PARENT, ValueMetaInterface.TYPE_INTEGER ),
+      new ValueMetaInteger(
+        KettleDatabaseRepository.FIELD_CONDITION_ID_CONDITION_PARENT ),
       id_condition_parent );
-    table.addValue( new ValueMeta(
-      KettleDatabaseRepository.FIELD_CONDITION_NEGATED, ValueMetaInterface.TYPE_BOOLEAN ), Boolean
+    table.addValue( new ValueMetaBoolean(
+      KettleDatabaseRepository.FIELD_CONDITION_NEGATED ), Boolean
       .valueOf( condition.isNegated() ) );
-    table.addValue( new ValueMeta(
-      KettleDatabaseRepository.FIELD_CONDITION_OPERATOR, ValueMetaInterface.TYPE_STRING ), condition
+    table.addValue( new ValueMetaString(
+      KettleDatabaseRepository.FIELD_CONDITION_OPERATOR ), condition
       .getOperatorDesc() );
-    table.addValue( new ValueMeta(
-      KettleDatabaseRepository.FIELD_CONDITION_LEFT_NAME, ValueMetaInterface.TYPE_STRING ), condition
+    table.addValue( new ValueMetaString(
+      KettleDatabaseRepository.FIELD_CONDITION_LEFT_NAME ), condition
       .getLeftValuename() );
-    table.addValue( new ValueMeta(
-      KettleDatabaseRepository.FIELD_CONDITION_CONDITION_FUNCTION, ValueMetaInterface.TYPE_STRING ), condition
+    table.addValue( new ValueMetaString(
+      KettleDatabaseRepository.FIELD_CONDITION_CONDITION_FUNCTION ), condition
       .getFunctionDesc() );
-    table.addValue( new ValueMeta(
-      KettleDatabaseRepository.FIELD_CONDITION_RIGHT_NAME, ValueMetaInterface.TYPE_STRING ), condition
+    table.addValue( new ValueMetaString(
+      KettleDatabaseRepository.FIELD_CONDITION_RIGHT_NAME ), condition
       .getRightValuename() );
 
     ObjectId id_value = null;
@@ -175,8 +177,8 @@ public class KettleDatabaseRepositoryConditionDelegate extends KettleDatabaseRep
           .getValueData() ), condition.getRightExactID() );
       condition.setRightExactID( id_value );
     }
-    table.addValue( new ValueMeta(
-      KettleDatabaseRepository.FIELD_CONDITION_ID_VALUE_RIGHT, ValueMetaInterface.TYPE_INTEGER ), id_value );
+    table.addValue( new ValueMetaInteger(
+      KettleDatabaseRepository.FIELD_CONDITION_ID_VALUE_RIGHT ), id_value );
 
     repository.connectionDelegate.getDatabase().prepareInsert( table.getRowMeta(), tablename );
     repository.connectionDelegate.getDatabase().setValuesInsert( table );
@@ -197,16 +199,16 @@ public class KettleDatabaseRepositoryConditionDelegate extends KettleDatabaseRep
       // Let's see if the same value is not yet available?
       String tablename = KettleDatabaseRepository.TABLE_R_VALUE;
       RowMetaAndData table = new RowMetaAndData();
-      table.addValue( new ValueMeta(
-        KettleDatabaseRepository.FIELD_VALUE_ID_VALUE, ValueMetaInterface.TYPE_INTEGER ), id_value );
+      table.addValue( new ValueMetaInteger(
+        KettleDatabaseRepository.FIELD_VALUE_ID_VALUE ), id_value );
       table.addValue(
-        new ValueMeta( KettleDatabaseRepository.FIELD_VALUE_NAME, ValueMetaInterface.TYPE_STRING ), name );
-      table.addValue( new ValueMeta(
-        KettleDatabaseRepository.FIELD_VALUE_VALUE_TYPE, ValueMetaInterface.TYPE_STRING ), type );
-      table.addValue( new ValueMeta(
-        KettleDatabaseRepository.FIELD_VALUE_VALUE_STR, ValueMetaInterface.TYPE_STRING ), value_str );
+        new ValueMetaString( KettleDatabaseRepository.FIELD_VALUE_NAME ), name );
+      table.addValue( new ValueMetaString(
+        KettleDatabaseRepository.FIELD_VALUE_VALUE_TYPE ), type );
+      table.addValue( new ValueMetaString(
+        KettleDatabaseRepository.FIELD_VALUE_VALUE_STR ), value_str );
       table.addValue(
-        new ValueMeta( KettleDatabaseRepository.FIELD_VALUE_IS_NULL, ValueMetaInterface.TYPE_BOOLEAN ), Boolean
+        new ValueMetaBoolean( KettleDatabaseRepository.FIELD_VALUE_IS_NULL ), Boolean
           .valueOf( isnull ) );
 
       repository.connectionDelegate.getDatabase().prepareInsert( table.getRowMeta(), tablename );
@@ -221,15 +223,15 @@ public class KettleDatabaseRepositoryConditionDelegate extends KettleDatabaseRep
   public synchronized ObjectId lookupValue( String name, String type, String value_str, boolean isnull ) throws KettleException {
     RowMetaAndData table = new RowMetaAndData();
     table.addValue(
-      new ValueMeta( KettleDatabaseRepository.FIELD_VALUE_NAME, ValueMetaInterface.TYPE_STRING ), name );
+      new ValueMetaString( KettleDatabaseRepository.FIELD_VALUE_NAME ), name );
     table.addValue(
-      new ValueMeta( KettleDatabaseRepository.FIELD_VALUE_VALUE_TYPE, ValueMetaInterface.TYPE_STRING ), type );
+      new ValueMetaString( KettleDatabaseRepository.FIELD_VALUE_VALUE_TYPE ), type );
     table
       .addValue(
-        new ValueMeta( KettleDatabaseRepository.FIELD_VALUE_VALUE_STR, ValueMetaInterface.TYPE_STRING ),
+        new ValueMetaString( KettleDatabaseRepository.FIELD_VALUE_VALUE_STR ),
         value_str );
     table.addValue(
-      new ValueMeta( KettleDatabaseRepository.FIELD_VALUE_IS_NULL, ValueMetaInterface.TYPE_BOOLEAN ), Boolean
+      new ValueMetaBoolean( KettleDatabaseRepository.FIELD_VALUE_IS_NULL ), Boolean
         .valueOf( isnull ) );
 
     String sql =

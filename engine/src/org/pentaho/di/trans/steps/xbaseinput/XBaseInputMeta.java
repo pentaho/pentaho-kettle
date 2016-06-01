@@ -36,8 +36,9 @@ import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.fileinput.FileInputList;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -329,13 +330,13 @@ public class XBaseInputMeta extends BaseStepMeta implements StepMetaInterface {
     }
 
     if ( rowNrAdded && rowNrField != null && rowNrField.length() > 0 ) {
-      ValueMetaInterface rnr = new ValueMeta( rowNrField, ValueMetaInterface.TYPE_INTEGER );
+      ValueMetaInterface rnr = new ValueMetaInteger( rowNrField );
       rnr.setOrigin( name );
       rowMeta.addValueMeta( rnr );
     }
 
     if ( includeFilename ) {
-      ValueMetaInterface v = new ValueMeta( filenameField, ValueMetaInterface.TYPE_STRING );
+      ValueMetaInterface v = new ValueMetaString( filenameField );
       v.setLength( 100, -1 );
       v.setOrigin( name );
       rowMeta.addValueMeta( v );

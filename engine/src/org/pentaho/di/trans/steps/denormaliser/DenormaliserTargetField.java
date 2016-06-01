@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,7 +22,7 @@
 
 package org.pentaho.di.trans.steps.denormaliser;
 
-import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.i18n.BaseMessages;
 
 /**
@@ -244,7 +244,7 @@ public class DenormaliserTargetField {
    * @return The description of the target Value type
    */
   public String getTargetTypeDesc() {
-    return ValueMeta.getTypeDesc( targetType );
+    return ValueMetaFactory.getValueMetaName( targetType );
   }
 
   /**
@@ -254,7 +254,7 @@ public class DenormaliserTargetField {
    *          the target value type description
    */
   public void setTargetType( String typeDesc ) {
-    targetType = ValueMeta.getType( typeDesc );
+    targetType = ValueMetaFactory.getIdForValueMeta( typeDesc );
   }
 
   /**

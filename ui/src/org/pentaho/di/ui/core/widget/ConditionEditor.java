@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -55,10 +55,10 @@ import org.pentaho.di.core.Condition;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaAndData;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
@@ -191,6 +191,7 @@ public class ConditionEditor extends Composite {
     gray = GUIResource.getInstance().getColorDarkGray();
 
     widget.addPaintListener( new PaintListener() {
+      @Override
       public void paintControl( PaintEvent pe ) {
         Rectangle r = widget.getBounds();
         if ( r.width > 0 && r.height > 0 ) {
@@ -200,6 +201,7 @@ public class ConditionEditor extends Composite {
     } );
 
     widget.addMouseMoveListener( new MouseMoveListener() {
+      @Override
       public void mouseMove( MouseEvent e ) {
         Point screen = new Point( e.x, e.y );
         int area = getAreaCode( screen );
@@ -281,6 +283,7 @@ public class ConditionEditor extends Composite {
     } );
 
     widget.addMouseListener( new MouseAdapter() {
+      @Override
       public void mouseDown( MouseEvent e ) {
         Point screen = new Point( e.x, e.y );
         // Point real = Screen2Real(screen);
@@ -395,7 +398,7 @@ public class ConditionEditor extends Composite {
                       new ErrorDialog( shell, "Error", "Error creating value meta object", exception );
                     }
                   } else {
-                    v = new ValueMetaAndData( new ValueMeta( "constant", ValueMetaInterface.TYPE_STRING ), null );
+                    v = new ValueMetaAndData( new ValueMetaString( "constant" ), null );
                   }
                 }
                 EnterValueDialog evd = new EnterValueDialog( shell, SWT.NONE, v.getValueMeta(), v.getValueData() );
@@ -421,6 +424,7 @@ public class ConditionEditor extends Composite {
 
       }
 
+      @Override
       public void mouseUp( MouseEvent e ) {
       }
     } );
@@ -443,6 +447,7 @@ public class ConditionEditor extends Composite {
     } );
 
     sbVertical.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         offsety = -sbVertical.getSelection();
         widget.redraw();
@@ -450,6 +455,7 @@ public class ConditionEditor extends Composite {
     } );
 
     sbHorizontal.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         offsetx = -sbHorizontal.getSelection();
         widget.redraw();
@@ -457,6 +463,7 @@ public class ConditionEditor extends Composite {
     } );
 
     widget.addControlListener( new ControlAdapter() {
+      @Override
       public void controlResized( ControlEvent arg0 ) {
         size_widget = widget.getBounds();
         setBars();
@@ -511,6 +518,7 @@ public class ConditionEditor extends Composite {
         MenuItem miNegate = new MenuItem( mPop, SWT.CASCADE );
         miNegate.setText( BaseMessages.getString( PKG, "ConditionEditor.NegateCondition" ) );
         miNegate.addSelectionListener( new SelectionAdapter() {
+          @Override
           public void widgetSelected( SelectionEvent e ) {
             active_condition.negate();
             widget.redraw();
@@ -525,6 +533,7 @@ public class ConditionEditor extends Composite {
         MenuItem miAdd = new MenuItem( mPop, SWT.CASCADE );
         miAdd.setText( BaseMessages.getString( PKG, "ConditionEditor.AddCondition.Label" ) );
         miAdd.addSelectionListener( new SelectionAdapter() {
+          @Override
           public void widgetSelected( SelectionEvent e ) {
             addCondition();
           }
@@ -536,6 +545,7 @@ public class ConditionEditor extends Composite {
         MenuItem miEdit = new MenuItem( mPop, SWT.CASCADE );
         miEdit.setText( "Edit condition" );
         miEdit.addSelectionListener( new SelectionAdapter() {
+          @Override
           public void widgetSelected( SelectionEvent e ) {
             editCondition( cond_nr );
             setModified();
@@ -545,6 +555,7 @@ public class ConditionEditor extends Composite {
         MenuItem miDel = new MenuItem( mPop, SWT.CASCADE );
         miDel.setText( BaseMessages.getString( PKG, "ConditionEditor.DeleteCondition.Label" ) );
         miDel.addSelectionListener( new SelectionAdapter() {
+          @Override
           public void widgetSelected( SelectionEvent e ) {
             removeCondition( cond_nr );
             setModified();
@@ -557,6 +568,7 @@ public class ConditionEditor extends Composite {
           miAdd = new MenuItem( mPop, SWT.CASCADE );
           miAdd.setText( BaseMessages.getString( PKG, "ConditionEditor.AddSubCondition.Label" ) );
           miAdd.addSelectionListener( new SelectionAdapter() {
+            @Override
             public void widgetSelected( SelectionEvent e ) {
               Condition c = new Condition();
               c.setOperator( Condition.OPERATOR_AND );
@@ -572,6 +584,7 @@ public class ConditionEditor extends Composite {
         MenuItem miCopy = new MenuItem( mPop, SWT.CASCADE );
         miCopy.setText( BaseMessages.getString( PKG, "ConditionEditor.CopyToClipboard" ) );
         miCopy.addSelectionListener( new SelectionAdapter() {
+          @Override
           public void widgetSelected( SelectionEvent e ) {
             Condition c = active_condition.getCondition( cond_nr );
             try {
@@ -587,6 +600,7 @@ public class ConditionEditor extends Composite {
         MenuItem miPasteBef = new MenuItem( mPop, SWT.CASCADE );
         miPasteBef.setText( BaseMessages.getString( PKG, "ConditionEditor.PasteFromClipboardBeforeCondition" ) );
         miPasteBef.addSelectionListener( new SelectionAdapter() {
+          @Override
           public void widgetSelected( SelectionEvent e ) {
             String xml = GUIResource.getInstance().fromClipboard();
             try {
@@ -613,6 +627,7 @@ public class ConditionEditor extends Composite {
         MenuItem miPasteAft = new MenuItem( mPop, SWT.CASCADE );
         miPasteAft.setText( BaseMessages.getString( PKG, "ConditionEditor.PasteFromClipboardAfterCondition" ) );
         miPasteAft.addSelectionListener( new SelectionAdapter() {
+          @Override
           public void widgetSelected( SelectionEvent e ) {
             String xml = GUIResource.getInstance().fromClipboard();
             try {
@@ -638,6 +653,7 @@ public class ConditionEditor extends Composite {
         MenuItem miMoveSub = new MenuItem( mPop, SWT.CASCADE );
         miMoveSub.setText( BaseMessages.getString( PKG, "ConditionEditor.MoveConditionToSubCondition" ) );
         miMoveSub.addSelectionListener( new SelectionAdapter() {
+          @Override
           public void widgetSelected( SelectionEvent e ) {
             // Move the condition lower: this means create a subcondition and put the condition there in the list.
             //
@@ -657,6 +673,7 @@ public class ConditionEditor extends Composite {
           miMoveParent.setEnabled( false );
         }
         miMoveParent.addSelectionListener( new SelectionAdapter() {
+          @Override
           public void widgetSelected( SelectionEvent e ) {
             // Move the condition lower: this means delete the condition from the active_condition.
             // After that, move it to the parent.
@@ -680,6 +697,7 @@ public class ConditionEditor extends Composite {
           miMoveDown.setEnabled( false );
         }
         miMoveDown.addSelectionListener( new SelectionAdapter() {
+          @Override
           public void widgetSelected( SelectionEvent e ) {
             Condition down = active_condition.getCondition( cond_nr );
             active_condition.removeCondition( cond_nr );
@@ -694,6 +712,7 @@ public class ConditionEditor extends Composite {
           miMoveUp.setEnabled( false );
         }
         miMoveUp.addSelectionListener( new SelectionAdapter() {
+          @Override
           public void widgetSelected( SelectionEvent e ) {
             Condition up = active_condition.getCondition( cond_nr );
             active_condition.removeCondition( cond_nr );
@@ -711,6 +730,7 @@ public class ConditionEditor extends Composite {
         MenuItem miDown = new MenuItem( mPop, SWT.CASCADE );
         miDown.setText( BaseMessages.getString( PKG, "ConditionEditor.MoveDown" ) );
         miDown.addSelectionListener( new SelectionAdapter() {
+          @Override
           public void widgetSelected( SelectionEvent e ) {
             // Move a condition down!
             // oper_nr = 1 : means move down

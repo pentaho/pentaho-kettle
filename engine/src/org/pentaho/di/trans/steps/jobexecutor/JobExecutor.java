@@ -25,6 +25,7 @@ package org.pentaho.di.trans.steps.jobexecutor;
 import java.util.ArrayList;
 
 import com.google.common.annotations.VisibleForTesting;
+
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.ResultFile;
@@ -36,8 +37,8 @@ import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.logging.LoggingRegistry;
 import org.pentaho.di.core.row.RowDataUtil;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.DelegationListener;
 import org.pentaho.di.job.Job;
@@ -318,8 +319,8 @@ public class JobExecutor extends BaseStep implements StepInterface {
           ValueMetaInterface valueMeta = row.getRowMeta().getValueMeta( i );
           if ( valueMeta.getType() != meta.getResultRowsType()[i] ) {
             throw new KettleException( BaseMessages.getString(
-              PKG, "JobExecutor.IncorrectDataTypePassed", valueMeta.getTypeDesc(), ValueMeta.getTypeDesc( meta
-                .getResultRowsType()[i] ) ) );
+              PKG, "JobExecutor.IncorrectDataTypePassed", valueMeta.getTypeDesc(),
+              ValueMetaFactory.getValueMetaName( meta.getResultRowsType()[i] ) ) );
           }
 
           targetRow[i] = row.getData()[i];

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -44,8 +44,8 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaBase;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.PropsUI;
@@ -208,11 +208,13 @@ public class StepFieldsDialog extends Dialog {
 
     // Add listeners
     lsCancel = new Listener() {
+      @Override
       public void handleEvent( Event e ) {
         cancel();
       }
     };
     lsEdit = new Listener() {
+      @Override
       public void handleEvent( Event e ) {
         edit();
       }
@@ -238,6 +240,7 @@ public class StepFieldsDialog extends Dialog {
     BaseStepDialog.positionBottomButtons( shell, buttons, margin, wFields );
 
     lsDef = new SelectionAdapter() {
+      @Override
       public void widgetDefaultSelected( SelectionEvent e ) {
         edit();
       }
@@ -247,19 +250,23 @@ public class StepFieldsDialog extends Dialog {
 
     // Detect X or ALT-F4 or something that kills this window...
     shell.addShellListener( new ShellAdapter() {
+      @Override
       public void shellClosed( ShellEvent e ) {
         cancel();
       }
     } );
 
     wFields.table.addMouseListener( new MouseListener() {
+      @Override
       public void mouseDoubleClick( MouseEvent arg0 ) {
         edit();
       }
 
+      @Override
       public void mouseDown( MouseEvent arg0 ) {
       }
 
+      @Override
       public void mouseUp( MouseEvent arg0 ) {
       }
     } );
@@ -299,12 +306,12 @@ public class StepFieldsDialog extends Dialog {
       item.setText( idx++, v.getLength() < 0 ? "-" : "" + v.getLength() );
       item.setText( idx++, v.getPrecision() < 0 ? "-" : "" + v.getPrecision() );
       item.setText( idx++, Const.NVL( v.getOrigin(), "" ) );
-      item.setText( idx++, ValueMeta.getStorageTypeCode( v.getStorageType() ) );
+      item.setText( idx++, ValueMetaBase.getStorageTypeCode( v.getStorageType() ) );
       item.setText( idx++, Const.NVL( v.getConversionMask(), "" ) );
       item.setText( idx++, Const.NVL( v.getCurrencySymbol(), "" ) );
       item.setText( idx++, Const.NVL( v.getDecimalSymbol(), "" ) );
       item.setText( idx++, Const.NVL( v.getGroupingSymbol(), "" ) );
-      item.setText( idx++, ValueMeta.getTrimTypeDesc( v.getTrimType() ) );
+      item.setText( idx++, ValueMetaBase.getTrimTypeDesc( v.getTrimType() ) );
       item.setText( idx++, Const.NVL( v.getComments(), "" ) );
 
     }

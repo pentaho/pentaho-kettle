@@ -24,7 +24,7 @@ package org.pentaho.di.trans.steps.googleanalytics;
 
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.injection.InjectionTypeConverter;
-import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 
 /**
  * Converter for output types.
@@ -32,6 +32,6 @@ import org.pentaho.di.core.row.ValueMeta;
 public class OutputTypeConverter extends InjectionTypeConverter {
   @Override
   public int string2intPrimitive( String v ) throws KettleValueException {
-    return ValueMeta.getType( v );
+    return ValueMetaFactory.getIdForValueMeta( v );
   }
 }

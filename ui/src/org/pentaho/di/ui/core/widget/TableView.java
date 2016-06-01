@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -90,8 +90,10 @@ import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.undo.TransAction;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.i18n.BaseMessages;
@@ -139,7 +141,6 @@ public class TableView extends Composite {
   private FocusAdapter lsFocusText, lsFocusCombo;
   private ModifyListener lsModCombo;
   private TraverseListener lsTraverse;
-  private MouseAdapter lsMouseText;
 
   private int sortfield;
   private int sortfieldLast;
@@ -223,11 +224,12 @@ public class TableView extends Composite {
     clearUndo();
 
     numberColumn = new ColumnInfo( "#", ColumnInfo.COLUMN_TYPE_TEXT, true, true );
-    ValueMetaInterface numberColumnValueMeta = new ValueMeta( "#", ValueMetaInterface.TYPE_INTEGER );
+    ValueMetaInterface numberColumnValueMeta = new ValueMetaInteger( "#" );
     numberColumnValueMeta.setConversionMask( "####0" );
     numberColumn.setValueMeta( numberColumnValueMeta );
 
     lsUndo = new ModifyListener() {
+      @Override
       public void modifyText( ModifyEvent arg0 ) {
         fieldChanged = true;
       }
@@ -384,91 +386,109 @@ public class TableView extends Composite {
     }
 
     SelectionAdapter lsRowInsBef = new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         insertRowBefore();
       }
     };
     SelectionAdapter lsRowInsAft = new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         insertRowAfter();
       }
     };
     SelectionAdapter lsCol1 = new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         optWidth( true );
       }
     };
     SelectionAdapter lsCol2 = new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         optWidth( false );
       }
     };
     SelectionAdapter lsRowUp = new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         moveRows( -1 );
       }
     };
     SelectionAdapter lsRowDown = new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         moveRows( +1 );
       }
     };
     SelectionAdapter lsClear = new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         clearAll( true );
       }
     };
     SelectionAdapter lsClipAll = new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         clipSelected();
       }
     };
     SelectionAdapter lsCopyToAll = new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         copyToAll();
       }
     };
     SelectionAdapter lsSelAll = new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         selectAll();
       }
     };
     SelectionAdapter lsUnselAll = new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         unselectAll();
       }
     };
     SelectionAdapter lsPasteAll = new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         pasteSelected();
       }
     };
     SelectionAdapter lsCutAll = new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         cutSelected();
       }
     };
     SelectionAdapter lsDelAll = new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         delSelected();
       }
     };
     SelectionAdapter lsKeep = new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         keepSelected();
       }
     };
     SelectionAdapter lsFilter = new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         setFilter();
       }
     };
     SelectionAdapter lsEditUndo = new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         undoAction();
       }
     };
     SelectionAdapter lsEditRedo = new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         redoAction();
       }
@@ -496,6 +516,7 @@ public class TableView extends Composite {
     table.setMenu( mRow );
 
     lsFocusText = new FocusAdapter() {
+      @Override
       public void focusLost( FocusEvent e ) {
         final Display d = Display.getCurrent();
 
@@ -519,6 +540,7 @@ public class TableView extends Composite {
         final String value = getTextWidgetValue( colnr );
 
         final Runnable worker = new Runnable() {
+          @Override
           public void run() {
             try {
               if ( row.isDisposed() ) {
@@ -546,6 +568,7 @@ public class TableView extends Composite {
           } catch ( InterruptedException ignored ) {
           }
           Runnable r = new Runnable() {
+            @Override
             public void run() {
               d.asyncExec( worker );
             }
@@ -558,6 +581,7 @@ public class TableView extends Composite {
       }
     };
     lsFocusCombo = new FocusAdapter() {
+      @Override
       public void focusLost( FocusEvent e ) {
         TableItem row = activeTableItem;
         if ( row == null ) {
@@ -582,6 +606,7 @@ public class TableView extends Composite {
       }
     };
     lsModCombo = new ModifyListener() {
+      @Override
       public void modifyText( ModifyEvent e ) {
         TableItem row = activeTableItem;
         if ( row == null ) {
@@ -598,6 +623,7 @@ public class TableView extends Composite {
 
     // Catch the keys pressed when editing a Text-field...
     lsKeyText = new KeyAdapter() {
+      @Override
       public void keyPressed( KeyEvent e ) {
         boolean right = false;
         boolean left = false;
@@ -683,6 +709,7 @@ public class TableView extends Composite {
 
     // Catch the keys pressed when editing a Combo field
     lsKeyCombo = new KeyAdapter() {
+      @Override
       public void keyPressed( KeyEvent e ) {
         boolean ctrl = ( ( e.stateMask & SWT.MOD1 ) != 0 );
         // CTRL-V --> Paste selected infomation...
@@ -769,6 +796,7 @@ public class TableView extends Composite {
      */
 
     KeyListener lsKeyTable = new KeyAdapter() {
+      @Override
       public void keyPressed( KeyEvent e ) {
         if ( activeTableItem == null ) {
           return;
@@ -1036,6 +1064,7 @@ public class TableView extends Composite {
 
     // Table listens to the mouse:
     MouseAdapter lsMouseT = new MouseAdapter() {
+      @Override
       public void mouseDown( MouseEvent event ) {
         if ( activeTableItem != null
           && editor != null
@@ -1118,6 +1147,7 @@ public class TableView extends Composite {
     for ( int i = 0; i < nrcols; i++ ) {
       final int colnr = i;
       Listener lsSort = new Listener() {
+        @Override
         public void handleEvent( Event e ) {
           // Sorting means: clear undo information!
           clearUndo();
@@ -1129,6 +1159,7 @@ public class TableView extends Composite {
     }
 
     lsTraverse = new TraverseListener() {
+      @Override
       public void keyTraversed( TraverseEvent e ) {
         e.doit = false;
       }
@@ -1138,6 +1169,7 @@ public class TableView extends Composite {
 
     // Clean up the clipboard
     addDisposeListener( new DisposeListener() {
+      @Override
       public void widgetDisposed( DisposeEvent e ) {
         if ( clipboard != null ) {
           clipboard.dispose();
@@ -1157,13 +1189,16 @@ public class TableView extends Composite {
     DragSource ddSource = new DragSource( table, DND.DROP_MOVE | DND.DROP_COPY );
     ddSource.setTransfer( ttypes );
     ddSource.addDragListener( new DragSourceListener() {
+      @Override
       public void dragStart( DragSourceEvent event ) {
       }
 
+      @Override
       public void dragSetData( DragSourceEvent event ) {
         event.data = "TableView" + Const.CR + getSelectedText();
       }
 
+      @Override
       public void dragFinished( DragSourceEvent event ) {
       }
     } );
@@ -1253,8 +1288,8 @@ public class TableView extends Composite {
       final RowMetaInterface rowMeta = new RowMeta();
 
       // First values are the color name + value!
-      rowMeta.addValueMeta( new ValueMeta( "colorname", ValueMetaInterface.TYPE_STRING ) );
-      rowMeta.addValueMeta( new ValueMeta( "color", ValueMetaInterface.TYPE_INTEGER ) );
+      rowMeta.addValueMeta( new ValueMetaString( "colorname" ) );
+      rowMeta.addValueMeta( new ValueMetaInteger( "color" ) );
       for ( int j = 0; j < table.getColumnCount(); j++ ) {
         ColumnInfo colInfo;
         if ( j > 0 ) {
@@ -1329,6 +1364,7 @@ public class TableView extends Composite {
 
       // Sort the vector!
       Collections.sort( v, new Comparator<Object[]>() {
+        @Override
         public int compare( Object[] r1, Object[] r2 ) {
 
           try {
@@ -2043,6 +2079,7 @@ public class TableView extends Composite {
     final boolean passwordField = columns[colnr - 1].isPasswordField();
 
     final ModifyListener modifyListener = new ModifyListener() {
+      @Override
       public void modifyText( ModifyEvent me ) {
         setColumnWidthBasedOnTextField( colnr, useVariables );
       }
@@ -2050,6 +2087,7 @@ public class TableView extends Composite {
 
     if ( useVariables ) {
       GetCaretPositionInterface getCaretPositionInterface = new GetCaretPositionInterface() {
+        @Override
         public int getCaretPosition() {
           return ( (TextVar) text ).getTextWidget().getCaretPosition();
         }
@@ -2059,6 +2097,7 @@ public class TableView extends Composite {
       // So we need to write to the table row
       //
       InsertTextInterface insertTextInterface = new InsertTextInterface() {
+        @Override
         public void insertText( String string, int position ) {
           StringBuilder buffer = new StringBuilder( table.getItem( rownr ).getText( colnr ) );
           buffer.insert( position, string );
@@ -2179,7 +2218,7 @@ public class TableView extends Composite {
 
   private String[] getComboValues( TableItem row, ColumnInfo colinfo ) {
     if ( colinfo.getType() == ColumnInfo.COLUMN_TYPE_FORMAT ) {
-      int type = ValueMeta.getType( row.getText( colinfo.getFieldTypeColumn() ) );
+      int type = ValueMetaFactory.getIdForValueMeta( row.getText( colinfo.getFieldTypeColumn() ) );
       switch ( type ) {
         case ValueMetaInterface.TYPE_DATE:
           return Const.getDateFormats();
@@ -2292,6 +2331,7 @@ public class TableView extends Composite {
     }
     button.addTraverseListener( lsTraverse ); // hop to next field
     button.addTraverseListener( new TraverseListener() {
+      @Override
       public void keyTraversed( TraverseEvent arg0 ) {
         closeActiveButton();
       }
@@ -2510,10 +2550,12 @@ public class TableView extends Composite {
     return -1;
   }
 
+  @Override
   public ScrollBar getHorizontalBar() {
     return table.getHorizontalBar();
   }
 
+  @Override
   public ScrollBar getVerticalBar() {
     return table.getVerticalBar();
   }
@@ -2858,9 +2900,9 @@ public class TableView extends Composite {
 
   public RowMetaInterface getRowWithoutValues() {
     RowMetaInterface f = new RowMeta();
-    f.addValueMeta( new ValueMeta( "#", ValueMetaInterface.TYPE_INTEGER ) );
+    f.addValueMeta( new ValueMetaInteger( "#" ) );
     for ( int i = 0; i < columns.length; i++ ) {
-      f.addValueMeta( new ValueMeta( columns[i].getName(), ValueMetaInterface.TYPE_STRING ) );
+      f.addValueMeta( new ValueMetaString( columns[i].getName() ) );
     }
     return f;
   }

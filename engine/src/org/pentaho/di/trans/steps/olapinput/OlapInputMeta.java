@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -33,8 +33,8 @@ import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.ObjectId;
@@ -85,10 +85,12 @@ public class OlapInputMeta extends BaseStepMeta implements StepMetaInterface {
     this.variableReplacementActive = variableReplacementActive;
   }
 
+  @Override
   public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     readData( stepnode, databases );
   }
 
+  @Override
   public Object clone() {
     OlapInputMeta retval = (OlapInputMeta) super.clone();
     return retval;
@@ -108,6 +110,7 @@ public class OlapInputMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
+  @Override
   public void setDefault() {
 
     olap4jUrl = "http://localhost:8080/pentaho/Xmla";
@@ -128,6 +131,7 @@ public class OlapInputMeta extends BaseStepMeta implements StepMetaInterface {
 
   }
 
+  @Override
   public void getFields( RowMetaInterface row, String origin, RowMetaInterface[] info, StepMeta nextStep,
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
 
@@ -151,6 +155,7 @@ public class OlapInputMeta extends BaseStepMeta implements StepMetaInterface {
     row.addRowMeta( add );
   }
 
+  @Override
   public String getXML() {
     StringBuilder retval = new StringBuilder();
 
@@ -165,6 +170,7 @@ public class OlapInputMeta extends BaseStepMeta implements StepMetaInterface {
     return retval.toString();
   }
 
+  @Override
   public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
       olap4jUrl = rep.getStepAttributeString( id_step, "url" );
@@ -178,6 +184,7 @@ public class OlapInputMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
+  @Override
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
 
@@ -194,6 +201,7 @@ public class OlapInputMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
+  @Override
   public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
     RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
@@ -204,16 +212,19 @@ public class OlapInputMeta extends BaseStepMeta implements StepMetaInterface {
     // remarks.add(cr);
   }
 
+  @Override
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
     TransMeta transMeta, Trans trans ) {
     data = (OlapData) stepDataInterface;
     return new OlapInput( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 
+  @Override
   public StepDataInterface getStepData() {
     return new OlapData();
   }
 
+  @Override
   public void analyseImpact( List<DatabaseImpact> impact, TransMeta transMeta, StepMeta stepMeta,
     RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, Repository repository,
     IMetaStore metaStore ) throws KettleStepException {
@@ -231,7 +242,7 @@ public class OlapInputMeta extends BaseStepMeta implements StepMetaInterface {
         name = headerValues[i];
       }
 
-      ValueMetaInterface valueMeta = new ValueMeta( name, ValueMetaInterface.TYPE_STRING );
+      ValueMetaInterface valueMeta = new ValueMetaString( name );
 
       outputRowMeta.addValueMeta( valueMeta );
 

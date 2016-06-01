@@ -46,7 +46,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaInteger;
 import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.variables.Variables;
@@ -84,7 +84,7 @@ public class GroupByTest  {
     doReturn( null ).when( groupBySpy ).getInputRowMeta();
 
     RowMetaInterface rowMeta = new RowMeta();
-    rowMeta.addValueMeta( new ValueMeta( "ROWNR", ValueMeta.TYPE_INTEGER ) );
+    rowMeta.addValueMeta( new ValueMetaInteger( "ROWNR" ) );
 
     List<RowSet> outputRowSets = new ArrayList<RowSet>();
     BlockingRowSet rowSet = new BlockingRowSet( 1 );
@@ -140,23 +140,23 @@ public class GroupByTest  {
       (Variables) null, (Repository) null, (IMetaStore) null );
 
     assertEquals( outputFields.getValueMetaList().size(), 9 );
-    assertTrue( outputFields.getValueMeta( 0 ).getType() == ValueMeta.TYPE_STRING );
+    assertTrue( outputFields.getValueMeta( 0 ).getType() == ValueMetaInterface.TYPE_STRING );
     assertTrue( outputFields.getValueMeta( 0 ).getName().equals( "group_by_field" ) );
-    assertTrue( outputFields.getValueMeta( 1 ).getType() == ValueMeta.TYPE_NUMBER );
+    assertTrue( outputFields.getValueMeta( 1 ).getType() == ValueMetaInterface.TYPE_NUMBER );
     assertTrue( outputFields.getValueMeta( 1 ).getName().equals( "perc_field" ) );
-    assertTrue( outputFields.getValueMeta( 2 ).getType() == ValueMeta.TYPE_NUMBER );
+    assertTrue( outputFields.getValueMeta( 2 ).getType() == ValueMetaInterface.TYPE_NUMBER );
     assertTrue( outputFields.getValueMeta( 2 ).getName().equals( "stddev_field" ) );
-    assertTrue( outputFields.getValueMeta( 3 ).getType() == ValueMeta.TYPE_NUMBER );
+    assertTrue( outputFields.getValueMeta( 3 ).getType() == ValueMetaInterface.TYPE_NUMBER );
     assertTrue( outputFields.getValueMeta( 3 ).getName().equals( "median_field" ) );
-    assertTrue( outputFields.getValueMeta( 4 ).getType() == ValueMeta.TYPE_INTEGER );
+    assertTrue( outputFields.getValueMeta( 4 ).getType() == ValueMetaInterface.TYPE_INTEGER );
     assertTrue( outputFields.getValueMeta( 4 ).getName().equals( "count_distinct_field" ) );
-    assertTrue( outputFields.getValueMeta( 5 ).getType() == ValueMeta.TYPE_INTEGER );
+    assertTrue( outputFields.getValueMeta( 5 ).getType() == ValueMetaInterface.TYPE_INTEGER );
     assertTrue( outputFields.getValueMeta( 5 ).getName().equals( "count_any_field" ) );
-    assertTrue( outputFields.getValueMeta( 6 ).getType() == ValueMeta.TYPE_INTEGER );
+    assertTrue( outputFields.getValueMeta( 6 ).getType() == ValueMetaInterface.TYPE_INTEGER );
     assertTrue( outputFields.getValueMeta( 6 ).getName().equals( "count_all_field" ) );
-    assertTrue( outputFields.getValueMeta( 7 ).getType() == ValueMeta.TYPE_STRING );
+    assertTrue( outputFields.getValueMeta( 7 ).getType() == ValueMetaInterface.TYPE_STRING );
     assertTrue( outputFields.getValueMeta( 7 ).getName().equals( "concat_comma_field" ) );
-    assertTrue( outputFields.getValueMeta( 8 ).getType() == ValueMeta.TYPE_STRING );
+    assertTrue( outputFields.getValueMeta( 8 ).getType() == ValueMetaInterface.TYPE_STRING );
     assertTrue( outputFields.getValueMeta( 8 ).getName().equals( "concat_custom_field" ) );
   }
 

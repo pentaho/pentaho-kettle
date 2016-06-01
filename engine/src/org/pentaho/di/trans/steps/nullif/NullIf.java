@@ -23,8 +23,8 @@
 package org.pentaho.di.trans.steps.nullif;
 
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -51,6 +51,7 @@ public class NullIf extends BaseStep implements StepInterface {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
+  @Override
   public boolean processRow( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
     meta = (NullIfMeta) smi;
     data = (NullIfData) sdi;
@@ -82,8 +83,7 @@ public class NullIf extends BaseStep implements StepInterface {
         data.nullValueMeta[i] = data.outputRowMeta.getValueMeta( data.keynr[i] );
         // convert from input string entered by the user
         data.nullValue[i] =
-            data.nullValueMeta[i].convertData( new ValueMeta( null, ValueMetaInterface.TYPE_STRING ), meta
-                .getFields()[i].getFieldValue() );
+          data.nullValueMeta[i].convertData( new ValueMetaString(), meta.getFields()[i].getFieldValue() );
       }
     }
 
@@ -105,6 +105,7 @@ public class NullIf extends BaseStep implements StepInterface {
     return true;
   }
 
+  @Override
   public void dispose( StepMetaInterface smi, StepDataInterface sdi ) {
     meta = (NullIfMeta) smi;
     data = (NullIfData) sdi;
@@ -112,6 +113,7 @@ public class NullIf extends BaseStep implements StepInterface {
     super.dispose( smi, sdi );
   }
 
+  @Override
   public boolean init( StepMetaInterface smi, StepDataInterface sdi ) {
     meta = (NullIfMeta) smi;
     data = (NullIfData) sdi;

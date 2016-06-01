@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,7 +25,7 @@ package org.pentaho.di.lineage;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
 
@@ -38,7 +38,7 @@ import org.pentaho.di.trans.step.StepMeta;
  */
 public class ValueLineage {
   private TransMeta transMeta;
-  private ValueMeta valueMeta;
+  private ValueMetaInterface valueMeta;
 
   private List<StepMeta> sourceSteps;
 
@@ -47,7 +47,7 @@ public class ValueLineage {
    *
    * @param valueMeta
    */
-  public ValueLineage( TransMeta transMeta, ValueMeta valueMeta ) {
+  public ValueLineage( TransMeta transMeta, ValueMetaInterface valueMeta ) {
     this.transMeta = transMeta;
     this.valueMeta = valueMeta;
     this.sourceSteps = new ArrayList<StepMeta>();
@@ -71,7 +71,7 @@ public class ValueLineage {
   /**
    * @return the valueMeta
    */
-  public ValueMeta getValueMeta() {
+  public ValueMetaInterface getValueMeta() {
     return valueMeta;
   }
 
@@ -79,7 +79,7 @@ public class ValueLineage {
    * @param valueMeta
    *          the valueMeta to set
    */
-  public void setValueMeta( ValueMeta valueMeta ) {
+  public void setValueMeta( ValueMetaInterface valueMeta ) {
     this.valueMeta = valueMeta;
   }
 
