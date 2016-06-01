@@ -25,7 +25,7 @@ package org.pentaho.di.trans.steps.scriptvalues_mod;
 import org.junit.Test;
 import org.mozilla.javascript.EvaluatorException;
 
-import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
 
 public class ScriptValueAddFunctions_GetVariableScopeTest {
 

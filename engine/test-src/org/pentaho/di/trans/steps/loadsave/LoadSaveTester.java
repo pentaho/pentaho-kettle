@@ -82,8 +82,8 @@ public class LoadSaveTester<T extends StepMetaInterface> extends LoadSaveBase<T>
                          InitializerInterface<T> metaInitializerIFace ) {
       this( clazz, commonAttributes, new ArrayList<String>(), new ArrayList<String>(), getterMap, setterMap,
         fieldLoadSaveValidatorAttributeMap, fieldLoadSaveValidatorTypeMap, metaInitializerIFace );
-    }
-  
+  }
+
   public LoadSaveTester( Class<T> clazz, List<String> commonAttributes,
                          List<String> xmlAttributes, List<String> repoAttributes,
                          Map<String, String> getterMap, Map<String, String> setterMap ) {
@@ -105,6 +105,7 @@ public class LoadSaveTester<T extends StepMetaInterface> extends LoadSaveBase<T>
     return fieldLoadSaveValidatorFactory;
   }
 
+  @Override
   @SuppressWarnings( "unchecked" )
   protected Map<String, FieldLoadSaveValidator<?>> createValidatorMapAndInvokeSetters( List<String> attributes,
     T metaToSave ) {
@@ -140,6 +141,7 @@ public class LoadSaveTester<T extends StepMetaInterface> extends LoadSaveBase<T>
     }
   }
 
+  @Override
   protected void validateLoadedMeta( List<String> attributes, Map<String, FieldLoadSaveValidator<?>> validatorMap,
     T metaSaved, T metaLoaded ) {
     for ( String attribute : attributes ) {

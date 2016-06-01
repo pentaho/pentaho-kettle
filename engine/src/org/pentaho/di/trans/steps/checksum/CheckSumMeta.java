@@ -110,7 +110,7 @@ public class CheckSumMeta extends BaseStepMeta implements StepMetaInterface {
     } else {
       checksumtype = checksumtypeCodes[0];
     }
-    
+
   }
   public int getTypeByDesc() {
     if ( checksumtype == null ) {
