@@ -63,6 +63,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class WebServer {
+  private static final String DEFAULT_DETECTION_TIMER_PROPERTY = "pentaho.carte.detectionTimer";
+  private static final int DEFAULT_DETECTION_TIMER = 20000;
   private static Class<?> PKG = WebServer.class; // for i18n purposes, needed by Translator2!!
 
   private LogChannelInterface log;
@@ -436,7 +438,8 @@ public class WebServer {
         }
       }
     };
-    slaveMonitoringTimer.schedule( timerTask, 20000, 20000 );
+    int detectionTime = defaultDetectionTimer();
+    slaveMonitoringTimer.schedule( timerTask, detectionTime, detectionTime );
   }
 
   /**
@@ -518,4 +521,13 @@ public class WebServer {
     this.webServerShutdownHandler = webServerShutdownHandler;
   }
 
+  public int defaultDetectionTimer() {
+    String sDetectionTimer = System.getProperty( DEFAULT_DETECTION_TIMER_PROPERTY );
+
+    if ( sDetectionTimer != null ) {
+      return Integer.parseInt( sDetectionTimer );
+    } else {
+      return DEFAULT_DETECTION_TIMER;
+    }
+  }
 }
