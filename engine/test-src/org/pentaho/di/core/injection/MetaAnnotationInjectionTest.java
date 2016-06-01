@@ -38,6 +38,7 @@ import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.injection.bean.BeanInjectionInfo;
 import org.pentaho.di.core.injection.bean.BeanInjector;
+import org.pentaho.di.core.injection.inheritance.MetaBeanChild;
 import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.value.ValueMetaString;
@@ -166,6 +167,22 @@ public class MetaAnnotationInjectionTest {
     } catch ( Exception ex ) {
       ex.printStackTrace();
     }
+  }
+
+  @Test
+  public void testGenerics() throws Exception {
+    BeanInjectionInfo ri = new BeanInjectionInfo( MetaBeanChild.class );
+
+    assertTrue( ri.getProperties().size() == 7 );
+    assertTrue( ri.getProperties().containsKey( "BASE_ITEM_NAME" ) );
+    assertTrue( ri.getProperties().containsKey( "ITEM_CHILD_NAME" ) );
+    assertTrue( ri.getProperties().containsKey( "A" ) );
+    assertTrue( ri.getProperties().containsKey( "ITEM.BASE_ITEM_NAME" ) );
+    assertTrue( ri.getProperties().containsKey( "ITEM.ITEM_CHILD_NAME" ) );
+    assertTrue( ri.getProperties().containsKey( "SUB.BASE_ITEM_NAME" ) );
+    assertTrue( ri.getProperties().containsKey( "SUB.ITEM_CHILD_NAME" ) );
+
+    assertEquals( String.class, ri.getProperties().get( "A" ).getPropertyClass() );
   }
 
   private static BeanInjector buildBeanInjectorFor( Class<?> clazz ) {

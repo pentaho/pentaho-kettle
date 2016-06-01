@@ -110,7 +110,8 @@ public class BeanInjectionInfo {
     properties.put( prop.name, prop );
     Group gr = groupsMap.get( metaInj.group() );
     if ( gr == null ) {
-      throw new RuntimeException( "Group '" + metaInj.group() + "' is not defined " + clazz );
+      throw new RuntimeException( "Group '" + metaInj.group() + "' for property '" + metaInj.name()
+          + "' is not defined " + clazz );
     }
     gr.groupProperties.add( prop );
   }
@@ -177,6 +178,10 @@ public class BeanInjectionInfo {
 
     public String getDescription() {
       return BeanInjectionInfo.this.getDescription( name );
+    }
+
+    public Class<?> getPropertyClass() {
+      return path.get( path.size() - 1 ).leafClass;
     }
   }
 
