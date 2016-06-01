@@ -778,6 +778,8 @@
             haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.trans.steps.pentahoreporting.PentahoReportingOutputTest"
             haltonerror="false"/>
+      <test todir="${testreports.xml.dir}" name="org.pentaho.di.trans.steps.pentahoreporting.PDI7502IT"
+            haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.trans.steps.regexeval.RegexEvalTest"
             haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.trans.steps.rowgenerator.RowGeneratorTest"
@@ -811,8 +813,8 @@
             haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.trans.steps.gpload.GPLoadTest"
             haltonerror="false"/>
-    	<test todir="${testreports.xml.dir}" name="org.pentaho.di.trans.steps.rest.RestInputTest"
-    	            haltonerror="false"/>
+      <test todir="${testreports.xml.dir}" name="org.pentaho.di.trans.steps.rest.RestInputTest"
+            haltonerror="false"/>
     </junit>
     <junitreport todir="${testreports.html.dir}">
       <fileset dir="${testreports.xml.dir}">
