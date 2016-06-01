@@ -19,7 +19,8 @@
  * limitations under the License.
  *
  ******************************************************************************/
-package org.pentaho.di.trans.steps.salesforceinput;
+
+package org.pentaho.di.trans.steps.salesforce;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -40,8 +41,10 @@ import org.json.simple.JSONObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.trans.steps.salesforceinput.SalesforceInputMeta;
 import org.w3c.dom.Element;
 
 import com.sforce.soap.partner.AllOrNoneHeader;
@@ -77,8 +80,6 @@ public class SalesforceConnection {
   private String password;
   private String module;
   private int timeout;
-  private String condition;
-
   private SoapBindingStub binding;
   private LoginResult loginResult;
   private GetUserInfoResult userInfo;
@@ -103,7 +104,11 @@ public class SalesforceConnection {
    * Construct a new Salesforce Connection
    */
   public SalesforceConnection( LogChannelInterface logInterface, String url, String username, String password ) throws KettleException {
-    this.log = logInterface;
+    if ( logInterface == null ) {
+      this.log = KettleLogStore.getLogChannelInterfaceFactory().create( this );
+    } else {
+      this.log = logInterface;
+    }
     this.url = url;
     setUsername( username );
     setPassword( password );
@@ -115,7 +120,6 @@ public class SalesforceConnection {
     this.sql = null;
     this.serverTimestamp = null;
     this.qr = null;
-    this.condition = null;
     this.startDate = null;
     this.endDate = null;
     this.sObjects = null;
@@ -124,7 +128,7 @@ public class SalesforceConnection {
     this.queryResultSize = 0;
     this.recordsCount = 0;
     setUsingCompression( false );
-    rollbackAllChangesOnError( false );
+    setRollbackAllChangesOnError( false );
 
     // check target URL
     if ( Const.isEmpty( getURL() ) ) {
@@ -145,7 +149,16 @@ public class SalesforceConnection {
     return this.rollbackAllChangesOnError;
   }
 
+  /**
+   * 
+   * @see #isRollbackAllChangesOnError(boolean)
+   */
+  @Deprecated
   public void rollbackAllChangesOnError( boolean value ) {
+    setRollbackAllChangesOnError( value );
+  }
+
+  public void setRollbackAllChangesOnError( boolean value ) {
     this.rollbackAllChangesOnError = value;
   }
 
@@ -153,7 +166,16 @@ public class SalesforceConnection {
     return this.queryAll;
   }
 
+  /**
+   * 
+   * @see #setQueryAll(boolean)
+   */
+  @Deprecated
   public void queryAll( boolean value ) {
+    setQueryAll( value );
+  }
+
+  public void setQueryAll( boolean value ) {
     this.queryAll = value;
   }
 
@@ -169,18 +191,10 @@ public class SalesforceConnection {
     }
     // Calculate difference in days
     long diffDays =
-      ( this.startDate.getTime().getTime() - this.endDate.getTime().getTime() ) / ( 24 * 60 * 60 * 1000 );
+      ( this.endDate.getTime().getTime() - this.startDate.getTime().getTime() ) / ( 24 * 60 * 60 * 1000 );
     if ( diffDays > 30 ) {
       throw new KettleException( BaseMessages.getString( PKG, "SalesforceInput.Error.StartDateTooOlder" ) );
     }
-  }
-
-  public void setCondition( String condition ) {
-    this.condition = condition;
-  }
-
-  public String getCondition() {
-    return this.condition;
   }
 
   public void setSQL( String sql ) {
@@ -215,6 +229,11 @@ public class SalesforceConnection {
     return this.qr;
   }
 
+  public void createBinding() throws ServiceException {
+    if ( this.binding == null ) {
+      this.binding = (SoapBindingStub) new SforceServiceLocator().getSoap();
+    }
+  }
   public SoapBindingStub getBinding() {
     return this.binding;
   }
@@ -251,46 +270,36 @@ public class SalesforceConnection {
     this.password = value;
   }
 
-  /**
-   * It is extracted method for test goal, should use only for test purpose
-   * 
-   * @return SoapBindingStub - new soap binding stub 
-   * @throws ServiceException
-   */
-  protected SoapBindingStub getSoapBinding() throws ServiceException {
-    return (SoapBindingStub) new SforceServiceLocator().getSoap();
-  }
-
   public void connect() throws KettleException {
     try {
-      this.binding = getSoapBinding();
+      createBinding();
       if ( log.isDetailed() ) {
-        log.logDetailed( BaseMessages.getString( PKG, "SalesforceInput.Log.LoginURL", binding
+        log.logDetailed( BaseMessages.getString( PKG, "SalesforceInput.Log.LoginURL", getBinding()
           ._getProperty( SoapBindingStub.ENDPOINT_ADDRESS_PROPERTY ) ) );
       }
 
       // Set timeout
       if ( getTimeOut() > 0 ) {
-        this.binding.setTimeout( getTimeOut() );
+        getBinding().setTimeout( getTimeOut() );
         if ( log.isDebug() ) {
           log.logDebug( BaseMessages.getString( PKG, "SalesforceInput.Log.SettingTimeout", "" + this.timeout ) );
         }
       }
 
       // Set URL
-      this.binding._setProperty( SoapBindingStub.ENDPOINT_ADDRESS_PROPERTY, getURL() );
+      getBinding()._setProperty( SoapBindingStub.ENDPOINT_ADDRESS_PROPERTY, getURL() );
 
       // Do we need compression?
       if ( isUsingCompression() ) {
-        this.binding._setProperty( HTTPConstants.MC_ACCEPT_GZIP, useCompression );
-        this.binding._setProperty( HTTPConstants.MC_GZIP_REQUEST, useCompression );
+        getBinding()._setProperty( HTTPConstants.MC_ACCEPT_GZIP, useCompression );
+        getBinding()._setProperty( HTTPConstants.MC_GZIP_REQUEST, useCompression );
       }
       if ( isRollbackAllChangesOnError() ) {
         // Set the SOAP header to rollback all changes
         // unless all records are processed successfully.
         AllOrNoneHeader allOrNoneHeader = new AllOrNoneHeader();
         allOrNoneHeader.setAllOrNone( true );
-        this.binding.setHeader(
+        getBinding().setHeader(
           new SforceServiceLocator().getServiceName().getNamespaceURI(), "AllOrNoneHeader", allOrNoneHeader );
       }
       // Attempt the login giving the user feedback
@@ -301,9 +310,6 @@ public class SalesforceConnection {
         log.logDetailed( BaseMessages.getString( PKG, "SalesforceInput.Log.LoginUsername", getUsername() ) );
         if ( getModule() != null ) {
           log.logDetailed( BaseMessages.getString( PKG, "SalesforceInput.Log.LoginModule", getModule() ) );
-        }
-        if ( getCondition() != null ) {
-          log.logDetailed( BaseMessages.getString( PKG, "SalesforceInput.Log.LoginCondition", getCondition() ) );
         }
         log.logDetailed( "<-----------------------------------------" );
       }
@@ -319,16 +325,16 @@ public class SalesforceConnection {
       }
 
       // set the session header for subsequent call authentication
-      this.binding._setProperty( SoapBindingStub.ENDPOINT_ADDRESS_PROPERTY, this.loginResult.getServerUrl() );
+      getBinding()._setProperty( SoapBindingStub.ENDPOINT_ADDRESS_PROPERTY, this.loginResult.getServerUrl() );
 
       // Create a new session header object and set the session id to that
       // returned by the login
       SessionHeader sh = new SessionHeader();
       sh.setSessionId( loginResult.getSessionId() );
-      this.binding.setHeader( new SforceServiceLocator().getServiceName().getNamespaceURI(), "SessionHeader", sh );
+      getBinding().setHeader( new SforceServiceLocator().getServiceName().getNamespaceURI(), "SessionHeader", sh );
 
       // Return the user Infos
-      this.userInfo = this.binding.getUserInfo();
+      this.userInfo = getBinding().getUserInfo();
       if ( log.isDebug() ) {
         log.logDebug( BaseMessages.getString( PKG, "SalesforceInput.Log.UserInfos" )
           + " : " + this.userInfo.getUserFullName() );

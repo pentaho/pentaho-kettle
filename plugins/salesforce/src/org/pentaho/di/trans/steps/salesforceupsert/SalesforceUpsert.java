@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,6 +23,7 @@
 package org.pentaho.di.trans.steps.salesforceupsert;
 
 import java.util.ArrayList;
+
 import org.apache.axis.message.MessageElement;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
@@ -32,12 +33,11 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.trans.step.BaseStep;
 import org.pentaho.di.trans.step.StepDataInterface;
-import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
-import org.pentaho.di.trans.steps.salesforceinput.SalesforceConnection;
+import org.pentaho.di.trans.steps.salesforce.SalesforceConnection;
+import org.pentaho.di.trans.steps.salesforce.SalesforceStep;
 import org.pentaho.di.trans.steps.salesforceutils.SalesforceUtils;
 
 import com.google.common.annotations.VisibleForTesting;
@@ -49,7 +49,7 @@ import com.sforce.soap.partner.sobject.SObject;
  * @author jstairs,Samatar
  * @since 10-06-2007
  */
-public class SalesforceUpsert extends BaseStep implements StepInterface {
+public class SalesforceUpsert extends SalesforceStep {
   private static Class<?> PKG = SalesforceUpsertMeta.class; // for i18n purposes, needed by Translator2!!
 
   private SalesforceUpsertMeta meta;
@@ -146,7 +146,7 @@ public class SalesforceUpsert extends BaseStep implements StepInterface {
 
         // build the SObject
         SObject sobjPass = new SObject();
-        sobjPass.setType( data.realModule );
+        sobjPass.setType( data.connection.getModule() );
         if ( upsertfields.size() > 0 ) {
           sobjPass.set_any( upsertfields.toArray( new MessageElement[upsertfields.size()] ) );
         }
@@ -286,36 +286,13 @@ public class SalesforceUpsert extends BaseStep implements StepInterface {
     if ( super.init( smi, sdi ) ) {
 
       try {
-        data.realModule = environmentSubstitute( meta.getModule() );
-        // Check if module is specified
-        if ( Const.isEmpty( data.realModule ) ) {
-          log.logError( BaseMessages.getString( PKG, "SalesforceUpsertDialog.ModuleMissing.DialogMessage" ) );
-          return false;
-        }
-
-        String realUser = environmentSubstitute( meta.getUserName() );
-        // Check if username is specified
-        if ( Const.isEmpty( realUser ) ) {
-          log.logError( BaseMessages.getString( PKG, "SalesforceUpsertDialog.UsernameMissing.DialogMessage" ) );
-          return false;
-        }
-
         String salesfoceIdFieldname = environmentSubstitute( meta.getSalesforceIDFieldName() );
         if ( !Const.isEmpty( salesfoceIdFieldname ) ) {
           data.realSalesforceFieldName = salesfoceIdFieldname;
         }
 
-        // initialize variables
-        data.realURL = environmentSubstitute( meta.getTargetURL() );
-        // create a Salesforce connection
-        data.connection =
-          new SalesforceConnection( log, data.realURL, realUser, environmentSubstitute( meta.getPassword() ) );
-        // set timeout
-        data.connection.setTimeOut( Const.toInt( environmentSubstitute( meta.getTimeOut() ), 0 ) );
-        // Do we use compression?
-        data.connection.setUsingCompression( meta.isUsingCompression() );
         // Do we need to rollback all changes on error
-        data.connection.rollbackAllChangesOnError( meta.isRollbackAllChangesOnError() );
+        data.connection.setRollbackAllChangesOnError( meta.isRollbackAllChangesOnError() );
         // Now connect ...
         data.connection.connect();
         return true;
@@ -329,21 +306,12 @@ public class SalesforceUpsert extends BaseStep implements StepInterface {
   }
 
   public void dispose( StepMetaInterface smi, StepDataInterface sdi ) {
-    meta = (SalesforceUpsertMeta) smi;
-    data = (SalesforceUpsertData) sdi;
-    try {
-      if ( data.outputBuffer != null ) {
-        data.outputBuffer = null;
-      }
-      if ( data.sfBuffer != null ) {
-        data.sfBuffer = null;
-      }
-      if ( data.connection != null ) {
-        data.connection.close();
-      }
-    } catch ( Exception e ) { /* Ignore */
+    if ( data.outputBuffer != null ) {
+      data.outputBuffer = null;
+    }
+    if ( data.sfBuffer != null ) {
+      data.sfBuffer = null;
     }
     super.dispose( smi, sdi );
   }
-
 }

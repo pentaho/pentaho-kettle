@@ -19,14 +19,16 @@
  * limitations under the License.
  *
  ******************************************************************************/
-package org.pentaho.di.trans.steps.salesforceinput;
+package org.pentaho.di.trans.steps.salesforce;
 
 import static org.junit.Assert.*;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
 
 import java.rmi.RemoteException;
 import java.util.Calendar;
 
+import org.apache.axis.transport.http.HTTPConstants;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -39,8 +41,11 @@ import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.util.EnvUtil;
 
+import com.sforce.soap.partner.AllOrNoneHeader;
 import com.sforce.soap.partner.GetServerTimestampResult;
+import com.sforce.soap.partner.GetUserInfoResult;
 import com.sforce.soap.partner.LoginResult;
+import com.sforce.soap.partner.SforceServiceLocator;
 import com.sforce.soap.partner.SoapBindingStub;
 import com.sforce.soap.partner.fault.InvalidIdFault;
 import com.sforce.soap.partner.fault.LoginFault;
@@ -56,7 +61,8 @@ public class SalesforceConnectionIT {
   public static void setUpClass() throws KettleException {
     PluginRegistry.addPluginType( TwoWayPasswordEncoderPluginType.getInstance() );
     PluginRegistry.init();
-    String passwordEncoderPluginID = Const.NVL( EnvUtil.getSystemProperty( Const.KETTLE_PASSWORD_ENCODER_PLUGIN ), "Kettle" );
+    String passwordEncoderPluginID =
+        Const.NVL( EnvUtil.getSystemProperty( Const.KETTLE_PASSWORD_ENCODER_PLUGIN ), "Kettle" );
     Encr.init( passwordEncoderPluginID );
   }
 
@@ -88,7 +94,7 @@ public class SalesforceConnectionIT {
     SalesforceConnection connection;
     try {
       connection = spy( new SalesforceConnection( logInterface, url, username, password ) );
-      doReturn( bindingStub ).when( connection ).getSoapBinding();
+      doReturn( bindingStub ).when( connection ).getBinding();
       ArgumentCaptor<String> captorUser = ArgumentCaptor.forClass( String.class );
       ArgumentCaptor<String> captorPassword = ArgumentCaptor.forClass( String.class );
 
@@ -101,4 +107,48 @@ public class SalesforceConnectionIT {
     }
   }
 
+  @Test
+  public void testConnectOptions() {
+    LogChannelInterface logInterface = mock( LogChannelInterface.class );
+    String url = "http://localhost";
+    String username = "username";
+    String password = "password";
+    Integer timeout = 30;
+    SalesforceConnection connection;
+    LoginResult loginResult;
+    GetServerTimestampResult serverTime;
+    GetUserInfoResult userInfo;
+    try {
+      connection = spy( new SalesforceConnection( logInterface, url, username, password ) );
+      bindingStub = spy( new SoapBindingStub() );
+      loginResult = mock( LoginResult.class );
+      userInfo = mock( GetUserInfoResult.class );
+      serverTime = new GetServerTimestampResult( Calendar.getInstance() );
+      doReturn( bindingStub ).when( connection ).getBinding();
+      doReturn( loginResult ).when( bindingStub ).login( anyString(), anyString() );
+      doReturn( userInfo ).when( bindingStub ).getUserInfo();
+      when( loginResult.getServerUrl() ).thenReturn( "http://localhost/serverUrl" );
+      when( loginResult.getSessionId() ).thenReturn( "UnitTestSession" );
+      when( userInfo.getUserFullName() ).thenReturn( "My Full Name" );
+      when( userInfo.getUserEmail() ).thenReturn( "MyEmail@pentaho.org" );
+      when( userInfo.getUserLanguage() ).thenReturn( "1s and 0s" );
+      when( userInfo.getOrganizationName() ).thenReturn( "Pentaho Salesforce Plugin Developers" );
+      doReturn( serverTime ).when( bindingStub ).getServerTimestamp();
+
+      connection.setTimeOut( timeout );
+      connection.setUsingCompression( true );
+      connection.setRollbackAllChangesOnError( true );
+      connection.connect();
+
+      assertEquals( timeout.intValue(), bindingStub.getTimeout() );
+      assertTrue( (boolean) bindingStub._getProperty( HTTPConstants.MC_ACCEPT_GZIP ) );
+      assertTrue( (boolean) bindingStub._getProperty( HTTPConstants.MC_GZIP_REQUEST ) );
+      AllOrNoneHeader headerObject = (AllOrNoneHeader)
+        bindingStub.getHeader( new SforceServiceLocator().getServiceName().getNamespaceURI(), "AllOrNoneHeader" )
+          .getObjectValue();
+      assertTrue( headerObject.isAllOrNone() );
+    } catch ( Exception e ) {
+      fail( "Connection fail: " + e.getMessage() );
+    }
+  }
 }

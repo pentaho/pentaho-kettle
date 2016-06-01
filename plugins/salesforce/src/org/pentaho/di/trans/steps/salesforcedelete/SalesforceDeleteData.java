@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,9 +23,7 @@
 package org.pentaho.di.trans.steps.salesforcedelete;
 
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.trans.step.BaseStepData;
-import org.pentaho.di.trans.step.StepDataInterface;
-import org.pentaho.di.trans.steps.salesforceinput.SalesforceConnection;
+import org.pentaho.di.trans.steps.salesforce.SalesforceStepData;
 
 import com.sforce.soap.partner.DeleteResult;
 
@@ -33,14 +31,10 @@ import com.sforce.soap.partner.DeleteResult;
  * @author Samatar
  * @since 10-06-2007
  */
-public class SalesforceDeleteData extends BaseStepData implements StepDataInterface {
+public class SalesforceDeleteData extends SalesforceStepData {
   public RowMetaInterface inputRowMeta;
   public RowMetaInterface outputRowMeta;
 
-  public String realURL;
-  public String realModule;
-
-  public SalesforceConnection connection;
   public DeleteResult[] deleteResult;
 
   public String[] deleteId;
@@ -52,10 +46,7 @@ public class SalesforceDeleteData extends BaseStepData implements StepDataInterf
   public SalesforceDeleteData() {
     super();
 
-    connection = null;
-    realURL = null;
     deleteResult = null;
-    realModule = null;
     iBufferPos = 0;
     indexOfKeyField = -1;
   }

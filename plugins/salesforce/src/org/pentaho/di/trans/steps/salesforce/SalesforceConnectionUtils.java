@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -20,9 +20,10 @@
  *
  ******************************************************************************/
 
-package org.pentaho.di.trans.steps.salesforceinput;
+package org.pentaho.di.trans.steps.salesforce;
 
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.trans.steps.salesforceinput.SalesforceInputMeta;
 
 public class SalesforceConnectionUtils {
 

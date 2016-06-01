@@ -20,40 +20,26 @@
  *
  ******************************************************************************/
 
-package org.pentaho.di.trans.steps.salesforceinsert;
+package org.pentaho.di.trans.steps.salesforceupsert;
 
-import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.trans.steps.salesforce.SalesforceStepData;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
-import com.sforce.soap.partner.SaveResult;
-import com.sforce.soap.partner.sobject.SObject;
+import org.junit.Test;
 
-/*
- * @author Samatar
- * @since 10-06-2007
- */
-public class SalesforceInsertData extends SalesforceStepData {
-  public RowMetaInterface inputRowMeta;
-  public RowMetaInterface outputRowMeta;
+public class SalesforceUpsertDataTest {
 
-  public int nrfields;
-  public int[] fieldnrs;
-
-  public SaveResult[] saveResult;
-
-  public SObject[] sfBuffer;
-  public Object[][] outputBuffer;
-  public int iBufferPos;
-
-  public String realSalesforceFieldName;
-
-  public SalesforceInsertData() {
-    super();
-
-    nrfields = 0;
-
-    saveResult = null;
-    realSalesforceFieldName = null;
-    iBufferPos = 0;
+  @Test
+  public void testConstructor() {
+    SalesforceUpsertData data = new SalesforceUpsertData();
+    assertNull( data.inputRowMeta );
+    assertNull( data.outputRowMeta );
+    assertEquals( 0, data.nrfields );
+    assertNull( data.fieldnrs );
+    assertNull( data.upsertResult );
+    assertNull( data.sfBuffer );
+    assertNull( data.outputBuffer );
+    assertEquals( 0, data.iBufferPos );
+    assertNull( data.realSalesforceFieldName );
   }
 }
