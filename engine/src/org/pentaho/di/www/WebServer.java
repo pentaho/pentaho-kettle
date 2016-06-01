@@ -63,7 +63,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class WebServer {
-  private static final String DEFAULT_DETECTION_TIMER_PROPERTY = "pentaho.crate.detectionTimer";
+  private static final String DEFAULT_DETECTION_TIMER_PROPERTY = "pentaho.carte.detectionTimer";
   private static final int DEFAULT_DETECTION_TIMER = 20000;
   private static Class<?> PKG = WebServer.class; // for i18n purposes, needed by Translator2!!
 

@@ -16,7 +16,7 @@ public class CarteTest {
   @Test
   public void test() throws Exception {
 
-    System.setProperty( "pentaho.crate.detectionTimer", "100" );
+    System.setProperty( "pentaho.carte.detectionTimer", "100" );
 
     SlaveServer master = new SlaveServer();
     master.setHostname( "127.0.0.1" );
