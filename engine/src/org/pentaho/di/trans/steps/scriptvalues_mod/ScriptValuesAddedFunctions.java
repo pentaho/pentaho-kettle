@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -1801,35 +1801,35 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
   }
 
   public static void setVariable( Context actualContext, Scriptable actualObject, Object[] arguments,
-    Function functionContext ) {
+                                  Function functionContext ) {
 
     if ( arguments.length != 3 ) {
       throw Context.reportRuntimeError( "The function call setVariable requires 3 arguments." );
     }
 
-      Object stepObject = Context.jsToJava( actualObject.get( "_step_", actualObject ), StepInterface.class );
-      if ( stepObject instanceof StepInterface ) {
-        StepInterface step = (StepInterface) stepObject;
-        Trans trans = step.getTrans();
-        final String variableName = Context.toString( arguments[ 0 ] );
-        final String variableValue = Context.toString( arguments[ 1 ] );
-        final VariableScope variableScope = getVariableScope( Context.toString( arguments[ 2 ] ) );
+    Object stepObject = Context.jsToJava( actualObject.get( "_step_", actualObject ), StepInterface.class );
+    if ( stepObject instanceof StepInterface ) {
+      StepInterface step = (StepInterface) stepObject;
+      Trans trans = step.getTrans();
+      final String variableName = Context.toString( arguments[ 0 ] );
+      final String variableValue = Context.toString( arguments[ 1 ] );
+      final VariableScope variableScope = getVariableScope( Context.toString( arguments[ 2 ] ) );
 
-        switch( variableScope ) {
-          case PARENT:
-            setParentScopeVariable( trans, variableName, variableValue );
-            break;
-          case GRAND_PARENT:
-            setGrandParentScopeVariable( trans, variableName, variableValue );
-            break;
-          case ROOT:
-            setRootScopeVariable( trans, variableName, variableValue );
-            break;
-          case SYSTEM:
-            setSystemScopeVariable( trans, variableName, variableValue );
-            break;
-        }
+      switch ( variableScope ) {
+        case PARENT:
+          setParentScopeVariable( trans, variableName, variableValue );
+          break;
+        case GRAND_PARENT:
+          setGrandParentScopeVariable( trans, variableName, variableValue );
+          break;
+        case ROOT:
+          setRootScopeVariable( trans, variableName, variableValue );
+          break;
+        case SYSTEM:
+          setSystemScopeVariable( trans, variableName, variableValue );
+          break;
       }
+    }
   }
 
   static void setRootScopeVariable( Trans trans, String variableName, String variableValue ) {
@@ -1859,7 +1859,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
     }
   }
 
-   static void setGrandParentScopeVariable( Trans trans, String variableName, String variableValue ) {
+  static void setGrandParentScopeVariable( Trans trans, String variableName, String variableValue ) {
     trans.setVariable( variableName, variableValue );
 
     VariableSpace parentSpace = trans.getParentVariableSpace();
@@ -1890,7 +1890,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 
   // Returning EnvironmentVar
   public static String getVariable( Context actualContext, Scriptable actualObject, Object[] ArgList,
-    Function FunctionContext ) {
+                                    Function FunctionContext ) {
     String sRC = "";
     String sArg1 = "";
     String sArg2 = "";
@@ -1902,12 +1902,12 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
         if ( scmO instanceof StepInterface ) {
           StepInterface scm = (StepInterface) Context.jsToJava( scmO, StepInterface.class );
 
-          sArg1 = Context.toString( ArgList[0] );
-          sArg2 = Context.toString( ArgList[1] );
+          sArg1 = Context.toString( ArgList[ 0 ] );
+          sArg2 = Context.toString( ArgList[ 1 ] );
           return scm.getVariable( sArg1, sArg2 );
         } else {
           // running via the Test button in a dialog
-          sArg2 = Context.toString( ArgList[1] );
+          sArg2 = Context.toString( ArgList[ 1 ] );
           return sArg2;
         }
       } catch ( Exception e ) {
