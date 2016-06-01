@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -29,6 +29,7 @@ import java.util.Date;
 import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
@@ -42,8 +43,8 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.pentahoreporting.PentahoReportingOutputMeta.ProcessorType;
 import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
 import org.pentaho.reporting.engine.classic.core.MasterReport;
+import org.pentaho.reporting.engine.classic.core.modules.gui.common.StatusType;
 import org.pentaho.reporting.engine.classic.core.modules.gui.csv.CSVTableExportTask;
-import org.pentaho.reporting.engine.classic.core.modules.gui.html.HtmlDirExportTask;
 import org.pentaho.reporting.engine.classic.core.modules.gui.html.HtmlStreamExportTask;
 import org.pentaho.reporting.engine.classic.core.modules.gui.pdf.PdfExportTask;
 import org.pentaho.reporting.engine.classic.core.modules.gui.rtf.RTFExportTask;
@@ -78,6 +79,7 @@ public class PentahoReportingOutput extends BaseStep implements StepInterface {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
+  @Override
   public boolean processRow( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
     meta = (PentahoReportingOutputMeta) smi;
     data = (PentahoReportingOutputData) sdi;
@@ -228,31 +230,33 @@ public class PentahoReportingOutput extends BaseStep implements StepInterface {
       ModifiableConfiguration modifiableConfiguration = (ModifiableConfiguration) report.getConfiguration();
       String property;
       Runnable exportTask;
-      switch( outputProcessorType ) {
+      PentahoReportingSwingGuiContext context = new PentahoReportingSwingGuiContext();
+
+      switch ( outputProcessorType ) {
         case PDF:
           property = "org.pentaho.reporting.engine.classic.core.modules.gui.pdf.TargetFileName";
           modifiableConfiguration.setConfigProperty( property, targetFilename );
-          exportTask = new PdfExportTask( report, null, null );
+          exportTask = new PdfExportTask( report, null, context );
           break;
         case CSV:
           property = "org.pentaho.reporting.engine.classic.core.modules.gui.csv.FileName";
           modifiableConfiguration.setConfigProperty( property, targetFilename );
-          exportTask = new CSVTableExportTask( report, null, null );
+          exportTask = new CSVTableExportTask( report, null, context );
           break;
         case Excel:
           property = "org.pentaho.reporting.engine.classic.core.modules.gui.xls.FileName";
           modifiableConfiguration.setConfigProperty( property, targetFilename );
-          exportTask = new ExcelExportTask( report, null, null );
+          exportTask = new ExcelExportTask( report, null, context );
           break;
         case Excel_2007:
           property = "org.pentaho.reporting.engine.classic.core.modules.gui.xls.FileName";
           modifiableConfiguration.setConfigProperty( property, targetFilename );
-          exportTask = new XSSFExcelExportTask( report, null, null );
+          exportTask = new XSSFExcelExportTask( report, null, context );
           break;
         case StreamingHTML:
           property = "org.pentaho.reporting.engine.classic.core.modules.gui.html.stream.TargetFileName";
           modifiableConfiguration.setConfigProperty( property, targetFilename );
-          exportTask = new HtmlStreamExportTask( report, null, null );
+          exportTask = new HtmlStreamExportTask( report, null, context );
           break;
         case PagedHTML:
           HtmlReportUtil.createDirectoryHTML( report, targetFilename );
@@ -262,7 +266,7 @@ public class PentahoReportingOutput extends BaseStep implements StepInterface {
         case RTF:
           property = "org.pentaho.reporting.engine.classic.core.modules.gui.rtf.FileName";
           modifiableConfiguration.setConfigProperty( property, targetFilename );
-          exportTask = new RTFExportTask( report, null, null );
+          exportTask = new RTFExportTask( report, null, context );
           break;
         default:
           exportTask = null;
@@ -273,6 +277,14 @@ public class PentahoReportingOutput extends BaseStep implements StepInterface {
         exportTask.run();
       }
 
+      if ( context.getStatusType() == StatusType.ERROR ) {
+        KettleVFS.getFileObject( targetFilename, getTransMeta() ).delete();
+        if ( context.getCause() != null ) {
+          throw context.getCause();
+        }
+        throw new KettleStepException( context.getMessage() );
+      }
+
       ResultFile resultFile =
         new ResultFile(
           ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject( targetFilename, getTransMeta() ),
@@ -280,7 +292,7 @@ public class PentahoReportingOutput extends BaseStep implements StepInterface {
       resultFile.setComment( "This file was created with a Pentaho Reporting Output step" );
       addResultFile( resultFile );
 
-    } catch ( Exception e ) {
+    } catch ( Throwable e ) {
 
       throw new KettleException( BaseMessages.getString(
         PKG, "PentahoReportingOutput.Exception.UnexpectedErrorRenderingReport", sourceFilename, targetFilename,
