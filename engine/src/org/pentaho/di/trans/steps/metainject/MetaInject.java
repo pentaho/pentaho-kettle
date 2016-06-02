@@ -22,18 +22,6 @@
 
 package org.pentaho.di.trans.steps.metainject;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.RowMetaAndData;
@@ -60,6 +48,18 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInjectionInterface;
 import org.pentaho.di.trans.step.StepMetaInterface;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 /**
  * Read a simple CSV file Just output Strings found in the file...
@@ -115,30 +115,6 @@ public class MetaInject extends BaseStep implements StepInterface {
     for ( String targetStep : data.stepInjectionMap.keySet() ) {
       if ( !data.stepInjectionMetasMap.containsKey( targetStep ) ) {
         oldInjection( targetStep );
-      }
-    }
-
-    if ( log.isDetailed() ) {
-      logDetailed( "XML of transformation after injection: " + data.transMeta.getXML() );
-    }
-    String targetFile = environmentSubstitute( meta.getTargetFile() );
-    if ( !Const.isEmpty( targetFile ) ) {
-      OutputStream os = null;
-      try {
-        os = KettleVFS.getOutputStream( targetFile, false );
-        os.write( XMLHandler.getXMLHeader().getBytes( Const.XML_ENCODING ) );
-        os.write( data.transMeta.getXML().getBytes( Const.XML_ENCODING ) );
-      } catch ( IOException e ) {
-        throw new KettleException( "Unable to write target file (ktr after injection) to file '" + targetFile + "'",
-            e );
-      } finally {
-        if ( os != null ) {
-          try {
-            os.close();
-          } catch ( Exception e ) {
-            throw new KettleException( e );
-          }
-        }
       }
     }
 
@@ -215,11 +191,40 @@ public class MetaInject extends BaseStep implements StepInterface {
       copyResult( injectTrans );
     }
 
+    // let the transformation complete it's execution to allow for any customizations to MDI to happen in the init methods of steps
+    if ( log.isDetailed() ) {
+      logDetailed( "XML of transformation after injection: " + data.transMeta.getXML() );
+    }
+    String targetFile = environmentSubstitute( meta.getTargetFile() );
+    if ( !Const.isEmpty( targetFile ) ) {
+      writeInjectedKtr( targetFile );
+    }
+
     // All done!
 
     setOutputDone();
 
     return false;
+  }
+
+  private void writeInjectedKtr( String targetFile ) throws KettleException {
+    OutputStream os = null;
+    try {
+      os = KettleVFS.getOutputStream( targetFile, false );
+      os.write( XMLHandler.getXMLHeader().getBytes( Const.XML_ENCODING ) );
+      os.write( data.transMeta.getXML().getBytes( Const.XML_ENCODING ) );
+    } catch ( IOException e ) {
+      throw new KettleException( "Unable to write target file (ktr after injection) to file '" + targetFile + "'",
+        e );
+    } finally {
+      if ( os != null ) {
+        try {
+          os.close();
+        } catch ( Exception e ) {
+          throw new KettleException( e );
+        }
+      }
+    }
   }
 
   private void newInjection( String targetStep, StepMetaInterface targetStepMeta ) throws KettleException {
