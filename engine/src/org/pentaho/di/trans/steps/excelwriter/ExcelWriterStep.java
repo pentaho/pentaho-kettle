@@ -772,6 +772,9 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
           data.wb.setSheetName( data.wb.getSheetIndex( data.sheet ), data.realSheetname );
           // unhide sheet in case it was hidden
           data.wb.setSheetHidden( data.wb.getSheetIndex( data.sheet ), false );
+          if ( meta.isTemplateSheetHidden() ) {
+            data.wb.setSheetHidden( data.wb.getSheetIndex( ts ), true );
+          }
         } else {
           // no template to use, simply create a new sheet
 
