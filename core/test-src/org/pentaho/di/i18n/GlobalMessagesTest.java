@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -26,6 +26,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.Locale;
 import java.util.ResourceBundle;
+import java.util.UUID;
 
 import org.junit.Test;
 
@@ -61,5 +62,14 @@ public class GlobalMessagesTest {
 
     res = GlobalMessages.getBundle( Locale.CHINA, "org/pentaho/di/i18n/messages/test_utf8_messages" );
     assertEquals( "选择一个环境变量", res.getString( "System.Dialog.SelectEnvironmentVar.Title" ) );
+  }
+
+  /*
+   * to validate the format of an unmatched string
+   */
+  @Test
+  public void testUnmatchedString() {
+    String messageId = UUID.randomUUID().toString();
+    assertEquals( "!" + messageId + "!", GlobalMessages.getInstance().getString( messageId ) );
   }
 }
