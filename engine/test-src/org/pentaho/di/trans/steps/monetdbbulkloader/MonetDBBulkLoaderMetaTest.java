@@ -95,13 +95,15 @@ public class MonetDBBulkLoaderMetaTest implements InitializerInterface<StepMetaI
 
     List<String> attributes =
         Arrays.asList( "dbConnectionName", "schemaName", "tableName", "logFile", "fieldSeparator", "fieldEnclosure",
-            "NULLrepresentation", "encoding", "truncate", "fullyQuoteSQL", "autoSchema", "autoStringWidths", "fieldTable", "fieldStream",
+            "NULLrepresentation", "encoding", "truncate", "fullyQuoteSQL", "fieldTable", "fieldStream",
             "fieldFormatOk" );
 
     // Important note - the "databaseMeta" is not tested here as it's tied to the dbConnectionName. Since the loader
     // has assymetry here, we have to not test the databaseMeta, or we have to do surgery on the MonetDBBulkLoaderMeta
     // so that it's symmetric (and has no dependent variables like this).
     // MB -5/2016
+
+    // Note - autoSchema is not persisted and neither is autoStringWidths. (Old functionality).
 
     FieldLoadSaveValidator<String[]> stringArrayLoadSaveValidator =
         new ArrayLoadSaveValidator<String>( new StringLoadSaveValidator(), 5 );
