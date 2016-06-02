@@ -22,9 +22,7 @@
 
 package org.pentaho.di.trans.steps.mappinginput;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
 import static org.junit.Assert.fail;
-import org.pentaho.di.core.row.ValueMetaInterface;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -33,11 +31,13 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.plugins.PluginRegistry;
+import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
 import org.pentaho.di.trans.steps.loadsave.validator.ArrayLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
@@ -50,7 +50,7 @@ import org.pentaho.di.trans.steps.mapping.MappingValueRename;
  */
 public class MappingInputMetaCloningTest {
 
-  LoadSaveTester loadSaveTester;
+  LoadSaveTester<MappingInputMeta> loadSaveTester;
 
   @Test
   public void clonesCorrectly() throws Exception {
@@ -70,7 +70,8 @@ public class MappingInputMetaCloningTest {
         + "%s\n"
         + "\tCloned object:\n"
         + "%s";
-      fail( String.format( template, ToStringBuilder.reflectionToString( meta ), ToStringBuilder.reflectionToString( clone ) ) );
+      fail( String.format( template, ToStringBuilder.reflectionToString( meta ),
+        ToStringBuilder.reflectionToString( clone ) ) );
     }
   }
 
@@ -79,7 +80,8 @@ public class MappingInputMetaCloningTest {
     KettleEnvironment.init();
     PluginRegistry.init( true );
     List<String> attributes =
-        Arrays.asList( "selectingAndSortingUnspecifiedFields", "fieldName", "fieldType", "fieldLength", "fieldPrecision" );
+      Arrays.asList( "selectingAndSortingUnspecifiedFields", "fieldName", "fieldType", "fieldLength",
+        "fieldPrecision" );
 
     Map<String, String> getterMap = new HashMap<String, String>() {
       {
@@ -106,9 +108,11 @@ public class MappingInputMetaCloningTest {
     attrValidatorMap.put( "fieldName", stringArrayLoadSaveValidator );
 
     Map<String, FieldLoadSaveValidator<?>> typeValidatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();
-    typeValidatorMap.put( int[].class.getCanonicalName(), new PrimitiveIntArrayLoadSaveValidator( new NonZeroIntLoadSaveValidator( 6 ), 5 ) );
+    typeValidatorMap.put( int[].class.getCanonicalName(),
+      new PrimitiveIntArrayLoadSaveValidator( new NonZeroIntLoadSaveValidator( 6 ), 5 ) );
 
-    loadSaveTester = new LoadSaveTester( MappingInputMeta.class, attributes, getterMap, setterMap, attrValidatorMap, typeValidatorMap );
+    loadSaveTester = new LoadSaveTester<MappingInputMeta>( MappingInputMeta.class, attributes, getterMap,
+      setterMap, attrValidatorMap, typeValidatorMap );
   }
 
   @Test
