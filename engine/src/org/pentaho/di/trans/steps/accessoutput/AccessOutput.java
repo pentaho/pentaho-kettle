@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -41,8 +41,6 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 
-import com.healthmarketscience.jackcess.Database;
-
 /**
  * Writes rows to a database table.
  *
@@ -75,7 +73,7 @@ public class AccessOutput extends BaseStep implements StepInterface {
 
     if ( first && meta.isDoNotOpenNewFileInit() ) {
       try {
-        if ( !OpenFile() ) {
+        if ( !openFile() ) {
           return false;
         }
 
@@ -126,15 +124,15 @@ public class AccessOutput extends BaseStep implements StepInterface {
         if ( data.table == null ) {
           if ( meta.isTableCreated() ) {
             // Create the table
-            data.columns = AccessOutputMeta.getColumns( data.outputRowMeta );
-            data.db.createTable( realTablename, data.columns );
-            data.table = data.db.getTable( realTablename );
+            data.createTable( realTablename, data.outputRowMeta );
           } else {
             logError( BaseMessages.getString( PKG, "AccessOutput.Error.TableDoesNotExist", realTablename ) );
             setErrors( 1 );
             stopAll();
             return false;
           }
+        } else if ( meta.isTableTruncated() ) {
+          data.truncateTable();
         }
         // All OK: we have an open database and a table to write to.
         //
@@ -157,11 +155,11 @@ public class AccessOutput extends BaseStep implements StepInterface {
       data.rows.add( columnValues );
       if ( meta.getCommitSize() > 0 ) {
         if ( data.rows.size() >= meta.getCommitSize() ) {
-          data.table.addRows( data.rows );
+          data.addRowsToTable( data.rows );
           data.rows.clear();
         }
       } else {
-        data.table.addRow( columnValues );
+        data.addRowToTable( columnValues );
       }
     } catch ( IOException e ) {
       logError( BaseMessages.getString(
@@ -182,7 +180,7 @@ public class AccessOutput extends BaseStep implements StepInterface {
     if ( super.init( smi, sdi ) ) {
       if ( !meta.isDoNotOpenNewFileInit() ) {
         try {
-          return OpenFile();
+          return openFile();
 
         } catch ( Exception e ) {
           logError( "An error occurred intialising this step: " + e.getMessage() );
@@ -196,7 +194,7 @@ public class AccessOutput extends BaseStep implements StepInterface {
     return false;
   }
 
-  private boolean OpenFile() throws Exception {
+  boolean openFile() throws Exception {
     data.oneFileOpened = true;
     String realFilename = environmentSubstitute( meta.getFilename() );
     if ( log.isBasic() ) {
@@ -208,13 +206,13 @@ public class AccessOutput extends BaseStep implements StepInterface {
     // First open or create the access file
     if ( !file.exists() ) {
       if ( meta.isFileCreated() ) {
-        data.db = Database.create( file );
+        data.createDatabase( file );
       } else {
         logError( BaseMessages.getString( PKG, "AccessOutput.InitError.FileDoesNotExist", realFilename ) );
         return false;
       }
     } else {
-      data.db = Database.open( file );
+      data.openDatabase( file );
     }
 
     // Add the filename to the result object...
@@ -236,14 +234,14 @@ public class AccessOutput extends BaseStep implements StepInterface {
       try {
         // Put the last records in the table as well!
         if ( data.table != null ) {
-          data.table.addRows( data.rows );
+          data.addRowsToTable( data.rows );
         }
 
         // Just for good measure.
         data.rows.clear();
 
         if ( data.db != null ) {
-          data.db.close();
+          data.closeDatabase();
         }
       } catch ( IOException e ) {
         logError( "Error closing the database: " + e.toString() );
