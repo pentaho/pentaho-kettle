@@ -30,6 +30,7 @@ import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.provider.local.LocalFile;
 import org.apache.poi.openxml4j.opc.OPCPackage;
 import org.apache.poi.poifs.filesystem.NPOIFSFileSystem;
+import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.pentaho.di.core.exception.KettleException;
@@ -44,6 +45,7 @@ public class PoiWorkbook implements KWorkbook {
   private LogChannelInterface log;
 
   private Workbook workbook;
+  private FormulaEvaluator evaluator;
   private String filename;
   private String encoding;
   // for PDI-10251 we need direct access to streams
@@ -77,6 +79,7 @@ public class PoiWorkbook implements KWorkbook {
         internalIS = KettleVFS.getInputStream( filename );
         workbook = org.apache.poi.ss.usermodel.WorkbookFactory.create( internalIS );
       }
+      evaluator = workbook.getCreationHelper().createFormulaEvaluator();
     } catch ( Exception e ) {
       throw new KettleException( e );
     }
@@ -87,6 +90,7 @@ public class PoiWorkbook implements KWorkbook {
 
     try {
       workbook = org.apache.poi.ss.usermodel.WorkbookFactory.create( inputStream );
+      evaluator = workbook.getCreationHelper().createFormulaEvaluator();
     } catch ( Exception e ) {
       throw new KettleException( e );
     }
@@ -115,7 +119,7 @@ public class PoiWorkbook implements KWorkbook {
     if ( sheet == null ) {
       return null;
     }
-    return new PoiSheet( sheet );
+    return new PoiSheet( sheet, evaluator );
   }
 
   public String[] getSheetNames() {
@@ -144,7 +148,7 @@ public class PoiWorkbook implements KWorkbook {
     if ( sheet == null ) {
       return null;
     }
-    return new PoiSheet( sheet );
+    return new PoiSheet( sheet, evaluator );
   }
 
   public String getSheetName( int sheetNr ) {

@@ -27,16 +27,16 @@ import java.util.TimeZone;
 
 import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.apache.poi.ss.usermodel.Row;
 import org.pentaho.di.core.spreadsheet.KCell;
 import org.pentaho.di.core.spreadsheet.KCellType;
 
 public class PoiCell implements KCell {
-
   private Cell cell;
 
-  public PoiCell( Cell cell ) {
-    this.cell = cell;
+  public PoiCell( Cell cell, FormulaEvaluator evaluator ) {
+    this.cell = evaluator.evaluateInCell(cell);
   }
 
   public KCellType getType() {
