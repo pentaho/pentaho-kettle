@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -34,14 +34,13 @@ public class SequenceMetaTests {
   @Test
   public void testSupport() {
 
-    // According to our Meta, Oracle, PostGres,
-    // Greenplum and Vertica support sequences
     DatabaseInterface[] support = new DatabaseInterface[] {
       new AS400DatabaseMeta(),
       new DB2DatabaseMeta(),
       new GreenplumDatabaseMeta(),
       new HypersonicDatabaseMeta(),
       new KingbaseESDatabaseMeta(),
+      new MonetDBDatabaseMeta(),
       new MSSQLServerDatabaseMeta(),
       new MSSQLServerNativeDatabaseMeta(),
       new NetezzaDatabaseMeta(),
@@ -53,7 +52,6 @@ public class SequenceMetaTests {
       new Vertica5DatabaseMeta(),
     };
 
-    // the rest of the database metas say they don't support sequences
     DatabaseInterface[] doNotSupport = new DatabaseInterface[] {
       new CacheDatabaseMeta(),
       new DbaseDatabaseMeta(),
@@ -70,16 +68,13 @@ public class SequenceMetaTests {
       new InformixDatabaseMeta(),
       new IngresDatabaseMeta(),
       new InterbaseDatabaseMeta(),
-      //new KettleDatabaseMeta(),
       new LucidDBDatabaseMeta(),
       new MondrianNativeDatabaseMeta(),
-      new MonetDBDatabaseMeta(),
       new MSAccessDatabaseMeta(),
       new MySQLDatabaseMeta(),
       new NeoviewDatabaseMeta(),
       new RemedyActionRequestSystemDatabaseMeta(),
       new SAPDBDatabaseMeta(),
-      new SAPR3DatabaseMeta(),
       new SQLiteDatabaseMeta(),
       new SybaseDatabaseMeta(),
       new SybaseIQDatabaseMeta(),
@@ -97,9 +92,9 @@ public class SequenceMetaTests {
     }
   }
 
-  private static void assertSupports( DatabaseInterface db, boolean expected ) {
+  public static void assertSupports( DatabaseInterface db, boolean expected ) {
     String dbType = db.getClass().getSimpleName();
-    if (expected) {
+    if ( expected ) {
       assertTrue( dbType, db.supportsSequences() );
       assertFalse( dbType + ": List of Sequences", Const.isEmpty( db.getSQLListOfSequences() ) );
       assertFalse( dbType + ": Sequence Exists", Const.isEmpty( db.getSQLSequenceExists( "testSeq" ) ) );
@@ -177,6 +172,15 @@ public class SequenceMetaTests {
     databaseInterface = new KingbaseESDatabaseMeta();
     assertEquals( "SELECT nextval('sequence_name')", databaseInterface.getSQLNextSequenceValue( sequenceName ) );
     assertEquals( "SELECT currval('sequence_name')", databaseInterface.getSQLCurrentSequenceValue( sequenceName ) );
+
+    databaseInterface = new MonetDBDatabaseMeta();
+    assertEquals( "SELECT next_value_for( 'sys', 'sequence_name' )", databaseInterface
+      .getSQLNextSequenceValue( sequenceName ) );
+    assertEquals( "SELECT get_value_for( 'sys', 'sequence_name' )", databaseInterface
+      .getSQLCurrentSequenceValue( sequenceName ) );
+    assertEquals( "SELECT name FROM sys.sequences", databaseInterface.getSQLListOfSequences() );
+    assertEquals( "SELECT * FROM sys.sequences WHERE name = 'sequence_name'", databaseInterface
+      .getSQLSequenceExists( sequenceName ) );
 
     databaseInterface = new MSSQLServerDatabaseMeta();
     assertEquals( "SELECT NEXT VALUE FOR sequence_name",
@@ -259,10 +263,6 @@ public class SequenceMetaTests {
     assertEquals( "", databaseInterface.getSQLNextSequenceValue( sequenceName ) );
     assertEquals( "", databaseInterface.getSQLCurrentSequenceValue( sequenceName ) );
 
-    databaseInterface = new MonetDBDatabaseMeta();
-    assertEquals( "", databaseInterface.getSQLNextSequenceValue( sequenceName ) );
-    assertEquals( "", databaseInterface.getSQLCurrentSequenceValue( sequenceName ) );
-
     databaseInterface = new MSAccessDatabaseMeta();
     assertEquals( "", databaseInterface.getSQLNextSequenceValue( sequenceName ) );
     assertEquals( "", databaseInterface.getSQLCurrentSequenceValue( sequenceName ) );
@@ -276,10 +276,6 @@ public class SequenceMetaTests {
     assertEquals( "", databaseInterface.getSQLCurrentSequenceValue( sequenceName ) );
 
     databaseInterface = new SAPDBDatabaseMeta();
-    assertEquals( "", databaseInterface.getSQLNextSequenceValue( sequenceName ) );
-    assertEquals( "", databaseInterface.getSQLCurrentSequenceValue( sequenceName ) );
-
-    databaseInterface = new SAPR3DatabaseMeta();
     assertEquals( "", databaseInterface.getSQLNextSequenceValue( sequenceName ) );
     assertEquals( "", databaseInterface.getSQLCurrentSequenceValue( sequenceName ) );
 
