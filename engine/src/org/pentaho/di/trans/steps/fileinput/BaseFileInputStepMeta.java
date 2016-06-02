@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -43,7 +43,8 @@ import org.pentaho.di.trans.step.StepMeta;
  *
  * @author Alexander Buloichik
  */
-public abstract class BaseFileInputStepMeta extends BaseStepMeta {
+public abstract class BaseFileInputStepMeta<A extends BaseFileInputStepMeta.AdditionalOutputFields, I extends BaseFileInputStepMeta.InputFiles<? extends BaseFileInputField>>
+    extends BaseStepMeta {
   private Class<?> PKG = this.getClass(); // for i18n purposes, needed by Translator2!!
 
   public static final String[] RequiredFilesCode = new String[] { "N", "Y" };
@@ -57,16 +58,16 @@ public abstract class BaseFileInputStepMeta extends BaseStepMeta {
           "System.Combo.Yes" ) };
 
   @InjectionDeep
-  public InputFiles inputFiles = new InputFiles();
+  public I inputFiles;
   @InjectionDeep
   public ErrorHandling errorHandling = new ErrorHandling();
   @InjectionDeep
-  public AdditionalOutputFields additionalOutputFields = new AdditionalOutputFields();
+  public A additionalOutputFields;
 
   /**
    * Input files settings.
    */
-  public static class InputFiles implements Cloneable {
+  public static class InputFiles<F extends BaseFileInputField> implements Cloneable {
 
     /** Array of filenames */
     @Injection( name = "FILENAME", group = "FILENAME_LINES" )
@@ -106,7 +107,7 @@ public abstract class BaseFileInputStepMeta extends BaseStepMeta {
 
     /** The fields to import... */
     @InjectionDeep
-    public BaseFileInputField[] inputFields = {};
+    public F[] inputFields;
 
     /** The add filenames to result filenames flag */
     @Injection( name = "ADD_FILES_TO_RESULT" )
