@@ -578,15 +578,15 @@ public class JobMeta extends AbstractMeta
 
     StringBuilder retval = new StringBuilder( 500 );
 
-    retval.append( "<" ).append( XML_TAG ).append( ">" ).append( Const.CR );
+    retval.append( XMLHandler.openTag( XML_TAG ) ).append( Const.CR );
 
     retval.append( "  " ).append( XMLHandler.addTagValue( "name", getName() ) );
 
-    retval.append( "    " ).append( XMLHandler.addTagValue( "description", description ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "extended_description", extendedDescription ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "job_version", jobVersion ) );
+    retval.append( "  " ).append( XMLHandler.addTagValue( "description", description ) );
+    retval.append( "  " ).append( XMLHandler.addTagValue( "extended_description", extendedDescription ) );
+    retval.append( "  " ).append( XMLHandler.addTagValue( "job_version", jobVersion ) );
     if ( jobStatus >= 0 ) {
-      retval.append( "    " ).append( XMLHandler.addTagValue( "job_status", jobStatus ) );
+      retval.append( "  " ).append( XMLHandler.addTagValue( "job_status", jobStatus ) );
     }
 
     retval.append( "  " ).append( XMLHandler.addTagValue( "directory",
@@ -599,18 +599,18 @@ public class JobMeta extends AbstractMeta
     retval.append( "    " ).append( XMLHandler.openTag( XML_TAG_PARAMETERS ) ).append( Const.CR );
     String[] parameters = listParameters();
     for ( int idx = 0; idx < parameters.length; idx++ ) {
-      retval.append( "        " ).append( XMLHandler.openTag( "parameter" ) ).append( Const.CR );
-      retval.append( "            " ).append( XMLHandler.addTagValue( "name", parameters[idx] ) );
+      retval.append( "      " ).append( XMLHandler.openTag( "parameter" ) ).append( Const.CR );
+      retval.append( "        " ).append( XMLHandler.addTagValue( "name", parameters[idx] ) );
       try {
-        retval.append( "            " )
+        retval.append( "        " )
             .append( XMLHandler.addTagValue( "default_value", getParameterDefault( parameters[idx] ) ) );
-        retval.append( "            " )
+        retval.append( "        " )
             .append( XMLHandler.addTagValue( "description", getParameterDescription( parameters[idx] ) ) );
       } catch ( UnknownParamException e ) {
         // skip the default value and/or description. This exception should never happen because we use listParameters()
         // above.
       }
-      retval.append( "        " ).append( XMLHandler.closeTag( "parameter" ) ).append( Const.CR );
+      retval.append( "      " ).append( XMLHandler.closeTag( "parameter" ) ).append( Const.CR );
     }
     retval.append( "    " ).append( XMLHandler.closeTag( XML_TAG_PARAMETERS ) ).append( Const.CR );
 
@@ -632,7 +632,7 @@ public class JobMeta extends AbstractMeta
     retval.append( "    " ).append( XMLHandler.openTag( XML_TAG_SLAVESERVERS ) ).append( Const.CR );
     for ( int i = 0; i < slaveServers.size(); i++ ) {
       SlaveServer slaveServer = slaveServers.get( i );
-      retval.append( "         " ).append( slaveServer.getXML() ).append( Const.CR );
+      retval.append( slaveServer.getXML() );
     }
     retval.append( "    " ).append( XMLHandler.closeTag( XML_TAG_SLAVESERVERS ) ).append( Const.CR );
 
@@ -645,33 +645,33 @@ public class JobMeta extends AbstractMeta
     retval.append( "   " ).append( XMLHandler.addTagValue( "pass_batchid", batchIdPassed ) );
     retval.append( "   " ).append( XMLHandler.addTagValue( "shared_objects_file", sharedObjectsFile ) );
 
-    retval.append( "  <entries>" ).append( Const.CR );
+    retval.append( "  " ).append( XMLHandler.openTag( "entries" ) ).append( Const.CR );
     for ( int i = 0; i < nrJobEntries(); i++ ) {
       JobEntryCopy jge = getJobEntry( i );
       jge.getEntry().setRepository( repository );
       retval.append( jge.getXML() );
     }
-    retval.append( "  </entries>" ).append( Const.CR );
+    retval.append( "  " ).append( XMLHandler.closeTag( "entries" ) ).append( Const.CR );
 
-    retval.append( "  <hops>" ).append( Const.CR );
+    retval.append( "  " ).append( XMLHandler.openTag( "hops" ) ).append( Const.CR );
     for ( JobHopMeta hi : jobhops ) {
       // Look at all the hops
       retval.append( hi.getXML() );
     }
-    retval.append( "  </hops>" ).append( Const.CR );
+    retval.append( "  " ).append( XMLHandler.closeTag( "hops" ) ).append( Const.CR );
 
-    retval.append( "  <notepads>" ).append( Const.CR );
+    retval.append( "  " ).append( XMLHandler.openTag( "notepads" ) ).append( Const.CR );
     for ( int i = 0; i < nrNotes(); i++ ) {
       NotePadMeta ni = getNote( i );
       retval.append( ni.getXML() );
     }
-    retval.append( "  </notepads>" ).append( Const.CR );
+    retval.append( "  " ).append( XMLHandler.closeTag( "notepads" ) ).append( Const.CR );
 
     // Also store the attribute groups
     //
-    retval.append( AttributesUtil.getAttributesXml( attributesMap ) ).append( Const.CR );
+    retval.append( AttributesUtil.getAttributesXml( attributesMap ) );
 
-    retval.append( "</" ).append( XML_TAG ).append( ">" ).append( Const.CR );
+    retval.append( XMLHandler.closeTag( XML_TAG ) ).append( Const.CR );
 
     return retval.toString();
   }

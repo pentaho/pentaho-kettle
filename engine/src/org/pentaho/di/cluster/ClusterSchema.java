@@ -159,22 +159,22 @@ public class ClusterSchema extends ChangedFlag implements Cloneable, SharedObjec
   public String getXML() {
     StringBuilder xml = new StringBuilder( 500 );
 
-    xml.append( "        <" ).append( XML_TAG ).append( ">" ).append( Const.CR );
+    xml.append( "      " ).append( XMLHandler.openTag( XML_TAG ) ).append( Const.CR );
 
-    xml.append( "          " ).append( XMLHandler.addTagValue( "name", name ) );
-    xml.append( "          " ).append( XMLHandler.addTagValue( "base_port", basePort ) );
-    xml.append( "          " ).append( XMLHandler.addTagValue( "sockets_buffer_size", socketsBufferSize ) );
-    xml.append( "          " ).append( XMLHandler.addTagValue( "sockets_flush_interval", socketsFlushInterval ) );
-    xml.append( "          " ).append( XMLHandler.addTagValue( "sockets_compressed", socketsCompressed ) );
-    xml.append( "          " ).append( XMLHandler.addTagValue( "dynamic", dynamic ) );
+    xml.append( "        " ).append( XMLHandler.addTagValue( "name", name ) );
+    xml.append( "        " ).append( XMLHandler.addTagValue( "base_port", basePort ) );
+    xml.append( "        " ).append( XMLHandler.addTagValue( "sockets_buffer_size", socketsBufferSize ) );
+    xml.append( "        " ).append( XMLHandler.addTagValue( "sockets_flush_interval", socketsFlushInterval ) );
+    xml.append( "        " ).append( XMLHandler.addTagValue( "sockets_compressed", socketsCompressed ) );
+    xml.append( "        " ).append( XMLHandler.addTagValue( "dynamic", dynamic ) );
 
-    xml.append( "          <slaveservers>" ).append( Const.CR );
+    xml.append( "        " ).append( XMLHandler.openTag( "slaveservers" ) ).append( Const.CR );
     for ( int i = 0; i < slaveServers.size(); i++ ) {
       SlaveServer slaveServer = slaveServers.get( i );
-      xml.append( "            " ).append( XMLHandler.addTagValue( "name", slaveServer.getName() ) );
+      xml.append( "          " ).append( XMLHandler.addTagValue( "name", slaveServer.getName() ) );
     }
-    xml.append( "          </slaveservers>" ).append( Const.CR );
-    xml.append( "        </" ).append( XML_TAG ).append( ">" ).append( Const.CR );
+    xml.append( "        " ).append( XMLHandler.closeTag( "slaveservers" ) ).append( Const.CR );
+    xml.append( "      " ).append( XMLHandler.closeTag( XML_TAG ) ).append( Const.CR );
     return xml.toString();
   }
 

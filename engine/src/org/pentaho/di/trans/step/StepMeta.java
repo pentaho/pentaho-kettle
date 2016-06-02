@@ -201,7 +201,7 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
   public String getXML( boolean includeInterface ) throws KettleException {
     StringBuilder retval = new StringBuilder( 200 );
 
-    retval.append( "  <" ).append( XML_TAG ).append( '>' ).append( Const.CR );
+    retval.append( "  " ).append( XMLHandler.openTag( XML_TAG ) ).append( Const.CR );
     retval.append( "    " ).append( XMLHandler.addTagValue( "name", getName() ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "type", getStepID() ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "description", description ) );
@@ -222,35 +222,35 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
 
     retval.append( AttributesUtil.getAttributesXml( attributesMap ) );
 
-    retval.append( "     " ).append( XMLHandler.addTagValue( "cluster_schema", clusterSchema == null ? ""
+    retval.append( "    " ).append( XMLHandler.addTagValue( "cluster_schema", clusterSchema == null ? ""
         : clusterSchema.getName() ) );
 
-    retval.append( " <remotesteps>" );
+    retval.append( "    " ).append( XMLHandler.openTag( "remotesteps" ) ).append( Const.CR );
     // Output the remote input steps
     List<RemoteStep> inputSteps = new ArrayList<RemoteStep>( remoteInputSteps );
     Collections.sort( inputSteps ); // sort alphabetically, making it easier to compare XML files
-    retval.append( "   <input>" );
+    retval.append( "      " ).append( XMLHandler.openTag( "input" ) ).append( Const.CR );
     for ( RemoteStep remoteStep : inputSteps ) {
       retval.append( "      " ).append( remoteStep.getXML() ).append( Const.CR );
     }
-    retval.append( "   </input>" );
+    retval.append( "      " ).append( XMLHandler.closeTag( "input" ) ).append( Const.CR );
 
     // Output the remote output steps
     List<RemoteStep> outputSteps = new ArrayList<RemoteStep>( remoteOutputSteps );
     Collections.sort( outputSteps ); // sort alphabetically, making it easier to compare XML files
-    retval.append( "   <output>" );
+    retval.append( "      " ).append( XMLHandler.openTag( "output" ) ).append( Const.CR );
     for ( RemoteStep remoteStep : outputSteps ) {
       retval.append( "      " ).append( remoteStep.getXML() ).append( Const.CR );
     }
-    retval.append( "   </output>" );
-    retval.append( " </remotesteps>" );
+    retval.append( "      " ).append( XMLHandler.closeTag( "output" ) ).append( Const.CR );
+    retval.append( "    " ).append( XMLHandler.closeTag( "remotesteps" ) ).append( Const.CR );
 
-    retval.append( "    <GUI>" ).append( Const.CR );
-    retval.append( "      <xloc>" ).append( location.x ).append( "</xloc>" ).append( Const.CR );
-    retval.append( "      <yloc>" ).append( location.y ).append( "</yloc>" ).append( Const.CR );
-    retval.append( "      <draw>" ).append( ( drawstep ? "Y" : "N" ) ).append( "</draw>" ).append( Const.CR );
-    retval.append( "      </GUI>" ).append( Const.CR );
-    retval.append( "    </" + XML_TAG + ">" ).append( Const.CR ).append( Const.CR );
+    retval.append( "    " ).append( XMLHandler.openTag( "GUI" ) ).append( Const.CR );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "xloc", location.x ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "yloc", location.y ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "draw", drawstep ? "Y" : "N" ) );
+    retval.append( "    " ).append( XMLHandler.closeTag( "GUI" ) ).append( Const.CR );
+    retval.append( "    " ).append( XMLHandler.closeTag( XML_TAG ) ).append( Const.CR ).append( Const.CR );
 
     return retval.toString();
   }

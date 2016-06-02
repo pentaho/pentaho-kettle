@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -104,7 +104,7 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
 
     retval.append( AttributesUtil.getAttributesXml( attributesMap ) );
 
-    retval.append( "      " ).append( XMLHandler.closeTag( XML_TAG ) ).append( Const.CR );
+    retval.append( "    " ).append( XMLHandler.closeTag( XML_TAG ) ).append( Const.CR );
     return retval.toString();
   }
 
