@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -199,7 +199,7 @@ public class SlaveStepCopyPartitionDistribution {
   public String getXML() {
     StringBuilder xml = new StringBuilder( 200 );
 
-    xml.append( XMLHandler.openTag( XML_TAG ) ).append( Const.CR );
+    xml.append( "  " ).append( XMLHandler.openTag( XML_TAG ) ).append( Const.CR );
 
     List<SlaveStepCopy> list = new ArrayList<SlaveStepCopy>( distribution.keySet() );
     Collections.sort( list );
@@ -207,26 +207,26 @@ public class SlaveStepCopyPartitionDistribution {
     for ( SlaveStepCopy copy : list ) {
       int partition = getPartition( copy );
 
-      xml.append( "  " ).append( XMLHandler.openTag( "entry" ) );
-      xml.append( "  " ).append( XMLHandler.addTagValue( "slavename", copy.slaveServerName, false ) );
+      xml.append( "    " ).append( XMLHandler.openTag( "entry" ) ).append( Const.CR );
+      xml.append( "      " ).append( XMLHandler.addTagValue( "slavename", copy.slaveServerName ) );
       xml
-        .append( "  " ).append(
-          XMLHandler.addTagValue( "partition_schema_name", copy.partitionSchemaName, false ) );
-      xml.append( "  " ).append( XMLHandler.addTagValue( "stepcopy", copy.stepCopyNr, false ) );
-      xml.append( "  " ).append( XMLHandler.addTagValue( "partition", partition, false ) );
+        .append( "      " ).append(
+          XMLHandler.addTagValue( "partition_schema_name", copy.partitionSchemaName ) );
+      xml.append( "      " ).append( XMLHandler.addTagValue( "stepcopy", copy.stepCopyNr ) );
+      xml.append( "      " ).append( XMLHandler.addTagValue( "partition", partition ) );
 
-      xml.append( XMLHandler.closeTag( "entry" ) ).append( Const.CR );
+      xml.append( "    " ).append( XMLHandler.closeTag( "entry" ) ).append( Const.CR );
     }
 
     if ( originalPartitionSchemas != null ) {
-      xml.append( "  " ).append( XMLHandler.openTag( "original-partition-schemas" ) );
+      xml.append( "    " ).append( XMLHandler.openTag( "original-partition-schemas" ) ).append( Const.CR );
       for ( PartitionSchema partitionSchema : originalPartitionSchemas ) {
         xml.append( partitionSchema.getXML() );
       }
-      xml.append( "  " ).append( XMLHandler.closeTag( "original-partition-schemas" ) );
+      xml.append( "    " ).append( XMLHandler.closeTag( "original-partition-schemas" ) ).append( Const.CR );
     }
 
-    xml.append( XMLHandler.closeTag( XML_TAG ) ).append( Const.CR );
+    xml.append( "  " ).append( XMLHandler.closeTag( XML_TAG ) ).append( Const.CR );
 
     return xml.toString();
   }

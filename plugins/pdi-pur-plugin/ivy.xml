@@ -117,9 +117,9 @@
     <dependency org="org.mortbay.jetty" name="jetty-util" rev="6.1.21" transitive="false" conf="test->default" />
 
     <!-- jersey -->
-    <dependency org="com.sun.jersey.contribs" name="jersey-multipart"     rev="1.19.1" transitive="false" conf="compile->default"/>
-    <dependency org="com.sun.jersey.contribs" name="jersey-apache-client" rev="1.19.1" transitive="false" conf="compile->default"/>
-    <dependency org="com.sun.jersey"          name="jersey-bundle"        rev="1.19.1" transitive="false" conf="compile->default"/>
+    <dependency org="com.sun.jersey.contribs" name="jersey-multipart"     rev="1.16" transitive="false" conf="compile->default"/>
+    <dependency org="com.sun.jersey.contribs" name="jersey-apache-client" rev="1.16" transitive="false" conf="compile->default"/>
+    <dependency org="com.sun.jersey"          name="jersey-bundle"        rev="1.16" transitive="false" conf="compile->default"/>
 
     <!-- To support Enunciate Annotations in Resource classes 1.21.1 -->
     <dependency org="org.codehaus.enunciate" name="enunciate-core-annotations" rev="1.28"/>

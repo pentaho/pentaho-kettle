@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,15 +27,16 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 
-import junit.framework.TestCase;
-
 import org.pentaho.di.core.row.value.ValueMetaString;
+
+import junit.framework.TestCase;
 
 /**
  * Test functionality in ValueMeta
  *
  * @author sboden
  */
+@SuppressWarnings( "deprecation" )
 public class ValueMetaTest extends TestCase {
   /**
    * Compare to byte arrays for equality.

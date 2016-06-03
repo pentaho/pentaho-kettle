@@ -24,7 +24,7 @@ package org.pentaho.di.trans.steps.fieldsplitter;
 
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.injection.InjectionTypeConverter;
-import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 
 /**
  * Converter for field types.
@@ -33,6 +33,6 @@ public class DataTypeConverter extends InjectionTypeConverter {
 
   @Override
   public int string2intPrimitive( String v ) throws KettleValueException {
-    return ValueMeta.getType( v );
+    return ValueMetaFactory.getIdForValueMeta( v );
   }
 }

@@ -184,11 +184,11 @@ public class CreditCardValidatorMeta extends BaseStepMeta implements StepMetaInt
   public String getXML() {
     StringBuilder retval = new StringBuilder();
 
-    retval.append( "    " + XMLHandler.addTagValue( "fieldname", fieldname ) );
-    retval.append( "    " + XMLHandler.addTagValue( "resultfieldname", resultfieldname ) );
-    retval.append( "    " + XMLHandler.addTagValue( "cardtype", cardtype ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "fieldname", fieldname ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "resultfieldname", resultfieldname ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "cardtype", cardtype ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "onlydigits", onlydigits ) );
-    retval.append( "    " + XMLHandler.addTagValue( "notvalidmsg", notvalidmsg ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "notvalidmsg", notvalidmsg ) );
 
     return retval.toString();
   }

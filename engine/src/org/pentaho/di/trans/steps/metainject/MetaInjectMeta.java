@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -159,14 +159,17 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface, S
   }
 
   // TODO: deep copy
+  @Override
   public Object clone() {
     Object retval = super.clone();
     return retval;
   }
 
+  @Override
   public void setDefault() {
   }
 
+  @Override
   public String getXML() {
     actualizeMetaInjectMapping();
     StringBuilder retval = new StringBuilder( 500 );
@@ -196,8 +199,10 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface, S
     retval.append( "    " ).append( XMLHandler.addTagValue( TARGET_FILE, targetFile ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( NO_EXECUTION, noExecution ) );
 
-    retval.append( "    " ).append( XMLHandler.addTagValue( STREAM_SOURCE_STEP, streamSourceStep == null ? null
-        : streamSourceStep.getName() ) );
+    if ( ( streamSourceStepname == null ) &&  ( streamSourceStep != null ) ) {
+      streamSourceStepname = streamSourceStep.getName();
+    }
+    retval.append( "    " ).append( XMLHandler.addTagValue( STREAM_SOURCE_STEP, streamSourceStepname ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( STREAM_TARGET_STEP, streamTargetStepname ) );
 
     retval.append( "    " ).append( XMLHandler.openTag( MAPPINGS ) );
@@ -216,6 +221,7 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface, S
     return retval.toString();
   }
 
+  @Override
   public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     try {
 
@@ -266,6 +272,7 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface, S
     }
   }
 
+  @Override
   public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
     throws KettleException {
     try {
@@ -278,6 +285,8 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface, S
       directoryPath = rep.getStepAttributeString( id_step, DIRECTORY_PATH );
 
       sourceStepName = rep.getStepAttributeString( id_step, SOURCE_STEP );
+      streamSourceStepname = rep.getStepAttributeString( id_step, STREAM_SOURCE_STEP );
+      streamTargetStepname = rep.getStepAttributeString( id_step, STREAM_TARGET_STEP );
       sourceOutputFields = new ArrayList<MetaInjectOutputField>();
       int nrSourceOutputFields = rep.countNrStepAttributes( id_step, SOURCE_OUTPUT_FIELD_NAME );
       for ( int i = 0; i < nrSourceOutputFields; i++ ) {
@@ -308,6 +317,7 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface, S
     }
   }
 
+  @Override
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
     throws KettleException {
     try {
@@ -320,11 +330,15 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface, S
       rep.saveStepAttribute( id_transformation, id_step, DIRECTORY_PATH, directoryPath );
 
       rep.saveStepAttribute( id_transformation, id_step, SOURCE_STEP, sourceStepName );
-      for ( MetaInjectOutputField field : sourceOutputFields ) {
-        rep.saveStepAttribute( id_transformation, id_step, SOURCE_OUTPUT_FIELD_NAME, field.getName() );
-        rep.saveStepAttribute( id_transformation, id_step, SOURCE_OUTPUT_FIELD_TYPE, field.getTypeDescription() );
-        rep.saveStepAttribute( id_transformation, id_step, SOURCE_OUTPUT_FIELD_LENGTH, field.getLength() );
-        rep.saveStepAttribute( id_transformation, id_step, SOURCE_OUTPUT_FIELD_PRECISION, field.getPrecision() );
+      rep.saveStepAttribute( id_transformation, id_step, STREAM_SOURCE_STEP, streamSourceStepname );
+      rep.saveStepAttribute( id_transformation, id_step, STREAM_TARGET_STEP, streamTargetStepname );
+      MetaInjectOutputField aField = null;
+      for ( int i = 0; i <  sourceOutputFields.size(); i++ ) {
+        aField = sourceOutputFields.get( i );
+        rep.saveStepAttribute( id_transformation, id_step, i, SOURCE_OUTPUT_FIELD_NAME, aField.getName() );
+        rep.saveStepAttribute( id_transformation, id_step, i, SOURCE_OUTPUT_FIELD_TYPE, aField.getTypeDescription() );
+        rep.saveStepAttribute( id_transformation, id_step, i, SOURCE_OUTPUT_FIELD_LENGTH, aField.getLength() );
+        rep.saveStepAttribute( id_transformation, id_step, i, SOURCE_OUTPUT_FIELD_PRECISION, aField.getPrecision() );
       }
 
       rep.saveStepAttribute( id_transformation, id_step, TARGET_FILE, targetFile );
@@ -346,6 +360,7 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface, S
     }
   }
 
+  @Override
   public void getFields( RowMetaInterface rowMeta, String origin, RowMetaInterface[] info, StepMeta nextStep,
       VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
 
@@ -361,11 +376,13 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface, S
     }
   }
 
+  @Override
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta tr,
       Trans trans ) {
     return new MetaInject( stepMeta, stepDataInterface, cnr, tr, trans );
   }
 
+  @Override
   public StepDataInterface getStepData() {
     return new MetaInjectData();
   }
@@ -668,6 +685,7 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface, S
   /**
    * @return The objects referenced in the step, like a mapping, a transformation, a job, ...
    */
+  @Override
   public String[] getReferencedObjectDescriptions() {
     return new String[] { BaseMessages.getString( PKG, "MetaInjectMeta.ReferencedObject.Description" ), };
   }
@@ -677,6 +695,7 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface, S
         .isEmpty( transName ) );
   }
 
+  @Override
   public boolean[] isReferencedObjectEnabled() {
     return new boolean[] { isTransformationDefined(), };
   }
@@ -686,6 +705,7 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface, S
     return BaseMessages.getString( PKG, "MetaInjectMeta.ReferencedObjectAfterInjection.Description" );
   }
 
+  @Override
   @Deprecated
   public Object loadReferencedObject( int index, Repository rep, VariableSpace space ) throws KettleException {
     return loadReferencedObject( index, rep, null, space );
@@ -707,6 +727,7 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface, S
    * @return the referenced object once loaded
    * @throws KettleException
    */
+  @Override
   public Object loadReferencedObject( int index, Repository rep, IMetaStore metaStore, VariableSpace space )
     throws KettleException {
     return loadTransformationMeta( this, rep, metaStore, space );

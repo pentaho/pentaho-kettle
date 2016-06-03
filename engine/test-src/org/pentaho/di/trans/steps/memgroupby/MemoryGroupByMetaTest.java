@@ -21,28 +21,67 @@
  ******************************************************************************/
 package org.pentaho.di.trans.steps.memgroupby;
 
-import org.junit.Test;
+import java.util.ArrayList;
 import java.util.Arrays;
-import static org.junit.Assert.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-public class MemoryGroupByMetaTest {
+import org.junit.Before;
+import org.junit.Test;
+import org.pentaho.di.core.KettleEnvironment;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.plugins.PluginRegistry;
+import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
+import org.pentaho.di.trans.steps.loadsave.initializer.InitializerInterface;
+import org.pentaho.di.trans.steps.loadsave.validator.ArrayLoadSaveValidator;
+import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
+import org.pentaho.di.trans.steps.loadsave.validator.IntLoadSaveValidator;
+import org.pentaho.di.trans.steps.loadsave.validator.PrimitiveIntArrayLoadSaveValidator;
+import org.pentaho.di.trans.steps.loadsave.validator.StringLoadSaveValidator;
 
-  @Test
-  public void testClone() throws Exception {
-    MemoryGroupByMeta meta = new MemoryGroupByMeta();
-    meta.allocate( 2, 3 );
-    meta.setGroupField( new String[] { "group1", "group2" } );
-    meta.setAggregateField( new String[] { " agg1", "agg2" } );
-    meta.setSubjectField( new String[] { "subj1", "subj2" } );
-    meta.setAggregateType( new int[] { 10, 20 } );
-    meta.setValueField( new String[] { "value1", "value2" } );
-    MemoryGroupByMeta aClone = (MemoryGroupByMeta) meta.clone();
-    assertFalse( meta == aClone );
-    assertTrue( Arrays.equals( meta.getGroupField(), aClone.getGroupField() ) );
-    assertTrue( Arrays.equals( meta.getAggregateField(), aClone.getAggregateField() ) );
-    assertTrue( Arrays.equals( meta.getSubjectField(), aClone.getSubjectField() ) );
-    assertTrue( Arrays.equals( meta.getAggregateType(), aClone.getAggregateType() ) );
-    assertTrue( Arrays.equals( meta.getValueField(), aClone.getValueField() ) );
+public class MemoryGroupByMetaTest implements InitializerInterface<StepMetaInterface> {
+  LoadSaveTester loadSaveTester;
+  Class<MemoryGroupByMeta> testMetaClass = MemoryGroupByMeta.class;
+
+  @Before
+  public void setUpLoadSave() throws Exception {
+    KettleEnvironment.init();
+    PluginRegistry.init( true );
+    List<String> attributes =
+        Arrays.asList( "alwaysGivingBackOneRow", "groupField", "aggregateField", "subjectField", "aggregateType", "valueField" );
+
+    FieldLoadSaveValidator<String[]> stringArrayLoadSaveValidator =
+        new ArrayLoadSaveValidator<String>( new StringLoadSaveValidator(), 5 );
+
+    Map<String, FieldLoadSaveValidator<?>> attrValidatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();
+    attrValidatorMap.put( "groupField", stringArrayLoadSaveValidator );
+    attrValidatorMap.put( "aggregateField", stringArrayLoadSaveValidator );
+    attrValidatorMap.put( "subjectField", stringArrayLoadSaveValidator );
+    attrValidatorMap.put( "valueField", stringArrayLoadSaveValidator );
+    attrValidatorMap.put( "aggregateType", new PrimitiveIntArrayLoadSaveValidator(
+        new IntLoadSaveValidator( MemoryGroupByMeta.typeGroupCode.length ), 5 ) );
+
+    Map<String, FieldLoadSaveValidator<?>> typeValidatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();
+
+    loadSaveTester =
+        new LoadSaveTester( testMetaClass, attributes, new ArrayList<String>(), new ArrayList<String>(),
+            new HashMap<String, String>(), new HashMap<String, String>(), attrValidatorMap, typeValidatorMap, this );
   }
 
+  // Call the allocate method on the LoadSaveTester meta class
+  @Override
+  public void modify( StepMetaInterface someMeta ) {
+    if ( someMeta instanceof MemoryGroupByMeta ) {
+      ( (MemoryGroupByMeta) someMeta ).allocate( 5, 5 );
+    }
+  }
+
+  @Test
+  public void testSerialization() throws KettleException {
+    loadSaveTester.testSerialization();
+  }
+
+  // Note - cloneTest removed because load/save tester covers clone testing as well.
 }

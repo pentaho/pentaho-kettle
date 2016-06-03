@@ -34,14 +34,13 @@ import org.junit.Test;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.plugins.PluginRegistry;
-import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
 import org.pentaho.di.trans.steps.loadsave.initializer.InitializerInterface;
 import org.pentaho.di.trans.steps.loadsave.validator.ArrayLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
 
-public class CalculatorMetaTest implements InitializerInterface<StepMetaInterface> {
-  LoadSaveTester loadSaveTester;
+public class CalculatorMetaTest implements InitializerInterface<CalculatorMeta> {
+  LoadSaveTester<CalculatorMeta> loadSaveTester;
   Class<CalculatorMeta> testMetaClass = CalculatorMeta.class;
 
   @Before
@@ -62,7 +61,7 @@ public class CalculatorMetaTest implements InitializerInterface<StepMetaInterfac
       }
     };
     FieldLoadSaveValidator<CalculatorMetaFunction[]> calculationMetaFunctionArrayLoadSaveValidator =
-        new ArrayLoadSaveValidator<CalculatorMetaFunction>( new CalculatorMetaFunctionLoadSaveValidator(), 5 );
+      new ArrayLoadSaveValidator<CalculatorMetaFunction>( new CalculatorMetaFunctionLoadSaveValidator(), 5 );
 
 
     Map<String, FieldLoadSaveValidator<?>> attrValidatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();
@@ -71,13 +70,13 @@ public class CalculatorMetaTest implements InitializerInterface<StepMetaInterfac
     Map<String, FieldLoadSaveValidator<?>> typeValidatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();
 
     loadSaveTester =
-        new LoadSaveTester( testMetaClass, attributes, new ArrayList<String>(), new ArrayList<String>(),
-            getterMap, setterMap, attrValidatorMap, typeValidatorMap, this );
+      new LoadSaveTester<CalculatorMeta>( testMetaClass, attributes, new ArrayList<String>(),
+        new ArrayList<String>(), getterMap, setterMap, attrValidatorMap, typeValidatorMap, this );
   }
 
   // Call the allocate method on the LoadSaveTester meta class
   @Override
-  public void modify( StepMetaInterface someMeta ) {
+  public void modify( CalculatorMeta someMeta ) {
     if ( someMeta instanceof CalculatorMeta ) {
       ( (CalculatorMeta) someMeta ).allocate( 5 );
     }
@@ -118,6 +117,4 @@ public class CalculatorMetaTest implements InitializerInterface<StepMetaInterfac
       return ( testObject.getXML().equals( actualInput.getXML() ) );
     }
   }
-
-
 }

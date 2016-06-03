@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -19,6 +19,7 @@
  * limitations under the License.
  *
  ******************************************************************************/
+
 package org.pentaho.di.trans.steps.salesforceupdate;
 
 import static org.junit.Assert.assertEquals;
@@ -30,6 +31,8 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.UUID;
+
 import org.apache.axis.message.MessageElement;
 import org.junit.Before;
 import org.junit.Test;
@@ -39,7 +42,7 @@ import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.value.ValueMetaBase;
 import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
-import org.pentaho.di.trans.steps.salesforceinput.SalesforceConnection;
+import org.pentaho.di.trans.steps.salesforce.SalesforceConnection;
 
 import com.sforce.soap.partner.sobject.SObject;
 
@@ -167,6 +170,10 @@ public class SalesforceUpdateTest {
 
   private SalesforceUpdateMeta generateSalesforceUpdateMeta( String[] updateLookup, Boolean[] useExternalId ) {
     SalesforceUpdateMeta meta = smh.initStepMetaInterface;
+    doReturn( UUID.randomUUID().toString() ).when( meta ).getTargetURL();
+    doReturn( UUID.randomUUID().toString() ).when( meta ).getUsername();
+    doReturn( UUID.randomUUID().toString() ).when( meta ).getPassword();
+    doReturn( UUID.randomUUID().toString() ).when( meta ).getModule();
     doReturn( 2 ).when( meta ).getBatchSizeInt();
     doReturn( updateLookup ).when( meta ).getUpdateLookup();
     doReturn( useExternalId ).when( meta ).getUseExternalId();

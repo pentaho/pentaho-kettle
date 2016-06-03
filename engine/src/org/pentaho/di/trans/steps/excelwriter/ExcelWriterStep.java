@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -52,8 +52,8 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMeta;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
@@ -78,6 +78,7 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
     super( s, stepDataInterface, c, t, dis );
   }
 
+  @Override
   public boolean processRow( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
 
     meta = (ExcelWriterStepMeta) smi;
@@ -771,6 +772,9 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
           data.wb.setSheetName( data.wb.getSheetIndex( data.sheet ), data.realSheetname );
           // unhide sheet in case it was hidden
           data.wb.setSheetHidden( data.wb.getSheetIndex( data.sheet ), false );
+          if ( meta.isTemplateSheetHidden() ) {
+            data.wb.setSheetHidden( data.wb.getSheetIndex( ts ), true );
+          }
         } else {
           // no template to use, simply create a new sheet
 
@@ -886,7 +890,7 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
             !Const.isEmpty( meta.getOutputFields()[ i ].getTitle() ) ? meta.getOutputFields()[ i ].getTitle() : meta
               .getOutputFields()[ i ].getName();
 
-          ValueMetaInterface vMeta = new ValueMeta( fieldName, ValueMetaInterface.TYPE_STRING );
+          ValueMetaInterface vMeta = new ValueMetaString( fieldName );
 
           writeField( fieldName, vMeta, meta.getOutputFields()[ i ], xlsRow, posX++, null, -1, true );
         }
@@ -894,7 +898,7 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
       } else if ( data.inputRowMeta != null ) {
         for ( int i = 0; i < data.inputRowMeta.size(); i++ ) {
           String fieldName = data.inputRowMeta.getFieldNames()[ i ];
-          ValueMetaInterface vMeta = new ValueMeta( fieldName, ValueMetaInterface.TYPE_STRING );
+          ValueMetaInterface vMeta = new ValueMetaString( fieldName );
           writeField( fieldName, vMeta, null, xlsRow, posX++, null, -1, true );
         }
       }
@@ -914,6 +918,7 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
    * @see org.pentaho.di.trans.step.BaseStep#init(org.pentaho.di.trans.step.StepMetaInterface,
    * org.pentaho.di.trans.step.StepDataInterface)
    */
+  @Override
   public boolean init( StepMetaInterface smi, StepDataInterface sdi ) {
     meta = (ExcelWriterStepMeta) smi;
     data = (ExcelWriterStepData) sdi;
@@ -944,6 +949,7 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
    * @see org.pentaho.di.trans.step.BaseStep#dispose(org.pentaho.di.trans.step.StepMetaInterface,
    * org.pentaho.di.trans.step.StepDataInterface)
    */
+  @Override
   public void dispose( StepMetaInterface smi, StepDataInterface sdi ) {
     meta = (ExcelWriterStepMeta) smi;
     data = (ExcelWriterStepData) sdi;

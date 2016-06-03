@@ -74,7 +74,6 @@ public class SymmetricCryptoTransMetaTest {
     LoadSaveTester loadSaveTester = new LoadSaveTester( SymmetricCryptoTransMeta.class, attributes,
       getterMap, setterMap, fieldLoadSaveValidator, new HashMap<String, FieldLoadSaveValidator<?>>() );
 
-    loadSaveTester.testRepoRoundTrip();
-    loadSaveTester.testXmlRoundTrip();
+    loadSaveTester.testSerialization();
   }
 }

@@ -26,6 +26,9 @@ import java.util.Hashtable;
 import java.util.Map;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
@@ -37,6 +40,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Dialog;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
@@ -63,7 +67,6 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
  * Allows you to edit/enter the transformation debugging information
  *
  * @author matt
- * @since 2007-09-14
  * @since version 3.0 RC1
  */
 public class TransDebugDialog extends Dialog {
@@ -153,7 +156,7 @@ public class TransDebugDialog extends Dialog {
       }
     } );
 
-    BaseStepDialog.positionBottomButtons( shell, new Button[] { wLaunch, wOK, wCancel }, margin, null );
+    BaseStepDialog.positionBottomButtons( shell, new Button[]{ wLaunch, wOK, wCancel }, margin, null );
 
     wOK.setToolTipText( BaseMessages.getString( PKG, "TransDebugDialog.Configure.ToolTip" ) );
     wLaunch.setToolTipText( BaseMessages.getString( PKG, "TransDebugDialog.Launch.ToolTip" ) );
@@ -161,12 +164,12 @@ public class TransDebugDialog extends Dialog {
     // Add the list of steps
     //
     ColumnInfo[] stepColumns =
-    { new ColumnInfo(
-      BaseMessages.getString( PKG, "TransDebugDialog.Column.StepName" ), ColumnInfo.COLUMN_TYPE_TEXT, false,
-      true ), // name,
-              // non-numeric,
-              // readonly
-    };
+      { new ColumnInfo(
+        BaseMessages.getString( PKG, "TransDebugDialog.Column.StepName" ), ColumnInfo.COLUMN_TYPE_TEXT, false,
+        true ), // name,
+        // non-numeric,
+        // readonly
+      };
 
     int nrSteps = transDebugMeta.getTransMeta().nrSteps();
     wSteps =
@@ -197,6 +200,17 @@ public class TransDebugDialog extends Dialog {
 
     } );
 
+    // If someone presses enter, launch the transformation (this allows for "quick-preview")
+    wSteps.table.addKeyListener( new KeyAdapter() {
+
+      @Override
+      public void keyPressed( KeyEvent e ) {
+        if ( e.character == SWT.CR ) {
+          wLaunch.notifyListeners( SWT.Selection, new Event() );
+        }
+      }
+    } );
+
     // Now add the composite on which we will dynamically place a number of widgets, based on the selected step...
     //
     wComposite = new Composite( shell, SWT.BORDER );
@@ -219,11 +233,12 @@ public class TransDebugDialog extends Dialog {
 
     BaseStepDialog.setSize( shell );
 
+    shell.open();
     // Set the focus on the OK button
     //
     wLaunch.setFocus();
+    shell.setDefaultButton( wLaunch );
 
-    shell.open();
     while ( !shell.isDisposed() ) {
       if ( !display.readAndDispatch() ) {
         display.sleep();
@@ -255,8 +270,8 @@ public class TransDebugDialog extends Dialog {
       StepMeta stepMeta = transDebugMeta.getTransMeta().getStep( i );
       TableItem item = new TableItem( wSteps.table, SWT.NONE );
       Image image =
-          resource.getImagesSteps().get( stepMeta.getStepID() ).getAsBitmapForSize( display, ConstUI.ICON_SIZE,
-              ConstUI.ICON_SIZE );
+        resource.getImagesSteps().get( stepMeta.getStepID() ).getAsBitmapForSize( display, ConstUI.ICON_SIZE,
+          ConstUI.ICON_SIZE );
       item.setImage( 0, image );
       item.setText( 0, "" );
       item.setText( 1, stepMeta.getName() );
@@ -461,7 +476,7 @@ public class TransDebugDialog extends Dialog {
         // Clear the preview step information for this step...
         //
         stepDebugMetaMap.remove( stepMeta );
-        wSteps.table.setSelection( new int[] {} );
+        wSteps.table.setSelection( new int[]{} );
         previousIndex = -1;
 
         // refresh the steps list...

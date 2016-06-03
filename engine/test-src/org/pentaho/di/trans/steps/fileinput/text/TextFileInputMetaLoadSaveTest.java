@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,8 +25,8 @@ package org.pentaho.di.trans.steps.fileinput.text;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.junit.Before;
 import org.junit.Test;
-import org.pentaho.di.job.entry.loadSave.TransStepLoadSaveTester;
 import org.pentaho.di.trans.steps.fileinput.BaseFileInputField;
+import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
 import org.pentaho.di.trans.steps.loadsave.validator.ArrayLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
 
@@ -45,7 +45,7 @@ import static org.junit.Assert.assertTrue;
  */
 public class TextFileInputMetaLoadSaveTest {
 
-  private TransStepLoadSaveTester<TextFileInputMeta> tester;
+  private LoadSaveTester tester;
 
   @Before
   public void setUp() throws Exception {
@@ -95,20 +95,14 @@ public class TextFileInputMetaLoadSaveTest {
     assertTrue( !commonAttributes.isEmpty() || !( xmlAttributes.isEmpty() || repoAttributes.isEmpty() ) );
 
     tester =
-        new TransStepLoadSaveTester<TextFileInputMeta>( TextFileInputMeta.class, commonAttributes, xmlAttributes,
+        new LoadSaveTester( TextFileInputMeta.class, commonAttributes, xmlAttributes,
             repoAttributes, getters, setters, attributeValidators, typeValidators );
   }
 
   @Test
-  public void xmlSerialization() throws Exception {
-    tester.testXmlRoundTrip();
+  public void testSerialization() throws Exception {
+    tester.testSerialization();
   }
-
-  @Test
-  public void repositorySerialization() throws Exception {
-    tester.testRepoRoundTrip();
-  }
-
 
   private static class TextFileInputFieldValidator implements FieldLoadSaveValidator<BaseFileInputField> {
     @Override public BaseFileInputField getTestObject() {

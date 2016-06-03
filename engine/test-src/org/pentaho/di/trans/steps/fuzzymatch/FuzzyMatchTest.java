@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -41,8 +41,8 @@ import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
@@ -94,7 +94,7 @@ public class FuzzyMatchTest {
 
     /**
      * Find input row set.
-     * 
+     *
      * @param sourceStep
      *          the source step
      * @return the row set
@@ -159,8 +159,8 @@ public class FuzzyMatchTest {
     fuzzyMatch.rowset = lookupRowSet;
 
     RowMetaInterface rowMetaInterface = new RowMeta();
-    ValueMetaInterface valueMeta = new ValueMeta( "field1", ValueMeta.TYPE_STRING );
-    valueMeta.setStorageMetadata( new ValueMeta( "field1", ValueMeta.TYPE_STRING ) );
+    ValueMetaInterface valueMeta = new ValueMetaString( "field1" );
+    valueMeta.setStorageMetadata( new ValueMetaString( "field1" ) );
     valueMeta.setStorageType( ValueMetaInterface.STORAGE_TYPE_BINARY_STRING );
     rowMetaInterface.addValueMeta( valueMeta );
     when( lookupRowSet.getRowMeta() ).thenReturn( rowMetaInterface );

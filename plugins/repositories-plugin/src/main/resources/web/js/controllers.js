@@ -31,7 +31,7 @@ define(
 
     var repoConnectionAppControllers = angular.module('repoConnectionAppControllers', []);
 
-    repoConnectionAppControllers.controller("PentahoRepositoryController", function($scope, $location, $rootScope, pentahoRepositoryModel, repositoryTypesModel) {
+    repoConnectionAppControllers.controller("PentahoRepositoryController", function($scope, $location, $rootScope, $filter, pentahoRepositoryModel, repositoryTypesModel) {
       $scope.model = pentahoRepositoryModel.model;
       $scope.getStarted = function() {
         pentahoRepositoryModel.reset();
@@ -53,17 +53,19 @@ define(
         $scope.model.hasError = false;
         $scope.model.errorMessage = "";
         for(var i = 0; i < repositories.length; i++){
-          if( repositories[i].displayName == $scope.model.displayName ){
+          if( $filter('lowercase')(repositories[i].displayName) == $filter('lowercase')($scope.model.displayName) ){
             $scope.model.hasError = true;
-            $scope.model.errorMessage = "Cannot create repository. Display Name [" + $scope.model.displayName + "] is already being used.";
+            $scope.model.errorMessage = "A repository connection with that name already exists. Please enter a different name.";
             break;
           }
         }
       }
       $scope.finish = function() {
-        checkDuplicate();
-        if( this.model.hasError ){
-          return;
+        if( this.model.displayName != getCurrentRepository() ) {
+          checkDuplicate();
+          if( this.model.hasError ){
+            return;
+          }
         }
         if (createRepository("PentahoEnterpriseRepository", JSON.stringify(this.model))) {
           $location.path("/pentaho-repository-creation-success")
@@ -105,7 +107,7 @@ define(
       $scope.successText = "Your connection was created and is ready to use.";
     });
 
-    repoConnectionAppControllers.controller("KettleFileRepositoryController", function($scope, $rootScope, $location, kettleFileRepositoryModel) {
+    repoConnectionAppControllers.controller("KettleFileRepositoryController", function($scope, $rootScope, $location, $filter, kettleFileRepositoryModel) {
       $scope.model = kettleFileRepositoryModel.model;
       $scope.selectLocation = function() {
         this.model.location = selectLocation();
@@ -121,17 +123,19 @@ define(
         $scope.model.hasError = false;
         $scope.model.errorMessage = "";
         for(var i = 0; i < repositories.length; i++){
-          if( repositories[i].displayName == $scope.model.displayName ){
+          if( $filter('lowercase')(repositories[i].displayName) == $filter('lowercase')($scope.model.displayName) ){
             $scope.model.hasError = true;
-            $scope.model.errorMessage = "Cannot create repository. Display Name [" + $scope.model.displayName + "] is already being used.";
+            $scope.model.errorMessage = "A repository connection with that name already exists. Please enter a different name.";
             break;
           }
         }
       }
       $scope.finish = function() {
-        checkDuplicate();
-        if( this.model.hasError ){
-          return;
+        if( this.model.displayName != getCurrentRepository() ) {
+          checkDuplicate();
+          if( this.model.hasError ){
+            return;
+          }
         }
         if (createRepository("KettleFileRepository", JSON.stringify(this.model))) {
           $location.path("/kettle-file-repository-creation-success")
@@ -172,7 +176,7 @@ define(
       $scope.successText = "Your Kettle file repository was created and is ready to use.";
     });
 
-    repoConnectionAppControllers.controller("KettleDatabaseRepositoryController", function($scope, $rootScope, $location, kettleDatabaseRepositoryModel) {
+    repoConnectionAppControllers.controller("KettleDatabaseRepositoryController", function($scope, $rootScope, $location, $filter, kettleDatabaseRepositoryModel) {
       $scope.model = kettleDatabaseRepositoryModel.model;
       $scope.selectDatabase = function() {
         $location.path("/kettle-database-repository-select")
@@ -189,17 +193,19 @@ define(
         $scope.model.hasError = false;
         $scope.model.errorMessage = "";
         for(var i = 0; i < repositories.length; i++){
-          if( repositories[i].displayName == $scope.model.displayName ){
+          if( $filter('lowercase')(repositories[i].displayName) == $filter('lowercase')($scope.model.displayName) ){
             $scope.model.hasError = true;
-            $scope.model.errorMessage = "Cannot create repository. Display Name [" + $scope.model.displayName + "] is already being used.";
+            $scope.model.errorMessage = "A repository connection with that name already exists. Please enter a different name.";
             break;
           }
         }
       }
       $scope.finish = function() {
-        checkDuplicate();
-        if( this.model.hasError ){
-          return;
+        if( this.model.displayName != getCurrentRepository() ) {
+          checkDuplicate();
+          if( this.model.hasError ){
+            return;
+          }
         }
         if (createRepository("KettleDatabaseRepository", JSON.stringify(this.model))) {
           $location.path("/kettle-database-repository-creation-success")

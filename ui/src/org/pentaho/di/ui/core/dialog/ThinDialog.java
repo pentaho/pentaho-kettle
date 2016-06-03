@@ -26,6 +26,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.browser.CloseWindowListener;
 import org.eclipse.swt.browser.WindowEvent;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Dialog;
 import org.eclipse.swt.widgets.Display;
@@ -51,13 +52,14 @@ public class ThinDialog extends Dialog {
     this.height = height;
   }
 
-  public void createDialog( String title, String url, int options ) {
+  public void createDialog( String title, String url, int options, Image logo ) {
 
     Shell parent = getParent();
     display = parent.getDisplay();
 
     dialog = new Shell( parent, options );
     dialog.setText( title );
+    dialog.setImage( logo );
     dialog.setSize( width, height );
     dialog.setLayout( new FillLayout() );
 

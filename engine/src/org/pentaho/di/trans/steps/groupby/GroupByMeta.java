@@ -302,6 +302,7 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface {
     this.valueField = valueField;
   }
 
+  @Override
   public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     readData( stepnode );
   }
@@ -314,8 +315,25 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface {
     valueField = new String[ nrfields ];
   }
 
+  @Override
   public Object clone() {
-    Object retval = super.clone();
+    GroupByMeta retval = (GroupByMeta) super.clone();
+
+    int szGroup = 0, szFields = 0;
+    if ( groupField != null ) {
+      szGroup = groupField.length;
+    }
+    if ( valueField != null ) {
+      szFields = valueField.length;
+    }
+    retval.allocate( szGroup, szFields );
+
+    System.arraycopy( groupField, 0, retval.groupField, 0, szGroup );
+    System.arraycopy( aggregateField, 0, retval.aggregateField, 0, szFields );
+    System.arraycopy( subjectField, 0, retval.subjectField, 0, szFields );
+    System.arraycopy( aggregateType, 0, retval.aggregateType, 0, szFields );
+    System.arraycopy( valueField, 0, retval.valueField, 0, szFields );
+
     return retval;
   }
 
@@ -399,6 +417,7 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface {
     return typeGroupLongDesc[ i ];
   }
 
+  @Override
   public void setDefault() {
     directory = "%%java.io.tmpdir%%";
     prefix = "grp";
@@ -413,6 +432,7 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface {
     allocate( sizeGroup, numberOfFields );
   }
 
+  @Override
   public void getFields( RowMetaInterface rowMeta, String origin, RowMetaInterface[] info, StepMeta nextStep,
                          VariableSpace space, Repository repository, IMetaStore metaStore ) {
     // re-assemble a new row of metadata
@@ -523,6 +543,7 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface {
     rowMeta.addRowMeta( fields );
   }
 
+  @Override
   public String getXML() {
     StringBuilder retval = new StringBuilder( 500 );
 
@@ -557,6 +578,7 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface {
     return retval.toString();
   }
 
+  @Override
   public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
     throws KettleException {
     try {
@@ -597,6 +619,7 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
+  @Override
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
     throws KettleException {
     try {
@@ -626,6 +649,7 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
+  @Override
   public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
                      RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
                      Repository repository, IMetaStore metaStore ) {
@@ -644,11 +668,13 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
+  @Override
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
                                 TransMeta transMeta, Trans trans ) {
     return new GroupBy( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 
+  @Override
   public StepDataInterface getStepData() {
     return new GroupByData();
   }

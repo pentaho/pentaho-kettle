@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2014 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -144,8 +144,7 @@ public class UnivariateStatsMetaTest {
             new HashMap<String, String>(), new HashMap<String, FieldLoadSaveValidator<?>>(),
             fieldLoadSaveValidatorTypeMap );
 
-    loadSaveTester.testRepoRoundTrip();
-    loadSaveTester.testXmlRoundTrip();
+    loadSaveTester.testSerialization();
   }
 
   private void assertContains( Map<String, Integer> map, String key, Integer value ) {

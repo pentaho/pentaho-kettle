@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -192,6 +192,7 @@ public class TextFileInputMeta extends BaseFileInputStepMeta implements StepMeta
     public void setDateFormatLocale( String locale ) {
       this.dateFormatLocale = new Locale( locale );
     }
+
   }
 
   /** The filters to use... */
@@ -247,6 +248,7 @@ public class TextFileInputMeta extends BaseFileInputStepMeta implements StepMeta
     this.filter = filter;
   }
 
+  @Override
   public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     try {
       inputFiles.acceptingFilenames = YES.equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "accept_filenames" ) );
@@ -300,7 +302,7 @@ public class TextFileInputMeta extends BaseFileInputStepMeta implements StepMeta
         Node excludefilemasknode = XMLHandler.getSubNodeByNr( filenode, "exclude_filemask", i );
         Node fileRequirednode = XMLHandler.getSubNodeByNr( filenode, "file_required", i );
         Node includeSubFoldersnode = XMLHandler.getSubNodeByNr( filenode, "include_subfolders", i );
-        inputFiles.fileName[i] = loadSource( filenode, filenamenode, i );
+        inputFiles.fileName[i] = loadSource( filenode, filenamenode, i, metaStore );
         inputFiles.fileMask[i] = XMLHandler.getNodeValue( filemasknode );
         inputFiles.excludeFileMask[i] = XMLHandler.getNodeValue( excludefilemasknode );
         inputFiles.fileRequired[i] = XMLHandler.getNodeValue( fileRequirednode );
@@ -411,6 +413,7 @@ public class TextFileInputMeta extends BaseFileInputStepMeta implements StepMeta
     }
   }
 
+  @Override
   public Object clone() {
     TextFileInputMeta retval = (TextFileInputMeta) super.clone();
 
@@ -434,9 +437,6 @@ public class TextFileInputMeta extends BaseFileInputStepMeta implements StepMeta
       retval.filter[i] = (TextFileFilter) filter[i].clone();
     }
 
-    retval.content.dateFormatLocale = (Locale) content.dateFormatLocale.clone();
-    retval.content.fileCompression = content.fileCompression;
-
     return retval;
   }
 
@@ -455,6 +455,7 @@ public class TextFileInputMeta extends BaseFileInputStepMeta implements StepMeta
     inputFiles.includeSubFolders = new String[nrFiles];
   }
 
+  @Override
   public void setDefault() {
     additionalOutputFields.shortFilenameField = null;
     additionalOutputFields.pathField = null;
@@ -523,6 +524,7 @@ public class TextFileInputMeta extends BaseFileInputStepMeta implements StepMeta
     content.rowLimit = 0L;
   }
 
+  @Override
   public void getFields( RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep,
       VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     if ( !inputFiles.passingThruFields ) {
@@ -671,6 +673,7 @@ public class TextFileInputMeta extends BaseFileInputStepMeta implements StepMeta
     getFields( inputRowMeta, name, info, nextStep, space, null, null );
   }
 
+  @Override
   public String getXML() {
     StringBuilder retval = new StringBuilder( 1500 );
 
@@ -818,6 +821,7 @@ public class TextFileInputMeta extends BaseFileInputStepMeta implements StepMeta
    * @param steps
    *          optionally search the info step in a list of steps
    */
+  @Override
   public void searchInfoAndTargetSteps( List<StepMeta> steps ) {
     acceptingStep = StepMeta.findStep( steps, inputFiles.acceptingStepName );
   }
@@ -829,6 +833,7 @@ public class TextFileInputMeta extends BaseFileInputStepMeta implements StepMeta
     return null;
   }
 
+  @Override
   public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
     throws KettleException {
     try {
@@ -965,6 +970,7 @@ public class TextFileInputMeta extends BaseFileInputStepMeta implements StepMeta
     }
   }
 
+  @Override
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
     throws KettleException {
     try {
@@ -1078,6 +1084,7 @@ public class TextFileInputMeta extends BaseFileInputStepMeta implements StepMeta
     }
   }
 
+  @Override
   public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
       String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
       IMetaStore metaStore ) {
@@ -1119,11 +1126,13 @@ public class TextFileInputMeta extends BaseFileInputStepMeta implements StepMeta
     }
   }
 
+  @Override
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta,
       Trans trans ) {
     return new TextFileInput( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 
+  @Override
   public StepDataInterface getStepData() {
     return new TextFileInputData();
   }
@@ -1216,6 +1225,7 @@ public class TextFileInputMeta extends BaseFileInputStepMeta implements StepMeta
    *
    * @return the filename of the exported resource
    */
+  @Override
   public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
       ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore )
         throws KettleException {
@@ -1252,7 +1262,7 @@ public class TextFileInputMeta extends BaseFileInputStepMeta implements StepMeta
     setFileName( fileName );
   }
 
-  protected String loadSource( Node filenode, Node filenamenode, int i ) {
+  protected String loadSource( Node filenode, Node filenamenode, int i, IMetaStore metaStore ) {
     return XMLHandler.getNodeValue( filenamenode );
   }
 
@@ -1300,5 +1310,17 @@ public class TextFileInputMeta extends BaseFileInputStepMeta implements StepMeta
    */
   public String getAcceptingField() {
     return inputFiles.acceptingField;
+  }
+
+  public String[] getFilePaths( VariableSpace space ) {
+    return FileInputList.createFilePathList(
+        space, inputFiles.fileName, inputFiles.fileMask, inputFiles.excludeFileMask,
+        inputFiles.fileRequired, includeSubFolderBoolean() );
+  }
+
+  public FileInputList getTextFileList( VariableSpace space ) {
+    return FileInputList.createFileList(
+        space, inputFiles.fileName, inputFiles.fileMask, inputFiles.excludeFileMask,
+        inputFiles.fileRequired, includeSubFolderBoolean() );
   }
 }

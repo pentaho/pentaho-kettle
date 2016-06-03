@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -44,6 +44,7 @@ import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
+import org.pentaho.di.trans.steps.nullif.NullIfMeta.Field;
 import org.pentaho.metastore.api.IMetaStore;
 
 /**
@@ -69,8 +70,8 @@ public class NullIfTest {
 
   private NullIfMeta mockProcessRowMeta() throws KettleStepException {
     NullIfMeta processRowMeta = smh.processRowsStepMetaInterface;
-    doReturn( new String[] { "nullable-field" } ).when( processRowMeta ).getFieldName();
-    doReturn( new String[] { "nullable-value" } ).when( processRowMeta ).getFieldValue();
+    Field[] fields = createArrayWithOneField( "nullable-field", "nullable-value" );
+    doReturn( fields ).when( processRowMeta ).getFields();
     doCallRealMethod().when( processRowMeta ).getFields( any( RowMetaInterface.class ), anyString(),
         any( RowMetaInterface[].class ), any( StepMeta.class ), any( VariableSpace.class ), any( Repository.class ),
         any( IMetaStore.class ) );
@@ -111,5 +112,12 @@ public class NullIfTest {
     for ( int i = 0; i < expectedRow.length; i++ ) {
       Assert.assertEquals( "Unexpected output value at index " + i, expectedRow[i], actualRow[i] );
     }
+  }
+
+  private static Field[] createArrayWithOneField( String fieldName, String fieldValue ) {
+    Field field = new Field();
+    field.setFieldName( fieldName );
+    field.setFieldValue( fieldValue );
+    return new Field[] { field };
   }
 }

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -43,7 +43,6 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
-import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
@@ -53,17 +52,17 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
-import org.pentaho.di.trans.step.StepDialogInterface;
+import org.pentaho.di.trans.steps.salesforce.SalesforceConnection;
+import org.pentaho.di.trans.steps.salesforce.SalesforceConnectionUtils;
+import org.pentaho.di.trans.steps.salesforce.SalesforceStepMeta;
 import org.pentaho.di.trans.steps.salesforcedelete.SalesforceDeleteMeta;
-import org.pentaho.di.trans.steps.salesforceinput.SalesforceConnection;
-import org.pentaho.di.trans.steps.salesforceinput.SalesforceConnectionUtils;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.widget.ComboVar;
 import org.pentaho.di.ui.core.widget.LabelTextVar;
 import org.pentaho.di.ui.core.widget.TextVar;
-import org.pentaho.di.ui.trans.step.BaseStepDialog;
+import org.pentaho.di.ui.trans.steps.salesforce.SalesforceStepDialog;
 
-public class SalesforceDeleteDialog extends BaseStepDialog implements StepDialogInterface {
+public class SalesforceDeleteDialog extends SalesforceStepDialog {
 
   private static Class<?> PKG = SalesforceDeleteMeta.class; // for i18n purposes, needed by Translator2!!
 
@@ -532,59 +531,6 @@ public class SalesforceDeleteDialog extends BaseStepDialog implements StepDialog
     }
   }
 
-  private void test() {
-    boolean successConnection = true;
-    String msgError = null;
-    String realUsername = null;
-    SalesforceConnection connection = null;
-    if ( !checkInput() ) {
-      return;
-    }
-    try {
-      SalesforceDeleteMeta meta = new SalesforceDeleteMeta();
-      getInfo( meta );
-
-      // check if the user is given
-      if ( !checkUser() ) {
-        return;
-      }
-
-      String realURL = transMeta.environmentSubstitute( meta.getTargetURL() );
-      realUsername = transMeta.environmentSubstitute( meta.getUserName() );
-      String realPassword = transMeta.environmentSubstitute( meta.getPassword() );
-      connection =
-        new SalesforceConnection( log, realURL, realUsername, realPassword );
-      connection.connect();
-
-      successConnection = true;
-
-    } catch ( Exception e ) {
-      successConnection = false;
-      msgError = e.getMessage();
-    } finally {
-      if ( connection != null ) {
-        try {
-          connection.close();
-        } catch ( Exception e ) { /* Ignore */
-        }
-      }
-    }
-
-    if ( successConnection ) {
-      MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_INFORMATION );
-      mb.setMessage( BaseMessages.getString( PKG, "SalesforceDeleteDialog.Connected.OK", realUsername )
-        + Const.CR );
-      mb.setText( BaseMessages.getString( PKG, "SalesforceDeleteDialog.Connected.Title.Ok" ) );
-      mb.open();
-    } else {
-      new ErrorDialog( shell,
-        BaseMessages.getString( PKG, "SalesforceDeleteDialog.Connected.Title.Error" ),
-        BaseMessages.getString( PKG, "SalesforceDeleteDialog.Connected.NOK", realUsername ),
-        new Exception( msgError ) );
-    }
-
-  }
-
   /**
    * Read the data from the TextFileInputMeta object and show it in this dialog.
    *
@@ -593,7 +539,7 @@ public class SalesforceDeleteDialog extends BaseStepDialog implements StepDialog
    */
   public void getData( SalesforceDeleteMeta in ) {
     wURL.setText( Const.NVL( in.getTargetURL(), "" ) );
-    wUserName.setText( Const.NVL( in.getUserName(), "" ) );
+    wUserName.setText( Const.NVL( in.getUsername(), "" ) );
     wPassword.setText( Const.NVL( in.getPassword(), "" ) );
     wBatchSize.setText( in.getBatchSize() );
     wModule.setText( Const.NVL( in.getModule(), "Account" ) );
@@ -601,8 +547,8 @@ public class SalesforceDeleteDialog extends BaseStepDialog implements StepDialog
       wDeleteField.setText( in.getDeleteField() );
     }
     wBatchSize.setText( "" + in.getBatchSize() );
-    wTimeOut.setText( Const.NVL( in.getTimeOut(), SalesforceConnectionUtils.DEFAULT_TIMEOUT ) );
-    wUseCompression.setSelection( in.isUsingCompression() );
+    wTimeOut.setText( Const.NVL( in.getTimeout(), SalesforceConnectionUtils.DEFAULT_TIMEOUT ) );
+    wUseCompression.setSelection( in.isCompression() );
     wRollbackAllChangesOnError.setSelection( in.isRollbackAllChangesOnError() );
 
     wStepname.selectAll();
@@ -626,45 +572,21 @@ public class SalesforceDeleteDialog extends BaseStepDialog implements StepDialog
     dispose();
   }
 
-  private void getInfo( SalesforceDeleteMeta in ) throws KettleException {
+  @Override
+  protected void getInfo( SalesforceStepMeta in ) throws KettleException {
+    SalesforceDeleteMeta meta = (SalesforceDeleteMeta) in;
     stepname = wStepname.getText(); // return value
 
     // copy info to SalesforceDeleteMeta class (input)
-    in.setTargetURL( Const.NVL( wURL.getText(), SalesforceConnectionUtils.TARGET_DEFAULT_URL ) );
-    in.setUserName( wUserName.getText() );
-    in.setPassword( wPassword.getText() );
-    in.setModule( wModule.getText() );
-    in.setDeleteField( wDeleteField.getText() );
-    in.setBatchSize( wBatchSize.getText() );
-    in.setUseCompression( wUseCompression.getSelection() );
-    in.setTimeOut( Const.NVL( wTimeOut.getText(), "0" ) );
-    in.setRollbackAllChangesOnError( wRollbackAllChangesOnError.getSelection() );
-  }
-
-  // check if module, username is given
-  private boolean checkInput() {
-    if ( Const.isEmpty( wModule.getText() ) ) {
-      MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
-      mb.setMessage( BaseMessages.getString( PKG, "SalesforceDeleteDialog.ModuleMissing.DialogMessage" ) );
-      mb.setText( BaseMessages.getString( PKG, "System.Dialog.Error.Title" ) );
-      mb.open();
-      return false;
-    }
-    return checkUser();
-  }
-
-  // check if module, username is given
-  private boolean checkUser() {
-
-    if ( Const.isEmpty( wUserName.getText() ) ) {
-      MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
-      mb.setMessage( BaseMessages.getString( PKG, "SalesforceDeleteDialog.UsernameMissing.DialogMessage" ) );
-      mb.setText( BaseMessages.getString( PKG, "System.Dialog.Error.Title" ) );
-      mb.open();
-      return false;
-    }
-
-    return true;
+    meta.setTargetURL( Const.NVL( wURL.getText(), SalesforceConnectionUtils.TARGET_DEFAULT_URL ) );
+    meta.setUsername( wUserName.getText() );
+    meta.setPassword( wPassword.getText() );
+    meta.setModule( wModule.getText() );
+    meta.setDeleteField( wDeleteField.getText() );
+    meta.setBatchSize( wBatchSize.getText() );
+    meta.setCompression( wUseCompression.getSelection() );
+    meta.setTimeout( Const.NVL( wTimeOut.getText(), "0" ) );
+    meta.setRollbackAllChangesOnError( wRollbackAllChangesOnError.getSelection() );
   }
 
   private void getModulesList() {
@@ -681,9 +603,9 @@ public class SalesforceDeleteDialog extends BaseStepDialog implements StepDialog
 
         // Define a new Salesforce connection
         connection =
-          new SalesforceConnection( log, url, transMeta.environmentSubstitute( meta.getUserName() ), transMeta
+          new SalesforceConnection( log, url, transMeta.environmentSubstitute( meta.getUsername() ), transMeta
             .environmentSubstitute( meta.getPassword() ) );
-        int realTimeOut = Const.toInt( transMeta.environmentSubstitute( meta.getTimeOut() ), 0 );
+        int realTimeOut = Const.toInt( transMeta.environmentSubstitute( meta.getTimeout() ), 0 );
         connection.setTimeOut( realTimeOut );
         // connect to Salesforce
         connection.connect();

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -42,7 +42,7 @@ import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.RepositoryPluginType;
-import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.imp.rule.ImportRuleInterface;
@@ -335,9 +335,9 @@ public class Import {
     }
 
     final boolean replace =
-      Const.isEmpty( optionReplace ) ? false : ValueMeta.convertStringToBoolean( optionReplace.toString() );
+      Const.isEmpty( optionReplace ) ? false : ValueMetaString.convertStringToBoolean( optionReplace.toString() );
     final boolean continueOnError =
-      Const.isEmpty( optionContinueOnError ) ? false : ValueMeta.convertStringToBoolean( optionContinueOnError
+      Const.isEmpty( optionContinueOnError ) ? false : ValueMetaString.convertStringToBoolean( optionContinueOnError
         .toString() );
 
     // Start the import!

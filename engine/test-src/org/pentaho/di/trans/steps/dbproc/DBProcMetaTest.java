@@ -21,28 +21,69 @@
  ******************************************************************************/
 package org.pentaho.di.trans.steps.dbproc;
 
-import org.junit.Test;
+import java.util.ArrayList;
 import java.util.Arrays;
-import static org.junit.Assert.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-public class DBProcMetaTest {
+import org.junit.Before;
+import org.junit.Test;
+import org.pentaho.di.core.KettleEnvironment;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.plugins.PluginRegistry;
+import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
+import org.pentaho.di.trans.steps.loadsave.initializer.InitializerInterface;
+import org.pentaho.di.trans.steps.loadsave.validator.ArrayLoadSaveValidator;
+import org.pentaho.di.trans.steps.loadsave.validator.DatabaseMetaLoadSaveValidator;
+import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
+import org.pentaho.di.trans.steps.loadsave.validator.IntLoadSaveValidator;
+import org.pentaho.di.trans.steps.loadsave.validator.PrimitiveIntArrayLoadSaveValidator;
+import org.pentaho.di.trans.steps.loadsave.validator.StringLoadSaveValidator;
+
+public class DBProcMetaTest implements InitializerInterface<StepMetaInterface> {
+  LoadSaveTester loadSaveTester;
+  Class<DBProcMeta> testMetaClass = DBProcMeta.class;
+
+  @Before
+  public void setUpLoadSave() throws Exception {
+    KettleEnvironment.init();
+    PluginRegistry.init( true );
+    List<String> attributes =
+        Arrays.asList( "procedure", "resultName", "resultType", "autoCommit", "argumentType", "argument", "argumentDirection", "database" );
+
+    Map<String, String> getterMap = new HashMap<String, String>();
+    Map<String, String> setterMap = new HashMap<String, String>();
+
+    FieldLoadSaveValidator<String[]> stringArrayLoadSaveValidator =
+        new ArrayLoadSaveValidator<String>( new StringLoadSaveValidator(), 5 );
+
+    Map<String, FieldLoadSaveValidator<?>> attrValidatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();
+    attrValidatorMap.put( "argument", stringArrayLoadSaveValidator );
+    attrValidatorMap.put( "argumentDirection", stringArrayLoadSaveValidator );
+    attrValidatorMap.put( "argumentType",
+        new PrimitiveIntArrayLoadSaveValidator( new IntLoadSaveValidator( 7 ), 5 ) );
+    attrValidatorMap.put( "database", new DatabaseMetaLoadSaveValidator() );
+    attrValidatorMap.put( "resultType", new IntLoadSaveValidator( 7 ) );
+
+    Map<String, FieldLoadSaveValidator<?>> typeValidatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();
+
+    loadSaveTester =
+        new LoadSaveTester( testMetaClass, attributes, new ArrayList<String>(), new ArrayList<String>(),
+            getterMap, setterMap, attrValidatorMap, typeValidatorMap, this );
+  }
+
+  // Call the allocate method on the LoadSaveTester meta class
+  @Override
+  public void modify( StepMetaInterface someMeta ) {
+    if ( someMeta instanceof DBProcMeta ) {
+      ( (DBProcMeta) someMeta ).allocate( 5 );
+    }
+  }
 
   @Test
-  public void cloneTest() throws Exception {
-    DBProcMeta meta = new DBProcMeta();
-    meta.allocate( 2 );
-    meta.setArgument( new String[] { "aa", "bb" } );
-    meta.setArgumentDirection( new String[] { "cc", "dd" } );
-    meta.setArgumentType( new int[] { 10, 50 } );
-    meta.setProcedure( "aprocedure" );
-    meta.setResultName( "aResultName" );
-    DBProcMeta aClone = (DBProcMeta) meta.clone();
-    assertFalse( aClone == meta );
-    assertTrue( Arrays.equals( meta.getArgument(), aClone.getArgument() ) );
-    assertTrue( Arrays.equals( meta.getArgumentDirection(), aClone.getArgumentDirection() ) );
-    assertTrue( Arrays.equals( meta.getArgumentType(), aClone.getArgumentType() ) );
-    assertEquals( meta.getProcedure(), aClone.getProcedure() );
-    assertEquals( meta.getResultName(), aClone.getResultName() );
-    assertEquals( meta.getXML(), aClone.getXML() );
+  public void testSerialization() throws KettleException {
+    loadSaveTester.testSerialization();
   }
 }

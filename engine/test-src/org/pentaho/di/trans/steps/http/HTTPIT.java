@@ -23,12 +23,14 @@
 package org.pentaho.di.trans.steps.http;
 
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.*;
-import org.pentaho.di.core.util.Assert;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.InetSocketAddress;
-import java.util.*;
 
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HostConfiguration;
@@ -48,14 +50,11 @@ import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaInteger;
 import org.pentaho.di.core.row.value.ValueMetaString;
+import org.pentaho.di.core.util.Assert;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
-import org.pentaho.di.trans.steps.loadsave.validator.ArrayLoadSaveValidator;
-import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
-import org.pentaho.di.trans.steps.loadsave.validator.StringLoadSaveValidator;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
 
 import com.sun.net.httpserver.HttpExchange;
@@ -241,30 +240,6 @@ public class HTTPIT {
     httpServer.start();
   }
 
-  @Test
-  public void testLoadSaveRoundTrip() throws KettleException {
-    List<String> attributes =
-        Arrays.asList( "url", "urlInField", "urlField", "encoding", "httpLogin", "httpPassword", "proxyHost",
-            "proxyPort", "socketTimeout", "connectionTimeout", "closeIdleConnectionsTime", "argumentField",
-            "argumentParameter", "headerField", "headerParameter", "fieldName", "resultCodeFieldName",
-            "responseTimeFieldName", "responseHeaderFieldName" );
-    Map<String, FieldLoadSaveValidator<?>> fieldLoadSaveValidatorAttributeMap =
-        new HashMap<String, FieldLoadSaveValidator<?>>();
-
-    //Arrays need to be consistent length
-    FieldLoadSaveValidator<String[]> stringArrayLoadSaveValidator =
-        new ArrayLoadSaveValidator<String>( new StringLoadSaveValidator(), 25 );
-    fieldLoadSaveValidatorAttributeMap.put( "argumentField", stringArrayLoadSaveValidator );
-    fieldLoadSaveValidatorAttributeMap.put( "argumentParameter", stringArrayLoadSaveValidator );
-    fieldLoadSaveValidatorAttributeMap.put( "headerField", stringArrayLoadSaveValidator );
-    fieldLoadSaveValidatorAttributeMap.put( "headerParameter", stringArrayLoadSaveValidator );
-
-    LoadSaveTester loadSaveTester =
-        new LoadSaveTester( HTTPMeta.class, attributes, new HashMap<String, String>(),
-            new HashMap<String, String>(), fieldLoadSaveValidatorAttributeMap,
-            new HashMap<String, FieldLoadSaveValidator<?>>() );
-
-    loadSaveTester.testRepoRoundTrip();
-    loadSaveTester.testXmlRoundTrip();
-  }
+  // LoadSave Test is a unit test of the meta, not an integration test. Moved to new class.
+  // MB 5/2016
 }

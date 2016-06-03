@@ -1,0 +1,213 @@
+/*! ******************************************************************************
+ *
+ * Pentaho Data Integration
+ *
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ *
+ *******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
+
+package org.pentaho.di.trans.steps.checksum;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.pentaho.di.core.KettleEnvironment;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleStepException;
+import org.pentaho.di.core.plugins.PluginRegistry;
+import org.pentaho.di.core.plugins.StepPluginType;
+import org.pentaho.di.core.row.RowMeta;
+import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaString;
+import org.pentaho.di.trans.RowProducer;
+import org.pentaho.di.trans.Trans;
+import org.pentaho.di.trans.TransHopMeta;
+import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.step.BaseStep;
+import org.pentaho.di.trans.step.RowAdapter;
+import org.pentaho.di.trans.step.StepInterface;
+import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.steps.dummytrans.DummyTransMeta;
+
+public class CheckSumTest {
+
+  @BeforeClass
+  public static void setUpBeforeClass() throws KettleException {
+    KettleEnvironment.init();
+  }
+
+  private Trans buildHexadecimalChecksumTrans( int checkSumType, boolean compatibilityMode ) throws Exception {
+    // Create a new transformation...
+    TransMeta transMeta = new TransMeta();
+    transMeta.setName( getClass().getName() );
+
+    // Create a CheckSum Step
+    String checkSumStepname = "CheckSum";
+    CheckSumMeta meta = new CheckSumMeta();
+
+    // Set the compatibility mode and other required fields
+    meta.setCompatibilityMode( compatibilityMode );
+    meta.setResultFieldName( "hex" );
+    meta.setCheckSumType( checkSumType );
+    meta.setResultType( CheckSumMeta.result_TYPE_HEXADECIMAL );
+    meta.setFieldName( new String[] { "test" } );
+
+    String checkSumPluginPid = PluginRegistry.getInstance().getPluginId( StepPluginType.class, meta );
+    StepMeta checkSumStep = new StepMeta( checkSumPluginPid, checkSumStepname, meta );
+    transMeta.addStep( checkSumStep );
+
+    // Create a Dummy step
+    String dummyStepname = "Output";
+    DummyTransMeta dummyMeta = new DummyTransMeta();
+    String dummyStepPid = PluginRegistry.getInstance().getPluginId( StepPluginType.class, dummyMeta );
+    StepMeta dummyStep = new StepMeta( dummyStepPid, dummyStepname, dummyMeta );
+    transMeta.addStep( dummyStep );
+
+    // Create a hop from CheckSum to Output
+    TransHopMeta hop = new TransHopMeta( checkSumStep, dummyStep );
+    transMeta.addTransHop( hop );
+
+    return new Trans( transMeta );
+  }
+
+  private RowMeta createStringRowMeta() throws Exception {
+    RowMeta rowMeta = new RowMeta();
+    ValueMetaInterface meta = new ValueMetaString( "test" );
+    rowMeta.addValueMeta( meta );
+    return rowMeta;
+  }
+
+  private class MockRowListener extends RowAdapter {
+    private List<Object[]> written;
+
+    private List<Object[]> read;
+
+    private List<Object[]> error;
+
+    public MockRowListener() {
+      written = new ArrayList<Object[]>();
+      read = new ArrayList<Object[]>();
+      error = new ArrayList<Object[]>();
+    }
+
+    public List<Object[]> getWritten() {
+      return written;
+    }
+
+    @Override
+    public void rowWrittenEvent( RowMetaInterface rowMeta, Object[] row ) throws KettleStepException {
+      written.add( row );
+    }
+
+    @Override
+    public void rowReadEvent( RowMetaInterface rowMeta, Object[] row ) throws KettleStepException {
+      read.add( row );
+    }
+
+    @Override
+    public void errorRowWrittenEvent( RowMetaInterface rowMeta, Object[] row ) throws KettleStepException {
+      error.add( row );
+    }
+  }
+
+  /**
+   * Create, execute, and return the row listener attached to the output step with complete results from the execution.
+   *
+   * @param checkSumType
+   *          Type of checksum to use (the array index of {@link CheckSumMeta#checksumtypeCodes})
+   * @param compatibilityMode
+   *          Use compatibility mode for CheckSum
+   * @param input
+   *          String to calculate checksum for
+   * @return RowListener with results.
+   */
+  private MockRowListener executeHexTest( int checkSumType, boolean compatibilityMode, String input ) throws Exception {
+    Trans trans = buildHexadecimalChecksumTrans( checkSumType, compatibilityMode );
+
+    trans.prepareExecution( null );
+
+    StepInterface output = trans.getRunThread( "Output", 0 );
+    MockRowListener listener = new MockRowListener();
+    output.addRowListener( listener );
+
+    RowProducer rp = trans.addRowProducer( "CheckSum", 0 );
+    RowMeta inputRowMeta = createStringRowMeta();
+    ( (BaseStep) trans.getRunThread( "CheckSum", 0 ) ).setInputRowMeta( inputRowMeta );
+
+    trans.startThreads();
+
+    rp.putRow( inputRowMeta, new Object[] { input } );
+    rp.finished();
+
+    trans.waitUntilFinished();
+    trans.stopAll();
+    trans.cleanup();
+    return listener;
+  }
+
+  @Test
+  public void testHexOutput_md5() throws Exception {
+    MockRowListener results = executeHexTest( 2, false, "xyz" );
+    assertEquals( 1, results.getWritten().size() );
+    assertEquals( "d16fb36f0911f878998c136191af705e", results.getWritten().get( 0 )[1] );
+  }
+
+  @Test
+  public void testHexOutput_md5_compatibilityMode() throws Exception {
+    MockRowListener results = executeHexTest( 2, true, "xyz" );
+    assertEquals( 1, results.getWritten().size() );
+    assertEquals( "FD6FFD6F0911FD78FDFD1361FDFD705E", results.getWritten().get( 0 )[1] );
+  }
+
+  @Test
+  public void testHexOutput_sha1() throws Exception {
+    MockRowListener results = executeHexTest( 3, false, "xyz" );
+    assertEquals( 1, results.getWritten().size() );
+    assertEquals( "66b27417d37e024c46526c2f6d358a754fc552f3", results.getWritten().get( 0 )[1] );
+  }
+
+  @Test
+  public void testHexOutput_sha1_compatibilityMode() throws Exception {
+    MockRowListener results = executeHexTest( 3, true, "xyz" );
+    assertEquals( 1, results.getWritten().size() );
+    assertEquals( "66FD7417FD7E024C46526C2F6D35FD754FFD52FD", results.getWritten().get( 0 )[1] );
+  }
+
+  @Test
+  public void testHexOutput_sha256() throws Exception {
+    MockRowListener results = executeHexTest( 4, false, "xyz" );
+    assertEquals( 1, results.getWritten().size() );
+    assertEquals( "3608bca1e44ea6c4d268eb6db02260269892c0b42b86bbf1e77a6fa16c3c9282",
+      results.getWritten().get( 0 )[1] );
+  }
+
+  @Test
+  public void testHexOutput_sha256_compatibilityMode() throws Exception {
+    try {
+      executeHexTest( 4, true, "xyz" );
+      fail();
+    } catch ( KettleException e ) {
+      // expected, SHA-256 is not supported for compatibility mode
+    }
+  }
+}

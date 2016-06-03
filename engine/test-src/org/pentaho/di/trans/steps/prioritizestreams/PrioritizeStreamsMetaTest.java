@@ -48,16 +48,9 @@ public class PrioritizeStreamsMetaTest {
     List<String> attributes =
         Arrays.asList( "stepName" );
 
-    Map<String, String> getterMap = new HashMap<String, String>() {
-      {
-        put( "stepName", "getStepName" );
-      }
-    };
-    Map<String, String> setterMap = new HashMap<String, String>() {
-      {
-        put( "stepName", "setStepName" );
-      }
-    };
+    Map<String, String> getterMap = new HashMap<String, String>();
+    Map<String, String> setterMap = new HashMap<String, String>();
+
     FieldLoadSaveValidator<String[]> stringArrayLoadSaveValidator =
         new ArrayLoadSaveValidator<String>( new StringLoadSaveValidator(), 5 );
 
@@ -65,7 +58,6 @@ public class PrioritizeStreamsMetaTest {
     attrValidatorMap.put( "stepName", stringArrayLoadSaveValidator );
 
     Map<String, FieldLoadSaveValidator<?>> typeValidatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();
-    // typeValidatorMap.put( int[].class.getCanonicalName(), new PrimitiveIntArrayLoadSaveValidator( new IntLoadSaveValidator(), 1 ) );
 
     loadSaveTester =
         new LoadSaveTester( testMetaClass, attributes, getterMap, setterMap, attrValidatorMap, typeValidatorMap );

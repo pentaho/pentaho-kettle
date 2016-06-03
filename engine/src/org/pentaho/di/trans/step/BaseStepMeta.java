@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -46,7 +46,7 @@ import org.pentaho.di.core.logging.LoggingObjectType;
 import org.pentaho.di.core.logging.SimpleLoggingObject;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -111,6 +111,7 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
    *
    * @see java.lang.Object#clone()
    */
+  @Override
   public Object clone() {
     try {
       BaseStepMeta retval = (BaseStepMeta) super.clone();
@@ -189,7 +190,7 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
    *          the space The variable space to use to replace variables
    * @throws KettleStepException
    *           the kettle step exception
-   * @deprecated in favor of the getFields method with repository and metastore arguments
+   * @deprecated use {@link #getFields(RowMetaInterface, String, RowMetaInterface[], StepMeta, VariableSpace, Repository, IMetaStore)}
    */
   @Deprecated
   public void getFields( RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info, StepMeta nextStep,
@@ -239,7 +240,7 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
    *          The output step names
    * @param info
    *          The fields used as information by this step
-   * @deprecated
+   * @deprecated use {@link #analyseImpact(List, TransMeta, StepMeta, RowMetaInterface, String[], String[], RowMetaInterface, Repository, IMetaStore)}
    */
   @Deprecated
   public void analyseImpact( List<DatabaseImpact> impact, TransMeta transMeta, StepMeta stepMeta,
@@ -287,7 +288,7 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
    *          StepMeta object containing the complete step
    * @param prev
    *          Row containing meta-data for the input fields (no data)
-   * @deprecated
+   * @deprecated use {@link #getSQLStatements(TransMeta, StepMeta, RowMetaInterface, Repository, IMetaStore)}
    */
   @Deprecated
   public SQLStatement getSQLStatements( TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev ) throws KettleStepException {
@@ -356,7 +357,7 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
    * @return the required fields for this steps meta data.
    * @throws KettleException
    *           in case the required fields can't be determined
-   * @deprecated
+   * @deprecated use {@link #getRequiredFields(VariableSpace)}
    */
   @Deprecated
   public RowMetaInterface getRequiredFields() throws KettleException {
@@ -449,7 +450,7 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
    * @return the string
    * @throws KettleException
    *           the kettle exception
-   * @deprecated
+   * @deprecated use {@link #exportResources(VariableSpace, Map, ResourceNamingInterface, Repository, IMetaStore)}
    */
   @Deprecated
   public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
@@ -916,7 +917,7 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
           String repCode = XMLHandler.getTagValue( node, "repcode" );
           String description = XMLHandler.getTagValue( node, "description" );
           String tooltip = XMLHandler.getTagValue( node, "tooltip" );
-          int valueType = ValueMeta.getType( XMLHandler.getTagValue( node, "valuetype" ) );
+          int valueType = ValueMetaFactory.getIdForValueMeta( XMLHandler.getTagValue( node, "valuetype" ) );
           String parentId = XMLHandler.getTagValue( node, "parentid" );
 
           KettleAttribute attribute =
@@ -935,6 +936,7 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
    *
    * @see org.pentaho.di.trans.step.StepAttributesInterface#findParent(java.util.List, java.lang.String)
    */
+  @Override
   public KettleAttributeInterface findParent( List<KettleAttributeInterface> attributes, String parentId ) {
     if ( Const.isEmpty( parentId ) ) {
       return null;
@@ -952,6 +954,7 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
    *
    * @see org.pentaho.di.trans.step.StepAttributesInterface#findAttribute(java.lang.String)
    */
+  @Override
   public KettleAttributeInterface findAttribute( String key ) {
     for ( KettleAttributeInterface attribute : attributes ) {
       if ( attribute.getKey().equals( key ) ) {
@@ -966,6 +969,7 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
    *
    * @see org.pentaho.di.trans.step.StepAttributesInterface#getXmlCode(java.lang.String)
    */
+  @Override
   public String getXmlCode( String attributeKey ) {
     return findAttribute( attributeKey ).getXmlCode();
   }
@@ -975,6 +979,7 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
    *
    * @see org.pentaho.di.trans.step.StepAttributesInterface#getRepCode(java.lang.String)
    */
+  @Override
   public String getRepCode( String attributeKey ) {
     KettleAttributeInterface attr = findAttribute( attributeKey );
     return Const.isEmpty( attr.getRepCode() ) ? attr.getXmlCode() : attr.getRepCode();
@@ -985,6 +990,7 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
    *
    * @see org.pentaho.di.trans.step.StepAttributesInterface#getDescription(java.lang.String)
    */
+  @Override
   public String getDescription( String attributeKey ) {
     return findAttribute( attributeKey ).getDescription();
   }
@@ -994,6 +1000,7 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
    *
    * @see org.pentaho.di.trans.step.StepAttributesInterface#getTooltip(java.lang.String)
    */
+  @Override
   public String getTooltip( String attributeKey ) {
     return findAttribute( attributeKey ).getTooltip();
   }
@@ -1043,6 +1050,8 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
   /**
    * Load the referenced object
    *
+   * @deprecated use {@link #loadReferencedObject(int, Repository, IMetaStore, VariableSpace)}
+   *
    * @param meta
    *          The metadata that references
    * @param index
@@ -1080,11 +1089,23 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
     // provided for API (compile & runtime) compatibility with v4
   }
 
+  /**
+   * @deprecated use {@link #loadXML(Node, List, IMetaStore)}
+   * @param stepnode
+   * @param databases
+   * @throws KettleXMLException
+   */
   @Deprecated
   public void loadXML( Node stepnode, List<DatabaseMeta> databases ) throws KettleXMLException {
     // provided for API (compile & runtime) compatibility with v4
   }
 
+  /**
+   * @deprecated use {@link #loadXML(Node, List, IMetaStore)}
+   * @param stepnode
+   * @param databases
+   * @throws KettleXMLException
+   */
   @Deprecated
   public void loadXML( Node stepnode, List<DatabaseMeta> databases, Map<String, Counter> counters ) throws KettleXMLException {
     // provided for API (compile & runtime) compatibility with v4
@@ -1094,6 +1115,12 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
     // provided for API (compile & runtime) compatibility with v4
   }
 
+  /**
+   * @deprecated use {@link #saveRep(Repository, IMetaStore, ObjectId, ObjectId)
+   * @param stepnode
+   * @param databases
+   * @throws KettleXMLException
+   */
   @Deprecated
   public void saveRep( Repository rep, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     // provided for API (compile & runtime) compatibility with v4
@@ -1103,11 +1130,33 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
     // provided for API (compile & runtime) compatibility with v4
   }
 
+  /**
+   * @deprecated use {@link #check(List, TransMeta, StepMeta, RowMetaInterface, String[], String[], RowMetaInterface, VariableSpace, Repository, IMetaStore)}
+   * @param remarks
+   * @param transMeta
+   * @param stepMeta
+   * @param prev
+   * @param input
+   * @param output
+   * @param info
+   */
   @Deprecated
   public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
     RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info ) {
   }
 
+  /**
+   * @deprecated use {@link #check(List, TransMeta, StepMeta, RowMetaInterface, String[], String[], RowMetaInterface, VariableSpace, Repository, IMetaStore)}
+   * @param remarks
+   * @param transMeta
+   * @param stepMeta
+   * @param prev
+   * @param input
+   * @param output
+   * @param info
+   * @param repository
+   * @param metaStore
+   */
   @Deprecated
   public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
     RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, Repository repository,

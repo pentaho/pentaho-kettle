@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -44,10 +44,10 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleValueException;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaAndData;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.gui.GUIResource;
@@ -155,7 +155,7 @@ public class EnterValueDialog extends Dialog {
     fdlValueType.top = new FormAttachment( 0, margin );
     wlValueType.setLayoutData( fdlValueType );
     wValueType = new CCombo( shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER | SWT.READ_ONLY );
-    wValueType.setItems( ValueMeta.getTypes() );
+    wValueType.setItems( ValueMetaFactory.getValueMetaNames() );
     props.setLook( wValueType );
     fdValueType = new FormData();
     fdValueType.left = new FormAttachment( middle, 0 );
@@ -163,6 +163,7 @@ public class EnterValueDialog extends Dialog {
     fdValueType.right = new FormAttachment( 100, -margin );
     wValueType.setLayoutData( fdValueType );
     wValueType.addModifyListener( new ModifyListener() {
+      @Override
       public void modifyText( ModifyEvent arg0 ) {
         setFormats();
       }
@@ -248,16 +249,19 @@ public class EnterValueDialog extends Dialog {
 
     // Add listeners
     lsCancel = new Listener() {
+      @Override
       public void handleEvent( Event e ) {
         cancel();
       }
     };
     lsOK = new Listener() {
+      @Override
       public void handleEvent( Event e ) {
         ok();
       }
     };
     lsTest = new Listener() {
+      @Override
       public void handleEvent( Event e ) {
         test();
       }
@@ -268,6 +272,7 @@ public class EnterValueDialog extends Dialog {
     wTest.addListener( SWT.Selection, lsTest );
 
     lsDef = new SelectionAdapter() {
+      @Override
       public void widgetDefaultSelected( SelectionEvent e ) {
         ok();
       }
@@ -280,11 +285,13 @@ public class EnterValueDialog extends Dialog {
     // We also set the list of possible masks in the wFormat
     //
     wInputString.addModifyListener( new ModifyListener() {
+      @Override
       public void modifyText( ModifyEvent event ) {
         setFormats();
       }
     } );
     wValueType.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent event ) {
         setFormats();
       }
@@ -292,6 +299,7 @@ public class EnterValueDialog extends Dialog {
 
     // Detect [X] or ALT-F4 or something that kills this window...
     shell.addShellListener( new ShellAdapter() {
+      @Override
       public void shellClosed( ShellEvent e ) {
         cancel();
       }
@@ -319,7 +327,7 @@ public class EnterValueDialog extends Dialog {
 
     int formatIndex = wFormat.getSelectionIndex();
     String formatString = formatIndex >= 0 ? wFormat.getItem( formatIndex ) : "";
-    int type = ValueMeta.getType( wValueType.getText() );
+    int type = ValueMetaFactory.getIdForValueMeta( wValueType.getText() );
     String string = wInputString.getText();
 
     // remove white spaces if not a string field
@@ -418,7 +426,7 @@ public class EnterValueDialog extends Dialog {
 
   private ValueMetaAndData getValue( String valuename ) throws KettleValueException {
     try {
-      int valtype = ValueMeta.getType( wValueType.getText() );
+      int valtype = ValueMetaFactory.getIdForValueMeta( wValueType.getText() );
       ValueMetaAndData val = new ValueMetaAndData( valuename, wInputString.getText() );
 
       ValueMetaInterface valueMeta = ValueMetaFactory.cloneValueMeta( val.getValueMeta(), valtype );
@@ -430,7 +438,7 @@ public class EnterValueDialog extends Dialog {
       valueMeta.setPrecision( Const.toInt( wPrecision.getText(), -1 ) );
       val.setValueMeta( valueMeta );
 
-      ValueMetaInterface stringValueMeta = new ValueMeta( valuename, ValueMetaInterface.TYPE_STRING );
+      ValueMetaInterface stringValueMeta = new ValueMetaString( valuename );
       stringValueMeta.setConversionMetadata( valueMeta );
 
       Object targetData = stringValueMeta.convertDataUsingConversionMetaData( valueData );

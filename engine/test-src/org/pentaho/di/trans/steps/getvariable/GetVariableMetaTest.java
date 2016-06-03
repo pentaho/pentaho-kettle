@@ -21,27 +21,25 @@
 ******************************************************************************/
 package org.pentaho.di.trans.steps.getvariable;
 
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
 import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.plugins.PluginRegistry;
-import org.pentaho.di.core.row.value.ValueMetaBase;
+import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.steps.getvariable.GetVariableMeta.FieldDefinition;
 import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
 import org.pentaho.di.trans.steps.loadsave.initializer.InitializerInterface;
 import org.pentaho.di.trans.steps.loadsave.validator.ArrayLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
-import org.pentaho.di.trans.steps.loadsave.validator.IntLoadSaveValidator;
-import org.pentaho.di.trans.steps.loadsave.validator.NonZeroIntLoadSaveValidator;
-import org.pentaho.di.trans.steps.loadsave.validator.PrimitiveIntArrayLoadSaveValidator;
-import org.pentaho.di.trans.steps.loadsave.validator.StringLoadSaveValidator;
 
 public class GetVariableMetaTest implements InitializerInterface<StepMetaInterface> {
   LoadSaveTester loadSaveTester;
@@ -51,56 +49,40 @@ public class GetVariableMetaTest implements InitializerInterface<StepMetaInterfa
   public void setUpLoadSave() throws Exception {
     KettleEnvironment.init();
     PluginRegistry.init( true );
-    List<String> attributes =
-        Arrays.asList( "fieldName", "variableString", "fieldFormat", "fieldType", "fieldLength", "fieldPrecision", "currency", "decimal", "group", "trimType" );
+    List<String> attributes = Arrays.asList( "fieldDefinitions" );
 
     Map<String, String> getterMap = new HashMap<String, String>() {
       {
-        put( "fieldName", "getFieldName" );
-        put( "variableString", "getVariableString" );
-        put( "fieldFormat", "getFieldFormat" );
-        put( "fieldType", "getFieldType" );
-        put( "fieldLength", "getFieldLength" );
-        put( "fieldPrecision", "getFieldPrecision" );
-        put( "currency", "getCurrency" );
-        put( "decimal", "getDecimal" );
-        put( "group", "getGroup" );
-        put( "trimType", "getTrimType" );
+        put( "fieldDefinitions", "getFieldDefinitions" );
       }
     };
     Map<String, String> setterMap = new HashMap<String, String>() {
       {
-        put( "fieldName", "setFieldName" );
-        put( "variableString", "setVariableString" );
-        put( "fieldFormat", "setFieldFormat" );
-        put( "fieldType", "setFieldType" );
-        put( "fieldLength", "setFieldLength" );
-        put( "fieldPrecision", "setFieldPrecision" );
-        put( "currency", "setCurrency" );
-        put( "decimal", "setDecimal" );
-        put( "group", "setGroup" );
-        put( "trimType", "setTrimType" );
+        put( "fieldDefinitions", "setFieldDefinitions" );
       }
     };
-    FieldLoadSaveValidator<String[]> stringArrayLoadSaveValidator =
-        new ArrayLoadSaveValidator<String>( new StringLoadSaveValidator(), 5 );
+
+    FieldDefinition fieldDefinition = new FieldDefinition();
+    fieldDefinition.setFieldName( "fieldName" );
+    fieldDefinition.setFieldLength( 4 );
+    fieldDefinition.setCurrency( null );
+    fieldDefinition.setFieldPrecision( 5 );
+    fieldDefinition.setFieldType( ValueMetaInterface.TYPE_NUMBER );
+    fieldDefinition.setGroup( "group" );
+    fieldDefinition.setVariableString( "variableString" );
+
+    FieldLoadSaveValidator<FieldDefinition[]> fieldDefinitionLoadSaveValidator =
+        new ArrayLoadSaveValidator<FieldDefinition>( new FieldDefinitionLoadSaveValidator( fieldDefinition ), 5 );
 
     Map<String, FieldLoadSaveValidator<?>> attrValidatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();
-    attrValidatorMap.put( "fieldName", stringArrayLoadSaveValidator );
-    attrValidatorMap.put( "variableString", stringArrayLoadSaveValidator );
-    attrValidatorMap.put( "fieldFormat", stringArrayLoadSaveValidator );
-    attrValidatorMap.put( "currency", stringArrayLoadSaveValidator );
-    attrValidatorMap.put( "decimal", stringArrayLoadSaveValidator );
-    attrValidatorMap.put( "group", stringArrayLoadSaveValidator );
-    attrValidatorMap.put( "trimType", new PrimitiveIntArrayLoadSaveValidator( new IntLoadSaveValidator( ValueMetaBase.getTrimTypeCodes().length ), 5 ) );
-    attrValidatorMap.put( "fieldLength", new PrimitiveIntArrayLoadSaveValidator( new IntLoadSaveValidator( 100 ), 5 ) );
-    attrValidatorMap.put( "fieldPrecision", new PrimitiveIntArrayLoadSaveValidator( new IntLoadSaveValidator( 9 ), 5 ) );
-    attrValidatorMap.put( "fieldType", new PrimitiveIntArrayLoadSaveValidator( new NonZeroIntLoadSaveValidator( 7 ), 5 ) );
+    attrValidatorMap.put( "fieldName", fieldDefinitionLoadSaveValidator );
 
     Map<String, FieldLoadSaveValidator<?>> typeValidatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();
+    typeValidatorMap.put( FieldDefinition[].class.getCanonicalName(), fieldDefinitionLoadSaveValidator );
+
     loadSaveTester =
-        new LoadSaveTester( testMetaClass, attributes, new ArrayList<String>(), new ArrayList<String>(),
-            getterMap, setterMap, attrValidatorMap, typeValidatorMap, this );
+        new LoadSaveTester( testMetaClass, attributes, Collections.emptyList(), Collections.emptyList(), getterMap,
+            setterMap, attrValidatorMap, typeValidatorMap, this );
   }
 
   // Call the allocate method on the LoadSaveTester meta class
@@ -113,5 +95,24 @@ public class GetVariableMetaTest implements InitializerInterface<StepMetaInterfa
   @Test
   public void testSerialization() throws KettleException {
     loadSaveTester.testSerialization();
+  }
+
+  public static class FieldDefinitionLoadSaveValidator implements FieldLoadSaveValidator<FieldDefinition> {
+
+    private final FieldDefinition defaultValue;
+
+    public FieldDefinitionLoadSaveValidator( FieldDefinition defaultValue ) {
+      this.defaultValue = defaultValue;
+    }
+
+    @Override
+    public FieldDefinition getTestObject() {
+      return defaultValue;
+    }
+
+    @Override
+    public boolean validateTestObject( FieldDefinition testObject, Object actual ) {
+      return EqualsBuilder.reflectionEquals( testObject, actual );
+    }
   }
 }

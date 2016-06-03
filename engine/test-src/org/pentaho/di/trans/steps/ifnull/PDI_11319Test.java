@@ -1,7 +1,7 @@
 /*
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2014 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  * **************************************************************************
  *
@@ -20,16 +20,16 @@
 
 package org.pentaho.di.trans.steps.ifnull;
 
+import java.io.File;
+import java.util.List;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.internal.ExactComparisonCriteria;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.trans.steps.ifnull.IfNullMeta.ValueTypes;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
-
-import java.io.File;
-import java.util.List;
 
 
 public class PDI_11319Test {
@@ -57,9 +57,13 @@ public class PDI_11319Test {
     meta.loadXML( nullIfStep, null, (IMetaStore) null );
 
     Assert.assertFalse( "Set Empty String is true", meta.isSetEmptyStringAll() );
-    boolean[] expected = new boolean[] { false };
-    ExactComparisonCriteria criteria = new ExactComparisonCriteria();
-    criteria.arrayEquals( "Set empty string value type works incorrectly", expected, meta.isSetTypeEmptyString() );
+    boolean[] expected = { false };
+    ValueTypes[] actual = meta.getValueTypes();
+    Assert.assertEquals( expected.length, actual.length );
+    for ( int i = 0; i < expected.length; i++ ) {
+      Assert.assertEquals( "Set empty string value type works incorrectly", expected[i], actual[i]
+          .isSetTypeEmptyString() );
+    }
   }
 
   /**
@@ -71,9 +75,13 @@ public class PDI_11319Test {
     meta.loadXML( nullIfStep, null, (IMetaStore) null );
 
     Assert.assertFalse( "Set Empty String is true", meta.isSetEmptyStringAll() );
-    boolean[] expected = new boolean[] { true, false, false };
-    ExactComparisonCriteria criteria = new ExactComparisonCriteria();
-    criteria.arrayEquals( "Set empty string value type works incorrectly", expected, meta.isSetTypeEmptyString() );
+    boolean[] expected = { true, false, false };
+    ValueTypes[] actual = meta.getValueTypes();
+    Assert.assertEquals( expected.length, actual.length );
+    for ( int i = 0; i < expected.length; i++ ) {
+      Assert.assertEquals( "Set empty string value type works incorrectly", expected[i], actual[i]
+          .isSetTypeEmptyString() );
+    }
   }
 
   private Node getNullIfStep( Node doc ) {

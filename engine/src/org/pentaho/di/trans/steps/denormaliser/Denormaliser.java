@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -38,10 +38,10 @@ import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueDataUtil;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaBase;
 import org.pentaho.di.core.row.value.ValueMetaDate;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -75,6 +75,7 @@ public class Denormaliser extends BaseStep implements StepInterface {
     data = (DenormaliserData) stepDataInterface;
   }
 
+  @Override
   public boolean processRow( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
     Object[] r = getRow(); // get row!
 
@@ -268,7 +269,7 @@ public class Denormaliser extends BaseStep implements StepInterface {
           if ( field.getTargetType() != ValueMetaInterface.TYPE_INTEGER ) {
             resultValue =
                 data.outputRowMeta.getValueMeta( outputIndex ).convertData(
-                    new ValueMeta( "num_values_aggregation", ValueMetaInterface.TYPE_INTEGER ), resultValue );
+                    new ValueMetaInteger( "num_values_aggregation" ), resultValue );
           }
           break;
         default:
@@ -440,6 +441,7 @@ public class Denormaliser extends BaseStep implements StepInterface {
     }
   }
 
+  @Override
   public boolean init( StepMetaInterface smi, StepDataInterface sdi ) {
     meta = (DenormaliserMeta) smi;
     data = (DenormaliserData) sdi;

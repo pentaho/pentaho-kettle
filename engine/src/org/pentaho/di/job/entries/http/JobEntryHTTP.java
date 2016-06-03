@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -21,9 +21,6 @@
  ******************************************************************************/
 
 package org.pentaho.di.job.entries.http;
-
-import org.pentaho.di.job.entry.validator.AndValidator;
-import org.pentaho.di.job.entry.validator.JobEntryValidatorUtils;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -52,8 +49,7 @@ import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
-import org.pentaho.di.core.row.ValueMeta;
-import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -61,6 +57,8 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
+import org.pentaho.di.job.entry.validator.AndValidator;
+import org.pentaho.di.job.entry.validator.JobEntryValidatorUtils;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.resource.ResourceEntry;
@@ -133,6 +131,7 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
     headerValue = new String[nrHeaders];
   }
 
+  @Override
   public Object clone() {
     JobEntryHTTP je = (JobEntryHTTP) super.clone();
     if ( headerName != null ) {
@@ -144,6 +143,7 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
     return je;
   }
 
+  @Override
   public String getXML() {
     StringBuilder retval = new StringBuilder( 300 );
 
@@ -182,6 +182,7 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
     return retval.toString();
   }
 
+  @Override
   public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers,
     Repository rep, IMetaStore metaStore ) throws KettleXMLException {
     try {
@@ -220,6 +221,7 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
     }
   }
 
+  @Override
   public void loadRep( Repository rep, IMetaStore metaStore, ObjectId id_jobentry, List<DatabaseMeta> databases,
     List<SlaveServer> slaveServers ) throws KettleException {
     try {
@@ -260,6 +262,7 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
     }
   }
 
+  @Override
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_job ) throws KettleException {
     try {
       rep.saveJobEntryAttribute( id_job, getObjectId(), "url", url );
@@ -392,6 +395,7 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
    * application server for example) several HTTP's are running at the same time, you get into problems because the
    * System.setProperty() calls are system wide!
    */
+  @Override
   public synchronized Result execute( Result previousResult, int nr ) {
     Result result = previousResult;
     result.setResult( false );
@@ -419,7 +423,7 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
       resultRows = new ArrayList<RowMetaAndData>();
       RowMetaAndData row = new RowMetaAndData();
       row.addValue(
-        new ValueMeta( urlFieldnameToUse, ValueMetaInterface.TYPE_STRING ), environmentSubstitute( url ) );
+        new ValueMetaString( urlFieldnameToUse ), environmentSubstitute( url ) );
       resultRows.add( row );
     }
 
@@ -452,6 +456,7 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
 
         if ( !Const.isEmpty( username ) ) {
           Authenticator.setDefault( new Authenticator() {
+            @Override
             protected PasswordAuthentication getPasswordAuthentication() {
               String realPassword = Encr.decryptPasswordOptionallyEncrypted( environmentSubstitute( password ) );
               return new PasswordAuthentication( environmentSubstitute( username ), realPassword != null
@@ -605,6 +610,7 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
     return result;
   }
 
+  @Override
   public boolean evaluates() {
     return true;
   }
@@ -692,6 +698,7 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
     this.targetFilenameExtention = uploadFilenameExtention;
   }
 
+  @Override
   public List<ResourceReference> getResourceDependencies( JobMeta jobMeta ) {
     List<ResourceReference> references = super.getResourceDependencies( jobMeta );
     String realUrl = jobMeta.environmentSubstitute( url );

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -68,7 +68,7 @@ public class IfNullDialog extends BaseStepDialog implements StepDialogInterface 
 
   private IfNullMeta input;
 
-  private int FieldsRows = 0;
+  private int fieldsRows = 0;
   private ModifyListener lsMod;
   private ModifyListener oldlsMod;
   private int middle;
@@ -137,7 +137,7 @@ public class IfNullDialog extends BaseStepDialog implements StepDialogInterface 
     middle = props.getMiddlePct();
     margin = Const.MARGIN;
 
-    FieldsRows = input.getFieldName().length;
+    fieldsRows = input.getFields().length;
 
     shell.setLayout( formLayout );
     shell.setText( BaseMessages.getString( PKG, "IfNullDialog.Shell.Title" ) );
@@ -291,7 +291,7 @@ public class IfNullDialog extends BaseStepDialog implements StepDialogInterface 
     fdlValueTypes.top = new FormAttachment( wSelectValuesType, margin );
     wlValueTypes.setLayoutData( fdlValueTypes );
 
-    int ValueTypesRows = input.getFieldName().length;
+    int valueTypesRows = input.getValueTypes().length;
     int FieldsCols = 4;
 
     ColumnInfo[] colval = new ColumnInfo[FieldsCols];
@@ -316,7 +316,7 @@ public class IfNullDialog extends BaseStepDialog implements StepDialogInterface 
     colval[1].setUsingVariables( true );
     wValueTypes =
       new TableView(
-        transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colval, ValueTypesRows, oldlsMod, props );
+        transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colval, valueTypesRows, oldlsMod, props );
 
     fdValueTypes = new FormData();
     fdValueTypes.left = new FormAttachment( 0, 0 );
@@ -442,7 +442,7 @@ public class IfNullDialog extends BaseStepDialog implements StepDialogInterface 
 
     wFields =
       new TableView(
-        transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, oldlsMod, props );
+        transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, fieldsRows, oldlsMod, props );
 
     fdFields = new FormData();
     fdFields.left = new FormAttachment( 0, 0 );
@@ -556,23 +556,23 @@ public class IfNullDialog extends BaseStepDialog implements StepDialogInterface 
     wSelectValuesType.setSelection( input.isSelectValuesType() );
 
     Table table = wValueTypes.table;
-    if ( input.getTypeName().length > 0 ) {
+    if ( input.getValueTypes().length > 0 ) {
       table.removeAll();
     }
-    for ( int i = 0; i < input.getTypeName().length; i++ ) {
+    for ( int i = 0; i < input.getValueTypes().length; i++ ) {
       TableItem ti = new TableItem( table, SWT.NONE );
       ti.setText( 0, "" + ( i + 1 ) );
-      if ( input.getTypeName()[i] != null ) {
-        ti.setText( 1, input.getTypeName()[i] );
+      if ( input.getValueTypes()[i].getTypeName() != null ) {
+        ti.setText( 1, input.getValueTypes()[i].getTypeName() );
       }
-      if ( input.getTypeReplaceValue()[i] != null ) {
-        ti.setText( 2, input.getTypeReplaceValue()[i] );
+      if ( input.getValueTypes()[i].getTypereplaceValue() != null ) {
+        ti.setText( 2, input.getValueTypes()[i].getTypereplaceValue() );
       }
-      if ( input.getTypeReplaceMask()[i] != null ) {
-        ti.setText( 3, input.getTypeReplaceMask()[i] );
+      if ( input.getValueTypes()[i].getTypereplaceMask() != null ) {
+        ti.setText( 3, input.getValueTypes()[i].getTypereplaceMask() );
       }
-      ti.setText( 4, input.isSetTypeEmptyString()[i]
-        ? BaseMessages.getString( PKG, "System.Combo.Yes" ) : BaseMessages.getString( PKG, "System.Combo.No" ) );
+      ti.setText( 4, input.getValueTypes()[i].isSetTypeEmptyString() ? BaseMessages.getString( PKG, "System.Combo.Yes" )
+          : BaseMessages.getString( PKG, "System.Combo.No" ) );
 
     }
 
@@ -581,22 +581,22 @@ public class IfNullDialog extends BaseStepDialog implements StepDialogInterface 
     wValueTypes.optWidth( true );
 
     table = wFields.table;
-    if ( input.getFieldName().length > 0 ) {
+    if ( input.getFields().length > 0 ) {
       table.removeAll();
     }
-    for ( int i = 0; i < input.getFieldName().length; i++ ) {
+    for ( int i = 0; i < input.getFields().length; i++ ) {
       TableItem ti = new TableItem( table, SWT.NONE );
       ti.setText( 0, "" + ( i + 1 ) );
-      if ( input.getFieldName()[i] != null ) {
-        ti.setText( 1, input.getFieldName()[i] );
+      if ( input.getFields()[i].getFieldName() != null ) {
+        ti.setText( 1, input.getFields()[i].getFieldName() );
       }
-      if ( input.getReplaceValue()[i] != null ) {
-        ti.setText( 2, input.getReplaceValue()[i] );
+      if ( input.getFields()[i].getReplaceValue() != null ) {
+        ti.setText( 2, input.getFields()[i].getReplaceValue() );
       }
-      if ( input.getReplaceMask()[i] != null ) {
-        ti.setText( 3, input.getReplaceMask()[i] );
+      if ( input.getFields()[i].getReplaceMask() != null ) {
+        ti.setText( 3, input.getFields()[i].getReplaceMask() );
       }
-      ti.setText( 4, input.isSetEmptyString()[i]
+      ti.setText( 4, input.getFields()[i].isSetEmptyString()
         ? BaseMessages.getString( PKG, "System.Combo.Yes" ) : BaseMessages.getString( PKG, "System.Combo.No" ) );
     }
 
@@ -645,31 +645,30 @@ public class IfNullDialog extends BaseStepDialog implements StepDialogInterface 
     //CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < nrtypes; i++ ) {
       TableItem ti = wValueTypes.getNonEmpty( i );
-      input.getTypeName()[i] = ti.getText( 1 );
-      input.isSetTypeEmptyString()[i] =
-        BaseMessages.getString( PKG, "System.Combo.Yes" ).equalsIgnoreCase( ti.getText( 4 ) );
-      if ( input.isSetTypeEmptyString()[i] ) {
-        input.getTypeReplaceValue()[i] = "";
-        input.getTypeReplaceMask()[i] = "";
+      input.getValueTypes()[i].setTypeName( ti.getText( 1 ) );
+      input.getValueTypes()[i].setTypeEmptyString( BaseMessages.getString( PKG, "System.Combo.Yes" ).equalsIgnoreCase(
+          ti.getText( 4 ) ) );
+      if ( input.getValueTypes()[i].isSetTypeEmptyString() ) {
+        input.getValueTypes()[i].setTypereplaceValue( "" );
+        input.getValueTypes()[i].setTypereplaceMask( "" );
       } else {
-        input.getTypeReplaceValue()[i] = ti.getText( 2 );
-        input.getTypeReplaceMask()[i] = ti.getText( 3 );
+        input.getValueTypes()[i].setTypereplaceValue( ti.getText( 2 ) );
+        input.getValueTypes()[i].setTypereplaceMask( ti.getText( 3 ) );
       }
-
     }
 
     //CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < nrfields; i++ ) {
       TableItem ti = wFields.getNonEmpty( i );
-      input.getFieldName()[i] = ti.getText( 1 );
-      input.isSetEmptyString()[i] =
-        BaseMessages.getString( PKG, "System.Combo.Yes" ).equalsIgnoreCase( ti.getText( 4 ) );
-      if ( input.isSetEmptyString()[i] ) {
-        input.getReplaceValue()[i] = "";
-        input.getReplaceMask()[i] = "";
+      input.getFields()[i].setFieldName( ti.getText( 1 ) );
+      input.getFields()[i].setEmptyString( BaseMessages.getString( PKG, "System.Combo.Yes" ).equalsIgnoreCase( ti
+          .getText( 4 ) ) );
+      if ( input.getFields()[i].isSetEmptyString() ) {
+        input.getFields()[i].setReplaceValue( "" );
+        input.getFields()[i].setReplaceMask( "" );
       } else {
-        input.getReplaceValue()[i] = ti.getText( 2 );
-        input.getReplaceMask()[i] = ti.getText( 3 );
+        input.getFields()[i].setReplaceValue( ti.getText( 2 ) );
+        input.getFields()[i].setReplaceMask( ti.getText( 3 ) );
       }
     }
     dispose();

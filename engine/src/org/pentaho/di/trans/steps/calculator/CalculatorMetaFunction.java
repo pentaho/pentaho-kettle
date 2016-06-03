@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,8 +24,8 @@ package org.pentaho.di.trans.steps.calculator;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.ObjectId;
@@ -437,6 +437,7 @@ public class CalculatorMetaFunction implements Cloneable {
     // all null
   }
 
+  @Override
   public boolean equals( Object obj ) {
     if ( obj != null && ( obj.getClass().equals( this.getClass() ) ) ) {
       CalculatorMetaFunction mf = (CalculatorMetaFunction) obj;
@@ -446,6 +447,7 @@ public class CalculatorMetaFunction implements Cloneable {
     return false;
   }
 
+  @Override
   public Object clone() {
     try {
       CalculatorMetaFunction retval = (CalculatorMetaFunction) super.clone();
@@ -465,7 +467,7 @@ public class CalculatorMetaFunction implements Cloneable {
     xml += XMLHandler.addTagValue( "field_a", fieldA );
     xml += XMLHandler.addTagValue( "field_b", fieldB );
     xml += XMLHandler.addTagValue( "field_c", fieldC );
-    xml += XMLHandler.addTagValue( "value_type", ValueMeta.getTypeDesc( valueType ) );
+    xml += XMLHandler.addTagValue( "value_type", ValueMetaFactory.getValueMetaName( valueType ) );
     xml += XMLHandler.addTagValue( "value_length", valueLength );
     xml += XMLHandler.addTagValue( "value_precision", valuePrecision );
     xml += XMLHandler.addTagValue( "remove", removedFromResult );
@@ -485,7 +487,7 @@ public class CalculatorMetaFunction implements Cloneable {
     fieldA = XMLHandler.getTagValue( calcnode, "field_a" );
     fieldB = XMLHandler.getTagValue( calcnode, "field_b" );
     fieldC = XMLHandler.getTagValue( calcnode, "field_c" );
-    valueType = ValueMeta.getType( XMLHandler.getTagValue( calcnode, "value_type" ) );
+    valueType = ValueMetaFactory.getIdForValueMeta( XMLHandler.getTagValue( calcnode, "value_type" ) );
     valueLength = Const.toInt( XMLHandler.getTagValue( calcnode, "value_length" ), -1 );
     valuePrecision = Const.toInt( XMLHandler.getTagValue( calcnode, "value_precision" ), -1 );
     removedFromResult = "Y".equalsIgnoreCase( XMLHandler.getTagValue( calcnode, "remove" ) );
@@ -534,7 +536,7 @@ public class CalculatorMetaFunction implements Cloneable {
     rep.saveStepAttribute( id_transformation, id_step, nr, "field_a", fieldA );
     rep.saveStepAttribute( id_transformation, id_step, nr, "field_b", fieldB );
     rep.saveStepAttribute( id_transformation, id_step, nr, "field_c", fieldC );
-    rep.saveStepAttribute( id_transformation, id_step, nr, "value_type", ValueMeta.getTypeDesc( valueType ) );
+    rep.saveStepAttribute( id_transformation, id_step, nr, "value_type", ValueMetaFactory.getValueMetaName( valueType ) );
     rep.saveStepAttribute( id_transformation, id_step, nr, "value_length", valueLength );
     rep.saveStepAttribute( id_transformation, id_step, nr, "value_precision", valuePrecision );
     rep.saveStepAttribute( id_transformation, id_step, nr, "remove", removedFromResult );
@@ -550,7 +552,7 @@ public class CalculatorMetaFunction implements Cloneable {
     fieldA = rep.getStepAttributeString( id_step, nr, "field_a" );
     fieldB = rep.getStepAttributeString( id_step, nr, "field_b" );
     fieldC = rep.getStepAttributeString( id_step, nr, "field_c" );
-    valueType = ValueMeta.getType( rep.getStepAttributeString( id_step, nr, "value_type" ) );
+    valueType = ValueMetaFactory.getIdForValueMeta( rep.getStepAttributeString( id_step, nr, "value_type" ) );
     valueLength = (int) rep.getStepAttributeInteger( id_step, nr, "value_length" );
     valuePrecision = (int) rep.getStepAttributeInteger( id_step, nr, "value_precision" );
     removedFromResult = rep.getStepAttributeBoolean( id_step, nr, "remove" );

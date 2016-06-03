@@ -109,6 +109,7 @@ public class MultiMergeJoinMeta extends BaseStepMeta implements StepMetaInterfac
     this.keyFields = keyFields;
   }
 
+  @Override
   public boolean excludeFromRowLayoutVerification() {
     return true;
   }
@@ -117,6 +118,7 @@ public class MultiMergeJoinMeta extends BaseStepMeta implements StepMetaInterfac
     super(); // allocate BaseStepMeta
   }
 
+  @Override
   public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     readData( stepnode );
   }
@@ -125,10 +127,11 @@ public class MultiMergeJoinMeta extends BaseStepMeta implements StepMetaInterfac
     keyFields = new String[nrKeys];
   }
 
+  @Override
   public Object clone() {
     MultiMergeJoinMeta retval = (MultiMergeJoinMeta) super.clone();
-    int nrKeys = keyFields.length;
-    int nrSteps = inputSteps.length;
+    int nrKeys = keyFields == null ? 0 : keyFields.length;
+    int nrSteps = inputSteps == null ? 0 : inputSteps.length;
     retval.allocateKeys( nrKeys );
     retval.allocateInputSteps( nrSteps );
     System.arraycopy( keyFields, 0, retval.keyFields, 0, nrKeys );
@@ -136,6 +139,7 @@ public class MultiMergeJoinMeta extends BaseStepMeta implements StepMetaInterfac
     return retval;
   }
 
+  @Override
   public String getXML() {
     StringBuilder retval = new StringBuilder();
 
@@ -193,11 +197,13 @@ public class MultiMergeJoinMeta extends BaseStepMeta implements StepMetaInterfac
     }
   }
 
+  @Override
   public void setDefault() {
     joinType = join_types[0];
     allocateKeys( 0 );
   }
 
+  @Override
   public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
     throws KettleException {
     try {
@@ -217,14 +223,18 @@ public class MultiMergeJoinMeta extends BaseStepMeta implements StepMetaInterfac
         String stepName = rep.getStepAttributeString( id_step, "step" + i );
         getStepIOMeta().addStream(
             new Stream( StreamType.INFO, null, BaseMessages.getString( PKG, "MultiMergeJoin.InfoStream.Description" ),
-                StreamIcon.INFO, null ) );
+                StreamIcon.INFO, stepName ) );
         inputSteps[i] = stepName;
       }
-      List<StreamInterface> infoStreams = getStepIOMeta().getInfoStreams();
-
-      for ( int i = 0; i < infoStreams.size(); i++ ) {
-        infoStreams.get( i ).setSubject( rep.getStepAttributeString( id_step, "step" + i ) );
-      }
+      // This next bit is completely unnecessary if you just pass the step name into
+      // the constructor above. That sets the subject to the step name in one pass
+      // instead of a second one.
+      // MB - 5/2016
+      //
+      // List<StreamInterface> infoStreams = getStepIOMeta().getInfoStreams();
+      // for ( int i = 0; i < infoStreams.size(); i++ ) {
+      //   infoStreams.get( i ).setSubject( rep.getStepAttributeString( id_step, "step" + i ) );
+      // }
 
       joinType = rep.getStepAttributeString( id_step, "join_type" );
     } catch ( Exception e ) {
@@ -240,6 +250,7 @@ public class MultiMergeJoinMeta extends BaseStepMeta implements StepMetaInterfac
     }
   }
 
+  @Override
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
     throws KettleException {
     try {
@@ -247,12 +258,19 @@ public class MultiMergeJoinMeta extends BaseStepMeta implements StepMetaInterfac
         rep.saveStepAttribute( id_transformation, id_step, i, "keys", keyFields[i] );
       }
 
-      List<StreamInterface> infoStreams = getStepIOMeta().getInfoStreams();
-
-      rep.saveStepAttribute( id_transformation, id_step, "number_input", infoStreams.size() );
-      for ( int i = 0; i < infoStreams.size(); i++ ) {
-        rep.saveStepAttribute( id_transformation, id_step, "step" + i, infoStreams.get( i ).getStepname() );
+      String[] inputStepsNames  = inputSteps != null ? inputSteps : ArrayUtils.EMPTY_STRING_ARRAY;
+      rep.saveStepAttribute( id_transformation, id_step, "number_input", inputStepsNames.length );
+      for ( int i = 0; i < inputStepsNames.length; i++ ) {
+        rep.saveStepAttribute( id_transformation, id_step, "step" + i, inputStepsNames[ i ] );
       }
+//      The following was the old way of persisting this step to the repository. This was inconsistent with
+//      how getXML works, and also fails the load/save tester
+//      List<StreamInterface> infoStreams = getStepIOMeta().getInfoStreams();
+//      rep.saveStepAttribute( id_transformation, id_step, "number_input", infoStreams.size() );
+//      for ( int i = 0; i < infoStreams.size(); i++ ) {
+//        rep.saveStepAttribute( id_transformation, id_step, "step" + i, infoStreams.get( i ).getStepname() );
+//      }
+      // inputSteps[i]
       rep.saveStepAttribute( id_transformation, id_step, "join_type", getJoinType() );
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString( PKG, "MultiMergeJoinMeta.Exception.UnableToSaveStepInfo" )
@@ -260,6 +278,7 @@ public class MultiMergeJoinMeta extends BaseStepMeta implements StepMetaInterfac
     }
   }
 
+  @Override
   public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
       String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
       IMetaStore metaStore ) {
@@ -273,6 +292,7 @@ public class MultiMergeJoinMeta extends BaseStepMeta implements StepMetaInterfac
     remarks.add( cr );
   }
 
+  @Override
   public void getFields( RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep,
       VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     // We don't have any input fields here in "r" as they are all info fields.
@@ -292,15 +312,18 @@ public class MultiMergeJoinMeta extends BaseStepMeta implements StepMetaInterfac
     return;
   }
 
+  @Override
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta tr,
       Trans trans ) {
     return new MultiMergeJoin( stepMeta, stepDataInterface, cnr, tr, trans );
   }
 
+  @Override
   public StepDataInterface getStepData() {
     return new MultiMergeJoinData();
   }
 
+  @Override
   public void resetStepIoMeta() {
     // Don't reset!
   }

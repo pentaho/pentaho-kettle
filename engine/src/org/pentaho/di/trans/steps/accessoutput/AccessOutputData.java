@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,6 +22,8 @@
 
 package org.pentaho.di.trans.steps.accessoutput;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,6 +32,7 @@ import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
 
 import com.healthmarketscience.jackcess.Column;
+import com.healthmarketscience.jackcess.Cursor;
 import com.healthmarketscience.jackcess.Database;
 import com.healthmarketscience.jackcess.Table;
 
@@ -40,7 +43,6 @@ import com.healthmarketscience.jackcess.Table;
 public class AccessOutputData extends BaseStepData implements StepDataInterface {
   public Database db;
   public Table table;
-  public List<Column> columns;
   public List<Object[]> rows;
   public RowMetaInterface outputRowMeta;
   public boolean oneFileOpened;
@@ -51,4 +53,39 @@ public class AccessOutputData extends BaseStepData implements StepDataInterface 
     oneFileOpened = false;
   }
 
+  void createDatabase( File databaseFile ) throws IOException {
+    db = Database.create( databaseFile );
+  }
+
+  void openDatabase( File databaseFile ) throws IOException {
+    db = Database.open( databaseFile );
+  }
+
+  void closeDatabase() throws IOException {
+    db.close();
+  }
+
+  void createTable( String tableName, RowMetaInterface rowMeta ) throws IOException {
+    List<Column> columns = AccessOutputMeta.getColumns( rowMeta );
+    db.createTable( tableName, columns );
+    table = db.getTable( tableName );
+  }
+
+  void addRowToTable( Object... row ) throws IOException {
+    table.addRow( row );
+  }
+
+  void addRowsToTable( List<Object[]> rows ) throws IOException {
+    table.addRows( rows );
+  }
+
+  void truncateTable() throws IOException {
+    if ( table == null ) {
+      return;
+    }
+    Cursor tableRows = Cursor.createCursor( table );
+    while ( tableRows.moveToNextRow() ) {
+      tableRows.deleteCurrentRow();
+    }
+  }
 }

@@ -22,8 +22,14 @@
 
 package org.pentaho.di.trans.steps.rowgenerator;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -46,13 +52,6 @@ import org.pentaho.di.trans.steps.loadsave.validator.PrimitiveIntArrayLoadSaveVa
 import org.pentaho.di.trans.steps.loadsave.validator.StringLoadSaveValidator;
 import org.pentaho.metastore.api.IMetaStore;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 public class RowGeneratorMetaTest implements InitializerInterface<StepMetaInterface> {
 
   private Repository rep;
@@ -62,7 +61,7 @@ public class RowGeneratorMetaTest implements InitializerInterface<StepMetaInterf
   private final String launchVariable = "${ROW_LIMIT}";
 
   private final String rowGeneratorRowLimitCode = "limit";
-  private LoadSaveTester loadSaveTester;
+  private LoadSaveTester<?> loadSaveTester;
   private Class<RowGeneratorMeta> testMetaClass = RowGeneratorMeta.class;
 
   @Before

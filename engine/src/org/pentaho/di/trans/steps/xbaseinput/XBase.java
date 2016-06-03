@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -32,8 +32,11 @@ import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaBoolean;
+import org.pentaho.di.core.row.value.ValueMetaDate;
+import org.pentaho.di.core.row.value.ValueMetaNumber;
+import org.pentaho.di.core.row.value.ValueMetaString;
 
 import com.linuxense.javadbf.DBFException;
 import com.linuxense.javadbf.DBFField;
@@ -114,24 +117,24 @@ public class XBase {
           case DBFField.FIELD_TYPE_C: // Character
             // case DBFField.FIELD_TYPE_P: // Picture
             debug = "character field";
-            value = new ValueMeta( field.getName(), ValueMetaInterface.TYPE_STRING );
+            value = new ValueMetaString( field.getName() );
             value.setLength( field.getFieldLength() );
             break;
           case FIELD_TYPE_I: // Integer
           case DBFField.FIELD_TYPE_N: // Numeric
           case DBFField.FIELD_TYPE_F: // Float
             debug = "Number field";
-            value = new ValueMeta( field.getName(), ValueMetaInterface.TYPE_NUMBER );
+            value = new ValueMetaNumber( field.getName() );
             value.setLength( field.getFieldLength(), field.getDecimalCount() );
             break;
           case DBFField.FIELD_TYPE_L: // Logical
             debug = "Logical field";
-            value = new ValueMeta( field.getName(), ValueMetaInterface.TYPE_BOOLEAN );
+            value = new ValueMetaBoolean( field.getName() );
             value.setLength( -1, -1 );
             break;
           case DBFField.FIELD_TYPE_D: // Date
             debug = "Date field";
-            value = new ValueMeta( field.getName(), ValueMetaInterface.TYPE_DATE );
+            value = new ValueMetaDate( field.getName() );
             value.setLength( -1, -1 );
             break;
           default:
@@ -255,6 +258,7 @@ public class XBase {
     return error;
   }
 
+  @Override
   public String toString() {
     if ( dbfFile != null ) {
       return dbfFile;

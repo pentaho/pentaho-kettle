@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -34,8 +34,9 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaBoolean;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -552,13 +553,13 @@ public class SSHMeta extends BaseStepMeta implements StepMetaInterface {
       row.clear();
     }
     ValueMetaInterface v =
-      new ValueMeta( space.environmentSubstitute( getStdOutFieldName() ), ValueMetaInterface.TYPE_STRING );
+      new ValueMetaString( space.environmentSubstitute( getStdOutFieldName() ) );
     v.setOrigin( name );
     row.addValueMeta( v );
 
     String stderrfield = space.environmentSubstitute( getStdErrFieldName() );
     if ( !Const.isEmpty( stderrfield ) ) {
-      v = new ValueMeta( stderrfield, ValueMetaInterface.TYPE_BOOLEAN );
+      v = new ValueMetaBoolean( stderrfield );
       v.setOrigin( name );
       row.addValueMeta( v );
     }

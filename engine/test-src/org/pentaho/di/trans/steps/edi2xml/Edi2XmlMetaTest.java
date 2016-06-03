@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -45,7 +45,6 @@ public class Edi2XmlMetaTest {
     setterMap.put( "outputfield", "setOutputField" );
 
     LoadSaveTester loadSaveTester = new LoadSaveTester( Edi2XmlMeta.class, attributes, getterMap, setterMap );
-    loadSaveTester.testRepoRoundTrip();
-    loadSaveTester.testXmlRoundTrip();
+    loadSaveTester.testSerialization();
   }
 }

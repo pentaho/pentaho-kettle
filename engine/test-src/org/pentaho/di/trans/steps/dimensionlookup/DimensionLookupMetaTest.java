@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,14 +22,22 @@
 
 package org.pentaho.di.trans.steps.dimensionlookup;
 
-import static org.junit.Assert.*;
-import static org.mockito.Matchers.*;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyObject;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
 import org.junit.Assert;
@@ -41,10 +49,12 @@ import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LogChannelInterfaceFactory;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
+import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
@@ -53,10 +63,87 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
+import org.pentaho.di.trans.steps.loadsave.initializer.InitializerInterface;
+import org.pentaho.di.trans.steps.loadsave.validator.ArrayLoadSaveValidator;
+import org.pentaho.di.trans.steps.loadsave.validator.DatabaseMetaLoadSaveValidator;
+import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
+import org.pentaho.di.trans.steps.loadsave.validator.IntLoadSaveValidator;
+import org.pentaho.di.trans.steps.loadsave.validator.NonZeroIntLoadSaveValidator;
+import org.pentaho.di.trans.steps.loadsave.validator.PrimitiveIntArrayLoadSaveValidator;
+import org.pentaho.di.trans.steps.loadsave.validator.StringLoadSaveValidator;
 import org.pentaho.metastore.api.IMetaStore;
 
+public class DimensionLookupMetaTest implements InitializerInterface<StepMetaInterface> {
+  LoadSaveTester loadSaveTester;
+  Class<DimensionLookupMeta> testMetaClass = DimensionLookupMeta.class;
+  private ThreadLocal<DimensionLookupMeta> holdTestingMeta = new ThreadLocal<DimensionLookupMeta>();
 
-public class DimensionLookupMetaTest {
+  @Before
+  public void setUpLoadSave() throws Exception {
+    KettleEnvironment.init();
+    PluginRegistry.init( true );
+    List<String> attributes =
+        Arrays.asList( "schemaName", "tableName", "update", "dateField", "dateFrom", "dateTo", "keyField", "keyRename",
+            "autoIncrement", "versionField", "commitSize", "useBatchUpdate", "minYear", "maxYear", "techKeyCreation",
+            "cacheSize", "usingStartDateAlternative", "startDateAlternative", "startDateFieldName", "preloadingCache", "keyStream",
+            "keyLookup", "fieldStream", "fieldLookup", "fieldUpdate", "databaseMeta", "sequenceName" );
+
+    Map<String, String> getterMap = new HashMap<String, String>() {
+      {
+        put( "useBatchUpdate", "useBatchUpdate" );
+      }
+    };
+    Map<String, String> setterMap = new HashMap<String, String>();
+
+    FieldLoadSaveValidator<String[]> stringArrayLoadSaveValidator =
+        new ArrayLoadSaveValidator<String>( new StringLoadSaveValidator(), 5 );
+
+    Map<String, FieldLoadSaveValidator<?>> attrValidatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();
+    attrValidatorMap.put( "keyStream", stringArrayLoadSaveValidator );
+    attrValidatorMap.put( "keyLookup", stringArrayLoadSaveValidator );
+    attrValidatorMap.put( "fieldStream", stringArrayLoadSaveValidator );
+    attrValidatorMap.put( "fieldLookup", stringArrayLoadSaveValidator );
+    // Note - have to use the non-zero int load/save validator here because if "update"
+    // is false, code in DimensionLookupMeta replaces "ValueMetaInterface.TYPE_NONE" with
+    // ValueMetaInterface.TYPE_STRING. This happens about once out of every 3 or so runs of
+    // the test which made it a bit difficult to track down.
+    // MB - 5/2016
+    attrValidatorMap.put( "fieldUpdate",
+        new PrimitiveIntArrayLoadSaveValidator( new NonZeroIntLoadSaveValidator( DimensionLookupMeta.typeDesc.length ), 5 ) );
+    attrValidatorMap.put( "databaseMeta", new DatabaseMetaLoadSaveValidator() );
+    attrValidatorMap.put( "startDateAlternative", new IntLoadSaveValidator( DimensionLookupMeta.getStartDateAlternativeCodes().length ) );
+    attrValidatorMap.put( "sequenceName", new SequenceNameLoadSaveValidator() );
+
+    Map<String, FieldLoadSaveValidator<?>> typeValidatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();
+
+    loadSaveTester =
+        new LoadSaveTester( testMetaClass, attributes, new ArrayList<String>(), new ArrayList<String>(),
+            getterMap, setterMap, attrValidatorMap, typeValidatorMap, this );
+  }
+
+  // Call the allocate method on the LoadSaveTester meta class
+  @Override
+  public void modify( StepMetaInterface someMeta ) {
+    if ( someMeta instanceof DimensionLookupMeta ) {
+      ( (DimensionLookupMeta) someMeta ).allocate( 5, 5 );
+      // doing this as a work-around for sequenceName validation.
+      // Apparently, sequenceName will always be written (getXml),
+      // but will only be read if the value of "update" is true.
+      // While testing the load/save behavior, there is no sane way
+      // to test dependent variables like this (that I could see). So,
+      // I'm holding onto the meta, and will have a special load/save handler
+      // for sequenceName.
+      // MB - 5/2016
+      this.holdTestingMeta.set( (DimensionLookupMeta) someMeta );
+    }
+  }
+
+  @Test
+  public void testSerialization() throws KettleException {
+    loadSaveTester.testSerialization();
+  }
 
   public static final String databaseXML =
       "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
@@ -110,6 +197,7 @@ public class DimensionLookupMetaTest {
     String keyField = "keyField";
 
     DatabaseMeta databaseMeta = spy( new DatabaseMeta( databaseXML ) {
+      @Override
       public String getFieldDefinition( ValueMetaInterface v, String tk, String pk, boolean use_autoinc ) {
         return "someValue";
       }
@@ -180,50 +268,38 @@ public class DimensionLookupMetaTest {
     assertEquals( "ks1", dimensionLookupMeta.getStreamFields().get( 3 ) );
   }
 
-  @Test
-  public void cloneTest() throws Exception {
-    DimensionLookupMeta meta = new DimensionLookupMeta();
-    meta.allocate( 2, 2 );
-    meta.setKeyStream( new String[] { "aa", "bb" } );
-    meta.setKeyLookup( new String[] { "cc", "dd" } );
-    meta.setFieldStream( new String[] { "ee", "ff" } );
-    meta.setFieldLookup( new String[] { "gg", "hh" } );
-    meta.setFieldUpdate( new int[] { 10, 50 } );
-    meta.setCacheSize( 16 );
-    meta.setCommitSize( 23 );
-    meta.setDateField( "dateField" );
-    meta.setDateFrom( "dateFrom" );
-    meta.setKeyField( "keyField" );
-    meta.setKeyRename( "keyRename" );
-    meta.setMaxYear( 15 );
-    meta.setMinYear( 12 );
-    meta.setSchemaName( "schemaName" );
-    meta.setSequenceName( "sequenceName" );
-    meta.setStartDateFieldName( "startDateFieldName" );
-    meta.setTableName( "tablename" );
-    meta.setTechKeyCreation( "techKeyCreation" );
-    meta.setVersionField( "versionField" );
-    DimensionLookupMeta aClone = (DimensionLookupMeta) meta.clone();
-    assertFalse( aClone == meta );
-    assertTrue( Arrays.equals( meta.getKeyStream(), aClone.getKeyStream() ) );
-    assertTrue( Arrays.equals( meta.getKeyLookup(), aClone.getKeyLookup() ) );
-    assertTrue( Arrays.equals( meta.getFieldStream(), aClone.getFieldStream() ) );
-    assertTrue( Arrays.equals( meta.getFieldLookup(), aClone.getFieldLookup() ) );
-    assertTrue( Arrays.equals( meta.getFieldUpdate(), aClone.getFieldUpdate() ) );
-    assertEquals( meta.getCacheSize(), aClone.getCacheSize() );
-    assertEquals( meta.getCommitSize(), aClone.getCommitSize() );
-    assertEquals( meta.getDateField(), aClone.getDateField() );
-    assertEquals( meta.getDateFrom(), aClone.getDateFrom() );
-    assertEquals( meta.getKeyField(), aClone.getKeyField() );
-    assertEquals( meta.getKeyRename(), aClone.getKeyRename() );
-    assertEquals( meta.getMaxYear(), aClone.getMaxYear() );
-    assertEquals( meta.getMinYear(), aClone.getMinYear() );
-    assertEquals( meta.getSchemaName(), aClone.getSchemaName() );
-    assertEquals( meta.getSequenceName(), aClone.getSequenceName() );
-    assertEquals( meta.getStartDateFieldName(), aClone.getStartDateFieldName() );
-    assertEquals( meta.getTableName(), aClone.getTableName() );
-    assertEquals( meta.getTechKeyCreation(), aClone.getTechKeyCreation() );
-    assertEquals( meta.getVersionField(), aClone.getVersionField() );
-    assertEquals( meta.getXML(), aClone.getXML() );
+  // Note - Removed cloneTest since it's covered by the load/save tester
+
+  // Doing this as a work-around for sequenceName validation.
+  // Apparently, sequenceName will always be written (getXml),
+  // but will only be read if the value of "update" is true (readData).
+  // While testing the load/save behavior, there is no sane way
+  // to test dependent variables like this (that I could see). So,
+  // I'm holding onto the meta in a threadlocal, and have to have
+  // this special load/save handler for sequenceName.
+  // MB - 5/2016
+  public class SequenceNameLoadSaveValidator implements FieldLoadSaveValidator<String> {
+    final Random rand = new Random();
+    @Override
+    public String getTestObject() {
+      DimensionLookupMeta dlm = holdTestingMeta.get(); // get the currently-being tested meta
+      if ( dlm.isUpdate() ) { // value returned here is dependant on isUpdate()
+        return UUID.randomUUID().toString(); // return a string
+      } else {
+        return null; // Return null if !isUpdate ...
+      }
+    }
+
+    @Override
+    public boolean validateTestObject( String testObject, Object actual ) {
+      String another = (String) actual;
+      DimensionLookupMeta dlm = holdTestingMeta.get();
+      if ( dlm.isUpdate() ) {
+        return testObject.equals( another ); // if isUpdate, compare strings
+      } else {
+        return ( another == null ); // If !isUpdate, another should be null
+      }
+    }
   }
+
 }

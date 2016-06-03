@@ -21,6 +21,8 @@
  ******************************************************************************/
 package org.pentaho.di.trans.steps.checksum;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -32,7 +34,6 @@ import org.junit.Test;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.plugins.PluginRegistry;
-import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
 import org.pentaho.di.trans.steps.loadsave.initializer.InitializerInterface;
 import org.pentaho.di.trans.steps.loadsave.validator.ArrayLoadSaveValidator;
@@ -40,9 +41,8 @@ import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.IntLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.StringLoadSaveValidator;
 
-
-public class CheckSumMetaTest implements InitializerInterface<StepMetaInterface> {
-  LoadSaveTester loadSaveTester;
+public class CheckSumMetaTest implements InitializerInterface<CheckSumMeta> {
+  LoadSaveTester<CheckSumMeta> loadSaveTester;
   Class<CheckSumMeta> testMetaClass = CheckSumMeta.class;
 
   @Before
@@ -57,11 +57,7 @@ public class CheckSumMetaTest implements InitializerInterface<StepMetaInterface>
         put( "checkSumType", "getTypeByDesc" );
       }
     };
-    Map<String, String> setterMap = new HashMap<String, String>() {
-      {
-        put( "checkSumType", "setCheckSumType" );
-      }
-    };
+    Map<String, String> setterMap = new HashMap<String, String>();
     FieldLoadSaveValidator<String[]> stringArrayLoadSaveValidator =
         new ArrayLoadSaveValidator<String>( new StringLoadSaveValidator(), 5 );
 
@@ -73,21 +69,34 @@ public class CheckSumMetaTest implements InitializerInterface<StepMetaInterface>
     Map<String, FieldLoadSaveValidator<?>> typeValidatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();
 
     loadSaveTester =
-        new LoadSaveTester( testMetaClass, attributes, new ArrayList<String>(), new ArrayList<String>(),
-            getterMap, setterMap, attrValidatorMap, typeValidatorMap, this );
+      new LoadSaveTester<CheckSumMeta>( testMetaClass, attributes, new ArrayList<String>(), new ArrayList<String>(),
+        getterMap, setterMap, attrValidatorMap, typeValidatorMap, this );
   }
 
   // Call the allocate method on the LoadSaveTester meta class
   @Override
-  public void modify( StepMetaInterface someMeta ) {
+  public void modify( CheckSumMeta someMeta ) {
     if ( someMeta instanceof CheckSumMeta ) {
-      ( (CheckSumMeta) someMeta ).allocate( 5 );
+      someMeta.allocate( 5 );
     }
+  }
+
+  @Test
+  public void testConstants() {
+    assertEquals( "CRC32", CheckSumMeta.TYPE_CRC32 );
+    assertEquals( "CRC32", CheckSumMeta.checksumtypeCodes[0] );
+    assertEquals( "ADLER32", CheckSumMeta.TYPE_ADLER32 );
+    assertEquals( "ADLER32", CheckSumMeta.checksumtypeCodes[1] );
+    assertEquals( "MD5", CheckSumMeta.TYPE_MD5 );
+    assertEquals( "MD5", CheckSumMeta.checksumtypeCodes[2] );
+    assertEquals( "SHA-1", CheckSumMeta.TYPE_SHA1 );
+    assertEquals( "SHA-1", CheckSumMeta.checksumtypeCodes[3] );
+    assertEquals( "SHA-256", CheckSumMeta.TYPE_SHA256 );
+    assertEquals( "SHA-256", CheckSumMeta.checksumtypeCodes[4] );
   }
 
   @Test
   public void testSerialization() throws KettleException {
     loadSaveTester.testSerialization();
   }
-  // Note - cloneTest removed because the LoadSaveTester includes a clone test.
 }

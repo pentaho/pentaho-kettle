@@ -22,6 +22,7 @@
 
 package org.pentaho.di.trans.steps.checksum;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.pentaho.di.core.CheckResult;
@@ -63,8 +64,9 @@ public class CheckSumMeta extends BaseStepMeta implements StepMetaInterface {
   public static final String TYPE_ADLER32 = "ADLER32";
   public static final String TYPE_MD5 = "MD5";
   public static final String TYPE_SHA1 = "SHA-1";
+  public static final String TYPE_SHA256 = "SHA-256";
 
-  public static String[] checksumtypeCodes = { TYPE_CRC32, TYPE_ADLER32, TYPE_MD5, TYPE_SHA1 };
+  public static String[] checksumtypeCodes = { TYPE_CRC32, TYPE_ADLER32, TYPE_MD5, TYPE_SHA1, TYPE_SHA256 };
 
   /**
    * The result type description
@@ -98,8 +100,17 @@ public class CheckSumMeta extends BaseStepMeta implements StepMetaInterface {
     super(); // allocate BaseStepMeta
   }
 
+  // TODO Deprecate one of these setCheckSumType methods
   public void setCheckSumType( int i ) {
     checksumtype = checksumtypeCodes[i];
+  }
+
+  public void setCheckSumType( String type ) {
+    if ( Arrays.asList( checksumtypeCodes ).contains( type ) ) {
+      checksumtype = type;
+    } else {
+      checksumtype = checksumtypeCodes[0];
+    }
   }
 
   public int getTypeByDesc() {
@@ -416,6 +427,18 @@ public class CheckSumMeta extends BaseStepMeta implements StepMetaInterface {
           PKG, "CheckSumMeta.CheckResult.NoInputReceivedFromOtherSteps" ), stepMeta );
       remarks.add( cr );
     }
+
+    if ( isCompatibilityMode() ) {
+      cr = new CheckResult( CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString(
+        PKG, "CheckSumMeta.CheckResult.CompatibilityModeWarning" ), stepMeta );
+      remarks.add( cr );
+    }
+
+    if ( isCompatibilityMode() && getCheckSumType() == TYPE_SHA256 ) {
+      cr = new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+        PKG, "CheckSumMeta.CheckResult.CompatibilityModeSHA256Error" ), stepMeta );
+      remarks.add( cr );
+    }
   }
 
   @Override
@@ -434,10 +457,20 @@ public class CheckSumMeta extends BaseStepMeta implements StepMetaInterface {
     return true;
   }
 
+  /**
+   * @deprecated update to non-compatibility mode
+   * @return the Compatibility Mode
+   */
+  @Deprecated
   public boolean isCompatibilityMode() {
     return compatibilityMode;
   }
 
+  /**
+   * @deprecated Update to non-compatibility mode
+   * @param compatibilityMode
+   */
+  @Deprecated
   public void setCompatibilityMode( boolean compatibilityMode ) {
     this.compatibilityMode = compatibilityMode;
   }

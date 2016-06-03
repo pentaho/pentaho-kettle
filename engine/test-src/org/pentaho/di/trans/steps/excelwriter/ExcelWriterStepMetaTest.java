@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -52,7 +52,7 @@ public class ExcelWriterStepMetaTest {
       "appendLines", "add_to_result_filenames", "name", "extention", "do_not_open_newfile_init", "split", "add_date",
       "add_time", "SpecifyFormat", "date_time_format", "sheetname", "autosizecolums", "stream_data", "protect_sheet",
       "password", "protected_by", "splitevery", "if_file_exists", "if_sheet_exists", "enabled", "sheet_enabled",
-      "filename", "sheetname", "outputfields" );
+      "filename", "sheetname", "outputfields", "TemplateSheetHidden" );
 
     Map<String, String> getterMap = new HashMap<String, String>();
     getterMap.put( "header", "isHeaderEnabled" );
@@ -134,10 +134,11 @@ public class ExcelWriterStepMetaTest {
     fieldLoadSaveValidatorTypeMap.put( ExcelWriterStepField[].class.getCanonicalName(),
       new ArrayLoadSaveValidator<ExcelWriterStepField>( new ExcelWriterStepFieldLoadSaveValidator() ) );
 
-    LoadSaveTester loadSaveTester = new LoadSaveTester( ExcelWriterStepMeta.class, attributes, getterMap, setterMap,
-      new HashMap<String, FieldLoadSaveValidator<?>>(), fieldLoadSaveValidatorTypeMap );
-    loadSaveTester.testRepoRoundTrip();
-    loadSaveTester.testXmlRoundTrip();
+    LoadSaveTester<ExcelWriterStepMeta> loadSaveTester =
+      new LoadSaveTester<ExcelWriterStepMeta>( ExcelWriterStepMeta.class, attributes, getterMap, setterMap,
+        new HashMap<String, FieldLoadSaveValidator<?>>(), fieldLoadSaveValidatorTypeMap );
+
+    loadSaveTester.testSerialization();
   }
 
   public class ExcelWriterStepFieldLoadSaveValidator implements FieldLoadSaveValidator<ExcelWriterStepField> {

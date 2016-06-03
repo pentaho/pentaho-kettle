@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -415,17 +415,17 @@ public abstract class BaseLogTable {
     StringBuilder retval = new StringBuilder();
 
     for ( LogTableField field : fields ) {
-      retval.append( XMLHandler.openTag( XML_TAG ) );
+      retval.append( "        " ).append( XMLHandler.openTag( XML_TAG ) ).append( Const.CR );
 
-      retval.append( XMLHandler.addTagValue( "id", field.getId(), false ) );
-      retval.append( XMLHandler.addTagValue( "enabled", field.isEnabled(), false ) );
-      retval.append( XMLHandler.addTagValue( "name", field.getFieldName(), false ) );
+      retval.append( "          " ).append( XMLHandler.addTagValue( "id", field.getId() ) );
+      retval.append( "          " ).append( XMLHandler.addTagValue( "enabled", field.isEnabled() ) );
+      retval.append( "          " ).append( XMLHandler.addTagValue( "name", field.getFieldName() ) );
       if ( field.isSubjectAllowed() ) {
-        retval.append( XMLHandler.addTagValue( "subject", field.getSubject() == null ? null : field
-          .getSubject().toString(), false ) );
+        retval.append( "          " ).append( XMLHandler.addTagValue( "subject",
+          field.getSubject() == null ? null : field.getSubject().toString() ) );
       }
 
-      retval.append( XMLHandler.closeTag( XML_TAG ) );
+      retval.append( "        " ).append( XMLHandler.closeTag( XML_TAG ) ).append( Const.CR );
     }
 
     return retval.toString();

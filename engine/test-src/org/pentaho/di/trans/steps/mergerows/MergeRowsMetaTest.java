@@ -22,28 +22,61 @@
 
 package org.pentaho.di.trans.steps.mergerows;
 
-import org.junit.Test;
-
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import static org.junit.Assert.*;
+import org.junit.Before;
+import org.junit.Test;
+import org.pentaho.di.core.KettleEnvironment;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.plugins.PluginRegistry;
+import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
+import org.pentaho.di.trans.steps.loadsave.initializer.InitializerInterface;
+import org.pentaho.di.trans.steps.loadsave.validator.ArrayLoadSaveValidator;
+import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
+import org.pentaho.di.trans.steps.loadsave.validator.StringLoadSaveValidator;
 
-public class MergeRowsMetaTest {
+public class MergeRowsMetaTest implements InitializerInterface<StepMetaInterface> {
+  LoadSaveTester loadSaveTester;
+  Class<MergeRowsMeta> testMetaClass = MergeRowsMeta.class;
 
+  @Before
+  public void setUpLoadSave() throws Exception {
+    KettleEnvironment.init();
+    PluginRegistry.init( true );
+    List<String> attributes =
+        Arrays.asList( "flagField", "keyFields", "valueFields" );
 
-  @Test
-  public void cloneTest() throws Exception {
-    MergeRowsMeta meta = new MergeRowsMeta();
-    meta.allocate( 2, 3 );
-    meta.setKeyFields( new String[] { "key1", "key2" } );
-    meta.setValueFields( new String[] { "value1", "value2" } );
-    // scalars should be cloned using super.clone() - makes sure they're calling super.clone()
-    meta.setFlagField( "randomFlagField" );
-    MergeRowsMeta aClone = (MergeRowsMeta) meta.clone();
-    assertFalse( aClone == meta ); // Make sure that return object isn't the same object
-    assertTrue( Arrays.equals( meta.getKeyFields(), aClone.getKeyFields() ) );
-    assertTrue( Arrays.equals( meta.getValueFields(), aClone.getValueFields() ) );
-    assertEquals( meta.getFlagField(), aClone.getFlagField() );
+    FieldLoadSaveValidator<String[]> stringArrayLoadSaveValidator =
+        new ArrayLoadSaveValidator<String>( new StringLoadSaveValidator(), 5 );
+
+    Map<String, FieldLoadSaveValidator<?>> attrValidatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();
+    attrValidatorMap.put( "keyFields", stringArrayLoadSaveValidator );
+    attrValidatorMap.put( "valueFields", stringArrayLoadSaveValidator );
+
+    Map<String, FieldLoadSaveValidator<?>> typeValidatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();
+
+    loadSaveTester =
+        new LoadSaveTester( testMetaClass, attributes, new ArrayList<String>(), new ArrayList<String>(),
+            new HashMap<String, String>(), new HashMap<String, String>(), attrValidatorMap, typeValidatorMap, this );
   }
 
+  // Call the allocate method on the LoadSaveTester meta class
+  @Override
+  public void modify( StepMetaInterface someMeta ) {
+    if ( someMeta instanceof MergeRowsMeta ) {
+      ( (MergeRowsMeta) someMeta ).allocate( 5, 5 );
+    }
+  }
+
+  @Test
+  public void testSerialization() throws KettleException {
+    loadSaveTester.testSerialization();
+  }
+
+  // Note - cloneTest removed as load/save validator covers clone testing as well now.
 }
