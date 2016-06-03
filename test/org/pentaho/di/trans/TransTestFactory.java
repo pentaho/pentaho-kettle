@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -45,9 +45,9 @@ import org.pentaho.di.trans.steps.injector.InjectorMeta;
  * The source step is an Injector step.<br>
  * The target step is a dummy step.<br>
  * The middle step is the step specified.<br>
- *
+ * 
  * @author Matt Casters (mcasters@pentaho.org)
- *
+ * 
  */
 public class TransTestFactory {
   public static final String INJECTOR_STEPNAME = "injector";
@@ -151,7 +151,7 @@ public class TransTestFactory {
     trans.initializeVariablesFrom( runTimeVariables );
     if ( runTimeParameters != null ) {
       for ( String param : trans.listParameters() ) {
-        String value = runTimeParameters.getVariable( param );
+        String value = runTimeParameters.getVariable( param ); 
         if ( value != null ) {
           trans.setParameterValue( param, value );
           transMeta.setParameterValue( param, value );
