@@ -24,7 +24,6 @@ import java.util.concurrent.Future;
 import javax.xml.ws.WebServiceException;
 
 import org.apache.commons.lang.BooleanUtils;
-import org.eclipse.swt.widgets.Display;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleSecurityException;
@@ -149,19 +148,7 @@ public class PurRepositoryConnector implements IRepositoryConnector {
           if ( log.isBasic() ) {
             log.logBasic( BaseMessages.getString( PKG, "PurRepositoryConnector.CreateServiceProvider.End" ) ); //$NON-NLS-1$
           }
-          boolean canSchedule = allowedActionsContains( (AbsSecurityProvider) result.getSecurityProvider(),
-            IAbsSecurityProvider.SCHEDULE_CONTENT_ACTION );
-          Display.getDefault().asyncExec( new Runnable() {
-            public void run() {
-              final String schedulePerspectiveId = "schedulerPerspective";
-              SpoonPerspectiveManager perspectiveManager = SpoonPerspectiveManager.getInstance();
-              if ( canSchedule ) {
-                perspectiveManager.showPerspective( schedulePerspectiveId );
-              } else {
-                perspectiveManager.hidePerspective( schedulePerspectiveId );
-              }
-            }
-          } );
+
           // If the user does not have access to administer security we do not
           // need to added them to the service list
           if ( allowedActionsContains( (AbsSecurityProvider) result.getSecurityProvider(),
