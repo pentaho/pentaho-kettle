@@ -38,7 +38,6 @@ import org.w3c.dom.Node;
 
 import static junit.framework.Assert.assertEquals;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -82,7 +81,7 @@ public class TransSplitterTest {
   @Test
    public void testTransSplitterRowsetSize() throws KettleException {
     TransMeta originalMeta = new TransMeta();
-    originalMeta.setSizeRowset( anyInt() );
+    originalMeta.setSizeRowset( 0 );
     TransMetaFactory factory = new TransMetaFactoryImpl();
 
     try {
