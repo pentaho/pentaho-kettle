@@ -35,6 +35,7 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.vfs2.FileName;
 import org.apache.commons.vfs2.FileObject;
@@ -1129,6 +1130,11 @@ public class TransMeta extends AbstractMeta
     return null;
   }
 
+  public List<TransHopMeta> findAllTransHopFrom( StepMeta fromstep ) {
+    return hops.stream()
+      .filter( hop ->  hop.getFromStep() != null && hop.getFromStep().equals( fromstep ) )
+      .collect( Collectors.toList() );
+  }
   /**
    * Find a certain hop in the transformation.
    *
