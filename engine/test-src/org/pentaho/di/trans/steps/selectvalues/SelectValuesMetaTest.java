@@ -184,6 +184,21 @@ public class SelectValuesMetaTest {
     assertArrayEquals( new int[0], selectValuesMeta.getSelectPrecision() );
   }
 
+  @Test( expected = NullPointerException.class )
+  public void setSelectFieldsNull() {
+    selectValuesMeta.setSelectFields( null );
+  }
+
+  @Test( expected = NullPointerException.class )
+  public void setDeleteNameNull() {
+    selectValuesMeta.setDeleteName( null );
+  }
+
+  @Test( expected = NullPointerException.class )
+  public void setMetaNull() {
+    selectValuesMeta.setMeta( null );
+  }
+
   public static class SelectFieldLoadSaveValidator implements FieldLoadSaveValidator<SelectField> {
 
     private final SelectField defaultValue;
