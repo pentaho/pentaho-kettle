@@ -1,7 +1,7 @@
 /*
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  * **************************************************************************
  *
@@ -20,17 +20,33 @@
 
 package org.pentaho.di.ui.trans.steps.userdefinedjavaclass;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.Assert;
 import org.junit.Test;
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.ui.trans.steps.userdefinedjavaclass.UserDefinedJavaClassCodeSnippits.Snippit;
 
 public class UserDefinedJavaClassCodeSnippitsTest {
 
   @Test
   public void testSnippitMainUseRightRowsize() throws Exception {
-
     String code = UserDefinedJavaClassCodeSnippits.getSnippitsHelper().getCode( "Main" );
     Assert.assertTrue( "Wrong row size variable is used", code.contains( "r = createOutputRow(r, data.outputRowMeta.size());" ) );
-
   }
 
+  @Test
+  public void testSnippitsWellDefined() throws KettleXMLException {
+    List<String> snippitNames = new ArrayList<String>();
+    for ( Snippit snippit : UserDefinedJavaClassCodeSnippits.getSnippitsHelper().getSnippits() ) {
+      Assert.assertNotNull( snippit.category );
+      Assert.assertFalse( Const.isEmpty( snippit.name ) );
+      Assert.assertFalse( Const.isEmpty( snippit.code ) );
+      Assert.assertFalse( Const.isEmpty( snippit.sample ) );
+      Assert.assertFalse( snippitNames.contains( snippit.name ) );
+      snippitNames.add( snippit.name );
+    }
+  }
 }
