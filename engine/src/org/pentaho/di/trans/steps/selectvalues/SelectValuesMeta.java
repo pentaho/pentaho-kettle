@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
@@ -107,7 +108,7 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface 
    *          The deleteName to set.
    */
   public void setDeleteName( String[] deleteName ) {
-    this.deleteName = deleteName;
+    this.deleteName = Objects.requireNonNull( deleteName, "deleteName must not be null" );
   }
 
   /**
@@ -307,7 +308,7 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface 
   public void getSelectFields( RowMetaInterface inputRowMeta, String name ) throws KettleStepException {
     RowMetaInterface row;
 
-    if ( selectFields != null && selectFields.length > 0 ) { // SELECT values
+    if ( selectFields.length > 0 ) { // SELECT values
 
       // 0. Start with an empty row
       // 1. Keep only the selected values
@@ -815,7 +816,7 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface 
    *          the meta to set
    */
   public void setMeta( SelectMetadataChange[] meta ) {
-    this.meta = meta;
+    this.meta = Objects.requireNonNull( meta, "meta must not be null" );
   }
 
   public boolean supportsErrorHandling() {
@@ -827,7 +828,7 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface 
   }
 
   public void setSelectFields( SelectField[] selectFields ) {
-    this.selectFields = selectFields;
+    this.selectFields = Objects.requireNonNull( selectFields, "selectFields must not be null" );
   }
 
   /**
