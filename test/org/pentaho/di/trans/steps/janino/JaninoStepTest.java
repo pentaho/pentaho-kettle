@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,6 +22,10 @@
 
 package org.pentaho.di.trans.steps.janino;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
+
 import java.math.BigDecimal;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -31,10 +35,10 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
-import junit.framework.TestCase;
-
+import org.junit.Test;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.RowMetaAndData;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
@@ -50,11 +54,13 @@ import org.pentaho.di.core.row.value.ValueMetaInternetAddress;
 import org.pentaho.di.core.row.value.ValueMetaNumber;
 import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.row.value.ValueMetaTimestamp;
+import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.trans.RowProducer;
 import org.pentaho.di.trans.RowStepCollector;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.TransTestFactory;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.dummytrans.DummyTransMeta;
@@ -65,7 +71,7 @@ import org.pentaho.di.trans.steps.injector.InjectorMeta;
  *
  * @author Slawomir Chodnicki
  */
-public class JaninoStepTest extends TestCase {
+public class JaninoStepTest {
   public RowMetaInterface createRowMetaInterface() {
     RowMetaInterface rm = new RowMeta();
 
@@ -170,6 +176,7 @@ public class JaninoStepTest extends TestCase {
   /**
    * Test case for janino step.
    */
+  @Test
   public void testJaninoStep() throws Exception {
     KettleEnvironment.init();
 
@@ -264,5 +271,30 @@ public class JaninoStepTest extends TestCase {
     List<RowMetaAndData> checkList = createExpectedList();
     List<RowMetaAndData> resultRows = rc.getRowsWritten();
     checkRows( resultRows, checkList );
+  }
+
+  @Test
+  public void testIntegerReturnType() throws KettleException {
+    String STEP_NAME = "JaninoStep";
+    JaninoMeta meta = new JaninoMeta();
+    meta.setDefault();
+    JaninoMetaFunction[] formulas =
+      { new JaninoMetaFunction( "intretval", "2", ValueMetaInterface.TYPE_INTEGER, -1, -1, null ), };
+    meta.setFormula( formulas );
+
+    TransMeta transMeta = TransTestFactory.generateTestTransformation( new Variables(), meta, STEP_NAME );
+
+    List<RowMetaAndData> inputData = new ArrayList<RowMetaAndData>();
+    inputData.add( new RowMetaAndData( new RowMeta(), new Object[0] ) );
+
+    List<RowMetaAndData> resultData = TransTestFactory.executeTestTransformation( transMeta,
+      TransTestFactory.INJECTOR_STEPNAME, STEP_NAME, TransTestFactory.DUMMY_STEPNAME, inputData );
+
+    assertNotNull( resultData );
+    assertEquals( 1, resultData.size() );
+    assertEquals( 1, resultData.get( 0 ).size() );
+    assertEquals( "intretval", resultData.get( 0 ).getValueMeta( 0 ).getName() );
+    assertEquals( ValueMetaInterface.TYPE_INTEGER, resultData.get( 0 ).getValueMeta( 0 ).getType() );
+    assertEquals( Long.valueOf( 2 ), resultData.get( 0 ).getInteger( 0 ) );
   }
 }

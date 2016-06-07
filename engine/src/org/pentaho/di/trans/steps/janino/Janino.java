@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -58,6 +58,7 @@ public class Janino extends BaseStep implements StepInterface {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
+  @Override
   public boolean processRow( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
     meta = (JaninoMeta) smi;
     data = (JaninoData) sdi;
@@ -195,6 +196,8 @@ public class Janino extends BaseStep implements StepInterface {
           ValueMetaInterface valueMeta = data.returnType[i];
           if ( valueMeta.getNativeDataTypeClass().isAssignableFrom( formulaResult.getClass() ) ) {
             value = formulaResult;
+          } else if ( formulaResult instanceof Integer && valueMeta.getType() == ValueMetaInterface.TYPE_INTEGER ) {
+            value = ( (Integer) formulaResult ).longValue();
           } else {
             throw new KettleValueException(
               BaseMessages.getString( PKG, "Janino.Error.ValueTypeMismatch", valueMeta.getTypeDesc(),
@@ -217,6 +220,7 @@ public class Janino extends BaseStep implements StepInterface {
     }
   }
 
+  @Override
   public boolean init( StepMetaInterface smi, StepDataInterface sdi ) {
     meta = (JaninoMeta) smi;
     data = (JaninoData) sdi;
