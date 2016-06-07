@@ -45,7 +45,7 @@ import org.pentaho.di.trans.step.StepMeta;
  */
 public abstract class BaseFileInputStepMeta<A extends BaseFileInputStepMeta.AdditionalOutputFields, I extends BaseFileInputStepMeta.InputFiles<? extends BaseFileInputField>>
     extends BaseStepMeta {
-  private Class<?> PKG = this.getClass(); // for i18n purposes, needed by Translator2!!
+  private static Class<?> PKG = BaseFileInputStepMeta.class; // for i18n purposes, needed by Translator2!!
 
   public static final String[] RequiredFilesCode = new String[] { "N", "Y" };
 
@@ -53,7 +53,7 @@ public abstract class BaseFileInputStepMeta<A extends BaseFileInputStepMeta.Addi
 
   public static final String YES = "Y";
 
-  public final String[] RequiredFilesDesc =
+  public static final String[] RequiredFilesDesc =
       new String[] { BaseMessages.getString( PKG, "System.Combo.No" ), BaseMessages.getString( PKG,
           "System.Combo.Yes" ) };
 
@@ -118,6 +118,18 @@ public abstract class BaseFileInputStepMeta<A extends BaseFileInputStepMeta.Addi
         return super.clone();
       } catch ( CloneNotSupportedException e ) {
         return null;
+      }
+    }
+
+    public void setFileRequired( String[] fileRequiredin ) {
+      for ( int i = 0; i < fileRequiredin.length; i++ ) {
+        this.fileRequired[i] = getRequiredFilesCode( fileRequiredin[i] );
+      }
+    }
+
+    public void setIncludeSubFolders( String[] includeSubFoldersin ) {
+      for ( int i = 0; i < includeSubFoldersin.length; i++ ) {
+        this.includeSubFolders[i] = getRequiredFilesCode( includeSubFoldersin[i] );
       }
     }
   }
@@ -268,7 +280,7 @@ public abstract class BaseFileInputStepMeta<A extends BaseFileInputStepMeta.Addi
     }
   }
 
-  public String getRequiredFilesCode( String tt ) {
+  public static String getRequiredFilesCode( String tt ) {
     if ( tt == null ) {
       return RequiredFilesCode[0];
     }
@@ -280,6 +292,10 @@ public abstract class BaseFileInputStepMeta<A extends BaseFileInputStepMeta.Addi
   }
 
   public FileInputList getFileInputList( VariableSpace space ) {
+    inputFiles.fileMask = normalizeAllocation( inputFiles.fileMask, inputFiles.fileName.length );
+    inputFiles.excludeFileMask = normalizeAllocation( inputFiles.excludeFileMask, inputFiles.fileName.length );
+    inputFiles.fileRequired = normalizeAllocation( inputFiles.fileRequired, inputFiles.fileName.length );
+    inputFiles.includeSubFolders = normalizeAllocation( inputFiles.includeSubFolders, inputFiles.fileName.length );
     return FileInputList.createFileList( space, inputFiles.fileName, inputFiles.fileMask, inputFiles.excludeFileMask,
         inputFiles.fileRequired, includeSubFolderBoolean() );
   }
@@ -291,6 +307,19 @@ public abstract class BaseFileInputStepMeta<A extends BaseFileInputStepMeta.Addi
       includeSubFolderBoolean[i] = YES.equalsIgnoreCase( inputFiles.includeSubFolders[i] );
     }
     return includeSubFolderBoolean;
+  }
+
+  private String[] normalizeAllocation( String[] oldAllocation, int length ) {
+    String[] newAllocation = null;
+    if ( oldAllocation.length < length ) {
+      newAllocation = new String[length];
+      for ( int i = 0; i < oldAllocation.length; i++ ) {
+        newAllocation[i] = oldAllocation[i];
+      }
+    } else {
+      newAllocation = oldAllocation;
+    }
+    return newAllocation;
   }
 
   @Override
