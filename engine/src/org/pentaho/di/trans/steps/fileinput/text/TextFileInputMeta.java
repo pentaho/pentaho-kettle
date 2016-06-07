@@ -67,7 +67,9 @@ import org.w3c.dom.Node;
 import com.google.common.annotations.VisibleForTesting;
 
 @InjectionSupported( localizationPrefix = "TextFileInput.Injection.", groups = { "FILENAME_LINES", "FIELDS", "FILTERS" } )
-public class TextFileInputMeta extends BaseFileInputStepMeta implements StepMetaInterface {
+public class TextFileInputMeta extends
+    BaseFileInputStepMeta<BaseFileInputStepMeta.AdditionalOutputFields, BaseFileInputStepMeta.InputFiles<BaseFileInputField>>
+    implements StepMetaInterface {
   private static Class<?> PKG = TextFileInputMeta.class; // for i18n purposes, needed by Translator2!! TODO: check i18n
                                                          // for base
 
@@ -217,6 +219,12 @@ public class TextFileInputMeta extends BaseFileInputStepMeta implements StepMeta
 
   /** The step to accept filenames from */
   private StepMeta acceptingStep;
+
+  public TextFileInputMeta() {
+    additionalOutputFields = new BaseFileInputStepMeta.AdditionalOutputFields();
+    inputFiles = new BaseFileInputStepMeta.InputFiles<>();
+    inputFiles.inputFields = new BaseFileInputField[0];
+  }
 
   /**
    * @return Returns the fileName.
