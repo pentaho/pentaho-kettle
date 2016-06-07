@@ -24,6 +24,8 @@ package org.pentaho.di.core.extension;
 
 public enum KettleExtensionPoint {
 
+    SpoonStart( "SpoonStart", "Spoon has started" ),
+    OpenRecent( "OpenRecent", "A recent file is opened" ),
   // Some transformation points
   //
     TransformationPrepareExecution( "TransformationPrepareExecution", "A transformation begins to prepare execution" ),

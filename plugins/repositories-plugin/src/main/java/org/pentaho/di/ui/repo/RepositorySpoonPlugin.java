@@ -38,15 +38,23 @@ public class RepositorySpoonPlugin implements SpoonPluginInterface {
 
   private static final String SPOON_CATEGORY = "spoon";
 
+  private RepositoryConnectController repositoryConnectController;
+
+  public RepositorySpoonPlugin( RepositoryConnectController repositoryConnectController ) {
+    this.repositoryConnectController = repositoryConnectController;
+  }
+
   @Override
   public void applyToContainer( String category, XulDomContainer container ) throws XulException {
     if ( category.equals( SPOON_CATEGORY ) ) {
       XulToolbar toolbar = (XulToolbar) container.getDocumentRoot().getElementById( "main-toolbar" );
       RepositoryConnectMenu repoConnectMenu =
-        new RepositoryConnectMenu( Spoon.getInstance(), (ToolBar) toolbar.getManagedObject() );
+        new RepositoryConnectMenu( Spoon.getInstance(), (ToolBar) toolbar.getManagedObject(),
+          repositoryConnectController );
       repoConnectMenu.render();
     }
   }
+
 
   @Override
   public SpoonLifecycleListener getLifecycleListener() {
