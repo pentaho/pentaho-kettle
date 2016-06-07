@@ -107,7 +107,7 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface 
    *          The deleteName to set.
    */
   public void setDeleteName( String[] deleteName ) {
-    this.deleteName = deleteName;
+    this.deleteName = deleteName == null ? new String[0] : deleteName;
   }
 
   /**
@@ -214,6 +214,7 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface 
     }
   }
 
+  @Override
   public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     readData( stepnode );
   }
@@ -242,12 +243,13 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface 
     }
   }
 
+  @Override
   public Object clone() {
     SelectValuesMeta retval = (SelectValuesMeta) super.clone();
 
-    int nrfields = selectFields.length;
-    int nrremove = deleteName.length;
-    int nrmeta = meta.length;
+    int nrfields = selectFields == null ? 0 : selectFields.length;
+    int nrremove = deleteName == null ? 0 : deleteName.length;
+    int nrmeta = meta == null ? 0 : meta.length;
 
     retval.allocate( nrfields, nrremove, nrmeta );
     for ( int i = 0; i < nrfields; i++ ) {
@@ -300,6 +302,7 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface 
     }
   }
 
+  @Override
   public void setDefault() {
     allocate( 0, 0, 0 );
   }
@@ -452,6 +455,7 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface 
     }
   }
 
+  @Override
   public void getFields( RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info, StepMeta nextStep,
       VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     try {
@@ -467,6 +471,7 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface 
     }
   }
 
+  @Override
   public String getXML() {
     StringBuilder retval = new StringBuilder( 300 );
 
@@ -504,6 +509,7 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface 
     return retval.toString();
   }
 
+  @Override
   public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
     throws KettleException {
     try {
@@ -555,6 +561,7 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface 
     }
   }
 
+  @Override
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
     throws KettleException {
     try {
@@ -607,6 +614,7 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface 
 
   }
 
+  @Override
   public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
       String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
       IMetaStore metaStore ) {
@@ -779,11 +787,13 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface 
     }
   }
 
+  @Override
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta,
       Trans trans ) {
     return new SelectValues( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 
+  @Override
   public StepDataInterface getStepData() {
     return new SelectValuesData();
   }
@@ -815,9 +825,10 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface 
    *          the meta to set
    */
   public void setMeta( SelectMetadataChange[] meta ) {
-    this.meta = meta;
+    this.meta = meta == null ? new SelectMetadataChange[0] : meta;
   }
 
+  @Override
   public boolean supportsErrorHandling() {
     return true;
   }
@@ -827,7 +838,7 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface 
   }
 
   public void setSelectFields( SelectField[] selectFields ) {
-    this.selectFields = selectFields;
+    this.selectFields = selectFields == null ? new SelectField[0] : selectFields;
   }
 
   /**
@@ -932,6 +943,7 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface 
       this.precision = precision;
     }
 
+    @Override
     public SelectField clone() {
       try {
         return (SelectField) super.clone();
