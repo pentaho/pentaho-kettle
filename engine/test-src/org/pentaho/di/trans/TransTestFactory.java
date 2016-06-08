@@ -31,6 +31,8 @@ import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
+import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.trans.step.StepErrorMeta;
@@ -63,10 +65,14 @@ public class TransTestFactory {
 
   public static TransMeta generateTestTransformation( VariableSpace parent, StepMetaInterface oneMeta,
       String oneStepname ) {
+    return generateTestTransformation( parent, oneMeta, oneStepname, null );
+  }
+  public static TransMeta generateTestTransformation( VariableSpace parent, StepMetaInterface oneMeta,
+      String oneStepname, RowMetaInterface injectorRowMeta ) {
     TransMeta previewMeta = new TransMeta( parent );
 
     // First the injector step...
-    StepMeta zero = getInjectorStepMeta();
+    StepMeta zero = getInjectorStepMeta( injectorRowMeta );
     previewMeta.addStep( zero );
 
     // Then the middle step to test...
@@ -135,6 +141,11 @@ public class TransTestFactory {
     previewMeta.addTransHop( oneErr );
 
     return previewMeta;
+  }
+
+  public static List<RowMetaAndData> executeTestTransformation( TransMeta transMeta,
+      String testStepname, List<RowMetaAndData> inputData ) throws KettleException {
+    return executeTestTransformation( transMeta, INJECTOR_STEPNAME, testStepname, DUMMY_STEPNAME, inputData );
   }
 
   public static List<RowMetaAndData> executeTestTransformation( TransMeta transMeta, String injectorStepname,
@@ -265,10 +276,35 @@ public class TransTestFactory {
   }
 
   static StepMeta getInjectorStepMeta() {
+    return getInjectorStepMeta( null );
+  }
+
+  static StepMeta getInjectorStepMeta( RowMetaInterface outputRowMeta ) {
     InjectorMeta zeroMeta = new InjectorMeta();
+
+    // Sets output fields for cases when no rows are sent to the test step, but metadata is still needed
+    if ( outputRowMeta != null && outputRowMeta.size() > 0 ) {
+      String[] fieldName = new String[outputRowMeta.size()];;
+      int[] fieldLength = new int[outputRowMeta.size()];
+      int[] fieldPrecision = new int[outputRowMeta.size()];
+      int[] fieldType = new int[outputRowMeta.size()];
+      for ( int i = 0; i < outputRowMeta.size(); i++ ) {
+        ValueMetaInterface field = outputRowMeta.getValueMeta( i );
+        fieldName[i] = field.getName();
+        fieldLength[i] = field.getLength();
+        fieldPrecision[i] = field.getPrecision();
+        fieldType[i] = field.getType();
+      }
+      zeroMeta.setFieldname( fieldName );
+      zeroMeta.setLength( fieldLength );
+      zeroMeta.setPrecision( fieldPrecision );
+      zeroMeta.setType( fieldType );
+    }
+
     StepMeta zero = new StepMeta( registry.getPluginId( StepPluginType.class, zeroMeta ), INJECTOR_STEPNAME, zeroMeta );
     zero.setLocation( 50, 50 );
     zero.setDraw( true );
+
     return zero;
   }
 
