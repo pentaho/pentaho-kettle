@@ -24,6 +24,7 @@ package org.pentaho.di.ui.spoon;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -171,9 +172,16 @@ public class SpoonPerspectiveManager {
 
     /**
      * Removes {@code perspectiveName} from {@code perspectivesCombo}
+     * if it exists in {@code perspectivesCombo}.
      */
     void removePerspective( final String perspectiveName ) {
-      perspectivesCombo.remove( perspectiveName );
+      if ( perspectiveExists( perspectiveName ) ) {
+        perspectivesCombo.remove( perspectiveName );
+      }
+    }
+
+    boolean perspectiveExists( String perspectiveName ) {
+      return Arrays.asList( perspectivesCombo.getItems() ).contains( perspectiveName );
     }
 
     /**

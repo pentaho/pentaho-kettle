@@ -87,6 +87,7 @@ public class SpoonPerspectiveManagerTest {
   @Test
   public void hidePerspective() {
     SpoonPerspectiveManager.PerspectiveManager perspectiveManager = perspectiveManagerMap.get( perspective );
+    doReturn( true ).when( perspectiveManager ).perspectiveExists( PERSPECTIVE_NAME );
     spoonPerspectiveManager.hidePerspective( perspective.getId() );
 
     verify( perspectiveManager ).removePerspective( PERSPECTIVE_NAME );
