@@ -30,6 +30,8 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.injection.Injection;
+import org.pentaho.di.core.injection.InjectionSupported;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
@@ -54,6 +56,7 @@ import org.w3c.dom.Node;
  *
  */
 
+@InjectionSupported( localizationPrefix = "MemoryGroupBy.Injection.", groups = { "FIELDS", "AGGREGATES" } )
 public class MemoryGroupByMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = MemoryGroupByMeta.class; // for i18n purposes, needed by Translator2!!
 
@@ -114,21 +117,27 @@ public class MemoryGroupByMeta extends BaseStepMeta implements StepMetaInterface
     BaseMessages.getString( PKG, "MemoryGroupByMeta.TypeGroupLongDesc.COUNT_DISTINCT" ),
     BaseMessages.getString( PKG, "MemoryGroupByMeta.TypeGroupLongDesc.COUNT_ANY" ), };
 
+  @Injection( name = "GROUPFIELD", group = "FIELDS" )
   /** Fields to group over */
   private String[] groupField;
 
+  @Injection( name = "AGGREGATEFIELD", group = "AGGREGATES" )
   /** Name of aggregate field */
   private String[] aggregateField;
 
+  @Injection( name = "SUBJECTFIELD", group = "AGGREGATES" )
   /** Field name to group over */
   private String[] subjectField;
 
+  @Injection( name = "AGGREGATETYPE", group = "AGGREGATES" )
   /** Type of aggregate */
   private int[] aggregateType;
 
+  @Injection( name = "VALUEFIELD", group = "AGGREGATES" )
   /** Value to use as separator for ex */
   private String[] valueField;
 
+  @Injection( name = "ALWAYSGIVINGBACKONEROW", group = "FIELDS" )
   /** Flag to indicate that we always give back one row. Defaults to true for existing transformations. */
   private boolean alwaysGivingBackOneRow;
 
