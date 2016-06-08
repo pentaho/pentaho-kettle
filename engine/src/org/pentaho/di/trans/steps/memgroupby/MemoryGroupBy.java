@@ -22,6 +22,12 @@
 
 package org.pentaho.di.trans.steps.memgroupby;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+
 import org.apache.commons.math.stat.descriptive.rank.Percentile;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
@@ -44,12 +50,6 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.memgroupby.MemoryGroupByData.HashEntry;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 
 /**
  * Groups information based on aggregation rules. (sum, count, ...)
@@ -75,16 +75,19 @@ public class MemoryGroupBy extends BaseStep implements StepInterface {
     data = (MemoryGroupByData) stepDataInterface;
   }
 
+  @Override
   public boolean processRow( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
     meta = (MemoryGroupByMeta) smi;
     data = (MemoryGroupByData) sdi;
 
     Object[] r = getRow(); // get row!
+
     if ( first ) {
-      if ( r == null ) {
+      if ( ( r == null ) && ( !meta.isAlwaysGivingBackOneRow() ) ) {
         setOutputDone();
         return false;
       }
+
       String val = getVariable( Const.KETTLE_AGGREGATION_ALL_NULLS_ARE_ZERO, "N" );
       allNullsAreZero = ValueMetaBase.convertStringToBoolean( val );
       val = getVariable( Const.KETTLE_AGGREGATION_MIN_NULL_IS_VALUED, "N" );
@@ -110,31 +113,34 @@ public class MemoryGroupBy extends BaseStep implements StepInterface {
       // Calculate indexes, loop up fields, etc.
       //
       data.subjectnrs = new int[meta.getSubjectField().length];
-
-      for ( int i = 0; i < meta.getSubjectField().length; i++ ) {
-        if ( meta.getAggregateType()[i] == MemoryGroupByMeta.TYPE_GROUP_COUNT_ANY ) {
-          data.subjectnrs[i] = 0;
-        } else {
-          data.subjectnrs[i] = data.inputRowMeta.indexOfValue( meta.getSubjectField()[i] );
-        }
-        if ( data.subjectnrs[i] < 0 ) {
-          logError( BaseMessages.getString( PKG, "MemoryGroupBy.Log.AggregateSubjectFieldCouldNotFound", meta
-            .getSubjectField()[i] ) );
-          setErrors( 1 );
-          stopAll();
-          return false;
-        }
-      }
-
       data.groupnrs = new int[meta.getGroupField().length];
-      for ( int i = 0; i < meta.getGroupField().length; i++ ) {
-        data.groupnrs[i] = data.inputRowMeta.indexOfValue( meta.getGroupField()[i] );
-        if ( data.groupnrs[i] < 0 ) {
-          logError( BaseMessages.getString(
-            PKG, "MemoryGroupBy.Log.GroupFieldCouldNotFound", meta.getGroupField()[i] ) );
-          setErrors( 1 );
-          stopAll();
-          return false;
+
+      // If the step does not receive any rows, we can not lookup field position indexes
+      if ( r != null ) {
+        for ( int i = 0; i < meta.getSubjectField().length; i++ ) {
+          if ( meta.getAggregateType()[i] == MemoryGroupByMeta.TYPE_GROUP_COUNT_ANY ) {
+            data.subjectnrs[i] = 0;
+          } else {
+            data.subjectnrs[i] = data.inputRowMeta.indexOfValue( meta.getSubjectField()[i] );
+          }
+          if ( data.subjectnrs[i] < 0 ) {
+            logError( BaseMessages.getString( PKG, "MemoryGroupBy.Log.AggregateSubjectFieldCouldNotFound", meta
+              .getSubjectField()[i] ) );
+            setErrors( 1 );
+            stopAll();
+            return false;
+          }
+        }
+
+        for ( int i = 0; i < meta.getGroupField().length; i++ ) {
+          data.groupnrs[i] = data.inputRowMeta.indexOfValue( meta.getGroupField()[i] );
+          if ( data.groupnrs[i] < 0 ) {
+            logError( BaseMessages.getString(
+              PKG, "MemoryGroupBy.Log.GroupFieldCouldNotFound", meta.getGroupField()[i] ) );
+            setErrors( 1 );
+            stopAll();
+            return false;
+          }
         }
       }
 
@@ -305,7 +311,7 @@ public class MemoryGroupBy extends BaseStep implements StepInterface {
               aggregate.distinctObjs[i].add( obj );
             }
           }
-          aggregate.counts[i] = (long) aggregate.distinctObjs[i].size();
+          aggregate.counts[i] = aggregate.distinctObjs[i].size();
           break;
         case MemoryGroupByMeta.TYPE_GROUP_COUNT_ALL:
           if ( !subjMeta.isNull( subj ) ) {
@@ -537,6 +543,7 @@ public class MemoryGroupBy extends BaseStep implements StepInterface {
 
   }
 
+  @Override
   public boolean init( StepMetaInterface smi, StepDataInterface sdi ) {
     meta = (MemoryGroupByMeta) smi;
     data = (MemoryGroupByData) sdi;
@@ -555,6 +562,7 @@ public class MemoryGroupBy extends BaseStep implements StepInterface {
     ( (MemoryGroupByData) sdi ).clear();
   }
 
+  @Override
   public void batchComplete() throws KettleException {
     // Empty the hash table
     //
