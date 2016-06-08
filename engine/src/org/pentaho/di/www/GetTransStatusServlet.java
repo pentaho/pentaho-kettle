@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -250,6 +250,7 @@ public class GetTransStatusServlet extends BaseHttpServlet implements CartePlugi
         SlaveServerTransStatus transStatus = new SlaveServerTransStatus( transName, entry.getId(), status );
         transStatus.setFirstLoggingLineNr( startLineNr );
         transStatus.setLastLoggingLineNr( lastLineNr );
+        transStatus.setLogDate( trans.getLogDate() );
 
         for ( int i = 0; i < trans.nrSteps(); i++ ) {
           StepInterface baseStep = trans.getRunThread( i );

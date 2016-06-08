@@ -24,6 +24,7 @@ package org.pentaho.di.trans.steps.loadsave.validator;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -60,8 +61,10 @@ public class DefaultFieldLoadSaveValidatorFactory implements FieldLoadSaveValida
     registerValidator( DatabaseMeta.class.getCanonicalName(), new DatabaseMetaLoadSaveValidator() );
     registerValidator( DatabaseMeta[].class.getCanonicalName(), new ArrayLoadSaveValidator<DatabaseMeta>(
       new DatabaseMetaLoadSaveValidator() ) );
+    registerValidator( Date.class.getCanonicalName(), new DateLoadSaveValidator() );
   }
 
+  @Override
   public void registerValidator( String typeString, FieldLoadSaveValidator<?> validator ) {
     this.typeMap.put( typeString, validator );
   }
