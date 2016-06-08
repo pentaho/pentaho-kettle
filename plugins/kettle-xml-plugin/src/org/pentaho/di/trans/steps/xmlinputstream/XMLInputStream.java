@@ -23,7 +23,9 @@
 package org.pentaho.di.trans.steps.xmlinputstream;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
@@ -33,6 +35,7 @@ import javax.xml.stream.events.EndElement;
 import javax.xml.stream.events.Namespace;
 import javax.xml.stream.events.XMLEvent;
 
+import org.apache.commons.vfs2.FileSystemException;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.exception.KettleException;
@@ -52,7 +55,7 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Use a StAX parser to read XML in a flexible and fast way.
- * 
+ *
  * @author Jens Bleuel
  * @since 2011-01-13
  */
@@ -76,63 +79,27 @@ public class XMLInputStream extends BaseStep implements StepInterface {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
+  @Override
   public boolean processRow( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
     if ( first ) {
       first = false;
 
-      // replace variables
-      data.filename = this.environmentSubstitute( meta.getFilename() );
-      data.nrRowsToSkip = Const.toLong( this.environmentSubstitute( meta.getNrRowsToSkip() ), 0 );
-      data.rowLimit = Const.toLong( this.environmentSubstitute( meta.getRowLimit() ), 0 );
-      data.encoding = this.environmentSubstitute( meta.getEncoding() );
-
-      data.outputRowMeta = new RowMeta();
-      meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
-
-      // get and save field positions
-      data.pos_xml_filename = data.outputRowMeta.indexOfValue( meta.getFilenameField() );
-      data.pos_xml_row_number = data.outputRowMeta.indexOfValue( meta.getRowNumberField() );
-      data.pos_xml_data_type_numeric = data.outputRowMeta.indexOfValue( meta.getXmlDataTypeNumericField() );
-      data.pos_xml_data_type_description = data.outputRowMeta.indexOfValue( meta.getXmlDataTypeDescriptionField() );
-      data.pos_xml_location_line = data.outputRowMeta.indexOfValue( meta.getXmlLocationLineField() );
-      data.pos_xml_location_column = data.outputRowMeta.indexOfValue( meta.getXmlLocationColumnField() );
-      data.pos_xml_element_id = data.outputRowMeta.indexOfValue( meta.getXmlElementIDField() );
-      data.pos_xml_parent_element_id = data.outputRowMeta.indexOfValue( meta.getXmlParentElementIDField() );
-      data.pos_xml_element_level = data.outputRowMeta.indexOfValue( meta.getXmlElementLevelField() );
-      data.pos_xml_path = data.outputRowMeta.indexOfValue( meta.getXmlPathField() );
-      data.pos_xml_parent_path = data.outputRowMeta.indexOfValue( meta.getXmlParentPathField() );
-      data.pos_xml_data_name = data.outputRowMeta.indexOfValue( meta.getXmlDataNameField() );
-      data.pos_xml_data_value = data.outputRowMeta.indexOfValue( meta.getXmlDataValueField() );
-
-      data.fileObject = KettleVFS.getFileObject( data.filename, getTransMeta() );
-
-      try {
-        data.inputStream = KettleVFS.getInputStream( data.fileObject );
-      } catch ( IOException e ) { // by FileInputStream
-        throw new KettleException( e );
+      if ( data.filenames == null ) {
+        getFilenamesFromPreviousSteps();
       }
-
-      try {
-        data.xmlEventReader = data.staxInstance.createXMLEventReader( data.inputStream, data.encoding );
-      } catch ( XMLStreamException e ) {
-        throw new KettleException( e );
-      }
-
-      if ( meta.isAddResultFile() ) {
-        // Add this to the result file names...
-        ResultFile resultFile =
-            new ResultFile( ResultFile.FILE_TYPE_GENERAL, data.fileObject, getTransMeta().getName(), getStepname() );
-        resultFile.setComment( "File was read by an XML Input Stream step" ); // TODO externalize
-        addResultFile( resultFile );
-      }
-
+      openNextFile();
       resetElementCounters();
     }
 
     Object[] outputRowData = getRowFromXML();
     if ( outputRowData == null ) {
-      setOutputDone(); // signal end to receiver(s)
-      return false; // This is the end of this step.
+      if ( openNextFile() ) {
+        resetElementCounters();
+        return true;
+      } else {
+        setOutputDone(); // signal end to receiver(s)
+        return false; // This is the end of this step.
+      }
     }
 
     putRowOut( outputRowData );
@@ -142,8 +109,94 @@ public class XMLInputStream extends BaseStep implements StepInterface {
       setOutputDone();
       return false;
     }
-
     return true;
+  }
+
+  private boolean openNextFile() throws KettleException {
+    try {
+      closeFile();
+      if ( data.filenr >= data.filenames.length ) {
+        return false;
+      }
+      data.fileObject = KettleVFS.getFileObject( data.filenames[data.filenr], getTransMeta() );
+      data.inputStream = KettleVFS.getInputStream( data.fileObject );
+      data.xmlEventReader = data.staxInstance.createXMLEventReader( data.inputStream, data.encoding );
+    } catch ( IOException e ) {
+      throw new KettleException( e );
+    } catch ( XMLStreamException e ) {
+      throw new KettleException( e );
+    }
+    data.filenr++;
+    if ( meta.isAddResultFile() ) {
+      // Add this to the result file names...
+      ResultFile resultFile =
+        new ResultFile( ResultFile.FILE_TYPE_GENERAL, data.fileObject, getTransMeta().getName(), getStepname() );
+      resultFile.setComment( BaseMessages.getString( PKG, "XMLInputStream.Log.ResultFileWasRead" ) );
+      addResultFile( resultFile );
+    }
+    return true;
+  }
+
+  private void closeFile() {
+    if ( data.xmlEventReader != null ) {
+      try {
+        data.xmlEventReader.close();
+      } catch ( XMLStreamException e ) {
+        if ( log.isBasic() ) {
+          log.logBasic( BaseMessages.getString( PKG, "XMLInputStream.Log.UnableToCloseFile",
+            data.filenames[( data.filenr - 1 )] ), e );
+        }
+      }
+    }
+    if ( data.inputStream != null ) {
+      try {
+        data.inputStream.close();
+      } catch ( IOException e ) {
+        if ( log.isBasic() ) {
+          log.logBasic( BaseMessages.getString( PKG, "XMLInputStream.Log.UnableToCloseFile",
+            data.filenames[( data.filenr - 1 )] ), e );
+        }
+      }
+    }
+    if ( data.fileObject != null ) {
+      try {
+        data.fileObject.close();
+      } catch ( FileSystemException e ) {
+        if ( log.isBasic() ) {
+          log.logBasic( BaseMessages.getString( PKG, "XMLInputStream.Log.UnableToCloseFile",
+             data.filenames[( data.filenr - 1 )] ), e );
+        }
+      }
+    }
+  }
+
+  private void getFilenamesFromPreviousSteps() throws KettleException {
+    List<String> filenames = new ArrayList<String>();
+    int index = -1;
+
+    Object[] row = getRow();
+
+    // Get the filename field index...
+    //
+    String filenameField = environmentSubstitute( meta.getFilename() );
+    index = getInputRowMeta().indexOfValue( filenameField );
+    if ( index < 0 ) {
+      throw new KettleException( BaseMessages.getString(
+        PKG, "XMLInputStream.FilenameFieldNotFound", filenameField ) );
+    }
+
+    while ( row != null ) {
+
+      String filename = getInputRowMeta().getString( row, index );
+      filenames.add( filename ); // add it to the list...
+
+      row = getRow(); // Grab another row...
+    }
+
+    data.filenames = filenames.toArray( new String[filenames.size()] );
+
+    logDetailed( BaseMessages.getString( PKG, "XMLInputStream.Log.ReadingFromNrFiles", Integer
+      .toString( data.filenames.length ) ) );
   }
 
   // sends the normal row and attributes
@@ -151,7 +204,7 @@ public class XMLInputStream extends BaseStep implements StepInterface {
 
     data.rowNumber++;
     if ( data.pos_xml_filename != -1 ) {
-      r[data.pos_xml_filename] = new String( data.filename );
+      r[data.pos_xml_filename] = new String( data.filenames[( data.filenr - 1 )] );
     }
     if ( data.pos_xml_row_number != -1 ) {
       r[data.pos_xml_row_number] = new Long( data.rowNumber );
@@ -234,7 +287,8 @@ public class XMLInputStream extends BaseStep implements StepInterface {
       case XMLStreamConstants.START_ELEMENT:
         data.elementLevel++;
         if ( data.elementLevel > PARENT_ID_ALLOCATE_SIZE - 1 ) {
-          throw new KettleException( "Too many nested XML elements, more than " + PARENT_ID_ALLOCATE_SIZE );
+          throw new KettleException(
+            BaseMessages.getString( PKG, "XMLInputStream.Log.TooManyNestedElements", PARENT_ID_ALLOCATE_SIZE ) );
         }
         if ( data.elementParentID[data.elementLevel] == null ) {
           data.elementParentID[data.elementLevel] = data.elementID;
@@ -341,7 +395,7 @@ public class XMLInputStream extends BaseStep implements StepInterface {
 
   /**
    * Returns the qualified name of the end element
-   * 
+   *
    * @param el
    *          an EndElement event
    * @param enabledNamespaces
@@ -432,7 +486,7 @@ public class XMLInputStream extends BaseStep implements StepInterface {
 
   /**
    * Returns the qualified name of the attribute
-   * 
+   *
    * @param a
    *          an attribute event
    * @param enabledNamespaces
@@ -450,7 +504,7 @@ public class XMLInputStream extends BaseStep implements StepInterface {
   /**
    * Returns the qualified name in the format: <code>prefix:localPart</code> if the prefix is present otherwise just
    * <code>localPart</code>
-   * 
+   *
    * @param prefix
    *          the namespace prefix part of the qualified name
    * @param localPart
@@ -473,46 +527,59 @@ public class XMLInputStream extends BaseStep implements StepInterface {
     data.elementPath[0] = ""; // initial empty
   }
 
+  @Override
   public boolean init( StepMetaInterface smi, StepDataInterface sdi ) {
     meta = (XMLInputStreamMeta) smi;
     data = (XMLInputStreamData) sdi;
 
     if ( super.init( smi, sdi ) ) {
       data.staxInstance = XMLInputFactory.newInstance(); // could select the parser later on
+      data.filenr = 0;
+      if ( getTransMeta().findNrPrevSteps( getStepMeta() ) == 0 ) {
+        String filename = environmentSubstitute( meta.getFilename() );
+        if ( Const.isEmpty( filename ) ) {
+          logError( BaseMessages.getString( PKG, "XMLInputStream.MissingFilename.Message" ) );
+          return false;
+        }
+
+        data.filenames = new String[] { filename, };
+      } else {
+        data.filenames = null;
+      }
+
+      data.nrRowsToSkip = Const.toLong( this.environmentSubstitute( meta.getNrRowsToSkip() ), 0 );
+      data.rowLimit = Const.toLong( this.environmentSubstitute( meta.getRowLimit() ), 0 );
+      data.encoding = this.environmentSubstitute( meta.getEncoding() );
+
+      data.outputRowMeta = new RowMeta();
+      meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
+
+      // get and save field positions
+      data.pos_xml_filename = data.outputRowMeta.indexOfValue( meta.getFilenameField() );
+      data.pos_xml_row_number = data.outputRowMeta.indexOfValue( meta.getRowNumberField() );
+      data.pos_xml_data_type_numeric = data.outputRowMeta.indexOfValue( meta.getXmlDataTypeNumericField() );
+      data.pos_xml_data_type_description = data.outputRowMeta.indexOfValue( meta.getXmlDataTypeDescriptionField() );
+      data.pos_xml_location_line = data.outputRowMeta.indexOfValue( meta.getXmlLocationLineField() );
+      data.pos_xml_location_column = data.outputRowMeta.indexOfValue( meta.getXmlLocationColumnField() );
+      data.pos_xml_element_id = data.outputRowMeta.indexOfValue( meta.getXmlElementIDField() );
+      data.pos_xml_parent_element_id = data.outputRowMeta.indexOfValue( meta.getXmlParentElementIDField() );
+      data.pos_xml_element_level = data.outputRowMeta.indexOfValue( meta.getXmlElementLevelField() );
+      data.pos_xml_path = data.outputRowMeta.indexOfValue( meta.getXmlPathField() );
+      data.pos_xml_parent_path = data.outputRowMeta.indexOfValue( meta.getXmlParentPathField() );
+      data.pos_xml_data_name = data.outputRowMeta.indexOfValue( meta.getXmlDataNameField() );
+      data.pos_xml_data_value = data.outputRowMeta.indexOfValue( meta.getXmlDataValueField() );
       return true;
     }
     return false;
   }
 
+  @Override
   public void dispose( StepMetaInterface smi, StepDataInterface sdi ) {
     meta = (XMLInputStreamMeta) smi;
     data = (XMLInputStreamData) sdi;
 
     // free resources
-    if ( data.xmlEventReader != null ) {
-      try {
-        data.xmlEventReader.close();
-      } catch ( XMLStreamException e ) {
-        // intentionally ignored on closing
-      }
-      data.xmlEventReader = null;
-    }
-    if ( data.inputStream != null ) {
-      try {
-        data.inputStream.close();
-      } catch ( IOException e ) {
-        // intentionally ignored on closing
-      }
-      data.inputStream = null;
-    }
-    if ( data.fileObject != null ) {
-      try {
-        data.fileObject.close();
-      } catch ( IOException e ) {
-        // intentionally ignored on closing
-      }
-      data.fileObject = null;
-    }
+    closeFile();
 
     data.staxInstance = null;
 

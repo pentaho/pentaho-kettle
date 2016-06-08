@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,16 +24,18 @@ package org.pentaho.di.trans.steps.xmlinputstream;
 
 import java.util.List;
 
-import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.ObjectId;
@@ -128,26 +130,27 @@ public class XMLInputStreamMeta extends BaseStepMeta implements StepMetaInterfac
     super(); // allocate BaseStepMeta
   }
 
+  @Override
   public void getFields( RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep,
       VariableSpace space, Repository repository, IMetaStore metaStore ) {
     int defaultStringLenNameValueElements =
         Const.toInt( space.environmentSubstitute( defaultStringLen ), new Integer( DEFAULT_STRING_LEN ) );
 
     if ( includeFilenameField ) {
-      ValueMetaInterface v = new ValueMeta( space.environmentSubstitute( filenameField ), ValueMeta.TYPE_STRING );
+      ValueMetaInterface v = new ValueMetaString( space.environmentSubstitute( filenameField ) );
       v.setLength( DEFAULT_STRING_LEN_FILENAME );
       v.setOrigin( name );
       r.addValueMeta( v );
     }
     if ( includeRowNumberField ) {
-      ValueMetaInterface v = new ValueMeta( space.environmentSubstitute( rowNumberField ), ValueMeta.TYPE_INTEGER );
+      ValueMetaInterface v = new ValueMetaInteger( space.environmentSubstitute( rowNumberField ) );
       v.setLength( ValueMetaInterface.DEFAULT_INTEGER_LENGTH );
       v.setOrigin( name );
       r.addValueMeta( v );
     }
     if ( includeXmlDataTypeNumericField ) {
       ValueMetaInterface vdtn =
-          new ValueMeta( space.environmentSubstitute( xmlDataTypeNumericField ), ValueMeta.TYPE_INTEGER );
+          new ValueMetaInteger( space.environmentSubstitute( xmlDataTypeNumericField ) );
       vdtn.setLength( ValueMetaInterface.DEFAULT_INTEGER_LENGTH );
       vdtn.setOrigin( name );
       r.addValueMeta( vdtn );
@@ -155,7 +158,7 @@ public class XMLInputStreamMeta extends BaseStepMeta implements StepMetaInterfac
 
     if ( includeXmlDataTypeDescriptionField ) {
       ValueMetaInterface vdtd =
-          new ValueMeta( space.environmentSubstitute( xmlDataTypeDescriptionField ), ValueMeta.TYPE_STRING );
+          new ValueMetaString( space.environmentSubstitute( xmlDataTypeDescriptionField ) );
       vdtd.setLength( 25 );
       vdtd.setOrigin( name );
       r.addValueMeta( vdtd );
@@ -163,7 +166,7 @@ public class XMLInputStreamMeta extends BaseStepMeta implements StepMetaInterfac
 
     if ( includeXmlLocationLineField ) {
       ValueMetaInterface vline =
-          new ValueMeta( space.environmentSubstitute( xmlLocationLineField ), ValueMeta.TYPE_INTEGER );
+          new ValueMetaInteger( space.environmentSubstitute( xmlLocationLineField ) );
       vline.setLength( ValueMetaInterface.DEFAULT_INTEGER_LENGTH );
       vline.setOrigin( name );
       r.addValueMeta( vline );
@@ -171,56 +174,56 @@ public class XMLInputStreamMeta extends BaseStepMeta implements StepMetaInterfac
 
     if ( includeXmlLocationColumnField ) {
       ValueMetaInterface vcol =
-          new ValueMeta( space.environmentSubstitute( xmlLocationColumnField ), ValueMeta.TYPE_INTEGER );
+          new ValueMetaInteger( space.environmentSubstitute( xmlLocationColumnField ) );
       vcol.setLength( ValueMetaInterface.DEFAULT_INTEGER_LENGTH );
       vcol.setOrigin( name );
       r.addValueMeta( vcol );
     }
 
     if ( includeXmlElementIDField ) {
-      ValueMetaInterface vdid = new ValueMeta( "xml_element_id", ValueMeta.TYPE_INTEGER );
+      ValueMetaInterface vdid = new ValueMetaInteger( "xml_element_id" );
       vdid.setLength( ValueMetaInterface.DEFAULT_INTEGER_LENGTH );
       vdid.setOrigin( name );
       r.addValueMeta( vdid );
     }
 
     if ( includeXmlParentElementIDField ) {
-      ValueMetaInterface vdparentid = new ValueMeta( "xml_parent_element_id", ValueMeta.TYPE_INTEGER );
+      ValueMetaInterface vdparentid = new ValueMetaInteger( "xml_parent_element_id" );
       vdparentid.setLength( ValueMetaInterface.DEFAULT_INTEGER_LENGTH );
       vdparentid.setOrigin( name );
       r.addValueMeta( vdparentid );
     }
 
     if ( includeXmlElementLevelField ) {
-      ValueMetaInterface vdlevel = new ValueMeta( "xml_element_level", ValueMeta.TYPE_INTEGER );
+      ValueMetaInterface vdlevel = new ValueMetaInteger( "xml_element_level" );
       vdlevel.setLength( ValueMetaInterface.DEFAULT_INTEGER_LENGTH );
       vdlevel.setOrigin( name );
       r.addValueMeta( vdlevel );
     }
 
     if ( includeXmlPathField ) {
-      ValueMetaInterface vdparentxp = new ValueMeta( "xml_path", ValueMeta.TYPE_STRING );
+      ValueMetaInterface vdparentxp = new ValueMetaString( "xml_path" );
       vdparentxp.setLength( DEFAULT_STRING_LEN_PATH );
       vdparentxp.setOrigin( name );
       r.addValueMeta( vdparentxp );
     }
 
     if ( includeXmlParentPathField ) {
-      ValueMetaInterface vdparentpxp = new ValueMeta( "xml_parent_path", ValueMeta.TYPE_STRING );
+      ValueMetaInterface vdparentpxp = new ValueMetaString( "xml_parent_path" );
       vdparentpxp.setLength( DEFAULT_STRING_LEN_PATH );
       vdparentpxp.setOrigin( name );
       r.addValueMeta( vdparentpxp );
     }
 
     if ( includeXmlDataNameField ) {
-      ValueMetaInterface vdname = new ValueMeta( "xml_data_name", ValueMeta.TYPE_STRING );
+      ValueMetaInterface vdname = new ValueMetaString( "xml_data_name" );
       vdname.setLength( defaultStringLenNameValueElements );
       vdname.setOrigin( name );
       r.addValueMeta( vdname );
     }
 
     if ( includeXmlDataValueField ) {
-      ValueMetaInterface vdval = new ValueMeta( "xml_data_value", ValueMeta.TYPE_STRING );
+      ValueMetaInterface vdval = new ValueMetaString( "xml_data_value" );
       vdval.setLength( defaultStringLenNameValueElements );
       vdval.setOrigin( name );
       r.addValueMeta( vdval );
@@ -228,6 +231,7 @@ public class XMLInputStreamMeta extends BaseStepMeta implements StepMetaInterfac
 
   }
 
+  @Override
   public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     try {
       filename = Const.NVL( XMLHandler.getTagValue( stepnode, "filename" ), "" );
@@ -299,6 +303,7 @@ public class XMLInputStreamMeta extends BaseStepMeta implements StepMetaInterfac
     }
   }
 
+  @Override
   public Object clone() {
     XMLInputStreamMeta retval = (XMLInputStreamMeta) super.clone();
     // TODO check
@@ -306,6 +311,7 @@ public class XMLInputStreamMeta extends BaseStepMeta implements StepMetaInterfac
     return retval;
   }
 
+  @Override
   public String getXML() {
     StringBuffer retval = new StringBuffer();
     retval.append( "    " + XMLHandler.addTagValue( "filename", filename ) );
@@ -362,6 +368,7 @@ public class XMLInputStreamMeta extends BaseStepMeta implements StepMetaInterfac
     return retval.toString();
   }
 
+  @Override
   public void setDefault() {
     filename = "";
     addResultFile = false;
@@ -415,6 +422,7 @@ public class XMLInputStreamMeta extends BaseStepMeta implements StepMetaInterfac
 
   }
 
+  @Override
   public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
     throws KettleException {
     try {
@@ -480,6 +488,7 @@ public class XMLInputStreamMeta extends BaseStepMeta implements StepMetaInterfac
     }
   }
 
+  @Override
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
     throws KettleException {
     try {
@@ -540,6 +549,7 @@ public class XMLInputStreamMeta extends BaseStepMeta implements StepMetaInterfac
     }
   }
 
+  @Override
   public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
       String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
       IMetaStore metaStore ) {
@@ -551,6 +561,21 @@ public class XMLInputStreamMeta extends BaseStepMeta implements StepMetaInterfac
       cr = new CheckResult( CheckResultInterface.TYPE_RESULT_OK, "Filename is given", stepMeta );
     }
     remarks.add( cr );
+
+    if ( transMeta.findNrPrevSteps( stepMeta ) > 0 ) {
+      RowMetaInterface previousFields;
+      try {
+        previousFields = transMeta.getPrevStepFields( stepMeta );
+        if ( null == previousFields.searchValueMeta( filename ) ) {
+          cr = new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, "Field name is not in previous step", stepMeta );
+        } else {
+          cr = new CheckResult( CheckResultInterface.TYPE_RESULT_OK, "Field name is in previous step", stepMeta );
+        }
+      } catch ( KettleStepException e ) {
+        cr = new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, "Could not find previous step", stepMeta );
+      }
+      remarks.add( cr );
+    }
 
     if ( includeXmlDataTypeNumericField || includeXmlDataTypeDescriptionField ) {
       cr =
@@ -575,11 +600,13 @@ public class XMLInputStreamMeta extends BaseStepMeta implements StepMetaInterfac
     remarks.add( cr );
   }
 
+  @Override
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta,
       Trans trans ) {
     return new XMLInputStream( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 
+  @Override
   public StepDataInterface getStepData() {
     return new XMLInputStreamData();
   }
