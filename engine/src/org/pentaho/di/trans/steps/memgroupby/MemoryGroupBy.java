@@ -82,11 +82,13 @@ public class MemoryGroupBy extends BaseStep implements StepInterface {
     data = (MemoryGroupByData) sdi;
 
     Object[] r = getRow(); // get row!
+
     if ( first ) {
-      if ( r == null ) {
+      if ( ( r == null ) && ( !meta.isAlwaysGivingBackOneRow() ) ) {
         setOutputDone();
         return false;
       }
+
       String val = getVariable( Const.KETTLE_AGGREGATION_ALL_NULLS_ARE_ZERO, "N" );
       allNullsAreZero = ValueMetaBase.convertStringToBoolean( val );
       val = getVariable( Const.KETTLE_AGGREGATION_MIN_NULL_IS_VALUED, "N" );
@@ -114,31 +116,34 @@ public class MemoryGroupBy extends BaseStep implements StepInterface {
       // Calculate indexes, loop up fields, etc.
       //
       data.subjectnrs = new int[meta.getSubjectField().length];
-
-      for ( int i = 0; i < meta.getSubjectField().length; i++ ) {
-        if ( meta.getAggregateType()[i] == MemoryGroupByMeta.TYPE_GROUP_COUNT_ANY ) {
-          data.subjectnrs[i] = 0;
-        } else {
-          data.subjectnrs[i] = data.inputRowMeta.indexOfValue( meta.getSubjectField()[i] );
-        }
-        if ( data.subjectnrs[i] < 0 ) {
-          logError( BaseMessages.getString( PKG, "MemoryGroupBy.Log.AggregateSubjectFieldCouldNotFound", meta
-            .getSubjectField()[i] ) );
-          setErrors( 1 );
-          stopAll();
-          return false;
-        }
-      }
-
       data.groupnrs = new int[meta.getGroupField().length];
-      for ( int i = 0; i < meta.getGroupField().length; i++ ) {
-        data.groupnrs[i] = data.inputRowMeta.indexOfValue( meta.getGroupField()[i] );
-        if ( data.groupnrs[i] < 0 ) {
-          logError( BaseMessages.getString(
-            PKG, "MemoryGroupBy.Log.GroupFieldCouldNotFound", meta.getGroupField()[i] ) );
-          setErrors( 1 );
-          stopAll();
-          return false;
+
+      // If the step does not receive any rows, we can not lookup field position indexes
+      if ( r != null ) {
+        for ( int i = 0; i < meta.getSubjectField().length; i++ ) {
+          if ( meta.getAggregateType()[i] == MemoryGroupByMeta.TYPE_GROUP_COUNT_ANY ) {
+            data.subjectnrs[i] = 0;
+          } else {
+            data.subjectnrs[i] = data.inputRowMeta.indexOfValue( meta.getSubjectField()[i] );
+          }
+          if ( data.subjectnrs[i] < 0 ) {
+            logError( BaseMessages.getString( PKG, "MemoryGroupBy.Log.AggregateSubjectFieldCouldNotFound", meta
+              .getSubjectField()[i] ) );
+            setErrors( 1 );
+            stopAll();
+            return false;
+          }
+        }
+
+        for ( int i = 0; i < meta.getGroupField().length; i++ ) {
+          data.groupnrs[i] = data.inputRowMeta.indexOfValue( meta.getGroupField()[i] );
+          if ( data.groupnrs[i] < 0 ) {
+            logError( BaseMessages.getString(
+              PKG, "MemoryGroupBy.Log.GroupFieldCouldNotFound", meta.getGroupField()[i] ) );
+            setErrors( 1 );
+            stopAll();
+            return false;
+          }
         }
       }
 
