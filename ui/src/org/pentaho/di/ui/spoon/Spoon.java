@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -218,13 +218,11 @@ import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.pkg.JarfileGenerator;
 import org.pentaho.di.repository.KettleRepositoryLostException;
 import org.pentaho.di.repository.ObjectId;
-import org.pentaho.di.repository.RepositoriesMeta;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryCapabilities;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryElementInterface;
-import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.repository.RepositoryOperation;
 import org.pentaho.di.repository.RepositorySecurityManager;
@@ -576,6 +574,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
   public DelegatingMetaStore metaStore;
 
+  private int[] savedSashWeights;
+  
   /**
    * This is the main procedure for Spoon.
    *
@@ -3242,7 +3242,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   }
 
   public void tabDeselected( TabItem item ) {
-
+    item.setGuiSizes( sashform.getWeights() );
   }
 
   public boolean tabCloseSelected() {
@@ -3299,6 +3299,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   }
 
   public void tabSelected( TabItem item ) {
+    sashform.setWeights( item.getGuiSizes() );
     delegates.tabs.tabSelected( item );
     enableMenus();
   }
@@ -7201,7 +7202,9 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     props.setScreen( windowProperty );
 
     props.setLogLevel( DefaultLogLevel.getLogLevel().getCode() );
-    props.setSashWeights( sashform.getWeights() );
+    if ( sashform.getWeights()[0] != 0 ) {
+      props.setSashWeights( sashform.getWeights() );
+    }
 
     // Also save the open files...
     // Go over the list of tabs, then add the info to the list
@@ -9250,4 +9253,20 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     authProviderDialog.show();
   }
 
+  public void createExpandedContent( String url ) {
+    ExpandedContentManager.createExpandedContent( url );
+    ExpandedContentManager.showExpandedContent();
+  }
+
+  public void hideExpandedContent() {
+    ExpandedContentManager.hideExpandedContent();
+  }
+
+  public void showExpandedContent() {
+    ExpandedContentManager.showExpandedContent();
+  }
+
+  public Composite getDesignParent() {
+    return sashform;
+  }
 }

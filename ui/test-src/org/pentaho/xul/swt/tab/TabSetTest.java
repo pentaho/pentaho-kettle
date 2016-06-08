@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -120,7 +120,8 @@ public class TabSetTest {
   }
 
   private TabItem createItem( TabSet tabSet, String name, String id, final CTabItem cTabItem ) {
-    return new TabItem( tabSet, name, id ) {
+    int[] weights = new int[] { 30, 70 };
+    return new TabItem( tabSet, name, id, weights ) {
       @Override
       protected CTabItem createTabItem( TabSet tabset ) {
         return cTabItem;
