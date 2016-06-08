@@ -295,6 +295,23 @@ public class TransMetaTest {
   }
 
   @Test
+  public void testGetAllTransHops() throws Exception {
+    TransMeta transMeta = new TransMeta( "transFile", "myTrans" );
+    StepMeta step1 = new StepMeta( "name1", null );
+    StepMeta step2 = new StepMeta( "name2", null );
+    StepMeta step3 = new StepMeta( "name3", null );
+    StepMeta step4 = new StepMeta( "name4", null );
+    TransHopMeta hopMeta1 = new TransHopMeta( step1, step2, true );
+    TransHopMeta hopMeta2 = new TransHopMeta( step2, step3, true );
+    TransHopMeta hopMeta3 = new TransHopMeta( step2, step4, true );
+    transMeta.addTransHop( 0, hopMeta1 );
+    transMeta.addTransHop( 1, hopMeta2 );
+    transMeta.addTransHop( 2, hopMeta3 );
+    List<TransHopMeta> allTransHopFrom = transMeta.findAllTransHopFrom( step2 );
+    assertEquals( step3, allTransHopFrom.get( 0 ).getToStep() );
+    assertEquals( step4, allTransHopFrom.get( 1 ).getToStep() );
+  }
+  @Test
   public void testGetPrevInfoFields() throws KettleStepException {
     DataGridMeta dgm1 = new DataGridMeta();
     dgm1.setFieldName( new String[]{ "id", "colA" } );

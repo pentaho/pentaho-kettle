@@ -27,6 +27,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import org.junit.Assume;
 import org.pentaho.di.core.util.Assert;
 
 import java.util.*;
@@ -139,6 +141,17 @@ public class RestIT {
 
   @Before
   public void setUp() throws Exception {
+    // This is only here because everything blows up due to the version
+    // of Java we're running -vs- the version of ASM we rely on thanks to the
+    // version of Jetty we need. When we upgrade to Jetty 8, this NPE will go away.
+    // I'm only catching the NPE to allow the test to work as much as it can with
+    // the version of Jetty we use.
+    // Makes me wonder if we can change the version of jetty used in test cases to
+    // the later one to avoid this before we have to go and change the version of
+    // Jetty for the rest of the platform.
+    //
+    // MB - 5/2016
+    Assume.assumeTrue( !System.getProperty( "java.version" ).startsWith( "1.8" ) );
     stepMockHelper = new StepMockHelper<RestMeta, RestData>( "REST CLIENT TEST", RestMeta.class, RestData.class );
     when( stepMockHelper.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) ).thenReturn(
         stepMockHelper.logChannelInterface );
@@ -150,59 +163,33 @@ public class RestIT {
 
   @After
   public void tearDown() throws Exception {
-    try {
+    if ( server != null ) {
       server.stop( 0 );
-    } catch ( NullPointerException ex ) {
-      // This is only here because everything blows up due to the version
-      // of Java we're running -vs- the version of ASM we rely on thanks to the
-      // version of Jetty we need. When we upgrade to Jetty 8, this NPE will go away.
-      // I'm only catching the NPE to allow the test to work as much as it can with
-      // the version of Jetty we use.
-      // Makes me wonder if we can change the version of jetty used in test cases to
-      // the later one to avoid this before we have to go and change the version of
-      // Jetty for the rest of the platform.
-      //
-      // MB - 5/2016
-      org.junit.Assert.assertTrue( System.getProperty( "java.version" ).startsWith( "1.8" ) );
     }
   }
 
   @Test
   public void testNoContent() throws Exception {
-    try {
-      RestData data = new RestData();
-      int[] index = { 0, 1 };
-      RowMeta meta = new RowMeta();
-      meta.addValueMeta( new ValueMetaString( "fieldName" ) );
-      meta.addValueMeta( new ValueMetaInteger( "codeFieldName" ) );
-      Object[] expectedRow = new Object[] { "", 204L };
-      Rest rest =
-        new RestHandler( stepMockHelper.stepMeta, data, 0, stepMockHelper.transMeta, stepMockHelper.trans, false );
-      RowMetaInterface inputRowMeta = mock( RowMetaInterface.class );
-      rest.setInputRowMeta( inputRowMeta );
-      when( inputRowMeta.clone() ).thenReturn( inputRowMeta );
-      when( stepMockHelper.processRowsStepMetaInterface.getUrl() ).thenReturn(
-          HTTP_LOCALHOST_9998 + "restTest/restNoContentAnswer" );
-      when( stepMockHelper.processRowsStepMetaInterface.getMethod() ).thenReturn( RestMeta.HTTP_METHOD_GET );
-      rest.init( stepMockHelper.processRowsStepMetaInterface, data );
-      data.resultFieldName = "ResultFieldName";
-      data.resultCodeFieldName = "ResultCodeFieldName";
-      Assert.assertTrue( rest.processRow( stepMockHelper.processRowsStepMetaInterface, data ) );
-      Object[] out = ( (RestHandler) rest ).getOutputRow();
-      Assert.assertTrue( meta.equals( out, expectedRow, index ) );
-    } catch ( ArrayIndexOutOfBoundsException ex ) {
-      // This is only here because everything blows up due to the version
-      // of Java we're running -vs- the version of ASM we rely on thanks to the
-      // version of Jetty we need. When we upgrade to Jetty 8, this NPE will go away.
-      // I'm only catching the NPE to allow the test to work as much as it can with
-      // the version of Jetty we use.
-      // Makes me wonder if we can change the version of jetty used in test cases to
-      // the later one to avoid this before we have to go and change the version of
-      // Jetty for the rest of the platform.
-      //
-      // MB - 5/2016
-      org.junit.Assert.assertTrue( System.getProperty( "java.version" ).startsWith( "1.8" ) );
-    }
+    RestData data = new RestData();
+    int[] index = { 0, 1 };
+    RowMeta meta = new RowMeta();
+    meta.addValueMeta( new ValueMetaString( "fieldName" ) );
+    meta.addValueMeta( new ValueMetaInteger( "codeFieldName" ) );
+    Object[] expectedRow = new Object[] { "", 204L };
+    Rest rest =
+      new RestHandler( stepMockHelper.stepMeta, data, 0, stepMockHelper.transMeta, stepMockHelper.trans, false );
+    RowMetaInterface inputRowMeta = mock( RowMetaInterface.class );
+    rest.setInputRowMeta( inputRowMeta );
+    when( inputRowMeta.clone() ).thenReturn( inputRowMeta );
+    when( stepMockHelper.processRowsStepMetaInterface.getUrl() ).thenReturn(
+      HTTP_LOCALHOST_9998 + "restTest/restNoContentAnswer" );
+    when( stepMockHelper.processRowsStepMetaInterface.getMethod() ).thenReturn( RestMeta.HTTP_METHOD_GET );
+    rest.init( stepMockHelper.processRowsStepMetaInterface, data );
+    data.resultFieldName = "ResultFieldName";
+    data.resultCodeFieldName = "ResultCodeFieldName";
+    Assert.assertTrue( rest.processRow( stepMockHelper.processRowsStepMetaInterface, data ) );
+    Object[] out = ( (RestHandler) rest ).getOutputRow();
+    Assert.assertTrue( meta.equals( out, expectedRow, index ) );
   }
 
   @Test

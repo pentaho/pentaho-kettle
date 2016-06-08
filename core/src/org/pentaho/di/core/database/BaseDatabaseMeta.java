@@ -1896,7 +1896,8 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterfaceEx
         String stat = all.substring( from, to );
         if ( !onlySpaces( stat ) ) {
           String s = Const.trim( stat );
-          statements.add( new SqlScriptStatement( s, from, to, s.toUpperCase().startsWith( "SELECT" ) ) );
+          statements.add( new SqlScriptStatement(
+            s, from, to, s.toUpperCase().startsWith( "SELECT" ) || s.toLowerCase().startsWith( "show" ) ) );
         }
         to++;
         from = to;

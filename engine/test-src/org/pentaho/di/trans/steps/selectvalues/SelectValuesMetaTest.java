@@ -23,6 +23,8 @@
 package org.pentaho.di.trans.steps.selectvalues;
 
 import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -177,6 +179,27 @@ public class SelectValuesMetaTest {
     selectValuesMeta.setSelectPrecision( new int[] { 1, 2 } );
     selectValuesMeta.setSelectPrecision( new int[] { 1 } );
     assertArrayEquals( new int[] { 1, SelectValuesMeta.UNDEFINED }, selectValuesMeta.getSelectPrecision() );
+  }
+
+  @Test
+  public void setSelectFieldsNull() {
+    selectValuesMeta.setSelectFields( null );
+    assertNotNull( selectValuesMeta.getSelectFields() );
+    assertEquals( 0, selectValuesMeta.getSelectFields().length );
+  }
+
+  @Test
+  public void setDeleteNameNull() {
+    selectValuesMeta.setDeleteName( null );
+    assertNotNull( selectValuesMeta.getDeleteName() );
+    assertEquals( 0, selectValuesMeta.getDeleteName().length );
+  }
+
+  @Test
+  public void setMetaNull() {
+    selectValuesMeta.setMeta( null );
+    assertNotNull( selectValuesMeta.getMeta() );
+    assertEquals( 0, selectValuesMeta.getMeta().length );
   }
 
   @Test

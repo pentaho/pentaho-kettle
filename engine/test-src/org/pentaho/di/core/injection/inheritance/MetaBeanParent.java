@@ -19,34 +19,28 @@
  * limitations under the License.
  *
  ******************************************************************************/
+package org.pentaho.di.core.injection.inheritance;
 
-package org.pentaho.di.core.injection;
+import java.util.List;
 
-public class MetaBeanLevel2 extends MetaBeanLevel2Base {
+import org.pentaho.di.core.injection.Injection;
+import org.pentaho.di.core.injection.InjectionDeep;
 
-  @Injection( name = "SEPARATOR" )
-  private String separator;
+public class MetaBeanParent<T extends MetaBeanParentItem, A> {
 
   @InjectionDeep
-  private MetaBeanLevel3[] files;
+  public List<T> items;
 
-  @InjectionDeep( prefix = "SECOND" )
-  private MetaBeanLevel4 filesSecond;
-  @InjectionDeep( prefix = "THIRD" )
-  private MetaBeanLevel4 filesThird;
+  @Injection( name = "A" )
+  A obj;
 
-  @Injection( name = "FILENAME_ARRAY" )
-  private String[] filenames;
-
-  public String[] getFilenames() {
-    return filenames;
+  @InjectionDeep( prefix = "ITEM" )
+  public T test1() {
+    return null;
   }
 
-  public String getSeparator() {
-    return separator;
-  }
-
-  public MetaBeanLevel3[] getFiles() {
-    return files;
+  @InjectionDeep( prefix = "SUB" )
+  public List<T> test2() {
+    return null;
   }
 }

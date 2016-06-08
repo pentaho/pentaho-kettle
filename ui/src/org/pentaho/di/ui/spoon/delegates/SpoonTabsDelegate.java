@@ -74,6 +74,10 @@ public class SpoonTabsDelegate extends SpoonDelegate {
   }
 
   public boolean tabClose( TabItem item ) throws KettleException {
+    return tabClose( item, false );
+  }
+
+  public boolean tabClose( TabItem item, boolean force ) throws KettleException {
     // Try to find the tab-item that's being closed.
     List<TabMapEntry> collection = new ArrayList<TabMapEntry>();
     collection.addAll( tabMap );
@@ -86,22 +90,24 @@ public class SpoonTabsDelegate extends SpoonDelegate {
     boolean canSave = true;
     for ( TabMapEntry entry : collection ) {
       if ( item.equals( entry.getTabItem() ) ) {
-        TabItemInterface itemInterface = entry.getObject();
-        if ( itemInterface.getManagedObject() != null
+        if ( !force ) {
+          TabItemInterface itemInterface = entry.getObject();
+          if ( itemInterface.getManagedObject() != null
             && AbstractMeta.class.isAssignableFrom( itemInterface.getManagedObject().getClass() ) ) {
-          canSave = !( (AbstractMeta) itemInterface.getManagedObject() ).hasMissingPlugins();
-        }
-        if ( canSave ) {
-          // Can we close this tab? Only allow users with create content perms to save
-          if ( !itemInterface.canBeClosed() && createPerms ) {
-            int reply = itemInterface.showChangedWarning();
-            if ( reply == SWT.YES ) {
-              close = itemInterface.applyChanges();
-            } else {
-              if ( reply == SWT.CANCEL ) {
-                close = false;
+            canSave = !( (AbstractMeta) itemInterface.getManagedObject() ).hasMissingPlugins();
+          }
+          if ( canSave ) {
+            // Can we close this tab? Only allow users with create content perms to save
+            if ( !itemInterface.canBeClosed() && createPerms ) {
+              int reply = itemInterface.showChangedWarning();
+              if ( reply == SWT.YES ) {
+                close = itemInterface.applyChanges();
               } else {
-                close = true;
+                if ( reply == SWT.CANCEL ) {
+                  close = false;
+                } else {
+                  close = true;
+                }
               }
             }
           }

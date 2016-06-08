@@ -1,12 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
            xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.0.0"
-           xmlns:ext="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.0.0" default-timeout="20000">
+           xmlns:ext="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.0.0"
+           xmlns:pen="http://www.pentaho.com/xml/schemas/pentaho-blueprint" default-timeout="20000">
+
+  <bean id="repositoryConnectController" scope="singleton"
+        class="org.pentaho.di.ui.repo.RepositoryConnectController">
+  </bean>
 
   <bean id="repositoriesSpoonPlugin" class="org.pentaho.di.ui.repo.RepositorySpoonPlugin"
         scope="singleton" destroy-method="removeFromContainer">
+    <argument ref="repositoryConnectController"/>
   </bean>
 
+  <bean id="repositorySpoonStartExtensionPoint" scope="singleton"
+        class="org.pentaho.di.ui.repo.RepositorySpoonStartExtensionPoint">
+    <argument ref="repositoryConnectController"/>
+    <pen:di-plugin type="org.pentaho.di.core.extension.ExtensionPointPluginType"/>
+  </bean>
+
+  <bean id="repositoryOpenRecentExtensionPoint" scope="singleton"
+        class="org.pentaho.di.ui.repo.RepositoryOpenRecentFileExtensionPoint">
+    <argument ref="repositoryConnectController"/>
+    <pen:di-plugin type="org.pentaho.di.core.extension.ExtensionPointPluginType"/>
+  </bean>
 
   <!-- Actual Plugin Class PluginInterface, references the Spoon Plugin above -->
   <bean id="repositoriesPlugin" class="org.pentaho.di.osgi.OSGIPlugin">

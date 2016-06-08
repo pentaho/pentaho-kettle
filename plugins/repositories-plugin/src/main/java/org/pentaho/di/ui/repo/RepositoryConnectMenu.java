@@ -51,10 +51,15 @@ public class RepositoryConnectMenu {
   private RepositoriesMeta repositoriesMeta;
   private final RepositoryConnectController repoConnectController;
 
-  public RepositoryConnectMenu( Spoon spoon, ToolBar toolBar ) {
+  public RepositoryConnectMenu( Spoon spoon, ToolBar toolBar, RepositoryConnectController repoConnectController ) {
     this.toolBar = toolBar;
     this.spoon = spoon;
-    repoConnectController = new RepositoryConnectController();
+    this.repoConnectController = repoConnectController;
+    repoConnectController.addListener( new RepositoryConnectController.RepositoryContollerListener() {
+      @Override public void update() {
+        renderAndUpdate();
+      }
+    } );
   }
 
   public void update() {
@@ -131,6 +136,11 @@ public class RepositoryConnectMenu {
                 String repoName = ( (MenuItem) selectionEvent.widget ).getText();
                 RepositoryMeta repositoryMeta = repositoriesMeta.findRepository( repoName );
                 if ( repositoryMeta != null ) {
+                  try {
+                    spoon.promptForSave();
+                  } catch ( KettleException ke ) {
+                    log.logError( "Error prompting for save", ke );
+                  }
                   if ( repositoryMeta.getId().equals( "KettleFileRepository" ) ) {
                     repoConnectController.connectToRepository( repositoryMeta );
                   } else {

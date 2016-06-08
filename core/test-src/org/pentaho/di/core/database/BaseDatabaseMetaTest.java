@@ -19,34 +19,19 @@
  * limitations under the License.
  *
  ******************************************************************************/
+package org.pentaho.di.core.database;
 
-package org.pentaho.di.core.injection;
+import org.junit.Test;
 
-public class MetaBeanLevel2 extends MetaBeanLevel2Base {
+import java.util.List;
 
-  @Injection( name = "SEPARATOR" )
-  private String separator;
+import static org.junit.Assert.*;
 
-  @InjectionDeep
-  private MetaBeanLevel3[] files;
-
-  @InjectionDeep( prefix = "SECOND" )
-  private MetaBeanLevel4 filesSecond;
-  @InjectionDeep( prefix = "THIRD" )
-  private MetaBeanLevel4 filesThird;
-
-  @Injection( name = "FILENAME_ARRAY" )
-  private String[] filenames;
-
-  public String[] getFilenames() {
-    return filenames;
-  }
-
-  public String getSeparator() {
-    return separator;
-  }
-
-  public MetaBeanLevel3[] getFiles() {
-    return files;
+public class BaseDatabaseMetaTest {
+  @Test
+  public void testShowIsTreatedAsAResultsQuery() throws Exception {
+    List<SqlScriptStatement> sqlScriptStatements =
+      new H2DatabaseMeta().getSqlScriptStatements( "show annotations from service" );
+    assertTrue( sqlScriptStatements.get( 0 ).isQuery() );
   }
 }
