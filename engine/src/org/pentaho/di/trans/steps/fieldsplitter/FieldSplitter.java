@@ -112,7 +112,8 @@ public class FieldSplitter extends BaseStep implements StepInterface {
     }
 
     String valueToSplit = data.previousMeta.getString( r, data.fieldnr );
-    String[] valueParts = Const.splitString( valueToSplit, data.delimiter, data.enclosure, true );
+    boolean removeEnclosure = Boolean.valueOf( System.getProperties().getProperty( Const.KETTLE_SPLIT_FIELDS_REMOVE_ENCLOSURE, "false" ) );
+    String[] valueParts = Const.splitString( valueToSplit, data.delimiter, data.enclosure, removeEnclosure );
     int prev = 0;
     for ( int i = 0; i < meta.getFieldName().length; i++ ) {
       String rawValue = null;
