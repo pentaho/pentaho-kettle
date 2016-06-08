@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -45,6 +45,7 @@ import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.repository.ObjectRevision;
 import org.pentaho.di.repository.RepositoryOperation;
 import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.repository.RepositorySecurityUI;
 import org.pentaho.di.ui.spoon.Spoon;
@@ -246,8 +247,8 @@ public class SpoonTabsDelegate extends SpoonDelegate {
             }
           }
         } );
-
-        TabItem tabItem = new TabItem( tabfolder, name, name );
+        PropsUI props = PropsUI.getInstance();
+        TabItem tabItem = new TabItem( tabfolder, name, name, props.getSashWeights() );
         tabItem.setImage( GUIResource.getInstance().getImageLogoSmall() );
         tabItem.setControl( browser.getComposite() );
 
