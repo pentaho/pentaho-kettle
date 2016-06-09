@@ -22,33 +22,13 @@
 
 package org.pentaho.di.trans.steps.metainject;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.refEq;
-import static org.mockito.Mockito.atLeastOnce;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
-
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleValueException;
+import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaBigNumber;
@@ -63,6 +43,22 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInjectionInterface;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.StepMockUtil;
+import org.pentaho.metastore.api.IMetaStore;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import static org.junit.Assert.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.refEq;
+import static org.mockito.Mockito.*;
 
 public class MetaInjectTest {
 
@@ -98,12 +94,14 @@ public class MetaInjectTest {
   private TransMeta transMeta;
 
   private StepMetaInjectionInterface metaInjectionInterface;
+  private IMetaStore metaStore;
 
   @Before
   public void before() throws Exception {
     metaInject = StepMockUtil.getStep( MetaInject.class, MetaInjectMeta.class, "MetaInjectTest" );
     metaInject = spy( metaInject );
-
+    metaStore = mock( IMetaStore.class );
+    metaInject.setMetaStore( metaStore );
     transMeta = mock( TransMeta.class );
     doReturn( transMeta ).when( metaInject ).getTransMeta();
 
@@ -162,6 +160,7 @@ public class MetaInjectTest {
 
     meta.setNoExecution( true );
     assertTrue( metaInject.init( meta, data ) );
+
     metaInject.processRow( meta, data );
 
     StepInjectionMetaEntry expectedNameEntry =
@@ -172,6 +171,28 @@ public class MetaInjectTest {
         RowMetaAndData.class ), any( SourceStepField.class ) );
     verify( metaInject, atLeastOnce() ).setEntryValueIfFieldExists( refEq( expectedDataEntry ), any(
         RowMetaAndData.class ), any( SourceStepField.class ) );
+  }
+
+  @Test
+  public void testMetastoreIsSet() throws Exception {
+    doReturn( new String[] { } ).when( transMeta ).getPrevStepNames( any( StepMeta.class ) );
+    data.stepInjectionMetasMap = new HashMap<>();
+    data.stepInjectionMap = new HashMap<>();
+
+    data.transMeta = new TransMeta();
+
+    meta.setNoExecution( false );
+    doReturn( LogLevel.ERROR ).when( metaInject ).getLogLevel();
+    // don't need to actually run anything to verify this. force it to "stopped"
+    doReturn( true ).when( metaInject ).isStopped();
+
+    // make sure the injected tranformation doesn't have a metastore first
+    assertNull( data.transMeta.getMetaStore() );
+
+    metaInject.processRow( meta, data );
+
+    // now it should be set
+    assertEquals( metaStore, data.transMeta.getMetaStore() );
   }
 
   @Test

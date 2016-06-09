@@ -560,7 +560,6 @@ public class AbstractMetaTest {
 
   @Test
   public void testGetSetSharedObjects() throws Exception {
-    assertNotNull( meta.getSharedObjects() );
     SharedObjects sharedObjects = mock( SharedObjects.class );
     meta.setSharedObjects( sharedObjects );
     assertEquals( sharedObjects, meta.getSharedObjects() );
