@@ -649,18 +649,6 @@ public class JsonInputMeta extends
     }
   }
 
-  @Override
-  public String getRequiredFilesCode( String tt ) {
-    if ( tt == null ) {
-      return RequiredFilesCode[0];
-    }
-    if ( tt.equals( RequiredFilesDesc[1] ) ) {
-      return RequiredFilesCode[1];
-    } else {
-      return RequiredFilesCode[0];
-    }
-  }
-
   private void readData( Node stepnode ) throws KettleXMLException {
     try {
       includeFilename = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "include" ) );
