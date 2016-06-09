@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -178,7 +178,8 @@ public class SpoonTransformationDelegate extends SpoonDelegate {
 
       if ( addTab ) {
         TransGraph transGraph = new TransGraph( spoon.tabfolder.getSwtTabset(), spoon, transMeta );
-        TabItem tabItem = new TabItem( spoon.tabfolder, tabName, tabName );
+        PropsUI props = PropsUI.getInstance();
+        TabItem tabItem = new TabItem( spoon.tabfolder, tabName, tabName, props.getSashWeights() );
         String toolTipText =
           BaseMessages.getString( PKG, "Spoon.TabTrans.Tooltip", spoon.delegates.tabs.makeTabName(
             transMeta, showLocation ) );
