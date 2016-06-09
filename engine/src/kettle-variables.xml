@@ -357,7 +357,7 @@
     <variable>KETTLE_AGGREGATION_ALL_NULLS_ARE_ZERO</variable>
     <default-value>N</default-value>
   </kettle-variable>
-  
+
   <kettle-variable>
     <description>Set this variable to Y for backward compatibility for the Text File Output step. Setting this to Ywill add no header row at all when the append option is enabled, regardless if the file is existing or not.</description>
     <variable>KETTLE_COMPATIBILITY_TEXT_FILE_OUTPUT_APPEND_NO_HEADER</variable>
@@ -378,35 +378,41 @@
     <default-value>N</default-value>
   </kettle-variable>
 
-	
-	<kettle-variable>
+
+  <kettle-variable>
     <description>You can use this variable to speed up hostname lookup. Hostname lookup is performed by Kettle so that it is capable of logging the server on which a job or transformation is executed.
     </description>
     <variable>KETTLE_SYSTEM_HOSTNAME</variable>
     <default-value></default-value>
   </kettle-variable>
-  
+
   <kettle-variable>
     <description>Set this variable to Y for backward compatibility when importing a reference to a directory with a variable. When set to Y, a directory reference is always prefixed with the root path independently if variables are used or not.
     </description>
     <variable>KETTLE_COMPATIBILITY_IMPORT_PATH_ADDITION_ON_VARIABLES</variable>
     <default-value>N</default-value>
   </kettle-variable>
-  
+
    <kettle-variable>
     <description>A variable to configure jetty option: acceptors for Carte</description>
     <variable>KETTLE_CARTE_JETTY_ACCEPTORS</variable>
   </kettle-variable>
-  
+
   <kettle-variable>
     <description>A variable to configure jetty option: acceptQueueSize for Carte</description>
     <variable>KETTLE_CARTE_JETTY_ACCEPT_QUEUE_SIZE</variable>
   </kettle-variable>
-  
+
   <kettle-variable>
     <description>A variable to configure jetty option: lowResourcesMaxIdleTime for Carte</description>
     <variable>KETTLE_CARTE_JETTY_RES_MAX_IDLE_TIME</variable>
   </kettle-variable>
-  
+
+  <kettle-variable>
+    <description>Set this variable to false to preserve enclosure symbol after splitting the string in the Split fields step. Changing it to true will remove first and last enclosure symbol from the resulting string chunks.</description>
+    <variable>KETTLE_SPLIT_FIELDS_REMOVE_ENCLOSURE</variable>
+    <default-value>false</default-value>
+  </kettle-variable>
+
 </kettle-variables>
 

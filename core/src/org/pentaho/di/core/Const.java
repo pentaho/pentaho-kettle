@@ -985,6 +985,11 @@ public class Const {
   public static final String KETTLE_DEFAULT_TIMESTAMP_FORMAT = "KETTLE_DEFAULT_TIMESTAMP_FORMAT";
 
   /**
+   * Variable that is responsible for removing enclosure symbol after splitting the string
+   */
+  public static final String KETTLE_SPLIT_FIELDS_REMOVE_ENCLOSURE = "KETTLE_SPLIT_FIELDS_REMOVE_ENCLOSURE";
+
+  /**
    * Compatibility settings for setNrErrors
    */
   // see PDI-10270 for details.
