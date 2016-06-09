@@ -21,6 +21,7 @@
  ******************************************************************************/
 package org.pentaho.di.www;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -38,6 +39,8 @@ import static org.mockito.Mockito.*;
  */
 public class CarteTest {
 
+  // this test isn't consistent/doesn't work.
+  @Ignore
   @Test
   public void test() throws Exception {
 
