@@ -426,5 +426,11 @@
     <default-value>true</default-value>
   </kettle-variable>
 
+  <kettle-variable>
+    <description>Set this variable to false to preserve enclosure symbol after splitting the string in the Split fields step. Changing it to true will remove first and last enclosure symbol from the resulting string chunks.</description>
+    <variable>KETTLE_SPLIT_FIELDS_REMOVE_ENCLOSURE</variable>
+    <default-value>false</default-value>
+  </kettle-variable>
+
 </kettle-variables>
 
