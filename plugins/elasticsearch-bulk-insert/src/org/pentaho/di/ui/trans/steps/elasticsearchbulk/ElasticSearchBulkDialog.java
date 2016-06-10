@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -63,7 +63,6 @@ import org.elasticsearch.client.transport.NoNodeAvailableException;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.cluster.ClusterState;
 import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.discovery.MasterNotDiscoveredException;
 import org.elasticsearch.node.Node;
 import org.elasticsearch.node.NodeBuilder;
@@ -497,7 +496,7 @@ public class ElasticSearchBulkDialog extends BaseStepDialog implements StepDialo
 
     setButtonPositions( new Button[]{ wGet }, Const.MARGIN, null );
 
-    final int fieldsRowCount = model.getFields().keySet().size();
+    final int fieldsRowCount = model.getFields().size();
 
     String[] names = this.fieldNames != null ? this.fieldNames : new String[]{ "" };
     ColumnInfo[] columnsMeta = new ColumnInfo[2];
@@ -780,19 +779,17 @@ public class ElasticSearchBulkDialog extends BaseStepDialog implements StepDialo
     wIdOutField.setEnabled( wUseOutput.getSelection() ); // listener not working here
 
     // Fields
-    mapToTableView( model.getFields(), wFields );
+    mapToTableView( model.getFieldsMap(), wFields );
 
     // Servers
-    for ( InetSocketTransportAddress server : model.getServers() ) {
-      String addr = server.address().getAddress().getHostAddress();
-      int port = server.address().getPort();
-      wServers.add( addr, "" + port );
+    for ( ElasticSearchBulkMeta.Server server : model.getServers() ) {
+      wServers.add( server.address, "" + server.port );
     }
     wServers.removeEmptyRows();
     wServers.setRowNums();
 
     // Settings
-    mapToTableView( model.getSettings(), wSettings );
+    mapToTableView( model.getSettingsMap(), wSettings );
 
     wStepname.selectAll();
     wStepname.setFocus();
@@ -894,14 +891,14 @@ public class ElasticSearchBulkDialog extends BaseStepDialog implements StepDialo
 
       Settings.Builder settingsBuilder = Settings.settingsBuilder();
       settingsBuilder.put( Settings.Builder.EMPTY_SETTINGS ); // keep default classloader
-      settingsBuilder.put( tempMeta.getSettings() );
+      settingsBuilder.put( tempMeta.getSettingsMap() );
       TransportClient.Builder tClientBuilder = TransportClient.builder().settings( settingsBuilder );
 
-      if ( tempMeta.getServers().length > 0 ) {
+      if ( !tempMeta.getServers().isEmpty() ) {
         node = null;
         TransportClient tClient = tClientBuilder.build();
-        for ( InetSocketTransportAddress address : tempMeta.getServers() ) {
-          tClient.addTransportAddress( address );
+        for ( ElasticSearchBulkMeta.Server s : tempMeta.getServers() ) {
+          tClient.addTransportAddress( s.getAddr() );
         }
         client = tClient;
       } else {

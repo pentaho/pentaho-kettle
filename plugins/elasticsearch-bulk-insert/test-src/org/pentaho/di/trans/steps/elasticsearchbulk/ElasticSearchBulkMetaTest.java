@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,6 +22,10 @@
 
 package org.pentaho.di.trans.steps.elasticsearchbulk;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Arrays;
@@ -33,17 +37,16 @@ import java.util.concurrent.TimeUnit;
 
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.junit.Test;
-import static org.junit.Assert.*;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleValueException;
-import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
-import org.pentaho.di.trans.steps.loadsave.validator.ArrayLoadSaveValidator;
-import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
-import org.pentaho.di.trans.steps.loadsave.validator.MapLoadSaveValidator;
-import org.pentaho.di.trans.steps.loadsave.validator.StringLoadSaveValidator;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.trans.step.StepDataInterface;
+import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
+import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
+import org.pentaho.di.trans.steps.loadsave.validator.ListLoadSaveValidator;
+import org.pentaho.di.trans.steps.loadsave.validator.MapLoadSaveValidator;
+import org.pentaho.di.trans.steps.loadsave.validator.StringLoadSaveValidator;
 
 public class ElasticSearchBulkMetaTest {
   @Test
@@ -65,9 +68,9 @@ public class ElasticSearchBulkMetaTest {
     getterMap.put( "overwriteIfExists", "isOverWriteIfSameId" );
     getterMap.put( "useOutput", "isUseOutput" );
     getterMap.put( "stopOnError", "isStopOnError" );
-    getterMap.put( "fields", "getFields" );
+    getterMap.put( "fields", "getFieldsMap" );
     getterMap.put( "servers", "getServers" );
-    getterMap.put( "settings", "getSettings" );
+    getterMap.put( "settings", "getSettingsMap" );
 
     Map<String, String> setterMap = new HashMap<String, String>();
     setterMap.put( "index", "setIndex" );
@@ -82,9 +85,9 @@ public class ElasticSearchBulkMetaTest {
     setterMap.put( "overwriteIfExists", "setOverWriteIfSameId" );
     setterMap.put( "useOutput", "setUseOutput" );
     setterMap.put( "stopOnError", "setStopOnError" );
-    setterMap.put( "fields", "setFields" );
+    setterMap.put( "fields", "setFieldsMap" );
     setterMap.put( "servers", "setServers" );
-    setterMap.put( "settings", "setSettings" );
+    setterMap.put( "settings", "setSettingsMap" );
 
     Map<String, FieldLoadSaveValidator<?>> fieldLoadSaveValidatorAttributeMap =
         new HashMap<String, FieldLoadSaveValidator<?>>();
@@ -95,11 +98,24 @@ public class ElasticSearchBulkMetaTest {
         new StringLoadSaveValidator(), new StringLoadSaveValidator() ) );
     fieldLoadSaveValidatorAttributeMap.put( "settings", new MapLoadSaveValidator<String, String>(
         new StringLoadSaveValidator(), new StringLoadSaveValidator() ) );
+    fieldLoadSaveValidatorAttributeMap.put( "servers", new ListLoadSaveValidator<ElasticSearchBulkMeta.Server>(
+        new FieldLoadSaveValidator<ElasticSearchBulkMeta.Server>() {
+          Random rand = new Random();
 
-    fieldLoadSaveValidatorTypeMap
-        .put( InetSocketTransportAddress[].class.getCanonicalName(),
-            new ArrayLoadSaveValidator<InetSocketTransportAddress>(
-                new InetSocketTransportAddressFieldLoadSaveValidator() ) );
+          @Override
+          public ElasticSearchBulkMeta.Server getTestObject() {
+            ElasticSearchBulkMeta.Server r = new ElasticSearchBulkMeta.Server();
+            r.address = rand.nextLong() + "";
+            r.port = rand.nextInt();
+            return r;
+          }
+
+          @Override
+          public boolean validateTestObject( ElasticSearchBulkMeta.Server testObject, Object actual ) {
+            ElasticSearchBulkMeta.Server ac = (ElasticSearchBulkMeta.Server) actual;
+            return ac.address.equals( testObject.address ) && ac.port == testObject.port;
+          }
+        } ) );
     fieldLoadSaveValidatorTypeMap.put( TimeUnit.class.getCanonicalName(), new TimeUnitFieldLoadSaveValidator() );
 
     LoadSaveTester loadSaveTester =
