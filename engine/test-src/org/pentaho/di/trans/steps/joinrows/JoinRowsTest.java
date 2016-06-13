@@ -69,7 +69,7 @@ public class JoinRowsTest {
   public void disposeDataFiles() throws Exception {
     File mockFile1 = Mockito.mock( File.class );
     File mockFile2 = Mockito.mock( File.class );
-    data.file = new File[]{ mockFile1, mockFile2 };
+    data.file = new File[]{ null, mockFile1, mockFile2 };
     getJoinRows().dispose( meta, data );
     verify( mockFile1, times( 1 ) ).delete();
     verify( mockFile2, times( 1 ) ).delete();
