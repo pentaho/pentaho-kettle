@@ -445,7 +445,7 @@ public class JoinRows extends BaseStep implements StepInterface {
 
     // Remove the temporary files...
     if ( data.file != null ) {
-      for ( int i = 0; i < data.file.length; i++ ) {
+      for ( int i = 1; i < data.file.length; i++ ) {
         data.file[i].delete();
       }
     }
