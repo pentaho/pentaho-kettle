@@ -50,7 +50,12 @@ public final class ExpandedContentManager {
    * @return true if the web browser is the topmost control of the graph
    */
   public static boolean isVisible( TransGraph graph ) {
-    return graph.getChildren()[0] instanceof Browser;
+    if ( graph != null ) {
+      if ( graph.getChildren().length > 0 ) {
+        return graph.getChildren()[0] instanceof Browser;
+      }
+    }
+    return false;
   }
 
   /**
@@ -157,9 +162,6 @@ public final class ExpandedContentManager {
     browser.moveBelow( null );
     browser.getParent().layout( true );
     browser.getParent().redraw();
-
-    sash.layout( true );
-    sash.redraw();
   }
 
   /**
@@ -185,7 +187,5 @@ public final class ExpandedContentManager {
     browser.setLayoutData( formData );
     browser.getParent().layout( true );
     browser.getParent().redraw();
-    sash.layout( true );
-    sash.redraw();
   }
 }

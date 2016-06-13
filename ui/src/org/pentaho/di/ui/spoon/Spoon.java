@@ -3240,7 +3240,9 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   }
 
   public void tabDeselected( TabItem item ) {
-    item.setSashWeights( sashform.getWeights() );
+    if ( !ExpandedContentManager.isVisible() ) {
+      item.setSashWeights( sashform.getWeights() );
+    }
   }
 
   public boolean tabCloseSelected() {
@@ -3299,6 +3301,9 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   public void tabSelected( TabItem item ) {
     sashform.setWeights( item.getSashWeights() );
     delegates.tabs.tabSelected( item );
+    if ( ExpandedContentManager.isVisible() ) {
+      sashform.setWeights( new int[] {0, 1000} );
+    }
     enableMenus();
   }
 
