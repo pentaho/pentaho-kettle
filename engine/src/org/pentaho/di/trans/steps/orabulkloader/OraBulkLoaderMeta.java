@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -34,6 +34,8 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.injection.Injection;
+import org.pentaho.di.core.injection.InjectionSupported;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
@@ -59,6 +61,7 @@ import org.w3c.dom.Node;
  *
  * @author Sven Boden
  */
+@InjectionSupported( localizationPrefix = "OraBulkLoader.Injection." )
 public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface,
   ProvidesDatabaseConnectionInformation {
   private static Class<?> PKG = OraBulkLoaderMeta.class; // for i18n purposes, needed by Translator2!!
@@ -69,84 +72,110 @@ public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
   private static int DEFAULT_MAX_ERRORS = 50;
 
   /** what's the schema for the target? */
+  @Injection( name = "SCHEMA_NAME" )
   private String schemaName;
 
   /** what's the table for the target? */
+  @Injection( name = "TABLE_NAME" )
   private String tableName;
 
   /** Path to the sqlldr utility */
+  @Injection( name = "SQLLDR_PATH" )
   private String sqlldr;
 
   /** Path to the control file */
+  @Injection( name = "CONTROL_FILE" )
   private String controlFile;
 
   /** Path to the data file */
+  @Injection( name = "DATA_FILE" )
   private String dataFile;
 
   /** Path to the log file */
+  @Injection( name = "LOG_FILE" )
   private String logFile;
 
   /** Path to the bad file */
+  @Injection( name = "BAD_FILE" )
   private String badFile;
 
   /** Path to the discard file */
+  @Injection( name = "DISCARD_FILE" )
   private String discardFile;
 
   /** database connection */
   private DatabaseMeta databaseMeta;
 
   /** Field value to dateMask after lookup */
+  @Injection( name = "FIELD_TABLE" )
   private String[] fieldTable;
 
   /** Field name in the stream */
+  @Injection( name = "FIELD_STREAM" )
   private String[] fieldStream;
 
   /** boolean indicating if field needs to be updated */
+  @Injection( name = "FIELD_DATEMASK" )
   private String[] dateMask;
 
   /** Commit size (ROWS) */
+  @Injection( name = "COMMIT_SIZE" )
   private String commitSize;
 
   /** bindsize */
+  @Injection( name = "BIND_SIZE" )
   private String bindSize;
 
   /** readsize */
+  @Injection( name = "READ_SIZE" )
   private String readSize;
 
   /** maximum errors */
+  @Injection( name = "MAX_ERRORS" )
   private String maxErrors;
 
   /** Load method */
+  @Injection( name = "LOAD_METHOD" )
   private String loadMethod;
 
   /** Load action */
+  @Injection( name = "LOAD_ACTION" )
   private String loadAction;
 
   /** Encoding to use */
+  @Injection( name = "ENCODING" )
   private String encoding;
 
   /** Character set name used for Oracle */
+  @Injection( name = "ORACLE_CHARSET_NAME" )
   private String characterSetName;
 
   /** Direct Path? */
+  @Injection( name = "DIRECT_PATH" )
   private boolean directPath;
 
   /** Erase files after use */
+  @Injection( name = "ERASE_FILES" )
   private boolean eraseFiles;
 
   /** Database name override */
+  @Injection( name = "DB_NAME_OVERRIDE" )
   private String dbNameOverride;
 
   /** Fails when sqlldr returns a warning **/
+  @Injection( name = "FAIL_ON_WARNING" )
   private boolean failOnWarning;
 
   /** Fails when sqlldr returns anything else than a warning or OK **/
+  @Injection( name = "FAIL_ON_ERROR" )
   private boolean failOnError;
 
   /** allow Oracle to load data in parallel **/
+  @Injection( name = "PARALLEL" )
   private boolean parallel;
 
   /** If not empty, use this record terminator instead of default one **/
+  @Injection( name = "RECORD_TERMINATOR" )
   private String altRecordTerm;
 
   /*
