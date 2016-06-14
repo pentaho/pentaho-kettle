@@ -4374,7 +4374,11 @@ public class ValueMetaBase implements ValueMetaInterface {
       boolean isClob = false;
 
       int type = rm.getColumnType( index );
-      boolean signed = rm.isSigned( index );
+      boolean signed = false;
+      try {
+        signed = rm.isSigned( index );
+      } catch (Exception e) {
+      }
       switch ( type ) {
         case java.sql.Types.CHAR:
         case java.sql.Types.VARCHAR:
@@ -4645,7 +4649,11 @@ public class ValueMetaBase implements ValueMetaInterface {
     // v.setOriginalNullable(originalNullable);
     //
 
-    boolean originalSigned = rm.isSigned( index );
+    boolean originalSigned = false;
+		try {
+			originalSigned = rm.isSigned(index);
+		} catch (Exception e) {
+		}
     v.setOriginalSigned( originalSigned );
   }
 
