@@ -780,7 +780,7 @@ public class XMLHandler {
 
     if ( val != null && val.length() > 0 ) {
       value.append( '>' );
-      value.append( encoder.encodeForXML( val ) );
+      value.append( encoder.encodeForXML( val ).replaceAll("&#xd;&#xa;",Const.CR).replaceAll("&#xd;",Const.CR).replaceAll("&#xa;",Const.CR) );
 
       value.append( "</" );
       value.append( tag );
