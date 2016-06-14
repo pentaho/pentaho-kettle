@@ -126,6 +126,7 @@ public class CalculatorMetaFunction implements Cloneable {
   public static final int CALC_SECOND_OF_MINUTE = 84;
   public static final int CALC_ROUND_CUSTOM_1 = 85;
   public static final int CALC_ROUND_CUSTOM_2 = 86;
+  public static final int CALC_ADD_SECONDS = 87;
 
   public static final String[] calc_desc = {
     "-", "CONSTANT", "COPY_FIELD", "ADD", "SUBTRACT", "MULTIPLY", "DIVIDE", "SQUARE", "SQUARE_ROOT",
@@ -142,7 +143,7 @@ public class CalculatorMetaFunction implements Cloneable {
     "GET_FILE_ENCODING", "DAMERAU_LEVENSHTEIN", "NEEDLEMAN_WUNSH", "JARO", "JARO_WINKLER", "SOUNDEX",
     "REFINED_SOUNDEX", "ADD_HOURS", "ADD_MINUTES", "DATE_DIFF_MSEC", "DATE_DIFF_SEC", "DATE_DIFF_MN",
     "DATE_DIFF_HR", "HOUR_OF_DAY", "MINUTE_OF_HOUR", "SECOND_OF_MINUTE",
-    "ROUND_CUSTOM_1", "ROUND_CUSTOM_2", };
+    "ROUND_CUSTOM_1", "ROUND_CUSTOM_2", "ADD_SECONDS", };
 
   public static final String[] calcLongDesc = {
     "-", BaseMessages.getString( PKG, "CalculatorMetaFunction.CalcFunctions.SetFieldToConstant" ),
@@ -221,7 +222,8 @@ public class CalculatorMetaFunction implements Cloneable {
     BaseMessages.getString( PKG, "CalculatorMetaFunction.CalcFunctions.MinuteOfHour" ),
     BaseMessages.getString( PKG, "CalculatorMetaFunction.CalcFunctions.SecondOfMinute" ),
     BaseMessages.getString( PKG, "CalculatorMetaFunction.CalcFunctions.RoundCustom" ),
-    BaseMessages.getString( PKG, "CalculatorMetaFunction.CalcFunctions.RoundCustom2" ), };
+    BaseMessages.getString( PKG, "CalculatorMetaFunction.CalcFunctions.RoundCustom2" ),
+    BaseMessages.getString( PKG, "CalculatorMetaFunction.CalcFunctions.AddSeconds" ), };
 
   public static final int[] calcDefaultResultType = new int[ calc_desc.length ];
 
@@ -381,6 +383,7 @@ public class CalculatorMetaFunction implements Cloneable {
     calcDefaultResultType[ CalculatorMetaFunction.CALC_SECOND_OF_MINUTE ] = ValueMetaInterface.TYPE_INTEGER;
     calcDefaultResultType[ CalculatorMetaFunction.CALC_ROUND_CUSTOM_1 ] = ValueMetaInterface.TYPE_NUMBER;
     calcDefaultResultType[ CalculatorMetaFunction.CALC_ROUND_CUSTOM_2 ] = ValueMetaInterface.TYPE_NUMBER;
+    calcDefaultResultType[ CalculatorMetaFunction.CALC_ADD_SECONDS] = ValueMetaInterface.TYPE_DATE;
   }
 
   private String fieldName;

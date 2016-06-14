@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -1197,6 +1197,15 @@ public class ValueDataUtil {
     return cal.getTime();
   }
 
+  public static Object addSeconds( ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB ) throws KettleValueException {
+
+    Calendar cal = Calendar.getInstance();
+    cal.setTime( metaA.getDate( dataA ) );
+    cal.add( Calendar.SECOND, metaB.getInteger( dataB ).intValue() );
+
+    return cal.getTime();
+  }
+
   public static Object addMonths( ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB ) throws KettleValueException {
 
     if ( dataA != null && dataB != null ) {
@@ -1831,7 +1840,7 @@ public class ValueDataUtil {
   /**
    *  Default utility method to get exact zero value according to ValueMetaInterface. Using
    *  this utility method saves from ClassCastExceptions later.
-   *  
+   *
    * @param type
    * @return
    * @throws KettleValueException
