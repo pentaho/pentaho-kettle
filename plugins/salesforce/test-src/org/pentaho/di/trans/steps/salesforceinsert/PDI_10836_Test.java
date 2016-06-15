@@ -41,6 +41,7 @@ import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaDate;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
+import org.pentaho.di.trans.steps.salesforce.SalesforceConnection;
 
 import com.sforce.soap.partner.sobject.SObject;
 
@@ -101,6 +102,7 @@ public class PDI_10836_Test {
     DateFormat utc = new SimpleDateFormat( "yyyy-MM-dd" );
     utc.setTimeZone( TimeZone.getTimeZone( "UTC" ) );
 
-    Assert.assertEquals( "2013-10-16", utc.format( data.sfBuffer[0].get_any()[0].getObjectValue() ) );
+    Assert.assertEquals( "2013-10-16",
+      utc.format( SalesforceConnection.getChildren( data.sfBuffer[0] )[0].getValue() ) );
   }
 }

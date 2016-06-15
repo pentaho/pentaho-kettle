@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.TimeZone;
 
-import org.apache.axis.message.MessageElement;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -44,6 +43,7 @@ import org.pentaho.di.trans.steps.salesforceutils.SalesforceUtils;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.sforce.soap.partner.sobject.SObject;
+import com.sforce.ws.bind.XmlObject;
 
 /**
  * Read data from Salesforce module, convert them to rows and writes these to one or more output streams.
@@ -62,6 +62,7 @@ public class SalesforceInsert extends SalesforceStep {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
+  @Override
   public boolean processRow( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
 
     // get one row ... This does some basic initialization of the objects, including loading the info coming in
@@ -127,7 +128,7 @@ public class SalesforceInsert extends SalesforceStep {
 
       // if there is room in the buffer
       if ( data.iBufferPos < meta.getBatchSizeInt() ) {
-        ArrayList<MessageElement> insertfields = new ArrayList<MessageElement>();
+        ArrayList<XmlObject> insertfields = new ArrayList<>();
         // Reserve for empty fields
         ArrayList<String> fieldsToNull = new ArrayList<String>();
 
@@ -165,7 +166,9 @@ public class SalesforceInsert extends SalesforceStep {
         sobjPass.setType( data.connection.getModule() );
 
         if ( insertfields.size() > 0 ) {
-          sobjPass.set_any( insertfields.toArray( new MessageElement[insertfields.size()] ) );
+          for ( XmlObject element : insertfields ) {
+            sobjPass.setSObjectField( element.getName().getLocalPart(), element.getValue() );
+          }
         }
         if ( fieldsToNull.size() > 0 ) {
           // Set Null to fields
@@ -285,6 +288,7 @@ public class SalesforceInsert extends SalesforceStep {
 
   }
 
+  @Override
   public boolean init( StepMetaInterface smi, StepDataInterface sdi ) {
     meta = (SalesforceInsertMeta) smi;
     data = (SalesforceInsertData) sdi;
@@ -312,6 +316,7 @@ public class SalesforceInsert extends SalesforceStep {
     }
   }
 
+  @Override
   public void dispose( StepMetaInterface smi, StepDataInterface sdi ) {
     if ( data.outputBuffer != null ) {
       data.outputBuffer = null;

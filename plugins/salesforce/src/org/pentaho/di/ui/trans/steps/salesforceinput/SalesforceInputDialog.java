@@ -25,7 +25,6 @@ package org.pentaho.di.ui.trans.steps.salesforceinput;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.axis.message.MessageElement;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.CTabFolder;
@@ -92,6 +91,7 @@ import org.pentaho.di.ui.trans.steps.salesforce.SalesforceStepDialog;
 
 import com.sforce.soap.partner.Field;
 import com.sforce.soap.partner.sobject.SObject;
+import com.sforce.ws.bind.XmlObject;
 
 public class SalesforceInputDialog extends SalesforceStepDialog {
 
@@ -201,6 +201,7 @@ public class SalesforceInputDialog extends SalesforceStepDialog {
     input = (SalesforceInputMeta) in;
   }
 
+  @Override
   public String open() {
     Shell parent = getParent();
     Display display = parent.getDisplay();
@@ -210,6 +211,7 @@ public class SalesforceInputDialog extends SalesforceStepDialog {
     setShellImage( shell, input );
 
     ModifyListener lsMod = new ModifyListener() {
+      @Override
       public void modifyText( ModifyEvent e ) {
         input.setChanged();
       }
@@ -356,6 +358,7 @@ public class SalesforceInputDialog extends SalesforceStepDialog {
     fdspecifyQuery.top = new FormAttachment( wConnectionGroup, 2 * margin );
     wspecifyQuery.setLayoutData( fdspecifyQuery );
     wspecifyQuery.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         setEnableQuery();
       }
@@ -380,10 +383,12 @@ public class SalesforceInputDialog extends SalesforceStepDialog {
     fdModule.right = new FormAttachment( 100, -margin );
     wModule.setLayoutData( fdModule );
     wModule.addFocusListener( new FocusListener() {
+      @Override
       public void focusLost( org.eclipse.swt.events.FocusEvent e ) {
         getModulesListError = false;
       }
 
+      @Override
       public void focusGained( org.eclipse.swt.events.FocusEvent e ) {
         // check if the URL and login credentials passed and not just had error
         if ( Const.isEmpty( wURL.getText() )
@@ -427,6 +432,7 @@ public class SalesforceInputDialog extends SalesforceStepDialog {
     fdCondition.bottom = new FormAttachment( wlPosition, -margin );
     wCondition.setLayoutData( fdCondition );
     wCondition.addModifyListener( new ModifyListener() {
+      @Override
       public void modifyText( ModifyEvent arg0 ) {
         setQueryToolTip();
         setPosition();
@@ -434,32 +440,39 @@ public class SalesforceInputDialog extends SalesforceStepDialog {
     } );
 
     wCondition.addKeyListener( new KeyAdapter() {
+      @Override
       public void keyPressed( KeyEvent e ) {
         setPosition();
       }
 
+      @Override
       public void keyReleased( KeyEvent e ) {
         setPosition();
       }
     } );
     wCondition.addFocusListener( new FocusAdapter() {
+      @Override
       public void focusGained( FocusEvent e ) {
         setPosition();
       }
 
+      @Override
       public void focusLost( FocusEvent e ) {
         setPosition();
       }
     } );
     wCondition.addMouseListener( new MouseAdapter() {
+      @Override
       public void mouseDoubleClick( MouseEvent e ) {
         setPosition();
       }
 
+      @Override
       public void mouseDown( MouseEvent e ) {
         setPosition();
       }
 
+      @Override
       public void mouseUp( MouseEvent e ) {
         setPosition();
       }
@@ -490,38 +503,46 @@ public class SalesforceInputDialog extends SalesforceStepDialog {
     fdQuery.bottom = new FormAttachment( wlPosition, -margin );
     wQuery.setLayoutData( fdQuery );
     wQuery.addModifyListener( new ModifyListener() {
+      @Override
       public void modifyText( ModifyEvent arg0 ) {
         setQueryToolTip();
       }
     } );
 
     wQuery.addKeyListener( new KeyAdapter() {
+      @Override
       public void keyPressed( KeyEvent e ) {
         setPosition();
       }
 
+      @Override
       public void keyReleased( KeyEvent e ) {
         setPosition();
       }
     } );
     wQuery.addFocusListener( new FocusAdapter() {
+      @Override
       public void focusGained( FocusEvent e ) {
         setPosition();
       }
 
+      @Override
       public void focusLost( FocusEvent e ) {
         setPosition();
       }
     } );
     wQuery.addMouseListener( new MouseAdapter() {
+      @Override
       public void mouseDoubleClick( MouseEvent e ) {
         setPosition();
       }
 
+      @Override
       public void mouseDown( MouseEvent e ) {
         setPosition();
       }
 
+      @Override
       public void mouseUp( MouseEvent e ) {
         setPosition();
       }
@@ -601,6 +622,7 @@ public class SalesforceInputDialog extends SalesforceStepDialog {
     wRecordsFilter.setLayoutData( fdRecordsFilter );
     wRecordsFilter.setItems( SalesforceConnectionUtils.recordsFilterDesc );
     wRecordsFilter.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         updateRecordsFilter();
       }
@@ -631,6 +653,7 @@ public class SalesforceInputDialog extends SalesforceStepDialog {
     fdlButton.right = new FormAttachment( 100, 0 );
     open.setLayoutData( fdlButton );
     open.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         final Shell dialog = new Shell( shell, SWT.DIALOG_TRIM );
         dialog.setText( BaseMessages.getString( PKG, "SalesforceInputDialog.SelectDate" ) );
@@ -646,6 +669,7 @@ public class SalesforceInputDialog extends SalesforceStepDialog {
         ok.setText( BaseMessages.getString( PKG, "System.Button.OK" ) );
         ok.setLayoutData( new GridData( SWT.FILL, SWT.CENTER, false, false ) );
         ok.addSelectionListener( new SelectionAdapter() {
+          @Override
           public void widgetSelected( SelectionEvent e ) {
             wReadFrom.setText( calendar.getYear()
               + "-"
@@ -691,6 +715,7 @@ public class SalesforceInputDialog extends SalesforceStepDialog {
     fdlButtonto.right = new FormAttachment( 100, 0 );
     opento.setLayoutData( fdlButtonto );
     opento.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         final Shell dialogto = new Shell( shell, SWT.DIALOG_TRIM );
         dialogto.setText( BaseMessages.getString( PKG, "SalesforceInputDialog.SelectDate" ) );
@@ -705,6 +730,7 @@ public class SalesforceInputDialog extends SalesforceStepDialog {
         okto.setText( BaseMessages.getString( PKG, "System.Button.OK" ) );
         okto.setLayoutData( new GridData( SWT.FILL, SWT.CENTER, false, false ) );
         okto.addSelectionListener( new SelectionAdapter() {
+          @Override
           public void widgetSelected( SelectionEvent e ) {
             wReadTo.setText( calendarto.getYear()
               + "-"
@@ -781,6 +807,7 @@ public class SalesforceInputDialog extends SalesforceStepDialog {
     fdInclURL.top = new FormAttachment( wAdvancedGroup, margin );
     wInclURL.setLayoutData( fdInclURL );
     wInclURL.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         setEnableInclTargetURL();
       }
@@ -820,6 +847,7 @@ public class SalesforceInputDialog extends SalesforceStepDialog {
     wInclModule.setLayoutData( fdModule );
 
     wInclModule.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         setEnableInclModule();
       }
@@ -858,6 +886,7 @@ public class SalesforceInputDialog extends SalesforceStepDialog {
     fdInclSQL.top = new FormAttachment( wInclModuleField, margin );
     wInclSQL.setLayoutData( fdInclSQL );
     wInclSQL.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         setEnableInclSQL();
       }
@@ -896,6 +925,7 @@ public class SalesforceInputDialog extends SalesforceStepDialog {
     fdInclTimestamp.top = new FormAttachment( wInclSQLField, margin );
     wInclTimestamp.setLayoutData( fdInclTimestamp );
     wInclTimestamp.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         setEnableInclTimestamp();
       }
@@ -935,6 +965,7 @@ public class SalesforceInputDialog extends SalesforceStepDialog {
     wInclRownum.setLayoutData( fdRownum );
 
     wInclRownum.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         setEnableInclRownum();
       }
@@ -975,6 +1006,7 @@ public class SalesforceInputDialog extends SalesforceStepDialog {
     wInclDeletionDate.setLayoutData( fdDeletionDate );
 
     wInclDeletionDate.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         setEnableInclDeletionDate();
       }
@@ -1187,16 +1219,19 @@ public class SalesforceInputDialog extends SalesforceStepDialog {
 
     // Add listeners
     lsOK = new Listener() {
+      @Override
       public void handleEvent( Event e ) {
         ok();
       }
     };
     lsTest = new Listener() {
+      @Override
       public void handleEvent( Event e ) {
         test();
       }
     };
     lsGet = new Listener() {
+      @Override
       public void handleEvent( Event e ) {
         Cursor busy = new Cursor( shell.getDisplay(), SWT.CURSOR_WAIT );
         shell.setCursor( busy );
@@ -1206,11 +1241,13 @@ public class SalesforceInputDialog extends SalesforceStepDialog {
       }
     };
     lsPreview = new Listener() {
+      @Override
       public void handleEvent( Event e ) {
         preview();
       }
     };
     lsCancel = new Listener() {
+      @Override
       public void handleEvent( Event e ) {
         cancel();
       }
@@ -1223,6 +1260,7 @@ public class SalesforceInputDialog extends SalesforceStepDialog {
     wCancel.addListener( SWT.Selection, lsCancel );
 
     lsDef = new SelectionAdapter() {
+      @Override
       public void widgetDefaultSelected( SelectionEvent e ) {
         ok();
       }
@@ -1235,6 +1273,7 @@ public class SalesforceInputDialog extends SalesforceStepDialog {
 
     // Detect X or ALT-F4 or something that kills this window...
     shell.addShellListener( new ShellAdapter() {
+      @Override
       public void shellClosed( ShellEvent e ) {
         cancel();
       }
@@ -1343,7 +1382,7 @@ public class SalesforceInputDialog extends SalesforceStepDialog {
         connection.setSQL( realQuery );
         connection.connect();
         // We are connected, so let's query
-        MessageElement[] fields = connection.getElements();
+        XmlObject[] fields = connection.getElements();
         int nrFields = fields.length;
         List<String> fieldNames = new ArrayList<String>();
         for ( int i = 0; i < nrFields; i++ ) {
@@ -1386,22 +1425,22 @@ public class SalesforceInputDialog extends SalesforceStepDialog {
     }
   }
 
-  private void addFields( String prefix, List<String> fieldNames, MessageElement field ) {
+  private void addFields( String prefix, List<String> fieldNames, XmlObject field ) {
     String fieldname = prefix + field.getName();
 
-    Object value = field.getObjectValue();
+    Object value = field.getValue();
     if ( value != null && value instanceof SObject ) {
       SObject sobject = (SObject) value;
-      for ( MessageElement element : sobject.get_any() ) {
+      for ( XmlObject element : SalesforceConnection.getChildren( sobject ) ) {
         addFields( fieldname + ".", fieldNames, element );
       }
     } else {
-      addField( fieldname, fieldNames, field.getValue() );
+      addField( fieldname, fieldNames, (String) field.getValue() );
     }
   }
 
   private void addField( Field field ) {
-    String fieldType = field.getType().getValue();
+    String fieldType = field.getType().toString();
 
     String fieldLength = null;
     String fieldPrecision = null;
@@ -1411,7 +1450,7 @@ public class SalesforceInputDialog extends SalesforceStepDialog {
     }
 
     addField(
-      field.getLabel(), field.getName(), field.isIdLookup(), field.getType().getValue(), fieldLength,
+      field.getLabel(), field.getName(), field.isIdLookup(), field.getType().toString(), fieldLength,
       fieldPrecision );
   }
 

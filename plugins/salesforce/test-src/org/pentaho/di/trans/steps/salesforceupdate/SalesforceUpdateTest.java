@@ -23,6 +23,7 @@
 package org.pentaho.di.trans.steps.salesforceupdate;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
@@ -33,7 +34,6 @@ import static org.mockito.Mockito.when;
 
 import java.util.UUID;
 
-import org.apache.axis.message.MessageElement;
 import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.di.core.exception.KettleException;
@@ -45,6 +45,7 @@ import org.pentaho.di.trans.steps.mock.StepMockHelper;
 import org.pentaho.di.trans.steps.salesforce.SalesforceConnection;
 
 import com.sforce.soap.partner.sobject.SObject;
+import com.sforce.ws.wsdl.Constants;
 
 public class SalesforceUpdateTest {
 
@@ -55,16 +56,16 @@ public class SalesforceUpdateTest {
   @Before
   public void setUp() throws Exception {
     smh =
-        new StepMockHelper<SalesforceUpdateMeta, SalesforceUpdateData>( "SalesforceUpsert", SalesforceUpdateMeta.class,
-            SalesforceUpdateData.class );
+      new StepMockHelper<SalesforceUpdateMeta, SalesforceUpdateData>( "SalesforceUpsert", SalesforceUpdateMeta.class,
+        SalesforceUpdateData.class );
     when( smh.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) ).thenReturn(
-        smh.logChannelInterface );
+      smh.logChannelInterface );
   }
 
   @Test
   public void testWriteToSalesForceForNullExtIdField_WithExtIdNO() throws Exception {
     SalesforceUpdate sfInputStep =
-        new SalesforceUpdate( smh.stepMeta, smh.stepDataInterface, 0, smh.transMeta, smh.trans );
+      new SalesforceUpdate( smh.stepMeta, smh.stepDataInterface, 0, smh.transMeta, smh.trans );
     SalesforceUpdateMeta meta = generateSalesforceUpdateMeta( new String[] { ACCOUNT_ID }, new Boolean[] { false } );
     SalesforceUpdateData data = generateSalesforceUpdateData();
     sfInputStep.init( meta, data );
@@ -77,15 +78,15 @@ public class SalesforceUpdateTest {
     sfInputStep.writeToSalesForce( new Object[] { null } );
     assertEquals( 1, data.sfBuffer[0].getFieldsToNull().length );
     assertEquals( ACCOUNT_ID, data.sfBuffer[0].getFieldsToNull()[0] );
-    assertNull( data.sfBuffer[0].get_any() );
+    assertNull( SalesforceConnection.getChildren( data.sfBuffer[0] ) );
   }
 
   @Test
   public void testWriteToSalesForceForNullExtIdField_WithExtIdYES() throws Exception {
     SalesforceUpdate sfInputStep =
-        new SalesforceUpdate( smh.stepMeta, smh.stepDataInterface, 0, smh.transMeta, smh.trans );
+      new SalesforceUpdate( smh.stepMeta, smh.stepDataInterface, 0, smh.transMeta, smh.trans );
     SalesforceUpdateMeta meta =
-        generateSalesforceUpdateMeta( new String[] { ACCOUNT_EXT_ID_ACCOUNT_ID_C_ACCOUNT }, new Boolean[] { true } );
+      generateSalesforceUpdateMeta( new String[] { ACCOUNT_EXT_ID_ACCOUNT_ID_C_ACCOUNT }, new Boolean[] { true } );
     SalesforceUpdateData data = generateSalesforceUpdateData();
     sfInputStep.init( meta, data );
 
@@ -97,13 +98,13 @@ public class SalesforceUpdateTest {
     sfInputStep.writeToSalesForce( new Object[] { null } );
     assertEquals( 1, data.sfBuffer[0].getFieldsToNull().length );
     assertEquals( ACCOUNT_ID, data.sfBuffer[0].getFieldsToNull()[0] );
-    assertNull( data.sfBuffer[0].get_any() );
+    assertNull( SalesforceConnection.getChildren( data.sfBuffer[0] ) );
   }
 
   @Test
   public void testWriteToSalesForceForNotNullExtIdField_WithExtIdNO() throws Exception {
     SalesforceUpdate sfInputStep =
-        new SalesforceUpdate( smh.stepMeta, smh.stepDataInterface, 0, smh.transMeta, smh.trans );
+      new SalesforceUpdate( smh.stepMeta, smh.stepDataInterface, 0, smh.transMeta, smh.trans );
     SalesforceUpdateMeta meta = generateSalesforceUpdateMeta( new String[] { ACCOUNT_ID }, new Boolean[] { false } );
     SalesforceUpdateData data = generateSalesforceUpdateData();
     sfInputStep.init( meta, data );
@@ -114,17 +115,21 @@ public class SalesforceUpdateTest {
     smh.initStepDataInterface.inputRowMeta = rowMeta;
 
     sfInputStep.writeToSalesForce( new Object[] { "001i000001c5Nv9AAE" } );
-    assertNull( data.sfBuffer[0].getFieldsToNull() );
-    assertEquals( 1, data.sfBuffer[0].get_any().length );
-    assertEquals( getExpectedMessageElement( ACCOUNT_ID, "001i000001c5Nv9AAE", false ), data.sfBuffer[0].get_any()[0] );
+    assertEquals( 0, data.sfBuffer[0].getFieldsToNull().length );
+    assertEquals( 1, SalesforceConnection.getChildren( data.sfBuffer[0] ).length );
+    assertEquals( Constants.PARTNER_SOBJECT_NS,
+      SalesforceConnection.getChildren( data.sfBuffer[0] )[0].getName().getNamespaceURI() );
+    assertEquals( ACCOUNT_ID, SalesforceConnection.getChildren( data.sfBuffer[0] )[0].getName().getLocalPart() );
+    assertEquals( "001i000001c5Nv9AAE", SalesforceConnection.getChildren( data.sfBuffer[0] )[0].getValue() );
+    assertFalse( SalesforceConnection.getChildren( data.sfBuffer[0] )[0].hasChildren() );
   }
 
   @Test
   public void testWriteToSalesForceForNotNullExtIdField_WithExtIdYES() throws Exception {
     SalesforceUpdate sfInputStep =
-        new SalesforceUpdate( smh.stepMeta, smh.stepDataInterface, 0, smh.transMeta, smh.trans );
+      new SalesforceUpdate( smh.stepMeta, smh.stepDataInterface, 0, smh.transMeta, smh.trans );
     SalesforceUpdateMeta meta =
-        generateSalesforceUpdateMeta( new String[] { ACCOUNT_EXT_ID_ACCOUNT_ID_C_ACCOUNT }, new Boolean[] { true } );
+      generateSalesforceUpdateMeta( new String[] { ACCOUNT_EXT_ID_ACCOUNT_ID_C_ACCOUNT }, new Boolean[] { true } );
     SalesforceUpdateData data = generateSalesforceUpdateData();
     sfInputStep.init( meta, data );
 
@@ -134,16 +139,19 @@ public class SalesforceUpdateTest {
     smh.initStepDataInterface.inputRowMeta = rowMeta;
 
     sfInputStep.writeToSalesForce( new Object[] { "tkas88" } );
-    assertNull( data.sfBuffer[0].getFieldsToNull() );
-    assertEquals( 1, data.sfBuffer[0].get_any().length );
-    assertEquals( getExpectedMessageElement( ACCOUNT_EXT_ID_ACCOUNT_ID_C_ACCOUNT, "tkas88", true ), data.sfBuffer[0]
-        .get_any()[0] );
+    assertEquals( 0, data.sfBuffer[0].getFieldsToNull().length );
+    assertEquals( 1, SalesforceConnection.getChildren( data.sfBuffer[0] ).length );
+    assertEquals( Constants.PARTNER_SOBJECT_NS,
+      SalesforceConnection.getChildren( data.sfBuffer[0] )[0].getName().getNamespaceURI() );
+    assertEquals( "Account", SalesforceConnection.getChildren( data.sfBuffer[0] )[0].getName().getLocalPart() );
+    assertNull( SalesforceConnection.getChildren( data.sfBuffer[0] )[0].getValue() );
+    assertFalse( SalesforceConnection.getChildren( data.sfBuffer[0] )[0].hasChildren() );
   }
 
   @Test
   public void testLogMessageInDetailedModeFotWriteToSalesForce() throws KettleException {
     SalesforceUpdate sfInputStep =
-        new SalesforceUpdate( smh.stepMeta, smh.stepDataInterface, 0, smh.transMeta, smh.trans );
+      new SalesforceUpdate( smh.stepMeta, smh.stepDataInterface, 0, smh.transMeta, smh.trans );
     SalesforceUpdateMeta meta = generateSalesforceUpdateMeta( new String[] { ACCOUNT_ID }, new Boolean[] { false } );
     SalesforceUpdateData data = generateSalesforceUpdateData();
     sfInputStep.init( meta, data );
@@ -179,9 +187,4 @@ public class SalesforceUpdateTest {
     doReturn( useExternalId ).when( meta ).getUseExternalId();
     return meta;
   }
-
-  private MessageElement getExpectedMessageElement( String name, String value, boolean isExternalId ) throws Exception {
-    return SalesforceConnection.createMessageElement( name, value, isExternalId );
-  }
-
 }
