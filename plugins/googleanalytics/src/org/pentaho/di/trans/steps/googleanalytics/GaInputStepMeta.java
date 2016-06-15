@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -32,13 +32,15 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.injection.Injection;
 import org.pentaho.di.core.injection.InjectionSupported;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -123,7 +125,7 @@ public class GaInputStepMeta extends BaseStepMeta implements StepMetaInterface {
   private String segmentName;
   @Injection( name = "SEGMENT_ID" )
   private String segmentId;
-  
+
   private String samplingLevel;
   public static final String[] TYPE_SAMPLING_LEVEL_CODE = new String[] { "DEFAULT", "FASTER", "HIGHER_PRECISION" };
 
@@ -155,6 +157,10 @@ public class GaInputStepMeta extends BaseStepMeta implements StepMetaInterface {
 
   public String[] getConversionMask() {
     return conversionMask;
+  }
+
+  public void setConversionMask( String[] conversionMask ) {
+    this.conversionMask = conversionMask;
   }
 
   public String getGaAppName() {
@@ -284,7 +290,7 @@ public class GaInputStepMeta extends BaseStepMeta implements StepMetaInterface {
   public void setGaProfileName( String gaProfileName ) {
     this.gaProfileName = gaProfileName;
   }
-  
+
   public String getSamplingLevel() {
     return samplingLevel;
   }
@@ -297,16 +303,32 @@ public class GaInputStepMeta extends BaseStepMeta implements StepMetaInterface {
     return feedFieldType;
   }
 
+  public void setFeedFieldType( String[] feedFieldType ) {
+    this.feedFieldType = feedFieldType;
+  }
+
   public String[] getFeedField() {
     return feedField;
+  }
+
+  public void setFeedField( String[] feedField ) {
+    this.feedField = feedField;
   }
 
   public String[] getOutputField() {
     return outputField;
   }
 
+  public void setOutputField( String[] outputField ) {
+    this.outputField = outputField;
+  }
+
   public int[] getOutputType() {
     return outputType;
+  }
+
+  public void setOutputType( int[] outputType ) {
+    this.outputType = outputType;
   }
 
   public int getFieldsCount() {
@@ -318,6 +340,7 @@ public class GaInputStepMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   // set sensible defaults for a new step
+  @Override
   public void setDefault() {
     oauthServiceAccount = "service.account@developer.gserviceaccount.com";
     oauthKeyFile = "";
@@ -348,6 +371,7 @@ public class GaInputStepMeta extends BaseStepMeta implements StepMetaInterface {
     conversionMask = new String[ nrkeys ];
   }
 
+  @Override
   public void getFields( RowMetaInterface r, String origin, RowMetaInterface[] info, StepMeta nextStep,
                          VariableSpace space, Repository repository, IMetaStore metaStore ) {
 
@@ -355,7 +379,12 @@ public class GaInputStepMeta extends BaseStepMeta implements StepMetaInterface {
     r.clear();
     // append the outputFields to the output
     for ( int i = 0; i < outputField.length; i++ ) {
-      ValueMetaInterface v = new ValueMeta( outputField[ i ], outputType[ i ] );
+      ValueMetaInterface v;
+      try {
+        v = ValueMetaFactory.createValueMeta( outputField[ i ], outputType[ i ] );
+      } catch ( KettlePluginException e ) {
+        v = new ValueMetaString( outputField[ i ] );
+      }
       // that would influence the output
       // v.setConversionMask(conversionMask[i]);
       v.setOrigin( origin );
@@ -364,6 +393,7 @@ public class GaInputStepMeta extends BaseStepMeta implements StepMetaInterface {
 
   }
 
+  @Override
   public Object clone() {
 
     // field by field copy is default
@@ -391,6 +421,7 @@ public class GaInputStepMeta extends BaseStepMeta implements StepMetaInterface {
 
   }
 
+  @Override
   public String getXML() throws KettleValueException {
 
     StringBuilder retval = new StringBuilder( 800 );
@@ -420,14 +451,15 @@ public class GaInputStepMeta extends BaseStepMeta implements StepMetaInterface {
       retval.append( "        " ).append( XMLHandler.addTagValue( "feedFieldType", feedFieldType[ i ] ) );
       retval.append( "        " ).append( XMLHandler.addTagValue( "feedField", feedField[ i ] ) );
       retval.append( "        " ).append( XMLHandler.addTagValue( "outField", outputField[ i ] ) );
-      retval
-        .append( "        " ).append( XMLHandler.addTagValue( "type", ValueMeta.getTypeDesc( outputType[ i ] ) ) );
+      retval.append( "        " )
+        .append( XMLHandler.addTagValue( "type", ValueMetaFactory.getValueMetaName( outputType[ i ] ) ) );
       retval.append( "        " ).append( XMLHandler.addTagValue( "conversionMask", conversionMask[ i ] ) );
       retval.append( "      </feedField>" ).append( Const.CR );
     }
     return retval.toString();
   }
 
+  @Override
   public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
 
     try {
@@ -476,7 +508,7 @@ public class GaInputStepMeta extends BaseStepMeta implements StepMetaInterface {
         feedFieldType[ i ] = XMLHandler.getTagValue( knode, "feedFieldType" );
         feedField[ i ] = XMLHandler.getTagValue( knode, "feedField" );
         outputField[ i ] = XMLHandler.getTagValue( knode, "outField" );
-        outputType[ i ] = ValueMeta.getType( XMLHandler.getTagValue( knode, "type" ) );
+        outputType[ i ] = ValueMetaFactory.getIdForValueMeta( XMLHandler.getTagValue( knode, "type" ) );
         conversionMask[ i ] = XMLHandler.getTagValue( knode, "conversionMask" );
 
         if ( outputType[ i ] < 0 ) {
@@ -491,6 +523,7 @@ public class GaInputStepMeta extends BaseStepMeta implements StepMetaInterface {
 
   }
 
+  @Override
   public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
     throws KettleException {
     try {
@@ -534,7 +567,7 @@ public class GaInputStepMeta extends BaseStepMeta implements StepMetaInterface {
         feedFieldType[ i ] = rep.getStepAttributeString( id_step, i, "feedFieldType" );
         feedField[ i ] = rep.getStepAttributeString( id_step, i, "feedField" );
         outputField[ i ] = rep.getStepAttributeString( id_step, i, "outField" );
-        outputType[ i ] = ValueMeta.getType( rep.getStepAttributeString( id_step, i, "type" ) );
+        outputType[ i ] = ValueMetaFactory.getIdForValueMeta( rep.getStepAttributeString( id_step, i, "type" ) );
         conversionMask[ i ] = rep.getStepAttributeString( id_step, i, "conversionMask" );
 
         if ( outputType[ i ] < 0 ) {
@@ -546,6 +579,7 @@ public class GaInputStepMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
+  @Override
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
     throws KettleException {
     try {
@@ -575,7 +609,7 @@ public class GaInputStepMeta extends BaseStepMeta implements StepMetaInterface {
         rep.saveStepAttribute( id_transformation, id_step, i, "feedField", feedField[ i ] );
         rep.saveStepAttribute( id_transformation, id_step, i, "outField", outputField[ i ] );
         rep.saveStepAttribute( id_transformation, id_step, i, "conversionMask", conversionMask[ i ] );
-        rep.saveStepAttribute( id_transformation, id_step, i, "type", ValueMeta.getTypeDesc( outputType[ i ] ) );
+        rep.saveStepAttribute( id_transformation, id_step, i, "type", ValueMetaFactory.getValueMetaName( outputType[ i ] ) );
 
       }
 
@@ -585,6 +619,7 @@ public class GaInputStepMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
+  @Override
   public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
                      RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
                      Repository repository, IMetaStore metaStore ) {
@@ -617,11 +652,13 @@ public class GaInputStepMeta extends BaseStepMeta implements StepMetaInterface {
 
   }
 
+  @Override
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
                                 TransMeta transMeta, Trans disp ) {
     return new GaInputStep( stepMeta, stepDataInterface, cnr, transMeta, disp );
   }
 
+  @Override
   public StepDataInterface getStepData() {
     return new GaInputStepData();
   }
@@ -638,7 +675,17 @@ public class GaInputStepMeta extends BaseStepMeta implements StepMetaInterface {
     return oauthServiceAccount;
   }
 
-  public void setOauthServiceAccount( String oauthServiceAccount ) {
+
+  public void setOAuthServiceAccount( String oauthServiceAccount ) {
     this.oauthServiceAccount = oauthServiceAccount;
+  }
+
+  /**
+   * @deprecated use {@link #setOAuthServiceAccount(String)} instead
+   * @param oauthServiceAccount
+   */
+  @Deprecated
+  public void setOauthServiceAccount( String oauthServiceAccount ) {
+    setOAuthServiceAccount( oauthServiceAccount );
   }
 }
