@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -28,6 +28,7 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.core.xml.XMLParserFactoryProducer;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
@@ -64,7 +65,7 @@ public class RepositoryExportSaxParser extends DefaultHandler2 {
   public void parse( RepositoryElementReadListener repositoryElementReadListener ) throws Exception {
     this.repositoryElementReadListener = repositoryElementReadListener;
 
-    SAXParserFactory factory = SAXParserFactory.newInstance();
+    SAXParserFactory factory = XMLParserFactoryProducer.createSecureSAXParserFactory();
     this.saxParser = factory.newSAXParser();
     this.saxParser.parse( new File( filename ), this );
   }

@@ -37,6 +37,9 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.io.IOUtils;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.logging.LogChannel;
+import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.core.xml.XMLParserFactoryProducer;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.utils.IRepositoryFactory;
 import org.w3c.dom.Document;
@@ -45,6 +48,7 @@ import org.xml.sax.SAXException;
 public class PDIImportUtil {
 
   private static IRepositoryFactory repositoryFactory = new IRepositoryFactory.CachingRepositoryFactory();
+  private static final LogChannelInterface log = new LogChannel( PDIImportUtil.class );
 
   /**
    * Connects to the PDI repository
@@ -65,8 +69,17 @@ public class PDIImportUtil {
     return loadXMLFrom( new ByteArrayInputStream( xml.getBytes() ) );
   }
 
+  /**
+   * @return instance of {@link Document}, if xml is loaded successfully null in case any error occurred during loading
+   */
   public static Document loadXMLFrom( InputStream is ) {
-    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+    DocumentBuilderFactory factory;
+    try {
+      factory = XMLParserFactoryProducer.createSecureDocBuilderFactory();
+    } catch ( ParserConfigurationException e ) {
+      log.logError( e.getLocalizedMessage() );
+      factory = DocumentBuilderFactory.newInstance();
+    }
     DocumentBuilder builder = null;
     Document doc = null;
     try {
@@ -82,11 +95,13 @@ public class PDIImportUtil {
       fous.flush();
       fous.close();
       doc = builder.parse( file );
-      is.close();
-    } catch ( Throwable th ) {
+    } catch ( IOException | SAXException e ) {
+      log.logError( e.getLocalizedMessage() );
+    } finally {
       try {
         is.close();
       } catch ( IOException e ) {
+        // nothing to do here
       }
     }
     return doc;
@@ -109,5 +124,6 @@ public class PDIImportUtil {
       return null;
     }
   }
+
 
 }

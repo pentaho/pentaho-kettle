@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,7 +25,6 @@ package org.pentaho.di.trans.steps.addxml;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
@@ -40,6 +39,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.xml.XMLParserFactoryProducer;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -274,7 +274,7 @@ public class AddXML extends BaseStep implements StepInterface {
     try {
       setSerializer( TransformerFactory.newInstance().newTransformer() );
 
-      setDomImplentation( DocumentBuilderFactory.newInstance().newDocumentBuilder().getDOMImplementation() );
+      setDomImplentation( XMLParserFactoryProducer.createSecureDocBuilderFactory().newDocumentBuilder().getDOMImplementation() );
 
       if ( meta.getEncoding() != null ) {
         getSerializer().setOutputProperty( OutputKeys.ENCODING, meta.getEncoding() );

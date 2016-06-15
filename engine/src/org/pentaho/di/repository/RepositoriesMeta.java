@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -42,12 +42,11 @@ import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.RepositoryPluginType;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.core.xml.XMLParserFactoryProducer;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.kdr.KettleDatabaseRepositoryMeta;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
-
-//import java.util.ArrayList;
 
 /*
  * Created on 31-mrt-2004
@@ -205,14 +204,11 @@ public class RepositoriesMeta {
       log.logBasic( BaseMessages.getString( PKG, "RepositoryMeta.Log.ReadingXMLFile", file.getAbsoluteFile() ) );
     }
 
-    DocumentBuilderFactory dbf;
-    DocumentBuilder db;
-    Document doc;
-
     try {
       // Check and open XML document
-      dbf = DocumentBuilderFactory.newInstance();
-      db = dbf.newDocumentBuilder();
+      DocumentBuilderFactory dbf = XMLParserFactoryProducer.createSecureDocBuilderFactory();
+      DocumentBuilder db = dbf.newDocumentBuilder();
+      Document doc;
       try {
         doc = db.parse( file );
       } catch ( FileNotFoundException ef ) {
@@ -250,14 +246,11 @@ public class RepositoriesMeta {
       log.logBasic( BaseMessages.getString( PKG, "RepositoryMeta.Log.ReadingXMLFile", "FromInputStream" ) );
     }
 
-    DocumentBuilderFactory dbf;
-    DocumentBuilder db;
-    Document doc;
     try {
       // Check and open XML document
-      dbf = DocumentBuilderFactory.newInstance();
-      db = dbf.newDocumentBuilder();
-      doc = db.parse( is );
+      DocumentBuilderFactory dbf = XMLParserFactoryProducer.createSecureDocBuilderFactory();
+      DocumentBuilder db = dbf.newDocumentBuilder();
+      Document doc = db.parse( is );
       parseRepositoriesDoc( doc );
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString( PKG, "RepositoryMeta.Error.ReadingInfo" ), e );

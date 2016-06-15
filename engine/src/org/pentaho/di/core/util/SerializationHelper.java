@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -31,13 +31,13 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.core.xml.XMLParserFactoryProducer;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.w3c.dom.Document;
@@ -425,7 +425,7 @@ public class SerializationHelper {
     try {
       String jobXML = rep.getJobEntryAttributeString( id_step, "job-xml" );
       ByteArrayInputStream bais = new ByteArrayInputStream( jobXML.getBytes() );
-      Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse( bais );
+      Document doc = XMLParserFactoryProducer.createSecureDocBuilderFactory().newDocumentBuilder().parse( bais );
       read( object, doc.getDocumentElement() );
     } catch ( ParserConfigurationException ex ) {
       throw new KettleException( ex.getMessage(), ex );
@@ -467,7 +467,7 @@ public class SerializationHelper {
     try {
       String stepXML = rep.getStepAttributeString( id_step, "step-xml" );
       ByteArrayInputStream bais = new ByteArrayInputStream( stepXML.getBytes() );
-      Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse( bais );
+      Document doc = XMLParserFactoryProducer.createSecureDocBuilderFactory().newDocumentBuilder().parse( bais );
       read( object, doc.getDocumentElement() );
     } catch ( ParserConfigurationException ex ) {
       throw new KettleException( ex.getMessage(), ex );

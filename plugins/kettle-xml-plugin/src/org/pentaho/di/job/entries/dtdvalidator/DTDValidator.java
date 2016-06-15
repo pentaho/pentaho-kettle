@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,25 +22,25 @@
 
 package org.pentaho.di.job.entries.dtdvalidator;
 
+import org.apache.commons.vfs2.FileObject;
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.core.vfs.KettleVFS;
+import org.pentaho.di.core.xml.XMLParserFactoryProducer;
+import org.pentaho.di.i18n.BaseMessages;
+import org.w3c.dom.Document;
+import org.xml.sax.ErrorHandler;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
-import org.apache.commons.vfs2.FileObject;
-import org.pentaho.di.core.Const;
-import org.pentaho.di.core.logging.LogChannelInterface;
-import org.pentaho.di.core.vfs.KettleVFS;
-import org.pentaho.di.i18n.BaseMessages;
-import org.w3c.dom.Document;
-import org.xml.sax.ErrorHandler;
-import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
 
 public class DTDValidator {
   private static Class<?> PKG = JobEntryDTDValidator.class; // for i18n purposes, needed by Translator2!!
@@ -104,56 +104,44 @@ public class DTDValidator {
 
   public boolean validate() {
 
-    boolean retval = false;
+    boolean isValid = false;
 
-    FileObject xmlfile = null;
-    FileObject DTDfile = null;
+    FileObject xmlFileObject = null;
+    FileObject dtdFileObject = null;
 
-    ByteArrayInputStream ba = null;
+
     try {
       if ( xmlfilename != null && ( ( getDTDFilename() != null && !isInternDTD() ) || ( isInternDTD() ) ) ) {
-        xmlfile = KettleVFS.getFileObject( getXMLFilename() );
+        xmlFileObject = KettleVFS.getFileObject( getXMLFilename() );
 
-        if ( xmlfile.exists() ) {
+        if ( xmlFileObject.exists() ) {
 
-          URL xmlFile = new File( KettleVFS.getFilename( xmlfile ) ).toURI().toURL();
+          URL xmlFile = new File( KettleVFS.getFilename( xmlFileObject ) ).toURI().toURL();
           StringBuffer xmlStringbuffer = new StringBuffer( "" );
 
-          BufferedReader xmlBufferedReader = null;
-          InputStreamReader is = null;
-          try {
-            // open XML File
-            is = new InputStreamReader( xmlFile.openStream() );
-            xmlBufferedReader = new BufferedReader( is );
-
-            char[] buffertXML = new char[1024];
-            int LenXML = -1;
-            while ( ( LenXML = xmlBufferedReader.read( buffertXML ) ) != -1 ) {
-              xmlStringbuffer.append( buffertXML, 0, LenXML );
-            }
-          } finally {
-            if ( is != null ) {
-              is.close();
-            }
-            if ( xmlBufferedReader != null ) {
-              xmlBufferedReader.close();
+          try ( InputStreamReader is = new InputStreamReader( xmlFile.openStream() );
+                BufferedReader xmlBufferedReader = new BufferedReader( is ) ) {
+            char[] buffertXML = new char[ 1024 ];
+            int lenXML;
+            while ( ( lenXML = xmlBufferedReader.read( buffertXML ) ) != -1 ) {
+              xmlStringbuffer.append( buffertXML, 0, lenXML );
             }
           }
 
           // Prepare parsing ...
-          DocumentBuilderFactory DocBuilderFactory = DocumentBuilderFactory.newInstance();
-          DocumentBuilder DocBuilder = DocBuilderFactory.newDocumentBuilder();
+          DocumentBuilderFactory docBuilderFactory = XMLParserFactoryProducer.createSecureDocBuilderFactory();
+          DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
 
           // Let's try to get XML document encoding
 
-          DocBuilderFactory.setValidating( false );
-          ba = new ByteArrayInputStream( xmlStringbuffer.toString().getBytes( "UTF-8" ) );
-          Document xmlDocDTD = DocBuilder.parse( ba );
+          docBuilderFactory.setValidating( false );
+          ByteArrayInputStream ba = new ByteArrayInputStream( xmlStringbuffer.toString().getBytes( "UTF-8" ) );
+          Document xmlDocDTD = docBuilder.parse( ba );
           if ( ba != null ) {
             ba.close();
           }
 
-          String encoding = null;
+          String encoding;
           if ( xmlDocDTD.getXmlEncoding() == null ) {
             encoding = "UTF-8";
           } else {
@@ -175,9 +163,9 @@ public class DTDValidator {
           } else {
             // DTD in external document
             // If we find an intern declaration, we remove it
-            DTDfile = KettleVFS.getFileObject( getDTDFilename() );
+            dtdFileObject = KettleVFS.getFileObject( getDTDFilename() );
 
-            if ( DTDfile.exists() ) {
+            if ( dtdFileObject.exists() ) {
               if ( xmlStartDTD != -1 ) {
                 int EndDTD = xmlStringbuffer.indexOf( ">", xmlStartDTD );
                 // String DocTypeDTD = xmlStringbuffer.substring(xmlStartDTD, EndDTD + 1);
@@ -189,7 +177,7 @@ public class DTDValidator {
               String RefDTD =
                 "<?xml version='"
                   + xmlDocDTD.getXmlVersion() + "' encoding='" + encoding + "'?>\n<!DOCTYPE " + xmlRootnodeDTD
-                  + " SYSTEM '" + KettleVFS.getFilename( DTDfile ) + "'>\n";
+                  + " SYSTEM '" + KettleVFS.getFilename( dtdFileObject ) + "'>\n";
 
               int xmloffsetDTD = xmlStringbuffer.indexOf( "<" + xmlRootnodeDTD );
               xmlStringbuffer.replace( 0, xmloffsetDTD, RefDTD );
@@ -202,16 +190,16 @@ public class DTDValidator {
             }
           }
 
-          if ( !( isInternDTD() && xmlStartDTD == -1 || ( !isInternDTD() && !DTDfile.exists() ) ) ) {
+          if ( !( isInternDTD() && xmlStartDTD == -1 || ( !isInternDTD() && !dtdFileObject.exists() ) ) ) {
 
             // Let's parse now ...
             MyErrorHandler error = new MyErrorHandler();
-            DocBuilderFactory.setValidating( true );
-            DocBuilder = DocBuilderFactory.newDocumentBuilder();
-            DocBuilder.setErrorHandler( error );
+            docBuilderFactory.setValidating( true );
+            docBuilder = docBuilderFactory.newDocumentBuilder();
+            docBuilder.setErrorHandler( error );
 
             ba = new ByteArrayInputStream( xmlStringbuffer.toString().getBytes( encoding ) );
-            xmlDocDTD = DocBuilder.parse( ba );
+            xmlDocDTD = docBuilder.parse( ba );
 
             if ( error.errorMessage == null ) {
               log.logBasic(
@@ -219,7 +207,7 @@ public class DTDValidator {
                   .getString( PKG, "JobEntryDTDValidator.DTDValidatorOK.Label", getXMLFilename() ) );
 
               // Everything is OK
-              retval = true;
+              isValid = true;
             } else {
               // Invalid DTD
               setNrErrors( error.nrErrors );
@@ -231,7 +219,7 @@ public class DTDValidator {
           }
 
         } else {
-          if ( !xmlfile.exists() ) {
+          if ( !xmlFileObject.exists() ) {
             setErrorMessage( BaseMessages.getString(
               PKG, "JobEntryDTDValidator.FileDoesNotExist.Label", getXMLFilename() ) );
           }
@@ -244,20 +232,17 @@ public class DTDValidator {
         PKG, "JobEntryDTDValidator.ErrorDTDValidator.Label", getXMLFilename(), getDTDFilename(), e.getMessage() ) );
     } finally {
       try {
-        if ( xmlfile != null ) {
-          xmlfile.close();
+        if ( xmlFileObject != null ) {
+          xmlFileObject.close();
         }
-        if ( DTDfile != null ) {
-          DTDfile.close();
-        }
-        if ( ba != null ) {
-          ba.close();
+        if ( dtdFileObject != null ) {
+          dtdFileObject.close();
         }
       } catch ( IOException e ) {
         // Ignore close errors
       }
     }
-    return retval;
+    return isValid;
   }
 
   private static class MyErrorHandler implements ErrorHandler {
