@@ -197,6 +197,64 @@ function(angular) {
     }
   }]);
 
+  repoConnectionApp.directive('errorMessage', ['$timeout', function($timeout) {
+    return {
+      restrict: 'E',
+      templateUrl: 'error-message.html',
+      controller: ['$rootScope', function($rootScope) {
+        $rootScope.animationClass = "";
+        $rootScope.dismiss = function() {
+          $timeout.cancel($rootScope.timer);
+          $rootScope.animationClass = "error-fade";
+          $timeout(function () {
+            $rootScope.hasError = false;
+          }, 0);
+        }
+        $rootScope.triggerError = function(errorMessage) {
+          $rootScope.errorMessage = errorMessage;
+          $rootScope.animationClass = "error-slide";
+          $timeout(function() {
+            $rootScope.hasError = true;
+          }, 0);
+          $rootScope.timer = $timeout(function () {
+            $rootScope.animationClass = "error-fade";
+            $timeout(function () {
+              $rootScope.hasError = false;
+            }, 0);
+          }, 5000);
+        }
+        $rootScope.resetErrorMsg = function() {
+          $timeout.cancel($rootScope.timer);
+          $rootScope.animationClass = "error-fade";
+          $timeout(function () {
+            $rootScope.hasError = false;
+          }, 0);
+        }
+        $rootScope.clearError = function() {
+          $timeout.cancel($rootScope.timer);
+          $rootScope.errorMessage = '';
+          $rootScope.animationClass = '';
+          $timeout(function() {
+            $rootScope.hasError = false;
+          }, 0);
+        }
+        $rootScope.refreshError = function() {
+          $timeout.cancel($rootScope.timer);
+          $rootScope.animationClass = "error-fade";
+          $timeout(function() {
+              $rootScope.hasError = false;
+            }, 0);
+          $timeout(function() {
+            $rootScope.hasError = true;
+          }, 500);
+          $rootScope.timer = $timeout(function () {
+            $rootScope.hasError = false;
+          }, 5000);
+        }
+      }]
+    }
+  }]);
+
   return repoConnectionApp;
 
 });

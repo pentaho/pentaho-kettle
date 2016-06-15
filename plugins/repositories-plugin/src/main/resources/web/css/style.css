@@ -584,8 +584,8 @@ hr {
   height: 63px;
   border-radius: 5px;
   position: absolute;
-  top: 10px;
   left: 23px;
+  z-index: 1000;
 }
 
 .error-message-text {
@@ -598,27 +598,31 @@ hr {
 }
 
 .error-message-close {
-  width: 14px;
-  height: 14px;
+  width: 12px;
+  height: 12px;
   float: right;
   margin-right: 10px;
   margin-top: 10px;
 }
 
-.error-message.ng-hide {
+.error-slide, .error-fade {
+  top: 10px;
+  opacity: 1;
+}
+
+.error-slide.ng-hide {
   top: -63px;
   opacity: 0;
 }
 
-.error-message.ng-hide-remove,
-.error-message.ng-hide-add {
-  display: block !important;
-}
-
-.error-message.ng-hide-remove {
+.error-slide.ng-hide-remove,
+.error-slide.ng-hide-add,
+.error-fade.ng-hide-remove,
+.error-fade.ng-hide-add {
   transition: all linear 600ms;
 }
 
-.error-message.ng-hide-add {
-  transition: all linear 600ms;
+.error-fade.ng-hide {
+  opacity: 0;
 }
+
