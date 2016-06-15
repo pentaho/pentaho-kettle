@@ -531,8 +531,8 @@ public class XMLHandler {
   /**
    * Load a file into an XML document
    *
-   * @param filename
-   *          The filename to load into a document
+   * @param fileObject
+   *          The fileObject to load into a document
    * @return the Document if all went well, null if an error occured!
    */
   public static Document loadXMLFile( FileObject fileObject ) throws KettleXMLException {
@@ -542,9 +542,9 @@ public class XMLHandler {
   /**
    * Load a file into an XML document
    *
-   * @param filename
-   *          The filename to load into a document
-   * @param systemId
+   * @param fileObject
+   *          The fileObject to load into a document
+   * @param systemID
    *          Provide a base for resolving relative URIs.
    * @param ignoreEntities
    *          Ignores external entities and returns an empty dummy.
@@ -577,7 +577,7 @@ public class XMLHandler {
    *
    * @param inputStream
    *          The stream to load a document from
-   * @param systemId
+   * @param systemID
    *          Provide a base for resolving relative URIs.
    * @param ignoreEntities
    *          Ignores external entities and returns an empty dummy.
@@ -587,17 +587,13 @@ public class XMLHandler {
    */
   public static Document loadXMLFile( InputStream inputStream, String systemID, boolean ignoreEntities,
     boolean namespaceAware ) throws KettleXMLException {
-    DocumentBuilderFactory dbf;
-    DocumentBuilder db;
-    Document doc;
-
     try {
       // Check and open XML document
       //
-      dbf = DocumentBuilderFactory.newInstance();
+      DocumentBuilderFactory dbf = XMLParserFactoryProducer.createSecureDocBuilderFactory();
       dbf.setIgnoringComments( true );
       dbf.setNamespaceAware( namespaceAware );
-      db = dbf.newDocumentBuilder();
+      DocumentBuilder db = dbf.newDocumentBuilder();
 
       // even dbf.setValidating(false) will the parser NOT prevent from checking the existance of the DTD
       // thus we need to give the BaseURI (systemID) below to have a chance to get it
@@ -607,6 +603,7 @@ public class XMLHandler {
         db.setEntityResolver( new DTDIgnoringEntityResolver() );
       }
 
+      Document doc;
       try {
         if ( Const.isEmpty( systemID ) ) {
           // Normal parsing
@@ -649,8 +646,8 @@ public class XMLHandler {
   /**
    * Load a file into an XML document
    *
-   * @param file
-   *          The file to load into a document
+   * @param resource
+   *          The resource to load into a document
    * @return the Document if all went well, null if an error occured!
    */
   public static Document loadXMLFile( URL resource ) throws KettleXMLException {
@@ -660,7 +657,7 @@ public class XMLHandler {
 
     try {
       // Check and open XML document
-      dbf = DocumentBuilderFactory.newInstance();
+      dbf = XMLParserFactoryProducer.createSecureDocBuilderFactory();
       db = dbf.newDocumentBuilder();
       InputStream inputStream = resource.openStream();
       try {
@@ -711,7 +708,7 @@ public class XMLHandler {
    *
    * @param string
    *          The XML text to load into a document
-   * @param Boolean
+   * @param deferNodeExpansion
    *          true to defer node expansion, false to not defer.
    * @return the Document if all went well, null if an error occurred!
    */
@@ -744,7 +741,7 @@ public class XMLHandler {
   public static DocumentBuilder createDocumentBuilder( boolean namespaceAware, boolean deferNodeExpansion )
     throws KettleXMLException {
     try {
-      DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+      DocumentBuilderFactory dbf = XMLParserFactoryProducer.createSecureDocBuilderFactory();
       dbf.setFeature( "http://apache.org/xml/features/dom/defer-node-expansion", deferNodeExpansion );
       dbf.setNamespaceAware( namespaceAware );
       return dbf.newDocumentBuilder();
@@ -1242,10 +1239,6 @@ public class XMLHandler {
  *
  */
 class DTDIgnoringEntityResolver implements EntityResolver {
-  public DTDIgnoringEntityResolver() {
-    // nothing
-  }
-
   @Override
   public InputSource resolveEntity( java.lang.String publicID, java.lang.String systemID ) throws IOException {
     System.out.println( "Public-ID: " + publicID.toString() );

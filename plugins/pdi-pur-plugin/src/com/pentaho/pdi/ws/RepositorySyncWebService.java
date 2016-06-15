@@ -1,5 +1,5 @@
 /*!
- * Copyright 2010 - 2015 Pentaho Corporation.  All rights reserved.
+ * Copyright 2010 - 2016 Pentaho Corporation.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,13 +19,13 @@ package com.pentaho.pdi.ws;
 import java.io.Serializable;
 
 import javax.jws.WebService;
-import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.RepositoryPluginType;
+import org.pentaho.di.core.xml.XMLParserFactoryProducer;
 import org.pentaho.di.repository.RepositoriesMeta;
 import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
@@ -82,7 +82,7 @@ public class RepositorySyncWebService implements IRepositorySyncWebService, Seri
       Element node;
       try {
         node =
-            DocumentBuilderFactory.newInstance().newDocumentBuilder().parse( new StringInputStream( xml ) )
+          XMLParserFactoryProducer.createSecureDocBuilderFactory().newDocumentBuilder().parse( new StringInputStream( xml ) )
                 .getDocumentElement();
       } catch ( Exception e ) {
         node = null;
@@ -144,8 +144,8 @@ public class RepositorySyncWebService implements IRepositorySyncWebService, Seri
     Element node;
     try {
       node =
-          DocumentBuilderFactory.newInstance().newDocumentBuilder().parse( new StringInputStream( xml ) )
-              .getDocumentElement();
+        XMLParserFactoryProducer.createSecureDocBuilderFactory().newDocumentBuilder().parse( new StringInputStream( xml ) )
+          .getDocumentElement();
     } catch ( Exception e ) {
       node = null;
     }

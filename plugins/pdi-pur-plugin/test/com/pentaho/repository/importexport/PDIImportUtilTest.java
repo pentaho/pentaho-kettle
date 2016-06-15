@@ -1,5 +1,5 @@
 /*!
- * Copyright 2010 - 2015 Pentaho Corporation.  All rights reserved.
+ * Copyright 2010 - 2016 Pentaho Corporation.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,18 +16,45 @@
  */
 package com.pentaho.repository.importexport;
 
+import org.junit.Before;
 import org.junit.Test;
+import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.repository.utils.IRepositoryFactory;
 
-import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.pentaho.di.core.util.Assert.assertNull;
+import static org.pentaho.di.core.util.Assert.assertNotNull;
 
 /**
  * Created by nbaker on 11/5/15.
  */
 public class PDIImportUtilTest {
+  /**
+   * @see <a href="https://en.wikipedia.org/wiki/Billion_laughs" />
+   */
+  private static final String MALICIOUS_XML =
+    "<?xml version=\"1.0\"?>\n"
+      + "<!DOCTYPE lolz [\n"
+      + " <!ENTITY lol \"lol\">\n"
+      + " <!ELEMENT lolz (#PCDATA)>\n"
+      + " <!ENTITY lol1 \"&lol;&lol;&lol;&lol;&lol;&lol;&lol;&lol;&lol;&lol;\">\n"
+      + " <!ENTITY lol2 \"&lol1;&lol1;&lol1;&lol1;&lol1;&lol1;&lol1;&lol1;&lol1;&lol1;\">\n"
+      + " <!ENTITY lol3 \"&lol2;&lol2;&lol2;&lol2;&lol2;&lol2;&lol2;&lol2;&lol2;&lol2;\">\n"
+      + " <!ENTITY lol4 \"&lol3;&lol3;&lol3;&lol3;&lol3;&lol3;&lol3;&lol3;&lol3;&lol3;\">\n"
+      + " <!ENTITY lol5 \"&lol4;&lol4;&lol4;&lol4;&lol4;&lol4;&lol4;&lol4;&lol4;&lol4;\">\n"
+      + " <!ENTITY lol6 \"&lol5;&lol5;&lol5;&lol5;&lol5;&lol5;&lol5;&lol5;&lol5;&lol5;\">\n"
+      + " <!ENTITY lol7 \"&lol6;&lol6;&lol6;&lol6;&lol6;&lol6;&lol6;&lol6;&lol6;&lol6;\">\n"
+      + " <!ENTITY lol8 \"&lol7;&lol7;&lol7;&lol7;&lol7;&lol7;&lol7;&lol7;&lol7;&lol7;\">\n"
+      + " <!ENTITY lol9 \"&lol8;&lol8;&lol8;&lol8;&lol8;&lol8;&lol8;&lol8;&lol8;&lol8;\">\n"
+      + "]>\n"
+      + "<lolz>&lol9;</lolz>";
+
+  @Before
+  public void setUp() throws Exception {
+    KettleEnvironment.init();
+  }
 
   @Test
   public void testConnectToRepository() throws Exception {
@@ -37,5 +64,25 @@ public class PDIImportUtilTest {
     PDIImportUtil.connectToRepository( "foo" );
 
     verify( mock, times( 1 ) ).connect( "foo" );
+  }
+
+  @Test( timeout = 2000 )
+  public void whenLoadingMaliciousXmlFromStringParsingEndsWithNoErrorAndNullValueIsReturned() throws Exception {
+    assertNull( PDIImportUtil.loadXMLFrom( MALICIOUS_XML ) );
+  }
+
+  @Test( timeout = 2000 )
+  public void whenLoadingMaliciousXmlFromInputStreamParsingEndsWithNoErrorAndNullValueIsReturned() throws Exception {
+    assertNull( PDIImportUtil.loadXMLFrom( MALICIOUS_XML ) );
+  }
+
+  @Test
+  public void whenLoadingLegalXmlFromStringNotNullDocumentIsReturned() throws Exception {
+    final String trans = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+      + "<transformation>"
+      + "</transformation>";
+
+    assertNotNull( PDIImportUtil.loadXMLFrom( trans ) );
+
   }
 }
