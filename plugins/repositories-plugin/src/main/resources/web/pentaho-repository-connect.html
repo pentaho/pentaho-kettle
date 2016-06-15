@@ -1,14 +1,3 @@
-<div class="error-message" ng-show="model.hasError">
-  <div class="error-message-icon">
-    <img src="images/caution.svg" />
-  </div>
-  <div class="error-message-text">
-    {{model.errorMessage}}
-  </div>
-  <div class="error-message-close" ng-click="model.hasError=false">
-    <img src="images/close_notif.svg" />
-  </div>
-</div>
 <div class="main_div">
   <div class="header" style="margin-bottom:37px;margin-top:77px;">
     <img id="pentaho-img" alt="" src="images/u135.png" />
@@ -18,11 +7,11 @@
     <form>
     <div style="margin-bottom:18px;">
       <label for="userName" class="margin_bottom_5 block text_left">User Name</label>
-      <input set-focus="model.username==''" id="userName" class="block repo_conn_txt" type="text" ng-model="model.username" />
+      <input set-focus="model.username==''" id="userName" class="block repo_conn_txt" type="text" ng-model="model.username" ng-change="resetErrorMsg()"/>
     </div>
     <div style="margin-bottom:18px;">
       <label for="password" class="margin_bottom_5 block text_left">Password</label>
-      <input set-focus="model.username!=''" id="password" class="block repo_conn_txt" type="password" ng-model="model.password" />
+      <input set-focus="model.username!=''" id="password" class="block repo_conn_txt" type="password" ng-model="model.password" ng-change="resetErrorMsg()"/>
     </div>
     <div>
       <button id="connect" class="standard" type="submit" ng-disabled="!canConnect()" ng-click="connect()">Connect</button>

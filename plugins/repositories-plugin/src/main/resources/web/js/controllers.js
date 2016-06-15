@@ -50,27 +50,31 @@ define(
       }
       function checkDuplicate() {
         repositories = JSON.parse(getRepositories());
-        $scope.model.hasError = false;
-        $scope.model.errorMessage = "";
         for(var i = 0; i < repositories.length; i++){
           if( $filter('lowercase')(repositories[i].displayName) == $filter('lowercase')($scope.model.displayName) ){
-            $scope.model.hasError = true;
-            $scope.model.errorMessage = "A repository connection with that name already exists. Please enter a different name.";
-            break;
+            $rootScope.triggerError("A repository connection with that name already exists. Please enter a different name.");
+            return true;
           }
         }
+        return false;
+      }
+      $scope.resetErrorMsg = function() {
+        $rootScope.resetErrorMsg();
       }
       $scope.finish = function() {
+        if( $rootScope.hasError ){
+          $rootScope.refreshError();
+          return;
+        }
         if( this.model.displayName != getCurrentRepository() ) {
-          checkDuplicate();
-          if( this.model.hasError ){
+          if( checkDuplicate() ){
             return;
           }
         }
         if (createRepository("PentahoEnterpriseRepository", JSON.stringify(this.model))) {
-          $location.path("/pentaho-repository-creation-success")
+          $location.path("/pentaho-repository-creation-success");
         } else {
-          $location.path("/pentaho-repository-creation-failure")
+          $location.path("/pentaho-repository-creation-failure");
         }
         if(this.model.isDefault) {
           setDefaultRepository(this.model.displayName);
@@ -91,6 +95,7 @@ define(
         $rootScope.back();
       }
       $scope.back = function() {
+        $rootScope.clearError();
         if (this.model.id) {
           $location.path("/repository-manager");
         } else {
@@ -120,27 +125,31 @@ define(
       }
       function checkDuplicate() {
         repositories = JSON.parse(getRepositories());
-        $scope.model.hasError = false;
-        $scope.model.errorMessage = "";
         for(var i = 0; i < repositories.length; i++){
           if( $filter('lowercase')(repositories[i].displayName) == $filter('lowercase')($scope.model.displayName) ){
-            $scope.model.hasError = true;
-            $scope.model.errorMessage = "A repository connection with that name already exists. Please enter a different name.";
-            break;
+            $rootScope.triggerError("A repository connection with that name already exists. Please enter a different name.");
+            return true;
           }
         }
+        return false;
+      }
+      $scope.resetErrorMsg = function() {
+        $rootScope.resetErrorMsg();
       }
       $scope.finish = function() {
+        if( $rootScope.hasError ){
+          $rootScope.refreshError();
+          return;
+        }
         if( this.model.displayName != getCurrentRepository() ) {
-          checkDuplicate();
-          if( this.model.hasError ){
+          if( checkDuplicate() ) {
             return;
           }
         }
         if (createRepository("KettleFileRepository", JSON.stringify(this.model))) {
-          $location.path("/kettle-file-repository-creation-success")
+          $location.path("/kettle-file-repository-creation-success");
         } else {
-          $location.path("/kettle-file-repository-creation-failure")
+          $location.path("/kettle-file-repository-creation-failure");
         }
         if(this.model.isDefault) {
           setDefaultRepository(this.model.displayName);
@@ -160,6 +169,7 @@ define(
         $rootScope.back();
       }
       $scope.back = function() {
+        $rootScope.clearError();
         if (this.model.id) {
           $location.path("/repository-manager");
         } else {
@@ -179,7 +189,8 @@ define(
     repoConnectionAppControllers.controller("KettleDatabaseRepositoryController", function($scope, $rootScope, $location, $filter, kettleDatabaseRepositoryModel) {
       $scope.model = kettleDatabaseRepositoryModel.model;
       $scope.selectDatabase = function() {
-        $location.path("/kettle-database-repository-select")
+        $rootScope.clearError();
+        $location.path("/kettle-database-repository-select");
         $rootScope.next();
       }
       $scope.canFinish = function() {
@@ -190,27 +201,31 @@ define(
       }
       function checkDuplicate() {
         repositories = JSON.parse(getRepositories());
-        $scope.model.hasError = false;
-        $scope.model.errorMessage = "";
         for(var i = 0; i < repositories.length; i++){
           if( $filter('lowercase')(repositories[i].displayName) == $filter('lowercase')($scope.model.displayName) ){
-            $scope.model.hasError = true;
-            $scope.model.errorMessage = "A repository connection with that name already exists. Please enter a different name.";
-            break;
+            $rootScope.triggerError("A repository connection with that name already exists. Please enter a different name.");
+            return true;
           }
         }
+        return false;
+      }
+      $scope.resetErrorMsg = function() {
+        $rootScope.resetErrorMsg();
       }
       $scope.finish = function() {
+        if( $rootScope.hasError ){
+          $rootScope.refreshError();
+          return;
+        }
         if( this.model.displayName != getCurrentRepository() ) {
-          checkDuplicate();
-          if( this.model.hasError ){
+          if( checkDuplicate() ){
             return;
           }
         }
         if (createRepository("KettleDatabaseRepository", JSON.stringify(this.model))) {
-          $location.path("/kettle-database-repository-creation-success")
+          $location.path("/kettle-database-repository-creation-success");
         } else {
-          $location.path("/kettle-database-repository-creation-failure")
+          $location.path("/kettle-database-repository-creation-failure");
         }
         if(this.model.isDefault) {
           setDefaultRepository(this.model.displayName);
@@ -231,6 +246,7 @@ define(
         $rootScope.back();
       }
       $scope.back = function() {
+        $rootScope.clearError();
         if (this.model.id) {
           $location.path("/repository-manager");
         } else {
@@ -382,7 +398,7 @@ define(
       }
     });
 
-    repoConnectionAppControllers.controller("RepositoryConnectController", function($scope, repositoryConnectModel) {
+    repoConnectionAppControllers.controller("RepositoryConnectController", function($scope, $rootScope, repositoryConnectModel) {
       $scope.model = repositoryConnectModel;
       $scope.model.username = getCurrentUser();
       $scope.model.currentRepositoryName = getCurrentRepository();
@@ -392,13 +408,18 @@ define(
         }
         return true;
       }
-
+      $scope.resetErrorMsg = function() {
+        $rootScope.resetErrorMsg();
+      }
       $scope.connect = function() {
-        this.model.hasError = false;
+        if( $rootScope.hasError ){
+          $rootScope.refreshError();
+          return;
+        }
         var response = JSON.parse(loginToRepository(this.model.username, this.model.password));
-        this.model.errorMessage = response.errorMessage;
-        this.model.hasError = response.success == false;
-        if (response.success == true) {
+        if( response.success == false){
+          $rootScope.triggerError(response.errorMessage);
+        } else {
           close();
         }
       }

@@ -36,8 +36,6 @@ define( [
     });
 
     repoConnectionApp.service("pentahoRepositoryModel",function() {
-      this.hasError = false;
-      this.errorMessage = "";
       this.default = {
         displayName: "",
         url: getDefaultUrl(),
@@ -52,8 +50,6 @@ define( [
     });
 
     repoConnectionApp.service("kettleFileRepositoryModel", function() {
-      this.hasError = false;
-      this.errorMessage = "";
       this.default = {
         displayName: "",
         location: "",
@@ -70,8 +66,6 @@ define( [
     });
 
     repoConnectionApp.service("kettleDatabaseRepositoryModel", function() {
-      this.hasError = false;
-      this.errorMessage = "";
       this.default = {
         displayName: "",
         databaseConnection: "None",
@@ -86,8 +80,6 @@ define( [
     });
 
     repoConnectionApp.service("repositoryConnectModel", function() {
-      this.hasError = false;
-      this.errorMessage = "";
       this.username = "";
       this.password = "";
       this.currentRepositoryName = "";

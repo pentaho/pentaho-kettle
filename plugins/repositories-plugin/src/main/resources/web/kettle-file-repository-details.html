@@ -1,20 +1,9 @@
-<!--<div class="error-message" ng-if="model.hasError">-->
-  <!--<div class="error-message-icon">-->
-    <!--<img src="images/caution.svg" />-->
-  <!--</div>-->
-  <!--<div class="error-message-text">-->
-    <!--{{model.errorMessage}}-->
-  <!--</div>-->
-  <!--<div class="error-message-close" ng-click="model.hasError=false">-->
-    <!--<img src="images/close_notif.svg" />-->
-  <!--</div>-->
-<!--</div>-->
 <div class="main_div">
   <div class="title_text margin_bottom_30">Repository Details</div>
   <div class="middle_div">
     <div class="margin_bottom_15">
       <label for="displayName" class="margin_bottom_5 block text_left">Display
-        Name</label> <input set-focus id="displayName" class="block" type="text" size="50" ng-model="model.displayName" />
+        Name</label> <input set-focus id="displayName" class="block" type="text" size="50" ng-model="model.displayName" ng-change="resetErrorMsg()"/>
     </div>
     <div>
       <label for="location" class="margin_bottom_5 block text_left">Location</label>
