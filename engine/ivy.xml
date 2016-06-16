@@ -101,6 +101,7 @@
 	<dependency org="org.eclipse.jetty" name="jetty-servlet" rev="8.1.15.v20140411" transitive="false"  conf="default->default"/>
 	<dependency org="org.eclipse.jetty" name="jetty-xml" rev="8.1.15.v20140411" transitive="false"  conf="default->default"/>
 	<dependency org="org.eclipse.jetty" name="jetty-webapp" rev="8.1.15.v20140411" transitive="false"  conf="default->default"/>
+	<dependency org="com.googlecode.log4jdbc" name="log4jdbc" rev="1.2" transitive="false" conf="default->default"/>
 
     <!-- OLAP4J is bringing in an older version of beanutils-core than is needed -->
     <dependency org="commons-beanutils"   name="commons-beanutils-core" rev="1.8.0"         transitive="false"/>
