@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,11 +23,12 @@
 package org.pentaho.di.trans.steps.elasticsearchbulk;
 
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.StringUtils;
@@ -40,6 +41,9 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.injection.Injection;
+import org.pentaho.di.core.injection.InjectionDeep;
+import org.pentaho.di.core.injection.InjectionSupported;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
@@ -63,6 +67,7 @@ import org.w3c.dom.Node;
     description = "ElasticSearchBulk.TypeTooltipDesc.ElasticSearchBulk",
     categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Bulk", image = "ESB.svg",
     documentationUrl = "http://wiki.pentaho.com/display/EAI/ElasticSearch+Bulk+Insert" )
+@InjectionSupported( localizationPrefix = "ElasticSearchBulk.Injection." )
 public class ElasticSearchBulkMeta extends BaseStepMeta implements StepMetaInterface {
 
   private static Class<?> PKG = ElasticSearchBulkMeta.class; // for i18n purposes
@@ -116,25 +121,44 @@ public class ElasticSearchBulkMeta extends BaseStepMeta implements StepMetaInter
   // FIELDS //
   // /////////
 
+  @Injection( name = "INDEX_NAME" )
   private String index = null;
+  @Injection( name = "INDEX_TYPE" )
   private String type = null;
+  @Injection( name = "JSON_INPUT" )
   private boolean isJsonInsert = false;
+  @Injection( name = "JSON_FIELD" )
   private String jsonField = null;
 
+  @Injection( name = "ID_FIELD" )
   private String idInField = null;
+  @Injection( name = "OVERWRITE_IF_EXIST" )
   private boolean overWriteIfSameId = false;
+  @Injection( name = "ID_OUTPUT_FIELD" )
   private String idOutField = null;
+  @Injection( name = "USE_OUTPUT" )
   private boolean useOutput = false;
+  @Injection( name = "STOP_ON_ERROR" )
   private boolean stopOnError = true;
 
+  @Injection( name = "BATCH_SIZE" )
   private String batchSize;
+  @Injection( name = "TIMEOUT_VALUE" )
   private String timeout;
+  @Injection( name = "TIMEOUT_UNIT" )
   private TimeUnit timeoutUnit;
-  private List<InetSocketTransportAddress> servers = new ArrayList<InetSocketTransportAddress>();
+
+  @InjectionDeep( prefix = "SERVER" )
+  List<Server> servers = new ArrayList<>();
+  @InjectionDeep( prefix = "FIELD" )
+  List<Field> fields = new ArrayList<>();
+  @InjectionDeep( prefix = "SETTING" )
+  List<Setting> settings = new ArrayList<>();
+  // private List<InetSocketTransportAddress> servers = new ArrayList<InetSocketTransportAddress>();
 
   /** fields to use in json generation */
-  private Map<String, String> fields = new HashMap<String, String>();
-  private Map<String, String> settings = new HashMap<String, String>();
+  //private Map<String, String> fields = new HashMap<String, String>();
+  //private Map<String, String> settings = new HashMap<String, String>();
 
   // ////////////////////
   // GETTERS/SETTERS //
@@ -211,12 +235,19 @@ public class ElasticSearchBulkMeta extends BaseStepMeta implements StepMetaInter
     this.stopOnError = stopOnError;
   }
 
-  public Map<String, String> getFields() {
-    return fields;
+  public List<Field> getFields() {
+    return Collections.unmodifiableList( fields );
   }
 
-  public void setFields( Map<String, String> fields ) {
-    this.fields = fields;
+  public Map<String, String> getFieldsMap() {
+    Map<String, String> result = new TreeMap<>();
+    fields.forEach( f -> result.put( f.name, f.targetName ) );
+    return Collections.unmodifiableMap( result );
+  }
+
+  public void setFieldsMap( Map<String, String> values ) {
+    clearFields();
+    values.entrySet().forEach( v -> addField( v.getKey(), v.getValue() ) );
   }
 
   public void clearFields() {
@@ -224,15 +255,19 @@ public class ElasticSearchBulkMeta extends BaseStepMeta implements StepMetaInter
   }
 
   public void addField( String inputName, String nameInJson ) {
-    this.fields.put( inputName, StringUtils.isBlank( nameInJson ) ? inputName : nameInJson );
+    Field f = new Field();
+    f.name = inputName;
+    f.targetName = StringUtils.isBlank( nameInJson ) ? inputName : nameInJson;
+    this.fields.add( f );
   }
 
-  public InetSocketTransportAddress[] getServers() {
-    return servers.toArray( new InetSocketTransportAddress[servers.size()] );
+  public List<Server> getServers() {
+    return Collections.unmodifiableList( servers );
   }
 
-  public void setServers( InetSocketTransportAddress[] servers ) {
-    this.servers = Arrays.asList( servers );
+  public void setServers( List<Server> values ) {
+    servers.clear();
+    servers.addAll( values );
   }
 
   public void clearServers() {
@@ -240,20 +275,21 @@ public class ElasticSearchBulkMeta extends BaseStepMeta implements StepMetaInter
   }
 
   public void addServer( String addr, int port ) {
-    try {
-      InetAddress address = InetAddress.getByName( addr );
-      servers.add( new InetSocketTransportAddress( address, port ) );
-    } catch ( Exception exception ) {
-      // TODO What do we do here?
-    }
+    Server s = new Server();
+    s.address = addr;
+    s.port = port;
+    servers.add( s );
   }
 
-  public Map<String, String> getSettings() {
-    return this.settings;
+  public Map<String, String> getSettingsMap() {
+    Map<String, String> result = new TreeMap<>();
+    settings.forEach( s -> result.put( s.setting, s.value ) );
+    return Collections.unmodifiableMap( result );
   }
 
-  public void setSettings( Map<String, String> settings ) {
-    this.settings = settings;
+  public void setSettingsMap( Map<String, String> values ) {
+    clearSettings();
+    values.entrySet().forEach( v -> addSetting( v.getKey(), v.getValue() ) );
   }
 
   public void clearSettings() {
@@ -262,7 +298,10 @@ public class ElasticSearchBulkMeta extends BaseStepMeta implements StepMetaInter
 
   public void addSetting( String property, String value ) {
     if ( StringUtils.isNotBlank( property ) ) {
-      settings.put( property, value );
+      Setting s = new Setting();
+      s.setting = property;
+      s.value = value;
+      settings.add( s );
     }
   }
 
@@ -469,12 +508,11 @@ public class ElasticSearchBulkMeta extends BaseStepMeta implements StepMetaInter
     // Fields
     retval.append( indent.toString() ).append( XMLHandler.openTag( Dom.TAG_FIELDS ) ).append( Const.CR );
     indent.incr();
-    for ( String colName : this.getFields().keySet() ) {
-      String targetName = this.getFields().get( colName );
+    for ( Field f : fields ) {
       retval.append( indent.toString() ).append( XMLHandler.openTag( Dom.TAG_FIELD ) ).append( Const.CR );
       indent.incr();
-      retval.append( indent.toString() ).append( XMLHandler.addTagValue( Dom.TAG_NAME, colName ) );
-      retval.append( indent.toString() ).append( XMLHandler.addTagValue( Dom.TAG_TARGET, targetName ) );
+      retval.append( indent.toString() ).append( XMLHandler.addTagValue( Dom.TAG_NAME, f.name ) );
+      retval.append( indent.toString() ).append( XMLHandler.addTagValue( Dom.TAG_TARGET, f.targetName ) );
       indent.decr();
       retval.append( indent.toString() ).append( XMLHandler.closeTag( Dom.TAG_FIELD ) ).append( Const.CR );
     }
@@ -484,13 +522,11 @@ public class ElasticSearchBulkMeta extends BaseStepMeta implements StepMetaInter
     // Servers
     retval.append( indent.toString() ).append( XMLHandler.openTag( Dom.TAG_SERVERS ) ).append( Const.CR );
     indent.incr();
-    for ( InetSocketTransportAddress istAddr : this.getServers() ) {
-      String address = istAddr.address().getAddress().getHostAddress();
-      int port = istAddr.address().getPort();
+    for ( Server istAddr : servers ) {
       retval.append( indent.toString() ).append( XMLHandler.openTag( Dom.TAG_SERVER ) ).append( Const.CR );
       indent.incr();
-      retval.append( indent.toString() ).append( XMLHandler.addTagValue( Dom.TAG_SERVER_ADDRESS, address ) );
-      retval.append( indent.toString() ).append( XMLHandler.addTagValue( Dom.TAG_SERVER_PORT, port ) );
+      retval.append( indent.toString() ).append( XMLHandler.addTagValue( Dom.TAG_SERVER_ADDRESS, istAddr.address ) );
+      retval.append( indent.toString() ).append( XMLHandler.addTagValue( Dom.TAG_SERVER_PORT, istAddr.port ) );
       indent.decr();
       retval.append( indent.toString() ).append( XMLHandler.closeTag( Dom.TAG_SERVER ) ).append( Const.CR );
     }
@@ -500,12 +536,11 @@ public class ElasticSearchBulkMeta extends BaseStepMeta implements StepMetaInter
     // Settings
     retval.append( indent.toString() ).append( XMLHandler.openTag( Dom.TAG_SETTINGS ) ).append( Const.CR );
     indent.incr();
-    for ( String settingName : this.getSettings().keySet() ) {
-      String settingValue = this.getSettings().get( settingName );
+    for ( Setting s : settings ) {
       retval.append( indent.toString() ).append( XMLHandler.openTag( Dom.TAG_SETTING ) ).append( Const.CR );
       indent.incr();
-      retval.append( indent.toString() ).append( XMLHandler.addTagValue( Dom.TAG_SETTING_NAME, settingName ) );
-      retval.append( indent.toString() ).append( XMLHandler.addTagValue( Dom.TAG_SETTING_VALUE, settingValue ) );
+      retval.append( indent.toString() ).append( XMLHandler.addTagValue( Dom.TAG_SETTING_NAME, s.setting ) );
+      retval.append( indent.toString() ).append( XMLHandler.addTagValue( Dom.TAG_SETTING_VALUE, s.value ) );
       indent.decr();
       retval.append( indent.toString() ).append( XMLHandler.closeTag( Dom.TAG_SETTING ) ).append( Const.CR );
     }
@@ -636,28 +671,27 @@ public class ElasticSearchBulkMeta extends BaseStepMeta implements StepMetaInter
           isStopOnError() );
 
       // Fields
-      String[] fieldNames = getFields().keySet().toArray( new String[getFields().keySet().size()] );
-      for ( int i = 0; i < fieldNames.length; i++ ) {
-        rep.saveStepAttribute( id_transformation, id_step, i, joinRepAttr( Dom.TAG_FIELD, Dom.TAG_NAME ), fieldNames[i] );
-        rep.saveStepAttribute( id_transformation, id_step, i, joinRepAttr( Dom.TAG_FIELD, Dom.TAG_TARGET ), getFields()
-            .get( fieldNames[i] ) );
+      for ( int i = 0; i < fields.size(); i++ ) {
+        rep.saveStepAttribute( id_transformation, id_step, i, joinRepAttr( Dom.TAG_FIELD, Dom.TAG_NAME ), fields.get(
+            i ).name );
+        rep.saveStepAttribute( id_transformation, id_step, i, joinRepAttr( Dom.TAG_FIELD, Dom.TAG_TARGET ), fields.get(
+            i ).targetName );
       }
 
       // Servers
-      for ( int i = 0; i < getServers().length; i++ ) {
+      for ( int i = 0; i < servers.size(); i++ ) {
         rep.saveStepAttribute( id_transformation, id_step, i, joinRepAttr( Dom.TAG_SERVER, Dom.TAG_SERVER_ADDRESS ),
-            getServers()[i].address().getAddress().getHostAddress() );
+            servers.get( i ).address );
         rep.saveStepAttribute( id_transformation, id_step, i, joinRepAttr( Dom.TAG_SERVER, Dom.TAG_SERVER_PORT ),
-            getServers()[i].address().getPort() );
+            servers.get( i ).port );
       }
 
       // Settings
-      String[] settingNames = getSettings().keySet().toArray( new String[getSettings().keySet().size()] );
-      for ( int i = 0; i < settingNames.length; i++ ) {
+      for ( int i = 0; i < settings.size(); i++ ) {
         rep.saveStepAttribute( id_transformation, id_step, i, joinRepAttr( Dom.TAG_SETTING, Dom.TAG_SETTING_NAME ),
-            settingNames[i] );
+            settings.get( i ).setting );
         rep.saveStepAttribute( id_transformation, id_step, i, joinRepAttr( Dom.TAG_SETTING, Dom.TAG_SETTING_VALUE ),
-            getSettings().get( settingNames[i] ) );
+            settings.get( i ).value );
       }
 
     } catch ( Exception e ) {
@@ -710,10 +744,10 @@ public class ElasticSearchBulkMeta extends BaseStepMeta implements StepMetaInter
               "ElasticSearchBulkMeta.CheckResult.MissingInput", getJsonField() ), stepMeta ) );
         }
       } else { // not JSON
-        for ( String fieldName : getFields().keySet() ) {
-          if ( prev.indexOfValue( fieldName ) < 0 ) { // fields not found
+        for ( Field f : fields ) {
+          if ( prev.indexOfValue( f.name ) < 0 ) { // fields not found
             remarks.add( new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                "ElasticSearchBulkMeta.CheckResult.MissingInput", fieldName ), stepMeta ) );
+                "ElasticSearchBulkMeta.CheckResult.MissingInput", f.name ), stepMeta ) );
           }
         }
       }
@@ -737,4 +771,28 @@ public class ElasticSearchBulkMeta extends BaseStepMeta implements StepMetaInter
     return true;
   }
 
+  public static class Server {
+    @Injection( name = "ADDRESS" )
+    public String address;
+    @Injection( name = "PORT" )
+    public int port;
+
+    public InetSocketTransportAddress getAddr() throws UnknownHostException {
+      return new InetSocketTransportAddress( InetAddress.getByName( address ), port );
+    }
+  }
+
+  public static class Field {
+    @Injection( name = "NAME" )
+    public String name;
+    @Injection( name = "TARGET_NAME" )
+    public String targetName;
+  }
+
+  public static class Setting {
+    @Injection( name = "NAME" )
+    public String setting;
+    @Injection( name = "VALUE" )
+    public String value;
+  }
 }

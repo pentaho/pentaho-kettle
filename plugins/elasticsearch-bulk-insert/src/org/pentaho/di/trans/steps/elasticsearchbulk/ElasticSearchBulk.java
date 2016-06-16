@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,6 +23,7 @@
 package org.pentaho.di.trans.steps.elasticsearchbulk;
 
 import java.io.IOException;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -43,7 +44,6 @@ import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.NoNodeAvailableException;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentFactory;
 import org.elasticsearch.node.Node;
@@ -322,7 +322,7 @@ public class ElasticSearchBulk extends BaseStep implements StepInterface {
     useOutput = meta.isUseOutput();
     stopOnError = meta.isStopOnError();
 
-    columnsToJson = meta.getFields();
+    columnsToJson = meta.getFieldsMap();
     this.hasFields = columnsToJson.size() > 0;
 
     this.opType =
@@ -466,22 +466,20 @@ public class ElasticSearchBulk extends BaseStep implements StepInterface {
     }
   }
 
-  private void initClient() {
-
+  private void initClient() throws UnknownHostException {
     Settings.Builder settingsBuilder = Settings.builder();
     settingsBuilder.put( Settings.Builder.EMPTY_SETTINGS ); // keep default classloader
-    settingsBuilder.put( meta.getSettings() );
+    settingsBuilder.put( meta.getSettingsMap() );
     // Settings settings = settingsBuilder.build();
     TransportClient.Builder tClientBuilder = TransportClient.builder().settings( settingsBuilder );
 
-    if ( meta.getServers().length > 0 ) {
+    if ( !meta.servers.isEmpty() ) {
       node = null;
       TransportClient tClient = tClientBuilder.build();
-      for ( InetSocketTransportAddress address : meta.getServers() ) {
-        tClient.addTransportAddress( address );
+      for ( ElasticSearchBulkMeta.Server s : meta.servers ) {
+        tClient.addTransportAddress( s.getAddr() );
       }
       client = tClient;
-
     } else {
       NodeBuilder nodeBuilder = NodeBuilder.nodeBuilder();
       nodeBuilder.settings( settingsBuilder );
