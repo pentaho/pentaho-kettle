@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,17 +22,22 @@
 
 package org.pentaho.di.trans.steps.googleanalytics;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.pentaho.di.core.KettleEnvironment;
-import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.core.xml.XMLHandler;
-import org.pentaho.metastore.api.IMetaStore;
-
-import java.io.ByteArrayInputStream;
-
-import static org.junit.Assert.*;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
+import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
+import org.pentaho.di.trans.steps.loadsave.validator.ArrayLoadSaveValidator;
+import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
+import org.pentaho.di.trans.steps.loadsave.validator.IntLoadSaveValidator;
+import org.pentaho.di.trans.steps.loadsave.validator.PrimitiveIntArrayLoadSaveValidator;
+import org.pentaho.di.trans.steps.loadsave.validator.StringLoadSaveValidator;
 
 /**
  * @author Andrey Khayrutdinov
@@ -45,63 +50,26 @@ public class GaInputStepMetaTest {
   }
 
   @Test
-  public void cloning() throws Exception {
-    GaInputStepMeta sample = createSampleMeta();
-    GaInputStepMeta clone = (GaInputStepMeta) sample.clone();
-    assertMetasAreEqual( sample, clone );
-  }
+  public void testSerialization() throws KettleException {
+    List<String> attributes = Arrays.asList( "OAuthServiceAccount", "GaAppName", "OAuthKeyFile", "GaProfileName",
+      "GaProfileTableId", "GaCustomTableId", "UseCustomTableId", "StartDate", "EndDate", "Dimensions", "Metrics",
+      "Filters", "Sort", "UseSegment", "UseCustomSegment", "CustomSegment", "SegmentId", "SegmentName",
+      "SamplingLevel", "RowLimit", "FeedFieldType", "FeedField", "OutputField", "OutputType", "ConversionMask" );
 
-  @Test
-  public void serialization_Xml() throws Exception {
-    GaInputStepMeta sample = createSampleMeta();
-    GaInputStepMeta another = new GaInputStepMeta();
+    Map<String, FieldLoadSaveValidator<?>> attributeMap = new HashMap<>();
+    Map<String, FieldLoadSaveValidator<?>> typeMap = new HashMap<>();
+    int maxValueCount = ValueMetaFactory.getAllValueMetaNames().length;
 
-    String xml = "<step>" + sample.getXML() + "</step>";
-    another.loadXML( XMLHandler.getSubNode(
-      XMLHandler.loadXMLFile( new ByteArrayInputStream( xml.getBytes() ) ), "step" ), null, (IMetaStore) null );
+    attributeMap.put( "FeedField", new ArrayLoadSaveValidator<String>( new StringLoadSaveValidator(), 25 ) );
+    attributeMap.put( "FeedFieldType", new ArrayLoadSaveValidator<String>( new StringLoadSaveValidator(), 25 ) );
+    attributeMap.put( "OutputField", new ArrayLoadSaveValidator<String>( new StringLoadSaveValidator(), 25 ) );
+    attributeMap.put( "OutputType",
+      new PrimitiveIntArrayLoadSaveValidator( new IntLoadSaveValidator( maxValueCount ), 25 ) );
+    attributeMap.put( "ConversionMask", new ArrayLoadSaveValidator<String>( new StringLoadSaveValidator(), 25 ) );
 
-    assertMetasAreEqual( sample, another );
-  }
+    LoadSaveTester<GaInputStepMeta> tester = new LoadSaveTester<>( GaInputStepMeta.class, attributes,
+      new HashMap<String, String>(), new HashMap<String, String>(), attributeMap, typeMap );
 
-
-  private GaInputStepMeta createSampleMeta() {
-    GaInputStepMeta meta = new GaInputStepMeta();
-    meta.setOauthServiceAccount( "account" );
-    meta.setOAuthKeyFile( "/dev/null" );
-    meta.setGaAppName( "appName" );
-    meta.setGaProfileTableId( "profileTableId" );
-    meta.setGaProfileName( "profileName" );
-    meta.setUseCustomTableId( true );
-    meta.setGaCustomTableId( "customTableId" );
-    meta.setStartDate( "2000-01-01" );
-    meta.setEndDate( "2010-01-01" );
-    meta.setDimensions( "dimensions" );
-    meta.setMetrics( "metrics" );
-    meta.setFilters( "filters" );
-    meta.setSort( "sort" );
-    meta.setUseSegment( true );
-    meta.setUseCustomSegment( true );
-    meta.setRowLimit( 10 );
-    meta.setCustomSegment( "customSegment" );
-    meta.setSegmentId( "segmentId" );
-    meta.setSegmentName( "segmentName" );
-
-    meta.allocate( 2 );
-    for ( int i = 0; i < 2; i++ ) {
-      String str = Integer.toString( i );
-      meta.getFeedField()[ i ] = str;
-      meta.getFeedFieldType()[ i ] = str;
-      meta.getOutputField()[ i ] = str;
-      meta.getConversionMask()[ i ] = str;
-    }
-    meta.getOutputType()[ 0 ] = ValueMetaInterface.TYPE_INTEGER;
-    meta.getOutputType()[ 1 ] = ValueMetaInterface.TYPE_STRING;
-
-    return meta;
-  }
-
-  private void assertMetasAreEqual( GaInputStepMeta meta1, GaInputStepMeta meta2 ) {
-    boolean eq = EqualsBuilder.reflectionEquals( meta1, meta2 );
-    assertTrue( eq );
+    tester.testSerialization();
   }
 }
