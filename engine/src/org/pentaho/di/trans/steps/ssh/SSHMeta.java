@@ -22,7 +22,6 @@
 
 package org.pentaho.di.trans.steps.ssh;
 
-import java.io.File;
 import java.util.List;
 
 import org.pentaho.di.core.CheckResult;
@@ -56,7 +55,6 @@ import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
 import com.trilead.ssh2.Connection;
-import com.trilead.ssh2.HTTPProxyData;
 
 /*
  * Created on 03-Juin-2008
@@ -64,7 +62,7 @@ import com.trilead.ssh2.HTTPProxyData;
  */
 
 public class SSHMeta extends BaseStepMeta implements StepMetaInterface {
-  private static Class<?> PKG = SSHMeta.class; // for i18n purposes, needed by Translator2!!
+  static Class<?> PKG = SSHMeta.class; // for i18n purposes, needed by Translator2!!
   private static int DEFAULT_PORT = 22;
 
   private String command;
@@ -94,16 +92,19 @@ public class SSHMeta extends BaseStepMeta implements StepMetaInterface {
     super(); // allocate BaseStepMeta
   }
 
+  @Override
   public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     readData( stepnode );
   }
 
+  @Override
   public Object clone() {
     SSHMeta retval = (SSHMeta) super.clone();
 
     return retval;
   }
 
+  @Override
   public void setDefault() {
     dynamicCommandField = false;
     command = null;
@@ -373,6 +374,7 @@ public class SSHMeta extends BaseStepMeta implements StepMetaInterface {
     return proxyPassword;
   }
 
+  @Override
   public String getXML() {
     StringBuilder retval = new StringBuilder();
 
@@ -427,6 +429,7 @@ public class SSHMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
+  @Override
   public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
 
     try {
@@ -457,6 +460,7 @@ public class SSHMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
+  @Override
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       rep.saveStepAttribute( id_transformation, id_step, "dynamicCommandField", dynamicCommandField );
@@ -487,6 +491,7 @@ public class SSHMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
+  @Override
   public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
     RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
@@ -546,6 +551,7 @@ public class SSHMeta extends BaseStepMeta implements StepMetaInterface {
 
   }
 
+  @Override
   public void getFields( RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep,
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
 
@@ -565,81 +571,54 @@ public class SSHMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
+  @Override
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
     TransMeta transMeta, Trans trans ) {
     return new SSH( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 
+  @Override
   public StepDataInterface getStepData() {
     return new SSHData();
   }
 
+  @Override
   public boolean supportsErrorHandling() {
     return true;
   }
 
+  /**
+   *
+   * @param serveur
+   * @param port
+   * @param username
+   * @param password
+   * @param useKey
+   * @param keyFilename
+   * @param passPhrase
+   * @param timeOut
+   * @param space
+   * @param proxyhost
+   * @param proxyport
+   * @param proxyusername
+   * @param proxypassword
+   * @return
+   * @throws KettleException
+   * @deprecated Use {@link SSHData#OpenConnection(String, int, String, String, boolean, String, String, int, VariableSpace, String, int, String, String)} instead
+   */
+  @Deprecated
   public static Connection OpenConnection( String serveur, int port, String username, String password,
     boolean useKey, String keyFilename, String passPhrase, int timeOut, VariableSpace space, String proxyhost,
     int proxyport, String proxyusername, String proxypassword ) throws KettleException {
-    Connection conn = null;
-    boolean isAuthenticated = false;
-    File keyFile = null;
-    try {
-      // perform some checks
-      if ( useKey ) {
-        if ( Const.isEmpty( keyFilename ) ) {
-          throw new KettleException( BaseMessages.getString( PKG, "SSH.Error.PrivateKeyFileMissing" ) );
-        }
-        keyFile = new File( keyFilename );
-        if ( !keyFile.exists() ) {
-          throw new KettleException( BaseMessages.getString( PKG, "SSH.Error.PrivateKeyNotExist", keyFilename ) );
-        }
-      }
-      // Create a new connection
-      conn = new Connection( serveur, port );
-
-      /* We want to connect through a HTTP proxy */
-      if ( !Const.isEmpty( proxyhost ) ) {
-        /* Now connect */
-        // if the proxy requires basic authentication:
-        if ( !Const.isEmpty( proxyusername ) ) {
-          conn.setProxyData( new HTTPProxyData( proxyhost, proxyport, proxyusername, proxypassword ) );
-        } else {
-          conn.setProxyData( new HTTPProxyData( proxyhost, proxyport ) );
-        }
-      }
-
-      // and connect
-      if ( timeOut == 0 ) {
-        conn.connect();
-      } else {
-        conn.connect( null, 0, timeOut * 1000 );
-      }
-      // authenticate
-      if ( useKey ) {
-        isAuthenticated =
-          conn.authenticateWithPublicKey( username, keyFile, space.environmentSubstitute( passPhrase ) );
-      } else {
-        isAuthenticated = conn.authenticateWithPassword( username, password );
-      }
-      if ( isAuthenticated == false ) {
-        throw new KettleException( BaseMessages.getString( PKG, "SSH.Error.AuthenticationFailed", username ) );
-      }
-    } catch ( Exception e ) {
-      // Something wrong happened
-      // do not forget to disconnect if connected
-      if ( conn != null ) {
-        conn.close();
-      }
-      throw new KettleException( BaseMessages.getString( PKG, "SSH.Error.ErrorConnecting", serveur, username ), e );
-    }
-    return conn;
+    return SSHData.OpenConnection( serveur, port, username, password, useKey, keyFilename, passPhrase, timeOut,
+      space, proxyhost, proxyport, proxyusername, proxypassword );
   }
 
   /**
    * Returns the Input/Output metadata for this step.
    *
    */
+  @Override
   public StepIOMetaInterface getStepIOMeta() {
     return new StepIOMeta( isDynamicCommand(), true, false, false, false, false );
   }

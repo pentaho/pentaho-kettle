@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -56,6 +56,7 @@ public class SSH extends BaseStep implements StepInterface {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
+  @Override
   public boolean processRow( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
     meta = (SSHMeta) smi;
     data = (SSHData) sdi;
@@ -198,6 +199,7 @@ public class SSH extends BaseStep implements StepInterface {
     return true;
   }
 
+  @Override
   public boolean init( StepMetaInterface smi, StepDataInterface sdi ) {
     meta = (SSHMeta) smi;
     data = (SSHData) sdi;
@@ -237,7 +239,7 @@ public class SSH extends BaseStep implements StepInterface {
       try {
         // Open connection
         data.conn =
-          SSHMeta.OpenConnection(
+          SSHData.OpenConnection(
             servername, nrPort, username, password, meta.isusePrivateKey(), keyFilename, passphrase, timeOut,
             this, proxyhost, proxyport, proxyusername, proxypassword );
 
@@ -255,6 +257,7 @@ public class SSH extends BaseStep implements StepInterface {
     return false;
   }
 
+  @Override
   public void dispose( StepMetaInterface smi, StepDataInterface sdi ) {
     meta = (SSHMeta) smi;
     data = (SSHData) sdi;
