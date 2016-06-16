@@ -24,7 +24,9 @@ package org.pentaho.di.trans.steps.datagrid;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -33,37 +35,52 @@ import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaBase;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
+import org.pentaho.di.trans.step.StepIOMeta;
+import org.pentaho.di.trans.step.StepIOMetaInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInjectionInterface;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.step.errorhandling.Stream;
+import org.pentaho.di.trans.step.errorhandling.StreamIcon;
+import org.pentaho.di.trans.step.errorhandling.StreamInterface;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
 public class DataGridMeta extends BaseStepMeta implements StepMetaInterface {
+  private static Class<?> PKG = DataGridMeta.class; // for i18n purposes, needed by Translator2!!
+
+
   private String[] currency;
   private String[] decimal;
   private String[] group;
 
   private String[] fieldName;
   private String[] fieldType;
+  private String[] fieldStorageType;
+  private String[] fieldIndexName;
   private String[] fieldFormat;
 
   private int[] fieldLength;
   private int[] fieldPrecision;
-  /** Flag : set empty string **/
+  /**
+   * Flag : set empty string *
+   */
   private boolean[] setEmptyString;
 
   private List<List<String>> dataLines;
+  private volatile Set<String> infoStepName;
 
   public DataGridMeta() {
     super(); // allocate BaseStepMeta
@@ -77,8 +94,7 @@ public class DataGridMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   /**
-   * @param setEmptyString
-   *          the setEmptyString to set
+   * @param setEmptyString the setEmptyString to set
    */
   public void setEmptyString( boolean[] setEmptyString ) {
     this.setEmptyString = setEmptyString;
@@ -92,8 +108,7 @@ public class DataGridMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   /**
-   * @param currency
-   *          The currency to set.
+   * @param currency The currency to set.
    */
   public void setCurrency( String[] currency ) {
     this.currency = currency;
@@ -107,8 +122,7 @@ public class DataGridMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   /**
-   * @param decimal
-   *          The decimal to set.
+   * @param decimal The decimal to set.
    */
   public void setDecimal( String[] decimal ) {
     this.decimal = decimal;
@@ -122,8 +136,7 @@ public class DataGridMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   /**
-   * @param fieldFormat
-   *          The fieldFormat to set.
+   * @param fieldFormat The fieldFormat to set.
    */
   public void setFieldFormat( String[] fieldFormat ) {
     this.fieldFormat = fieldFormat;
@@ -137,8 +150,7 @@ public class DataGridMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   /**
-   * @param fieldLength
-   *          The fieldLength to set.
+   * @param fieldLength The fieldLength to set.
    */
   public void setFieldLength( int[] fieldLength ) {
     this.fieldLength = fieldLength;
@@ -152,8 +164,7 @@ public class DataGridMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   /**
-   * @param fieldName
-   *          The fieldName to set.
+   * @param fieldName The fieldName to set.
    */
   public void setFieldName( String[] fieldName ) {
     this.fieldName = fieldName;
@@ -167,8 +178,7 @@ public class DataGridMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   /**
-   * @param fieldPrecision
-   *          The fieldPrecision to set.
+   * @param fieldPrecision The fieldPrecision to set.
    */
   public void setFieldPrecision( int[] fieldPrecision ) {
     this.fieldPrecision = fieldPrecision;
@@ -182,11 +192,40 @@ public class DataGridMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   /**
-   * @param fieldType
-   *          The fieldType to set.
+   * @param fieldType The fieldType to set.
    */
   public void setFieldType( String[] fieldType ) {
     this.fieldType = fieldType;
+  }
+
+  public String[] getFieldStorageType() {
+    return fieldStorageType;
+  }
+
+  public void setFieldStorageType( String[] fieldStorageType ) {
+    this.fieldStorageType = fieldStorageType;
+  }
+
+  public String[] getFieldIndexName() {
+    return fieldIndexName;
+  }
+
+  public void setFieldIndexName( String[] fieldIndexName ) {
+    this.fieldIndexName = fieldIndexName;
+  }
+
+  public Set<String> getInfoStepName() {
+    return infoStepName;
+  }
+
+  public void setInfoStepName( Set<String> infoStepName ) {
+    this.infoStepName = infoStepName;
+    //resetStepIoMeta();
+  }
+
+  public void addInfoStepName( String name ) {
+    this.infoStepName.add( name );
+    //resetStepIoMeta();
   }
 
   /**
@@ -197,8 +236,7 @@ public class DataGridMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   /**
-   * @param group
-   *          The group to set.
+   * @param group The group to set.
    */
   public void setGroup( String[] group ) {
     this.group = group;
@@ -218,15 +256,17 @@ public class DataGridMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public void allocate( int nrfields ) {
-    fieldName = new String[nrfields];
-    fieldType = new String[nrfields];
-    fieldFormat = new String[nrfields];
-    fieldLength = new int[nrfields];
-    fieldPrecision = new int[nrfields];
-    currency = new String[nrfields];
-    decimal = new String[nrfields];
-    group = new String[nrfields];
-    setEmptyString = new boolean[nrfields];
+    fieldName = new String[ nrfields ];
+    fieldType = new String[ nrfields ];
+    fieldStorageType = new String[ nrfields ];
+    fieldIndexName = new String[ nrfields ];
+    fieldFormat = new String[ nrfields ];
+    fieldLength = new int[ nrfields ];
+    fieldPrecision = new int[ nrfields ];
+    currency = new String[ nrfields ];
+    decimal = new String[ nrfields ];
+    group = new String[ nrfields ];
+    setEmptyString = new boolean[ nrfields ];
   }
 
   @Override
@@ -246,6 +286,9 @@ public class DataGridMeta extends BaseStepMeta implements StepMetaInterface {
     System.arraycopy( fieldLength, 0, retval.fieldLength, 0, nrfields );
     System.arraycopy( fieldPrecision, 0, retval.fieldPrecision, 0, nrfields );
     System.arraycopy( setEmptyString, 0, retval.setEmptyString, 0, nrfields );
+
+    retval.setInfoStepName( new HashSet<String>() );
+    retval.getInfoStepName().addAll( infoStepName );
 
     if ( dataLines != null ) {
       retval.setDataLines( new ArrayList<List<String>>() );
@@ -270,19 +313,33 @@ public class DataGridMeta extends BaseStepMeta implements StepMetaInterface {
       for ( int i = 0; i < nrfields; i++ ) {
         Node fnode = XMLHandler.getSubNodeByNr( fields, "field", i );
 
-        fieldName[i] = XMLHandler.getTagValue( fnode, "name" );
-        fieldType[i] = XMLHandler.getTagValue( fnode, "type" );
-        fieldFormat[i] = XMLHandler.getTagValue( fnode, "format" );
-        currency[i] = XMLHandler.getTagValue( fnode, "currency" );
-        decimal[i] = XMLHandler.getTagValue( fnode, "decimal" );
-        group[i] = XMLHandler.getTagValue( fnode, "group" );
+        fieldName[ i ] = XMLHandler.getTagValue( fnode, "name" );
+        fieldType[ i ] = XMLHandler.getTagValue( fnode, "type" );
+        fieldStorageType[ i ] = XMLHandler.getTagValue( fnode, "storage_type" );
+        fieldIndexName[ i ] = XMLHandler.getTagValue( fnode, "index_name" );
+        fieldFormat[ i ] = XMLHandler.getTagValue( fnode, "format" );
+        currency[ i ] = XMLHandler.getTagValue( fnode, "currency" );
+        decimal[ i ] = XMLHandler.getTagValue( fnode, "decimal" );
+        group[ i ] = XMLHandler.getTagValue( fnode, "group" );
         slength = XMLHandler.getTagValue( fnode, "length" );
         sprecision = XMLHandler.getTagValue( fnode, "precision" );
 
-        fieldLength[i] = Const.toInt( slength, -1 );
-        fieldPrecision[i] = Const.toInt( sprecision, -1 );
+        fieldLength[ i ] = Const.toInt( slength, -1 );
+        fieldPrecision[ i ] = Const.toInt( sprecision, -1 );
         String emptyString = XMLHandler.getTagValue( fnode, "set_empty_string" );
-        setEmptyString[i] = !Const.isEmpty( emptyString ) && "Y".equalsIgnoreCase( emptyString );
+        setEmptyString[ i ] = !Const.isEmpty( emptyString ) && "Y".equalsIgnoreCase( emptyString );
+      }
+
+      infoStepName = new HashSet<String>();
+      Node infoStepNode = XMLHandler.getSubNode( stepnode, "info_step" );
+      if ( infoStepNode != null ) {
+        Node stepNameNode = infoStepNode.getFirstChild();
+        while ( stepNameNode != null ) {
+          if ( "name".equals( stepNameNode.getNodeName() ) ) {
+            infoStepName.add( XMLHandler.getNodeValue( stepNameNode ) );
+          }
+          stepNameNode = stepNameNode.getNextSibling();
+        }
       }
 
       Node datanode = XMLHandler.getSubNode( stepnode, "data" );
@@ -312,7 +369,7 @@ public class DataGridMeta extends BaseStepMeta implements StepMetaInterface {
         lineNode = lineNode.getNextSibling();
       }
     } catch ( Exception e ) {
-      throw new KettleXMLException( "Unable to load step info from XML", e );
+      throw new KettleXMLException( BaseMessages.getString( PKG, "DataGridMeta.Error.ReadFromXml" ), e );
     }
   }
 
@@ -325,23 +382,25 @@ public class DataGridMeta extends BaseStepMeta implements StepMetaInterface {
     DecimalFormat decimalFormat = new DecimalFormat();
 
     for ( i = 0; i < nrfields; i++ ) {
-      fieldName[i] = "field" + i;
-      fieldType[i] = "Number";
-      fieldFormat[i] = "\u00A40,000,000.00;\u00A4-0,000,000.00";
-      fieldLength[i] = 9;
-      fieldPrecision[i] = 2;
-      currency[i] = decimalFormat.getDecimalFormatSymbols().getCurrencySymbol();
-      decimal[i] = new String( new char[] { decimalFormat.getDecimalFormatSymbols().getDecimalSeparator() } );
-      group[i] = new String( new char[] { decimalFormat.getDecimalFormatSymbols().getGroupingSeparator() } );
-      setEmptyString[i] = false;
+      fieldName[ i ] = "field" + i;
+      fieldType[ i ] = "Number";
+      fieldStorageType[ i ] = "normal";
+      fieldIndexName[ i ] = "";
+      fieldFormat[ i ] = "\u00A40,000,000.00;\u00A4-0,000,000.00";
+      fieldLength[ i ] = 9;
+      fieldPrecision[ i ] = 2;
+      currency[ i ] = decimalFormat.getDecimalFormatSymbols().getCurrencySymbol();
+      decimal[ i ] = new String( new char[] { decimalFormat.getDecimalFormatSymbols().getDecimalSeparator() } );
+      group[ i ] = new String( new char[] { decimalFormat.getDecimalFormatSymbols().getGroupingSeparator() } );
+      setEmptyString[ i ] = false;
     }
-
+    infoStepName = new HashSet<String>();
     dataLines = new ArrayList<List<String>>();
   }
 
   @Override
   public void getFields( RowMetaInterface rowMeta, String name, RowMetaInterface[] info, StepMeta nextStep,
-    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+                         VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     for ( int i = 0; i < fieldName.length; i++ ) {
       try {
         if ( !Const.isEmpty( fieldName[i] ) ) {
@@ -349,19 +408,39 @@ public class DataGridMeta extends BaseStepMeta implements StepMetaInterface {
           if ( type == ValueMetaInterface.TYPE_NONE ) {
             type = ValueMetaInterface.TYPE_STRING;
           }
-          ValueMetaInterface v = ValueMetaFactory.createValueMeta( fieldName[i], type );
-          v.setLength( fieldLength[i] );
-          v.setPrecision( fieldPrecision[i] );
+          ValueMetaInterface v = ValueMetaFactory.createValueMeta( fieldName[ i ], type );
+          v.setLength( fieldLength[ i ] );
+          v.setPrecision( fieldPrecision[ i ] );
           v.setOrigin( name );
-          v.setConversionMask( fieldFormat[i] );
-          v.setCurrencySymbol( currency[i] );
-          v.setGroupingSymbol( group[i] );
-          v.setDecimalSymbol( decimal[i] );
-
+          v.setConversionMask( fieldFormat[ i ] );
+          v.setCurrencySymbol( currency[ i ] );
+          v.setGroupingSymbol( group[ i ] );
+          v.setDecimalSymbol( decimal[ i ] );
+          int storageType = ValueMetaBase.getStorageType( fieldStorageType[ i ] );
+          if ( storageType != -1 ) {
+            if ( storageType == ValueMetaBase.STORAGE_TYPE_BINARY_STRING ) {
+              ValueMetaInterface storageMetadata =
+                ValueMetaFactory.cloneValueMeta( v, ValueMetaInterface.TYPE_STRING );
+              storageMetadata.setStorageType( ValueMetaInterface.STORAGE_TYPE_NORMAL );
+              storageMetadata.setLength( -1, -1 ); // we don't really know the lengths of the strings read in advance.
+              v.setStorageMetadata( storageMetadata );
+              ValueMetaInterface clone = v.clone();
+              clone.setStorageType( ValueMetaInterface.STORAGE_TYPE_NORMAL );
+              v.getStorageMetadata().setConversionMetadata( clone );
+            } else if ( storageType == ValueMetaBase.STORAGE_TYPE_INDEXED ) {
+              ValueMetaInterface storageMetadata =
+                ValueMetaFactory.cloneValueMeta( v, ValueMetaInterface.TYPE_STRING );
+              storageMetadata.setStorageType( ValueMetaInterface.STORAGE_TYPE_NORMAL );
+              storageMetadata.setLength( -1, -1 ); // we don't really know the lengths of the strings read in advance.
+              v.setStorageMetadata( storageMetadata );
+            }
+            v.setStorageType( storageType );
+          }
           rowMeta.addValueMeta( v );
         }
       } catch ( Exception e ) {
-        throw new KettleStepException( "Unable to create value of type " + fieldType[i], e );
+        throw new KettleStepException( BaseMessages.getString( PKG, "DataGridMeta.Error.GetFields", fieldType[ i ] ),
+          e );
       }
     }
   }
@@ -372,17 +451,19 @@ public class DataGridMeta extends BaseStepMeta implements StepMetaInterface {
 
     retval.append( "    <fields>" ).append( Const.CR );
     for ( int i = 0; i < fieldName.length; i++ ) {
-      if ( fieldName[i] != null && fieldName[i].length() != 0 ) {
+      if ( fieldName[ i ] != null && fieldName[ i ].length() != 0 ) {
         retval.append( "      <field>" ).append( Const.CR );
-        retval.append( "        " ).append( XMLHandler.addTagValue( "name", fieldName[i] ) );
-        retval.append( "        " ).append( XMLHandler.addTagValue( "type", fieldType[i] ) );
-        retval.append( "        " ).append( XMLHandler.addTagValue( "format", fieldFormat[i] ) );
-        retval.append( "        " ).append( XMLHandler.addTagValue( "currency", currency[i] ) );
-        retval.append( "        " ).append( XMLHandler.addTagValue( "decimal", decimal[i] ) );
-        retval.append( "        " ).append( XMLHandler.addTagValue( "group", group[i] ) );
-        retval.append( "        " ).append( XMLHandler.addTagValue( "length", fieldLength[i] ) );
-        retval.append( "        " ).append( XMLHandler.addTagValue( "precision", fieldPrecision[i] ) );
-        retval.append( "        " ).append( XMLHandler.addTagValue( "set_empty_string", setEmptyString[i] ) );
+        retval.append( "        " ).append( XMLHandler.addTagValue( "name", fieldName[ i ] ) );
+        retval.append( "        " ).append( XMLHandler.addTagValue( "type", fieldType[ i ] ) );
+        retval.append( "        " ).append( XMLHandler.addTagValue( "storage_type", fieldStorageType[ i ] ) );
+        retval.append( "        " ).append( XMLHandler.addTagValue( "index_name", fieldIndexName[ i ] ) );
+        retval.append( "        " ).append( XMLHandler.addTagValue( "format", fieldFormat[ i ] ) );
+        retval.append( "        " ).append( XMLHandler.addTagValue( "currency", currency[ i ] ) );
+        retval.append( "        " ).append( XMLHandler.addTagValue( "decimal", decimal[ i ] ) );
+        retval.append( "        " ).append( XMLHandler.addTagValue( "group", group[ i ] ) );
+        retval.append( "        " ).append( XMLHandler.addTagValue( "length", fieldLength[ i ] ) );
+        retval.append( "        " ).append( XMLHandler.addTagValue( "precision", fieldPrecision[ i ] ) );
+        retval.append( "        " ).append( XMLHandler.addTagValue( "set_empty_string", setEmptyString[ i ] ) );
         retval.append( "      </field>" ).append( Const.CR );
       }
     }
@@ -398,6 +479,12 @@ public class DataGridMeta extends BaseStepMeta implements StepMetaInterface {
     }
     retval.append( "    </data>" ).append( Const.CR );
 
+    retval.append( "    <info_step>" ).append( Const.CR );
+    for ( String line : infoStepName ) {
+      retval.append( XMLHandler.addTagValue( "name", line, false ) );
+    }
+    retval.append( "    </info_step>" ).append( Const.CR );
+
     return retval.toString();
   }
 
@@ -410,16 +497,18 @@ public class DataGridMeta extends BaseStepMeta implements StepMetaInterface {
       allocate( nrfields );
 
       for ( int i = 0; i < nrfields; i++ ) {
-        fieldName[i] = rep.getStepAttributeString( idStep, i, "field_name" );
-        fieldType[i] = rep.getStepAttributeString( idStep, i, "field_type" );
+        fieldName[ i ] = rep.getStepAttributeString( idStep, i, "field_name" );
+        fieldType[ i ] = rep.getStepAttributeString( idStep, i, "field_type" );
+        fieldStorageType[ i ] = rep.getStepAttributeString( idStep, i, "field_storage_type" );
+        fieldIndexName[ i ] = rep.getStepAttributeString( idStep, i, "field_index_name" );
 
-        fieldFormat[i] = rep.getStepAttributeString( idStep, i, "field_format" );
-        currency[i] = rep.getStepAttributeString( idStep, i, "field_currency" );
-        decimal[i] = rep.getStepAttributeString( idStep, i, "field_decimal" );
-        group[i] = rep.getStepAttributeString( idStep, i, "field_group" );
-        fieldLength[i] = (int) rep.getStepAttributeInteger( idStep, i, "field_length" );
-        fieldPrecision[i] = (int) rep.getStepAttributeInteger( idStep, i, "field_precision" );
-        setEmptyString[i] = rep.getStepAttributeBoolean( idStep, i, "set_empty_string", false );
+        fieldFormat[ i ] = rep.getStepAttributeString( idStep, i, "field_format" );
+        currency[ i ] = rep.getStepAttributeString( idStep, i, "field_currency" );
+        decimal[ i ] = rep.getStepAttributeString( idStep, i, "field_decimal" );
+        group[ i ] = rep.getStepAttributeString( idStep, i, "field_group" );
+        fieldLength[ i ] = (int) rep.getStepAttributeInteger( idStep, i, "field_length" );
+        fieldPrecision[ i ] = (int) rep.getStepAttributeInteger( idStep, i, "field_precision" );
+        setEmptyString[ i ] = rep.getStepAttributeBoolean( idStep, i, "set_empty_string", false );
       }
 
       int nrLines = (int) rep.getStepAttributeInteger( idStep, "nr_lines" );
@@ -434,8 +523,17 @@ public class DataGridMeta extends BaseStepMeta implements StepMetaInterface {
 
         dataLines.add( line );
       }
+
+      infoStepName = new HashSet<String>();
+      int nrInfoStepNames = (int) rep.getStepAttributeInteger( idStep, "nr_step_names" );
+
+      for ( int k = 0; k < nrInfoStepNames; k++ ) {
+        String item = rep.getStepAttributeString( idStep, k, "step_name" );
+        infoStepName.add( item );
+      }
+
     } catch ( Exception e ) {
-      throw new KettleException( "Unexpected error reading step information from the repository", e );
+      throw new KettleException( BaseMessages.getString( PKG, "DataGridMeta.Error.ReadFromRepository" ), e );
     }
   }
 
@@ -443,16 +541,18 @@ public class DataGridMeta extends BaseStepMeta implements StepMetaInterface {
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId idTransformation, ObjectId idStep ) throws KettleException {
     try {
       for ( int i = 0; i < fieldName.length; i++ ) {
-        if ( fieldName[i] != null && fieldName[i].length() != 0 ) {
-          rep.saveStepAttribute( idTransformation, idStep, i, "field_name", fieldName[i] );
-          rep.saveStepAttribute( idTransformation, idStep, i, "field_type", fieldType[i] );
-          rep.saveStepAttribute( idTransformation, idStep, i, "field_format", fieldFormat[i] );
-          rep.saveStepAttribute( idTransformation, idStep, i, "field_currency", currency[i] );
-          rep.saveStepAttribute( idTransformation, idStep, i, "field_decimal", decimal[i] );
-          rep.saveStepAttribute( idTransformation, idStep, i, "field_group", group[i] );
-          rep.saveStepAttribute( idTransformation, idStep, i, "field_length", fieldLength[i] );
-          rep.saveStepAttribute( idTransformation, idStep, i, "field_precision", fieldPrecision[i] );
-          rep.saveStepAttribute( idTransformation, idStep, i, "set_empty_string", setEmptyString[i] );
+        if ( fieldName[ i ] != null && fieldName[ i ].length() != 0 ) {
+          rep.saveStepAttribute( idTransformation, idStep, i, "field_name", fieldName[ i ] );
+          rep.saveStepAttribute( idTransformation, idStep, i, "field_type", fieldType[ i ] );
+          rep.saveStepAttribute( idTransformation, idStep, i, "field_storage_type", fieldStorageType[ i ] );
+          rep.saveStepAttribute( idTransformation, idStep, i, "field_index_name", fieldIndexName[ i ] );
+          rep.saveStepAttribute( idTransformation, idStep, i, "field_format", fieldFormat[ i ] );
+          rep.saveStepAttribute( idTransformation, idStep, i, "field_currency", currency[ i ] );
+          rep.saveStepAttribute( idTransformation, idStep, i, "field_decimal", decimal[ i ] );
+          rep.saveStepAttribute( idTransformation, idStep, i, "field_group", group[ i ] );
+          rep.saveStepAttribute( idTransformation, idStep, i, "field_length", fieldLength[ i ] );
+          rep.saveStepAttribute( idTransformation, idStep, i, "field_precision", fieldPrecision[ i ] );
+          rep.saveStepAttribute( idTransformation, idStep, i, "set_empty_string", setEmptyString[ i ] );
         }
       }
 
@@ -466,14 +566,20 @@ public class DataGridMeta extends BaseStepMeta implements StepMetaInterface {
         }
       }
 
+      rep.saveStepAttribute( idTransformation, idStep, "nr_step_names", infoStepName.size() );
+      int k = 0;
+      for ( String item : infoStepName ) {
+        rep.saveStepAttribute( idTransformation, idStep, k++, "step_name", item );
+      }
+
     } catch ( Exception e ) {
-      throw new KettleException( "Unable to save step information to the repository for id_step=" + idStep, e );
+      throw new KettleException( BaseMessages.getString( PKG, "DataGridMeta.Error.SaveToRepository", idStep ), e );
     }
   }
 
   @Override
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
-    TransMeta transMeta, Trans trans ) {
+                                TransMeta transMeta, Trans trans ) {
     return new DataGrid( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 
@@ -485,6 +591,36 @@ public class DataGridMeta extends BaseStepMeta implements StepMetaInterface {
   @Override
   public StepMetaInjectionInterface getStepMetaInjectionInterface() {
     return new DataGridMetaInjection( this );
+  }
+
+  /**
+   * Returns the Input/Output metadata for this step. DataGrid step produces output from input can be only info streams
+   */
+  @Override
+  public StepIOMetaInterface getStepIOMeta() {
+    if ( ioMeta == null ) {
+      ioMeta = new StepIOMeta( true, true, true, false, false, false );
+      for ( String name : infoStepName ) {
+        StreamInterface stream =
+          new Stream( StreamInterface.StreamType.INFO, null,
+            BaseMessages.getString( PKG, "DataGridMeta.InfoStream.Description" ), StreamIcon.INFO, name );
+        ioMeta.addStream( stream );
+      }
+    }
+    return ioMeta;
+  }
+
+  @Override
+  public void resetStepIoMeta() {
+    //ioMeta = null;
+  }
+
+  @Override
+  public void searchInfoAndTargetSteps( List<StepMeta> steps ) {
+    ioMeta = null;
+    for ( StreamInterface stream : getStepIOMeta().getInfoStreams() ) {
+      stream.setStepMeta( StepMeta.findStep( steps, (String) stream.getSubject() ) );
+    }
   }
 
 }

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,7 +23,9 @@
 package org.pentaho.di.trans.steps.datagrid;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
@@ -66,6 +68,25 @@ public class DataGridMetaInjection implements StepMetaInjectionInterface {
       }
     }
 
+    // And the info step names
+    //
+    StepInjectionMetaEntry stepsEntry = new StepInjectionMetaEntry( Entry.INDEX_STEP_NAMES.name(),
+      Entry.INDEX_STEP_NAMES.getValueType(), Entry.INDEX_STEP_NAMES.getDescription() );
+    all.add( stepsEntry );
+
+    StepInjectionMetaEntry stepEntry = new StepInjectionMetaEntry( Entry.STEP_NAMES.name(),
+      Entry.STEP_NAMES.getValueType(), Entry.STEP_NAMES.getDescription() );
+    stepsEntry.getDetails().add( stepEntry );
+
+    for ( Entry entry : Entry.values() ) {
+      if ( entry.getParent() == Entry.STEP_NAMES ) {
+        StepInjectionMetaEntry metaEntry =
+          new StepInjectionMetaEntry( entry.name(), entry.getValueType(), entry.getDescription() );
+        stepEntry.getDetails().add( metaEntry );
+      }
+    }
+
+
     // And the data fields
     //
     StepInjectionMetaEntry sheetsEntry = new StepInjectionMetaEntry( Entry.DATA_LINES.name(),
@@ -84,12 +105,15 @@ public class DataGridMetaInjection implements StepMetaInjectionInterface {
       }
     }
 
+
     return all;
   }
 
   private class GridMetaEntry {
     String fieldName;
     String fieldType;
+    String fieldStorageType;
+    String fieldIndexName;
     String fieldFormat;
     String currency;
     String decimal;
@@ -123,12 +147,18 @@ public class DataGridMetaInjection implements StepMetaInjectionInterface {
                   Entry metaEntry = Entry.findEntry( entry.getKey() );
                   if ( metaEntry != null ) {
                     String value = (String) entry.getValue();
-                    switch ( metaEntry ) {
+                    switch( metaEntry ) {
                       case NAME:
                         gridMetaEntry.fieldName = value;
                         break;
                       case TYPE:
                         gridMetaEntry.fieldType = value;
+                        break;
+                      case STORAGE_TYPE:
+                        gridMetaEntry.fieldStorageType = value;
+                        break;
+                      case INDEX_NAME:
+                        gridMetaEntry.fieldIndexName = value;
                         break;
                       case LENGTH:
                         gridMetaEntry.fieldLength = Const.toInt( value, -1 );
@@ -168,6 +198,38 @@ public class DataGridMetaInjection implements StepMetaInjectionInterface {
 
     // Now that we know how many fields we have we can simply read all the data fields...
     //
+    Set<String> infoStep = new HashSet<String>();
+
+    for ( StepInjectionMetaEntry lookFields1 : all ) {
+      Entry fieldsEntry1 = Entry.findEntry( lookFields1.getKey() );
+      if ( fieldsEntry1 != null ) {
+        if ( fieldsEntry1 == Entry.INDEX_STEP_NAMES ) {
+          for ( StepInjectionMetaEntry entries1 : lookFields1.getDetails() ) {
+            Entry fieldEntry = Entry.findEntry( entries1.getKey() );
+            if ( fieldEntry != null ) {
+              if ( fieldEntry == Entry.STEP_NAMES ) {
+                List<StepInjectionMetaEntry> entries = entries1.getDetails();
+                for ( StepInjectionMetaEntry entry : entries ) {
+                  Entry metaEntry = Entry.findEntry( entry.getKey() );
+                  if ( metaEntry != null ) {
+                    String value = (String) entry.getValue();
+                    switch( metaEntry ) {
+                      case INDEX_NAME:
+                        infoStep.add( value );
+                        break;
+                      default:
+                        break;
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
+
     List<String> line = new ArrayList<String>();
 
     for ( StepInjectionMetaEntry lookFields : all ) {
@@ -183,7 +245,7 @@ public class DataGridMetaInjection implements StepMetaInjectionInterface {
                   Entry metaEntry = Entry.findEntry( entry.getKey() );
                   if ( metaEntry != null ) {
                     String value = (String) entry.getValue();
-                    switch ( metaEntry ) {
+                    switch( metaEntry ) {
                       case DATA_VALUE:
                         line.add( value );
                         if ( line.size() >= gridMetaEntries.size() ) {
@@ -210,15 +272,17 @@ public class DataGridMetaInjection implements StepMetaInjectionInterface {
       for ( int i = 0; i < gridMetaEntries.size(); i++ ) {
         GridMetaEntry entry = gridMetaEntries.get( i );
         //CHECKSTYLE:Indentation:OFF
-        meta.getFieldName()[i] = entry.fieldName;
-        meta.getFieldType()[i] = entry.fieldType;
-        meta.getFieldFormat()[i] = entry.fieldFormat;
-        meta.getFieldLength()[i] = entry.fieldLength;
-        meta.getFieldPrecision()[i] = entry.fieldPrecision;
-        meta.getCurrency()[i] = entry.currency;
-        meta.getGroup()[i] = entry.group;
-        meta.getDecimal()[i] = entry.decimal;
-        meta.isSetEmptyString()[i] = entry.setEmptyString;
+        meta.getFieldName()[ i ] = entry.fieldName;
+        meta.getFieldType()[ i ] = entry.fieldType;
+        meta.getFieldStorageType()[ i ] = entry.fieldStorageType;
+        meta.getFieldIndexName()[ i ] = entry.fieldIndexName;
+        meta.getFieldFormat()[ i ] = entry.fieldFormat;
+        meta.getFieldLength()[ i ] = entry.fieldLength;
+        meta.getFieldPrecision()[ i ] = entry.fieldPrecision;
+        meta.getCurrency()[ i ] = entry.currency;
+        meta.getGroup()[ i ] = entry.group;
+        meta.getDecimal()[ i ] = entry.decimal;
+        meta.isSetEmptyString()[ i ] = entry.setEmptyString;
       }
     }
 
@@ -226,6 +290,10 @@ public class DataGridMetaInjection implements StepMetaInjectionInterface {
       // Set the data ...
       //
       meta.setDataLines( dataLines );
+    }
+
+    if ( !infoStep.isEmpty() ) {
+      meta.setInfoStepName( infoStep );
     }
   }
 
@@ -240,21 +308,27 @@ public class DataGridMetaInjection implements StepMetaInjectionInterface {
   private enum Entry {
 
     FIELDS( ValueMetaInterface.TYPE_NONE, "All the fields" ),
-      FIELD( ValueMetaInterface.TYPE_NONE, "One field" ),
+    FIELD( ValueMetaInterface.TYPE_NONE, "One field" ),
 
-      NAME( FIELD, ValueMetaInterface.TYPE_STRING, "Field name" ),
-      TYPE( FIELD, ValueMetaInterface.TYPE_STRING, "Field data type" ),
-      FORMAT( FIELD, ValueMetaInterface.TYPE_STRING, "Field conversion format" ),
-      CURRENCY( FIELD, ValueMetaInterface.TYPE_STRING, "Field currency symbol" ),
-      DECIMAL( FIELD, ValueMetaInterface.TYPE_STRING, "Field decimal symbol" ),
-      GROUP( FIELD, ValueMetaInterface.TYPE_STRING, "Field group symbol" ),
-      LENGTH( FIELD, ValueMetaInterface.TYPE_STRING, "Field length" ),
-      PRECISION( FIELD, ValueMetaInterface.TYPE_STRING, "Field precision" ),
-      EMPTY_STRING( FIELD, ValueMetaInterface.TYPE_STRING, "Set field to empty string?" ),
+    NAME( FIELD, ValueMetaInterface.TYPE_STRING, "Field name" ),
+    TYPE( FIELD, ValueMetaInterface.TYPE_STRING, "Field data type" ),
+    STORAGE_TYPE( FIELD, ValueMetaInterface.TYPE_STRING, "Field data storage type" ),
+    INDEX_NAME( FIELD, ValueMetaInterface.TYPE_STRING, "Field name of the index field from previous steps" ),
+    FORMAT( FIELD, ValueMetaInterface.TYPE_STRING, "Field conversion format" ),
+    CURRENCY( FIELD, ValueMetaInterface.TYPE_STRING, "Field currency symbol" ),
+    DECIMAL( FIELD, ValueMetaInterface.TYPE_STRING, "Field decimal symbol" ),
+    GROUP( FIELD, ValueMetaInterface.TYPE_STRING, "Field group symbol" ),
+    LENGTH( FIELD, ValueMetaInterface.TYPE_STRING, "Field length" ),
+    PRECISION( FIELD, ValueMetaInterface.TYPE_STRING, "Field precision" ),
+    EMPTY_STRING( FIELD, ValueMetaInterface.TYPE_STRING, "Set field to empty string?" ),
 
-      DATA_LINES( ValueMetaInterface.TYPE_NONE, "Nr Rows x Nr Columns values" ),
-      DATA_LINE( DATA_LINES, ValueMetaInterface.TYPE_NONE, "One data value" ),
-      DATA_VALUE( DATA_LINE, ValueMetaInterface.TYPE_STRING, "One value" );
+    INDEX_STEP_NAMES( ValueMetaInterface.TYPE_NONE, "Names of the info steps" ),
+    STEP_NAMES( INDEX_STEP_NAMES, ValueMetaInterface.TYPE_NONE, "One step name" ),
+    STEP_NAME( STEP_NAMES, ValueMetaInterface.TYPE_STRING, "Step name values" ),
+
+    DATA_LINES( ValueMetaInterface.TYPE_NONE, "Nr Rows x Nr Columns values" ),
+    DATA_LINE( DATA_LINES, ValueMetaInterface.TYPE_NONE, "One data value" ),
+    DATA_VALUE( DATA_LINE, ValueMetaInterface.TYPE_STRING, "One value" );
 
     private int valueType;
     private String description;

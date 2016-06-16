@@ -3448,8 +3448,8 @@ public class ValueMetaBase implements ValueMetaInterface {
         break;
 
       case TYPE_BINARY:
-        byte[] b1 = (byte[]) data1;
-        byte[] b2 = (byte[]) data2;
+        byte[] b1 = getBinary( data1 );
+        byte[] b2 = getBinary( data2 );
 
         int length = b1.length < b2.length ? b1.length : b2.length;
 

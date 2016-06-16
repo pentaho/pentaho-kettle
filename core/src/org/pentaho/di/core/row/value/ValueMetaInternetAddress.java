@@ -507,4 +507,9 @@ public class ValueMetaInternetAddress extends ValueMetaDate {
   public Class<?> getNativeDataTypeClass() throws KettleValueException {
     return InetAddress.class;
   }
+
+  @Override
+  public byte[] getBinaryString( Object object ) throws KettleValueException {
+    return convertStringToBinaryString( getString( object ) );
+  }
 }
