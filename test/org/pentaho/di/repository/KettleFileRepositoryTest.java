@@ -31,8 +31,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
-import junit.framework.TestCase;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSelectInfo;
@@ -47,6 +45,8 @@ import org.pentaho.di.repository.filerep.KettleFileRepository;
 import org.pentaho.di.repository.filerep.KettleFileRepositoryMeta;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.metastore.api.IMetaStore;
+
+import junit.framework.TestCase;
 
 public class KettleFileRepositoryTest extends TestCase {
 
@@ -105,6 +105,11 @@ public class KettleFileRepositoryTest extends TestCase {
       KettleMetaStoreTestBase testBase = new KettleMetaStoreTestBase();
       testBase.testFunctionality( metaStore );
 
+      // Test directory deletion
+      repository.deleteRepositoryDirectory( samplesDirectory );
+      RepositoryDirectoryInterface checkDelete = tree.findDirectory( "/foo/bar/samples" );
+      assertNull( checkDelete );
+
       // Finally test disconnecting
       repository.disconnect();
       assertFalse( repository.isConnected() );
@@ -122,6 +127,7 @@ public class KettleFileRepositoryTest extends TestCase {
   private void verifyTransformationSamples( RepositoryDirectoryInterface samplesDirectory ) throws Exception {
     File transSamplesFolder = new File( "samples/transformations/" );
     String[] files = transSamplesFolder.list( new FilenameFilter() {
+      @Override
       public boolean accept( File dir, String name ) {
         return name.endsWith( ".ktr" ) && !name.contains( "HL7" );
       }
