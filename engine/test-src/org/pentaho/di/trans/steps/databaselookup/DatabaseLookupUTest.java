@@ -22,6 +22,35 @@
 
 package org.pentaho.di.trans.steps.databaselookup;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyBoolean;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.anyLong;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockingDetails;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.concurrent.TimeUnit;
+
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Matchers;
@@ -43,30 +72,13 @@ import org.pentaho.di.core.row.value.ValueMetaInteger;
 import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.trans.Trans;
+import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.databaselookup.readallcache.ReadAllCache;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
 import org.pentaho.metastore.api.IMetaStore;
-
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.concurrent.TimeUnit;
-
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyBoolean;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.*;
 
 /**
  * @author Andrey Khayrutdinov
@@ -216,6 +228,64 @@ public class DatabaseLookupUTest {
   }
 
   @Test
+  public void testEqualsAndIsNullAreCached() throws Exception {
+    StepMockHelper<DatabaseLookupMeta, DatabaseLookupData> mockHelper =
+        new StepMockHelper<>( "Test", DatabaseLookupMeta.class, DatabaseLookupData.class );
+    when( mockHelper.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) )
+      .thenReturn( mockHelper.logChannelInterface );
+
+    DatabaseLookup look =
+      new MockDatabaseLookup( mockHelper.stepMeta, mockHelper.stepDataInterface, 0, mockHelper.transMeta,
+        mockHelper.trans );
+    DatabaseLookupData lookData = new DatabaseLookupData();
+    lookData.cache = DefaultCache.newCache( lookData, 0 );
+    lookData.lookupMeta = new RowMeta();
+
+    MySQLDatabaseMeta mysql = new MySQLDatabaseMeta();
+    mysql.setName( "MySQL" );
+    DatabaseMeta dbMeta = new DatabaseMeta();
+    dbMeta.setDatabaseInterface( mysql );
+
+    DatabaseLookupMeta meta = new DatabaseLookupMeta();
+    meta.setDatabaseMeta( dbMeta );
+    meta.setTablename( "VirtualTable" );
+
+    meta.setTableKeyField( new String[] { "ID1", "ID2" } );
+    meta.setKeyCondition( new String[] { "=", "IS NULL" } );
+
+    meta.setReturnValueNewName( new String[] { "val1", "val2" } );
+    meta.setReturnValueField( new String[] { BINARY_FIELD, BINARY_FIELD } );
+    meta.setReturnValueDefaultType( new int[] { ValueMetaInterface.TYPE_BINARY, ValueMetaInterface.TYPE_BINARY } );
+
+    meta.setStreamKeyField1( new String[ 0 ] );
+    meta.setStreamKeyField2( new String[ 0 ] );
+
+    meta.setReturnValueDefault( new String[] { "", "" } );
+
+    meta = spy( meta );
+    doAnswer( new Answer() {
+      @Override public Object answer( InvocationOnMock invocation ) throws Throwable {
+        RowMetaInterface row = (RowMetaInterface) invocation.getArguments()[ 0 ];
+        ValueMetaInterface v = new ValueMetaBinary( BINARY_FIELD );
+        row.addValueMeta( v );
+        return null;
+      }
+    } ).when( meta ).getFields(
+      any( RowMetaInterface.class ),
+      anyString(),
+      any( RowMetaInterface[].class ),
+      any( StepMeta.class ),
+      any( VariableSpace.class ),
+      any( Repository.class ),
+      any( IMetaStore.class ) );
+
+
+    look.init( meta, lookData );
+    assertTrue( lookData.allEquals ); // Test for fix on PDI-15202
+
+  }
+
+  @Test
   public void getRowInCacheTest() throws KettleException {
 
     StepMockHelper<DatabaseLookupMeta, DatabaseLookupData> mockHelper =
@@ -355,4 +425,20 @@ public class DatabaseLookupUTest {
     assertNotNull( data.cache.getRowFromCache( data.lookupMeta, new Object[] { 1L } ) );
     assertNotNull( data.cache.getRowFromCache( data.lookupMeta, new Object[] { 2L } ) );
   }
+
+  public class MockDatabaseLookup extends DatabaseLookup {
+    public MockDatabaseLookup(StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans ) {
+      super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
+    }
+
+    @Override
+    Database getDatabase( DatabaseMeta meta ) {
+      try {
+        return createVirtualDb( meta );
+      } catch ( Exception ex ) {
+        throw new RuntimeException( ex );
+      }
+    }
+  }
+
 }
