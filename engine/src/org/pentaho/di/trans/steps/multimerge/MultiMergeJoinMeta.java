@@ -32,6 +32,8 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.injection.Injection;
+import org.pentaho.di.core.injection.InjectionSupported;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -56,23 +58,26 @@ import org.w3c.dom.Node;
  * @author Biswapesh
  * @since 24-nov-2006
  */
-
+@InjectionSupported( localizationPrefix = "MultiMergeJoin.Injection." )
 public class MultiMergeJoinMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = MultiMergeJoinMeta.class; // for i18n purposes, needed by Translator2!!
 
   public static final String[] join_types = { "INNER", "FULL OUTER" };
   public static final boolean[] optionals = { false, true };
 
+  @Injection( name = "JOIN_TYPE" )
   private String joinType;
 
   /**
    * comma separated key values for each stream
    */
+  @Injection( name = "KEY_FIELDS" )
   private String[] keyFields;
 
   /**
    * input stream names
    */
+  @Injection( name = "INPUT_STEPS" )
   private String[] inputSteps;
 
   /**
@@ -201,6 +206,7 @@ public class MultiMergeJoinMeta extends BaseStepMeta implements StepMetaInterfac
   public void setDefault() {
     joinType = join_types[0];
     allocateKeys( 0 );
+    allocateInputSteps( 0 );
   }
 
   @Override
