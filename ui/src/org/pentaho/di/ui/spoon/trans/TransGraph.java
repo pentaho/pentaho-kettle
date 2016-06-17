@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -346,6 +346,8 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 
   public List<SelectedStepListener> stepListeners;
 
+  public List<StepSelectionListener> currentStepListeners = new ArrayList<>();
+
   /**
    * A map that keeps track of which log line was written by which step
    */
@@ -393,6 +395,10 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 
   public void addSelectedStepListener( SelectedStepListener selectedStepListener ) {
     stepListeners.add( selectedStepListener );
+  }
+
+  public void addCurrentStepListener( StepSelectionListener stepSelectionListener ) {
+    currentStepListeners.add( stepSelectionListener );
   }
 
   public TransGraph( Composite parent, final Spoon spoon, final TransMeta transMeta ) {
@@ -881,6 +887,10 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
           case STEP_ICON:
             stepMeta = (StepMeta) areaOwner.getOwner();
             currentStep = stepMeta;
+
+            for ( StepSelectionListener listener : currentStepListeners ) {
+              listener.onUpdateSelection( currentStep );
+            }
 
             if ( candidate != null ) {
               addCandidateAsHop( e.x, e.y );
@@ -2919,6 +2929,15 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     if ( selection.size() == 0 ) {
       spoon.delStep( transMeta, stMeta );
       return;
+    }
+
+    if ( currentStep != null && selection.contains( currentStep ) ) {
+      currentStep = null;
+      transPreviewDelegate.setSelectedStep( currentStep );
+      transPreviewDelegate.refreshView();
+      for ( StepSelectionListener listener : currentStepListeners ) {
+        listener.onUpdateSelection( currentStep );
+      }
     }
 
     StepMeta[] steps = selection.toArray( new StepMeta[selection.size()] );
