@@ -16,19 +16,21 @@
  */
 package org.pentaho.di.repository.pur;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertTrue;
+
+import java.util.UUID;
+
 import org.junit.Test;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.repository.ObjectId;
+import org.pentaho.di.repository.RepositoryObject;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.platform.api.repository2.unified.RepositoryFile;
 import org.pentaho.platform.api.repository2.unified.data.node.NodeRepositoryFileData;
 import org.pentaho.platform.repository.RepositoryFilenameUtils;
-
-import java.util.UUID;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertNotNull;
 
 /**
  * @author Andrey Khayrutdinov
@@ -37,6 +39,18 @@ public class PurRepository_DatabaseNames_IT extends PurRepositoryTestBase {
 
   public PurRepository_DatabaseNames_IT( Boolean lazyRepo ) {
     super( lazyRepo );
+  }
+
+  @Test
+  public void saveDatabaseModifiedDate() throws Exception {
+    Long testStart = System.currentTimeMillis();
+    final String name = UUID.randomUUID().toString();
+    DatabaseMeta db = saveDatabase( name );
+
+    RepositoryObject info =
+      purRepository.getObjectInformation( db.getObjectId(), RepositoryObjectType.DATABASE );
+    assertNotNull( info.getModifiedDate() );
+    assertTrue( testStart <= info.getModifiedDate().getTime() );
   }
 
   @Test
