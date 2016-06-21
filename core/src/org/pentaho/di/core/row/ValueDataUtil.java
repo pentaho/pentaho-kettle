@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -1193,6 +1193,15 @@ public class ValueDataUtil {
     Calendar cal = Calendar.getInstance();
     cal.setTime( metaA.getDate( dataA ) );
     cal.add( Calendar.MINUTE, metaB.getInteger( dataB ).intValue() );
+
+    return cal.getTime();
+  }
+
+  public static Object addSeconds( ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB ) throws KettleValueException {
+
+    Calendar cal = Calendar.getInstance();
+    cal.setTime( metaA.getDate( dataA ) );
+    cal.add( Calendar.SECOND, metaB.getInteger( dataB ).intValue() );
 
     return cal.getTime();
   }
