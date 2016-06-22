@@ -72,6 +72,7 @@ import org.eclipse.swt.browser.LocationListener;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.custom.SashForm;
+import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTarget;
@@ -1453,18 +1454,23 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     JobMeta jobMeta = getActiveJob();
     boolean transActive = transMeta != null;
     boolean jobActive = jobMeta != null;
+    Control focusControl = getDisplay().getFocusControl();
 
-    if ( transActive ) {
-      if ( transMeta.getSelectedSteps().size() > 0 ) {
-        copySteps();
-      } else {
-        copyTransformation();
-      }
-    } else if ( jobActive ) {
-      if ( jobMeta.getSelectedEntries().size() > 0 ) {
-        copyJobentries();
-      } else {
-        copyJob();
+    if ( focusControl instanceof StyledText ) {
+      copyLogSelectedText( (StyledText) focusControl );
+    } else {
+      if ( transActive ) {
+        if ( transMeta.getSelectedSteps().size() > 0 ) {
+          copySteps();
+        } else {
+          copyTransformation();
+        }
+      } else if ( jobActive ) {
+        if ( jobMeta.getSelectedEntries().size() > 0 ) {
+          copyJobentries();
+        } else {
+          copyJob();
+        }
       }
     }
   }
@@ -1627,6 +1633,10 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   public boolean isExecutionResultsPaneVisible() {
     TransGraph transGraph = getActiveTransGraph();
     return ( transGraph != null ) && ( transGraph.isExecutionResultsPaneVisible() );
+  }
+
+  public void copyLogSelectedText( StyledText text ) {
+    toClipboard( text.getSelectionText() );
   }
 
   public void copyTransformation() {
