@@ -241,13 +241,17 @@ public class ElasticSearchBulkMeta extends BaseStepMeta implements StepMetaInter
 
   public Map<String, String> getFieldsMap() {
     Map<String, String> result = new TreeMap<>();
-    fields.forEach( f -> result.put( f.name, f.targetName ) );
+    for ( Field f : fields ) {
+      result.put( f.name, f.targetName );
+    }
     return Collections.unmodifiableMap( result );
   }
 
   public void setFieldsMap( Map<String, String> values ) {
     clearFields();
-    values.entrySet().forEach( v -> addField( v.getKey(), v.getValue() ) );
+    for ( String k : values.keySet() ) {
+      addField( k, values.get( k ) );
+    }
   }
 
   public void clearFields() {
@@ -283,13 +287,17 @@ public class ElasticSearchBulkMeta extends BaseStepMeta implements StepMetaInter
 
   public Map<String, String> getSettingsMap() {
     Map<String, String> result = new TreeMap<>();
-    settings.forEach( s -> result.put( s.setting, s.value ) );
+    for ( Setting s : settings ) {
+      result.put( s.setting, s.value );
+    }
     return Collections.unmodifiableMap( result );
   }
 
   public void setSettingsMap( Map<String, String> values ) {
     clearSettings();
-    values.entrySet().forEach( v -> addSetting( v.getKey(), v.getValue() ) );
+    for ( String k : values.keySet() ) {
+      addSetting( k, values.get( k ) );
+    }
   }
 
   public void clearSettings() {
