@@ -61,7 +61,7 @@ import org.w3c.dom.Node;
  *
  * @author Sven Boden
  */
-@InjectionSupported( localizationPrefix = "OraBulkLoader.Injection." )
+@InjectionSupported( localizationPrefix = "OraBulkLoader.Injection.", groups = { "FIELDS", "DATABASE_FIELDS" } )
 public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface,
   ProvidesDatabaseConnectionInformation {
   private static Class<?> PKG = OraBulkLoaderMeta.class; // for i18n purposes, needed by Translator2!!
@@ -71,112 +71,118 @@ public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
   private static int DEFAULT_READ_SIZE = 0;
   private static int DEFAULT_MAX_ERRORS = 50;
 
+  /** database connection */
+  private DatabaseMeta databaseMeta;
+  private List<? extends SharedObjectInterface> databases;
+
   /** what's the schema for the target? */
-  @Injection( name = "SCHEMA_NAME" )
+  @Injection( name = "SCHEMA_NAME", group = "FIELDS" )
   private String schemaName;
 
   /** what's the table for the target? */
-  @Injection( name = "TABLE_NAME" )
+  @Injection( name = "TABLE_NAME", group = "FIELDS" )
   private String tableName;
 
   /** Path to the sqlldr utility */
-  @Injection( name = "SQLLDR_PATH" )
+  @Injection( name = "SQLLDR_PATH", group = "FIELDS" )
   private String sqlldr;
 
   /** Path to the control file */
-  @Injection( name = "CONTROL_FILE" )
+  @Injection( name = "CONTROL_FILE", group = "FIELDS" )
   private String controlFile;
 
   /** Path to the data file */
-  @Injection( name = "DATA_FILE" )
+  @Injection( name = "DATA_FILE", group = "FIELDS" )
   private String dataFile;
 
   /** Path to the log file */
-  @Injection( name = "LOG_FILE" )
+  @Injection( name = "LOG_FILE", group = "FIELDS" )
   private String logFile;
 
   /** Path to the bad file */
-  @Injection( name = "BAD_FILE" )
+  @Injection( name = "BAD_FILE", group = "FIELDS" )
   private String badFile;
 
   /** Path to the discard file */
-  @Injection( name = "DISCARD_FILE" )
+  @Injection( name = "DISCARD_FILE", group = "FIELDS" )
   private String discardFile;
 
-  /** database connection */
-  private DatabaseMeta databaseMeta;
-
   /** Field value to dateMask after lookup */
-  @Injection( name = "FIELD_TABLE" )
+  @Injection( name = "FIELD_TABLE", group = "DATABASE_FIELDS" )
   private String[] fieldTable;
 
   /** Field name in the stream */
-  @Injection( name = "FIELD_STREAM" )
+  @Injection( name = "FIELD_STREAM", group = "DATABASE_FIELDS" )
   private String[] fieldStream;
 
   /** boolean indicating if field needs to be updated */
-  @Injection( name = "FIELD_DATEMASK" )
+  @Injection( name = "FIELD_DATEMASK", group = "DATABASE_FIELDS" )
   private String[] dateMask;
 
   /** Commit size (ROWS) */
-  @Injection( name = "COMMIT_SIZE" )
+  @Injection( name = "COMMIT_SIZE", group = "FIELDS" )
   private String commitSize;
 
   /** bindsize */
-  @Injection( name = "BIND_SIZE" )
+  @Injection( name = "BIND_SIZE", group = "FIELDS" )
   private String bindSize;
 
   /** readsize */
-  @Injection( name = "READ_SIZE" )
+  @Injection( name = "READ_SIZE", group = "FIELDS" )
   private String readSize;
 
   /** maximum errors */
-  @Injection( name = "MAX_ERRORS" )
+  @Injection( name = "MAX_ERRORS", group = "FIELDS" )
   private String maxErrors;
 
   /** Load method */
-  @Injection( name = "LOAD_METHOD" )
+  @Injection( name = "LOAD_METHOD", group = "FIELDS" )
   private String loadMethod;
 
   /** Load action */
-  @Injection( name = "LOAD_ACTION" )
+  @Injection( name = "LOAD_ACTION", group = "FIELDS" )
   private String loadAction;
 
   /** Encoding to use */
-  @Injection( name = "ENCODING" )
+  @Injection( name = "ENCODING", group = "FIELDS" )
   private String encoding;
 
   /** Character set name used for Oracle */
-  @Injection( name = "ORACLE_CHARSET_NAME" )
+  @Injection( name = "ORACLE_CHARSET_NAME", group = "FIELDS" )
   private String characterSetName;
 
   /** Direct Path? */
-  @Injection( name = "DIRECT_PATH" )
+  @Injection( name = "DIRECT_PATH", group = "FIELDS" )
   private boolean directPath;
 
   /** Erase files after use */
-  @Injection( name = "ERASE_FILES" )
+  @Injection( name = "ERASE_FILES", group = "FIELDS" )
   private boolean eraseFiles;
 
   /** Database name override */
-  @Injection( name = "DB_NAME_OVERRIDE" )
+  @Injection( name = "DB_NAME_OVERRIDE", group = "FIELDS" )
   private String dbNameOverride;
 
   /** Fails when sqlldr returns a warning **/
-  @Injection( name = "FAIL_ON_WARNING" )
+  @Injection( name = "FAIL_ON_WARNING", group = "FIELDS" )
   private boolean failOnWarning;
 
   /** Fails when sqlldr returns anything else than a warning or OK **/
-  @Injection( name = "FAIL_ON_ERROR" )
+  @Injection( name = "FAIL_ON_ERROR", group = "FIELDS" )
   private boolean failOnError;
 
   /** allow Oracle to load data in parallel **/
-  @Injection( name = "PARALLEL" )
+  @Injection( name = "PARALLEL", group = "FIELDS" )
   private boolean parallel;
 
   /** If not empty, use this record terminator instead of default one **/
-  @Injection( name = "RECORD_TERMINATOR" )
+  @Injection( name = "RECORD_TERMINATOR", group = "FIELDS" )
   private String altRecordTerm;
+
+  @Injection( name = "CONNECTION_NAME" )
+  public void setConnection( String connectionName ) {
+    databaseMeta = DatabaseMeta.findDatabase( databases, connectionName );
+  }
 
   /*
    * Do not translate following values!!! They are will end up in the job export.
@@ -359,7 +365,7 @@ public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
     try {
       // String csize, bsize, rsize, serror;
       // int nrvalues;
-
+      this.databases = databases;
       String con = XMLHandler.getTagValue( stepnode, "connection" );
       databaseMeta = DatabaseMeta.findDatabase( databases, con );
 
@@ -512,8 +518,8 @@ public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
 
   public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
+      this.databases = databases;
       databaseMeta = rep.loadDatabaseMetaFromStepAttribute( id_step, "id_connection", databases );
-
       commitSize = rep.getStepAttributeString( id_step, "commit" );
       bindSize = rep.getStepAttributeString( id_step, "bind_size" );
       readSize = rep.getStepAttributeString( id_step, "read_size" );

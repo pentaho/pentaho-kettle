@@ -164,5 +164,10 @@ public class OraBulkLoaderMetaInjectionTest extends BaseMetadataInjectionTest<Or
         return meta.getAltRecordTerm();
       }
     } );
+    check( "CONNECTION_NAME", new StringGetter() {
+        public String get() {
+          return "My Connection";
+        }
+      }, "My Connection" );
   }
 }
