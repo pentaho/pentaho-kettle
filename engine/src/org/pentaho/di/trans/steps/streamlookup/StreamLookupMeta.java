@@ -123,6 +123,23 @@ public class StreamLookupMeta extends BaseStepMeta implements StepMetaInterface 
   @Override
   public Object clone() {
     StreamLookupMeta retval = (StreamLookupMeta) super.clone();
+
+    if ( getStepIOMeta() != null
+        && getStepIOMeta().getInfoStreams() != null
+        && retval.getStepIOMeta() != null
+        && getStepIOMeta().getInfoStreams() != null ) {
+      retval.getStepIOMeta().getInfoStreams().get( 0 ).setStreamType(
+        getStepIOMeta().getInfoStreams().get( 0 ).getStreamType() );
+      retval.getStepIOMeta().getInfoStreams().get( 0 ).setStepMeta(
+        getStepIOMeta().getInfoStreams().get( 0 ).getStepMeta() );
+      retval.getStepIOMeta().getInfoStreams().get( 0 ).setDescription(
+        getStepIOMeta().getInfoStreams().get( 0 ).getDescription() );
+      retval.getStepIOMeta().getInfoStreams().get( 0 ).setStreamIcon(
+        getStepIOMeta().getInfoStreams().get( 0 ).getStreamIcon() );
+      retval.getStepIOMeta().getInfoStreams().get( 0 ).setSubject(
+        getStepIOMeta().getInfoStreams().get( 0 ).getSubject() );
+    }
+
     int nrkeys = keystream.length;
     int nrvals = value.length;
     retval.allocate( nrkeys, nrvals );
