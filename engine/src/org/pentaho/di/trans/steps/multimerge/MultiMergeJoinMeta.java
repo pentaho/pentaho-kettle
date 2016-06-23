@@ -183,16 +183,7 @@ public class MultiMergeJoinMeta extends BaseStepMeta implements StepMetaInterfac
       allocateInputSteps( nInputStreams );
 
       for ( int i = 0; i < nInputStreams; i++ ) {
-        getStepIOMeta().addStream(
-            new Stream( StreamType.INFO, null, BaseMessages.getString( PKG, "MultiMergeJoin.InfoStream.Description" ),
-                StreamIcon.INFO, null ) );
-      }
-
-      List<StreamInterface> infoStreams = getStepIOMeta().getInfoStreams();
-      for ( int i = 0; i < infoStreams.size(); i++ ) {
-        String stepName = XMLHandler.getTagValue( stepnode, "step" + i );
-        infoStreams.get( i ).setSubject( stepName );
-        inputSteps[i] = stepName;
+        inputSteps[i] = XMLHandler.getTagValue( stepnode, "step" + i );
       }
 
       joinType = XMLHandler.getTagValue( stepnode, "join_type" );
@@ -226,11 +217,7 @@ public class MultiMergeJoinMeta extends BaseStepMeta implements StepMetaInterfac
       allocateInputSteps( (int) nInputStreams );
 
       for ( int i = 0; i < nInputStreams; i++ ) {
-        String stepName = rep.getStepAttributeString( id_step, "step" + i );
-        getStepIOMeta().addStream(
-            new Stream( StreamType.INFO, null, BaseMessages.getString( PKG, "MultiMergeJoin.InfoStream.Description" ),
-                StreamIcon.INFO, stepName ) );
-        inputSteps[i] = stepName;
+        inputSteps[i] = rep.getStepAttributeString( id_step, "step" + i );
       }
       // This next bit is completely unnecessary if you just pass the step name into
       // the constructor above. That sets the subject to the step name in one pass
@@ -251,8 +238,14 @@ public class MultiMergeJoinMeta extends BaseStepMeta implements StepMetaInterfac
 
   @Override
   public void searchInfoAndTargetSteps( List<StepMeta> steps ) {
-    for ( StreamInterface stream : getStepIOMeta().getInfoStreams() ) {
-      stream.setStepMeta( StepMeta.findStep( steps, (String) stream.getSubject() ) );
+    getStepIOMeta().getInfoStreams().clear();
+    for ( int i = 0; i < inputSteps.length; i++ ) {
+      String inputStepName = inputSteps[i];
+      if ( i >= getStepIOMeta().getInfoStreams().size() ) {
+        getStepIOMeta().addStream(
+          new Stream( StreamType.INFO, StepMeta.findStep( steps, inputStepName ), 
+              BaseMessages.getString( PKG, "MultiMergeJoin.InfoStream.Description" ), StreamIcon.INFO, inputStepName ) );
+      }
     }
   }
 
