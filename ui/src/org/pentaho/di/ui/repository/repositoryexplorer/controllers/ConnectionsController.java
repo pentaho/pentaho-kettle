@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -35,6 +35,8 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.RepositoryElementMetaInterface;
+import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.repository.repositoryexplorer.ContextChangeVetoer;
@@ -92,6 +94,7 @@ public class ConnectionsController extends LazilyInitializedController implement
     return "connectionsController";
   }
 
+  @Override
   public void init( Repository repository ) throws ControllerInitializationException {
     this.repository = repository;
   }
@@ -192,15 +195,23 @@ public class ConnectionsController extends LazilyInitializedController implement
   void refreshConnectionList() {
     final List<UIDatabaseConnection> tmpList = new ArrayList<UIDatabaseConnection>();
     Runnable r = new Runnable() {
+      @Override
       public void run() {
         try {
           ObjectId[] dbIdList = repository.getDatabaseIDs( false );
           for ( ObjectId dbId : dbIdList ) {
             DatabaseMeta dbMeta = repository.loadDatabaseMeta( dbId, null );
+            RepositoryElementMetaInterface repoMeta =
+              repository.getObjectInformation( dbId, RepositoryObjectType.DATABASE );
+            UIDatabaseConnection conn = null;
             try {
-              tmpList.add( UIObjectRegistry.getInstance().constructUIDatabaseConnection( dbMeta, repository ) );
+              conn = UIObjectRegistry.getInstance().constructUIDatabaseConnection( dbMeta, repository );
             } catch ( UIObjectCreationException uoe ) {
-              tmpList.add( new UIDatabaseConnection( dbMeta, repository ) );
+              conn = new UIDatabaseConnection( dbMeta, repository );
+            }
+            if ( conn != null ) {
+              conn.setRepositoryElementMetaInterface( repoMeta );
+              tmpList.add( conn );
             }
           }
         } catch ( KettleException e ) {
