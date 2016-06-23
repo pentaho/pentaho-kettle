@@ -110,11 +110,16 @@ public class MetaInject extends BaseStep implements StepInterface {
 
     for ( Map.Entry<String, StepMetaInterface> en : data.stepInjectionMetasMap.entrySet() ) {
       newInjection( en.getKey(), en.getValue() );
+      List<StepMeta> steps = en.getValue().getParentStepMeta().getParentTransMeta().getSteps();
+      en.getValue().searchInfoAndTargetSteps( steps );
     }
 
-    for ( String targetStep : data.stepInjectionMap.keySet() ) {
-      if ( !data.stepInjectionMetasMap.containsKey( targetStep ) ) {
-        oldInjection( targetStep );
+    for ( String targetStepName : data.stepInjectionMap.keySet() ) {
+      if ( !data.stepInjectionMetasMap.containsKey( targetStepName ) ) {
+        oldInjection( targetStepName );
+        StepMeta targetStep = StepMeta.findStep( this.getTransMeta().getSteps(), targetStepName );
+        List<StepMeta> steps = targetStep.getParentTransMeta().getSteps();
+        targetStep.getStepMetaInterface().searchInfoAndTargetSteps( steps );
       }
     }
 
