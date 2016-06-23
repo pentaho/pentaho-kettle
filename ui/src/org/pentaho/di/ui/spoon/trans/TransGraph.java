@@ -498,6 +498,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     helpTip = new CheckBoxToolTip( canvas );
     helpTip.addCheckBoxToolTipListener( new CheckBoxToolTipListener() {
 
+      @Override
       public void checkBoxSelected( boolean enabled ) {
         spoon.props.setShowingHelpToolTips( enabled );
       }
@@ -515,11 +516,13 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     vert = canvas.getVerticalBar();
 
     hori.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         redraw();
       }
     } );
     vert.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         redraw();
       }
@@ -536,6 +539,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     canvas.setBackground( GUIResource.getInstance().getColorBackground() );
 
     canvas.addPaintListener( new PaintListener() {
+      @Override
       public void paintControl( PaintEvent e ) {
         if ( !spoon.isStopped() ) {
           TransGraph.this.paintControl( e );
@@ -561,6 +565,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     DropTarget ddTarget = new DropTarget( canvas, DND.DROP_MOVE );
     ddTarget.setTransfer( ttypes );
     ddTarget.addDropListener( new DropTargetListener() {
+      @Override
       public void dragEnter( DropTargetEvent event ) {
         clearSettings();
 
@@ -569,20 +574,24 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
         redraw();
       }
 
+      @Override
       public void dragLeave( DropTargetEvent event ) {
         drop_candidate = null;
         redraw();
       }
 
+      @Override
       public void dragOperationChanged( DropTargetEvent event ) {
       }
 
+      @Override
       public void dragOver( DropTargetEvent event ) {
         drop_candidate = PropsUI.calculateGridPosition( getRealPosition( canvas, event.x, event.y ) );
 
         redraw();
       }
 
+      @Override
       public void drop( DropTargetEvent event ) {
         // no data to copy, indicate failure in event.detail
         if ( event.data == null ) {
@@ -702,6 +711,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
         }
       }
 
+      @Override
       public void dropAccept( DropTargetEvent event ) {
       }
     } );
@@ -713,6 +723,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     final Timer timer = new Timer( "TransGraph.setControlStates Timer: " + getMeta().getName() );
     TimerTask timerTask = new TimerTask() {
 
+      @Override
       public void run() {
         try {
           setControlStates();
@@ -728,12 +739,14 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     // Make sure the timer stops when we close the tab...
     //
     addDisposeListener( new DisposeListener() {
+      @Override
       public void widgetDisposed( DisposeEvent arg0 ) {
         timer.cancel();
       }
     } );
   }
 
+  @Override
   public void mouseDoubleClick( MouseEvent e ) {
     clearSettings();
 
@@ -791,6 +804,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     }
   }
 
+  @Override
   public void mouseDown( MouseEvent e ) {
 
     boolean alt = ( e.stateMask & SWT.ALT ) != 0;
@@ -969,6 +983,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     }
   }
 
+  @Override
   public void mouseUp( MouseEvent e ) {
     boolean control = ( e.stateMask & SWT.MOD1 ) != 0;
 
@@ -1199,6 +1214,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     }
   }
 
+  @Override
   public void mouseMove( MouseEvent e ) {
     boolean shift = ( e.stateMask & SWT.SHIFT ) != 0;
     noInputStep = null;
@@ -1367,7 +1383,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
       if ( lastButton == 1 && !shift ) {
         /*
          * One or more notes are selected and moved around...
-         * 
+         *
          * new : new position of the note (not the mouse pointer) dx : difference with previous position
          */
         int dx = note.x - selectedNote.getLocation().x;
@@ -1396,6 +1412,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     }
   }
 
+  @Override
   public void mouseHover( MouseEvent e ) {
 
     boolean tip = true;
@@ -1428,6 +1445,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     }
   }
 
+  @Override
   public void mouseScrolled( MouseEvent e ) {
     /*
      * if (e.count == 3) { // scroll up zoomIn(); } else if (e.count == -3) { // scroll down zoomOut(); } }
@@ -1500,6 +1518,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
         item.setText( Const.NVL( stream.getDescription(), "" ) );
         item.setImage( getImageFor( stream ) );
         item.addSelectionListener( new SelectionAdapter() {
+          @Override
           public void widgetSelected( SelectionEvent e ) {
             addHop( stream );
           }
@@ -1517,7 +1536,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     }
 
     /*
-     * 
+     *
      * if (transMeta.findTransHop(candidate) == null) { spoon.newHop(transMeta, candidate); } if (startErrorHopStep) {
      * addErrorHop(); } if (startTargetHopStream != null) { // Auto-configure the target in the source step... //
      * startTargetHopStream.setStepMeta(candidate.getToStep());
@@ -1578,6 +1597,9 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
   private void addErrorHop() {
     // Automatically configure the step error handling too!
     //
+    if ( candidate == null || candidate.getFromStep() == null ) {
+      return;
+    }
     StepErrorMeta errorMeta = candidate.getFromStep().getStepErrorMeta();
     if ( errorMeta == null ) {
       errorMeta = new StepErrorMeta( transMeta, candidate.getFromStep() );
@@ -1596,21 +1618,23 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 
   /*
    * private void showStepTargetOptions(final StepMeta stepMeta, StepIOMetaInterface ioMeta, int x, int y) {
-   * 
+   *
    * if (!Const.isEmpty(ioMeta.getTargetStepnames())) { final Menu menu = new Menu(canvas); for (final StreamInterface
    * stream : ioMeta.getTargetStreams()) { MenuItem menuItem = new MenuItem(menu, SWT.NONE);
    * menuItem.setText(stream.getDescription()); menuItem.addSelectionListener(new SelectionAdapter() {
-   * 
+   *
    * @Override public void widgetSelected(SelectionEvent arg0) { // Click on the target icon means: create a new target
    * hop // if (startHopStep==null) { startHopStep = stepMeta; } menu.setVisible(false); menu.dispose(); redraw(); } });
    * } menu.setLocation(x, y); menu.setVisible(true); resetDelayTimer(stepMeta);
-   * 
+   *
    * //showTargetStreamsStep = stepMeta; } }
    */
 
+  @Override
   public void mouseEnter( MouseEvent arg0 ) {
   }
 
+  @Override
   public void mouseExit( MouseEvent arg0 ) {
   }
 
@@ -1625,6 +1649,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     mouseOverSteps.add( stepMeta );
 
     DelayTimer delayTimer = new DelayTimer( 500, new DelayListener() {
+      @Override
       public void expired() {
         mouseOverSteps.remove( stepMeta );
         delayTimers.remove( stepMeta );
@@ -1673,6 +1698,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 
   protected void asyncRedraw() {
     spoon.getDisplay().asyncExec( new Runnable() {
+      @Override
       public void run() {
         if ( !TransGraph.this.isDisposed() ) {
           TransGraph.this.redraw();
@@ -1737,12 +1763,14 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
       zoomLabel = new Combo( swtToolbar, SWT.DROP_DOWN );
       zoomLabel.setItems( TransPainter.magnificationDescriptions );
       zoomLabel.addSelectionListener( new SelectionAdapter() {
+        @Override
         public void widgetSelected( SelectionEvent arg0 ) {
           readMagnification();
         }
       } );
 
       zoomLabel.addKeyListener( new KeyAdapter() {
+        @Override
         public void keyPressed( KeyEvent event ) {
           if ( event.character == SWT.CR ) {
             readMagnification();
@@ -1846,6 +1874,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     }
   }
 
+  @Override
   public void keyPressed( KeyEvent e ) {
 
     if ( e.keyCode == SWT.ESC ) {
@@ -1930,9 +1959,11 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 
   }
 
+  @Override
   public void keyReleased( KeyEvent e ) {
   }
 
+  @Override
   public boolean setFocus() {
     return ( canvas != null ) ? canvas.setFocus() : false;
   }
@@ -2495,6 +2526,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
           // Add the default round robin plugin...
           //
           Action action = new Action( "RoundRobinRowDistribution", Action.AS_CHECK_BOX ) {
+            @Override
             public void run() {
               stepMeta.setRowDistribution( null ); // default
               stepMeta.setDistributes( true );
@@ -2515,6 +2547,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
                 && stepMeta.getRowDistribution().getCode().equals( rowDistributionPlugin.getIds()[0] );
 
             action = new Action( rowDistributionPlugin.getIds()[0], Action.AS_CHECK_BOX ) {
+              @Override
               public void run() {
                 try {
                   stepMeta.setRowDistribution( (RowDistributionInterface) PluginRegistry.getInstance().loadClass(
@@ -2537,6 +2570,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
           //
 
           action = new Action( "CopyRowsDistribution", Action.AS_CHECK_BOX ) {
+            @Override
             public void run() {
               stepMeta.setDistributes( false );
             }
@@ -2561,6 +2595,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
           String activeReferencedObjectDescription = stepMetaInterface.getActiveReferencedObjectDescription();
           if ( getActiveSubtransformation( this, stepMeta ) != null && activeReferencedObjectDescription != null ) {
             action = new Action( activeReferencedObjectDescription, Action.AS_DROP_DOWN_MENU ) {
+              @Override
               public void run() {
                 openMapping( stepMeta, -1 ); // negative by convention
               }
@@ -2577,6 +2612,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
               final int index = i;
               String referencedObject = referencedObjects[i];
               action = new Action( referencedObject, Action.AS_DROP_DOWN_MENU ) {
+                @Override
                 public void run() {
                   openMapping( stepMeta, index );
                 }
@@ -2953,6 +2989,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 
       // Run something in the background to cancel active database queries, forecably if needed!
       Runnable run = new Runnable() {
+        @Override
         public void run() {
           IProgressMonitor monitor = pmd.getProgressMonitor();
           while ( pmd.getShell() == null || ( !pmd.getShell().isDisposed() && !monitor.isCanceled() ) ) {
@@ -3061,6 +3098,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     return img;
   }
 
+  @Override
   protected Point getOffset() {
     Point area = getArea();
     Point max = transMeta.getMaximum();
@@ -3216,7 +3254,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 
     /*
      * TransHopMeta hfrom = transMeta.findTransHopTo(stepMeta); TransHopMeta hto = transMeta.findTransHopFrom(stepMeta);
-     * 
+     *
      * if (hfrom != null && hto != null) { if (transMeta.findTransHop(hfrom.getFromStep(), hto.getToStep()) == null) {
      * TransHopMeta hnew = new TransHopMeta(hfrom.getFromStep(), hto.getToStep()); transMeta.addTransHop(hnew);
      * spoon.addUndoNew(transMeta, new TransHopMeta[] { hnew }, new int[] { transMeta.indexOfTransHop(hnew) });
@@ -3237,6 +3275,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     iconsize = spoon.props.getIconSize();
   }
 
+  @Override
   public EngineMetaInterface getMeta() {
     return transMeta;
   }
@@ -3263,18 +3302,22 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     spoon.setUndoMenu( transMeta );
   }
 
+  @Override
   public boolean applyChanges() throws KettleException {
     return spoon.saveToFile( transMeta );
   }
 
+  @Override
   public boolean canBeClosed() {
     return !transMeta.hasChanged();
   }
 
+  @Override
   public TransMeta getManagedObject() {
     return transMeta;
   }
 
+  @Override
   public boolean hasContentChanged() {
     return transMeta.hasChanged();
   }
@@ -3530,6 +3573,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     fdClose.top = new FormAttachment( 0, 0 );
     closeButton.setLayoutData( fdClose );
     closeButton.addMouseListener( new MouseAdapter() {
+      @Override
       public void mouseDown( MouseEvent e ) {
         disposeExtraView();
       }
@@ -3543,6 +3587,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     fdMinMax.top = new FormAttachment( 0, 0 );
     minMaxButton.setLayoutData( fdMinMax );
     minMaxButton.addMouseListener( new MouseAdapter() {
+      @Override
       public void mouseDown( MouseEvent e ) {
         minMaxExtraView();
       }
@@ -3686,6 +3731,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
           final Thread parentThread = Thread.currentThread();
 
           shell.getDisplay().asyncExec( new Runnable() {
+            @Override
             public void run() {
               addAllTabs();
               prepareTrans( parentThread, args );
@@ -3816,6 +3862,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
         // What method should we call back when a break-point is hit?
 
         transDebugMeta.addBreakPointListers( new BreakPointListener() {
+          @Override
           public void breakPointHit( TransDebugMeta transDebugMeta, StepDebugMeta stepDebugMeta,
                                      RowMetaInterface rowBufferMeta, List<Object[]> rowBuffer ) {
             showPreview( transDebugMeta, stepDebugMeta, rowBufferMeta, rowBuffer );
@@ -3837,6 +3884,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
         // Show the execution results view...
         //
         shell.getDisplay().asyncExec( new Runnable() {
+          @Override
           public void run() {
             addAllTabs();
           }
@@ -3858,6 +3906,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
                                         final RowMetaInterface rowBufferMeta, final List<Object[]> rowBuffer ) {
     shell.getDisplay().asyncExec( new Runnable() {
 
+      @Override
       public void run() {
 
         if ( isDisposed() ) {
@@ -3954,6 +4003,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     return false;
   }
 
+  @Override
   public synchronized void setControlStates() {
     if ( isDisposed() || getDisplay().isDisposed() ) {
       return;
@@ -3964,6 +4014,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 
     getDisplay().asyncExec( new Runnable() {
 
+      @Override
       public void run() {
         boolean operationsNotAllowed = false;
         try {
@@ -4030,6 +4081,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 
   private synchronized void prepareTrans( final Thread parentThread, final String[] args ) {
     Runnable runnable = new Runnable() {
+      @Override
       public void run() {
         try {
           trans.prepareExecution( args );
@@ -4073,6 +4125,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
       //
       trans.addTransListener( new TransAdapter() {
 
+        @Override
         public void transFinished( Trans trans ) {
           checkTransEnded();
           checkErrorVisuals();
@@ -4096,6 +4149,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     // See if we have to fire off the performance graph updater etc.
     //
     getDisplay().asyncExec( new Runnable() {
+      @Override
       public void run() {
         if ( transPerfDelegate.getTransPerfTab() != null ) {
           // If there is a tab open, try to the correct content on there now
@@ -4111,9 +4165,11 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 
     redrawTimer = new Timer( "TransGraph: redraw timer" );
     TimerTask timtask = new TimerTask() {
+      @Override
       public void run() {
         if ( !spoon.getDisplay().isDisposed() ) {
           spoon.getDisplay().asyncExec( new Runnable() {
+            @Override
             public void run() {
               if ( !TransGraph.this.canvas.isDisposed() ) {
                 TransGraph.this.canvas.redraw();
@@ -4162,6 +4218,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
         checkErrorVisuals();
 
         shell.getDisplay().asyncExec( new Runnable() {
+          @Override
           public void run() {
             redraw();
           }
@@ -4177,6 +4234,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
       stepLogMap = new HashMap<StepMeta, String>();
       shell.getDisplay().syncExec( new Runnable() {
 
+        @Override
         public void run() {
 
           for ( StepMetaDataCombi combi : trans.getSteps() ) {
@@ -4206,6 +4264,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     // Redraw the canvas to show the error icons etc.
     //
     shell.getDisplay().asyncExec( new Runnable() {
+      @Override
       public void run() {
         redraw();
       }
@@ -4232,6 +4291,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     }
 
     getDisplay().asyncExec( new Runnable() {
+      @Override
       public void run() {
         EnterPreviewRowsDialog dialog = new EnterPreviewRowsDialog( shell, SWT.NONE, stepnames, rowMetas, rowBuffers );
         dialog.open();
@@ -4405,6 +4465,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 
   }
 
+  @Override
   public HasLogChannelInterface getLogChannelProvider() {
     return trans;
   }
@@ -4420,6 +4481,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
       if ( running ) {
         trans.addTransListener( new TransAdapter() {
 
+          @Override
           public void transFinished( Trans trans ) {
             checkTransEnded();
             checkErrorVisuals();
@@ -4458,6 +4520,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
       //
       final RowListener rowListener = new RowListener() {
 
+        @Override
         public void rowReadEvent( RowMetaInterface rowMeta, Object[] row ) throws KettleStepException {
           if ( input ) {
             try {
@@ -4468,6 +4531,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
           }
         }
 
+        @Override
         public void rowWrittenEvent( RowMetaInterface rowMeta, Object[] row ) throws KettleStepException {
           if ( output ) {
             try {
@@ -4478,6 +4542,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
           }
         }
 
+        @Override
         public void errorRowWrittenEvent( RowMetaInterface rowMeta, Object[] row ) throws KettleStepException {
           if ( error ) {
             try {
@@ -4492,6 +4557,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
       // When the dialog is closed, make sure to remove the listener!
       //
       dialog.addDialogClosedListener( new DialogClosedListener() {
+        @Override
         public void dialogClosed() {
           runThread.removeRowListener( rowListener );
         }
@@ -4501,6 +4567,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
       //
       getDisplay().asyncExec( new Runnable() {
 
+        @Override
         public void run() {
           dialog.open();
         }
@@ -4510,15 +4577,17 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     }
   }
 
+  @Override
   public String getName() {
     return "transgraph";
   }
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.ui.xul.impl.XulEventHandler#getXulDomContainer()
    */
+  @Override
   public XulDomContainer getXulDomContainer() {
     return xulDomContainer;
   }
@@ -4530,13 +4599,15 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.ui.xul.impl.XulEventHandler#setXulDomContainer(org.pentaho.ui.xul.XulDomContainer)
    */
+  @Override
   public void setXulDomContainer( XulDomContainer xulDomContainer ) {
     this.xulDomContainer = xulDomContainer;
   }
 
+  @Override
   public boolean canHandleSave() {
     return true;
   }
