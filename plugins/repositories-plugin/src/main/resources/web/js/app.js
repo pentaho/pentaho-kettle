@@ -197,63 +197,64 @@ function(angular) {
     }
   }]);
 
-  repoConnectionApp.directive('errorMessage', ['$timeout', function($timeout) {
-    return {
-      restrict: 'E',
-      templateUrl: 'error-message.html',
-      controller: ['$rootScope', function($rootScope) {
-        $rootScope.animationClass = "";
-        $rootScope.dismiss = function() {
-          $timeout.cancel($rootScope.timer);
-          $rootScope.animationClass = "error-fade";
-          $timeout(function () {
-            $rootScope.hasError = false;
-          }, 0);
+  repoConnectionApp.directive('errorMessage', [ '$timeout', function($timeout) {
+    function link(scope, element, attrs) {
+      var elem = element.find('.error-message');
+      scope.dismiss = function() {
+        $timeout.cancel(scope.timer);
+        elem.animate({
+          opacity : 0
+        }, 600, function() {
+          elem.css('top', -63);
+        });
+        scope.hasError = false;
+      }
+      scope.showError = function() {
+        $timeout.cancel(scope.timer);
+        elem.animate({
+          top : 10,
+          opacity : 1
+        }, 600);
+        scope.timer = $timeout(function() {
+          scope.dismiss();
+        }, 5000);
+      }
+      scope.triggerError = function(message) {
+        scope.errorMessage = message;
+        scope.hasError = true;
+        scope.showError();
+      }
+      scope.resetErrorMsg = function() {
+        $timeout.cancel(scope.timer);
+        if (scope.hasError) {
+          scope.dismiss();
+          scope.hasError = false;
         }
-        $rootScope.triggerError = function(errorMessage) {
-          $rootScope.errorMessage = errorMessage;
-          $rootScope.animationClass = "error-slide";
-          $timeout(function() {
-            $rootScope.hasError = true;
-          }, 0);
-          $rootScope.timer = $timeout(function () {
-            $rootScope.animationClass = "error-fade";
-            $timeout(function () {
-              $rootScope.hasError = false;
-            }, 0);
-          }, 5000);
-        }
-        $rootScope.resetErrorMsg = function() {
-          $timeout.cancel($rootScope.timer);
-          $rootScope.animationClass = "error-fade";
-          $timeout(function () {
-            $rootScope.hasError = false;
-          }, 0);
-        }
-        $rootScope.clearError = function() {
-          $timeout.cancel($rootScope.timer);
-          $rootScope.errorMessage = '';
-          $rootScope.animationClass = '';
-          $timeout(function() {
-            $rootScope.hasError = false;
-          }, 0);
-        }
-        $rootScope.refreshError = function() {
-          $timeout.cancel($rootScope.timer);
-          $rootScope.animationClass = "error-fade";
-          $timeout(function() {
-              $rootScope.hasError = false;
-            }, 0);
-          $timeout(function() {
-            $rootScope.hasError = true;
-          }, 500);
-          $rootScope.timer = $timeout(function () {
-            $rootScope.hasError = false;
-          }, 5000);
-        }
-      }]
+      }
+      scope.clearError = function() {
+        $timeout.cancel(scope.timer);
+        elem.stop();
+        elem.css('top', -63);
+        elem.css('opacity', 0);
+        scope.errorMessage = "";
+        scope.hasError = false;
+      }
+      scope.refreshError = function() {
+        $timeout.cancel(scope.timer);
+        elem.stop();
+        elem.animate({
+          opacity : 0
+        }, 600, function() {
+          scope.showError();
+        });
+      }
     }
-  }]);
+    return {
+      restrict : 'E',
+      link : link,
+      templateUrl : 'error-message.html'
+    }
+  } ]);
 
   return repoConnectionApp;
 
