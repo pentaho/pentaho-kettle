@@ -366,7 +366,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             value="6.12"
             description="The version of CheckStyle to use for coding standards"/>
   <property name="pentaho.coding.standards.version"
-			value="1.0.4"/>
+			value="1.0.5"/>
   <property name="checkstyle.dir"
             value="${basedir}/checkstyle"/>
   <property name="checkstyle.lib.dir"
@@ -665,22 +665,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       Fetches ant-contrib from sourceforge
       ====================================================================-->
   <target name="antcontrib.download" unless="antcontrib.available">
-    <mkdir dir="${subfloor.tmp.dir}"/>
-    <get src="http://downloads.sourceforge.net/ant-contrib/ant-contrib-1.0b3-bin.zip"
-         dest="${subfloor.tmp.dir}/antcontrib.zip"
+    <mkdir dir="${antcontrib.build.cache.dir}"/>
+    <get src="http://nexus.pentaho.org/content/groups/omni/ant-contrib/ant-contrib/1.0b3/ant-contrib-1.0b3.jar"
+         dest="${antcontrib.build.cache.dir}"
          usetimestamp="true"/>
-    <unzip src="${subfloor.tmp.dir}/antcontrib.zip" dest="${subfloor.tmp.dir}">
-      <patternset>
-        <include name="**/*.jar"/>
-      </patternset>
-    </unzip>
-    <copy todir="${antcontrib.build.cache.dir}">
-      <fileset dir="${subfloor.tmp.dir}/ant-contrib">
-        <include name="**/*.jar"/>
-      </fileset>
-    </copy>
   </target>
-
 
   <!--=======================================================================
       init
