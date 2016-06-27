@@ -26,11 +26,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.doCallRealMethod;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -87,6 +83,23 @@ public class TransTest {
     trans.setLog( Mockito.mock( LogChannelInterface.class ) );
     trans.prepareExecution( null );
     trans.startThreads();
+  }
+
+  /**
+   * PDI-14948 - Execution of trans with no steps never ends
+   */
+  @Test( timeout = 1000 )
+  public void transWithNoStepsIsNotEndless() throws Exception {
+    Trans transWithNoSteps = new Trans( new TransMeta() );
+    transWithNoSteps = spy( transWithNoSteps );
+
+    transWithNoSteps.prepareExecution( new String[] {} );
+
+    transWithNoSteps.startThreads();
+
+    // check trans lifecycle is not corrupted
+    verify( transWithNoSteps ).fireTransStartedListeners();
+    verify( transWithNoSteps ).fireTransFinishedListeners();
   }
 
   @Test

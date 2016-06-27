@@ -1442,6 +1442,10 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 
     heartbeat = startHeartbeat( getHeartbeatIntervalInSeconds() );
 
+    if ( steps.isEmpty() ) {
+      fireTransFinishedListeners();
+    }
+
     if ( log.isDetailed() ) {
       log.logDetailed( BaseMessages.getString( PKG, "Trans.Log.TransformationHasAllocated", String.valueOf( steps
           .size() ), String.valueOf( rowsets.size() ) ) );
