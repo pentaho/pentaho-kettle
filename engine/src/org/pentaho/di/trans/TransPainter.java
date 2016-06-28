@@ -41,7 +41,6 @@ import org.pentaho.di.core.gui.PrimitiveGCInterface.EImage;
 import org.pentaho.di.core.gui.PrimitiveGCInterface.ELineStyle;
 import org.pentaho.di.core.gui.Rectangle;
 import org.pentaho.di.core.gui.ScrollBarInterface;
-import org.pentaho.di.core.injection.bean.BeanInjectionInfo;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.partition.PartitionSchema;
@@ -49,7 +48,6 @@ import org.pentaho.di.trans.step.BaseStepData.StepExecutionStatus;
 import org.pentaho.di.trans.step.StepIOMetaInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.step.StepPartitioningMeta;
 import org.pentaho.di.trans.step.StepStatus;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface;
@@ -84,7 +82,18 @@ public class TransPainter extends BasePainter {
   private StepMeta showTargetStreamsStep;
   private Trans trans;
   private boolean slowStepIndicatorEnabled;
-
+  private Map<StepMeta, List<Object[]>> previewDataMap;
+  
+  public TransPainter( GCInterface gc, TransMeta transMeta, Point area, ScrollBarInterface hori,
+      ScrollBarInterface vert, TransHopMeta candidate, Point drop_candidate, Rectangle selrect,
+      List<AreaOwner> areaOwners, List<StepMeta> mouseOverSteps, int iconsize, int linewidth, int gridsize,
+      int shadowSize, boolean antiAliasing, String noteFontName, int noteFontHeight, Trans trans,
+      boolean slowStepIndicatorEnabled, Map<StepMeta, List<Object[]>> previewDataMap ) {
+    this( gc, transMeta, area, hori, vert, candidate, drop_candidate, selrect, areaOwners, mouseOverSteps, 
+        iconsize, linewidth, gridsize, shadowSize, antiAliasing, noteFontName, noteFontHeight, trans, slowStepIndicatorEnabled );
+    this.previewDataMap = previewDataMap;
+  }
+  
   public TransPainter( GCInterface gc, TransMeta transMeta, Point area, ScrollBarInterface hori,
     ScrollBarInterface vert, TransHopMeta candidate, Point drop_candidate, Rectangle selrect,
     List<AreaOwner> areaOwners, List<StepMeta> mouseOverSteps, int iconsize, int linewidth, int gridsize,
@@ -758,170 +767,7 @@ public class TransPainter extends BasePainter {
     // Optionally drawn the mouse-over information
     //
     if ( mouseOverSteps.contains( stepMeta ) ) {
-      gc.setTransform( translationX, translationY, 0, BasePainter.FACTOR_1_TO_1 );
-
-      StepMetaInterface stepMetaInterface = stepMeta.getStepMetaInterface();
-      boolean mdiSupport =
-          stepMetaInterface.getStepMetaInjectionInterface() != null || BeanInjectionInfo.isInjectionSupported(
-              stepMetaInterface.getClass() );
-
-      EImage[] miniIcons;
-      if ( mdiSupport ) {
-        miniIcons = new EImage[] { EImage.INPUT, EImage.EDIT, EImage.CONTEXT_MENU, EImage.OUTPUT, EImage.INJECT, };
-      } else {
-        miniIcons = new EImage[] { EImage.INPUT, EImage.EDIT, EImage.CONTEXT_MENU, EImage.OUTPUT, };
-      }
-
-      int totalHeight = 0;
-      int totalIconsWidth = 0;
-      int totalWidth = 2 * MINI_ICON_MARGIN;
-      for ( EImage miniIcon : miniIcons ) {
-        Point bounds = gc.getImageBounds( miniIcon );
-        totalWidth += bounds.x + MINI_ICON_MARGIN;
-        totalIconsWidth += bounds.x + MINI_ICON_MARGIN;
-        if ( bounds.y > totalHeight ) {
-          totalHeight = bounds.y;
-        }
-      }
-      totalHeight += 2 * MINI_ICON_MARGIN;
-
-      gc.setFont( EFont.SMALL );
-      String trimmedName =
-        stepMeta.getName().length() < 30 ? stepMeta.getName() : stepMeta.getName().substring( 0, 30 );
-      Point nameExtent = gc.textExtent( trimmedName );
-      nameExtent.y += 2 * MINI_ICON_MARGIN;
-      nameExtent.x += 3 * MINI_ICON_MARGIN;
-      totalHeight += nameExtent.y;
-      if ( nameExtent.x > totalWidth ) {
-        totalWidth = nameExtent.x;
-      }
-
-      int areaX = translateToCurrentScale( x ) + translateToCurrentScale( iconsize ) / 2 - totalWidth / 2 + MINI_ICON_SKEW;
-      int areaY = translateToCurrentScale( y ) + translateToCurrentScale( iconsize ) + MINI_ICON_DISTANCE  + BasePainter.CONTENT_MENU_INDENT;
-
-      gc.setForeground( EColor.CRYSTAL );
-      gc.setBackground( EColor.CRYSTAL );
-      gc.setLineWidth( 1 );
-      gc.fillRoundRectangle( areaX, areaY, totalWidth, totalHeight, BasePainter.CORNER_RADIUS_5, BasePainter.CORNER_RADIUS_5 );
-
-      gc.setBackground( EColor.WHITE );
-
-      gc.fillRoundRectangle( areaX, areaY + nameExtent.y, totalWidth, ( totalHeight - nameExtent.y ),
-          BasePainter.CORNER_RADIUS_5, BasePainter.CORNER_RADIUS_5 );
-      gc.fillRectangle( areaX, areaY + nameExtent.y, totalWidth, ( totalHeight - nameExtent.y ) / 2 );
-
-      gc.drawRoundRectangle( areaX, areaY, totalWidth, totalHeight, BasePainter.CORNER_RADIUS_5, BasePainter.CORNER_RADIUS_5 );
-
-      gc.setForeground( EColor.WHITE );
-
-      gc.drawText( trimmedName, areaX + ( totalWidth - nameExtent.x ) / 2 + MINI_ICON_MARGIN, areaY
-        + MINI_ICON_MARGIN, true );
-      gc.setForeground( EColor.CRYSTAL );
-      gc.setBackground( EColor.CRYSTAL );
-
-      gc.setFont( EFont.GRAPH );
-      areaOwners.add( new AreaOwner( AreaType.MINI_ICONS_BALLOON, translateTo1To1( areaX ), translateTo1To1( areaY ),
-          translateTo1To1( totalWidth ), translateTo1To1( totalHeight ), offset, stepMeta, ioMeta ) );
-
-      gc.fillPolygon( new int[] {
-        areaX + totalWidth / 2 - MINI_ICON_TRIANGLE_BASE / 2 + 1, areaY + 2,
-        areaX + totalWidth / 2 + MINI_ICON_TRIANGLE_BASE / 2, areaY + 2,
-        areaX + totalWidth / 2 - MINI_ICON_SKEW, areaY - MINI_ICON_DISTANCE - 3, } );
-
-      gc.setBackground( EColor.WHITE );
-
-      // Put on the icons...
-      //
-      int xIcon = areaX + ( totalWidth - totalIconsWidth ) / 2 + MINI_ICON_MARGIN;
-      int yIcon = areaY + 5 + nameExtent.y;
-
-      for ( int i = 0; i < miniIcons.length; i++ ) {
-        EImage miniIcon = miniIcons[i];
-        Point bounds = gc.getImageBounds( miniIcon );
-        boolean enabled = false;
-        switch ( i ) {
-          case 0: // INPUT
-            enabled = ioMeta.isInputAcceptor() || ioMeta.isInputDynamic();
-            areaOwners.add( new AreaOwner( AreaType.STEP_INPUT_HOP_ICON, translateTo1To1( xIcon ),
-                translateTo1To1( yIcon ), translateTo1To1( bounds.x ), translateTo1To1( bounds.y ), offset, stepMeta,
-                ioMeta ) );
-            break;
-          case 1: // EDIT
-            enabled = true;
-            areaOwners.add( new AreaOwner( AreaType.STEP_EDIT_ICON, translateTo1To1( xIcon ), translateTo1To1( yIcon ),
-                translateTo1To1( bounds.x ), translateTo1To1( bounds.y ), offset, stepMeta, ioMeta ) );
-            break;
-          case 2: // STEP_MENU
-            enabled = true;
-            areaOwners.add( new AreaOwner( AreaType.STEP_MENU_ICON, translateTo1To1( xIcon ), translateTo1To1( yIcon ),
-                translateTo1To1( bounds.x ), translateTo1To1( bounds.y ), offset, stepMeta, ioMeta ) );
-            break;
-          case 3: // OUTPUT
-            enabled = ioMeta.isOutputProducer() || ioMeta.isOutputDynamic();
-            areaOwners.add( new AreaOwner( AreaType.STEP_OUTPUT_HOP_ICON, translateTo1To1( xIcon ),
-                translateTo1To1( yIcon ), translateTo1To1( bounds.x ), translateTo1To1( bounds.y ), offset, stepMeta,
-                ioMeta ) );
-            break;
-          case 4: // INJECT
-            enabled = mdiSupport;
-            StepMetaInterface mdiObject = mdiSupport ? stepMetaInterface : null;
-            areaOwners.add( new AreaOwner( AreaType.STEP_INJECT_ICON, translateTo1To1( xIcon ),
-                translateTo1To1( yIcon ), translateTo1To1( bounds.x ), translateTo1To1( bounds.y ), offset, stepMeta,
-                mdiObject ) );
-            break;
-          default:
-            break;
-        }
-        if ( enabled ) {
-          gc.setAlpha( 255 );
-        } else {
-          gc.setAlpha( 100 );
-        }
-        gc.drawImage( miniIcon, xIcon, yIcon, BasePainter.FACTOR_1_TO_1 );
-        xIcon += bounds.x + 5;
-      }
-
-      // OK, see if we need to show a slide-out for target streams...
-      //
-      if ( showTargetStreamsStep != null ) {
-        ioMeta = showTargetStreamsStep.getStepMetaInterface().getStepIOMeta();
-        List<StreamInterface> targetStreams = ioMeta.getTargetStreams();
-        int targetsWidth = 0;
-        int targetsHeight = 0;
-        for ( int i = 0; i < targetStreams.size(); i++ ) {
-          String description = targetStreams.get( i ).getDescription();
-          Point extent = gc.textExtent( description );
-          if ( extent.x > targetsWidth ) {
-            targetsWidth = extent.x;
-          }
-          targetsHeight += extent.y + MINI_ICON_MARGIN;
-        }
-        targetsWidth += MINI_ICON_MARGIN;
-
-        gc.setBackground( EColor.LIGHTGRAY );
-        gc.fillRoundRectangle( areaX, areaY + totalHeight + 2, targetsWidth, targetsHeight, 7, 7 );
-        gc.drawRoundRectangle( areaX, areaY + totalHeight + 2, targetsWidth, targetsHeight, 7, 7 );
-
-        int targetY = areaY + totalHeight + MINI_ICON_MARGIN;
-        for ( int i = 0; i < targetStreams.size(); i++ ) {
-          String description = targetStreams.get( i ).getDescription();
-          Point extent = gc.textExtent( description );
-          gc.drawText( description, areaX + MINI_ICON_MARGIN, targetY, true );
-          if ( i < targetStreams.size() - 1 ) {
-            gc.drawLine( areaX + MINI_ICON_MARGIN / 2, targetY + extent.y + 3, areaX
-              + targetsWidth - MINI_ICON_MARGIN / 2, targetY + extent.y + 2 );
-          }
-
-          areaOwners.add( new AreaOwner(
-            AreaType.STEP_TARGET_HOP_ICON_OPTION, areaX, targetY, targetsWidth, extent.y + MINI_ICON_MARGIN,
-            offset, stepMeta, targetStreams.get( i ) ) );
-
-          targetY += extent.y + MINI_ICON_MARGIN;
-        }
-
-        gc.setBackground( EColor.BACKGROUND );
-      }
-      gc.setTransform( translationX, translationY, 0, magnification );
+      drawFlyout( stepMeta, ioMeta, x, y );
     }
 
     TransPainterExtension extension =
@@ -937,6 +783,124 @@ public class TransPainter extends BasePainter {
     // Restore the previous alpha value
     //
     gc.setAlpha( alpha );
+  }
+  
+  private void drawFlyout( StepMeta stepMeta, StepIOMetaInterface ioMeta, int x, int y ) {
+
+    int totalWidth = 186;
+    int totalHeight = 33;
+    int totalIconsHeight = 7;
+
+    int areaX = ( area.x / 2 ) - ( totalWidth / 2 );
+    int areaY = -3;
+
+    gc.setTransform( translationX, translationY, 0, BasePainter.FACTOR_1_TO_1 );
+
+    // Sets the color to #005EAA
+    gc.setForeground( 0, 94, 170 );
+    gc.setBackground( 0, 94, 170 );
+
+    gc.setLineWidth( 1 );
+
+    // Draws the main rectangle
+    gc.fillRoundRectangle( areaX, areaY, totalWidth, totalHeight, BasePainter.CORNER_RADIUS_5,
+        BasePainter.CORNER_RADIUS_5 );
+    gc.setFont( EFont.GRAPH );
+    areaOwners.add( new AreaOwner( AreaType.MINI_ICONS_BALLOON, translateTo1To1( areaX ), translateTo1To1( areaY ),
+        translateTo1To1( totalWidth ), translateTo1To1( totalHeight ), offset, stepMeta, ioMeta ) );
+    gc.setForeground( EColor.WHITE );
+
+    int yIcon = areaY + totalIconsHeight;
+    int xIcon = areaX;
+
+    // Draw the label
+    String label = stepMeta.getName();
+    if ( label.length() > 16 ) { // 16 label text length allowed.
+      label = label.substring( 0, 16 ) + "...";
+    }
+    int xText = ( xIcon + 62 ) - ( new Double( label.length() * 2.6 ).intValue() ); // xIcon + 62 text middle position.
+    xText = xText <= xIcon ? xIcon : xText; // xIcon max text far left position.
+    gc.drawText( label, xText, yIcon + 3 );
+    if ( label.length() > 16 ) {
+      areaOwners.add( new AreaOwner( AreaType.DET_LABEL, translateTo1To1( xText ), translateTo1To1( yIcon + 3 ),
+          translateTo1To1( 104 ), translateTo1To1( 30 ), offset, stepMeta, ioMeta ) );
+    }
+
+    // Draw the line separator
+    gc.drawLine( xIcon + 125, yIcon + 1, xIcon + 125, yIcon + 19 );
+
+    // Draw the icons
+    boolean isDataBufferEmpty = isDataBufferEmpty( stepMeta );
+    EImage[] miniIcons =
+        new EImage[] { isDataBufferEmpty ? EImage.DET_GRAPH_DISABLED : EImage.DET_GRAPH, EImage.DET_RUN };
+
+    for ( int i = 0; i < miniIcons.length; i++ ) {
+      EImage miniIcon = miniIcons[i];
+      Point bounds = gc.getImageBounds( miniIcon );
+
+      switch ( i ) {
+        case 0: // DET_GRAPH
+          xIcon += bounds.x + 119;
+
+          if ( !isDataBufferEmpty ) {
+            areaOwners.add( new AreaOwner( AreaType.DET_GRAPH, translateTo1To1( xIcon ), translateTo1To1( yIcon ),
+                translateTo1To1( bounds.x ), translateTo1To1( bounds.y ), offset, stepMeta, ioMeta ) );
+          }
+
+          break;
+        case 1: // DET_RUN
+          xIcon += bounds.x + 10; // 10 is the space between icons.
+
+          areaOwners.add( new AreaOwner( AreaType.DET_RUN, translateTo1To1( xIcon ), translateTo1To1( yIcon ),
+              translateTo1To1( bounds.x ), translateTo1To1( bounds.y ), offset, stepMeta, ioMeta ) );
+          break;
+        default:
+          break;
+      }
+      gc.drawImage( miniIcon, xIcon, yIcon, 20, 20, BasePainter.FACTOR_1_TO_1 );
+    }
+
+    // OK, see if we need to show a slide-out for target streams...
+    //
+
+    if ( showTargetStreamsStep != null ) {
+      ioMeta = showTargetStreamsStep.getStepMetaInterface().getStepIOMeta();
+      List<StreamInterface> targetStreams = ioMeta.getTargetStreams();
+      int targetsWidth = 0;
+      int targetsHeight = 0;
+      for ( int i = 0; i < targetStreams.size(); i++ ) {
+        String description = targetStreams.get( i ).getDescription();
+        Point extent = gc.textExtent( description );
+        if ( extent.x > targetsWidth ) {
+          targetsWidth = extent.x;
+        }
+        targetsHeight += extent.y + MINI_ICON_MARGIN;
+      }
+      targetsWidth += MINI_ICON_MARGIN;
+
+      gc.setBackground( EColor.LIGHTGRAY );
+      gc.fillRoundRectangle( areaX, areaY + totalHeight + 2, targetsWidth, targetsHeight, 7, 7 );
+      gc.drawRoundRectangle( areaX, areaY + totalHeight + 2, targetsWidth, targetsHeight, 7, 7 );
+
+      int targetY = areaY + totalHeight + MINI_ICON_MARGIN;
+      for ( int i = 0; i < targetStreams.size(); i++ ) {
+        String description = targetStreams.get( i ).getDescription();
+        Point extent = gc.textExtent( description );
+        gc.drawText( description, areaX + MINI_ICON_MARGIN, targetY, true );
+        if ( i < targetStreams.size() - 1 ) {
+          gc.drawLine( areaX + MINI_ICON_MARGIN / 2, targetY + extent.y + 3, areaX + targetsWidth - MINI_ICON_MARGIN
+              / 2, targetY + extent.y + 2 );
+        }
+
+        areaOwners.add( new AreaOwner( AreaType.STEP_TARGET_HOP_ICON_OPTION, areaX, targetY, targetsWidth, extent.y
+            + MINI_ICON_MARGIN, offset, stepMeta, targetStreams.get( i ) ) );
+
+        targetY += extent.y + MINI_ICON_MARGIN;
+      }
+
+      gc.setBackground( EColor.BACKGROUND );
+    }
+    gc.setTransform( translationX, translationY, 0, magnification );
   }
 
   public Point getNamePosition( String string, Point screen, int iconsize ) {
@@ -1363,5 +1327,16 @@ public class TransPainter extends BasePainter {
 
   public boolean isStartErrorHopStep() {
     return startErrorHopStep;
+  }
+  
+  public boolean isDataBufferEmpty( StepMeta stepMeta ) {
+    boolean isEmpty = true;
+    if ( previewDataMap != null ) {
+      List<Object[]> rowsData = previewDataMap.get( stepMeta );
+      if ( rowsData != null ) {
+        isEmpty = rowsData.isEmpty();
+      }
+    }
+    return isEmpty;
   }
 }
