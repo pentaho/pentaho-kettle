@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -28,7 +28,6 @@ import java.util.Set;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.i18n.BaseMessages;
@@ -187,7 +186,7 @@ public class SwitchCase extends BaseStep implements StepInterface {
         try {
           Object value =
             data.valueMeta.convertDataFromString(
-              target.caseValue, data.stringValueMeta, null, null, ValueMeta.TRIM_TYPE_NONE );
+              target.caseValue, data.stringValueMeta, null, null, ValueMetaInterface.TRIM_TYPE_NONE );
 
           // If we have a value and a rowset, we can store the combination in the map
           //
