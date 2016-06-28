@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -341,14 +341,16 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
         MetaInject.getUnavailableSourceSteps( targetSourceMapping, transMeta, stepMeta );
     Set<TargetStepAttribute> unavailableTargetSteps =
         MetaInject.getUnavailableTargetSteps( targetSourceMapping, injectTransMeta );
-    if ( unavailableSourceSteps.isEmpty() && unavailableTargetSteps.isEmpty() ) {
+    Set<TargetStepAttribute> missingTargetKeys =
+        MetaInject.getUnavailableTargetKeys( targetSourceMapping, injectTransMeta, unavailableTargetSteps );
+    if ( unavailableSourceSteps.isEmpty() && unavailableTargetSteps.isEmpty() && missingTargetKeys.isEmpty() ) {
       return;
     }
-    showInvalidMappingDialog( unavailableSourceSteps, unavailableTargetSteps );
+    showInvalidMappingDialog( unavailableSourceSteps, unavailableTargetSteps, missingTargetKeys );
   }
 
   private void showInvalidMappingDialog( Set<SourceStepField> unavailableSourceSteps,
-      Set<TargetStepAttribute> unavailableTargetSteps ) {
+      Set<TargetStepAttribute> unavailableTargetSteps, Set<TargetStepAttribute> missingTargetKeys ) {
     MessageBox mb = new MessageBox( shell, SWT.YES | SWT.NO | SWT.ICON_QUESTION );
     mb.setMessage( BaseMessages.getString( PKG, "MetaInjectDialog.InvalidMapping.Question" ) );
     mb.setText( BaseMessages.getString( PKG, "MetaInjectDialog.InvalidMapping.Title" ) );
@@ -356,6 +358,9 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
     if ( id == SWT.YES ) {
       MetaInject.removeUnavailableStepsFromMapping( targetSourceMapping, unavailableSourceSteps,
           unavailableTargetSteps );
+      for ( TargetStepAttribute target : missingTargetKeys ) {
+        targetSourceMapping.remove( target );
+      }
     }
   }
 

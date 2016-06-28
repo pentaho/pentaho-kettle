@@ -585,6 +585,32 @@ public class MetaInject extends BaseStep implements StepInterface {
     return Collections.unmodifiableSet( unavailableTargetSteps );
   }
 
+  public static Set<TargetStepAttribute> getUnavailableTargetKeys( Map<TargetStepAttribute, SourceStepField> targetMap,
+      TransMeta injectedTransMeta, Set<TargetStepAttribute> unavailableTargetSteps ) {
+    Set<TargetStepAttribute> missingKeys = new HashSet<>();
+    Map<String, BeanInjectionInfo> beanInfos = getUsedStepBeanInfos( injectedTransMeta );
+    for ( TargetStepAttribute key : targetMap.keySet() ) {
+      if ( !unavailableTargetSteps.contains( key ) ) {
+        BeanInjectionInfo info = beanInfos.get( key.getStepname().toUpperCase() );
+        if ( info != null && !info.getProperties().containsKey( key.getAttributeKey() ) ) {
+          missingKeys.add( key );
+        }
+      }
+    }
+    return missingKeys;
+  }
+
+  private static Map<String, BeanInjectionInfo> getUsedStepBeanInfos( TransMeta transMeta ) {
+    Map<String, BeanInjectionInfo> res = new HashMap<>();
+    for ( StepMeta step : transMeta.getUsedSteps() ) {
+      Class<? extends StepMetaInterface> stepMetaClass = step.getStepMetaInterface().getClass();
+      if ( BeanInjectionInfo.isInjectionSupported( stepMetaClass ) ) {
+        res.put( step.getName().toUpperCase(), new BeanInjectionInfo( stepMetaClass ) );
+      }
+    }
+    return res;
+  }
+
   private static Set<String> getUsedStepsForReferencendTransformation( TransMeta transMeta ) {
     Set<String> usedStepNames = new HashSet<String>();
     for ( StepMeta currentStep : transMeta.getUsedSteps() ) {
