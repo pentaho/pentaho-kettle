@@ -24,6 +24,7 @@ package org.pentaho.di.trans.steps.metainject;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.pentaho.di.core.Result;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleException;
@@ -37,6 +38,7 @@ import org.pentaho.di.core.row.value.ValueMetaDate;
 import org.pentaho.di.core.row.value.ValueMetaInteger;
 import org.pentaho.di.core.row.value.ValueMetaNumber;
 import org.pentaho.di.core.row.value.ValueMetaString;
+import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepInjectionMetaEntry;
 import org.pentaho.di.trans.step.StepMeta;
@@ -185,7 +187,7 @@ public class MetaInjectTest {
     doReturn( LogLevel.ERROR ).when( metaInject ).getLogLevel();
     // don't need to actually run anything to verify this. force it to "stopped"
     doReturn( true ).when( metaInject ).isStopped();
-
+    doNothing().when( metaInject ).waitUntilFinished( any( Trans.class ) );
     // make sure the injected tranformation doesn't have a metastore first
     assertNull( data.transMeta.getMetaStore() );
 
@@ -193,6 +195,22 @@ public class MetaInjectTest {
 
     // now it should be set
     assertEquals( metaStore, data.transMeta.getMetaStore() );
+  }
+
+  @Test
+  public void testTransWaitsForListenersToFinish() throws Exception {
+    doReturn( new String[] { } ).when( transMeta ).getPrevStepNames( any( StepMeta.class ) );
+    data.stepInjectionMetasMap = new HashMap<>();
+    data.stepInjectionMap = new HashMap<>();
+    data.transMeta = new TransMeta();
+    meta.setNoExecution( false );
+    Trans injectTrans = mock( Trans.class );
+    doReturn( injectTrans ).when( metaInject ).createInjectTrans();
+    when( injectTrans.isFinished() ).thenReturn( true );
+    Result result = mock( Result.class );
+    when( injectTrans.getResult() ).thenReturn( result );
+    metaInject.processRow( meta, data );
+    verify( injectTrans ).waitUntilFinished();
   }
 
   @Test

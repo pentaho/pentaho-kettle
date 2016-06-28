@@ -127,7 +127,7 @@ public class MetaInject extends BaseStep implements StepInterface {
     if ( !meta.isNoExecution() ) {
       // Now we can execute this modified transformation metadata.
       //
-      final Trans injectTrans = new Trans( data.transMeta, this );
+      final Trans injectTrans = createInjectTrans();
       injectTrans.setMetaStore( getMetaStore() );
       if ( getTrans().getParentJob() != null ) {
         injectTrans.setParentJob( getTrans().getParentJob() ); // See PDI-13224
@@ -196,6 +196,7 @@ public class MetaInject extends BaseStep implements StepInterface {
         }
       }
       copyResult( injectTrans );
+      waitUntilFinished( injectTrans );
     }
 
     // let the transformation complete it's execution to allow for any customizations to MDI to happen in the init methods of steps
@@ -212,6 +213,14 @@ public class MetaInject extends BaseStep implements StepInterface {
     setOutputDone();
 
     return false;
+  }
+
+  void waitUntilFinished( Trans injectTrans ) {
+    injectTrans.waitUntilFinished();
+  }
+
+  Trans createInjectTrans() {
+    return new Trans( data.transMeta, this );
   }
 
   private void writeInjectedKtr( String targetFile ) throws KettleException {
