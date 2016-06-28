@@ -156,6 +156,15 @@ public class SWTGC implements GCInterface {
       gc.drawImage( img, 0, 0, bounds.width, bounds.height, x, y, small_icon_size, small_icon_size );
     }
   }
+  
+  public void drawImage( EImage image, int x, int y, int width, int height, float magnification ) {
+    Image img = getNativeImage( image ).getAsBitmapForSize( gc.getDevice(), Math.round( width * magnification ),
+        Math.round( height * magnification ) );
+    if ( img != null ) {
+      Rectangle bounds = img.getBounds();
+      gc.drawImage( img, 0, 0, bounds.width, bounds.height, x, y, width, height );
+    }
+  }
 
   public void drawImage( EImage image, int x, int y, float magnification, double angle ) {
     Image img =
@@ -225,6 +234,12 @@ public class SWTGC implements GCInterface {
         return GUIResource.getInstance().getDisabledArrow();
       case ARROW_CANDIDATE:
         return GUIResource.getInstance().getCandidateArrow();
+      case DET_RUN:
+        return GUIResource.getInstance().getSwtImageDetRun();
+      case DET_GRAPH:  
+        return GUIResource.getInstance().getSwtImageDetGraph();
+      case DET_GRAPH_DISABLED:
+        return GUIResource.getInstance().getSwtImageDetGraphDisable();
       default:
         break;
     }
