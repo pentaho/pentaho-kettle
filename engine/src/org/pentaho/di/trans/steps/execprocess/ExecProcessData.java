@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -33,6 +33,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
  */
 public class ExecProcessData extends BaseStepData implements StepDataInterface {
   public int indexOfProcess;
+  public int[] indexOfArguments;
   public RowMetaInterface previousRowMeta;
   public RowMetaInterface outputRowMeta;
   public int NrPrevFields;
