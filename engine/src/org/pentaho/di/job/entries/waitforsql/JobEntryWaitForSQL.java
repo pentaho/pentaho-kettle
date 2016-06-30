@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -21,10 +21,6 @@
  ******************************************************************************/
 
 package org.pentaho.di.job.entries.waitforsql;
-
-import static org.pentaho.di.job.entry.validator.AndValidator.putValidators;
-import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.andValidator;
-import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notBlankValidator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,6 +42,8 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
+import org.pentaho.di.job.entry.validator.AndValidator;
+import org.pentaho.di.job.entry.validator.JobEntryValidatorUtils;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.resource.ResourceEntry;
@@ -132,6 +130,7 @@ public class JobEntryWaitForSQL extends JobEntryBase implements Cloneable, JobEn
     this( "" );
   }
 
+  @Override
   public Object clone() {
     JobEntryWaitForSQL je = (JobEntryWaitForSQL) super.clone();
     return je;
@@ -156,6 +155,7 @@ public class JobEntryWaitForSQL extends JobEntryBase implements Cloneable, JobEn
     return getSuccessConditionByCode( tt );
   }
 
+  @Override
   public String getXML() {
     StringBuffer retval = new StringBuffer( 200 );
 
@@ -229,6 +229,7 @@ public class JobEntryWaitForSQL extends JobEntryBase implements Cloneable, JobEn
     this.maximumTimeout = maximumTimeout;
   }
 
+  @Override
   public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers,
     Repository rep, IMetaStore metaStore ) throws KettleXMLException {
     try {
@@ -254,6 +255,7 @@ public class JobEntryWaitForSQL extends JobEntryBase implements Cloneable, JobEn
     }
   }
 
+  @Override
   public void loadRep( Repository rep, IMetaStore metaStore, ObjectId id_jobentry, List<DatabaseMeta> databases,
     List<SlaveServer> slaveServers ) throws KettleException {
     try {
@@ -292,6 +294,7 @@ public class JobEntryWaitForSQL extends JobEntryBase implements Cloneable, JobEn
     return 0;
   }
 
+  @Override
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_job ) throws KettleException {
     try {
       rep.saveDatabaseMetaJobEntryAttribute( id_job, getObjectId(), "connection", "id_database", connection );
@@ -324,14 +327,17 @@ public class JobEntryWaitForSQL extends JobEntryBase implements Cloneable, JobEn
     return connection;
   }
 
+  @Override
   public boolean evaluates() {
     return true;
   }
 
+  @Override
   public boolean isUnconditional() {
     return false;
   }
 
+  @Override
   public Result execute( Result previousResult, int nr ) {
     Result result = previousResult;
     result.setResult( false );
@@ -471,6 +477,12 @@ public class JobEntryWaitForSQL extends JobEntryBase implements Cloneable, JobEn
       logBasic( "Exception while waiting for SQL data: " + e.getMessage() );
     }
 
+    if ( result.getResult() ) {
+      // Remove error count set at the beginning of the method
+      // PDI-15437
+      result.setNrErrors( 0 );
+    }
+
     return result;
   }
 
@@ -572,10 +584,12 @@ public class JobEntryWaitForSQL extends JobEntryBase implements Cloneable, JobEn
 
   }
 
+  @Override
   public DatabaseMeta[] getUsedDatabaseConnections() {
     return new DatabaseMeta[] { connection, };
   }
 
+  @Override
   public List<ResourceReference> getResourceDependencies( JobMeta jobMeta ) {
     List<ResourceReference> references = super.getResourceDependencies( jobMeta );
     if ( connection != null ) {
@@ -589,8 +603,9 @@ public class JobEntryWaitForSQL extends JobEntryBase implements Cloneable, JobEn
 
   @Override
   public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
-    Repository repository, IMetaStore metaStore ) {
-    andValidator().validate( this, "WaitForSQL", remarks, putValidators( notBlankValidator() ) );
+                     Repository repository, IMetaStore metaStore ) {
+    JobEntryValidatorUtils.andValidator().validate( this, "WaitForSQL", remarks,
+      AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
   }
 
 }
