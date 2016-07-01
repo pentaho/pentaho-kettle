@@ -29,13 +29,9 @@ public class DateLoadSaveValidator implements FieldLoadSaveValidator<Date> {
 
   @Override
   public Date getTestObject() {
-    boolean future = new Random().nextBoolean();
     Long time = System.currentTimeMillis();
-    if ( future ) {
-      time += new Random().nextInt( time.intValue() ); // Up to 2*N years after 1970
-    } else {
-      time -= new Random().nextInt( time.intValue() ); // Back to January 1 1970
-    }
+    // forward or back less than a month
+    time += new Random().nextInt();
     return new Date( time );
   }
 
