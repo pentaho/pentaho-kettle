@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -29,11 +29,14 @@ import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaBase;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
+import org.pentaho.di.core.row.value.ValueMetaNone;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -211,6 +214,7 @@ public class MemoryGroupByMeta extends BaseStepMeta implements StepMetaInterface
     this.valueField = valueField;
   }
 
+  @Override
   public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     readData( stepnode );
   }
@@ -223,6 +227,7 @@ public class MemoryGroupByMeta extends BaseStepMeta implements StepMetaInterface
     valueField = new String[nrfields];
   }
 
+  @Override
   public Object clone() {
     Object retval = super.clone();
     return retval;
@@ -298,6 +303,7 @@ public class MemoryGroupByMeta extends BaseStepMeta implements StepMetaInterface
     return typeGroupLongDesc[i];
   }
 
+  @Override
   public void setDefault() {
     int sizegroup = 0;
     int nrfields = 0;
@@ -305,8 +311,12 @@ public class MemoryGroupByMeta extends BaseStepMeta implements StepMetaInterface
     allocate( sizegroup, nrfields );
   }
 
+  @Override
   public void getFields( RowMetaInterface r, String origin, RowMetaInterface[] info, StepMeta nextStep,
     VariableSpace space, Repository repository, IMetaStore metaStore ) {
+    boolean compatibilityMode = ValueMetaBase.convertStringToBoolean(
+      space.getVariable( Const.KETTLE_COMPATIBILITY_MEMORY_GROUP_BY_SUM_AVERAGE_RETURN_NUMBER_TYPE, "N" ) );
+
     // re-assemble a new row of metadata
     //
     RowMetaInterface fields = new RowMeta();
@@ -350,6 +360,12 @@ public class MemoryGroupByMeta extends BaseStepMeta implements StepMetaInterface
             break;
           case TYPE_GROUP_SUM:
           case TYPE_GROUP_AVERAGE:
+            if ( !compatibilityMode && subj.isNumeric() ) {
+              value_type = subj.getType();
+            } else {
+              value_type = ValueMetaInterface.TYPE_NUMBER;
+            }
+            break;
           case TYPE_GROUP_MEDIAN:
           case TYPE_GROUP_PERCENTILE:
           case TYPE_GROUP_STANDARD_DEVIATION:
@@ -377,7 +393,15 @@ public class MemoryGroupByMeta extends BaseStepMeta implements StepMetaInterface
         }
 
         if ( value_type != ValueMetaInterface.TYPE_NONE ) {
-          ValueMetaInterface v = new ValueMeta( value_name, value_type );
+          ValueMetaInterface v;
+          try {
+            v = ValueMetaFactory.createValueMeta( value_name, value_type );
+          } catch ( KettlePluginException e ) {
+            log.logError(
+              BaseMessages.getString( PKG, "MemoryGroupByMeta.Exception.UnknownValueMetaType" ), value_type, e );
+            v = new ValueMetaNone( value_name );
+          }
+
           v.setOrigin( origin );
           v.setLength( length, precision );
           fields.addValueMeta( v );
@@ -391,6 +415,7 @@ public class MemoryGroupByMeta extends BaseStepMeta implements StepMetaInterface
     r.addRowMeta( fields );
   }
 
+  @Override
   public String getXML() {
     StringBuffer retval = new StringBuffer( 500 );
 
@@ -418,6 +443,7 @@ public class MemoryGroupByMeta extends BaseStepMeta implements StepMetaInterface
     return retval.toString();
   }
 
+  @Override
   public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
       int groupsize = rep.countNrStepAttributes( id_step, "group_name" );
@@ -449,6 +475,7 @@ public class MemoryGroupByMeta extends BaseStepMeta implements StepMetaInterface
     }
   }
 
+  @Override
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       rep.saveStepAttribute( id_transformation, id_step, "give_back_row", alwaysGivingBackOneRow );
@@ -470,6 +497,7 @@ public class MemoryGroupByMeta extends BaseStepMeta implements StepMetaInterface
     }
   }
 
+  @Override
   public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
     RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
@@ -488,11 +516,13 @@ public class MemoryGroupByMeta extends BaseStepMeta implements StepMetaInterface
     }
   }
 
+  @Override
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
     TransMeta transMeta, Trans trans ) {
     return new MemoryGroupBy( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 
+  @Override
   public StepDataInterface getStepData() {
     return new MemoryGroupByData();
   }

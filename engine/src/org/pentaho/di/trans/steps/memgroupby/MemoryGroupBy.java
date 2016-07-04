@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -66,15 +66,17 @@ public class MemoryGroupBy extends BaseStep implements StepInterface {
 
   private boolean allNullsAreZero = false;
   private boolean minNullIsValued = false;
+  private boolean compatibilityMode = false;
 
   public MemoryGroupBy( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-    Trans trans ) {
+                        Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
 
     meta = (MemoryGroupByMeta) getStepMeta().getStepMetaInterface();
     data = (MemoryGroupByData) stepDataInterface;
   }
 
+  @Override
   public boolean processRow( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
     meta = (MemoryGroupByMeta) smi;
     data = (MemoryGroupByData) sdi;
@@ -85,6 +87,8 @@ public class MemoryGroupBy extends BaseStep implements StepInterface {
       allNullsAreZero = ValueMetaBase.convertStringToBoolean( val );
       val = getVariable( Const.KETTLE_AGGREGATION_MIN_NULL_IS_VALUED, "N" );
       minNullIsValued = ValueMetaBase.convertStringToBoolean( val );
+      compatibilityMode = ValueMetaBase.convertStringToBoolean(
+        getVariable( Const.KETTLE_COMPATIBILITY_MEMORY_GROUP_BY_SUM_AVERAGE_RETURN_NUMBER_TYPE, "N" ) );
 
       // What is the output looking like?
       //
@@ -159,8 +163,8 @@ public class MemoryGroupBy extends BaseStep implements StepInterface {
 
     // Here is where we start to do the real work...
     //
-    if ( r == null ) // no more input to be expected... (or none received in the first place)
-    {
+    if ( r == null ) {
+      // no more input to be expected... (or none received in the first place)
       handleLastOfGroup();
 
       setOutputDone();
@@ -408,8 +412,6 @@ public class MemoryGroupBy extends BaseStep implements StepInterface {
           vMeta = new ValueMeta( meta.getAggregateField()[i], ValueMetaInterface.TYPE_NUMBER );
           v = new ArrayList<Double>();
           break;
-        case MemoryGroupByMeta.TYPE_GROUP_SUM:
-        case MemoryGroupByMeta.TYPE_GROUP_AVERAGE:
         case MemoryGroupByMeta.TYPE_GROUP_STANDARD_DEVIATION:
           vMeta = new ValueMeta( meta.getAggregateField()[i], ValueMetaInterface.TYPE_NUMBER );
           break;
@@ -417,6 +419,11 @@ public class MemoryGroupBy extends BaseStep implements StepInterface {
         case MemoryGroupByMeta.TYPE_GROUP_COUNT_ANY:
         case MemoryGroupByMeta.TYPE_GROUP_COUNT_ALL:
           vMeta = new ValueMeta( meta.getAggregateField()[i], ValueMetaInterface.TYPE_INTEGER );
+          break;
+        case MemoryGroupByMeta.TYPE_GROUP_SUM:
+        case MemoryGroupByMeta.TYPE_GROUP_AVERAGE:
+          vMeta = !compatibilityMode && subjMeta.isNumeric() ? subjMeta.clone() : new ValueMetaNumber();
+          vMeta.setName( meta.getAggregateField()[i] );
           break;
         case MemoryGroupByMeta.TYPE_GROUP_FIRST:
         case MemoryGroupByMeta.TYPE_GROUP_LAST:
@@ -536,6 +543,7 @@ public class MemoryGroupBy extends BaseStep implements StepInterface {
 
   }
 
+  @Override
   public boolean init( StepMetaInterface smi, StepDataInterface sdi ) {
     meta = (MemoryGroupByMeta) smi;
     data = (MemoryGroupByData) sdi;
@@ -554,6 +562,7 @@ public class MemoryGroupBy extends BaseStep implements StepInterface {
     ( (MemoryGroupByData) sdi ).clear();
   }
 
+  @Override
   public void batchComplete() throws KettleException {
     // Empty the hash table
     //
