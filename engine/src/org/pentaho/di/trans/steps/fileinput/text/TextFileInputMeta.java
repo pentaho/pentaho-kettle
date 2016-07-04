@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -34,6 +34,7 @@ import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.fileinput.FileInputList;
@@ -1229,8 +1230,12 @@ public class TextFileInputMeta extends BaseFileInputStepMeta implements StepMeta
         // Replace the filename ONLY (folder or filename)
         //
         for ( int i = 0; i < inputFiles.fileName.length; i++ ) {
-          FileObject fileObject =
-              KettleVFS.getFileObject( space.environmentSubstitute( inputFiles.fileName[i] ), space );
+          final String fileName = inputFiles.fileName[ i ];
+
+          if ( fileName == null || fileName.isEmpty() ) {
+            continue;
+          }
+          FileObject fileObject = getFileObject( space.environmentSubstitute( fileName ), space );
           inputFiles.fileName[i] =
               resourceNamingInterface.nameResource( fileObject, space, Const.isEmpty( inputFiles.fileMask[i] ) );
         }
@@ -1300,5 +1305,12 @@ public class TextFileInputMeta extends BaseFileInputStepMeta implements StepMeta
    */
   public String getAcceptingField() {
     return inputFiles.acceptingField;
+  }
+
+  /**
+   * For testing
+   */
+  FileObject getFileObject( String vfsFileName, VariableSpace variableSpace ) throws KettleFileException {
+    return KettleVFS.getFileObject( variableSpace.environmentSubstitute( vfsFileName ), variableSpace );
   }
 }
