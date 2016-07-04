@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -111,7 +111,7 @@ public class TransSplitter {
   }
 
   /**
-   * @param originalTransformation
+   * @param transMeta The original transformation
    */
   public TransSplitter( TransMeta transMeta ) throws KettleException {
     this( transMeta, new TransMetaFactoryImpl() );
@@ -356,6 +356,9 @@ public class TransSplitter {
 
     // Also set the logging details...
     transMeta.setTransLogTable( (TransLogTable) originalTransformation.getTransLogTable().clone() );
+
+    // Rowset size
+    transMeta.setSizeRowset( originalTransformation.getSizeRowset() );
 
     return transMeta;
   }
