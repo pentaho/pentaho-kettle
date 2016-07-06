@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -1434,6 +1434,10 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
     ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.TransformationStart.id, this );
 
     heartbeat = startHeartbeat( getHeartbeatIntervalInSeconds() );
+
+    if ( steps.isEmpty() ) {
+      fireTransFinishedListeners();
+    }
 
     if ( log.isDetailed() ) {
       log.logDetailed( BaseMessages.getString( PKG, "Trans.Log.TransformationHasAllocated", String.valueOf( steps
