@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -523,7 +523,7 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
         cell.setCellFormula( vMeta.getString( v ) );
       } else {
         // static content case
-        switch( vMeta.getType() ) {
+        switch ( vMeta.getType() ) {
           case ValueMetaInterface.TYPE_DATE:
             if ( v != null && vMeta.getDate( v ) != null ) {
               cell.setCellValue( vMeta.getDate( v ) );
@@ -580,6 +580,7 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
     DataFormat format = data.wb.createDataFormat();
     short formatIndex = format.getFormat( excelFieldFormat );
     CellStyle style = data.wb.createCellStyle();
+    style.cloneStyleFrom( cell.getCellStyle() );
     style.setDataFormat( formatIndex );
     cell.setCellStyle( style );
   }
