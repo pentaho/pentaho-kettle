@@ -24,7 +24,6 @@ package org.pentaho.di.trans;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
@@ -35,9 +34,6 @@ import java.io.OutputStream;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.concurrent.CountDownLatch;
 
 import org.apache.commons.io.IOUtils;
@@ -58,12 +54,7 @@ import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
-import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.step.StepMetaChangeListenerInterface;
 import org.pentaho.di.trans.step.StepMetaDataCombi;
-import org.pentaho.di.trans.steps.metainject.MetaInjectMeta;
-import org.pentaho.di.trans.steps.metainject.SourceStepField;
-import org.pentaho.di.trans.steps.metainject.TargetStepAttribute;
 
 public class TransTest {
 
@@ -214,72 +205,6 @@ public class TransTest {
     }
     Trans trans = new Trans( mockTransMeta, null, null, null, ktr.getURL().toURI().toString() );
     assertEquals( testParamValue, trans.getParameterValue( testParam ) );
-  }
-
-  @Test
-  public void testTransListeners() {
-    TransMeta TransMeta = new TransMeta();
-
-    StepMeta oldFormStep = new StepMeta();
-    oldFormStep.setName( "Generate_1" );
-
-    StepMeta newFormStep = new StepMeta();
-    newFormStep.setName( "Generate_2" );
-
-    StepMeta toStep = new StepMeta();
-    toStep.setStepMetaInterface( new MetaInjectMeta() );
-    toStep.setName( "ETL Inject Metadata" );
-
-    StepMeta deletedStep = new StepMeta();
-    deletedStep.setStepMetaInterface( new MetaInjectMeta() );
-    deletedStep.setName( "ETL Inject Metadata for delete" );
-
-    // Verify add & remove listeners
-
-    TransMeta.addStep( oldFormStep );
-    TransMeta.addStep( toStep );
-    TransMeta.addStep( deletedStep );
-
-    assertEquals( TransMeta.nrStepChangeListeners(), 2 );
-    TransMeta.removeStepChangeListener( (StepMetaChangeListenerInterface) deletedStep.getStepMetaInterface() );
-    assertEquals( TransMeta.nrStepChangeListeners(), 1 );
-    TransMeta.removeStep( 2 );
-
-    TransHopMeta hi = new TransHopMeta( oldFormStep, toStep );
-    TransMeta.addTransHop( hi );
-
-    // Verify MetaInjectMeta.onStepChange()
-
-    // add new TargetStepAttribute
-    MetaInjectMeta toMeta = (MetaInjectMeta) toStep.getStepMetaInterface();
-
-    Map<TargetStepAttribute, SourceStepField> sourceMapping = new HashMap<TargetStepAttribute, SourceStepField>();
-    TargetStepAttribute keyTest = new TargetStepAttribute( "File", "key", true );
-    SourceStepField valueTest = new SourceStepField( oldFormStep.getName(), oldFormStep.getName() );
-    sourceMapping.put( keyTest, valueTest );
-
-    toMeta.setTargetSourceMapping( sourceMapping );
-
-    // Run all listeners
-    TransMeta.notifyAllListeners( oldFormStep, newFormStep );
-
-    // Verify changes, which listeners makes
-    sourceMapping = toMeta.getTargetSourceMapping();
-    for ( Entry<TargetStepAttribute, SourceStepField> entry : sourceMapping.entrySet() ) {
-      SourceStepField value = entry.getValue();
-      if ( !value.getStepname().equals( newFormStep.getName() ) ) {
-        fail();
-      }
-    }
-
-    // verify another functions
-    TransMeta.addStep( 1, deletedStep );
-    assertEquals( TransMeta.nrSteps(), 3 );
-    assertEquals( TransMeta.nrStepChangeListeners(), 2 );
-
-    TransMeta.removeStep( 0 );
-    assertEquals( TransMeta.nrSteps(), 2 );
-
   }
 
   @Test
