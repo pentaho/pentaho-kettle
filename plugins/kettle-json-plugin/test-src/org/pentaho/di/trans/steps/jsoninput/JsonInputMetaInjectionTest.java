@@ -93,81 +93,6 @@ public class JsonInputMetaInjectionTest extends BaseMetadataInjectionTest<JsonIn
         return meta.isRemoveSourceField();
       }
     } );
-    check( "ACCEPT_FILE_NAMES", new BooleanGetter() {
-      public boolean get() {
-        return meta.inputFiles.acceptingFilenames;
-      }
-    } );
-    check( "ACCEPT_FILE_STEP", new StringGetter() {
-      public String get() {
-        return meta.inputFiles.acceptingStepName;
-      }
-    } );
-    check( "PASS_THROUGH_FIELDS", new BooleanGetter() {
-      public boolean get() {
-        return meta.inputFiles.passingThruFields;
-      }
-    } );
-    check( "ACCEPT_FILE_FIELD", new StringGetter() {
-      public String get() {
-        return meta.inputFiles.acceptingField;
-      }
-    } );
-    check( "ADD_FILES_TO_RESULT", new BooleanGetter() {
-      public boolean get() {
-        return meta.inputFiles.isaddresult;
-      }
-    } );
-    check( "IGNORE_ERRORS", new BooleanGetter() {
-      public boolean get() {
-        return meta.errorHandling.errorIgnored;
-      }
-    } );
-    check( "FILE_ERROR_FIELD", new StringGetter() {
-      public String get() {
-        return meta.errorHandling.fileErrorField;
-      }
-    } );
-    check( "FILE_ERROR_MESSAGE_FIELD", new StringGetter() {
-      public String get() {
-        return meta.errorHandling.fileErrorMessageField;
-      }
-    } );
-    check( "SKIP_BAD_FILES", new BooleanGetter() {
-      public boolean get() {
-        return meta.errorHandling.skipBadFiles;
-      }
-    } );
-    check( "WARNING_FILES_TARGET_DIR", new StringGetter() {
-      public String get() {
-        return meta.errorHandling.warningFilesDestinationDirectory;
-      }
-    } );
-    check( "WARNING_FILES_EXTENTION", new StringGetter() {
-      public String get() {
-        return meta.errorHandling.warningFilesExtension;
-      }
-    } );
-    check( "ERROR_FILES_TARGET_DIR", new StringGetter() {
-      public String get() {
-        return meta.errorHandling.errorFilesDestinationDirectory;
-      }
-    } );
-    check( "ERROR_FILES_EXTENTION", new StringGetter() {
-      public String get() {
-        return meta.errorHandling.errorFilesExtension;
-      }
-    } );
-    check( "LINE_NR_FILES_TARGET_DIR", new StringGetter() {
-      public String get() {
-        return meta.errorHandling.lineNumberFilesDestinationDirectory;
-      }
-    } );
-    check( "LINE_NR_FILES_EXTENTION", new StringGetter() {
-      public String get() {
-        return meta.errorHandling.lineNumberFilesExtension;
-      }
-    } );
     check( "FILE_SHORT_FILE_FIELDNAME", new StringGetter() {
       public String get() {
         return meta.additionalOutputFields.shortFilenameField;
@@ -243,19 +168,9 @@ public class JsonInputMetaInjectionTest extends BaseMetadataInjectionTest<JsonIn
         return meta.inputFiles.inputFields[0].getPath();
       }
     } );
-    check( "FIELD_POSITION", new IntGetter() {
-      public int get() {
-        return meta.inputFiles.inputFields[0].getPosition();
-      }
-    } );
     check( "FIELD_LENGTH", new IntGetter() {
       public int get() {
         return meta.inputFiles.inputFields[0].getLength();
-      }
-    } );
-    check( "FIELD_IGNORE", new BooleanGetter() {
-      public boolean get() {
-        return meta.inputFiles.inputFields[0].isIgnored();
       }
     } );
     check( "FIELD_FORMAT", new StringGetter() {
@@ -288,14 +203,19 @@ public class JsonInputMetaInjectionTest extends BaseMetadataInjectionTest<JsonIn
         return meta.inputFiles.inputFields[0].isRepeated();
       }
     } );
-    check( "FIELD_NULL_STRING", new StringGetter() {
+    check( "SOURCE_FIELD_NAME", new StringGetter() {
       public String get() {
-        return meta.inputFiles.inputFields[0].getNullString();
+        return meta.getFieldValue();
       }
     } );
-    check( "FIELD_IF_NULL", new StringGetter() {
-      public String get() {
-        return meta.inputFiles.inputFields[0].getIfNullValue();
+    check( "SOURCE_IN_FIELD", new BooleanGetter() {
+      public boolean get() {
+        return meta.isInFields();
+      }
+    } );
+    check( "SOURCE_FIELD_IS_FILENAME", new BooleanGetter() {
+      public boolean get() {
+        return meta.getIsAFile();
       }
     } );
 
