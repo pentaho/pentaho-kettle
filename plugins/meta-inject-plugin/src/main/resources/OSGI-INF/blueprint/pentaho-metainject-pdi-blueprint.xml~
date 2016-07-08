@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+          xmlns:pen="PropsUI for say which property should behttp://www.pentaho.com/xml/schemas/pentaho-blueprint"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
+          xmlns:cxf="http://cxf.apache.org/blueprint/core"
+          xmlns:jaxrs="http://cxf.apache.org/blueprint/jaxrs" xmlns:jaxws="http://cxf.apache.org/blueprint/jaxws"
+          xsi:schemaLocation="
+ http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/aries/tags/blueprint-0.3.1/blueprint-core/src/main/resources/org/apache/aries/blueprint/ext/blueprint-ext.xsd
+ http://cxf.apache.org/blueprint/jaxws http://cxf.apache.org/schemas/blueprint/jaxws.xsd
+ http://cxf.apache.org/blueprint/jaxrs http://cxf.apache.org/schemas/blueprint/jaxrs.xsd
+ http://cxf.apache.org/blueprint/core http://cxf.apache.org/schemas/blueprint/core.xsd
+ http://camel.apache.org/schema/blueprint http://camel.apache.org/schema/blueprint/camel-blueprint.xsd
+ http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0 http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.1.0.xsd
+ http://www.pentaho.com/xml/schemas/pentaho-blueprint http://www.pentaho.com/xml/schemas/pentaho-blueprint.xsd
+ ">
+
+ <bean id="RepositoryImporterPatchTransStep"
+       class="org.pentaho.di.job.entries.metainject.RepositoryImporterExtension"
+       scope="singleton"
+       destroy-method="destroy">
+   <pen:di-plugin type="org.pentaho.di.core.extension.ExtensionPointPluginType"/>
+ </bean>
+
+ <bean id="RepositoryExporterPatchTransStep"
+       class="org.pentaho.di.job.entries.metainject.RepositoryExporterExtension"
+       scope="singleton"
+       destroy-method="destroy">
+   <pen:di-plugin type="org.pentaho.di.core.extension.ExtensionPointPluginType"/>
+ </bean>
+
+</blueprint>
