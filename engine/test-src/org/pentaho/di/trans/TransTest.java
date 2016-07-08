@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -82,6 +82,23 @@ public class TransTest {
     trans.setLog( Mockito.mock( LogChannelInterface.class ) );
     trans.prepareExecution( null );
     trans.startThreads();
+  }
+
+  /**
+   * PDI-14948 - Execution of trans with no steps never ends
+   */
+  @Test( timeout = 1000 )
+  public void transWithNoStepsIsNotEndless() throws Exception {
+    Trans transWithNoSteps = new Trans( new TransMeta() );
+    transWithNoSteps = spy( transWithNoSteps );
+
+    transWithNoSteps.prepareExecution( new String[] {} );
+
+    transWithNoSteps.startThreads();
+
+    // check trans lifecycle is not corrupted
+    verify( transWithNoSteps ).fireTransStartedListeners();
+    verify( transWithNoSteps ).fireTransFinishedListeners();
   }
 
   @Test
