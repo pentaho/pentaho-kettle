@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -32,8 +32,11 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.injection.Injection;
+import org.pentaho.di.core.injection.InjectionDeep;
+import org.pentaho.di.core.injection.InjectionSupported;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.value.ValueMetaBase;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -52,6 +55,7 @@ import org.pentaho.di.trans.step.errorhandling.Stream;
 import org.pentaho.di.trans.step.errorhandling.StreamIcon;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface.StreamType;
+import org.pentaho.di.trans.steps.fieldsplitter.DataTypeConverter;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
@@ -59,6 +63,7 @@ import org.w3c.dom.Node;
  * Created on 14-may-2008
  *
  */
+@InjectionSupported( groups = {}, localizationPrefix = "SwitchCaseMeta.Injection." )
 public class SwitchCaseMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = SwitchCaseMeta.class; // for i18n purposes, needed by Translator2!!
 
@@ -66,27 +71,35 @@ public class SwitchCaseMeta extends BaseStepMeta implements StepMetaInterface {
   private static final String XML_TAG_CASE_VALUE = "case";
 
   /** The field to switch over */
+  @Injection( name = "FIELD_NAME" )
   private String fieldname;
 
   /** The case value type to help parse numeric and date-time data */
+  @Injection( name = "VALUE_TYPE", converter = DataTypeConverter.class )
   private int caseValueType;
   /** The case value format to help parse numeric and date-time data */
+  @Injection( name = "VALUE_FORMAT" )
   private String caseValueFormat;
   /** The decimal symbol to help parse numeric data */
+  @Injection( name = "VALUE_DECIMAL" )
   private String caseValueDecimal;
   /** The grouping symbol to help parse numeric data */
+  @Injection( name = "VALUE_GROUP" )
   private String caseValueGroup;
 
   /** The targets to switch over */
+  @InjectionDeep( prefix = "SWITCH_CASE_TARGET" )
   private List<SwitchCaseTarget> caseTargets;
 
   /** The default target step name (only used during serialization) */
+  @Injection( name = "DEFAULT_TARGET_STEP_NAME" )
   private String defaultTargetStepname;
 
   /** The default target step */
   private StepMeta defaultTargetStep;
 
   /** True if the comparison is a String.contains instead of equals */
+  @Injection( name = "CONTAINS" )
   private boolean isContains;
 
   public SwitchCaseMeta() {
@@ -122,7 +135,7 @@ public class SwitchCaseMeta extends BaseStepMeta implements StepMetaInterface {
 
     retval.append( XMLHandler.addTagValue( "fieldname", fieldname ) );
     retval.append( XMLHandler.addTagValue( "use_contains", isContains ) );
-    retval.append( XMLHandler.addTagValue( "case_value_type", ValueMeta.getTypeDesc( caseValueType ) ) );
+    retval.append( XMLHandler.addTagValue( "case_value_type", ValueMetaBase.getTypeDesc( caseValueType ) ) );
     retval.append( XMLHandler.addTagValue( "case_value_format", caseValueFormat ) );
     retval.append( XMLHandler.addTagValue( "case_value_decimal", caseValueDecimal ) );
     retval.append( XMLHandler.addTagValue( "case_value_group", caseValueGroup ) );
@@ -150,7 +163,7 @@ public class SwitchCaseMeta extends BaseStepMeta implements StepMetaInterface {
     try {
       fieldname = XMLHandler.getTagValue( stepnode, "fieldname" );
       isContains = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "use_contains" ) );
-      caseValueType = ValueMeta.getType( XMLHandler.getTagValue( stepnode, "case_value_type" ) );
+      caseValueType = ValueMetaBase.getType( XMLHandler.getTagValue( stepnode, "case_value_type" ) );
       caseValueFormat = XMLHandler.getTagValue( stepnode, "case_value_format" );
       caseValueDecimal = XMLHandler.getTagValue( stepnode, "case_value_decimal" );
       caseValueGroup = XMLHandler.getTagValue( stepnode, "case_value_group" );
@@ -181,7 +194,7 @@ public class SwitchCaseMeta extends BaseStepMeta implements StepMetaInterface {
     try {
       fieldname = rep.getStepAttributeString( id_step, "fieldname" );
       isContains = rep.getStepAttributeBoolean( id_step, "use_contains" );
-      caseValueType = ValueMeta.getType( rep.getStepAttributeString( id_step, "case_value_type" ) );
+      caseValueType = ValueMetaBase.getType( rep.getStepAttributeString( id_step, "case_value_type" ) );
       caseValueFormat = rep.getStepAttributeString( id_step, "case_value_format" );
       caseValueDecimal = rep.getStepAttributeString( id_step, "case_value_decimal" );
       caseValueGroup = rep.getStepAttributeString( id_step, "case_value_group" );
@@ -206,7 +219,7 @@ public class SwitchCaseMeta extends BaseStepMeta implements StepMetaInterface {
     try {
       rep.saveStepAttribute( id_transformation, id_step, "fieldname", fieldname );
       rep.saveStepAttribute( id_transformation, id_step, "use_contains", isContains );
-      rep.saveStepAttribute( id_transformation, id_step, "case_value_type", ValueMeta.getTypeDesc( caseValueType ) );
+      rep.saveStepAttribute( id_transformation, id_step, "case_value_type", ValueMetaBase.getTypeDesc( caseValueType ) );
       rep.saveStepAttribute( id_transformation, id_step, "case_value_format", caseValueFormat );
       rep.saveStepAttribute( id_transformation, id_step, "case_value_decimal", caseValueDecimal );
       rep.saveStepAttribute( id_transformation, id_step, "case_value_group", caseValueGroup );
@@ -436,8 +449,10 @@ public class SwitchCaseMeta extends BaseStepMeta implements StepMetaInterface {
   public void searchInfoAndTargetSteps( List<StepMeta> steps ) {
     for ( StreamInterface stream : getStepIOMeta().getTargetStreams() ) {
       SwitchCaseTarget target = (SwitchCaseTarget) stream.getSubject();
-      StepMeta stepMeta = StepMeta.findStep( steps, target.caseTargetStepname );
-      target.caseTargetStep = stepMeta;
+      if ( target != null ) {
+        StepMeta stepMeta = StepMeta.findStep( steps, target.caseTargetStepname );
+        target.caseTargetStep = stepMeta;
+      }
     }
     defaultTargetStep = StepMeta.findStep( steps, defaultTargetStepname );
     resetStepIoMeta();
