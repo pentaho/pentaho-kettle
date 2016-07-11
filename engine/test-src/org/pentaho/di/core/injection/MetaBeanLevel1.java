@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,7 +22,8 @@
 
 package org.pentaho.di.core.injection;
 
-@InjectionSupported( localizationPrefix = "", groups = { "FILENAME_LINES", "FILENAME_LINES2" } )
+@InjectionSupported( localizationPrefix = "", groups = { "FILENAME_LINES", "FILENAME_LINES2" }, hide = {
+  "FLONG_HIDDEN" } )
 public class MetaBeanLevel1 {
 
   @InjectionDeep
@@ -34,6 +35,8 @@ public class MetaBeanLevel1 {
   public int fint;
   @Injection( name = "FLONG" )
   public long flong;
+  @Injection( name = "FLONG_HIDDEN" )
+  public long flong_hidden;
 
   public MetaBeanLevel2 getSub() {
     return sub;

@@ -25,8 +25,10 @@ package org.pentaho.di.core.injection.bean;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.core.injection.Injection;
@@ -48,6 +50,7 @@ public class BeanInjectionInfo {
   private List<Group> groupsList = new ArrayList<>();
   /** Used only for fast group search during initialize. */
   private Map<String, Group> groupsMap = new HashMap<>();
+  private Set<String> hideProperties = new HashSet<>();
 
   public static boolean isInjectionSupported( Class<?> clazz ) {
     InjectionSupported annotation = clazz.getAnnotation( InjectionSupported.class );
@@ -70,6 +73,9 @@ public class BeanInjectionInfo {
         Group gr = new Group( group );
         groupsList.add( gr );
         groupsMap.put( gr.getName(), gr );
+      }
+      for ( String p : clazzAnnotation.hide() ) {
+        hideProperties.add( p );
       }
 
       BeanLevelInfo root = new BeanLevelInfo();
@@ -106,6 +112,12 @@ public class BeanInjectionInfo {
     if ( properties.containsKey( propertyName ) ) {
       throw new RuntimeException( "Property '" + propertyName + "' already defined for " + clazz );
     }
+
+    // probably hided
+    if ( hideProperties.contains( propertyName ) ) {
+      return;
+    }
+
     Property prop = new Property( propertyName, metaInj.group(), leaf.createCallStack() );
     properties.put( prop.name, prop );
     Group gr = groupsMap.get( metaInj.group() );
