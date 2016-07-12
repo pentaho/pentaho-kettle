@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,8 +25,7 @@ package org.pentaho.di.trans;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -253,6 +252,23 @@ public class TransTest {
     TransMeta.removeStep( 0 );
     assertEquals( TransMeta.nrSteps(), 2 );
 
+  }
+
+  /**
+   * PDI-14948 - Execution of trans with no steps never ends
+  **/
+   @Test( timeout = 1000 )
+  public void transWithNoStepsIsNotEndless() throws Exception {
+    Trans transWithNoSteps = new Trans( new TransMeta() );
+    transWithNoSteps = spy( transWithNoSteps );
+
+    transWithNoSteps.prepareExecution( new String[] {} );
+
+    transWithNoSteps.startThreads();
+
+    // check trans lifecycle is not corrupted
+    verify( transWithNoSteps ).fireTransStartedListeners();
+    verify( transWithNoSteps ).fireTransFinishedListeners();
   }
 
   private void startThreads( Runnable one, Runnable two, CountDownLatch start ) throws InterruptedException {
