@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -47,7 +47,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * <p/>
  * There is a special condition flag, shared among all actors. Each of them must stop when it has found out the flag has
  * been cleared. Also, in most cases it makes sense to clear the flag after any exception has raised (see {@linkplain
- * StopOnErrorCallable}, because any actor can face with it in concurrent environment.
+ * StopOnErrorCallable}, because any actor can face with it in concurrency environment.
  * <p/>
  * The runner stores results of all actors, though in most cases this information is needless - what is important that
  * is the fact the execution has completed with no errors.
@@ -223,5 +223,3 @@ class ConcurrencyTestRunner<M, B> {
     return Collections.unmodifiableMap( monitoredResults );
   }
 }
-
-
