@@ -4326,7 +4326,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
    */
   private void attachActiveTrans( TransGraph transGraph, StepMeta stepMeta ) {
     if ( trans != null && transGraph != null ) {
-      Trans subTransformation = trans.getActiveSubtransformations().get( stepMeta.getName() );
+      Trans subTransformation = trans.getActiveSubTransformation( stepMeta.getName() );
       transGraph.setTrans( subTransformation );
       if ( !transGraph.isExecutionResultsPaneVisible() ) {
         transGraph.showExecutionResults();
@@ -4343,7 +4343,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
    */
   private Trans getActiveSubtransformation( TransGraph transGraph, StepMeta stepMeta ) {
     if ( trans != null && transGraph != null ) {
-      return trans.getActiveSubtransformations().get( stepMeta.getName() );
+      return trans.getActiveSubTransformation( stepMeta.getName() );
     }
     return null;
   }
