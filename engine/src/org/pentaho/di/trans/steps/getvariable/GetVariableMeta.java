@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -29,12 +29,14 @@ import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -105,27 +107,29 @@ public class GetVariableMeta extends BaseStepMeta implements StepMetaInterface {
     this.variableString = variableString;
   }
 
+  @Override
   public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     readData( stepnode );
   }
 
   public void allocate( int count ) {
-    fieldName = new String[count];
-    variableString = new String[count];
+    fieldName = new String[ count ];
+    variableString = new String[ count ];
 
-    fieldType = new int[count];
+    fieldType = new int[ count ];
 
-    fieldFormat = new String[count];
-    fieldLength = new int[count];
-    fieldPrecision = new int[count];
+    fieldFormat = new String[ count ];
+    fieldLength = new int[ count ];
+    fieldPrecision = new int[ count ];
 
-    currency = new String[count];
-    decimal = new String[count];
-    group = new String[count];
+    currency = new String[ count ];
+    decimal = new String[ count ];
+    group = new String[ count ];
 
-    trimType = new int[count];
+    trimType = new int[ count ];
   }
 
+  @Override
   public Object clone() {
     GetVariableMeta retval = (GetVariableMeta) super.clone();
 
@@ -134,16 +138,16 @@ public class GetVariableMeta extends BaseStepMeta implements StepMetaInterface {
     retval.allocate( count );
 
     for ( int i = 0; i < count; i++ ) {
-      retval.fieldName[i] = fieldName[i];
-      retval.variableString[i] = variableString[i];
-      retval.fieldType[i] = fieldType[i];
-      retval.fieldFormat[i] = fieldFormat[i];
-      retval.currency[i] = currency[i];
-      retval.decimal[i] = decimal[i];
-      retval.group[i] = group[i];
-      retval.fieldLength[i] = fieldLength[i];
-      retval.fieldPrecision[i] = fieldPrecision[i];
-      retval.trimType[i] = trimType[i];
+      retval.fieldName[ i ] = fieldName[ i ];
+      retval.variableString[ i ] = variableString[ i ];
+      retval.fieldType[ i ] = fieldType[ i ];
+      retval.fieldFormat[ i ] = fieldFormat[ i ];
+      retval.currency[ i ] = currency[ i ];
+      retval.decimal[ i ] = decimal[ i ];
+      retval.group[ i ] = group[ i ];
+      retval.fieldLength[ i ] = fieldLength[ i ];
+      retval.fieldPrecision[ i ] = fieldPrecision[ i ];
+      retval.trimType[ i ] = trimType[ i ];
     }
 
     return retval;
@@ -159,21 +163,21 @@ public class GetVariableMeta extends BaseStepMeta implements StepMetaInterface {
       for ( int i = 0; i < count; i++ ) {
         Node fnode = XMLHandler.getSubNodeByNr( fields, "field", i );
 
-        fieldName[i] = XMLHandler.getTagValue( fnode, "name" );
-        variableString[i] = XMLHandler.getTagValue( fnode, "variable" );
-        fieldType[i] = ValueMeta.getType( XMLHandler.getTagValue( fnode, "type" ) );
-        fieldFormat[i] = XMLHandler.getTagValue( fnode, "format" );
-        currency[i] = XMLHandler.getTagValue( fnode, "currency" );
-        decimal[i] = XMLHandler.getTagValue( fnode, "decimal" );
-        group[i] = XMLHandler.getTagValue( fnode, "group" );
-        fieldLength[i] = Const.toInt( XMLHandler.getTagValue( fnode, "length" ), -1 );
-        fieldPrecision[i] = Const.toInt( XMLHandler.getTagValue( fnode, "precision" ), -1 );
-        trimType[i] = ValueMeta.getTrimTypeByCode( XMLHandler.getTagValue( fnode, "trim_type" ) );
+        fieldName[ i ] = XMLHandler.getTagValue( fnode, "name" );
+        variableString[ i ] = XMLHandler.getTagValue( fnode, "variable" );
+        fieldType[ i ] = ValueMeta.getType( XMLHandler.getTagValue( fnode, "type" ) );
+        fieldFormat[ i ] = XMLHandler.getTagValue( fnode, "format" );
+        currency[ i ] = XMLHandler.getTagValue( fnode, "currency" );
+        decimal[ i ] = XMLHandler.getTagValue( fnode, "decimal" );
+        group[ i ] = XMLHandler.getTagValue( fnode, "group" );
+        fieldLength[ i ] = Const.toInt( XMLHandler.getTagValue( fnode, "length" ), -1 );
+        fieldPrecision[ i ] = Const.toInt( XMLHandler.getTagValue( fnode, "precision" ), -1 );
+        trimType[ i ] = ValueMeta.getTrimTypeByCode( XMLHandler.getTagValue( fnode, "trim_type" ) );
 
         // Backward compatibility
         //
-        if ( fieldType[i] == ValueMetaInterface.TYPE_NONE ) {
-          fieldType[i] = ValueMetaInterface.TYPE_STRING;
+        if ( fieldType[ i ] == ValueMetaInterface.TYPE_NONE ) {
+          fieldType[ i ] = ValueMetaInterface.TYPE_STRING;
         }
       }
     } catch ( Exception e ) {
@@ -181,25 +185,27 @@ public class GetVariableMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
+  @Override
   public void setDefault() {
     int count = 0;
 
     allocate( count );
 
     for ( int i = 0; i < count; i++ ) {
-      fieldName[i] = "field" + i;
-      variableString[i] = "";
+      fieldName[ i ] = "field" + i;
+      variableString[ i ] = "";
     }
   }
 
+  @Override
   public void getFields( RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info, StepMeta nextStep,
-    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+                         VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     // Determine the maximum length...
     //
     int length = -1;
     for ( int i = 0; i < fieldName.length; i++ ) {
-      if ( variableString[i] != null ) {
-        String string = space.environmentSubstitute( variableString[i] );
+      if ( variableString[ i ] != null ) {
+        String string = space.environmentSubstitute( variableString[ i ] );
         if ( string.length() > length ) {
           length = string.length();
         }
@@ -208,20 +214,25 @@ public class GetVariableMeta extends BaseStepMeta implements StepMetaInterface {
 
     RowMetaInterface row = new RowMeta();
     for ( int i = 0; i < fieldName.length; i++ ) {
-      ValueMetaInterface v = new ValueMeta( fieldName[i], fieldType[i] );
-      if ( fieldLength[i] < 0 ) {
+      ValueMetaInterface v;
+      try {
+        v = ValueMetaFactory.createValueMeta( fieldName[ i ], fieldType[ i ] );
+      } catch ( KettlePluginException e ) {
+        throw new KettleStepException( e );
+      }
+      if ( fieldLength[ i ] < 0 ) {
         v.setLength( length );
       } else {
-        v.setLength( fieldLength[i] );
+        v.setLength( fieldLength[ i ] );
       }
-      if ( fieldPrecision[i] >= 0 ) {
-        v.setPrecision( fieldPrecision[i] );
+      if ( fieldPrecision[ i ] >= 0 ) {
+        v.setPrecision( fieldPrecision[ i ] );
       }
-      v.setConversionMask( fieldFormat[i] );
-      v.setGroupingSymbol( group[i] );
-      v.setDecimalSymbol( decimal[i] );
-      v.setCurrencySymbol( currency[i] );
-      v.setTrimType( trimType[i] );
+      v.setConversionMask( fieldFormat[ i ] );
+      v.setGroupingSymbol( group[ i ] );
+      v.setDecimalSymbol( decimal[ i ] );
+      v.setCurrencySymbol( currency[ i ] );
+      v.setTrimType( trimType[ i ] );
       v.setOrigin( name );
 
       row.addValueMeta( v );
@@ -230,25 +241,26 @@ public class GetVariableMeta extends BaseStepMeta implements StepMetaInterface {
     inputRowMeta.mergeRowMeta( row );
   }
 
+  @Override
   public String getXML() {
     StringBuffer retval = new StringBuffer( 300 );
 
     retval.append( "    <fields>" ).append( Const.CR );
     for ( int i = 0; i < fieldName.length; i++ ) {
-      if ( fieldName[i] != null && fieldName[i].length() != 0 ) {
+      if ( fieldName[ i ] != null && fieldName[ i ].length() != 0 ) {
         retval.append( "      <field>" ).append( Const.CR );
-        retval.append( "        " ).append( XMLHandler.addTagValue( "name", fieldName[i] ) );
-        retval.append( "        " ).append( XMLHandler.addTagValue( "variable", variableString[i] ) );
+        retval.append( "        " ).append( XMLHandler.addTagValue( "name", fieldName[ i ] ) );
+        retval.append( "        " ).append( XMLHandler.addTagValue( "variable", variableString[ i ] ) );
         retval
-          .append( "        " ).append( XMLHandler.addTagValue( "type", ValueMeta.getTypeDesc( fieldType[i] ) ) );
-        retval.append( "        " ).append( XMLHandler.addTagValue( "format", fieldFormat[i] ) );
-        retval.append( "        " ).append( XMLHandler.addTagValue( "currency", currency[i] ) );
-        retval.append( "        " ).append( XMLHandler.addTagValue( "decimal", decimal[i] ) );
-        retval.append( "        " ).append( XMLHandler.addTagValue( "group", group[i] ) );
-        retval.append( "        " ).append( XMLHandler.addTagValue( "length", fieldLength[i] ) );
-        retval.append( "        " ).append( XMLHandler.addTagValue( "precision", fieldPrecision[i] ) );
+          .append( "        " ).append( XMLHandler.addTagValue( "type", ValueMeta.getTypeDesc( fieldType[ i ] ) ) );
+        retval.append( "        " ).append( XMLHandler.addTagValue( "format", fieldFormat[ i ] ) );
+        retval.append( "        " ).append( XMLHandler.addTagValue( "currency", currency[ i ] ) );
+        retval.append( "        " ).append( XMLHandler.addTagValue( "decimal", decimal[ i ] ) );
+        retval.append( "        " ).append( XMLHandler.addTagValue( "group", group[ i ] ) );
+        retval.append( "        " ).append( XMLHandler.addTagValue( "length", fieldLength[ i ] ) );
+        retval.append( "        " ).append( XMLHandler.addTagValue( "precision", fieldPrecision[ i ] ) );
         retval.append( "        " ).append(
-          XMLHandler.addTagValue( "trim_type", ValueMeta.getTrimTypeCode( trimType[i] ) ) );
+          XMLHandler.addTagValue( "trim_type", ValueMeta.getTrimTypeCode( trimType[ i ] ) ) );
 
         retval.append( "      </field>" ).append( Const.CR );
       }
@@ -258,29 +270,31 @@ public class GetVariableMeta extends BaseStepMeta implements StepMetaInterface {
     return retval.toString();
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
+  @Override
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
+    throws KettleException {
     try {
       int nrfields = rep.countNrStepAttributes( id_step, "field_name" );
 
       allocate( nrfields );
 
       for ( int i = 0; i < nrfields; i++ ) {
-        fieldName[i] = rep.getStepAttributeString( id_step, i, "field_name" );
-        variableString[i] = rep.getStepAttributeString( id_step, i, "field_variable" );
-        fieldType[i] = ValueMeta.getType( rep.getStepAttributeString( id_step, i, "field_type" ) );
+        fieldName[ i ] = rep.getStepAttributeString( id_step, i, "field_name" );
+        variableString[ i ] = rep.getStepAttributeString( id_step, i, "field_variable" );
+        fieldType[ i ] = ValueMeta.getType( rep.getStepAttributeString( id_step, i, "field_type" ) );
 
-        fieldFormat[i] = rep.getStepAttributeString( id_step, i, "field_format" );
-        currency[i] = rep.getStepAttributeString( id_step, i, "field_currency" );
-        decimal[i] = rep.getStepAttributeString( id_step, i, "field_decimal" );
-        group[i] = rep.getStepAttributeString( id_step, i, "field_group" );
-        fieldLength[i] = (int) rep.getStepAttributeInteger( id_step, i, "field_length" );
-        fieldPrecision[i] = (int) rep.getStepAttributeInteger( id_step, i, "field_precision" );
-        trimType[i] = ValueMeta.getTrimTypeByCode( rep.getStepAttributeString( id_step, i, "field_trim_type" ) );
+        fieldFormat[ i ] = rep.getStepAttributeString( id_step, i, "field_format" );
+        currency[ i ] = rep.getStepAttributeString( id_step, i, "field_currency" );
+        decimal[ i ] = rep.getStepAttributeString( id_step, i, "field_decimal" );
+        group[ i ] = rep.getStepAttributeString( id_step, i, "field_group" );
+        fieldLength[ i ] = (int) rep.getStepAttributeInteger( id_step, i, "field_length" );
+        fieldPrecision[ i ] = (int) rep.getStepAttributeInteger( id_step, i, "field_precision" );
+        trimType[ i ] = ValueMeta.getTrimTypeByCode( rep.getStepAttributeString( id_step, i, "field_trim_type" ) );
 
         // Backward compatibility
         //
-        if ( fieldType[i] == ValueMetaInterface.TYPE_NONE ) {
-          fieldType[i] = ValueMetaInterface.TYPE_STRING;
+        if ( fieldType[ i ] == ValueMetaInterface.TYPE_NONE ) {
+          fieldType[ i ] = ValueMetaInterface.TYPE_STRING;
         }
       }
 
@@ -289,24 +303,26 @@ public class GetVariableMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
+  @Override
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
+    throws KettleException {
     try {
 
       for ( int i = 0; i < fieldName.length; i++ ) {
-        if ( fieldName[i] != null && fieldName[i].length() != 0 ) {
-          rep.saveStepAttribute( id_transformation, id_step, i, "field_name", fieldName[i] );
-          rep.saveStepAttribute( id_transformation, id_step, i, "field_variable", variableString[i] );
+        if ( fieldName[ i ] != null && fieldName[ i ].length() != 0 ) {
+          rep.saveStepAttribute( id_transformation, id_step, i, "field_name", fieldName[ i ] );
+          rep.saveStepAttribute( id_transformation, id_step, i, "field_variable", variableString[ i ] );
           rep
             .saveStepAttribute( id_transformation, id_step, i, "field_type", ValueMeta
-              .getTypeDesc( fieldType[i] ) );
-          rep.saveStepAttribute( id_transformation, id_step, i, "field_format", fieldFormat[i] );
-          rep.saveStepAttribute( id_transformation, id_step, i, "field_currency", currency[i] );
-          rep.saveStepAttribute( id_transformation, id_step, i, "field_decimal", decimal[i] );
-          rep.saveStepAttribute( id_transformation, id_step, i, "field_group", group[i] );
-          rep.saveStepAttribute( id_transformation, id_step, i, "field_length", fieldLength[i] );
-          rep.saveStepAttribute( id_transformation, id_step, i, "field_precision", fieldPrecision[i] );
+              .getTypeDesc( fieldType[ i ] ) );
+          rep.saveStepAttribute( id_transformation, id_step, i, "field_format", fieldFormat[ i ] );
+          rep.saveStepAttribute( id_transformation, id_step, i, "field_currency", currency[ i ] );
+          rep.saveStepAttribute( id_transformation, id_step, i, "field_decimal", decimal[ i ] );
+          rep.saveStepAttribute( id_transformation, id_step, i, "field_group", group[ i ] );
+          rep.saveStepAttribute( id_transformation, id_step, i, "field_length", fieldLength[ i ] );
+          rep.saveStepAttribute( id_transformation, id_step, i, "field_precision", fieldPrecision[ i ] );
           rep.saveStepAttribute( id_transformation, id_step, i, "field_trim_type", ValueMeta
-            .getTrimTypeCode( trimType[i] ) );
+            .getTrimTypeCode( trimType[ i ] ) );
         }
       }
     } catch ( Exception e ) {
@@ -315,16 +331,17 @@ public class GetVariableMeta extends BaseStepMeta implements StepMetaInterface {
 
   }
 
+  @Override
   public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
-    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
-    Repository repository, IMetaStore metaStore ) {
+                     RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+                     Repository repository, IMetaStore metaStore ) {
     // See if we have input streams leading to this step!
     int nrRemarks = remarks.size();
     for ( int i = 0; i < fieldName.length; i++ ) {
-      if ( Const.isEmpty( variableString[i] ) ) {
+      if ( Const.isEmpty( variableString[ i ] ) ) {
         CheckResult cr =
           new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
-            PKG, "GetVariableMeta.CheckResult.VariableNotSpecified", fieldName[i] ), stepMeta );
+            PKG, "GetVariableMeta.CheckResult.VariableNotSpecified", fieldName[ i ] ), stepMeta );
         remarks.add( cr );
       }
     }
@@ -336,11 +353,13 @@ public class GetVariableMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
+  @Override
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
-    TransMeta transMeta, Trans trans ) {
+                                TransMeta transMeta, Trans trans ) {
     return new GetVariable( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 
+  @Override
   public StepDataInterface getStepData() {
     return new GetVariableData();
   }
