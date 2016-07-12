@@ -176,6 +176,12 @@ public class TextFileInputMetaNewInjectionTest extends BaseMetadataInjectionTest
       }
     } );
 
+    check( "LENGTH", new StringGetter() {
+        public String get() {
+          return meta.content.length;
+        }
+      } );
+
     check( "ROW_LIMIT", new LongGetter() {
       public long get() {
         return meta.content.rowLimit;

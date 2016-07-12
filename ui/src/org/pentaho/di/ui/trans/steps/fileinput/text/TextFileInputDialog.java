@@ -281,6 +281,10 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
   private CCombo wEncoding;
   private FormData fdlEncoding, fdEncoding;
 
+  private Label wlLength;
+  private CCombo wLength;
+  private FormData fdlLength, fdLength;
+
   private Label wlLimit;
   private Text wLimit;
   private FormData fdlLimit, fdLimit;
@@ -1491,12 +1495,33 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
       }
     } );
 
+    wlLength = new Label( wContentComp, SWT.RIGHT );
+    wlLength.setText( BaseMessages.getString( PKG, "TextFileInputDialog.Length.Label" ) );
+    props.setLook( wlLength );
+    fdlLength = new FormData();
+    fdlLength.left = new FormAttachment( 0, 0 );
+    fdlLength.top = new FormAttachment( wEncoding, margin );
+    fdlLength.right = new FormAttachment( middle, -margin );
+    wlLength.setLayoutData( fdlLength );
+    wLength = new CCombo( wContentComp, SWT.BORDER | SWT.READ_ONLY );
+    wLength.setText( BaseMessages.getString( PKG, "TextFileInputDialog.Length.Label" ) );
+    props.setLook( wLength );
+    wLength.add( "Characters" );
+    wLength.add( "Bytes" );
+    wLength.select( 0 );
+    wLength.addModifyListener( lsMod );
+    fdLength = new FormData();
+    fdLength.left = new FormAttachment( middle, 0 );
+    fdLength.top = new FormAttachment( wEncoding, margin );
+    fdLength.right = new FormAttachment( 100, 0 );
+    wLength.setLayoutData( fdLength );
+
     wlLimit = new Label( wContentComp, SWT.RIGHT );
     wlLimit.setText( BaseMessages.getString( PKG, "TextFileInputDialog.Limit.Label" ) );
     props.setLook( wlLimit );
     fdlLimit = new FormData();
     fdlLimit.left = new FormAttachment( 0, 0 );
-    fdlLimit.top = new FormAttachment( wEncoding, margin );
+    fdlLimit.top = new FormAttachment( wLength, margin );
     fdlLimit.right = new FormAttachment( middle, -margin );
     wlLimit.setLayoutData( fdlLimit );
     wLimit = new Text( wContentComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
@@ -1504,7 +1529,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
     wLimit.addModifyListener( lsMod );
     fdLimit = new FormData();
     fdLimit.left = new FormAttachment( middle, 0 );
-    fdLimit.top = new FormAttachment( wEncoding, margin );
+    fdLimit.top = new FormAttachment( wLength, margin );
     fdLimit.right = new FormAttachment( 100, 0 );
     wLimit.setLayoutData( fdLimit );
 
@@ -2253,6 +2278,9 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
     if ( meta.content.fileFormat != null ) {
       wFormat.setText( meta.content.fileFormat );
     }
+    if ( meta.content.length != null ) {
+        wLength.setText( meta.content.length );
+    }
     wLimit.setText( "" + meta.content.rowLimit );
 
     logDebug( "getting fields info..." );
@@ -2520,6 +2548,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
     meta.content.dateFormatLenient = wDateLenient.getSelection();
     meta.content.noEmptyLines = wNoempty.getSelection();
     meta.content.encoding = wEncoding.getText();
+    meta.content.length = wLength.getText();
 
     int nrfiles = wFilenameList.getItemCount();
     int nrfields = wFields.nrNonEmpty();

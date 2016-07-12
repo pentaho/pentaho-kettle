@@ -139,6 +139,24 @@ public class TextFileInputContentParsingTest extends BaseTextParsingTest {
   }
 
   @Test
+  public void testFixedWidthBytes() throws Exception {
+
+    meta.content.header = false;
+    meta.content.fileType = "Fixed";
+    meta.content.fileFormat = "Unix";
+    meta.content.encoding = "Shift_JIS";
+    meta.content.length = "Bytes";
+    initByFile( "fixed-length-bytes.txt" );
+
+    setFields( new BaseFileInputField( "f1", 0, 5 ), new BaseFileInputField( "f2", 5, 3 ), new BaseFileInputField( "f3",
+        8, 1 ),  new BaseFileInputField( "f4", 9, 3 ) );
+
+    process();
+
+    check( new Object[][] { { "1.000", "個 ", "T", "1.0" }, { "2.000", "M  ", "Z", "1.0" } } );
+  }
+
+  @Test
   public void testFilterEmptyBacklog5381() throws Exception {
 
     meta.content.header = false;
