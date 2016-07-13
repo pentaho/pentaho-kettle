@@ -25,6 +25,7 @@ package org.pentaho.di.concurrency;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -49,6 +50,7 @@ import static org.mockito.Mockito.when;
 /**
  * @author Andrey Khayrutdinov
  */
+@Ignore
 public class PluginRegistryConcurrencyTest {
 
   private static final Class<? extends PluginTypeInterface> type1 = TwoWayPasswordEncoderPluginType.class;

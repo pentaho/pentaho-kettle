@@ -24,6 +24,7 @@ package org.pentaho.di.concurrency;
 
 import org.apache.commons.collections.ListUtils;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -55,6 +56,7 @@ import static org.mockito.Mockito.when;
  * @author Andrey Khayrutdinov
  */
 @RunWith( Parameterized.class )
+@Ignore
 public class JobTrackerConcurrencyTest {
 
   private static final int gettersAmount = 10;
