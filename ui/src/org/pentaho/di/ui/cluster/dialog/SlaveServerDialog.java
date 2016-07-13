@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -360,28 +360,24 @@ public class SlaveServerDialog extends Dialog {
 
     // Https
     Control lastControl = wMaster;
-    {
-      Label wlSSL = new Label( wServiceComp, SWT.RIGHT );
-      wlSSL.setText( BaseMessages.getString( PKG, "SlaveServerDialog.UseSsl.Label" ) );
-      props.setLook( wlSSL );
-      FormData fd = new FormData();
-      fd.top = new FormAttachment( lastControl, margin );
-      fd.left = new FormAttachment( 0, 0 );
-      fd.right = new FormAttachment( middle, -margin );
-      wlSSL.setLayoutData( fd );
-      wlSSL.setVisible( false ); // future functional
-    }
+    Label wlSSL = new Label( wServiceComp, SWT.RIGHT );
+    wlSSL.setText( BaseMessages.getString( PKG, "SlaveServerDialog.UseSsl.Label" ) );
+    props.setLook( wlSSL );
+    FormData fd = new FormData();
+    fd.top = new FormAttachment( lastControl, margin );
+    fd.left = new FormAttachment( 0, 0 );
+    fd.right = new FormAttachment( middle, -margin );
+    wlSSL.setLayoutData( fd );
+    wlSSL.setVisible( false ); // future functional
 
-    {
-      wSSL = new Button( wServiceComp, SWT.CHECK );
-      props.setLook( wSSL );
-      FormData fd = new FormData();
-      fd.top = new FormAttachment( lastControl, margin );
-      fd.left = new FormAttachment( middle, 0 );
-      fd.right = new FormAttachment( 95, 0 );
-      wSSL.setLayoutData( fd );
-      wSSL.setVisible( false ); // future functional
-    }
+    wSSL = new Button( wServiceComp, SWT.CHECK );
+    props.setLook( wSSL );
+    FormData bfd = new FormData();
+    bfd.top = new FormAttachment( lastControl, margin );
+    bfd.left = new FormAttachment( middle, 0 );
+    bfd.right = new FormAttachment( 95, 0 );
+    wSSL.setLayoutData( bfd );
+    wSSL.setVisible( false ); // future functional
 
     fdServiceComp = new FormData();
     fdServiceComp.left = new FormAttachment( 0, 0 );
@@ -512,22 +508,24 @@ public class SlaveServerDialog extends Dialog {
 
   public void ok() {
     getInfo();
-    originalServer.setName( slaveServer.getName() );
-    originalServer.setHostname( slaveServer.getHostname() );
-    originalServer.setPort( slaveServer.getPort() );
-    originalServer.setWebAppName( slaveServer.getWebAppName() );
-    originalServer.setUsername( slaveServer.getUsername() );
-    originalServer.setPassword( slaveServer.getPassword() );
+    synchronized ( originalServer ) {
+      originalServer.setName( slaveServer.getName() );
+      originalServer.setHostname( slaveServer.getHostname() );
+      originalServer.setPort( slaveServer.getPort() );
+      originalServer.setWebAppName( slaveServer.getWebAppName() );
+      originalServer.setUsername( slaveServer.getUsername() );
+      originalServer.setPassword( slaveServer.getPassword() );
 
-    originalServer.setProxyHostname( slaveServer.getProxyHostname() );
-    originalServer.setProxyPort( slaveServer.getProxyPort() );
-    originalServer.setNonProxyHosts( slaveServer.getNonProxyHosts() );
+      originalServer.setProxyHostname( slaveServer.getProxyHostname() );
+      originalServer.setProxyPort( slaveServer.getProxyPort() );
+      originalServer.setNonProxyHosts( slaveServer.getNonProxyHosts() );
 
-    originalServer.setMaster( slaveServer.isMaster() );
+      originalServer.setMaster( slaveServer.isMaster() );
 
-    originalServer.setSslMode( slaveServer.isSslMode() );
+      originalServer.setSslMode( slaveServer.isSslMode() );
 
-    originalServer.setChanged();
+      originalServer.setChanged();
+    }
 
     ok = true;
 
