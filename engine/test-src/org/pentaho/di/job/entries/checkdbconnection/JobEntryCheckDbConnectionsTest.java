@@ -21,6 +21,9 @@
  ******************************************************************************/
 package org.pentaho.di.job.entries.checkdbconnection;
 
+import org.apache.commons.vfs2.FileObject;
+import org.apache.commons.vfs2.FileSystemException;
+import org.junit.After;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -28,17 +31,33 @@ import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.util.Assert;
+import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.job.Job;
 
 public class JobEntryCheckDbConnectionsTest {
+
+  private static final String H2_DATABASE = "myDb";
 
   @BeforeClass
   public static void setUpBeforeClass() throws KettleException {
     KettleEnvironment.init( false );
   }
 
+  @After
+  public void cleanup() {
+    try {
+      FileObject dbFile = KettleVFS.getFileObject( H2_DATABASE + ".h2.db" );
+      if ( dbFile.exists() ) {
+        System.out.println( "deleting file" );
+        dbFile.delete();
+      }
+    } catch ( KettleFileException | FileSystemException ignored ) {
+      // Ignore, we tried cleaning up
+    }
+  }
 
   /**
    * Test whether a Millisecond-level timeout actually waits for N milliseconds, instead of N seconds
@@ -53,7 +72,7 @@ public class JobEntryCheckDbConnectionsTest {
     meta.setParentJob( mockedJob );
     meta.setLogLevel( LogLevel.BASIC );
 
-    DatabaseMeta db = new DatabaseMeta( "InMemory H2", "H2", null, null, "myDb", "-1", null, null );
+    DatabaseMeta db = new DatabaseMeta( "InMemory H2", "H2", null, null, H2_DATABASE, "-1", null, null );
     meta.setConnections( new DatabaseMeta[]{ db } );
     meta.setWaittimes( new int[]{ JobEntryCheckDbConnections.UNIT_TIME_MILLI_SECOND } );
     meta.setWaitfors( new String[]{ String.valueOf( waitMilliseconds ) } );
