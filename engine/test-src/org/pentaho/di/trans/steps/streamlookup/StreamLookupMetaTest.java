@@ -21,17 +21,24 @@
  ******************************************************************************/
 package org.pentaho.di.trans.steps.streamlookup;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.plugins.PluginRegistry;
+import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
 import org.pentaho.di.trans.steps.loadsave.initializer.InitializerInterface;
@@ -84,4 +91,19 @@ public class StreamLookupMetaTest implements InitializerInterface<StepMetaInterf
     loadSaveTester.testSerialization();
   }
 
+  @Test
+  public void testCloneInfoSteps() {
+    StreamLookupMeta meta = new StreamLookupMeta();
+    meta.setDefault();
+
+    final String stepName = UUID.randomUUID().toString();
+    StepMeta infoStep = mock( StepMeta.class );
+    when( infoStep.getName() ).thenReturn( stepName );
+    meta.getStepIOMeta().getInfoStreams().get( 0 ).setStepMeta( infoStep );
+
+    StreamLookupMeta cloned = (StreamLookupMeta) meta.clone();
+    assertEquals( stepName, cloned.getStepIOMeta().getInfoStreams().get( 0 ).getStepname() );
+    assertNotSame( meta.getStepIOMeta().getInfoStreams().get( 0 ),
+      cloned.getStepIOMeta().getInfoStreams().get( 0 ) );
+  }
 }

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -41,6 +41,8 @@ public interface StreamInterface {
   public void setStreamType( StreamType streamType );
 
   public String getDescription();
+
+  public void setDescription( String description );
 
   public StreamIcon getStreamIcon();
 
