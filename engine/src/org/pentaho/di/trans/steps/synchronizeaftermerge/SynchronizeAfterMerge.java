@@ -850,6 +850,7 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface {
 
     if ( super.init( smi, sdi ) ) {
       try {
+        meta.normalizeAllocationFields();
         data.realSchemaName = environmentSubstitute( meta.getSchemaName() );
         if ( meta.istablenameInField() ) {
           if ( Const.isEmpty( meta.gettablenameField() ) ) {
