@@ -30,11 +30,14 @@ import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ProvidesModelerMeta;
 import org.pentaho.di.core.SQLStatement;
+import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.injection.Injection;
+import org.pentaho.di.core.injection.InjectionSupported;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
@@ -60,43 +63,56 @@ import org.w3c.dom.Node;
  * Created on 26-apr-2003
  *
  */
+@InjectionSupported( localizationPrefix = "InsertUpdateDialog." )
 public class InsertUpdateMeta extends BaseStepMeta implements StepMetaInterface, ProvidesModelerMeta {
   private static Class<?> PKG = InsertUpdateMeta.class; // for i18n purposes, needed by Translator2!!
 
   /** what's the lookup schema? */
+  @Injection(name="SCHEMA_NAME")
   private String schemaName;
 
   /** what's the lookup table? */
+  @Injection(name="TABLE_NAME")
   private String tableName;
 
   /** database connection */
+  @Injection(name="DATABASE_META")
   private DatabaseMeta databaseMeta;
 
   /** which field in input stream to compare with? */
+  @Injection(name="KEY_STREAM")
   private String[] keyStream;
 
   /** field in table */
+  @Injection(name="KEY_LOOKUP")
   private String[] keyLookup;
 
   /** Comparator: =, <>, BETWEEN, ... */
+  @Injection(name="KEY_CONDITION")
   private String[] keyCondition;
 
   /** Extra field for between... */
+  @Injection(name="KEY_STREAM_2")
   private String[] keyStream2;
 
   /** Field value to update after lookup */
+  @Injection(name="UPDATE_LOOKUP")
   private String[] updateLookup;
 
   /** Stream name to update value with */
+  @Injection(name="UPDATE_STREAM")
   private String[] updateStream;
 
   /** boolean indicating if field needs to be updated */
+  @Injection(name="UPDATE")
   private Boolean[] update;
 
   /** Commit size for inserts/updates */
+  @Injection(name="COMMIT_SIZE")
   private String commitSize;
 
   /** Bypass any updates */
+  @Injection(name="UPDATE_BYPASSED")
   private boolean updateBypassed;
 
   public InsertUpdateMeta() {
