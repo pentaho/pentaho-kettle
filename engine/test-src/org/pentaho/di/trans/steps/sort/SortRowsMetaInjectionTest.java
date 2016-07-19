@@ -84,5 +84,15 @@ public class SortRowsMetaInjectionTest extends BaseMetadataInjectionTest<SortRow
         return meta.getPreSortedField()[0];
       }
     } );
+    check( "COLLATOR_STRENGTH", new IntGetter() {
+      public int get() {
+        return meta.getCollatorStrength()[0];
+      }
+    } );
+    check( "COLLATOR_ENABLED", new BooleanGetter() {
+      public boolean get() {
+        return meta.getCollatorEnabled()[0];
+      }
+    } );
   }
 }
