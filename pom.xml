@@ -259,11 +259,10 @@
         </property>
       </activation>
       <modules>
-        <module>engine-ext</module>
         <module>core</module>
         <module>engine</module>
-        <module>dbdialog</module>
         <module>ui</module>
+        <module>security</module>
       </modules>
     </profile>
     <profile>

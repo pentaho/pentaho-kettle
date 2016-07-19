@@ -322,7 +322,7 @@ define(
         function _wrapHttp(method, url, data, timeout) {
           var options = {
             method: method,
-            url: _cacheBust(url),
+            url: CONTEXT_PATH + _cacheBust(url),
             headers: {
               Accept: "application/json"
             },
@@ -347,6 +347,8 @@ define(
           } else {
             url += "?v=" + value;
           }
+          var cid = getConnectionId();
+          url += "&cid=" + cid;
           return url;
         }
       }

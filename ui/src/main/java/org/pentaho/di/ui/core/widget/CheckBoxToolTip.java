@@ -46,7 +46,7 @@ import org.eclipse.swt.widgets.Label;
 import org.pentaho.di.ui.core.gui.GUIResource;
 
 public class CheckBoxToolTip extends ToolTip {
-  private String message;
+  private String message = "";
   private String title;
   private Image image;
   private String checkBoxMessage;
@@ -204,6 +204,7 @@ public class CheckBoxToolTip extends ToolTip {
    */
   public void setTitle( String title ) {
     this.title = title;
+    super.setText( title );
   }
 
   /**

@@ -22,6 +22,7 @@
 
 package org.pentaho.di.ui.spoon.trans;
 
+import org.eclipse.rap.rwt.service.ServerPushSession;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
@@ -93,10 +94,11 @@ public class LogBrowser {
 
     // Refresh the log every second or so
     //
+    final ServerPushSession pushSession = new ServerPushSession();
     final Timer logRefreshTimer = new Timer( "log sniffer Timer" );
     TimerTask timerTask = new TimerTask() {
       public void run() {
-        if ( text.isDisposed() ) {
+        if ( text.isDisposed() || text.getDisplay().isDisposed() ) {
           return;
         }
 
@@ -123,7 +125,7 @@ public class LogBrowser {
               int lastNr = KettleLogStore.getLastBufferLineNr();
               if ( lastNr > lastLogId.get() ) {
                 List<KettleLoggingEvent> logLines =
-                  KettleLogStore.getLogBufferFromTo( childIds, true, lastLogId.get(), lastNr );
+                  KettleLogStore.getLogBufferFromTo( childIds, false, lastLogId.get(), lastNr );
 
                 // The maximum size of the log buffer
                 //
@@ -189,32 +191,43 @@ public class LogBrowser {
       }
     };
 
+    pushSession.start();
     // Refresh every often enough
     //
     logRefreshTimer
       .schedule( timerTask, Const.toInt( EnvUtil.getSystemProperty( Const.KETTLE_LOG_TAB_REFRESH_DELAY ), 1000 ),
         Const.toInt( EnvUtil.getSystemProperty( Const.KETTLE_LOG_TAB_REFRESH_PERIOD ), 1000 ) );
 
-
-    text.addListener( SWT.MouseDown, e -> {
-      try {
-        int offset = text.getOffsetAtLocation( new Point( e.x, e.y ) );
-        StyleRange style = text.getStyleRangeAtOffset( offset );
-        if ( style != null && style.underline && style.underlineStyle == SWT.UNDERLINE_LINK ) {
-          if ( Desktop.isDesktopSupported() ) {
-            Desktop.getDesktop().browse( new URI( (String) style.data ) );
-          }
-        }
-      } catch ( Exception ex ) {
-        // no character under event.x, event.y
-      }
-    } );
+//
+//    text.addListener( SWT.MouseDown, e -> {
+//      try {
+//        int offset = text.getOffsetAtLocation( new Point( e.x, e.y ) );
+//        StyleRange style = text.getStyleRangeAtOffset( offset );
+//        if ( style != null && style.underline && style.underlineStyle == SWT.UNDERLINE_LINK ) {
+//          if ( Desktop.isDesktopSupported() ) {
+//            Desktop.getDesktop().browse( new URI( (String) style.data ) );
+//          }
+//        }
+//      } catch ( Exception ex ) {
+//        // no character under event.x, event.y
+//      }
+//    } );
 
     // Make sure the timer goes down when the widget is disposed
     //
     text.addDisposeListener( new DisposeListener() {
       public void widgetDisposed( DisposeEvent event ) {
         logRefreshTimer.cancel();
+        pushSession.stop();
+      }
+    } );
+
+    // Make sure the timer goes down when the Display is disposed
+    text.getDisplay().disposeExec( new Runnable() {
+      @Override
+      public void run() {
+        logRefreshTimer.cancel();
+        pushSession.stop();
       }
     } );
 

@@ -17,12 +17,14 @@
 
   <properties>
     <maven-replacer-plugin.version>1.5.2</maven-replacer-plugin.version>
+    <webspoon.version>8.3.0.0-371-19</webspoon.version>
   </properties>
 
   <dependencies>
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-core</artifactId>
+      <version>${webspoon.version}</version>
     </dependency>
     <dependency>
       <groupId>pentaho-kettle</groupId>

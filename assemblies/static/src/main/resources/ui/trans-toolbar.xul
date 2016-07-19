@@ -144,7 +144,7 @@
   <menupopup id="trans-graph-background">
     <menuitem id="trans-graph-background-new-note" label="${TransGraph.PopupMenu.NewNote}" command="transgraph.newNote()" />
 
-    <menuitem id="trans-graph-background-paste" acceltext="CTRL-V" accesskey="ctrl-v" label="${TransGraph.PopupMenu.PasteStepFromClipboard}" command="transgraph.paste()" />
+    <menuitem id="trans-graph-background-paste" label="${TransGraph.PopupMenu.PasteStepFromClipboard}" command="transgraph.paste()" />
     <menuseparator />
     <menuitem id="trans-graph-background-select-all" acceltext="CTRL-A" accesskey="ctrl-a" label="${TransGraph.PopupMenu.SelectAll}" command="transgraph.selectAll()" />
     <menuitem id="trans-graph-background-clear-selection" label="${TransGraph.PopupMenu.ClearSelection}"

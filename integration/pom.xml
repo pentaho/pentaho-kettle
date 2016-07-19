@@ -22,14 +22,15 @@
     <ftpserver-core.version>1.0.6</ftpserver-core.version>
     <bcprov-jdk14.version>1.51</bcprov-jdk14.version>
     <pdi.version>9.0.0.0-423</pdi.version>
+    <selenium.version>3.14.0</selenium.version>
+    <guava.version>23.0</guava.version>
   </properties>
 
   <dependencies>
     <dependency>
-      <groupId>pentaho-kettle</groupId>
-      <artifactId>kettle-core</artifactId>
-      <version>${project.version}</version>
-      <scope>test</scope>
+      <groupId>org.seleniumhq.selenium</groupId>
+      <artifactId>selenium-server</artifactId>
+      <version>${selenium.version}</version>
     </dependency>
     <dependency>
       <groupId>pentaho-kettle</groupId>
@@ -109,6 +110,11 @@
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-all</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <version>${guava.version}</version>
     </dependency>
     <dependency>
       <groupId>org.pentaho.di.plugins</groupId>

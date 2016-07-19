@@ -27,7 +27,7 @@
       <id>lowdeps</id>
       <activation>
         <property>
-          <name>!skipDefault</name>
+          <name>skipDefault</name>
         </property>
       </activation>
       <modules>
@@ -43,38 +43,11 @@
         </property>
       </activation>
       <modules>
-        <module>core</module>
-        <module>core-ui</module>
-        <module>file-open-save</module>
-        <module>file-open-save-new</module>
-        <module>connections</module>
-        <module>get-fields</module>
-        <module>repositories</module>
-        <module>meta-inject</module>
-        <module>engine-configuration</module>
-        <module>get-previous-row-field</module>
-        <module>aggregate-rows</module>
-        <module>elasticsearch-bulk-insert</module>
-        <module>google-analytics</module>
-        <module>gp-bulk-loader</module>
-        <module>pentaho-googledrive-vfs</module>
-        <module>hl7</module>
-        <module>drools</module>
-        <module>dummy</module>
-        <module>json</module>
-        <module>s3csvinput</module>
-        <module>sap</module>
-        <module>shapefilereader</module>
-        <module>gpload</module>
-        <module>openerp</module>
-        <module>palo</module>
-        <module>version-checker</module>
-        <module>lucid-db-streaming-loader</module>
-        <module>salesforce</module>
-        <module>pur</module>
-        <module>ms-access</module>
-        <module>xml</module>
-        <module>streaming</module>
+        <module>file-open-save/core</module>
+        <module>get-fields/core</module>
+        <module>repositories/core</module>
+        <module>engine-configuration/ui</module>
+        <module>connections/ui</module>
       </modules>
     </profile>
 

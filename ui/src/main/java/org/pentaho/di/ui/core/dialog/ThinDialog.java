@@ -28,8 +28,10 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.eclipse.rap.rwt.service.ServerPushSession;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
+import org.eclipse.swt.browser.BrowserFunction;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
@@ -50,6 +52,7 @@ import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.function.Supplier;
+import org.pentaho.di.core.WebSpoonUtils;
 
 /**
  * Created by bmorrise on 2/18/16.
@@ -110,6 +113,11 @@ public class ThinDialog extends Dialog {
         Shell shell = browse.getShell();
         shell.close();
       } );
+      new BrowserFunction( browser, "getConnectionId" ) {
+        @Override public Object function( Object[] arguments ) {
+          return WebSpoonUtils.getConnectionId();
+        }
+      };
     } catch ( Exception e ) {
       MessageBox messageBox = new MessageBox( dialog, SWT.ICON_ERROR | SWT.OK );
       messageBox.setMessage( "Browser cannot be initialized." );
@@ -117,6 +125,11 @@ public class ThinDialog extends Dialog {
       messageBox.open();
     }
     setPosition();
+    final ServerPushSession pushSession = new ServerPushSession();
+    pushSession.start();
+    dialog.addDisposeListener( ( event ) -> {
+      pushSession.stop();
+    });
     dialog.open();
   }
 

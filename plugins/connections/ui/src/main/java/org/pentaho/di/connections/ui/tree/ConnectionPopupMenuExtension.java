@@ -50,8 +50,6 @@ public class ConnectionPopupMenuExtension implements ExtensionPointInterface {
   private static final Class<?> PKG = ConnectionPopupMenuExtension.class;
 
   private Supplier<Spoon> spoonSupplier = Spoon::getInstance;
-  private Menu rootMenu;
-  private Menu itemMenu;
   private ConnectionDelegate vfsConnectionDelegate;
   private ConnectionTreeItem vfsConnectionTreeItem;
 
@@ -83,8 +81,7 @@ public class ConnectionPopupMenuExtension implements ExtensionPointInterface {
   }
 
   private Menu createRootPopupMenu( Tree tree ) {
-    if ( rootMenu == null ) {
-      rootMenu = new Menu( tree );
+    Menu rootMenu = new Menu( tree );
       MenuItem menuItem = new MenuItem( rootMenu, SWT.NONE );
       menuItem.setText( BaseMessages.getString( PKG, "VFSConnectionPopupMenuExtension.MenuItem.New" ) );
       menuItem.addSelectionListener( new SelectionAdapter() {
@@ -93,13 +90,11 @@ public class ConnectionPopupMenuExtension implements ExtensionPointInterface {
           vfsConnectionDelegate.openDialog();
         }
       } );
-    }
     return rootMenu;
   }
 
   private Menu createItemPopupMenu( Tree tree ) {
-    if ( itemMenu == null ) {
-      itemMenu = new Menu( tree );
+    Menu itemMenu = new Menu( tree );
       MenuItem editMenuItem = new MenuItem( itemMenu, SWT.NONE );
       editMenuItem.setText( BaseMessages.getString( PKG, "VFSConnectionPopupMenuExtension.MenuItem.Edit" ) );
       editMenuItem.addSelectionListener( new SelectionAdapter() {
@@ -115,7 +110,6 @@ public class ConnectionPopupMenuExtension implements ExtensionPointInterface {
           vfsConnectionDelegate.delete( vfsConnectionTreeItem.getLabel() );
         }
       } );
-    }
     return itemMenu;
   }
 }

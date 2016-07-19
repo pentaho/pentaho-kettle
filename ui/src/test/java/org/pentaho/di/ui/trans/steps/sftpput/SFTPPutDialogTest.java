@@ -22,10 +22,12 @@
 package org.pentaho.di.ui.trans.steps.sftpput;
 
 import org.apache.commons.lang.reflect.FieldUtils;
+import org.eclipse.rap.rwt.testfixture.TestContext;
 import org.eclipse.swt.widgets.Shell;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
+import org.junit.Rule;
 import org.junit.Test;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.job.entries.sftp.SFTPClient;
@@ -46,6 +48,9 @@ public class SFTPPutDialogTest {
   @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
 
   private static boolean changedPropsUi;
+
+  @Rule
+  public TestContext context = new TestContext();
 
   @BeforeClass
   public static void hackPropsUi() throws Exception {

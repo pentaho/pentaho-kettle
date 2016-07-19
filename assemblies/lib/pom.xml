@@ -4,6 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>pdi-libs</artifactId>
+  <version>9.0.0.0-423-21</version>
   <packaging>pom</packaging>
 
   <name>PDI Client Libraries</name>
@@ -15,12 +16,12 @@
   </parent>
 
   <properties>
-    <pdi-engine-spark.version>${project.version}</pdi-engine-spark.version>
+    <pdi-engine-spark.version>${project.parent.version}</pdi-engine-spark.version>
     <rxjava.version>2.2.3</rxjava.version>
 
     <pentaho-json.version>9.0.0.0-423</pentaho-json.version>
     <pentaho-hadoop-shims.version>9.0.2020.02.00-423</pentaho-hadoop-shims.version>
-    <pdi-spark-driver.version>${project.version}</pdi-spark-driver.version>
+    <pdi-spark-driver.version>${project.parent.version}</pdi-spark-driver.version>
     <pdi-osgi-bridge.version>9.0.0.0-423</pdi-osgi-bridge.version>
     <commons-database.version>9.0.0.0-423</commons-database.version>
     <pentaho-registry.version>9.0.0.0-423</pentaho-registry.version>
@@ -36,13 +37,20 @@
     <LucidDbClient-minimal.version>0.9.4</LucidDbClient-minimal.version>
     <sapdbc.version>7.4.4</sapdbc.version>
     <sqlite-jdbc.version>3.27.2.1</sqlite-jdbc.version>
+    <slf4j-api.version>1.7.7</slf4j-api.version>
+    <slf4j-log4j12.version>1.7.7</slf4j-log4j12.version>
+    <log4j.version>1.2.17</log4j.version>
+    <apache-log4j-extras>1.2.17</apache-log4j-extras>
     <webservices-api.version>2.3.1</webservices-api.version>
     <webservices-rt.version>2.3.1</webservices-rt.version>
     <asm.version>3.2</asm.version>
     <blueprints-core.version>2.6.0</blueprints-core.version>
     <commons-configuration.version>1.9</commons-configuration.version>
     <flexjson.version>2.1</flexjson.version>
-    <jersey-multipart.version>1.19.1</jersey-multipart.version>
+    <!-- jackson-databind depends on jackson-core and jackson-annotations
+    so that this artifacts have the same version to prevent compile errors -->
+    <fasterxml.jackson.core.version>2.9.2</fasterxml.jackson.core.version>
+    <jersey.version>1.19.1</jersey.version>
     <mimepull.version>1.9.3</mimepull.version>
     <jsr311-api.version>1.1.1</jsr311-api.version>
     <enunciate-jersey-rt.version>1.27</enunciate-jersey-rt.version>
@@ -55,7 +63,10 @@
     <paho.version>1.2.0</paho.version>
     <bahir.version>2.3.2</bahir.version>
     <snowflake-jdbc.version>3.6.28</snowflake-jdbc.version>
-    <javax.servlet-api.version>3.1.0</javax.servlet-api.version>
+
+    <!-- Spring -->
+    <springframework4.version>4.3.22.RELEASE</springframework4.version>
+    <springframework4-security.version>4.2.9.RELEASE</springframework4-security.version>
   </properties>
 
   <dependencies>
@@ -64,6 +75,16 @@
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-core</artifactId>
       <version>${project.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.eclipse.rap</groupId>
+          <artifactId>org.eclipse.rap.clientbuilder</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.mozilla</groupId>
+          <artifactId>rhino</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>pentaho-kettle</groupId>
@@ -74,16 +95,24 @@
           <groupId>javax.servlet</groupId>
           <artifactId>*</artifactId>
         </exclusion>
+        <exclusion>
+          <groupId>org.eclipse.jetty</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-dbdialog</artifactId>
-      <version>${project.version}</version>
+      <version>${project.parent.version}</version>
       <exclusions>
         <exclusion>
           <groupId>org.eclipse.swt</groupId>
           <artifactId>*</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.eclipse</groupId>
+          <artifactId>jface</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -95,6 +124,21 @@
         <exclusion>
           <groupId>org.eclipse.swt</groupId>
           <artifactId>*</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.eclipse.rap</groupId>
+          <artifactId>org.eclipse.rap.clientbuilder</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho</groupId>
+      <artifactId>commons-xul-swt</artifactId>
+      <version>${project.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.eclipse</groupId>
+          <artifactId>jface</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -252,6 +296,17 @@
       <groupId>org.pentaho</groupId>
       <artifactId>pentaho-hadoop-shims-common-mapreduce</artifactId>
       <version>${pentaho-hadoop-shims.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>pentaho</groupId>
+      <artifactId>pentaho-platform-scheduler</artifactId>
+      <version>${platform.version}</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
@@ -491,11 +546,6 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>javax.servlet-api</artifactId>
-      <version>${javax.servlet-api.version}</version>
-    </dependency>
-    <dependency>
       <groupId>net.snowflake</groupId>
       <artifactId>snowflake-jdbc</artifactId>
       <version>${snowflake-jdbc.version}</version>
@@ -532,6 +582,43 @@
       <groupId>org.springframework.security</groupId>
       <artifactId>spring-security-core</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.springframework.security</groupId>
+      <artifactId>spring-security-ldap</artifactId>
+      <version>${springframework4-security.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.ldap</groupId>
+      <artifactId>spring-ldap-core</artifactId>
+      <version>2.3.2.RELEASE</version>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-tx</artifactId>
+      <version>${springframework4.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.security</groupId>
+      <artifactId>spring-security-config</artifactId>
+      <version>${springframework4-security.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.security</groupId>
+      <artifactId>spring-security-web</artifactId>
+      <version>${springframework4-security.version}</version>
+    </dependency>
 
     <dependency>
       <groupId>org.springframework.security</groupId>
@@ -548,6 +635,11 @@
           <artifactId>jackson-module-jaxb-annotations</artifactId>
         </exclusion>
       </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <version>${log4j.version}</version>
     </dependency>
     <dependency>
       <groupId>log4j</groupId>
@@ -630,7 +722,18 @@
     <dependency>
       <groupId>com.sun.jersey.contribs</groupId>
       <artifactId>jersey-multipart</artifactId>
-      <version>${jersey-multipart.version}</version>
+      <version>${jersey.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>com.sun.jersey.contribs</groupId>
+      <artifactId>jersey-spring</artifactId>
+      <version>${jersey.version}</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
