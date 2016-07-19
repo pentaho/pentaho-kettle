@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -30,6 +30,8 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.injection.Injection;
+import org.pentaho.di.core.injection.InjectionSupported;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -57,8 +59,14 @@ import org.w3c.dom.Node;
  * @author Sven Boden
  * @since 3-june-2007
  */
+@InjectionSupported( localizationPrefix = "AppendMeta.Injection." )
 public class AppendMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = Append.class; // for i18n purposes, needed by Translator2!!
+
+  @Injection( name = "HEAD_STEP" )
+  public String headStepname;
+  @Injection( name = "TAIL_STEP" )
+  public String tailStepname;
 
   public AppendMeta() {
     super(); // allocate BaseStepMeta
