@@ -2,10 +2,9 @@
           xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.0.0 http://maven.apache.org/xsd/assembly-2.0.0.xsd">
   <id>client</id>
   <formats>
-    <format>zip</format>
+    <format>war</format>
   </formats>
-  <includeBaseDirectory>true</includeBaseDirectory>
-  <baseDirectory>data-integration</baseDirectory>
+  <includeBaseDirectory>false</includeBaseDirectory>
   <fileSets>
     <!-- the staging dir -->
     <fileSet>
@@ -17,59 +16,19 @@
     <!-- pdi components -->
     <dependencySet>
       <includes>
-        <include>org.pentaho.di:pdi-static:zip</include>
-        <include>org.pentaho.di:pdi-samples:zip</include>
         <include>org.pentaho.di:pdi-libs:zip</include>
-        <include>org.pentaho.di:pdi-plugins:zip</include>
+      </includes>
+      <unpack>true</unpack>
+      <outputDirectory>WEB-INF</outputDirectory>
+      <useTransitiveDependencies>false</useTransitiveDependencies>
+      <useProjectArtifact>false</useProjectArtifact>
+    </dependencySet>
+    <dependencySet>
+      <includes>
+        <include>org.pentaho.di:pdi-static:zip</include>
       </includes>
       <unpack>true</unpack>
       <outputDirectory>.</outputDirectory>
-      <useTransitiveDependencies>false</useTransitiveDependencies>
-      <useProjectArtifact>false</useProjectArtifact>
-    </dependencySet>
-    <!-- swt -->
-    <dependencySet>
-      <includes>
-        <include>org.eclipse.platform:*.linux.x86</include>
-      </includes>
-      <outputDirectory>libswt/linux/x86</outputDirectory>
-      <outputFileNameMapping>swt.jar</outputFileNameMapping>
-      <useTransitiveDependencies>false</useTransitiveDependencies>
-      <useProjectArtifact>false</useProjectArtifact>
-    </dependencySet>
-    <dependencySet>
-      <includes>
-        <include>org.eclipse.platform:*.linux.x86_64</include>
-      </includes>
-      <outputDirectory>libswt/linux/x86_64</outputDirectory>
-      <outputFileNameMapping>swt.jar</outputFileNameMapping>
-      <useTransitiveDependencies>false</useTransitiveDependencies>
-      <useProjectArtifact>false</useProjectArtifact>
-    </dependencySet>
-    <dependencySet>
-      <includes>
-        <include>org.eclipse.swt:*.win32.x86</include>
-      </includes>
-      <outputDirectory>libswt/win32</outputDirectory>
-      <outputFileNameMapping>swt.jar</outputFileNameMapping>
-      <useTransitiveDependencies>false</useTransitiveDependencies>
-      <useProjectArtifact>false</useProjectArtifact>
-    </dependencySet>
-    <dependencySet>
-      <includes>
-        <include>org.eclipse.swt:*.win32.x86_64</include>
-      </includes>
-      <outputDirectory>libswt/win64</outputDirectory>
-      <outputFileNameMapping>swt.jar</outputFileNameMapping>
-      <useTransitiveDependencies>false</useTransitiveDependencies>
-      <useProjectArtifact>false</useProjectArtifact>
-    </dependencySet>
-    <dependencySet>
-      <includes>
-        <include>org.eclipse.swt:*.macosx.x86_64</include>
-      </includes>
-      <outputDirectory>libswt/osx64</outputDirectory>
-      <outputFileNameMapping>swt.jar</outputFileNameMapping>
       <useTransitiveDependencies>false</useTransitiveDependencies>
       <useProjectArtifact>false</useProjectArtifact>
     </dependencySet>
@@ -87,26 +46,6 @@
       <outputDirectory>.</outputDirectory>
       <useTransitiveDependencies>false</useTransitiveDependencies>
       <useProjectArtifact>false</useProjectArtifact>
-    </dependencySet>
-    <!-- jdbc drivers -->
-    <dependencySet>
-      <includes>
-        <include>pentaho:pdi-dataservice-driver-bundle:zip</include>
-      </includes>
-      <outputDirectory>Data Service JDBC Driver</outputDirectory>
-      <useTransitiveDependencies>false</useTransitiveDependencies>
-      <useProjectArtifact>false</useProjectArtifact>
-      <outputFileNameMapping>${artifact.artifactId}-${artifact.baseVersion}.${artifact.extension}</outputFileNameMapping>
-    </dependencySet>
-    <!-- application launcher -->
-    <dependencySet>
-      <includes>
-        <include>pentaho:pentaho-application-launcher</include>
-      </includes>
-      <outputDirectory>launcher</outputDirectory>
-      <useTransitiveDependencies>false</useTransitiveDependencies>
-      <useProjectArtifact>false</useProjectArtifact>
-      <outputFileNameMapping>launcher.jar</outputFileNameMapping>
     </dependencySet>
   </dependencySets>
 </assembly>

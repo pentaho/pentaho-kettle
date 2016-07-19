@@ -263,7 +263,7 @@ public class Props implements Cloneable {
 
   public String getFilename() {
     String filename = "";
-    String directory = Const.getKettleDirectory();
+    String directory = Const.getKettleUserDirectory();
 
     switch ( type ) {
       case TYPE_PROPERTIES_SPOON:

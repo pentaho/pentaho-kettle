@@ -69,7 +69,7 @@ public class XulDatabaseExplorerDialog {
 
       KettleXulLoader theLoader = new KettleXulLoader();
       theLoader.setSettingsManager( XulSpoonSettingsManager.getInstance() );
-      theLoader.setSettingsManager( new DefaultSettingsManager( new File( Const.getKettleDirectory()
+      theLoader.setSettingsManager( new DefaultSettingsManager( new File( Const.getKettleUserDirectory()
         + Const.FILE_SEPARATOR + "xulSettings.properties" ) ) );
       theLoader.setOuterContext( this.shell );
 

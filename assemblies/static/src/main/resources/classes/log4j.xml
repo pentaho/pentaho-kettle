@@ -19,9 +19,9 @@
    <!-- ================================= -->
 
    <!-- A time/date based rolling appender -->
-   <appender name="PENTAHOFILE" class="org.apache.log4j.DailyRollingFileAppender">
+   <appender name="spoon" class="org.apache.log4j.DailyRollingFileAppender">
 
-      <param name="File" value="logs/pdi.log"/>
+      <param name="File" value="logs/spoon.log"/>
       <param name="Append" value="false"/>
 
       <!-- Rollover at midnight each day -->
@@ -131,13 +131,19 @@
     <appender-ref ref="pdi-execution-appender"/>
   </logger>
 
+  <!--
+  <category name="org.springframework.security">
+    <priority value="DEBUG"/>
+  </category>
+  -->
+
    <!-- ======================= -->
    <!-- Setup the Root category -->
    <!-- ======================= -->
 
    <root>
-      <priority value="ERROR" />
-      <appender-ref ref="PENTAHOCONSOLE"/>
+      <priority value="INFO" />
+      <appender-ref ref="spoon"/>
       <!--<appender-ref ref="PENTAHOFILE"/>-->
    </root>
 

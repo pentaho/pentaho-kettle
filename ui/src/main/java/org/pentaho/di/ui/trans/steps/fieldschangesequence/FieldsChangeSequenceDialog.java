@@ -295,7 +295,7 @@ public class FieldsChangeSequenceDialog extends BaseStepDialog implements StepDi
             }
 
             // Dislay in red missing field names
-            Display.getDefault().asyncExec( new Runnable() {
+            display.asyncExec( new Runnable() {
               public void run() {
                 if ( !wFields.isDisposed() ) {
                   for ( int i = 0; i < wFields.table.getItemCount(); i++ ) {

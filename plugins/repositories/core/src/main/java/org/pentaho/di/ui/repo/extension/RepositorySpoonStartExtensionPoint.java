@@ -80,15 +80,20 @@ public class RepositorySpoonStartExtensionPoint implements ExtensionPointInterfa
         repositoryConnectController
           .connectToRepository( repositoryMeta, null, null );
       }
-      if ( !repositoryConnectController.isConnected() ) {
-        String msg = BaseMessages.getString( PKG, "Repository.NoConnected.Message" );
-        log.logError( msg ); // "No repositories defined on this system."
-        MessageBox mb = new MessageBox( getSpoon().getShell(), SWT.OK | SWT.ICON_ERROR );
-        mb.setMessage( BaseMessages.getString( PKG, "Repository.NoConnected.Message", optionRepname
-          .toString() ) );
-        mb.setText( BaseMessages.getString( PKG, "Repository.NoConnected.Message.Title" ) );
-        mb.open();
-      }
+      /*
+       *  Comment out the whole block because spoon.setRepository( repository ) is executed asynchronously
+       *  in RepositoryConnectController.connectToRepository( RepositoryMeta repositoryMeta, String username, String password ).
+       *  The asynchronous execution results in showing the error message below even when successfully connected.
+       */
+//      if ( !repositoryConnectController.isConnected() ) {
+//        String msg = BaseMessages.getString( PKG, "Repository.NoConnected.Message" );
+//        log.logError( msg ); // "No repositories defined on this system."
+//        MessageBox mb = new MessageBox( getSpoon().getShell(), SWT.OK | SWT.ICON_ERROR );
+//        mb.setMessage( BaseMessages.getString( PKG, "Repository.NoConnected.Message", optionRepname
+//          .toString() ) );
+//        mb.setText( BaseMessages.getString( PKG, "Repository.NoConnected.Message.Title" ) );
+//        mb.open();
+//      }
     } else if ( Utils.isEmpty( optionFilename ) ) {
       RepositoryMeta repositoryMeta = repositoryConnectController.getDefaultRepositoryMeta();
       if ( repositoryMeta != null ) {

@@ -92,7 +92,7 @@
 
   <menupopup id="job-graph-background">
     <menuitem id="job-graph-note-new" label="${JobGraph.PopupMenu.Note.New}" command="jobgraph.newNote()" />
-    <menuitem id="job-graph-note-paste" acceltext="CTRL-V" accesskey="ctrl-v" label="${JobGraph.PopupMenu.PasteStepFromClipboard}" command="jobgraph.pasteNote()" />
+    <menuitem id="job-graph-note-paste" label="${JobGraph.PopupMenu.PasteStepFromClipboard}" command="jobgraph.pasteNote()" />
     <menuseparator />
     <menuitem id="job-graph-background-select-all" acceltext="CTRL-A" accesskey="ctrl-a" label="${JobGraph.PopupMenu.SelectAll}" command="jobgraph.selectAll()" />
     <menuitem id="job-graph-background-clear-selection" label="${JobGraph.PopupMenu.ClearSelection}" command="jobgraph.clearSelection()" />

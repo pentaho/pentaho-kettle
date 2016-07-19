@@ -212,7 +212,7 @@ public class ScriptDialog extends BaseStepDialog implements StepDialogInterface 
 
   private TreeItem itemoutput;
 
-  private static GUIResource guiresource = GUIResource.getInstance();
+  private GUIResource guiresource = GUIResource.getInstance();
 
   private TreeItem itemWaitFieldsIn, itemWaitFieldsOut;
 

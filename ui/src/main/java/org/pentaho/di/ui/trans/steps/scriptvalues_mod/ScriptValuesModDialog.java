@@ -221,7 +221,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 
   private TreeItem itemoutput;
 
-  private static GUIResource guiresource = GUIResource.getInstance();
+  private GUIResource guiresource = GUIResource.getInstance();
 
   private TreeItem itemWaitFieldsIn, itemWaitFieldsOut;
 

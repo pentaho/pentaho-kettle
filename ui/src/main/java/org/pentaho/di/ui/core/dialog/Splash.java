@@ -40,6 +40,8 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.Const;
@@ -107,6 +109,8 @@ public class Splash {
     shell.setImage( kettleIcon );
 
     shell.setText( BaseMessages.getString( PKG, "SplashDialog.Title" ) ); // "Pentaho Data Integration"
+    shell.setLayout( new FillLayout() );
+    final Canvas canvas = new Canvas( shell, SWT.NO_REDRAW_RESIZE );
 
     shell.addPaintListener( e -> {
       StringBuilder sb = new StringBuilder();
@@ -202,6 +206,7 @@ public class Splash {
     } );
 
     shell.addDisposeListener( disposeEvent -> {
+      canvas.dispose();
       kettleImage.dispose();
       kettleIcon.dispose();
       exclamationImage.dispose();

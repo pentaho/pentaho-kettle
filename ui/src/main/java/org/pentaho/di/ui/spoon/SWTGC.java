@@ -89,9 +89,8 @@ public class SWTGC implements GCInterface {
   private Point area;
   private Transform transform;
 
-  public SWTGC( Device device, Point area, int iconsize ) {
-    this.image = new Image( device, area.x, area.y );
-    this.gc = new GC( image );
+  public SWTGC( GC gc, Point area, int iconsize ) {
+    this.gc = gc;
     this.images = GUIResource.getInstance().getImagesSteps();
     this.iconsize = iconsize;
     this.area = area;
@@ -119,7 +118,6 @@ public class SWTGC implements GCInterface {
   }
 
   public void dispose() {
-    gc.dispose();
     if ( transform != null && transform.isDisposed() == false ) {
       transform.dispose();
     }

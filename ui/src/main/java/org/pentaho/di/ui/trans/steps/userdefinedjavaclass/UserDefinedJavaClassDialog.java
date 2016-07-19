@@ -167,7 +167,7 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
   private UserDefinedJavaClassMeta input;
   private UserDefinedJavaClassCodeSnippits snippitsHelper;
 
-  private static GUIResource guiResource = GUIResource.getInstance();
+  private GUIResource guiResource = GUIResource.getInstance();
 
   private TreeItem itemInput, itemInfo, itemOutput;
 

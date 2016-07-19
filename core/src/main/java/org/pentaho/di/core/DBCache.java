@@ -133,7 +133,7 @@ public class DBCache {
   }
 
   public String getFilename() {
-    return Const.getKettleDirectory()
+    return Const.getKettleUserDirectory()
       + Const.FILE_SEPARATOR + "db.cache-" + BuildVersion.getInstance().getVersion();
   }
 

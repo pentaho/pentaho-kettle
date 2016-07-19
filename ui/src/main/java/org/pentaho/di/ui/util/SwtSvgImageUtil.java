@@ -76,6 +76,7 @@ public class SwtSvgImageUtil {
    */
   public static SwtUniversalImage getMissingImage( Display display ) {
     Image img = new Image( display, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE );
+    /*
     GC gc = new GC( img );
     gc.setForeground( new Color( display, 0, 0, 0 ) );
     gc.drawRectangle( 4, 4, ConstUI.ICON_SIZE - 8, ConstUI.ICON_SIZE - 8 );
@@ -83,6 +84,7 @@ public class SwtSvgImageUtil {
     gc.drawLine( 4, 4, ConstUI.ICON_SIZE - 4, ConstUI.ICON_SIZE - 4 );
     gc.drawLine( ConstUI.ICON_SIZE - 4, 4, 4, ConstUI.ICON_SIZE - 4 );
     gc.dispose();
+    */
     return new SwtUniversalImageBitmap( img );
   }
 

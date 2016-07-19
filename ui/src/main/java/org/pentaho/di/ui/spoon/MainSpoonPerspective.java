@@ -126,7 +126,7 @@ public class MainSpoonPerspective implements SpoonPerspectiveImageProvider {
     // What transformation is in the active tab?
     // TransLog, TransGraph & TransHist contain the same transformation
     //
-    TabMapEntry mapEntry = ( (Spoon) SpoonFactory.getInstance() ).delegates.tabs.getTab( tabfolder.getSelected() );
+    TabMapEntry mapEntry = Spoon.getInstance().delegates.tabs.getTab( tabfolder.getSelected() );
     EngineMetaInterface meta = null;
     if ( mapEntry != null ) {
       if ( mapEntry.getObject() instanceof TransGraph ) {

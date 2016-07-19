@@ -25,6 +25,8 @@
     <eclipse.version>3.6.0</eclipse.version>
     <junit.version>4.11</junit.version>
     <js.project.list>requirejs,requirejs-text,angular,require-css,angular-i18n</js.project.list>
+    <rap.version>3.7.0</rap.version>
+    <webspoon.version>8.2.0.0-342-18</webspoon.version>
   </properties>
 
   <dependencies>
@@ -79,7 +81,7 @@
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-core</artifactId>
-      <version>${pdi.version}</version>
+      <version>${webspoon.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -194,6 +196,12 @@
       <groupId>org.eclipse.core</groupId>
       <artifactId>org.eclipse.core.commands</artifactId>
       <version>${eclipse.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.rap</groupId>
+      <artifactId>org.eclipse.rap.rwt.testfixture</artifactId>
+      <version>${rap.version}-SNAPSHOT</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

@@ -31,6 +31,8 @@ import org.apache.commons.vfs2.FileSystemException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
+import org.eclipse.rap.rwt.RWT;
+import org.eclipse.rap.rwt.client.service.UrlLauncher;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
@@ -143,6 +145,11 @@ public class RepositoryExportProgressDialog {
           .getString( PKG, "RepositoryExportDialog.ErrorExport.Message" ), e );
       retval = false;
     }
+    StringBuilder url = new StringBuilder();
+    url.append( RWT.getServiceManager().getServiceHandlerUrl( "downloadServiceHandler" ) );
+    url.append( '&' ).append( "filename" ).append( '=' ).append( filename );
+    UrlLauncher launcher = RWT.getClient().getService( UrlLauncher.class );
+    launcher.openURL( url.toString() );
 
     return retval;
   }
