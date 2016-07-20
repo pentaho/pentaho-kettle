@@ -356,6 +356,12 @@ public class GUIResource {
   private SwtUniversalImage imageBalance;
 
   private SwtUniversalImage imageCheckpoint;
+  
+  private SwtUniversalImage detRun;
+  
+  private SwtUniversalImage detGraph;
+  
+  private SwtUniversalImage detGraphDisable;  
 
   private Image imageGantt;
 
@@ -637,7 +643,10 @@ public class GUIResource {
       imageAddSingle.dispose();
       imageRemoveAll.dispose();
       imageRemoveSingle.dispose();
-
+      detRun.dispose();
+      detGraph.dispose();
+      detGraphDisable.dispose();
+      
       defaultArrow.dispose();
       okArrow.dispose();
       errorArrow.dispose();
@@ -1089,6 +1098,15 @@ public class GUIResource {
     // "ui/images/scales.png
     imageCheckpoint =
       SwtSvgImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "CheckeredFlag_image" ) );
+    
+    detRun =
+      SwtSvgImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "DetRun_image" ) );
+    
+    detGraph =
+        SwtSvgImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "DetGraph_image" ) );
+
+    detGraphDisable =
+        SwtSvgImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "DetGraphDisable_image" ) );
 
     // "ui/images/gantt.png
     imageGantt = loadAsResource( display, BasePropertyHandler.getProperty( "Gantt_image" ), ConstUI.SMALL_ICON_SIZE );
@@ -2451,6 +2469,30 @@ public class GUIResource {
 
   public SwtUniversalImage getSwtImageCheckpoint() {
     return imageCheckpoint;
+  }
+  
+  public Image getImageDetRun() {
+    return detRun.getAsBitmapForSize( display, ConstUI.SMALL_ICON_SIZE, ConstUI.SMALL_ICON_SIZE );
+  }
+
+  public SwtUniversalImage getSwtImageDetRun() {
+    return detRun;
+  }
+  
+  public Image getImageDetGraph() {
+    return detGraph.getAsBitmapForSize( display, ConstUI.SMALL_ICON_SIZE, ConstUI.SMALL_ICON_SIZE );
+  }
+
+  public SwtUniversalImage getSwtImageDetGraph() {
+    return detGraph;
+  }
+  
+  public Image getImageDetGraphDisable() {
+    return detGraphDisable.getAsBitmapForSize( display, ConstUI.SMALL_ICON_SIZE, ConstUI.SMALL_ICON_SIZE );
+  }
+
+  public SwtUniversalImage getSwtImageDetGraphDisable() {
+    return detGraphDisable;
   }
 
   public Image getImageGantt() {
