@@ -48,6 +48,7 @@ import org.pentaho.di.core.SwingUniversalImage;
 import org.pentaho.di.core.SwingUniversalImageBitmap;
 import org.pentaho.di.core.SwingUniversalImageSvg;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.gui.PrimitiveGCInterface.EImage;
 import org.pentaho.di.core.svg.SvgImage;
 import org.pentaho.di.core.svg.SvgSupport;
 import org.pentaho.di.core.util.SwingSvgImageUtil;
@@ -351,11 +352,6 @@ public class SwingDirectGC implements GCInterface {
 
     // gc.drawImage(img, locationX+xOffset, locationY+yOffset, observer);
 
-  }
-  
-  public void drawImage( EImage image, int x, int y, int width, int height, float magnification ) {  
-    SwingUniversalImage img = getNativeImage( image );
-    drawImage( img, x, y, width, height );
   }
 
   public void drawImage( EImage image, int locationX, int locationY, float magnification, double angle ) {

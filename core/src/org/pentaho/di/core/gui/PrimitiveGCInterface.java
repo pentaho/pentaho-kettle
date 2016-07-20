@@ -41,7 +41,7 @@ public interface PrimitiveGCInterface {
   public enum EImage {
     LOCK, STEP_ERROR, EDIT, CONTEXT_MENU, TRUE, FALSE, ERROR, INFO, TARGET, INPUT, OUTPUT, ARROW, COPY_ROWS,
       UNCONDITIONAL, PARALLEL, BUSY, INJECT, LOAD_BALANCE, CHECKPOINT, DB,
-    ARROW_DEFAULT, ARROW_OK, ARROW_ERROR, ARROW_DISABLED, ARROW_CANDIDATE, DET_RUN, DET_GRAPH, DET_GRAPH_DISABLED
+    ARROW_DEFAULT, ARROW_OK, ARROW_ERROR, ARROW_DISABLED, ARROW_CANDIDATE
   }
 
   public void setLineWidth( int width );
@@ -72,8 +72,6 @@ public interface PrimitiveGCInterface {
   public void drawImage( EImage image, int x, int y );
 
   public void drawImage( EImage image, int x, int y, float magnification );
-  
-  public void drawImage( EImage image, int x, int y, int width, int height, float magnification );
 
   public void drawImage( EImage image, int x, int y, float magnification, double angle );
 

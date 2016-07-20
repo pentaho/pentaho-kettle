@@ -577,8 +577,4 @@ public class TransPreviewDelegate extends SpoonDelegate implements XulEventHandl
     lastRadio.setSelected( false );
     offRadio.setSelected( true );
   }
-  
-  public Map<StepMeta, List<Object[]>> getPreviewDataMap() {
-    return previewDataMap;
-  }
 }
