@@ -29,14 +29,11 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
+
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Random;
 
-import javax.xml.namespace.QName;
-import javax.xml.rpc.ServiceException;
-
-import org.apache.axis.message.MessageElement;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -49,7 +46,11 @@ import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.util.EnvUtil;
 
-import com.sforce.soap.partner.SoapBindingStub;
+import com.sforce.soap.partner.Connector;
+import com.sforce.soap.partner.PartnerConnection;
+import com.sforce.ws.ConnectionException;
+import com.sforce.ws.ConnectorConfig;
+import com.sforce.ws.bind.XmlObject;
 
 public class SalesforceConnectionTest {
 
@@ -244,22 +245,22 @@ public class SalesforceConnectionTest {
 
   @Test
   public void testMessageElements() throws Exception {
-    MessageElement me = SalesforceConnection.fromTemplateElement( "myName", 123, false );
+    XmlObject me = SalesforceConnection.fromTemplateElement( "myName", 123, false );
     assertNotNull( me );
-    assertEquals( "myName", me.getName() );
+    assertEquals( "myName", me.getName().getLocalPart() );
     assertNull( me.getValue() );
 
     me = null;
     me = SalesforceConnection.fromTemplateElement( "myName", 123, true );
     assertNotNull( me );
-    assertEquals( "myName", me.getName() );
-    assertEquals( "123", me.getValue() );
+    assertEquals( "myName", me.getName().getLocalPart() );
+    assertEquals( 123, me.getValue() );
 
     me = null;
     me = SalesforceConnection.createMessageElement( "myName", 123, false );
     assertNotNull( me );
-    assertEquals( "myName", me.getName() );
-    assertEquals( "123", me.getValue() );
+    assertEquals( "myName", me.getName().getLocalPart() );
+    assertEquals( 123, me.getValue() );
 
     me = null;
     try {
@@ -271,11 +272,11 @@ public class SalesforceConnectionTest {
 
     me = null;
     try {
-      me = SalesforceConnection.createMessageElement( "myType:Name", 123, true );
+      me = SalesforceConnection.createMessageElement( "myType:Name", "123", true );
       assertNotNull( me );
-      assertEquals( "Name", me.getName() );
-      assertEquals( "myType", me.getChildElement( new QName( "type" ) ).getValue() );
-      assertEquals( "123", me.getChildElement( new QName( "Name" ) ).getValue() );
+      assertEquals( "Name", me.getName().getLocalPart() );
+      assertEquals( "myType", me.getField( "type" ) );
+      assertEquals( "123", me.getField( "Name" ) );
     } catch ( Exception expected ) {
       fail();
     }
@@ -284,23 +285,27 @@ public class SalesforceConnectionTest {
     try {
       me = SalesforceConnection.createMessageElement( "myType:Name/MyLookupField", 123, true );
       assertNotNull( me );
-      assertEquals( "MyLookupField", me.getName() );
-      assertEquals( "myType", me.getChildElement( new QName( "type" ) ).getValue() );
-      assertEquals( "123", me.getChildElement( new QName( "Name" ) ).getValue() );
+      assertEquals( "MyLookupField", me.getName().getLocalPart() );
+      //assertEquals( "myType", me.getField( "type" ) );
+      assertEquals( 123, me.getField( "Name" ) );
     } catch ( Exception expected ) {
       fail();
     }
   }
 
   @Test
-  public void testCreateBinding() throws KettleException, ServiceException {
+  public void testCreateBinding() throws KettleException, ConnectionException {
     SalesforceConnection conn = new SalesforceConnection( null, "http://localhost:1234", "aUser", "aPass" );
+    ConnectorConfig config = new ConnectorConfig();
+    config.setAuthEndpoint( Connector.END_POINT );
+    config.setManualLogin( true ); // Required to prevent connection attempt during test
+
     assertNull( conn.getBinding() );
 
-    conn.createBinding();
-    SoapBindingStub binding1 = conn.getBinding();
-    conn.createBinding();
-    SoapBindingStub binding2 = conn.getBinding();
+    conn.createBinding( config );
+    PartnerConnection binding1 = conn.getBinding();
+    conn.createBinding( config );
+    PartnerConnection binding2 = conn.getBinding();
     assertSame( binding1, binding2 );
   }
 }

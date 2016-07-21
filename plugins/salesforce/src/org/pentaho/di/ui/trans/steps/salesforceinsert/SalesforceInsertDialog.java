@@ -28,9 +28,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.sforce.soap.partner.Field;
-import com.sforce.soap.partner.FieldType;
-
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
@@ -68,7 +65,6 @@ import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.row.value.ValueMetaNone;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.salesforce.SalesforceConnection;
 import org.pentaho.di.trans.steps.salesforce.SalesforceConnectionUtils;
@@ -85,6 +81,9 @@ import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.trans.step.TableItemInsertListener;
 import org.pentaho.di.ui.trans.steps.salesforce.SalesforceStepDialog;
+
+import com.sforce.soap.partner.Field;
+import com.sforce.soap.partner.FieldType;
 
 public class SalesforceInsertDialog extends SalesforceStepDialog {
 
@@ -172,11 +171,12 @@ public class SalesforceInsertDialog extends SalesforceStepDialog {
   private boolean getModulesListError = false; /* True if error getting modules list */
 
   public SalesforceInsertDialog( Shell parent, Object in, TransMeta transMeta, String sname ) {
-    super( parent, (BaseStepMeta) in, transMeta, sname );
+    super( parent, in, transMeta, sname );
     input = (SalesforceInsertMeta) in;
     inputFields = new HashMap<String, Integer>();
   }
 
+  @Override
   public String open() {
     Shell parent = getParent();
     Display display = parent.getDisplay();
@@ -186,17 +186,20 @@ public class SalesforceInsertDialog extends SalesforceStepDialog {
     setShellImage( shell, input );
 
     ModifyListener lsMod = new ModifyListener() {
+      @Override
       public void modifyText( ModifyEvent e ) {
         input.setChanged();
       }
     };
     ModifyListener lsTableMod = new ModifyListener() {
+      @Override
       public void modifyText( ModifyEvent arg0 ) {
         input.setChanged();
         setModuleFieldCombo();
       }
     };
     SelectionAdapter lsSelection = new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         input.setChanged();
         setModuleFieldCombo();
@@ -426,10 +429,12 @@ public class SalesforceInsertDialog extends SalesforceStepDialog {
     fdModule.right = new FormAttachment( 100, -margin );
     wModule.setLayoutData( fdModule );
     wModule.addFocusListener( new FocusListener() {
+      @Override
       public void focusLost( org.eclipse.swt.events.FocusEvent e ) {
         getModulesListError = false;
       }
 
+      @Override
       public void focusGained( org.eclipse.swt.events.FocusEvent e ) {
         // check if the URL and login credentials passed and not just had error
         if ( Const.isEmpty( wURL.getText() )
@@ -547,6 +552,7 @@ public class SalesforceInsertDialog extends SalesforceStepDialog {
     wDoMapping.setLayoutData( fdDoMapping );
 
     wDoMapping.addListener( SWT.Selection, new Listener() {
+      @Override
       public void handleEvent( Event arg0 ) {
         generateMappings();
       }
@@ -564,6 +570,7 @@ public class SalesforceInsertDialog extends SalesforceStepDialog {
     //
 
     final Runnable runnable = new Runnable() {
+      @Override
       public void run() {
         StepMeta stepMeta = transMeta.findStep( stepname );
         if ( stepMeta != null ) {
@@ -578,6 +585,7 @@ public class SalesforceInsertDialog extends SalesforceStepDialog {
             setComboBoxes();
             // Dislay in red missing field names
             Display.getDefault().asyncExec( new Runnable() {
+              @Override
               public void run() {
                 if ( !wReturn.isDisposed() ) {
                   for ( int i = 0; i < wReturn.table.getItemCount(); i++ ) {
@@ -626,22 +634,26 @@ public class SalesforceInsertDialog extends SalesforceStepDialog {
 
     // Add listeners
     lsOK = new Listener() {
+      @Override
       public void handleEvent( Event e ) {
         ok();
       }
     };
     lsTest = new Listener() {
+      @Override
       public void handleEvent( Event e ) {
         test();
       }
     };
 
     lsGetLU = new Listener() {
+      @Override
       public void handleEvent( Event e ) {
         getUpdate();
       }
     };
     lsCancel = new Listener() {
+      @Override
       public void handleEvent( Event e ) {
         cancel();
       }
@@ -653,6 +665,7 @@ public class SalesforceInsertDialog extends SalesforceStepDialog {
     wCancel.addListener( SWT.Selection, lsCancel );
 
     lsDef = new SelectionAdapter() {
+      @Override
       public void widgetDefaultSelected( SelectionEvent e ) {
         ok();
       }
@@ -662,6 +675,7 @@ public class SalesforceInsertDialog extends SalesforceStepDialog {
 
     // Detect X or ALT-F4 or something that kills this window...
     shell.addShellListener( new ShellAdapter() {
+      @Override
       public void shellClosed( ShellEvent e ) {
         cancel();
       }
@@ -688,6 +702,7 @@ public class SalesforceInsertDialog extends SalesforceStepDialog {
       RowMetaInterface r = transMeta.getPrevStepFields( stepname );
       if ( r != null ) {
         TableItemInsertListener listener = new TableItemInsertListener() {
+          @Override
           public boolean tableItemInserted( TableItem tableItem, ValueMetaInterface v ) {
             tableItem.setText( 3, "Y" );
             return true;
@@ -886,7 +901,7 @@ public class SalesforceInsertDialog extends SalesforceStepDialog {
       Field[] fields = connection.getObjectFields( transMeta.environmentSubstitute( wModule.getText() ) );
       String[] fieldNames = connection.getFields( fields );
 
-      FieldType dateType = FieldType.fromString( "date" );
+      FieldType dateType = FieldType.date;
       for ( int i = 0; i < fields.length; i++ ) {
         if ( dateType.equals( fields[ i ].getType() ) ) {
           // Mark date columns as TYPE_DATE to strip time part later
@@ -1012,6 +1027,7 @@ public class SalesforceInsertDialog extends SalesforceStepDialog {
     Display display = shell.getDisplay();
     if ( !( display == null || display.isDisposed() ) ) {
       display.asyncExec( new Runnable() {
+        @Override
         public void run() {
           // clear
           for ( int i = 0; i < tableFieldColumns.size(); i++ ) {

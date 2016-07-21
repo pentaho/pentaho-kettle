@@ -24,7 +24,6 @@ package org.pentaho.di.trans.steps.salesforceupdate;
 
 import java.util.ArrayList;
 
-import org.apache.axis.message.MessageElement;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowDataUtil;
@@ -40,6 +39,7 @@ import org.pentaho.di.trans.steps.salesforceutils.SalesforceUtils;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.sforce.soap.partner.sobject.SObject;
+import com.sforce.ws.bind.XmlObject;
 
 /**
  * Read data from Salesforce module, convert them to rows and writes these to one or more output streams.
@@ -58,6 +58,7 @@ public class SalesforceUpdate extends SalesforceStep {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
+  @Override
   public boolean processRow( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
 
     // get one row ... This does some basic initialization of the objects, including loading the info coming in
@@ -124,7 +125,7 @@ public class SalesforceUpdate extends SalesforceStep {
       if ( data.iBufferPos < meta.getBatchSizeInt() ) {
         // Reserve for empty fields
         ArrayList<String> fieldsToNull = new ArrayList<String>();
-        ArrayList<MessageElement> updatefields = new ArrayList<MessageElement>();
+        ArrayList<XmlObject> updatefields = new ArrayList<>();
 
         // Add fields to update
         for ( int i = 0; i < data.nrfields; i++ ) {
@@ -144,7 +145,9 @@ public class SalesforceUpdate extends SalesforceStep {
         SObject sobjPass = new SObject();
         sobjPass.setType( data.connection.getModule() );
         if ( updatefields.size() > 0 ) {
-          sobjPass.set_any( updatefields.toArray( new MessageElement[updatefields.size()] ) );
+          for ( XmlObject element : updatefields ) {
+            sobjPass.setSObjectField( element.getName().getLocalPart(), element.getValue() );
+          }
         }
         if ( fieldsToNull.size() > 0 ) {
           // Set Null to fields
@@ -171,7 +174,12 @@ public class SalesforceUpdate extends SalesforceStep {
   private void flushBuffers() throws KettleException {
 
     try {
-      // create the object(s) by sending the array to the web service
+      if ( data.sfBuffer.length > data.iBufferPos ) {
+        SObject[] smallBuffer = new SObject[data.iBufferPos];
+        System.arraycopy( data.sfBuffer, 0, smallBuffer, 0, data.iBufferPos );
+        data.sfBuffer = smallBuffer;
+      }
+      // update the object(s) by sending the array to the web service
       data.saveResult = data.connection.update( data.sfBuffer );
       int nr = data.saveResult.length;
       for ( int j = 0; j < nr; j++ ) {
@@ -262,6 +270,7 @@ public class SalesforceUpdate extends SalesforceStep {
 
   }
 
+  @Override
   public boolean init( StepMetaInterface smi, StepDataInterface sdi ) {
     meta = (SalesforceUpdateMeta) smi;
     data = (SalesforceUpdateData) sdi;
@@ -285,6 +294,7 @@ public class SalesforceUpdate extends SalesforceStep {
     return false;
   }
 
+  @Override
   public void dispose( StepMetaInterface smi, StepDataInterface sdi ) {
     if ( data.outputBuffer != null ) {
       data.outputBuffer = null;

@@ -25,17 +25,16 @@ package org.pentaho.di.trans.steps.salesforce;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.xml.namespace.QName;
-import javax.xml.rpc.ServiceException;
 import javax.xml.soap.SOAPException;
 
-import org.apache.axis.message.MessageElement;
-import org.apache.axis.transport.http.HTTPConstants;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.pentaho.di.core.Const;
@@ -45,9 +44,7 @@ import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.steps.salesforceinput.SalesforceInputMeta;
-import org.w3c.dom.Element;
 
-import com.sforce.soap.partner.AllOrNoneHeader;
 import com.sforce.soap.partner.DeleteResult;
 import com.sforce.soap.partner.DeletedRecord;
 import com.sforce.soap.partner.DescribeGlobalResult;
@@ -59,19 +56,21 @@ import com.sforce.soap.partner.GetDeletedResult;
 import com.sforce.soap.partner.GetUpdatedResult;
 import com.sforce.soap.partner.GetUserInfoResult;
 import com.sforce.soap.partner.LoginResult;
+import com.sforce.soap.partner.PartnerConnection;
 import com.sforce.soap.partner.QueryResult;
 import com.sforce.soap.partner.SaveResult;
-import com.sforce.soap.partner.SessionHeader;
-import com.sforce.soap.partner.SforceServiceLocator;
-import com.sforce.soap.partner.SoapBindingStub;
 import com.sforce.soap.partner.UpsertResult;
 import com.sforce.soap.partner.fault.ExceptionCode;
 import com.sforce.soap.partner.fault.LoginFault;
 import com.sforce.soap.partner.sobject.SObject;
+import com.sforce.ws.ConnectionException;
+import com.sforce.ws.ConnectorConfig;
+import com.sforce.ws.bind.XmlObject;
+import com.sforce.ws.wsdl.Constants;
 
 public class SalesforceConnection {
-  private static final FieldType ID_FIELD_TYPE = FieldType.fromString( "id" );
-  private static final FieldType REFERENCE_FIELD_TYPE = FieldType.fromString( "reference" );
+  private static final FieldType ID_FIELD_TYPE = FieldType.id;
+  private static final FieldType REFERENCE_FIELD_TYPE = FieldType.reference;
 
   private static Class<?> PKG = SalesforceInputMeta.class; // for i18n purposes, needed by Translator2!!
 
@@ -80,7 +79,7 @@ public class SalesforceConnection {
   private String password;
   private String module;
   private int timeout;
-  private SoapBindingStub binding;
+  private PartnerConnection binding;
   private LoginResult loginResult;
   private GetUserInfoResult userInfo;
   private String sql;
@@ -150,7 +149,7 @@ public class SalesforceConnection {
   }
 
   /**
-   * 
+   *
    * @see #isRollbackAllChangesOnError(boolean)
    */
   @Deprecated
@@ -167,7 +166,7 @@ public class SalesforceConnection {
   }
 
   /**
-   * 
+   *
    * @see #setQueryAll(boolean)
    */
   @Deprecated
@@ -229,12 +228,13 @@ public class SalesforceConnection {
     return this.qr;
   }
 
-  public void createBinding() throws ServiceException {
+  public void createBinding( ConnectorConfig config ) throws ConnectionException {
     if ( this.binding == null ) {
-      this.binding = (SoapBindingStub) new SforceServiceLocator().getSoap();
+      this.binding = new PartnerConnection( config );
     }
   }
-  public SoapBindingStub getBinding() {
+
+  public PartnerConnection getBinding() {
     return this.binding;
   }
 
@@ -271,37 +271,33 @@ public class SalesforceConnection {
   }
 
   public void connect() throws KettleException {
+    ConnectorConfig config = new ConnectorConfig();
+    config.setAuthEndpoint( getURL() );
+    config.setCompression( isUsingCompression() );
+    config.setManualLogin( true );
+
+    // Set timeout
+    if ( getTimeOut() > 0 ) {
+      if ( log.isDebug() ) {
+        log.logDebug( BaseMessages.getString( PKG, "SalesforceInput.Log.SettingTimeout", "" + this.timeout ) );
+      }
+      config.setConnectionTimeout( getTimeOut() );
+      config.setReadTimeout( getTimeOut() );
+    }
+
     try {
-      createBinding();
+      createBinding( config );
+
       if ( log.isDetailed() ) {
-        log.logDetailed( BaseMessages.getString( PKG, "SalesforceInput.Log.LoginURL", getBinding()
-          ._getProperty( SoapBindingStub.ENDPOINT_ADDRESS_PROPERTY ) ) );
+        log.logDetailed( BaseMessages.getString( PKG, "SalesforceInput.Log.LoginURL", config.getAuthEndpoint() ) );
       }
 
-      // Set timeout
-      if ( getTimeOut() > 0 ) {
-        getBinding().setTimeout( getTimeOut() );
-        if ( log.isDebug() ) {
-          log.logDebug( BaseMessages.getString( PKG, "SalesforceInput.Log.SettingTimeout", "" + this.timeout ) );
-        }
-      }
-
-      // Set URL
-      getBinding()._setProperty( SoapBindingStub.ENDPOINT_ADDRESS_PROPERTY, getURL() );
-
-      // Do we need compression?
-      if ( isUsingCompression() ) {
-        getBinding()._setProperty( HTTPConstants.MC_ACCEPT_GZIP, useCompression );
-        getBinding()._setProperty( HTTPConstants.MC_GZIP_REQUEST, useCompression );
-      }
       if ( isRollbackAllChangesOnError() ) {
         // Set the SOAP header to rollback all changes
         // unless all records are processed successfully.
-        AllOrNoneHeader allOrNoneHeader = new AllOrNoneHeader();
-        allOrNoneHeader.setAllOrNone( true );
-        getBinding().setHeader(
-          new SforceServiceLocator().getServiceName().getNamespaceURI(), "AllOrNoneHeader", allOrNoneHeader );
+        getBinding().setAllOrNoneHeader( true );
       }
+
       // Attempt the login giving the user feedback
       if ( log.isDetailed() ) {
         log.logDetailed( BaseMessages.getString( PKG, "SalesforceInput.Log.LoginNow" ) );
@@ -324,14 +320,9 @@ public class SalesforceConnection {
           + " : " + this.loginResult.getServerUrl() );
       }
 
-      // set the session header for subsequent call authentication
-      getBinding()._setProperty( SoapBindingStub.ENDPOINT_ADDRESS_PROPERTY, this.loginResult.getServerUrl() );
-
       // Create a new session header object and set the session id to that
       // returned by the login
-      SessionHeader sh = new SessionHeader();
-      sh.setSessionId( loginResult.getSessionId() );
-      getBinding().setHeader( new SforceServiceLocator().getServiceName().getNamespaceURI(), "SessionHeader", sh );
+      getBinding().setSessionHeader( loginResult.getSessionId() );
 
       // Return the user Infos
       this.userInfo = getBinding().getUserInfo();
@@ -422,7 +413,7 @@ public class SalesforceConnection {
                 List<String> list = new ArrayList<String>();
                 int desPos = 0;
                 for ( int i = 0; i < nr; i++ ) {
-                  list.add( updatedRecords.getIds( i ) );
+                  list.add( updatedRecords.getIds()[i] );
 
                   if ( i % SalesforceConnectionUtils.MAX_UPDATED_OBJECTS_IDS == 0 || i == nr - 1 ) {
                     SObject[] s =
@@ -555,7 +546,7 @@ public class SalesforceConnection {
         // or we have fetched all available records
         retval.setRecordIndexChanges( true );
         retval.setRecordIndex( index );
-        if ( con != null && con.get_any()[index] != null && getDeletedList.containsKey( con.getId() ) ) {
+        if ( con != null && getChildren( con )[index] != null && getDeletedList.containsKey( con.getId() ) ) {
           retval.setRecordValue( con );
           retval.setDeletionDate( getDeletedList.get( con.getId() ) );
         }
@@ -574,16 +565,16 @@ public class SalesforceConnection {
     if ( con == null ) {
       return null;
     } else {
-      MessageElement element = getMessageElementForHierarchy( con, fieldHierarchy );
+      XmlObject element = getMessageElementForHierarchy( con, fieldHierarchy );
       if ( element != null ) {
-        Object object = element.getObjectValue();
+        Object object = element.getValue();
         if ( object != null ) {
           if ( object instanceof QueryResult ) {
             return buildJsonQueryResult( (QueryResult) object );
           }
           return String.valueOf( object );
         } else {
-          return element.getValue();
+          return (String) element.getValue();
         }
       }
     }
@@ -594,16 +585,16 @@ public class SalesforceConnection {
    * Drill down the SObject hierarchy based on the given field hierarchy until either null or the correct MessageElement
    * is found
    */
-  private MessageElement getMessageElementForHierarchy( SObject con, String[] fieldHierarchy ) {
+  private XmlObject getMessageElementForHierarchy( SObject con, String[] fieldHierarchy ) {
     final int lastIndex = fieldHierarchy.length - 1;
     SObject currentSObject = con;
     for ( int index = 0; index <= lastIndex; index++ ) {
-      for ( MessageElement element : currentSObject.get_any() ) {
-        if ( element.getName().equals( fieldHierarchy[index] ) ) {
+      for ( XmlObject element : getChildren( currentSObject ) ) {
+        if ( element.getName().getLocalPart().equals( fieldHierarchy[index] ) ) {
           if ( index == lastIndex ) {
             return element;
           } else {
-            Object object = element.getObjectValue();
+            Object object = element.getValue();
             if ( object != null ) {
               currentSObject = (SObject) object;
               // Found the next level, keep going
@@ -636,8 +627,8 @@ public class SalesforceConnection {
   @SuppressWarnings( "unchecked" )
   private JSONObject buildJSONSObject( SObject sobject ) {
     JSONObject jsonObject = new JSONObject();
-    for ( MessageElement element : sobject.get_any() ) {
-      Object object = element.getObjectValue();
+    for ( XmlObject element : getChildren( sobject ) ) {
+      Object object = element.getValue();
       if ( object != null && object instanceof SObject ) {
         jsonObject.put( element.getName(), buildJSONSObject( (SObject) object ) );
       } else {
@@ -650,7 +641,7 @@ public class SalesforceConnection {
   // Get SOQL meta data (not a Good way but i don't see any other way !)
   // TODO : Go back to this one
   // I am sure there is an easy way to return meta for a SOQL result
-  public MessageElement[] getElements() throws Exception {
+  public XmlObject[] getElements() throws Exception {
     // Query first
     this.qr = getBinding().query( getSQL() );
     // and then return records
@@ -658,7 +649,7 @@ public class SalesforceConnection {
     if ( con == null ) {
       return null;
     }
-    return con.get_any();
+    return getChildren( con );
   }
 
   public boolean queryMore() throws KettleException {
@@ -696,7 +687,7 @@ public class SalesforceConnection {
       objects = new ArrayList<String>();
 
       for ( int i = 0; i < nrObjects; i++ ) {
-        DescribeGlobalSObjectResult o = dgr.getSobjects( i );
+        DescribeGlobalSObjectResult o = dgr.getSobjects()[i];
         if ( ( OnlyQueryableObjects && o.isQueryable() ) || !OnlyQueryableObjects ) {
           objects.add( o.getName() );
         }
@@ -787,7 +778,7 @@ public class SalesforceConnection {
 
   /**
    * Method returns specified object's fields' names, use #getObjectFields to get fields itself
-   * 
+   *
    * @param objectName
    *          object name
    * @param excludeNonUpdatableFields
@@ -831,12 +822,12 @@ public class SalesforceConnection {
    * Method returns names of the fields specified.<br>
    * For the type='reference' it also returns name in the
    * <code>format: objectReferenceTo:externalIdField/lookupField</code>
-   * 
+   *
    * @param fields
    *          fields
    * @param excludeNonUpdatableFields
    *          the flag that indicates if non-updatable fields should be excluded or not
-   * @return fields' names 
+   * @return fields' names
    * @throws KettleException
    */
   public String[] getFields( Field[] fields, boolean excludeNonUpdatableFields ) throws KettleException {
@@ -847,7 +838,7 @@ public class SalesforceConnection {
         fieldsList.add( field.getName() );
         //Get the referenced to the field object and for this object get all its field to find possible idLookup fields
         if ( isReferenceField( field ) ) {
-          String referenceTo = field.getReferenceTo( 0 );
+          String referenceTo = field.getReferenceTo()[0];
           Field[] referenceObjectFields = this.getObjectFields( referenceTo, excludeNonUpdatableFields );
 
           for ( Field f : referenceObjectFields ) {
@@ -895,9 +886,9 @@ public class SalesforceConnection {
     }
   }
 
-  public static MessageElement createMessageElement( String name, Object value, boolean useExternalKey ) throws Exception {
+  public static XmlObject createMessageElement( String name, Object value, boolean useExternalKey ) throws Exception {
 
-    MessageElement me = null;
+    XmlObject me = null;
 
     if ( useExternalKey ) {
       // We use an external key
@@ -934,43 +925,45 @@ public class SalesforceConnection {
     return me;
   }
 
-  private static MessageElement createForeignKeyElement( String type, String lookupField, String extIdName,
+  private static XmlObject createForeignKeyElement( String type, String lookupField, String extIdName,
     Object extIdValue ) throws Exception {
 
     // Foreign key relationship to the object
-    MessageElement me = fromTemplateElement( lookupField, null, false );
-    me.addChild( new MessageElement( new QName( "type" ), type ) );
-    me.addChild( new MessageElement( new QName( extIdName ), extIdValue ) );
+    XmlObject me = fromTemplateElement( lookupField, null, false );
+    me.addField( "type", type );
+    me.addField( extIdName, extIdValue );
 
     return me;
   }
 
-  private static MessageElement TEMPLATE_MESSAGE_ELEMENT = new MessageElement( "", "temp" );
-
-  // The Template org.w3c.dom.Element instance
-  private static Element TEMPLATE_XML_ELEMENT;
-
-  static {
-    try {
-      // Create and cache this org.w3c.dom.Element instance for once here.
-      TEMPLATE_XML_ELEMENT = TEMPLATE_MESSAGE_ELEMENT.getAsDOM();
-    } catch ( Exception e ) {
-      throw new RuntimeException( e );
-    }
-    TEMPLATE_XML_ELEMENT.removeAttribute( "xsi:type" );
-    TEMPLATE_XML_ELEMENT.removeAttribute( "xmlns:ns1" );
-    TEMPLATE_XML_ELEMENT.removeAttribute( "xmlns:xsd" );
-    TEMPLATE_XML_ELEMENT.removeAttribute( "xmlns:xsi" );
-  }
-
-  public static MessageElement fromTemplateElement( String name, Object value, boolean setValue ) throws SOAPException {
+  public static XmlObject fromTemplateElement( String name, Object value, boolean setValue ) throws SOAPException {
     // Use the TEMPLATE org.w3c.dom.Element to create new Message Elements
-    MessageElement me = new MessageElement( TEMPLATE_XML_ELEMENT );
+    XmlObject me = new XmlObject();
     if ( setValue ) {
-      me.setObjectValue( value );
+      me.setValue( value );
     }
-    me.setName( name );
+    me.setName( new QName( name ) );
     return me;
   }
 
+  public static XmlObject[] getChildren( SObject object ) {
+    List<String> reservedFieldNames = Arrays.asList( "type", "fieldsToNull" );
+    if ( object == null ) {
+      return null;
+    }
+    List<XmlObject> children = new ArrayList<>();
+    Iterator<XmlObject> iterator = object.getChildren();
+    while ( iterator.hasNext() ) {
+      XmlObject child = iterator.next();
+      if ( child.getName().getNamespaceURI().equals( Constants.PARTNER_SOBJECT_NS )
+          && reservedFieldNames.contains( child.getName().getLocalPart() ) ) {
+        continue;
+      }
+      children.add( child );
+    }
+    if ( children.size() == 0 ) {
+      return null;
+    }
+    return children.toArray( new XmlObject[children.size()] );
+  }
 }
