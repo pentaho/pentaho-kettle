@@ -36,6 +36,8 @@ import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.injection.Injection;
+import org.pentaho.di.core.injection.InjectionSupported;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
@@ -64,6 +66,7 @@ import org.w3c.dom.Node;
  * TODO: In the distant future the use_autoinc flag should be removed since its
  *       functionality is now taken over by techKeyCreation (which is cleaner).
  */
+@InjectionSupported( localizationPrefix = "CombinationLookup.Injection." )
 public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInterface,
     ProvidesModelerMeta {
   private static Class<?> PKG = CombinationLookupMeta.class; // for i18n purposes, needed by Translator2!!
@@ -71,61 +74,79 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
   /** Default cache size: 0 will cache everything */
   public static final int DEFAULT_CACHE_SIZE = 9999;
 
+  private List<? extends SharedObjectInterface> databases;
+
   /** what's the lookup schema? */
+  @Injection( name = "SCHEMA_NAME" )
   private String schemaName;
 
   /** what's the lookup table? */
+  @Injection( name = "TABLE_NAME" )
   private String tablename;
 
   /** database connection */
   private DatabaseMeta databaseMeta;
 
   /** replace fields with technical key? */
+  @Injection( name = "REPLACE_FIELDS" )
   private boolean replaceFields;
 
   /** which fields do we use to look up a value? */
+  @Injection( name = "KEY_FIELDS" )
   private String[] keyField;
 
   /** With which fields in dimension do we look up? */
+  @Injection( name = "KEY_LOOKUP" )
   private String[] keyLookup;
 
   /** Use checksum algorithm to limit index size? */
+  @Injection( name = "USE_HASH" )
   private boolean useHash;
 
   /** Name of the CRC field in the dimension */
+  @Injection( name = "HASH_FIELD" )
   private String hashField;
 
   /** Technical Key field to return */
+  @Injection( name = "TECHNICAL_KEY_FIELD" )
   private String technicalKeyField;
 
   /** Where to get the sequence from... */
+  @Injection( name = "SEQUENCE_FROM" )
   private String sequenceFrom;
 
   /** Commit size for insert / update */
+  @Injection( name = "COMMIT_SIZE" )
   private int commitSize;
 
   /** Preload the cache, defaults to false
    * @author nicow2
    * */
+  @Injection( name = "PRELOAD_CACHE" )
   private boolean preloadCache = false;
 
   /** Limit the cache size to this! */
+  @Injection( name = "CACHE_SIZE" )
   private int cacheSize;
 
   /** Use the auto-increment feature of the database to generate keys. */
+  @Injection( name = "AUTO_INC" )
   private boolean useAutoinc;
 
   /** Which method to use for the creation of the tech key */
+  @Injection( name = "TECHNICAL_KEY_CREATION" )
   private String techKeyCreation = null;
 
+  @Injection( name = "LAST_UPDATE_FIELD" )
   private String lastUpdateField;
 
   public static String CREATION_METHOD_AUTOINC = "autoinc";
   public static String CREATION_METHOD_SEQUENCE = "sequence";
   public static String CREATION_METHOD_TABLEMAX = "tablemax";
 
-  public CombinationLookupMeta() {
-    super(); // allocate BaseStepMeta
+  @Injection( name = "CONNECTIONNAME" )
+  public void setConnection( String connectionName ) {
+    databaseMeta = DatabaseMeta.findDatabase( databases, connectionName );
   }
 
   /**
@@ -367,6 +388,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
   }
 
   private void readData( Node stepnode, List<? extends SharedObjectInterface> databases ) throws KettleXMLException {
+    this.databases = databases;
     try {
       String commit, csize;
 
@@ -497,6 +519,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 
   @Override
   public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
+    this.databases = databases;
     try {
       databaseMeta = rep.loadDatabaseMetaFromStepAttribute( id_step, "id_connection", databases );
 
