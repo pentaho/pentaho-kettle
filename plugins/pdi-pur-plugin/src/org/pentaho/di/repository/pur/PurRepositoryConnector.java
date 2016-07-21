@@ -43,7 +43,6 @@ import org.pentaho.di.ui.repository.pur.services.ILockService;
 import org.pentaho.di.ui.repository.pur.services.IRevisionService;
 import org.pentaho.di.ui.repository.pur.services.IRoleSupportSecurityManager;
 import org.pentaho.di.ui.repository.pur.services.ITrashService;
-import org.pentaho.di.ui.spoon.SpoonPerspectiveManager;
 import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
 import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
@@ -278,8 +277,6 @@ public class PurRepositoryConnector implements IRepositoryConnector {
 
   @Override
   public synchronized void disconnect() {
-    SpoonPerspectiveManager perspectiveManager = SpoonPerspectiveManager.getInstance();
-    perspectiveManager.hidePerspective( "schedulerPerspective" );
     if ( serviceManager != null ) {
       serviceManager.close();
     }

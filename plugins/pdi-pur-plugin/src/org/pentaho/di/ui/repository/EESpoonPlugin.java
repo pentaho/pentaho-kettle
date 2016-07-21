@@ -216,6 +216,7 @@ public class EESpoonPlugin implements SpoonPluginInterface, SpoonLifecycleListen
    * Called when repository is disconnected.
    */
   private void doOnSecurityCleanup() {
+    updateSchedulePerspective( false );
     updateMenuState( true, true );
   }
 
@@ -299,13 +300,12 @@ public class EESpoonPlugin implements SpoonPluginInterface, SpoonLifecycleListen
 
   /**
    * Change the menu-item states based on Execute and Create permissions.
-   * 
    * @param createPermitted
    *          - if true, we enable menu-items requiring creation permissions
    * @param executePermitted
    *          - if true, we enable menu-items requiring execute permissions
    */
-  private void updateMenuState( boolean createPermitted, boolean executePermitted ) {
+  void updateMenuState( boolean createPermitted, boolean executePermitted ) {
     Document doc = getDocumentRoot();
     if ( doc != null ) {
       // Main spoon menu

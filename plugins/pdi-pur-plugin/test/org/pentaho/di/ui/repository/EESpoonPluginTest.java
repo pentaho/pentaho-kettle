@@ -19,11 +19,14 @@ package org.pentaho.di.ui.repository;
 import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.di.ui.spoon.SpoonPerspectiveManager;
+import org.pentaho.di.ui.spoon.SpoonLifecycleListener.SpoonLifeCycleEvent;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doCallRealMethod;
+import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyBoolean;
 
 public class EESpoonPluginTest {
@@ -34,6 +37,8 @@ public class EESpoonPluginTest {
   public void setUp() {
     eeSpoonPlugin = mock( EESpoonPlugin.class );
     doCallRealMethod().when( eeSpoonPlugin ).updateSchedulePerspective( anyBoolean() );
+    doCallRealMethod().when( eeSpoonPlugin ).onEvent( any() );
+    doNothing().when( eeSpoonPlugin ).updateMenuState( anyBoolean(), anyBoolean() );
 
     perspectiveManager = mock( SpoonPerspectiveManager.class );
     doReturn( perspectiveManager ).when( eeSpoonPlugin ).getPerspectiveManager();
@@ -48,6 +53,12 @@ public class EESpoonPluginTest {
   @Test
   public void schedulePerspectiveIsHiddenWhenUserHasNoPermissionsForScheduling() {
     eeSpoonPlugin.updateSchedulePerspective( false );
+    verify( perspectiveManager ).hidePerspective( "schedulerPerspective" );
+  }
+
+  @Test
+  public void disconnectTriggersHidePerspective() throws Exception {
+    eeSpoonPlugin.onEvent( SpoonLifeCycleEvent.REPOSITORY_DISCONNECTED );
     verify( perspectiveManager ).hidePerspective( "schedulerPerspective" );
   }
 }
