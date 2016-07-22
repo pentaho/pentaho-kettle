@@ -228,10 +228,11 @@ public class SalesforceConnection {
     return this.qr;
   }
 
-  public void createBinding( ConnectorConfig config ) throws ConnectionException {
+  public PartnerConnection createBinding( ConnectorConfig config ) throws ConnectionException {
     if ( this.binding == null ) {
       this.binding = new PartnerConnection( config );
     }
+    return this.binding;
   }
 
   public PartnerConnection getBinding() {
@@ -275,7 +276,7 @@ public class SalesforceConnection {
     config.setAuthEndpoint( getURL() );
     config.setServiceEndpoint( getURL() );
     config.setUsername( getUsername() );
-    config.setPassword( Encr.decryptPasswordOptionallyEncrypted( getPassword() ) );
+    config.setPassword( getPassword() );
     config.setCompression( isUsingCompression() );
     config.setManualLogin( true );
 
@@ -289,7 +290,7 @@ public class SalesforceConnection {
     }
 
     try {
-      createBinding( config );
+      PartnerConnection pConnection = createBinding( config );
 
       if ( log.isDetailed() ) {
         log.logDetailed( BaseMessages.getString( PKG, "SalesforceInput.Log.LoginURL", config.getAuthEndpoint() ) );
@@ -298,7 +299,7 @@ public class SalesforceConnection {
       if ( isRollbackAllChangesOnError() ) {
         // Set the SOAP header to rollback all changes
         // unless all records are processed successfully.
-        getBinding().setAllOrNoneHeader( true );
+        pConnection.setAllOrNoneHeader( true );
       }
 
       // Attempt the login giving the user feedback
@@ -315,7 +316,7 @@ public class SalesforceConnection {
 
       // Login
       this.loginResult =
-        getBinding().login( getBinding().getConfig().getUsername(), getBinding().getConfig().getPassword() );
+          pConnection.login( config.getUsername(), Encr.decryptPasswordOptionallyEncrypted( config.getPassword() ) );
 
       if ( log.isDebug() ) {
         log.logDebug( BaseMessages.getString( PKG, "SalesforceInput.Log.SessionId" )
@@ -326,11 +327,11 @@ public class SalesforceConnection {
 
       // Create a new session header object and set the session id to that
       // returned by the login
-      getBinding().setSessionHeader( loginResult.getSessionId() );
-      getBinding().getConfig().setServiceEndpoint( loginResult.getServerUrl() );
+      pConnection.setSessionHeader( loginResult.getSessionId() );
+      config.setServiceEndpoint( loginResult.getServerUrl() );
 
       // Return the user Infos
-      this.userInfo = getBinding().getUserInfo();
+      this.userInfo = pConnection.getUserInfo();
       if ( log.isDebug() ) {
         log.logDebug( BaseMessages.getString( PKG, "SalesforceInput.Log.UserInfos" )
           + " : " + this.userInfo.getUserFullName() );
@@ -346,7 +347,7 @@ public class SalesforceConnection {
         log.logDebug( "<-----------------------------------------" );
       }
 
-      this.serverTimestamp = getBinding().getServerTimestamp().getTimestamp().getTime();
+      this.serverTimestamp = pConnection.getServerTimestamp().getTimestamp().getTime();
       if ( log.isDebug() ) {
         BaseMessages.getString( PKG, "SalesforceInput.Log.ServerTimestamp", getServerTimestamp() );
       }
