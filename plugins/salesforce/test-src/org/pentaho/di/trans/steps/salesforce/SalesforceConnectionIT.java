@@ -25,9 +25,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
@@ -84,42 +82,47 @@ public class SalesforceConnectionIT {
   }
 
   @Test
-  public void testConnect() {
+  public void testConnect() throws Exception {
     testConnect( samplePassword );
   }
 
   @Test
-  public void testConnect_Encrypted() {
+  public void testConnect_Encrypted() throws Exception {
     String password = Encr.encryptPasswordIfNotUsingVariables( samplePassword );
     testConnect( password );
   }
 
-  private void testConnect( String password ) {
+  private void testConnect( String password ) throws Exception {
     LogChannelInterface logInterface = mock( LogChannelInterface.class );
     String url = "http://localhost/services/Soap/u/37.0";
     String username = "MySampleUsername";
     SalesforceConnection connection;
-    try {
-      connection = spy( new SalesforceConnection( logInterface, url, username, password ) );
-      doNothing().when( connection ).createBinding( any( ConnectorConfig.class ) );
-      doReturn( bindingStub ).when( connection ).getBinding();
-      doReturn( mock( LoginResult.class ) ).when( bindingStub ).login( anyString(), anyString() );
-      ArgumentCaptor<String> captorUser = ArgumentCaptor.forClass( String.class );
-      ArgumentCaptor<String> captorPassword = ArgumentCaptor.forClass( String.class );
+    connection = spy( new SalesforceConnection( logInterface, url, username, password ) );
+    ArgumentCaptor<ConnectorConfig> captorConfig = ArgumentCaptor.forClass( ConnectorConfig.class );
 
+    ConnectorConfig mockConfig = mock( ConnectorConfig.class );
+    doReturn( UUID.randomUUID().toString() ).when( mockConfig ).getUsername();
+    doReturn( UUID.randomUUID().toString() ).when( mockConfig ).getPassword();
+    doReturn( mockConfig ).when( bindingStub ).getConfig();
+    doReturn( mock( LoginResult.class ) ).when( bindingStub ).login( anyString(), anyString() );
+
+    try {
       connection.connect();
-      verify( bindingStub ).login( captorUser.capture(), captorPassword.capture() );
-      assertTrue( username.equals( captorUser.getValue() ) );
-      assertTrue( samplePassword.equals( captorPassword.getValue() ) );
-    } catch ( Exception e ) {
-      fail( "Connection fail: " + e.getMessage() );
+    } catch ( KettleException e ) {
+      // The connection should fail
+      // We just want to see the generated ConnectorConfig
     }
+
+    verify( connection ).createBinding( captorConfig.capture() );
+    assertEquals( username, captorConfig.getValue().getUsername() );
+    assertEquals( Encr.decryptPasswordOptionallyEncrypted( password ),
+      captorConfig.getValue().getPassword() );
   }
 
   @Test
   public void testConnectOptions() {
     LogChannelInterface logInterface = mock( LogChannelInterface.class );
-    String url = "http://localhost/services/Soap/u/37.0";
+    String url = SalesforceConnectionUtils.TARGET_DEFAULT_URL;
     String username = "username";
     String password = "password";
     Integer timeout = 30;
@@ -133,7 +136,7 @@ public class SalesforceConnectionIT {
       serverTime.setTimestamp( Calendar.getInstance() );
 
       ArgumentCaptor<ConnectorConfig> captorConfig = ArgumentCaptor.forClass( ConnectorConfig.class );
-      doNothing().when( connection ).createBinding( captorConfig.capture() );
+
       doReturn( loginResult ).when( bindingStub ).login( anyString(), anyString() );
       doReturn( userInfo ).when( bindingStub ).getUserInfo();
       when( loginResult.getServerUrl() ).thenReturn( "http://localhost/services/Soap/u/37.0" );
@@ -154,6 +157,7 @@ public class SalesforceConnectionIT {
         // We just want to see the generated ConnectorConfig
       }
 
+      verify( connection ).createBinding( captorConfig.capture() );
       ConnectorConfig config = captorConfig.getValue();
       assertNotNull( config );
       assertEquals( url, config.getAuthEndpoint() );

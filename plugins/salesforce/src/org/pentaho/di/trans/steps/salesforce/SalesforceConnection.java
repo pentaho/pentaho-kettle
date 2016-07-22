@@ -273,6 +273,9 @@ public class SalesforceConnection {
   public void connect() throws KettleException {
     ConnectorConfig config = new ConnectorConfig();
     config.setAuthEndpoint( getURL() );
+    config.setServiceEndpoint( getURL() );
+    config.setUsername( getUsername() );
+    config.setPassword( Encr.decryptPasswordOptionallyEncrypted( getPassword() ) );
     config.setCompression( isUsingCompression() );
     config.setManualLogin( true );
 
@@ -311,7 +314,8 @@ public class SalesforceConnection {
       }
 
       // Login
-      this.loginResult = getBinding().login( getUsername(), Encr.decryptPasswordOptionallyEncrypted( getPassword() ) );
+      this.loginResult =
+        getBinding().login( getBinding().getConfig().getUsername(), getBinding().getConfig().getPassword() );
 
       if ( log.isDebug() ) {
         log.logDebug( BaseMessages.getString( PKG, "SalesforceInput.Log.SessionId" )
@@ -323,6 +327,7 @@ public class SalesforceConnection {
       // Create a new session header object and set the session id to that
       // returned by the login
       getBinding().setSessionHeader( loginResult.getSessionId() );
+      getBinding().getConfig().setServiceEndpoint( loginResult.getServerUrl() );
 
       // Return the user Infos
       this.userInfo = getBinding().getUserInfo();
