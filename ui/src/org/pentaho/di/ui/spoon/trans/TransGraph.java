@@ -35,7 +35,6 @@ import java.util.StringTokenizer;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
-import java.util.concurrent.Callable;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.action.Action;
@@ -363,8 +362,6 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 
   private StreamType candidateHopType;
 
-  private Map<StepMeta, DelayTimer> delayTimers;
-
   private StepMeta showTargetStreamsStep;
 
   Timer redrawTimer;
@@ -411,7 +408,6 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     spoon.selectionFilter.setText( "" );
 
     this.mouseOverSteps = new ArrayList<StepMeta>();
-    this.delayTimers = new HashMap<StepMeta, DelayTimer>();
 
     transLogDelegate = new TransLogDelegate( spoon, this );
     transGridDelegate = new TransGridDelegate( spoon, this );
@@ -813,6 +809,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 
   @Override
   public void mouseDown( MouseEvent e ) {
+    mouseOverSteps.clear();
 
     boolean alt = ( e.stateMask & SWT.ALT ) != 0;
     boolean control = ( e.stateMask & SWT.MOD1 ) != 0;
@@ -881,7 +878,6 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
           case STEP_EDIT_ICON:
             clearSettings();
             currentStep = (StepMeta) areaOwner.getParent();
-            stopStepMouseOverDelayTimer( currentStep );
             editStep();
             break;
 
@@ -897,7 +893,15 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
             stepMeta = (StepMeta) areaOwner.getParent();
             setMenu( stepMeta.getLocation().x, stepMeta.getLocation().y );
             break;
+            
+          case DET_GRAPH:
+            System.out.println( "Graph button clicked." );
+            break;
 
+          case DET_RUN:
+            System.out.println( "Run inspect button clicked." );
+            break;
+            
           case STEP_ICON:
             stepMeta = (StepMeta) areaOwner.getOwner();
             currentStep = stepMeta;
@@ -1031,12 +1035,12 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
         transMeta.unselectAll();
         selectInRect( transMeta, selectionRegion );
         selectionRegion = null;
-        stopStepMouseOverDelayTimers();
         redraw();
       } else {
         // Clicked on an icon?
         //
         if ( selectedStep != null && startHopStep == null ) {
+          mouseOverSteps.add( selectedStep );
           if ( e.button == 1 ) {
             Point realclick = screen2real( e.x, e.y );
             if ( lastclick.x == realclick.x && lastclick.y == realclick.y ) {
@@ -1249,25 +1253,6 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     }
     Point note = new Point( real.x - noteoffset.x, real.y - noteoffset.y );
 
-    // Moved over an area?
-    //
-    AreaOwner areaOwner = getVisibleAreaOwner( real.x, real.y );
-    if ( areaOwner != null ) {
-      switch ( areaOwner.getAreaType() ) {
-        case STEP_ICON:
-          StepMeta stepMeta = (StepMeta) areaOwner.getOwner();
-          resetDelayTimer( stepMeta );
-          break;
-
-        case MINI_ICONS_BALLOON: // Give the timer a bit more time
-          stepMeta = (StepMeta) areaOwner.getParent();
-          resetDelayTimer( stepMeta );
-          break;
-        default:
-          break;
-      }
-    }
-
     //
     // First see if the icon we clicked on was selected.
     // If the icon was not selected, we should un-select all other
@@ -1330,7 +1315,6 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
         for ( int i = 0; i < selectedSteps.size(); i++ ) {
           StepMeta stepMeta = selectedSteps.get( i );
           PropsUI.setLocation( stepMeta, stepMeta.getLocation().x + dx, stepMeta.getLocation().y + dy );
-          stopStepMouseOverDelayTimer( stepMeta );
         }
       }
       // Adjust location of selected hops...
@@ -1426,33 +1410,12 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
   @Override
   public void mouseHover( MouseEvent e ) {
 
-    boolean tip = true;
-
     toolTip.hide();
     Point real = screen2real( e.x, e.y );
-
-    AreaOwner areaOwner = getVisibleAreaOwner( real.x, real.y );
-    if ( areaOwner != null ) {
-      switch ( areaOwner.getAreaType() ) {
-        case STEP_ICON:
-          StepMeta stepMeta = (StepMeta) areaOwner.getOwner();
-          if ( !stepMeta.isMissing() &&  !mouseOverSteps.contains( stepMeta ) ) {
-            addStepMouseOverDelayTimer( stepMeta );
-            redraw();
-            tip = false;
-          }
-          break;
-        default:
-          break;
-      }
-    }
-
-    if ( tip ) {
-      // Show a tool tip upon mouse-over of an object on the canvas
-      //
-      if ( !helpTip.isVisible() ) {
-        setToolTip( real.x, real.y, e.x, e.y );
-      }
+    // Show a tool tip upon mouse-over of an object on the canvas
+    //
+    if ( !helpTip.isVisible() ) {
+      setToolTip( real.x, real.y, e.x, e.y );
     }
   }
 
@@ -1620,13 +1583,6 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     candidate.getFromStep().setStepErrorMeta( errorMeta );
   }
 
-  private void resetDelayTimer( StepMeta stepMeta ) {
-    DelayTimer delayTimer = delayTimers.get( stepMeta );
-    if ( delayTimer != null ) {
-      delayTimer.reset();
-    }
-  }
-
   /*
    * private void showStepTargetOptions(final StepMeta stepMeta, StepIOMetaInterface ioMeta, int x, int y) {
    *
@@ -1647,64 +1603,6 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 
   @Override
   public void mouseExit( MouseEvent arg0 ) {
-  }
-
-  private synchronized void addStepMouseOverDelayTimer( final StepMeta stepMeta ) {
-
-    // Don't add the same mouse over delay timer twice...
-    //
-    if ( mouseOverSteps.contains( stepMeta ) ) {
-      return;
-    }
-
-    mouseOverSteps.add( stepMeta );
-
-    DelayTimer delayTimer = new DelayTimer( 500, new DelayListener() {
-      @Override
-      public void expired() {
-        mouseOverSteps.remove( stepMeta );
-        delayTimers.remove( stepMeta );
-        showTargetStreamsStep = null;
-        asyncRedraw();
-      }
-    }, new Callable<Boolean>() {
-
-      @Override
-      public Boolean call() throws Exception {
-        Point cursor = getLastMove();
-        if ( cursor != null ) {
-          AreaOwner areaOwner = getVisibleAreaOwner( cursor.x, cursor.y );
-          if ( areaOwner != null ) {
-            AreaType areaType = areaOwner.getAreaType();
-            if ( areaType == AreaType.STEP_ICON ) {
-              StepMeta selectedStepMeta = (StepMeta) areaOwner.getOwner();
-              return selectedStepMeta == stepMeta;
-            } else if ( areaType.belongsToTransContextMenu() ) {
-              StepMeta selectedStepMeta = (StepMeta) areaOwner.getParent();
-              return selectedStepMeta == stepMeta;
-            }
-          }
-        }
-        return false;
-      }
-    } );
-
-    new Thread( delayTimer ).start();
-
-    delayTimers.put( stepMeta, delayTimer );
-  }
-
-  private void stopStepMouseOverDelayTimer( final StepMeta stepMeta ) {
-    DelayTimer delayTimer = delayTimers.get( stepMeta );
-    if ( delayTimer != null ) {
-      delayTimer.stop();
-    }
-  }
-
-  private void stopStepMouseOverDelayTimers() {
-    for ( DelayTimer timer : delayTimers.values() ) {
-      timer.stop();
-    }
   }
 
   protected void asyncRedraw() {
@@ -2020,8 +1918,6 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
       // CHECKSTYLE:Indentation:OFF
       transMeta.getTransHop( i ).split = false;
     }
-
-    stopStepMouseOverDelayTimers();
   }
 
   public String[] getDropStrings( String str, String sep ) {
@@ -2773,8 +2669,14 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     AreaOwner areaOwner = getVisibleAreaOwner( x, y );
     if ( areaOwner != null ) {
       switch ( areaOwner.getAreaType() ) {
-        case REMOTE_INPUT_STEP:
+        case DET_LABEL:
           StepMeta step = (StepMeta) areaOwner.getParent();
+          tip.append( step.getName() );
+          screenX+=10;
+          screenY+=20;
+        break;
+        case REMOTE_INPUT_STEP:
+          step = (StepMeta) areaOwner.getParent();
           tip.append( "Remote input steps:" ).append( Const.CR ).append( "-----------------------" ).append( Const.CR );
           for ( RemoteStep remoteStep : step.getRemoteInputSteps() ) {
             tip.append( remoteStep.toString() ).append( Const.CR );
@@ -2895,8 +2797,8 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     if ( hi != null ) { // We clicked on a HOP!
 
       // Set the tooltip for the hop:
-      tip.append( Const.CR ).append( BaseMessages.getString( PKG, "TransGraph.Dialog.HopInfo" ) ).append(
-        newTip = hi.toString() ).append( Const.CR );
+      tip.append( BaseMessages.getString( PKG, "TransGraph.Dialog.HopInfo" ) ).append(
+        newTip = hi.toString() );
     }
 
     if ( tip.length() == 0 ) {
@@ -2939,6 +2841,8 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     } else if ( !newTip.equalsIgnoreCase( getToolTipText() ) ) {
       if ( tipImage != null ) {
         toolTip.setImage( tipImage );
+      } else if ( areaOwner != null && areaOwner.getAreaType().equals( AreaType.DET_LABEL ) ){
+        toolTip.setImage( null );
       } else {
         toolTip.setImage( GUIResource.getInstance().getImageSpoon() );
       }
@@ -3098,7 +3002,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
         candidate, drop_candidate, selectionRegion, areaOwners, mouseOverSteps,
         PropsUI.getInstance().getIconSize(), PropsUI.getInstance().getLineWidth(), gridSize, PropsUI.getInstance().getShadowSize(), PropsUI.getInstance()
         .isAntiAliasingEnabled(), PropsUI.getInstance().getNoteFont().getName(), PropsUI.getInstance()
-        .getNoteFont().getHeight(), trans, PropsUI.getInstance().isIndicateSlowTransStepsEnabled() );
+        .getNoteFont().getHeight(), trans, PropsUI.getInstance().isIndicateSlowTransStepsEnabled(), transPreviewDelegate.getPreviewDataMap() );
 
     transPainter.setMagnification( magnificationFactor );
     transPainter.setStepLogMap( stepLogMap );
