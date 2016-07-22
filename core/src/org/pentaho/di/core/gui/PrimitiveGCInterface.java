@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -72,6 +72,8 @@ public interface PrimitiveGCInterface {
   public void drawImage( EImage image, int x, int y );
 
   public void drawImage( EImage image, int x, int y, float magnification );
+
+  public void drawImage( EImage image, int x, int y, int width, int height, float magnification );
 
   public void drawImage( EImage image, int x, int y, float magnification, double angle );
 

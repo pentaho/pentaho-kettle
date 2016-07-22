@@ -37,6 +37,7 @@ public enum KettleExtensionPoint {
     TransformationMetaLoaded( "TransformationMetaLoaded", "Transformation metadata was loaded" ),
     TransPainterArrow( "TransPainterArrow", "Draw additional information on top of a transformation hop (arrow)" ),
     TransPainterStep( "TransPainterStep", "Draw additional information on top of a transformation step icon" ),
+    TransPainterFlyout( "TransPainterFlyout", "Draw step flyout when step is clicked" ),
     TransPainterStart( "TransPainterStart", "Draw transformation or plugin metadata at the start (below the rest)" ),
     TransPainterEnd( "TransPainterEnd", "Draw transformation or plugin metadata at the end (on top of all the rest)" ),
     TransGraphMouseDown( "TransGraphMouseDown", "A left or right button was clicked in a transformation" ),
