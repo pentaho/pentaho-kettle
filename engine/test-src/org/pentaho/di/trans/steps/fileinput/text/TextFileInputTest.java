@@ -22,6 +22,9 @@
 
 package org.pentaho.di.trans.steps.fileinput.text;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStreamReader;
@@ -45,10 +48,6 @@ import org.pentaho.di.trans.step.errorhandling.FileErrorHandler;
 import org.pentaho.di.trans.steps.StepMockUtil;
 import org.pentaho.di.trans.steps.fileinput.BaseFileInputField;
 import org.pentaho.di.utils.TestUtils;
-
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.mock;
-import static org.pentaho.di.trans.TransTestingUtil.assertResult;
 
 public class TextFileInputTest {
 
@@ -132,8 +131,8 @@ public class TextFileInputTest {
 
     TextFileInput input = StepMockUtil.getStep( TextFileInput.class, TextFileInputMeta.class, "test" );
     List<Object[]> output = TransTestingUtil.execute( input, meta, data, 2, false );
-    assertResult( new Object[] { "r1c1", "r1c2" }, output.get( 0 ) );
-    assertResult( new Object[] { "r2c1", "r2c2" }, output.get( 1 ) );
+    TransTestingUtil.assertResult( new Object[] { "r1c1", "r1c2" }, output.get( 0 ) );
+    TransTestingUtil.assertResult( new Object[] { "r2c1", "r2c2" }, output.get( 1 ) );
 
     deleteVfsFile( virtualFile );
   }
@@ -150,8 +149,8 @@ public class TextFileInputTest {
 
     TextFileInput input = StepMockUtil.getStep( TextFileInput.class, TextFileInputMeta.class, "test" );
     List<Object[]> output = TransTestingUtil.execute( input, meta, data, 2, false );
-    assertResult( new Object[] { "1", "1", "1" }, output.get( 0 ) );
-    assertResult( new Object[] { "2", "1", "2" }, output.get( 1 ) );
+    TransTestingUtil.assertResult( new Object[] { "1", "1", "1" }, output.get( 0 ) );
+    TransTestingUtil.assertResult( new Object[] { "2", "1", "2" }, output.get( 1 ) );
 
     deleteVfsFile( virtualFile );
   }
@@ -168,7 +167,7 @@ public class TextFileInputTest {
 
     TextFileInput input = StepMockUtil.getStep( TextFileInput.class, TextFileInputMeta.class, "test" );
     List<Object[]> output = TransTestingUtil.execute( input, meta, data, 1, false );
-    assertResult( new Object[] { "-" }, output.get( 0 ) );
+    TransTestingUtil.assertResult( new Object[] { "-" }, output.get( 0 ) );
 
     deleteVfsFile( virtualFile );
   }

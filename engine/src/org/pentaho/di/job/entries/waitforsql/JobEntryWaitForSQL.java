@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -21,9 +21,6 @@
  ******************************************************************************/
 
 package org.pentaho.di.job.entries.waitforsql;
-
-import org.pentaho.di.job.entry.validator.AndValidator;
-import org.pentaho.di.job.entry.validator.JobEntryValidatorUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,6 +42,8 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
+import org.pentaho.di.job.entry.validator.AndValidator;
+import org.pentaho.di.job.entry.validator.JobEntryValidatorUtils;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.resource.ResourceEntry;
@@ -131,6 +130,7 @@ public class JobEntryWaitForSQL extends JobEntryBase implements Cloneable, JobEn
     this( "" );
   }
 
+  @Override
   public Object clone() {
     JobEntryWaitForSQL je = (JobEntryWaitForSQL) super.clone();
     return je;
@@ -155,6 +155,7 @@ public class JobEntryWaitForSQL extends JobEntryBase implements Cloneable, JobEn
     return getSuccessConditionByCode( tt );
   }
 
+  @Override
   public String getXML() {
     StringBuilder retval = new StringBuilder( 200 );
 
@@ -224,10 +225,16 @@ public class JobEntryWaitForSQL extends JobEntryBase implements Cloneable, JobEn
     return maximumTimeout;
   }
 
+  /**
+   * Set how long the job entry may test the connection for a success result
+   *
+   * @param maximumTimeout Number of seconds to wait for success
+   */
   public void setMaximumTimeout( String maximumTimeout ) {
     this.maximumTimeout = maximumTimeout;
   }
 
+  @Override
   public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers,
     Repository rep, IMetaStore metaStore ) throws KettleXMLException {
     try {
@@ -253,6 +260,7 @@ public class JobEntryWaitForSQL extends JobEntryBase implements Cloneable, JobEn
     }
   }
 
+  @Override
   public void loadRep( Repository rep, IMetaStore metaStore, ObjectId id_jobentry, List<DatabaseMeta> databases,
     List<SlaveServer> slaveServers ) throws KettleException {
     try {
@@ -291,6 +299,7 @@ public class JobEntryWaitForSQL extends JobEntryBase implements Cloneable, JobEn
     return 0;
   }
 
+  @Override
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_job ) throws KettleException {
     try {
       rep.saveDatabaseMetaJobEntryAttribute( id_job, getObjectId(), "connection", "id_database", connection );
@@ -323,14 +332,33 @@ public class JobEntryWaitForSQL extends JobEntryBase implements Cloneable, JobEn
     return connection;
   }
 
+  @Override
   public boolean evaluates() {
     return true;
   }
 
+  @Override
   public boolean isUnconditional() {
     return false;
   }
 
+  // Visible for testing purposes
+  protected void checkConnection() throws KettleDatabaseException {
+    // check connection
+    // connect and disconnect
+    Database dbchecked = null;
+    try {
+      dbchecked = new Database( this, connection );
+      dbchecked.shareVariablesWith( this );
+      dbchecked.connect( parentJob.getTransactionId(), null );
+    } finally {
+      if ( dbchecked != null ) {
+        dbchecked.disconnect();
+      }
+    }
+  }
+
+  @Override
   public Result execute( Result previousResult, int nr ) {
     Result result = previousResult;
     result.setResult( false );
@@ -373,16 +401,7 @@ public class JobEntryWaitForSQL extends JobEntryBase implements Cloneable, JobEn
     try {
       // check connection
       // connect and disconnect
-      Database dbchecked = null;
-      try {
-        dbchecked = new Database( this, connection );
-        dbchecked.shareVariablesWith( this );
-        dbchecked.connect( parentJob.getTransactionId(), null );
-      } finally {
-        if ( dbchecked != null ) {
-          dbchecked.disconnect();
-        }
-      }
+      checkConnection();
 
       // starttime (in seconds)
       long timeStart = System.currentTimeMillis() / 1000;
@@ -470,10 +489,16 @@ public class JobEntryWaitForSQL extends JobEntryBase implements Cloneable, JobEn
       logBasic( "Exception while waiting for SQL data: " + e.getMessage() );
     }
 
+    if ( result.getResult() ) {
+      // Remove error count set at the beginning of the method
+      // PDI-15437
+      result.setNrErrors( 0 );
+    }
+
     return result;
   }
 
-  private boolean SQLDataOK( Result result, long nrRowsLimit, String realSchemaName, String realTableName,
+  protected boolean SQLDataOK( Result result, long nrRowsLimit, String realSchemaName, String realTableName,
     String customSQL ) throws KettleException {
     String countStatement = null;
     long rowsCount = 0;
@@ -571,10 +596,12 @@ public class JobEntryWaitForSQL extends JobEntryBase implements Cloneable, JobEn
 
   }
 
+  @Override
   public DatabaseMeta[] getUsedDatabaseConnections() {
     return new DatabaseMeta[] { connection, };
   }
 
+  @Override
   public List<ResourceReference> getResourceDependencies( JobMeta jobMeta ) {
     List<ResourceReference> references = super.getResourceDependencies( jobMeta );
     if ( connection != null ) {

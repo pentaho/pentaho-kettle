@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -21,18 +21,6 @@
  ******************************************************************************/
 
 package org.pentaho.di.trans.steps.metainject;
-
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
@@ -60,6 +48,18 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInjectionInterface;
 import org.pentaho.di.trans.step.StepMetaInterface;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 /**
  * Read a simple CSV file Just output Strings found in the file...
@@ -108,36 +108,18 @@ public class MetaInject extends BaseStep implements StepInterface {
       }
     }
 
+    List<StepMeta> steps = data.transMeta.getSteps();
     for ( Map.Entry<String, StepMetaInterface> en : data.stepInjectionMetasMap.entrySet() ) {
       newInjection( en.getKey(), en.getValue() );
+      en.getValue().searchInfoAndTargetSteps( steps );
     }
 
-    for ( String targetStep : data.stepInjectionMap.keySet() ) {
-      if ( !data.stepInjectionMetasMap.containsKey( targetStep ) ) {
-        oldInjection( targetStep );
-      }
-    }
-
-    if ( log.isDetailed() ) {
-      logDetailed( "XML of transformation after injection: " + data.transMeta.getXML() );
-    }
-    String targetFile = environmentSubstitute( meta.getTargetFile() );
-    if ( !Const.isEmpty( targetFile ) ) {
-      OutputStream os = null;
-      try {
-        os = KettleVFS.getOutputStream( targetFile, false );
-        os.write( XMLHandler.getXMLHeader().getBytes( Const.XML_ENCODING ) );
-        os.write( data.transMeta.getXML().getBytes( Const.XML_ENCODING ) );
-      } catch ( IOException e ) {
-        throw new KettleException( "Unable to write target file (ktr after injection) to file '" + targetFile + "'",
-            e );
-      } finally {
-        if ( os != null ) {
-          try {
-            os.close();
-          } catch ( Exception e ) {
-            throw new KettleException( e );
-          }
+    for ( String targetStepName : data.stepInjectionMap.keySet() ) {
+      if ( !data.stepInjectionMetasMap.containsKey( targetStepName ) ) {
+        oldInjection( targetStepName );
+        StepMeta targetStep = StepMeta.findStep( steps, targetStepName );
+        if ( targetStep != null ) {
+          targetStep.getStepMetaInterface().searchInfoAndTargetSteps( steps );
         }
       }
     }
@@ -145,7 +127,8 @@ public class MetaInject extends BaseStep implements StepInterface {
     if ( !meta.isNoExecution() ) {
       // Now we can execute this modified transformation metadata.
       //
-      final Trans injectTrans = new Trans( data.transMeta, this );
+      final Trans injectTrans = createInjectTrans();
+      injectTrans.setMetaStore( getMetaStore() );
       if ( getTrans().getParentJob() != null ) {
         injectTrans.setParentJob( getTrans().getParentJob() ); // See PDI-13224
       }
@@ -166,7 +149,7 @@ public class MetaInject extends BaseStep implements StepInterface {
       // Finally, add the mapping transformation to the active sub-transformations
       // map in the parent transformation
       //
-      getTrans().getActiveSubtransformations().put( getStepname(), injectTrans );
+      getTrans().addActiveSubTransformation( getStepname(), injectTrans );
 
       if ( !Const.isEmpty( meta.getSourceStepName() ) ) {
         StepInterface stepInterface = injectTrans.getStepInterface( meta.getSourceStepName(), 0 );
@@ -213,6 +196,16 @@ public class MetaInject extends BaseStep implements StepInterface {
         }
       }
       copyResult( injectTrans );
+      waitUntilFinished( injectTrans );
+    }
+
+    // let the transformation complete it's execution to allow for any customizations to MDI to happen in the init methods of steps
+    if ( log.isDetailed() ) {
+      logDetailed( "XML of transformation after injection: " + data.transMeta.getXML() );
+    }
+    String targetFile = environmentSubstitute( meta.getTargetFile() );
+    if ( !Const.isEmpty( targetFile ) ) {
+      writeInjectedKtr( targetFile );
     }
 
     // All done!
@@ -220,6 +213,34 @@ public class MetaInject extends BaseStep implements StepInterface {
     setOutputDone();
 
     return false;
+  }
+
+  void waitUntilFinished( Trans injectTrans ) {
+    injectTrans.waitUntilFinished();
+  }
+
+  Trans createInjectTrans() {
+    return new Trans( data.transMeta, this );
+  }
+
+  private void writeInjectedKtr( String targetFile ) throws KettleException {
+    OutputStream os = null;
+    try {
+      os = KettleVFS.getOutputStream( targetFile, false );
+      os.write( XMLHandler.getXMLHeader().getBytes( Const.XML_ENCODING ) );
+      os.write( data.transMeta.getXML().getBytes( Const.XML_ENCODING ) );
+    } catch ( IOException e ) {
+      throw new KettleException( "Unable to write target file (ktr after injection) to file '" + targetFile + "'",
+        e );
+    } finally {
+      if ( os != null ) {
+        try {
+          os.close();
+        } catch ( Exception e ) {
+          throw new KettleException( e );
+        }
+      }
+    }
   }
 
   private void newInjection( String targetStep, StepMetaInterface targetStepMeta ) throws KettleException {
@@ -482,10 +503,10 @@ public class MetaInject extends BaseStep implements StepInterface {
 
     if ( super.init( smi, sdi ) ) {
       try {
+        meta.actualizeMetaInjectMapping();
         data.transMeta = loadTransformationMeta();
         data.transMeta.copyVariablesFrom( this );
         data.transMeta.copyParametersFrom( this.getTransMeta() );
-
         checkSoureStepsAvailability();
         checkTargetStepsAvailability();
         // Get a mapping between the step name and the injection...
@@ -571,6 +592,32 @@ public class MetaInject extends BaseStep implements StepInterface {
       }
     }
     return Collections.unmodifiableSet( unavailableTargetSteps );
+  }
+
+  public static Set<TargetStepAttribute> getUnavailableTargetKeys( Map<TargetStepAttribute, SourceStepField> targetMap,
+      TransMeta injectedTransMeta, Set<TargetStepAttribute> unavailableTargetSteps ) {
+    Set<TargetStepAttribute> missingKeys = new HashSet<>();
+    Map<String, BeanInjectionInfo> beanInfos = getUsedStepBeanInfos( injectedTransMeta );
+    for ( TargetStepAttribute key : targetMap.keySet() ) {
+      if ( !unavailableTargetSteps.contains( key ) ) {
+        BeanInjectionInfo info = beanInfos.get( key.getStepname().toUpperCase() );
+        if ( info != null && !info.getProperties().containsKey( key.getAttributeKey() ) ) {
+          missingKeys.add( key );
+        }
+      }
+    }
+    return missingKeys;
+  }
+
+  private static Map<String, BeanInjectionInfo> getUsedStepBeanInfos( TransMeta transMeta ) {
+    Map<String, BeanInjectionInfo> res = new HashMap<>();
+    for ( StepMeta step : transMeta.getUsedSteps() ) {
+      Class<? extends StepMetaInterface> stepMetaClass = step.getStepMetaInterface().getClass();
+      if ( BeanInjectionInfo.isInjectionSupported( stepMetaClass ) ) {
+        res.put( step.getName().toUpperCase(), new BeanInjectionInfo( stepMetaClass ) );
+      }
+    }
+    return res;
   }
 
   private static Set<String> getUsedStepsForReferencendTransformation( TransMeta transMeta ) {

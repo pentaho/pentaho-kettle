@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -153,18 +153,20 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface {
     super(); // allocate BaseStepMeta
   }
 
+  @Override
   public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     readData( stepnode );
   }
 
+  @Override
   public Object clone() {
     Object retval = super.clone();
     return retval;
   }
 
-  public void allocate( int embeddedimages ) {
-    this.embeddedimages = new String[embeddedimages];
-    this.contentids = new String[embeddedimages];
+  public void allocate( int value ) {
+    this.embeddedimages = new String[value];
+    this.contentids = new String[value];
   }
 
   private void readData( Node stepnode ) {
@@ -230,13 +232,23 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface {
     embeddedimages[i] = value;
   }
 
+  public void setEmbeddedImages( String[] value ) {
+    this.embeddedimages = value;
+  }
+
   public void setContentIds( int i, String value ) {
     contentids[i] = value;
   }
 
+  public void setContentIds( String[] value ) {
+    this.contentids = value;
+  }
+
+  @Override
   public void setDefault() {
   }
 
+  @Override
   public String getXML() throws KettleException {
     StringBuilder retval = new StringBuilder( 300 );
 
@@ -743,6 +755,7 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface {
     this.priority = priorityin;
   }
 
+  @Override
   public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
 
@@ -818,6 +831,7 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface {
 
   }
 
+  @Override
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       rep.saveStepAttribute( id_transformation, id_step, "server", this.server );
@@ -884,6 +898,7 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface {
 
   }
 
+  @Override
   public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
     RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
@@ -1048,15 +1063,18 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
+  @Override
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta tr,
     Trans trans ) {
     return new Mail( stepMeta, stepDataInterface, cnr, tr, trans );
   }
 
+  @Override
   public StepDataInterface getStepData() {
     return new MailData();
   }
 
+  @Override
   public boolean supportsErrorHandling() {
     return true;
   }

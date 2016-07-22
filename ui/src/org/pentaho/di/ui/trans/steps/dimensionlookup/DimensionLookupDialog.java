@@ -1610,7 +1610,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
                 } catch ( Exception ignored ) {
                   // ignore any errors here.
                   db = null;
-                }                
+                }
               }
             }
           }

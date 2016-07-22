@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -245,6 +245,7 @@ public class TableOutputMetaTest {
     TableOutputMeta tableOutputMeta = new TableOutputMeta();
     tableOutputMeta.setDefault();
     tableOutputMeta.setFieldStream( new String[] {"1", "2", "3"} );
+    tableOutputMeta.setFieldDatabase( new String[] {"d1", "d2", "d3"} );
     TableOutputMeta clone = (TableOutputMeta) tableOutputMeta.clone();
     assertNotSame( clone, tableOutputMeta );
     assertEquals( clone.getXML(), tableOutputMeta.getXML() );

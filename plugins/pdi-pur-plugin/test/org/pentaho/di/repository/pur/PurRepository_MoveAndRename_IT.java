@@ -1,5 +1,5 @@
 /*!
- * Copyright 2010 - 2015 Pentaho Corporation.  All rights reserved.
+ * Copyright 2010 - 2016 Pentaho Corporation.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,16 +24,23 @@ import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.platform.api.repository2.unified.VersionSummary;
 
+import java.util.Arrays;
 import java.util.List;
 
-import static java.util.Arrays.asList;
-import static org.junit.Assert.*;
-import static org.junit.matchers.JUnitMatchers.hasItem;
+import static org.hamcrest.CoreMatchers.hasItem;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public class PurRepository_MoveAndRename_IT extends PurRepositoryTestBase {
 
   private final JobAssistant jobAssistant = new JobAssistant();
   private final TransAssistant transAssistant = new TransAssistant();
+
+  public PurRepository_MoveAndRename_IT( Boolean lazyRepo ) {
+    super( lazyRepo );
+  }
 
   @Test
   public void renameJob_Successfully() throws Exception {
@@ -290,7 +297,7 @@ public class PurRepository_MoveAndRename_IT extends PurRepositoryTestBase {
 
     @Override
     List<String> getNames( RepositoryDirectoryInterface dir ) throws Exception {
-      return asList( purRepository.getJobNames( dir.getObjectId(), false ) );
+      return Arrays.asList( purRepository.getJobNames( dir.getObjectId(), false ) );
     }
 
   }
@@ -314,7 +321,7 @@ public class PurRepository_MoveAndRename_IT extends PurRepositoryTestBase {
 
     @Override
     List<String> getNames( RepositoryDirectoryInterface dir ) throws Exception {
-      return asList( purRepository.getTransformationNames( dir.getObjectId(), false ) );
+      return Arrays.asList( purRepository.getTransformationNames( dir.getObjectId(), false ) );
     }
   }
 }

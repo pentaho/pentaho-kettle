@@ -28,7 +28,7 @@ import java.io.InputStream;
 
 /**
  * Detector of BOM prefix in file.
- * 
+ *
  * We don't use BOMInputStream because: 1) it requires commons-io 2.1 or higher, 2) it doesn't support GB18030 charset,
  * 3) it's additional abstraction level that add some microseconds to read
  */

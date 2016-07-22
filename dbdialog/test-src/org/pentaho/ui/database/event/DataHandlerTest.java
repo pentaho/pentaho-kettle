@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -21,9 +21,11 @@
  ******************************************************************************/
 package org.pentaho.ui.database.event;
 
+import java.util.Properties;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.pentaho.di.core.database.BaseDatabaseMeta;
 import org.pentaho.di.core.database.DatabaseInterface;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.logging.KettleLogStore;
@@ -75,6 +77,7 @@ public class DataHandlerTest {
   XulTextbox userNameBox;
   XulTextbox passwordBox;
   XulTextbox serverInstanceBox;
+  XulTextbox webappName;
   XulMessageBox messageBox;
   XulRoot generalDatasourceWindow;
 
@@ -120,6 +123,9 @@ public class DataHandlerTest {
     when( document.getElementById( "instance-text" ) ).thenReturn( serverInstanceBox );
     when( serverInstanceBox.getValue() ).thenReturn( "instance" );
     when( serverInstanceBox.getAttributeValue( "shouldDisablePortIfPopulated" ) ).thenReturn( "true" );
+    webappName = mock( XulTextbox.class );
+    when( document.getElementById( "web-application-name-text" ) ).thenReturn( webappName );
+    when( webappName.getValue() ).thenReturn( "webappName" );
 
     messageBox = mock( XulMessageBox.class );
     when( document.createElement( "messagebox" ) ).thenReturn( messageBox );
@@ -176,6 +182,7 @@ public class DataHandlerTest {
     when( dbInterface.getDefaultDatabasePort() ).thenReturn( 5309 );
     when( connectionBox.getSelectedItem() ).thenReturn( "myDb" );
     DataHandler.connectionMap.put( "myDb", dbInterface );
+    dataHandler.getData();
     dataHandler.loadAccessData();
   }
 
@@ -227,20 +234,28 @@ public class DataHandlerTest {
 
     DatabaseMeta dbMeta = mock( DatabaseMeta.class );
     when( dbMeta.getAccessType() ).thenReturn( DatabaseMeta.TYPE_ACCESS_JNDI );
+    Properties props = new Properties();
+    props.put( BaseDatabaseMeta.ATTRIBUTE_PREFIX_EXTRA_OPTION + "KettleThin.webappname", "foo" );
+    when( dbMeta.getAttributes() ).thenReturn( props );
 
     when( accessBox.getSelectedItem() ).thenReturn( "JNDI" );
     when( deckOptionsBox.getSelectedIndex() ).thenReturn( -1 );
     dataHandler.setData( dbMeta );
     assertEquals( dbMeta, dataHandler.getData() );
     assertNotSame( initialDbMeta, dataHandler.getData() );
+    assertFalse( props.containsKey( BaseDatabaseMeta.ATTRIBUTE_PREFIX_EXTRA_OPTION + "KettleThin.webappname" ) );
+    verify( dbMeta ).setDBName( "foo" );
 
     dataHandler.setData( null );
     assertEquals( dbMeta, dataHandler.getData() );
   }
 
   @Test
-  public void testPushCache() throws Exception {
-
+  public void testPushPopCache() throws Exception {
+    dataHandler.getData();
+    dataHandler.pushCache();
+    dataHandler.popCache();
+    verify( webappName ).setValue( "pentaho-di" );
   }
 
   @Test

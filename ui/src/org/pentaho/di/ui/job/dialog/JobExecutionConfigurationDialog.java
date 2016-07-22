@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -58,13 +58,12 @@ public class JobExecutionConfigurationDialog extends ConfigurationDialog {
   }
 
   protected void serverOptionsComposite( Class<?> PKG, String prefix ) {
-
     wlRemoteHost = new Label( serverOptionsComposite, SWT.NONE );
     props.setLook( wlRemoteHost );
     wlRemoteHost.setText( BaseMessages.getString( PKG, prefix + ".RemoteHost.Label" ) );
     wlRemoteHost.setToolTipText( BaseMessages.getString( PKG, prefix + ".RemoteHost.Tooltip" ) );
     FormData fdlRemoteHost = new FormData();
-    fdlRemoteHost.top = new FormAttachment( 0, 12 );
+    fdlRemoteHost.top = new FormAttachment( 0, 10 );
     fdlRemoteHost.left = new FormAttachment( environmentSeparator, 5 );
     wlRemoteHost.setLayoutData( fdlRemoteHost );
 
@@ -73,8 +72,8 @@ public class JobExecutionConfigurationDialog extends ConfigurationDialog {
     props.setLook( wRemoteHost );
     FormData fdRemoteHost = new FormData();
     fdRemoteHost.left = new FormAttachment( wlRemoteHost, 0, SWT.LEFT );
-    fdRemoteHost.right = new FormAttachment( 100, -293 );
-    fdRemoteHost.top = new FormAttachment( wlRemoteHost, 10 );
+    fdRemoteHost.width = 170;
+    fdRemoteHost.top = new FormAttachment( wlRemoteHost, 8 );
     wRemoteHost.setLayoutData( fdRemoteHost );
     for ( int i = 0; i < abstractMeta.getSlaveServers().size(); i++ ) {
       SlaveServer slaveServer = abstractMeta.getSlaveServers().get( i );
@@ -87,13 +86,13 @@ public class JobExecutionConfigurationDialog extends ConfigurationDialog {
     props.setLook( wPassExport );
     FormData fdPassExport = new FormData();
     fdPassExport.left = new FormAttachment( wRemoteHost, 0, SWT.LEFT );
-    fdPassExport.top = new FormAttachment( wRemoteHost, 10 );
+    fdPassExport.top = new FormAttachment( wRemoteHost, 8 );
     wPassExport.setLayoutData( fdPassExport );
 
     wExpandRemote = new Button( serverOptionsComposite, SWT.CHECK );
     wExpandRemote.setText( BaseMessages.getString( PKG, prefix + ".ExpandRemote.Label" ) );
-    wExpandRemote.setToolTipText( BaseMessages.getString( PKG,
-        "JobExecutionConfigurationDialog.ExpandRemote.Tooltip" ) );
+    wExpandRemote
+        .setToolTipText( BaseMessages.getString( PKG, "JobExecutionConfigurationDialog.ExpandRemote.Tooltip" ) );
     props.setLook( wExpandRemote );
     FormData fd_expandCheckButton = new FormData();
     fd_expandCheckButton.bottom = new FormAttachment( wPassExport, 0, SWT.BOTTOM );
@@ -102,73 +101,70 @@ public class JobExecutionConfigurationDialog extends ConfigurationDialog {
   }
 
   protected void optionsSectionControls() {
+    wClearLog = new Button( gDetails, SWT.CHECK );
+    wClearLog.setText( BaseMessages.getString( PKG, "JobExecutionConfigurationDialog.ClearLog.Label" ) );
+    wClearLog.setToolTipText( BaseMessages.getString( PKG, "JobExecutionConfigurationDialog.ClearLog.Tooltip" ) );
+    props.setLook( wClearLog );
+    FormData fdClearLog = new FormData();
+    fdClearLog.top = new FormAttachment( 0, 10 );
+    fdClearLog.left = new FormAttachment( 0, 10 );
+    wClearLog.setLayoutData( fdClearLog );
 
     wSafeMode = new Button( gDetails, SWT.CHECK );
     wSafeMode.setText( BaseMessages.getString( PKG, "JobExecutionConfigurationDialog.SafeMode.Label" ) );
     wSafeMode.setToolTipText( BaseMessages.getString( PKG, "JobExecutionConfigurationDialog.SafeMode.Tooltip" ) );
     props.setLook( wSafeMode );
     FormData fdSafeMode = new FormData();
-    fdSafeMode.right = new FormAttachment( 0, 186 );
-    fdSafeMode.top = new FormAttachment( 0, 30 );
+    fdSafeMode.top = new FormAttachment( wClearLog, 7 );
     fdSafeMode.left = new FormAttachment( 0, 10 );
     wSafeMode.setLayoutData( fdSafeMode );
 
     wGatherMetrics = new Button( gDetails, SWT.CHECK );
     wGatherMetrics.setText( BaseMessages.getString( PKG, "JobExecutionConfigurationDialog.GatherMetrics.Label" ) );
-    wGatherMetrics.setToolTipText( BaseMessages.getString( PKG,
-        "JobExecutionConfigurationDialog.GatherMetrics.Tooltip" ) );
+    wGatherMetrics.setToolTipText( BaseMessages
+        .getString( PKG, "JobExecutionConfigurationDialog.GatherMetrics.Tooltip" ) );
     props.setLook( wGatherMetrics );
     FormData fdGatherMetrics = new FormData();
-    fdGatherMetrics.right = new FormAttachment( 0, 230 );
-    fdGatherMetrics.top = new FormAttachment( 0, 55 );
+    fdGatherMetrics.top = new FormAttachment( wSafeMode, 7 );
     fdGatherMetrics.left = new FormAttachment( 0, 10 );
+    fdGatherMetrics.bottom = new FormAttachment( 100, -10 );
     wGatherMetrics.setLayoutData( fdGatherMetrics );
 
-    wClearLog = new Button( gDetails, SWT.CHECK );
-    wClearLog.setText( BaseMessages.getString( PKG, "JobExecutionConfigurationDialog.ClearLog.Label" ) );
-    wClearLog.setToolTipText( BaseMessages.getString( PKG, "JobExecutionConfigurationDialog.ClearLog.Tooltip" ) );
-    props.setLook( wClearLog );
-    FormData fdClearLog = new FormData();
-    fdClearLog.right = new FormAttachment( 0, 200 );
-    fdClearLog.top = new FormAttachment( 0, 5 );
-    fdClearLog.left = new FormAttachment( 0, 10 );
-    wClearLog.setLayoutData( fdClearLog );
-
     wlLogLevel = new Label( gDetails, SWT.RIGHT );
-    props.setLook( wlLogLevel );
     wlLogLevel.setText( BaseMessages.getString( PKG, "JobExecutionConfigurationDialog.LogLevel.Label" ) );
     wlLogLevel.setToolTipText( BaseMessages.getString( PKG, "JobExecutionConfigurationDialog.LogLevel.Tooltip" ) );
+    props.setLook( wlLogLevel );
     FormData fdlLogLevel = new FormData();
-    fdlLogLevel.right = new FormAttachment( 0, 333 );
-    fdlLogLevel.top = new FormAttachment( 0, 7 );
-    fdlLogLevel.left = new FormAttachment( 0, 260 );
+    fdlLogLevel.top = new FormAttachment( 0, 10 );
+    fdlLogLevel.left = new FormAttachment( 45, 0 );
     wlLogLevel.setLayoutData( fdlLogLevel );
 
     wLogLevel = new CCombo( gDetails, SWT.READ_ONLY | SWT.BORDER );
     wLogLevel.setToolTipText( BaseMessages.getString( PKG, "JobExecutionConfigurationDialog.LogLevel.Tooltip" ) );
     props.setLook( wLogLevel );
     FormData fdLogLevel = new FormData();
+    fdLogLevel.top = new FormAttachment( wlLogLevel, -2, SWT.TOP );
+    fdLogLevel.width = 180;
     fdLogLevel.left = new FormAttachment( wlLogLevel, 6 );
-    fdLogLevel.width = 200;
-    if ( Const.isOSX() ) {
-      fdLogLevel.top = new FormAttachment( wClearLog, 2, SWT.TOP );
-    } else {
-      fdLogLevel.top = new FormAttachment( wClearLog, -2, SWT.TOP );
-    }
-    fdLogLevel.right = new FormAttachment( 0, 500 );
     wLogLevel.setLayoutData( fdLogLevel );
     wLogLevel.setItems( LogLevel.getLogLevelDescriptions() );
 
+    Label lblStartJob = new Label( gDetails, SWT.RIGHT );
+    lblStartJob.setText( BaseMessages.getString( PKG, "JobExecutionConfigurationDialog.StartCopy.Label" ) );
+    lblStartJob.setToolTipText( BaseMessages.getString( PKG, "JobExecutionConfigurationDialog.StartCopy.Tooltip" ) );
+    props.setLook( lblStartJob );
+    FormData fd_lblStartJob = new FormData();
+    fd_lblStartJob.top = new FormAttachment( wlLogLevel, 18 );
+    fd_lblStartJob.right = new FormAttachment( wlLogLevel, 0, SWT.RIGHT );
+    lblStartJob.setLayoutData( fd_lblStartJob );
+
     wStartCopy = new CCombo( gDetails, SWT.READ_ONLY | SWT.BORDER );
-    props.setLook( wStartCopy );
     wStartCopy.setToolTipText( BaseMessages.getString( PKG, "JobExecutionConfigurationDialog.StartCopy.Tooltip" ) );
+    props.setLook( wStartCopy );
     FormData fd_startJobCombo = new FormData();
-    fd_startJobCombo.right = new FormAttachment( wLogLevel, 0, SWT.RIGHT );
-    if ( Const.isOSX() ) {
-      fd_startJobCombo.top = new FormAttachment( wLogLevel, 8 );
-    } else {
-      fd_startJobCombo.top = new FormAttachment( wLogLevel, 10 );
-    }
+    fd_startJobCombo.top = new FormAttachment( lblStartJob, -2, SWT.TOP );
+    fd_startJobCombo.width = 180;
+    fd_startJobCombo.left = new FormAttachment( lblStartJob, 6 );
     wStartCopy.setLayoutData( fd_startJobCombo );
 
     JobMeta jobMeta = (JobMeta) super.abstractMeta;
@@ -179,20 +175,6 @@ public class JobExecutionConfigurationDialog extends ConfigurationDialog {
       names[i] = getJobEntryCopyName( copy );
     }
     wStartCopy.setItems( names );
-
-    Label lblStartJob = new Label( gDetails, SWT.NONE );
-    props.setLook( lblStartJob );
-    fd_startJobCombo.left = new FormAttachment( lblStartJob, 6 );
-    FormData fd_lblStartJob = new FormData();
-    if ( Const.isOSX() ) {
-      fd_lblStartJob.top = new FormAttachment( wlLogLevel, 8 );
-    } else {
-      fd_lblStartJob.top = new FormAttachment( wlLogLevel, 18 );
-    }
-    fd_lblStartJob.right = new FormAttachment( wlLogLevel, 0, SWT.RIGHT );
-    lblStartJob.setLayoutData( fd_lblStartJob );
-    lblStartJob.setText( BaseMessages.getString( PKG, "JobExecutionConfigurationDialog.StartCopy.Label" ) );
-    lblStartJob.setToolTipText( BaseMessages.getString( PKG, "JobExecutionConfigurationDialog.StartCopy.Tooltip" ) );
   }
 
   public boolean open() {
@@ -252,7 +234,7 @@ public class JobExecutionConfigurationDialog extends ConfigurationDialog {
     if ( configuration.isExecutingRemotely() ) {
       stackedLayout.topControl = serverOptionsComposite;
     }
-    
+
     wSafeMode.setSelection( configuration.isSafeModeEnabled() );
     wClearLog.setSelection( configuration.isClearingLog() );
     wRemoteHost.setText( configuration.getRemoteServer() == null ? "" : configuration.getRemoteServer().toString() );

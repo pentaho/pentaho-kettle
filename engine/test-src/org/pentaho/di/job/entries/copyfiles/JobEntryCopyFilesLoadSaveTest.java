@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2014 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -26,7 +26,7 @@ import org.pentaho.di.job.entry.loadSave.JobEntryLoadSaveTestSupport;
 import java.util.List;
 import java.util.Map;
 
-import static java.util.Arrays.asList;
+import java.util.Arrays;
 
 public class JobEntryCopyFilesLoadSaveTest extends JobEntryLoadSaveTestSupport<JobEntryCopyFiles> {
 
@@ -35,7 +35,7 @@ public class JobEntryCopyFilesLoadSaveTest extends JobEntryLoadSaveTestSupport<J
   }
 
   @Override protected List<String> listCommonAttributes() {
-    return asList( "copy_empty_folders", "arg_from_previous", "overwrite_files", "include_subfolders",
+    return Arrays.asList( "copy_empty_folders", "arg_from_previous", "overwrite_files", "include_subfolders",
       "remove_source_files", "add_result_filesname", "destination_is_a_file", "create_destination_folder" );
   }
 

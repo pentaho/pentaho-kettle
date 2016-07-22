@@ -82,10 +82,10 @@ public class ArgumentsDialog extends Dialog {
     shell.setText( BaseMessages.getString( PKG, "ArgumentsDialog.Arguments.Label" ) );
 
     ColumnInfo[] cArguments =
-        { new ColumnInfo( BaseMessages.getString( PKG, "ArgumentsDialog.ArgumentsColumn.Argument" ),
+    { new ColumnInfo( BaseMessages.getString( PKG, "ArgumentsDialog.ArgumentsColumn.Argument" ),
             ColumnInfo.COLUMN_TYPE_TEXT, false, true, 180 ), // Argument name
-          new ColumnInfo( BaseMessages.getString( PKG, "ArgumentsDialog.ArgumentsColumn.Value" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false, false, 172 ), // Actual value
+      new ColumnInfo( BaseMessages.getString( PKG, "ArgumentsDialog.ArgumentsColumn.Value" ),
+            ColumnInfo.COLUMN_TYPE_TEXT, false, false, 172 ), // Actual value
     };
 
     int nrArguments = configuration.getArguments() != null ? configuration.getArguments().size() : 0;

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -21,44 +21,11 @@
  ******************************************************************************/
 package org.pentaho.di.core.row.value;
 
-import static org.apache.commons.lang.SystemUtils.LINE_SEPARATOR;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
-import static org.pentaho.di.core.row.ValueMetaInterface.TYPE_BIGNUMBER;
-import static org.pentaho.di.core.row.ValueMetaInterface.TYPE_BINARY;
-import static org.pentaho.di.core.row.ValueMetaInterface.TYPE_BOOLEAN;
-import static org.pentaho.di.core.row.ValueMetaInterface.TYPE_DATE;
-import static org.pentaho.di.core.row.ValueMetaInterface.TYPE_INET;
-import static org.pentaho.di.core.row.ValueMetaInterface.TYPE_INTEGER;
-import static org.pentaho.di.core.row.ValueMetaInterface.TYPE_NUMBER;
-import static org.pentaho.di.core.row.ValueMetaInterface.TYPE_STRING;
-
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.net.InetAddress;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.Time;
-import java.sql.Timestamp;
-import java.sql.Types;
-import java.text.ParsePosition;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.TimeZone;
-
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.SystemUtils;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -68,28 +35,76 @@ import org.pentaho.di.core.database.DatabaseInterface;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.database.NetezzaDatabaseMeta;
 import org.pentaho.di.core.database.Vertica5DatabaseMeta;
+import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleValueException;
+import org.pentaho.di.core.logging.KettleLogStore;
+import org.pentaho.di.core.logging.KettleLoggingEvent;
+import org.pentaho.di.core.logging.KettleLoggingEventListener;
+import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.core.logging.LoggingObject;
+import org.pentaho.di.core.logging.LoggingRegistry;
 import org.pentaho.di.core.plugins.DatabasePluginType;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
 
+import java.io.IOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.math.BigDecimal;
+import java.net.InetAddress;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.Time;
+import java.sql.Timestamp;
+import java.sql.Types;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.List;
+import java.util.TimeZone;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 public class ValueMetaBaseTest {
 
   private static final String TEST_NAME = "TEST_NAME";
+  private static final String LOG_FIELD = "LOG_FIELD";
+  public static final int MAX_TEXT_FIELD_LEN = 5;
+
   // Get PKG from class under test
   private static Class<?> PKG = ( new ValueMetaBase() {
     public Class<?> getPackage() {
       return PKG;
     }
   } ).getPackage();
+  private StoreLoggingEventListener listener;
 
   @BeforeClass
   public static void setUpBeforeClass() throws KettleException {
     PluginRegistry.addPluginType( ValueMetaPluginType.getInstance() );
     PluginRegistry.addPluginType( DatabasePluginType.getInstance() );
     PluginRegistry.init( true );
+    KettleLogStore.init();
+  }
+
+  @Before
+  public void setUp() {
+    listener = new StoreLoggingEventListener();
+    KettleLogStore.getAppender().addLoggingEventListener( listener );
+  }
+
+  @After
+  public void tearDown() {
+    KettleLogStore.getAppender().removeLoggingEventListener( listener );
+    listener = new StoreLoggingEventListener();
   }
 
   @Test
@@ -110,18 +125,18 @@ public class ValueMetaBaseTest {
 
   @Test
   public void testCtorNameAndType() {
-    ValueMetaBase base = new ValueMetaBase( "myStringType", TYPE_STRING );
+    ValueMetaBase base = new ValueMetaBase( "myStringType", ValueMetaInterface.TYPE_STRING );
     assertEquals( base.getName(), "myStringType" );
-    assertEquals( base.getType(), TYPE_STRING );
+    assertEquals( base.getType(), ValueMetaInterface.TYPE_STRING );
     assertEquals( base.getTypeDesc(), "String" );
   }
 
   @Test
   public void test4ArgCtor() {
     ValueMetaBase base =
-      new ValueMetaBase( "Hello, is it me you're looking for?", TYPE_BOOLEAN, 4, 9 );
+      new ValueMetaBase( "Hello, is it me you're looking for?", ValueMetaInterface.TYPE_BOOLEAN, 4, 9 );
     assertEquals( base.getName(), "Hello, is it me you're looking for?" );
-    assertEquals( base.getType(), TYPE_BOOLEAN );
+    assertEquals( base.getType(), ValueMetaInterface.TYPE_BOOLEAN );
     assertEquals( base.getLength(), 4 );
     assertEquals( base.getPrecision(), -1 );
     assertEquals( base.getStorageType(), ValueMetaInterface.STORAGE_TYPE_NORMAL );
@@ -143,7 +158,7 @@ public class ValueMetaBaseTest {
     Mockito.when( metaData.getColumnType( 1 ) ).thenReturn( Types.DATE );
     Mockito.when( metaData.getColumnType( 2 ) ).thenReturn( Types.TIME );
 
-    obj.type = TYPE_DATE;
+    obj.type = ValueMetaInterface.TYPE_DATE;
     // call to testing method
     obj.getValueFromResultSet( databaseInterface, resultSet, 0 );
     // for jdbc Date type getDate method called
@@ -160,42 +175,42 @@ public class ValueMetaBaseTest {
 
     BigDecimal bigDecimal = BigDecimal.ONE;
     ValueMetaBase valueDoubleMetaBase =
-      new ValueMetaBase( String.valueOf( bigDecimal ), TYPE_BIGNUMBER, ValueMetaInterface.STORAGE_TYPE_NORMAL );
+      new ValueMetaBase( String.valueOf( bigDecimal ), ValueMetaInterface.TYPE_BIGNUMBER, ValueMetaInterface.STORAGE_TYPE_NORMAL );
     assertEquals(
-      "<value-data>" + encoder.encodeForXML( String.valueOf( bigDecimal ) ) + "</value-data>" + LINE_SEPARATOR,
+      "<value-data>" + encoder.encodeForXML( String.valueOf( bigDecimal ) ) + "</value-data>" + SystemUtils.LINE_SEPARATOR,
       valueDoubleMetaBase.getDataXML( bigDecimal ) );
 
     boolean valueBoolean = Boolean.TRUE;
     ValueMetaBase valueBooleanMetaBase =
-      new ValueMetaBase( String.valueOf( valueBoolean ), TYPE_BOOLEAN, ValueMetaInterface.STORAGE_TYPE_NORMAL );
+      new ValueMetaBase( String.valueOf( valueBoolean ), ValueMetaInterface.TYPE_BOOLEAN, ValueMetaInterface.STORAGE_TYPE_NORMAL );
     assertEquals(
-      "<value-data>" + encoder.encodeForXML( String.valueOf( valueBoolean ) ) + "</value-data>" + LINE_SEPARATOR,
+      "<value-data>" + encoder.encodeForXML( String.valueOf( valueBoolean ) ) + "</value-data>" + SystemUtils.LINE_SEPARATOR,
       valueBooleanMetaBase.getDataXML( valueBoolean ) );
 
     Date date = new Date( 0 );
     ValueMetaBase dateMetaBase =
-      new ValueMetaBase( date.toString(), TYPE_DATE, ValueMetaInterface.STORAGE_TYPE_NORMAL );
+      new ValueMetaBase( date.toString(), ValueMetaInterface.TYPE_DATE, ValueMetaInterface.STORAGE_TYPE_NORMAL );
     SimpleDateFormat formaterData = new SimpleDateFormat( ValueMetaBase.DEFAULT_DATE_FORMAT_MASK );
     assertEquals(
-      "<value-data>" + encoder.encodeForXML( formaterData.format( date ) ) + "</value-data>" + LINE_SEPARATOR,
+      "<value-data>" + encoder.encodeForXML( formaterData.format( date ) ) + "</value-data>" + SystemUtils.LINE_SEPARATOR,
       dateMetaBase.getDataXML( date ) );
 
     InetAddress inetAddress = InetAddress.getByName( "127.0.0.1" );
     ValueMetaBase inetAddressMetaBase =
-      new ValueMetaBase( inetAddress.toString(), TYPE_INET, ValueMetaInterface.STORAGE_TYPE_NORMAL );
-    assertEquals( "<value-data>" + encoder.encodeForXML( inetAddress.toString() ) + "</value-data>" + LINE_SEPARATOR,
+      new ValueMetaBase( inetAddress.toString(), ValueMetaInterface.TYPE_INET, ValueMetaInterface.STORAGE_TYPE_NORMAL );
+    assertEquals( "<value-data>" + encoder.encodeForXML( inetAddress.toString() ) + "</value-data>" + SystemUtils.LINE_SEPARATOR,
       inetAddressMetaBase.getDataXML( inetAddress ) );
 
     long value = Long.MAX_VALUE;
-    ValueMetaBase integerMetaBase = new ValueMetaBase( String.valueOf( value ), TYPE_INTEGER,
+    ValueMetaBase integerMetaBase = new ValueMetaBase( String.valueOf( value ), ValueMetaInterface.TYPE_INTEGER,
       ValueMetaInterface.STORAGE_TYPE_NORMAL );
-    assertEquals( "<value-data>" + encoder.encodeForXML( String.valueOf( value ) ) + "</value-data>" + LINE_SEPARATOR,
+    assertEquals( "<value-data>" + encoder.encodeForXML( String.valueOf( value ) ) + "</value-data>" + SystemUtils.LINE_SEPARATOR,
       integerMetaBase.getDataXML( value ) );
 
     String stringValue = "TEST_STRING";
     ValueMetaBase valueMetaBase =
-      new ValueMetaBase( stringValue, TYPE_STRING, ValueMetaInterface.STORAGE_TYPE_NORMAL );
-    assertEquals( "<value-data>" + encoder.encodeForXML( stringValue ) + "</value-data>" + LINE_SEPARATOR,
+      new ValueMetaBase( stringValue, ValueMetaInterface.TYPE_STRING, ValueMetaInterface.STORAGE_TYPE_NORMAL );
+    assertEquals( "<value-data>" + encoder.encodeForXML( stringValue ) + "</value-data>" + SystemUtils.LINE_SEPARATOR,
       valueMetaBase.getDataXML( stringValue ) );
 
     Timestamp timestamp = new Timestamp( 0 );
@@ -203,7 +218,7 @@ public class ValueMetaBaseTest {
       ValueMetaInterface.STORAGE_TYPE_NORMAL );
     SimpleDateFormat formater = new SimpleDateFormat( ValueMetaBase.DEFAULT_TIMESTAMP_FORMAT_MASK );
     assertEquals(
-      "<value-data>" + encoder.encodeForXML( formater.format( timestamp ) ) + "</value-data>" + LINE_SEPARATOR,
+      "<value-data>" + encoder.encodeForXML( formater.format( timestamp ) ) + "</value-data>" + SystemUtils.LINE_SEPARATOR,
       valueMetaBaseTimeStamp.getDataXML( timestamp ) );
   }
 
@@ -215,7 +230,7 @@ public class ValueMetaBaseTest {
     final int expectedVarBinarylength = 80;
 
     ValueMetaBase obj = new ValueMetaBase();
-    DatabaseMeta dbMeta = spy( new DatabaseMeta() );
+    DatabaseMeta dbMeta = Mockito.spy( new DatabaseMeta() );
     DatabaseInterface databaseInterface = new Vertica5DatabaseMeta();
     dbMeta.setDatabaseInterface( databaseInterface );
 
@@ -236,18 +251,18 @@ public class ValueMetaBaseTest {
       obj.getValueFromSQLType( dbMeta, TEST_NAME, metaData, binaryColumnIndex, false, false );
     assertNotNull( binaryValueMeta );
     assertTrue( TEST_NAME.equals( binaryValueMeta.getName() ) );
-    assertTrue( TYPE_BINARY == binaryValueMeta.getType() );
+    assertTrue( ValueMetaInterface.TYPE_BINARY == binaryValueMeta.getType() );
     assertTrue( expectedBinarylength == binaryValueMeta.getLength() );
-    assertFalse( binaryValueMeta.isLargeTextField() );
+    Assert.assertFalse( binaryValueMeta.isLargeTextField() );
 
     // get value meta for varbinary type
     ValueMetaInterface varbinaryValueMeta =
       obj.getValueFromSQLType( dbMeta, TEST_NAME, metaData, varbinaryColumnIndex, false, false );
     assertNotNull( varbinaryValueMeta );
     assertTrue( TEST_NAME.equals( varbinaryValueMeta.getName() ) );
-    assertTrue( TYPE_BINARY == varbinaryValueMeta.getType() );
+    assertTrue( ValueMetaInterface.TYPE_BINARY == varbinaryValueMeta.getType() );
     assertTrue( expectedVarBinarylength == varbinaryValueMeta.getLength() );
-    assertFalse( varbinaryValueMeta.isLargeTextField() );
+    Assert.assertFalse( varbinaryValueMeta.isLargeTextField() );
 
   }
 
@@ -256,16 +271,16 @@ public class ValueMetaBaseTest {
     final int varbinaryColumnIndex = 2;
 
     ValueMetaBase valueMetaBase = new ValueMetaBase(),
-      valueMetaBaseSpy = spy( valueMetaBase );
+      valueMetaBaseSpy = Mockito.spy( valueMetaBase );
     DatabaseMeta dbMeta = Mockito.mock( DatabaseMeta.class );
     DatabaseInterface databaseInterface = Mockito.mock( DatabaseInterface.class );
-    doReturn( databaseInterface ).when( dbMeta ).getDatabaseInterface();
+    Mockito.doReturn( databaseInterface ).when( dbMeta ).getDatabaseInterface();
 
     ResultSetMetaData metaData = Mockito.mock( ResultSetMetaData.class );
     valueMetaBaseSpy.getValueFromSQLType( dbMeta, TEST_NAME, metaData, varbinaryColumnIndex, false, false );
 
-    verify( databaseInterface, Mockito.times( 1 ) ).customizeValueFromSQLType( any( ValueMetaInterface.class ),
-      any( ResultSetMetaData.class ), anyInt() );
+    Mockito.verify( databaseInterface, Mockito.times( 1 ) ).customizeValueFromSQLType( Mockito.any( ValueMetaInterface.class ),
+      Mockito.any( ResultSetMetaData.class ), Mockito.anyInt() );
   }
 
   @Test
@@ -279,7 +294,7 @@ public class ValueMetaBaseTest {
     Mockito.when( metaData.getColumnType( 1 ) ).thenReturn( Types.TIME );
     Mockito.when( resultSet.getTime( 1 ) ).thenReturn( new Time( 0 ) );
     Mockito.when( valueMetaInterface.getOriginalColumnType() ).thenReturn( Types.TIME );
-    Mockito.when( valueMetaInterface.getType() ).thenReturn( TYPE_DATE );
+    Mockito.when( valueMetaInterface.getType() ).thenReturn( ValueMetaInterface.TYPE_DATE );
 
     DatabaseInterface databaseInterface = new Vertica5DatabaseMeta();
     Object ret = databaseInterface.getValueFromResultSet( resultSet, valueMetaInterface, 0 );
@@ -300,12 +315,12 @@ public class ValueMetaBaseTest {
     assertTrue( ValueMetaBase.convertStringToBoolean( "true" ) );
     assertTrue( ValueMetaBase.convertStringToBoolean( "tRuE" ) );
     assertTrue( ValueMetaBase.convertStringToBoolean( "Y" ) );
-    assertFalse( ValueMetaBase.convertStringToBoolean( "N" ) );
-    assertFalse( ValueMetaBase.convertStringToBoolean( "No" ) );
-    assertFalse( ValueMetaBase.convertStringToBoolean( "no" ) );
-    assertFalse( ValueMetaBase.convertStringToBoolean( "Yeah" ) );
-    assertFalse( ValueMetaBase.convertStringToBoolean( "False" ) );
-    assertFalse( ValueMetaBase.convertStringToBoolean( "NOT false" ) );
+    Assert.assertFalse( ValueMetaBase.convertStringToBoolean( "N" ) );
+    Assert.assertFalse( ValueMetaBase.convertStringToBoolean( "No" ) );
+    Assert.assertFalse( ValueMetaBase.convertStringToBoolean( "no" ) );
+    Assert.assertFalse( ValueMetaBase.convertStringToBoolean( "Yeah" ) );
+    Assert.assertFalse( ValueMetaBase.convertStringToBoolean( "False" ) );
+    Assert.assertFalse( ValueMetaBase.convertStringToBoolean( "NOT false" ) );
   }
 
   @Test
@@ -357,20 +372,20 @@ public class ValueMetaBaseTest {
 
   @Test
   public void testIsNumeric() {
-    int[] numTypes = { TYPE_INTEGER, TYPE_NUMBER, TYPE_BIGNUMBER };
+    int[] numTypes = { ValueMetaInterface.TYPE_INTEGER, ValueMetaInterface.TYPE_NUMBER, ValueMetaInterface.TYPE_BIGNUMBER };
     for ( int type : numTypes ) {
       assertTrue( Integer.toString( type ), ValueMetaBase.isNumeric( type ) );
     }
 
-    int[] notNumTypes = { TYPE_INET, TYPE_BOOLEAN, TYPE_BINARY, TYPE_DATE, TYPE_STRING };
+    int[] notNumTypes = { ValueMetaInterface.TYPE_INET, ValueMetaInterface.TYPE_BOOLEAN, ValueMetaInterface.TYPE_BINARY, ValueMetaInterface.TYPE_DATE, ValueMetaInterface.TYPE_STRING };
     for ( int type : notNumTypes ) {
-      assertFalse( Integer.toString( type ), ValueMetaBase.isNumeric( type ) );
+      Assert.assertFalse( Integer.toString( type ), ValueMetaBase.isNumeric( type ) );
     }
   }
 
   @Test
   public void testGetAllTypes() {
-    assertArrayEquals( ValueMetaBase.getAllTypes(), ValueMetaFactory.getAllValueMetaNames() );
+    Assert.assertArrayEquals( ValueMetaBase.getAllTypes(), ValueMetaFactory.getAllValueMetaNames() );
   }
 
   @Test
@@ -464,7 +479,7 @@ public class ValueMetaBaseTest {
 
   @Test
   public void testCompareIntegers() throws KettleValueException {
-    ValueMetaBase intMeta = new ValueMetaBase( "int", TYPE_INTEGER );
+    ValueMetaBase intMeta = new ValueMetaBase( "int", ValueMetaInterface.TYPE_INTEGER );
     Long int1 = new Long( 6223372036854775804L );
     Long int2 = new Long( -6223372036854775804L );
     assertEquals( 1, intMeta.compare( int1, int2 ) );
@@ -495,7 +510,7 @@ public class ValueMetaBaseTest {
 
   @Test
   public void testCompareDate() throws KettleValueException {
-    ValueMetaBase dateMeta = new ValueMetaBase( "int", TYPE_DATE );
+    ValueMetaBase dateMeta = new ValueMetaBase( "int", ValueMetaInterface.TYPE_DATE );
     Date date1 = new Date( 6223372036854775804L );
     Date date2 = new Date( -6223372036854775804L );
     assertEquals( 1, dateMeta.compare( date1, date2 ) );
@@ -505,7 +520,7 @@ public class ValueMetaBaseTest {
 
   @Test
   public void testDateParsing8601() throws Exception {
-    ValueMetaBase dateMeta = new ValueMetaBase( "date", TYPE_DATE );
+    ValueMetaBase dateMeta = new ValueMetaBase( "date", ValueMetaInterface.TYPE_DATE );
     dateMeta.setDateFormatLenient( false );
 
     // try to convert date by 'start-of-date' make - old behavior
@@ -524,6 +539,53 @@ public class ValueMetaBaseTest {
     assertEquals( local( 1918, 3, 25, 0, 0, 0, 0 ), dateMeta.convertStringToDate( "1918-03-25  \n" ) );
   }
 
+  @Test
+  public void testSetPreparedStatementStringValueDontLogTruncated() throws KettleDatabaseException {
+    ValueMetaBase valueMetaString = new ValueMetaBase( "LOG_FIELD", ValueMetaInterface.TYPE_STRING,  LOG_FIELD.length(), 0 );
+
+    DatabaseMeta databaseMeta = Mockito.mock( DatabaseMeta.class );
+    PreparedStatement preparedStatement = Mockito.mock( PreparedStatement.class );
+    Mockito.when( databaseMeta.getMaxTextFieldLength() ).thenReturn( LOG_FIELD.length() );
+    List<KettleLoggingEvent> events = listener.getEvents();
+    assertEquals( 0, events.size() );
+
+    valueMetaString.setPreparedStatementValue( databaseMeta, preparedStatement, 0, LOG_FIELD );
+
+    //no logging occurred as max string length equals to logging text length
+    assertEquals( 0, events.size() );
+  }
+
+  @Test
+  public void testSetPreparedStatementStringValueLogTruncated() throws KettleDatabaseException {
+    ValueMetaBase valueMetaString = new ValueMetaBase( "LOG_FIELD", ValueMetaInterface.TYPE_STRING,  LOG_FIELD.length(), 0 );
+
+    DatabaseMeta databaseMeta = Mockito.mock( DatabaseMeta.class );
+    PreparedStatement preparedStatement = Mockito.mock( PreparedStatement.class );
+    Mockito.when( databaseMeta.getMaxTextFieldLength() ).thenReturn( MAX_TEXT_FIELD_LEN );
+    List<KettleLoggingEvent> events = listener.getEvents();
+    assertEquals( 0, events.size() );
+
+    valueMetaString.setPreparedStatementValue( databaseMeta, preparedStatement, 0, LOG_FIELD );
+
+    //check that truncated string was logged
+    assertEquals( 1, events.size() );
+  }
+
+  @Test
+  public void testValueMetaBaseOnlyHasOneLogger() throws NoSuchFieldException, IllegalAccessException {
+    Field log = ValueMetaBase.class.getDeclaredField( "log" );
+    assertTrue( Modifier.isStatic( log.getModifiers() ) );
+    assertTrue( Modifier.isFinal( log.getModifiers() ) );
+    log.setAccessible( true );
+    try {
+      assertEquals( LoggingRegistry.getInstance().findExistingLoggingSource( new LoggingObject( "ValueMetaBase" ) )
+          .getLogChannelId(),
+        ( (LogChannelInterface) log.get( null ) ).getLogChannelId() );
+    } finally {
+      log.setAccessible( false );
+    }
+  }
+
   Date local( int year, int month, int dat, int hrs, int min, int sec, int ms ) {
     GregorianCalendar cal = new GregorianCalendar( year, month - 1, dat, hrs, min, sec );
     cal.set( Calendar.MILLISECOND, ms );
@@ -535,5 +597,32 @@ public class ValueMetaBaseTest {
     cal.setTimeZone( TimeZone.getTimeZone( "UTC" ) );
     cal.set( Calendar.MILLISECOND, ms );
     return cal.getTime();
+  }
+
+  @Test
+  public void testGetNativeDataTypeClass() {
+    ValueMetaInterface base = new ValueMetaBase();
+    Class<?> clazz = null;
+    try {
+      clazz = base.getNativeDataTypeClass();
+      Assert.fail();
+    } catch ( KettleValueException expected ) {
+      // ValueMetaBase should throw an exception, as all sub-classes should override
+      Assert.assertNull( clazz );
+    }
+  }
+
+  private class StoreLoggingEventListener implements KettleLoggingEventListener {
+
+    private List<KettleLoggingEvent> events = new ArrayList<>();
+
+    @Override
+    public void eventAdded( KettleLoggingEvent event ) {
+      events.add( event );
+    }
+
+    public List<KettleLoggingEvent> getEvents() {
+      return events;
+    }
   }
 }

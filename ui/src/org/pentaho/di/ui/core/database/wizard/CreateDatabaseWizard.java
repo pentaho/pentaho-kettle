@@ -22,12 +22,18 @@
 
 package org.pentaho.di.ui.core.database.wizard;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardDialog;
+import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.exception.KettlePluginException;
+import org.pentaho.di.core.plugins.DatabasePluginType;
+import org.pentaho.di.core.plugins.PluginInterface;
+import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.gui.GUIResource;
 
@@ -41,6 +47,8 @@ import org.pentaho.di.ui.core.gui.GUIResource;
 public class CreateDatabaseWizard {
 
   private boolean wizardFinished = false; // true when wizard finished
+
+  private List<WizardPage> additionalPages = new ArrayList<>();
 
   /**
    * Shows a wizard that creates a new database connection...
@@ -68,12 +76,22 @@ public class CreateDatabaseWizard {
     final CreateDatabaseWizardPageOracle pageoracle =
       new CreateDatabaseWizardPageOracle( "oracle", props, newDBInfo );
 
-    final CreateDatabaseWizardPageSAPR3 pageSAPR3 = new CreateDatabaseWizardPageSAPR3( "SAPR3", props, newDBInfo );
-
     final CreateDatabaseWizardPageGeneric pageGeneric =
       new CreateDatabaseWizardPageGeneric( "generic", props, newDBInfo );
 
     final CreateDatabaseWizardPage2 page2 = new CreateDatabaseWizardPage2( "2", props, newDBInfo );
+
+    for ( PluginInterface pluginInterface : PluginRegistry.getInstance().getPlugins( DatabasePluginType.class ) ) {
+      try {
+        Object plugin = PluginRegistry.getInstance().loadClass( pluginInterface );
+        if ( plugin instanceof WizardPageFactory ) {
+          WizardPageFactory factory = (WizardPageFactory) plugin;
+          additionalPages.add( factory.createWizardPage( props, newDBInfo ) );
+        }
+      } catch ( KettlePluginException kpe ) {
+        // Don't do anything
+      }
+    }
 
     wizardFinished = false; // set to false for safety only
 
@@ -100,8 +118,10 @@ public class CreateDatabaseWizard {
     wizard.addPage( pagejdbc );
     wizard.addPage( pageoracle );
     wizard.addPage( pageifx );
-    wizard.addPage( pageSAPR3 );
     wizard.addPage( pageGeneric );
+    for ( WizardPage page : additionalPages ) {
+      wizard.addPage( page );
+    }
     wizard.addPage( page2 );
 
     WizardDialog wd = new WizardDialog( shell, wizard );

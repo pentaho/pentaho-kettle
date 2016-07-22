@@ -889,7 +889,7 @@ public class PropsUI extends Props {
             @Override
             public void paintControl( PaintEvent paintEvent ) {
               paintEvent.gc.setBackground( gui.getColorBackground() );
-              paintEvent.gc.fillRectangle( 2, 0, control.getBounds().width-8, control.getBounds().height-20 );
+              paintEvent.gc.fillRectangle( 2, 0, control.getBounds().width - 8, control.getBounds().height - 20 );
             }
           } );
         }

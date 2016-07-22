@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,6 +24,7 @@ package org.pentaho.di.www;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.pentaho.di.cluster.HttpUtil;
@@ -54,6 +55,8 @@ public class SlaveServerTransStatus {
 
   private int lastLoggingLineNr;
 
+  private Date logDate;
+
   private List<StepStatus> stepStatusList;
 
   private Result result;
@@ -78,31 +81,32 @@ public class SlaveServerTransStatus {
   public String getXML() throws KettleException {
     StringBuilder xml = new StringBuilder();
 
-    xml.append( "<" + XML_TAG + ">" ).append( Const.CR );
-    xml.append( XMLHandler.addTagValue( "transname", transName ) );
-    xml.append( XMLHandler.addTagValue( "id", id ) );
-    xml.append( XMLHandler.addTagValue( "status_desc", statusDescription ) );
-    xml.append( XMLHandler.addTagValue( "error_desc", errorDescription ) );
-    xml.append( XMLHandler.addTagValue( "paused", paused ) );
+    xml.append( XMLHandler.openTag( XML_TAG ) ).append( Const.CR );
+    xml.append( "  " ).append( XMLHandler.addTagValue( "transname", transName ) );
+    xml.append( "  " ).append( XMLHandler.addTagValue( "id", id ) );
+    xml.append( "  " ).append( XMLHandler.addTagValue( "status_desc", statusDescription ) );
+    xml.append( "  " ).append( XMLHandler.addTagValue( "error_desc", errorDescription ) );
+    xml.append( "  " ).append( XMLHandler.addTagValue( "log_date", XMLHandler.date2string( logDate ) ) );
+    xml.append( "  " ).append( XMLHandler.addTagValue( "paused", paused ) );
 
-    xml.append( "  <stepstatuslist>" ).append( Const.CR );
+    xml.append( "  " ).append( XMLHandler.openTag( "stepstatuslist" ) ).append( Const.CR );
     for ( int i = 0; i < stepStatusList.size(); i++ ) {
       StepStatus stepStatus = stepStatusList.get( i );
       xml.append( "    " ).append( stepStatus.getXML() ).append( Const.CR );
     }
-    xml.append( "  </stepstatuslist>" ).append( Const.CR );
+    xml.append( "  " ).append( XMLHandler.closeTag( "stepstatuslist" ) ).append( Const.CR );
 
-    xml.append( XMLHandler.addTagValue( "first_log_line_nr", firstLoggingLineNr ) );
-    xml.append( XMLHandler.addTagValue( "last_log_line_nr", lastLoggingLineNr ) );
+    xml.append( "  " ).append( XMLHandler.addTagValue( "first_log_line_nr", firstLoggingLineNr ) );
+    xml.append( "  " ).append( XMLHandler.addTagValue( "last_log_line_nr", lastLoggingLineNr ) );
 
     if ( result != null ) {
       String resultXML = result.getXML();
       xml.append( resultXML );
     }
 
-    xml.append( XMLHandler.addTagValue( "logging_string", XMLHandler.buildCDATA( loggingString ) ) );
+    xml.append( "  " ).append( XMLHandler.addTagValue( "logging_string", XMLHandler.buildCDATA( loggingString ) ) );
 
-    xml.append( "</" + XML_TAG + ">" );
+    xml.append( XMLHandler.closeTag( XML_TAG ) );
 
     return xml.toString();
   }
@@ -113,6 +117,7 @@ public class SlaveServerTransStatus {
     transName = XMLHandler.getTagValue( transStatusNode, "transname" );
     statusDescription = XMLHandler.getTagValue( transStatusNode, "status_desc" );
     errorDescription = XMLHandler.getTagValue( transStatusNode, "error_desc" );
+    logDate = XMLHandler.stringToDate( XMLHandler.getTagValue( transStatusNode, "log_date" ) );
     paused = "Y".equalsIgnoreCase( XMLHandler.getTagValue( transStatusNode, "paused" ) );
 
     Node statusListNode = XMLHandler.getSubNode( transStatusNode, "stepstatuslist" );
@@ -358,6 +363,20 @@ public class SlaveServerTransStatus {
    */
   public void setFirstLoggingLineNr( int firstLoggingLineNr ) {
     this.firstLoggingLineNr = firstLoggingLineNr;
+  }
+
+  /**
+   * @return the logDate
+   */
+  public Date getLogDate() {
+    return logDate;
+  }
+
+  /**
+   * @param the logDate
+   */
+  public void setLogDate( Date logDate ) {
+    this.logDate = logDate;
   }
 
   /**

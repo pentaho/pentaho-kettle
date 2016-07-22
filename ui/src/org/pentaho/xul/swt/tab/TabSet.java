@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -58,6 +58,10 @@ public class TabSet implements SelectionListener, CTabFolder2Listener {
   }
 
   public void widgetSelected( SelectionEvent event ) {
+    TabItem deSelectedTabItem = tabList.get( selectedIndex );
+    if ( deSelectedTabItem != null ) {
+      notifyDeselectListeners( deSelectedTabItem );
+    }
     for ( int i = 0; i < tabList.size(); i++ ) {
       TabItem item = tabList.get( i );
       if ( event.item.equals( item.getSwtTabItem() ) ) {

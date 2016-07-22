@@ -244,24 +244,24 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
   public String getXML() {
     StringBuilder xml = new StringBuilder();
 
-    xml.append( "<" ).append( XML_TAG ).append( ">" );
+    xml.append( "      " ).append( XMLHandler.openTag( XML_TAG ) ).append( Const.CR );
 
-    xml.append( XMLHandler.addTagValue( "name", name, false ) );
-    xml.append( XMLHandler.addTagValue( "hostname", hostname, false ) );
-    xml.append( XMLHandler.addTagValue( "port", port, false ) );
-    xml.append( XMLHandler.addTagValue( "webAppName", webAppName, false ) );
-    xml.append( XMLHandler.addTagValue( "username", username, false ) );
+    xml.append( "        " ).append( XMLHandler.addTagValue( "name", name ) );
+    xml.append( "        " ).append( XMLHandler.addTagValue( "hostname", hostname ) );
+    xml.append( "        " ).append( XMLHandler.addTagValue( "port", port ) );
+    xml.append( "        " ).append( XMLHandler.addTagValue( "webAppName", webAppName ) );
+    xml.append( "        " ).append( XMLHandler.addTagValue( "username", username ) );
     xml.append( XMLHandler.addTagValue( "password", Encr.encryptPasswordIfNotUsingVariables( password ), false ) );
-    xml.append( XMLHandler.addTagValue( "proxy_hostname", proxyHostname, false ) );
-    xml.append( XMLHandler.addTagValue( "proxy_port", proxyPort, false ) );
-    xml.append( XMLHandler.addTagValue( "non_proxy_hosts", nonProxyHosts, false ) );
-    xml.append( XMLHandler.addTagValue( "master", master, false ) );
-    xml.append( XMLHandler.addTagValue( SSL_MODE_TAG, isSslMode(), false ) );
+    xml.append( "        " ).append( XMLHandler.addTagValue( "proxy_hostname", proxyHostname ) );
+    xml.append( "        " ).append( XMLHandler.addTagValue( "proxy_port", proxyPort ) );
+    xml.append( "        " ).append( XMLHandler.addTagValue( "non_proxy_hosts", nonProxyHosts ) );
+    xml.append( "        " ).append( XMLHandler.addTagValue( "master", master ) );
+    xml.append( "        " ).append( XMLHandler.addTagValue( SSL_MODE_TAG, isSslMode(), false ) );
     if ( sslConfig != null ) {
       xml.append( sslConfig.getXML() );
     }
 
-    xml.append( "</" ).append( XML_TAG ).append( ">" );
+    xml.append( "      " ).append( XMLHandler.closeTag( XML_TAG ) ).append( Const.CR );
 
     return xml.toString();
   }
@@ -855,7 +855,8 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
 
   public Properties getKettleProperties() throws Exception {
     String xml = execService( GetPropertiesServlet.CONTEXT_PATH + "/?xml=Y" );
-    InputStream in = new ByteArrayInputStream( xml.getBytes() );
+    String decryptedXml =  Encr.decryptPassword( xml );
+    InputStream in = new ByteArrayInputStream( decryptedXml.getBytes() );
     Properties properties = new Properties();
     properties.loadFromXML( in );
     return properties;

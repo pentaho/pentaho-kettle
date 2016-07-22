@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -75,7 +75,7 @@ public class JobEntryFilesExistTest {
   @Test
   public void testSetNrErrorsNewBehaviorFalseResult() throws Exception {
     // this tests fix for PDI-10270
-    entry.arguments = new String[] { "nonExistingFile.ext" };
+    entry.setArguments( new String[] { "nonExistingFile.ext" } );
 
     Result res = entry.execute( new Result(), 0 );
 
@@ -86,7 +86,7 @@ public class JobEntryFilesExistTest {
   @Test
   public void testSetNrErrorsOldBehaviorFalseResult() throws Exception {
     // this tests backward compatibility settings for PDI-10270
-    entry.arguments = new String[] { "nonExistingFile1.ext", "nonExistingFile2.ext" };
+    entry.setArguments( new String[] { "nonExistingFile1.ext", "nonExistingFile2.ext" } );
 
     entry.setVariable( Const.KETTLE_COMPATIBILITY_SET_ERROR_ON_SPECIFIC_JOB_ENTRIES, "Y" );
 
@@ -95,12 +95,12 @@ public class JobEntryFilesExistTest {
     assertFalse( "Entry should fail", res.getResult() );
     assertEquals(
       "Files not found. Result is false. And... Number of errors should be the same as number of not found files",
-      entry.arguments.length, res.getNrErrors() );
+      entry.getArguments().length, res.getNrErrors() );
   }
 
   @Test
   public void testExecuteWithException() throws Exception {
-    entry.arguments = new String[] { null };
+    entry.setArguments( new String[] { null } );
 
     Result res = entry.execute( new Result(), 0 );
 
@@ -110,7 +110,7 @@ public class JobEntryFilesExistTest {
 
   @Test
   public void testExecuteSuccess() throws Exception {
-    entry.arguments = new String[] { existingFile1, existingFile2 };
+    entry.setArguments( new String[] { existingFile1, existingFile2 } );
 
     Result res = entry.execute( new Result(), 0 );
 
@@ -119,8 +119,8 @@ public class JobEntryFilesExistTest {
 
   @Test
   public void testExecuteFail() throws Exception {
-    entry.arguments =
-      new String[] { existingFile1, existingFile2, "nonExistingFile1.ext", "nonExistingFile2.ext" };
+    entry.setArguments(
+      new String[] { existingFile1, existingFile2, "nonExistingFile1.ext", "nonExistingFile2.ext" } );
 
     Result res = entry.execute( new Result(), 0 );
 

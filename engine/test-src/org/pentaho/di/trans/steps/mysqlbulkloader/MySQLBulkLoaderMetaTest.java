@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,35 +25,23 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 import org.junit.Test;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
 import org.pentaho.di.trans.steps.loadsave.validator.ArrayLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
+import org.pentaho.di.trans.steps.loadsave.validator.IntLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.PrimitiveIntArrayLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.StringLoadSaveValidator;
 
 public class MySQLBulkLoaderMetaTest {
 
-  public class FieldFormatTypeLoadSaveValidator implements FieldLoadSaveValidator<Integer> {
-    @Override
-    public Integer getTestObject() {
-      return new Random().nextInt( MySQLBulkLoaderMeta.getFieldFormatTypeCodes().length );
-    }
-
-    @Override
-    public boolean validateTestObject( Integer testObject, Object actual ) {
-      return testObject.equals( actual );
-    }
-  }
-
   @Test
   public void testRoundTrip() throws KettleException {
     List<String> attributes =
-      Arrays.asList( /*"connection",*/ "schema", "table", "encoding", "delimiter", "enclosure", 
-        "escape_char", "replace", "ignore", "local", "fifo_file_name",  "bulk_size", 
+      Arrays.asList( /*"connection",*/ "schema", "table", "encoding", "delimiter", "enclosure",
+        "escape_char", "replace", "ignore", "local", "fifo_file_name",  "bulk_size",
         "stream_name", "field_name", "field_format_ok" );
 
     Map<String, String> getterMap = new HashMap<String, String>();
@@ -96,7 +84,8 @@ public class MySQLBulkLoaderMetaTest {
     FieldLoadSaveValidator<String[]> stringArrayLoadSaveValidator =
       new ArrayLoadSaveValidator<String>( new StringLoadSaveValidator(), 25 );
     FieldLoadSaveValidator<int[]> fieldFormatTypeArrayLoadSaveValidator =
-      new PrimitiveIntArrayLoadSaveValidator( new FieldFormatTypeLoadSaveValidator(), 25 );
+      new PrimitiveIntArrayLoadSaveValidator(
+        new IntLoadSaveValidator( MySQLBulkLoaderMeta.getFieldFormatTypeCodes().length ), 25 );
 
     fieldLoadSaveValidatorAttributeMap.put( "stream_name", stringArrayLoadSaveValidator );
     fieldLoadSaveValidatorAttributeMap.put( "field_name", stringArrayLoadSaveValidator );
@@ -106,7 +95,6 @@ public class MySQLBulkLoaderMetaTest {
       new LoadSaveTester( MySQLBulkLoaderMeta.class, attributes, getterMap, setterMap,
         fieldLoadSaveValidatorAttributeMap, new HashMap<String, FieldLoadSaveValidator<?>>() );
 
-    loadSaveTester.testXmlRoundTrip();
-    loadSaveTester.testRepoRoundTrip();
+    loadSaveTester.testSerialization();
   }
 }

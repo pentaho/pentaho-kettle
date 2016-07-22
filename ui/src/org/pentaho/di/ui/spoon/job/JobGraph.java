@@ -309,6 +309,7 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
     this.log = spoon.getLog();
     this.spoon = spoon;
     this.jobMeta = jobMeta;
+    spoon.selectionFilter.setText( "" );
 
     this.props = PropsUI.getInstance();
     this.areaOwners = new ArrayList<AreaOwner>();

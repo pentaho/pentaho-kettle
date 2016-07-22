@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -44,7 +44,7 @@ import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.value.ValueMetaBase;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
@@ -200,7 +200,7 @@ public class SwitchCaseDialog extends BaseStepDialog implements StepDialogInterf
     fdlDataType.top = new FormAttachment( wContains, margin );
     wlDataType.setLayoutData( fdlDataType );
     wDataType = new CCombo( shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-    wDataType.setItems( ValueMeta.getTypes() );
+    wDataType.setItems( ValueMetaBase.getTypes() );
     props.setLook( wDataType );
     FormData fdDataType = new FormData();
     fdDataType.left = new FormAttachment( middle, margin );
@@ -378,7 +378,7 @@ public class SwitchCaseDialog extends BaseStepDialog implements StepDialogInterf
   public void getData() {
     wFieldName.setText( Const.NVL( input.getFieldname(), "" ) );
     wContains.setSelection( input.isContains() );
-    wDataType.setText( ValueMeta.getTypeDesc( input.getCaseValueType() ) );
+    wDataType.setText( ValueMetaBase.getTypeDesc( input.getCaseValueType() ) );
     wDecimalSymbol.setText( Const.NVL( input.getCaseValueDecimal(), "" ) );
     wGroupingSymbol.setText( Const.NVL( input.getCaseValueGroup(), "" ) );
     wConversionMask.setText( Const.NVL( input.getCaseValueFormat(), "" ) );
@@ -414,7 +414,7 @@ public class SwitchCaseDialog extends BaseStepDialog implements StepDialogInterf
 
     input.setFieldname( wFieldName.getText() );
     input.setContains( wContains.getSelection() );
-    input.setCaseValueType( ValueMeta.getType( wDataType.getText() ) );
+    input.setCaseValueType( ValueMetaBase.getType( wDataType.getText() ) );
     input.setCaseValueFormat( wConversionMask.getText() );
     input.setCaseValueDecimal( wDecimalSymbol.getText() );
     input.setCaseValueGroup( wGroupingSymbol.getText() );

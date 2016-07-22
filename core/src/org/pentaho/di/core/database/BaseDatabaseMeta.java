@@ -1896,7 +1896,8 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterfaceEx
         String stat = all.substring( from, to );
         if ( !onlySpaces( stat ) ) {
           String s = Const.trim( stat );
-          statements.add( new SqlScriptStatement( s, from, to, s.toUpperCase().startsWith( "SELECT" ) ) );
+          statements.add( new SqlScriptStatement(
+            s, from, to, s.toUpperCase().startsWith( "SELECT" ) || s.toLowerCase().startsWith( "show" ) ) );
         }
         to++;
         from = to;
@@ -1927,6 +1928,20 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterfaceEx
   @Override
   public boolean isMySQLVariant() {
     return false;
+  }
+
+  /**
+   * @return true if the database type can be tested against a database instance
+   */
+  public boolean canTest() {
+    return true;
+  }
+
+  /**
+   * @return true if the database name is a required parameter
+   */
+  public boolean requiresName() {
+    return true;
   }
 
   /**
@@ -2264,5 +2279,10 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterfaceEx
   @Override
   public String getDropTableIfExistsStatement( String tableName ) {
     return "DROP TABLE IF EXISTS " + tableName;
+  }
+
+  @Override
+  public boolean fullExceptionLog( Exception e ) {
+    return true;
   }
 }

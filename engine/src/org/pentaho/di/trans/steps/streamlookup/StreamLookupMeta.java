@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -105,6 +105,7 @@ public class StreamLookupMeta extends BaseStepMeta implements StepMetaInterface 
     super(); // allocate BaseStepMeta
   }
 
+  @Override
   public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     readData( stepnode );
   }
@@ -117,6 +118,38 @@ public class StreamLookupMeta extends BaseStepMeta implements StepMetaInterface 
     setValueName( new String[nrvalues] );
     setValueDefault( new String[nrvalues] );
     setValueDefaultType( new int[nrvalues] );
+  }
+
+  @Override
+  public Object clone() {
+    StreamLookupMeta retval = (StreamLookupMeta) super.clone();
+
+    if ( getStepIOMeta() != null
+        && getStepIOMeta().getInfoStreams() != null
+        && retval.getStepIOMeta() != null
+        && getStepIOMeta().getInfoStreams() != null ) {
+      retval.getStepIOMeta().getInfoStreams().get( 0 ).setStreamType(
+        getStepIOMeta().getInfoStreams().get( 0 ).getStreamType() );
+      retval.getStepIOMeta().getInfoStreams().get( 0 ).setStepMeta(
+        getStepIOMeta().getInfoStreams().get( 0 ).getStepMeta() );
+      retval.getStepIOMeta().getInfoStreams().get( 0 ).setDescription(
+        getStepIOMeta().getInfoStreams().get( 0 ).getDescription() );
+      retval.getStepIOMeta().getInfoStreams().get( 0 ).setStreamIcon(
+        getStepIOMeta().getInfoStreams().get( 0 ).getStreamIcon() );
+      retval.getStepIOMeta().getInfoStreams().get( 0 ).setSubject(
+        getStepIOMeta().getInfoStreams().get( 0 ).getSubject() );
+    }
+
+    int nrkeys = keystream.length;
+    int nrvals = value.length;
+    retval.allocate( nrkeys, nrvals );
+    System.arraycopy( keystream, 0, retval.keystream, 0, nrkeys );
+    System.arraycopy( keylookup, 0, retval.keylookup, 0, nrkeys );
+    System.arraycopy( value, 0, retval.value, 0, nrvals );
+    System.arraycopy( valueName, 0, retval.valueName, 0, nrvals );
+    System.arraycopy( valueDefault, 0, retval.valueDefault, 0, nrvals );
+    System.arraycopy( valueDefaultType, 0, retval.valueDefaultType, 0, nrvals );
+    return retval;
   }
 
   private void readData( Node stepnode ) throws KettleXMLException {
@@ -174,6 +207,7 @@ public class StreamLookupMeta extends BaseStepMeta implements StepMetaInterface 
     }
   }
 
+  @Override
   public void setDefault() {
     setMemoryPreservationActive( true );
     setUsingSortedList( false );
@@ -182,6 +216,7 @@ public class StreamLookupMeta extends BaseStepMeta implements StepMetaInterface 
     allocate( 0, 0 );
   }
 
+  @Override
   public void getFields( RowMetaInterface row, String origin, RowMetaInterface[] info, StepMeta nextStep,
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     if ( info != null && info.length == 1 && info[0] != null ) {
@@ -210,6 +245,7 @@ public class StreamLookupMeta extends BaseStepMeta implements StepMetaInterface 
     }
   }
 
+  @Override
   public String getXML() {
     StringBuilder retval = new StringBuilder();
 
@@ -242,6 +278,7 @@ public class StreamLookupMeta extends BaseStepMeta implements StepMetaInterface 
     return retval.toString();
   }
 
+  @Override
   public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
       String lookupFromStepname = rep.getStepAttributeString( id_step, "lookup_from_step" );
@@ -279,6 +316,7 @@ public class StreamLookupMeta extends BaseStepMeta implements StepMetaInterface 
     }
   }
 
+  @Override
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       StreamInterface infoStream = getStepIOMeta().getInfoStreams().get( 0 );
@@ -307,6 +345,7 @@ public class StreamLookupMeta extends BaseStepMeta implements StepMetaInterface 
     }
   }
 
+  @Override
   public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
     RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
@@ -451,15 +490,18 @@ public class StreamLookupMeta extends BaseStepMeta implements StepMetaInterface 
     }
   }
 
+  @Override
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
     TransMeta transMeta, Trans trans ) {
     return new StreamLookup( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 
+  @Override
   public StepDataInterface getStepData() {
     return new StreamLookupData();
   }
 
+  @Override
   public boolean excludeFromRowLayoutVerification() {
     return true;
   }
@@ -467,6 +509,7 @@ public class StreamLookupMeta extends BaseStepMeta implements StepMetaInterface 
   /**
    * Returns the Input/Output metadata for this step. The generator step only produces output, does not accept input!
    */
+  @Override
   public StepIOMetaInterface getStepIOMeta() {
     if ( ioMeta == null ) {
 
@@ -481,6 +524,7 @@ public class StreamLookupMeta extends BaseStepMeta implements StepMetaInterface 
     return ioMeta;
   }
 
+  @Override
   public void resetStepIoMeta() {
     // Do nothing, don't reset as there is no need to do this.
   }

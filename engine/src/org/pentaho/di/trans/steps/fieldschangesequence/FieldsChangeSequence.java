@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,7 +25,6 @@ package org.pentaho.di.trans.steps.fieldschangesequence;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
@@ -54,6 +53,7 @@ public class FieldsChangeSequence extends BaseStep implements StepInterface {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
+  @Override
   public boolean processRow( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
     meta = (FieldsChangeSequenceMeta) smi;
     data = (FieldsChangeSequenceData) sdi;
@@ -91,7 +91,7 @@ public class FieldsChangeSequence extends BaseStep implements StepInterface {
         data.fieldnr = data.previousMeta.size();
         data.fieldnrs = new int[data.fieldnr];
         data.previousValues = new Object[data.fieldnr];
-        data.fieldnrsMeta = new ValueMeta[data.fieldnr];
+        data.fieldnrsMeta = new ValueMetaInterface[data.fieldnr];
         for ( int i = 0; i < data.previousMeta.size(); i++ ) {
           data.fieldnrs[i] = i;
           data.fieldnrsMeta[i] = data.previousMeta.getValueMeta( i );
@@ -168,6 +168,7 @@ public class FieldsChangeSequence extends BaseStep implements StepInterface {
     return true;
   }
 
+  @Override
   public boolean init( StepMetaInterface smi, StepDataInterface sdi ) {
     meta = (FieldsChangeSequenceMeta) smi;
     data = (FieldsChangeSequenceData) sdi;
@@ -179,6 +180,7 @@ public class FieldsChangeSequence extends BaseStep implements StepInterface {
     return false;
   }
 
+  @Override
   public void dispose( StepMetaInterface smi, StepDataInterface sdi ) {
     meta = (FieldsChangeSequenceMeta) smi;
     data = (FieldsChangeSequenceData) sdi;

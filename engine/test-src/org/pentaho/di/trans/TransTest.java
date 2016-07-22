@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -34,6 +34,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -82,6 +83,23 @@ public class TransTest {
     trans.setLog( Mockito.mock( LogChannelInterface.class ) );
     trans.prepareExecution( null );
     trans.startThreads();
+  }
+
+  /**
+   * PDI-14948 - Execution of trans with no steps never ends
+   */
+  @Test( timeout = 1000 )
+  public void transWithNoStepsIsNotEndless() throws Exception {
+    Trans transWithNoSteps = new Trans( new TransMeta() );
+    transWithNoSteps = spy( transWithNoSteps );
+
+    transWithNoSteps.prepareExecution( new String[] {} );
+
+    transWithNoSteps.startThreads();
+
+    // check trans lifecycle is not corrupted
+    verify( transWithNoSteps ).fireTransStartedListeners();
+    verify( transWithNoSteps ).fireTransFinishedListeners();
   }
 
   @Test
@@ -283,6 +301,27 @@ public class TransTest {
     trans.writeStepLogInformation();
 
     verify( mockedDataBase ).cleanupLogRecords( stepLogTable );
+  }
+
+  @Test
+  public void testFireTransFinishedListeners() throws Exception {
+    Trans trans = new Trans();
+    TransListener mockListener = mock( TransListener.class );
+    trans.setTransListeners( Collections.singletonList( mockListener ) );
+
+    trans.fireTransFinishedListeners();
+
+    verify( mockListener ).transFinished( trans );
+  }
+
+  @Test( expected = KettleException.class )
+  public void testFireTransFinishedListenersExceprionOnTransFinished() throws Exception {
+    Trans trans = new Trans();
+    TransListener mockListener = mock( TransListener.class );
+    doThrow( KettleException.class ).when( mockListener ).transFinished( trans );
+    trans.setTransListeners( Collections.singletonList( mockListener ) );
+
+    trans.fireTransFinishedListeners();
   }
 
   private void startThreads( Runnable one, Runnable two, CountDownLatch start ) throws InterruptedException {

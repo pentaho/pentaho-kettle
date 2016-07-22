@@ -93,7 +93,8 @@ public class EnvUtil {
       Thread.currentThread().setContextClassLoader( ClassLoader.getSystemClassLoader() );
     }
 
-    Map<?, ?> kettleProperties = EnvUtil.readProperties( Const.KETTLE_PROPERTIES );
+    Map<Object, Object> kettleProperties = EnvUtil.readProperties( Const.KETTLE_PROPERTIES );
+    insertDefaultValues( kettleProperties );
     applyKettleProperties( kettleProperties );
 
     // Also put some default values for obscure environment variables in there...
@@ -109,12 +110,14 @@ public class EnvUtil {
     System.getProperties().put( Const.INTERNAL_VARIABLE_STEP_PARTITION_NR, "0" );
     System.getProperties().put( Const.INTERNAL_VARIABLE_STEP_UNIQUE_COUNT, "1" );
     System.getProperties().put( Const.INTERNAL_VARIABLE_STEP_UNIQUE_NUMBER, "0" );
+  }
 
-    // If user didn't set value for USER_DIR_IS_ROOT set it to "false". See PDI-14522
+  private static void insertDefaultValues( Map<Object, Object> kettleProperties ) {
+    // If user didn't set value for USER_DIR_IS_ROOT set it to "false".
+    // See PDI-14522, PDI-14821
     if ( !kettleProperties.containsKey( Const.VFS_USER_DIR_IS_ROOT ) ) {
-      System.getProperties().put( Const.VFS_USER_DIR_IS_ROOT, "false" );
+      kettleProperties.put( Const.VFS_USER_DIR_IS_ROOT, "false" );
     }
-
   }
 
   public static void applyKettleProperties( Map<?, ?> kettleProperties ) {

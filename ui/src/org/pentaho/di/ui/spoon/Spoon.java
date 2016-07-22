@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -72,6 +72,7 @@ import org.eclipse.swt.browser.LocationListener;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.custom.SashForm;
+import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTarget;
@@ -199,6 +200,7 @@ import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.vfs.KettleVFS;
+import org.pentaho.di.core.vfs.KettleVfsDelegatingResolver;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.imp.ImportRules;
@@ -217,13 +219,11 @@ import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.pkg.JarfileGenerator;
 import org.pentaho.di.repository.KettleRepositoryLostException;
 import org.pentaho.di.repository.ObjectId;
-import org.pentaho.di.repository.RepositoriesMeta;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryCapabilities;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryElementInterface;
-import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.repository.RepositoryOperation;
 import org.pentaho.di.repository.RepositorySecurityManager;
@@ -316,6 +316,7 @@ import org.pentaho.di.ui.trans.dialog.TransHopDialog;
 import org.pentaho.di.ui.trans.dialog.TransLoadProgressDialog;
 import org.pentaho.di.ui.util.HelpUtils;
 import org.pentaho.di.ui.util.ThreadGuiResources;
+import org.pentaho.di.ui.xul.KettleWaitBox;
 import org.pentaho.di.ui.xul.KettleXulLoader;
 import org.pentaho.di.version.BuildVersion;
 import org.pentaho.metastore.api.IMetaStore;
@@ -330,7 +331,6 @@ import org.pentaho.ui.xul.components.WaitBoxRunnable;
 import org.pentaho.ui.xul.components.XulMenuitem;
 import org.pentaho.ui.xul.components.XulMenuseparator;
 import org.pentaho.ui.xul.components.XulToolbarbutton;
-import org.pentaho.ui.xul.components.XulWaitBox;
 import org.pentaho.ui.xul.containers.XulMenupopup;
 import org.pentaho.ui.xul.containers.XulToolbar;
 import org.pentaho.ui.xul.impl.XulEventHandler;
@@ -1010,8 +1010,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
   public VfsFileChooserDialog getVfsFileChooserDialog( FileObject rootFile, FileObject initialFile ) {
     if ( vfsFileChooserDialog == null ) {
-      vfsFileChooserDialog = new VfsFileChooserDialog( shell, KettleVFS.getInstance().getFileSystemManager(), rootFile,
-          initialFile );
+      vfsFileChooserDialog = new VfsFileChooserDialog( shell, new KettleVfsDelegatingResolver(), rootFile, initialFile );
     }
     vfsFileChooserDialog.setRootFile( rootFile );
     vfsFileChooserDialog.setInitialFile( initialFile );
@@ -1019,6 +1018,10 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   }
 
   public boolean closeFile() {
+    return closeFile( false );
+  }
+
+  public boolean closeFile( boolean force ) {
     boolean closed = true;
     EngineMetaInterface meta = getActiveMeta();
     if ( meta != null ) {
@@ -1043,7 +1046,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       }
 
       // If a transformation or job is the current active tab, close it
-      closed = tabCloseSelected();
+      closed = tabCloseSelected( force );
 
       if ( closed && ( afterCloseId != null ) ) {
         try {
@@ -1058,15 +1061,23 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   }
 
   public boolean closeAllFiles() {
+    return closeAllFiles( false );
+  }
+
+  public boolean closeAllFiles( boolean force ) {
     int numTabs = delegates.tabs.getTabs().size();
     for ( int i = numTabs - 1; i >= 0; i-- ) {
       tabfolder.setSelected( i );
-      if ( !closeFile() ) {
+      if ( !closeFile( force ) ) {
         return false; // A single cancel aborts the rest of the operation
       }
     }
 
     return true;
+  }
+
+  public boolean closeAllJobsAndTransformations() {
+    return closeAllJobsAndTransformations( false );
   }
 
   /**
@@ -1076,7 +1087,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
    *
    * @return If user agrees with closing of tabs then return true so we can disconnect from the repo.
    */
-  public boolean closeAllJobsAndTransformations() {
+  public boolean closeAllJobsAndTransformations( boolean force ) {
     // Check to see if there are any open jobs/trans.  If there are not any then we don't need to close anything.
     // Keep in mind that the 'Welcome' tab can be active.
     final List<TransMeta> transList = delegates.trans.getTransformationList();
@@ -1111,7 +1122,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     final int isCloseAllFiles = mb.open();
     if ( ( isCloseAllFiles == SWT.YES ) || ( isCloseAllFiles == SWT.OK ) ) {
       // Yes - User specified that they want to close all.
-      return Spoon.getInstance().closeAllFiles();
+      return closeAllFiles( force );
     } else if ( ( isCloseAllFiles == SWT.NO ) && ( executePerms ) ) {
       // No - don't close tabs only if user has execute permissions.
       // Return true so we can disconnect from repo
@@ -1453,18 +1464,23 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     JobMeta jobMeta = getActiveJob();
     boolean transActive = transMeta != null;
     boolean jobActive = jobMeta != null;
+    Control focusControl = getDisplay().getFocusControl();
 
-    if ( transActive ) {
-      if ( transMeta.getSelectedSteps().size() > 0 ) {
-        copySteps();
-      } else {
-        copyTransformation();
-      }
-    } else if ( jobActive ) {
-      if ( jobMeta.getSelectedEntries().size() > 0 ) {
-        copyJobentries();
-      } else {
-        copyJob();
+    if ( focusControl instanceof StyledText ) {
+      copyLogSelectedText( (StyledText) focusControl );
+    } else {
+      if ( transActive ) {
+        if ( transMeta.getSelectedSteps().size() > 0 ) {
+          copySteps();
+        } else {
+          copyTransformation();
+        }
+      } else if ( jobActive ) {
+        if ( jobMeta.getSelectedEntries().size() > 0 ) {
+          copyJobentries();
+        } else {
+          copyJob();
+        }
       }
     }
   }
@@ -1627,6 +1643,10 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   public boolean isExecutionResultsPaneVisible() {
     TransGraph transGraph = getActiveTransGraph();
     return ( transGraph != null ) && ( transGraph.isExecutionResultsPaneVisible() );
+  }
+
+  public void copyLogSelectedText( StyledText text ) {
+    toClipboard( text.getSelectionText() );
   }
 
   public void copyTransformation() {
@@ -1824,39 +1844,12 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     //
     if ( lastUsedFile.isSourceRepository()
       && ( rep == null || !rep.getName().equalsIgnoreCase( lastUsedFile.getRepositoryName() ) ) ) {
-      // Ask for a username password to get the required repository access
-      //
-      loginDialog = new RepositoriesDialog( shell, lastUsedFile.getRepositoryName(), new ILoginCallback() {
-
-        public void onSuccess( Repository repository ) {
-          // Close the previous connection...
-          if ( rep != null ) {
-            rep.disconnect();
-            SpoonPluginManager
-              .getInstance().notifyLifecycleListeners( SpoonLifeCycleEvent.REPOSITORY_DISCONNECTED );
-          }
-          setRepository( repository );
-          try {
-            loadLastUsedFile( lastUsedFile, rep == null ? null : rep.getName() );
-            addMenuLast();
-          } catch ( KettleException ke ) {
-            // "Error loading transformation", "I was unable to load this
-            // transformation from the
-            // XML file because of an error"
-            new ErrorDialog( loginDialog.getShell(),
-              BaseMessages.getString( PKG, "Spoon.Dialog.LoadTransformationError.Title" ),
-              BaseMessages.getString( PKG, "Spoon.Dialog.LoadTransformationError.Message" ), ke );
-          }
-        }
-
-        public void onError( Throwable t ) {
-          onLoginError( t );
-        }
-
-        public void onCancel() {
-        }
-      } );
-      loginDialog.show();
+      // Allow plugins to handle how we connect to a repository
+      try {
+        ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.OpenRecent.id, lastUsedFile );
+      } catch ( KettleException ke ) {
+        log.logError( "Failed to call extension point", ke );
+      }
     } else if ( !lastUsedFile.isSourceRepository() ) {
       // This file must have been on the file system.
       openFile( lastUsedFile.getFilename(), false );
@@ -2426,8 +2419,13 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         new Image[] {
           GUIResource.getInstance().getImageStartMedium(), GUIResource.getInstance().getImageDummyMedium() };
 
+      int pos = 0;
       for ( int i = 0; i < specialText.length; i++ ) {
-        TreeItem specialItem = new TreeItem( generalItem, SWT.NONE, i );
+        if ( !filterMatch( specialText[i] ) && !filterMatch( specialTooltip[i] ) ) {
+          continue;
+        }
+
+        TreeItem specialItem = new TreeItem( generalItem, SWT.NONE, pos );
         specialItem.setImage( specialImage[i] );
         specialItem.setText( specialText[i] );
         specialItem.addListener( SWT.Selection, new Listener() {
@@ -2439,6 +2437,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         } );
 
         coreJobToolTipMap.put( specialText[i], specialTooltip[i] );
+        pos++;
       }
     }
 
@@ -3251,17 +3250,23 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   }
 
   public void tabDeselected( TabItem item ) {
-
+    if ( !ExpandedContentManager.isVisible() ) {
+      item.setSashWeights( sashform.getWeights() );
+    }
   }
 
   public boolean tabCloseSelected() {
+    return tabCloseSelected( false );
+  }
+
+  public boolean tabCloseSelected( boolean force ) {
     // this gets called on by the file-close menu item
 
     String activePerspectiveId = SpoonPerspectiveManager.getInstance().getActivePerspective().getId();
     boolean etlPerspective = activePerspectiveId.equals( MainSpoonPerspective.ID );
 
     if ( etlPerspective ) {
-      return tabClose( tabfolder.getSelected() );
+      return tabClose( tabfolder.getSelected(), force );
     }
 
     // hack to make the plugins see file-close commands
@@ -3290,12 +3295,25 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     }
   }
 
+  public boolean tabClose( TabItem item, boolean force ) {
+    try {
+      return delegates.tabs.tabClose( item, force );
+    } catch ( Exception e ) {
+      new ErrorDialog( shell, "Error", "Unexpected error closing tab!", e );
+      return false;
+    }
+  }
+
   public TabSet getTabSet() {
     return tabfolder;
   }
 
   public void tabSelected( TabItem item ) {
+    sashform.setWeights( item.getSashWeights() );
     delegates.tabs.tabSelected( item );
+    if ( ExpandedContentManager.isVisible() ) {
+      sashform.setWeights( new int[] {0, 1000} );
+    }
     enableMenus();
   }
 
@@ -3970,9 +3988,10 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       };
 
       try {
-        final XulWaitBox box = (XulWaitBox) this.mainSpoonContainer.getDocumentRoot().createElement( "waitbox" );
+        final KettleWaitBox box = (KettleWaitBox) this.mainSpoonContainer.getDocumentRoot().createElement( "iconwaitbox" );
         box.setIndeterminate( true );
         box.setCanCancel( false );
+        box.setIcon( "ui/images/kettle_logo_small.svg" );
         box.setTitle( BaseMessages.getString(
           RepositoryDialogInterface.class, "RepositoryExplorerDialog.Connection.Wait.Title" ) );
         box.setMessage( BaseMessages.getString(
@@ -4156,7 +4175,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     if ( rep != null ) {
 
       // Prompt and close all tabs as user disconnected from the repo
-      boolean shouldDisconnect = Spoon.getInstance().closeAllJobsAndTransformations();
+      boolean shouldDisconnect = Spoon.getInstance().closeAllJobsAndTransformations( true );
       if ( shouldDisconnect ) {
         loadSessionInformation( null, false );
 
@@ -4840,6 +4859,26 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
             .getString( PKG, "Spoon.Error.UnableToLoadSharedObjects.Message" ), e );
       }
 
+    }
+  }
+
+  public void promptForSave() throws KettleException {
+    List<TabMapEntry> list = delegates.tabs.getTabs();
+
+    for ( TabMapEntry mapEntry : list ) {
+      TabItemInterface itemInterface = mapEntry.getObject();
+
+      if ( !itemInterface.canBeClosed() ) {
+        // Show the tab
+        tabfolder.setSelected( mapEntry.getTabItem() );
+
+        // Unsaved work that needs to changes to be applied?
+        //
+        int reply = itemInterface.showChangedWarning();
+        if ( reply == SWT.YES ) {
+          itemInterface.applyChanges();
+        }
+      }
     }
   }
 
@@ -6814,6 +6853,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         }
         // Only enable certain menu-items if we need to.
         disableMenuItem( doc, "file-new-database", disableTransMenu && disableJobMenu );
+        disableMenuItem( doc, "menubar-new-database", disableTransMenu && disableJobMenu );
         disableMenuItem( doc, "file-save", disableTransMenu && disableJobMenu && disableMetaMenu || disableSave );
         disableMenuItem( doc, "toolbar-file-save", disableTransMenu
           && disableJobMenu && disableMetaMenu || disableSave );
@@ -6857,8 +6897,6 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         disableMenuItem( doc, "trans-last-impact", disableTransMenu );
 
         // Tools
-        disableMenuItem( doc, "repository-connect", isRepositoryRunning );
-        disableMenuItem( doc, "repository-disconnect", !isRepositoryRunning );
         disableMenuItem( doc, "repository-explore", !isRepositoryRunning );
         disableMenuItem( doc, "tools-dabase-explore", !isRepositoryRunning && disableDatabaseExplore );
         disableMenuItem( doc, "repository-clear-shared-object-cache", !isRepositoryRunning );
@@ -7177,7 +7215,9 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     props.setScreen( windowProperty );
 
     props.setLogLevel( DefaultLogLevel.getLogLevel().getCode() );
-    props.setSashWeights( sashform.getWeights() );
+    if ( sashform.getWeights()[0] != 0 ) {
+      props.setSashWeights( sashform.getWeights() );
+    }
 
     // Also save the open files...
     // Go over the list of tabs, then add the info to the list
@@ -7741,94 +7781,6 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     return APP_NAME;
   }
 
-  public void selectRep( CommandLineOption[] options ) {
-    RepositoryMeta repositoryMeta;
-
-    StringBuilder optionRepname = getCommandLineOption( options, "rep" ).getArgument();
-    StringBuilder optionFilename = getCommandLineOption( options, "file" ).getArgument();
-    StringBuilder optionUsername = getCommandLineOption( options, "user" ).getArgument();
-    StringBuilder optionPassword = getCommandLineOption( options, "pass" ).getArgument();
-
-    if ( Const.isEmpty( optionRepname )
-      && Const.isEmpty( optionFilename ) && props.showRepositoriesDialogAtStartup() ) {
-      if ( log.isBasic() ) {
-        // "Asking for repository"
-        log.logBasic( BaseMessages.getString( PKG, "Spoon.Log.AskingForRepository" ) );
-      }
-
-      loginDialog = new RepositoriesDialog( shell, null, new ILoginCallback() {
-
-        public void onSuccess( Repository repository ) {
-          setRepository( repository );
-          SpoonPluginManager.getInstance().notifyLifecycleListeners( SpoonLifeCycleEvent.REPOSITORY_CONNECTED );
-        }
-
-        public void onError( Throwable t ) {
-          onLoginError( t );
-        }
-
-        public void onCancel() {
-          // do nothing
-        }
-      } );
-      hideSplash();
-      loginDialog.show();
-      showSplash();
-    } else if ( !Const.isEmpty( optionRepname ) && Const.isEmpty( optionFilename ) ) {
-      RepositoriesMeta repsInfo = new RepositoriesMeta();
-      repsInfo.getLog().setLogLevel( log.getLogLevel() );
-      try {
-        repsInfo.readData();
-        repositoryMeta = repsInfo.findRepository( optionRepname.toString() );
-        if ( repositoryMeta != null && !Const.isEmpty( optionUsername ) && !Const.isEmpty( optionPassword ) ) {
-          // Define and connect to the repository...
-          Repository repo =
-            PluginRegistry
-              .getInstance().loadClass( RepositoryPluginType.class, repositoryMeta, Repository.class );
-          repo.init( repositoryMeta );
-          repo.getLog().setLogLevel( log.getLogLevel() );
-          repo.connect( optionUsername != null ? optionUsername.toString() : null, optionPassword != null
-            ? optionPassword.toString() : null );
-          setRepository( repo );
-        } else {
-          if ( !Const.isEmpty( optionUsername ) && !Const.isEmpty( optionPassword ) ) {
-            String msg = BaseMessages.getString( PKG, "Spoon.Log.NoRepositoriesDefined" );
-            log.logError( msg ); // "No repositories defined on this system."
-            MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
-            mb.setMessage( BaseMessages.getString( PKG, "Spoon.Error.Repository.NotFound", optionRepname
-              .toString() ) );
-            mb.setText( BaseMessages.getString( PKG, "Spoon.Error.Repository.NotFound.Title" ) );
-            mb.open();
-          }
-
-          loginDialog = new RepositoriesDialog( shell, null, new ILoginCallback() {
-
-            public void onSuccess( Repository repository ) {
-              setRepository( repository );
-              SpoonPluginManager.getInstance().notifyLifecycleListeners( SpoonLifeCycleEvent.REPOSITORY_CONNECTED );
-            }
-
-            public void onError( Throwable t ) {
-              onLoginError( t );
-            }
-
-            public void onCancel() {
-              // TODO Auto-generated method stub
-
-            }
-          } );
-          hideSplash();
-          loginDialog.show();
-          showSplash();
-        }
-      } catch ( Exception e ) {
-        hideSplash();
-        // Eat the exception but log it...
-        log.logError( "Error reading repositories xml file", e );
-      }
-    }
-  }
-
   public void handleStartOptions( CommandLineOption[] options ) {
 
     // note that at this point the rep object is populated by previous calls
@@ -7942,9 +7894,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
   public void start( CommandLineOption[] options ) throws KettleException {
 
-    // Show the repository connection dialog
-    //
-    selectRep( options );
+    ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.SpoonStart.id, options );
 
     // Read the start option parameters
     //
@@ -8090,7 +8040,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     return clOptions;
   }
 
-  private void loadLastUsedFile( LastUsedFile lastUsedFile, String repositoryName ) throws KettleException {
+  public void loadLastUsedFile( LastUsedFile lastUsedFile, String repositoryName ) throws KettleException {
     loadLastUsedFile( lastUsedFile, repositoryName, true );
   }
 
@@ -8199,10 +8149,10 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
           //CHECKSTYLE:Indentation:OFF
           for ( int i = 0; i < mappings.size(); i++ ) {
             SourceToTargetMapping mapping = mappings.get( i );
-            svm.getSelectName()[i] = sourceFields.getValueMeta( mapping.getSourcePosition() ).getName();
-            svm.getSelectRename()[i] = target[mapping.getTargetPosition()];
-            svm.getSelectLength()[i] = -1;
-            svm.getSelectPrecision()[i] = -1;
+            svm.getSelectFields()[i].setName( sourceFields.getValueMeta( mapping.getSourcePosition() ).getName() );
+            svm.getSelectFields()[i].setRename( target[mapping.getTargetPosition()] );
+            svm.getSelectFields()[i].setLength( -1 );
+            svm.getSelectFields()[i].setPrecision( -1 );
           }
           // a new comment. Sincerely yours CO ;)
           // Now that we have the meta-data, create a new step info object
@@ -9316,4 +9266,20 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     authProviderDialog.show();
   }
 
+  public void createExpandedContent( String url ) {
+    ExpandedContentManager.createExpandedContent( url );
+    ExpandedContentManager.showExpandedContent();
+  }
+
+  public void hideExpandedContent() {
+    ExpandedContentManager.hideExpandedContent();
+  }
+
+  public void showExpandedContent() {
+    ExpandedContentManager.showExpandedContent();
+  }
+
+  public Composite getDesignParent() {
+    return sashform;
+  }
 }

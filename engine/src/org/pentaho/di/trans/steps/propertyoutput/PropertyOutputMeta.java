@@ -102,10 +102,12 @@ public class PropertyOutputMeta extends BaseStepMeta implements StepMetaInterfac
   /** Flag append in file **/
   private boolean append;
 
+  @Override
   public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     readData( stepnode );
   }
 
+  @Override
   public Object clone() {
 
     PropertyOutputMeta retval = (PropertyOutputMeta) super.clone();
@@ -219,9 +221,15 @@ public class PropertyOutputMeta extends BaseStepMeta implements StepMetaInterfac
   }
 
   /**
+   * @deprecated use {@link #isAddToResult()}
    * @return Returns the Add to result filesname flag.
    */
+  @Deprecated
   public boolean addToResult() {
+    return isAddToResult();
+  }
+
+  public boolean isAddToResult() {
     return addToResult;
   }
 
@@ -363,6 +371,7 @@ public class PropertyOutputMeta extends BaseStepMeta implements StepMetaInterfac
     }
   }
 
+  @Override
   public void setDefault() {
     append = false;
     createparentfolder = false;
@@ -372,6 +381,7 @@ public class PropertyOutputMeta extends BaseStepMeta implements StepMetaInterfac
     comment = null;
   }
 
+  @Override
   public String getXML() {
     StringBuilder retval = new StringBuilder();
 
@@ -400,6 +410,7 @@ public class PropertyOutputMeta extends BaseStepMeta implements StepMetaInterfac
     return retval.toString();
   }
 
+  @Override
   public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
 
@@ -425,6 +436,7 @@ public class PropertyOutputMeta extends BaseStepMeta implements StepMetaInterfac
     }
   }
 
+  @Override
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
 
@@ -449,6 +461,7 @@ public class PropertyOutputMeta extends BaseStepMeta implements StepMetaInterfac
     }
   }
 
+  @Override
   public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
     RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
@@ -525,6 +538,7 @@ public class PropertyOutputMeta extends BaseStepMeta implements StepMetaInterfac
 
   }
 
+  @Override
   public StepDataInterface getStepData() {
     return new PropertyOutputData();
   }
@@ -559,11 +573,13 @@ public class PropertyOutputMeta extends BaseStepMeta implements StepMetaInterfac
     this.valuefield = valuefield;
   }
 
+  @Override
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta tr,
     Trans trans ) {
     return new PropertyOutput( stepMeta, stepDataInterface, cnr, tr, trans );
   }
 
+  @Override
   public boolean supportsErrorHandling() {
     return true;
   }
@@ -585,6 +601,7 @@ public class PropertyOutputMeta extends BaseStepMeta implements StepMetaInterfac
    *
    * @return the filename of the exported resource
    */
+  @Override
   public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
     ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore ) throws KettleException {
     try {

@@ -1,5 +1,5 @@
 /*!
- * Copyright 2010 - 2015 Pentaho Corporation.  All rights reserved.
+ * Copyright 2010 - 2016 Pentaho Corporation.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,11 +21,13 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import junit.framework.Assert;
 
 import org.dom4j.Document;
+import org.json.simple.JSONObject;
 import org.junit.After;
 import org.junit.Test;
 import org.pentaho.di.core.Const;
@@ -40,6 +42,7 @@ import org.pentaho.di.laf.BasePropertyHandler;
 import org.pentaho.di.laf.LAFFactory;
 import org.pentaho.di.laf.PropertyHandler;
 import org.pentaho.di.repository.BaseRepositoryMeta;
+import org.pentaho.di.repository.RepositoriesMeta;
 import org.pentaho.di.repository.RepositoryCapabilities;
 import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.platform.api.engine.IApplicationContext;
@@ -203,7 +206,6 @@ public class RepositorySyncWebServiceTest implements Serializable {
         throw new KettleException( "Unable to load Kettle database repository meta object", e );
       }
     }
-
   }
 
   public IRepositorySyncWebService getRepositorySyncWebService() {

@@ -41,6 +41,42 @@
       </layout>
    </appender>
 
+   <!-- ================== -->
+   <!-- Log4JDBC Appenders -->
+   <!-- ================== -->
+   <!--
+   <appender name="sql-appender" class="org.apache.log4j.FileAppender">
+      <param name="File" value="logs/log4jdbc-sql.log"/>
+      <param name="Append" value="false"/>
+      <layout class="org.apache.log4j.PatternLayout">
+        <param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss.SSS} &lt;%t&gt; %m%n%n"/>
+      </layout>
+   </appender>
+
+   <appender name="sql-timing-appender" class="org.apache.log4j.FileAppender">
+      <param name="File" value="logs/log4jdbc-sqltiming.log"/>
+      <param name="Append" value="false"/>
+      <layout class="org.apache.log4j.PatternLayout">
+        <param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss.SSS} %m%n%n"/>
+      </layout>
+   </appender>
+
+   <appender name="jdbc-appender" class="org.apache.log4j.FileAppender">
+      <param name="File" value="logs/log4jdbc-jdbc.log"/>
+      <param name="Append" value="false"/>
+      <layout class="org.apache.log4j.PatternLayout">
+        <param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss.SSS} %m%n"/>
+      </layout>
+   </appender>
+
+   <appender name="connection-appender" class="org.apache.log4j.FileAppender">
+      <param name="File" value="logs/log4jdbc-connection.log"/>
+      <param name="Append" value="false"/>
+      <layout class="org.apache.log4j.PatternLayout">
+        <param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss.SSS} %m%n"/>
+      </layout>
+   </appender>
+   -->
    <!-- ============================== -->
    <!-- Append messages to the console -->
    <!-- ============================== -->
@@ -81,5 +117,33 @@
       <!--<appender-ref ref="PENTAHOFILE"/>-->
    </root>
 
-   
+   <!-- ================ -->
+   <!-- Log4JDBC Loggers -->
+   <!-- ================ -->
+   <!--
+   <logger name="jdbc.sqlonly" additivity="false">
+    <level value="info"/>
+    <appender-ref ref="sql-appender"/>
+   </logger>
+
+   <logger name="jdbc.sqltiming" additivity="false">
+      <level value="info"/>
+      <appender-ref ref="sql-timing-appender"/>
+   </logger>
+
+   <logger name="jdbc.audit" additivity="false">
+      <level value="info"/>
+      <appender-ref ref="jdbc-appender"/>
+   </logger>
+
+   <logger name="jdbc.resultset" additivity="false">
+      <level value="info"/>
+      <appender-ref ref="jdbc-appender"/>
+   </logger>
+  
+   <logger name="jdbc.connection" additivity="false">
+      <level value="info"/>
+      <appender-ref ref="connection-appender"/>
+   </logger>
+   -->
 </log4j:configuration>

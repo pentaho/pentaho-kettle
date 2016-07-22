@@ -40,7 +40,7 @@ import org.pentaho.di.trans.steps.fileinput.IBaseFileInputStepControl;
 
 /**
  * Reader for one text file.
- * 
+ *
  * @author Alexander Buloichik
  */
 public class TextFileInputReader implements IBaseFileInputReader {

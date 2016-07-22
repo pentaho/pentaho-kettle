@@ -1,0 +1,37 @@
+<div class="main_div" ng-show="databases.length">
+  <div class="title_text margin_bottom_30">Select a database
+    connection</div>
+  <div class="middle_div">
+    <div id="dbDiv" class="margin_bottom_20 text_left right">
+      <div ng-repeat="database in databases" class="db_list_items" ng-class="{active : database == selectedDatabase || databases.length == 1}" ng-click="selectDatabase(database)">{{database.name}}</div>
+    </div>
+    <div>
+      <button id="delete" class="right margin_left_10 secondary" ng-class="{visible : selectedDatabase || databases.length == 1}"
+          type="button" ng-click="deleteConnection()">Delete</button>
+      <button id="edit" class="right margin_left_10 secondary" ng-class="{visible : selectedDatabase || databases.length == 1}"
+          type="button" ng-click="editConnection()">Edit</button>
+      <button id="new" class="right secondary" type="button" ng-click="createNewConnection()">New</button>
+    </div>
+  </div>
+</div>
+<div class="main_div" ng-hide="databases.length">
+  <div class="title_text margin_bottom_30">Select a database
+    connection</div>
+  <div class="middle_div">
+    <div class="margin_bottom_20">
+      <textarea id="no_conn" class="text_center" readonly="readonly">You do not have a database connection for this repository. Please create one.</textarea>
+    </div>
+    <div>
+      <button class="same_width standard" type="button" ng-click="createNewConnection()">Create New Connection</button>
+    </div>
+  </div>
+</div>
+<div class="bottom">
+  <div class="margin_bottom_20">
+    <hr />
+  </div>
+  <div>
+    <img class="left helpImg" alt="" src="images/u42.png" /><a id="btnHelp" class="left" ng-click="help()">Help</a>
+    <button class="right standard" type="button" ng-click="back()">Back</button>
+  </div>
+</div>

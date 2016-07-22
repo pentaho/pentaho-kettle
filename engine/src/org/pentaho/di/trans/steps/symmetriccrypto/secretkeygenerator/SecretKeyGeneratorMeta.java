@@ -180,14 +180,29 @@ public class SecretKeyGeneratorMeta extends BaseStepMeta implements StepMetaInte
     return secretKeyCount;
   }
 
+  public void setSecretKeyCount( String[] value ) {
+    this.secretKeyCount = value;
+  }
+
   /**
    * @param fieldType
    *          The fieldType to set.
+   * @deprecated mis-named setter
    */
+  @Deprecated
   public void setFieldType( String[] fieldType ) {
     this.secretKeyLength = fieldType;
   }
 
+  /**
+   * @param fieldType
+   *          The fieldType to set.
+   */
+  public void setSecretKeyLength( String[] value ) {
+    this.secretKeyLength = value;
+  }
+
+  @Override
   public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     readData( stepnode );
   }
@@ -199,19 +214,17 @@ public class SecretKeyGeneratorMeta extends BaseStepMeta implements StepMetaInte
     secretKeyCount = new String[count];
   }
 
+  @Override
   public Object clone() {
     SecretKeyGeneratorMeta retval = (SecretKeyGeneratorMeta) super.clone();
 
     int count = algorithm.length;
 
     retval.allocate( count );
-
-    for ( int i = 0; i < count; i++ ) {
-      retval.algorithm[i] = algorithm[i];
-      retval.scheme[i] = scheme[i];
-      retval.secretKeyLength[i] = secretKeyLength[i];
-      retval.secretKeyCount[i] = secretKeyCount[i];
-    }
+    System.arraycopy( algorithm, 0, retval.algorithm, 0, count );
+    System.arraycopy( scheme, 0, retval.scheme, 0, count );
+    System.arraycopy( secretKeyLength, 0, retval.secretKeyLength, 0, count );
+    System.arraycopy( secretKeyCount, 0, retval.secretKeyCount, 0, count );
 
     return retval;
   }
@@ -243,6 +256,7 @@ public class SecretKeyGeneratorMeta extends BaseStepMeta implements StepMetaInte
     }
   }
 
+  @Override
   public void setDefault() {
     int count = 0;
 
@@ -261,6 +275,7 @@ public class SecretKeyGeneratorMeta extends BaseStepMeta implements StepMetaInte
     outputKeyInBinary = false;
   }
 
+  @Override
   public void getFields( RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep,
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
 
@@ -288,6 +303,7 @@ public class SecretKeyGeneratorMeta extends BaseStepMeta implements StepMetaInte
 
   }
 
+  @Override
   public String getXML() {
     StringBuilder retval = new StringBuilder( 200 );
 
@@ -311,9 +327,10 @@ public class SecretKeyGeneratorMeta extends BaseStepMeta implements StepMetaInte
     return retval.toString();
   }
 
+  @Override
   public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
-      int nrfields = rep.countNrStepAttributes( id_step, "cctype" );
+      int nrfields = rep.countNrStepAttributes( id_step, "algorithm" );
 
       allocate( nrfields );
 
@@ -333,6 +350,7 @@ public class SecretKeyGeneratorMeta extends BaseStepMeta implements StepMetaInte
     }
   }
 
+  @Override
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       for ( int i = 0; i < algorithm.length; i++ ) {
@@ -351,6 +369,7 @@ public class SecretKeyGeneratorMeta extends BaseStepMeta implements StepMetaInte
 
   }
 
+  @Override
   public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
     RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
@@ -387,11 +406,13 @@ public class SecretKeyGeneratorMeta extends BaseStepMeta implements StepMetaInte
     }
   }
 
+  @Override
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
     TransMeta transMeta, Trans trans ) {
     return new SecretKeyGenerator( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 
+  @Override
   public StepDataInterface getStepData() {
     return new SecretKeyGeneratorData();
   }

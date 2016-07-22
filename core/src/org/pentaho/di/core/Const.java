@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,6 +25,7 @@ package org.pentaho.di.core;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.text.StrBuilder;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.util.EnvUtil;
@@ -604,6 +605,11 @@ public class Const {
   public static final String KETTLE_JOB_LOG_SCHEMA = "KETTLE_JOB_LOG_SCHEMA";
 
   /**
+   * The name of the variable that defines the timer used for detecting slave nodes.
+   */
+  public static final String KETTLE_SLAVE_DETECTION_TIMER = "KETTLE_SLAVE_DETECTION_TIMER";
+
+  /**
    * The name of the variable that defines the logging table for all jobs
    */
   public static final String KETTLE_JOB_LOG_TABLE = "KETTLE_JOB_LOG_TABLE";
@@ -743,6 +749,14 @@ public class Const {
    */
   public static final String KETTLE_COMPATIBILITY_MERGE_ROWS_USE_REFERENCE_STREAM_WHEN_IDENTICAL =
     "KETTLE_COMPATIBILITY_MERGE_ROWS_USE_REFERENCE_STREAM_WHEN_IDENTICAL";
+
+  /**
+   * System wide flag to control behavior of the Memory Group By step in case of SUM and AVERAGE aggregation. (PDI-5537)
+   * 'Y' preserves the old behavior and always returns a Number type for SUM and Average aggregations
+   * 'N' enables the documented behavior of returning the same type as the input fields use (correct behavior).
+   */
+  public static final String KETTLE_COMPATIBILITY_MEMORY_GROUP_BY_SUM_AVERAGE_RETURN_NUMBER_TYPE =
+    "KETTLE_COMPATIBILITY_MEMORY_GROUP_BY_SUM_AVERAGE_RETURN_NUMBER_TYPE";
 
   /**
    * You can use this variable to speed up hostname lookup.
@@ -1004,6 +1018,11 @@ public class Const {
   public static final String KETTLE_DEFAULT_TIMESTAMP_FORMAT = "KETTLE_DEFAULT_TIMESTAMP_FORMAT";
 
   /**
+   * Variable that is responsible for removing enclosure symbol after splitting the string
+   */
+  public static final String KETTLE_SPLIT_FIELDS_REMOVE_ENCLOSURE = "KETTLE_SPLIT_FIELDS_REMOVE_ENCLOSURE";
+
+  /**
    * Compatibility settings for setNrErrors
    */
   // see PDI-10270 for details.
@@ -1056,9 +1075,9 @@ public class Const {
 
   /**
    * A variable to configure VFS USER_DIR_IS_ROOT option: should be "true" or "false"
+   * {@linkplain org.apache.commons.vfs2.provider.sftp.SftpFileSystemConfigBuilder#USER_DIR_IS_ROOT}
    */
-  public static final String VFS_USER_DIR_IS_ROOT =
-      "vfs.sftp.org.apache.commons.vfs2.provider.sftp.SftpFileSystemConfigBuilder.USER_DIR_IS_ROOT";
+  public static final String VFS_USER_DIR_IS_ROOT = "vfs.sftp.userDirIsRoot";
 
   /**
    * rounds double f to any number of places after decimal point Does arithmetic using BigDecimal class to avoid integer
@@ -1361,7 +1380,7 @@ public class Const {
    * specified, the String is truncated.
    *
    * MB - New version is nearly 25% faster
-   * 
+   *
    * @param ret
    *          The StringBuilder to pad
    * @param limit
@@ -1375,7 +1394,7 @@ public class Const {
       }
       ret.setLength( limit );
       return ret.toString();
-    } else { 
+    } else {
       return null;
     }
   }
@@ -1395,7 +1414,7 @@ public class Const {
    */
   public static String replace( String string, String repl, String with ) {
     if ( string != null && repl != null && with != null ) {
-      return string.replaceAll(Pattern.quote(repl), Matcher.quoteReplacement(with));
+      return string.replaceAll( Pattern.quote( repl ), Matcher.quoteReplacement( with ) );
     } else {
       return null;
     }
@@ -1405,7 +1424,7 @@ public class Const {
    * Alternate faster version of string replace using a stringbuffer as input.
    *
    * 33% Faster using replaceAll this way than original method
-   * 
+   *
    * @param str
    *          The string where we want to replace in
    * @param code
@@ -1418,15 +1437,15 @@ public class Const {
       return; // do nothing
     }
     String aString = str.toString();
-    str.setLength(0);
-    str.append( aString.replaceAll( Pattern.quote(code), Matcher.quoteReplacement(repl) ) );
+    str.setLength( 0 );
+    str.append( aString.replaceAll( Pattern.quote( code ), Matcher.quoteReplacement( repl ) ) );
   }
 
   /**
    * Alternate faster version of string replace using a stringbuilder as input (non-synchronized).
    *
    * 33% Faster using replaceAll this way than original method
-   * 
+   *
    * @param str
    *          The string where we want to replace in
    * @param code
@@ -1439,8 +1458,8 @@ public class Const {
       return; // do nothing
     }
     String aString = str.toString();
-    str.setLength(0);
-    str.append( aString.replaceAll( Pattern.quote(code), Matcher.quoteReplacement(repl) ) );
+    str.setLength( 0 );
+    str.append( aString.replaceAll( Pattern.quote( code ), Matcher.quoteReplacement( repl ) ) );
   }
 
   /**
@@ -2355,6 +2374,30 @@ public class Const {
    *         is null.
    */
   public static String[] splitString( String stringToSplit, String delimiter, String enclosure ) {
+    return splitString( stringToSplit, delimiter, enclosure, false );
+  }
+
+  /**
+   * Split the given string using the given delimiter and enclosure strings.
+   *
+   * The delimiter and enclosures are not regular expressions (regexes); rather they are literal strings that will be
+   * quoted so as not to be treated like regexes.
+   *
+   * This method expects that the data contains an even number of enclosure strings in the input; otherwise the results
+   * are undefined
+   *
+   * @param stringToSplit
+   *          the String to split
+   * @param delimiter
+   *          the delimiter string
+   * @param enclosure
+   *          the enclosure string
+   * @param removeEnclosure
+   *          removes enclosure from split result
+   * @return an array of strings split on the delimiter (ignoring those in enclosures), or null if the string to split
+   *         is null.
+   */
+  public static String[] splitString( String stringToSplit, String delimiter, String enclosure, boolean removeEnclosure ) {
 
     ArrayList<String> splitList = null;
 
@@ -2420,7 +2463,13 @@ public class Const {
             addSplit = oddNumberOfEnclosures;
           }
           if ( addSplit ) {
-            splitList.add( concatSplit.toString() );
+            String splitResult = concatSplit.toString();
+            //remove enclosure from resulting split
+            if ( removeEnclosure ) {
+              splitResult = removeEnclosure( splitResult, enclosure );
+            }
+
+            splitList.add( splitResult );
             concatSplit = null;
             addSplit = false;
           }
@@ -2430,6 +2479,20 @@ public class Const {
 
     // Return list as array
     return splitList.toArray( new String[splitList.size()] );
+  }
+
+  private static String removeEnclosure( String stringToSplit, String enclosure ) {
+
+    int firstIndex = stringToSplit.indexOf( enclosure );
+    int lastIndex = stringToSplit.lastIndexOf( enclosure );
+    if ( firstIndex == lastIndex ) {
+      return stringToSplit;
+    }
+    StrBuilder strBuilder = new StrBuilder( stringToSplit );
+    strBuilder.replace( firstIndex, enclosure.length() + firstIndex, "" );
+    strBuilder.replace( lastIndex - enclosure.length(), lastIndex, "" );
+
+    return strBuilder.toString();
   }
 
   /**
@@ -2498,7 +2561,7 @@ public class Const {
   }
 
   /**
-   * Check if the CharSequence (String, StringBuffer, StringBuilder) supplied is empty. 
+   * Check if the CharSequence (String, StringBuffer, StringBuilder) supplied is empty.
    * A CharSequence is empty when it is null or when the length is 0
    *
    * @param string
@@ -3016,14 +3079,14 @@ public class Const {
       int inLen = in.length(), posn = 0;
       char[] tmp = new char[ inLen ];
       char ch;
-      for ( int i = 0; i < inLen; i++) {
+      for ( int i = 0; i < inLen; i++ ) {
         ch = in.charAt( i );
         if ( ( ch != '\n' && ch != '\r' ) ) {
           tmp[posn] = ch;
           posn++;
         }
       }
-      return new String(tmp, 0, posn);
+      return new String( tmp, 0, posn );
     } else {
       return "";
     }
@@ -3045,19 +3108,19 @@ public class Const {
       int inLen = in.length(), posn = 0;
       char[] tmp = new char[ inLen ];
       char ch;
-      for ( int i = 0; i < inLen; i++) {
+      for ( int i = 0; i < inLen; i++ ) {
         ch = in.charAt( i );
         if ( ch != badChar ) {
           tmp[posn] = ch;
           posn++;
         }
       }
-      return new String(tmp, 0, posn);
+      return new String( tmp, 0, posn );
     } else {
       return "";
     }
   }
-  
+
   /**
    * Remove CR / LF from String
    *
@@ -3237,7 +3300,7 @@ public class Const {
    * depending on length of the string to pad, and the size to pad it to.
    * For larger amounts to pad, (e.g. pad a 4 character string out to 20 places)
    * this is orders of magnitude faster.
-   * 
+   *
    * @param valueToPad
    *    the string to pad
    * @param filler
@@ -3246,10 +3309,10 @@ public class Const {
    *    the size to pad to
    * @return
    *    the new string, padded to the left
-   *    
+   *
    * Note - The original method was flawed in a few cases:
-   * 
-   *   1- The filler could be a string of any length - and the returned 
+   *
+   *   1- The filler could be a string of any length - and the returned
    *   string was not necessarily limited to size. So a 3 character pad
    *   of an 11 character string could end up being 17 characters long.
    *   2- For a pad of zero characters ("") the former method would enter
@@ -3285,7 +3348,7 @@ public class Const {
    * depending on length of the string to pad, and the size to pad it to.
    * For larger amounts to pad, (e.g. pad a 4 character string out to 20 places)
    * this is orders of magnitude faster.
-   * 
+   *
    * @param valueToPad
    *    the string to pad
    * @param filler
@@ -3294,10 +3357,10 @@ public class Const {
    *    the size to pad to
    * @return
    *   The string, padded to the right
-   *   
-   *   1- The filler can still be a string of any length - and the returned 
+   *
+   *   1- The filler can still be a string of any length - and the returned
    *   string was not necessarily limited to size. So a 3 character pad
-   *   of an 11 character string with a size of 15 could end up being 17 
+   *   of an 11 character string with a size of 15 could end up being 17
    *   characters long (instead of the "asked for 15").
    *   2- For a pad of zero characters ("") the former method would enter
    *   an infinite loop.
@@ -3312,7 +3375,7 @@ public class Const {
     int fSize = filler.length();
     // This next if ensures previous behavior, but prevents infinite loop
     // if "" is passed in as a filler.
-    if ( ( vSize >= size) || ( fSize == 0 )  ) {
+    if ( ( vSize >= size ) || ( fSize == 0 )  ) {
       return valueToPad;
     }
     int tgt = ( size - vSize );
@@ -3325,7 +3388,7 @@ public class Const {
     }
     StringBuilder sb = new StringBuilder( valueToPad );
     sb.append( sb1 );
-    return sb.substring(0, size);
+    return sb.substring( 0, size );
   }
 
   public static boolean classIsOrExtends( Class<?> clazz, Class<?> superClass ) {

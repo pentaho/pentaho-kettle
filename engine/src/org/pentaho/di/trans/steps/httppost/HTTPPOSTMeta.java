@@ -93,7 +93,7 @@ public class HTTPPOSTMeta extends BaseStepMeta implements StepMetaInterface {
   /** function result: new value name */
   private String fieldName;
   private String resultCodeFieldName;
-
+  private String responseHeaderFieldName;
   private boolean urlInField;
 
   private String urlField;
@@ -334,18 +334,15 @@ public class HTTPPOSTMeta extends BaseStepMeta implements StepMetaInterface {
 
     int nrargs = argumentField.length;
     retval.allocate( nrargs );
-    for ( int i = 0; i < nrargs; i++ ) {
-      retval.argumentField[i] = argumentField[i];
-      retval.argumentParameter[i] = argumentParameter[i];
-      retval.argumentHeader[i] = argumentHeader[i];
-    }
+    System.arraycopy( argumentField, 0, retval.argumentField, 0, nrargs );
+    System.arraycopy( argumentParameter, 0, retval.argumentParameter, 0, nrargs );
+    System.arraycopy( argumentHeader, 0, retval.argumentHeader, 0, nrargs );
+
 
     int nrqueryparams = queryField.length;
     retval.allocateQuery( nrqueryparams );
-    for ( int i = 0; i < nrqueryparams; i++ ) {
-      retval.queryField[i] = queryField[i];
-      retval.queryParameter[i] = queryParameter[i];
-    }
+    System.arraycopy( queryField, 0, retval.queryField, 0, nrqueryparams );
+    System.arraycopy( queryParameter, 0, retval.queryParameter, 0, nrqueryparams );
 
     return retval;
   }
@@ -372,6 +369,7 @@ public class HTTPPOSTMeta extends BaseStepMeta implements StepMetaInterface {
     fieldName = "result";
     resultCodeFieldName = "";
     responseTimeFieldName = "";
+    responseHeaderFieldName = "";
     postafile = false;
 
     socketTimeout = String.valueOf( DEFAULT_SOCKET_TIMEOUT );
@@ -394,6 +392,13 @@ public class HTTPPOSTMeta extends BaseStepMeta implements StepMetaInterface {
     if ( !Const.isEmpty( responseTimeFieldName ) ) {
       ValueMetaInterface v =
         new ValueMetaInteger( space.environmentSubstitute( responseTimeFieldName ) );
+      inputRowMeta.addValueMeta( v );
+    }
+    String headerFieldName = space.environmentSubstitute( responseHeaderFieldName );
+    if ( !Const.isEmpty( headerFieldName ) ) {
+      ValueMetaInterface v =
+        new ValueMetaString( headerFieldName );
+      v.setOrigin( name );
       inputRowMeta.addValueMeta( v );
     }
   }
@@ -438,6 +443,7 @@ public class HTTPPOSTMeta extends BaseStepMeta implements StepMetaInterface {
     retval.append( "      " + XMLHandler.addTagValue( "name", fieldName ) );
     retval.append( "      " + XMLHandler.addTagValue( "code", resultCodeFieldName ) );
     retval.append( "      " + XMLHandler.addTagValue( "response_time", responseTimeFieldName ) );
+    retval.append( "      " + XMLHandler.addTagValue( "response_header", responseHeaderFieldName ) );
     retval.append( "      </result>" + Const.CR );
 
     return retval.toString();
@@ -483,6 +489,8 @@ public class HTTPPOSTMeta extends BaseStepMeta implements StepMetaInterface {
       fieldName = XMLHandler.getTagValue( stepnode, "result", "name" ); // Optional, can be null
       resultCodeFieldName = XMLHandler.getTagValue( stepnode, "result", "code" ); // Optional, can be null
       responseTimeFieldName = XMLHandler.getTagValue( stepnode, "result", "response_time" ); // Optional, can be null
+      responseHeaderFieldName =
+        XMLHandler.getTagValue( stepnode, "result", "response_header" ); // Optional, can be null
     } catch ( Exception e ) {
       throw new KettleXMLException(
         BaseMessages.getString( PKG, "HTTPPOSTMeta.Exception.UnableToReadStepInfo" ), e );
@@ -526,6 +534,7 @@ public class HTTPPOSTMeta extends BaseStepMeta implements StepMetaInterface {
       fieldName = rep.getStepAttributeString( id_step, "result_name" );
       resultCodeFieldName = rep.getStepAttributeString( id_step, "result_code" );
       responseTimeFieldName = rep.getStepAttributeString( id_step, "response_time" );
+      responseHeaderFieldName = rep.getStepAttributeString( id_step, "response_header" );
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString(
         PKG, "HTTPPOSTMeta.Exception.UnexpectedErrorReadingStepInfo" ), e );
@@ -563,6 +572,7 @@ public class HTTPPOSTMeta extends BaseStepMeta implements StepMetaInterface {
       rep.saveStepAttribute( id_transformation, id_step, "result_name", fieldName );
       rep.saveStepAttribute( id_transformation, id_step, "result_code", resultCodeFieldName );
       rep.saveStepAttribute( id_transformation, id_step, "response_time", responseTimeFieldName );
+      rep.saveStepAttribute( id_transformation, id_step, "response_header", responseHeaderFieldName );
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString( PKG, "HTTPPOSTMeta.Exception.UnableToSaveStepInfo" )
         + id_step, e );
@@ -734,5 +744,13 @@ public class HTTPPOSTMeta extends BaseStepMeta implements StepMetaInterface {
 
   public void setResponseTimeFieldName( String responseTimeFieldName ) {
     this.responseTimeFieldName = responseTimeFieldName;
+  }
+
+  public String getResponseHeaderFieldName() {
+    return responseHeaderFieldName;
+  }
+
+  public void setResponseHeaderFieldName( String responseHeaderFieldName ) {
+    this.responseHeaderFieldName = responseHeaderFieldName;
   }
 }

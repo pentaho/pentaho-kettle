@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -143,14 +143,14 @@ public class StepPartitioningMeta implements XMLInterface, Cloneable {
   public String getXML() {
     StringBuilder xml = new StringBuilder( 150 );
 
-    xml.append( "         <partitioning>" ).append( Const.CR );
-    xml.append( "           " ).append( XMLHandler.addTagValue( "method", getMethodCode() ) );
-    xml.append( "           " ).append(
+    xml.append( "    " ).append( XMLHandler.openTag( "partitioning" ) ).append( Const.CR );
+    xml.append( "      " ).append( XMLHandler.addTagValue( "method", getMethodCode() ) );
+    xml.append( "      " ).append(
       XMLHandler.addTagValue( "schema_name", partitionSchema != null ? partitionSchema.getName() : "" ) );
     if ( partitioner != null ) {
       xml.append( partitioner.getXML() );
     }
-    xml.append( "           </partitioning>" ).append( Const.CR );
+    xml.append( "    " ).append( XMLHandler.closeTag( "partitioning" ) ).append( Const.CR );
 
     return xml.toString();
   }

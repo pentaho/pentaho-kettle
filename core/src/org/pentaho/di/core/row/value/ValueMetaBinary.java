@@ -39,4 +39,9 @@ public class ValueMetaBinary extends ValueMetaBase implements ValueMetaInterface
   public Object getNativeDataType( Object object ) throws KettleValueException {
     return getBinary( object );
   }
+
+  @Override
+  public Class<?> getNativeDataTypeClass() throws KettleValueException {
+    return byte[].class;
+  }
 }

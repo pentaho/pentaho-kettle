@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -55,6 +55,13 @@ public class ArrayLoadSaveValidator<ObjectType> implements FieldLoadSaveValidato
 
   @Override
   public boolean validateTestObject( ObjectType[] original, Object actual ) {
+    if ( original == null && actual == null ) {
+      return true;
+    } else if ( original != null && actual == null ) {
+      return false;
+    } else if ( original == null && actual != null ) {
+      return false;
+    }
     if ( original.getClass().isAssignableFrom( actual.getClass() ) ) {
       @SuppressWarnings( "unchecked" )
       ObjectType[] otherList = (ObjectType[]) actual;

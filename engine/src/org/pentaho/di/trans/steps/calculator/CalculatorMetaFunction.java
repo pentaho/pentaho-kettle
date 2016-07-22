@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,8 +24,8 @@ package org.pentaho.di.trans.steps.calculator;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.ObjectId;
@@ -126,6 +126,7 @@ public class CalculatorMetaFunction implements Cloneable {
   public static final int CALC_SECOND_OF_MINUTE = 84;
   public static final int CALC_ROUND_CUSTOM_1 = 85;
   public static final int CALC_ROUND_CUSTOM_2 = 86;
+  public static final int CALC_ADD_SECONDS = 87;
 
   public static final String[] calc_desc = {
     "-", "CONSTANT", "COPY_FIELD", "ADD", "SUBTRACT", "MULTIPLY", "DIVIDE", "SQUARE", "SQUARE_ROOT",
@@ -142,7 +143,7 @@ public class CalculatorMetaFunction implements Cloneable {
     "GET_FILE_ENCODING", "DAMERAU_LEVENSHTEIN", "NEEDLEMAN_WUNSH", "JARO", "JARO_WINKLER", "SOUNDEX",
     "REFINED_SOUNDEX", "ADD_HOURS", "ADD_MINUTES", "DATE_DIFF_MSEC", "DATE_DIFF_SEC", "DATE_DIFF_MN",
     "DATE_DIFF_HR", "HOUR_OF_DAY", "MINUTE_OF_HOUR", "SECOND_OF_MINUTE",
-    "ROUND_CUSTOM_1", "ROUND_CUSTOM_2", };
+    "ROUND_CUSTOM_1", "ROUND_CUSTOM_2", "ADD_SECONDS", };
 
   public static final String[] calcLongDesc = {
     "-", BaseMessages.getString( PKG, "CalculatorMetaFunction.CalcFunctions.SetFieldToConstant" ),
@@ -221,7 +222,8 @@ public class CalculatorMetaFunction implements Cloneable {
     BaseMessages.getString( PKG, "CalculatorMetaFunction.CalcFunctions.MinuteOfHour" ),
     BaseMessages.getString( PKG, "CalculatorMetaFunction.CalcFunctions.SecondOfMinute" ),
     BaseMessages.getString( PKG, "CalculatorMetaFunction.CalcFunctions.RoundCustom" ),
-    BaseMessages.getString( PKG, "CalculatorMetaFunction.CalcFunctions.RoundCustom2" ), };
+    BaseMessages.getString( PKG, "CalculatorMetaFunction.CalcFunctions.RoundCustom2" ),
+    BaseMessages.getString( PKG, "CalculatorMetaFunction.CalcFunctions.AddSeconds" ), };
 
   public static final int[] calcDefaultResultType = new int[ calc_desc.length ];
 
@@ -381,6 +383,7 @@ public class CalculatorMetaFunction implements Cloneable {
     calcDefaultResultType[ CalculatorMetaFunction.CALC_SECOND_OF_MINUTE ] = ValueMetaInterface.TYPE_INTEGER;
     calcDefaultResultType[ CalculatorMetaFunction.CALC_ROUND_CUSTOM_1 ] = ValueMetaInterface.TYPE_NUMBER;
     calcDefaultResultType[ CalculatorMetaFunction.CALC_ROUND_CUSTOM_2 ] = ValueMetaInterface.TYPE_NUMBER;
+    calcDefaultResultType[ CalculatorMetaFunction.CALC_ADD_SECONDS] = ValueMetaInterface.TYPE_DATE;
   }
 
   private String fieldName;
@@ -437,6 +440,7 @@ public class CalculatorMetaFunction implements Cloneable {
     // all null
   }
 
+  @Override
   public boolean equals( Object obj ) {
     if ( obj != null && ( obj.getClass().equals( this.getClass() ) ) ) {
       CalculatorMetaFunction mf = (CalculatorMetaFunction) obj;
@@ -446,6 +450,7 @@ public class CalculatorMetaFunction implements Cloneable {
     return false;
   }
 
+  @Override
   public Object clone() {
     try {
       CalculatorMetaFunction retval = (CalculatorMetaFunction) super.clone();
@@ -465,7 +470,7 @@ public class CalculatorMetaFunction implements Cloneable {
     xml += XMLHandler.addTagValue( "field_a", fieldA );
     xml += XMLHandler.addTagValue( "field_b", fieldB );
     xml += XMLHandler.addTagValue( "field_c", fieldC );
-    xml += XMLHandler.addTagValue( "value_type", ValueMeta.getTypeDesc( valueType ) );
+    xml += XMLHandler.addTagValue( "value_type", ValueMetaFactory.getValueMetaName( valueType ) );
     xml += XMLHandler.addTagValue( "value_length", valueLength );
     xml += XMLHandler.addTagValue( "value_precision", valuePrecision );
     xml += XMLHandler.addTagValue( "remove", removedFromResult );
@@ -485,7 +490,7 @@ public class CalculatorMetaFunction implements Cloneable {
     fieldA = XMLHandler.getTagValue( calcnode, "field_a" );
     fieldB = XMLHandler.getTagValue( calcnode, "field_b" );
     fieldC = XMLHandler.getTagValue( calcnode, "field_c" );
-    valueType = ValueMeta.getType( XMLHandler.getTagValue( calcnode, "value_type" ) );
+    valueType = ValueMetaFactory.getIdForValueMeta( XMLHandler.getTagValue( calcnode, "value_type" ) );
     valueLength = Const.toInt( XMLHandler.getTagValue( calcnode, "value_length" ), -1 );
     valuePrecision = Const.toInt( XMLHandler.getTagValue( calcnode, "value_precision" ), -1 );
     removedFromResult = "Y".equalsIgnoreCase( XMLHandler.getTagValue( calcnode, "remove" ) );
@@ -534,7 +539,7 @@ public class CalculatorMetaFunction implements Cloneable {
     rep.saveStepAttribute( id_transformation, id_step, nr, "field_a", fieldA );
     rep.saveStepAttribute( id_transformation, id_step, nr, "field_b", fieldB );
     rep.saveStepAttribute( id_transformation, id_step, nr, "field_c", fieldC );
-    rep.saveStepAttribute( id_transformation, id_step, nr, "value_type", ValueMeta.getTypeDesc( valueType ) );
+    rep.saveStepAttribute( id_transformation, id_step, nr, "value_type", ValueMetaFactory.getValueMetaName( valueType ) );
     rep.saveStepAttribute( id_transformation, id_step, nr, "value_length", valueLength );
     rep.saveStepAttribute( id_transformation, id_step, nr, "value_precision", valuePrecision );
     rep.saveStepAttribute( id_transformation, id_step, nr, "remove", removedFromResult );
@@ -550,7 +555,7 @@ public class CalculatorMetaFunction implements Cloneable {
     fieldA = rep.getStepAttributeString( id_step, nr, "field_a" );
     fieldB = rep.getStepAttributeString( id_step, nr, "field_b" );
     fieldC = rep.getStepAttributeString( id_step, nr, "field_c" );
-    valueType = ValueMeta.getType( rep.getStepAttributeString( id_step, nr, "value_type" ) );
+    valueType = ValueMetaFactory.getIdForValueMeta( rep.getStepAttributeString( id_step, nr, "value_type" ) );
     valueLength = (int) rep.getStepAttributeInteger( id_step, nr, "value_length" );
     valuePrecision = (int) rep.getStepAttributeInteger( id_step, nr, "value_precision" );
     removedFromResult = rep.getStepAttributeBoolean( id_step, nr, "remove" );

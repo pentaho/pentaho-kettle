@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -73,11 +73,15 @@ public class JobEntryJobRunner implements Runnable {
       result.setResult( false );
       result.setNrErrors( 1 );
     } finally {
+      //[PDI-14981] otherwise will get null pointer exception if 'job finished' listeners will be using it
+      job.setResult( result );
       try {
         ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.JobFinish.id, getJob() );
 
         job.fireJobFinishListeners();
-      } catch ( KettleException e ) {
+
+        //catch more general exception to prevent thread hanging
+      } catch ( Exception e ) {
         result.setNrErrors( 1 );
         result.setResult( false );
         log.logError( BaseMessages.getString( PKG, "Job.Log.ErrorExecJob", e.getMessage() ), e );

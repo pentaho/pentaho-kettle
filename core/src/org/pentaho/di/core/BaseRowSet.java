@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,6 +25,8 @@ package org.pentaho.di.core;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.pentaho.di.core.row.RowMetaInterface;
 
@@ -39,33 +41,38 @@ abstract class BaseRowSet implements Comparable<RowSet>, RowSet {
   protected RowMetaInterface rowMeta;
 
   protected AtomicBoolean done;
-  protected String originStepName;
+  protected volatile String originStepName;
   protected AtomicInteger originStepCopy;
-  protected String destinationStepName;
+  protected volatile String destinationStepName;
   protected AtomicInteger destinationStepCopy;
 
-  protected String remoteSlaveServerName;
+  protected volatile String remoteSlaveServerName;
+  private ReadWriteLock lock;
 
-  /**
-   * Create new non-blocking-queue with maxSize capacity.
-   *
-   * @param maxSize
-   */
   public BaseRowSet() {
     // not done putting data into this RowSet
     done = new AtomicBoolean( false );
 
     originStepCopy = new AtomicInteger( 0 );
     destinationStepCopy = new AtomicInteger( 0 );
+    lock = new ReentrantReadWriteLock();
   }
 
   /**
-   * Compares using the target steps and copy, not the source. That way, re-partitioning is always done in the same way.
-   *
+   * Compares using the target steps and copy, not the source.
+   * That way, re-partitioning is always done in the same way.
    */
   @Override
   public int compareTo( RowSet rowSet ) {
-    String target = remoteSlaveServerName + "." + destinationStepName + "." + destinationStepCopy.intValue();
+    lock.readLock().lock();
+    String target;
+
+    try {
+      target = remoteSlaveServerName + "." + destinationStepName + "." + destinationStepCopy.intValue();
+    } finally {
+      lock.readLock().unlock();
+    }
+
     String comp =
       rowSet.getRemoteSlaveServerName()
         + "." + rowSet.getDestinationStepName() + "." + rowSet.getDestinationStepCopy();
@@ -147,10 +154,7 @@ abstract class BaseRowSet implements Comparable<RowSet>, RowSet {
    */
   @Override
   public String getOriginStepName() {
-    synchronized ( originStepName ) {
-      return originStepName;
-    }
-
+    return originStepName;
   }
 
   /*
@@ -208,52 +212,42 @@ abstract class BaseRowSet implements Comparable<RowSet>, RowSet {
    */
   @Override
   public void setThreadNameFromToCopy( String from, int from_copy, String to, int to_copy ) {
-    if ( originStepName == null ) {
+
+    lock.writeLock().lock();
+    try {
       originStepName = from;
-    } else {
-      synchronized ( originStepName ) {
-        originStepName = from;
-      }
-    }
+      originStepCopy.set( from_copy );
 
-    originStepCopy.set( from_copy );
-
-    if ( destinationStepName == null ) {
       destinationStepName = to;
-    } else {
-      synchronized ( destinationStepName ) {
-        destinationStepName = to;
-      }
+      destinationStepCopy.set( to_copy );
+    } finally {
+      lock.writeLock().unlock();
     }
-
-    destinationStepCopy.set( to_copy );
   }
 
   @Override
   public String toString() {
     StringBuilder str;
-    synchronized ( originStepName ) {
-      str = new StringBuilder( originStepName );
-    }
-    str.append( "." );
-    synchronized ( originStepCopy ) {
-      str.append( originStepCopy );
-    }
-    str.append( " - " );
-    synchronized ( destinationStepName ) {
-      str.append( destinationStepName );
-    }
-    str.append( "." );
-    synchronized ( destinationStepCopy ) {
-      str.append( destinationStepCopy );
-    }
-    if ( !Const.isEmpty( remoteSlaveServerName ) ) {
-      synchronized ( remoteSlaveServerName ) {
-        str.append( " (" );
-        str.append( remoteSlaveServerName );
-        str.append( ")" );
+
+    lock.readLock().lock();
+    try {
+      str = new StringBuilder( originStepName )
+        .append( "." )
+        .append( originStepCopy )
+        .append( " - " )
+        .append( destinationStepName )
+        .append( "." )
+        .append( destinationStepCopy );
+
+      if ( !Const.isEmpty( remoteSlaveServerName ) ) {
+        str.append( " (" )
+          .append( remoteSlaveServerName )
+          .append( ")" );
       }
+    } finally {
+      lock.readLock().unlock();
     }
+
     return str.toString();
   }
 

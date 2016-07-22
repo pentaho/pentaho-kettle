@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -59,7 +59,7 @@ public class JobEntryFilesExist extends JobEntryBase implements Cloneable, JobEn
 
   private String filename; // TODO: looks like it is not used: consider deleting
 
-  public String[] arguments;
+  private String[] arguments;
 
   public JobEntryFilesExist( String n ) {
     super( n, "" );
@@ -70,8 +70,17 @@ public class JobEntryFilesExist extends JobEntryBase implements Cloneable, JobEn
     this( "" );
   }
 
+  public void allocate( int nrFields ) {
+    arguments = new String[nrFields];
+  }
+
   public Object clone() {
     JobEntryFilesExist je = (JobEntryFilesExist) super.clone();
+    if ( arguments != null ) {
+      int nrFields = arguments.length;
+      je.allocate( nrFields );
+      System.arraycopy( arguments, 0, je.arguments, 0, nrFields );
+    }
     return je;
   }
 
@@ -104,7 +113,7 @@ public class JobEntryFilesExist extends JobEntryBase implements Cloneable, JobEn
 
       // How many field arguments?
       int nrFields = XMLHandler.countNodes( fields, "field" );
-      arguments = new String[nrFields];
+      allocate( nrFields );
 
       // Read them all...
       for ( int i = 0; i < nrFields; i++ ) {
@@ -126,7 +135,7 @@ public class JobEntryFilesExist extends JobEntryBase implements Cloneable, JobEn
 
       // How many arguments?
       int argnr = rep.countNrJobEntryAttributes( id_jobentry, "name" );
-      arguments = new String[argnr];
+      allocate( argnr );
 
       // Read them all...
       for ( int a = 0; a < argnr; a++ ) {
@@ -161,6 +170,14 @@ public class JobEntryFilesExist extends JobEntryBase implements Cloneable, JobEn
 
   public String getFilename() {
     return filename;
+  }
+
+  public String[] getArguments() {
+    return arguments;
+  }
+
+  public void setArguments( String[] arguments ) {
+    this.arguments = arguments;
   }
 
   public Result execute( Result previousResult, int nr ) {

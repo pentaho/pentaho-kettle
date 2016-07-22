@@ -1,5 +1,5 @@
 /*!
- * Copyright 2010 - 2015 Pentaho Corporation.  All rights reserved.
+ * Copyright 2010 - 2016 Pentaho Corporation.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
  */
 package org.pentaho.di.repository.pur.metastore;
 
-import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.repository.pur.PurRepository;
@@ -289,10 +288,10 @@ public class PurRepositoryMetaStore extends MemoryMetaStore implements IMetaStor
     RepositoryFile elementTypeFolder = validateElementTypeRepositoryFolder( namespace, elementType );
 
     RepositoryFile elementFile =
-        new RepositoryFile.Builder( checkAndSanitize( element.getName() ) ).title( element.getName() )
+        new RepositoryFile.Builder( PurRepository.checkAndSanitize( element.getName() ) ).title( element.getName() )
             .versioned( false ).build();
 
-    DataNode elementDataNode = new DataNode( checkAndSanitize( element.getName() ) );
+    DataNode elementDataNode = new DataNode( PurRepository.checkAndSanitize( element.getName() ) );
     elementToDataNode( element, elementDataNode );
 
     RepositoryFile createdFile =
@@ -344,7 +343,7 @@ public class PurRepositoryMetaStore extends MemoryMetaStore implements IMetaStor
       throw new MetaStoreException( "The element to update with id " + elementId + " could not be found in the store" );
     }
 
-    DataNode elementDataNode = new DataNode( checkAndSanitize( element.getName() ) );
+    DataNode elementDataNode = new DataNode( PurRepository.checkAndSanitize( element.getName() ) );
     elementToDataNode( element, elementDataNode );
 
     RepositoryFile updatedFile = pur.updateFile( existingFile, new NodeRepositoryFileData( elementDataNode ), null );
@@ -544,20 +543,6 @@ public class PurRepositoryMetaStore extends MemoryMetaStore implements IMetaStor
     return null; // new RepositoryFileAcl.Builder(RepositoryFileAcl.Builder).entriesInheriting(true).build()
   }
 
-  /**
-   * Performs one-way conversion on incoming String to produce a syntactically valid JCR path (section 4.6 Path Syntax).
-   */
-  protected static String checkAndSanitize( final String in ) {
-    if ( in == null ) {
-      throw new IllegalArgumentException();
-    }
-    String out = in;
-    if ( out.contains( "/" ) || out.equals( ".." ) || out.equals( "." ) || StringUtils.isBlank( out ) ) {
-      throw new IllegalArgumentException();
-    }
-    out = out.replaceAll( "[/:\\[\\]\\*'\"\\|\\s\\.]", "_" ); //$NON-NLS-1$//$NON-NLS-2$
-    return out;
-  }
 
   @Override
   public IMetaStoreElementType newElementType( String namespace ) throws MetaStoreException {

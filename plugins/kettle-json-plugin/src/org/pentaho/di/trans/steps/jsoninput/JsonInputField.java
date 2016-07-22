@@ -25,6 +25,7 @@ package org.pentaho.di.trans.steps.jsoninput;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.exception.KettleValueException;
+import org.pentaho.di.core.injection.Injection;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaBase;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
@@ -56,6 +57,7 @@ public class JsonInputField extends BaseFileInputField implements Cloneable {
   @Deprecated
   public static final String[] trimTypeDesc = ValueMetaBase.trimTypeDesc;
 
+  @Injection( name = "FIELD_PATH", group = "FIELDS" )
   private String path;
 
   public JsonInputField( String fieldname ) {

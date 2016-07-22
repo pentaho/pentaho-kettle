@@ -30,7 +30,7 @@ import java.lang.annotation.Target;
 
 /**
  * This annotation signals to the plugin system that the class is an authentication provider plugin.
- * 
+ *
  */
 @Documented
 @Retention( RetentionPolicy.RUNTIME )

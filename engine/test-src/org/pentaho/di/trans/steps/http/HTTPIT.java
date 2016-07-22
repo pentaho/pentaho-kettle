@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,33 +27,34 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.pentaho.di.core.util.Assert.assertTrue;
 
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.InetSocketAddress;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
+import org.apache.commons.httpclient.Header;
+import org.apache.commons.httpclient.HostConfiguration;
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpMethod;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.InjectMocks;
+import org.mockito.Mockito;
 import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
+import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
+import org.pentaho.di.core.row.value.ValueMetaString;
+import org.pentaho.di.core.util.Assert;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
-import org.pentaho.di.trans.steps.loadsave.validator.ArrayLoadSaveValidator;
-import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
-import org.pentaho.di.trans.steps.loadsave.validator.StringLoadSaveValidator;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
 
 import com.sun.net.httpserver.HttpExchange;
@@ -67,12 +68,15 @@ public class HTTPIT {
 
   private class HTTPHandler extends HTTP {
 
-    Object[] row = new Object[] { "anyData" };
+    Object[] row;
     Object[] outputRow;
+    boolean override = false;
 
     public HTTPHandler( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-        Trans trans ) {
+        Trans trans, boolean override ) {
       super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
+      this.row = new Object[] { "anyData" };
+      this.override = override;
     }
 
     /**
@@ -88,11 +92,11 @@ public class HTTPIT {
      * putRow is used to copy a row, to the alternate rowset(s) This should get priority over everything else!
      * (synchronized) If distribute is true, a row is copied only once to the output rowsets, otherwise copies are sent
      * to each rowset!
-     * 
+     *
      * @param row
      *          The row to put to the destination rowset(s).
      * @throws org.pentaho.di.core.exception.KettleStepException
-     * 
+     *
      */
     @Override
     public void putRow( RowMetaInterface rowMeta, Object[] row ) throws KettleStepException {
@@ -103,11 +107,47 @@ public class HTTPIT {
       return outputRow;
     }
 
+
+
+    @Override
+    protected int requestStatusCode( HttpMethod method, HostConfiguration hostConfiguration, HttpClient httpClient )
+      throws IOException {
+      if ( override ) {
+        return 402;
+      } else {
+        return super.requestStatusCode( method, hostConfiguration, httpClient );
+      }
+    }
+
+    @Override
+    protected InputStreamReader openStream( String encoding, HttpMethod method ) throws Exception {
+      if ( override ) {
+        InputStreamReader mockInputStreamReader = Mockito.mock( InputStreamReader.class );
+        when( mockInputStreamReader.read() ).thenReturn( -1 );
+        return mockInputStreamReader;
+      } else {
+        return super.openStream( encoding, method );
+      }
+    }
+
+    @Override
+    protected Header[] searchForHeaders( HttpMethod method ) {
+      Header[] headers = { new Header( "host", host ) };
+      if ( override ) {
+        return headers;
+      } else {
+        return super.searchForHeaders( method );
+      }
+    }
+
+
   }
+
 
   public static final String host = "localhost";
   public static final int port = 9998;
   public static final String HTTP_LOCALHOST_9998 = "http://localhost:9998/";
+
   @InjectMocks
   private StepMockHelper<HTTPMeta, HTTPData> stepMockHelper;
   private HttpServer httpServer;
@@ -133,11 +173,17 @@ public class HTTPIT {
 
   }
 
+
   @Test
   public void test204Answer() throws Exception {
     HTTPData data = new HTTPData();
-    Object[] expectedRow = new Object[] { "", 204L, null, null, null, null, null, null, null, null, null, null };
-    HTTP http = new HTTPHandler( stepMockHelper.stepMeta, data, 0, stepMockHelper.transMeta, stepMockHelper.trans );
+    int[] index = { 0, 1 };
+    RowMeta meta = new RowMeta();
+    meta.addValueMeta( new ValueMetaString( "fieldName" ) );
+    meta.addValueMeta( new ValueMetaInteger( "codeFieldName" ) );
+    Object[] expectedRow = new Object[] { "", 204L };
+    HTTP http =
+      new HTTPHandler( stepMockHelper.stepMeta, data, 0, stepMockHelper.transMeta, stepMockHelper.trans, false );
     RowMetaInterface inputRowMeta = mock( RowMetaInterface.class );
     http.setInputRowMeta( inputRowMeta );
     when( inputRowMeta.clone() ).thenReturn( inputRowMeta );
@@ -147,11 +193,39 @@ public class HTTPIT {
     when( stepMockHelper.processRowsStepMetaInterface.getResultCodeFieldName() ).thenReturn( "ResultCodeFieldName" );
     when( stepMockHelper.processRowsStepMetaInterface.getFieldName() ).thenReturn( "ResultFieldName" );
     http.init( stepMockHelper.processRowsStepMetaInterface, data );
-    assertTrue( http.processRow( stepMockHelper.processRowsStepMetaInterface, data ) );
-    System.out.println( Arrays.toString( expectedRow ) );
+    Assert.assertTrue( http.processRow( stepMockHelper.processRowsStepMetaInterface, data ) );
     Object[] out = ( (HTTPHandler) http ).getOutputRow();
-    System.out.println( Arrays.toString( out ) );
-    assertTrue( Arrays.equals( expectedRow, out ) );
+    Assert.assertTrue( meta.equals( out, expectedRow, index ) );
+  }
+
+  @Test
+  public void testResponseHeader() throws Exception {
+    HTTPData data = new HTTPData();
+    int[] index = { 0, 1, 2 };
+    RowMeta meta = new RowMeta();
+    meta.addValueMeta( new ValueMetaString( "fieldName" ) );
+    meta.addValueMeta( new ValueMetaInteger( "codeFieldName" ) );
+    meta.addValueMeta( new ValueMetaString( "headerFieldName" ) );
+    Object[] expectedRow =
+      new Object[] { "", 402L, "{\"host\":\"localhost\"}" };
+    HTTP http =
+      new HTTPHandler( stepMockHelper.stepMeta, data, 0, stepMockHelper.transMeta, stepMockHelper.trans, true );
+    RowMetaInterface inputRowMeta = mock( RowMetaInterface.class );
+    http.setInputRowMeta( inputRowMeta );
+    when( inputRowMeta.clone() ).thenReturn( inputRowMeta );
+    when( stepMockHelper.processRowsStepMetaInterface.getUrl() ).thenReturn( HTTP_LOCALHOST_9998 );
+    when( stepMockHelper.processRowsStepMetaInterface.getHeaderField() ).thenReturn( new String[] {} );
+    when( stepMockHelper.processRowsStepMetaInterface.getArgumentField() ).thenReturn( new String[] {} );
+    when( stepMockHelper.processRowsStepMetaInterface.getResultCodeFieldName() ).thenReturn( "ResultCodeFieldName" );
+    when( stepMockHelper.processRowsStepMetaInterface.getFieldName() ).thenReturn( "ResultFieldName" );
+    when( stepMockHelper.processRowsStepMetaInterface.getEncoding() ).thenReturn( "UTF8" );
+    when( stepMockHelper.processRowsStepMetaInterface.getResponseHeaderFieldName() ).thenReturn(
+      "ResponseHeaderFieldName" );
+    http.init( stepMockHelper.processRowsStepMetaInterface, data );
+    Assert.assertTrue( http.processRow( stepMockHelper.processRowsStepMetaInterface, data ) );
+    Object[] out = ( (HTTPHandler) http ).getOutputRow();
+    Assert.assertTrue( meta.equals( out, expectedRow, index ) );
+
   }
 
   private void startHttp204Answer() throws IOException {
@@ -166,31 +240,6 @@ public class HTTPIT {
     httpServer.start();
   }
 
-  @Test
-  public void testLoadSaveRoundTrip() throws KettleException {
-    List<String> attributes =
-        Arrays.asList( "url", "urlInField", "urlField", "encoding", "httpLogin", "httpPassword", "proxyHost",
-            "proxyPort", "socketTimeout", "connectionTimeout", "closeIdleConnectionsTime", "argumentField",
-            "argumentParameter", "headerField", "headerParameter", "fieldName", "resultCodeFieldName",
-            "responseTimeFieldName" );
-
-    Map<String, FieldLoadSaveValidator<?>> fieldLoadSaveValidatorAttributeMap =
-        new HashMap<String, FieldLoadSaveValidator<?>>();
-
-    //Arrays need to be consistent length
-    FieldLoadSaveValidator<String[]> stringArrayLoadSaveValidator =
-        new ArrayLoadSaveValidator<String>( new StringLoadSaveValidator(), 25 );
-    fieldLoadSaveValidatorAttributeMap.put( "argumentField", stringArrayLoadSaveValidator );
-    fieldLoadSaveValidatorAttributeMap.put( "argumentParameter", stringArrayLoadSaveValidator );
-    fieldLoadSaveValidatorAttributeMap.put( "headerField", stringArrayLoadSaveValidator );
-    fieldLoadSaveValidatorAttributeMap.put( "headerParameter", stringArrayLoadSaveValidator );
-
-    LoadSaveTester loadSaveTester =
-        new LoadSaveTester( HTTPMeta.class, attributes, new HashMap<String, String>(),
-            new HashMap<String, String>(), fieldLoadSaveValidatorAttributeMap,
-            new HashMap<String, FieldLoadSaveValidator<?>>() );
-
-    loadSaveTester.testRepoRoundTrip();
-    loadSaveTester.testXmlRoundTrip();
-  }
+  // LoadSave Test is a unit test of the meta, not an integration test. Moved to new class.
+  // MB 5/2016
 }

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2014 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,12 +22,6 @@
 
 package org.pentaho.di.trans.cluster;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -39,7 +33,15 @@ import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.TransMetaFactory;
+import org.pentaho.di.trans.TransMetaFactoryImpl;
 import org.w3c.dom.Node;
+
+import static junit.framework.Assert.assertEquals;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class TransSplitterTest {
   private LogChannelInterfaceFactory oldLogChannelInterfaceFactory;
@@ -74,5 +76,21 @@ public class TransSplitterTest {
       // ignore
     }
     verify( rep, times( 1 ) ).readTransSharedObjects( meta2 );
+  }
+
+  @Test
+   public void testTransSplitterRowsetSize() throws KettleException {
+    TransMeta originalMeta = new TransMeta();
+    originalMeta.setSizeRowset( 0 );
+    TransMetaFactory factory = new TransMetaFactoryImpl();
+
+    try {
+      TransSplitter transSplitter = new TransSplitter( originalMeta, factory );
+      transSplitter.splitOriginalTransformation();
+      assertEquals( originalMeta.getSizeRowset(), transSplitter.getMaster().getSizeRowset() );
+    } catch ( Exception e ) {
+      //ignore
+    }
+
   }
 }

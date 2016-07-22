@@ -45,22 +45,22 @@ public class SelectValuesMetaInjectionTest extends BaseMetadataInjectionTest<Sel
     } );
     check( "FIELD_NAME", new StringGetter() {
       public String get() {
-        return meta.getSelectName()[0];
+        return meta.getSelectFields()[0].getName();
       }
     } );
     check( "FIELD_RENAME", new StringGetter() {
       public String get() {
-        return meta.getSelectRename()[0];
+        return meta.getSelectFields()[0].getRename();
       }
     } );
     check( "FIELD_LENGTH", new IntGetter() {
       public int get() {
-        return meta.getSelectLength()[0];
+        return meta.getSelectFields()[0].getLength();
       }
     } );
     check( "FIELD_PRECISION", new IntGetter() {
       public int get() {
-        return meta.getSelectPrecision()[0];
+        return meta.getSelectFields()[0].getPrecision();
       }
     } );
     check( "REMOVE_NAME", new StringGetter() {

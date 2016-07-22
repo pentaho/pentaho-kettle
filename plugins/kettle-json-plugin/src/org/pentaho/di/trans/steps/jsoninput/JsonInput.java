@@ -110,6 +110,22 @@ public class JsonInput extends BaseFileInputStep<JsonInputMeta, JsonInputData> i
         return false; // end of data or error.
       }
 
+      // filter out rows that only contain null
+      int start = 0;
+      if ( meta.isInFields() && !meta.isRemoveSourceField() ) {
+        start = 1;
+      }
+      boolean hasValues = false;
+      for ( int i = start; i < outRow.length; i++ ) {
+        if ( outRow[ i ] != null ) {
+          hasValues = true;
+          break;
+        }
+      }
+      if ( !hasValues ) {
+        return true;
+      }
+
       if ( log.isRowLevel() ) {
         logRowlevel( BaseMessages.getString( PKG, "JsonInput.Log.ReadRow", data.outputRowMeta.getString( outRow ) ) );
       }
@@ -150,6 +166,11 @@ public class JsonInput extends BaseFileInputStep<JsonInputMeta, JsonInputData> i
     } else {
       data.readrow = getRow();
       data.inputRowMeta = getInputRowMeta();
+      if ( data.inputRowMeta == null ) {
+        data.hasFirstRow = false;
+        return;
+      }
+      data.hasFirstRow = true;
       data.outputRowMeta = data.inputRowMeta.clone();
 
       // Check if source field is provided
@@ -242,6 +263,7 @@ public class JsonInput extends BaseFileInputStep<JsonInputMeta, JsonInputData> i
     if ( input != null ) {
       try {
         data.readerRowSet = data.reader.parse( input );
+        input.close();
         return true;
       } catch ( KettleException ke ) {
         logInputError( ke );
@@ -303,6 +325,9 @@ public class JsonInput extends BaseFileInputStep<JsonInputMeta, JsonInputData> i
    * get final row for output
    */
   private Object[] getOneOutputRow() throws KettleException {
+    if ( meta.isInFields() && !data.hasFirstRow ) {
+      return null;
+    }
     Object[] rawReaderRow = null;
     while ( ( rawReaderRow = data.readerRowSet.getRow() ) == null ) {
       if ( data.inputs.hasNext() && data.readerRowSet.isDone() ) {
@@ -426,10 +451,11 @@ public class JsonInput extends BaseFileInputStep<JsonInputMeta, JsonInputData> i
   }
 
   private void createReader() throws KettleException {
-    data.reader = new FastJsonReader( meta.getInputFields(), meta.isDefaultPathLeafToNull(), log );
+    data.reader = new FastJsonReader( meta.getInputFields(), log );
     data.reader.setIgnoreMissingPath( meta.isIgnoreMissingPath() );
   }
 
+  @Override
   public void dispose( StepMetaInterface smi, StepDataInterface sdi ) {
     meta = (JsonInputMeta) smi;
     data = (JsonInputData) sdi;

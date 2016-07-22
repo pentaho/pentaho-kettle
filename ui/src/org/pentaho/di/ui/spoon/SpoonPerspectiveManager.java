@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,36 +22,22 @@
 
 package org.pentaho.di.ui.spoon;
 
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
-
-import org.apache.commons.io.IOUtils;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.CCombo;
-import org.eclipse.swt.events.KeyAdapter;
-import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
-import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.i18n.LanguageChoice;
-import org.pentaho.di.ui.core.ConstUI;
-import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.ui.xul.XulComponent;
 import org.pentaho.ui.xul.XulDomContainer;
@@ -63,7 +49,19 @@ import org.pentaho.ui.xul.containers.XulVbox;
 import org.pentaho.ui.xul.dom.Document;
 import org.pentaho.ui.xul.impl.XulEventHandler;
 import org.pentaho.ui.xul.swt.tags.SwtDeck;
-import org.pentaho.ui.xul.swt.tags.SwtToolbarbutton;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
 
 /**
  * Singleton Object controlling SpoonPerspectives.
@@ -75,11 +73,14 @@ import org.pentaho.ui.xul.swt.tags.SwtToolbarbutton;
  *
  */
 public class SpoonPerspectiveManager {
+
+  private static Class<?> PKG = SpoonPerspectiveManager.class;
+
   private static SpoonPerspectiveManager instance = new SpoonPerspectiveManager();
 
   private final Map<Class<? extends SpoonPerspective>, SpoonPerspective> perspectives;
 
-  private final Map<SpoonPerspective, PerspectiveInitializer> initializerMap;
+  private final Map<SpoonPerspective, PerspectiveManager> perspectiveManagerMap;
 
   private final LinkedHashSet<SpoonPerspective> orderedPerspectives;
 
@@ -95,6 +96,8 @@ public class SpoonPerspectiveManager {
 
   private final LogChannelInterface log = new LogChannel( this );
 
+  private String[] defaultDisabled = new String[] { "schedulerPerspective" };
+
   public String getStartupPerspective() {
     return startupPerspective;
   }
@@ -103,62 +106,66 @@ public class SpoonPerspectiveManager {
     this.startupPerspective = startupPerspective;
   }
 
+  Map<SpoonPerspective, PerspectiveManager> getPerspectiveManagerMap() {
+    return Collections.unmodifiableMap( perspectiveManagerMap );
+  }
+
   protected static class SpoonPerspectiveComparator implements Comparator<SpoonPerspective> {
     public int compare( SpoonPerspective o1, SpoonPerspective o2 ) {
       return o1.getId().compareTo( o2.getId() );
     }
   }
 
-  private class PerspectiveInitializer {
+  static class PerspectiveManager {
     private final SpoonPerspective per;
 
     private final XulVbox box;
 
     private final XulToolbar mainToolbar;
-
-    private final SwtToolbarbutton btn;
-    private final CCombo perspectivesCombo;
+    private final List<PerspectiveData> perspectiveList;
     private final String name;
+    private boolean initialized;
 
-    public PerspectiveInitializer( SpoonPerspective per, XulVbox box, XulToolbar mainToolbar, SwtToolbarbutton btn,
-        CCombo perspectivesCombo, String name ) {
+    public PerspectiveManager( SpoonPerspective per, XulVbox box, XulToolbar mainToolbar,
+                               List<PerspectiveData> perspectiveList, String name ) {
       super();
       this.per = per;
       this.box = box;
       this.mainToolbar = mainToolbar;
-      this.btn = btn;
-      this.perspectivesCombo = perspectivesCombo;
+      this.perspectiveList = perspectiveList;
       this.name = name;
+      initialized = false;
     }
 
-    public void initialize() {
+    public void initializeIfNeeded() {
+      if ( !initialized ) {
+        performInit();
+        initialized = true;
+      }
+    }
+
+    void performInit() {
       per.getUI().setParent( (Composite) box.getManagedObject() );
       per.getUI().layout();
       ( (Composite) mainToolbar.getManagedObject() ).layout( true, true );
+    }
 
-      per.addPerspectiveListener( new SpoonPerspectiveListener() {
-        public void onActivation() {
-          if ( btn != null ) {
-            btn.setSelected( true );
-          }
-          if ( perspectivesCombo != null ) {
-            perspectivesCombo.setText( name );
-          }
+    /**
+     * Sets hidden to true for {@code perspectiveName} from {@code perspectiveList}
+     */
+    void setPerspectiveHidden( final String perspectiveName, boolean hidden ) {
+      for ( PerspectiveData perspectiveData : perspectiveList ) {
+        if ( perspectiveData.getName().equals( perspectiveName ) ) {
+          perspectiveData.setHidden( hidden );
         }
-
-        public void onDeactication() {
-          if ( btn != null ) {
-            btn.setSelected( false );
-          }
-        }
-      } );
+      }
     }
   }
 
   @SuppressWarnings( "rawtypes" )
   private SpoonPerspectiveManager() {
     perspectives = new LinkedHashMap<Class<? extends SpoonPerspective>, SpoonPerspective>();
-    initializerMap = new HashMap<SpoonPerspective, PerspectiveInitializer>();
+    perspectiveManagerMap = new HashMap<SpoonPerspective, PerspectiveManager>();
     orderedPerspectives = new LinkedHashSet<SpoonPerspective>();
   }
 
@@ -207,6 +214,39 @@ public class SpoonPerspectiveManager {
   }
 
   /**
+   * Changes perspective visibility due to {@code hidePerspective} value.
+   * If perspective exists already, and we want to make it visible, no new perspective will be added.
+   *
+   */
+  private void changePerspectiveVisibility( final String perspectiveId, boolean hidePerspective ) {
+    PerspectiveManager perspectiveManager;
+
+    for ( SpoonPerspective sp : getPerspectiveManagerMap().keySet() ) {
+      if ( sp.getId().equals( perspectiveId ) ) {
+        perspectiveManager = getPerspectiveManagerMap().get( sp );
+        perspectiveManager.setPerspectiveHidden( sp.getDisplayName( Locale.getDefault() ), hidePerspective );
+        return;
+      }
+    }
+
+    getLogger().logError( "Perspective with " + perspectiveId + " is not found." );
+  }
+
+  /**
+   * Shows perspective with {@code perspectiveId} if it is not shown yet.
+   */
+  public void showPerspective( final String perspectiveId ) {
+    changePerspectiveVisibility( perspectiveId, false );
+  }
+
+  /**
+   * Hides perspective with {@code perspectiveId}.
+   */
+  public void hidePerspective( final String perspectiveId ) {
+    changePerspectiveVisibility( perspectiveId, true );
+  }
+
+  /**
    * Returns an unmodifiable List of perspectives in no set order.
    *
    * @return
@@ -228,11 +268,10 @@ public class SpoonPerspectiveManager {
         }
       }
     }
-    Spoon.getInstance().enableMenus();
+    getSpoon().enableMenus();
   }
 
   /**
-   *
    * Activates the given instance of the class literal passed in. Activating a perspective first deactivates the current
    * perspective removing any overlays its applied to the UI. It then switches the main deck to display the perspective
    * UI and applies the optional overlays to the main Spoon XUL container.
@@ -252,9 +291,9 @@ public class SpoonPerspectiveManager {
     if ( sp == null ) {
       throw new KettleException( "Could not locate perspective by class: " + clazz );
     }
-    PerspectiveInitializer perspectiveInitializer = initializerMap.remove( sp );
-    if ( perspectiveInitializer != null ) {
-      perspectiveInitializer.initialize();
+    PerspectiveManager perspectiveManager = getPerspectiveManagerMap().get( sp );
+    if ( perspectiveManager != null ) {
+      perspectiveManager.initializeIfNeeded();
     }
     unloadPerspective( activePerspective );
     activePerspective = sp;
@@ -296,7 +335,7 @@ public class SpoonPerspectiveManager {
 
     sp.setActive( true );
     deck.setSelectedIndex( deck.getChildNodes().indexOf( deck.getElementById( "perspective-" + sp.getId() ) ) );
-    Spoon.getInstance().enableMenus();
+    getSpoon().enableMenus();
   }
 
   /**
@@ -360,44 +399,42 @@ public class SpoonPerspectiveManager {
       }
     }
 
-    CCombo perspectivesCombo = null;
+    final List<PerspectiveData> perspectiveList = new ArrayList<>();
 
-    if ( PropsUI.getInstance().isLegacyPerspectiveMode() ) {
-      log.logDebug( "Use legacy perspective switcher" );
-    } else {
-      log.logDebug( "Use new perspective switcher" );
-      // create dropdown for perspectives
-      final ToolBar toolbar = (ToolBar) mainToolbar.getManagedObject();
+    final ToolBar swtToolbar = (ToolBar) mainToolbar.getManagedObject();
+    final Shell shell = swtToolbar.getShell();
+    final ToolItem perspectiveButton = new ToolItem( swtToolbar, SWT.DROP_DOWN, 7 );
 
-      perspectivesCombo = new CCombo( toolbar, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER );
-      PropsUI.getInstance().setLook( perspectivesCombo );
-
-      final CCombo c = perspectivesCombo;
-      perspectivesCombo.addSelectionListener( new SelectionAdapter() {
-        public void widgetSelected( SelectionEvent se ) {
-          Spoon.getInstance().loadPerspective( c.getData( c.getText() ).toString() );
-          toolbar.forceFocus();
-        }
-      } );
-      
-      perspectivesCombo.addKeyListener( new KeyAdapter() {
-        public void keyPressed( KeyEvent event ) {
-          if ( event.character == SWT.CR ) {
-            Spoon.getInstance().loadPerspective( c.getText() );
+    perspectiveButton.setImage( GUIResource.getInstance().getImage( "ui/images/perspective_changer.svg" ) );
+    perspectiveButton.setToolTipText( BaseMessages.getString( PKG, "Spoon.Menu.View.Perspectives" ) );
+    perspectiveButton.addSelectionListener( new SelectionAdapter() {
+      @Override public void widgetSelected( SelectionEvent e ) {
+        Menu menu = new Menu( shell );
+        for ( final PerspectiveData perspectiveData : perspectiveList ) {
+          MenuItem item = new MenuItem( menu, SWT.CHECK );
+          if ( perspectiveData.isHidden() ) {
+            item.setEnabled( false );
           }
+          if ( activePerspective.getId().equals( perspectiveData.getId() ) ) {
+            item.setSelection( true );
+          }
+          item.setText( perspectiveData.getName() );
+          item.addSelectionListener( new SelectionAdapter() {
+            @Override public void widgetSelected( SelectionEvent selectionEvent ) {
+              Spoon.getInstance().loadPerspective( perspectiveData.getId() );
+              swtToolbar.forceFocus();
+            }
+          } );
         }
-      } );
-      ToolItem sep = new ToolItem( toolbar, SWT.SEPARATOR );
-      if ( Const.isLinux() ) {
-        sep.setWidth( 150 );
-      } else if ( Const.isOSX() ) {
-        sep.setWidth( 120 );
-      } else {
-        sep.setWidth( 140 );
+        ToolItem item = (ToolItem) e.widget;
+        Rectangle rect = item.getBounds();
+        Point pt = item.getParent().toDisplay( new Point( rect.x, rect.y + rect.height ) );
+
+        menu.setLocation( pt.x, pt.y );
+        menu.setVisible( true );
+
       }
-      sep.setControl( perspectivesCombo );
-      toolbar.forceFocus();
-    }
+    } );
 
     for ( final SpoonPerspective per : getPerspectives() ) {
       if ( installedPerspectives.contains( per ) ) {
@@ -405,69 +442,29 @@ public class SpoonPerspectiveManager {
         continue;
       }
       String name = per.getDisplayName( LanguageChoice.getInstance().getDefaultLocale() );
-
-      SwtToolbarbutton btn = null;
-      if ( PropsUI.getInstance().isLegacyPerspectiveMode() ) {
-        // old button
-        try {
-          btn = (SwtToolbarbutton) domContainer.getDocumentRoot().createElement( "toolbarbutton" );
-        } catch ( XulException e ) {
-          log.logError( "Error create toolbarbutton", e );
-        }
-        btn.setType( "toggle" );
-        btn.setLabel( name );
-        btn.setTooltiptext( name );
-        btn.setOnclick( "spoon.loadPerspective(" + y + ")" );
-        btn.setId( "perspective-btn-" + per.getId() );
-        mainToolbar.addChild( btn );
-
-        boolean iconSet = false;
-        if ( SpoonPerspectiveImageProvider.class.isAssignableFrom( per.getClass() ) ) {
-          String location = ( (SpoonPerspectiveImageProvider) per ).getPerspectiveIconPath();
-          Image image =
-              GUIResource.getInstance().getImage( location, per.getClass().getClassLoader(), ConstUI.SMALL_ICON_SIZE,
-                  ConstUI.SMALL_ICON_SIZE );
-          if ( image != null ) {
-            btn.setImage( image );
-            iconSet = true;
-          }
-        }
-        if ( !iconSet ) {
-          InputStream in = per.getPerspectiveIcon();
-          if ( in != null ) {
-            try {
-              btn.setImageFromStream( in );
-            } finally {
-              IOUtils.closeQuietly( in );
-            }
-          }
-        }
-      } else {
-        // new button
-        perspectivesCombo.add( name );
-        perspectivesCombo.setData( name, per.getId() );
+      PerspectiveData perspectiveData = new PerspectiveData( name, per.getId() );
+      if ( Arrays.asList( defaultDisabled ).contains( per.getId() ) ) {
+        perspectiveData.setHidden( true );
       }
+      perspectiveList.add( perspectiveData );
 
       XulVbox box = deck.createVBoxCard();
       box.setId( "perspective-" + per.getId() );
       box.setFlex( 1 );
       deck.addChild( box );
 
-      PerspectiveInitializer perspectiveInitializer =
-          new PerspectiveInitializer( per, box, mainToolbar, btn, perspectivesCombo, name );
+      PerspectiveManager perspectiveManager =
+          new PerspectiveManager( per, box, mainToolbar, perspectiveList, name );
+      perspectiveManagerMap.put( per, perspectiveManager );
       // Need to force init for main perspective even if it won't be shown
       if ( perspectiveIdx == y || y == 0 ) {
         if ( perspectiveIdx == y ) {
           // we have a startup perspective. Hold onto the class
-          if ( btn != null ) {
-            btn.setSelected( true );
-          }
           perClass = per.getClass();
         }
+
         // force init
-        perspectiveInitializer.initialize();
-      } else {
-        initializerMap.put( per, perspectiveInitializer );
+        perspectiveManager.initializeIfNeeded();
       }
       y++;
       installedPerspectives.add( per );
@@ -483,5 +480,45 @@ public class SpoonPerspectiveManager {
         // TODO Auto-generated catch block
       }
     }
+  }
+
+  static class PerspectiveData {
+    private String name;
+    private String id;
+    private boolean hidden = false;
+
+    public PerspectiveData( String name, String id ) {
+      this.name = name;
+      this.id = id;
+    }
+
+    public String getName() {
+      return name;
+    }
+
+    public String getId() {
+      return id;
+    }
+
+    public boolean isHidden() {
+      return hidden;
+    }
+
+    public void setHidden( boolean hidden ) {
+      this.hidden = hidden;
+    }
+  }
+
+  /**
+   * For testing
+   */
+  Spoon getSpoon() {
+    return Spoon.getInstance();
+  }
+  /**
+   * For testing
+   */
+  LogChannelInterface getLogger() {
+    return log;
   }
 }

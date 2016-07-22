@@ -29,6 +29,7 @@
       changing="true" transitive="false" conf="compile->default"/>
     <dependency org="pentaho" name="pentaho-platform-repository" rev="${dependency.bi-platform.revision}"
       changing="true" transitive="false" />
+    <dependency org="org.yaml" name="snakeyaml" rev="1.7" conf="default->default" transitive="false"/>
     <dependency org="pentaho" name="pentaho-platform-extensions" rev="${dependency.bi-platform.revision}"
       changing="true" transitive="false" conf="compile->default"/>
     <dependency org="pentaho" name="pentaho-xul-core" rev="${dependency.pentaho-xul.revision}"
@@ -91,6 +92,7 @@
       transitive="false" />
       
     <dependency org="org.json" name="json" rev="${dependency.json.revision}" transitive="false" changing="true"/>
+    <dependency org="com.googlecode.json-simple" name="json-simple" rev="1.1" transitive="false" conf="compile->default;test->default"/>
 
     <dependency org="org.aspectj" name="aspectjrt" rev="1.6.6" conf="test->default" />
     <dependency org="jta" name="jta" rev="1.0.1b" conf="test->default" />

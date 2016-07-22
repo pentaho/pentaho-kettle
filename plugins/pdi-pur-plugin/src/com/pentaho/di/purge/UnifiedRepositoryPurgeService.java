@@ -1,5 +1,5 @@
 /*!
- * Copyright 2010 - 2015 Pentaho Corporation.  All rights reserved.
+ * Copyright 2010 - 2016 Pentaho Corporation.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -175,7 +175,7 @@ public class UnifiedRepositoryPurgeService implements IPurgeService {
         if ( file.isVersioned() ) {
           if ( purgeSpecification.isPurgeFiles() ) {
             getLogger().info( "Purge File" );
-            keepNumberOfVersions( file.getId(), 0 );
+            keepNumberOfVersions( file.getId(), 1 ); // the latest version will be removed with deleteFileWithPermanentFlag
             getRepoWs().deleteFileWithPermanentFlag( file.getId(), true, "purge utility" );
           } else if ( purgeSpecification.isPurgeRevisions() ) {
             getLogger().info( "Purging Revisions" );

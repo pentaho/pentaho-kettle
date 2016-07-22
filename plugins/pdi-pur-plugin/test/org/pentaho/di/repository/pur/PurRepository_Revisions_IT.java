@@ -1,5 +1,5 @@
 /*!
- * Copyright 2010 - 2015 Pentaho Corporation.  All rights reserved.
+ * Copyright 2010 - 2016 Pentaho Corporation.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,12 +28,19 @@ import org.pentaho.platform.api.repository2.unified.VersionSummary;
 import java.util.Calendar;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Andrey Khayrutdinov
  */
 public class PurRepository_Revisions_IT extends PurRepositoryTestBase {
+
+  public PurRepository_Revisions_IT( Boolean lazyRepo ) {
+    super( lazyRepo );
+  }
 
   @Test
   public void onlyRevision_DataAndCommentAreSaved_Trans() throws Exception {

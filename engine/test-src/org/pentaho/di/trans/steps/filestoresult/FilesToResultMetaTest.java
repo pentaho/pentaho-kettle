@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -26,27 +26,15 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 import org.junit.Test;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
 import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
+import org.pentaho.di.trans.steps.loadsave.validator.IntLoadSaveValidator;
 
 public class FilesToResultMetaTest {
-
-  public class ResultFileFieldLoadSaveValidator implements FieldLoadSaveValidator<Integer> {
-    @Override
-    public Integer getTestObject() {
-      return new Random().nextInt( ResultFile.fileTypeCode.length );
-    }
-
-    @Override
-    public boolean validateTestObject( Integer testObject, Object actual ) {
-      return testObject.equals( actual );
-    }
-  }
 
   @Test
   public void testStepMeta() throws KettleException {
@@ -62,12 +50,12 @@ public class FilesToResultMetaTest {
 
     Map<String, FieldLoadSaveValidator<?>> fieldLoadSaveValidatorAttributeMap =
       new HashMap<String, FieldLoadSaveValidator<?>>();
-    fieldLoadSaveValidatorAttributeMap.put( "file_type", new ResultFileFieldLoadSaveValidator() );
+    fieldLoadSaveValidatorAttributeMap.put( "file_type",
+      new IntLoadSaveValidator( ResultFile.fileTypeCode.length ) );
 
     LoadSaveTester loadSaveTester =
       new LoadSaveTester( FilesToResultMeta.class, attributes, getterMap, setterMap,
         fieldLoadSaveValidatorAttributeMap, new HashMap<String, FieldLoadSaveValidator<?>>() );
-    loadSaveTester.testRepoRoundTrip();
-    loadSaveTester.testXmlRoundTrip();
+    loadSaveTester.testSerialization();
   }
 }

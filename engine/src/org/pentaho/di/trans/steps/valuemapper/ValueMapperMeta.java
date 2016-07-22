@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -33,8 +33,8 @@ import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.injection.Injection;
 import org.pentaho.di.core.injection.InjectionSupported;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -105,6 +105,7 @@ public class ValueMapperMeta extends BaseStepMeta implements StepMetaInterface {
     this.targetValue = fieldValue;
   }
 
+  @Override
   public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     readData( stepnode );
   }
@@ -114,6 +115,7 @@ public class ValueMapperMeta extends BaseStepMeta implements StepMetaInterface {
     targetValue = new String[count];
   }
 
+  @Override
   public Object clone() {
     ValueMapperMeta retval = (ValueMapperMeta) super.clone();
 
@@ -121,10 +123,8 @@ public class ValueMapperMeta extends BaseStepMeta implements StepMetaInterface {
 
     retval.allocate( count );
 
-    for ( int i = 0; i < count; i++ ) {
-      retval.sourceValue[i] = sourceValue[i];
-      retval.targetValue[i] = targetValue[i];
-    }
+    System.arraycopy( sourceValue, 0, retval.sourceValue, 0, count );
+    System.arraycopy( targetValue, 0, retval.targetValue, 0, count );
 
     return retval;
   }
@@ -152,6 +152,7 @@ public class ValueMapperMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
+  @Override
   public void setDefault() {
     int count = 0;
 
@@ -163,11 +164,12 @@ public class ValueMapperMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
+  @Override
   public void getFields( RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep,
     VariableSpace space, Repository repository, IMetaStore metaStore ) {
     ValueMetaInterface extra = null;
     if ( !Const.isEmpty( getTargetField() ) ) {
-      extra = new ValueMeta( getTargetField(), ValueMetaInterface.TYPE_STRING );
+      extra = new ValueMetaString( getTargetField() );
 
       // Lengths etc?
       // Take the max length of all the strings...
@@ -200,6 +202,7 @@ public class ValueMapperMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
+  @Override
   public String getXML() {
     StringBuilder retval = new StringBuilder();
 
@@ -220,6 +223,7 @@ public class ValueMapperMeta extends BaseStepMeta implements StepMetaInterface {
     return retval.toString();
   }
 
+  @Override
   public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
       fieldToUse = rep.getStepAttributeString( id_step, "field_to_use" );
@@ -240,6 +244,7 @@ public class ValueMapperMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
+  @Override
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       rep.saveStepAttribute( id_transformation, id_step, "field_to_use", fieldToUse );
@@ -257,6 +262,7 @@ public class ValueMapperMeta extends BaseStepMeta implements StepMetaInterface {
 
   }
 
+  @Override
   public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
     RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
@@ -287,11 +293,13 @@ public class ValueMapperMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
+  @Override
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
     TransMeta transMeta, Trans trans ) {
     return new ValueMapper( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 
+  @Override
   public StepDataInterface getStepData() {
     return new ValueMapperData();
   }

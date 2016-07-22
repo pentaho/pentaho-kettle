@@ -251,8 +251,16 @@ public class StringOperationsMeta extends BaseStepMeta implements StepMetaInterf
     return padLen;
   }
 
+  public void setPadLen( String[] value ) {
+    padLen = value;
+  }
+
   public String[] getPadChar() {
     return padChar;
+  }
+
+  public void setPadChar( String[] value ) {
+    padChar = value;
   }
 
   public int[] getTrimType() {
@@ -275,22 +283,43 @@ public class StringOperationsMeta extends BaseStepMeta implements StepMetaInterf
     return initCap;
   }
 
+  public void setInitCap( int[] value ) {
+    initCap = value;
+  }
+
   public int[] getMaskXML() {
     return maskXML;
+  }
+
+  public void setMaskXML( int[] value ) {
+    maskXML = value;
   }
 
   public int[] getDigits() {
     return digits;
   }
 
+  public void setDigits( int[] value ) {
+    digits = value;
+  }
+
   public int[] getRemoveSpecialCharacters() {
     return remove_special_characters;
+  }
+
+  public void setRemoveSpecialCharacters( int[] value ) {
+    remove_special_characters = value;
   }
 
   public int[] getPaddingType() {
     return padding_type;
   }
 
+  public void setPaddingType( int[] value ) {
+    padding_type = value;
+  }
+
+  @Override
   public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     readData( stepnode );
   }
@@ -309,26 +338,23 @@ public class StringOperationsMeta extends BaseStepMeta implements StepMetaInterf
     remove_special_characters = new int[nrkeys];
   }
 
+  @Override
   public Object clone() {
     StringOperationsMeta retval = (StringOperationsMeta) super.clone();
     int nrkeys = fieldInStream.length;
 
     retval.allocate( nrkeys );
-
-    for ( int i = 0; i < nrkeys; i++ ) {
-      retval.fieldInStream[i] = fieldInStream[i];
-      retval.fieldOutStream[i] = fieldOutStream[i];
-      retval.trimType[i] = trimType[i];
-      retval.lowerUpper[i] = lowerUpper[i];
-      retval.padding_type[i] = padding_type[i];
-      retval.padChar[i] = padChar[i];
-      retval.padLen[i] = padLen[i];
-      retval.initCap[i] = initCap[i];
-      retval.maskXML[i] = maskXML[i];
-      retval.digits[i] = digits[i];
-      retval.remove_special_characters[i] = remove_special_characters[i];
-
-    }
+    System.arraycopy( fieldInStream, 0, retval.fieldInStream, 0, nrkeys );
+    System.arraycopy( fieldOutStream, 0, retval.fieldOutStream, 0, nrkeys );
+    System.arraycopy( trimType, 0, retval.trimType, 0, nrkeys );
+    System.arraycopy( lowerUpper, 0, retval.lowerUpper, 0, nrkeys );
+    System.arraycopy( padding_type, 0, retval.padding_type, 0, nrkeys );
+    System.arraycopy( padChar, 0, retval.padChar, 0, nrkeys );
+    System.arraycopy( padLen, 0, retval.padLen, 0, nrkeys );
+    System.arraycopy( initCap, 0, retval.initCap, 0, nrkeys );
+    System.arraycopy( maskXML, 0, retval.maskXML, 0, nrkeys );
+    System.arraycopy( digits, 0, retval.digits, 0, nrkeys );
+    System.arraycopy( remove_special_characters, 0, retval.remove_special_characters, 0, nrkeys );
 
     return retval;
   }
@@ -367,6 +393,7 @@ public class StringOperationsMeta extends BaseStepMeta implements StepMetaInterf
     }
   }
 
+  @Override
   public void setDefault() {
     fieldInStream = null;
     fieldOutStream = null;
@@ -376,6 +403,7 @@ public class StringOperationsMeta extends BaseStepMeta implements StepMetaInterf
     allocate( nrkeys );
   }
 
+  @Override
   public String getXML() {
     StringBuilder retval = new StringBuilder( 500 );
 
@@ -408,6 +436,7 @@ public class StringOperationsMeta extends BaseStepMeta implements StepMetaInterf
     return retval.toString();
   }
 
+  @Override
   public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
 
@@ -439,6 +468,7 @@ public class StringOperationsMeta extends BaseStepMeta implements StepMetaInterf
     }
   }
 
+  @Override
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
 
@@ -465,6 +495,7 @@ public class StringOperationsMeta extends BaseStepMeta implements StepMetaInterf
     }
   }
 
+  @Override
   public void getFields( RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info, StepMeta nextStep,
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     // Add new field?
@@ -495,6 +526,7 @@ public class StringOperationsMeta extends BaseStepMeta implements StepMetaInterf
     }
   }
 
+  @Override
   public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepinfo,
     RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
@@ -593,15 +625,18 @@ public class StringOperationsMeta extends BaseStepMeta implements StepMetaInterf
     }
   }
 
+  @Override
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
     TransMeta transMeta, Trans trans ) {
     return new StringOperations( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 
+  @Override
   public StepDataInterface getStepData() {
     return new StringOperationsData();
   }
 
+  @Override
   public boolean supportsErrorHandling() {
     return true;
   }

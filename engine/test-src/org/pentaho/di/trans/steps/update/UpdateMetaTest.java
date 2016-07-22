@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,10 +27,11 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-
-import junit.framework.TestCase;
 
 import org.apache.commons.lang.StringUtils;
 import org.junit.Assert;
@@ -48,14 +49,25 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
+import org.pentaho.di.trans.steps.loadsave.initializer.InitializerInterface;
+import org.pentaho.di.trans.steps.loadsave.validator.ArrayLoadSaveValidator;
+import org.pentaho.di.trans.steps.loadsave.validator.DatabaseMetaLoadSaveValidator;
+import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
+import org.pentaho.di.trans.steps.loadsave.validator.StringLoadSaveValidator;
 import org.pentaho.metastore.api.IMetaStore;
 
-public class UpdateMetaTest extends TestCase {
+import junit.framework.TestCase;
+
+public class UpdateMetaTest extends TestCase implements InitializerInterface<StepMetaInterface> {
 
   private StepMeta stepMeta;
   private Update upd;
   private UpdateData ud;
   private UpdateMeta umi;
+  LoadSaveTester loadSaveTester;
+  Class<UpdateMeta> testMetaClass = UpdateMeta.class;
 
   public static final String databaseXML =
       "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
@@ -64,9 +76,11 @@ public class UpdateMetaTest extends TestCase {
         + "<password></password>" + "</connection>";
 
 
+  @Override
   @Before
   protected void setUp() throws KettleException {
     KettleEnvironment.init();
+    PluginRegistry.init( true );
     TransMeta transMeta = new TransMeta();
     transMeta.setName( "delete1" );
 
@@ -85,6 +99,66 @@ public class UpdateMetaTest extends TestCase {
     transMeta.addStep( stepMeta );
     upd = new Update( stepMeta, ud, 1, transMeta, trans );
     upd.copyVariablesFrom( transMeta );
+
+    List<String> attributes =
+        Arrays.asList( "schemaName", "tableName", "commitSize", "errorIgnored", "ignoreFlagField",
+            "skipLookup", "useBatchUpdate", "keyStream", "keyLookup", "keyCondition", "keyStream2",
+            "updateLookup", "updateStream", "databaseMeta" );
+
+    Map<String, String> getterMap = new HashMap<String, String>() {
+      {
+        put( "schemaName", "getSchemaName" );
+        put( "tableName", "getTableName" );
+        put( "commitSize", "getCommitSizeVar" );
+        put( "errorIgnored", "isErrorIgnored" );
+        put( "ignoreFlagField", "getIgnoreFlagField" );
+        put( "skipLookup", "isSkipLookup" );
+        put( "useBatchUpdate", "useBatchUpdate" );
+        put( "keyStream", "getKeyStream" );
+        put( "keyLookup", "getKeyLookup" );
+        put( "keyCondition", "getKeyCondition" );
+        put( "keyStream2", "getKeyStream2" );
+        put( "updateLookup", "getUpdateLookup" );
+        put( "updateStream", "getUpdateStream" );
+        put( "databaseMeta", "getDatabaseMeta" );
+      }
+    };
+    Map<String, String> setterMap = new HashMap<String, String>() {
+      {
+        put( "schemaName", "setSchemaName" );
+        put( "tableName", "setTableName" );
+        put( "commitSize", "setCommitSize" );
+        put( "errorIgnored", "setErrorIgnored" );
+        put( "ignoreFlagField", "setIgnoreFlagField" );
+        put( "skipLookup", "setSkipLookup" );
+        put( "useBatchUpdate", "setUseBatchUpdate" );
+        put( "keyStream", "setKeyStream" );
+        put( "keyLookup", "setKeyLookup" );
+        put( "keyCondition", "setKeyCondition" );
+        put( "keyStream2", "setKeyStream2" );
+        put( "updateLookup", "setUpdateLookup" );
+        put( "updateStream", "setUpdateStream" );
+        put( "databaseMeta", "setDatabaseMeta" );
+      }
+    };
+    FieldLoadSaveValidator<String[]> stringArrayLoadSaveValidator =
+        new ArrayLoadSaveValidator<String>( new StringLoadSaveValidator(), 5 );
+
+
+    Map<String, FieldLoadSaveValidator<?>> attrValidatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();
+    attrValidatorMap.put( "keyStream", stringArrayLoadSaveValidator );
+    attrValidatorMap.put( "keyLookup", stringArrayLoadSaveValidator );
+    attrValidatorMap.put( "keyCondition", stringArrayLoadSaveValidator );
+    attrValidatorMap.put( "keyStream2", stringArrayLoadSaveValidator );
+    attrValidatorMap.put( "updateLookup", stringArrayLoadSaveValidator );
+    attrValidatorMap.put( "updateStream", stringArrayLoadSaveValidator );
+    attrValidatorMap.put( "databaseMeta", new DatabaseMetaLoadSaveValidator() );
+
+    Map<String, FieldLoadSaveValidator<?>> typeValidatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();
+
+    loadSaveTester =
+        new LoadSaveTester( testMetaClass, attributes, new ArrayList<String>(), new ArrayList<String>(),
+            getterMap, setterMap, attrValidatorMap, typeValidatorMap, this );
   }
 
   @Test
@@ -116,6 +190,7 @@ public class UpdateMetaTest extends TestCase {
     String schemaTable = "default.tableName";
 
     DatabaseMeta databaseMeta = spy( new DatabaseMeta( databaseXML ) {
+      @Override
       public String getFieldDefinition( ValueMetaInterface v, String tk, String pk, boolean use_autoinc ) {
         return "someValue";
       }
@@ -145,4 +220,16 @@ public class UpdateMetaTest extends TestCase {
     Assert.assertTrue( StringUtils.countMatches( sql, schemaTable ) == 2 );
   }
 
+  // Call the allocate method on the LoadSaveTester meta class
+  @Override
+  public void modify( StepMetaInterface someMeta ) {
+    if ( someMeta instanceof UpdateMeta ) {
+      ( (UpdateMeta) someMeta ).allocate( 5, 5 );
+    }
+  }
+
+  @Test
+  public void testSerialization() throws KettleException {
+    loadSaveTester.testSerialization();
+  }
 }

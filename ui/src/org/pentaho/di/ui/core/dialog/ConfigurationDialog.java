@@ -232,7 +232,6 @@ public abstract class ConfigurationDialog extends Dialog {
 
   protected void optionsSectionLayout( Class<?> PKG, String prefix ) {
     gDetails = new Group( shell, SWT.SHADOW_ETCHED_IN );
-    fdLocal.bottom = new FormAttachment( 100, -510 );
     gDetails.setText( BaseMessages.getString( PKG, prefix + ".DetailsGroup.Label" ) );
     props.setLook( gDetails );
 
@@ -252,11 +251,11 @@ public abstract class ConfigurationDialog extends Dialog {
 
     tabFolder = new CTabFolder( shell, SWT.BORDER );
     props.setLook( tabFolder, Props.WIDGET_STYLE_TAB );
-    fdDetails.bottom = new FormAttachment( tabFolder, -16 );
     fd_tabFolder = new FormData();
     fd_tabFolder.right = new FormAttachment( 100, -15 );
     fd_tabFolder.left = new FormAttachment( 0, 15 );
-    fd_tabFolder.top = new FormAttachment( 0, 276 );
+    fd_tabFolder.top = new FormAttachment( gDetails, 15 );
+    fd_tabFolder.bottom = new FormAttachment( gDetails, 410 );
     tabFolder.setLayoutData( fd_tabFolder );
 
     // Parameters
@@ -268,17 +267,15 @@ public abstract class ConfigurationDialog extends Dialog {
     parametersComposite.setLayout( new FormLayout() );
     tbtmParameters.setControl( parametersComposite );
 
-    ColumnInfo[] cParams =
-        { new ColumnInfo( BaseMessages.getString( PKG, prefix + ".ParamsColumn.Argument" ), ColumnInfo.COLUMN_TYPE_TEXT,
-            false, true, 126 ), // Stepname
-          new ColumnInfo( BaseMessages.getString( PKG, prefix + ".ParamsColumn.Default" ), ColumnInfo.COLUMN_TYPE_TEXT,
-              false, true, 138 ), // Preview size
-
-          new ColumnInfo( BaseMessages.getString( PKG, prefix + ".ParamsColumn.Value" ), ColumnInfo.COLUMN_TYPE_TEXT,
-              false, false, 142 ), // Preview size
-
-          new ColumnInfo( BaseMessages.getString( PKG, prefix + ".ParamsColumn.Description" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false, true, 181 ), // Preview size
+    ColumnInfo[] cParams = {
+      new ColumnInfo( BaseMessages.getString( PKG, prefix + ".ParamsColumn.Argument" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false, true, 126 ), // Stepname
+      new ColumnInfo( BaseMessages.getString( PKG, prefix + ".ParamsColumn.Default" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false, true, 138 ), // Preview size
+      new ColumnInfo( BaseMessages.getString( PKG, prefix + ".ParamsColumn.Value" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false, false, 142 ), // Preview size
+      new ColumnInfo( BaseMessages.getString( PKG, prefix + ".ParamsColumn.Description" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false, true, 181 ), // Preview size
     };
 
     String[] namedParams = abstractMeta.listParameters();
@@ -288,16 +285,17 @@ public abstract class ConfigurationDialog extends Dialog {
             nrParams, false, null, props, false );
     FormData fdParams = new FormData();
     fdParams.top = new FormAttachment( 0, 10 );
+    fdParams.right = new FormAttachment( 100, -10 );
+    fdParams.bottom = new FormAttachment( 100, -45 );
     fdParams.left = new FormAttachment( 0, 10 );
     wParams.setLayoutData( fdParams );
 
     tabFolder.setSelection( 0 );
 
     Button argsButton = new Button( parametersComposite, SWT.NONE );
-    fdParams.right = new FormAttachment( argsButton, 0, SWT.RIGHT );
-    fdParams.bottom = new FormAttachment( argsButton, -6 );
     FormData fd_argsButton = new FormData();
     fd_argsButton.right = new FormAttachment( 100, -10 );
+    fd_argsButton.top = new FormAttachment( wParams, 6 );
     fd_argsButton.bottom = new FormAttachment( 100, -10 );
     argsButton.setLayoutData( fd_argsButton );
     argsButton.setText( BaseMessages.getString( PKG, prefix + ".Arguments.Label" ) );
@@ -317,11 +315,11 @@ public abstract class ConfigurationDialog extends Dialog {
     variablesComposite.setLayout( new FormLayout() );
     tbtmVariables.setControl( variablesComposite );
 
-    ColumnInfo[] cVariables =
-        { new ColumnInfo( BaseMessages.getString( PKG, prefix + ".VariablesColumn.Argument" ),
-            ColumnInfo.COLUMN_TYPE_TEXT, false, false, 287 ), // Stepname
-          new ColumnInfo( BaseMessages.getString( PKG, prefix + ".VariablesColumn.Value" ), ColumnInfo.COLUMN_TYPE_TEXT,
-              false, false, 300 ), // Preview size
+    ColumnInfo[] cVariables = {
+      new ColumnInfo( BaseMessages.getString( PKG, prefix + ".VariablesColumn.Argument" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false, false, 287 ), // Stepname
+      new ColumnInfo( BaseMessages.getString( PKG, prefix + ".VariablesColumn.Value" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false, false, 300 ), // Preview size
     };
 
     int nrVariables = configuration.getVariables() != null ? configuration.getVariables().size() : 0;
@@ -331,20 +329,20 @@ public abstract class ConfigurationDialog extends Dialog {
 
     FormData fdVariables = new FormData();
     fdVariables.top = new FormAttachment( 0, 10 );
-    fdVariables.left = new FormAttachment( 0, 10 );
-    fdVariables.bottom = new FormAttachment( 0, 221 );
     fdVariables.right = new FormAttachment( 100, -10 );
+    fdVariables.bottom = new FormAttachment( 100, -10 );
+    fdVariables.left = new FormAttachment( 0, 10 );
 
     wVariables.setLayoutData( fdVariables );
   }
 
-  protected void buttonsSectionLayout( Class<?> PKG, String prefix, final String docTitle, final String docUrl, final String docHeader ) {
+  protected void buttonsSectionLayout( Class<?> PKG, String prefix, final String docTitle, final String docUrl,
+      final String docHeader ) {
 
     // Bottom buttons and separator
 
     alwaysShowOption = new Button( shell, SWT.CHECK );
     props.setLook( alwaysShowOption );
-    fd_tabFolder.bottom = new FormAttachment( 100, -106 );
     alwaysShowOption.setSelection( abstractMeta.isAlwaysShowRunOptions() );
 
     alwaysShowOption.setToolTipText( BaseMessages.getString( PKG, prefix + ".alwaysShowOption" ) );
@@ -357,6 +355,7 @@ public abstract class ConfigurationDialog extends Dialog {
 
     wCancel = new Button( shell, SWT.PUSH );
     FormData fd_wCancel = new FormData();
+    fd_wCancel.bottom = new FormAttachment( 100, -15 );
     wCancel.setLayoutData( fd_wCancel );
     wCancel.setText( BaseMessages.getString( PKG, "System.Button.Cancel" ) );
     wCancel.addSelectionListener( new SelectionAdapter() {
@@ -369,6 +368,7 @@ public abstract class ConfigurationDialog extends Dialog {
     FormData fd_wOK = new FormData();
     fd_wOK.top = new FormAttachment( wCancel, 0, SWT.TOP );
     fd_wOK.right = new FormAttachment( wCancel, -5 );
+    fd_wOK.bottom = new FormAttachment( 100, -15 );
     wOK.setLayoutData( fd_wOK );
     wOK.setText( BaseMessages.getString( PKG, prefix + ".Button.Launch" ) );
     wOK.addSelectionListener( new SelectionAdapter() {
@@ -382,6 +382,7 @@ public abstract class ConfigurationDialog extends Dialog {
     btnHelp.setText( BaseMessages.getString( PKG, "System.Button.Help" ) );
     btnHelp.setToolTipText( BaseMessages.getString( PKG, "System.Tooltip.Help" ) );
     FormData fd_btnHelp = new FormData();
+    fd_btnHelp.bottom = new FormAttachment( 100, -15 );
     fd_btnHelp.left = new FormAttachment( 0, 15 );
     btnHelp.setLayoutData( fd_btnHelp );
     btnHelp.addSelectionListener( new SelectionAdapter() {
@@ -392,29 +393,26 @@ public abstract class ConfigurationDialog extends Dialog {
     } );
 
     Label separator = new Label( shell, SWT.SEPARATOR | SWT.HORIZONTAL );
-    fd_wCancel.top = new FormAttachment( separator, 15 );
-    fd_btnHelp.top = new FormAttachment( separator, 15 );
-    fd_wCancel.right = new FormAttachment( separator, 0, SWT.RIGHT );
+    if ( Const.isLinux() ) {
+      fd_wCancel.top = new FormAttachment( separator, 10 );
+    } else {
+      fd_wCancel.top = new FormAttachment( separator, 15 );
+    }
+    if ( Const.isLinux() ) {
+      fd_btnHelp.top = new FormAttachment( separator, 10 );
+    } else {
+      fd_btnHelp.top = new FormAttachment( separator, 15 );
+    }
+    fd_wCancel.right = new FormAttachment( 100, -15 );
     FormData fd_separator = new FormData();
     fd_separator.right = new FormAttachment( 100, -15 );
     fd_separator.left = new FormAttachment( 0, 15 );
     fd_separator.top = new FormAttachment( alwaysShowOption, 15 );
-    fd_separator.bottom = new FormAttachment( alwaysShowOption, 17, SWT.BOTTOM );
     separator.setLayoutData( fd_separator );
   }
 
   protected void openDialog() {
-
-    if ( Const.isWindows() ) {
-      shell.setSize( 653, 671 );
-    }
-    if ( Const.isLinux() ) {
-      shell.setSize( 740, 678 );
-    }
-    if ( Const.isOSX() ) {
-      shell.setSize( 653, 678 );
-    }
-
+    shell.pack();
     // Set the focus on the OK button
     wOK.setFocus();
     shell.open();
@@ -422,8 +420,8 @@ public abstract class ConfigurationDialog extends Dialog {
     Rectangle shellBounds = getParent().getBounds();
     Point dialogSize = shell.getSize();
 
-    shell.setLocation( shellBounds.x + ( shellBounds.width - dialogSize.x ) / 2, shellBounds.y + ( shellBounds.height
-        - dialogSize.y ) / 2 );
+    shell.setLocation( shellBounds.x + ( shellBounds.width - dialogSize.x ) / 2, shellBounds.y
+        + ( shellBounds.height - dialogSize.y ) / 2 );
 
     while ( !shell.isDisposed() ) {
       if ( !display.readAndDispatch() ) {
@@ -436,6 +434,8 @@ public abstract class ConfigurationDialog extends Dialog {
 
     gLocal = new Group( shell, SWT.SHADOW_ETCHED_IN );
     gLocal.setText( BaseMessages.getString( PKG, prefix + ".LocalGroup.Label" ) );
+    FormLayout fl = new FormLayout();
+    fl.marginHeight = 25;
     gLocal.setLayout( new FormLayout() );
     props.setLook( gLocal );
     fdLocal = new FormData();
@@ -451,7 +451,8 @@ public abstract class ConfigurationDialog extends Dialog {
     wExecLocal.setToolTipText( BaseMessages.getString( PKG, prefix + ".ExecLocal.Tooltip" ) );
     props.setLook( wExecLocal );
     fdExecLocal = new FormData();
-    fdExecLocal.top = new FormAttachment( 11 );
+    fdExecLocal.top = new FormAttachment( 0, 10 );
+    fdExecLocal.left = new FormAttachment( 0, 10 );
     wExecLocal.setLayoutData( fdExecLocal );
     wExecLocal.addSelectionListener( new SelectionAdapter() {
       public void widgetSelected( SelectionEvent e ) {
@@ -465,9 +466,8 @@ public abstract class ConfigurationDialog extends Dialog {
       composite.setLayout( new FormLayout() );
       props.setLook( composite );
       composite.setToolTipText( BaseMessages.getString( PKG, prefix + ".ExecRemote.DisabledTooltip" ) );
-      fdExecLocal.left = new FormAttachment( composite, 0, SWT.LEFT );
       fdComposite = new FormData();
-      fdComposite.left = new FormAttachment( wExecLocal, 10, SWT.LEFT );
+      fdComposite.left = new FormAttachment( 0, 10 );
       fdComposite.top = new FormAttachment( wExecLocal, 7 );
       composite.setLayoutData( fdComposite );
 
@@ -483,7 +483,6 @@ public abstract class ConfigurationDialog extends Dialog {
       wExecRemote.setText( BaseMessages.getString( PKG, prefix + ".ExecRemote.Label" ) );
       wExecRemote.setToolTipText( BaseMessages.getString( PKG, prefix + ".ExecRemote.Tooltip" ) );
       props.setLook( wExecRemote );
-      fdExecLocal.left = new FormAttachment( wExecRemote, 0, SWT.LEFT );
       fdExecRemote = new FormData();
       fdExecRemote.left = new FormAttachment( 0, 10 );
       fdExecRemote.top = new FormAttachment( wExecLocal, 7 );
@@ -499,9 +498,9 @@ public abstract class ConfigurationDialog extends Dialog {
     // separator
     environmentSeparator = new Label( gLocal, SWT.SEPARATOR | SWT.VERTICAL );
     FormData fd_environmentSeparator = new FormData();
-    fd_environmentSeparator.height = 83;
-    fd_environmentSeparator.top = new FormAttachment( wExecLocal, 0, SWT.TOP );
-    fd_environmentSeparator.left = new FormAttachment( 0, 113 );
+    fd_environmentSeparator.top = new FormAttachment( 0, 10 );
+    fd_environmentSeparator.left = new FormAttachment( wExecLocal, 50 );
+    fd_environmentSeparator.bottom = new FormAttachment( 100, -10 );
     environmentSeparator.setLayoutData( fd_environmentSeparator );
 
     // stacked layout composite
@@ -511,8 +510,8 @@ public abstract class ConfigurationDialog extends Dialog {
     stackedLayoutComposite.setLayout( stackedLayout );
     FormData fd_stackedLayoutComposite = new FormData();
     fd_stackedLayoutComposite.top = new FormAttachment( 0 );
-    fd_stackedLayoutComposite.left = new FormAttachment( environmentSeparator, 7 );
-    fd_stackedLayoutComposite.bottom = new FormAttachment( 100, -5 );
+    fd_stackedLayoutComposite.left = new FormAttachment( environmentSeparator, 5 );
+    fd_stackedLayoutComposite.bottom = new FormAttachment( 100, -10 );
     fd_stackedLayoutComposite.right = new FormAttachment( 100, -7 );
     stackedLayoutComposite.setLayoutData( fd_stackedLayoutComposite );
 
@@ -538,6 +537,9 @@ public abstract class ConfigurationDialog extends Dialog {
     FormData fd_localDescriptionLabel = new FormData();
     fd_localDescriptionLabel.left = new FormAttachment( environmentSeparator, 5 );
     fd_localDescriptionLabel.top = new FormAttachment( 0, 12 );
+    if ( Const.isOSX() ) {
+      fd_localDescriptionLabel.top = new FormAttachment( 0, 10 );
+    }
     localDescriptionLabel.setLayoutData( fd_localDescriptionLabel );
   }
 

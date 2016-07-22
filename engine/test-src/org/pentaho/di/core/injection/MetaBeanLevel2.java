@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -29,6 +29,11 @@ public class MetaBeanLevel2 extends MetaBeanLevel2Base {
 
   @InjectionDeep
   private MetaBeanLevel3[] files;
+
+  @InjectionDeep( prefix = "SECOND" )
+  private MetaBeanLevel4 filesSecond;
+  @InjectionDeep( prefix = "THIRD" )
+  private MetaBeanLevel4 filesThird;
 
   @Injection( name = "FILENAME_ARRAY" )
   private String[] filenames;

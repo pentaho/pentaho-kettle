@@ -420,7 +420,7 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.trans.HasDatabasesInterface#nrDatabases()
    */
   @Override
@@ -430,7 +430,7 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.trans.HasDatabasesInterface#getDatabase(int)
    */
   @Override
@@ -641,7 +641,7 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.core.gui.UndoInterface#addUndo(java.lang.Object[], java.lang.Object[], int[],
    * org.pentaho.di.core.gui.Point[], org.pentaho.di.core.gui.Point[], int, boolean)
    */
@@ -697,7 +697,7 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.core.gui.UndoInterface#nextUndo()
    */
   @Override
@@ -716,7 +716,7 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.core.gui.UndoInterface#viewNextUndo()
    */
   @Override
@@ -734,7 +734,7 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
   // get previous undo, change position
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.core.gui.UndoInterface#previousUndo()
    */
   @Override
@@ -769,7 +769,7 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
   // View previous undo, don't change position
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.core.gui.UndoInterface#viewPreviousUndo()
    */
   @Override
@@ -785,7 +785,7 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.core.gui.UndoInterface#getMaxUndo()
    */
   @Override
@@ -795,7 +795,7 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.core.gui.UndoInterface#setMaxUndo(int)
    */
   @Override
@@ -1048,7 +1048,7 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.trans.HasDatabaseInterface#addOrReplaceDatabase(org.pentaho.di.core.database.DatabaseMeta)
    */
   @Override
@@ -1069,7 +1069,7 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.trans.HasDatabasesInterface#addDatabase(org.pentaho.di.core.database.DatabaseMeta)
    */
   @Override
@@ -1081,7 +1081,7 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.trans.HasDatabasesInterface#addDatabase(int, org.pentaho.di.core.database.DatabaseMeta)
    */
   @Override
@@ -1115,7 +1115,7 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.trans.HasDatabasesInterface#indexOfDatabase(org.pentaho.di.core.database.DatabaseMeta)
    */
   @Override
@@ -1136,7 +1136,7 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.trans.HasDatabasesInterface#haveConnectionsChanged()
    */
   @Override
@@ -1156,7 +1156,7 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.trans.HasDatabasesInterface#removeDatabase(int)
    */
   @Override
@@ -1190,7 +1190,7 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.core.variables.VariableSpace#copyVariablesFrom(org.pentaho.di.core.variables.VariableSpace)
    */
 
@@ -1201,7 +1201,7 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.core.variables.VariableSpace#environmentSubstitute(java.lang.String)
    */
   @Override
@@ -1211,7 +1211,7 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   /*
    * (non-javadoc)
-   * 
+   *
    * @see org.pentaho.di.core.variables.VariableSpace#environmentSubstitute(java.lang.String[])
    */
   @Override
@@ -1226,7 +1226,7 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.core.variables.VariableSpace#getParentVariableSpace()
    */
   @Override
@@ -1236,7 +1236,7 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * org.pentaho.di.core.variables.VariableSpace#setParentVariableSpace(org.pentaho.di.core.variables.VariableSpace)
    */
@@ -1247,7 +1247,7 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.core.variables.VariableSpace#getVariable(java.lang.String, java.lang.String)
    */
   @Override
@@ -1257,7 +1257,7 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.core.variables.VariableSpace#getVariable(java.lang.String)
    */
   @Override
@@ -1267,7 +1267,7 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.core.variables.VariableSpace#getBooleanValueOfVariable(java.lang.String, boolean)
    */
   @Override
@@ -1283,7 +1283,7 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * org.pentaho.di.core.variables.VariableSpace#initializeVariablesFrom(org.pentaho.di.core.variables.VariableSpace)
    */
@@ -1294,7 +1294,7 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.core.variables.VariableSpace#listVariables()
    */
   @Override
@@ -1304,7 +1304,7 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.core.variables.VariableSpace#setVariable(java.lang.String, java.lang.String)
    */
   @Override
@@ -1314,7 +1314,7 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.core.variables.VariableSpace#shareVariablesWith(org.pentaho.di.core.variables.VariableSpace)
    */
   @Override
@@ -1324,7 +1324,7 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.core.variables.VariableSpace#injectVariables(java.util.Map)
    */
   @Override
@@ -1334,7 +1334,7 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.core.parameters.NamedParams#addParameterDefinition(java.lang.String, java.lang.String,
    * java.lang.String)
    */
@@ -1345,7 +1345,7 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.core.parameters.NamedParams#getParameterDescription(java.lang.String)
    */
   @Override
@@ -1355,7 +1355,7 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.core.parameters.NamedParams#getParameterDefault(java.lang.String)
    */
   @Override
@@ -1365,7 +1365,7 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.core.parameters.NamedParams#getParameterValue(java.lang.String)
    */
   @Override
@@ -1375,7 +1375,7 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.core.parameters.NamedParams#listParameters()
    */
   @Override
@@ -1385,7 +1385,7 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.core.parameters.NamedParams#setParameterValue(java.lang.String, java.lang.String)
    */
   @Override
@@ -1395,7 +1395,7 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.core.parameters.NamedParams#eraseParameters()
    */
   @Override
@@ -1405,7 +1405,7 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.core.parameters.NamedParams#clearParameters()
    */
   @Override
@@ -1415,7 +1415,7 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.core.parameters.NamedParams#copyParametersFrom(org.pentaho.di.core.parameters.NamedParams)
    */
   @Override
@@ -1425,7 +1425,7 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.core.parameters.NamedParams#activateParameters()
    */
   @Override
@@ -1456,7 +1456,7 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.core.logging.LoggingObjectInterface#getLogLevel()
    */
   @Override

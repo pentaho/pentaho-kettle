@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -71,8 +71,7 @@ public class GetRepositoryNamesMetaTest {
     LoadSaveTester tester = new LoadSaveTester( GetRepositoryNamesMeta.class, attributes, getterMap, setterMap,
       new HashMap<String, FieldLoadSaveValidator<?>>(), fieldLoadSaveValidatorTypeMap );
 
-    tester.testRepoRoundTrip();
-    tester.testXmlRoundTrip();
+    tester.testSerialization();
   }
 
   public class ObjectTypeSelectionLoadSaveValidator implements FieldLoadSaveValidator<ObjectTypeSelection> {
@@ -91,4 +90,5 @@ public class GetRepositoryNamesMetaTest {
     }
 
   }
+
 }

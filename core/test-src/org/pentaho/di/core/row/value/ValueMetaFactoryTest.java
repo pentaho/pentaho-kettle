@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,8 +22,11 @@
 
 package org.pentaho.di.core.row.value;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -31,12 +34,14 @@ import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettlePluginException;
+import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.ValueMetaInterface;
 
 public class ValueMetaFactoryTest {
@@ -44,6 +49,52 @@ public class ValueMetaFactoryTest {
   @BeforeClass
   public static void beforeClassSetUp() throws KettleException {
     KettleClientEnvironment.init();
+  }
+
+  @Test
+  public void testClone() throws KettleException {
+    ValueMetaInterface original = new ValueMetaString();
+    original.setCollatorLocale( Locale.CANADA );
+    original.setCollatorStrength( 3 );
+    ValueMetaInterface cloned = ValueMetaFactory.cloneValueMeta( original );
+    assertNotNull( cloned );
+    assertNotSame( original, cloned );
+    valueMetaDeepEquals( original, cloned );
+  }
+
+  private static void valueMetaDeepEquals( ValueMetaInterface expected, ValueMetaInterface actual ) {
+    if ( expected == null && actual == null ) {
+      return;
+    }
+    assertEquals( expected.getName(), actual.getName() );
+    assertEquals( expected.getType(), actual.getType() );
+    assertEquals( expected.getLength(), actual.getLength() );
+    assertEquals( expected.getPrecision(), actual.getPrecision() );
+    assertEquals( expected.getConversionMask(), actual.getConversionMask() );
+    assertEquals( expected.getDecimalSymbol(), actual.getDecimalSymbol() );
+    assertEquals( expected.getGroupingSymbol(), actual.getGroupingSymbol() );
+    assertEquals( expected.getStorageType(), actual.getStorageType() );
+    assertEquals( expected.getStringEncoding(), actual.getStringEncoding() );
+    assertEquals( expected.getTrimType(), actual.getTrimType() );
+    assertEquals( expected.isDateFormatLenient(), actual.isDateFormatLenient() );
+    assertEquals( expected.getDateFormatLocale(), actual.getDateFormatLocale() );
+    assertEquals( expected.getDateFormatTimeZone(), actual.getDateFormatTimeZone() );
+    assertEquals( expected.isLenientStringToNumber(), actual.isLenientStringToNumber() );
+    assertEquals( expected.isLargeTextField(), actual.isLargeTextField() );
+    assertEquals( expected.getComments(), actual.getComments() );
+    assertEquals( expected.isCaseInsensitive(), actual.isCaseInsensitive() );
+    assertEquals( expected.isCollatorDisabled(), actual.isCollatorDisabled() );
+    assertEquals( expected.getCollatorStrength(), actual.getCollatorStrength() );
+    assertArrayEquals( expected.getIndex(), actual.getIndex() );
+    assertEquals( expected.getOrigin(), actual.getOrigin() );
+    assertEquals( expected.isOriginalAutoIncrement(), actual.isOriginalAutoIncrement() );
+    assertEquals( expected.getOriginalColumnType(), actual.getOriginalColumnType() );
+    assertEquals( expected.getOriginalColumnTypeName(), actual.getOriginalColumnTypeName() );
+    assertEquals( expected.isOriginalNullable(), actual.isOriginalNullable() );
+    assertEquals( expected.getOriginalPrecision(), actual.getOriginalPrecision() );
+    assertEquals( expected.getOriginalScale(), actual.getOriginalScale() );
+    assertEquals( expected.isOriginalSigned(), actual.isOriginalSigned() );
+    valueMetaDeepEquals( expected.getStorageMetadata(), actual.getStorageMetadata() );
   }
 
   @Test
@@ -415,5 +466,19 @@ public class ValueMetaFactoryTest {
     assertEquals( null, ValueMetaFactory.guessValueMetaInterface( new Float( 1.0 ) ) );
     assertEquals( null, ValueMetaFactory.guessValueMetaInterface( new StringBuilder() ) );
     assertEquals( null, ValueMetaFactory.guessValueMetaInterface( (byte) 1 ) );
+  }
+
+  @Test
+  public void testGetNativeDataTypeClass() throws KettlePluginException {
+    for ( String valueMetaName : ValueMetaFactory.getValueMetaNames() ) {
+      int valueMetaID = ValueMetaFactory.getIdForValueMeta( valueMetaName );
+      ValueMetaInterface valueMeta = ValueMetaFactory.createValueMeta( valueMetaID );
+      try {
+        Class<?> clazz = valueMeta.getNativeDataTypeClass();
+        assertNotNull( clazz );
+      } catch ( KettleValueException kve ) {
+        fail( valueMetaName + " should implement getNativeDataTypeClass()" );
+      }
+    }
   }
 }

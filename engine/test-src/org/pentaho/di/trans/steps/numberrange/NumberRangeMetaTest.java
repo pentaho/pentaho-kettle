@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -37,21 +37,6 @@ import org.pentaho.di.trans.steps.loadsave.validator.ListLoadSaveValidator;
 
 public class NumberRangeMetaTest {
 
-  public class NumberRangeRuleFieldLoadSaveValidator implements FieldLoadSaveValidator<NumberRangeRule> {
-    @Override
-    public NumberRangeRule getTestObject() {
-      return new NumberRangeRule(
-        new Random().nextDouble(),
-        new Random().nextDouble(),
-        UUID.randomUUID().toString() );
-    }
-
-    @Override
-    public boolean validateTestObject( NumberRangeRule testObject, Object actual ) {
-      return testObject.equals( actual );
-    }
-  }
-
   @Test
   public void testStepMeta() throws KettleException {
     List<String> attributes = Arrays.asList( "inputField", "outputField", "fallBackValue", "rules" );
@@ -76,7 +61,21 @@ public class NumberRangeMetaTest {
     LoadSaveTester loadSaveTester = new LoadSaveTester(
       NumberRangeMeta.class, attributes, getterMap, setterMap,
       fieldLoadSaveValidatorAttributeMap, new HashMap<String, FieldLoadSaveValidator<?>>() );
-    loadSaveTester.testRepoRoundTrip();
-    loadSaveTester.testXmlRoundTrip();
+    loadSaveTester.testSerialization();
+  }
+
+  public class NumberRangeRuleFieldLoadSaveValidator implements FieldLoadSaveValidator<NumberRangeRule> {
+    @Override
+    public NumberRangeRule getTestObject() {
+      return new NumberRangeRule(
+        new Random().nextDouble(),
+        new Random().nextDouble(),
+        UUID.randomUUID().toString() );
+    }
+
+    @Override
+    public boolean validateTestObject( NumberRangeRule testObject, Object actual ) {
+      return testObject.equals( actual );
+    }
   }
 }

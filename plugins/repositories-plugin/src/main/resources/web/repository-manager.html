@@ -1,0 +1,34 @@
+<div class="main_div">
+  <div class="title_text margin_bottom_30">Repository Manager</div>
+  <div id="table-wrapper" class="margin_bottom_20 table_border">
+    <div id="table-scroll">
+      <table id="repoMngTable">
+        <tr ng-repeat="repository in model.repositories" ng-class="{active : repository === model.selectedRepository}"  ng-click="selectRepository(repository)">
+          <td class="bullet" />
+          <td class="repo_type text_left">
+            <div class="repoType">{{repository.displayName}}</div>
+            <div id="repoDesc">{{repository.description}}</div>
+          </td>
+          <td class="default">
+            <button class="defaultBtn" ng-click="setDefault(repository.displayName)" ng-show="repository.isDefault == false" >Set Default</button>
+            <button class="defaultBtn activate" ng-click="setDefault(null)" ng-show="repository.isDefault == true">Default</button>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </div>
+  <div>
+    <button id="deleteBtn" class="right margin_left_10 secondary" type="button" ng-class="{invisible : !model.selectedRepository || model.repositories.length == 0}" ng-click="delete(model.selectedRepository)">Delete</button>
+    <button id="editBtn" class="right secondary" type="button" style="margin-left: 85px;" ng-class="{invisible : !model.selectedRepository || model.repositories.length == 0}" ng-click="edit(model.selectedRepository)">Edit</button>
+    <button id="addBtn" class="right standard" type="button" ng-click="add()">Add</button>
+  </div>
+  <div class="bottom">
+    <div class="margin_bottom_20">
+      <hr />
+    </div>
+    <div>
+      <img class="left helpImg" alt="" src="images/u42.png" /><a id="btnHelp" class="left" ng-click="help()">Help</a>
+      <button id="btnClose" class="right secondary" type="button" ng-click="close()">Close</button>
+    </div>
+  </div>
+</div>

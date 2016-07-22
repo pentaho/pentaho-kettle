@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -60,18 +60,17 @@ public class TransExecutionConfigurationDialog extends ConfigurationDialog {
   private Button showDialogRunCheckbox;
 
   public TransExecutionConfigurationDialog( Shell parent, TransExecutionConfiguration configuration,
-      TransMeta transMeta ) {
+    TransMeta transMeta ) {
     super( parent, configuration, transMeta );
   }
 
   protected void serverOptionsComposite( Class<?> PKG, String prefix ) {
-
     wlRemoteHost = new Label( serverOptionsComposite, SWT.NONE );
     props.setLook( wlRemoteHost );
     wlRemoteHost.setText( BaseMessages.getString( PKG, prefix + ".RemoteHost.Label" ) );
     wlRemoteHost.setToolTipText( BaseMessages.getString( PKG, prefix + ".RemoteHost.Tooltip" ) );
     FormData fdlRemoteHost = new FormData();
-    fdlRemoteHost.top = new FormAttachment( 0, 12 );
+    fdlRemoteHost.top = new FormAttachment( 0, 10 );
     fdlRemoteHost.left = new FormAttachment( environmentSeparator, 5 );
     wlRemoteHost.setLayoutData( fdlRemoteHost );
 
@@ -80,8 +79,8 @@ public class TransExecutionConfigurationDialog extends ConfigurationDialog {
     props.setLook( wRemoteHost );
     FormData fdRemoteHost = new FormData();
     fdRemoteHost.left = new FormAttachment( wlRemoteHost, 0, SWT.LEFT );
-    fdRemoteHost.right = new FormAttachment( 100, -293 );
-    fdRemoteHost.top = new FormAttachment( wlRemoteHost, 10 );
+    fdRemoteHost.width = 170;
+    fdRemoteHost.top = new FormAttachment( wlRemoteHost, 8 );
     wRemoteHost.setLayoutData( fdRemoteHost );
     for ( int i = 0; i < abstractMeta.getSlaveServers().size(); i++ ) {
       SlaveServer slaveServer = abstractMeta.getSlaveServers().get( i );
@@ -94,9 +93,8 @@ public class TransExecutionConfigurationDialog extends ConfigurationDialog {
     props.setLook( wPassExport );
     FormData fdPassExport = new FormData();
     fdPassExport.left = new FormAttachment( wRemoteHost, 0, SWT.LEFT );
-    fdPassExport.top = new FormAttachment( wRemoteHost, 10 );
+    fdPassExport.top = new FormAttachment( wRemoteHost, 8 );
     wPassExport.setLayoutData( fdPassExport );
-
   }
 
   protected void clusteredOptionsComposite() {
@@ -107,6 +105,9 @@ public class TransExecutionConfigurationDialog extends ConfigurationDialog {
         "TransExecutionConfigurationDialog.ClusterDescription.Label" ) );
     FormData fd_clusterDescriptionLabel = new FormData();
     fd_clusterDescriptionLabel.top = new FormAttachment( 0, 12 );
+    if ( Const.isOSX() ) {
+      fd_clusterDescriptionLabel.top = new FormAttachment( 0, 10 );
+    }
     fd_clusterDescriptionLabel.left = new FormAttachment( environmentSeparator, 5 );
     clusterDescriptionLabel.setLayoutData( fd_clusterDescriptionLabel );
 
@@ -114,6 +115,9 @@ public class TransExecutionConfigurationDialog extends ConfigurationDialog {
     props.setLook( showDialogRunCheckbox );
     FormData fd_resroucesCheckBox = new FormData();
     fd_resroucesCheckBox.top = new FormAttachment( clusterDescriptionLabel, 10 );
+    if ( Const.isOSX() ) {
+      fd_resroucesCheckBox.top = new FormAttachment( clusterDescriptionLabel, 8 );
+    }
     fd_resroucesCheckBox.left = new FormAttachment( clusterDescriptionLabel, 0, SWT.LEFT );
     showDialogRunCheckbox.setLayoutData( fd_resroucesCheckBox );
     showDialogRunCheckbox.setText( BaseMessages.getString( PKG,
@@ -121,14 +125,21 @@ public class TransExecutionConfigurationDialog extends ConfigurationDialog {
   }
 
   protected void optionsSectionControls() {
+    wClearLog = new Button( gDetails, SWT.CHECK );
+    wClearLog.setText( BaseMessages.getString( PKG, "TransExecutionConfigurationDialog.ClearLog.Label" ) );
+    wClearLog.setToolTipText( BaseMessages.getString( PKG, "TransExecutionConfigurationDialog.ClearLog.Tooltip" ) );
+    props.setLook( wClearLog );
+    FormData fdClearLog = new FormData();
+    fdClearLog.top = new FormAttachment( 0, 10 );
+    fdClearLog.left = new FormAttachment( 0, 10 );
+    wClearLog.setLayoutData( fdClearLog );
 
     wSafeMode = new Button( gDetails, SWT.CHECK );
     wSafeMode.setText( BaseMessages.getString( PKG, "TransExecutionConfigurationDialog.SafeMode.Label" ) );
     wSafeMode.setToolTipText( BaseMessages.getString( PKG, "TransExecutionConfigurationDialog.SafeMode.Tooltip" ) );
     props.setLook( wSafeMode );
     FormData fdSafeMode = new FormData();
-    fdSafeMode.right = new FormAttachment( 0, 186 );
-    fdSafeMode.top = new FormAttachment( 0, 30 );
+    fdSafeMode.top = new FormAttachment( wClearLog, 7 );
     fdSafeMode.left = new FormAttachment( 0, 10 );
     wSafeMode.setLayoutData( fdSafeMode );
 
@@ -138,43 +149,27 @@ public class TransExecutionConfigurationDialog extends ConfigurationDialog {
         "TransExecutionConfigurationDialog.GatherMetrics.Tooltip" ) );
     props.setLook( wGatherMetrics );
     FormData fdGatherMetrics = new FormData();
-    fdGatherMetrics.right = new FormAttachment( 0, 230 );
-    fdGatherMetrics.top = new FormAttachment( 0, 55 );
+    fdGatherMetrics.top = new FormAttachment( wSafeMode, 7 );
     fdGatherMetrics.left = new FormAttachment( 0, 10 );
+    fdGatherMetrics.bottom = new FormAttachment( 100, -10 );
     wGatherMetrics.setLayoutData( fdGatherMetrics );
 
-    wClearLog = new Button( gDetails, SWT.CHECK );
-    wClearLog.setText( BaseMessages.getString( PKG, "TransExecutionConfigurationDialog.ClearLog.Label" ) );
-    wClearLog.setToolTipText( BaseMessages.getString( PKG, "TransExecutionConfigurationDialog.ClearLog.Tooltip" ) );
-    props.setLook( wClearLog );
-    FormData fdClearLog = new FormData();
-    fdClearLog.right = new FormAttachment( 0, 200 );
-    fdClearLog.top = new FormAttachment( 0, 5 );
-    fdClearLog.left = new FormAttachment( 0, 10 );
-    wClearLog.setLayoutData( fdClearLog );
-
-    wlLogLevel = new Label( gDetails, SWT.RIGHT );
+    wlLogLevel = new Label( gDetails, SWT.NONE );
     props.setLook( wlLogLevel );
     wlLogLevel.setText( BaseMessages.getString( PKG, "TransExecutionConfigurationDialog.LogLevel.Label" ) );
     wlLogLevel.setToolTipText( BaseMessages.getString( PKG, "TransExecutionConfigurationDialog.LogLevel.Tooltip" ) );
     FormData fdlLogLevel = new FormData();
-    fdlLogLevel.right = new FormAttachment( 0, 333 );
-    fdlLogLevel.top = new FormAttachment( 0, 7 );
-    fdlLogLevel.left = new FormAttachment( 0, 260 );
+    fdlLogLevel.top = new FormAttachment( 0, 10 );
+    fdlLogLevel.left = new FormAttachment( 45, 0 );
     wlLogLevel.setLayoutData( fdlLogLevel );
 
     wLogLevel = new CCombo( gDetails, SWT.READ_ONLY | SWT.BORDER );
     wLogLevel.setToolTipText( BaseMessages.getString( PKG, "TransExecutionConfigurationDialog.LogLevel.Tooltip" ) );
     props.setLook( wLogLevel );
     FormData fdLogLevel = new FormData();
+    fdLogLevel.top = new FormAttachment( wlLogLevel, -2, SWT.TOP );
+    fdLogLevel.width = 180;
     fdLogLevel.left = new FormAttachment( wlLogLevel, 6 );
-    fdLogLevel.width = 200;
-    if ( Const.isOSX() ) {
-      fdLogLevel.top = new FormAttachment( wClearLog, 2, SWT.TOP );
-    } else {
-      fdLogLevel.top = new FormAttachment( wClearLog, -2, SWT.TOP );
-    }
-    fdLogLevel.right = new FormAttachment( 0, 500 );
     wLogLevel.setLayoutData( fdLogLevel );
     wLogLevel.setItems( LogLevel.getLogLevelDescriptions() );
   }
@@ -212,8 +207,8 @@ public class TransExecutionConfigurationDialog extends ConfigurationDialog {
     } else {
       wExecCluster = new Button( gLocal, SWT.RADIO );
       wExecCluster.setText( BaseMessages.getString( PKG, "TransExecutionConfigurationDialog.ExecCluster.Label" ) );
-      wExecCluster.setToolTipText( BaseMessages.getString( PKG,
-          "TransExecutionConfigurationDialog.ExecCluster.Tooltip" ) );
+      wExecCluster.setToolTipText( BaseMessages
+          .getString( PKG, "TransExecutionConfigurationDialog.ExecCluster.Tooltip" ) );
       props.setLook( wExecCluster );
       fdExecCluster = new FormData();
       fdExecCluster.left = new FormAttachment( 0, 10 );

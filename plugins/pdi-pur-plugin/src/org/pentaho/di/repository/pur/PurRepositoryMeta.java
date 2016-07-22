@@ -1,5 +1,5 @@
 /*!
- * Copyright 2010 - 2015 Pentaho Corporation.  All rights reserved.
+ * Copyright 2010 - 2016 Pentaho Corporation.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,11 +17,14 @@
 package org.pentaho.di.repository.pur;
 
 import java.util.List;
+import java.util.Map;
 
+import org.json.simple.JSONObject;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.BaseRepositoryMeta;
+import org.pentaho.di.repository.RepositoriesMeta;
 import org.pentaho.di.repository.RepositoryCapabilities;
 import org.pentaho.di.repository.RepositoryMeta;
 import org.w3c.dom.Node;
@@ -29,6 +32,8 @@ import org.w3c.dom.Node;
 public class PurRepositoryMeta extends BaseRepositoryMeta implements RepositoryMeta, java.io.Serializable {
 
   private static final long serialVersionUID = -2456840196232185649L; /* EESOURCE: UPDATE SERIALVERUID */
+
+  public static final String URL = "url";
 
   /** The id as specified in the repository plugin meta, used for backward compatibility only */
   public static String REPOSITORY_TYPE_ID = "PentahoEnterpriseRepository";
@@ -142,4 +147,17 @@ public class PurRepositoryMeta extends BaseRepositoryMeta implements RepositoryM
         isVersionCommentMandatory() );
   }
 
+  @Override public void populate( Map<String, Object> properties, RepositoriesMeta repositoriesMeta ) {
+    super.populate( properties, repositoriesMeta );
+    String url = (String) properties.get( URL );
+    PurRepositoryLocation purRepositoryLocation = new PurRepositoryLocation( url );
+    setRepositoryLocation( purRepositoryLocation );
+  }
+
+  @SuppressWarnings( "unchecked" )
+  @Override public JSONObject toJSONObject() {
+    JSONObject object = super.toJSONObject();
+    object.put( URL, getRepositoryLocation().getUrl() );
+    return object;
+  }
 }

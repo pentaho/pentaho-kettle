@@ -69,7 +69,7 @@ import org.w3c.dom.Node;
  * typically used to conveniently read the settings from the XML node.
  * <p>
  * <i><a href=
- * "#saveRep(org.pentaho.di.repository.Repository, org.pentaho.di.repository.ObjectId, 
+ * "#saveRep(org.pentaho.di.repository.Repository, org.pentaho.di.repository.ObjectId,
  *    org.pentaho.di.repository.ObjectId)"
  * >public void saveRep(...)</a></i>
  * <p>

@@ -1,5 +1,5 @@
 /*!
- * Copyright 2010 - 2015 Pentaho Corporation.  All rights reserved.
+ * Copyright 2010 - 2016 Pentaho Corporation.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,6 +58,7 @@ import org.pentaho.di.ui.spoon.ChangedWarningDialog;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.SpoonLifecycleListener;
 import org.pentaho.di.ui.spoon.SpoonPerspective;
+import org.pentaho.di.ui.spoon.SpoonPerspectiveManager;
 import org.pentaho.di.ui.spoon.SpoonPlugin;
 import org.pentaho.di.ui.spoon.SpoonPluginCategories;
 import org.pentaho.di.ui.spoon.SpoonPluginInterface;
@@ -148,10 +149,12 @@ public class EESpoonPlugin implements SpoonPluginInterface, SpoonLifecycleListen
     } catch ( KettleException e ) {
       try {
         getMainSpoonContainer();
-        XulMessageBox messageBox = (XulMessageBox) spoonXulContainer.getDocumentRoot().createElement( "messagebox" );//$NON-NLS-1$
-        messageBox.setTitle( BaseMessages.getString( PKG, "Dialog.Success" ) );//$NON-NLS-1$
-        messageBox.setAcceptLabel( BaseMessages.getString( PKG, "Dialog.Ok" ) );//$NON-NLS-1$
-        messageBox.setMessage( BaseMessages.getString( PKG, "AbsController.RoleActionPermission.Success" ) );//$NON-NLS-1$
+        XulMessageBox messageBox =
+          (XulMessageBox) spoonXulContainer.getDocumentRoot().createElement( "messagebox" ); //$NON-NLS-1$
+        messageBox.setTitle( BaseMessages.getString( PKG, "Dialog.Success" ) ); //$NON-NLS-1$
+        messageBox.setAcceptLabel( BaseMessages.getString( PKG, "Dialog.Ok" ) ); //$NON-NLS-1$
+        messageBox
+          .setMessage( BaseMessages.getString( PKG, "AbsController.RoleActionPermission.Success" ) ); //$NON-NLS-1$
         messageBox.open();
       } catch ( Exception ex ) {
         e.printStackTrace();
@@ -213,6 +216,7 @@ public class EESpoonPlugin implements SpoonPluginInterface, SpoonLifecycleListen
    * Called when repository is disconnected.
    */
   private void doOnSecurityCleanup() {
+    updateSchedulePerspective( false );
     updateMenuState( true, true );
   }
 
@@ -220,11 +224,14 @@ public class EESpoonPlugin implements SpoonPluginInterface, SpoonLifecycleListen
     boolean createPermitted = securityProvider.isAllowed( IAbsSecurityProvider.CREATE_CONTENT_ACTION );
     boolean executePermitted = securityProvider.isAllowed( IAbsSecurityProvider.EXECUTE_CONTENT_ACTION );
     boolean adminPermitted = securityProvider.isAllowed( IAbsSecurityProvider.ADMINISTER_SECURITY_ACTION );
-    enablePermission( createPermitted, executePermitted, adminPermitted );
+    boolean schedulePermitted = securityProvider.isAllowed( IAbsSecurityProvider.SCHEDULE_CONTENT_ACTION );
+
+    enablePermission( createPermitted, executePermitted, adminPermitted, schedulePermitted );
   }
 
-  private void enablePermission( boolean createPermitted, boolean executePermitted, boolean adminPermitted ) {
+  private void enablePermission( boolean createPermitted, boolean executePermitted, boolean adminPermitted, boolean schedulePermitted ) {
     updateMenuState( createPermitted, executePermitted );
+    updateSchedulePerspective( schedulePermitted );
     updateChangedWarningDialog( createPermitted );
   }
 
@@ -293,13 +300,12 @@ public class EESpoonPlugin implements SpoonPluginInterface, SpoonLifecycleListen
 
   /**
    * Change the menu-item states based on Execute and Create permissions.
-   * 
    * @param createPermitted
    *          - if true, we enable menu-items requiring creation permissions
    * @param executePermitted
    *          - if true, we enable menu-items requiring execute permissions
    */
-  private void updateMenuState( boolean createPermitted, boolean executePermitted ) {
+  void updateMenuState( boolean createPermitted, boolean executePermitted ) {
     Document doc = getDocumentRoot();
     if ( doc != null ) {
       // Main spoon menu
@@ -353,6 +359,17 @@ public class EESpoonPlugin implements SpoonPluginInterface, SpoonLifecycleListen
       if ( transCopyContextMenu != null ) {
         transCopyContextMenu.setDisabled( !exportAllowed );
       }
+    }
+  }
+
+  void updateSchedulePerspective( boolean schedulePermitted ) {
+    final String schedulePerspectiveId = "schedulerPerspective";
+    final SpoonPerspectiveManager perspectiveManager = getPerspectiveManager();
+
+    if ( schedulePermitted ) {
+      perspectiveManager.showPerspective( schedulePerspectiveId );
+    } else {
+      perspectiveManager.hidePerspective( schedulePerspectiveId );
     }
   }
 
@@ -472,5 +489,12 @@ public class EESpoonPlugin implements SpoonPluginInterface, SpoonLifecycleListen
         spoonXulContainer = Spoon.getInstance().getMainSpoonContainer();
       }
     }
+  }
+
+  /**
+   * For testing
+   */
+  SpoonPerspectiveManager getPerspectiveManager() {
+    return SpoonPerspectiveManager.getInstance();
   }
 }

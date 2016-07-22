@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,16 +22,17 @@
 
 package org.pentaho.di.core.variables;
 
-import java.util.Hashtable;
-import java.util.Map;
-import java.util.Set;
-
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaBase;
 import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.version.BuildVersion;
+
+import java.util.Hashtable;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * This class is an implementation of VariableSpace
@@ -48,7 +49,7 @@ public class Variables implements VariableSpace {
   private boolean initialized;
 
   public Variables() {
-    properties = new Hashtable<String, String>();
+    properties = new ConcurrentHashMap<>();
     parent = null;
     injection = null;
     initialized = false;

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,10 +23,9 @@
 package org.pentaho.di.trans.steps.constant;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
-
-import java.sql.Timestamp;
 
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
@@ -35,7 +34,6 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.util.StringUtil;
@@ -74,7 +72,7 @@ public class Constant extends BaseStep implements StepInterface {
     Object[] rowData = new Object[meta.getFieldName().length];
 
     for ( int i = 0; i < meta.getFieldName().length; i++ ) {
-      int valtype = ValueMeta.getType( meta.getFieldType()[i] );
+      int valtype = ValueMetaFactory.getIdForValueMeta( meta.getFieldType()[i] );
       if ( meta.getFieldName()[i] != null ) {
         ValueMetaInterface value = null;
         try {
@@ -220,6 +218,7 @@ public class Constant extends BaseStep implements StepInterface {
     return new RowMetaAndData( rowMeta, rowData );
   }
 
+  @Override
   public boolean processRow( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
     Object[] r = null;
     r = getRow();
@@ -259,6 +258,7 @@ public class Constant extends BaseStep implements StepInterface {
     return true;
   }
 
+  @Override
   public boolean init( StepMetaInterface smi, StepDataInterface sdi ) {
     meta = (ConstantMeta) smi;
     data = (ConstantData) sdi;

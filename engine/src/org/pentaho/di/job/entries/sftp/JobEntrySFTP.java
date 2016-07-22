@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -211,11 +211,11 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
       wildcard = rep.getJobEntryAttributeString( id_jobentry, "wildcard" );
       remove = rep.getJobEntryAttributeBoolean( id_jobentry, "remove" );
 
-      String addToResult = rep.getStepAttributeString( id_jobentry, "add_to_result_filenames" );
+      String addToResult = rep.getJobEntryAttributeString( id_jobentry, "isaddresult" );
       if ( Const.isEmpty( addToResult ) ) {
         isaddresult = true;
       } else {
-        isaddresult = rep.getStepAttributeBoolean( id_jobentry, "add_to_result_filenames" );
+        isaddresult = rep.getJobEntryAttributeBoolean( id_jobentry, "isaddresult" );
       }
 
       createtargetfolder = rep.getJobEntryAttributeBoolean( id_jobentry, "createtargetfolder" );
@@ -378,12 +378,28 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
     return targetDirectory;
   }
 
+  /**
+   * @deprecated use {@link #setCreateTargetFolder(boolean)} instead
+   */
   public void setcreateTargetFolder( boolean createtargetfolder ) {
     this.createtargetfolder = createtargetfolder;
   }
 
+  /**
+   * @deprecated use {@link #isCreateTargetFolder()} instead.
+   * @return createTargetFolder
+   */
+  @Deprecated
   public boolean iscreateTargetFolder() {
     return createtargetfolder;
+  }
+
+  public boolean isCreateTargetFolder() {
+    return createtargetfolder;
+  }
+
+  public void setCreateTargetFolder( boolean createtargetfolder ) {
+    this.createtargetfolder = createtargetfolder;
   }
 
   public boolean isCopyPrevious() {

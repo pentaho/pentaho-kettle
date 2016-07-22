@@ -22,7 +22,6 @@
 
 package org.pentaho.di.trans.steps.fieldsplitter;
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.pentaho.di.core.CheckResult;
@@ -132,6 +131,7 @@ public class FieldSplitterMeta extends BaseStepMeta implements StepMetaInterface
   private boolean[] fieldRemoveID;
 
   /** type of new field */
+  @Injection( name = "DATA_TYPE", group = "FIELDS", converter = DataTypeConverter.class )
   private int[] fieldType;
 
   /** formatting mask to convert value */
@@ -167,6 +167,7 @@ public class FieldSplitterMeta extends BaseStepMeta implements StepMetaInterface
   private String[] fieldIfNull;
 
   /** Perform trimming of this type on the fieldName during lookup and storage */
+  @Injection( name = "TRIM_TYPE", group = "FIELDS", converter = TrimTypeConverter.class )
   private int[] fieldTrimType;
 
   public FieldSplitterMeta() {
@@ -301,26 +302,6 @@ public class FieldSplitterMeta extends BaseStepMeta implements StepMetaInterface
     this.fieldTrimType = fieldTrimType;
   }
 
-  @Injection( name = "DATA_TYPE", group = "FIELDS" )
-  public void setFieldType( int index, String value ) {
-    if ( fieldType == null ) {
-      fieldType = new int[index + 1];
-    } else if ( fieldType.length <= index ) {
-      fieldType = Arrays.copyOf( fieldType, index + 1 );
-    }
-    fieldType[index] = ValueMeta.getType( value );
-  }
-
-  @Injection( name = "TRIM_TYPE", group = "FIELDS" )
-  public void setFieldTrimType( int index, String value ) {
-    if ( fieldTrimType == null ) {
-      fieldTrimType = new int[index + 1];
-    } else if ( fieldTrimType.length <= index ) {
-      fieldTrimType = Arrays.copyOf( fieldTrimType, index + 1 );
-    }
-    fieldTrimType[index] = ValueMeta.getTrimTypeByCode( value );
-  }
-
   public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     readData( stepnode );
   }
@@ -348,21 +329,19 @@ public class FieldSplitterMeta extends BaseStepMeta implements StepMetaInterface
 
     retval.allocate( nrfields );
 
-    for ( int i = 0; i < nrfields; i++ ) {
-      retval.fieldName[i] = fieldName[i];
-      retval.fieldID[i] = fieldID[i];
-      retval.fieldRemoveID[i] = fieldRemoveID[i];
-      retval.fieldType[i] = fieldType[i];
-      retval.fieldLength[i] = fieldLength[i];
-      retval.fieldPrecision[i] = fieldPrecision[i];
-      retval.fieldFormat[i] = fieldFormat[i];
-      retval.fieldGroup[i] = fieldGroup[i];
-      retval.fieldDecimal[i] = fieldDecimal[i];
-      retval.fieldCurrency[i] = fieldCurrency[i];
-      retval.fieldNullIf[i] = fieldNullIf[i];
-      retval.fieldIfNull[i] = fieldIfNull[i];
-      retval.fieldTrimType[i] = fieldTrimType[i];
-    }
+    System.arraycopy( fieldName, 0, retval.fieldName, 0, nrfields );
+    System.arraycopy( fieldID, 0, retval.fieldID, 0, nrfields );
+    System.arraycopy( fieldRemoveID, 0, retval.fieldRemoveID, 0, nrfields );
+    System.arraycopy( fieldType, 0, retval.fieldType, 0, nrfields );
+    System.arraycopy( fieldLength, 0, retval.fieldLength, 0, nrfields );
+    System.arraycopy( fieldPrecision, 0, retval.fieldPrecision, 0, nrfields );
+    System.arraycopy( fieldFormat, 0, retval.fieldFormat, 0, nrfields );
+    System.arraycopy( fieldGroup, 0, retval.fieldGroup, 0, nrfields );
+    System.arraycopy( fieldDecimal, 0, retval.fieldDecimal, 0, nrfields );
+    System.arraycopy( fieldCurrency, 0, retval.fieldCurrency, 0, nrfields );
+    System.arraycopy( fieldNullIf, 0, retval.fieldNullIf, 0, nrfields );
+    System.arraycopy( fieldIfNull, 0, retval.fieldIfNull, 0, nrfields );
+    System.arraycopy( fieldTrimType, 0, retval.fieldTrimType, 0, nrfields );
 
     return retval;
   }

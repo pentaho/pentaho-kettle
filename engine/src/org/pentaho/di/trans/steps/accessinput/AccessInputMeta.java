@@ -218,7 +218,16 @@ public class AccessInputMeta extends BaseStepMeta implements StepMetaInterface {
    * @param field
    *          The hiddenFieldName to set.
    */
+  @Deprecated
   public void setIsHiddenField( String field ) {
+    setHiddenField( field );
+  }
+
+  /**
+   * @param field
+   *          The hiddenFieldName to set.
+   */
+  public void setHiddenField( String field ) {
     hiddenFieldName = field;
   }
 
@@ -286,6 +295,13 @@ public class AccessInputMeta extends BaseStepMeta implements StepMetaInterface {
    * @return Returns the excludeFileMask.
    */
   public String[] getExludeFileMask() {
+    return getExcludeFileMask();
+  }
+
+  /**
+   * @return Returns the excludeFileMask.
+   */
+  public String[] getExcludeFileMask() {
     return excludeFileMask;
   }
 
@@ -328,6 +344,12 @@ public class AccessInputMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public void setFileRequired( String[] fileRequiredin ) {
+    if ( fileRequiredin == null ) {
+      this.fileRequired = new String[0];
+      return;
+    }
+
+    this.fileRequired = new String[fileRequiredin.length];
     for ( int i = 0; i < fileRequiredin.length; i++ ) {
       this.fileRequired[i] = getRequiredFilesCode( fileRequiredin[i] );
     }
@@ -349,6 +371,12 @@ public class AccessInputMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public void setIncludeSubFolders( String[] includeSubFoldersin ) {
+    if ( includeSubFoldersin == null ) {
+      this.includeSubFolders = new String[0];
+      return;
+    }
+
+    this.includeSubFolders = new String[includeSubFoldersin.length];
     for ( int i = 0; i < includeSubFoldersin.length; i++ ) {
       this.includeSubFolders[i] = getRequiredFilesCode( includeSubFoldersin[i] );
     }
@@ -402,14 +430,30 @@ public class AccessInputMeta extends BaseStepMeta implements StepMetaInterface {
   /**
    * @return Returns the includeFilename.
    */
+  @Deprecated
   public boolean includeFilename() {
+    return isIncludeFilename();
+  }
+
+  /**
+   * @return Returns the includeFilename.
+   */
+  public boolean isIncludeFilename() {
     return includeFilename;
   }
 
   /**
    * @return Returns the includeTablename.
    */
+  @Deprecated
   public boolean includeTablename() {
+    return isIncludeTablename();
+  }
+
+  /**
+   * @return Returns the includeTablename.
+   */
+  public boolean isIncludeTablename() {
     return includeTablename;
   }
 
@@ -432,7 +476,15 @@ public class AccessInputMeta extends BaseStepMeta implements StepMetaInterface {
   /**
    * @return Returns the includeRowNumber.
    */
+  @Deprecated
   public boolean includeRowNumber() {
+    return isIncludeRowNumber();
+  }
+
+  /**
+   * @return Returns the includeRowNumber.
+   */
+  public boolean isIncludeRowNumber() {
     return includeRowNumber;
   }
 
@@ -454,7 +506,15 @@ public class AccessInputMeta extends BaseStepMeta implements StepMetaInterface {
   /**
    * @return Returns the resetRowNumber.
    */
+  @Deprecated
   public boolean resetRowNumber() {
+    return isResetRowNumber();
+  }
+
+  /**
+   * @return Returns the resetRowNumber.
+   */
+  public boolean isResetRowNumber() {
     return resetRowNumber;
   }
 
@@ -514,7 +574,15 @@ public class AccessInputMeta extends BaseStepMeta implements StepMetaInterface {
   /**
    * @return Returns the tablenameField.
    */
+  @Deprecated
   public String gettablenameField() {
+    return getTablenameField();
+  }
+
+  /**
+   * @return Returns the tablenameField.
+   */
+  public String getTablenameField() {
     return tablenameField;
   }
 
@@ -560,13 +628,12 @@ public class AccessInputMeta extends BaseStepMeta implements StepMetaInterface {
     int nrFiles = fileName.length;
     int nrFields = inputFields.length;
     retval.allocate( nrFiles, nrFields );
-    for ( int i = 0; i < nrFiles; i++ ) {
-      retval.fileName[i] = fileName[i];
-      retval.fileMask[i] = fileMask[i];
-      retval.excludeFileMask[i] = excludeFileMask[i];
-      retval.fileRequired[i] = fileRequired[i];
-      retval.includeSubFolders[i] = includeSubFolders[i];
-    }
+    System.arraycopy( fileName, 0, retval.fileName, 0, nrFiles );
+    System.arraycopy( fileMask, 0, retval.fileMask, 0, nrFiles );
+    System.arraycopy( excludeFileMask, 0, retval.excludeFileMask, 0, nrFiles );
+    System.arraycopy( fileRequired, 0, retval.fileRequired, 0, nrFiles );
+    System.arraycopy( includeSubFolders, 0, retval.includeSubFolders, 0, nrFiles );
+
     for ( int i = 0; i < nrFields; i++ ) {
       if ( inputFields[i] != null ) {
         retval.inputFields[i] = (AccessInputField) inputFields[i].clone();
@@ -955,6 +1022,7 @@ public class AccessInputMeta extends BaseStepMeta implements StepMetaInterface {
       pathFieldName = rep.getStepAttributeString( id_step, "pathFieldName" );
       hiddenFieldName = rep.getStepAttributeString( id_step, "hiddenFieldName" );
       lastModificationTimeFieldName = rep.getStepAttributeString( id_step, "lastModificationTimeFieldName" );
+      uriNameFieldName = rep.getStepAttributeString( id_step, "uriNameFieldName" );
       rootUriNameFieldName = rep.getStepAttributeString( id_step, "rootUriNameFieldName" );
       extensionFieldName = rep.getStepAttributeString( id_step, "extensionFieldName" );
       sizeFieldName = rep.getStepAttributeString( id_step, "sizeFieldName" );
@@ -1012,6 +1080,7 @@ public class AccessInputMeta extends BaseStepMeta implements StepMetaInterface {
       rep.saveStepAttribute( id_transformation, id_step, "uriNameFieldName", uriNameFieldName );
       rep.saveStepAttribute( id_transformation, id_step, "rootUriNameFieldName", rootUriNameFieldName );
       rep.saveStepAttribute( id_transformation, id_step, "extensionFieldName", extensionFieldName );
+      rep.saveStepAttribute( id_transformation, id_step, "sizeFieldName", sizeFieldName );
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString(
         PKG, "AccessInputMeta.Exception.ErrorSavingToRepository", "" + id_step ), e );

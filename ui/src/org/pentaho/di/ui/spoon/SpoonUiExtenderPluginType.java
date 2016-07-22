@@ -36,7 +36,6 @@ import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginMainClassType;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.PluginTypeInterface;
-import org.pentaho.di.ui.spoon.trans.TransGraph;
 
 @PluginMainClassType( SpoonUiExtenderPluginInterface.class )
 @PluginAnnotationType( SpoonUiExtenderPlugin.class )
@@ -57,21 +56,21 @@ public class SpoonUiExtenderPluginType extends BasePluginType implements PluginT
     return pluginType;
   }
 
-  public List<SpoonUiExtenderPluginInterface> getRelevantExtenders( Class<?> clazz, String uiEvent) {
+  public List<SpoonUiExtenderPluginInterface> getRelevantExtenders( Class<?> clazz, String uiEvent ) {
 
     PluginRegistry instance = PluginRegistry.getInstance();
     List<PluginInterface> pluginInterfaces = instance.getPlugins( SpoonUiExtenderPluginType.class );
 
     List<SpoonUiExtenderPluginInterface> relevantPluginInterfaces = new ArrayList<SpoonUiExtenderPluginInterface>(  );
-    if ( pluginInterfaces != null ){
-      for( PluginInterface pluginInterface : pluginInterfaces ) {
+    if ( pluginInterfaces != null ) {
+      for ( PluginInterface pluginInterface : pluginInterfaces ) {
         try {
           Object loadClass = instance.loadClass( pluginInterface );
 
           SpoonUiExtenderPluginInterface spoonUiExtenderPluginInterface = (SpoonUiExtenderPluginInterface) loadClass;
 
           Set<String> events = spoonUiExtenderPluginInterface.respondsTo().get( clazz );
-          if ( events != null && events.contains( uiEvent )) {
+          if ( events != null && events.contains( uiEvent ) ) {
             relevantPluginInterfaces.add( spoonUiExtenderPluginInterface );
           }
         } catch ( KettlePluginException e ) {

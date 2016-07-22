@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -21,17 +21,19 @@
  ******************************************************************************/
 package org.pentaho.di.trans.steps.xmloutput;
 
-import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Matchers;
-import org.owasp.esapi.ESAPI;
-import org.owasp.esapi.Encoder;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
@@ -57,12 +59,10 @@ public class XMLOutputTest {
   private static final String[] ILLEGAL_CHARACTERS_IN_XML_ATTRIBUTES = { "<", ">", "&", "\'", "\"" };
 
   private static Object[] rowWithData;
-  private static Object[] expectedRowWithData;
 
   @BeforeClass
   public static void setUpBeforeClass() {
     rowWithData = initRowWithData( ILLEGAL_CHARACTERS_IN_XML_ATTRIBUTES );
-    expectedRowWithData = initRowWithData( getEscapedCharacters() );
   }
 
   @Before
@@ -91,16 +91,12 @@ public class XMLOutputTest {
   }
 
   @Test
-  public void testSpecialSymbolsInAttributeValuesAreEscaped() throws KettleException {
+  public void testSpecialSymbolsInAttributeValuesAreEscaped() throws KettleException, XMLStreamException {
     xmlOutput.init( xmlOutputMeta, xmlOutputData );
-    String buildRowAttributes = xmlOutput.buildRowAttributes( rowWithData );
-    // System.out.println( "Actual row: " + buildRowAttributes );
 
-    String expectedAttributesRow = getExpectedAttributesRow();
-    // System.out.println( "Expected row: " + expectedAttributesRow );
-
-    assertEquals( expectedAttributesRow, buildRowAttributes );
-
+    xmlOutputData.writer = mock( XMLStreamWriter.class );
+    xmlOutput.writeRowAttributes( rowWithData );
+    verify( xmlOutputData.writer, times( rowWithData.length ) ).writeAttribute( any(), any() );
   }
 
   private static Object[] initRowWithData( String[] dt ) {
@@ -140,30 +136,5 @@ public class XMLOutputTest {
       fNmrs[j] = j;
     }
     return fNmrs;
-
   }
-
-  private String getExpectedAttributesRow() {
-    StringBuilder sb = new StringBuilder();
-    XMLField[] expectedXmlFields = initOutputFields( rowWithData.length, ContentType.Attribute );
-
-    for ( int i = 0; i < rowWithData.length; i++ ) {
-      String attributeName = expectedXmlFields[i].getElementName();
-      String attributeValue = String.valueOf( expectedRowWithData[i] );
-      sb.append( ' ' ).append( attributeName ).append( "=\"" ).append( attributeValue ).append( "\"" );
-    }
-    return sb.toString();
-
-  }
-
-  private static String[] getEscapedCharacters() {
-    Encoder encoder = ESAPI.encoder();
-    String[] escCharacters = new String[ILLEGAL_CHARACTERS_IN_XML_ATTRIBUTES.length];
-    for ( int i = 0; i < escCharacters.length; i++ ) {
-      escCharacters[i] = encoder.encodeForXML( String.valueOf( ILLEGAL_CHARACTERS_IN_XML_ATTRIBUTES[i] ) );
-    }
-    return escCharacters;
-
-  }
-
 }

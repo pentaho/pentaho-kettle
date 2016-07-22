@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -26,29 +26,17 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 import org.junit.Test;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
 import org.pentaho.di.trans.steps.loadsave.validator.ArrayLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
+import org.pentaho.di.trans.steps.loadsave.validator.IntLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.PrimitiveIntArrayLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.StringLoadSaveValidator;
 
 public class RandomValueMetaTest {
-
-  public class RandomValueFunctionFieldLoadSaveValidator implements FieldLoadSaveValidator<Integer> {
-    @Override
-    public Integer getTestObject() {
-      return new Random().nextInt( RandomValueMeta.functions.length );
-    }
-
-    @Override
-    public boolean validateTestObject( Integer testObject, Object actual ) {
-      return testObject.equals( actual );
-    }
-  }
 
   @Test
   public void testStepMeta() throws KettleException {
@@ -67,11 +55,10 @@ public class RandomValueMetaTest {
     fieldLoadSaveValidatorAttributeMap.put( "name",
       new ArrayLoadSaveValidator<String>( new StringLoadSaveValidator(), 25 ) );
     fieldLoadSaveValidatorAttributeMap.put( "type",
-      new PrimitiveIntArrayLoadSaveValidator( new RandomValueFunctionFieldLoadSaveValidator(), 25 ) );
+      new PrimitiveIntArrayLoadSaveValidator( new IntLoadSaveValidator( RandomValueMeta.functions.length ), 25 ) );
 
     LoadSaveTester loadSaveTester = new LoadSaveTester( RandomValueMeta.class, attributes, getterMap, setterMap,
       fieldLoadSaveValidatorAttributeMap, new HashMap<String, FieldLoadSaveValidator<?>>() );
-    loadSaveTester.testRepoRoundTrip();
-    loadSaveTester.testXmlRoundTrip();
+    loadSaveTester.testSerialization();
   }
 }

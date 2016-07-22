@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -47,6 +47,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
@@ -84,6 +85,7 @@ public class FieldSplitterDialog extends BaseStepDialog implements StepDialogInt
     input = (FieldSplitterMeta) in;
   }
 
+  @Override
   public String open() {
     Shell parent = getParent();
     Display display = parent.getDisplay();
@@ -93,6 +95,7 @@ public class FieldSplitterDialog extends BaseStepDialog implements StepDialogInt
     setShellImage( shell, input );
 
     ModifyListener lsMod = new ModifyListener() {
+      @Override
       public void modifyText( ModifyEvent e ) {
         input.setChanged();
       }
@@ -147,9 +150,11 @@ public class FieldSplitterDialog extends BaseStepDialog implements StepDialogInt
     fdSplitfield.right = new FormAttachment( 100, 0 );
     wSplitfield.setLayoutData( fdSplitfield );
     wSplitfield.addFocusListener( new FocusListener() {
+      @Override
       public void focusLost( org.eclipse.swt.events.FocusEvent e ) {
       }
 
+      @Override
       public void focusGained( org.eclipse.swt.events.FocusEvent e ) {
         Cursor busy = new Cursor( shell.getDisplay(), SWT.CURSOR_WAIT );
         shell.setCursor( busy );
@@ -228,7 +233,7 @@ public class FieldSplitterDialog extends BaseStepDialog implements StepDialogInt
           new String[] { "Y", "N" } ),
         new ColumnInfo(
           BaseMessages.getString( PKG, "FieldSplitterDialog.ColumnInfo.Type" ),
-          ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes() ),
+          ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMetaFactory.getValueMetaNames() ),
         new ColumnInfo(
           BaseMessages.getString( PKG, "FieldSplitterDialog.ColumnInfo.Length" ),
           ColumnInfo.COLUMN_TYPE_TEXT, false ),
@@ -269,11 +274,13 @@ public class FieldSplitterDialog extends BaseStepDialog implements StepDialogInt
 
     // Add listeners
     lsOK = new Listener() {
+      @Override
       public void handleEvent( Event e ) {
         ok();
       }
     };
     lsCancel = new Listener() {
+      @Override
       public void handleEvent( Event e ) {
         cancel();
       }
@@ -283,6 +290,7 @@ public class FieldSplitterDialog extends BaseStepDialog implements StepDialogInt
     wCancel.addListener( SWT.Selection, lsCancel );
 
     lsDef = new SelectionAdapter() {
+      @Override
       public void widgetDefaultSelected( SelectionEvent e ) {
         ok();
       }
@@ -292,6 +300,7 @@ public class FieldSplitterDialog extends BaseStepDialog implements StepDialogInt
 
     // Detect X or ALT-F4 or something that kills this window...
     shell.addShellListener( new ShellAdapter() {
+      @Override
       public void shellClosed( ShellEvent e ) {
         cancel();
       }
@@ -352,7 +361,7 @@ public class FieldSplitterDialog extends BaseStepDialog implements StepDialogInt
         ti.setText( 2, input.getFieldID()[i] );
       }
       ti.setText( 3, input.getFieldRemoveID()[i] ? "Y" : "N" );
-      ti.setText( 4, ValueMeta.getTypeDesc( input.getFieldType()[i] ) );
+      ti.setText( 4, ValueMetaFactory.getValueMetaName( input.getFieldType()[i] ) );
       if ( input.getFieldLength()[i] >= 0 ) {
         ti.setText( 5, "" + input.getFieldLength()[i] );
       }
@@ -414,7 +423,7 @@ public class FieldSplitterDialog extends BaseStepDialog implements StepDialogInt
       input.getFieldName()[i] = ti.getText( 1 );
       input.getFieldID()[i] = ti.getText( 2 );
       input.getFieldRemoveID()[i] = "Y".equalsIgnoreCase( ti.getText( 3 ) );
-      input.getFieldType()[i] = ValueMeta.getType( ti.getText( 4 ) );
+      input.getFieldType()[i] = ValueMetaFactory.getIdForValueMeta( ti.getText( 4 ) );
       input.getFieldLength()[i] = Const.toInt( ti.getText( 5 ), -1 );
       input.getFieldPrecision()[i] = Const.toInt( ti.getText( 6 ), -1 );
       input.getFieldFormat()[i] = ti.getText( 7 );

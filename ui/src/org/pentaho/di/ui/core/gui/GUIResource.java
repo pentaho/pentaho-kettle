@@ -206,9 +206,9 @@ public class GUIResource {
   private SwtUniversalImage imageFolder;
 
   private SwtUniversalImage imageTransRepo;
-  
+
   private SwtUniversalImage imageJobRepo;
-  
+
   private Image imageWizard;
 
   private Image imageCredits;
@@ -230,7 +230,7 @@ public class GUIResource {
   private SwtUniversalImage imageVariable;
 
   private SwtUniversalImage imageTransGraph;
-  
+
   private SwtUniversalImage imagePartitionSchema;
 
   private SwtUniversalImage imageJobGraph;
@@ -1125,10 +1125,10 @@ public class GUIResource {
 
     imageTransGraph = SwtSvgImageUtil.getUniversalImage( display, getClass().getClassLoader(),
       BasePropertyHandler.getProperty( "SpoonIcon_image" ) );
-        
+
     imagePartitionSchema = SwtSvgImageUtil.getUniversalImage( display, getClass().getClassLoader(),
         BasePropertyHandler.getProperty( "Image_Partition_Schema" ) );
-    
+
     imageJobGraph = SwtSvgImageUtil.getUniversalImage( display, getClass().getClassLoader(),
       BasePropertyHandler.getProperty( "ChefIcon_image" ) );
 
@@ -1152,12 +1152,12 @@ public class GUIResource {
     // "ui/images/transrepo.png"
     imageTransRepo = SwtSvgImageUtil.getUniversalImage( display, getClass().getClassLoader(),
       BasePropertyHandler.getProperty( "TransRepo_image" ) );
-    
+
     // "ui/images/jobrepo.png"
     imageJobRepo = SwtSvgImageUtil.getUniversalImage( display, getClass().getClassLoader(),
       BasePropertyHandler.getProperty( "JobRepo_image" ) );
-        
-    
+
+
     // Makes transparent images "on the fly"
     //
 
@@ -1781,9 +1781,9 @@ public class GUIResource {
   public Image getImageFolderConnectionsMedium() {
     return imageTransGraph.getAsBitmapForSize( display, ConstUI.MEDIUM_ICON_SIZE, ConstUI.MEDIUM_ICON_SIZE );
   }
-  
+
   public Image getImagePartitionSchema() {
-    return imagePartitionSchema.getAsBitmapForSize( display, ConstUI.MEDIUM_ICON_SIZE, ConstUI.MEDIUM_ICON_SIZE );    
+    return imagePartitionSchema.getAsBitmapForSize( display, ConstUI.MEDIUM_ICON_SIZE, ConstUI.MEDIUM_ICON_SIZE );
   }
 
   public Image getImageJobGraph() {
@@ -1838,7 +1838,7 @@ public class GUIResource {
   public SwtUniversalImage getSwtImageJobRepo() {
     return imageJobRepo;
   }
-  
+
   /**
    * @return the imageTransRepo
    */
@@ -1849,7 +1849,7 @@ public class GUIResource {
   public SwtUniversalImage getSwtImageTransRepo() {
     return imageTransRepo;
   }
-  
+
   /**
    * @return the imageDummySmall
    */
@@ -2022,14 +2022,14 @@ public class GUIResource {
 
     /*
      * Point location = control.getLocation();
-     * 
+     *
      * Composite parent = control.getParent(); while (parent!=null) {
-     * 
+     *
      * Composite newParent = parent.getParent(); if (newParent!=null) { location.x+=parent.getLocation().x;
      * location.y+=parent.getLocation().y; } else { if (parent instanceof Shell) { // Top level shell. Shell shell =
      * (Shell)parent; Rectangle bounds = shell.getBounds(); Rectangle clientArea = shell.getClientArea(); location.x +=
      * bounds.width-clientArea.width; location.y += bounds.height-clientArea.height; } } parent = newParent; }
-     * 
+     *
      * return location;
      */
   }

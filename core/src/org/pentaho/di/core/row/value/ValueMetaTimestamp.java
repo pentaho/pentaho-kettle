@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -37,7 +37,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-import org.pentaho.di.compatibility.Value;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseInterface;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -278,25 +277,25 @@ public class ValueMetaTimestamp extends ValueMetaDate {
     String null_value = nullIf;
     if ( null_value == null ) {
       switch ( convertMeta.getType() ) {
-        case Value.VALUE_TYPE_BOOLEAN:
+        case ValueMetaInterface.TYPE_BOOLEAN:
           null_value = Const.NULL_BOOLEAN;
           break;
-        case Value.VALUE_TYPE_STRING:
+        case ValueMetaInterface.TYPE_STRING:
           null_value = Const.NULL_STRING;
           break;
-        case Value.VALUE_TYPE_BIGNUMBER:
+        case ValueMetaInterface.TYPE_BIGNUMBER:
           null_value = Const.NULL_BIGNUMBER;
           break;
-        case Value.VALUE_TYPE_NUMBER:
+        case ValueMetaInterface.TYPE_NUMBER:
           null_value = Const.NULL_NUMBER;
           break;
-        case Value.VALUE_TYPE_INTEGER:
+        case ValueMetaInterface.TYPE_INTEGER:
           null_value = Const.NULL_INTEGER;
           break;
-        case Value.VALUE_TYPE_DATE:
+        case ValueMetaInterface.TYPE_DATE:
           null_value = Const.NULL_DATE;
           break;
-        case Value.VALUE_TYPE_BINARY:
+        case ValueMetaInterface.TYPE_BINARY:
           null_value = Const.NULL_BINARY;
           break;
         default:
@@ -411,6 +410,8 @@ public class ValueMetaTimestamp extends ValueMetaDate {
   @Override
   public Object convertData( ValueMetaInterface meta2, Object data2 ) throws KettleValueException {
     switch ( meta2.getType() ) {
+      case TYPE_TIMESTAMP:
+        return ( (ValueMetaTimestamp) meta2 ).getTimestamp( data2 );
       case TYPE_STRING:
         return convertStringToTimestamp( meta2.getString( data2 ) );
       case TYPE_INTEGER:
@@ -654,5 +655,10 @@ public class ValueMetaTimestamp extends ValueMetaDate {
       dateFormatChanged = false;
     }
     return dateFormat;
+  }
+
+  @Override
+  public Class<?> getNativeDataTypeClass() throws KettleValueException {
+    return Timestamp.class;
   }
 }

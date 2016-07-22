@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -28,8 +28,9 @@ import java.util.List;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaBase;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.trans.step.StepInjectionMetaEntry;
 import org.pentaho.di.trans.step.StepMetaInjectionInterface;
 import org.pentaho.di.trans.steps.textfileoutput.TextFileField;
@@ -305,7 +306,7 @@ public class ConcatFieldsMetaInjection implements StepMetaInjectionInterface {
       while ( iConcatFields.hasNext() ) {
         TextFileField field = new TextFileField();
         field.setName( iConcatFields.next() );
-        field.setType( ValueMeta.getType( iConcatTypes.next() ) );
+        field.setType( ValueMetaFactory.getIdForValueMeta( iConcatTypes.next() ) );
         field.setFormat( iConcatFormats.next() );
         field.setLength( Const.toInt( iConcatLengths.next(), -1 ) );
         field.setPrecision( Const.toInt( iConcatPrecisions.next(), -1 ) );
@@ -313,7 +314,7 @@ public class ConcatFieldsMetaInjection implements StepMetaInjectionInterface {
         field.setDecimalSymbol( iConcatDecimals.next() );
         field.setGroupingSymbol( iConcatGroups.next() );
         field.setNullString( iConcatNulls.next() );
-        field.setTrimType( ValueMeta.getTrimTypeByDesc( iConcatTrims.next() ) );
+        field.setTrimType( ValueMetaBase.getTrimTypeByDesc( iConcatTrims.next() ) );
         tff[i] = field;
         i++;
       }
@@ -321,6 +322,7 @@ public class ConcatFieldsMetaInjection implements StepMetaInjectionInterface {
     }
   }
 
+  @Override
   public List<StepInjectionMetaEntry> extractStepMetadataEntries() throws KettleException {
     return null;
   }

@@ -2137,47 +2137,66 @@ public class Database implements VariableSpace, LoggingObjectInterface {
         && databaseMeta.getDatabaseInterface() instanceof MSSQLServerDatabaseMeta )
         || databaseMeta.getDatabaseInterface().supportsResultSetMetadataRetrievalOnly() ) {
         sel_stmt = connection.createStatement( ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY );
-
-        if ( databaseMeta.isFetchSizeSupported() && sel_stmt.getMaxRows() >= 1 ) {
-          if ( databaseMeta.getDatabaseInterface() instanceof MySQLDatabaseMeta ) {
-            sel_stmt.setFetchSize( Integer.MIN_VALUE );
-          } else {
-            sel_stmt.setFetchSize( 1 );
+        try {
+          if ( databaseMeta.isFetchSizeSupported() && sel_stmt.getMaxRows() >= 1 ) {
+            if ( databaseMeta.getDatabaseInterface() instanceof MySQLDatabaseMeta ) {
+              sel_stmt.setFetchSize( Integer.MIN_VALUE );
+            } else {
+              sel_stmt.setFetchSize( 1 );
+            }
           }
-        }
-        if ( databaseMeta.supportsSetMaxRows() ) {
-          sel_stmt.setMaxRows( 1 );
-        }
+          if ( databaseMeta.supportsSetMaxRows() ) {
+            sel_stmt.setMaxRows( 1 );
+          }
 
-        ResultSet r = sel_stmt.executeQuery( databaseMeta.stripCR( sql ) );
-        fields = getRowInfo( r.getMetaData(), false, false );
-        r.close();
-        sel_stmt.close();
-        sel_stmt = null;
+          ResultSet r = sel_stmt.executeQuery( databaseMeta.stripCR( sql ) );
+          try {
+            fields = getRowInfo( r.getMetaData(), false, false );
+          } finally { // avoid leaking resources
+            r.close();
+          }
+        } finally { // avoid leaking resources
+          sel_stmt.close();
+          sel_stmt = null;
+        }
       } else {
         PreparedStatement ps = connection.prepareStatement( databaseMeta.stripCR( sql ) );
-        if ( param ) {
-          RowMetaInterface par = inform;
+        try {
+          if ( param ) {
+            RowMetaInterface par = inform;
 
-          if ( par == null || par.isEmpty() ) {
-            par = getParameterMetaData( ps );
+            if ( par == null || par.isEmpty() ) {
+              par = getParameterMetaData( ps );
+            }
+
+            if ( par == null || par.isEmpty() ) {
+              par = getParameterMetaData( sql, inform, data );
+            }
+
+            setValues( par, data, ps );
           }
-
-          if ( par == null || par.isEmpty() ) {
-            par = getParameterMetaData( sql, inform, data );
+          ResultSet r = ps.executeQuery();
+          try {
+            //
+            // See PDI-14893
+            // If we're in this private fallback method, it's because the databasemeta returns false for
+            // supportsPreparedStatementMetadataRetrieval() or because we got an exception trying to do
+            // it the other way. In either case, there is no reason for us to ever try getting the prepared
+            // statement's metadata. The right answer is to directly get the resultset metadata.
+            //
+            // ResultSetMetaData metadata = ps.getMetaData();
+            // If the PreparedStatement can't get us the metadata, try using the ResultSet's metadata
+            // if ( metadata == null ) {
+            //  metadata = r.getMetaData();
+            // }
+            ResultSetMetaData metadata = r.getMetaData();
+            fields = getRowInfo( metadata, false, false );
+          } finally { // should always use a try/finally to avoid leaks
+            r.close();
           }
-
-          setValues( par, data, ps );
+        } finally { // should always use a try/finally to avoid leaks
+          ps.close();
         }
-        ResultSet r = ps.executeQuery();
-        ResultSetMetaData metadata = ps.getMetaData();
-        // If the PreparedStatement can't get us the metadata, try using the ResultSet's metadata
-        if ( metadata == null ) {
-          metadata = r.getMetaData();
-        }
-        fields = getRowInfo( metadata, false, false );
-        r.close();
-        ps.close();
       }
     } catch ( Exception ex ) {
       throw new KettleDatabaseException( "Couldn't get field info from [" + sql + "]" + Const.CR, ex );
@@ -3168,7 +3187,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
         StringBuilder sqlBuff = new StringBuilder( 250 );
         sqlBuff.append( "UPDATE " ).append( schemaTable ).append( " SET " );
 
-        for ( int i = 1; i < rowMeta.size(); i++ ) { // Without ID_JOB or ID_BATCH 
+        for ( int i = 1; i < rowMeta.size(); i++ ) { // Without ID_JOB or ID_BATCH
           ValueMetaInterface valueMeta = rowMeta.getValueMeta( i );
           if ( i > 1 ) {
             sqlBuff.append( ", " );
@@ -3193,7 +3212,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
 
       }
     } catch ( Exception e ) {
-      DatabaseLogExceptionFactory.getExceptionStrategy( logTable )
+      DatabaseLogExceptionFactory.getExceptionStrategy( logTable, e )
         .registerException( log, e, PKG, "Database.Error.WriteLogTable",
           environmentSubstitute( logTable.getActualTableName() ) );
     }

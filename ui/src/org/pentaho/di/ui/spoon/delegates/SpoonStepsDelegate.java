@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -26,12 +26,13 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.extension.ExtensionPointHandler;
+import org.pentaho.di.core.extension.KettleExtensionPoint;
 import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Partitioner;
@@ -199,24 +200,29 @@ public class SpoonStepsDelegate extends SpoonDelegate {
   }
 
   public void delSteps( TransMeta transformation, StepMeta[] steps ) {
+    try {
+      ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.TransBeforeDeleteSteps.id, steps );
+    } catch ( KettleException e ) {
+      return;
+    }
 
     // Hops belonging to the deleting steps are placed in a single transaction and removed.
     List<TransHopMeta> transHops = new ArrayList<TransHopMeta>();
     int[] hopIndexes = new int[transformation.nrTransHops()];
     int hopIndex = 0;
-    main: for ( int i = transformation.nrTransHops() - 1; i >= 0; i-- ) {
+    for ( int i = transformation.nrTransHops() - 1; i >= 0; i-- ) {
       TransHopMeta hi = transformation.getTransHop( i );
-      for ( int j = 0; j < steps.length; j++ ) {
+      for ( int j = 0; j < steps.length && hopIndex < hopIndexes.length; j++ ) {
         if ( hi.getFromStep().equals( steps[j] ) || hi.getToStep().equals( steps[j] ) ) {
           int idx = transformation.indexOfTransHop( hi );
           transHops.add( (TransHopMeta) hi.clone() );
           hopIndexes[hopIndex] = idx;
           transformation.removeTransHop( idx );
           spoon.refreshTree();
-          continue main;
+          hopIndex++;
+          break;
         }
       }
-      hopIndex++;
     }
     if ( !transHops.isEmpty() ) {
       TransHopMeta[] hops = transHops.toArray( new TransHopMeta[transHops.size()] );
@@ -235,32 +241,10 @@ public class SpoonStepsDelegate extends SpoonDelegate {
     spoon.refreshTree();
     spoon.refreshGraph();
   }
-  
+
   public void delStep( TransMeta transMeta, StepMeta stepMeta ) {
-    spoon.getLog().logDebug(
-      toString(), BaseMessages.getString( PKG, "Spoon.Log.DeleteStep" ) + stepMeta.getName() ); // "Delete
-    // step:
-    // "
-
-    for ( int i = transMeta.nrTransHops() - 1; i >= 0; i-- ) {
-      TransHopMeta hi = transMeta.getTransHop( i );
-      if ( hi.getFromStep().equals( stepMeta ) || hi.getToStep().equals( stepMeta ) ) {
-        int idx = transMeta.indexOfTransHop( hi );
-        spoon.addUndoDelete( transMeta, new TransHopMeta[] { (TransHopMeta) hi.clone() }, new int[] { idx } );
-        // ,true // the true flag was causing the hops to not get restored on Undo delete step with hop(s)
-        // );
-        transMeta.removeTransHop( idx );
-        spoon.refreshTree();
-      }
-    }
-
-    int pos = transMeta.indexOfStep( stepMeta );
-    transMeta.removeStep( pos );
-    spoon.addUndoDelete( transMeta, new StepMeta[] { stepMeta }, new int[] { pos } );
-
-    spoon.refreshTree();
-    spoon.refreshGraph();
-  }  
+    delSteps( transMeta, new StepMeta[] { stepMeta } );
+  }
 
   public StepDialogInterface getStepDialog( StepMetaInterface stepMeta, TransMeta transMeta, String stepName ) throws KettleException {
     String dialogClassName = stepMeta.getDialogClassName();

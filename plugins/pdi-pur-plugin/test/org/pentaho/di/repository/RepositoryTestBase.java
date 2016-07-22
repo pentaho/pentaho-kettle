@@ -1,5 +1,5 @@
 /*!
- * Copyright 2010 - 2015 Pentaho Corporation.  All rights reserved.
+ * Copyright 2010 - 2016 Pentaho Corporation.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -85,7 +85,7 @@ import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.platform.api.repository2.unified.RepositoryFilePermission;
 import org.w3c.dom.Node;
 
-public abstract class RepositoryTestBase {
+public abstract class RepositoryTestBase extends RepositoryTestLazySupport {
 
   // ~ Static fields/initializers ======================================================================================
 
@@ -390,6 +390,9 @@ public abstract class RepositoryTestBase {
   protected Stack<RepositoryElementInterface> deleteStack;
 
   // ~ Constructors ====================================================================================================
+  public RepositoryTestBase( Boolean lazyRepo ) {
+    super( lazyRepo );
+  }
 
   // ~ Methods =========================================================================================================
 

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -37,8 +37,10 @@ import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.injection.bean.BeanInjectionInfo;
 import org.pentaho.di.core.injection.bean.BeanInjector;
+import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaBase;
 import org.pentaho.di.core.row.value.ValueMetaBoolean;
 import org.pentaho.di.core.row.value.ValueMetaInteger;
 import org.pentaho.di.core.row.value.ValueMetaString;
@@ -54,6 +56,7 @@ public abstract class BaseMetadataInjectionTest<T> {
   protected Set<String> nonTestedProperties;
 
   protected void setup( T meta ) {
+    KettleLogStore.init();
     this.meta = meta;
     info = new BeanInjectionInfo( meta.getClass() );
     injector = new BeanInjector( info );
@@ -209,6 +212,14 @@ public abstract class BaseMetadataInjectionTest<T> {
     assertEquals( Long.MAX_VALUE, getter.get() );
 
     skipPropertyTest( propertyName );
+  }
+
+  public static int[] getTypeCodes( String[] typeNames ) {
+    int[] typeCodes = new int[typeNames.length];
+    for ( int i = 0; i < typeNames.length; i++ ) {
+      typeCodes[i] = ValueMetaBase.getType( typeNames[i] );
+    }
+    return typeCodes;
   }
 
   public interface BooleanGetter {

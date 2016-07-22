@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,6 +22,9 @@
 
 package org.pentaho.di.trans.steps.combinationlookup;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -35,8 +38,9 @@ import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaDate;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -53,9 +57,6 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
-
-import java.util.Arrays;
-import java.util.List;
 
 /*
  * Created on 14-may-2003
@@ -103,7 +104,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
   /** Commit size for insert / update */
   private int commitSize;
 
-  /** Preload the cache, defaults to false 
+  /** Preload the cache, defaults to false
    * @author nicow2
    * */
   private boolean preloadCache = false;
@@ -130,6 +131,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
   /**
    * @return Returns the database.
    */
+  @Override
   public DatabaseMeta getDatabaseMeta() {
     return databaseMeta;
   }
@@ -283,6 +285,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
   /**
    * @return Returns the tablename.
    */
+  @Override
   public String getTableName() {
     return tablename;
   }
@@ -340,6 +343,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
     this.useHash = useHash;
   }
 
+  @Override
   public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     readData( stepnode, databases );
   }
@@ -349,18 +353,15 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
     keyLookup = new String[nrkeys];
   }
 
+  @Override
   public Object clone() {
     CombinationLookupMeta retval = (CombinationLookupMeta) super.clone();
 
     int nrkeys = keyField.length;
 
     retval.allocate( nrkeys );
-
-    // Read keys to dimension
-    for ( int i = 0; i < nrkeys; i++ ) {
-      retval.keyField[i] = keyField[i];
-      retval.keyLookup[i] = keyLookup[i];
-    }
+    System.arraycopy( keyField, 0, retval.keyField, 0, nrkeys );
+    System.arraycopy( keyLookup, 0, retval.keyLookup, 0, nrkeys );
 
     return retval;
   }
@@ -412,6 +413,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
     }
   }
 
+  @Override
   public void setDefault() {
     schemaName = "";
     tablename = BaseMessages.getString( PKG, "CombinationLookupMeta.DimensionTableName.Label" );
@@ -436,9 +438,10 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
     useAutoinc = false;
   }
 
+  @Override
   public void getFields( RowMetaInterface row, String origin, RowMetaInterface[] info, StepMeta nextStep,
       VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
-    ValueMetaInterface v = new ValueMeta( technicalKeyField, ValueMetaInterface.TYPE_INTEGER );
+    ValueMetaInterface v = new ValueMetaInteger( technicalKeyField );
     v.setLength( 10 );
     v.setPrecision( 0 );
     v.setOrigin( origin );
@@ -454,6 +457,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
     }
   }
 
+  @Override
   public String getXML() {
     StringBuilder retval = new StringBuilder( 512 );
 
@@ -491,6 +495,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
     return retval.toString();
   }
 
+  @Override
   public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
       databaseMeta = rep.loadDatabaseMetaFromStepAttribute( id_step, "id_connection", databases );
@@ -524,6 +529,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
     }
   }
 
+  @Override
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       rep.saveStepAttribute( id_transformation, id_step, "schema", schemaName );
@@ -562,6 +568,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
     }
   }
 
+  @Override
   public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
       RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
       Repository repository, IMetaStore metaStore ) {
@@ -728,6 +735,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
     }
   }
 
+  @Override
   public SQLStatement getSQLStatements( TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
       Repository repository, IMetaStore metaStore ) {
     SQLStatement retval = new SQLStatement( stepMeta.getName(), databaseMeta, null ); // default: nothing to do!
@@ -749,14 +757,14 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
             RowMetaInterface fields = new RowMeta();
 
             // First, the new technical key...
-            ValueMetaInterface vkeyfield = new ValueMeta( technicalKeyField, ValueMetaInterface.TYPE_INTEGER );
+            ValueMetaInterface vkeyfield = new ValueMetaInteger( technicalKeyField );
             vkeyfield.setLength( 10 );
             vkeyfield.setPrecision( 0 );
 
             // Then the hashcode (optional)
             ValueMetaInterface vhashfield = null;
             if ( useHash && !Const.isEmpty( hashField ) ) {
-              vhashfield = new ValueMeta( hashField, ValueMetaInterface.TYPE_INTEGER );
+              vhashfield = new ValueMetaInteger( hashField );
               vhashfield.setLength( 15 );
               vhashfield.setPrecision( 0 );
               doHash = true;
@@ -765,7 +773,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
             // Then the last update field (optional)
             ValueMetaInterface vLastUpdateField = null;
             if ( !Const.isEmpty( lastUpdateField ) ) {
-              vLastUpdateField = new ValueMeta( lastUpdateField, ValueMetaInterface.TYPE_DATE );
+              vLastUpdateField = new ValueMetaDate( lastUpdateField );
             }
 
             if ( !db.checkTableExists( schemaTable ) ) {
@@ -948,15 +956,18 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
     return retval;
   }
 
+  @Override
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
       TransMeta transMeta, Trans trans ) {
     return new CombinationLookup( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 
+  @Override
   public StepDataInterface getStepData() {
     return new CombinationLookupData();
   }
 
+  @Override
   public void analyseImpact( List<DatabaseImpact> impact, TransMeta transMeta, StepMeta stepMeta,
       RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, Repository repository,
       IMetaStore metaStore ) {
@@ -983,6 +994,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
     }
   }
 
+  @Override
   public DatabaseMeta[] getUsedDatabaseConnections() {
     if ( databaseMeta != null ) {
       return new DatabaseMeta[] { databaseMeta };
@@ -991,6 +1003,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
     }
   }
 
+  @Override
   public boolean equals( Object other ) {
     if ( other == this ) {
       return true;
@@ -1064,6 +1077,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
   /**
    * @return the schemaName
    */
+  @Override
   public String getSchemaName() {
     return schemaName;
   }

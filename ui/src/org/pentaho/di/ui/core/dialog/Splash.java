@@ -58,7 +58,7 @@ import org.pentaho.di.version.BuildVersion;
 
 /**
  * Displays the Kettle splash screen
- * 
+ *
  * @author Matt
  * @since 14-mrt-2005
  */
@@ -131,11 +131,11 @@ public class Splash {
         Calendar cal = Calendar.getInstance();
         String licenseText = String.format( sb.toString(), cal );
         e.gc.drawImage( kettle_image, 0, 0 );
-        
+
         String fullVersionText =  BaseMessages.getString( PKG, "SplashDialog.Version" );
         String buildVersion = BuildVersion.getInstance().getVersion();
-        if ( StringUtils.ordinalIndexOf( buildVersion,".", 2 ) > 0 ) {
-          fullVersionText =  fullVersionText + " "  + buildVersion.substring( 0, StringUtils.ordinalIndexOf( buildVersion,".", 2 ) );
+        if ( StringUtils.ordinalIndexOf( buildVersion, ".", 2 ) > 0 ) {
+          fullVersionText =  fullVersionText + " "  + buildVersion.substring( 0, StringUtils.ordinalIndexOf( buildVersion, ".", 2 ) );
         } else {
           fullVersionText =  fullVersionText + " "  + buildVersion;
         }
@@ -146,7 +146,7 @@ public class Splash {
         String outputStringDate = "";
         SimpleDateFormat inputFormat = null;
         SimpleDateFormat outputFormat = null;
-    
+
         if ( inputStringDate.matches( "^\\d{4}/\\d{1,2}/\\d{1,2}\\s\\d{1,2}:\\d{2}:\\d{2}.\\d{3}$" ) ) {
           inputFormat = new SimpleDateFormat( "yyyy/MM/dd hh:mm:ss.SSS" );
         }
@@ -168,8 +168,8 @@ public class Splash {
         } catch ( ParseException pe ) {
           // Just show date in origin format
           outputStringDate = inputStringDate;
-        }        
-        
+        }
+
         // try using the desired font size for the license text
         e.gc.setFont( licFont );
 
@@ -184,7 +184,7 @@ public class Splash {
         }
 
         e.gc.drawText( licenseText, 290, 275, true );
-        
+
         String version =  buildVersion;
         // If this is a Milestone or RC release, warn the user
         if ( Const.RELEASE.equals( Const.ReleaseType.MILESTONE ) ) {

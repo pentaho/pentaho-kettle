@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -66,16 +66,16 @@ public class GroupByData extends BaseStepData implements StepDataInterface {
 
   public File tempFile;
 
-  public FileOutputStream fos;
+  public FileOutputStream fosToTempFile;
 
-  public DataOutputStream dos;
+  public DataOutputStream dosToTempFile;
 
   public int rowsOnFile;
 
   public boolean firstRead;
 
-  public FileInputStream fis;
-  public DataInputStream dis;
+  public FileInputStream fisToTmpFile;
+  public DataInputStream disToTmpFile;
 
   public Object[] groupResult;
 
@@ -103,9 +103,6 @@ public class GroupByData extends BaseStepData implements StepDataInterface {
 
   public boolean newBatch;
 
-  /**
-   *
-   */
   public GroupByData() {
     super();
 

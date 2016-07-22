@@ -69,9 +69,9 @@ public abstract class BaseJobServlet extends BodyHttpServlet {
 
     // Create the transformation and store in the list...
     final Job job = new Job( repository, jobMeta, servletLoggingObject );
-
     // Setting variables
     job.initializeVariablesFrom( null );
+    job.getJobMeta().setMetaStore( jobMap.getSlaveServerConfig().getMetaStore() );
     job.getJobMeta().setInternalKettleVariables( job );
     job.injectVariables( jobConfiguration.getJobExecutionConfiguration().getVariables() );
     job.setArguments( jobExecutionConfiguration.getArgumentStrings() );
@@ -127,6 +127,7 @@ public abstract class BaseJobServlet extends BodyHttpServlet {
 
     // Create the transformation and store in the list...
     final Trans trans = new Trans( transMeta, servletLoggingObject );
+    trans.setMetaStore( transformationMap.getSlaveServerConfig().getMetaStore() );
 
     if ( transExecutionConfiguration.isSetLogfile() ) {
       String realLogFilename = transExecutionConfiguration.getLogFileName();

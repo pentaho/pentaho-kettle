@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -302,6 +302,7 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface {
     this.valueField = valueField;
   }
 
+  @Override
   public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     readData( stepnode );
   }
@@ -314,8 +315,25 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface {
     valueField = new String[ nrfields ];
   }
 
+  @Override
   public Object clone() {
-    Object retval = super.clone();
+    GroupByMeta retval = (GroupByMeta) super.clone();
+
+    int szGroup = 0, szFields = 0;
+    if ( groupField != null ) {
+      szGroup = groupField.length;
+    }
+    if ( valueField != null ) {
+      szFields = valueField.length;
+    }
+    retval.allocate( szGroup, szFields );
+
+    System.arraycopy( groupField, 0, retval.groupField, 0, szGroup );
+    System.arraycopy( aggregateField, 0, retval.aggregateField, 0, szFields );
+    System.arraycopy( subjectField, 0, retval.subjectField, 0, szFields );
+    System.arraycopy( aggregateType, 0, retval.aggregateType, 0, szFields );
+    System.arraycopy( valueField, 0, retval.valueField, 0, szFields );
+
     return retval;
   }
 
@@ -399,6 +417,7 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface {
     return typeGroupLongDesc[ i ];
   }
 
+  @Override
   public void setDefault() {
     directory = "%%java.io.tmpdir%%";
     prefix = "grp";
@@ -407,13 +426,14 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface {
     aggregateIgnored = false;
     aggregateIgnoredField = null;
 
-    int sizegroup = 0;
-    int nrfields = 0;
+    int sizeGroup = 0;
+    int numberOfFields = 0;
 
-    allocate( sizegroup, nrfields );
+    allocate( sizeGroup, numberOfFields );
   }
 
-  public void getFields( RowMetaInterface r, String origin, RowMetaInterface[] info, StepMeta nextStep,
+  @Override
+  public void getFields( RowMetaInterface rowMeta, String origin, RowMetaInterface[] info, StepMeta nextStep,
                          VariableSpace space, Repository repository, IMetaStore metaStore ) {
     // re-assemble a new row of metadata
     //
@@ -423,7 +443,7 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface {
       // Add the grouping fields in the correct order...
       //
       for ( int i = 0; i < groupField.length; i++ ) {
-        ValueMetaInterface valueMeta = r.searchValueMeta( groupField[ i ] );
+        ValueMetaInterface valueMeta = rowMeta.searchValueMeta( groupField[ i ] );
         if ( valueMeta != null ) {
           fields.addValueMeta( valueMeta );
         }
@@ -431,16 +451,16 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface {
     } else {
       // Add all the original fields from the incoming row meta
       //
-      fields.addRowMeta( r );
+      fields.addRowMeta( rowMeta );
     }
 
     // Re-add aggregates
     //
     for ( int i = 0; i < subjectField.length; i++ ) {
-      ValueMetaInterface subj = r.searchValueMeta( subjectField[ i ] );
+      ValueMetaInterface subj = rowMeta.searchValueMeta( subjectField[ i ] );
       if ( subj != null || aggregateType[ i ] == TYPE_GROUP_COUNT_ANY ) {
-        String value_name = aggregateField[ i ];
-        int value_type = ValueMetaInterface.TYPE_NONE;
+        String valueName = aggregateField[ i ];
+        int valueType = ValueMetaInterface.TYPE_NONE;
         int length = -1;
         int precision = -1;
 
@@ -455,23 +475,23 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface {
           case TYPE_GROUP_LAST_INCL_NULL:
           case TYPE_GROUP_MIN:
           case TYPE_GROUP_MAX:
-            value_type = subj.getType();
+            valueType = subj.getType();
             break;
           case TYPE_GROUP_COUNT_DISTINCT:
           case TYPE_GROUP_COUNT_ANY:
           case TYPE_GROUP_COUNT_ALL:
-            value_type = ValueMetaInterface.TYPE_INTEGER;
+            valueType = ValueMetaInterface.TYPE_INTEGER;
             break;
           case TYPE_GROUP_CONCAT_COMMA:
-            value_type = ValueMetaInterface.TYPE_STRING;
+            valueType = ValueMetaInterface.TYPE_STRING;
             break;
           case TYPE_GROUP_STANDARD_DEVIATION:
           case TYPE_GROUP_MEDIAN:
           case TYPE_GROUP_PERCENTILE:
-            value_type = ValueMetaInterface.TYPE_NUMBER;
+            valueType = ValueMetaInterface.TYPE_NUMBER;
             break;
           case TYPE_GROUP_CONCAT_STRING:
-            value_type = ValueMetaInterface.TYPE_STRING;
+            valueType = ValueMetaInterface.TYPE_STRING;
             break;
           default:
             break;
@@ -479,8 +499,8 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface {
 
         // Change type from integer to number in case off averages for cumulative average
         //
-        if ( aggregateType[ i ] == TYPE_GROUP_CUMULATIVE_AVERAGE && value_type == ValueMetaInterface.TYPE_INTEGER ) {
-          value_type = ValueMetaInterface.TYPE_NUMBER;
+        if ( aggregateType[ i ] == TYPE_GROUP_CUMULATIVE_AVERAGE && valueType == ValueMetaInterface.TYPE_INTEGER ) {
+          valueType = ValueMetaInterface.TYPE_NUMBER;
           precision = -1;
           length = -1;
         } else if ( aggregateType[ i ] == TYPE_GROUP_COUNT_ALL
@@ -488,17 +508,17 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface {
           length = ValueMetaInterface.DEFAULT_INTEGER_LENGTH;
           precision = 0;
         } else if ( aggregateType[ i ] == TYPE_GROUP_SUM
-            && value_type != ValueMetaInterface.TYPE_INTEGER && value_type != ValueMetaInterface.TYPE_NUMBER
-            && value_type != ValueMetaInterface.TYPE_BIGNUMBER ) {
+            && valueType != ValueMetaInterface.TYPE_INTEGER && valueType != ValueMetaInterface.TYPE_NUMBER
+            && valueType != ValueMetaInterface.TYPE_BIGNUMBER ) {
           // If it ain't numeric, we change it to Number
           //
-          value_type = ValueMetaInterface.TYPE_NUMBER;
+          valueType = ValueMetaInterface.TYPE_NUMBER;
           precision = -1;
           length = -1;
         }
 
-        if ( value_type != ValueMetaInterface.TYPE_NONE ) {
-          ValueMetaInterface v = new ValueMeta( value_name, value_type );
+        if ( valueType != ValueMetaInterface.TYPE_NONE ) {
+          ValueMetaInterface v = new ValueMeta( valueName, valueType );
           v.setOrigin( origin );
           v.setLength( length, precision );
           fields.addValueMeta( v );
@@ -519,10 +539,11 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface {
 
     // Now that we have all the fields we want, we should clear the original row and replace the values...
     //
-    r.clear();
-    r.addRowMeta( fields );
+    rowMeta.clear();
+    rowMeta.addRowMeta( fields );
   }
 
+  @Override
   public String getXML() {
     StringBuilder retval = new StringBuilder( 500 );
 
@@ -557,6 +578,7 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface {
     return retval.toString();
   }
 
+  @Override
   public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
     throws KettleException {
     try {
@@ -597,6 +619,7 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
+  @Override
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
     throws KettleException {
     try {
@@ -626,6 +649,7 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
+  @Override
   public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
                      RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
                      Repository repository, IMetaStore metaStore ) {
@@ -644,11 +668,13 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
+  @Override
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
                                 TransMeta transMeta, Trans trans ) {
     return new GroupBy( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 
+  @Override
   public StepDataInterface getStepData() {
     return new GroupByData();
   }

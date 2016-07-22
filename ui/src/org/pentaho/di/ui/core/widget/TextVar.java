@@ -106,7 +106,7 @@ public class TextVar extends Composite {
   protected void initialize( VariableSpace space, Composite composite, int flags, String toolTipText,
       GetCaretPositionInterface getCaretPositionInterface, InsertTextInterface insertTextInterface,
       SelectionListener selectionListener ) {
-   
+
     this.toolTipText = toolTipText;
     this.getCaretPositionInterface = getCaretPositionInterface;
     this.insertTextInterface = insertTextInterface;

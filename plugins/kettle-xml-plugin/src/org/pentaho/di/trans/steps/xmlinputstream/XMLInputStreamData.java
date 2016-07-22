@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -47,7 +47,8 @@ public class XMLInputStreamData extends BaseStepData implements StepDataInterfac
   public XMLEventReader xmlEventReader;
 
   // from meta data but replaced by variables
-  public String filename;
+  public String[] filenames;
+  public int filenr;
   public long nrRowsToSkip;
   public long rowLimit;
   public String encoding;

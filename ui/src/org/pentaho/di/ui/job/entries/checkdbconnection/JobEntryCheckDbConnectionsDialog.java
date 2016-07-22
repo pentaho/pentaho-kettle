@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -180,8 +180,8 @@ public class JobEntryCheckDbConnectionsDialog extends JobEntryDialog implements 
 
     addDatabases();
 
-    int rows =
-      jobEntry.connections == null ? 1 : ( jobEntry.connections.length == 0 ? 0 : jobEntry.connections.length );
+    int rows = jobEntry.getConnections() == null ? 1
+      : ( jobEntry.getConnections().length == 0 ? 0 : jobEntry.getConnections().length );
 
     final int FieldsRows = rows;
 
@@ -325,13 +325,13 @@ public class JobEntryCheckDbConnectionsDialog extends JobEntryDialog implements 
       wName.setText( jobEntry.getName() );
     }
 
-    if ( jobEntry.connections != null ) {
-      for ( int i = 0; i < jobEntry.connections.length; i++ ) {
+    if ( jobEntry.getConnections() != null ) {
+      for ( int i = 0; i < jobEntry.getConnections().length; i++ ) {
         TableItem ti = wFields.table.getItem( i );
-        if ( jobEntry.connections[i] != null ) {
-          ti.setText( 1, jobEntry.connections[i].getName() );
-          ti.setText( 2, "" + Const.toInt( jobEntry.waitfors[i], 0 ) );
-          ti.setText( 3, JobEntryCheckDbConnections.getWaitTimeDesc( jobEntry.waittimes[i] ) );
+        if ( jobEntry.getConnections()[i] != null ) {
+          ti.setText( 1, jobEntry.getConnections()[i].getName() );
+          ti.setText( 2, "" + Const.toInt( jobEntry.getWaitfors()[i], 0 ) );
+          ti.setText( 3, JobEntryCheckDbConnections.getWaitTimeDesc( jobEntry.getWaittimes()[i] ) );
         }
       }
       wFields.setRowNums();
@@ -360,20 +360,24 @@ public class JobEntryCheckDbConnectionsDialog extends JobEntryDialog implements 
 
     int nritems = wFields.nrNonEmpty();
 
-    jobEntry.connections = new DatabaseMeta[nritems];
-    jobEntry.waitfors = new String[nritems];
-    jobEntry.waittimes = new int[nritems];
+    DatabaseMeta[] connections = new DatabaseMeta[nritems];
+    String[] waitfors = new String[nritems];
+    int[] waittimes = new int[nritems];
 
     for ( int i = 0; i < nritems; i++ ) {
       String arg = wFields.getNonEmpty( i ).getText( 1 );
       DatabaseMeta dbMeta = jobMeta.findDatabase( arg );
       if ( dbMeta != null ) {
-        jobEntry.connections[i] = dbMeta;
-        jobEntry.waitfors[i] = "" + Const.toInt( wFields.getNonEmpty( i ).getText( 2 ), 0 );
-        jobEntry.waittimes[i] =
+        connections[i] = dbMeta;
+        waitfors[i] = "" + Const.toInt( wFields.getNonEmpty( i ).getText( 2 ), 0 );
+        waittimes[i] =
           JobEntryCheckDbConnections.getWaitTimeByDesc( wFields.getNonEmpty( i ).getText( 3 ) );
       }
     }
+    jobEntry.setConnections( connections );
+    jobEntry.setWaitfors( waitfors );
+    jobEntry.setWaittimes( waittimes );
+
     dispose();
   }
 

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.TimeZone;
 
-import org.apache.axis.message.MessageElement;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -35,16 +34,16 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.trans.step.BaseStep;
 import org.pentaho.di.trans.step.StepDataInterface;
-import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
-import org.pentaho.di.trans.steps.salesforceinput.SalesforceConnection;
+import org.pentaho.di.trans.steps.salesforce.SalesforceConnection;
+import org.pentaho.di.trans.steps.salesforce.SalesforceStep;
 import org.pentaho.di.trans.steps.salesforceutils.SalesforceUtils;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.sforce.soap.partner.sobject.SObject;
+import com.sforce.ws.bind.XmlObject;
 
 /**
  * Read data from Salesforce module, convert them to rows and writes these to one or more output streams.
@@ -52,7 +51,7 @@ import com.sforce.soap.partner.sobject.SObject;
  * @author jstairs,Samatar
  * @since 10-06-2007
  */
-public class SalesforceInsert extends BaseStep implements StepInterface {
+public class SalesforceInsert extends SalesforceStep {
   private static Class<?> PKG = SalesforceInsertMeta.class; // for i18n purposes, needed by Translator2!!
 
   private SalesforceInsertMeta meta;
@@ -63,6 +62,7 @@ public class SalesforceInsert extends BaseStep implements StepInterface {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
+  @Override
   public boolean processRow( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
 
     // get one row ... This does some basic initialization of the objects, including loading the info coming in
@@ -128,7 +128,7 @@ public class SalesforceInsert extends BaseStep implements StepInterface {
 
       // if there is room in the buffer
       if ( data.iBufferPos < meta.getBatchSizeInt() ) {
-        ArrayList<MessageElement> insertfields = new ArrayList<MessageElement>();
+        ArrayList<XmlObject> insertfields = new ArrayList<>();
         // Reserve for empty fields
         ArrayList<String> fieldsToNull = new ArrayList<String>();
 
@@ -163,10 +163,12 @@ public class SalesforceInsert extends BaseStep implements StepInterface {
 
         // build the SObject
         SObject sobjPass = new SObject();
-        sobjPass.setType( data.realModule );
+        sobjPass.setType( data.connection.getModule() );
 
         if ( insertfields.size() > 0 ) {
-          sobjPass.set_any( insertfields.toArray( new MessageElement[insertfields.size()] ) );
+          for ( XmlObject element : insertfields ) {
+            sobjPass.setSObjectField( element.getName().getLocalPart(), element.getValue() );
+          }
         }
         if ( fieldsToNull.size() > 0 ) {
           // Set Null to fields
@@ -286,71 +288,41 @@ public class SalesforceInsert extends BaseStep implements StepInterface {
 
   }
 
+  @Override
   public boolean init( StepMetaInterface smi, StepDataInterface sdi ) {
     meta = (SalesforceInsertMeta) smi;
     data = (SalesforceInsertData) sdi;
 
     if ( super.init( smi, sdi ) ) {
-
       try {
-        data.realModule = environmentSubstitute( meta.getModule() );
-        // Check if module is specified
-        if ( Const.isEmpty( data.realModule ) ) {
-          log.logError( BaseMessages.getString( PKG, "SalesforceInsertDialog.ModuleMissing.DialogMessage" ) );
-          return false;
-        }
-
-        String realUser = environmentSubstitute( meta.getUserName() );
-        // Check if username is specified
-        if ( Const.isEmpty( realUser ) ) {
-          log.logError( BaseMessages.getString( PKG, "SalesforceInsertDialog.UsernameMissing.DialogMessage" ) );
-          return false;
-        }
-
         String salesfoceIdFieldname = environmentSubstitute( meta.getSalesforceIDFieldName() );
         if ( !Const.isEmpty( salesfoceIdFieldname ) ) {
           data.realSalesforceFieldName = salesfoceIdFieldname;
         }
 
-        // initialize variables
-        data.realURL = environmentSubstitute( meta.getTargetURL() );
-        // create a Salesforce connection
-        data.connection =
-          new SalesforceConnection( log, data.realURL, realUser, environmentSubstitute( meta.getPassword() ) );
-        // set timeout
-        data.connection.setTimeOut( Const.toInt( environmentSubstitute( meta.getTimeOut() ), 0 ) );
-        // Do we use compression?
-        data.connection.setUsingCompression( meta.isUsingCompression() );
         // Do we need to rollback all changes on error?
-        data.connection.rollbackAllChangesOnError( meta.isRollbackAllChangesOnError() );
+        data.connection.setRollbackAllChangesOnError( meta.isRollbackAllChangesOnError() );
 
         // Now connect ...
         data.connection.connect();
-
-        return true;
       } catch ( KettleException ke ) {
         logError( BaseMessages.getString( PKG, "SalesforceInsert.Log.ErrorOccurredDuringStepInitialize" )
           + ke.getMessage() );
+        return false;
       }
       return true;
+    } else {
+      return false;
     }
-    return false;
   }
 
+  @Override
   public void dispose( StepMetaInterface smi, StepDataInterface sdi ) {
-    meta = (SalesforceInsertMeta) smi;
-    data = (SalesforceInsertData) sdi;
-    try {
-      if ( data.outputBuffer != null ) {
-        data.outputBuffer = null;
-      }
-      if ( data.sfBuffer != null ) {
-        data.sfBuffer = null;
-      }
-      if ( data.connection != null ) {
-        data.connection.close();
-      }
-    } catch ( Exception e ) { /* Ignore */
+    if ( data.outputBuffer != null ) {
+      data.outputBuffer = null;
+    }
+    if ( data.sfBuffer != null ) {
+      data.sfBuffer = null;
     }
     super.dispose( smi, sdi );
   }

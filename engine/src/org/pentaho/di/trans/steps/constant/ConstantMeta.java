@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -33,7 +33,6 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.variables.VariableSpace;
@@ -61,7 +60,7 @@ public class ConstantMeta extends BaseStepMeta implements StepMetaInterface {
   private String[] currency;
   private String[] decimal;
   private String[] group;
-  private String[] value;
+  private String[] value; // Null-if
 
   private String[] fieldName;
   private String[] fieldType;
@@ -182,9 +181,15 @@ public class ConstantMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   /**
+   * @deprecated use {@link #isEmptyString()} instead
    * @return the setEmptyString
    */
+  @Deprecated
   public boolean[] isSetEmptyString() {
+    return setEmptyString;
+  }
+
+  public boolean[] isEmptyString() {
     return setEmptyString;
   }
 
@@ -249,19 +254,16 @@ public class ConstantMeta extends BaseStepMeta implements StepMetaInterface {
     int nrfields = fieldName.length;
 
     retval.allocate( nrfields );
-
-    for ( int i = 0; i < nrfields; i++ ) {
-      retval.fieldName[i] = fieldName[i];
-      retval.fieldType[i] = fieldType[i];
-      retval.fieldFormat[i] = fieldFormat[i];
-      retval.currency[i] = currency[i];
-      retval.decimal[i] = decimal[i];
-      retval.group[i] = group[i];
-      retval.value[i] = value[i];
-      retval.fieldLength[i] = fieldLength[i];
-      retval.fieldPrecision[i] = fieldPrecision[i];
-      retval.setEmptyString[i] = setEmptyString[i];
-    }
+    System.arraycopy( fieldName, 0, retval.fieldName, 0, nrfields );
+    System.arraycopy( fieldType, 0, retval.fieldType, 0, nrfields );
+    System.arraycopy( fieldFormat, 0, retval.fieldFormat, 0, nrfields );
+    System.arraycopy( currency, 0, retval.currency, 0, nrfields );
+    System.arraycopy( decimal, 0, retval.decimal, 0, nrfields );
+    System.arraycopy( group, 0, retval.group, 0, nrfields );
+    System.arraycopy( value, 0, retval.value, 0, nrfields );
+    System.arraycopy( fieldLength, 0, retval.fieldLength, 0, nrfields );
+    System.arraycopy( fieldPrecision, 0, retval.fieldPrecision, 0, nrfields );
+    System.arraycopy( setEmptyString, 0, retval.setEmptyString, 0, nrfields );
 
     return retval;
   }
@@ -324,7 +326,7 @@ public class ConstantMeta extends BaseStepMeta implements StepMetaInterface {
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     for ( int i = 0; i < fieldName.length; i++ ) {
       if ( fieldName[i] != null && fieldName[i].length() != 0 ) {
-        int type = ValueMeta.getType( fieldType[i] );
+        int type = ValueMetaFactory.getIdForValueMeta( fieldType[i] );
         if ( type == ValueMetaInterface.TYPE_NONE ) {
           type = ValueMetaInterface.TYPE_STRING;
         }

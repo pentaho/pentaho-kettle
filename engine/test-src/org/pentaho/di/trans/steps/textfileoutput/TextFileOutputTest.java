@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,6 +22,8 @@
 
 package org.pentaho.di.trans.steps.textfileoutput;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyInt;
@@ -34,8 +36,6 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.pentaho.di.core.util.Assert.assertFalse;
-import static org.pentaho.di.core.util.Assert.assertTrue;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -206,11 +206,11 @@ public class TextFileOutputTest {
     when( stepMockHelper.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) ).thenReturn(
         stepMockHelper.logChannelInterface );
     verify( stepMockHelper.logChannelInterface, never() ).logError( anyString() );
-    verify( stepMockHelper.logChannelInterface, never() ).logError( anyString(), anyObject() );
+    verify( stepMockHelper.logChannelInterface, never() ).logError( anyString(), any( Object[].class ) );
     verify( stepMockHelper.logChannelInterface, never() ).logError( anyString(), (Throwable) anyObject() );
     when( stepMockHelper.trans.isRunning() ).thenReturn( true );
     verify( stepMockHelper.trans, never() ).stopAll();
-    stepMockHelper.stepDataInterface.previouslyOpenedFiles = new ArrayList<String>();
+    stepMockHelper.stepDataInterface.previouslyOpenedFiles = new ArrayList<>();
     when( stepMockHelper.processRowsStepMetaInterface.getSeparator() ).thenReturn( " " );
     when( stepMockHelper.processRowsStepMetaInterface.getEnclosure() ).thenReturn( "\"" );
     when( stepMockHelper.processRowsStepMetaInterface.getNewline() ).thenReturn( "\n" );
@@ -413,7 +413,8 @@ public class TextFileOutputTest {
 
     for ( int i = 0; i < textFileField.length; i++ ) {
       String name = textFileField[i].getName();
-      when( inputRowMeta.getValueMeta( i ) ).thenReturn( new ValueMetaString( name ) );
+      ValueMetaString valueMetaString = new ValueMetaString( name );
+      when( inputRowMeta.getValueMeta( i ) ).thenReturn( valueMetaString );
       when( inputRowMeta.indexOfValue( name ) ).thenReturn( i );
     }
 

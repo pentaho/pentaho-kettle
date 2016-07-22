@@ -100,13 +100,8 @@ public class MergeJoinMetaTest {
   }
 
   @Test
-  public void testLoadSaveXML() throws KettleException {
-    loadSaveTester.testXmlRoundTrip();
-  }
-
-  @Test
-  public void testLoadSaveRepo() throws KettleException {
-    loadSaveTester.testRepoRoundTrip();
+  public void testSerialization() throws KettleException {
+    loadSaveTester.testSerialization();
   }
 
   @Test
@@ -165,5 +160,20 @@ public class MergeJoinMetaTest {
     assertTrue( field3 instanceof ValueMetaString );
     assertEquals( "inputStep2", field3.getOrigin() );
 
+  }
+
+  @Test
+  public void cloneTest() throws Exception {
+    MergeJoinMeta meta = new MergeJoinMeta();
+    meta.allocate( 2, 3 );
+    meta.setKeyFields1( new String[] { "kf1-1", "kf1-2" } );
+    meta.setKeyFields2( new String[] { "kf2-1", "kf2-2", "kf2-3" } );
+    // scalars should be cloned using super.clone() - makes sure they're calling super.clone()
+    meta.setJoinType( "INNER" );
+    MergeJoinMeta aClone = (MergeJoinMeta) meta.clone();
+    assertFalse( aClone == meta ); // Not same object returned by clone
+    assertTrue( Arrays.equals( meta.getKeyFields1(), aClone.getKeyFields1() ) );
+    assertTrue( Arrays.equals( meta.getKeyFields2(), aClone.getKeyFields2() ) );
+    assertEquals( meta.getJoinType(), aClone.getJoinType() );
   }
 }

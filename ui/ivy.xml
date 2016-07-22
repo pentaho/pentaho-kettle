@@ -26,7 +26,7 @@
     <dependency org="pentaho"               name="pentaho-xul-swt"     rev="${dependency.pentaho-xul.revision}"         changing="true"/>
     <dependency org="pentaho"               name="pentaho-xul-swing"   rev="${dependency.pentaho-xul.revision}"         changing="true"/>
 
-    <dependency org="pentaho" name="pentaho-capability-manager" rev="${dependency.pentaho-capability-manager.revision}" conf="default->default" transitive="false"/>
+    <dependency org="pentaho" name="pentaho-capability-manager" rev="${dependency.pentaho-osgi-bundles.revision}" conf="default->default" transitive="false"/>
 
     <!-- Third-party (external) dependencies -->
 

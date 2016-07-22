@@ -1,5 +1,5 @@
 /*!
- * Copyright 2010 - 2015 Pentaho Corporation.  All rights reserved.
+ * Copyright 2010 - 2016 Pentaho Corporation.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.pentaho.di.repository.pur;
 import org.hamcrest.core.IsInstanceOf;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentMatcher;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.JobEntryLogTable;
@@ -29,6 +30,7 @@ import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryElementMetaInterface;
 import org.pentaho.di.repository.RepositoryObjectType;
+import org.pentaho.di.repository.RepositoryTestLazySupport;
 import org.pentaho.di.repository.pur.model.EERepositoryObject;
 import org.pentaho.di.trans.HasDatabasesInterface;
 import org.pentaho.di.ui.repository.pur.services.ILockService;
@@ -55,11 +57,17 @@ import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
 
-public class PurRepositoryUnitTest {
+public class PurRepositoryUnitTest extends RepositoryTestLazySupport {
   private VariableSpace mockedVariableSpace;
   private HasDatabasesInterface mockedHasDbInterface;
+
+  public PurRepositoryUnitTest( Boolean lazyRepo ) {
+    super( lazyRepo );
+  }
 
   @Before
   public void init() {
@@ -125,7 +133,13 @@ public class PurRepositoryUnitTest {
 
     when( mockRootFolder.getId() ).thenReturn( "/" );
     when( mockRootFolder.getPath() ).thenReturn( "/" );
+    // for Lazy Repo
     when( mockRepo.getFile( "/" ) ).thenReturn( mockRootFolder );
+    // for Eager Repo
+    RepositoryFileTree repositoryFileTree = mock( RepositoryFileTree.class );
+    when( mockRepo.getTree( "/", -1, null, true ) ).thenReturn( repositoryFileTree );
+    when( repositoryFileTree.getFile() ).thenReturn( mockRootFolder );
+
     purRepository.connect( "TEST_USER", "TEST_PASSWORD" );
 
     RepositoryDirectoryInterface rootDir = purRepository.getRootDir();
@@ -164,7 +178,12 @@ public class PurRepositoryUnitTest {
     List<RepositoryFile> rootChildren = new ArrayList<>( Collections.singletonList( mockFile ) );
     when( mockRepo.getChildren( argThat( IsInstanceOf.<RepositoryRequest>instanceOf( RepositoryRequest.class ) ) ) )
         .thenReturn( rootChildren );
+    // for Lazy Repo
     when( mockRepo.getFile( "/" ) ).thenReturn( mockRootFolder );
+    // for Eager Repo
+    RepositoryFileTree repositoryFileTree = mock( RepositoryFileTree.class );
+    when( mockRepo.getTree( "/", -1, null, true ) ).thenReturn( repositoryFileTree );
+    when( repositoryFileTree.getFile() ).thenReturn( mockRootFolder );
     purRepository.connect( "TEST_USER", "TEST_PASSWORD" );
     List<RepositoryDirectoryInterface> children = purRepository.getRootDir().getChildren();
     assertThat( children, empty() );
@@ -197,10 +216,12 @@ public class PurRepositoryUnitTest {
 
 
     when( mockEtcFolder.getPath() ).thenReturn( "/etc" );
+    when( mockEtcFolder.getName() ).thenReturn( "etc" );
     when( mockEtcFolder.isFolder() ).thenReturn( true );
     when( mockEtcFolder.getId() ).thenReturn( testId );
 
     when( mockFolderVisible.getPath() ).thenReturn( "/visible" );
+    when( mockFolderVisible.getName() ).thenReturn( "visible" );
     when( mockFolderVisible.isFolder() ).thenReturn( true );
     when( mockFolderVisible.getId() ).thenReturn( visibleFolderId );
 
@@ -211,7 +232,18 @@ public class PurRepositoryUnitTest {
     List<RepositoryFile> rootChildren = new ArrayList<>( Arrays.asList( mockEtcFolder, mockFolderVisible ) );
     when( mockRepo.getChildren( argThat( IsInstanceOf.<RepositoryRequest>instanceOf( RepositoryRequest.class ) ) ) )
         .thenReturn( rootChildren );
+    // for Lazy Repo
     when( mockRepo.getFile( "/" ) ).thenReturn( mockRootFolder );
+    // for Eager Repo
+    RepositoryFileTree repositoryFileTree = mock( RepositoryFileTree.class );
+    when( mockRepo.getTree( "/", -1, null, true ) ).thenReturn( repositoryFileTree );
+    when( repositoryFileTree.getFile() ).thenReturn( mockRootFolder );
+    RepositoryFileTree mockEtcFolderTree = mock( RepositoryFileTree.class );
+    when( mockEtcFolderTree.getFile() ).thenReturn( mockEtcFolder );
+    RepositoryFileTree mockFolderVisibleTree = mock( RepositoryFileTree.class );
+    when( mockFolderVisibleTree.getFile() ).thenReturn( mockFolderVisible );
+    when( repositoryFileTree.getChildren() ).thenReturn( new ArrayList<RepositoryFileTree>( Arrays.asList(
+        mockEtcFolderTree, mockFolderVisibleTree ) ) );
     purRepository.connect( "TEST_USER", "TEST_PASSWORD" );
     int children = purRepository.getRootDir().getNrSubdirectories();
     assertThat( children, equalTo( 1 ) );
@@ -274,6 +306,8 @@ public class PurRepositoryUnitTest {
     RepositoryFile mockFileVersioningNotEnabled = mock( RepositoryFile.class );
     RepositoryFileTree mockRepositoryTreeChildVersioningEnabled = mock( RepositoryFileTree.class );
     RepositoryFileTree mockRepositoryTreeChildVersioningNotEnabled = mock( RepositoryFileTree.class );
+    RepositoryFile publicFolder = mock( RepositoryFile.class );
+    RepositoryFileTree publicFolderTree = mock( RepositoryFileTree.class );
 
     RepositoryFile mockRootFolder = mock( RepositoryFile.class );
     RepositoryObjectType repositoryObjectType = RepositoryObjectType.TRANSFORMATION;
@@ -288,32 +322,45 @@ public class PurRepositoryUnitTest {
     when( mockRepo.getFileById( testId ) ).thenReturn( mockFileVersioningEnabled );
 
 
-    when( mockFileVersioningEnabled.getPath() ).thenReturn( "/home/testuser/path.ktr" );
+    when( mockFileVersioningEnabled.getPath() ).thenReturn( "/public/path.ktr" );
     when( mockFileVersioningEnabled.getId() ).thenReturn( testFileId );
     when( mockFileVersioningEnabled.getName() ).thenReturn( "path.ktr" );
 
-    when( mockFileVersioningNotEnabled.getPath() ).thenReturn( "/home/testuser/path2.ktr" );
+    when( mockFileVersioningNotEnabled.getPath() ).thenReturn( "/public/path2.ktr" );
     when( mockFileVersioningNotEnabled.getId() ).thenReturn( testFileId + "2" );
     when( mockFileVersioningNotEnabled.getName() ).thenReturn( "path2.ktr" );
+
+    when( publicFolder.getPath() ).thenReturn( "/public" );
+    when( publicFolder.getName() ).thenReturn( "public" );
+    when( publicFolder.getId() ).thenReturn( testFileId + "3" );
+    when( publicFolder.isFolder() ).thenReturn( true );
+    when( publicFolderTree.getFile() ).thenReturn( publicFolder );
 
 
     when( mockRepositoryTreeChildVersioningEnabled.getFile() ).thenReturn( mockFileVersioningEnabled );
     when( mockRepositoryTreeChildVersioningEnabled.getVersionCommentEnabled() ).thenReturn( true );
     when( mockRepositoryTreeChildVersioningEnabled.getVersioningEnabled() ).thenReturn( true );
 
-    when( mockRepositoryTreeChildVersioningNotEnabled.getFile() ).thenReturn( mockFileVersioningEnabled );
+    when( mockRepositoryTreeChildVersioningNotEnabled.getFile() ).thenReturn( mockFileVersioningNotEnabled );
     when( mockRepositoryTreeChildVersioningNotEnabled.getVersionCommentEnabled() ).thenReturn( false );
     when( mockRepositoryTreeChildVersioningNotEnabled.getVersioningEnabled() ).thenReturn( false );
 
     when( mockRepo.getTree( anyString(), anyInt(), anyString(), anyBoolean() ) ).thenReturn( mockRepositoryTree );
     when( mockRepo.getTree( any( RepositoryRequest.class ) ) ).thenReturn( mockRepositoryTree );
+    when( mockRepo.getTree( argThat( new ArgumentMatcher<RepositoryRequest>() {
+      @Override public boolean matches( Object argument ) {
+        return ( (RepositoryRequest) argument ).getPath().equals( "/public" );
+      }
+    } ) ) ).thenReturn( publicFolderTree );
     when( mockRepositoryTree.getFile() ).thenReturn( mockRootFolder );
-    when( mockRepositoryTree.getChildren() ).thenReturn( children );
+    when( mockRepositoryTree.getChildren() ).thenReturn( new ArrayList<>( Arrays.asList( publicFolderTree ) ) );
+    when( publicFolderTree.getChildren() ).thenReturn( children );
     when( mockRootFolder.getId() ).thenReturn( "/" );
     when( mockRootFolder.getPath() ).thenReturn( "/" );
     when( mockRepo.getFile( "/" ) ).thenReturn( mockRootFolder );
+    when( mockRepo.getFile( "/public" ) ).thenReturn( publicFolder );
     purRepository.connect( "TEST_USER", "TEST_PASSWORD" );
-    List<RepositoryElementMetaInterface> repositoryObjects = purRepository.getRootDir().getRepositoryObjects();
+    List<RepositoryElementMetaInterface> repositoryObjects = purRepository.findDirectory( "/public" ).getRepositoryObjects();
     assertThat( repositoryObjects.size(), is( 2 ) );
 
     // Test Enabled

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2014 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,6 +27,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.URISyntaxException;
 import java.nio.channels.FileChannel;
 
@@ -35,6 +36,8 @@ import junit.framework.Assert;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.pentaho.test.util.XXEUtils;
+import org.xml.sax.SAXParseException;
 
 public class RepositoryExportSaxParserTest {
   private static final String PKG = "org/pentaho/di/repository/";
@@ -68,6 +71,25 @@ public class RepositoryExportSaxParserTest {
     } catch ( Exception e ) {
       Assert.fail( "No exception is expected But occured: " + e );
     }
+  }
+
+  @Test( expected = SAXParseException.class )
+  public void exceptionIsThrownWhenParsingXmlWithBigAmountOfExternalEntities() throws Exception {
+    File file = createTmpFile( XXEUtils.MALICIOUS_XML );
+
+    repExpSAXParser = new RepositoryExportSaxParser( file.getAbsolutePath(), null );
+    repExpSAXParser.parse( repImpMock );
+  }
+
+  private File createTmpFile( String content ) throws Exception {
+    File tmpFile = File.createTempFile( "RepositoryExportSaxParserTest", ".xml" );
+    tmpFile.deleteOnExit();
+
+    try ( PrintWriter writer = new PrintWriter( tmpFile ) ) {
+      writer.write( content );
+    }
+
+    return tmpFile;
   }
 
   private static void createTempDirWithSpecialCharactersInName() throws IOException {

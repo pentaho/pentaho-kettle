@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -76,7 +76,7 @@ public class Condition implements Cloneable, XMLInterface {
 
   public static final String[] functions = new String[] {
     "=", "<>", "<", "<=", ">", ">=", "REGEXP", "IS NULL", "IS NOT NULL", "IN LIST", "CONTAINS", "STARTS WITH",
-    "ENDS WITH", "LIKE", "TRUE", };
+    "ENDS WITH", "LIKE", "TRUE" };
 
   public static final int FUNC_EQUAL = 0;
   public static final int FUNC_NOT_EQUAL = 1;
@@ -375,7 +375,7 @@ public class Condition implements Cloneable, XMLInterface {
       if ( isAtomic() ) {
 
         if ( function == FUNC_TRUE ) {
-          return true;
+          return !negate;
         }
 
         // Get fieldnrs left value

@@ -193,16 +193,35 @@ public class LDIFInputMeta extends BaseStepMeta implements StepMetaInterface {
 
   /**
    * @return Returns the hiddenFieldName.
+   * @deprecated due to standards violation (is... reserved for boolean getters)
    */
+  @Deprecated
   public String isHiddenField() {
+    return hiddenFieldName;
+  }
+
+  /**
+   * @return Returns the hiddenFieldName.
+   */
+  public String getHiddenField() {
     return hiddenFieldName;
   }
 
   /**
    * @param field
    *          The hiddenFieldName to set.
+   * @deprecated due to standards violation (is... reserved for boolean getters)
    */
+  @Deprecated
   public void setIsHiddenField( String field ) {
+    hiddenFieldName = field;
+  }
+
+  /**
+   * @param field
+   *          The hiddenFieldName to set.
+   */
+  public void setHiddenField( String field ) {
     hiddenFieldName = field;
   }
 
@@ -253,8 +272,17 @@ public class LDIFInputMeta extends BaseStepMeta implements StepMetaInterface {
 
   /**
    * @return Returns the excludeFileMask.
+   * @deprecated due to typo
    */
+  @Deprecated
   public String[] getExludeFileMask() {
+    return excludeFileMask;
+  }
+
+  /**
+   * @return Returns the excludeFileMask.
+   */
+  public String[] getExcludeFileMask() {
     return excludeFileMask;
   }
 
@@ -370,8 +398,18 @@ public class LDIFInputMeta extends BaseStepMeta implements StepMetaInterface {
 
   /**
    * @return Returns the includeFilename.
+   * @deprecated due to standards violation
    */
+
+  @Deprecated
   public boolean includeFilename() {
+    return includeFilename;
+  }
+
+  /**
+   * @return Returns the includeFilename.
+   */
+  public boolean getIncludeFilename() {
     return includeFilename;
   }
 
@@ -385,8 +423,17 @@ public class LDIFInputMeta extends BaseStepMeta implements StepMetaInterface {
 
   /**
    * @return Returns the includeRowNumber.
+   * @deprecated due to standards violation
    */
+  @Deprecated
   public boolean includeRowNumber() {
+    return includeRowNumber;
+  }
+
+  /**
+   * @return Returns the includeRowNumber.
+   */
+  public boolean getIncludeRowNumber() {
     return includeRowNumber;
   }
 
@@ -400,8 +447,17 @@ public class LDIFInputMeta extends BaseStepMeta implements StepMetaInterface {
 
   /**
    * @return Returns the includeContentType.
+   * @deprecated due to standards violation
    */
+  @Deprecated
   public boolean includeContentType() {
+    return includeContentType;
+  }
+
+  /**
+   * @return Returns the includeContentType.
+   */
+  public boolean getIncludeContentType() {
     return includeContentType;
   }
 
@@ -423,8 +479,17 @@ public class LDIFInputMeta extends BaseStepMeta implements StepMetaInterface {
 
   /**
    * @return Returns the includeDN.
+   * @deprecated due to standards violation
    */
+  @Deprecated
   public boolean IncludeDN() {
+    return includeDN;
+  }
+
+  /**
+   * @return Returns the includeDN.
+   */
+  public boolean getIncludeDN() {
     return includeDN;
   }
 
@@ -453,11 +518,19 @@ public class LDIFInputMeta extends BaseStepMeta implements StepMetaInterface {
 
   /**
    * @return Returns the addtoresultfilename.
+   * @deprecated because of standards violation
    */
+  @Deprecated
   public boolean AddToResultFilename() {
     return addtoresultfilename;
   }
 
+  /**
+   * @return Returns the addtoresultfilename.
+   */
+  public boolean getAddToResultFilename() {
+    return addtoresultfilename;
+  }
   /**
    * @return Returns the rowLimit.
    */
@@ -560,13 +633,11 @@ public class LDIFInputMeta extends BaseStepMeta implements StepMetaInterface {
 
     retval.allocate( nrFiles, nrFields );
 
-    for ( int i = 0; i < nrFiles; i++ ) {
-      retval.fileName[i] = fileName[i];
-      retval.fileMask[i] = fileMask[i];
-      retval.excludeFileMask[i] = excludeFileMask[i];
-      retval.fileRequired[i] = fileRequired[i];
-      retval.includeSubFolders[i] = includeSubFolders[i];
-    }
+    System.arraycopy( fileName, 0, retval.fileName, 0, nrFiles );
+    System.arraycopy( fileMask, 0, retval.fileMask, 0, nrFiles );
+    System.arraycopy( excludeFileMask, 0, retval.excludeFileMask, 0, nrFiles );
+    System.arraycopy( fileRequired, 0, retval.fileRequired, 0, nrFiles );
+    System.arraycopy( includeSubFolders, 0, retval.includeSubFolders, 0, nrFiles );
 
     for ( int i = 0; i < nrFields; i++ ) {
       if ( inputFields[i] != null ) {
@@ -897,6 +968,7 @@ public class LDIFInputMeta extends BaseStepMeta implements StepMetaInterface {
       rootUriNameFieldName = rep.getStepAttributeString( id_step, "rootUriNameFieldName" );
       extensionFieldName = rep.getStepAttributeString( id_step, "extensionFieldName" );
       sizeFieldName = rep.getStepAttributeString( id_step, "sizeFieldName" );
+      uriNameFieldName = rep.getStepAttributeString(  id_step, "uriNameFieldName" );
     } catch ( Exception e ) {
       throw new KettleException(
         BaseMessages.getString( PKG, "LDIFInputMeta.Exception.ErrorReadingRepository" ), e );
@@ -949,6 +1021,7 @@ public class LDIFInputMeta extends BaseStepMeta implements StepMetaInterface {
       rep.saveStepAttribute(
         id_transformation, id_step, "lastModificationTimeFieldName", lastModificationTimeFieldName );
       rep.saveStepAttribute( id_transformation, id_step, "uriNameFieldName", uriNameFieldName );
+      rep.saveStepAttribute( id_transformation, id_step, "sizeFieldName", sizeFieldName );
       rep.saveStepAttribute( id_transformation, id_step, "rootUriNameFieldName", rootUriNameFieldName );
       rep.saveStepAttribute( id_transformation, id_step, "extensionFieldName", extensionFieldName );
     } catch ( Exception e ) {

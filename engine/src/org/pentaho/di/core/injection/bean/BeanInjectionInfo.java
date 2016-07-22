@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,8 +25,10 @@ package org.pentaho.di.core.injection.bean;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.core.injection.Injection;
@@ -48,6 +50,7 @@ public class BeanInjectionInfo {
   private List<Group> groupsList = new ArrayList<>();
   /** Used only for fast group search during initialize. */
   private Map<String, Group> groupsMap = new HashMap<>();
+  private Set<String> hideProperties = new HashSet<>();
 
   public static boolean isInjectionSupported( Class<?> clazz ) {
     InjectionSupported annotation = clazz.getAnnotation( InjectionSupported.class );
@@ -70,6 +73,9 @@ public class BeanInjectionInfo {
         Group gr = new Group( group );
         groupsList.add( gr );
         groupsMap.put( gr.getName(), gr );
+      }
+      for ( String p : clazzAnnotation.hide() ) {
+        hideProperties.add( p );
       }
 
       BeanLevelInfo root = new BeanLevelInfo();
@@ -101,16 +107,58 @@ public class BeanInjectionInfo {
     if ( StringUtils.isBlank( metaInj.name() ) ) {
       throw new RuntimeException( "Property name shouldn't be blank in the " + clazz );
     }
-    if ( properties.containsKey( metaInj.name() ) ) {
-      throw new RuntimeException( "Property '" + metaInj.name() + "' already defined for " + clazz );
+
+    String propertyName = calcPropertyName( metaInj, leaf );
+    if ( properties.containsKey( propertyName ) ) {
+      throw new RuntimeException( "Property '" + propertyName + "' already defined for " + clazz );
     }
-    Property prop = new Property( metaInj.name(), metaInj.group(), leaf.createCallStack() );
+
+    // probably hided
+    if ( hideProperties.contains( propertyName ) ) {
+      return;
+    }
+
+    Property prop = new Property( propertyName, metaInj.group(), leaf.createCallStack() );
     properties.put( prop.name, prop );
     Group gr = groupsMap.get( metaInj.group() );
     if ( gr == null ) {
-      throw new RuntimeException( "Group '" + metaInj.group() + "' is not defined " + clazz );
+      throw new RuntimeException( "Group '" + metaInj.group() + "' for property '" + metaInj.name()
+          + "' is not defined " + clazz );
     }
     gr.groupProperties.add( prop );
+  }
+
+  public String getDescription( String name ) {
+    String description = BaseMessages.getString( clazz, clazzAnnotation.localizationPrefix() + name );
+    if ( description != null && description.startsWith( "!" ) && description.endsWith( "!" ) ) {
+      Class baseClass = clazz.getSuperclass();
+      while ( baseClass != null ) {
+        InjectionSupported baseAnnotation = (InjectionSupported) baseClass.getAnnotation( InjectionSupported.class );
+        if ( baseAnnotation != null ) {
+          description = BaseMessages.getString( baseClass, baseAnnotation.localizationPrefix() + name );
+          if ( description != null && !description.startsWith( "!" ) && !description.endsWith( "!" ) ) {
+            return description;
+          }
+        }
+        baseClass = baseClass.getSuperclass();
+      }
+    }
+    return description;
+  }
+
+  private String calcPropertyName( Injection metaInj, BeanLevelInfo leaf ) {
+    String name = metaInj.name();
+    while ( leaf != null ) {
+      if ( StringUtils.isNotBlank( leaf.prefix ) ) {
+        name = leaf.prefix + '.' + name;
+      }
+      leaf = leaf.parent;
+    }
+    if ( !name.equals( metaInj.name() ) && !metaInj.group().isEmpty() ) {
+      // group exist with prefix
+      throw new RuntimeException( "Group shouldn't be declared with prefix in " + clazz );
+    }
+    return name;
   }
 
   public class Property {
@@ -125,7 +173,7 @@ public class BeanInjectionInfo {
       this.path = path;
       int ac = 0;
       for ( BeanLevelInfo level : path ) {
-        if ( level.array ) {
+        if ( level.dim != BeanLevelInfo.DIMENSION.NONE ) {
           ac++;
         }
       }
@@ -141,7 +189,11 @@ public class BeanInjectionInfo {
     }
 
     public String getDescription() {
-      return BaseMessages.getString( clazz, clazzAnnotation.localizationPrefix() + name );
+      return BeanInjectionInfo.this.getDescription( name );
+    }
+
+    public Class<?> getPropertyClass() {
+      return path.get( path.size() - 1 ).leafClass;
     }
   }
 
@@ -162,7 +214,7 @@ public class BeanInjectionInfo {
     }
 
     public String getDescription() {
-      return BaseMessages.getString( clazz, clazzAnnotation.localizationPrefix() + name );
+      return BeanInjectionInfo.this.getDescription( name );
     }
   }
 }

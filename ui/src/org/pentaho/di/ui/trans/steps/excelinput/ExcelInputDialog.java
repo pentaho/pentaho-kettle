@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -308,6 +308,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
     input = (ExcelInputMeta) in;
   }
 
+  @Override
   public String open() {
     Shell parent = getParent();
     Display display = parent.getDisplay();
@@ -317,6 +318,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
     setShellImage( shell, input );
 
     lsMod = new ModifyListener() {
+      @Override
       public void modifyText( ModifyEvent e ) {
         input.setChanged();
         checkAlerts();
@@ -543,6 +545,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
     fdAccFilenames.right = new FormAttachment( 100, 0 );
     wAccFilenames.setLayoutData( fdAccFilenames );
     wAccFilenames.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent arg0 ) {
         setFlags();
       }
@@ -714,6 +717,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
     wSheetnameList.setLayoutData( fdFilenameList );
 
     wSheetnameList.addModifyListener( new ModifyListener() {
+      @Override
       public void modifyText( ModifyEvent arg0 ) {
         checkAlerts();
       }
@@ -763,6 +767,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
     fdHeader.right = new FormAttachment( 100, 0 );
     wHeader.setLayoutData( fdHeader );
     wHeader.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent arg0 ) {
         setFlags();
       }
@@ -837,9 +842,11 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
     fdEncoding.right = new FormAttachment( 100, 0 );
     wEncoding.setLayoutData( fdEncoding );
     wEncoding.addFocusListener( new FocusListener() {
+      @Override
       public void focusLost( org.eclipse.swt.events.FocusEvent e ) {
       }
 
+      @Override
       public void focusGained( org.eclipse.swt.events.FocusEvent e ) {
         Cursor busy = new Cursor( shell.getDisplay(), SWT.CURSOR_WAIT );
         shell.setCursor( busy );
@@ -932,7 +939,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
           BaseMessages.getString( PKG, "ExcelInputDialog.Name.Column" ), ColumnInfo.COLUMN_TYPE_TEXT, false ),
         new ColumnInfo(
           BaseMessages.getString( PKG, "ExcelInputDialog.Type.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
-          ValueMeta.getTypes() ),
+          ValueMetaFactory.getValueMetaNames() ),
         new ColumnInfo(
           BaseMessages.getString( PKG, "ExcelInputDialog.Length.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
           false ),
@@ -963,6 +970,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
     wFields.setSize( FieldsWidth, FieldsHeight );
     wFields.addModifyListener( new ModifyListener() {
 
+      @Override
       public void modifyText( ModifyEvent arg0 ) {
         checkAlerts();
       }
@@ -1007,16 +1015,19 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 
     // Add listeners
     lsOK = new Listener() {
+      @Override
       public void handleEvent( Event e ) {
         ok();
       }
     };
     lsPreview = new Listener() {
+      @Override
       public void handleEvent( Event e ) {
         preview();
       }
     };
     lsCancel = new Listener() {
+      @Override
       public void handleEvent( Event e ) {
         cancel();
       }
@@ -1027,6 +1038,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
     wCancel.addListener( SWT.Selection, lsCancel );
 
     lsDef = new SelectionAdapter() {
+      @Override
       public void widgetDefaultSelected( SelectionEvent e ) {
         ok();
       }
@@ -1042,6 +1054,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 
     // Add the file to the list of files...
     SelectionAdapter selA = new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent arg0 ) {
         wFilenameList.add( new String[] {
           wFilename.getText(), wFilemask.getText(), wExcludeFilemask.getText(),
@@ -1060,6 +1073,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 
     // Delete files from the list of files...
     wbdFilename.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent arg0 ) {
         int[] idx = wFilenameList.getSelectionIndices();
         wFilenameList.remove( idx );
@@ -1071,6 +1085,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 
     // Edit the selected file & remove from the list...
     wbeFilename.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent arg0 ) {
         int idx = wFilenameList.getSelectionIndex();
         if ( idx >= 0 ) {
@@ -1087,6 +1102,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 
     // Show the files that are selected at this time...
     wbShowFiles.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         showFiles();
       }
@@ -1094,6 +1110,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 
     // Whenever something changes, set the tooltip to the expanded version of the filename:
     wFilename.addModifyListener( new ModifyListener() {
+      @Override
       public void modifyText( ModifyEvent e ) {
         wFilename.setToolTipText( transMeta.environmentSubstitute( wFilename.getText() ) );
       }
@@ -1101,10 +1118,9 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 
     // Listen to the Browse... button
     wbbFilename.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
-        if ( !Const.isEmpty( wFilemask.getText() ) || !Const.isEmpty( wExcludeFilemask.getText() ) ) // A mask: a
-                                                                                                     // directory!
-        {
+        if ( !Const.isEmpty( wFilemask.getText() ) || !Const.isEmpty( wExcludeFilemask.getText() ) ) { // A mask: a directory!
           DirectoryDialog dialog = new DirectoryDialog( shell, SWT.OPEN );
           if ( wFilename.getText() != null ) {
             String fpath = transMeta.environmentSubstitute( wFilename.getText() );
@@ -1155,12 +1171,14 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 
     // Get a list of the sheetnames.
     wbGetSheets.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent arg0 ) {
         getSheets();
       }
     } );
 
     wbGetFields.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent arg0 ) {
         getFields();
       }
@@ -1168,6 +1186,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 
     // Detect X or ALT-F4 or something that kills this window...
     shell.addShellListener( new ShellAdapter() {
+      @Override
       public void shellClosed( ShellEvent e ) {
         cancel();
       }
@@ -1491,7 +1510,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
       meta.getField()[i] = new ExcelInputField();
 
       meta.getField()[i].setName( item.getText( 1 ) );
-      meta.getField()[i].setType( ValueMeta.getType( item.getText( 2 ) ) );
+      meta.getField()[i].setType( ValueMetaFactory.getIdForValueMeta( item.getText( 2 ) ) );
       String slength = item.getText( 3 );
       String sprec = item.getText( 4 );
       meta.getField()[i].setTrimType( ExcelInputMeta.getTrimTypeByDesc( item.getText( 5 ) ) );
@@ -1580,6 +1599,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
     wErrorIgnored.setLayoutData( fdErrorIgnored );
     previous = wErrorIgnored;
     wErrorIgnored.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent arg0 ) {
         setFlags();
       }

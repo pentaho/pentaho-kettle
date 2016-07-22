@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -62,10 +62,10 @@ public class XMLCheck {
    *          inputstream
    * @return true if the xml is well formed.
    */
-  public static final boolean isXMLWellFormed( InputStream is ) throws KettleException {
+  public static boolean isXMLWellFormed( InputStream is ) throws KettleException {
     boolean retval = false;
     try {
-      SAXParserFactory factory = SAXParserFactory.newInstance();
+      SAXParserFactory factory = XMLParserFactoryProducer.createSecureSAXParserFactory();
       XMLTreeHandler handler = new XMLTreeHandler();
 
       // Parse the input.

@@ -120,9 +120,9 @@ public class JsonInputDialog extends BaseStepDialog implements StepDialogInterfa
   private Button wreadUrl;
   private FormData fdlreadUrl, fdreadUrl;
 
-  //  private Label wlremoveSourceField;
-  //  private Button wremoveSourceField;
-  //  private FormData fdlremoveSourceField, fdremoveSourceField;
+  private Label wlremoveSourceField;
+  private Button wremoveSourceField;
+  private FormData fdlremoveSourceField, fdremoveSourceField;
   private Label wlInclFilenameField;
   private TextVar wInclFilenameField;
   private FormData fdlInclFilenameField, fdInclFilenameField;
@@ -160,9 +160,6 @@ public class JsonInputDialog extends BaseStepDialog implements StepDialogInterfa
   private Label wlIgnoreMissingPath;
   private Button wIgnoreMissingPath;
   private FormData fdlIgnoreMissingPath, fdIgnoreMissingPath;
-
-  // default path leaf to null
-  // private Button wDefaultPathLeafToNull;
 
   // do not fail if no files?
   private Label wldoNotFailIfNoFile;
@@ -641,23 +638,6 @@ public class JsonInputDialog extends BaseStepDialog implements StepDialogInterfa
     fdIgnoreMissingPath.top = new FormAttachment( wdoNotFailIfNoFile, margin );
     wIgnoreMissingPath.setLayoutData( fdIgnoreMissingPath );
 
-    //  wDefaultPathLeafToNull = new Button( wConf, SWT.CHECK );
-    //  wDefaultPathLeafToNull.setOrientation( SWT.RIGHT_TO_LEFT );
-    //  wDefaultPathLeafToNull.setText( BaseMessages.getString( PKG, "JsonInputDialog.DefaultPathLeafToNull.Label" ) );
-    //  props.setLook( wDefaultPathLeafToNull );
-    //  wDefaultPathLeafToNull.addSelectionListener( new SelectionAdapter() {
-    //    public void widgetSelected( SelectionEvent e ) {
-    //      input.setChanged();
-    //    }
-    //  } );
-    //  wDefaultPathLeafToNull.setToolTipText( BaseMessages
-    //      .getString( PKG, "JsonInputDialog.DefaultPathLeafToNull.Tooltip" ) );
-    //  FormData fdDefaultPathLeafToNull = new FormData();
-    //  wIgnoreMissingPath.pack();
-    //  fdDefaultPathLeafToNull.right =  new FormAttachment( middle, wIgnoreMissingPath.getSize().y - margin );
-    //  fdDefaultPathLeafToNull.top = new FormAttachment( wIgnoreMissingPath, margin );
-    //  wDefaultPathLeafToNull.setLayoutData( fdDefaultPathLeafToNull );
-
     wlLimit = new Label( wConf, SWT.RIGHT );
     wlLimit.setText( BaseMessages.getString( PKG, "JsonInputDialog.Limit.Label" ) );
     props.setLook( wlLimit );
@@ -880,13 +860,40 @@ public class JsonInputDialog extends BaseStepDialog implements StepDialogInterfa
     };
     wSourceStreamField.addSelectionListener( lsstream );
 
+    // If source string defined in a Field
+    wlSourceField = new Label( wOutputField, SWT.RIGHT );
+    wlSourceField.setText( BaseMessages.getString( PKG, "JsonInputDialog.wlSourceField.Label" ) );
+    props.setLook( wlSourceField );
+    fdlFieldValue = new FormData();
+    fdlFieldValue.left = new FormAttachment( 0, -margin );
+    fdlFieldValue.top = new FormAttachment( wSourceStreamField, margin );
+    fdlFieldValue.right = new FormAttachment( middle, -2 * margin );
+    wlSourceField.setLayoutData( fdlFieldValue );
+
+    wFieldValue = new CCombo( wOutputField, SWT.BORDER | SWT.READ_ONLY );
+    wFieldValue.setEditable( true );
+    props.setLook( wFieldValue );
+    wFieldValue.addModifyListener( lsMod );
+    fdFieldValue = new FormData();
+    fdFieldValue.left = new FormAttachment( middle, -margin );
+    fdFieldValue.top = new FormAttachment( wSourceStreamField, margin );
+    fdFieldValue.right = new FormAttachment( 100, -margin );
+    wFieldValue.setLayoutData( fdFieldValue );
+    setSourceStreamField();
+
+    fdOutputField = new FormData();
+    fdOutputField.left = new FormAttachment( 0, margin );
+    fdOutputField.top = new FormAttachment( wFilenameList, margin );
+    fdOutputField.right = new FormAttachment( 100, -margin );
+    wOutputField.setLayoutData( fdOutputField );
+
     // Is source is a file?
     wlSourceIsAFile = new Label( wOutputField, SWT.RIGHT );
     wlSourceIsAFile.setText( BaseMessages.getString( PKG, "JsonInputDialog.SourceIsAFile.Label" ) );
     props.setLook( wlSourceIsAFile );
     fdlSourceIsAFile = new FormData();
     fdlSourceIsAFile.left = new FormAttachment( 0, -margin );
-    fdlSourceIsAFile.top = new FormAttachment( wSourceStreamField, margin );
+    fdlSourceIsAFile.top = new FormAttachment( wFieldValue, margin );
     fdlSourceIsAFile.right = new FormAttachment( middle, -2 * margin );
     wlSourceIsAFile.setLayoutData( fdlSourceIsAFile );
 
@@ -895,7 +902,7 @@ public class JsonInputDialog extends BaseStepDialog implements StepDialogInterfa
     wSourceIsAFile.setToolTipText( BaseMessages.getString( PKG, "JsonInputDialog.SourceIsAFile.Tooltip" ) );
     fdSourceIsAFile = new FormData();
     fdSourceIsAFile.left = new FormAttachment( middle, -margin );
-    fdSourceIsAFile.top = new FormAttachment( wSourceStreamField, margin );
+    fdSourceIsAFile.top = new FormAttachment( wFieldValue, margin );
     wSourceIsAFile.setLayoutData( fdSourceIsAFile );
     SelectionAdapter lssourceisafile = new SelectionAdapter() {
       public void widgetSelected( SelectionEvent arg0 ) {
@@ -913,7 +920,7 @@ public class JsonInputDialog extends BaseStepDialog implements StepDialogInterfa
     props.setLook( wlreadUrl );
     fdlreadUrl = new FormData();
     fdlreadUrl.left = new FormAttachment( 0, -margin );
-    fdlreadUrl.top = new FormAttachment( wSourceIsAFile, margin );
+    fdlreadUrl.top = new FormAttachment( wlSourceIsAFile, margin );
     fdlreadUrl.right = new FormAttachment( middle, -2 * margin );
     wlreadUrl.setLayoutData( fdlreadUrl );
     wreadUrl = new Button( wOutputField, SWT.CHECK );
@@ -921,7 +928,7 @@ public class JsonInputDialog extends BaseStepDialog implements StepDialogInterfa
     wreadUrl.setToolTipText( BaseMessages.getString( PKG, "JsonInputDialog.readUrl.Tooltip" ) );
     fdreadUrl = new FormData();
     fdreadUrl.left = new FormAttachment( middle, -margin );
-    fdreadUrl.top = new FormAttachment( wSourceIsAFile, margin );
+    fdreadUrl.top = new FormAttachment( wlSourceIsAFile, margin );
     wreadUrl.setLayoutData( fdreadUrl );
     SelectionAdapter lsreadurl = new SelectionAdapter() {
       public void widgetSelected( SelectionEvent arg0 ) {
@@ -933,49 +940,27 @@ public class JsonInputDialog extends BaseStepDialog implements StepDialogInterfa
     };
     wreadUrl.addSelectionListener( lsreadurl );
 
-    // If source string defined in a Field
-    wlSourceField = new Label( wOutputField, SWT.RIGHT );
-    wlSourceField.setText( BaseMessages.getString( PKG, "JsonInputDialog.wlSourceField.Label" ) );
-    props.setLook( wlSourceField );
-    fdlFieldValue = new FormData();
-    fdlFieldValue.left = new FormAttachment( 0, -margin );
-    fdlFieldValue.top = new FormAttachment( wreadUrl, margin );
-    fdlFieldValue.right = new FormAttachment( middle, -2 * margin );
-    wlSourceField.setLayoutData( fdlFieldValue );
-
-    wFieldValue = new CCombo( wOutputField, SWT.BORDER | SWT.READ_ONLY );
-    wFieldValue.setEditable( true );
-    props.setLook( wFieldValue );
-    wFieldValue.addModifyListener( lsMod );
-    fdFieldValue = new FormData();
-    fdFieldValue.left = new FormAttachment( middle, -margin );
-    fdFieldValue.top = new FormAttachment( wreadUrl, margin );
-    fdFieldValue.right = new FormAttachment( 100, -margin );
-    wFieldValue.setLayoutData( fdFieldValue );
-    setSourceStreamField();
-
-    fdOutputField = new FormData();
-    fdOutputField.left = new FormAttachment( 0, margin );
-    fdOutputField.top = new FormAttachment( wFilenameList, margin );
-    fdOutputField.right = new FormAttachment( 100, -margin );
-    wOutputField.setLayoutData( fdOutputField );
-
-    //  // Remove source field from output stream?
-    //  wlremoveSourceField = new Label( wOutputField, SWT.RIGHT );
-    //  wlremoveSourceField.setText( BaseMessages.getString( PKG, "JsonInputDialog.removeSourceField.Label" ) );
-    //  props.setLook( wlremoveSourceField );
-    //  fdlremoveSourceField = new FormData();
-    //  fdlremoveSourceField.left = new FormAttachment( 0, -margin );
-    //  fdlremoveSourceField.top = new FormAttachment( wFieldValue, margin );
-    //  fdlremoveSourceField.right = new FormAttachment( middle, -2 * margin );
-    //  wlremoveSourceField.setLayoutData( fdlremoveSourceField );
-    //  wremoveSourceField = new Button( wOutputField, SWT.CHECK );
-    //  props.setLook( wremoveSourceField );
-    //  wremoveSourceField.setToolTipText( BaseMessages.getString( PKG, "JsonInputDialog.removeSourceField.Tooltip" ) );
-    //  fdremoveSourceField = new FormData();
-    //  fdremoveSourceField.left = new FormAttachment( middle, -margin );
-    //  fdremoveSourceField.top = new FormAttachment( wFieldValue, margin );
-    //  wremoveSourceField.setLayoutData( fdremoveSourceField );
+    // Remove source field from output stream?
+    wlremoveSourceField = new Label( wOutputField, SWT.RIGHT );
+    wlremoveSourceField.setText( BaseMessages.getString( PKG, "JsonInputDialog.removeSourceField.Label" ) );
+    props.setLook( wlremoveSourceField );
+    fdlremoveSourceField = new FormData();
+    fdlremoveSourceField.left = new FormAttachment( 0, -margin );
+    fdlremoveSourceField.top = new FormAttachment( wlreadUrl, margin );
+    fdlremoveSourceField.right = new FormAttachment( middle, -2 * margin );
+    wlremoveSourceField.setLayoutData( fdlremoveSourceField );
+    wremoveSourceField = new Button( wOutputField, SWT.CHECK );
+    props.setLook( wremoveSourceField );
+    fdremoveSourceField = new FormData();
+    fdremoveSourceField.left = new FormAttachment( middle, -margin );
+    fdremoveSourceField.top = new FormAttachment( wlreadUrl, margin );
+    wremoveSourceField.setLayoutData( fdremoveSourceField );
+    SelectionAdapter removeSourceFieldAdapter = new SelectionAdapter() {
+      @Override public void widgetSelected( SelectionEvent selectionEvent ) {
+        input.setChanged();
+      }
+    };
+    wremoveSourceField.addSelectionListener( removeSourceFieldAdapter );
 
     // ///////////////////////////////////////////////////////////
     // / END OF Output Field GROUP
@@ -1171,8 +1156,8 @@ public class JsonInputDialog extends BaseStepDialog implements StepDialogInterfa
     wSourceIsAFile.setEnabled( wSourceStreamField.getSelection() );
     wlreadUrl.setEnabled( wSourceStreamField.getSelection() );
     wreadUrl.setEnabled( wSourceStreamField.getSelection() );
-    //  wlremoveSourceField.setEnabled( wSourceStreamField.getSelection() );
-    //  wremoveSourceField.setEnabled( wSourceStreamField.getSelection() );
+    wlremoveSourceField.setEnabled( wSourceStreamField.getSelection() );
+    wremoveSourceField.setEnabled( wSourceStreamField.getSelection() );
 
     wlFilename.setEnabled( !wSourceStreamField.getSelection() );
     wbbFilename.setEnabled( !wSourceStreamField.getSelection() );
@@ -1256,9 +1241,7 @@ public class JsonInputDialog extends BaseStepDialog implements StepDialogInterfa
     wIgnoreEmptyFile.setSelection( in.isIgnoreEmptyFile() );
     wdoNotFailIfNoFile.setSelection( in.isDoNotFailIfNoFile() );
     wIgnoreMissingPath.setSelection( in.isIgnoreMissingPath() );
-
-    // wremoveSourceField.setSelection( in.isRemoveSourceField() );
-    // wDefaultPathLeafToNull.setSelection( in.isDefaultPathLeafToNull() );
+    wremoveSourceField.setSelection( in.isRemoveSourceField() );
     wSourceStreamField.setSelection( in.isInFields() );
     wSourceIsAFile.setSelection( in.getIsAFile() );
 
@@ -1399,8 +1382,7 @@ public class JsonInputDialog extends BaseStepDialog implements StepDialogInterfa
     in.setIgnoreEmptyFile( wIgnoreEmptyFile.getSelection() );
     in.setDoNotFailIfNoFile( wdoNotFailIfNoFile.getSelection() );
     in.setIgnoreMissingPath( wIgnoreMissingPath.getSelection() );
-    // in.setRemoveSourceField( wremoveSourceField.getSelection() );
-    // in.setDefaultPathLeafToNull( wDefaultPathLeafToNull.getSelection() );
+    in.setRemoveSourceField( wremoveSourceField.getSelection() );
     in.setInFields( wSourceStreamField.getSelection() );
     in.setIsAFile( wSourceIsAFile.getSelection() );
     in.setFieldValue( wFieldValue.getText() );

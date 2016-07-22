@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -334,6 +334,13 @@ public class KettleDatabaseRepositoryDirectoryDelegate extends KettleDatabaseRep
     }
   }
 
+  /**
+   * @deprecated use {@link #renameRepositoryDirectory(ObjectId, RepositoryDirectoryInterface, String)}
+   *
+   * @param dir
+   * @return
+   * @throws KettleException
+   */
   @Deprecated
   public ObjectId renameRepositoryDirectory( RepositoryDirectory dir ) throws KettleException {
     try {

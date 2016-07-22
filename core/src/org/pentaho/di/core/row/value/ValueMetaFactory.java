@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -91,6 +91,8 @@ public class ValueMetaFactory {
     target.setLargeTextField( source.isLargeTextField() );
     target.setComments( source.getComments() );
     target.setCaseInsensitive( source.isCaseInsensitive() );
+    target.setCollatorDisabled( source.isCollatorDisabled() );
+    target.setCollatorStrength( source.getCollatorStrength() );
     target.setIndex( source.getIndex() );
 
     target.setOrigin( source.getOrigin() );
@@ -165,22 +167,22 @@ public class ValueMetaFactory {
    * <p>This method makes attempt to guess kettle value meta interface based on Object class.
    * This may be the case when we somehow obtain an Object as a result of any calculation,
    * and we are trying to assign some ValueMeta for it.</p>
-   * 
+   *
    * <p>As an example - we have target value meta Number (which is java Double under the hood)
    * and value as a BigDecimal.<br />
-   * This BigDecimal can be converted to a Double value.<br /> 
+   * This BigDecimal can be converted to a Double value.<br />
    * we have {@link ValueMetaInterface#convertData(ValueMetaInterface, Object)} call for this
    * where is ValueMetaInterface object is our target value meta, Object is a BigDecimal - so
    * we need to pass ValueMetaBigNumber as a first parameter, value Object as a second and
-   * as the result we will have target Double (ValueMetaNumber) value so we can safely 
+   * as the result we will have target Double (ValueMetaNumber) value so we can safely
    * put it into output rowset.</p>
-   * 
+   *
    * <p>Something similar we had for ValueMetaBase.getValueFromSQLType(...) to guess value meta
    * for java sql type.</p>
-   * 
+   *
    * <p>Currently this method does not have support for plugin value meta. Hope if this approach
    * will be found usable this may be implemented later.</p>
-   * 
+   *
    * @param object object to guess applicable ValueMetaInterface.
    * @return
    * @see ValueMetaInterface if the kettle value meta is recognized, null otherwise.

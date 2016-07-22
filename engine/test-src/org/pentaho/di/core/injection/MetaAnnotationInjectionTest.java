@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -26,16 +26,20 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.injection.bean.BeanInjectionInfo;
 import org.pentaho.di.core.injection.bean.BeanInjector;
+import org.pentaho.di.core.injection.inheritance.MetaBeanChild;
+import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.value.ValueMetaString;
 
@@ -46,6 +50,11 @@ public class MetaAnnotationInjectionTest {
   private static final String COMPLEX_NAME = "COMPLEX_NAME";
 
   private static final String TEST_NAME = "TEST_NAME";
+
+  @Before
+  public void before() {
+    KettleLogStore.init();
+  }
 
   @Test
   public void testInjectionDescription() throws Exception {
@@ -63,6 +72,7 @@ public class MetaAnnotationInjectionTest {
     assertTrue( ri.getProperties().containsKey( "FIRST" ) );
 
     assertEquals( "FILENAME_LINES", ri.getProperties().get( "FILENAME" ).getGroupName() );
+    assertEquals( "!DESCRIPTION!", ri.getDescription( "DESCRIPTION" ) );
   }
 
   @Test
@@ -117,6 +127,62 @@ public class MetaAnnotationInjectionTest {
     assertNotNull( targetBean.getComplexField() );
     assertTrue( targetBean.getComplexField().length == 1 );
     assertEquals( TEST_NAME, targetBean.getComplexField()[0].getFieldName() );
+  }
+
+  @Test
+  public void testWrongDeclarations() throws Exception {
+    try {
+      new BeanInjectionInfo( MetaBeanWrong1.class );
+      fail();
+    } catch ( Exception ex ) {
+    }
+    try {
+      new BeanInjectionInfo( MetaBeanWrong2.class );
+      fail();
+    } catch ( Exception ex ) {
+    }
+    try {
+      new BeanInjectionInfo( MetaBeanWrong3.class );
+      fail();
+    } catch ( Exception ex ) {
+    }
+    try {
+      new BeanInjectionInfo( MetaBeanWrong4.class );
+      fail();
+    } catch ( Exception ex ) {
+    }
+    try {
+      new BeanInjectionInfo( MetaBeanWrong5.class );
+      fail();
+    } catch ( Exception ex ) {
+    }
+    try {
+      new BeanInjectionInfo( MetaBeanWrong6.class );
+      fail();
+    } catch ( Exception ex ) {
+    }
+    try {
+      new BeanInjectionInfo( MetaBeanWrong7.class );
+      fail();
+    } catch ( Exception ex ) {
+      ex.printStackTrace();
+    }
+  }
+
+  @Test
+  public void testGenerics() throws Exception {
+    BeanInjectionInfo ri = new BeanInjectionInfo( MetaBeanChild.class );
+
+    assertTrue( ri.getProperties().size() == 7 );
+    assertTrue( ri.getProperties().containsKey( "BASE_ITEM_NAME" ) );
+    assertTrue( ri.getProperties().containsKey( "ITEM_CHILD_NAME" ) );
+    assertTrue( ri.getProperties().containsKey( "A" ) );
+    assertTrue( ri.getProperties().containsKey( "ITEM.BASE_ITEM_NAME" ) );
+    assertTrue( ri.getProperties().containsKey( "ITEM.ITEM_CHILD_NAME" ) );
+    assertTrue( ri.getProperties().containsKey( "SUB.BASE_ITEM_NAME" ) );
+    assertTrue( ri.getProperties().containsKey( "SUB.ITEM_CHILD_NAME" ) );
+
+    assertEquals( String.class, ri.getProperties().get( "A" ).getPropertyClass() );
   }
 
   private static BeanInjector buildBeanInjectorFor( Class<?> clazz ) {

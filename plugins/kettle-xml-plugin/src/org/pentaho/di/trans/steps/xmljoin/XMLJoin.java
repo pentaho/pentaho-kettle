@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -26,7 +26,6 @@ import java.io.StringReader;
 import java.io.StringWriter;
 
 import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
@@ -41,6 +40,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.xml.XMLParserFactoryProducer;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -123,7 +123,7 @@ public class XMLJoin extends BaseStep implements StepInterface {
 
       data.XPathStatement = meta.getTargetXPath();
       try {
-        DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+        DocumentBuilder builder = XMLParserFactoryProducer.createSecureDocBuilderFactory().newDocumentBuilder();
         data.targetDOM = builder.parse( inputSource );
         if ( !meta.isComplexJoin() ) {
           data.targetNode = (Node) xpath.evaluate( data.XPathStatement, data.targetDOM, XPathConstants.NODE );
@@ -198,7 +198,7 @@ public class XMLJoin extends BaseStep implements StepInterface {
       String strJoinXML = (String) rJoinSource[data.iSourceXMLField];
 
       try {
-        DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+        DocumentBuilder builder = XMLParserFactoryProducer.createSecureDocBuilderFactory().newDocumentBuilder();
         Document joinDocument = builder.parse( new InputSource( new StringReader( strJoinXML ) ) );
 
         Node node = data.targetDOM.importNode( joinDocument.getDocumentElement(), true );

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -50,7 +50,7 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
-import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -87,6 +87,7 @@ public class DataGridDialog extends BaseStepDialog implements StepDialogInterfac
     dataGridMeta = (DataGridMeta) input.clone();
   }
 
+  @Override
   public String open() {
     Shell parent = getParent();
     Display display = parent.getDisplay();
@@ -96,6 +97,7 @@ public class DataGridDialog extends BaseStepDialog implements StepDialogInterfac
     setShellImage( shell, input );
 
     lsMod = new ModifyListener() {
+      @Override
       public void modifyText( ModifyEvent e ) {
         input.setChanged();
       }
@@ -157,7 +159,7 @@ public class DataGridDialog extends BaseStepDialog implements StepDialogInterfac
           BaseMessages.getString( PKG, "DataGridDialog.Name.Column" ), ColumnInfo.COLUMN_TYPE_TEXT, false ),
         new ColumnInfo(
           BaseMessages.getString( PKG, "DataGridDialog.Type.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
-          ValueMeta.getTypes() ),
+          ValueMetaFactory.getValueMetaNames() ),
         new ColumnInfo(
           BaseMessages.getString( PKG, "DataGridDialog.Format.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
           Const.getDateFormats() ),
@@ -240,16 +242,19 @@ public class DataGridDialog extends BaseStepDialog implements StepDialogInterfac
 
     // Add listeners
     lsOK = new Listener() {
+      @Override
       public void handleEvent( Event e ) {
         ok();
       }
     };
     lsPreview = new Listener() {
+      @Override
       public void handleEvent( Event e ) {
         preview();
       }
     };
     lsCancel = new Listener() {
+      @Override
       public void handleEvent( Event e ) {
         cancel();
       }
@@ -260,6 +265,7 @@ public class DataGridDialog extends BaseStepDialog implements StepDialogInterfac
     wCancel.addListener( SWT.Selection, lsCancel );
 
     lsDef = new SelectionAdapter() {
+      @Override
       public void widgetDefaultSelected( SelectionEvent e ) {
         ok();
       }
@@ -269,12 +275,14 @@ public class DataGridDialog extends BaseStepDialog implements StepDialogInterfac
 
     // Detect X or ALT-F4 or something that kills this window...
     shell.addShellListener( new ShellAdapter() {
+      @Override
       public void shellClosed( ShellEvent e ) {
         cancel();
       }
     } );
 
     lsResize = new Listener() {
+      @Override
       public void handleEvent( Event event ) {
         Point size = shell.getSize();
         wFields.setSize( size.x - 10, size.y - 50 );

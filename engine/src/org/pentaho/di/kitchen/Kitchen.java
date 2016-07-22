@@ -85,6 +85,7 @@ public class Kitchen {
         public Map.Entry<KettlePluginException, Future<KettleException>> call() throws Exception {
           PluginRegistry.addPluginType( repositoryPluginType );
           try {
+            KettleClientEnvironment.getInstance().setClient( KettleClientEnvironment.ClientType.KITCHEN );
             KettleClientEnvironment.init();
           } catch ( KettlePluginException e ) {
             return new AbstractMap.SimpleImmutableEntry<KettlePluginException, Future<KettleException>>( e, null );

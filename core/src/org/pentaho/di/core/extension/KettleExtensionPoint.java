@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,6 +24,8 @@ package org.pentaho.di.core.extension;
 
 public enum KettleExtensionPoint {
 
+    SpoonStart( "SpoonStart", "Spoon has started" ),
+    OpenRecent( "OpenRecent", "A recent file is opened" ),
   // Some transformation points
   //
     TransformationPrepareExecution( "TransformationPrepareExecution", "A transformation begins to prepare execution" ),
@@ -48,6 +50,7 @@ public enum KettleExtensionPoint {
     TransStepRightClick( "TransStepRightClick", "A right button was clicked on a step" ),
     TransGraphMouseDoubleClick( "TransGraphMouseDoubleClick",
       "A left or right button was double-clicked in a transformation" ),
+    TransBeforeDeleteSteps( "TransBeforeDeleteSteps", "Transformation steps about to be deleted" ),
     SpoonTransMetaExecutionStart( "SpoonTransMetaExecutionStart",
       "Spoon initiates the execution of a trans (TransMeta)" ),
     SpoonTransExecutionConfiguration( "SpoonTransExecutionConfiguration",
@@ -99,9 +102,9 @@ public enum KettleExtensionPoint {
     CarteStartup( "CarteStartup", "Right after the Carte webserver has started and is fully functional" ),
     CarteShutdown( "CarteShutdown", "Right before the Carte webserver will shut down" ),
 
-    SpoonViewTreeExtension ( "SpoonViewTreeExtension", "View tree spoon extension" ),
-    SpoonPopupMenuExtension ( "SpoonPopupMenuExtension", "Pop up menu extension for the view tree" ),
-    SpoonTreeDelegateExtension ( "SpoonTreeDelegateExtension", "During the SpoonTreeDelegate execution" ),
+    SpoonViewTreeExtension( "SpoonViewTreeExtension", "View tree spoon extension" ),
+    SpoonPopupMenuExtension( "SpoonPopupMenuExtension", "Pop up menu extension for the view tree" ),
+    SpoonTreeDelegateExtension( "SpoonTreeDelegateExtension", "During the SpoonTreeDelegate execution" ),
 
     AfterDeleteRepositoryObject( "AfterDeleteRepositoryObject",
       "After an object has been deleted from the repository" );

@@ -31,6 +31,8 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.injection.Injection;
+import org.pentaho.di.core.injection.InjectionSupported;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaBoolean;
@@ -55,28 +57,57 @@ import org.w3c.dom.Node;
  * Created on 03-Juin-2008
  *
  */
-
+@InjectionSupported( localizationPrefix = "GetTableNames.Injection.", groups = { "FIELDS", "SETTINGS", "OUTPUT" } )
 public class GetTableNamesMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = GetTableNamesMeta.class; // for i18n purposes, needed by Translator2!!
 
   /** database connection */
   private DatabaseMeta database;
+
+  @Injection( name = "SCHEMANAME", group = "FIELDS" )
   private String schemaname;
+
+  @Injection( name = "TABLENAMEFIELDNAME", group = "OUTPUT" )
   /** function result: new value name */
   private String tablenamefieldname;
+
+  @Injection( name = "SQLCREATIONFIELDNAME", group = "OUTPUT" )
   private String sqlcreationfieldname;
+
+  @Injection( name = "OBJECTTYPEFIELDNAME", group = "OUTPUT" )
   private String objecttypefieldname;
+
+  @Injection( name = "ISSYSTEMOBJECTFIELDNAME", group = "OUTPUT" )
   private String issystemobjectfieldname;
 
+  @Injection( name = "INCLUDECATALOG", group = "SETTINGS" )
   private boolean includeCatalog;
+
+  @Injection( name = "INCLUDESCHEMA", group = "SETTINGS" )
   private boolean includeSchema;
+
+  @Injection( name = "INCLUDETABLE", group = "SETTINGS" )
   private boolean includeTable;
+
+  @Injection( name = "INCLUDEVIEW", group = "SETTINGS" )
   private boolean includeView;
+
+  @Injection( name = "INCLUDEPROCEDURE", group = "SETTINGS" )
   private boolean includeProcedure;
+
+  @Injection( name = "INCLUDESYNONYM", group = "SETTINGS" )
   private boolean includeSynonym;
+
+  @Injection( name = "ADDSCHEMAINOUTPUT", group = "SETTINGS" )
   private boolean addSchemaInOutput;
+
+  @Injection( name = "DYNAMICSCHEMA", group = "FIELDS" )
   private boolean dynamicSchema;
+
+  @Injection( name = "SCHENAMENAMEFIELD", group = "FIELDS" )
   private String schenameNameField;
+
+  private List<? extends SharedObjectInterface> databases;
 
   public GetTableNamesMeta() {
     super(); // allocate BaseStepMeta
@@ -154,7 +185,12 @@ public class GetTableNamesMeta extends BaseStepMeta implements StepMetaInterface
    * @param issystemobjectfieldname
    *          The issystemobjectfieldname to set.
    */
+  // TODO deprecate one of these
   public void setIsSystemObjectFieldName( String issystemobjectfieldname ) {
+    this.issystemobjectfieldname = issystemobjectfieldname;
+  }
+
+  public void setSystemObjectFieldName( String issystemobjectfieldname ) {
     this.issystemobjectfieldname = issystemobjectfieldname;
   }
 
@@ -251,6 +287,11 @@ public class GetTableNamesMeta extends BaseStepMeta implements StepMetaInterface
     return this.addSchemaInOutput;
   }
 
+  @Injection( name = "CONNECTIONNAME" )
+  public void setConnection( String connectionName ) {
+    database = DatabaseMeta.findDatabase( databases, connectionName );
+  }
+
   public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     readData( stepnode, databases );
   }
@@ -340,7 +381,7 @@ public class GetTableNamesMeta extends BaseStepMeta implements StepMetaInterface
 
   private void readData( Node stepnode, List<? extends SharedObjectInterface> databases ) throws KettleXMLException {
     try {
-
+      this.databases = databases;
       String con = XMLHandler.getTagValue( stepnode, "connection" );
       database = DatabaseMeta.findDatabase( databases, con );
       schemaname = XMLHandler.getTagValue( stepnode, "schemaname" );
@@ -366,6 +407,7 @@ public class GetTableNamesMeta extends BaseStepMeta implements StepMetaInterface
 
   public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
+      this.databases = databases;
       database = rep.loadDatabaseMetaFromStepAttribute( id_step, "id_connection", databases );
       schemaname = rep.getStepAttributeString( id_step, "schemaname" );
       tablenamefieldname = rep.getStepAttributeString( id_step, "tablenamefieldname" );

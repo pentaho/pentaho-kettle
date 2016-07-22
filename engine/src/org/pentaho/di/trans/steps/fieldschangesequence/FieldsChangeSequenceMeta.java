@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -31,8 +31,8 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -88,10 +88,12 @@ public class FieldsChangeSequenceMeta extends BaseStepMeta implements StepMetaIn
     this.resultfieldName = resultfieldName;
   }
 
+  @Override
   public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     readData( stepnode );
   }
 
+  @Override
   public Object clone() {
     FieldsChangeSequenceMeta retval = (FieldsChangeSequenceMeta) super.clone();
 
@@ -99,9 +101,7 @@ public class FieldsChangeSequenceMeta extends BaseStepMeta implements StepMetaIn
 
     retval.allocate( nrfields );
 
-    for ( int i = 0; i < nrfields; i++ ) {
-      retval.fieldName[i] = fieldName[i];
-    }
+    System.arraycopy( fieldName, 0, retval.fieldName, 0, nrfields );
     return retval;
   }
 
@@ -156,6 +156,7 @@ public class FieldsChangeSequenceMeta extends BaseStepMeta implements StepMetaIn
     }
   }
 
+  @Override
   public String getXML() {
     StringBuilder retval = new StringBuilder();
     retval.append( "      " + XMLHandler.addTagValue( "start", start ) );
@@ -173,6 +174,7 @@ public class FieldsChangeSequenceMeta extends BaseStepMeta implements StepMetaIn
     return retval.toString();
   }
 
+  @Override
   public void setDefault() {
     resultfieldName = null;
     start = "1";
@@ -186,6 +188,7 @@ public class FieldsChangeSequenceMeta extends BaseStepMeta implements StepMetaIn
     }
   }
 
+  @Override
   public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
       start = rep.getStepAttributeString( id_step, "start" );
@@ -203,6 +206,7 @@ public class FieldsChangeSequenceMeta extends BaseStepMeta implements StepMetaIn
     }
   }
 
+  @Override
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       rep.saveStepAttribute( id_transformation, id_step, "start", start );
@@ -216,16 +220,18 @@ public class FieldsChangeSequenceMeta extends BaseStepMeta implements StepMetaIn
     }
   }
 
+  @Override
   public void getFields( RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep,
     VariableSpace space, Repository repository, IMetaStore metaStore ) {
     if ( !Const.isEmpty( resultfieldName ) ) {
-      ValueMetaInterface v = new ValueMeta( resultfieldName, ValueMetaInterface.TYPE_INTEGER );
+      ValueMetaInterface v = new ValueMetaInteger( resultfieldName );
       v.setLength( ValueMetaInterface.DEFAULT_INTEGER_LENGTH, 0 );
       v.setOrigin( name );
       r.addValueMeta( v );
     }
   }
 
+  @Override
   public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
     RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
@@ -299,15 +305,18 @@ public class FieldsChangeSequenceMeta extends BaseStepMeta implements StepMetaIn
     }
   }
 
+  @Override
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
     TransMeta transMeta, Trans trans ) {
     return new FieldsChangeSequence( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 
+  @Override
   public StepDataInterface getStepData() {
     return new FieldsChangeSequenceData();
   }
 
+  @Override
   public boolean supportsErrorHandling() {
     return true;
   }

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -149,8 +149,23 @@ public class JobEntryPGPDecryptFiles extends JobEntryBase implements Cloneable, 
     this( "" );
   }
 
+  public void allocate( int nrFields ) {
+    source_filefolder = new String[nrFields];
+    passphrase = new String[nrFields];
+    destination_filefolder = new String[nrFields];
+    wildcard = new String[nrFields];
+  }
+
   public Object clone() {
     JobEntryPGPDecryptFiles je = (JobEntryPGPDecryptFiles) super.clone();
+    if ( source_filefolder != null ) {
+      int nrFields = source_filefolder.length;
+      je.allocate( nrFields );
+      System.arraycopy( source_filefolder, 0, je.source_filefolder, 0, nrFields );
+      System.arraycopy( destination_filefolder, 0, je.destination_filefolder, 0, nrFields );
+      System.arraycopy( wildcard, 0, je.wildcard, 0, nrFields );
+      System.arraycopy( passphrase, 0, je.passphrase, 0, nrFields );
+    }
     return je;
   }
 
@@ -239,10 +254,7 @@ public class JobEntryPGPDecryptFiles extends JobEntryBase implements Cloneable, 
 
       // How many field arguments?
       int nrFields = XMLHandler.countNodes( fields, "field" );
-      source_filefolder = new String[nrFields];
-      passphrase = new String[nrFields];
-      destination_filefolder = new String[nrFields];
-      wildcard = new String[nrFields];
+      allocate( nrFields );
 
       // Read them all...
       for ( int i = 0; i < nrFields; i++ ) {
@@ -289,10 +301,7 @@ public class JobEntryPGPDecryptFiles extends JobEntryBase implements Cloneable, 
 
       // How many arguments?
       int argnr = rep.countNrJobEntryAttributes( id_jobentry, "source_filefolder" );
-      source_filefolder = new String[argnr];
-      passphrase = new String[argnr];
-      destination_filefolder = new String[argnr];
-      wildcard = new String[argnr];
+      allocate( argnr );
 
       // Read them all...
       for ( int a = 0; a < argnr; a++ ) {
@@ -1293,7 +1302,16 @@ public class JobEntryPGPDecryptFiles extends JobEntryBase implements Cloneable, 
     return destinationFolder;
   }
 
+  /**
+   * @deprecated use {@link #setGPGLocation(String)} instead
+   * @param gpglocation
+   */
+  @Deprecated
   public void setGPGPLocation( String gpglocation ) {
+    this.gpglocation = gpglocation;
+  }
+
+  public void setGPGLocation( String gpglocation ) {
     this.gpglocation = gpglocation;
   }
 

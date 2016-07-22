@@ -87,13 +87,15 @@
     <dependency org="${ivy.artifact.group}" name="kettle-json-plugin" rev="${project.revision}" changing="true" conf="plugins->default">
         <artifact name="kettle-json-plugin" type="zip"/>
     </dependency>
+    <dependency org="${ivy.artifact.group}" name="kettle-sap-plugin" rev="${project.revision}" changing="true" conf="plugins->default">
+        <artifact name="kettle-sap-plugin" type="zip"/>
+    </dependency>    
     <dependency org="pentaho" name="pentaho-karaf-assembly" rev="${project.revision}" changing="true" conf="pentaho-system->default" m:classifier="client">
       <artifact name="pentaho-karaf-assembly" type="zip" m:classifier="client"/>
     </dependency>
     
     <!-- Pentaho dependencies (non-Kettle), launcher, shim, etc. -->
     <dependency org="pentaho"               name="pentaho-application-launcher"  rev="${dependency.launcher.revision}" conf="launcher->default"/>
-    <dependency org="pentaho"               name="pentaho-hadoop-hive-jdbc-shim" rev="${dependency.pentaho-hadoop-hive-jdbc-shim.revision}"/>
     <dependency org="pentaho" name="pentaho-big-data-plugin" rev="${dependency.pentaho-big-data-plugin.revision}" changing="true" transitive="false" conf="plugins->default">
       <artifact name="pentaho-big-data-plugin" type="zip"/>
     </dependency>
@@ -198,6 +200,10 @@
 
     <dependency org="org.codehaus.jackson" name="jackson-xc" rev="1.9.3" transitive="false"/>
     <dependency org="com.sun.jersey.contribs" name="jersey-multipart" rev="1.16" transitive="false"/>
+
+    <!-- Salesforce plugin dependency -->
+    <dependency org="pentaho"         name="salesforce-partner" rev="24.0"/>
+    <exclude    org="org.apache.axis" module="axis-saaj"/>
 
     <exclude org="javax.servlet"   module="servlet-api"/>
   </dependencies>

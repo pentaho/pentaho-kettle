@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -84,7 +84,7 @@ public class JobEntrySetVariables extends JobEntryBase implements Cloneable, Job
   public static final int VARIABLE_TYPE_PARENT_JOB = 2;
   public static final int VARIABLE_TYPE_ROOT_JOB = 3;
 
-  private static final String[] variableTypeCode = { "JVM", "CURRENT_JOB", "PARENT_JOB", "ROOT_JOB" };
+  public static final String[] variableTypeCode = { "JVM", "CURRENT_JOB", "PARENT_JOB", "ROOT_JOB" };
   private static final String[] variableTypeDesc = {
     BaseMessages.getString( PKG, "JobEntrySetVariables.VariableType.JVM" ),
     BaseMessages.getString( PKG, "JobEntrySetVariables.VariableType.CurrentJob" ),
@@ -102,8 +102,21 @@ public class JobEntrySetVariables extends JobEntryBase implements Cloneable, Job
     this( "" );
   }
 
+  public void allocate( int nrFields ) {
+    variableName = new String[nrFields];
+    variableValue = new String[nrFields];
+    variableType = new int[nrFields];
+  }
+
   public Object clone() {
     JobEntrySetVariables je = (JobEntrySetVariables) super.clone();
+    if ( variableName != null ) {
+      int nrFields = variableName.length;
+      je.allocate( nrFields );
+      System.arraycopy( variableName, 0, je.variableName, 0, nrFields );
+      System.arraycopy( variableValue, 0, je.variableValue, 0, nrFields );
+      System.arraycopy( variableType, 0, je.variableType, 0, nrFields );
+    }
     return je;
   }
 
@@ -144,9 +157,7 @@ public class JobEntrySetVariables extends JobEntryBase implements Cloneable, Job
       Node fields = XMLHandler.getSubNode( entrynode, "fields" );
       // How many field variableName?
       int nrFields = XMLHandler.countNodes( fields, "field" );
-      variableName = new String[nrFields];
-      variableValue = new String[nrFields];
-      variableType = new int[nrFields];
+      allocate( nrFields );
 
       // Read them all...
       for ( int i = 0; i < nrFields; i++ ) {
@@ -173,9 +184,7 @@ public class JobEntrySetVariables extends JobEntryBase implements Cloneable, Job
 
       // How many variableName?
       int argnr = rep.countNrJobEntryAttributes( id_jobentry, "variable_name" );
-      variableName = new String[argnr];
-      variableValue = new String[argnr];
-      variableType = new int[argnr];
+      allocate( argnr );
 
       // Read them all...
       for ( int a = 0; a < argnr; a++ ) {

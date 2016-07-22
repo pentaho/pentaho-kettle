@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -542,9 +542,8 @@ public class JobEntryEvalFilesMetricsDialog extends JobEntryDialog implements Jo
     fdlFields.top = new FormAttachment( wWildcard, margin );
     wlFields.setLayoutData( fdlFields );
 
-    int rows =
-      jobEntry.source_filefolder == null ? 1 : ( jobEntry.source_filefolder.length == 0
-        ? 0 : jobEntry.source_filefolder.length );
+    int rows = jobEntry.getSourceFileFolder() == null ? 1
+      : ( jobEntry.getSourceFileFolder().length == 0 ? 0 : jobEntry.getSourceFileFolder().length );
     final int FieldsRows = rows;
 
     ColumnInfo[] colinf =
@@ -918,19 +917,20 @@ public class JobEntryEvalFilesMetricsDialog extends JobEntryDialog implements Jo
       wName.setText( jobEntry.getName() );
     }
 
-    if ( jobEntry.source_filefolder != null ) {
-      for ( int i = 0; i < jobEntry.source_filefolder.length; i++ ) {
+    if ( jobEntry.getSourceFileFolder() != null ) {
+      for ( int i = 0; i < jobEntry.getSourceFileFolder().length; i++ ) {
         TableItem ti = wFields.table.getItem( i );
-        if ( jobEntry.source_filefolder[i] != null ) {
-          ti.setText( 1, jobEntry.source_filefolder[i] );
+        if ( jobEntry.getSourceFileFolder()[i] != null ) {
+          ti.setText( 1, jobEntry.getSourceFileFolder()[i] );
         }
 
-        if ( jobEntry.wildcard[i] != null ) {
-          ti.setText( 2, jobEntry.wildcard[i] );
+        if ( jobEntry.getSourceWildcard()[i] != null ) {
+          ti.setText( 2, jobEntry.getSourceWildcard()[i] );
         }
 
-        if ( jobEntry.includeSubFolders[i] != null ) {
-          ti.setText( 3, JobEntryEvalFilesMetrics.getIncludeSubFoldersDesc( jobEntry.includeSubFolders[i] ) );
+        if ( jobEntry.getSourceIncludeSubfolders()[i] != null ) {
+          ti.setText( 3,
+            JobEntryEvalFilesMetrics.getIncludeSubFoldersDesc( jobEntry.getSourceIncludeSubfolders()[i] ) );
         }
       }
       wFields.setRowNums();
@@ -952,7 +952,7 @@ public class JobEntryEvalFilesMetricsDialog extends JobEntryDialog implements Jo
     wEvaluationType.setText( JobEntryEvalFilesMetrics.getEvaluationTypeDesc( jobEntry.evaluationType ) );
     wScale.setText( JobEntryEvalFilesMetrics.getScaleDesc( jobEntry.scale ) );
     wSuccessNumberCondition.setText( JobEntrySimpleEval
-      .getSuccessNumberConditionDesc( jobEntry.successnumbercondition ) );
+      .getSuccessNumberConditionDesc( jobEntry.getSuccessConditionType() ) );
     if ( jobEntry.getCompareValue() != null ) {
       wCompareValue.setText( jobEntry.getCompareValue() );
     }
@@ -989,8 +989,8 @@ public class JobEntryEvalFilesMetricsDialog extends JobEntryDialog implements Jo
     jobEntry.sourceFiles = JobEntryEvalFilesMetrics.getSourceFilesByDesc( wSourceFiles.getText() );
     jobEntry.evaluationType = JobEntryEvalFilesMetrics.getEvaluationTypeByDesc( wEvaluationType.getText() );
     jobEntry.scale = JobEntryEvalFilesMetrics.getScaleByDesc( wScale.getText() );
-    jobEntry.successnumbercondition =
-      JobEntrySimpleEval.getSuccessNumberConditionByDesc( wSuccessNumberCondition.getText() );
+    jobEntry.setSuccessConditionType(
+      JobEntrySimpleEval.getSuccessNumberConditionByDesc( wSuccessNumberCondition.getText() ) );
     jobEntry.setCompareValue( wCompareValue.getText() );
     jobEntry.setMinValue( wMinValue.getText() );
     jobEntry.setMaxValue( wMaxValue.getText() );
@@ -1002,21 +1002,24 @@ public class JobEntryEvalFilesMetricsDialog extends JobEntryDialog implements Jo
         nr++;
       }
     }
-    jobEntry.source_filefolder = new String[nr];
-    jobEntry.wildcard = new String[nr];
-    jobEntry.includeSubFolders = new String[nr];
+    String[] sourceFileFolder = new String[nr];
+    String[] sourceWildcard = new String[nr];
+    String[] sourceIncludeSubfolders = new String[nr];
     nr = 0;
     for ( int i = 0; i < nritems; i++ ) {
       String source = wFields.getNonEmpty( i ).getText( 1 );
       String wild = wFields.getNonEmpty( i ).getText( 2 );
       String includeSubFolders = wFields.getNonEmpty( i ).getText( 3 );
       if ( source != null && source.length() != 0 ) {
-        jobEntry.source_filefolder[nr] = source;
-        jobEntry.wildcard[nr] = wild;
-        jobEntry.includeSubFolders[nr] = JobEntryEvalFilesMetrics.getIncludeSubFolders( includeSubFolders );
+        sourceFileFolder[nr] = source;
+        sourceWildcard[nr] = wild;
+        sourceIncludeSubfolders[nr] = JobEntryEvalFilesMetrics.getIncludeSubFolders( includeSubFolders );
         nr++;
       }
     }
+    jobEntry.setSourceFileFolder( sourceFileFolder );
+    jobEntry.setSourceWildcard( sourceWildcard );
+    jobEntry.setSourceIncludeSubfolders( sourceIncludeSubfolders );
     dispose();
   }
 

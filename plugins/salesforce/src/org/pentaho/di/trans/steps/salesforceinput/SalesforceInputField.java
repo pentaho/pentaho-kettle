@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,10 +23,15 @@
 package org.pentaho.di.trans.steps.salesforceinput;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
-import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.repository.ObjectId;
+import org.pentaho.di.repository.Repository;
+import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
 /**
@@ -70,7 +75,7 @@ public class SalesforceInputField implements Cloneable {
     this.name = fieldname;
     this.field = "";
     this.length = -1;
-    this.type = ValueMeta.TYPE_STRING;
+    this.type = ValueMetaInterface.TYPE_STRING;
     this.format = "";
     this.trimtype = TYPE_TRIM_NONE;
     this.groupSymbol = "";
@@ -85,31 +90,35 @@ public class SalesforceInputField implements Cloneable {
     this( "" );
   }
 
-  public String getXML() {
-    String retval = "";
-
-    retval += "      <field>" + Const.CR;
-    retval += "        " + XMLHandler.addTagValue( "name", getName() );
-    retval += "        " + XMLHandler.addTagValue( "field", getField() );
-    retval += "        " + XMLHandler.addTagValue( "idlookup", isIdLookup() );
-    retval += "        " + XMLHandler.addTagValue( "type", getTypeDesc() );
-    retval += "        " + XMLHandler.addTagValue( "format", getFormat() );
-    retval += "        " + XMLHandler.addTagValue( "currency", getCurrencySymbol() );
-    retval += "        " + XMLHandler.addTagValue( "decimal", getDecimalSymbol() );
-    retval += "        " + XMLHandler.addTagValue( "group", getGroupSymbol() );
-    retval += "        " + XMLHandler.addTagValue( "length", getLength() );
-    retval += "        " + XMLHandler.addTagValue( "precision", getPrecision() );
-    retval += "        " + XMLHandler.addTagValue( "trim_type", getTrimTypeCode() );
-    retval += "        " + XMLHandler.addTagValue( "repeat", isRepeated() );
-    retval += "        </field>" + Const.CR;
-    return retval;
+  public SalesforceInputField( Node fnode ) throws KettleStepException {
+    readData( fnode );
   }
 
-  public SalesforceInputField( Node fnode ) throws KettleStepException {
+  public String getXML() {
+    StringBuilder retval = new StringBuilder();
+
+    retval.append( "      " ).append( XMLHandler.openTag( "field" ) ).append( Const.CR );
+    retval.append( "        " ).append( XMLHandler.addTagValue( "name", getName() ) );
+    retval.append( "        " ).append( XMLHandler.addTagValue( "field", getField() ) );
+    retval.append( "        " ).append( XMLHandler.addTagValue( "idlookup", isIdLookup() ) );
+    retval.append( "        " ).append( XMLHandler.addTagValue( "type", getTypeDesc() ) );
+    retval.append( "        " ).append( XMLHandler.addTagValue( "format", getFormat() ) );
+    retval.append( "        " ).append( XMLHandler.addTagValue( "currency", getCurrencySymbol() ) );
+    retval.append( "        " ).append( XMLHandler.addTagValue( "decimal", getDecimalSymbol() ) );
+    retval.append( "        " ).append( XMLHandler.addTagValue( "group", getGroupSymbol() ) );
+    retval.append( "        " ).append( XMLHandler.addTagValue( "length", getLength() ) );
+    retval.append( "        " ).append( XMLHandler.addTagValue( "precision", getPrecision() ) );
+    retval.append( "        " ).append( XMLHandler.addTagValue( "trim_type", getTrimTypeCode() ) );
+    retval.append( "        " ).append( XMLHandler.addTagValue( "repeat", isRepeated() ) );
+    retval.append( "      " ).append( XMLHandler.closeTag( "field" ) ).append( Const.CR );
+    return retval.toString();
+  }
+
+  public void readData( Node fnode ) {
     setName( XMLHandler.getTagValue( fnode, "name" ) );
     setField( XMLHandler.getTagValue( fnode, "field" ) );
     setIdLookup( "Y".equalsIgnoreCase( XMLHandler.getTagValue( fnode, "idlookup" ) ) );
-    setType( ValueMeta.getType( XMLHandler.getTagValue( fnode, "type" ) ) );
+    setType( ValueMetaFactory.getIdForValueMeta( XMLHandler.getTagValue( fnode, "type" ) ) );
     setFormat( XMLHandler.getTagValue( fnode, "format" ) );
     setCurrencySymbol( XMLHandler.getTagValue( fnode, "currency" ) );
     setDecimalSymbol( XMLHandler.getTagValue( fnode, "decimal" ) );
@@ -118,6 +127,38 @@ public class SalesforceInputField implements Cloneable {
     setPrecision( Const.toInt( XMLHandler.getTagValue( fnode, "precision" ), -1 ) );
     setTrimType( getTrimTypeByCode( XMLHandler.getTagValue( fnode, "trim_type" ) ) );
     setRepeated( !"N".equalsIgnoreCase( XMLHandler.getTagValue( fnode, "repeat" ) ) );
+  }
+
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, int fieldNr ) throws KettleException {
+    setName( rep.getStepAttributeString( id_step, fieldNr, "field_name" ) );
+    setField( rep.getStepAttributeString( id_step, fieldNr, "field_attribut" ) );
+    setIdLookup( rep.getStepAttributeBoolean( id_step, fieldNr, "field_idlookup" ) );
+    setType( ValueMetaFactory.getIdForValueMeta( rep.getStepAttributeString( id_step, fieldNr, "field_type" ) ) );
+    setFormat( rep.getStepAttributeString( id_step, fieldNr, "field_format" ) );
+    setCurrencySymbol( rep.getStepAttributeString( id_step, fieldNr, "field_currency" ) );
+    setDecimalSymbol( rep.getStepAttributeString( id_step, fieldNr, "field_decimal" ) );
+    setGroupSymbol( rep.getStepAttributeString( id_step, fieldNr, "field_group" ) );
+    setLength( (int) rep.getStepAttributeInteger( id_step, fieldNr, "field_length" ) );
+    setPrecision( (int) rep.getStepAttributeInteger( id_step, fieldNr, "field_precision" ) );
+    setTrimType( SalesforceInputField.getTrimTypeByCode( rep.getStepAttributeString(
+      id_step, fieldNr, "field_trim_type" ) ) );
+    setRepeated( rep.getStepAttributeBoolean( id_step, fieldNr, "field_repeat" ) );
+  }
+
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation,
+      ObjectId id_step, int fieldNr ) throws KettleException {
+    rep.saveStepAttribute( id_transformation, id_step, fieldNr, "field_name", getName() );
+    rep.saveStepAttribute( id_transformation, id_step, fieldNr, "field_attribut", getField() );
+    rep.saveStepAttribute( id_transformation, id_step, fieldNr, "field_idlookup", isIdLookup() );
+    rep.saveStepAttribute( id_transformation, id_step, fieldNr, "field_type", getTypeDesc() );
+    rep.saveStepAttribute( id_transformation, id_step, fieldNr, "field_format", getFormat() );
+    rep.saveStepAttribute( id_transformation, id_step, fieldNr, "field_currency", getCurrencySymbol() );
+    rep.saveStepAttribute( id_transformation, id_step, fieldNr, "field_decimal", getDecimalSymbol() );
+    rep.saveStepAttribute( id_transformation, id_step, fieldNr, "field_group", getGroupSymbol() );
+    rep.saveStepAttribute( id_transformation, id_step, fieldNr, "field_length", getLength() );
+    rep.saveStepAttribute( id_transformation, id_step, fieldNr, "field_precision", getPrecision() );
+    rep.saveStepAttribute( id_transformation, id_step, fieldNr, "field_trim_type", getTrimTypeCode() );
+    rep.saveStepAttribute( id_transformation, id_step, fieldNr, "field_repeat", isRepeated() );
   }
 
   public static final int getTrimTypeByCode( String tt ) {
@@ -199,7 +240,7 @@ public class SalesforceInputField implements Cloneable {
   }
 
   public String getTypeDesc() {
-    return ValueMeta.getTypeDesc( type );
+    return ValueMetaFactory.getValueMetaName( type );
   }
 
   public void setType( int type ) {
