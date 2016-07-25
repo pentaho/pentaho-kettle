@@ -116,6 +116,7 @@ public class RepositoryConnectController {
           return false;
         }
         ( (AbstractRepository) repository ).create();
+        spoon.setRepository( repository );
       }
     } catch ( KettleException ke ) {
       log.logError( "Unable to load repository type", ke );
