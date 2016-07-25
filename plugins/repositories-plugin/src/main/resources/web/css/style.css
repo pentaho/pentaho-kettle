@@ -68,6 +68,19 @@ body {
   width: 49%;
 }
 
+.connect_label {
+  font-family: OpenSansLight;
+  font-size: 17px;
+}
+
+.connection_name_label {
+  font-family: OpenSansLight;
+  font-size: 24px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 /*
 * TEXTS
 */
@@ -122,7 +135,7 @@ a:visited {
 }
 
 /*
-*	MARGINS
+*  MARGINS
 */
 .margin_bottom_5 {
   margin-bottom: 5px;
@@ -528,6 +541,10 @@ tr.active #repoDesc {
 .repoType {
   font-family: OpenSansLight;
   font-size: 24px;
+  width: 400px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis !important;
 }
 
 /*
