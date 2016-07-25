@@ -40,9 +40,18 @@ import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.trans.step.*;
+import org.pentaho.di.trans.step.BaseStep;
+import org.pentaho.di.trans.step.StepDataInterface;
+import org.pentaho.di.trans.step.StepInterface;
+import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.step.StepMetaInterface;
 
-import javax.net.ssl.*;
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.TrustManagerFactory;
+import javax.net.ssl.X509TrustManager;
 import javax.ws.rs.core.MediaType;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -263,17 +272,19 @@ public class Rest extends BaseStep implements StepInterface {
 
       if ( data.trustAllCerts ) {
         try {
-          SSLContext sslContext = SSLContext.getInstance("TLS");
-          sslContext.init(null, new TrustManager[]{new X509TrustManager() {
-            public void checkClientTrusted(X509Certificate[] arg0, String arg1) throws CertificateException {}
-            public void checkServerTrusted(X509Certificate[] arg0, String arg1) throws CertificateException {}
-            public X509Certificate[] getAcceptedIssuers() { return new X509Certificate[0]; }
+          SSLContext sslContext = SSLContext.getInstance( "TLS" );
+          sslContext.init( null, new TrustManager[]{new X509TrustManager() {
+            public void checkClientTrusted( X509Certificate[] arg0, String arg1 ) throws CertificateException { }
+            public void checkServerTrusted( X509Certificate[] arg0, String arg1 ) throws CertificateException { }
+            public X509Certificate[] getAcceptedIssuers() {
+              return new X509Certificate[0];
+            }
 
-          }}, new java.security.SecureRandom());
-          SSLContext.setDefault(sslContext);
+          } }, new java.security.SecureRandom() );
+          SSLContext.setDefault( sslContext );
           data.config.getProperties().put( HTTPSProperties.PROPERTY_HTTPS_PROPERTIES, new HTTPSProperties( hv, sslContext ) );
-        } catch (Exception e) {
-          throw new KettleException("Exception trusting all certs", e);
+        } catch ( Exception e ) {
+          throw new KettleException( "Exception trusting all certs", e );
         }
       } else if ( !Const.isEmpty( data.trustStoreFile ) ) {
 
