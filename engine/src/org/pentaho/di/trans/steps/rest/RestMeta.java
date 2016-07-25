@@ -22,8 +22,6 @@
 
 package org.pentaho.di.trans.steps.rest;
 
-import java.util.List;
-
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -33,7 +31,6 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaInteger;
 import org.pentaho.di.core.row.value.ValueMetaString;
@@ -45,13 +42,11 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.trans.step.BaseStepMeta;
-import org.pentaho.di.trans.step.StepDataInterface;
-import org.pentaho.di.trans.step.StepInterface;
-import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.step.*;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
+
+import java.util.List;
 
 /**
  * @author Samatar
@@ -106,7 +101,6 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
   private String fieldName;
   private String resultCodeFieldName;
   private String responseTimeFieldName;
-  private String responseHeaderFieldName;
 
   /** proxy **/
   private String proxyHost;
@@ -126,6 +120,9 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
   /** Trust store **/
   private String trustStoreFile;
   private String trustStorePassword;
+
+  /** Trust all certs **/
+  private boolean trustAllCerts;
 
   public RestMeta() {
     super(); // allocate BaseStepMeta
@@ -303,6 +300,8 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
     return dynamicMethod;
   }
 
+  public boolean isTrustAllCerts() { return trustAllCerts; }
+
   /**
    * @param dynamicMethod
    *          If the method is defined in a field?
@@ -413,12 +412,12 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
     this.fieldName = "result";
     this.resultCodeFieldName = "";
     this.responseTimeFieldName = "";
-    this.responseHeaderFieldName = "";
     this.method = HTTP_METHOD_GET;
     this.dynamicMethod = false;
     this.methodFieldName = null;
     this.preemptive = false;
     this.trustStoreFile = null;
+    this.trustAllCerts = true;
     this.trustStorePassword = null;
     this.applicationType = APPLICATION_TYPE_TEXT_PLAIN;
 
@@ -444,17 +443,10 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
       v.setOrigin( name );
       inputRowMeta.addValueMeta( v );
     }
-    String headerFieldName = space.environmentSubstitute( responseHeaderFieldName );
-    if ( !Const.isEmpty( headerFieldName ) ) {
-      ValueMetaInterface v =
-        new ValueMeta( headerFieldName, ValueMeta.TYPE_STRING );
-      v.setOrigin( name );
-      inputRowMeta.addValueMeta( v );
-    }
   }
 
   public String getXML() {
-    StringBuilder retval = new StringBuilder();
+    StringBuffer retval = new StringBuffer();
     retval.append( "    " ).append( XMLHandler.addTagValue( "applicationType", applicationType ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "method", method ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "url", url ) );
@@ -475,7 +467,7 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
     retval.append( "    " ).append( XMLHandler.addTagValue( "trustStoreFile", trustStoreFile ) );
     retval.append( "    " ).append(
         XMLHandler.addTagValue( "trustStorePassword", Encr.encryptPasswordIfNotUsingVariables( trustStorePassword ) ) );
-
+    retval.append( "    " ).append(XMLHandler.addTagValue("trustAllCerts", trustAllCerts));
     retval.append( "    <headers>" ).append( Const.CR );
     for ( int i = 0, len = ( headerName != null ? headerName.length : 0 ); i < len; i++ ) {
       retval.append( "      <header>" ).append( Const.CR );
@@ -507,7 +499,6 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
     retval.append( "      " ).append( XMLHandler.addTagValue( "name", fieldName ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "code", resultCodeFieldName ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "response_time", responseTimeFieldName ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "response_header", responseHeaderFieldName ) );
     retval.append( "      </result>" ).append( Const.CR );
 
     return retval.toString();
@@ -532,6 +523,7 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
       preemptive = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "preemptive" ) );
 
       trustStoreFile = XMLHandler.getTagValue( stepnode, "trustStoreFile" );
+      trustAllCerts = "Y".equalsIgnoreCase(XMLHandler.getTagValue( stepnode, "trustAllCerts" ));
       trustStorePassword =
           Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue( stepnode, "trustStorePassword" ) );
 
@@ -562,7 +554,6 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
       fieldName = XMLHandler.getTagValue( stepnode, "result", "name" ); // Optional, can be null
       resultCodeFieldName = XMLHandler.getTagValue( stepnode, "result", "code" ); // Optional, can be null
       responseTimeFieldName = XMLHandler.getTagValue( stepnode, "result", "response_time" ); // Optional, can be null
-      responseHeaderFieldName = XMLHandler.getTagValue( stepnode, "result", "response_header" ); // Optional, can be null
     } catch ( Exception e ) {
       throw new KettleXMLException( BaseMessages.getString( PKG, "RestMeta.Exception.UnableToReadStepInfo" ), e );
     }
@@ -589,6 +580,7 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
       trustStoreFile = rep.getStepAttributeString( id_step, "trustStoreFile" );
       trustStorePassword =
           Encr.decryptPasswordOptionallyEncrypted( rep.getStepAttributeString( id_step, "trustStorePassword" ) );
+      trustAllCerts = "Y".equalsIgnoreCase(rep.getStepAttributeString( id_step, "trustAllCerts" ));
 
       preemptive = rep.getStepAttributeBoolean( id_step, "preemptive" );
       int nrheaders = rep.countNrStepAttributes( id_step, "header_field" );
@@ -612,7 +604,6 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
       fieldName = rep.getStepAttributeString( id_step, "result_name" );
       resultCodeFieldName = rep.getStepAttributeString( id_step, "result_code" );
       responseTimeFieldName = rep.getStepAttributeString( id_step, "response_time" );
-      responseHeaderFieldName = rep.getStepAttributeString( id_step, "response_header" );
     } catch ( Exception e ) {
       throw new KettleException(
         BaseMessages.getString( PKG, "RestMeta.Exception.UnexpectedErrorReadingStepInfo" ), e );
@@ -640,6 +631,7 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
       rep.saveStepAttribute( id_transformation, id_step, "trustStoreFile", trustStoreFile );
       rep.saveStepAttribute( id_transformation, id_step, "trustStorePassword", Encr
           .encryptPasswordIfNotUsingVariables( trustStorePassword ) );
+      rep.saveStepAttribute( id_transformation, id_step, "trustAllCerts", new Boolean(trustAllCerts).toString());
 
       rep.saveStepAttribute( id_transformation, id_step, "preemptive", preemptive );
       for ( int i = 0; i < headerName.length; i++ ) {
@@ -657,7 +649,6 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
       rep.saveStepAttribute( id_transformation, id_step, "result_name", fieldName );
       rep.saveStepAttribute( id_transformation, id_step, "result_code", resultCodeFieldName );
       rep.saveStepAttribute( id_transformation, id_step, "response_time", responseTimeFieldName );
-      rep.saveStepAttribute( id_transformation, id_step, "response_header", responseHeaderFieldName );
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString( PKG, "RestMeta.Exception.UnableToSaveStepInfo" )
         + id_step, e );
@@ -870,6 +861,20 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
   /**
    * Setter
    *
+   * @param trustAllCerts()
+   */
+  public void setTrustAllCerts( boolean trustAllCerts ){ this.trustAllCerts = trustAllCerts; }
+
+  /**
+   * Getter
+   *
+   * @return trustAllCerts
+   */
+  public boolean getTrustAllCerts(){ return this.trustAllCerts; }
+
+  /**
+   * Setter
+   *
    * @param trustStorePassword
    */
   public void setTrustStorePassword( String trustStorePassword ) {
@@ -890,13 +895,6 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
 
   public void setResponseTimeFieldName( String responseTimeFieldName ) {
     this.responseTimeFieldName = responseTimeFieldName;
-  }
-  public String getResponseHeaderFieldName() {
-    return responseHeaderFieldName;
-  }
-
-  public void setResponseHeaderFieldName( String responseHeaderFieldName ) {
-    this.responseHeaderFieldName = responseHeaderFieldName;
   }
 
   public static boolean isActiveBody( String method ) {
