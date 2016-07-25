@@ -22,14 +22,13 @@
 
 package org.pentaho.di.trans.steps.rest;
 
-import javax.ws.rs.core.MediaType;
-
+import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
+import com.sun.jersey.client.apache.config.DefaultApacheHttpClientConfig;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
 
-import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
-import com.sun.jersey.client.apache.config.DefaultApacheHttpClientConfig;
+import javax.ws.rs.core.MediaType;
 
 /**
  * @author Samatar
@@ -52,16 +51,10 @@ public class RestData extends BaseStepData implements StepDataInterface {
   /** Headers **/
   public int[] indexOfHeaderFields;
   public String[] headerNames;
-
-  /** query parameters **/
+  /** parameters **/
   public int nrParams;
   public int[] indexOfParamFields;
   public String[] paramNames;
-
-  /** matrix parameters **/
-  public int nrMatrixParams;
-  public int[] indexOfMatrixParamFields;
-  public String[] matrixParamNames;
 
   /** proxy **/
   public String realProxyHost;
@@ -73,16 +66,12 @@ public class RestData extends BaseStepData implements StepDataInterface {
   public String resultFieldName;
   public String resultCodeFieldName;
   public String resultResponseFieldName;
-  public String resultHeaderFieldName;
 
   /** Flag set headers **/
   public boolean useHeaders;
 
-  /** Flag set Query Parameters **/
+  /** Flag set Parameters **/
   public boolean useParams;
-
-  /** Flag set Matrix Parameters **/
-  public boolean useMatrixParams;
 
   /** Flag set body **/
   public boolean useBody;
@@ -93,6 +82,9 @@ public class RestData extends BaseStepData implements StepDataInterface {
   /** trust store **/
   public String trustStoreFile;
   public String trustStorePassword;
+
+  /** Flag to trust all certificates - including self-signed **/
+  public boolean trustAllCerts = true;
 
   public DefaultApacheHttpClientConfig config;
 
@@ -111,10 +103,8 @@ public class RestData extends BaseStepData implements StepDataInterface {
     this.resultFieldName = null;
     this.resultCodeFieldName = null;
     this.resultResponseFieldName = null;
-    this.resultHeaderFieldName = null;
     this.nrheader = 0;
     this.nrParams = 0;
-    this.nrMatrixParams = 0;
     this.method = null;
     this.indexOfBodyField = -1;
     this.indexOfMethod = -1;

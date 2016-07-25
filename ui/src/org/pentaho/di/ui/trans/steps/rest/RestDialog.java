@@ -22,38 +22,16 @@
 
 package org.pentaho.di.ui.trans.steps.rest;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
-import org.eclipse.swt.events.FocusListener;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.ShellAdapter;
-import org.eclipse.swt.events.ShellEvent;
+import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
-import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.FileDialog;
-import org.eclipse.swt.widgets.Group;
-import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Listener;
-import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.TableItem;
-import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.*;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -65,12 +43,11 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.rest.RestMeta;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
-import org.pentaho.di.ui.core.widget.ColumnInfo;
-import org.pentaho.di.ui.core.widget.ComboVar;
-import org.pentaho.di.ui.core.widget.PasswordTextVar;
-import org.pentaho.di.ui.core.widget.TableView;
-import org.pentaho.di.ui.core.widget.TextVar;
+import org.pentaho.di.ui.core.widget.*;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
+
+import java.util.*;
+import java.util.List;
 
 public class RestDialog extends BaseStepDialog implements StepDialogInterface {
   private static Class<?> PKG = RestMeta.class; // for i18n purposes, needed by Translator2!!
@@ -169,14 +146,12 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
   private Label wlResponseTime;
   private TextVar wResponseTime;
   private FormData fdlResponseTime, fdResponseTime;
-  private Label wlResponseHeader;
-  private TextVar wResponseHeader;
-  private FormData fdlResponseHeader, fdResponseHeader;
 
   private Label wlTrustStorePassword;
   private TextVar wTrustStorePassword;
   private FormData fdlTrustStorePassword, fdTrustStorePassword;
 
+  private Button wTrustAllCerts;
   private Label wlTrustStoreFile;
   private TextVar wTrustStoreFile;
   private Button wbTrustStoreFile;
@@ -554,23 +529,6 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
     fdResponseTime.top = new FormAttachment( wResultCode, margin );
     fdResponseTime.right = new FormAttachment( 100, 0 );
     wResponseTime.setLayoutData( fdResponseTime );
- // Response header line...
-    wlResponseHeader = new Label( gOutputFields, SWT.RIGHT );
-    wlResponseHeader.setText( BaseMessages.getString( PKG, "RestDialog.ResponseHeader.Label" ) );
-    props.setLook( wlResponseHeader );
-    fdlResponseHeader = new FormData();
-    fdlResponseHeader.left = new FormAttachment( 0, 0 );
-    fdlResponseHeader.right = new FormAttachment( middle, -margin );
-    fdlResponseHeader.top = new FormAttachment( wResponseTime, margin );
-    wlResponseHeader.setLayoutData( fdlResponseHeader );
-    wResponseHeader = new TextVar( transMeta, gOutputFields, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-    props.setLook( wResponseHeader );
-    wResponseHeader.addModifyListener( lsMod );
-    fdResponseHeader = new FormData();
-    fdResponseHeader.left = new FormAttachment( middle, 0 );
-    fdResponseHeader.top = new FormAttachment( wResponseTime, margin );
-    fdResponseHeader.right = new FormAttachment( 100, 0 );
-    wResponseHeader.setLayoutData( fdResponseHeader );
 
     FormData fdOutputFields = new FormData();
     fdOutputFields.left = new FormAttachment( 0, 0 );
@@ -771,6 +729,48 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
     props.setLook( wSSLComp );
 
     // ////////////////////////
+    // START SSL accept all certs GROUP
+    Group gSSLAllCerts = new Group( wSSLComp, SWT.SHADOW_ETCHED_IN );
+    gSSLAllCerts.setText( BaseMessages.getString( PKG, "RestDialog.SSL.AcceptAllCerts.Title" ) );
+    FormLayout sslAllCertsLayout = new FormLayout();
+    sslAllCertsLayout.marginWidth = 3;
+    sslAllCertsLayout.marginHeight = 3;
+    gSSLAllCerts.setLayout( sslAllCertsLayout );
+    props.setLook( gSSLAllCerts );
+
+    // Accept All Certs Checkbox line
+    Label wlTrustAllCerts = new Label( gSSLAllCerts, SWT.RIGHT );
+    wlTrustAllCerts.setText( BaseMessages.getString( PKG, "RestDialog.SSL.AcceptAllCerts.Label" ) );
+    props.setLook(  wlTrustAllCerts );
+    FormData fdlTrustAllCerts = new FormData();
+    fdlTrustAllCerts.top = new FormAttachment( gSSLAllCerts, margin * 2 );
+    fdlTrustAllCerts.left = new FormAttachment( 0, 0 );
+    fdlTrustAllCerts.right = new FormAttachment( middle, -margin );
+    wlTrustAllCerts.setLayoutData( fdlTrustAllCerts );
+
+    wTrustAllCerts = new Button( gSSLAllCerts, SWT.CHECK );
+    props.setLook( wTrustAllCerts );
+    FormData fdTrustAllCerts = new FormData();
+    fdTrustAllCerts.top = new FormAttachment(  gSSLAllCerts, margin * 2 );
+    fdTrustAllCerts.left = new FormAttachment( middle, 0 );
+    fdTrustAllCerts.right = new FormAttachment( 100, 0 );
+    wTrustAllCerts.setLayoutData( fdTrustAllCerts );
+    wTrustAllCerts.addSelectionListener( new SelectionAdapter() {
+      public void widgetSelected( SelectionEvent e ) {
+        input.setChanged();
+        input.setTrustAllCerts( wTrustAllCerts.getSelection() );
+      }
+    } );
+
+    FormData fdSSLCerts = new FormData();
+    fdSSLCerts.left = new FormAttachment( 0, 0 );
+    fdSSLCerts.right = new FormAttachment( 100, 0 );
+    fdSSLCerts.top = new FormAttachment( wSSLComp, margin );
+    gSSLAllCerts.setLayoutData( fdSSLCerts );
+
+    // ////// END of SSL accept all certs GROUP
+
+    // ////////////////////////
     // START SSLTrustStore GROUP
 
     Group gSSLTrustStore = new Group( wSSLComp, SWT.SHADOW_ETCHED_IN );
@@ -780,6 +780,7 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
     SSLTrustStoreLayout.marginHeight = 3;
     gSSLTrustStore.setLayout( SSLTrustStoreLayout );
     props.setLook( gSSLTrustStore );
+    wlTrustStoreFile = new Label( gSSLTrustStore, SWT.RIGHT );
 
     // TrustStoreFile line
     wlTrustStoreFile = new Label( gSSLTrustStore, SWT.RIGHT );
@@ -845,7 +846,7 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
     FormData fdSSLTrustStore = new FormData();
     fdSSLTrustStore.left = new FormAttachment( 0, 0 );
     fdSSLTrustStore.right = new FormAttachment( 100, 0 );
-    fdSSLTrustStore.top = new FormAttachment( gHttpAuth, margin );
+    fdSSLTrustStore.top = new FormAttachment( gSSLAllCerts, margin );
     gSSLTrustStore.setLayoutData( fdSSLTrustStore );
 
     // END HTTP AUTH GROUP
@@ -1280,7 +1281,7 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
         }
       }
     }
-
+    wTrustAllCerts.setSelection( input.isTrustAllCerts() );
     wMethod.setText( Const.NVL( input.getMethod(), RestMeta.HTTP_METHOD_GET ) );
     wMethodInField.setSelection( input.isDynamicMethod() );
     if ( input.getBodyField() != null ) {
@@ -1325,9 +1326,6 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
     }
     if ( input.getTrustStorePassword() != null ) {
       wTrustStorePassword.setText( input.getTrustStorePassword() );
-    }
-    if ( input.getResponseHeaderFieldName() != null ) {
-      wResponseHeader.setText( input.getResponseHeaderFieldName() );
     }
 
     wApplicationType.setText( Const.NVL( input.getApplicationType(), "" ) );
@@ -1388,7 +1386,6 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
     input.setFieldName( wResult.getText() );
     input.setResultCodeFieldName( wResultCode.getText() );
     input.setResponseTimeFieldName( wResponseTime.getText() );
-    input.setResponseHeaderFieldName( wResponseHeader.getText() );
 
     input.setHttpLogin( wHttpLogin.getText() );
     input.setHttpPassword( wHttpPassword.getText() );
