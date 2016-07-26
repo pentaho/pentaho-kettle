@@ -25,6 +25,8 @@ package org.pentaho.di.ui.repo;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
@@ -41,8 +43,9 @@ import org.pentaho.di.ui.spoon.Spoon;
 public class RepositoryConnectMenu {
 
   private static Class<?> PKG = RepositoryConnectMenu.class;
-  private static LogChannelInterface log =
-    KettleLogStore.getLogChannelInterfaceFactory().create( RepositoryConnectMenu.class );
+  private static LogChannelInterface log = KettleLogStore.getLogChannelInterfaceFactory().create(
+      RepositoryConnectMenu.class );
+  private static final int MAX_REPO_NAME_PIXEL_LENGTH = 280;
 
   private Spoon spoon;
   private ToolBar toolBar;
@@ -56,7 +59,8 @@ public class RepositoryConnectMenu {
     this.spoon = spoon;
     this.repoConnectController = repoConnectController;
     repoConnectController.addListener( new RepositoryConnectController.RepositoryContollerListener() {
-      @Override public void update() {
+      @Override
+      public void update() {
         renderAndUpdate();
       }
     } );
@@ -110,7 +114,8 @@ public class RepositoryConnectMenu {
     connectButton = new ToolItem( toolBar, toolBar.getItems().length );
     connectButton.setText( BaseMessages.getString( PKG, "RepositoryConnectMenu.Connect" ) );
     connectButton.addSelectionListener( new SelectionAdapter() {
-      @Override public void widgetSelected( SelectionEvent selectionEvent ) {
+      @Override
+      public void widgetSelected( SelectionEvent selectionEvent ) {
         new RepositoryDialog( spoon.getShell(), repoConnectController ).openCreation();
         renderAndUpdate();
       }
@@ -121,19 +126,23 @@ public class RepositoryConnectMenu {
     connectDropdown = new ToolItem( toolBar, SWT.DROP_DOWN, toolBar.getItems().length );
     connectDropdown.setText( BaseMessages.getString( PKG, "RepositoryConnectMenu.Connect" ) );
     connectDropdown.addSelectionListener( new SelectionAdapter() {
-      @Override public void widgetSelected( SelectionEvent event ) {
+      @Override
+      public void widgetSelected( SelectionEvent event ) {
         final Menu connectionMenu = new Menu( toolBar.getShell() );
         if ( repositoriesMeta != null ) {
           for ( int i = 0; i < repositoriesMeta.nrRepositories(); i++ ) {
             MenuItem item = new MenuItem( connectionMenu, SWT.CHECK );
-            item.setText( repositoriesMeta.getRepository( i ).getName() );
+            String truncatedName = truncateName( repositoriesMeta.getRepository( i ).getName() );
+            item.setText( truncatedName );
+            item.setData( repositoriesMeta.getRepository( i ).getName() );
             if ( spoon.rep != null && spoon.rep.getName().equals( repositoriesMeta.getRepository( i ).getName() ) ) {
               item.setSelection( true );
               continue;
             }
             item.addSelectionListener( new SelectionAdapter() {
-              @Override public void widgetSelected( SelectionEvent selectionEvent ) {
-                String repoName = ( (MenuItem) selectionEvent.widget ).getText();
+              @Override
+              public void widgetSelected( SelectionEvent selectionEvent ) {
+                String repoName = (String) ( (MenuItem) selectionEvent.widget ).getData();
                 RepositoryMeta repositoryMeta = repositoriesMeta.findRepository( repoName );
                 if ( repositoryMeta != null ) {
                   try {
@@ -157,7 +166,8 @@ public class RepositoryConnectMenu {
         MenuItem managerItem = new MenuItem( connectionMenu, SWT.NONE );
         managerItem.setText( BaseMessages.getString( PKG, "RepositoryConnectMenu.RepositoryManager" ) );
         managerItem.addSelectionListener( new SelectionAdapter() {
-          @Override public void widgetSelected( SelectionEvent selectionEvent ) {
+          @Override
+          public void widgetSelected( SelectionEvent selectionEvent ) {
             new RepositoryDialog( spoon.getShell(), repoConnectController ).openManager();
             renderAndUpdate();
           }
@@ -168,7 +178,8 @@ public class RepositoryConnectMenu {
         disconnectItem.setEnabled( spoon.rep != null );
         disconnectItem.setText( BaseMessages.getString( PKG, "RepositoryConnectMenu.Disconnect" ) );
         disconnectItem.addSelectionListener( new SelectionAdapter() {
-          @Override public void widgetSelected( SelectionEvent selectionEvent ) {
+          @Override
+          public void widgetSelected( SelectionEvent selectionEvent ) {
             spoon.closeRepository();
             renderAndUpdate();
           }
@@ -177,10 +188,26 @@ public class RepositoryConnectMenu {
         ToolItem item = (ToolItem) event.widget;
         Rectangle rect = item.getBounds();
         org.eclipse.swt.graphics.Point pt =
-          item.getParent().toDisplay( new org.eclipse.swt.graphics.Point( rect.x, rect.y + rect.height ) );
+            item.getParent().toDisplay( new org.eclipse.swt.graphics.Point( rect.x, rect.y + rect.height ) );
 
         connectionMenu.setLocation( pt.x, pt.y );
         connectionMenu.setVisible( true );
+      }
+
+      private String truncateName( String name ) {
+        GC gc = new GC( toolBar );
+        Point size = gc.textExtent( name );
+        if ( size.x <= MAX_REPO_NAME_PIXEL_LENGTH ) { // repository name is small enough to fit just return it.
+          gc.dispose();
+          return name;
+        }
+        String originalName = name;
+        while ( gc.textExtent( name + "..." ).x > MAX_REPO_NAME_PIXEL_LENGTH ) {
+          name = name.substring( 0, name.length() - 1 );
+        }
+        gc.dispose();
+        name = name + "...";
+        return name;
       }
     } );
   }
