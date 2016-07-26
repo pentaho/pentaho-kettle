@@ -48,6 +48,7 @@ import org.eclipse.swt.graphics.Color;
 import org.pentaho.di.ui.core.gui.GUIResource;
 
 public class SOQLValuesHighlight implements LineStyleListener {
+  // Random change here.
   JavaScanner scanner = new JavaScanner();
   int[] tokenColors;
   Color[] colors;
