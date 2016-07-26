@@ -248,4 +248,24 @@ public class RepositoryConnectControllerTest {
     assertEquals( true, output.contains( REPOSITORY_DESCRIPTION ) );
     assertEquals( true, output.contains( REPOSITORY_NAME ) );
   }
+
+  @Test
+  public void testRepoSwitch() throws Exception {
+    when( pluginRegistry.loadClass( RepositoryPluginType.class, REPOSITORY_ID, Repository.class ) ).thenReturn(
+        repository );
+
+    KettleFileRepositoryMeta kettleFileRepositoryMeta = new KettleFileRepositoryMeta();
+    kettleFileRepositoryMeta.setId( REPOSITORY_ID );
+    kettleFileRepositoryMeta.setDescription( REPOSITORY_DESCRIPTION );
+    kettleFileRepositoryMeta.setName( REPOSITORY_NAME );
+
+    controller.connectToRepository( kettleFileRepositoryMeta );
+
+    verify( spoon ).closeAllJobsAndTransformations( true );
+
+    when( spoon.getRepository() ).thenReturn( repository );
+    controller.connectToRepository( kettleFileRepositoryMeta );
+
+    verify( spoon ).closeRepository();
+  }
 }

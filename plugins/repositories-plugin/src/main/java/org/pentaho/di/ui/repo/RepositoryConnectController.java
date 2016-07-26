@@ -190,8 +190,13 @@ public class RepositoryConnectController {
       if ( username != null ) {
         getPropsUI().setLastRepositoryLogin( username );
       }
-      getSpoon().closeAllJobsAndTransformations( true );
-      getSpoon().setRepository( repository );
+      Spoon spoon = getSpoon();
+      if ( spoon.getRepository() != null ) {
+        spoon.closeRepository();
+      } else {
+        spoon.closeAllJobsAndTransformations( true );
+      }
+      spoon.setRepository( repository );
       fireListeners();
       jsonObject.put( "success", true );
     } catch ( KettleException ke ) {
