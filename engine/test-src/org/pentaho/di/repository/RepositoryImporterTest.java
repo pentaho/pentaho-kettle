@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,10 +22,7 @@
 
 package org.pentaho.di.repository;
 
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -47,7 +44,6 @@ import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.mapping.MappingMeta;
-import org.pentaho.di.trans.steps.metainject.MetaInjectMeta;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -194,26 +190,6 @@ public class RepositoryImporterTest {
 
     importerWithCompatibilityImportPath.importTransformation( entityNode, feedback );
     verify( mappingMeta2 ).setDirectoryPath( ROOT_PATH + "/myDir/${USER_VARIABLE}" );
-  }
-
-  @Test
-  public void testPatchTransSteps_with_meta_inject_step() {
-    Repository repository = mock( Repository.class );
-    LogChannelInterface log = mock( LogChannelInterface.class );
-    RepositoryImporter importer = spy( new RepositoryImporter( repository, log ) );
-    importer.setBaseDirectory( mock( RepositoryDirectoryInterface.class ) );
-    doReturn( "TEST_PATH" ).when( importer ).resolvePath( anyString(), anyString() );
-
-    MetaInjectMeta metaInjectMeta = mock( MetaInjectMeta.class );
-    doReturn( ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME ).when( metaInjectMeta ).getSpecificationMethod();
-    StepMeta stepMeta = mock( StepMeta.class );
-    doReturn( metaInjectMeta ).when( stepMeta ).getStepMetaInterface();
-    doReturn( true ).when( stepMeta ).isEtlMetaInject();
-    TransMeta transMeta = mock( TransMeta.class );
-    doReturn( Collections.singletonList( stepMeta ) ).when( transMeta ).getSteps();
-
-    importer.patchTransSteps( transMeta );
-    verify( metaInjectMeta ).setDirectoryPath( "TEST_PATH" );
   }
 
   private static JobEntryTrans createJobEntryTrans() {
