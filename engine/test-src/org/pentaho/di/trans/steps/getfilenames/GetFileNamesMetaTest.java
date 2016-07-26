@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -98,9 +98,9 @@ public class GetFileNamesMetaTest {
     fieldLoadSaveValidatorAttributeMap.put( "file_required", fileRequiredArrayLoadSaveValidator );
     fieldLoadSaveValidatorAttributeMap.put( "include_subfolders", stringArrayLoadSaveValidator );
 
-    LoadSaveTester loadSaveTester =
-      new LoadSaveTester( GetFileNamesMeta.class, attributes, getterMap, setterMap,
-          fieldLoadSaveValidatorAttributeMap, new HashMap<String, FieldLoadSaveValidator<?>>() );
+    LoadSaveTester<GetFileNamesMeta> loadSaveTester =
+      new LoadSaveTester<>( GetFileNamesMeta.class, attributes, getterMap, setterMap,
+        fieldLoadSaveValidatorAttributeMap, new HashMap<String, FieldLoadSaveValidator<?>>() );
 
     loadSaveTester.testRepoRoundTrip();
     loadSaveTester.testXmlRoundTrip();
@@ -111,7 +111,7 @@ public class GetFileNamesMetaTest {
     @Override
     public FileInputList.FileTypeFilter getTestObject() {
       FileInputList.FileTypeFilter[] filters = FileInputList.FileTypeFilter.values();
-      return filters[new Random().nextInt( filters.length )];
+      return filters[ new Random().nextInt( filters.length ) ];
     }
 
     @Override
@@ -127,7 +127,7 @@ public class GetFileNamesMetaTest {
 
     @Override
     public String getTestObject() {
-      return GetFileNamesMeta.RequiredFilesCode[new Random().nextInt( GetFileNamesMeta.RequiredFilesCode.length )];
+      return GetFileNamesMeta.RequiredFilesCode[ new Random().nextInt( GetFileNamesMeta.RequiredFilesCode.length ) ];
     }
 
     @Override
