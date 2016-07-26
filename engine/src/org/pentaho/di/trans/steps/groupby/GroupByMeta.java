@@ -34,6 +34,7 @@ import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -529,7 +530,7 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface {
     if ( passAllRows ) {
       // If we pass all rows, we can add a line nr in the group...
       if ( addingLineNrInGroup && !Const.isEmpty( lineNrInGroupField ) ) {
-        ValueMetaInterface lineNr = new ValueMeta( lineNrInGroupField, ValueMetaInterface.TYPE_INTEGER );
+        ValueMetaInterface lineNr = new ValueMetaInteger( lineNrInGroupField );
         lineNr.setLength( ValueMetaInterface.DEFAULT_INTEGER_LENGTH, 0 );
         lineNr.setOrigin( origin );
         fields.addValueMeta( lineNr );

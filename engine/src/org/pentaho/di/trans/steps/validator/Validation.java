@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -32,6 +32,7 @@ import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.injection.Injection;
 import org.pentaho.di.core.injection.InjectionTypeConverter;
 import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
@@ -758,7 +759,7 @@ public class Validation implements Cloneable {
   public static class DataTypeConverter extends InjectionTypeConverter {
     @Override
     public int string2intPrimitive( String v ) throws KettleValueException {
-      return ValueMeta.getType( v );
+      return ValueMetaFactory.getIdForValueMeta( v );
     }
   }
 }

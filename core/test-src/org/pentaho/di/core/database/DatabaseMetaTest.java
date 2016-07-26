@@ -22,12 +22,22 @@
 
 package org.pentaho.di.core.database;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.doCallRealMethod;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -43,8 +53,8 @@ import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.plugins.DatabasePluginType;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaNone;
 
 public class DatabaseMetaTest {
   private static final String TABLE_NAME = "tableName";
@@ -141,7 +151,7 @@ public class DatabaseMetaTest {
 
     final RowMeta fields = new RowMeta();
     for ( int i = 0; i < 10; i++ ) {
-      final ValueMeta valueMeta = new ValueMeta( "test_" + i );
+      final ValueMetaInterface valueMeta = new ValueMetaNone( "test_" + i );
       fields.addValueMeta( valueMeta );
     }
 

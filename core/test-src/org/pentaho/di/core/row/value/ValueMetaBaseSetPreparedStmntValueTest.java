@@ -1,7 +1,7 @@
 /*
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  * **************************************************************************
  *
@@ -20,15 +20,11 @@
 
 package org.pentaho.di.core.row.value;
 
-import static org.mockito.Mockito.*;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.pentaho.di.core.Const;
-import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.di.core.row.RowMeta;
-import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMetaInterface;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.sql.PreparedStatement;
@@ -37,6 +33,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.row.RowMeta;
+import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.ValueMetaInterface;
 
 public class ValueMetaBaseSetPreparedStmntValueTest {
 
@@ -69,7 +73,7 @@ public class ValueMetaBaseSetPreparedStmntValueTest {
 
     System.setProperty( Const.KETTLE_COMPATIBILITY_DB_IGNORE_TIMEZONE, "N" );
 
-    ValueMetaBase valueMeta = new ValueMetaBase( "", ValueMetaInterface.TYPE_DATE, -1, -1 );
+    ValueMetaBase valueMeta = new ValueMetaDate( "", -1, -1 );
     valueMeta.setPrecision( 1 );
     valueMeta.setPreparedStatementValue( dbMeta, ps, 1, date );
 
@@ -81,7 +85,7 @@ public class ValueMetaBaseSetPreparedStmntValueTest {
 
     System.setProperty( Const.KETTLE_COMPATIBILITY_DB_IGNORE_TIMEZONE, "Y" );
 
-    ValueMetaBase valueMeta = new ValueMetaBase( "", ValueMetaInterface.TYPE_DATE, -1, -1 );
+    ValueMetaBase valueMeta = new ValueMetaDate( "", -1, -1 );
     valueMeta.setPrecision( 1 );
     valueMeta.setPreparedStatementValue( dbMeta, ps, 1, date );
 
@@ -93,7 +97,7 @@ public class ValueMetaBaseSetPreparedStmntValueTest {
 
     System.setProperty( Const.KETTLE_COMPATIBILITY_DB_IGNORE_TIMEZONE, "N" );
 
-    ValueMetaBase valueMeta = new ValueMetaBase( "", ValueMetaInterface.TYPE_DATE, -1, -1 );
+    ValueMetaBase valueMeta = new ValueMetaDate( "", -1, -1 );
     valueMeta.setPreparedStatementValue( dbMeta, ps, 1, ts );
 
     verify( ps ).setTimestamp( eq( 1 ), any( Timestamp.class ), any( Calendar.class ) );
@@ -104,7 +108,7 @@ public class ValueMetaBaseSetPreparedStmntValueTest {
 
     System.setProperty( Const.KETTLE_COMPATIBILITY_DB_IGNORE_TIMEZONE, "Y" );
 
-    ValueMetaBase valueMeta = new ValueMetaBase( "", ValueMetaInterface.TYPE_DATE, -1, -1 );
+    ValueMetaBase valueMeta = new ValueMetaDate( "", -1, -1 );
     valueMeta.setPreparedStatementValue( dbMeta, ps, 1, ts );
 
     verify( ps ).setTimestamp( eq( 1 ), any( Timestamp.class ) );
@@ -115,7 +119,7 @@ public class ValueMetaBaseSetPreparedStmntValueTest {
 
     System.setProperty( Const.KETTLE_COMPATIBILITY_DB_IGNORE_TIMEZONE, "N" );
 
-    ValueMetaBase valueMeta = new ValueMetaBase( "", ValueMetaInterface.TYPE_DATE, -1, -1 );
+    ValueMetaBase valueMeta = new ValueMetaDate( "", -1, -1 );
     valueMeta.setPreparedStatementValue( dbMeta, ps, 1, date );
     valueMeta.setStorageType( ValueMetaInterface.STORAGE_TYPE_NORMAL );
 
@@ -127,7 +131,7 @@ public class ValueMetaBaseSetPreparedStmntValueTest {
 
     System.setProperty( Const.KETTLE_COMPATIBILITY_DB_IGNORE_TIMEZONE, "Y" );
 
-    ValueMetaBase valueMeta = new ValueMetaBase( "", ValueMetaInterface.TYPE_DATE, -1, -1 );
+    ValueMetaBase valueMeta = new ValueMetaDate( "", -1, -1 );
     valueMeta.setPreparedStatementValue( dbMeta, ps, 1, date );
     valueMeta.setStorageType( ValueMetaInterface.STORAGE_TYPE_NORMAL );
 

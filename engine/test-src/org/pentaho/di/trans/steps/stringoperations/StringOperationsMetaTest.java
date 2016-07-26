@@ -38,8 +38,8 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
@@ -115,15 +115,15 @@ public class StringOperationsMetaTest implements InitializerInterface<StepMetaIn
     meta.setFieldInStream( new String[] { "field1" } );
 
     RowMetaInterface rowMetaInterface = new RowMeta();
-    ValueMetaInterface valueMeta = new ValueMeta( "field1", ValueMeta.TYPE_STRING );
-    valueMeta.setStorageMetadata( new ValueMeta( "field1", ValueMeta.TYPE_STRING ) );
+    ValueMetaInterface valueMeta = new ValueMetaString( "field1" );
+    valueMeta.setStorageMetadata( new ValueMetaString( "field1" ) );
     valueMeta.setStorageType( ValueMetaInterface.STORAGE_TYPE_BINARY_STRING );
     rowMetaInterface.addValueMeta( valueMeta );
 
     VariableSpace space = mock( VariableSpace.class );
     meta.getFields( rowMetaInterface, "STRING_OPERATIONS", null, null, space, null, null );
     RowMetaInterface expectedRowMeta = new RowMeta();
-    expectedRowMeta.addValueMeta( new ValueMeta( "field1", ValueMeta.TYPE_STRING ) );
+    expectedRowMeta.addValueMeta( new ValueMetaString( "field1" ) );
     assertEquals( expectedRowMeta.toString(), rowMetaInterface.toString() );
   }
 }

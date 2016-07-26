@@ -42,9 +42,12 @@ import org.pentaho.di.core.injection.Injection;
 import org.pentaho.di.core.injection.InjectionDeep;
 import org.pentaho.di.core.injection.InjectionSupported;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaBoolean;
+import org.pentaho.di.core.row.value.ValueMetaDate;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
@@ -362,7 +365,7 @@ public class TextFileInputMeta extends
         BaseFileInputField field = new BaseFileInputField();
 
         field.setName( XMLHandler.getTagValue( fnode, "name" ) );
-        field.setType( ValueMeta.getType( XMLHandler.getTagValue( fnode, "type" ) ) );
+        field.setType( ValueMetaFactory.getIdForValueMeta( XMLHandler.getTagValue( fnode, "type" ) ) );
         field.setFormat( XMLHandler.getTagValue( fnode, "format" ) );
         field.setCurrencySymbol( XMLHandler.getTagValue( fnode, "currency" ) );
         field.setDecimalSymbol( XMLHandler.getTagValue( fnode, "decimal" ) );
@@ -372,7 +375,7 @@ public class TextFileInputMeta extends
         field.setPosition( Const.toInt( XMLHandler.getTagValue( fnode, "position" ), -1 ) );
         field.setLength( Const.toInt( XMLHandler.getTagValue( fnode, "length" ), -1 ) );
         field.setPrecision( Const.toInt( XMLHandler.getTagValue( fnode, "precision" ), -1 ) );
-        field.setTrimType( ValueMeta.getTrimTypeByCode( XMLHandler.getTagValue( fnode, "trim_type" ) ) );
+        field.setTrimType( ValueMetaString.getTrimTypeByCode( XMLHandler.getTagValue( fnode, "trim_type" ) ) );
         field.setRepeated( YES.equalsIgnoreCase( XMLHandler.getTagValue( fnode, "repeat" ) ) );
 
         inputFiles.inputFields[i] = field;
@@ -544,7 +547,7 @@ public class TextFileInputMeta extends
         boolean found = false;
         for ( int i = 0; i < info.length && !found; i++ ) {
           if ( info[i] != null ) {
-            row.mergeRowMeta( info[i] );
+            row.mergeRowMeta( info[i], name );
             found = true;
           }
         }
@@ -579,30 +582,30 @@ public class TextFileInputMeta extends
     }
     if ( errorHandling.errorIgnored ) {
       if ( errorCountField != null && errorCountField.length() > 0 ) {
-        ValueMetaInterface v = new ValueMeta( errorCountField, ValueMetaInterface.TYPE_INTEGER );
+        ValueMetaInterface v = new ValueMetaInteger( errorCountField );
         v.setLength( ValueMetaInterface.DEFAULT_INTEGER_LENGTH, 0 );
         v.setOrigin( name );
         row.addValueMeta( v );
       }
       if ( errorFieldsField != null && errorFieldsField.length() > 0 ) {
-        ValueMetaInterface v = new ValueMeta( errorFieldsField, ValueMetaInterface.TYPE_STRING );
+        ValueMetaInterface v = new ValueMetaString( errorFieldsField );
         v.setOrigin( name );
         row.addValueMeta( v );
       }
       if ( errorTextField != null && errorTextField.length() > 0 ) {
-        ValueMetaInterface v = new ValueMeta( errorTextField, ValueMetaInterface.TYPE_STRING );
+        ValueMetaInterface v = new ValueMetaString( errorTextField );
         v.setOrigin( name );
         row.addValueMeta( v );
       }
     }
     if ( content.includeFilename ) {
-      ValueMetaInterface v = new ValueMeta( content.filenameField, ValueMetaInterface.TYPE_STRING );
+      ValueMetaInterface v = new ValueMetaString( content.filenameField );
       v.setLength( 100 );
       v.setOrigin( name );
       row.addValueMeta( v );
     }
     if ( content.includeRowNumber ) {
-      ValueMetaInterface v = new ValueMeta( content.rowNumberField, ValueMetaInterface.TYPE_INTEGER );
+      ValueMetaInterface v = new ValueMetaInteger( content.rowNumberField );
       v.setLength( ValueMetaInterface.DEFAULT_INTEGER_LENGTH, 0 );
       v.setOrigin( name );
       row.addValueMeta( v );
@@ -612,62 +615,55 @@ public class TextFileInputMeta extends
 
     if ( StringUtils.isNotBlank( additionalOutputFields.shortFilenameField ) ) {
       ValueMetaInterface v =
-          new ValueMeta( space.environmentSubstitute( additionalOutputFields.shortFilenameField ),
-              ValueMetaInterface.TYPE_STRING );
+          new ValueMetaString( space.environmentSubstitute( additionalOutputFields.shortFilenameField ) );
       v.setLength( 100, -1 );
       v.setOrigin( name );
       row.addValueMeta( v );
     }
     if ( StringUtils.isNotBlank( additionalOutputFields.extensionField ) ) {
       ValueMetaInterface v =
-          new ValueMeta( space.environmentSubstitute( additionalOutputFields.extensionField ),
-              ValueMetaInterface.TYPE_STRING );
+          new ValueMetaString( space.environmentSubstitute( additionalOutputFields.extensionField ) );
       v.setLength( 100, -1 );
       v.setOrigin( name );
       row.addValueMeta( v );
     }
     if ( StringUtils.isNotBlank( additionalOutputFields.pathField ) ) {
       ValueMetaInterface v =
-          new ValueMeta( space.environmentSubstitute( additionalOutputFields.pathField ),
-              ValueMetaInterface.TYPE_STRING );
+          new ValueMetaString( space.environmentSubstitute( additionalOutputFields.pathField ) );
       v.setLength( 100, -1 );
       v.setOrigin( name );
       row.addValueMeta( v );
     }
     if ( StringUtils.isNotBlank( additionalOutputFields.sizeField ) ) {
       ValueMetaInterface v =
-          new ValueMeta( space.environmentSubstitute( additionalOutputFields.sizeField ),
-              ValueMetaInterface.TYPE_INTEGER );
+          new ValueMetaString( space.environmentSubstitute( additionalOutputFields.sizeField ) );
       v.setOrigin( name );
       v.setLength( 9 );
       row.addValueMeta( v );
     }
     if ( StringUtils.isNotBlank( additionalOutputFields.hiddenField ) ) {
       ValueMetaInterface v =
-          new ValueMeta( space.environmentSubstitute( additionalOutputFields.hiddenField ),
-              ValueMetaInterface.TYPE_BOOLEAN );
+          new ValueMetaBoolean( space.environmentSubstitute( additionalOutputFields.hiddenField ) );
       v.setOrigin( name );
       row.addValueMeta( v );
     }
 
     if ( StringUtils.isNotBlank( additionalOutputFields.lastModificationField ) ) {
       ValueMetaInterface v =
-          new ValueMeta( space.environmentSubstitute( additionalOutputFields.lastModificationField ),
-              ValueMetaInterface.TYPE_DATE );
+          new ValueMetaDate( space.environmentSubstitute( additionalOutputFields.lastModificationField ) );
       v.setOrigin( name );
       row.addValueMeta( v );
     }
     if ( StringUtils.isNotBlank( additionalOutputFields.uriField ) ) {
       ValueMetaInterface v =
-          new ValueMeta( space.environmentSubstitute( additionalOutputFields.uriField ),
-              ValueMetaInterface.TYPE_STRING );
+          new ValueMetaString( space.environmentSubstitute( additionalOutputFields.uriField ) );
       v.setLength( 100, -1 );
       v.setOrigin( name );
       row.addValueMeta( v );
     }
 
     if ( StringUtils.isNotBlank( additionalOutputFields.rootUriField ) ) {
-      ValueMetaInterface v = new ValueMeta( additionalOutputFields.rootUriField, ValueMetaInterface.TYPE_STRING );
+      ValueMetaInterface v = new ValueMetaString( additionalOutputFields.rootUriField );
       v.setLength( 100, -1 );
       v.setOrigin( name );
       row.addValueMeta( v );
@@ -923,7 +919,7 @@ public class TextFileInputMeta extends
         BaseFileInputField field = new BaseFileInputField();
 
         field.setName( rep.getStepAttributeString( id_step, i, "field_name" ) );
-        field.setType( ValueMeta.getType( rep.getStepAttributeString( id_step, i, "field_type" ) ) );
+        field.setType( ValueMetaFactory.getIdForValueMeta( rep.getStepAttributeString( id_step, i, "field_type" ) ) );
         field.setFormat( rep.getStepAttributeString( id_step, i, "field_format" ) );
         field.setCurrencySymbol( rep.getStepAttributeString( id_step, i, "field_currency" ) );
         field.setDecimalSymbol( rep.getStepAttributeString( id_step, i, "field_decimal" ) );
@@ -933,7 +929,7 @@ public class TextFileInputMeta extends
         field.setPosition( (int) rep.getStepAttributeInteger( id_step, i, "field_position" ) );
         field.setLength( (int) rep.getStepAttributeInteger( id_step, i, "field_length" ) );
         field.setPrecision( (int) rep.getStepAttributeInteger( id_step, i, "field_precision" ) );
-        field.setTrimType( ValueMeta.getTrimTypeByCode( rep.getStepAttributeString( id_step, i, "field_trim_type" ) ) );
+        field.setTrimType( ValueMetaString.getTrimTypeByCode( rep.getStepAttributeString( id_step, i, "field_trim_type" ) ) );
         field.setRepeated( rep.getStepAttributeBoolean( id_step, i, "field_repeat" ) );
 
         inputFiles.inputFields[i] = field;

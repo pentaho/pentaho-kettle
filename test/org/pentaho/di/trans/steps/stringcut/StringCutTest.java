@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -34,8 +34,8 @@ import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.trans.RowProducer;
 import org.pentaho.di.trans.RowStepCollector;
 import org.pentaho.di.trans.Trans;
@@ -62,7 +62,7 @@ public class StringCutTest extends TransformationTestCase {
     RowMetaInterface rm = new RowMeta();
 
     ValueMetaInterface[] valuesMeta =
-    { new ValueMeta( "field1", ValueMeta.TYPE_STRING ), new ValueMeta( "field2", ValueMeta.TYPE_STRING ),
+    { new ValueMetaString( "field1" ), new ValueMetaString( "field2" ),
 
     };
 
@@ -78,8 +78,8 @@ public class StringCutTest extends TransformationTestCase {
 
     ValueMetaInterface[] valuesMeta =
     {
-      new ValueMeta( "field1", ValueMeta.TYPE_STRING ), new ValueMeta( "field2", ValueMeta.TYPE_STRING ),
-      new ValueMeta( "outf3", ValueMeta.TYPE_STRING ),
+      new ValueMetaString( "field1" ), new ValueMetaString( "field2" ),
+      new ValueMetaString( "outf3" ),
 
     };
 
@@ -95,8 +95,8 @@ public class StringCutTest extends TransformationTestCase {
 
     ValueMetaInterface[] valuesMeta =
     {
-      new ValueMeta( "field1", ValueMeta.TYPE_STRING ), new ValueMeta( "field2", ValueMeta.TYPE_STRING ),
-      new ValueMeta( "outf3", ValueMeta.TYPE_STRING ), new ValueMeta( "outf4", ValueMeta.TYPE_STRING ),
+      new ValueMetaString( "field1" ), new ValueMetaString( "field2" ),
+      new ValueMetaString( "outf3" ), new ValueMetaString( "outf4" ),
 
     };
 
@@ -478,7 +478,7 @@ public class StringCutTest extends TransformationTestCase {
     RowMetaInterface rm = new RowMeta();
 
     ValueMetaInterface[] valuesMeta =
-    { new ValueMeta( "field1", ValueMeta.TYPE_STRING ), new ValueMeta( "field2", ValueMeta.TYPE_STRING ), };
+    { new ValueMetaString( "field1" ), new ValueMetaString( "field2" ), };
 
     for ( int i = 0; i < valuesMeta.length; i++ ) {
       valuesMeta[i].setStorageMetadata( createRowMetaInterface().getValueMeta( i ) );
@@ -493,8 +493,8 @@ public class StringCutTest extends TransformationTestCase {
     RowMetaInterface rm = new RowMeta();
 
     ValueMetaInterface[] valuesMeta =
-    { new ValueMeta( "field1", ValueMeta.TYPE_STRING ), new ValueMeta( "field2", ValueMeta.TYPE_STRING ),
-      new ValueMeta( "field1_1", ValueMeta.TYPE_STRING ), };
+    { new ValueMetaString( "field1" ), new ValueMetaString( "field2" ),
+      new ValueMetaString( "field1_1" ), };
 
     valuesMeta[1].setStorageMetadata( createRowMetaInterface().getValueMeta( 1 ) );
     valuesMeta[1].setStorageType( ValueMetaInterface.STORAGE_TYPE_BINARY_STRING );

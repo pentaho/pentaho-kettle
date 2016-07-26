@@ -22,8 +22,8 @@
 
 package org.pentaho.di.trans.steps.propertyinput;
 
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.i18n.BaseMessages;
 
 /**
@@ -84,6 +84,7 @@ public class PropertyInputField implements Cloneable {
     this.precision = -1;
     this.repeat = false;
   }
+  @Override
   public String toString() {
     return String.format( "PropertyInputField: (%s, %d, %d, %d, %s, %d, %d, %s, %s, %s, %b)",
         name, column, type, length, format, trimtype, precision,
@@ -169,6 +170,7 @@ public class PropertyInputField implements Cloneable {
     return trimTypeDesc[i];
   }
 
+  @Override
   public Object clone() {
     try {
       PropertyInputField retval = (PropertyInputField) super.clone();
@@ -200,7 +202,7 @@ public class PropertyInputField implements Cloneable {
   }
 
   public String getTypeDesc() {
-    return ValueMeta.getTypeDesc( type );
+    return ValueMetaFactory.getValueMetaName( type );
   }
 
   public void setType( int type ) {

@@ -33,7 +33,6 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaInteger;
 import org.pentaho.di.core.row.value.ValueMetaString;
@@ -355,6 +354,7 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
     this.fieldName = resultName;
   }
 
+  @Override
   public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     readData( stepnode, databases );
   }
@@ -373,6 +373,7 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
     matrixParameterName = new String[nrmatrixparameters];
   }
 
+  @Override
   public Object clone() {
     RestMeta retval = (RestMeta) super.clone();
 
@@ -391,6 +392,7 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
     return retval;
   }
 
+  @Override
   public void setDefault() {
     int i;
     int nrheaders = 0;
@@ -424,6 +426,7 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
 
   }
 
+  @Override
   public void getFields( RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info, StepMeta nextStep,
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     if ( !Const.isEmpty( fieldName ) ) {
@@ -447,12 +450,13 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
     String headerFieldName = space.environmentSubstitute( responseHeaderFieldName );
     if ( !Const.isEmpty( headerFieldName ) ) {
       ValueMetaInterface v =
-        new ValueMeta( headerFieldName, ValueMeta.TYPE_STRING );
+        new ValueMetaString( headerFieldName );
       v.setOrigin( name );
       inputRowMeta.addValueMeta( v );
     }
   }
 
+  @Override
   public String getXML() {
     StringBuilder retval = new StringBuilder();
     retval.append( "    " ).append( XMLHandler.addTagValue( "applicationType", applicationType ) );
@@ -568,6 +572,7 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
+  @Override
   public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
       applicationType = rep.getStepAttributeString( id_step, "applicationType" );
@@ -619,6 +624,7 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
+  @Override
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       rep.saveStepAttribute( id_transformation, id_step, "applicationType", applicationType );
@@ -664,6 +670,7 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
+  @Override
   public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
     RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
@@ -733,15 +740,18 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
 
   }
 
+  @Override
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
     TransMeta transMeta, Trans trans ) {
     return new Rest( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 
+  @Override
   public StepDataInterface getStepData() {
     return new RestData();
   }
 
+  @Override
   public boolean supportsErrorHandling() {
     return true;
   }

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,6 +27,8 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaAndData;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.kdr.KettleDatabaseRepository;
 
@@ -50,14 +52,15 @@ public class KettleDatabaseRepositoryValueDelegate extends KettleDatabaseReposit
       RowMetaAndData r = getValue( id_value );
       if ( r != null ) {
         String name = r.getString( KettleDatabaseRepository.FIELD_VALUE_NAME, null );
-        int valtype = ValueMeta.getType( r.getString( KettleDatabaseRepository.FIELD_VALUE_VALUE_TYPE, null ) );
+        int valtype = ValueMetaFactory.getIdForValueMeta(
+          r.getString( KettleDatabaseRepository.FIELD_VALUE_VALUE_TYPE, null ) );
         boolean isNull = r.getBoolean( KettleDatabaseRepository.FIELD_VALUE_IS_NULL, false );
         valueMetaAndData.setValueMeta( new ValueMeta( name, valtype ) );
 
         if ( isNull ) {
           valueMetaAndData.setValueData( null );
         } else {
-          ValueMetaInterface stringValueMeta = new ValueMeta( name, ValueMetaInterface.TYPE_STRING );
+          ValueMetaInterface stringValueMeta = new ValueMetaString( name );
           ValueMetaInterface valueMeta = valueMetaAndData.getValueMeta();
           stringValueMeta.setConversionMetadata( valueMeta );
 

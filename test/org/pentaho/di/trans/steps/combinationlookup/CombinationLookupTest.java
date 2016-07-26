@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -28,8 +28,6 @@ import static org.mockito.Mockito.when;
 
 import java.sql.ResultSet;
 
-import junit.framework.TestCase;
-
 import org.apache.commons.lang.StringUtils;
 import org.junit.Assert;
 import org.junit.Before;
@@ -43,8 +41,9 @@ import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransHopMeta;
@@ -52,6 +51,8 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.tableinput.TableInputMeta;
 import org.pentaho.metastore.api.IMetaStore;
+
+import junit.framework.TestCase;
 
 /**
  * Test class for combination lookup/update. HSQL is used as database in memory to get an easy playground for database
@@ -90,7 +91,8 @@ public class CombinationLookupTest extends TestCase {
     "INSERT INTO "
       + source_table + "(ORDNO, DLR_CD, DLR_NM, DLR_DESC)"
       + "VALUES (5, 'DE010004', 'Germania', 'German Distribution Center');" };
-  
+
+  @Override
   @Before
   public void setUp() throws Exception {
     KettleEnvironment.init();
@@ -101,10 +103,10 @@ public class CombinationLookupTest extends TestCase {
 
     ValueMetaInterface[] valuesMeta =
     {
-      new ValueMeta( "ID", ValueMeta.TYPE_INTEGER, 8, 0 ),
-      new ValueMeta( "DLR_CD", ValueMeta.TYPE_STRING, 8, 0 ),
-      new ValueMeta( "DLR_NM", ValueMeta.TYPE_STRING, 30, 0 ),
-      new ValueMeta( "DLR_DESC", ValueMeta.TYPE_STRING, 30, 0 ), };
+      new ValueMetaInteger( "ID", 8, 0 ),
+      new ValueMetaString( "DLR_CD", 8, 0 ),
+      new ValueMetaString( "DLR_NM", 30, 0 ),
+      new ValueMetaString( "DLR_DESC", 30, 0 ), };
 
     for ( int i = 0; i < valuesMeta.length; i++ ) {
       rm.addValueMeta( valuesMeta[i] );
@@ -118,10 +120,10 @@ public class CombinationLookupTest extends TestCase {
 
     ValueMetaInterface[] valuesMeta =
     {
-      new ValueMeta( "ORDNO", ValueMeta.TYPE_INTEGER, 8, 0 ),
-      new ValueMeta( "DLR_CD", ValueMeta.TYPE_STRING, 8, 0 ),
-      new ValueMeta( "DLR_NM", ValueMeta.TYPE_STRING, 30, 0 ),
-      new ValueMeta( "DLR_DESC", ValueMeta.TYPE_STRING, 30, 0 ), };
+      new ValueMetaInteger( "ORDNO", 8, 0 ),
+      new ValueMetaString( "DLR_CD", 8, 0 ),
+      new ValueMetaString( "DLR_NM", 30, 0 ),
+      new ValueMetaString( "DLR_DESC", 30, 0 ), };
 
     for ( int i = 0; i < valuesMeta.length; i++ ) {
       rm.addValueMeta( valuesMeta[i] );
@@ -195,7 +197,7 @@ public class CombinationLookupTest extends TestCase {
       fail( "less rows returned than expected" );
     }
   }
-  
+
   public void testUseDefaultSchemaName() throws Exception {
     String schemaName = "";
     String tableName = "tableName";
@@ -203,6 +205,7 @@ public class CombinationLookupTest extends TestCase {
     String technicalKeyField = "technicalKeyField";
 
     DatabaseMeta databaseMeta = spy( new DatabaseMeta( databasesXML[0] ) {
+      @Override
       public String getFieldDefinition( ValueMetaInterface v, String tk, String pk, boolean use_autoinc ) {
         return "someValue";
       }
@@ -226,7 +229,7 @@ public class CombinationLookupTest extends TestCase {
 
     SQLStatement sqlStatement =
         clm.getSQLStatements( new TransMeta(), stepMeta, rowMetaInterface, repository, metaStore );
-    
+
     String sql = sqlStatement.getSQL();
     Assert.assertTrue( StringUtils.countMatches( sql, schemaTable ) == 3 );
   }

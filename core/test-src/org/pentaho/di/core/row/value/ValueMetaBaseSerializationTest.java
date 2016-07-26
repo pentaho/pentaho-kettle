@@ -64,7 +64,8 @@ public class ValueMetaBaseSerializationTest {
   }
 
   private static ValueMetaBase createTestObject( int storageType ) {
-    ValueMetaBase vmb = new ValueMetaBase( "test", ValueMetaInterface.TYPE_STRING, storageType );
+    ValueMetaBase vmb = new ValueMetaBase( "test", ValueMetaInterface.TYPE_STRING );
+    vmb.setStorageType( storageType );
     vmb.setLength( 10, 5 );
     vmb.setOrigin( "origin" );
     vmb.setComments( "comments" );

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -32,8 +32,9 @@ import java.util.Date;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.gui.TextFileInputFieldInterface;
 import org.pentaho.di.core.injection.Injection;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
+import org.pentaho.di.core.row.value.ValueMetaString;
 
 /**
  * Describes a single field in a text file
@@ -130,6 +131,7 @@ public class BaseFileInputField implements Cloneable, TextFileInputFieldInterfac
     return position - field.getPosition();
   }
 
+  @Override
   public int compareTo( TextFileInputFieldInterface field ) {
     return position - field.getPosition();
   }
@@ -140,6 +142,7 @@ public class BaseFileInputField implements Cloneable, TextFileInputFieldInterfac
     return ( position == field.getPosition() );
   }
 
+  @Override
   public Object clone() {
     try {
       Object retval = super.clone();
@@ -149,6 +152,7 @@ public class BaseFileInputField implements Cloneable, TextFileInputFieldInterfac
     }
   }
 
+  @Override
   public int getPosition() {
     return position;
   }
@@ -157,14 +161,17 @@ public class BaseFileInputField implements Cloneable, TextFileInputFieldInterfac
     this.position = position;
   }
 
+  @Override
   public int getLength() {
     return length;
   }
 
+  @Override
   public void setLength( int length ) {
     this.length = length;
   }
 
+  @Override
   public String getName() {
     return name;
   }
@@ -178,7 +185,7 @@ public class BaseFileInputField implements Cloneable, TextFileInputFieldInterfac
   }
 
   public String getTypeDesc() {
-    return ValueMeta.getTypeDesc( type );
+    return ValueMetaFactory.getValueMetaName( type );
   }
 
   public void setType( int type ) {
@@ -187,7 +194,7 @@ public class BaseFileInputField implements Cloneable, TextFileInputFieldInterfac
 
   @Injection( name = "FIELD_TYPE", group = "FIELDS" )
   public void setType( String value ) {
-    this.type = ValueMeta.getType( value );
+    this.type = ValueMetaFactory.getIdForValueMeta( value );
   }
 
   public boolean isIgnored() {
@@ -219,11 +226,11 @@ public class BaseFileInputField implements Cloneable, TextFileInputFieldInterfac
   }
 
   public String getTrimTypeCode() {
-    return ValueMeta.getTrimTypeCode( trimtype );
+    return ValueMetaString.getTrimTypeCode( trimtype );
   }
 
   public String getTrimTypeDesc() {
-    return ValueMeta.getTrimTypeDesc( trimtype );
+    return ValueMetaString.getTrimTypeDesc( trimtype );
   }
 
   public void setTrimType( int trimtype ) {
@@ -232,7 +239,7 @@ public class BaseFileInputField implements Cloneable, TextFileInputFieldInterfac
 
   @Injection( name = "FIELD_TRIM_TYPE", group = "FIELDS" )
   public void setTrimType( String value ) {
-    this.trimtype = ValueMeta.getTrimTypeByCode( value );
+    this.trimtype = ValueMetaString.getTrimTypeByCode( value );
   }
 
   public String getGroupSymbol() {
@@ -295,6 +302,7 @@ public class BaseFileInputField implements Cloneable, TextFileInputFieldInterfac
     this.ifNullValue = ifNullValue;
   }
 
+  @Override
   public String toString() {
     return name + "@" + position + ":" + length;
   }
@@ -622,6 +630,7 @@ public class BaseFileInputField implements Cloneable, TextFileInputFieldInterfac
     }
   }
 
+  @Override
   public TextFileInputFieldInterface createNewInstance( String newFieldname, int x, int newlength ) {
     return new BaseFileInputField( newFieldname, x, newlength );
   }
