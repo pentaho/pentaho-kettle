@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -38,8 +38,6 @@ import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.ProgressMonitorListener;
 import org.pentaho.di.core.ProgressNullMonitorListener;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.extension.ExtensionPointHandler;
-import org.pentaho.di.core.extension.KettleExtensionPoint;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -55,6 +53,7 @@ import org.pentaho.di.repository.filerep.KettleFileRepository;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.mapping.MappingMeta;
+import org.pentaho.di.trans.steps.metainject.MetaInjectMeta;
 
 /**
  * <p>This class is used to read repository, load jobs and transformations, and export them into xml file.
@@ -364,15 +363,9 @@ public class RepositoryExporter implements IRepositoryExporterFeedback {
 
   private void convertFromFileRepository( TransMeta transMeta ) {
 
-    Object[] metaInjectObjectArray = new Object[4];
-    metaInjectObjectArray[0] = transMeta;
-    metaInjectObjectArray[1] = PKG;
-
     if ( repository instanceof KettleFileRepository ) {
 
       KettleFileRepository fileRep = (KettleFileRepository) repository;
-
-      metaInjectObjectArray[2] = fileRep;
 
       // The id of the transformation is the relative filename.
       // Setting the filename also sets internal variables needed to load the trans/job referenced.
@@ -400,13 +393,24 @@ public class RepositoryExporter implements IRepositoryExporterFeedback {
             }
           }
         }
-
-        metaInjectObjectArray[3] = stepMeta;
-
-        try {
-          ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.RepositoryExporterPatchTransStep.id, metaInjectObjectArray );
-        } catch ( KettleException ke ) {
-          log.logError( ke.getMessage(), ke );
+        if ( stepMeta.isEtlMetaInject() ) {
+          MetaInjectMeta metaInjectMeta = (MetaInjectMeta) stepMeta.getStepMetaInterface();
+          // convert to a named based reference.
+          //
+          if ( metaInjectMeta.getSpecificationMethod() == ObjectLocationSpecificationMethod.FILENAME ) {
+            try {
+              TransMeta meta =
+                  MetaInjectMeta.loadTransformationMeta( metaInjectMeta, fileRep, fileRep.metaStore, transMeta );
+              FileObject fileObject = KettleVFS.getFileObject( meta.getFilename() );
+              metaInjectMeta.setSpecificationMethod( ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME );
+              metaInjectMeta.setFileName( null );
+              metaInjectMeta.setTransName( meta.getName() );
+              metaInjectMeta.setDirectoryPath( Const.NVL( calcRepositoryDirectory( fileRep, fileObject ), "/" ) );
+            } catch ( Exception e ) {
+              log.logError( BaseMessages.getString( PKG, "Repository.Exporter.Log.UnableToLoadTransInMDI",
+                  metaInjectMeta.getName() ), e );
+            }
+          }
         }
       }
     }

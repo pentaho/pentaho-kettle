@@ -16,7 +16,6 @@
   
   <modules>
     <module>repositories-plugin</module>
-    <module>meta-inject-plugin</module>
   </modules>
   
 </project>
