@@ -430,7 +430,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
     stepPerformanceSnapshotSeqNr = new AtomicInteger( 0 );
     lastWrittenStepPerformanceSequenceNr = 0;
 
-    activeSubtransformations = new HashMap<String, Trans>();
+    activeSubtransformations = new ConcurrentHashMap<>();
     activeSubjobs = new HashMap<String, Job>();
 
     resultRows = new ArrayList<RowMetaAndData>();
@@ -5084,12 +5084,28 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
   }
 
   /**
-   * Gets the active sub-transformations.
+   *  Use:
+   *  {@link #addActiveSubTransformation(String, Trans),
+   *  {@link #getActiveSubTransformation(String)},
+   *  {@link #removeActiveSubTransformation(String)}
    *
-   * @return a map (by name) of the active sub-transformations
+   *  instead
    */
+  @Deprecated
   public Map<String, Trans> getActiveSubtransformations() {
     return activeSubtransformations;
+  }
+
+  public void addActiveSubTransformation( final String subTransName, Trans subTrans ) {
+    activeSubtransformations.put( subTransName, subTrans );
+  }
+
+  public Trans removeActiveSubTransformation( final String subTransName ) {
+    return activeSubtransformations.remove( subTransName );
+  }
+
+  public Trans getActiveSubTransformation( final String subTransName ) {
+    return activeSubtransformations.get( subTransName );
   }
 
   /**

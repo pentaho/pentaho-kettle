@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2014 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -139,7 +139,9 @@ public class SimpleMappingTest {
     smp.dispose( stepMockHelper.processRowsStepMetaInterface, simpleMpData );
     verify( stepMockHelper.trans, times( 1 ) ).isFinished();
     verify( stepMockHelper.trans, never() ).waitUntilFinished();
-    verify( stepMockHelper.trans, never() ).getActiveSubtransformations();
+    verify( stepMockHelper.trans, never() ).addActiveSubTransformation( anyString(), any( Trans.class ) );
+    verify( stepMockHelper.trans, never() ).removeActiveSubTransformation( anyString() );
+    verify( stepMockHelper.trans, never() ).getActiveSubTransformation( anyString() );
     verify( stepMockHelper.trans, times( 1 ) ).getErrors();
     assertTrue( "The step contains the errors", smp.getErrors() == errorCount );
 
