@@ -170,6 +170,10 @@
           <artifactId>xbean</artifactId>
           <groupId>org.apache.xbean</groupId>
         </exclusion>
+        <exclusion>
+          <groupId>xerces</groupId>
+          <artifactId>xerces</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
   </dependencies>
