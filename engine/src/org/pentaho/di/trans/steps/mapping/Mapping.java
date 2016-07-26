@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -496,7 +496,7 @@ public class Mapping extends BaseStep implements StepInterface {
     // Finally, add the mapping transformation to the active sub-transformations
     // map in the parent transformation
     //
-    getTrans().getActiveSubtransformations().put( getStepname(), getData().getMappingTrans() );
+    getTrans().addActiveSubTransformation( getStepname(), getData().getMappingTrans() );
   }
 
   @VisibleForTesting StepInterface[] pickupTargetStepsFor( MappingIODefinition outputDefinition )
@@ -623,7 +623,7 @@ public class Mapping extends BaseStep implements StepInterface {
 
       // Remove it from the list of active sub-transformations...
       //
-      getTrans().getActiveSubtransformations().remove( getStepname() );
+      getTrans().removeActiveSubTransformation( getStepname() );
 
       // See if there was an error in the sub-transformation, in that case, flag error etc.
       if ( getData().getMappingTrans().getErrors() > 0 ) {

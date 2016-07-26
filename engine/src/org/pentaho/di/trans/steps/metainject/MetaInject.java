@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -269,7 +269,7 @@ public class MetaInject extends BaseStep implements StepInterface {
       // Finally, add the mapping transformation to the active sub-transformations
       // map in the parent transformation
       //
-      getTrans().getActiveSubtransformations().put( getStepname(), injectTrans );
+      getTrans().addActiveSubTransformation( getStepname(), injectTrans );
 
       if ( !Const.isEmpty( meta.getSourceStepName() ) ) {
         StepInterface stepInterface = injectTrans.getStepInterface( meta.getSourceStepName(), 0 );
