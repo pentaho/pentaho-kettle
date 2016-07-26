@@ -196,7 +196,7 @@ public class TransExecutor extends BaseStep implements StepInterface {
     passParametersToTrans();
 
     // keep track for drill down in Spoon...
-    getTrans().getActiveSubtransformations().put( getStepname(), executorTrans );
+    getTrans().addActiveSubTransformation( getStepname(), executorTrans );
 
     Result result = new Result();
     result.setRows( transExecutorData.groupBuffer );
