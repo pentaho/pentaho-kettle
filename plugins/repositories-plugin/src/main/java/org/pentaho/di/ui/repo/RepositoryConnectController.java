@@ -60,6 +60,7 @@ public class RepositoryConnectController {
     KettleLogStore.getLogChannelInterfaceFactory().create( RepositoryConnectController.class );
 
   private RepositoryMeta currentRepository;
+  private RepositoryMeta connectedRepository;
   private RepositoriesMeta repositoriesMeta;
   private PluginRegistry pluginRegistry;
   private Spoon spoon;
@@ -116,7 +117,7 @@ public class RepositoryConnectController {
           return false;
         }
         ( (AbstractRepository) repository ).create();
-        spoon.setRepository( repository );
+        setConnectedRepository( repositoryMeta );
       }
     } catch ( KettleException ke ) {
       log.logError( "Unable to load repository type", ke );
@@ -197,6 +198,7 @@ public class RepositoryConnectController {
         spoon.closeAllJobsAndTransformations( true );
       }
       spoon.setRepository( repository );
+      setConnectedRepository( repositoryMeta );
       fireListeners();
       jsonObject.put( "success", true );
     } catch ( KettleException ke ) {
@@ -218,6 +220,7 @@ public class RepositoryConnectController {
       if ( getSpoon().getRepositoryName() != null && getSpoon().getRepositoryName()
         .equals( repositoryMeta.getName() ) ) {
         getSpoon().closeRepository();
+        setConnectedRepository( null );
       }
       repositoriesMeta.removeRepository( index );
       save();
@@ -263,6 +266,14 @@ public class RepositoryConnectController {
 
   public RepositoryMeta getCurrentRepository() {
     return this.currentRepository;
+  }
+
+  public RepositoryMeta getConnectedRepository() {
+    return connectedRepository;
+  }
+
+  public void setConnectedRepository( RepositoryMeta connectedRepository ) {
+    this.connectedRepository = connectedRepository;
   }
 
   public RepositoryMeta getDefaultRepositoryMeta() {
