@@ -695,7 +695,7 @@ public class TransPainter extends BasePainter {
     String name = stepMeta.getName();
 
     if ( stepMeta.isSelected() ) {
-      gc.setLineWidth( linewidth + 2 );
+      gc.setLineWidth( linewidth + 1 );
     } else {
       gc.setLineWidth( linewidth );
     }
@@ -713,14 +713,25 @@ public class TransPainter extends BasePainter {
     } else {
       gc.setForeground( EColor.CRYSTAL );
     }
+    if ( stepMeta.isSelected() ) {
+      gc.setForeground( 0, 93, 166 );
+    }
     gc.drawRoundRectangle( x - 1, y - 1, iconsize + 1, iconsize + 1, 8, 8 );
 
     Point namePosition = getNamePosition( name, screen, iconsize );
 
+    if ( stepMeta.isSelected() ) {
+      int tmpAlpha = gc.getAlpha();
+      gc.setAlpha( 192 );
+      gc.setBackground( 216, 230, 241 );
+      gc.fillRoundRectangle( namePosition.x - 8, namePosition.y - 2, gc.textExtent( name ).x + 15, 25,
+          BasePainter.CORNER_RADIUS_5 + 15, BasePainter.CORNER_RADIUS_5 + 15 );
+      gc.setAlpha( tmpAlpha );
+    }
+
     gc.setForeground( EColor.BLACK );
     gc.setFont( EFont.GRAPH );
-    gc.drawText( name, namePosition.x, namePosition.y, true );
-
+    gc.drawText( name, namePosition.x, namePosition.y + 2, true );
     boolean partitioned = false;
 
     StepPartitioningMeta meta = stepMeta.getStepPartitioningMeta();
