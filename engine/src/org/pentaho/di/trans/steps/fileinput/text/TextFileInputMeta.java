@@ -1307,6 +1307,21 @@ public class TextFileInputMeta extends
   }
 
   /**
+   * @return the length
+   */
+  public String getLength() {
+    return content.length;
+  }
+
+  /**
+   * @param length
+   *          the length to set
+   */
+  public void setLength( String length ) {
+    content.length = length;
+  }
+
+  /**
    * Required for the Data Lineage.
    */
   public boolean isAcceptingFilenames() {

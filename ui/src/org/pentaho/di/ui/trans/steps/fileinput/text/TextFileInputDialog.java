@@ -1506,8 +1506,8 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
     wLength = new CCombo( wContentComp, SWT.BORDER | SWT.READ_ONLY );
     wLength.setText( BaseMessages.getString( PKG, "TextFileInputDialog.Length.Label" ) );
     props.setLook( wLength );
-    wLength.add( "Characters" );
-    wLength.add( "Bytes" );
+    wLength.add( BaseMessages.getString( PKG, "TextFileInputDialog.Length.Characters" ) );
+    wLength.add( BaseMessages.getString( PKG, "TextFileInputDialog.Length.Bytes" ) );
     wLength.select( 0 );
     wLength.addModifyListener( lsMod );
     fdLength = new FormData();
@@ -2279,7 +2279,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
       wFormat.setText( meta.content.fileFormat );
     }
     if ( meta.content.length != null ) {
-        wLength.setText( meta.content.length );
+      wLength.setText( meta.content.length );
     }
     wLimit.setText( "" + meta.content.rowLimit );
 
