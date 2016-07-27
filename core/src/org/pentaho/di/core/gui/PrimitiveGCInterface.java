@@ -120,4 +120,6 @@ public interface PrimitiveGCInterface {
   public void switchForegroundBackgroundColors();
 
   public Point getArea();
+  
+  public void fillOval( int x, int y, int width, int height );
 }
