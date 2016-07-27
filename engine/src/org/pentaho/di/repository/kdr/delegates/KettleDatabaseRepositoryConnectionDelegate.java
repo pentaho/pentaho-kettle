@@ -32,6 +32,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Counter;
@@ -94,7 +95,7 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
 
   protected boolean useBatchProcessing;
 
-  protected Map<String, PreparedStatement> sqlMap;
+  protected ConcurrentHashMap<String, PreparedStatement> sqlMap;
 
   private class StepAttributeComparator implements Comparator<Object[]> {
 
@@ -114,7 +115,7 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
     this.databaseMeta = databaseMeta;
     this.database = new Database( loggingObject, databaseMeta );
 
-    sqlMap = new HashMap<String, PreparedStatement>();
+    sqlMap = new ConcurrentHashMap<>();
 
     useBatchProcessing = true; // defaults to true;
 
@@ -389,11 +390,7 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
         + quote( KettleDatabaseRepository.FIELD_STEP_ATTRIBUTE_CODE ) + ", "
         + quote( KettleDatabaseRepository.FIELD_STEP_ATTRIBUTE_NR );
 
-    PreparedStatement ps = sqlMap.get( sql );
-    if ( ps == null ) {
-      ps = database.prepareSQL( sql );
-      sqlMap.put( sql, ps );
-    }
+    PreparedStatement ps = getPreparedStatement( sql );
 
     RowMetaAndData parameter = getParameterMetaData( id_transformation );
     ResultSet resultSet = database.openQuery( ps, parameter.getRowMeta(), parameter.getData() );
@@ -1561,11 +1558,7 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
   public ObjectId[] getIDs( String sql, ObjectId... objectId ) throws KettleException {
     // Get the prepared statement
     //
-    PreparedStatement ps = sqlMap.get( sql );
-    if ( ps == null ) {
-      ps = database.prepareSQL( sql );
-      sqlMap.put( sql, ps );
-    }
+    PreparedStatement ps = getPreparedStatement( sql );
 
     // Assemble the parameters (if any)
     //
@@ -1595,11 +1588,7 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
   public String[] getStrings( String sql, ObjectId... objectId ) throws KettleException {
     // Get the prepared statement
     //
-    PreparedStatement ps = sqlMap.get( sql );
-    if ( ps == null ) {
-      ps = database.prepareSQL( sql );
-      sqlMap.put( sql, ps );
-    }
+    PreparedStatement ps = getPreparedStatement( sql );
 
     // Assemble the parameters (if any)
     //
@@ -1807,11 +1796,7 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
 
     // Get the prepared statement
     //
-    PreparedStatement ps = sqlMap.get( sql );
-    if ( ps == null ) {
-      ps = database.prepareSQL( sql );
-      sqlMap.put( sql, ps );
-    }
+    PreparedStatement ps = getPreparedStatement( sql );
 
     // Assemble the parameter (if any)
     //
@@ -1882,11 +1867,7 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
 
     // Get the prepared statement
     //
-    PreparedStatement ps = sqlMap.get( sql );
-    if ( ps == null ) {
-      ps = database.prepareSQL( sql );
-      sqlMap.put( sql, ps );
-    }
+    PreparedStatement ps = getPreparedStatement( sql );
 
     // Assemble the parameter (if any)
     //
@@ -1917,6 +1898,15 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
     }
   }
 
+  private PreparedStatement getPreparedStatement( String sql ) throws KettleDatabaseException {
+    PreparedStatement ps = sqlMap.get( sql );
+    if ( ps == null ) {
+      ps = database.prepareSQL( sql );
+      sqlMap.putIfAbsent( sql, ps );
+    }
+    return ps;
+  }
+
   public RowMetaAndData getParameterMetaData( ObjectId... ids ) throws KettleException {
     RowMetaInterface parameterMeta = new RowMeta();
     Object[] parameterData = new Object[ids.length];
@@ -1929,11 +1919,7 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
 
   public void performDelete( String sql, ObjectId... ids ) throws KettleException {
     try {
-      PreparedStatement ps = sqlMap.get( sql );
-      if ( ps == null ) {
-        ps = database.prepareSQL( sql );
-        sqlMap.put( sql, ps );
-      }
+      PreparedStatement ps = getPreparedStatement( sql );
 
       RowMetaAndData param = getParameterMetaData( ids );
       database.setValues( param, ps );
