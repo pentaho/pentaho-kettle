@@ -695,7 +695,7 @@ public class TransPainter extends BasePainter {
     String name = stepMeta.getName();
 
     if ( stepMeta.isSelected() ) {
-      gc.setLineWidth( linewidth + 1 );
+      gc.setLineWidth( linewidth + 2 );
     } else {
       gc.setLineWidth( linewidth );
     }
