@@ -33,6 +33,7 @@ import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
+import java.util.concurrent.Callable;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -99,6 +100,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.extension.ExtensionPointHandler;
 import org.pentaho.di.core.extension.KettleExtensionPoint;
 import org.pentaho.di.core.gui.AreaOwner;
+import org.pentaho.di.core.gui.AreaOwner.AreaType;
 import org.pentaho.di.core.gui.GCInterface;
 import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.gui.Redrawable;
@@ -156,6 +158,8 @@ import org.pentaho.di.ui.spoon.TabMapEntry.ObjectType;
 import org.pentaho.di.ui.spoon.XulSpoonResourceBundle;
 import org.pentaho.di.ui.spoon.XulSpoonSettingsManager;
 import org.pentaho.di.ui.spoon.dialog.NotePadDialog;
+import org.pentaho.di.ui.spoon.trans.DelayListener;
+import org.pentaho.di.ui.spoon.trans.DelayTimer;
 import org.pentaho.di.ui.spoon.trans.TransGraph;
 import org.pentaho.di.ui.xul.KettleXulLoader;
 import org.pentaho.ui.xul.XulDomContainer;
@@ -287,6 +291,8 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
   /** A map that keeps track of which log line was written by which job entry */
   private Map<JobEntryCopy, String> entryLogMap;
 
+  private Map<JobEntryCopy, DelayTimer> delayTimers;
+
   private JobEntryCopy startHopEntry;
   private Point endHopLocation;
 
@@ -308,6 +314,7 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
     this.props = PropsUI.getInstance();
     this.areaOwners = new ArrayList<AreaOwner>();
     this.mouseOverEntries = new ArrayList<JobEntryCopy>();
+    this.delayTimers = new HashMap<JobEntryCopy, DelayTimer>();
 
     jobLogDelegate = new JobLogDelegate( spoon, this );
     jobHistoryDelegate = new JobHistoryDelegate( spoon, this );
@@ -702,6 +709,7 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
           case JOB_ENTRY_MINI_ICON_EDIT:
             clearSettings();
             currentEntry = (JobEntryCopy) areaOwner.getOwner();
+            stopEntryMouseOverDelayTimer( currentEntry );
             editEntry( currentEntry );
             break;
 
@@ -825,6 +833,7 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
         jobMeta.unselectAll();
         selectInRect( jobMeta, selectionRegion );
         selectionRegion = null;
+        stopEntryMouseOverDelayTimers();
         redraw();
       } else {
         // Clicked on an icon?
@@ -1023,6 +1032,25 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
     }
     Point note = new Point( real.x - noteoffset.x, real.y - noteoffset.y );
 
+    // Moved over an area?
+    //
+    AreaOwner areaOwner = getVisibleAreaOwner( real.x, real.y );
+    if ( areaOwner != null ) {
+      JobEntryCopy jobEntryCopy = null;
+      switch ( areaOwner.getAreaType() ) {
+        case JOB_ENTRY_ICON:
+          jobEntryCopy = (JobEntryCopy) areaOwner.getOwner();
+          resetDelayTimer( jobEntryCopy );
+          break;
+        case MINI_ICONS_BALLOON: // Give the timer a bit more time
+          jobEntryCopy = (JobEntryCopy) areaOwner.getOwner();
+          resetDelayTimer( jobEntryCopy );
+          break;
+        default:
+          break;
+      }
+    }
+
     //
     // First see if the icon we clicked on was selected.
     // If the icon was not selected, we should un-select all other
@@ -1086,6 +1114,7 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
         for ( int i = 0; i < selectedEntries.size(); i++ ) {
           JobEntryCopy jobEntryCopy = selectedEntries.get( i );
           PropsUI.setLocation( jobEntryCopy, jobEntryCopy.getLocation().x + dx, jobEntryCopy.getLocation().y + dy );
+          stopEntryMouseOverDelayTimer( jobEntryCopy );
         }
       }
       // Adjust location of selected hops...
@@ -1172,12 +1201,34 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
   }
 
   public void mouseHover( MouseEvent e ) {
+
+    boolean tip = true;
+
     // toolTip.hide();
     Point real = screen2real( e.x, e.y );
-    // Show a tool tip upon mouse-over of an object on the canvas
-    //
-    if ( !helpTip.isVisible() ) {
-      setToolTip( real.x, real.y, e.x, e.y );
+
+    AreaOwner areaOwner = getVisibleAreaOwner( real.x, real.y );
+    if ( areaOwner != null ) {
+      switch ( areaOwner.getAreaType() ) {
+        case JOB_ENTRY_ICON:
+          JobEntryCopy jobEntryCopy = (JobEntryCopy) areaOwner.getOwner();
+          if ( !jobEntryCopy.isMissing() && !mouseOverEntries.contains( jobEntryCopy ) ) {
+            addEntryMouseOverDelayTimer( jobEntryCopy );
+            redraw();
+            tip = false;
+          }
+          break;
+        default:
+          break;
+      }
+    }
+
+    if ( tip ) {
+      // Show a tool tip upon mouse-over of an object on the canvas
+      //
+      if ( !helpTip.isVisible() ) {
+        setToolTip( real.x, real.y, e.x, e.y );
+      }
     }
   }
 
@@ -1258,6 +1309,66 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
       }
     }
     return null;
+  }
+
+  private synchronized void addEntryMouseOverDelayTimer( final JobEntryCopy jobEntryCopy ) {
+
+    // Don't add the same mouse over delay timer twice...
+    //
+    if ( mouseOverEntries.contains( jobEntryCopy ) ) {
+      return;
+    }
+
+    mouseOverEntries.add( jobEntryCopy );
+
+    DelayTimer delayTimer = new DelayTimer( 500, new DelayListener() {
+      public void expired() {
+        mouseOverEntries.remove( jobEntryCopy );
+        delayTimers.remove( jobEntryCopy );
+        asyncRedraw();
+      }
+    }, new Callable<Boolean>() {
+
+      @Override
+      public Boolean call() throws Exception {
+        Point cursor = getLastMove();
+        if ( cursor != null ) {
+          AreaOwner areaOwner = getVisibleAreaOwner( cursor.x, cursor.y );
+          if ( areaOwner != null ) {
+            AreaType areaType = areaOwner.getAreaType();
+            if ( areaType == AreaType.JOB_ENTRY_ICON || areaType.belongsToJobContextMenu() ) {
+              JobEntryCopy selectedJobEntryCopy = (JobEntryCopy) areaOwner.getOwner();
+              return selectedJobEntryCopy == jobEntryCopy;
+            }
+          }
+        }
+        return false;
+      }
+    } );
+
+    new Thread( delayTimer ).start();
+
+    delayTimers.put( jobEntryCopy, delayTimer );
+  }
+
+  private void stopEntryMouseOverDelayTimer( final JobEntryCopy jobEntryCopy ) {
+    DelayTimer delayTimer = delayTimers.get( jobEntryCopy );
+    if ( delayTimer != null ) {
+      delayTimer.stop();
+    }
+  }
+
+  private void stopEntryMouseOverDelayTimers() {
+    for ( DelayTimer timer : delayTimers.values() ) {
+      timer.stop();
+    }
+  }
+
+  private void resetDelayTimer( JobEntryCopy jobEntryCopy ) {
+    DelayTimer delayTimer = delayTimers.get( jobEntryCopy );
+    if ( delayTimer != null ) {
+      delayTimer.reset();
+    }
   }
 
   protected void asyncRedraw() {
@@ -1516,6 +1627,8 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
     for ( int i = 0; i < jobMeta.nrJobHops(); i++ ) {
       jobMeta.getJobHop( i ).setSplit( false );
     }
+
+    stopEntryMouseOverDelayTimers();
   }
 
   public Point getRealPosition( Composite canvas, int x, int y ) {
@@ -2213,21 +2326,25 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
         case JOB_ENTRY_MINI_ICON_INPUT:
           tip.append( BaseMessages.getString( PKG, "JobGraph.EntryInputConnector.Tooltip" ) );
           tipImage = GUIResource.getInstance().getImageHopInput();
+          resetDelayTimer( (JobEntryCopy) areaOwner.getOwner() );
           break;
 
         case JOB_ENTRY_MINI_ICON_OUTPUT:
           tip.append( BaseMessages.getString( PKG, "JobGraph.EntryOutputConnector.Tooltip" ) );
           tipImage = GUIResource.getInstance().getImageHopOutput();
+          resetDelayTimer( (JobEntryCopy) areaOwner.getOwner() );
           break;
 
         case JOB_ENTRY_MINI_ICON_EDIT:
           tip.append( BaseMessages.getString( PKG, "JobGraph.EditStep.Tooltip" ) );
           tipImage = GUIResource.getInstance().getImageEdit();
+          resetDelayTimer( (JobEntryCopy) areaOwner.getOwner() );
           break;
 
         case JOB_ENTRY_MINI_ICON_CONTEXT:
           tip.append( BaseMessages.getString( PKG, "JobGraph.ShowMenu.Tooltip" ) );
           tipImage = GUIResource.getInstance().getImageContextMenu();
+          resetDelayTimer( (JobEntryCopy) areaOwner.getOwner() );
           break;
 
         case JOB_ENTRY_RESULT_FAILURE:
