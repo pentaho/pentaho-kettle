@@ -1439,6 +1439,10 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 
     ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.TransformationStart.id, this );
 
+    if ( steps.isEmpty() ) {
+      fireTransFinishedListeners();
+    }
+
     if ( log.isDetailed() ) {
       log
         .logDetailed( BaseMessages
@@ -3728,8 +3732,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
       if ( executionConfiguration.isClusterPosting() ) {
         if ( executionConfiguration.isClusterPreparing() ) {
           // Prepare the master...
-          if ( masterSteps.size() > 0 ) // If there is something that needs to be done on the master...
-          {
+          if ( masterSteps.size() > 0 ) {
+            // If there is something that needs to be done on the master...
             String carteObjectId = carteObjectMap.get( master );
             String masterReply =
               masterServer.execService( PrepareExecutionTransServlet.CONTEXT_PATH
@@ -3763,8 +3767,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 
         if ( executionConfiguration.isClusterStarting() ) {
           // Start the master...
-          if ( masterSteps.size() > 0 ) // If there is something that needs to be done on the master...
-          {
+          if ( masterSteps.size() > 0 ) {
+            // If there is something that needs to be done on the master...
             String carteObjectId = carteObjectMap.get( master );
             String masterReply =
               masterServer.execService( StartExecutionTransServlet.CONTEXT_PATH
@@ -4306,8 +4310,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
    *          the new internal kettle variables
    */
   public void setInternalKettleVariables( VariableSpace var ) {
-    if ( transMeta != null && !Const.isEmpty( transMeta.getFilename() ) ) // we have a finename that's defined.
-    {
+    if ( transMeta != null && !Const.isEmpty( transMeta.getFilename() ) ) {
+      // we have a finename that's defined.
       try {
         FileObject fileObject = KettleVFS.getFileObject( transMeta.getFilename(), var );
         FileName fileName = fileObject.getName();
