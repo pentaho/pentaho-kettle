@@ -157,6 +157,7 @@ public class TransPreviewDelegate extends SpoonDelegate implements XulEventHandl
 
     transPreviewComposite = new Composite( transGraph.extraViewTabFolder, SWT.NONE );
     transPreviewComposite.setLayout( new FormLayout() );
+    PropsUI.getInstance().setLook( transPreviewComposite, Props.WIDGET_STYLE_TOOLBAR );
 
     addToolBar();
 
@@ -176,7 +177,11 @@ public class TransPreviewDelegate extends SpoonDelegate implements XulEventHandl
     FormData fdPreview = new FormData();
     fdPreview.left = new FormAttachment( 0, 0 );
     fdPreview.right = new FormAttachment( 100, 0 );
-    fdPreview.top = new FormAttachment( (Control) toolbar.getManagedObject(), 0 );
+    if ( Const.isLinux() ) {
+      fdPreview.top = new FormAttachment( (Control) toolbar.getManagedObject(), 4 );
+    } else {
+      fdPreview.top = new FormAttachment( (Control) toolbar.getManagedObject(), 10 );
+    }
     fdPreview.bottom = new FormAttachment( 100, 0 );
     previewComposite.setLayoutData( fdPreview );
 
@@ -217,9 +222,9 @@ public class TransPreviewDelegate extends SpoonDelegate implements XulEventHandl
       lastRadio = (SwtRadio) xulDomContainer.getDocumentRoot().getElementById( "preview-last" );
       offRadio = (SwtRadio) xulDomContainer.getDocumentRoot().getElementById( "preview-off" );
 
-      PropsUI.getInstance().setLook( (Control) firstRadio.getManagedObject() );
-      PropsUI.getInstance().setLook( (Control) lastRadio.getManagedObject() );
-      PropsUI.getInstance().setLook( (Control) offRadio.getManagedObject() );
+      PropsUI.getInstance().setLook( (Control) firstRadio.getManagedObject(), Props.WIDGET_STYLE_TOOLBAR );
+      PropsUI.getInstance().setLook( (Control) lastRadio.getManagedObject(), Props.WIDGET_STYLE_TOOLBAR );
+      PropsUI.getInstance().setLook( (Control) offRadio.getManagedObject(), Props.WIDGET_STYLE_TOOLBAR );
 
     } catch ( Throwable t ) {
       log.logError( toString(), Const.getStackTracker( t ) );
