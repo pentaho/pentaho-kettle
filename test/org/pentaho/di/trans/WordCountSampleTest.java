@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,6 +22,9 @@
 
 package org.pentaho.di.trans;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,14 +37,12 @@ import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.trans.TransMeta.TransformationType;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMetaDataCombi;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 
 public class WordCountSampleTest {
 
@@ -179,7 +180,7 @@ public class WordCountSampleTest {
     RowMetaInterface rm = new RowMeta();
 
     ValueMetaInterface[] valuesMeta =
-      { new ValueMeta( "key", ValueMeta.TYPE_STRING ), new ValueMeta( "value", ValueMeta.TYPE_STRING ), };
+      { new ValueMetaString( "key" ), new ValueMetaString( "value" ), };
 
     for ( int i = 0; i < valuesMeta.length; i++ ) {
       rm.addValueMeta( valuesMeta[ i ] );
@@ -203,7 +204,7 @@ public class WordCountSampleTest {
     RowMetaInterface rm = new RowMeta();
 
     ValueMetaInterface[] valuesMeta =
-      { new ValueMeta( "key", ValueMeta.TYPE_STRING ), new ValueMeta( "value", ValueMeta.TYPE_INTEGER ), };
+      { new ValueMetaString( "key" ), new ValueMetaInteger( "value" ), };
 
     for ( ValueMetaInterface aValuesMeta : valuesMeta ) {
       rm.addValueMeta( aValuesMeta );

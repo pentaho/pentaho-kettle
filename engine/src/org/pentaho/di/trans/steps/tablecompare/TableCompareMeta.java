@@ -33,8 +33,8 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -402,33 +402,33 @@ public class TableCompareMeta extends BaseStepMeta implements StepMetaInterface 
         PKG, "TableCompareMeta.Exception.NrErrorsRightJoinFieldNotSpecified" ) );
     }
 
-    ValueMetaInterface nrErrorsValueMeta = new ValueMeta( nrErrorsField, ValueMetaInterface.TYPE_INTEGER );
+    ValueMetaInterface nrErrorsValueMeta = new ValueMetaInteger( nrErrorsField );
     nrErrorsValueMeta.setLength( 9 );
     nrErrorsValueMeta.setOrigin( origin );
     inputRowMeta.addValueMeta( nrErrorsValueMeta );
 
     ValueMetaInterface nrRecordsReference =
-      new ValueMeta( nrRecordsReferenceField, ValueMetaInterface.TYPE_INTEGER );
+      new ValueMetaInteger( nrRecordsReferenceField );
     nrRecordsReference.setLength( 9 );
     nrRecordsReference.setOrigin( origin );
     inputRowMeta.addValueMeta( nrRecordsReference );
 
-    ValueMetaInterface nrRecordsCompare = new ValueMeta( nrRecordsCompareField, ValueMetaInterface.TYPE_INTEGER );
+    ValueMetaInterface nrRecordsCompare = new ValueMetaInteger( nrRecordsCompareField );
     nrRecordsCompare.setLength( 9 );
     nrRecordsCompare.setOrigin( origin );
     inputRowMeta.addValueMeta( nrRecordsCompare );
 
-    ValueMetaInterface nrErrorsLeft = new ValueMeta( nrErrorsLeftJoinField, ValueMetaInterface.TYPE_INTEGER );
+    ValueMetaInterface nrErrorsLeft = new ValueMetaInteger( nrErrorsLeftJoinField );
     nrErrorsLeft.setLength( 9 );
     nrErrorsLeft.setOrigin( origin );
     inputRowMeta.addValueMeta( nrErrorsLeft );
 
-    ValueMetaInterface nrErrorsInner = new ValueMeta( nrErrorsInnerJoinField, ValueMetaInterface.TYPE_INTEGER );
+    ValueMetaInterface nrErrorsInner = new ValueMetaInteger( nrErrorsInnerJoinField );
     nrErrorsInner.setLength( 9 );
     nrErrorsInner.setOrigin( origin );
     inputRowMeta.addValueMeta( nrErrorsInner );
 
-    ValueMetaInterface nrErrorsRight = new ValueMeta( nrErrorsRightJoinField, ValueMetaInterface.TYPE_INTEGER );
+    ValueMetaInterface nrErrorsRight = new ValueMetaInteger( nrErrorsRightJoinField );
     nrErrorsRight.setLength( 9 );
     nrErrorsRight.setOrigin( origin );
     inputRowMeta.addValueMeta( nrErrorsRight );

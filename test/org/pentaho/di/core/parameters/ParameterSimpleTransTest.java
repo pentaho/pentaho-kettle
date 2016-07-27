@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -26,8 +26,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import junit.framework.TestCase;
-
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleValueException;
@@ -35,8 +33,8 @@ import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.trans.RowStepCollector;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransHopMeta;
@@ -45,6 +43,9 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.dummytrans.DummyTransMeta;
 import org.pentaho.di.trans.steps.getvariable.GetVariableMeta;
+import org.pentaho.di.trans.steps.getvariable.GetVariableMeta.FieldDefinition;
+
+import junit.framework.TestCase;
 
 /**
  * Test class for parameters in transformations.
@@ -56,7 +57,7 @@ public class ParameterSimpleTransTest extends TestCase {
     RowMetaInterface rm = new RowMeta();
 
     ValueMetaInterface[] valuesMeta =
-    { new ValueMeta( "PARAM1", ValueMeta.TYPE_STRING ), new ValueMeta( "PARAM2", ValueMeta.TYPE_STRING ), };
+    { new ValueMetaString( "PARAM1" ), new ValueMetaString( "PARAM2" ), };
 
     for ( int i = 0; i < valuesMeta.length; i++ ) {
       rm.addValueMeta( valuesMeta[i] );
@@ -81,7 +82,7 @@ public class ParameterSimpleTransTest extends TestCase {
     RowMetaInterface rm = new RowMeta();
 
     ValueMetaInterface[] valuesMeta =
-    { new ValueMeta( "PARAM1", ValueMeta.TYPE_STRING ), new ValueMeta( "PARAM2", ValueMeta.TYPE_STRING ), };
+    { new ValueMetaString( "PARAM1" ), new ValueMetaString( "PARAM2" ), };
 
     for ( int i = 0; i < valuesMeta.length; i++ ) {
       rm.addValueMeta( valuesMeta[i] );
@@ -107,8 +108,8 @@ public class ParameterSimpleTransTest extends TestCase {
 
     ValueMetaInterface[] valuesMeta =
     {
-      new ValueMeta( "${JAVA_HOME}", ValueMeta.TYPE_STRING ),
-      new ValueMeta( "PARAM2", ValueMeta.TYPE_STRING ), };
+      new ValueMetaString( "${JAVA_HOME}" ),
+      new ValueMetaString( "PARAM2" ), };
 
     for ( int i = 0; i < valuesMeta.length; i++ ) {
       rm.addValueMeta( valuesMeta[i] );
@@ -133,7 +134,7 @@ public class ParameterSimpleTransTest extends TestCase {
     RowMetaInterface rm = new RowMeta();
 
     ValueMetaInterface[] valuesMeta =
-    { new ValueMeta( "PARAM1", ValueMeta.TYPE_STRING ), new ValueMeta( "PARAM2", ValueMeta.TYPE_STRING ), };
+    { new ValueMetaString( "PARAM1" ), new ValueMetaString( "PARAM2" ), };
 
     for ( int i = 0; i < valuesMeta.length; i++ ) {
       rm.addValueMeta( valuesMeta[i] );
@@ -158,7 +159,7 @@ public class ParameterSimpleTransTest extends TestCase {
     RowMetaInterface rm = new RowMeta();
 
     ValueMetaInterface[] valuesMeta =
-    { new ValueMeta( "PARAM1", ValueMeta.TYPE_STRING ), new ValueMeta( "PARAM2", ValueMeta.TYPE_STRING ), };
+    { new ValueMetaString( "PARAM1" ), new ValueMetaString( "PARAM2" ), };
 
     for ( int i = 0; i < valuesMeta.length; i++ ) {
       rm.addValueMeta( valuesMeta[i] );
@@ -254,25 +255,31 @@ public class ParameterSimpleTransTest extends TestCase {
     //
     String[] fieldName = { "PARAM1", "PARAM2" };
     String[] varName = { "${Param1}", "%%PARAM2%%" };
-    int[] fieldType = { ValueMeta.TYPE_STRING, ValueMeta.TYPE_STRING };
+    int[] fieldType = { ValueMetaInterface.TYPE_STRING, ValueMetaInterface.TYPE_STRING };
     int[] length = { -1, -1 };
     int[] precision = { -1, -1 };
     String[] format = { "", "" };
     String[] currency = { "", "" };
     String[] decimal = { "", "" };
     String[] grouping = { "", "" };
-    int[] trimType = { ValueMeta.TRIM_TYPE_NONE, ValueMeta.TRIM_TYPE_NONE };
+    int[] trimType = { ValueMetaInterface.TRIM_TYPE_NONE, ValueMetaInterface.TRIM_TYPE_NONE };
 
-    gvm.setFieldName( fieldName );
-    gvm.setVariableString( varName );
-    gvm.setFieldType( fieldType );
-    gvm.setFieldLength( length );
-    gvm.setFieldPrecision( precision );
-    gvm.setFieldFormat( format );
-    gvm.setCurrency( currency );
-    gvm.setDecimal( decimal );
-    gvm.setGroup( grouping );
-    gvm.setTrimType( trimType );
+    FieldDefinition[] fields = new FieldDefinition[fieldName.length];
+    for ( int i = 0; i < fields.length; i++ ) {
+      FieldDefinition field = new FieldDefinition();
+      field.setFieldName( fieldName[i] );
+      field.setVariableString( varName[i] );
+      field.setFieldType( fieldType[i] );
+      field.setFieldLength( length[i] );
+      field.setFieldPrecision( precision[i] );
+      field.setFieldFormat( format[i] );
+      field.setCurrency( currency[i] );
+      field.setDecimal( decimal[i] );
+      field.setGroup( grouping[i] );
+      field.setTrimType( trimType[i] );
+      fields[i] = field;
+    }
+    gvm.setFieldDefinitions( fields );
 
     //
     // Create a dummy step 1
@@ -344,25 +351,31 @@ public class ParameterSimpleTransTest extends TestCase {
     //
     String[] fieldName = { "Param1", "PARAM2" };
     String[] varName = { "${Param1}", "%%PARAM2%%" };
-    int[] fieldType = { ValueMeta.TYPE_STRING, ValueMeta.TYPE_STRING };
+    int[] fieldType = { ValueMetaInterface.TYPE_STRING, ValueMetaInterface.TYPE_STRING };
     int[] length = { -1, -1 };
     int[] precision = { -1, -1 };
     String[] format = { "", "" };
     String[] currency = { "", "" };
     String[] decimal = { "", "" };
     String[] grouping = { "", "" };
-    int[] trimType = { ValueMeta.TRIM_TYPE_NONE, ValueMeta.TRIM_TYPE_NONE };
+    int[] trimType = { ValueMetaInterface.TRIM_TYPE_NONE, ValueMetaInterface.TRIM_TYPE_NONE };
 
-    gvm.setFieldName( fieldName );
-    gvm.setVariableString( varName );
-    gvm.setFieldType( fieldType );
-    gvm.setFieldLength( length );
-    gvm.setFieldPrecision( precision );
-    gvm.setFieldFormat( format );
-    gvm.setCurrency( currency );
-    gvm.setDecimal( decimal );
-    gvm.setGroup( grouping );
-    gvm.setTrimType( trimType );
+    FieldDefinition[] fields = new FieldDefinition[fieldName.length];
+    for ( int i = 0; i < fields.length; i++ ) {
+      FieldDefinition field = new FieldDefinition();
+      field.setFieldName( fieldName[i] );
+      field.setVariableString( varName[i] );
+      field.setFieldType( fieldType[i] );
+      field.setFieldLength( length[i] );
+      field.setFieldPrecision( precision[i] );
+      field.setFieldFormat( format[i] );
+      field.setCurrency( currency[i] );
+      field.setDecimal( decimal[i] );
+      field.setGroup( grouping[i] );
+      field.setTrimType( trimType[i] );
+      fields[i] = field;
+    }
+    gvm.setFieldDefinitions( fields );
 
     //
     // Create a dummy step 1
@@ -433,25 +446,31 @@ public class ParameterSimpleTransTest extends TestCase {
     //
     String[] fieldName = { "PARAM1", "PARAM2" };
     String[] varName = { "${JAVA_HOME}", "%%PARAM2%%" };
-    int[] fieldType = { ValueMeta.TYPE_STRING, ValueMeta.TYPE_STRING };
+    int[] fieldType = { ValueMetaInterface.TYPE_STRING, ValueMetaInterface.TYPE_STRING };
     int[] length = { -1, -1 };
     int[] precision = { -1, -1 };
     String[] format = { "", "" };
     String[] currency = { "", "" };
     String[] decimal = { "", "" };
     String[] grouping = { "", "" };
-    int[] trimType = { ValueMeta.TRIM_TYPE_NONE, ValueMeta.TRIM_TYPE_NONE };
+    int[] trimType = { ValueMetaInterface.TRIM_TYPE_NONE, ValueMetaInterface.TRIM_TYPE_NONE };
 
-    gvm.setFieldName( fieldName );
-    gvm.setVariableString( varName );
-    gvm.setFieldType( fieldType );
-    gvm.setFieldLength( length );
-    gvm.setFieldPrecision( precision );
-    gvm.setFieldFormat( format );
-    gvm.setCurrency( currency );
-    gvm.setDecimal( decimal );
-    gvm.setGroup( grouping );
-    gvm.setTrimType( trimType );
+    FieldDefinition[] fields = new FieldDefinition[fieldName.length];
+    for ( int i = 0; i < fields.length; i++ ) {
+      FieldDefinition field = new FieldDefinition();
+      field.setFieldName( fieldName[i] );
+      field.setVariableString( varName[i] );
+      field.setFieldType( fieldType[i] );
+      field.setFieldLength( length[i] );
+      field.setFieldPrecision( precision[i] );
+      field.setFieldFormat( format[i] );
+      field.setCurrency( currency[i] );
+      field.setDecimal( decimal[i] );
+      field.setGroup( grouping[i] );
+      field.setTrimType( trimType[i] );
+      fields[i] = field;
+    }
+    gvm.setFieldDefinitions( fields );
 
     //
     // Create a dummy step 1
@@ -522,25 +541,31 @@ public class ParameterSimpleTransTest extends TestCase {
     //
     String[] fieldName = { "PARAM1", "PARAM2" };
     String[] varName = { "${Param1}", "%%PARAM2%%" };
-    int[] fieldType = { ValueMeta.TYPE_STRING, ValueMeta.TYPE_STRING };
+    int[] fieldType = { ValueMetaInterface.TYPE_STRING, ValueMetaInterface.TYPE_STRING };
     int[] length = { -1, -1 };
     int[] precision = { -1, -1 };
     String[] format = { "", "" };
     String[] currency = { "", "" };
     String[] decimal = { "", "" };
     String[] grouping = { "", "" };
-    int[] trimType = { ValueMeta.TRIM_TYPE_NONE, ValueMeta.TRIM_TYPE_NONE };
+    int[] trimType = { ValueMetaInterface.TRIM_TYPE_NONE, ValueMetaInterface.TRIM_TYPE_NONE };
 
-    gvm.setFieldName( fieldName );
-    gvm.setVariableString( varName );
-    gvm.setFieldType( fieldType );
-    gvm.setFieldLength( length );
-    gvm.setFieldPrecision( precision );
-    gvm.setFieldFormat( format );
-    gvm.setCurrency( currency );
-    gvm.setDecimal( decimal );
-    gvm.setGroup( grouping );
-    gvm.setTrimType( trimType );
+    FieldDefinition[] fields = new FieldDefinition[fieldName.length];
+    for ( int i = 0; i < fields.length; i++ ) {
+      FieldDefinition field = new FieldDefinition();
+      field.setFieldName( fieldName[i] );
+      field.setVariableString( varName[i] );
+      field.setFieldType( fieldType[i] );
+      field.setFieldLength( length[i] );
+      field.setFieldPrecision( precision[i] );
+      field.setFieldFormat( format[i] );
+      field.setCurrency( currency[i] );
+      field.setDecimal( decimal[i] );
+      field.setGroup( grouping[i] );
+      field.setTrimType( trimType[i] );
+      fields[i] = field;
+    }
+    gvm.setFieldDefinitions( fields );
 
     //
     // Create a dummy step 1
@@ -614,25 +639,31 @@ public class ParameterSimpleTransTest extends TestCase {
     //
     String[] fieldName = { "PARAM1", "PARAM2" };
     String[] varName = { "${Param1}", "%%PARAM2%%" };
-    int[] fieldType = { ValueMeta.TYPE_STRING, ValueMeta.TYPE_STRING };
+    int[] fieldType = { ValueMetaInterface.TYPE_STRING, ValueMetaInterface.TYPE_STRING };
     int[] length = { -1, -1 };
     int[] precision = { -1, -1 };
     String[] format = { "", "" };
     String[] currency = { "", "" };
     String[] decimal = { "", "" };
     String[] grouping = { "", "" };
-    int[] trimType = { ValueMeta.TRIM_TYPE_NONE, ValueMeta.TRIM_TYPE_NONE };
+    int[] trimType = { ValueMetaInterface.TRIM_TYPE_NONE, ValueMetaInterface.TRIM_TYPE_NONE };
 
-    gvm.setFieldName( fieldName );
-    gvm.setVariableString( varName );
-    gvm.setFieldType( fieldType );
-    gvm.setFieldLength( length );
-    gvm.setFieldPrecision( precision );
-    gvm.setFieldFormat( format );
-    gvm.setCurrency( currency );
-    gvm.setDecimal( decimal );
-    gvm.setGroup( grouping );
-    gvm.setTrimType( trimType );
+    FieldDefinition[] fields = new FieldDefinition[fieldName.length];
+    for ( int i = 0; i < fields.length; i++ ) {
+      FieldDefinition field = new FieldDefinition();
+      field.setFieldName( fieldName[i] );
+      field.setVariableString( varName[i] );
+      field.setFieldType( fieldType[i] );
+      field.setFieldLength( length[i] );
+      field.setFieldPrecision( precision[i] );
+      field.setFieldFormat( format[i] );
+      field.setCurrency( currency[i] );
+      field.setDecimal( decimal[i] );
+      field.setGroup( grouping[i] );
+      field.setTrimType( trimType[i] );
+      fields[i] = field;
+    }
+    gvm.setFieldDefinitions( fields );
 
     //
     // Create a dummy step 1
@@ -706,25 +737,31 @@ public class ParameterSimpleTransTest extends TestCase {
     //
     String[] fieldName = { "PARAM1", "PARAM2" };
     String[] varName = { "${Param1}", "%%PARAM2%%" };
-    int[] fieldType = { ValueMeta.TYPE_STRING, ValueMeta.TYPE_STRING };
+    int[] fieldType = { ValueMetaInterface.TYPE_STRING, ValueMetaInterface.TYPE_STRING };
     int[] length = { -1, -1 };
     int[] precision = { -1, -1 };
     String[] format = { "", "" };
     String[] currency = { "", "" };
     String[] decimal = { "", "" };
     String[] grouping = { "", "" };
-    int[] trimType = { ValueMeta.TRIM_TYPE_NONE, ValueMeta.TRIM_TYPE_NONE };
+    int[] trimType = { ValueMetaInterface.TRIM_TYPE_NONE, ValueMetaInterface.TRIM_TYPE_NONE };
 
-    gvm.setFieldName( fieldName );
-    gvm.setVariableString( varName );
-    gvm.setFieldType( fieldType );
-    gvm.setFieldLength( length );
-    gvm.setFieldPrecision( precision );
-    gvm.setFieldFormat( format );
-    gvm.setCurrency( currency );
-    gvm.setDecimal( decimal );
-    gvm.setGroup( grouping );
-    gvm.setTrimType( trimType );
+    FieldDefinition[] fields = new FieldDefinition[fieldName.length];
+    for ( int i = 0; i < fields.length; i++ ) {
+      FieldDefinition field = new FieldDefinition();
+      field.setFieldName( fieldName[i] );
+      field.setVariableString( varName[i] );
+      field.setFieldType( fieldType[i] );
+      field.setFieldLength( length[i] );
+      field.setFieldPrecision( precision[i] );
+      field.setFieldFormat( format[i] );
+      field.setCurrency( currency[i] );
+      field.setDecimal( decimal[i] );
+      field.setGroup( grouping[i] );
+      field.setTrimType( trimType[i] );
+      fields[i] = field;
+    }
+    gvm.setFieldDefinitions( fields );
 
     //
     // Create a dummy step 1

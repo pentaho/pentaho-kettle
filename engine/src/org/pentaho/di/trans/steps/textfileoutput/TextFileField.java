@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,7 +23,8 @@
 package org.pentaho.di.trans.steps.textfileoutput;
 
 import org.pentaho.di.core.injection.Injection;
-import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
+import org.pentaho.di.core.row.value.ValueMetaString;
 
 /**
  * Describes a single field in a text file
@@ -89,6 +90,7 @@ public class TextFileField implements Cloneable {
     return name.equals( field.getName() );
   }
 
+  @Override
   public Object clone() {
     try {
       Object retval = super.clone();
@@ -119,7 +121,7 @@ public class TextFileField implements Cloneable {
   }
 
   public String getTypeDesc() {
-    return ValueMeta.getTypeDesc( type );
+    return ValueMetaFactory.getValueMetaName( type );
   }
 
   public void setType( int type ) {
@@ -128,7 +130,7 @@ public class TextFileField implements Cloneable {
 
   @Injection( name = "OUTPUT_TYPE", group = "OUTPUT_FIELDS" )
   public void setType( String typeDesc ) {
-    this.type = ValueMeta.getType( typeDesc );
+    this.type = ValueMetaFactory.getIdForValueMeta( typeDesc );
   }
 
   public String getFormat() {
@@ -179,6 +181,7 @@ public class TextFileField implements Cloneable {
     this.nullString = null_string;
   }
 
+  @Override
   public String toString() {
     return name + ":" + getTypeDesc();
   }
@@ -193,14 +196,14 @@ public class TextFileField implements Cloneable {
 
   @Injection( name = "OUTPUT_TRIM", group = "OUTPUT_FIELDS" )
   public void setTrimTypeByDesc( String value ) {
-    this.trimType = ValueMeta.getTrimTypeByDesc( value );
+    this.trimType = ValueMetaString.getTrimTypeByDesc( value );
   }
 
   public String getTrimTypeCode() {
-    return ValueMeta.getTrimTypeCode( trimType );
+    return ValueMetaString.getTrimTypeCode( trimType );
   }
 
   public String getTrimTypeDesc() {
-    return ValueMeta.getTrimTypeDesc( trimType );
+    return ValueMetaString.getTrimTypeDesc( trimType );
   }
 }

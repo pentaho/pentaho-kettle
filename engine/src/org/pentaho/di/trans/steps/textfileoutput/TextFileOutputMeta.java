@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -39,8 +39,8 @@ import org.pentaho.di.core.injection.Injection;
 import org.pentaho.di.core.injection.InjectionDeep;
 import org.pentaho.di.core.injection.InjectionSupported;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -658,6 +658,7 @@ public class TextFileOutputMeta extends BaseStepMeta implements StepMetaInterfac
     this.fileNameField = fileNameField;
   }
 
+  @Override
   public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     readData( stepnode, metaStore );
   }
@@ -666,6 +667,7 @@ public class TextFileOutputMeta extends BaseStepMeta implements StepMetaInterfac
     outputFields = new TextFileField[nrfields];
   }
 
+  @Override
   public Object clone() {
     TextFileOutputMeta retval = (TextFileOutputMeta) super.clone();
     int nrfields = outputFields.length;
@@ -769,7 +771,7 @@ public class TextFileOutputMeta extends BaseStepMeta implements StepMetaInterfac
         outputFields[i].setCurrencySymbol( XMLHandler.getTagValue( fnode, "currency" ) );
         outputFields[i].setDecimalSymbol( XMLHandler.getTagValue( fnode, "decimal" ) );
         outputFields[i].setGroupingSymbol( XMLHandler.getTagValue( fnode, "group" ) );
-        outputFields[i].setTrimType( ValueMeta.getTrimTypeByCode( XMLHandler.getTagValue( fnode, "trim_type" ) ) );
+        outputFields[i].setTrimType( ValueMetaString.getTrimTypeByCode( XMLHandler.getTagValue( fnode, "trim_type" ) ) );
         outputFields[i].setNullString( XMLHandler.getTagValue( fnode, "nullif" ) );
         outputFields[i].setLength( Const.toInt( XMLHandler.getTagValue( fnode, "length" ), -1 ) );
         outputFields[i].setPrecision( Const.toInt( XMLHandler.getTagValue( fnode, "precision" ), -1 ) );
@@ -801,6 +803,7 @@ public class TextFileOutputMeta extends BaseStepMeta implements StepMetaInterfac
     return nl;
   }
 
+  @Override
   public void setDefault() {
     createparentfolder = true; // Default createparentfolder to true
     separator = ";";
@@ -952,6 +955,7 @@ public class TextFileOutputMeta extends BaseStepMeta implements StepMetaInterfac
     return retval;
   }
 
+  @Override
   public void getFields( RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep,
       VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     // No values are added to the row in this type of step
@@ -988,6 +992,7 @@ public class TextFileOutputMeta extends BaseStepMeta implements StepMetaInterfac
     getFields( inputRowMeta, name, info, nextStep, space, null, null );
   }
 
+  @Override
   public String getXML() {
     StringBuilder retval = new StringBuilder( 800 );
 
@@ -1048,6 +1053,7 @@ public class TextFileOutputMeta extends BaseStepMeta implements StepMetaInterfac
     return retval.toString();
   }
 
+  @Override
   public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
     throws KettleException {
     try {
@@ -1110,7 +1116,7 @@ public class TextFileOutputMeta extends BaseStepMeta implements StepMetaInterfac
         outputFields[i].setCurrencySymbol( rep.getStepAttributeString( id_step, i, "field_currency" ) );
         outputFields[i].setDecimalSymbol( rep.getStepAttributeString( id_step, i, "field_decimal" ) );
         outputFields[i].setGroupingSymbol( rep.getStepAttributeString( id_step, i, "field_group" ) );
-        outputFields[i].setTrimType( ValueMeta.getTrimTypeByCode( rep.getStepAttributeString( id_step, i,
+        outputFields[i].setTrimType( ValueMetaString.getTrimTypeByCode( rep.getStepAttributeString( id_step, i,
             "field_trim_type" ) ) );
         outputFields[i].setNullString( rep.getStepAttributeString( id_step, i, "field_nullif" ) );
         outputFields[i].setLength( (int) rep.getStepAttributeInteger( id_step, i, "field_length" ) );
@@ -1123,6 +1129,7 @@ public class TextFileOutputMeta extends BaseStepMeta implements StepMetaInterfac
     }
   }
 
+  @Override
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
     throws KettleException {
     try {
@@ -1176,6 +1183,7 @@ public class TextFileOutputMeta extends BaseStepMeta implements StepMetaInterfac
     }
   }
 
+  @Override
   public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
       String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
       IMetaStore metaStore ) {
@@ -1230,11 +1238,13 @@ public class TextFileOutputMeta extends BaseStepMeta implements StepMetaInterfac
     remarks.add( cr );
   }
 
+  @Override
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta,
       Trans trans ) {
     return new TextFileOutput( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 
+  @Override
   public StepDataInterface getStepData() {
     return new TextFileOutputData();
   }
@@ -1254,6 +1264,7 @@ public class TextFileOutputMeta extends BaseStepMeta implements StepMetaInterfac
    *
    * @return the filename of the exported resource
    */
+  @Override
   public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
       ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore )
     throws KettleException {
@@ -1280,6 +1291,7 @@ public class TextFileOutputMeta extends BaseStepMeta implements StepMetaInterfac
     this.fileName = fileName;
   }
 
+  @Override
   public List<StepInjectionMetaEntry> extractStepMetadataEntries() throws KettleException {
     return getStepMetaInjectionInterface().extractStepMetadataEntries();
   }

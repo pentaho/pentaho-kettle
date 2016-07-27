@@ -48,6 +48,7 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaBase;
 import org.pentaho.di.core.row.value.ValueMetaInteger;
 import org.pentaho.di.core.row.value.ValueMetaNumber;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -81,6 +82,7 @@ public class GroupBy extends BaseStep implements StepInterface {
     data = (GroupByData) stepDataInterface;
   }
 
+  @Override
   public boolean processRow( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
     meta = (GroupByMeta) smi;
     data = (GroupByData) sdi;
@@ -597,16 +599,16 @@ public class GroupBy extends BaseStep implements StepInterface {
           break;
         case GroupByMeta.TYPE_GROUP_MEDIAN:
         case GroupByMeta.TYPE_GROUP_PERCENTILE:
-          vMeta = new ValueMeta( meta.getAggregateField()[ i ], ValueMetaInterface.TYPE_NUMBER );
+          vMeta = new ValueMetaNumber( meta.getAggregateField()[ i ] );
           v = new ArrayList<Double>();
           break;
         case GroupByMeta.TYPE_GROUP_STANDARD_DEVIATION:
-          vMeta = new ValueMeta( meta.getAggregateField()[ i ], ValueMetaInterface.TYPE_NUMBER );
+          vMeta = new ValueMetaNumber( meta.getAggregateField()[ i ] );
           break;
         case GroupByMeta.TYPE_GROUP_COUNT_DISTINCT:
         case GroupByMeta.TYPE_GROUP_COUNT_ANY:
         case GroupByMeta.TYPE_GROUP_COUNT_ALL:
-          vMeta = new ValueMeta( meta.getAggregateField()[ i ], ValueMetaInterface.TYPE_INTEGER );
+          vMeta = new ValueMetaInteger( meta.getAggregateField()[ i ] );
           break;
         case GroupByMeta.TYPE_GROUP_FIRST:
         case GroupByMeta.TYPE_GROUP_LAST:
@@ -619,11 +621,11 @@ public class GroupBy extends BaseStep implements StepInterface {
           v = r == null ? null : r[ data.subjectnrs[ i ] ];
           break;
         case GroupByMeta.TYPE_GROUP_CONCAT_COMMA:
-          vMeta = new ValueMeta( meta.getAggregateField()[ i ], ValueMetaInterface.TYPE_STRING );
+          vMeta = new ValueMetaString( meta.getAggregateField()[ i ] );
           v = new StringBuilder();
           break;
         case GroupByMeta.TYPE_GROUP_CONCAT_STRING:
-          vMeta = new ValueMeta( meta.getAggregateField()[ i ], ValueMetaInterface.TYPE_STRING );
+          vMeta = new ValueMetaString( meta.getAggregateField()[ i ] );
           v = new StringBuilder();
           break;
         default:
@@ -696,8 +698,8 @@ public class GroupBy extends BaseStep implements StepInterface {
           break;
         case GroupByMeta.TYPE_GROUP_AVERAGE:
           ag =
-            ValueDataUtil.divide( data.aggMeta.getValueMeta( i ), ag, new ValueMeta(
-              "c", ValueMetaInterface.TYPE_INTEGER ), new Long( data.counts[ i ] ) );
+            ValueDataUtil.divide( data.aggMeta.getValueMeta( i ), ag,
+              new ValueMetaInteger( "c" ), new Long( data.counts[ i ] ) );
           break;
         case GroupByMeta.TYPE_GROUP_MEDIAN:
         case GroupByMeta.TYPE_GROUP_PERCENTILE:
@@ -843,6 +845,7 @@ public class GroupBy extends BaseStep implements StepInterface {
     }
   }
 
+  @Override
   public boolean init( StepMetaInterface smi, StepDataInterface sdi ) {
     meta = (GroupByMeta) smi;
     data = (GroupByData) sdi;
@@ -857,6 +860,7 @@ public class GroupBy extends BaseStep implements StepInterface {
     return false;
   }
 
+  @Override
   public void dispose( StepMetaInterface smi, StepDataInterface sdi ) {
     if ( data.tempFile != null ) {
       try {
@@ -877,6 +881,7 @@ public class GroupBy extends BaseStep implements StepInterface {
     super.dispose( smi, sdi );
   }
 
+  @Override
   public void batchComplete() throws KettleException {
     handleLastOfGroup();
     data.newBatch = true;

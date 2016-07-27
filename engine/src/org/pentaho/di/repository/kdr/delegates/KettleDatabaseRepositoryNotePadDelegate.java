@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,8 +27,9 @@ import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.gui.Point;
-import org.pentaho.di.core.row.ValueMeta;
-import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaBoolean;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.kdr.KettleDatabaseRepository;
 
@@ -141,30 +142,30 @@ public class KettleDatabaseRepositoryNotePadDelegate extends KettleDatabaseRepos
 
     RowMetaAndData table = new RowMetaAndData();
 
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_NOTE_ID_NOTE, ValueMetaInterface.TYPE_INTEGER ), id );
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_NOTE_VALUE_STR, ValueMetaInterface.TYPE_STRING ), note );
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_NOTE_GUI_LOCATION_X, ValueMetaInterface.TYPE_INTEGER ), new Long( gui_location_x ) );
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_NOTE_GUI_LOCATION_Y, ValueMetaInterface.TYPE_INTEGER ), new Long( gui_location_y ) );
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_NOTE_GUI_LOCATION_WIDTH, ValueMetaInterface.TYPE_INTEGER ), new Long( gui_location_width ) );
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_NOTE_GUI_LOCATION_HEIGHT, ValueMetaInterface.TYPE_INTEGER ), new Long( gui_location_height ) );
+    table.addValue( new ValueMetaInteger( KettleDatabaseRepository.FIELD_NOTE_ID_NOTE ), id );
+    table.addValue( new ValueMetaString( KettleDatabaseRepository.FIELD_NOTE_VALUE_STR ), note );
+    table.addValue( new ValueMetaInteger( KettleDatabaseRepository.FIELD_NOTE_GUI_LOCATION_X ), new Long( gui_location_x ) );
+    table.addValue( new ValueMetaInteger( KettleDatabaseRepository.FIELD_NOTE_GUI_LOCATION_Y ), new Long( gui_location_y ) );
+    table.addValue( new ValueMetaInteger( KettleDatabaseRepository.FIELD_NOTE_GUI_LOCATION_WIDTH ), new Long( gui_location_width ) );
+    table.addValue( new ValueMetaInteger( KettleDatabaseRepository.FIELD_NOTE_GUI_LOCATION_HEIGHT ), new Long( gui_location_height ) );
     // Font
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_NOTE_FONT_NAME, ValueMetaInterface.TYPE_STRING ), fontname );
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_NOTE_FONT_SIZE, ValueMetaInterface.TYPE_INTEGER ), fontsize );
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_NOTE_FONT_BOLD, ValueMetaInterface.TYPE_BOOLEAN ), Boolean.valueOf( fontbold ) );
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_NOTE_FONT_ITALIC, ValueMetaInterface.TYPE_BOOLEAN ), Boolean.valueOf( fontitalic ) );
+    table.addValue( new ValueMetaString( KettleDatabaseRepository.FIELD_NOTE_FONT_NAME ), fontname );
+    table.addValue( new ValueMetaInteger( KettleDatabaseRepository.FIELD_NOTE_FONT_SIZE ), fontsize );
+    table.addValue( new ValueMetaBoolean( KettleDatabaseRepository.FIELD_NOTE_FONT_BOLD ), Boolean.valueOf( fontbold ) );
+    table.addValue( new ValueMetaBoolean( KettleDatabaseRepository.FIELD_NOTE_FONT_ITALIC ), Boolean.valueOf( fontitalic ) );
     // Font color
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_NOTE_COLOR_RED, ValueMetaInterface.TYPE_INTEGER ), new Long( fontcolorred ) );
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_NOTE_COLOR_GREEN, ValueMetaInterface.TYPE_INTEGER ), new Long( fontcolorgreen ) );
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_NOTE_COLOR_BLUE, ValueMetaInterface.TYPE_INTEGER ), new Long( fontcolorblue ) );
+    table.addValue( new ValueMetaInteger( KettleDatabaseRepository.FIELD_NOTE_COLOR_RED ), new Long( fontcolorred ) );
+    table.addValue( new ValueMetaInteger( KettleDatabaseRepository.FIELD_NOTE_COLOR_GREEN ), new Long( fontcolorgreen ) );
+    table.addValue( new ValueMetaInteger( KettleDatabaseRepository.FIELD_NOTE_COLOR_BLUE ), new Long( fontcolorblue ) );
     // Font background color
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_NOTE_BACK_GROUND_COLOR_RED, ValueMetaInterface.TYPE_INTEGER ), new Long( fontbackcolorred ) );
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_NOTE_BACK_GROUND_COLOR_GREEN, ValueMetaInterface.TYPE_INTEGER ), new Long( fontbackcolorgreen ) );
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_NOTE_BACK_GROUND_COLOR_BLUE, ValueMetaInterface.TYPE_INTEGER ), new Long( fontbackcolorblue ) );
+    table.addValue( new ValueMetaInteger( KettleDatabaseRepository.FIELD_NOTE_BACK_GROUND_COLOR_RED ), new Long( fontbackcolorred ) );
+    table.addValue( new ValueMetaInteger( KettleDatabaseRepository.FIELD_NOTE_BACK_GROUND_COLOR_GREEN ), new Long( fontbackcolorgreen ) );
+    table.addValue( new ValueMetaInteger( KettleDatabaseRepository.FIELD_NOTE_BACK_GROUND_COLOR_BLUE ), new Long( fontbackcolorblue ) );
     // Font border color
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_NOTE_BORDER_COLOR_RED, ValueMetaInterface.TYPE_INTEGER ), new Long( fontbordercolorred ) );
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_NOTE_BORDER_COLOR_GREEN, ValueMetaInterface.TYPE_INTEGER ), new Long( fontbordercolorgreen ) );
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_NOTE_BORDER_COLOR_BLUE, ValueMetaInterface.TYPE_INTEGER ), new Long( fontbordercolorblue ) );
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_NOTE_DRAW_SHADOW, ValueMetaInterface.TYPE_BOOLEAN ), Boolean.valueOf( drawshadow ) );
+    table.addValue( new ValueMetaInteger( KettleDatabaseRepository.FIELD_NOTE_BORDER_COLOR_RED ), new Long( fontbordercolorred ) );
+    table.addValue( new ValueMetaInteger( KettleDatabaseRepository.FIELD_NOTE_BORDER_COLOR_GREEN ), new Long( fontbordercolorgreen ) );
+    table.addValue( new ValueMetaInteger( KettleDatabaseRepository.FIELD_NOTE_BORDER_COLOR_BLUE ), new Long( fontbordercolorblue ) );
+    table.addValue( new ValueMetaBoolean( KettleDatabaseRepository.FIELD_NOTE_DRAW_SHADOW ), Boolean.valueOf( drawshadow ) );
 
     repository.connectionDelegate.getDatabase().prepareInsert( table.getRowMeta(), KettleDatabaseRepository.TABLE_R_NOTE );
     repository.connectionDelegate.getDatabase().setValuesInsert( table );

@@ -42,8 +42,8 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
 import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
@@ -97,8 +97,8 @@ public class TableInputMetaTest {
     when( mockDB.getQueryFields( anyString(), anyBoolean() ) ).thenReturn( createMockFields() );
 
     RowMetaInterface expectedRowMeta = new RowMeta();
-    ValueMetaInterface valueMeta = new ValueMeta( "field1", ValueMeta.TYPE_STRING );
-    valueMeta.setStorageMetadata( new ValueMeta( "field1", ValueMeta.TYPE_STRING ) );
+    ValueMetaInterface valueMeta = new ValueMetaString( "field1" );
+    valueMeta.setStorageMetadata( new ValueMetaString( "field1" ) );
     valueMeta.setStorageType( ValueMetaInterface.STORAGE_TYPE_BINARY_STRING );
     expectedRowMeta.addValueMeta( valueMeta );
 
@@ -111,7 +111,7 @@ public class TableInputMetaTest {
 
   private RowMetaInterface createMockFields() {
     RowMetaInterface rowMetaInterface = new RowMeta();
-    ValueMetaInterface valueMeta = new ValueMeta( "field1", ValueMeta.TYPE_STRING );
+    ValueMetaInterface valueMeta = new ValueMetaString( "field1" );
     rowMetaInterface.addValueMeta( valueMeta );
     return rowMetaInterface;
   }

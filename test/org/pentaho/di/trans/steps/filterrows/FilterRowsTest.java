@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,10 +22,13 @@
 
 package org.pentaho.di.trans.steps.filterrows;
 
+import static org.junit.Assert.assertEquals;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
 import org.junit.Test;
-
-import static org.junit.Assert.*;
-
 import org.pentaho.di.core.Condition;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.RowMetaAndData;
@@ -33,18 +36,14 @@ import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.trans.RowProducer;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.injector.InjectorMeta;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
 
 public class FilterRowsTest {
 
@@ -54,8 +53,8 @@ public class FilterRowsTest {
     RowMetaInterface rm = new RowMeta();
 
     ValueMetaInterface[] valuesMeta = {
-      new ValueMeta( "KEY1", ValueMeta.TYPE_STRING ),
-      new ValueMeta( "KEY2", ValueMeta.TYPE_STRING ),
+      new ValueMetaString( "KEY1" ),
+      new ValueMetaString( "KEY2" ),
     };
 
     for ( int i = 0; i < valuesMeta.length; i++ ) {

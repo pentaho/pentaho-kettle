@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -29,8 +29,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import junit.framework.TestCase;
-
 import org.junit.After;
 import org.junit.Before;
 import org.pentaho.di.core.KettleEnvironment;
@@ -41,8 +39,9 @@ import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.trans.RowProducer;
 import org.pentaho.di.trans.RowStepCollector;
 import org.pentaho.di.trans.Trans;
@@ -51,6 +50,8 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.injector.InjectorMeta;
+
+import junit.framework.TestCase;
 
 public class UpdateTest extends TestCase {
 
@@ -93,10 +94,10 @@ public class UpdateTest extends TestCase {
 
     ValueMetaInterface[] valuesMeta =
     {
-      new ValueMeta( "ID", ValueMeta.TYPE_INTEGER, 8, 0 ),
-      new ValueMeta( "CODE", ValueMeta.TYPE_INTEGER, 8, 0 ),
-      new ValueMeta( "VALUE", ValueMeta.TYPE_STRING, 255, 0 ),
-      new ValueMeta( "ROW_ORDER", ValueMeta.TYPE_INTEGER, 8, 0 ), };
+      new ValueMetaInteger( "ID", 8, 0 ),
+      new ValueMetaInteger( "CODE", 8, 0 ),
+      new ValueMetaString( "VALUE", 255, 0 ),
+      new ValueMetaInteger( "ROW_ORDER", 8, 0 ), };
 
     for ( int i = 0; i < valuesMeta.length; i++ ) {
       rm.addValueMeta( valuesMeta[i] );
@@ -140,6 +141,7 @@ public class UpdateTest extends TestCase {
 
   }
 
+  @Override
   @Before
   public void setUp() throws Exception {
 
@@ -215,6 +217,7 @@ public class UpdateTest extends TestCase {
 
   }
 
+  @Override
   @After
   public void tearDown() throws Exception {
 

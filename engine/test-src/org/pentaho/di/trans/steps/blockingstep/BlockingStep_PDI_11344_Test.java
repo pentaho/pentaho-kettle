@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,19 +22,25 @@
 
 package org.pentaho.di.trans.steps.blockingstep;
 
-import org.junit.Test;
-import org.pentaho.di.core.logging.LoggingObjectInterface;
-import org.pentaho.di.core.row.RowMeta;
-import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
-import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.trans.steps.mock.StepMockHelper;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
+
+import org.junit.Test;
+import org.pentaho.di.core.logging.LoggingObjectInterface;
+import org.pentaho.di.core.row.RowMeta;
+import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaBigNumber;
+import org.pentaho.di.core.row.value.ValueMetaBoolean;
+import org.pentaho.di.core.row.value.ValueMetaDate;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
+import org.pentaho.di.core.row.value.ValueMetaNumber;
+import org.pentaho.di.core.row.value.ValueMetaString;
+import org.pentaho.di.trans.steps.mock.StepMockHelper;
 
 public class BlockingStep_PDI_11344_Test {
 
@@ -43,11 +49,11 @@ public class BlockingStep_PDI_11344_Test {
 
     ValueMetaInterface[] valuesMeta =
     {
-      new ValueMeta( "field1", ValueMeta.TYPE_STRING ), new ValueMeta( "field2", ValueMeta.TYPE_INTEGER ),
-      new ValueMeta( "field3", ValueMeta.TYPE_NUMBER ), new ValueMeta( "field4", ValueMeta.TYPE_DATE ),
-      new ValueMeta( "field5", ValueMeta.TYPE_BOOLEAN ),
-      new ValueMeta( "field6", ValueMeta.TYPE_BIGNUMBER ),
-      new ValueMeta( "field7", ValueMeta.TYPE_BIGNUMBER ) };
+      new ValueMetaString( "field1" ), new ValueMetaInteger( "field2" ),
+      new ValueMetaNumber( "field3" ), new ValueMetaDate( "field4" ),
+      new ValueMetaBoolean( "field5" ),
+      new ValueMetaBigNumber( "field6" ),
+      new ValueMetaBigNumber( "field7" ) };
 
     for ( ValueMetaInterface aValuesMeta : valuesMeta ) {
       rm.addValueMeta( aValuesMeta );

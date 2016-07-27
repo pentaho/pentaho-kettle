@@ -25,7 +25,7 @@ import java.util.Random;
 import java.util.UUID;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
-import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.trans.steps.textfileinput.TextFileInputField;
 
 @SuppressWarnings( "deprecation" )
@@ -44,7 +44,7 @@ public class TextFileInputFieldValidator implements FieldLoadSaveValidator<TextF
     rtn.setNullString( UUID.randomUUID().toString() );
     rtn.setPrecision( rand.nextInt( 9 ) );
     rtn.setRepeated( rand.nextBoolean() );
-    rtn.setTrimType( rand.nextInt( ValueMeta.trimTypeDesc.length ) );
+    rtn.setTrimType( rand.nextInt( ValueMetaString.trimTypeDesc.length ) );
     return rtn;
   }
 

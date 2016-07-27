@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -36,8 +36,9 @@ import org.pentaho.di.core.DBCache;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaDate;
+import org.pentaho.di.core.row.value.ValueMetaNumber;
 import org.pentaho.di.core.util.StreamLogger;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
@@ -218,6 +219,7 @@ public class MySQLBulkLoader extends BaseStep implements StepInterface {
 
   }
 
+  @Override
   public boolean processRow( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
     meta = (MySQLBulkLoaderMeta) smi;
     data = (MySQLBulkLoaderData) sdi;
@@ -447,6 +449,7 @@ public class MySQLBulkLoader extends BaseStep implements StepInterface {
     }
   }
 
+  @Override
   public boolean init( StepMetaInterface smi, StepDataInterface sdi ) {
     meta = (MySQLBulkLoaderMeta) smi;
     data = (MySQLBulkLoaderData) sdi;
@@ -465,15 +468,15 @@ public class MySQLBulkLoader extends BaseStep implements StepInterface {
       data.newline = Const.CR.getBytes();
 
       String realEncoding = environmentSubstitute( meta.getEncoding() );
-      data.bulkTimestampMeta = new ValueMeta( "timestampMeta", ValueMetaInterface.TYPE_DATE );
+      data.bulkTimestampMeta = new ValueMetaDate( "timestampMeta" );
       data.bulkTimestampMeta.setConversionMask( "yyyy-MM-dd HH:mm:ss" );
       data.bulkTimestampMeta.setStringEncoding( realEncoding );
 
-      data.bulkDateMeta = new ValueMeta( "dateMeta", ValueMetaInterface.TYPE_DATE );
+      data.bulkDateMeta = new ValueMetaDate( "dateMeta" );
       data.bulkDateMeta.setConversionMask( "yyyy-MM-dd" );
       data.bulkDateMeta.setStringEncoding( realEncoding );
 
-      data.bulkNumberMeta = new ValueMeta( "numberMeta", ValueMetaInterface.TYPE_NUMBER );
+      data.bulkNumberMeta = new ValueMetaNumber( "numberMeta" );
       data.bulkNumberMeta.setConversionMask( "#.#" );
       data.bulkNumberMeta.setGroupingSymbol( "," );
       data.bulkNumberMeta.setDecimalSymbol( "." );
@@ -491,6 +494,7 @@ public class MySQLBulkLoader extends BaseStep implements StepInterface {
     return false;
   }
 
+  @Override
   public void dispose( StepMetaInterface smi, StepDataInterface sdi ) {
     meta = (MySQLBulkLoaderMeta) smi;
     data = (MySQLBulkLoaderData) sdi;
@@ -546,6 +550,7 @@ public class MySQLBulkLoader extends BaseStep implements StepInterface {
       this.size = size;
     }
 
+    @Override
     public void run() {
       try {
         fifoStream = new BufferedOutputStream( new FileOutputStream( OpenFifo.this.fifoName ), this.size );
@@ -579,6 +584,7 @@ public class MySQLBulkLoader extends BaseStep implements StepInterface {
       this.loadCommand = loadCommand;
     }
 
+    @Override
     public void run() {
       try {
         data.db.execStatement( loadCommand );

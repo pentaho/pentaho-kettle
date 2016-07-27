@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,6 +25,11 @@ package org.pentaho.di.core.row;
 import java.util.Date;
 
 import org.pentaho.di.core.exception.KettleValueException;
+import org.pentaho.di.core.row.value.ValueMetaBoolean;
+import org.pentaho.di.core.row.value.ValueMetaDate;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
+import org.pentaho.di.core.row.value.ValueMetaNumber;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.util.StringUtil;
 
 public class SpeedTest {
@@ -80,27 +85,27 @@ public class SpeedTest {
   private static void populateMetaAndData( int i, Object[] rowString10, RowMetaInterface metaString10,
     Object[] rowMixed10, RowMetaInterface metaMixed10 ) {
     rowString10[i] = StringUtil.generateRandomString( 20, "", "", false );
-    ValueMetaInterface meta = new ValueMeta( "String" + ( i + 1 ), ValueMetaInterface.TYPE_STRING, 20, 0 );
+    ValueMetaInterface meta = new ValueMetaString( "String" + ( i + 1 ), 20, 0 );
     metaString10.addValueMeta( meta );
 
     rowMixed10[i * 5 + 0] = StringUtil.generateRandomString( 20, "", "", false );
-    ValueMetaInterface meta0 = new ValueMeta( "String" + ( i * 5 + 1 ), ValueMetaInterface.TYPE_STRING, 20, 0 );
+    ValueMetaInterface meta0 = new ValueMetaString( "String" + ( i * 5 + 1 ), 20, 0 );
     metaMixed10.addValueMeta( meta0 );
 
     rowMixed10[i * 5 + 1] = new Date();
-    ValueMetaInterface meta1 = new ValueMeta( "String" + ( i * 5 + 1 ), ValueMetaInterface.TYPE_DATE );
+    ValueMetaInterface meta1 = new ValueMetaDate( "String" + ( i * 5 + 1 ) );
     metaMixed10.addValueMeta( meta1 );
 
     rowMixed10[i * 5 + 2] = new Double( Math.random() * 1000000 );
-    ValueMetaInterface meta2 = new ValueMeta( "String" + ( i * 5 + 1 ), ValueMetaInterface.TYPE_NUMBER, 12, 4 );
+    ValueMetaInterface meta2 = new ValueMetaNumber( "String" + ( i * 5 + 1 ), 12, 4 );
     metaMixed10.addValueMeta( meta2 );
 
     rowMixed10[i * 5 + 3] = new Long( (long) ( Math.random() * 1000000 ) );
-    ValueMetaInterface meta3 = new ValueMeta( "String" + ( i * 5 + 1 ), ValueMetaInterface.TYPE_INTEGER, 8, 0 );
+    ValueMetaInterface meta3 = new ValueMetaInteger( "String" + ( i * 5 + 1 ), 8, 0 );
     metaMixed10.addValueMeta( meta3 );
 
     rowMixed10[i * 5 + 4] = Boolean.valueOf( Math.random() > 0.5 ? true : false );
-    ValueMetaInterface meta4 = new ValueMeta( "String" + ( i * 5 + 1 ), ValueMetaInterface.TYPE_BOOLEAN );
+    ValueMetaInterface meta4 = new ValueMetaBoolean( "String" + ( i * 5 + 1 ) );
     metaMixed10.addValueMeta( meta4 );
   }
 

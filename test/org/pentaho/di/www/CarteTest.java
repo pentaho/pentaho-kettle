@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -30,16 +30,16 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.apache.html.dom.HTMLDocumentImpl;
 import org.cyberneko.html.parsers.DOMFragmentParser;
+import org.eclipse.jetty.testing.HttpTester;
+import org.eclipse.jetty.testing.ServletTester;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.eclipse.jetty.testing.HttpTester;
-import org.eclipse.jetty.testing.ServletTester;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.logging.LogChannel;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
@@ -331,17 +331,17 @@ public class CarteTest {
     A.setRowLimit( "10000000" );
 
     A.getFieldName()[0] = "ID";
-    A.getFieldType()[0] = ValueMeta.getTypeDesc( ValueMetaInterface.TYPE_INTEGER );
+    A.getFieldType()[0] = ValueMetaFactory.getValueMetaName( ValueMetaInterface.TYPE_INTEGER );
     A.getFieldLength()[0] = 7;
     A.getValue()[0] = "1234";
 
     A.getFieldName()[1] = "Name";
-    A.getFieldType()[1] = ValueMeta.getTypeDesc( ValueMetaInterface.TYPE_STRING );
+    A.getFieldType()[1] = ValueMetaFactory.getValueMetaName( ValueMetaInterface.TYPE_STRING );
     A.getFieldLength()[1] = 35;
     A.getValue()[1] = "Some name";
 
     A.getFieldName()[2] = "Last updated";
-    A.getFieldType()[2] = ValueMeta.getTypeDesc( ValueMetaInterface.TYPE_DATE );
+    A.getFieldType()[2] = ValueMetaFactory.getValueMetaName( ValueMetaInterface.TYPE_DATE );
     A.getFieldFormat()[2] = "yyyy/MM/dd";
     A.getValue()[2] = "2010/02/09";
 

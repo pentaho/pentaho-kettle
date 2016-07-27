@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -45,8 +45,8 @@ import org.pentaho.di.core.logging.LoggingObjectType;
 import org.pentaho.di.core.logging.SimpleLoggingObject;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.trans.RowStepCollector;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.TransTestFactory;
@@ -96,13 +96,13 @@ public class TableCompareTest {
     ValueMetaInterface[] valuesMeta =
     {
       // fields to handle error information
-      new ValueMeta( ehlkd, ValueMeta.TYPE_STRING ),
-      new ValueMeta( ehlrvi, ValueMeta.TYPE_STRING ),
-      new ValueMeta( ehlcvif, ValueMeta.TYPE_STRING ),
+      new ValueMetaString( ehlkd ),
+      new ValueMetaString( ehlrvi ),
+      new ValueMetaString( ehlcvif ),
       // fields to handle connection properties
-      new ValueMeta( schemaName, ValueMeta.TYPE_STRING ), new ValueMeta( reference, ValueMeta.TYPE_STRING ),
-      new ValueMeta( compare, ValueMeta.TYPE_STRING ), new ValueMeta( key, ValueMeta.TYPE_STRING ),
-      new ValueMeta( exclude, ValueMeta.TYPE_STRING ) };
+      new ValueMetaString( schemaName ), new ValueMetaString( reference ),
+      new ValueMetaString( compare ), new ValueMetaString( key ),
+      new ValueMetaString( exclude ) };
     for ( int i = 0; i < valuesMeta.length; i++ ) {
       rm.addValueMeta( valuesMeta[i] );
     }
@@ -135,7 +135,7 @@ public class TableCompareTest {
 
   /**
    * PDI-7255 - The table compare step reports incorrect record as missing
-   * 
+   *
    * @throws KettleException
    * @throws IOException
    */
@@ -177,7 +177,7 @@ public class TableCompareTest {
 
   /**
    * Test table compare test can handle complex keys comparison
-   * 
+   *
    * @throws IOException
    * @throws KettleException
    */
@@ -219,7 +219,7 @@ public class TableCompareTest {
 
   /**
    * Test compare table if reference table is empty
-   * 
+   *
    * @throws IOException
    * @throws KettleException
    */
@@ -253,7 +253,7 @@ public class TableCompareTest {
 
   /**
    * Test compare table reference table is empty
-   * 
+   *
    * @throws IOException
    * @throws KettleException
    */
@@ -285,7 +285,7 @@ public class TableCompareTest {
 
   /**
    * Test that step reports value comparison errors
-   * 
+   *
    * @throws IOException
    * @throws KettleException
    */
@@ -325,7 +325,7 @@ public class TableCompareTest {
 
   /**
    * Test that step can ignore excluded values during comparison
-   * 
+   *
    * @throws IOException
    * @throws KettleException
    */

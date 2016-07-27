@@ -181,6 +181,14 @@ public class ValueMetaBase implements ValueMetaInterface {
     this( name, type, -1, -1 );
   }
 
+  /**
+   * @deprecated use {@link #ValueMetaBase(String, int)} and {@link #setStorageType(int)} instead
+   *
+   * @param name
+   * @param type
+   * @param storageType
+   */
+  @Deprecated
   public ValueMetaBase( String name, int type, int storageType ) {
     this( name, type, -1, -1 );
     this.storageType = storageType;

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -51,8 +51,8 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
@@ -96,6 +96,7 @@ public class PentahoReportingOutputDialog extends BaseStepDialog implements Step
     }
   }
 
+  @Override
   public String open() {
     Shell parent = getParent();
     Display display = parent.getDisplay();
@@ -105,6 +106,7 @@ public class PentahoReportingOutputDialog extends BaseStepDialog implements Step
     setShellImage( shell, input );
 
     ModifyListener lsMod = new ModifyListener() {
+      @Override
       public void modifyText( ModifyEvent e ) {
         input.setChanged();
       }
@@ -225,6 +227,7 @@ public class PentahoReportingOutputDialog extends BaseStepDialog implements Step
     wProcessor.setLayoutData( fdProcessor );
     wProcessor.setItems( ProcessorType.getDescriptions() );
     wProcessor.addListener( SWT.Selection, new Listener() {
+      @Override
       public void handleEvent( Event e ) {
         input.setChanged();
       }
@@ -241,22 +244,26 @@ public class PentahoReportingOutputDialog extends BaseStepDialog implements Step
 
     // Add listeners
     wOK.addListener( SWT.Selection, new Listener() {
+      @Override
       public void handleEvent( Event e ) {
         ok();
       }
     } );
     wCancel.addListener( SWT.Selection, new Listener() {
+      @Override
       public void handleEvent( Event e ) {
         cancel();
       }
     } );
     wGet.addListener( SWT.Selection, new Listener() {
+      @Override
       public void handleEvent( Event e ) {
         get();
       }
     } );
 
     lsDef = new SelectionAdapter() {
+      @Override
       public void widgetDefaultSelected( SelectionEvent e ) {
         ok();
       }
@@ -268,6 +275,7 @@ public class PentahoReportingOutputDialog extends BaseStepDialog implements Step
 
     // Detect X or ALT-F4 or something that kills this window...
     shell.addShellListener( new ShellAdapter() {
+      @Override
       public void shellClosed( ShellEvent e ) {
         cancel();
       }
@@ -347,6 +355,7 @@ public class PentahoReportingOutputDialog extends BaseStepDialog implements Step
     // See if we need to boot the reporting engine. Since this takes time we do it in the background...
     //
     Runnable runnable = new Runnable() {
+      @Override
       public void run() {
         PentahoReportingOutput.performPentahoReportingBoot( log, input.getClass() );
       }
@@ -390,7 +399,7 @@ public class PentahoReportingOutputDialog extends BaseStepDialog implements Step
       RowMetaInterface r = new RowMeta();
       for ( int i = 0; i < definition.getParameterCount(); i++ ) {
         ParameterDefinitionEntry entry = definition.getParameterDefinition( i );
-        ValueMeta valueMeta = new ValueMeta( entry.getName(), ValueMetaInterface.TYPE_STRING );
+        ValueMetaInterface valueMeta = new ValueMetaString( entry.getName() );
         valueMeta.setComments( getParameterDefinitionEntryTypeDescription( entry ) );
         r.addValueMeta( valueMeta );
       }
@@ -400,6 +409,7 @@ public class PentahoReportingOutputDialog extends BaseStepDialog implements Step
       BaseStepDialog.getFieldsFromPrevious(
         r, wFields, 1, new int[] { 1 }, new int[] {}, -1, -1, new TableItemInsertListener() {
 
+          @Override
           public boolean tableItemInserted( TableItem item, ValueMetaInterface valueMeta ) {
             item.setText( 2, valueMeta.getComments() );
             return true;

@@ -93,8 +93,8 @@ public class ValueMetaTest extends TestCase {
     val1.setLength( 6 );
     val1.setStringEncoding( "UTF8" );
 
-    ValueMeta val2 =
-        new ValueMeta( "BINSTR1", ValueMetaInterface.TYPE_STRING, ValueMetaInterface.STORAGE_TYPE_BINARY_STRING );
+    ValueMeta val2 = new ValueMeta( "BINSTR1", ValueMetaInterface.TYPE_STRING );
+    val2.setStorageType( ValueMetaInterface.STORAGE_TYPE_BINARY_STRING );
     val2.setStorageMetadata( val1 );
     val2.setLength( 6 );
     val2.setStringEncoding( "UTF8" );

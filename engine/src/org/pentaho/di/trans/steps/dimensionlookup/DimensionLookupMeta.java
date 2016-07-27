@@ -41,8 +41,11 @@ import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaBoolean;
+import org.pentaho.di.core.row.value.ValueMetaDate;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -96,7 +99,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
   public static final String[] typeCodes = { // for saving to the repository
     "Insert", "Update", "Punch through", "DateInsertedOrUpdated", "DateInserted", "DateUpdated", "LastVersion", };
 
-  public static final String[] typeDescLookup = ValueMeta.getTypes();
+  public static final String[] typeDescLookup = ValueMetaFactory.getValueMetaNames();
 
   public static final int START_DATE_ALTERNATIVE_NONE = 0;
   public static final int START_DATE_ALTERNATIVE_SYSDATE = 1;
@@ -564,7 +567,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 
       return TYPE_UPDATE_DIM_INSERT; // INSERT is the default: don't lose information.
     } else {
-      int retval = ValueMeta.getType( ty );
+      int retval = ValueMetaFactory.getIdForValueMeta( ty );
       if ( retval == ValueMetaInterface.TYPE_NONE ) {
         retval = ValueMetaInterface.TYPE_STRING;
       }
@@ -574,7 +577,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 
   public static final String getUpdateType( boolean upd, int t ) {
     if ( !upd ) {
-      return ValueMeta.getTypeDesc( t );
+      return ValueMetaFactory.getValueMetaName( t );
     } else {
       return typeDesc[t];
     }
@@ -582,7 +585,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 
   public static final String getUpdateTypeCode( boolean upd, int t ) {
     if ( !upd ) {
-      return ValueMeta.getTypeDesc( t );
+      return ValueMetaFactory.getValueMetaName( t );
     } else {
       return typeCodes[t];
     }
@@ -703,7 +706,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
       throw new KettleStepException( message );
     }
 
-    ValueMetaInterface v = new ValueMeta( keyField, ValueMetaInterface.TYPE_INTEGER );
+    ValueMetaInterface v = new ValueMetaInteger( keyField );
     if ( keyRename != null && keyRename.length() > 0 ) {
       v.setName( keyRename );
     }
@@ -1530,24 +1533,24 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 
               // First the technical key
               //
-              ValueMetaInterface vkeyfield = new ValueMeta( keyField, ValueMetaInterface.TYPE_INTEGER );
+              ValueMetaInterface vkeyfield = new ValueMetaInteger( keyField );
               vkeyfield.setLength( 10 );
               fields.addValueMeta( vkeyfield );
 
               // The the version
               //
-              ValueMetaInterface vversion = new ValueMeta( versionField, ValueMetaInterface.TYPE_INTEGER );
+              ValueMetaInterface vversion = new ValueMetaInteger( versionField );
               vversion.setLength( 5 );
               fields.addValueMeta( vversion );
 
               // The date from
               //
-              ValueMetaInterface vdatefrom = new ValueMeta( dateFrom, ValueMetaInterface.TYPE_DATE );
+              ValueMetaInterface vdatefrom = new ValueMetaDate( dateFrom );
               fields.addValueMeta( vdatefrom );
 
               // The date to
               //
-              ValueMetaInterface vdateto = new ValueMeta( dateTo, ValueMetaInterface.TYPE_DATE );
+              ValueMetaInterface vdateto = new ValueMetaDate( dateTo );
               fields.addValueMeta( vdateto );
 
               String errors = "";
@@ -1593,10 +1596,10 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
                   case TYPE_UPDATE_DATE_INSUP:
                   case TYPE_UPDATE_DATE_INSERTED:
                   case TYPE_UPDATE_DATE_UPDATED:
-                    valueMeta = new ValueMeta( fieldLookup[i], ValueMetaInterface.TYPE_DATE );
+                    valueMeta = new ValueMetaDate( fieldLookup[i] );
                     break;
                   case TYPE_UPDATE_LAST_VERSION:
-                    valueMeta = new ValueMeta( fieldLookup[i], ValueMetaInterface.TYPE_BOOLEAN );
+                    valueMeta = new ValueMetaBoolean( fieldLookup[i] );
                     break;
                   default:
                     break;
