@@ -104,7 +104,7 @@
         <artifact name="jackrabbit-data" type="jar"/>
     </dependency>
     <dependency org="org.slf4j" name="slf4j-log4j12" rev="1.6.4" conf="test->default" />
-    <dependency org="javassist" name="javassist" rev="3.12.1.GA" conf="test->default" transitive="false" />
+    <dependency org="org.javassist" name="javassist" rev="3.20.0-GA" conf="test->default" transitive="false" />
     <dependency org="org.scannotation" name="scannotation" rev="1.0.2" conf="test->default" transitive="false"/>
     <dependency org="javax.jcr" name="jcr" rev="2.0" conf="test->default"/>
     <dependency org="org.owasp.esapi" name="esapi" rev="2.0.1" transitive="false" conf="test->default"/>
