@@ -75,7 +75,9 @@ public class RepositoryConnectMenu {
           connectionLabel.append( spoon.rep.getUserInfo().getLogin() );
           connectionLabel.append( " | " );
         }
-        connectionLabel.append( spoon.rep.getName() );
+        if ( repoConnectController != null && repoConnectController.getConnectedRepository() != null ) {
+          connectionLabel.append( repoConnectController.getConnectedRepository().getName() );
+        }
         connectDropdown.setText( connectionLabel.toString() );
       } else {
         connectDropdown.setText( BaseMessages.getString( PKG, "RepositoryConnectMenu.Connect" ) );
@@ -181,6 +183,7 @@ public class RepositoryConnectMenu {
           @Override
           public void widgetSelected( SelectionEvent selectionEvent ) {
             spoon.closeRepository();
+            repoConnectController.setConnectedRepository( null );
             renderAndUpdate();
           }
         } );
