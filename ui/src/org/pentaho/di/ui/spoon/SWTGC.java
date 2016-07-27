@@ -539,4 +539,8 @@ public class SWTGC implements GCInterface {
     gc.drawImage( swtImage, x, y );
     swtImage.dispose();
   }
+  
+  public void fillOval( int x, int y, int width, int height ) {
+    gc.fillOval( x, y, width, height );
+  }  
 }

@@ -816,4 +816,8 @@ public class SwingGC implements GCInterface {
   public void drawImage( BufferedImage image, int x, int y ) {
     gc.drawImage( image, x, y, observer );
   }
+  
+  public void fillOval( int x, int y, int width, int height ) {
+    gc.fillOval( x, y, width, height );
+  }  
 }
