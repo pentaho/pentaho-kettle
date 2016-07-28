@@ -158,7 +158,6 @@ import org.pentaho.di.trans.step.errorhandling.Stream;
 import org.pentaho.di.trans.step.errorhandling.StreamIcon;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface.StreamType;
-import org.pentaho.di.trans.steps.metainject.MetaInjectMeta;
 import org.pentaho.di.trans.steps.tableinput.TableInputMeta;
 import org.pentaho.di.ui.core.ConstUI;
 import org.pentaho.di.ui.core.PropsUI;
@@ -4336,16 +4335,6 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
         && ( stepMeta.getStepMetaInterface().getActiveReferencedObjectDescription() == null || index < 0 ) ) {
         TransMeta subTransMeta = subTrans.getTransMeta();
         referencedMeta = subTransMeta;
-        if ( stepMeta.getStepMetaInterface() instanceof MetaInjectMeta ) {
-          // Make sure we don't accidently overwrite this transformation so we'll remove the filename and objectId
-          // Modify the name so the users sees it's a result
-          subTransMeta.setFilename( null );
-          subTransMeta.setObjectId( null );
-          String appendName = " (" + BaseMessages.getString( PKG, "TransGraph.AfterInjection" ) + ")";
-          if ( !subTransMeta.getName().endsWith( appendName ) ) {
-            subTransMeta.setName( subTransMeta.getName() + appendName );
-          }
-        }
       } else {
         StepMetaInterface meta = stepMeta.getStepMetaInterface();
         if ( !Const.isEmpty( meta.getReferencedObjectDescriptions() ) ) {
