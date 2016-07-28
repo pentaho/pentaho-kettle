@@ -202,6 +202,5 @@
     <dependency org="com.sun.jersey.contribs" name="jersey-multipart" rev="1.16" transitive="false"/>
 
     <exclude org="javax.servlet"   module="servlet-api"/>
-    <exclude org="javassist" module="javassist"/>
   </dependencies>
 </ivy-module>
