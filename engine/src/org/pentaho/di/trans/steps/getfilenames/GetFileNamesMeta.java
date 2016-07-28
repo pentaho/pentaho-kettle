@@ -695,7 +695,7 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface 
                                            boolean[] includesubfolders ) {
     return FileInputList.createFileList(
       space, filename, filemask, excludefilemask, filerequired, includesubfolders,
-      buildFileTypeFiltersArray( fileName ) );
+      buildFileTypeFiltersArray( filename ) );
   }
 
   @Override
