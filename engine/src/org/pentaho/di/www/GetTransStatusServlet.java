@@ -377,21 +377,71 @@ public class GetTransStatusServlet extends BaseHttpServlet implements CartePlugi
             StepInterface step = trans.getRunThread( i );
             if ( ( step.isRunning() ) || step.getStatus() != StepExecutionStatus.STATUS_EMPTY ) {
               StepStatus stepStatus = new StepStatus( step );
-              boolean snif = false;
-              if ( step.isRunning() && !step.isStopped() && !step.isPaused() ) {
-                snif = true;
-                String sniffLink =
-                  " <a href=\""
-                    + convertContextPath( SniffStepServlet.CONTEXT_PATH ) + "?trans="
-                    + URLEncoder.encode( transName, "UTF-8" ) + "&id=" + URLEncoder.encode( id, "UTF-8" )
-                    + "&lines=50" + "&copynr=" + step.getCopy() + "&type=" + SniffStepServlet.TYPE_OUTPUT
-                    + "&step=" + URLEncoder.encode( step.getStepname(), "UTF-8" ) + "\">"
-                    + encoder.encodeForHTML( stepStatus.getStepname() ) + "</a>";
-                stepStatus.setStepname( sniffLink );
-              }
 
-              out.print( stepStatus.getHTMLTableRow( snif ) );
+              out.print( stepStatus.getHTMLTableRow(false) );
             }
+          }
+          out.println( "</table>" );
+          out.println( "<p>" );
+
+
+	  // Preview data table
+          out.println( "<table border=\"1\">" );
+          out.println( "<tr> <th> Preview data </th><th> Input rows </th><th> Output rows </th></tr> ");
+          for ( int i = 0; i < trans.nrSteps(); i++ ) {
+       	       StepInterface step = trans.getRunThread( i );
+       	       if ( ( step.isRunning() ) || step.getStatus() != StepExecutionStatus.STATUS_EMPTY ) {
+         		       StepStatus stepStatus = new StepStatus( step );
+      	       out.println("<tr><th>" + encoder.encodeForHTML(stepStatus.getStepname()) + "</th>"
+
+      			       + "<th> <a href=\"" + convertContextPath( SniffRowsServlet.CONTEXT_PATH )
+      			       + "?trans=" + URLEncoder.encode( transName, "UTF-8" )
+      			       + "&id=" + URLEncoder.encode( id, "UTF-8" )
+               			       + "&copynr=" + step.getCopy()
+               			       + "&type=" + SniffRowsServlet.TYPE_INPUT
+               			       + "&step=" + URLEncoder.encode( step.getStepname(), "UTF-8" )
+      			       + "&cmd=start\"> start </a>"
+
+      			       + "<a href=\"" + convertContextPath( SniffRowsServlet.CONTEXT_PATH )
+      			       + "?trans=" + URLEncoder.encode( transName, "UTF-8" )
+      			       + "&id=" + URLEncoder.encode( id, "UTF-8" )
+               			       + "&copynr=" + step.getCopy()
+               			       + "&type=" + SniffRowsServlet.TYPE_INPUT
+               			       + "&step=" + URLEncoder.encode( step.getStepname(), "UTF-8" )
+      			       + "&cmd=inspect\"> inspect </a>"
+
+      			       + "<a href=\"" + convertContextPath( SniffRowsServlet.CONTEXT_PATH )
+      			       + "?trans=" + URLEncoder.encode( transName, "UTF-8" )
+      			       + "&id=" + URLEncoder.encode( id, "UTF-8" )
+               			       + "&copynr=" + step.getCopy()
+               			       + "&type=" + SniffRowsServlet.TYPE_INPUT
+               			       + "&step=" + URLEncoder.encode( step.getStepname(), "UTF-8" )
+      			       + "&cmd=stop\"> stop </a></th>"
+
+      			       + "<th> <a href=\"" + convertContextPath( SniffRowsServlet.CONTEXT_PATH )
+      			       + "?trans=" + URLEncoder.encode( transName, "UTF-8" )
+      			       + "&id=" + URLEncoder.encode( id, "UTF-8" )
+               			       + "&copynr=" + step.getCopy()
+               			       + "&type=" + SniffRowsServlet.TYPE_OUTPUT
+               			       + "&step=" + URLEncoder.encode( step.getStepname(), "UTF-8" )
+      			       + "&cmd=start\"> start </a>"
+
+      			       + "<a href=\"" + convertContextPath( SniffRowsServlet.CONTEXT_PATH )
+      			       + "?trans=" + URLEncoder.encode( transName, "UTF-8" )
+      			       + "&id=" + URLEncoder.encode( id, "UTF-8" )
+               			       + "&copynr=" + step.getCopy()
+               			       + "&type=" + SniffRowsServlet.TYPE_OUTPUT
+               			       + "&step=" + URLEncoder.encode( step.getStepname(), "UTF-8" )
+      			       + "&cmd=inspect\"> inspect </a>"
+
+      			       + "<a href=\"" + convertContextPath( SniffRowsServlet.CONTEXT_PATH )
+      			       + "?trans=" + URLEncoder.encode( transName, "UTF-8" )
+      			       + "&id=" + URLEncoder.encode( id, "UTF-8" )
+               			       + "&copynr=" + step.getCopy()
+               			       + "&type=" + SniffRowsServlet.TYPE_OUTPUT
+               			       + "&step=" + URLEncoder.encode( step.getStepname(), "UTF-8" )
+      			       + "&cmd=stop\"> stop </a></th></tr>");
+             }
           }
           out.println( "</table>" );
           out.println( "<p>" );
