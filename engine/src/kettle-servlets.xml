@@ -25,6 +25,7 @@
   <servlet id="allocateSocket"> <description>Service for the allocation of server sockets</description> <classname>org.pentaho.di.www.AllocateServerSocketServlet</classname> </servlet>
   <servlet id="listSocket"> <description>Lists server socket allocation information</description> <classname>org.pentaho.di.www.ListServerSocketServlet</classname> </servlet>
   <servlet id="sniffStep"> <description>Sniff test a transformation step</description> <classname>org.pentaho.di.www.SniffStepServlet</classname> </servlet>
+  <servlet id="sniffRows"> <description>Sniff rows of a transformation step</description> <classname>org.pentaho.di.www.SniffRowsServlet</classname> </servlet>
   <servlet id="executeTrans"> <description>Execute (prepare and start) a specific transformation and pass output to the servlet</description> <classname>org.pentaho.di.www.ExecuteTransServlet</classname> </servlet>
   <servlet id="transImage"> <description>Generate a PNG image of a transformation</description> <classname>org.pentaho.di.www.GetTransImageServlet</classname> </servlet>
   <servlet id="runTrans"> <description>Run a transformation directly from a repository</description> <classname>org.pentaho.di.www.RunTransServlet</classname> </servlet>
