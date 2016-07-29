@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -383,7 +383,7 @@ public class RowMetaAndData implements Cloneable {
     removeValue( index );
   }
 
-  public synchronized void removeValue( int index ) {
+  public void removeValue( int index ) {
     rowMeta.removeValueMeta( index );
     data = RowDataUtil.removeItem( data, index );
   }
