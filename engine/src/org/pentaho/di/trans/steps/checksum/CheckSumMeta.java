@@ -67,6 +67,12 @@ public class CheckSumMeta extends BaseStepMeta implements StepMetaInterface {
   public static final String TYPE_SHA256 = "SHA-256";
 
   public static String[] checksumtypeCodes = { TYPE_CRC32, TYPE_ADLER32, TYPE_MD5, TYPE_SHA1, TYPE_SHA256 };
+  public static String[] checksumtypeDescs = {
+    BaseMessages.getString( PKG, "CheckSumDialog.Type.CRC32" ),
+    BaseMessages.getString( PKG, "CheckSumDialog.Type.ADLER32" ),
+    BaseMessages.getString( PKG, "CheckSumDialog.Type.MD5" ),
+    BaseMessages.getString( PKG, "CheckSumDialog.Type.SHA1" ),
+    BaseMessages.getString( PKG, "CheckSumDialog.Type.SHA256" ) };
 
   /**
    * The result type description
@@ -117,17 +123,12 @@ public class CheckSumMeta extends BaseStepMeta implements StepMetaInterface {
     if ( checksumtype == null ) {
       return 0;
     }
-    int retval;
-    if ( checksumtype.equals( checksumtypeCodes[1] ) ) {
-      retval = 1;
-    } else if ( checksumtype.equals( checksumtypeCodes[2] ) ) {
-      retval = 2;
-    } else if ( checksumtype.equals( checksumtypeCodes[3] ) ) {
-      retval = 3;
-    } else {
-      retval = 0;
+    for ( int i = 0; i < checksumtypeCodes.length; i++ ) {
+      if ( checksumtype.equals( checksumtypeCodes[i] ) ) {
+        return i;
+      }
     }
-    return retval;
+    return 0;
   }
 
   public String getCheckSumType() {

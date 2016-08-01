@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -99,6 +99,7 @@ public class CheckSumDialog extends BaseStepDialog implements StepDialogInterfac
     inputFields = new HashMap<String, Integer>();
   }
 
+  @Override
   public String open() {
     Shell parent = getParent();
     Display display = parent.getDisplay();
@@ -108,6 +109,7 @@ public class CheckSumDialog extends BaseStepDialog implements StepDialogInterfac
     setShellImage( shell, input );
 
     ModifyListener lsMod = new ModifyListener() {
+      @Override
       public void modifyText( ModifyEvent e ) {
         input.setChanged();
       }
@@ -153,10 +155,9 @@ public class CheckSumDialog extends BaseStepDialog implements StepDialogInterfac
     fdlType.top = new FormAttachment( wStepname, margin );
     wlType.setLayoutData( fdlType );
     wType = new CCombo( shell, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER );
-    wType.add( BaseMessages.getString( PKG, "CheckSumDialog.Type.CRC32" ) );
-    wType.add( BaseMessages.getString( PKG, "CheckSumDialog.Type.ADLER32" ) );
-    wType.add( BaseMessages.getString( PKG, "CheckSumDialog.Type.MD5" ) );
-    wType.add( BaseMessages.getString( PKG, "CheckSumDialog.Type.SHA1" ) );
+    for ( int i = 0; i < CheckSumMeta.checksumtypeDescs.length; i++ ) {
+      wType.add( CheckSumMeta.checksumtypeDescs[i] );
+    }
     wType.select( 0 );
     props.setLook( wType );
     fdType = new FormData();
@@ -165,8 +166,9 @@ public class CheckSumDialog extends BaseStepDialog implements StepDialogInterfac
     fdType.right = new FormAttachment( 100, 0 );
     wType.setLayoutData( fdType );
     wType.addSelectionListener( new SelectionAdapter() {
-
+      @Override
       public void widgetSelected( SelectionEvent e ) {
+        input.setChanged();
         activeResultType();
       }
     } );
@@ -191,6 +193,7 @@ public class CheckSumDialog extends BaseStepDialog implements StepDialogInterfac
     wResultType.setLayoutData( fdResultType );
     wResultType.addSelectionListener( new SelectionAdapter() {
 
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         input.setChanged();
         activeHexa();
@@ -242,6 +245,7 @@ public class CheckSumDialog extends BaseStepDialog implements StepDialogInterfac
     fdCompatibility.right = new FormAttachment( 100, 0 );
     wCompatibility.setLayoutData( fdCompatibility );
     SelectionAdapter lsSelR = new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent arg0 ) {
         input.setChanged();
       }
@@ -280,6 +284,7 @@ public class CheckSumDialog extends BaseStepDialog implements StepDialogInterfac
     // Search the fields in the background
 
     final Runnable runnable = new Runnable() {
+      @Override
       public void run() {
         StepMeta stepMeta = transMeta.findStep( stepname );
         if ( stepMeta != null ) {
@@ -302,16 +307,19 @@ public class CheckSumDialog extends BaseStepDialog implements StepDialogInterfac
 
     // Add listeners
     lsCancel = new Listener() {
+      @Override
       public void handleEvent( Event e ) {
         cancel();
       }
     };
     lsGet = new Listener() {
+      @Override
       public void handleEvent( Event e ) {
         get();
       }
     };
     lsOK = new Listener() {
+      @Override
       public void handleEvent( Event e ) {
         ok();
       }
@@ -322,6 +330,7 @@ public class CheckSumDialog extends BaseStepDialog implements StepDialogInterfac
     wGet.addListener( SWT.Selection, lsGet );
 
     lsDef = new SelectionAdapter() {
+      @Override
       public void widgetDefaultSelected( SelectionEvent e ) {
         ok();
       }
@@ -331,6 +340,7 @@ public class CheckSumDialog extends BaseStepDialog implements StepDialogInterfac
 
     // Detect X or ALT-F4 or something that kills this window...
     shell.addShellListener( new ShellAdapter() {
+      @Override
       public void shellClosed( ShellEvent e ) {
         cancel();
       }
@@ -354,7 +364,8 @@ public class CheckSumDialog extends BaseStepDialog implements StepDialogInterfac
   }
 
   private void activeResultType() {
-    boolean active = wType.getSelectionIndex() == 2 || wType.getSelectionIndex() == 3;
+    int currentType = wType.getSelectionIndex();
+    boolean active = currentType == 2 || currentType == 3 || currentType == 4;
     wlResultType.setEnabled( active );
     wResultType.setEnabled( active );
   }
@@ -381,6 +392,7 @@ public class CheckSumDialog extends BaseStepDialog implements StepDialogInterfac
       RowMetaInterface r = transMeta.getPrevStepFields( stepname );
       if ( r != null ) {
         TableItemInsertListener insertListener = new TableItemInsertListener() {
+          @Override
           public boolean tableItemInserted( TableItem tableItem, ValueMetaInterface v ) {
             tableItem.setText( 2, BaseMessages.getString( PKG, "System.Combo.Yes" ) );
             return true;
