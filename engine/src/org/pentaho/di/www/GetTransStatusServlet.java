@@ -392,7 +392,7 @@ public class GetTransStatusServlet extends BaseHttpServlet implements CartePlugi
        	       StepInterface step = trans.getRunThread( i );
        	       if ( ( step.isRunning() ) || step.getStatus() != StepExecutionStatus.STATUS_EMPTY ) {
          		       StepStatus stepStatus = new StepStatus( step );
-      	       out.println("<tr><th>" + encoder.encodeForHTML(stepStatus.getStepname()) + "</th>"
+      	       		       out.println("<tr><th>" + encoder.encodeForHTML(stepStatus.getStepname()) + "</th>"
 
       			       + "<th> <a href=\"" + convertContextPath( SniffRowsServlet.CONTEXT_PATH )
       			       + "?trans=" + URLEncoder.encode( transName, "UTF-8" )
@@ -400,15 +400,7 @@ public class GetTransStatusServlet extends BaseHttpServlet implements CartePlugi
                			       + "&copynr=" + step.getCopy()
                			       + "&type=" + SniffRowsServlet.TYPE_INPUT
                			       + "&step=" + URLEncoder.encode( step.getStepname(), "UTF-8" )
-      			       + "&cmd=start\"> start </a>"
-
-      			       + "<a href=\"" + convertContextPath( SniffRowsServlet.CONTEXT_PATH )
-      			       + "?trans=" + URLEncoder.encode( transName, "UTF-8" )
-      			       + "&id=" + URLEncoder.encode( id, "UTF-8" )
-               			       + "&copynr=" + step.getCopy()
-               			       + "&type=" + SniffRowsServlet.TYPE_INPUT
-               			       + "&step=" + URLEncoder.encode( step.getStepname(), "UTF-8" )
-      			       + "&cmd=inspect\"> inspect </a>"
+      			       + "\"> start </a>"
 
       			       + "<a href=\"" + convertContextPath( SniffRowsServlet.CONTEXT_PATH )
       			       + "?trans=" + URLEncoder.encode( transName, "UTF-8" )
@@ -424,15 +416,7 @@ public class GetTransStatusServlet extends BaseHttpServlet implements CartePlugi
                			       + "&copynr=" + step.getCopy()
                			       + "&type=" + SniffRowsServlet.TYPE_OUTPUT
                			       + "&step=" + URLEncoder.encode( step.getStepname(), "UTF-8" )
-      			       + "&cmd=start\"> start </a>"
-
-      			       + "<a href=\"" + convertContextPath( SniffRowsServlet.CONTEXT_PATH )
-      			       + "?trans=" + URLEncoder.encode( transName, "UTF-8" )
-      			       + "&id=" + URLEncoder.encode( id, "UTF-8" )
-               			       + "&copynr=" + step.getCopy()
-               			       + "&type=" + SniffRowsServlet.TYPE_OUTPUT
-               			       + "&step=" + URLEncoder.encode( step.getStepname(), "UTF-8" )
-      			       + "&cmd=inspect\"> inspect </a>"
+      			       + "\"> start </a>"
 
       			       + "<a href=\"" + convertContextPath( SniffRowsServlet.CONTEXT_PATH )
       			       + "?trans=" + URLEncoder.encode( transName, "UTF-8" )

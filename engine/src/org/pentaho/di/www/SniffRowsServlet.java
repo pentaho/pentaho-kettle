@@ -55,11 +55,56 @@ public class SniffRowsServlet extends BaseHttpServlet implements CartePluginInte
 
   	public static final String XML_TAG = "step-sniff";
 
-  	private final int threshold = 50000;
+  	private final int defaultBufferSize = 50;
+
+	final class CircularQueue<T> {
+		private T[] arr;
+    		private boolean wrapped;
+    		private int next_insert;
+
+		@SuppressWarnings("unchecked")
+    		public CircularQueue(int size) {
+			next_insert = 0;
+			wrapped = false;
+			arr = (T[]) new Object[size];
+		}
+
+		public void push(T elem) {
+			arr[next_insert++] = elem;
+			if (next_insert == arr.length) {
+				next_insert = 0;
+				wrapped = true;
+			}
+    		}
+
+    		public ArrayList<T> get(){
+			ArrayList<T> ret = new ArrayList<T>();
+			if (!wrapped) {
+				for (int i = 0; i < next_insert; ++ i)
+					ret.add(arr[i]);
+			} else {
+				int arr_pos = next_insert;
+				for (int i=0; i < arr.length; ++i) {
+					ret.add(arr[arr_pos++]);
+					if (arr_pos == arr.length)
+						arr_pos = 0;
+				}
+			}
+			return ret;
+		}
+
+		public int size() {
+			if (wrapped)
+				return arr.length;
+			else
+				return next_insert;
+		}
+	}
+
 
   	final class MetaAndData {
     		public RowMetaInterface bufferRowMeta;
-    		public List<Object[]> bufferRowData;
+    		public CircularQueue<Object[]> bufferRowData;
     		public String transName;
     		public String id;
     		public String stepName;
@@ -104,7 +149,7 @@ public class SniffRowsServlet extends BaseHttpServlet implements CartePluginInte
       	  <th>type</th>
     	  </tr>
     	  <tr>
-    	  <td>trans</td>
+    	  <td>transName</td>
     	  <td>Name of the transformation containing required step.</td>
     	  <td>query</td>
     	  </tr>
@@ -137,7 +182,7 @@ public class SniffRowsServlet extends BaseHttpServlet implements CartePluginInte
     	  </tr>
     	  <tr>
     	  <td>cmd</td>
-    	  <td>Command to operate (start, stop, intercept). If not provided, it will be assumed to be a request of intercepting rows.</td>
+    	  <td>If equal to "stop" it stops listening the specified step. If missing, it starts intercepting rows.</td>
     	  <td>optional</td>
     	  </tr>
     	  </tbody>
@@ -250,6 +295,9 @@ public class SniffRowsServlet extends BaseHttpServlet implements CartePluginInte
 		       }
 
     		       int copyNr = Const.toInt( request.getParameter( "copynr" ), 0 );
+    		       int bufferSize = Const.toInt( request.getParameter( "buffer" ), 0 );
+    		       if (bufferSize == 0)
+				bufferSize = defaultBufferSize;
     		       final int nrLines = Const.toInt( request.getParameter( "lines" ), 0 );
     		       String type = Const.NVL( request.getParameter( "type" ), TYPE_OUTPUT );
     		       boolean useXML = "Y".equalsIgnoreCase( request.getParameter( "xml" ) );
@@ -331,110 +379,19 @@ public class SniffRowsServlet extends BaseHttpServlet implements CartePluginInte
 						       	       break;
 							       	       }
 				       	       }
-				       	       if (metaData == null) {
-					       	       // System.out.println("Listener NOT found");
-					       }
 
-					       // START
-
-					       if (cmd.equalsIgnoreCase("start")) {
-				       	       	       if (metaData == null) {
-					       	       	       // N => create listener
-					       	       	       // System.out.println("Metadata is null");
-					       	       	       final MetaAndData newMetaData = new MetaAndData();
-        			       	       	       	       newMetaData.bufferRowMeta = null;
-        			       	       	       	       newMetaData.bufferRowData = new ArrayList<Object[]>();
-        			       	       	       	       newMetaData.transName = transName;
-        			       	       	       	       newMetaData.id = id;
-        			       	       	       	       newMetaData.stepName = stepName;
-        			       	       	       	       newMetaData.copyNr = copyNr;
-        			       	       	       	       newMetaData.type = type;
-
-					       	       	       if (type.equalsIgnoreCase(TYPE_INPUT)) {
-					       	       	       	       // System.out.println("Adding read listener...");
-						       	       	       newMetaData.rowListener = new RowListener() {
-          				       		       	       	       public void rowReadEvent( RowMetaInterface rowMeta, Object[] row ) throws KettleStepException {
-										       // System.out.println("Row read event.");
-					       			       	       	       try {
-				       				       	       	       	       mutex.acquire();
-				       				       	       	       	       if (newMetaData.bufferRowData.size() > threshold) {
-												       System.out.println("Threshold reached! Discarding old data.");
-				       	       	       	       	       				       newMetaData.bufferRowData.clear();
-												} else {
-              					       		       	       	       	       		newMetaData.bufferRowMeta = rowMeta;
-              					       		       	       	       	       		newMetaData.bufferRowData.add( row );
-              					       		       	       	       	       }
-              					       		       	       	       	       mutex.release();
-              					       		       	       	       } catch (Exception ex) {
-					       			       	       	       	       System.out.println("Exception in row read event.");
-              					       		       	       	       }
-            					       	       	       	       }
-          				       	       	       	       	       public void errorRowWrittenEvent( RowMetaInterface rowMeta, Object[] row ) throws KettleStepException {
-          				       	       	       	       	       }
-          				       	       	       	       	       public void rowWrittenEvent( RowMetaInterface rowMeta, Object[] row ) throws KettleStepException {
-          				       	       	       	       	       }
-          				       	       	       	       };
-          				       	       	       } else {
-					       	       	       	       // System.out.println("Adding write listener...");
-						       	       	       newMetaData.rowListener = new RowListener() {
-          				       		       	       	       public void rowWrittenEvent( RowMetaInterface rowMeta, Object[] row ) throws KettleStepException {
-										       // System.out.println("Row written event.");
-					       			       	       	       try {
-				       				       	       	       	       mutex.acquire();
-				       				       	       	       	       if (newMetaData.bufferRowData.size() > threshold) {
-												       System.out.println("Threshold reached! Discarding old data.");
-				       	       	       	       	       				       newMetaData.bufferRowData.clear();
-												} else {
-              					       		       	       	       	       		newMetaData.bufferRowMeta = rowMeta;
-              					       		       	       	       	       		newMetaData.bufferRowData.add( row );
-              					       		       	       	       	       }
-              					       		       	       	       	       mutex.release();
-              					       		       	       	       } catch (Exception ex) {
-					       			       	       	       	       System.out.println("Exception in row written event.");
-              					       		       	       	       }
-            					       	       	       	       }
-          				       	       	       	       	       public void errorRowWrittenEvent( RowMetaInterface rowMeta, Object[] row ) throws KettleStepException {
-          				       	       	       	       	       }
-          				       	       	       	       	       public void rowReadEvent( RowMetaInterface rowMeta, Object[] row ) throws KettleStepException {
-          				       	       	       	       	       }
-          				       	       	       	       };
-          				       	       	       }
-          				       	       	       clients.add(newMetaData);
-					       	       	       // System.out.println("Adding listener to step...");
-        		       		       	       	       step.addRowListener(newMetaData.rowListener);
-        		       		       	       	       List<RowListener> list = step.getRowListeners();
-        		       		       	       	       // System.out.println("Current number of listeners for this step: " + list.size());
-        		       		       	       	       metaData = newMetaData;
-          			       	       	       }
-        		       			       if ( useXML ) {
-          			       			       out.println( new WebResult( WebResult.STRING_OK, "Started" ).getXML() );
-        		       			       } else {
-          			       			       out.println( "<HTML>" );
-          			       			       out.println( "<HEAD>" );
-          			       			       out.println( "<TITLE> Preview data response</TITLE>" );
-          			       			       out.println( "</HEAD>" );
-          			       			       out.println( "<BODY>" );
-          			       			       out.println( "Started" );
-          			       			       out.println( "<p>" );
-          				       		       out.println( "<a href=\""
-            						       		       + convertContextPath( GetTransStatusServlet.CONTEXT_PATH ) + "?name="
-            						       		       + URLEncoder.encode( transName, "UTF-8" ) + "&id=" + URLEncoder.encode( id, "UTF-8" ) + "\">"
-            						       		       + BaseMessages.getString( PKG, "TransStatusServlet.BackToTransStatusPage" ) + "</a><p>" );
-          			       			       out.println( "</BODY>" );
-          			       			       out.println( "</HTML>" );
-        		       			       }
-					       } else if (cmd.equalsIgnoreCase("stop")) {
+					       // STOP
+					       if (cmd.equalsIgnoreCase("stop")) {
 				       	       	       if (metaData != null) {
-					       	       	       // System.out.println("Metadata is not null");
 							       step.removeRowListener(metaData.rowListener);
 				       	       		       for (int i = 0; i < clients.size(); ++i) {
 								       if (clients.get(i) == metaData) {
-										clients.remove(i);
-										break;
-									}
+									       clients.remove(i);
+									       break;
+								       }
 							       }
 						       } else {
-					       	       	       // System.out.println("Metadata is null");
+					       	       	       // System.out.println("Stop: metadata is null");
 					       	       }
 
         		       			       if ( useXML ) {
@@ -456,175 +413,213 @@ public class SniffRowsServlet extends BaseHttpServlet implements CartePluginInte
         		       			       }
 
 					       } else {
-						       if (metaData != null) {
-				       	       	       	       // send data, clean, release lock
+				       	       	       if (metaData == null) {
+					       	       	       // N => create listener
+					       	       	       // System.out.println("Metadata is null");
+					       	       	       final MetaAndData newMetaData = new MetaAndData();
+        			       	       	       	       newMetaData.bufferRowMeta = null;
+        			       	       	       	       newMetaData.bufferRowData = new CircularQueue<Object[]>(bufferSize);
+        			       	       	       	       newMetaData.transName = transName;
+        			       	       	       	       newMetaData.id = id;
+        			       	       	       	       newMetaData.stepName = stepName;
+        			       	       	       	       newMetaData.copyNr = copyNr;
+        			       	       	       	       newMetaData.type = type;
 
-        		       	       	       	       	       // Pass along the rows of data...
-        		       	       	       	       	       if ( useXML ) {
+					       	       	       if (type.equalsIgnoreCase(TYPE_INPUT)) {
+					       	       	       	       // System.out.println("Adding read listener...");
+						       	       	       newMetaData.rowListener = new RowListener() {
+          				       		       	       	       public void rowReadEvent( RowMetaInterface rowMeta, Object[] row ) throws KettleStepException {
+										       // System.out.println("Row read event.");
+					       			       	       	       try {
+				       				       	       	       	       mutex.acquire();
+              					       		       	       	       	       newMetaData.bufferRowMeta = rowMeta;
+              					       		       	       	       	       newMetaData.bufferRowData.push(row);
+              					       		       	       	       	       mutex.release();
+              					       		       	       	       } catch (Exception ex) {
+					       			       	       	       	       System.out.println("Exception in row read event.");
+              					       		       	       	       }
+            					       	       	       	       }
+          				       	       	       	       	       public void errorRowWrittenEvent( RowMetaInterface rowMeta, Object[] row ) throws KettleStepException {
+          				       	       	       	       	       }
+          				       	       	       	       	       public void rowWrittenEvent( RowMetaInterface rowMeta, Object[] row ) throws KettleStepException {
+          				       	       	       	       	       }
+          				       	       	       	       };
+          				       	       	       } else {
+					       	       	       	       // System.out.println("Adding write listener...");
+						       	       	       newMetaData.rowListener = new RowListener() {
+          				       		       	       	       public void rowWrittenEvent( RowMetaInterface rowMeta, Object[] row ) throws KettleStepException {
+										       // System.out.println("Row written event.");
+					       			       	       	       try {
+				       				       	       	       	       mutex.acquire();
+              					       		       	       	       	       newMetaData.bufferRowMeta = rowMeta;
+              					       		       	       	       	       newMetaData.bufferRowData.push(row);
+              					       		       	       	       	       mutex.release();
+              					       		       	       	       } catch (Exception ex) {
+					       			       	       	       	       System.out.println("Exception in row written event.");
+              					       		       	       	       }
+            					       	       	       	       }
+          				       	       	       	       	       public void errorRowWrittenEvent( RowMetaInterface rowMeta, Object[] row ) throws KettleStepException {
+          				       	       	       	       	       }
+          				       	       	       	       	       public void rowReadEvent( RowMetaInterface rowMeta, Object[] row ) throws KettleStepException {
+          				       	       	       	       	       }
+          				       	       	       	       };
+          				       	       	       }
+          				       	       	       clients.add(newMetaData);
+					       	       	       // System.out.println("Adding listener to step...");
+        		       		       	       	       step.addRowListener(newMetaData.rowListener);
+        		       		       	       	       List<RowListener> list = step.getRowListeners();
+        		       		       	       	       // System.out.println("Current number of listeners for this step: " + list.size());
+        		       		       	       	       metaData = newMetaData;
+          			       	       	       }
+				       	       	       // send data, clean, release lock
 
-          			       	       	       	       	       // Send the result back as XML
-          			       	       	       	       	       response.setContentType( "text/xml" );
-          			       	       	       	       	       response.setCharacterEncoding( Const.XML_ENCODING );
-          			       	       	       	       	       out.print( XMLHandler.getXMLHeader( Const.XML_ENCODING ) );
+        		       	       	       	       // Pass along the rows of data...
+        		       	       	       	       if ( useXML ) {
 
-          			       	       	       	       	       out.println( XMLHandler.openTag( XML_TAG ) );
+          			       	       	       	       // Send the result back as XML
+          			       	       	       	       response.setContentType( "text/xml" );
+          			       	       	       	       response.setCharacterEncoding( Const.XML_ENCODING );
+          			       	       	       	       out.print( XMLHandler.getXMLHeader( Const.XML_ENCODING ) );
 
-          			       	       	       	       	       if ( metaData.bufferRowMeta != null ) {
+          			       	       	       	       out.println( XMLHandler.openTag( XML_TAG ) );
 
-            				       	       	       	       	       // Row Meta data
-            				       	       	       	       	       out.println( metaData.bufferRowMeta.getMetaXML() );
+          			       	       	       	       if ( metaData.bufferRowMeta != null ) {
 
-            				       	       	       	       	       // Nr of lines
-            				       	       	       	       	       out.println( XMLHandler.addTagValue( "nr_rows", metaData.bufferRowData.size() ) );
+            				       	       	       	       // Row Meta data
+            				       	       	       	       out.println( metaData.bufferRowMeta.getMetaXML() );
 
-            				       	       	       	       	       // Rows of data
-            				       	       	       	       	       for ( int i = 0; i < metaData.bufferRowData.size(); i++ ) {
-              					       	       	       	       	       Object[] rowData = metaData.bufferRowData.get( i );
-              					       	       	       	       	       out.println( metaData.bufferRowMeta.getDataXML( rowData ) );
-            				       	       	       	       	       }
-          			       	       	       	       	       }
+            				       	       	       	       List<Object[]> data = metaData.bufferRowData.get();
 
-          			       	       	       	       	       out.println( XMLHandler.closeTag( XML_TAG ) );
+            				       	       	       	       // Nr of lines
+            				       	       	       	       out.println( XMLHandler.addTagValue( "nr_rows", data.size() ) );
 
-        		       	       	       	       	       } else {
-          			       	       	       	       	       response.setContentType( "text/html;charset=UTF-8" );
+            				       	       	       	       // Rows of data
+            				       	       	       	       for (int i = 0; i < data.size(); i++ ) {
+              					       	       	       	       out.println( metaData.bufferRowMeta.getDataXML(data.get(i)));
+            				       	       	       	       }
+          			       	       	       	       }
 
-          			       	       	       	       	       out.println( "<HTML>" );
-          			       	       	       	       	       out.println( "<HEAD>" );
-          			       	       	       	       	       out.println( "<TITLE> Preview " + metaData.type + " rows for step " + stepName + "</TITLE>" );
-          			       	       	       	       	       out.println( "<META http-equiv=\"Refresh\" content=\"1;url="
-            					       	       	       	       	       + convertContextPath( CONTEXT_PATH )
-            					       	       	       	       	       + "?trans=" + URLEncoder.encode( transName, "UTF-8" ) 
-            					       	       	       	       	       + "&id=" + URLEncoder.encode( id, "UTF-8" ) 
-            					       	       	       	       	       + "&type=" + URLEncoder.encode( type, "UTF-8" ) 
-            					       	       	       	       	       + "&step=" + URLEncoder.encode(stepName, "UTF-8")
-            					       	       	       	       	       + "\">" );
-          			       	       	       	       	       out.println( "<META http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">" );
-          			       	       	       	       	       out.println( "</HEAD>" );
-          			       	       	       	       	       out.println( "<BODY>" );
-          			       	       	       	       	       out.println( "<H1> Preview " + metaData.type + " rows for step " + stepName + "</H1>" );
+          			       	       	       	       out.println( XMLHandler.closeTag( XML_TAG ) );
 
-          			       	       	       	       	       try {
-            				       	       	       	       	       out.println( "<table border=\"1\">" );
-
-            				       	       	       	       	       if ( metaData.bufferRowMeta != null ) {
-              					       	       	       	       	       // Print a header row containing all the field names...
-              					       	       	       	       	       out.print( "<tr><th>#</th>" );
-              					       	       	       	       	       for ( ValueMetaInterface valueMeta : metaData.bufferRowMeta.getValueMetaList() ) {
-                					       	       	       	       	       out.print( "<th>" + valueMeta.getName() + "</th>" );
-              					       	       	       	       	       }
-              					       	       	       	       	       out.println( "</tr>" );
-
-              					       	       	       	       	       // Now output the data rows...
-              					       	       	       	       	       for ( int r = 0; r < metaData.bufferRowData.size(); r++ ) {
-                					       	       	       	       	       Object[] rowData = metaData.bufferRowData.get( r );
-                					       	       	       	       	       out.print( "<tr>" );
-                					       	       	       	       	       out.println( "<td>" + ( r + 1 ) + "</td>" );
-                					       	       	       	       	       for ( int v = 0; v < metaData.bufferRowMeta.size(); v++ ) {
-                  						       	       	       	       	       ValueMetaInterface valueMeta = metaData.bufferRowMeta.getValueMeta( v );
-                  						       	       	       	       	       Object valueData = rowData[v];
-                  						       	       	       	       	       out.println( "<td>" + valueMeta.getString( valueData ) + "</td>" );
-                					       	       	       	       	       }
-                					       	       	       	       	       out.println( "</tr>" );
-              					       	       	       	       	       }
-            				       	       	       	       	       }
-
-            				       	       	       	       	       out.println( "</table>" );
-
-            				       	       	       	       	       out.println( "<p>" );
-
-          			       	       	       	       	       } catch ( Exception ex ) {
-            				       	       	       	       	       out.println( "<p>" );
-            				       	       	       	       	       out.println( "<pre>" );
-            				       	       	       	       	       out.println( encoder.encodeForHTML( Const.getStackTracker( ex ) ) );
-            				       	       	       	       	       out.println( "</pre>" );
-          			       	       	       	       	       }
-
-          			       	       	       	       	       out.println( "<p>" );
-          			       	       	       	       	       out.println( "</BODY>" );
-          			       	       	       	       	       out.println( "</HTML>" );
-
-						       	       	       // Clean queue
-				       	       	       	       	       metaData.bufferRowData.clear();
-				       	       	       	       }
         		       	       	       	       } else {
-				       	       		       // System.out.println("metadata is null.");
-        			       	       		       if ( useXML ) {
-          				       	       		       out.println( new WebResult( WebResult.STRING_ERROR, "Preview data not running").getXML() );
-        			       	       		       } else {
-          				       	       		       out.println( "<HTML>" );
-          				       	       		       out.println( "<HEAD>" );
-          				       	       		       out.println( "<TITLE> Preview data response</TITLE>" );
-          				       	       		       out.println( "</HEAD>" );
-          				       	       		       out.println( "<BODY>" );
-          				       	       		       out.println( "ERROR: preview data not running for this step");
-          			       			       	       out.println( "<p>" );
-          				       		       	       out.println( "<a href=\""
-            						       		       	       + convertContextPath( GetTransStatusServlet.CONTEXT_PATH ) + "?name="
-            						       		       	       + URLEncoder.encode( transName, "UTF-8" ) + "&id=" + URLEncoder.encode( id, "UTF-8" ) + "\">"
-            						       		       	       + BaseMessages.getString( PKG, "TransStatusServlet.BackToTransStatusPage" ) + "</a><p>" );
-          				       	       		       out.println( "</BODY>" );
-          				       	       		       out.println( "</HTML>" );
-        			       	       		       }
-        		       	       	       	       }
+          			       	       	       	       response.setContentType( "text/html;charset=UTF-8" );
 
-					       }
+          			       	       	       	       out.println( "<HTML>" );
+          			       	       	       	       out.println( "<HEAD>" );
+          			       	       	       	       out.println( "<TITLE> Preview " + metaData.type + " rows for step " + stepName + "</TITLE>" );
+          			       	       	       	       out.println( "<META http-equiv=\"Refresh\" content=\"1;url="
+            					       	       	       	       + convertContextPath( CONTEXT_PATH )
+            					       	       	       	       + "?trans=" + URLEncoder.encode( transName, "UTF-8" ) 
+            					       	       	       	       + "&id=" + URLEncoder.encode( id, "UTF-8" ) 
+            					       	       	       	       + "&type=" + URLEncoder.encode( type, "UTF-8" ) 
+            					       	       	       	       + "&step=" + URLEncoder.encode(stepName, "UTF-8")
+            					       	       	       	       + "#bottom\">" );
+          			       	       	       	       out.println( "<META http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">" );
+          			       	       	       	       out.println( "</HEAD>" );
+          			       	       	       	       out.println( "<BODY>" );
+          			       	       	       	       out.println( "<H1> Preview " + metaData.type + " rows for step " + stepName + "</H1>" );
+
+          			       	       	       	       try {
+            				       	       	       	       out.println( "<table border=\"1\">" );
+
+            				       	       	       	       if ( metaData.bufferRowMeta != null ) {
+              					       	       	       	       // Print a header row containing all the field names...
+              					       	       	       	       out.print( "<tr><th>#</th>" );
+              					       	       	       	       for ( ValueMetaInterface valueMeta : metaData.bufferRowMeta.getValueMetaList() ) {
+                					       	       	       	       out.print( "<th>" + valueMeta.getName() + "</th>" );
+              					       	       	       	       }
+              					       	       	       	       out.println( "</tr>" );
+
+              					       	       	       	       // Now output the data rows...
+            				       	       	       	       	       List<Object[]> data = metaData.bufferRowData.get();
+              					       	       	       	       for ( int r = 0; r < data.size(); r++ ) {
+                					       	       	       	       Object[] rowData = data.get(r);
+                					       	       	       	       out.print( "<tr>" );
+
+                					       	       	       	       out.println( "<td>" + ( r + 1 ) + "</td>" );
+
+                					       	       	       	       for ( int v = 0; v < metaData.bufferRowMeta.size(); v++ ) {
+                  						       	       	       	       ValueMetaInterface valueMeta = metaData.bufferRowMeta.getValueMeta( v );
+                  						       	       	       	       Object valueData = rowData[v];
+                  						       	       	       	       out.println( "<td>" + valueMeta.getString( valueData ) + "</td>" );
+                					       	       	       	       }
+                					       	       	       	       out.println( "</tr>" );
+              					       	       	       	       }
+            				       	       	       	       }
+
+            				       	       	       	       out.println( "</table>" );
+
+            				       	       	       	       out.println( "<p>" );
+
+          			       	       	       	       } catch ( Exception ex ) {
+            				       	       	       	       out.println( "<p>" );
+            				       	       	       	       out.println( "<pre>" );
+            				       	       	       	       out.println( encoder.encodeForHTML( Const.getStackTracker( ex ) ) );
+            				       	       	       	       out.println( "</pre>" );
+          			       	       	       	       }
+
+          			       	       	       	       out.println( "<p>" );
+          			       	       	       	       out.println( "<a name=\"bottom\"></a>" );
+          			       	       	       	       out.println( "</BODY>" );
+          			       	       	       	       out.println( "</HTML>" );
+				       	       	       }
+        		       	       	       }
 				       	       mutex.release();
-				       } catch (Exception ex) {
-					       System.out.println("Exception!");
-            				       out.println(Const.getStackTracker( ex ));
-          				       out.println( "<HTML>" );
-          				       out.println( "<HEAD>" );
-          				       out.println( "<TITLE> Preview data response</TITLE>" );
-          				       out.println( "</HEAD>" );
-          				       out.println( "<BODY>" );
-          				       out.println( "ERROR: Exception: " + ex.toString());
-            				       out.println( encoder.encodeForHTML( Const.getStackTracker( ex ) ) );
-          				       out.println( "</BODY>" );
-          				       out.println( "</HTML>" );
-          				       mutex.release();
+			       	       } catch (Exception ex) {
+				       	       System.out.println("Exception!");
+            			       	       out.println(Const.getStackTracker( ex ));
+          			       	       out.println( "<HTML>" );
+          			       	       out.println( "<HEAD>" );
+          			       	       out.println( "<TITLE> Preview data response</TITLE>" );
+          			       	       out.println( "</HEAD>" );
+          			       	       out.println( "<BODY>" );
+          			       	       out.println( "ERROR: Exception: " + ex.toString());
+            			       	       out.println( encoder.encodeForHTML( Const.getStackTracker( ex ) ) );
+          			       	       out.println( "</BODY>" );
+          			       	       out.println( "</HTML>" );
+          			       	       mutex.release();
 
-				       }
-      			       } else {
-				       System.out.println("Step not found.");
-        			       if ( useXML ) {
-          				       out.println( new WebResult( WebResult.STRING_ERROR, "Could Not Find Step", stepName ).getXML() );
-        			       } else {
-          				       out.println( "<HTML>" );
-          				       out.println( "<HEAD>" );
-          				       out.println( "<TITLE> Preview data response</TITLE>" );
-          				       out.println( "</HEAD>" );
-          				       out.println( "<BODY>" );
-          				       out.println( "ERROR: Could not find step " + stepName );
+			       	       }
+      		       	       } else {
+			       	       System.out.println("Step not found.");
+        		       	       if ( useXML ) {
+          			       	       out.println( new WebResult( WebResult.STRING_ERROR, "Could Not Find Step", stepName ).getXML() );
+        		       	       } else {
+          			       	       out.println( "<HTML>" );
+          			       	       out.println( "<HEAD>" );
+          			       	       out.println( "<TITLE> Preview data response</TITLE>" );
+          			       	       out.println( "</HEAD>" );
+          			       	       out.println( "<BODY>" );
+          			       	       out.println( "ERROR: Could not find step " + stepName );
           			       	       out.println( "<p>" );
-          				       out.println( "<a href=\""
-            						       + convertContextPath( GetTransStatusServlet.CONTEXT_PATH ) + "?name="
-            						       + URLEncoder.encode( transName, "UTF-8" ) + "&id=" + URLEncoder.encode( id, "UTF-8" ) + "\">"
-            						       + BaseMessages.getString( PKG, "TransStatusServlet.BackToTransStatusPage" ) + "</a><p>" );
-          				       out.println( "</BODY>" );
-          				       out.println( "</HTML>" );
-        			       }
-      			       }
-    		       } else {
-			       System.out.println("Trans not found.");
-        		       if ( useXML ) {
-          			       out.println( new WebResult( WebResult.STRING_ERROR, "Could Not Find Trans", transName ).getXML() );
-        		       } else {
-          			       out.println( "<HTML>" );
-          			       out.println( "<HEAD>" );
-          			       out.println( "<TITLE> Preview data response</TITLE>" );
-          			       out.println( "</HEAD>" );
-          			       out.println( "<BODY>" );
-          			       out.println( "ERROR: Could not find Trans " + transName );
-          			       out.println( "<p>" );
-          			       out.println( "<a href=\""
-            					       + convertContextPath( GetTransStatusServlet.CONTEXT_PATH ) + "?name="
-            					       + URLEncoder.encode( transName, "UTF-8" ) + "&id=" + URLEncoder.encode( id, "UTF-8" ) + "\">"
-            					       + BaseMessages.getString( PKG, "TransStatusServlet.BackToTransStatusPage" ) + "</a><p>" );
-          			       out.println( "</BODY>" );
-          			       out.println( "</HTML>" );
-        		       }
-    		       }
+          			       	       out.println( "<a href=\""
+            					       	       + convertContextPath( GetTransStatusServlet.CONTEXT_PATH ) + "?name="
+            					       	       + URLEncoder.encode( transName, "UTF-8" ) + "&id=" + URLEncoder.encode( id, "UTF-8" ) + "\">"
+            					       	       + BaseMessages.getString( PKG, "TransStatusServlet.BackToTransStatusPage" ) + "</a><p>" );
+          			       	       out.println( "</BODY>" );
+          			       	       out.println( "</HTML>" );
+        		       	       }
+      		       	       }
+    	       	       } else {
+		       	       System.out.println("Trans not found.");
+        	       	       if ( useXML ) {
+          		       	       out.println( new WebResult( WebResult.STRING_ERROR, "Could Not Find Trans", transName ).getXML() );
+        	       	       } else {
+          		       	       out.println( "<HTML>" );
+          		       	       out.println( "<HEAD>" );
+          		       	       out.println( "<TITLE> Preview data response</TITLE>" );
+          		       	       out.println( "</HEAD>" );
+          		       	       out.println( "<BODY>" );
+          		       	       out.println( "ERROR: Could not find Trans " + transName );
+          		       	       out.println( "<p>" );
+          		       	       out.println( "<a href=\""
+            				       	       + convertContextPath( GetTransStatusServlet.CONTEXT_PATH ) + "?name="
+            				       	       + URLEncoder.encode( transName, "UTF-8" ) + "&id=" + URLEncoder.encode( id, "UTF-8" ) + "\">"
+            				       	       + BaseMessages.getString( PKG, "TransStatusServlet.BackToTransStatusPage" ) + "</a><p>" );
+          		       	       out.println( "</BODY>" );
+          		       	       out.println( "</HTML>" );
+        	       	       }
+    	       	       }
 	}
 
 	public String toString() {
