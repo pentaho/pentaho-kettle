@@ -12,7 +12,10 @@
 2. Run `ant dist`
   * This will perform a build of the Kettle modules and core plugins, and generate a local distribution folder, `dist/`, which can be used to run the "Spoon" or other programs.
 
-Note: Apache Ivy manages the creation of the .classpath file for the Eclipse project, and it is not needed, or recommended, to include this file into a pull request.
+Notes:
+ * Apache Ivy manages the creation of the .classpath file for the Eclipse project, and it is not needed, or recommended, to include this file into a pull request.
+ * A copy of the `ant` binary is also available within most Eclipse installations and can be run through console by properly setting the path environment variable.
+ * The build process requires also the Maven package (`sudo apt-get install maven2` on Ubuntu Linux).
 
 # Contributing
 
