@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -35,6 +35,10 @@ public class ValueMetaBigNumber extends ValueMetaBase implements ValueMetaInterf
 
   public ValueMetaBigNumber( String name ) {
     super( name, ValueMetaInterface.TYPE_BIGNUMBER );
+  }
+
+  public ValueMetaBigNumber( String name, int length, int precision ) {
+    super( name, ValueMetaInterface.TYPE_BIGNUMBER, length, precision );
   }
 
   @Override

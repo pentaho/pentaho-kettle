@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -20,33 +20,29 @@
  *
  ******************************************************************************/
 
-package org.pentaho.di.concurrency;
+package org.pentaho.di.trans.steps.append;
 
-import java.util.concurrent.Callable;
-import java.util.concurrent.atomic.AtomicBoolean;
+import org.junit.Before;
+import org.junit.Test;
+import org.pentaho.di.core.injection.BaseMetadataInjectionTest;
 
-/**
- * A convenient class to derive from as it takes care of handling crashes during execution of callable
- *
- * @author Andrey Khayrutdinov
- */
-abstract class StopOnErrorCallable<T> implements Callable<T> {
-
-  final AtomicBoolean condition;
-
-  StopOnErrorCallable( AtomicBoolean condition ) {
-    this.condition = condition;
+public class AppendMetaInjectionTest extends BaseMetadataInjectionTest<AppendMeta> {
+  @Before
+  public void setup() {
+    setup( new AppendMeta() );
   }
 
-  @Override
-  public T call() throws Exception {
-    try {
-      return doCall();
-    } catch ( Exception e ) {
-      condition.set( false );
-      throw e;
-    }
+  @Test
+  public void test() throws Exception {
+    check( "HEAD_STEP", new StringGetter() {
+      public String get() {
+        return meta.headStepname;
+      }
+    } );
+    check( "TAIL_STEP", new StringGetter() {
+      public String get() {
+        return meta.tailStepname;
+      }
+    } );
   }
-
-  abstract T doCall() throws Exception;
 }

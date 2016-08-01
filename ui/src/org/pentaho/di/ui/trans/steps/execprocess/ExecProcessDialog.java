@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,6 +24,8 @@ package org.pentaho.di.ui.trans.steps.execprocess;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
+import org.eclipse.swt.custom.CTabFolder;
+import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -36,15 +38,18 @@ import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
@@ -52,38 +57,36 @@ import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.steps.execprocess.ExecProcessMeta;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
-import org.pentaho.di.ui.core.widget.TextVar;
+import org.pentaho.di.ui.core.widget.ColumnInfo;
+import org.pentaho.di.ui.core.widget.LabelTextVar;
+import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class ExecProcessDialog extends BaseStepDialog implements StepDialogInterface {
   private static Class<?> PKG = ExecProcessMeta.class; // for i18n purposes, needed by Translator2!!
 
+  private CTabFolder wTabFolder;
+  private CTabItem wGeneralTab, wOutputTab;
+  private Composite wGeneralComp, wOutputComp;
+
   private Label wlProcess;
   private CCombo wProcess;
   private FormData fdlProcess, fdProcess;
 
-  private Label wlResult;
-  private TextVar wResult;
-  private FormData fdlResult, fdResult;
+  private Label wlArgumentsInFields;
+  private Button wArgumentsInFields;
+  private FormData fdlArgumentsInFields, fdArgumentsInFields;
 
-  private Label wlExitValue;
-  private TextVar wExitValue;
-  private FormData fdlExitValue, fdExitValue;
-
-  private Label wlError;
-  private TextVar wError;
-  private FormData fdlError, fdError;
-
-  private Group wOutputFields;
-  private FormData fdOutputFields;
+  private Label wlArgumentFields;
+  private TableView wArgumentFields;
+  private FormData fdlArgumentFields, fdArgumentFields;
 
   private Label wlFailWhenNotSuccess;
   private Button wFailWhenNotSuccess;
   private FormData fdlFailWhenNotSuccess, fdFailWhenNotSuccess;
 
-  private Label wlOutputDelim;
-  private TextVar wOutputDelim;
-  private FormData fdlOutputDelim, fdOutputDelim;
+  private LabelTextVar wOutputDelim, wResult, wExitValue, wError;
+  private FormData fdOutputDelim, fdResult, fdExitValue, fdError;
 
   private ExecProcessMeta input;
   private boolean gotPreviousFields = false;
@@ -93,6 +96,7 @@ public class ExecProcessDialog extends BaseStepDialog implements StepDialogInter
     input = (ExecProcessMeta) in;
   }
 
+  @Override
   public String open() {
     Shell parent = getParent();
     Display display = parent.getDisplay();
@@ -102,6 +106,7 @@ public class ExecProcessDialog extends BaseStepDialog implements StepDialogInter
     setShellImage( shell, input );
 
     ModifyListener lsMod = new ModifyListener() {
+      @Override
       public void modifyText( ModifyEvent e ) {
         input.setChanged();
       }
@@ -138,8 +143,27 @@ public class ExecProcessDialog extends BaseStepDialog implements StepDialogInter
     fdStepname.right = new FormAttachment( 100, 0 );
     wStepname.setLayoutData( fdStepname );
 
+    // The Tab Folders
+    wTabFolder = new CTabFolder( shell, SWT.BORDER );
+    props.setLook(  wTabFolder, Props.WIDGET_STYLE_TAB );
+
+    // ///////////////////////
+    // START OF GENERAL TAB //
+    // ///////////////////////
+
+    wGeneralTab = new CTabItem( wTabFolder, SWT.NONE );
+    wGeneralTab.setText( BaseMessages.getString( PKG, "ExecProcessDialog.GeneralTab.TabItem" ) );
+
+    wGeneralComp = new Composite( wTabFolder, SWT.NONE );
+    props.setLook( wGeneralComp );
+
+    FormLayout generalLayout = new FormLayout();
+    generalLayout.marginWidth = margin;
+    generalLayout.marginHeight = margin;
+    wGeneralComp.setLayout( generalLayout );
+
     // filename field
-    wlProcess = new Label( shell, SWT.RIGHT );
+    wlProcess = new Label( wGeneralComp, SWT.RIGHT );
     wlProcess.setText( BaseMessages.getString( PKG, "ExecProcessDialog.Process.Label" ) );
     props.setLook( wlProcess );
     fdlProcess = new FormData();
@@ -148,7 +172,7 @@ public class ExecProcessDialog extends BaseStepDialog implements StepDialogInter
     fdlProcess.top = new FormAttachment( wStepname, margin );
     wlProcess.setLayoutData( fdlProcess );
 
-    wProcess = new CCombo( shell, SWT.BORDER | SWT.READ_ONLY );
+    wProcess = new CCombo( wGeneralComp, SWT.BORDER | SWT.READ_ONLY );
     wProcess.setEditable( true );
     props.setLook( wProcess );
     wProcess.addModifyListener( lsMod );
@@ -158,9 +182,11 @@ public class ExecProcessDialog extends BaseStepDialog implements StepDialogInter
     fdProcess.right = new FormAttachment( 100, -margin );
     wProcess.setLayoutData( fdProcess );
     wProcess.addFocusListener( new FocusListener() {
+      @Override
       public void focusLost( org.eclipse.swt.events.FocusEvent e ) {
       }
 
+      @Override
       public void focusGained( org.eclipse.swt.events.FocusEvent e ) {
         Cursor busy = new Cursor( shell.getDisplay(), SWT.CURSOR_WAIT );
         shell.setCursor( busy );
@@ -170,131 +196,179 @@ public class ExecProcessDialog extends BaseStepDialog implements StepDialogInter
       }
     } );
 
+    // Command Arguments are in separate fields
+    wlArgumentsInFields = new Label( wGeneralComp, SWT.RIGHT );
+    wlArgumentsInFields.setText( BaseMessages.getString( PKG, "ExecProcessDialog.ArgumentInFields.Label" ) );
+    props.setLook( wlArgumentsInFields );
+    fdlArgumentsInFields = new FormData();
+    fdlArgumentsInFields.left = new FormAttachment( 0, 0 );
+    fdlArgumentsInFields.top = new FormAttachment( wProcess, margin );
+    fdlArgumentsInFields.right = new FormAttachment( middle, -margin );
+    wlArgumentsInFields.setLayoutData( fdlArgumentsInFields );
+    wArgumentsInFields = new Button( wGeneralComp, SWT.CHECK );
+    wArgumentsInFields.setToolTipText( BaseMessages.getString( PKG, "ExecProcessDialog.ArgumentInFields.Tooltip" ) );
+    props.setLook( wArgumentsInFields );
+    fdArgumentsInFields = new FormData();
+    fdArgumentsInFields.left = new FormAttachment( middle, 0 );
+    fdArgumentsInFields.top = new FormAttachment( wProcess, margin );
+    fdArgumentsInFields.right = new FormAttachment( 100, 0 );
+    wArgumentsInFields.setLayoutData( fdArgumentsInFields );
+    wArgumentsInFields.addSelectionListener( new SelectionAdapter() {
+      @Override
+      public void widgetSelected( SelectionEvent e ) {
+        enableFields();
+        input.setChanged();
+      }
+    } );
+
     // Fail when status is different than 0
-    wlFailWhenNotSuccess = new Label( shell, SWT.RIGHT );
+    wlFailWhenNotSuccess = new Label( wGeneralComp, SWT.RIGHT );
     wlFailWhenNotSuccess.setText( BaseMessages.getString( PKG, "ExecProcessDialog.FailWhenNotSuccess.Label" ) );
     props.setLook( wlFailWhenNotSuccess );
     fdlFailWhenNotSuccess = new FormData();
     fdlFailWhenNotSuccess.left = new FormAttachment( 0, 0 );
-    fdlFailWhenNotSuccess.top = new FormAttachment( wProcess, margin );
+    fdlFailWhenNotSuccess.top = new FormAttachment( wArgumentsInFields, margin );
     fdlFailWhenNotSuccess.right = new FormAttachment( middle, -margin );
     wlFailWhenNotSuccess.setLayoutData( fdlFailWhenNotSuccess );
-    wFailWhenNotSuccess = new Button( shell, SWT.CHECK );
+    wFailWhenNotSuccess = new Button( wGeneralComp, SWT.CHECK );
     wFailWhenNotSuccess.setToolTipText( BaseMessages.getString(
       PKG, "ExecProcessDialog.FailWhenNotSuccess.Tooltip" ) );
     props.setLook( wFailWhenNotSuccess );
     fdFailWhenNotSuccess = new FormData();
     fdFailWhenNotSuccess.left = new FormAttachment( middle, 0 );
-    fdFailWhenNotSuccess.top = new FormAttachment( wProcess, margin );
+    fdFailWhenNotSuccess.top = new FormAttachment( wArgumentsInFields, margin );
     fdFailWhenNotSuccess.right = new FormAttachment( 100, 0 );
     wFailWhenNotSuccess.setLayoutData( fdFailWhenNotSuccess );
     wFailWhenNotSuccess.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         input.setChanged();
       }
     } );
 
+    // List of Argument Fields when ArgumentsInFields is enabled
+    wlArgumentFields = new Label( wGeneralComp, SWT.LEFT );
+    wlArgumentFields.setText( BaseMessages.getString( PKG, "ExecProcessDialog.ArgumentFields.Label" ) );
+    props.setLook( wlArgumentFields );
+    fdlArgumentFields = new FormData();
+    fdlArgumentFields.left = new FormAttachment( 0, 0 );
+    fdlArgumentFields.top = new FormAttachment( wFailWhenNotSuccess, margin );
+    fdlArgumentFields.right = new FormAttachment( middle, -margin );
+    wlArgumentFields.setLayoutData( fdlArgumentFields );
+    ColumnInfo[] colinf = new ColumnInfo[1];
+    colinf[0] = new ColumnInfo(
+      BaseMessages.getString( PKG, "ExecProcessDialog.ArgumentField.Label" ),
+      ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
+    colinf[0].setToolTip( BaseMessages.getString( PKG, "ExecProcessDialog.ArgumentField.Tooltip" ) );
+    wArgumentFields =
+      new TableView(
+        null, wGeneralComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, 1, lsMod, props );
+    fdArgumentFields = new FormData();
+    fdArgumentFields.left = new FormAttachment( 0, 0 );
+    fdArgumentFields.top = new FormAttachment( wlArgumentFields, margin );
+    fdArgumentFields.right = new FormAttachment( 100, 0 );
+    fdArgumentFields.bottom = new FormAttachment( 100, -margin );
+    wArgumentFields.setLayoutData( fdArgumentFields );
+
+    FormData fdGeneralComp = new FormData();
+    fdGeneralComp.left = new FormAttachment( 0, 0 );
+    fdGeneralComp.top = new FormAttachment( 0, 0 );
+    fdGeneralComp.right = new FormAttachment( 100, 0 );
+    fdGeneralComp.bottom = new FormAttachment( 100, 0 );
+    wGeneralComp.setLayoutData( fdGeneralComp );
+
+    wGeneralComp.layout();
+    wGeneralTab.setControl( wGeneralComp );
+
+    // /////////////////////
+    // END OF GENERAL TAB //
+    // /////////////////////
+
+    // //////////////////////
+    // START OF OUTPUT TAB //
+    // //////////////////////
+
+    wOutputTab = new CTabItem( wTabFolder, SWT.NONE );
+    wOutputTab.setText( BaseMessages.getString( PKG, "ExecProcessDialog.Output.TabItem" ) );
+
+    wOutputComp = new Composite( wTabFolder, SWT.NONE );
+    props.setLook( wOutputComp );
+
+    FormLayout fdOutputCompLayout = new FormLayout();
+    fdOutputCompLayout.marginWidth = margin;
+    fdOutputCompLayout.marginHeight = margin;
+    wOutputComp.setLayout( fdOutputCompLayout );
+
     // Output Line Delimiter
-    wlOutputDelim = new Label( shell, SWT.RIGHT );
-    wlOutputDelim.setText( BaseMessages.getString( PKG, "ExecProcessDialog.OutputDelimiterField.Label" ) );
-    props.setLook( wlOutputDelim );
-    fdlOutputDelim = new FormData();
-    fdlOutputDelim.left = new FormAttachment( 0, 0 );
-    fdlOutputDelim.right = new FormAttachment( middle, -margin );
-    fdlOutputDelim.top = new FormAttachment( wFailWhenNotSuccess, margin );
-    wlOutputDelim.setLayoutData( fdlOutputDelim );
-    wOutputDelim = new TextVar( transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-    wOutputDelim.setToolTipText( BaseMessages.getString( PKG, "ExecProcessDialog.OutputDelimiterField.Tooltip" ) );
-    props.setLook( wOutputDelim );
+    wOutputDelim = new LabelTextVar( transMeta, wOutputComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER,
+      BaseMessages.getString( PKG, "ExecProcessDialog.OutputDelimiterField.Label" ),
+      BaseMessages.getString( PKG, "ExecProcessDialog.OutputDelimiterField.Tooltip" ) );
     wOutputDelim.addModifyListener( lsMod );
     fdOutputDelim = new FormData();
-    fdOutputDelim.left = new FormAttachment( middle, 0 );
-    fdOutputDelim.top = new FormAttachment( wFailWhenNotSuccess, margin );
+    fdOutputDelim.left = new FormAttachment( 0, 0 );
+    fdOutputDelim.top = new FormAttachment( 0, margin );
     fdOutputDelim.right = new FormAttachment( 100, 0 );
     wOutputDelim.setLayoutData( fdOutputDelim );
 
-    // ///////////////////////////////
-    // START OF OUTPUT Fields GROUP //
-    // ///////////////////////////////
-
-    wOutputFields = new Group( shell, SWT.SHADOW_NONE );
-    props.setLook( wOutputFields );
-    wOutputFields.setText( BaseMessages.getString( PKG, "ExecProcessDialog.OutputFields.Label" ) );
-
-    FormLayout OutputFieldsgroupLayout = new FormLayout();
-    OutputFieldsgroupLayout.marginWidth = 10;
-    OutputFieldsgroupLayout.marginHeight = 10;
-    wOutputFields.setLayout( OutputFieldsgroupLayout );
-
     // Result fieldname ...
-    wlResult = new Label( wOutputFields, SWT.RIGHT );
-    wlResult.setText( BaseMessages.getString( PKG, "ExecProcessDialog.ResultField.Label" ) );
-    props.setLook( wlResult );
-    fdlResult = new FormData();
-    fdlResult.left = new FormAttachment( 0, 0 );
-    fdlResult.right = new FormAttachment( middle, -margin );
-    fdlResult.top = new FormAttachment( wFailWhenNotSuccess, margin * 2 );
-    wlResult.setLayoutData( fdlResult );
-
-    wResult = new TextVar( transMeta, wOutputFields, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-    wResult.setToolTipText( BaseMessages.getString( PKG, "ExecProcessDialog.ResultField.Tooltip" ) );
-    props.setLook( wResult );
+    wResult = new LabelTextVar( transMeta, wOutputComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER,
+      BaseMessages.getString( PKG, "ExecProcessDialog.ResultField.Label" ),
+      BaseMessages.getString( PKG, "ExecProcessDialog.ResultField.Tooltip" ) );
     wResult.addModifyListener( lsMod );
     fdResult = new FormData();
-    fdResult.left = new FormAttachment( middle, 0 );
-    fdResult.top = new FormAttachment( wFailWhenNotSuccess, margin * 2 );
+    fdResult.left = new FormAttachment( 0, 0 );
+    fdResult.top = new FormAttachment( wOutputDelim, margin );
     fdResult.right = new FormAttachment( 100, 0 );
     wResult.setLayoutData( fdResult );
 
     // Error fieldname ...
-    wlError = new Label( wOutputFields, SWT.RIGHT );
-    wlError.setText( BaseMessages.getString( PKG, "ExecProcessDialog.ErrorField.Label" ) );
-    props.setLook( wlError );
-    fdlError = new FormData();
-    fdlError.left = new FormAttachment( 0, 0 );
-    fdlError.right = new FormAttachment( middle, -margin );
-    fdlError.top = new FormAttachment( wResult, margin );
-    wlError.setLayoutData( fdlError );
-
-    wError = new TextVar( transMeta, wOutputFields, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-    wError.setToolTipText( BaseMessages.getString( PKG, "ExecProcessDialog.ErrorField.Tooltip" ) );
-    props.setLook( wError );
+    wError = new LabelTextVar( transMeta, wOutputComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER,
+      BaseMessages.getString( PKG, "ExecProcessDialog.ErrorField.Label" ),
+      BaseMessages.getString( PKG, "ExecProcessDialog.ErrorField.Tooltip" ) );
     wError.addModifyListener( lsMod );
     fdError = new FormData();
-    fdError.left = new FormAttachment( middle, 0 );
+    fdError.left = new FormAttachment( 0, 0 );
     fdError.top = new FormAttachment( wResult, margin );
     fdError.right = new FormAttachment( 100, 0 );
     wError.setLayoutData( fdError );
 
     // ExitValue fieldname ...
-    wlExitValue = new Label( wOutputFields, SWT.RIGHT );
-    wlExitValue.setText( BaseMessages.getString( PKG, "ExecProcessDialog.ExitValueField.Label" ) );
-    props.setLook( wlExitValue );
-    fdlExitValue = new FormData();
-    fdlExitValue.left = new FormAttachment( 0, 0 );
-    fdlExitValue.right = new FormAttachment( middle, -margin );
-    fdlExitValue.top = new FormAttachment( wError, margin );
-    wlExitValue.setLayoutData( fdlExitValue );
-
-    wExitValue = new TextVar( transMeta, wOutputFields, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-    wExitValue.setToolTipText( BaseMessages.getString( PKG, "ExecProcessDialog.ExitValueField.Tooltip" ) );
-    props.setLook( wExitValue );
+    wExitValue = new LabelTextVar( transMeta, wOutputComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER,
+      BaseMessages.getString( PKG, "ExecProcessDialog.ExitValueField.Label" ),
+      BaseMessages.getString( PKG, "ExecProcessDialog.ExitValueField.Tooltip" ) );
     wExitValue.addModifyListener( lsMod );
     fdExitValue = new FormData();
-    fdExitValue.left = new FormAttachment( middle, 0 );
+    fdExitValue.left = new FormAttachment( 0, 0 );
     fdExitValue.top = new FormAttachment( wError, margin );
     fdExitValue.right = new FormAttachment( 100, 0 );
     wExitValue.setLayoutData( fdExitValue );
 
-    fdOutputFields = new FormData();
-    fdOutputFields.left = new FormAttachment( 0, margin );
-    fdOutputFields.top = new FormAttachment( wOutputDelim, 2 * margin );
-    fdOutputFields.right = new FormAttachment( 100, -margin );
-    wOutputFields.setLayoutData( fdOutputFields );
+    FormData fdOutputComp = new FormData();
+    fdOutputComp.left = new FormAttachment( 0, 0 );
+    fdOutputComp.top = new FormAttachment( 0, 0 );
+    fdOutputComp.right = new FormAttachment( 100, 0 );
+    fdOutputComp.bottom = new FormAttachment( 100, 0 );
+    wOutputComp.setLayoutData( fdOutputComp );
 
-    // ///////////////////////////////
-    // END OF OUTPUT Fields GROUP //
-    // ///////////////////////////////
+    wOutputComp.layout();
+    wOutputTab.setControl( wOutputComp );
+
+    // ////////////////////
+    // END OF OUTPUT TAB //
+    // ////////////////////
+
+    FormData fdTabFolder = new FormData();
+    fdTabFolder.left = new FormAttachment( 0, 0 );
+    fdTabFolder.top = new FormAttachment( wStepname, margin );
+    fdTabFolder.right = new FormAttachment( 100, 0 );
+    fdTabFolder.bottom = new FormAttachment( 100, -50 );
+    wTabFolder.setLayoutData( fdTabFolder );
+
+    wTabFolder.setSelection( 0 );
+
+    // ////////////////////
+    // END OF TAB FOLDER //
+    // ////////////////////
 
     // THE BUTTONS
     wOK = new Button( shell, SWT.PUSH );
@@ -302,16 +376,18 @@ public class ExecProcessDialog extends BaseStepDialog implements StepDialogInter
     wCancel = new Button( shell, SWT.PUSH );
     wCancel.setText( BaseMessages.getString( PKG, "System.Button.Cancel" ) );
 
-    setButtonPositions( new Button[] { wOK, wCancel }, margin, wOutputFields );
+    setButtonPositions( new Button[] { wOK, wCancel }, margin, wTabFolder );
 
     // Add listeners
     lsOK = new Listener() {
+      @Override
       public void handleEvent( Event e ) {
         ok();
       }
     };
 
     lsCancel = new Listener() {
+      @Override
       public void handleEvent( Event e ) {
         cancel();
       }
@@ -321,6 +397,7 @@ public class ExecProcessDialog extends BaseStepDialog implements StepDialogInter
     wCancel.addListener( SWT.Selection, lsCancel );
 
     lsDef = new SelectionAdapter() {
+      @Override
       public void widgetDefaultSelected( SelectionEvent e ) {
         ok();
       }
@@ -330,6 +407,7 @@ public class ExecProcessDialog extends BaseStepDialog implements StepDialogInter
 
     // Detect X or ALT-F4 or something that kills this window...
     shell.addShellListener( new ShellAdapter() {
+      @Override
       public void shellClosed( ShellEvent e ) {
         cancel();
       }
@@ -338,7 +416,19 @@ public class ExecProcessDialog extends BaseStepDialog implements StepDialogInter
     // Set the shell size, based upon previous time...
     setSize();
 
+    RowMetaInterface r = null;
+    try {
+      r = transMeta.getPrevStepFields( stepname );
+      if ( r != null ) {
+        wArgumentFields.getColumns()[0].setComboValues( r.getFieldNames() );
+      }
+    } catch ( KettleStepException ignore ) {
+      // Do nothing
+    }
+
+
     getData();
+    enableFields();
     input.setChanged( changed );
 
     shell.open();
@@ -374,9 +464,25 @@ public class ExecProcessDialog extends BaseStepDialog implements StepDialogInter
       wOutputDelim.setText( input.getOutputLineDelimiter() );
     }
     wFailWhenNotSuccess.setSelection( input.isFailWhenNotSuccess() );
+    wArgumentsInFields.setSelection( input.isArgumentsInFields() );
+    int nrRows = input.getArgumentFieldNames().length;
+    if ( nrRows <= 0 ) {
+      wArgumentFields.getTable().setItemCount( 1 );
+    } else {
+      wArgumentFields.getTable().setItemCount( nrRows );
+      for ( int i = 0; i < input.getArgumentFieldNames().length; i++ ) {
+        TableItem item = wArgumentFields.getTable().getItem( i );
+        item.setText( 1, input.getArgumentFieldNames()[i] );
+      }
+    }
+    wArgumentFields.setRowNums();
 
     wStepname.selectAll();
     wStepname.setFocus();
+  }
+
+  private void enableFields() {
+    wArgumentFields.setEnabled( wArgumentsInFields.getSelection() );
   }
 
   private void cancel() {
@@ -393,8 +499,19 @@ public class ExecProcessDialog extends BaseStepDialog implements StepDialogInter
     input.setResultFieldName( wResult.getText() );
     input.setErrorFieldName( wError.getText() );
     input.setExitValueFieldName( wExitValue.getText() );
-    input.setFailWhentNoSuccess( wFailWhenNotSuccess.getSelection() );
+    input.setFailWhenNotSuccess( wFailWhenNotSuccess.getSelection() );
     input.setOutputLineDelimiter( wOutputDelim.getText() );
+    input.setArgumentsInFields( wArgumentsInFields.getSelection() );
+    String[] argumentFields = null;
+    if ( wArgumentsInFields.getSelection() ) {
+      argumentFields = new String[wArgumentFields.nrNonEmpty()];
+    } else {
+      argumentFields = new String[0];
+    }
+    for ( int i = 0; i < argumentFields.length; i++ ) {
+      argumentFields[i] = wArgumentFields.getNonEmpty( i ).getText( 1 );
+    }
+    input.setArgumentFieldNames( argumentFields );
     stepname = wStepname.getText(); // return value
 
     dispose();

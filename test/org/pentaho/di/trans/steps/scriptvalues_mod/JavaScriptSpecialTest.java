@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -29,8 +29,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import junit.framework.TestCase;
-
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleValueException;
@@ -38,8 +36,12 @@ import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaBoolean;
+import org.pentaho.di.core.row.value.ValueMetaDate;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
+import org.pentaho.di.core.row.value.ValueMetaNumber;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.trans.RowProducer;
 import org.pentaho.di.trans.RowStepCollector;
@@ -52,6 +54,8 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.dummytrans.DummyTransMeta;
 import org.pentaho.di.trans.steps.injector.InjectorMeta;
 
+import junit.framework.TestCase;
+
 /**
  * Test class for the Modified Javascript step for the special functions. Things tested: LuhnCheck().
  *
@@ -61,7 +65,7 @@ public class JavaScriptSpecialTest extends TestCase {
   public RowMetaInterface createRowMetaInterface1() {
     RowMetaInterface rm = new RowMeta();
 
-    ValueMetaInterface[] valuesMeta = { new ValueMeta( "string", ValueMeta.TYPE_STRING ), };
+    ValueMetaInterface[] valuesMeta = { new ValueMetaString( "string" ), };
 
     for ( int i = 0; i < valuesMeta.length; i++ ) {
       rm.addValueMeta( valuesMeta[ i ] );
@@ -99,7 +103,7 @@ public class JavaScriptSpecialTest extends TestCase {
     RowMetaInterface rm = new RowMeta();
 
     ValueMetaInterface[] valuesMeta =
-      { new ValueMeta( "string", ValueMeta.TYPE_STRING ), new ValueMeta( "bool", ValueMeta.TYPE_BOOLEAN ) };
+      { new ValueMetaString( "string" ), new ValueMetaBoolean( "bool" ) };
 
     for ( int i = 0; i < valuesMeta.length; i++ ) {
       rm.addValueMeta( valuesMeta[ i ] );
@@ -154,9 +158,9 @@ public class JavaScriptSpecialTest extends TestCase {
 
     ValueMetaInterface[] valuesMeta =
       {
-        new ValueMeta( "int_in", ValueMeta.TYPE_INTEGER ),
-        new ValueMeta( "number_in", ValueMeta.TYPE_NUMBER ),
-        new ValueMeta( "string_in", ValueMeta.TYPE_STRING ), };
+        new ValueMetaInteger( "int_in" ),
+        new ValueMetaNumber( "number_in" ),
+        new ValueMetaString( "string_in" ), };
 
     for ( int i = 0; i < valuesMeta.length; i++ ) {
       rm.addValueMeta( valuesMeta[ i ] );
@@ -188,12 +192,12 @@ public class JavaScriptSpecialTest extends TestCase {
 
     ValueMetaInterface[] valuesMeta =
       {
-        new ValueMeta( "int_in", ValueMeta.TYPE_INTEGER ),
-        new ValueMeta( "number_in", ValueMeta.TYPE_NUMBER ),
-        new ValueMeta( "string_in", ValueMeta.TYPE_STRING ), new ValueMeta( "long1", ValueMeta.TYPE_INTEGER ),
-        new ValueMeta( "number1", ValueMeta.TYPE_NUMBER ), new ValueMeta( "string1", ValueMeta.TYPE_STRING ),
-        new ValueMeta( "long2", ValueMeta.TYPE_INTEGER ), new ValueMeta( "number2", ValueMeta.TYPE_NUMBER ),
-        new ValueMeta( "string2", ValueMeta.TYPE_STRING ), };
+        new ValueMetaInteger( "int_in" ),
+        new ValueMetaNumber( "number_in" ),
+        new ValueMetaString( "string_in" ), new ValueMetaInteger( "long1" ),
+        new ValueMetaNumber( "number1" ), new ValueMetaString( "string1" ),
+        new ValueMetaInteger( "long2" ), new ValueMetaNumber( "number2" ),
+        new ValueMetaString( "string2" ), };
 
     for ( int i = 0; i < valuesMeta.length; i++ ) {
       rm.addValueMeta( valuesMeta[ i ] );
@@ -522,8 +526,8 @@ public class JavaScriptSpecialTest extends TestCase {
     svm.setFieldname( new String[] { "long1", "number1", "string1", "long2", "number2", "string2" } );
     svm.setRename( new String[] { "long1", "number1", "string1", "long2", "number2", "string2" } );
     svm.setType( new int[] {
-      ValueMeta.TYPE_INTEGER, ValueMeta.TYPE_NUMBER, ValueMeta.TYPE_STRING, ValueMeta.TYPE_INTEGER,
-      ValueMeta.TYPE_NUMBER, ValueMeta.TYPE_STRING, } );
+      ValueMetaInterface.TYPE_INTEGER, ValueMetaInterface.TYPE_NUMBER, ValueMetaInterface.TYPE_STRING,
+      ValueMetaInterface.TYPE_INTEGER, ValueMetaInterface.TYPE_NUMBER, ValueMetaInterface.TYPE_STRING, } );
     svm.setLength( new int[] { -1, -1, -1, -1, -1, -1, -1 } );
     svm.setPrecision( new int[] { -1, -1, -1, -1, -1, -1, -1 } );
     svm.setReplace( new boolean[] { false, false, false, false, false, false, } );
@@ -591,7 +595,7 @@ public class JavaScriptSpecialTest extends TestCase {
 
     //Create RowMeta
     RowMetaInterface rm = new RowMeta();
-    rm.addValueMeta( new ValueMeta( "input", ValueMeta.TYPE_DATE ) );
+    rm.addValueMeta( new ValueMetaDate( "input" ) );
 
     //Populate Row
     DateFormat format = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss" );
@@ -605,15 +609,15 @@ public class JavaScriptSpecialTest extends TestCase {
 
     //Create RowMeta
     RowMetaInterface rm = new RowMeta();
-    rm.addValueMeta( new ValueMeta( "input", ValueMeta.TYPE_DATE ) );
-    rm.addValueMeta( new ValueMeta( "new_weekday", ValueMeta.TYPE_DATE ) );
-    rm.addValueMeta( new ValueMeta( "new_year", ValueMeta.TYPE_DATE ) );
-    rm.addValueMeta( new ValueMeta( "new_month", ValueMeta.TYPE_DATE ) );
-    rm.addValueMeta( new ValueMeta( "new_week", ValueMeta.TYPE_DATE ) );
-    rm.addValueMeta( new ValueMeta( "new_day", ValueMeta.TYPE_DATE ) );
-    rm.addValueMeta( new ValueMeta( "new_hour", ValueMeta.TYPE_DATE ) );
-    rm.addValueMeta( new ValueMeta( "new_minute", ValueMeta.TYPE_DATE ) );
-    rm.addValueMeta( new ValueMeta( "new_second", ValueMeta.TYPE_DATE ) );
+    rm.addValueMeta( new ValueMetaDate( "input" ) );
+    rm.addValueMeta( new ValueMetaDate( "new_weekday" ) );
+    rm.addValueMeta( new ValueMetaDate( "new_year" ) );
+    rm.addValueMeta( new ValueMetaDate( "new_month" ) );
+    rm.addValueMeta( new ValueMetaDate( "new_week" ) );
+    rm.addValueMeta( new ValueMetaDate( "new_day" ) );
+    rm.addValueMeta( new ValueMetaDate( "new_hour" ) );
+    rm.addValueMeta( new ValueMetaDate( "new_minute" ) );
+    rm.addValueMeta( new ValueMetaDate( "new_second" ) );
 
     DateFormat format = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss" );
     Object[] r1 = new Object[] {

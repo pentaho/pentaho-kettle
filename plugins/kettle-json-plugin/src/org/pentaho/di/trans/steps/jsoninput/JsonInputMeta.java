@@ -69,7 +69,11 @@ import org.w3c.dom.Node;
  */
 @Step( id = "JsonInput", image = "JSI.svg", i18nPackageName = "org.pentaho.di.trans.steps.jsoninput",
     name = "JsonInput.name", description = "JsonInput.description", categoryDescription = "JsonInput.category" )
-@InjectionSupported( localizationPrefix = "JsonInput.Injection.", groups = { "FILENAME_LINES", "FIELDS" } )
+@InjectionSupported( localizationPrefix = "JsonInput.Injection.", groups = { "FILENAME_LINES", "FIELDS" }, hide = {
+  "ACCEPT_FILE_NAMES", "ACCEPT_FILE_STEP", "PASS_THROUGH_FIELDS", "ACCEPT_FILE_FIELD", "ADD_FILES_TO_RESULT",
+  "IGNORE_ERRORS", "FILE_ERROR_FIELD", "FILE_ERROR_MESSAGE_FIELD", "SKIP_BAD_FILES", "WARNING_FILES_TARGET_DIR",
+  "WARNING_FILES_EXTENTION", "ERROR_FILES_TARGET_DIR", "ERROR_FILES_EXTENTION", "LINE_NR_FILES_TARGET_DIR",
+  "LINE_NR_FILES_EXTENTION", "FIELD_NULL_STRING", "FIELD_POSITION", "FIELD_IGNORE", "FIELD_IF_NULL" } )
 public class JsonInputMeta extends
     BaseFileInputStepMeta<JsonInputMeta.AdditionalFileOutputFields, JsonInputMeta.InputFiles> implements
     StepMetaInterface {
@@ -197,12 +201,15 @@ public class JsonInputMeta extends
   }
 
   /** Is In fields */
+  @Injection( name = "SOURCE_FIELD_NAME" )
   private String valueField;
 
   /** Is In fields */
+  @Injection( name = "SOURCE_IN_FIELD" )
   private boolean inFields;
 
   /** Is a File */
+  @Injection( name = "SOURCE_FIELD_IS_FILENAME" )
   private boolean isAFile;
 
   /** Flag: add result filename **/

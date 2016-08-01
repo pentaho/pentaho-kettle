@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -36,7 +36,6 @@ import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaDate;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
@@ -90,7 +89,7 @@ public class RowGenerator extends BaseStep implements StepInterface {
     }
 
     for ( int i = 0; i < meta.getFieldName().length; i++ ) {
-      int valtype = ValueMeta.getType( meta.getFieldType()[i] );
+      int valtype = ValueMetaFactory.getIdForValueMeta( meta.getFieldType()[i] );
       if ( meta.getFieldName()[i] != null ) {
         ValueMetaInterface valueMeta = ValueMetaFactory.createValueMeta( meta.getFieldName()[i], valtype ); // build a
                                                                                                             // value!
@@ -187,6 +186,7 @@ public class RowGenerator extends BaseStep implements StepInterface {
     return new RowMetaAndData( rowMeta, rowData );
   }
 
+  @Override
   public synchronized boolean processRow( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
     meta = (RowGeneratorMeta) smi;
     data = (RowGeneratorData) sdi;
@@ -244,6 +244,7 @@ public class RowGenerator extends BaseStep implements StepInterface {
     return retval;
   }
 
+  @Override
   public boolean init( StepMetaInterface smi, StepDataInterface sdi ) {
     try {
       meta = (RowGeneratorMeta) smi;

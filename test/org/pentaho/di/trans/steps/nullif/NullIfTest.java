@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -26,8 +26,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import junit.framework.TestCase;
-
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleValueException;
@@ -35,8 +33,9 @@ import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.trans.RowProducer;
 import org.pentaho.di.trans.RowStepCollector;
 import org.pentaho.di.trans.Trans;
@@ -46,6 +45,9 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.dummytrans.DummyTransMeta;
 import org.pentaho.di.trans.steps.injector.InjectorMeta;
+import org.pentaho.di.trans.steps.nullif.NullIfMeta.Field;
+
+import junit.framework.TestCase;
 
 /**
  * Test class for the NullIf step.
@@ -57,7 +59,7 @@ public class NullIfTest extends TestCase {
     RowMetaInterface rm = new RowMeta();
 
     ValueMetaInterface[] valuesMeta =
-    { new ValueMeta( "field1", ValueMeta.TYPE_STRING ), new ValueMeta( "field2", ValueMeta.TYPE_INTEGER ), };
+    { new ValueMetaString( "field1" ), new ValueMetaInteger( "field2" ), };
 
     for ( int i = 0; i < valuesMeta.length; i++ ) {
       rm.addValueMeta( valuesMeta[i] );
@@ -206,8 +208,14 @@ public class NullIfTest extends TestCase {
     String nullIfName = "nullif step";
     NullIfMeta ni = new NullIfMeta();
 
-    ni.setFieldName( new String[] { "field2", "field1" } );
-    ni.setFieldValue( new String[] { "1", "tst" } );
+    Field[] fields = new Field[2];
+    fields[0] = new Field();
+    fields[0].setFieldName( "field2" );
+    fields[0].setFieldValue( "1" );
+    fields[1] = new Field();
+    fields[1].setFieldName( "field1" );
+    fields[1].setFieldValue( "tst" );
+    ni.setFields( fields );
 
     String nullIfPid = registry.getPluginId( StepPluginType.class, ni );
     StepMeta nullIfStep = new StepMeta( nullIfPid, nullIfName, ni );

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,8 +27,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
-import junit.framework.TestCase;
-
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleValueException;
@@ -36,8 +34,11 @@ import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaBoolean;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
+import org.pentaho.di.core.row.value.ValueMetaNumber;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.trans.RowProducer;
 import org.pentaho.di.trans.RowStepCollector;
@@ -49,6 +50,8 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.dummytrans.DummyTransMeta;
 import org.pentaho.di.trans.steps.injector.InjectorMeta;
+
+import junit.framework.TestCase;
 
 /**
  * Test class for the Modified Javascript step. Things tested: ltrim(), rtrim(), trim(), lpad(), rpad(), upper(),
@@ -62,7 +65,7 @@ public class JavaScriptStringTest extends TestCase {
   public RowMetaInterface createRowMetaInterface1() {
     RowMetaInterface rm = new RowMeta();
 
-    ValueMetaInterface[] valuesMeta = { new ValueMeta( "string", ValueMeta.TYPE_STRING ), };
+    ValueMetaInterface[] valuesMeta = { new ValueMetaString( "string" ), };
 
     for ( int i = 0; i < valuesMeta.length; i++ ) {
       rm.addValueMeta( valuesMeta[ i ] );
@@ -149,9 +152,9 @@ public class JavaScriptStringTest extends TestCase {
 
     ValueMetaInterface[] valuesMeta =
       {
-        new ValueMeta( "string", ValueMeta.TYPE_STRING ), new ValueMeta( "original", ValueMeta.TYPE_STRING ),
-        new ValueMeta( "ltrimStr", ValueMeta.TYPE_STRING ),
-        new ValueMeta( "rtrimStr", ValueMeta.TYPE_STRING ), new ValueMeta( "trimStr", ValueMeta.TYPE_STRING ), };
+        new ValueMetaString( "string" ), new ValueMetaString( "original" ),
+        new ValueMetaString( "ltrimStr" ),
+        new ValueMetaString( "rtrimStr" ), new ValueMetaString( "trimStr" ), };
 
     for ( int i = 0; i < valuesMeta.length; i++ ) {
       rm.addValueMeta( valuesMeta[ i ] );
@@ -201,12 +204,12 @@ public class JavaScriptStringTest extends TestCase {
 
     ValueMetaInterface[] valuesMeta =
       {
-        new ValueMeta( "string", ValueMeta.TYPE_STRING ), new ValueMeta( "lpadded1", ValueMeta.TYPE_STRING ),
-        new ValueMeta( "lpadded2", ValueMeta.TYPE_STRING ),
-        new ValueMeta( "rpadded1", ValueMeta.TYPE_STRING ),
-        new ValueMeta( "rpadded2", ValueMeta.TYPE_STRING ),
-        new ValueMeta( "upperStr", ValueMeta.TYPE_STRING ),
-        new ValueMeta( "lowerStr", ValueMeta.TYPE_STRING ), };
+        new ValueMetaString( "string" ), new ValueMetaString( "lpadded1" ),
+        new ValueMetaString( "lpadded2" ),
+        new ValueMetaString( "rpadded1" ),
+        new ValueMetaString( "rpadded2" ),
+        new ValueMetaString( "upperStr" ),
+        new ValueMetaString( "lowerStr" ), };
 
     for ( int i = 0; i < valuesMeta.length; i++ ) {
       rm.addValueMeta( valuesMeta[ i ] );
@@ -223,8 +226,8 @@ public class JavaScriptStringTest extends TestCase {
 
     ValueMetaInterface[] valuesMeta =
       {
-        new ValueMeta( "string", ValueMeta.TYPE_STRING ), new ValueMeta( "numb1", ValueMeta.TYPE_NUMBER ),
-        new ValueMeta( "bool1", ValueMeta.TYPE_BOOLEAN ), new ValueMeta( "str1", ValueMeta.TYPE_STRING ), };
+        new ValueMetaString( "string" ), new ValueMetaNumber( "numb1" ),
+        new ValueMetaBoolean( "bool1" ), new ValueMetaString( "str1" ), };
 
     for ( int i = 0; i < valuesMeta.length; i++ ) {
       rm.addValueMeta( valuesMeta[ i ] );
@@ -302,9 +305,9 @@ public class JavaScriptStringTest extends TestCase {
 
     ValueMetaInterface[] valuesMeta =
       {
-        new ValueMeta( "string", ValueMeta.TYPE_STRING ), new ValueMeta( "search", ValueMeta.TYPE_STRING ),
-        new ValueMeta( "offset1", ValueMeta.TYPE_INTEGER ),
-        new ValueMeta( "offset2", ValueMeta.TYPE_INTEGER ), };
+        new ValueMetaString( "string" ), new ValueMetaString( "search" ),
+        new ValueMetaInteger( "offset1" ),
+        new ValueMetaInteger( "offset2" ), };
 
     for ( int i = 0; i < valuesMeta.length; i++ ) {
       rm.addValueMeta( valuesMeta[ i ] );
@@ -343,10 +346,10 @@ public class JavaScriptStringTest extends TestCase {
 
     ValueMetaInterface[] valuesMeta =
       {
-        new ValueMeta( "string", ValueMeta.TYPE_STRING ), new ValueMeta( "search", ValueMeta.TYPE_STRING ),
-        new ValueMeta( "offset1", ValueMeta.TYPE_INTEGER ),
-        new ValueMeta( "offset2", ValueMeta.TYPE_INTEGER ), new ValueMeta( "index1", ValueMeta.TYPE_INTEGER ),
-        new ValueMeta( "index2", ValueMeta.TYPE_INTEGER ), new ValueMeta( "index3", ValueMeta.TYPE_INTEGER ), };
+        new ValueMetaString( "string" ), new ValueMetaString( "search" ),
+        new ValueMetaInteger( "offset1" ),
+        new ValueMetaInteger( "offset2" ), new ValueMetaInteger( "index1" ),
+        new ValueMetaInteger( "index2" ), new ValueMetaInteger( "index3" ), };
 
     for ( int i = 0; i < valuesMeta.length; i++ ) {
       rm.addValueMeta( valuesMeta[ i ] );

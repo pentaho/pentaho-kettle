@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -28,8 +28,9 @@ import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleObjectExistsException;
-import org.pentaho.di.core.row.ValueMeta;
-import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaBoolean;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.kdr.KettleDatabaseRepository;
@@ -144,36 +145,36 @@ public class KettleDatabaseRepositorySlaveServerDelegate extends KettleDatabaseR
     RowMetaAndData table = new RowMetaAndData();
 
     table.addValue(
-      new ValueMeta( KettleDatabaseRepository.FIELD_SLAVE_ID_SLAVE, ValueMetaInterface.TYPE_INTEGER ), id );
+      new ValueMetaInteger( KettleDatabaseRepository.FIELD_SLAVE_ID_SLAVE ), id );
     table.addValue(
-      new ValueMeta( KettleDatabaseRepository.FIELD_SLAVE_NAME, ValueMetaInterface.TYPE_STRING ), slaveServer
+      new ValueMetaString( KettleDatabaseRepository.FIELD_SLAVE_NAME ), slaveServer
         .getName() );
     table.addValue(
-      new ValueMeta( KettleDatabaseRepository.FIELD_SLAVE_HOST_NAME, ValueMetaInterface.TYPE_STRING ),
+      new ValueMetaString( KettleDatabaseRepository.FIELD_SLAVE_HOST_NAME ),
       slaveServer.getHostname() );
     table.addValue(
-      new ValueMeta( KettleDatabaseRepository.FIELD_SLAVE_PORT, ValueMetaInterface.TYPE_STRING ), slaveServer
+      new ValueMetaString( KettleDatabaseRepository.FIELD_SLAVE_PORT ), slaveServer
         .getPort() );
-    table.addValue( new ValueMeta(
-      KettleDatabaseRepository.FIELD_SLAVE_WEB_APP_NAME, ValueMetaInterface.TYPE_STRING ), slaveServer
+    table.addValue( new ValueMetaString(
+      KettleDatabaseRepository.FIELD_SLAVE_WEB_APP_NAME ), slaveServer
       .getWebAppName() );
     table.addValue(
-      new ValueMeta( KettleDatabaseRepository.FIELD_SLAVE_USERNAME, ValueMetaInterface.TYPE_STRING ),
+      new ValueMetaString( KettleDatabaseRepository.FIELD_SLAVE_USERNAME ),
       slaveServer.getUsername() );
     table.addValue(
-      new ValueMeta( KettleDatabaseRepository.FIELD_SLAVE_PASSWORD, ValueMetaInterface.TYPE_STRING ), Encr
+      new ValueMetaString( KettleDatabaseRepository.FIELD_SLAVE_PASSWORD ), Encr
         .encryptPasswordIfNotUsingVariables( slaveServer.getPassword() ) );
-    table.addValue( new ValueMeta(
-      KettleDatabaseRepository.FIELD_SLAVE_PROXY_HOST_NAME, ValueMetaInterface.TYPE_STRING ), slaveServer
+    table.addValue( new ValueMetaString(
+      KettleDatabaseRepository.FIELD_SLAVE_PROXY_HOST_NAME ), slaveServer
       .getProxyHostname() );
     table.addValue(
-      new ValueMeta( KettleDatabaseRepository.FIELD_SLAVE_PROXY_PORT, ValueMetaInterface.TYPE_STRING ),
+      new ValueMetaString( KettleDatabaseRepository.FIELD_SLAVE_PROXY_PORT ),
       slaveServer.getProxyPort() );
-    table.addValue( new ValueMeta(
-      KettleDatabaseRepository.FIELD_SLAVE_NON_PROXY_HOSTS, ValueMetaInterface.TYPE_STRING ), slaveServer
+    table.addValue( new ValueMetaString(
+      KettleDatabaseRepository.FIELD_SLAVE_NON_PROXY_HOSTS ), slaveServer
       .getNonProxyHosts() );
     table.addValue(
-      new ValueMeta( KettleDatabaseRepository.FIELD_SLAVE_MASTER, ValueMetaInterface.TYPE_BOOLEAN ), Boolean
+      new ValueMetaBoolean( KettleDatabaseRepository.FIELD_SLAVE_MASTER ), Boolean
         .valueOf( slaveServer.isMaster() ) );
 
     repository.connectionDelegate.getDatabase().prepareInsert(
@@ -188,34 +189,34 @@ public class KettleDatabaseRepositorySlaveServerDelegate extends KettleDatabaseR
   public synchronized void updateSlave( SlaveServer slaveServer ) throws KettleException {
     RowMetaAndData table = new RowMetaAndData();
     table.addValue(
-      new ValueMeta( KettleDatabaseRepository.FIELD_SLAVE_NAME, ValueMetaInterface.TYPE_STRING ), slaveServer
+      new ValueMetaString( KettleDatabaseRepository.FIELD_SLAVE_NAME ), slaveServer
         .getName() );
     table.addValue(
-      new ValueMeta( KettleDatabaseRepository.FIELD_SLAVE_HOST_NAME, ValueMetaInterface.TYPE_STRING ),
+      new ValueMetaString( KettleDatabaseRepository.FIELD_SLAVE_HOST_NAME ),
       slaveServer.getHostname() );
     table.addValue(
-      new ValueMeta( KettleDatabaseRepository.FIELD_SLAVE_PORT, ValueMetaInterface.TYPE_STRING ), slaveServer
+      new ValueMetaString( KettleDatabaseRepository.FIELD_SLAVE_PORT ), slaveServer
         .getPort() );
-    table.addValue( new ValueMeta(
-      KettleDatabaseRepository.FIELD_SLAVE_WEB_APP_NAME, ValueMetaInterface.TYPE_STRING ), slaveServer
+    table.addValue( new ValueMetaString(
+      KettleDatabaseRepository.FIELD_SLAVE_WEB_APP_NAME ), slaveServer
       .getWebAppName() );
     table.addValue(
-      new ValueMeta( KettleDatabaseRepository.FIELD_SLAVE_USERNAME, ValueMetaInterface.TYPE_STRING ),
+      new ValueMetaString( KettleDatabaseRepository.FIELD_SLAVE_USERNAME ),
       slaveServer.getUsername() );
     table.addValue(
-      new ValueMeta( KettleDatabaseRepository.FIELD_SLAVE_PASSWORD, ValueMetaInterface.TYPE_STRING ), Encr
+      new ValueMetaString( KettleDatabaseRepository.FIELD_SLAVE_PASSWORD ), Encr
         .encryptPasswordIfNotUsingVariables( slaveServer.getPassword() ) );
-    table.addValue( new ValueMeta(
-      KettleDatabaseRepository.FIELD_SLAVE_PROXY_HOST_NAME, ValueMetaInterface.TYPE_STRING ), slaveServer
+    table.addValue( new ValueMetaString(
+      KettleDatabaseRepository.FIELD_SLAVE_PROXY_HOST_NAME ), slaveServer
       .getProxyHostname() );
     table.addValue(
-      new ValueMeta( KettleDatabaseRepository.FIELD_SLAVE_PROXY_PORT, ValueMetaInterface.TYPE_STRING ),
+      new ValueMetaString( KettleDatabaseRepository.FIELD_SLAVE_PROXY_PORT ),
       slaveServer.getProxyPort() );
-    table.addValue( new ValueMeta(
-      KettleDatabaseRepository.FIELD_SLAVE_NON_PROXY_HOSTS, ValueMetaInterface.TYPE_STRING ), slaveServer
+    table.addValue( new ValueMetaString(
+      KettleDatabaseRepository.FIELD_SLAVE_NON_PROXY_HOSTS ), slaveServer
       .getNonProxyHosts() );
     table.addValue(
-      new ValueMeta( KettleDatabaseRepository.FIELD_SLAVE_MASTER, ValueMetaInterface.TYPE_BOOLEAN ), Boolean
+      new ValueMetaBoolean( KettleDatabaseRepository.FIELD_SLAVE_MASTER ), Boolean
         .valueOf( slaveServer.isMaster() ) );
 
     repository.connectionDelegate.updateTableRow(

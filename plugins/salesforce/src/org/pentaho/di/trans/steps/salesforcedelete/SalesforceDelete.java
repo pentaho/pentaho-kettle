@@ -50,6 +50,7 @@ public class SalesforceDelete extends SalesforceStep {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
+  @Override
   public boolean processRow( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
 
     // get one row ... This does some basic initialization of the objects, including loading the info coming in
@@ -129,7 +130,12 @@ public class SalesforceDelete extends SalesforceStep {
   private void flushBuffers() throws KettleException {
 
     try {
-      // create the object(s) by sending the array to the web service
+      if ( data.deleteId.length > data.iBufferPos ) {
+        String[] smallBuffer = new String[data.iBufferPos];
+        System.arraycopy( data.deleteId, 0, smallBuffer, 0, data.iBufferPos );
+        data.deleteId = smallBuffer;
+      }
+      // delete the object(s) by sending the array to the web service
       data.deleteResult = data.connection.delete( data.deleteId );
       int nr = data.deleteResult.length;
       for ( int j = 0; j < nr; j++ ) {
@@ -205,6 +211,7 @@ public class SalesforceDelete extends SalesforceStep {
 
   }
 
+  @Override
   public boolean init( StepMetaInterface smi, StepDataInterface sdi ) {
     meta = (SalesforceDeleteMeta) smi;
     data = (SalesforceDeleteData) sdi;
@@ -232,6 +239,7 @@ public class SalesforceDelete extends SalesforceStep {
     return false;
   }
 
+  @Override
   public void dispose( StepMetaInterface smi, StepDataInterface sdi ) {
     if ( data.outputBuffer != null ) {
       data.outputBuffer = null;

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -308,8 +308,6 @@ public class SwitchCaseTest {
 
     assertNull( defaultRowSet.getRow()[0] );
   }
-
-
 
   /**
    * Switch case step ancestor with overridden methods to have ability to simulate normal transformation execution.

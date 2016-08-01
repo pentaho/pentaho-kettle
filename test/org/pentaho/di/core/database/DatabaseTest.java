@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,8 +22,13 @@
 
 package org.pentaho.di.core.database;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -50,8 +55,8 @@ import org.pentaho.di.core.logging.LoggingObjectType;
 import org.pentaho.di.core.logging.SimpleLoggingObject;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
 import org.pentaho.di.trans.TransMeta;
 
 /**
@@ -85,9 +90,9 @@ public class DatabaseTest {
   }
 
   /**
-   * Test that mysql fetch size is not set if fetch size more than 
+   * Test that mysql fetch size is not set if fetch size more than
    * max rows ResultSet can return.
-   * 
+   *
    * @throws KettleDatabaseException
    * @throws SQLException
    */
@@ -105,7 +110,7 @@ public class DatabaseTest {
 
   /**
    * Test that non-mysql databases can set fetch size.
-   * 
+   *
    * @throws SQLException
    */
   @Test
@@ -121,9 +126,9 @@ public class DatabaseTest {
   }
 
   /**
-   * Test that if for mysql variant if max rows more than fetch size 
+   * Test that if for mysql variant if max rows more than fetch size
    * we do set fetch size
-   * @throws SQLException 
+   * @throws SQLException
    */
   @Test
   public void testOpenQuerySetMySqlFetchSize() throws SQLException {
@@ -147,8 +152,8 @@ public class DatabaseTest {
     RowMetaInterface rm = new RowMeta();
 
     ValueMetaInterface[] valuesMeta =
-    { new ValueMeta( "ID", ValueMeta.TYPE_INTEGER ),
-      new ValueMeta( "DLR_CD", ValueMeta.TYPE_INTEGER ), };
+    { new ValueMetaInteger( "ID" ),
+      new ValueMetaInteger( "DLR_CD" ), };
 
     for ( int i = 0; i < valuesMeta.length; i++ ) {
       valuesMeta[i].setLength( 8 );
@@ -213,7 +218,7 @@ public class DatabaseTest {
     RowMetaInterface rm = new RowMeta();
 
     ValueMetaInterface[] valuesMeta =
-    { new ValueMeta( "ID", ValueMeta.TYPE_INTEGER ), new ValueMeta( "VALUE", ValueMeta.TYPE_INTEGER ), };
+    { new ValueMetaInteger( "ID" ), new ValueMetaInteger( "VALUE" ), };
 
     for ( int i = 0; i < valuesMeta.length; i++ ) {
       valuesMeta[i].setLength( 8 );

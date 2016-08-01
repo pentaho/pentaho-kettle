@@ -34,6 +34,7 @@ import org.pentaho.di.core.gui.TextFileInputFieldInterface;
 import org.pentaho.di.core.injection.Injection;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaString;
 
 
 /**
@@ -229,11 +230,11 @@ public class TextFileInputField implements Cloneable, TextFileInputFieldInterfac
   }
 
   public String getTrimTypeCode() {
-    return ValueMeta.getTrimTypeCode( trimtype );
+    return ValueMetaString.getTrimTypeCode( trimtype );
   }
 
   public String getTrimTypeDesc() {
-    return ValueMeta.getTrimTypeDesc( trimtype );
+    return ValueMetaString.getTrimTypeDesc( trimtype );
   }
 
   public void setTrimType( int trimtype ) {

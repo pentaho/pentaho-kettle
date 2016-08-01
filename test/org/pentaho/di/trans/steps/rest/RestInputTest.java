@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -39,7 +39,7 @@ import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.trans.RowProducer;
 import org.pentaho.di.trans.RowStepCollector;
 import org.pentaho.di.trans.Trans;
@@ -53,7 +53,7 @@ import com.sun.jersey.spi.container.servlet.ServletContainer;
 
 /**
  * Regression test case for PDI-13072
- * 
+ *
  * @author vladimir.dolzhenko@gmail.com
  */
 public class RestInputTest {
@@ -106,8 +106,8 @@ public class RestInputTest {
     RowProducer rp = trans.addRowProducer( inputStep.getName(), 0 );
 
     RowMeta rowMeta = new RowMeta();
-    rowMeta.addValueMeta( new ValueMeta( "pageSize", ValueMeta.TYPE_STRING ) );
-    rowMeta.addValueMeta( new ValueMeta( "name", ValueMeta.TYPE_STRING ) );
+    rowMeta.addValueMeta( new ValueMetaString( "pageSize" ) );
+    rowMeta.addValueMeta( new ValueMetaString( "name" ) );
     rp.putRow( rowMeta, new Object[] { Integer.valueOf( limit ), name } );
 
     rp.finished();

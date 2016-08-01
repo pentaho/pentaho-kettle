@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,6 +22,7 @@
 
 package org.pentaho.di.trans.steps.switchcase;
 
+import org.pentaho.di.core.injection.Injection;
 import org.pentaho.di.trans.step.StepMeta;
 
 /**
@@ -32,9 +33,11 @@ import org.pentaho.di.trans.step.StepMeta;
  */
 public class SwitchCaseTarget implements Cloneable {
   /** The value to switch over */
+  @Injection( name = "CASE_VALUE" )
   public String caseValue;
 
   /** The case target step name (only used during serialization) */
+  @Injection( name = "CASE_TARGET_STEP_NAME" )
   public String caseTargetStepname;
 
   /** The case target step */

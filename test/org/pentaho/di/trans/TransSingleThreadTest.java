@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,8 +27,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import junit.framework.TestCase;
-
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.RowMetaAndData;
@@ -36,11 +34,18 @@ import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaBigNumber;
+import org.pentaho.di.core.row.value.ValueMetaBoolean;
+import org.pentaho.di.core.row.value.ValueMetaDate;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
+import org.pentaho.di.core.row.value.ValueMetaNumber;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.trans.TransMeta.TransformationType;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMetaDataCombi;
+
+import junit.framework.TestCase;
 
 public class TransSingleThreadTest extends TestCase {
 
@@ -151,11 +156,11 @@ public class TransSingleThreadTest extends TestCase {
 
     ValueMetaInterface[] valuesMeta =
     {
-      new ValueMeta( "field1", ValueMeta.TYPE_STRING ), new ValueMeta( "field2", ValueMeta.TYPE_INTEGER ),
-      new ValueMeta( "field3", ValueMeta.TYPE_NUMBER ), new ValueMeta( "field4", ValueMeta.TYPE_DATE ),
-      new ValueMeta( "field5", ValueMeta.TYPE_BOOLEAN ),
-      new ValueMeta( "field6", ValueMeta.TYPE_BIGNUMBER ),
-      new ValueMeta( "field7", ValueMeta.TYPE_BIGNUMBER ), };
+      new ValueMetaString( "field1" ), new ValueMetaInteger( "field2" ),
+      new ValueMetaNumber( "field3" ), new ValueMetaDate( "field4" ),
+      new ValueMetaBoolean( "field5" ),
+      new ValueMetaBigNumber( "field6" ),
+      new ValueMetaBigNumber( "field7" ), };
 
     for ( int i = 0; i < valuesMeta.length; i++ ) {
       rm.addValueMeta( valuesMeta[i] );

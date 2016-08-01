@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -33,8 +33,8 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
@@ -64,6 +64,7 @@ public class SasInput extends BaseStep implements StepInterface {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
+  @Override
   public boolean processRow( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
     meta = (SasInputMeta) smi;
     data = (SasInputData) sdi;
@@ -160,13 +161,16 @@ public class SasInput extends BaseStep implements StepInterface {
     sasReader.read( new SasReaderCallback() {
       private boolean firstRead = true;
 
+      @Override
       public void column( int index, String name, String label, SasColumnType type, int length ) {
       }
 
+      @Override
       public boolean readData() {
         return true;
       }
 
+      @Override
       public boolean row( int rowNumber, Object[] rowData ) {
         try {
           // Let's copy the data for safety
@@ -198,7 +202,7 @@ public class SasInput extends BaseStep implements StepInterface {
                 row[outputIndex++] = value;
                 break;
               default:
-                throw new RuntimeException( "Unhandled data type '" + ValueMeta.getTypeDesc( type ) );
+                throw new RuntimeException( "Unhandled data type '" + ValueMetaFactory.getValueMetaName( type ) );
             }
           }
 

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,6 +25,8 @@ package org.pentaho.di.trans.steps.execprocess;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
@@ -57,6 +59,7 @@ public class ExecProcess extends BaseStep implements StepInterface {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
+  @Override
   public boolean processRow( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
     meta = (ExecProcessMeta) smi;
     data = (ExecProcessData) sdi;
@@ -93,6 +96,21 @@ public class ExecProcess extends BaseStep implements StepInterface {
             .getProcessField() ) );
         }
       }
+      if ( meta.isArgumentsInFields() ) {
+        if ( data.indexOfArguments == null ) {
+          data.indexOfArguments = new int[meta.getArgumentFieldNames().length];
+          for ( int i = 0; i < data.indexOfArguments.length; i++ ) {
+            String fieldName = meta.getArgumentFieldNames()[i];
+            data.indexOfArguments[i] = data.previousRowMeta.indexOfValue( fieldName );
+            if ( data.indexOfArguments[i] < 0 ) {
+              logError( BaseMessages.getString( PKG, "ExecProcess.Exception.CouldnotFindField" )
+                + "[" + fieldName + "]" );
+              throw new KettleException(
+                BaseMessages.getString( PKG, "ExecProcess.Exception.CouldnotFindField", fieldName ) );
+            }
+          }
+        }
+      }
     } // End If first
 
     Object[] outputRow = RowDataUtil.allocateRowData( data.outputRowMeta.size() );
@@ -110,7 +128,21 @@ public class ExecProcess extends BaseStep implements StepInterface {
       }
 
       // execute and return result
-      execProcess( processString, processResult );
+      if ( meta.isArgumentsInFields() ) {
+        List<String> cmdArray = new ArrayList<>();
+        cmdArray.add( processString );
+
+        for ( int i = 0; i < data.indexOfArguments.length; i++ ) {
+          // Runtime.exec will fail on null array elements
+          // Convert to an empty string if value is null
+          String argString = data.previousRowMeta.getString( r, data.indexOfArguments[i] );
+          cmdArray.add( Const.NVL( argString, "" ) );
+        }
+
+        execProcess( cmdArray.toArray( new String[0] ), processResult );
+      } else {
+        execProcess( processString, processResult );
+      }
 
       if ( meta.isFailWhenNotSuccess() ) {
         if ( processResult.getExistStatus() != 0 ) {
@@ -164,13 +196,21 @@ public class ExecProcess extends BaseStep implements StepInterface {
   }
 
   private void execProcess( String process, ProcessResult processresult ) throws KettleException {
+    execProcess( new String[]{ process }, processresult );
+  }
+
+  private void execProcess( String[] process, ProcessResult processresult ) throws KettleException {
 
     Process p = null;
     try {
       String errorMsg = null;
       // execute process
       try {
-        p = data.runtime.exec( process );
+        if ( !meta.isArgumentsInFields() ) {
+          p = data.runtime.exec( process[0] );
+        } else {
+          p = data.runtime.exec( process );
+        }
       } catch ( Exception e ) {
         errorMsg = e.getMessage();
       }
@@ -223,6 +263,7 @@ public class ExecProcess extends BaseStep implements StepInterface {
     return retvalBuff.toString();
   }
 
+  @Override
   public boolean init( StepMetaInterface smi, StepDataInterface sdi ) {
     meta = (ExecProcessMeta) smi;
     data = (ExecProcessData) sdi;
@@ -238,6 +279,7 @@ public class ExecProcess extends BaseStep implements StepInterface {
     return false;
   }
 
+  @Override
   public void dispose( StepMetaInterface smi, StepDataInterface sdi ) {
     meta = (ExecProcessMeta) smi;
     data = (ExecProcessData) sdi;

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -36,20 +36,20 @@ public class BasePainter {
 
   public final double theta = Math.toRadians( 11 ); // arrowhead sharpness
 
-  protected static final int MINI_ICON_SIZE = 16;
-  protected static final int MINI_ICON_MARGIN = 5;
-  protected static final int MINI_ICON_TRIANGLE_BASE = 20;
-  protected static final int MINI_ICON_DISTANCE = 4;
-  protected static final int MINI_ICON_SKEW = 0;
+  public static final int MINI_ICON_SIZE = 16;
+  public static final int MINI_ICON_MARGIN = 5;
+  public static final int MINI_ICON_TRIANGLE_BASE = 20;
+  public static final int MINI_ICON_DISTANCE = 4;
+  public static final int MINI_ICON_SKEW = 0;
 
-  protected static final int CONTENT_MENU_INDENT = 4;
+  public static final int CONTENT_MENU_INDENT = 4;
 
-  protected static final int CORNER_RADIUS_5 = 10;
-  protected static final int CORNER_RADIUS_4 = 8;
-  protected static final int CORNER_RADIUS_3 = 6;
-  protected static final int CORNER_RADIUS_2 = 4;
+  public static final int CORNER_RADIUS_5 = 10;
+  public static final int CORNER_RADIUS_4 = 8;
+  public static final int CORNER_RADIUS_3 = 6;
+  public static final int CORNER_RADIUS_2 = 4;
 
-  protected static final float FACTOR_1_TO_1 = 1.0f;
+  public static final float FACTOR_1_TO_1 = 1.0f;
 
   protected Point area;
 

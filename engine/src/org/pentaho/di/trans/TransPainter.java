@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -264,6 +264,22 @@ public class TransPainter extends BasePainter {
       StepMeta stepMeta = transMeta.getStep( i );
       if ( stepMeta.isDrawn() ) {
         drawStepPerformanceTable( stepMeta );
+      }
+    }
+
+    for ( int i = transMeta.nrSteps() - 1; i >= 0; i-- ) {
+      StepMeta stepMeta = transMeta.getStep( i );
+      if ( stepMeta.isSelected() && stepMeta.isDrawn() ) {
+        TransPainterFlyoutExtension extension =
+          new TransPainterFlyoutExtension(
+            gc, areaOwners, transMeta, stepMeta, translationX, translationY, magnification, area, offset );
+        try {
+          ExtensionPointHandler.callExtensionPoint(
+            LogChannel.GENERAL, KettleExtensionPoint.TransPainterFlyout.id, extension );
+        } catch ( Exception e ) {
+          LogChannel.GENERAL.logError( "Error calling extension point(s) for the transformation painter step", e );
+        }
+        break;
       }
     }
 
@@ -697,14 +713,25 @@ public class TransPainter extends BasePainter {
     } else {
       gc.setForeground( EColor.CRYSTAL );
     }
+    if ( stepMeta.isSelected() ) {
+      gc.setForeground( 0, 93, 166 );
+    }
     gc.drawRoundRectangle( x - 1, y - 1, iconsize + 1, iconsize + 1, 8, 8 );
 
     Point namePosition = getNamePosition( name, screen, iconsize );
 
+    if ( stepMeta.isSelected() ) {
+      int tmpAlpha = gc.getAlpha();
+      gc.setAlpha( 192 );
+      gc.setBackground( 216, 230, 241 );
+      gc.fillRoundRectangle( namePosition.x - 8, namePosition.y - 2, gc.textExtent( name ).x + 15, 25,
+          BasePainter.CORNER_RADIUS_5 + 15, BasePainter.CORNER_RADIUS_5 + 15 );
+      gc.setAlpha( tmpAlpha );
+    }
+
     gc.setForeground( EColor.BLACK );
     gc.setFont( EFont.GRAPH );
-    gc.drawText( name, namePosition.x, namePosition.y, true );
-
+    gc.drawText( name, namePosition.x, namePosition.y + 2, true );
     boolean partitioned = false;
 
     StepPartitioningMeta meta = stepMeta.getStepPartitioningMeta();

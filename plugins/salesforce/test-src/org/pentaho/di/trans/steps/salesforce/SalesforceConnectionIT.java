@@ -21,14 +21,21 @@
  ******************************************************************************/
 package org.pentaho.di.trans.steps.salesforce;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.rmi.RemoteException;
 import java.util.Calendar;
+import java.util.UUID;
 
-import org.apache.axis.transport.http.HTTPConstants;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -41,21 +48,18 @@ import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.util.EnvUtil;
 
-import com.sforce.soap.partner.AllOrNoneHeader;
 import com.sforce.soap.partner.GetServerTimestampResult;
 import com.sforce.soap.partner.GetUserInfoResult;
 import com.sforce.soap.partner.LoginResult;
-import com.sforce.soap.partner.SforceServiceLocator;
-import com.sforce.soap.partner.SoapBindingStub;
-import com.sforce.soap.partner.fault.InvalidIdFault;
-import com.sforce.soap.partner.fault.LoginFault;
-import com.sforce.soap.partner.fault.UnexpectedErrorFault;
+import com.sforce.soap.partner.PartnerConnection;
+import com.sforce.ws.ConnectionException;
+import com.sforce.ws.ConnectorConfig;
 
 public class SalesforceConnectionIT {
 
-  private SoapBindingStub bindingStub;
+  private PartnerConnection bindingStub;
 
-  private String samplePassword = "password";
+  private String samplePassword = "MySamplePassword";
 
   @BeforeClass
   public static void setUpClass() throws KettleException {
@@ -67,86 +71,100 @@ public class SalesforceConnectionIT {
   }
 
   @Before
-  public void setUp() throws InvalidIdFault, UnexpectedErrorFault, LoginFault, RemoteException {
-    GetServerTimestampResult serverTime = new GetServerTimestampResult( Calendar.getInstance() );
+  public void setUp() throws RemoteException, ConnectionException {
+    GetServerTimestampResult serverTime = new GetServerTimestampResult();
+    serverTime.setTimestamp(  Calendar.getInstance()  );
     LoginResult result = mock( LoginResult.class );
 
-    bindingStub = mock( SoapBindingStub.class );
+    bindingStub = mock( PartnerConnection.class );
     when( bindingStub.login( anyString(), anyString() ) ).thenReturn( result );
     when( bindingStub.getServerTimestamp() ).thenReturn( serverTime );
   }
 
   @Test
-  public void testConnect() {
+  public void testConnect() throws Exception {
     testConnect( samplePassword );
   }
 
   @Test
-  public void testConnect_Encrypted() {
+  public void testConnect_Encrypted() throws Exception {
     String password = Encr.encryptPasswordIfNotUsingVariables( samplePassword );
     testConnect( password );
   }
 
-  public void testConnect( String password ) {
+  private void testConnect( String password ) throws Exception {
     LogChannelInterface logInterface = mock( LogChannelInterface.class );
-    String url = "url";
-    String username = "username";
+    String url = "http://localhost/services/Soap/u/37.0";
+    String username = "MySampleUsername";
     SalesforceConnection connection;
-    try {
-      connection = spy( new SalesforceConnection( logInterface, url, username, password ) );
-      doReturn( bindingStub ).when( connection ).getBinding();
-      ArgumentCaptor<String> captorUser = ArgumentCaptor.forClass( String.class );
-      ArgumentCaptor<String> captorPassword = ArgumentCaptor.forClass( String.class );
+    connection = spy( new SalesforceConnection( logInterface, url, username, password ) );
+    ArgumentCaptor<ConnectorConfig> captorConfig = ArgumentCaptor.forClass( ConnectorConfig.class );
 
+    ConnectorConfig mockConfig = mock( ConnectorConfig.class );
+    doReturn( UUID.randomUUID().toString() ).when( mockConfig ).getUsername();
+    doReturn( UUID.randomUUID().toString() ).when( mockConfig ).getPassword();
+    doReturn( mockConfig ).when( bindingStub ).getConfig();
+    doReturn( mock( LoginResult.class ) ).when( bindingStub ).login( anyString(), anyString() );
+
+    try {
       connection.connect();
-      verify( bindingStub ).login( captorUser.capture(), captorPassword.capture() );
-      assertTrue( username.equals( captorUser.getValue() ) );
-      assertTrue( samplePassword.equals( captorPassword.getValue() ) );
-    } catch ( Exception e ) {
-      fail( "Connection fail" );
+    } catch ( KettleException e ) {
+      // The connection should fail
+      // We just want to see the generated ConnectorConfig
     }
+
+    verify( connection ).createBinding( captorConfig.capture() );
+    assertEquals( username, captorConfig.getValue().getUsername() );
+    assertEquals( Encr.decryptPasswordOptionallyEncrypted( password ),
+      captorConfig.getValue().getPassword() );
   }
 
   @Test
   public void testConnectOptions() {
     LogChannelInterface logInterface = mock( LogChannelInterface.class );
-    String url = "http://localhost";
+    String url = SalesforceConnectionUtils.TARGET_DEFAULT_URL;
     String username = "username";
     String password = "password";
     Integer timeout = 30;
-    SalesforceConnection connection;
-    LoginResult loginResult;
-    GetServerTimestampResult serverTime;
-    GetUserInfoResult userInfo;
     try {
-      connection = spy( new SalesforceConnection( logInterface, url, username, password ) );
-      bindingStub = spy( new SoapBindingStub() );
-      loginResult = mock( LoginResult.class );
-      userInfo = mock( GetUserInfoResult.class );
-      serverTime = new GetServerTimestampResult( Calendar.getInstance() );
-      doReturn( bindingStub ).when( connection ).getBinding();
+      SalesforceConnection connection =
+        spy( new SalesforceConnection( logInterface, url, username, password ) );
+      connection.setTimeOut( timeout );
+      LoginResult loginResult = mock( LoginResult.class );
+      GetUserInfoResult userInfo = mock( GetUserInfoResult.class );
+      GetServerTimestampResult serverTime = new GetServerTimestampResult();
+      serverTime.setTimestamp( Calendar.getInstance() );
+
+      ArgumentCaptor<ConnectorConfig> captorConfig = ArgumentCaptor.forClass( ConnectorConfig.class );
+
       doReturn( loginResult ).when( bindingStub ).login( anyString(), anyString() );
       doReturn( userInfo ).when( bindingStub ).getUserInfo();
-      when( loginResult.getServerUrl() ).thenReturn( "http://localhost/serverUrl" );
-      when( loginResult.getSessionId() ).thenReturn( "UnitTestSession" );
-      when( userInfo.getUserFullName() ).thenReturn( "My Full Name" );
-      when( userInfo.getUserEmail() ).thenReturn( "MyEmail@pentaho.org" );
-      when( userInfo.getUserLanguage() ).thenReturn( "1s and 0s" );
-      when( userInfo.getOrganizationName() ).thenReturn( "Pentaho Salesforce Plugin Developers" );
+      when( loginResult.getServerUrl() ).thenReturn( "http://localhost/services/Soap/u/37.0" );
+      when( loginResult.getSessionId() ).thenReturn( UUID.randomUUID().toString() );
+      when( userInfo.getUserFullName() ).thenReturn( UUID.randomUUID().toString() );
+      when( userInfo.getUserEmail() ).thenReturn( UUID.randomUUID().toString() );
+      when( userInfo.getUserLanguage() ).thenReturn( UUID.randomUUID().toString() );
+      when( userInfo.getOrganizationName() ).thenReturn( UUID.randomUUID().toString() );
       doReturn( serverTime ).when( bindingStub ).getServerTimestamp();
 
       connection.setTimeOut( timeout );
       connection.setUsingCompression( true );
       connection.setRollbackAllChangesOnError( true );
-      connection.connect();
+      try {
+        connection.connect();
+      } catch ( KettleException e ) {
+        // The connection should fail
+        // We just want to see the generated ConnectorConfig
+      }
 
-      assertEquals( timeout.intValue(), bindingStub.getTimeout() );
-      assertTrue( (boolean) bindingStub._getProperty( HTTPConstants.MC_ACCEPT_GZIP ) );
-      assertTrue( (boolean) bindingStub._getProperty( HTTPConstants.MC_GZIP_REQUEST ) );
-      AllOrNoneHeader headerObject = (AllOrNoneHeader)
-        bindingStub.getHeader( new SforceServiceLocator().getServiceName().getNamespaceURI(), "AllOrNoneHeader" )
-          .getObjectValue();
-      assertTrue( headerObject.isAllOrNone() );
+      verify( connection ).createBinding( captorConfig.capture() );
+      ConnectorConfig config = captorConfig.getValue();
+      assertNotNull( config );
+      assertEquals( url, config.getAuthEndpoint() );
+      assertTrue( config.isCompression() );
+      assertTrue( config.isManualLogin() );
+      assertEquals( timeout, Integer.valueOf( config.getConnectionTimeout() ) );
+      assertEquals( timeout, Integer.valueOf( config.getReadTimeout() ) );
     } catch ( Exception e ) {
       fail( "Connection fail: " + e.getMessage() );
     }

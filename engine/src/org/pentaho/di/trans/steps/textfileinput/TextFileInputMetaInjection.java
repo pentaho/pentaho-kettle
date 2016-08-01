@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -28,13 +28,13 @@ import java.util.Locale;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.trans.step.StepInjectionMetaEntry;
+import org.pentaho.di.trans.step.StepInjectionUtil;
 import org.pentaho.di.trans.step.StepMetaInjectionEntryInterface;
 import org.pentaho.di.trans.step.StepMetaInjectionInterface;
-
-import org.pentaho.di.trans.step.StepInjectionUtil;
 
 /**
  * This takes care of the external metadata injection into the TextFileInputMeta class
@@ -42,6 +42,7 @@ import org.pentaho.di.trans.step.StepInjectionUtil;
  * @author Matt
  * @deprecated replaced by implementation in the ...steps.fileinput.text package
  */
+@Deprecated
 public class TextFileInputMetaInjection implements StepMetaInjectionInterface {
 
   enum Entry implements StepMetaInjectionEntryInterface {
@@ -143,6 +144,7 @@ public class TextFileInputMetaInjection implements StepMetaInjectionInterface {
     /**
      * @return the valueType
      */
+    @Override
     public int getValueType() {
       return valueType;
     }
@@ -150,6 +152,7 @@ public class TextFileInputMetaInjection implements StepMetaInjectionInterface {
     /**
      * @return the description
      */
+    @Override
     public String getDescription() {
       return description;
     }
@@ -321,7 +324,7 @@ public class TextFileInputMetaInjection implements StepMetaInjectionInterface {
                       field.setLength( Const.toInt( value, -1 ) );
                       break;
                     case FIELD_TYPE:
-                      field.setType( ValueMeta.getType( value ) );
+                      field.setType( ValueMetaFactory.getIdForValueMeta( value ) );
                       break;
                     case FIELD_IGNORE:
                       field.setIgnored( "Y".equalsIgnoreCase( value ) );
@@ -330,7 +333,7 @@ public class TextFileInputMetaInjection implements StepMetaInjectionInterface {
                       field.setFormat( value );
                       break;
                     case FIELD_TRIM_TYPE:
-                      field.setTrimType( ValueMeta.getTrimTypeByCode( value ) );
+                      field.setTrimType( ValueMetaString.getTrimTypeByCode( value ) );
                       break;
                     case FIELD_PRECISION:
                       field.setPrecision( Const.toInt( value, -1 ) );
@@ -583,6 +586,7 @@ public class TextFileInputMetaInjection implements StepMetaInjectionInterface {
 
   }
 
+  @Override
   public List<StepInjectionMetaEntry> extractStepMetadataEntries() throws KettleException {
     List<StepInjectionMetaEntry> result = new ArrayList<StepInjectionMetaEntry>();
     result.add( StepInjectionUtil.getEntry( Entry.FILE_TYPE, meta.getFileType() ) );

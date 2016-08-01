@@ -31,7 +31,7 @@ done
 echo "-"
 SPOONDIR=$(dirname "$(readlink -f "$0")")
 echo Launching Spoon: "$SPOONDIR/spoon.sh $SPOON_OPTIONS"
-if [ "$SPOON_REDIRECT" -ne "1" ] ; then
+if [ "$SPOON_REDIRECT" != "1" ] ; then
     exec ./spoon.sh $SPOON_OPTIONS
 else
     echo "Console output gets redirected to $SPOONDIR/SpoonDebug.txt"

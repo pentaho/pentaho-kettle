@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2014 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -41,9 +41,10 @@ import org.pentaho.di.core.plugins.Plugin;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
 import org.pentaho.di.core.row.value.ValueMetaPluginType;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
@@ -109,7 +110,7 @@ public class MappingInputFieldsTest {
   }
 
   /**
-   * verifies: If SelectingAndSortingUnspecifiedFields checkbox is checked, then 
+   * verifies: If SelectingAndSortingUnspecifiedFields checkbox is checked, then
    * <ol>
    * <li>all fields throw to the next step;
    * <li>fields are resorted: mapped fields, then alphabetical sorted not mapped fields.
@@ -131,13 +132,13 @@ public class MappingInputFieldsTest {
 
     RowMeta rm = new RowMeta();
 
-    rm.addValueMeta( new ValueMeta( "string", ValueMetaInterface.TYPE_STRING ) );
-    rm.addValueMeta( new ValueMeta( "number1", ValueMetaInterface.TYPE_INTEGER ) );
-    rm.addValueMeta( new ValueMeta( "number2", ValueMetaInterface.TYPE_INTEGER ) );
-    rm.addValueMeta( new ValueMeta( "number3", ValueMetaInterface.TYPE_INTEGER ) );
-    rm.addValueMeta( new ValueMeta( "number", ValueMetaInterface.TYPE_INTEGER ) );
-    rm.addValueMeta( new ValueMeta( "number4", ValueMetaInterface.TYPE_INTEGER ) );
-    rm.addValueMeta( new ValueMeta( "number5", ValueMetaInterface.TYPE_INTEGER ) );
+    rm.addValueMeta( new ValueMetaString( "string" ) );
+    rm.addValueMeta( new ValueMetaInteger( "number1" ) );
+    rm.addValueMeta( new ValueMetaInteger( "number2" ) );
+    rm.addValueMeta( new ValueMetaInteger( "number3" ) );
+    rm.addValueMeta( new ValueMetaInteger( "number" ) );
+    rm.addValueMeta( new ValueMetaInteger( "number4" ) );
+    rm.addValueMeta( new ValueMetaInteger( "number5" ) );
 
     in.putRow( rm, new Object[] { "str", new Integer( 100501 ), new Integer( 100502 ), new Integer( 100503 ),
       new Integer( 100500 ), new Integer( 100504 ), new Integer( 100505 ) } );
@@ -253,13 +254,13 @@ public class MappingInputFieldsTest {
 
     RowMeta rm = new RowMeta();
 
-    rm.addValueMeta( new ValueMeta( "string", ValueMetaInterface.TYPE_STRING ) );
-    rm.addValueMeta( new ValueMeta( "number1", ValueMetaInterface.TYPE_INTEGER ) );
-    rm.addValueMeta( new ValueMeta( "number2", ValueMetaInterface.TYPE_INTEGER ) );
-    rm.addValueMeta( new ValueMeta( "number3", ValueMetaInterface.TYPE_INTEGER ) );
-    rm.addValueMeta( new ValueMeta( "number", ValueMetaInterface.TYPE_INTEGER ) );
-    rm.addValueMeta( new ValueMeta( "number4", ValueMetaInterface.TYPE_INTEGER ) );
-    rm.addValueMeta( new ValueMeta( "number5", ValueMetaInterface.TYPE_INTEGER ) );
+    rm.addValueMeta( new ValueMetaString( "string" ) );
+    rm.addValueMeta( new ValueMetaInteger( "number1" ) );
+    rm.addValueMeta( new ValueMetaInteger( "number2" ) );
+    rm.addValueMeta( new ValueMetaInteger( "number3" ) );
+    rm.addValueMeta( new ValueMetaInteger( "number" ) );
+    rm.addValueMeta( new ValueMetaInteger( "number4" ) );
+    rm.addValueMeta( new ValueMetaInteger( "number5" ) );
 
     in.putRow( rm, new Object[] { "str", new Integer( 100501 ), new Integer( 100502 ), new Integer( 100503 ),
       new Integer( 100500 ), new Integer( 100504 ), new Integer( 100505 ) } );

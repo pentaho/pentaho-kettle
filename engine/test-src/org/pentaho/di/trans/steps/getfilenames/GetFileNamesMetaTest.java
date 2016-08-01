@@ -29,7 +29,6 @@ import java.util.Map;
 import java.util.Random;
 
 import org.junit.Test;
-import static org.junit.Assert.*;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.fileinput.FileInputList;
 import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
@@ -99,8 +98,8 @@ public class GetFileNamesMetaTest {
     fieldLoadSaveValidatorAttributeMap.put( "file_required", fileRequiredArrayLoadSaveValidator );
     fieldLoadSaveValidatorAttributeMap.put( "include_subfolders", stringArrayLoadSaveValidator );
 
-    LoadSaveTester loadSaveTester =
-      new LoadSaveTester( GetFileNamesMeta.class, attributes, getterMap, setterMap,
+    LoadSaveTester<GetFileNamesMeta> loadSaveTester =
+      new LoadSaveTester<>( GetFileNamesMeta.class, attributes, getterMap, setterMap,
           fieldLoadSaveValidatorAttributeMap, new HashMap<String, FieldLoadSaveValidator<?>>() );
 
     loadSaveTester.testSerialization();

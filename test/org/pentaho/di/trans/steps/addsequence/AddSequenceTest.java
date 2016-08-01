@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -26,16 +26,14 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import junit.framework.TestCase;
-
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
 import org.pentaho.di.trans.RowStepCollector;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransHopMeta;
@@ -43,6 +41,8 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.rowgenerator.RowGeneratorMeta;
+
+import junit.framework.TestCase;
 
 /**
  * Test class for the Add sequence step.
@@ -57,10 +57,10 @@ public class AddSequenceTest extends TestCase {
 
     ValueMetaInterface[] valuesMeta =
     {
-      new ValueMeta( "counter", ValueMeta.TYPE_INTEGER ),
-      new ValueMeta( "valuename", ValueMeta.TYPE_INTEGER ),
-      new ValueMeta( "valuename_1", ValueMeta.TYPE_INTEGER ),
-      new ValueMeta( "valuename_2", ValueMeta.TYPE_INTEGER ) };
+      new ValueMetaInteger( "counter" ),
+      new ValueMetaInteger( "valuename" ),
+      new ValueMetaInteger( "valuename_1" ),
+      new ValueMetaInteger( "valuename_2" ) };
 
     for ( int i = 0; i < valuesMeta.length; i++ ) {
       rm.addValueMeta( valuesMeta[i] );

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -125,6 +125,12 @@ public class Append extends BaseStep implements StepInterface {
       List<StreamInterface> infoStreams = meta.getStepIOMeta().getInfoStreams();
       StreamInterface headStream = infoStreams.get( 0 );
       StreamInterface tailStream = infoStreams.get( 1 );
+      if ( meta.headStepname != null ) {
+        headStream.setStepMeta( getTransMeta().findStep( meta.headStepname ) );
+      }
+      if ( meta.tailStepname != null ) {
+        tailStream.setStepMeta( getTransMeta().findStep( meta.tailStepname ) );
+      }
 
       if ( headStream.getStepname() == null || tailStream.getStepname() == null ) {
         logError( BaseMessages.getString( PKG, "AppendRows.Log.BothHopsAreNeeded" ) );

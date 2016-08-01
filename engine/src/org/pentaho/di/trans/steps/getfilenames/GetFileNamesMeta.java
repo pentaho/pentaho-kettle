@@ -383,10 +383,12 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface 
     return fileTypeFilter;
   }
 
+  @Override
   public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     readData( stepnode );
   }
 
+  @Override
   public Object clone() {
     GetFileNamesMeta retval = (GetFileNamesMeta) super.clone();
 
@@ -411,6 +413,7 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface 
     includeSubFolders = new String[nrfiles];
   }
 
+  @Override
   public void setDefault() {
     int nrfiles = 0;
     doNotFailIfNoFile = false;
@@ -435,6 +438,7 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface 
     }
   }
 
+  @Override
   public void getFields( RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep,
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
 
@@ -520,6 +524,7 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface 
 
   }
 
+  @Override
   public String getXML() {
     StringBuilder retval = new StringBuilder( 300 );
 
@@ -594,6 +599,7 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface 
     }
   }
 
+  @Override
   public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
       int nrfiles = rep.countNrStepAttributes( id_step, "file_name" );
@@ -631,6 +637,7 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface 
     }
   }
 
+  @Override
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       rep.saveStepAttribute( id_transformation, id_step, "filterfiletype", fileTypeFilter.toString() );
@@ -671,7 +678,7 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface 
     return includeSubFolders;
   }
 
-  private FileInputList.FileTypeFilter[] buildFileTypeFiltersArray() {
+  private FileInputList.FileTypeFilter[] buildFileTypeFiltersArray( String[] fileName ) {
     FileInputList.FileTypeFilter[] filters = new FileInputList.FileTypeFilter[fileName.length];
     for ( int i = 0; i < fileName.length; i++ ) {
       filters[i] = getFileTypeFilter();
@@ -682,21 +689,23 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface 
   public String[] getFilePaths( VariableSpace space ) {
     return FileInputList.createFilePathList(
       space, fileName, fileMask, excludeFileMask, fileRequired, includeSubFolderBoolean(),
-      buildFileTypeFiltersArray() );
+      buildFileTypeFiltersArray( fileName ) );
   }
 
   public FileInputList getFileList( VariableSpace space ) {
     return FileInputList.createFileList(
       space, fileName, fileMask, excludeFileMask, fileRequired, includeSubFolderBoolean(),
-      buildFileTypeFiltersArray() );
+      buildFileTypeFiltersArray( fileName ) );
   }
 
   public FileInputList getDynamicFileList( VariableSpace space, String[] filename, String[] filemask,
     String[] excludefilemask, String[] filerequired, boolean[] includesubfolders ) {
     return FileInputList.createFileList(
-      space, filename, filemask, excludefilemask, filerequired, includesubfolders, buildFileTypeFiltersArray() );
+      space, filename, filemask, excludefilemask, filerequired, includesubfolders,
+      buildFileTypeFiltersArray( filename ) );
   }
 
+  @Override
   public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
     RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
@@ -770,11 +779,13 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface 
     return references;
   }
 
+  @Override
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
     TransMeta transMeta, Trans trans ) {
     return new GetFileNames( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 
+  @Override
   public StepDataInterface getStepData() {
     return new GetFileNamesData();
   }
@@ -791,6 +802,7 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface 
    *
    * @return the filename of the exported resource
    */
+  @Override
   public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
     ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore ) throws KettleException {
     try {

@@ -193,8 +193,8 @@ import org.pentaho.di.core.reflection.StringSearchResult;
 import org.pentaho.di.core.row.RowBuffer;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.undo.TransAction;
 import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.variables.VariableSpace;
@@ -910,6 +910,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     target.setTransfer( types );
 
     target.addDropListener( new DropTargetListener() {
+      @Override
       public void dragEnter( DropTargetEvent event ) {
         if ( event.detail == DND.DROP_DEFAULT ) {
           if ( ( event.operations & DND.DROP_COPY ) != 0 ) {
@@ -920,10 +921,12 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         }
       }
 
+      @Override
       public void dragOver( DropTargetEvent event ) {
         event.feedback = DND.FEEDBACK_SELECT | DND.FEEDBACK_SCROLL;
       }
 
+      @Override
       public void dragOperationChanged( DropTargetEvent event ) {
         if ( event.detail == DND.DROP_DEFAULT ) {
           if ( ( event.operations & DND.DROP_COPY ) != 0 ) {
@@ -934,12 +937,15 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         }
       }
 
+      @Override
       public void dragLeave( DropTargetEvent event ) {
       }
 
+      @Override
       public void dropAccept( DropTargetEvent event ) {
       }
 
+      @Override
       public void drop( DropTargetEvent event ) {
         if ( fileTransfer.isSupportedType( event.currentDataType ) ) {
           String[] files = (String[]) event.data;
@@ -1230,8 +1236,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     RowMetaAndData allArgs = new RowMetaAndData();
 
     for ( int ii = 0; ii < arguments.length; ++ii ) {
-      allArgs.addValue( new ValueMeta(
-        Props.STRING_ARGUMENT_NAME_PREFIX + ( 1 + ii ), ValueMetaInterface.TYPE_STRING ), arguments[ii] );
+      allArgs.addValue( new ValueMetaString(
+        Props.STRING_ARGUMENT_NAME_PREFIX + ( 1 + ii ) ), arguments[ii] );
     }
 
     // Now ask the use for more info on these!
@@ -1264,7 +1270,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       for ( String varName : list ) {
         String varValue = sp.getProperty( varName, "" );
         if ( vars.getRowMeta().indexOfValue( varName ) < 0 && !varName.startsWith( Const.INTERNAL_VARIABLE_PREFIX ) ) {
-          vars.addValue( new ValueMeta( varName, ValueMetaInterface.TYPE_STRING ), varValue );
+          vars.addValue( new ValueMetaString( varName ), varValue );
         }
       }
     }
@@ -1274,7 +1280,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       for ( String varName : list ) {
         String varValue = sp.getProperty( varName, "" );
         if ( vars.getRowMeta().indexOfValue( varName ) < 0 && !varName.startsWith( Const.INTERNAL_VARIABLE_PREFIX ) ) {
-          vars.addValue( new ValueMeta( varName, ValueMetaInterface.TYPE_STRING ), varValue );
+          vars.addValue( new ValueMetaString( varName ), varValue );
         }
       }
     }
@@ -1682,6 +1688,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   public void showWelcomePage() {
     try {
       LocationListener listener = new LocationListener() {
+        @Override
         public void changing( LocationEvent event ) {
           if ( event.location.endsWith( ".pdf" ) ) {
             Program.launch( event.location );
@@ -1705,6 +1712,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
           }
         }
 
+        @Override
         public void changed( LocationEvent event ) {
           // System.out.println("Changed to: " + event.location);
         }
@@ -1731,6 +1739,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   public void showDocumentMap() {
     try {
       LocationListener listener = new LocationListener() {
+        @Override
         public void changing( LocationEvent event ) {
           if ( event.location.endsWith( ".pdf" ) ) {
             Program.launch( event.location );
@@ -1738,6 +1747,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
           }
         }
 
+        @Override
         public void changed( LocationEvent event ) {
           System.out.println( "Changed to: " + event.location );
         }
@@ -1794,6 +1804,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       final String lastFileId = Integer.toString( i );
 
       Action action = new Action( "open-last-file-" + ( i + 1 ), Action.AS_DROP_DOWN_MENU ) {
+        @Override
         public void run() {
           lastFileSelect( lastFileId );
         }
@@ -1949,6 +1960,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     selectionFilter.setLayoutData( fdSelectionFilter );
 
     selectionFilter.addModifyListener( new ModifyListener() {
+      @Override
       public void modifyText( ModifyEvent arg0 ) {
         if ( coreObjectsTree != null && !coreObjectsTree.isDisposed() ) {
           previousShowTrans = false;
@@ -1973,6 +1985,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     } );
 
     expandAll.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent event ) {
         if ( designSelected ) {
           tidyBranches( coreObjectsTree.getItems(), true );
@@ -1984,6 +1997,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     } );
 
     collapseAll.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent event ) {
         if ( designSelected ) {
           tidyBranches( coreObjectsTree.getItems(), false );
@@ -2115,6 +2129,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
     coreObjectsTree.addSelectionListener( new SelectionAdapter() {
 
+      @Override
       public void widgetSelected( SelectionEvent event ) {
         // expand the selected tree item, collapse the rest
         //
@@ -2140,6 +2155,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     } );
 
     coreObjectsTree.addTreeListener( new TreeAdapter() {
+      @Override
       public void treeExpanded( TreeEvent treeEvent ) {
         if ( props.getAutoCollapseCoreObjectsTree() ) {
           TreeItem treeItem = (TreeItem) treeEvent.item;
@@ -2164,6 +2180,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
     coreObjectsTree.addMouseMoveListener( new MouseMoveListener() {
 
+      @Override
       public void mouseMove( MouseEvent move ) {
         // don't show tooltips in the tree if the option is not set
         if ( !getProperties().showToolTips() ) {
@@ -2302,6 +2319,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
           }
         }
         Collections.sort( sortedCat, new Comparator<PluginInterface>() {
+          @Override
           public int compare( PluginInterface p1, PluginInterface p2 ) {
             return p1.getName().compareTo( p2.getName() );
           }
@@ -2345,6 +2363,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
           TreeItem stepItem = createTreeItem( item, pluginName, stepImage );
           stepItem.addListener( SWT.Selection, new Listener() {
 
+            @Override
             public void handleEvent( Event event ) {
               System.out.println( "Tree item Listener fired" );
             }
@@ -2393,6 +2412,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
               TreeItem stepItem = createTreeItem( item, pluginName, jobEntryImage );
               stepItem.addListener( SWT.Selection, new Listener() {
 
+                @Override
                 public void handleEvent( Event arg0 ) {
                   System.out.println( "Tree item Listener fired" );
                 }
@@ -2430,6 +2450,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         specialItem.setText( specialText[i] );
         specialItem.addListener( SWT.Selection, new Listener() {
 
+          @Override
           public void handleEvent( Event arg0 ) {
             System.out.println( "Tree item Listener fired" );
           }
@@ -3232,6 +3253,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         final Sash sash = (Sash) comp;
 
         sash.addSelectionListener( new SelectionAdapter() {
+          @Override
           public void widgetSelected( SelectionEvent event ) {
             Rectangle rect = sash.getParent().getClientArea();
             event.x = Math.min( Math.max( event.x, SASH_LIMIT ), rect.width - SASH_LIMIT );
@@ -3249,6 +3271,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
   }
 
+  @Override
   public void tabDeselected( TabItem item ) {
     if ( !ExpandedContentManager.isVisible() ) {
       item.setSashWeights( sashform.getWeights() );
@@ -3286,6 +3309,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
   }
 
+  @Override
   public boolean tabClose( TabItem item ) {
     try {
       return delegates.tabs.tabClose( item );
@@ -3308,6 +3332,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     return tabfolder;
   }
 
+  @Override
   public void tabSelected( TabItem item ) {
     sashform.setWeights( item.getSashWeights() );
     delegates.tabs.tabSelected( item );
@@ -3750,6 +3775,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
     loginDialog = new RepositoriesDialog( shell, null, new ILoginCallback() {
 
+      @Override
       public void onSuccess( Repository repository ) {
         // Close previous repository...
         if ( rep != null ) {
@@ -3765,11 +3791,13 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         SpoonPluginManager.getInstance().notifyLifecycleListeners( SpoonLifeCycleEvent.REPOSITORY_CONNECTED );
       }
 
+      @Override
       public void onError( Throwable t ) {
         closeRepository();
         onLoginError( t );
       }
 
+      @Override
       public void onCancel() {
 
       }
@@ -4002,6 +4030,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
           public void run() {
 
             shell.getDisplay().syncExec( new Runnable() {
+              @Override
               public void run() {
                 RepositoryExplorer explorer;
                 try {
@@ -4010,6 +4039,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
                       new RepositoryExplorer( shell, rep, cb, Variables.getADefaultVariableSpace() );
                   } catch ( final KettleRepositoryLostException krle ) {
                     shell.getDisplay().asyncExec( new Runnable() {
+                      @Override
                       public void run() {
                         new ErrorDialog(
                             getShell(),
@@ -4034,6 +4064,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
                 } catch ( final Throwable e ) {
                   shell.getDisplay().asyncExec( new Runnable() {
+                    @Override
                     public void run() {
                       new ErrorDialog( shell, BaseMessages.getString( PKG, "Spoon.Error" ), e.getMessage(), e );
                     }
@@ -5575,7 +5606,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       return false;
     }
 
-    //ok, let's show one more modal dialog, users like modal dialogs. 
+    //ok, let's show one more modal dialog, users like modal dialogs.
     //They feel that their opinion are important to us.
     box =
       new MessageBox( shell, SWT.ICON_QUESTION
@@ -6134,16 +6165,19 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     TreeMemory.addTreeListener( selectionTree, STRING_SPOON_MAIN_TREE );
 
     selectionTree.addMenuDetectListener( new MenuDetectListener() {
+      @Override
       public void menuDetected( MenuDetectEvent e ) {
         setMenu( selectionTree );
       }
     } );
 
     selectionTree.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         showSelection();
       }
 
+      @Override
       public void widgetDefaultSelected( SelectionEvent e ) {
         doubleClickedInTree( selectionTree );
       }
@@ -7416,6 +7450,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   }
 
   // Change of step, connection, hop or note...
+  @Override
   public void addUndoPosition( UndoInterface undoInterface, Object[] obj, int[] pos, Point[] prev, Point[] curr ) {
     // It's better to store the indexes of the objects, not the objects
     // itself!
@@ -7755,6 +7790,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     page2.createControl( shell );
 
     Wizard wizard = new Wizard() {
+      @Override
       public boolean performFinish() {
         return delegates.db.copyTable( page1.getSourceDatabase(), page1.getTargetDatabase(), page2.getSelection() );
       }
@@ -7762,6 +7798,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       /**
        * @see org.eclipse.jface.wizard.Wizard#canFinish()
        */
+      @Override
       public boolean canFinish() {
         return page2.canFinish();
       }
@@ -7777,6 +7814,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     wd.open();
   }
 
+  @Override
   public String toString() {
     return APP_NAME;
   }
@@ -7913,7 +7951,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     }
 
     // If we are a MILESTONE or RELEASE_CANDIDATE
-    if ( !ValueMeta.convertStringToBoolean( System.getProperty( "KETTLE_HIDE_DEVELOPMENT_VERSION_WARNING", "N" ) )
+    if ( !ValueMetaString.convertStringToBoolean( System.getProperty( "KETTLE_HIDE_DEVELOPMENT_VERSION_WARNING", "N" ) )
       && Const.RELEASE.equals( Const.ReleaseType.MILESTONE ) ) {
 
       // display the same warning message
@@ -8466,8 +8504,10 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     }
 
     Thread thread = new Thread() {
+      @Override
       public void run() {
         getDisplay().asyncExec( new Runnable() {
+          @Override
           public void run() {
             try {
               delegates.trans.executeTransformation(
@@ -8697,10 +8737,12 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     menuListeners.add( new Object[] { id, listener, methodName } );
   }
 
+  @Override
   public void addTransGraph( TransMeta transMeta ) {
     delegates.trans.addTransGraph( transMeta );
   }
 
+  @Override
   public void addJobGraph( JobMeta jobMeta ) {
     delegates.jobs.addJobGraph( jobMeta );
   }
@@ -8717,6 +8759,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     return delegates.tabs.addSpoonBrowser( name, urlString, null, showControls );
   }
 
+  @Override
   public boolean addSpoonBrowser( String name, String urlString ) {
     return delegates.tabs.addSpoonBrowser( name, urlString, null, true );
   }
@@ -8759,10 +8802,12 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     delegates.db.getSQL();
   }
 
+  @Override
   public boolean overwritePrompt( String message, String rememberText, String rememberPropertyName ) {
     return new PopupOverwritePrompter( shell, props ).overwritePrompt( message, rememberText, rememberPropertyName );
   }
 
+  @Override
   public Object[] messageDialogWithToggle( String dialogTitle, Object image, String message, int dialogImageType,
       String[] buttonLabels, int defaultIndex, String toggleMessage, boolean toggleState ) {
     return GUIResource.getInstance().messageDialogWithToggle(
@@ -8770,6 +8815,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         toggleState );
   }
 
+  @Override
   public boolean messageBox( final String message, final String text, final boolean allowCancel, final int type ) {
 
     final StringBuilder answer = new StringBuilder( "N" );
@@ -8869,6 +8915,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
    * public XulToolbar getToolbar() { return toolbar; }
    */
 
+  @Override
   public void update( ChangedFlagInterface o, Object arg ) {
     try {
       Method m = getClass().getMethod( arg.toString() );
@@ -8882,12 +8929,14 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     }
   }
 
+  @Override
   public void consume( final LifeEventInfo info ) {
     // if (PropsUI.getInstance().isListenerDisabled(info.getName()))
     // return;
 
     if ( info.hasHint( LifeEventInfo.Hint.DISPLAY_BROWSER ) ) {
       display.asyncExec( new Runnable() {
+        @Override
         public void run() {
           delegates.tabs.addSpoonBrowser( info.getName(), info.getMessage(), false, null );
         }
@@ -9025,6 +9074,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
   protected PropertyChangeSupport changeSupport = new PropertyChangeSupport( this );
 
+  @Override
   public void addPropertyChangeListener( PropertyChangeListener listener ) {
     changeSupport.addPropertyChangeListener( listener );
   }
@@ -9033,6 +9083,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     changeSupport.addPropertyChangeListener( propertyName, listener );
   }
 
+  @Override
   public void removePropertyChangeListener( PropertyChangeListener listener ) {
     changeSupport.removePropertyChangeListener( listener );
   }
@@ -9052,24 +9103,30 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
    * ========================= Start XulEventHandler Methods ==========================
    */
 
+  @Override
   public Object getData() {
     return null;
   }
 
+  @Override
   public String getName() {
     return "spoon";
   }
 
+  @Override
   public XulDomContainer getXulDomContainer() {
     return getMainSpoonContainer();
   }
 
+  @Override
   public void setData( Object arg0 ) {
   }
 
+  @Override
   public void setName( String arg0 ) {
   }
 
+  @Override
   public void setXulDomContainer( XulDomContainer arg0 ) {
   }
 
@@ -9128,6 +9185,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   public void fireMenuControlers() {
     if ( !Display.getDefault().getThread().equals( Thread.currentThread() ) ) {
       display.syncExec( new Runnable() {
+        @Override
         public void run() {
           fireMenuControlers();
         }

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,8 +27,9 @@ import java.util.List;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.trans.step.StepInjectionMetaEntry;
 import org.pentaho.di.trans.step.StepMetaInjectionInterface;
 
@@ -107,7 +108,7 @@ public class FixedInputMetaInjection implements StepMetaInjectionInterface {
                           inputField.setName( value );
                           break;
                         case TYPE:
-                          inputField.setType( ValueMeta.getType( value ) );
+                          inputField.setType( ValueMetaFactory.getIdForValueMeta( value ) );
                           break;
                         case WIDTH:
                           inputField.setWidth( Const.toInt( value, -1 ) );
@@ -131,7 +132,7 @@ public class FixedInputMetaInjection implements StepMetaInjectionInterface {
                           inputField.setFormat( value );
                           break;
                         case TRIM_TYPE:
-                          inputField.setTrimType( ValueMeta.getTrimTypeByCode( value ) );
+                          inputField.setTrimType( ValueMetaString.getTrimTypeByCode( value ) );
                           break;
                         default:
                           break;
@@ -183,6 +184,7 @@ public class FixedInputMetaInjection implements StepMetaInjectionInterface {
     meta.setFieldDefinition( fixedInputFields.toArray( new FixedFileInputField[fixedInputFields.size()] ) );
   }
 
+  @Override
   public List<StepInjectionMetaEntry> extractStepMetadataEntries() throws KettleException {
     return null;
   }

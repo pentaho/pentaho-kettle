@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -33,8 +33,8 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaNumber;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.ObjectId;
@@ -257,37 +257,37 @@ public class UnivariateStatsMeta extends BaseStepMeta implements StepMetaInterfa
 
     int index = 0;
     if ( fn.getCalcN() ) {
-      v[index] = new ValueMeta( fn.getSourceFieldName() + "(N)", ValueMetaInterface.TYPE_NUMBER );
+      v[index] = new ValueMetaNumber( fn.getSourceFieldName() + "(N)" );
       v[index].setOrigin( origin );
       index++;
     }
 
     if ( fn.getCalcMean() ) {
-      v[index] = new ValueMeta( fn.getSourceFieldName() + "(mean)", ValueMetaInterface.TYPE_NUMBER );
+      v[index] = new ValueMetaNumber( fn.getSourceFieldName() + "(mean)" );
       v[index].setOrigin( origin );
       index++;
     }
 
     if ( fn.getCalcStdDev() ) {
-      v[index] = new ValueMeta( fn.getSourceFieldName() + "(stdDev)", ValueMetaInterface.TYPE_NUMBER );
+      v[index] = new ValueMetaNumber( fn.getSourceFieldName() + "(stdDev)" );
       v[index].setOrigin( origin );
       index++;
     }
 
     if ( fn.getCalcMin() ) {
-      v[index] = new ValueMeta( fn.getSourceFieldName() + "(min)", ValueMetaInterface.TYPE_NUMBER );
+      v[index] = new ValueMetaNumber( fn.getSourceFieldName() + "(min)" );
       v[index].setOrigin( origin );
       index++;
     }
 
     if ( fn.getCalcMax() ) {
-      v[index] = new ValueMeta( fn.getSourceFieldName() + "(max)", ValueMetaInterface.TYPE_NUMBER );
+      v[index] = new ValueMetaNumber( fn.getSourceFieldName() + "(max)" );
       v[index].setOrigin( origin );
       index++;
     }
 
     if ( fn.getCalcMedian() ) {
-      v[index] = new ValueMeta( fn.getSourceFieldName() + "(median)", ValueMetaInterface.TYPE_NUMBER );
+      v[index] = new ValueMetaNumber( fn.getSourceFieldName() + "(median)" );
       v[index].setOrigin( origin );
       index++;
     }
@@ -298,7 +298,7 @@ public class UnivariateStatsMeta extends BaseStepMeta implements StepMetaInterfa
       NumberFormat pF = NumberFormat.getInstance();
       pF.setMaximumFractionDigits( 2 );
       String res = pF.format( percent * 100 );
-      v[index] = new ValueMeta( fn.getSourceFieldName() + "(" + res + "th percentile)", ValueMetaInterface.TYPE_NUMBER );
+      v[index] = new ValueMetaNumber( fn.getSourceFieldName() + "(" + res + "th percentile)" );
       v[index].setOrigin( origin );
       index++;
     }

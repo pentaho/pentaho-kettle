@@ -77,8 +77,19 @@ public class ExecProcessMeta extends BaseStepMeta implements StepMetaInterface {
   /** Output Line Delimiter - defaults to empty string for backward compatibility **/
   public String outputLineDelimiter = "";
 
+  /** Whether arguments for the command are provided in input fields **/
+  private boolean argumentsInFields;
+
+  /** The field names where arguments should be found **/
+  private String[] argumentFieldNames;
+
   public ExecProcessMeta() {
     super(); // allocate BaseStepMeta
+    allocate( 0 );
+  }
+
+  public void allocate( int argumentCount ) {
+    this.argumentFieldNames = new String[argumentCount];
   }
 
   /**
@@ -149,23 +160,36 @@ public class ExecProcessMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   /**
+   * @deprecated due to method name typo
    * @param failwhennotsuccess
    *          The failwhennotsuccess to set.
    */
+  @Deprecated
   public void setFailWhentNoSuccess( boolean failwhennotsuccess ) {
+    setFailWhenNotSuccess( failwhennotsuccess );
+  }
+
+  /**
+   * @param failwhennotsuccess
+   *          The failwhennotsuccess to set.
+   */
+  public void setFailWhenNotSuccess( boolean failwhennotsuccess ) {
     this.failwhennotsuccess = failwhennotsuccess;
   }
 
+  @Override
   public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     readData( stepnode, databases );
   }
 
+  @Override
   public Object clone() {
     ExecProcessMeta retval = (ExecProcessMeta) super.clone();
 
     return retval;
   }
 
+  @Override
   public void setDefault() {
     resultfieldname = "Result output";
     errorfieldname = "Error output";
@@ -173,6 +197,7 @@ public class ExecProcessMeta extends BaseStepMeta implements StepMetaInterface {
     failwhennotsuccess = false;
   }
 
+  @Override
   public void getFields( RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info, StepMeta nextStep,
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     // Output fields (String)
@@ -199,6 +224,7 @@ public class ExecProcessMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
+  @Override
   public String getXML() {
     StringBuilder retval = new StringBuilder();
 
@@ -208,6 +234,15 @@ public class ExecProcessMeta extends BaseStepMeta implements StepMetaInterface {
     retval.append( "    " + XMLHandler.addTagValue( "exitvaluefieldname", exitvaluefieldname ) );
     retval.append( "    " + XMLHandler.addTagValue( "failwhennotsuccess", failwhennotsuccess ) );
     retval.append( "    " + XMLHandler.addTagValue( "outputlinedelimiter", outputLineDelimiter ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "argumentsInFields", argumentsInFields ) );
+
+    retval.append( "    " ).append( XMLHandler.openTag( "argumentFields" ) ).append( Const.CR );
+    for ( int i = 0; i < argumentFieldNames.length; i++ ) {
+      retval.append( "      " ).append( XMLHandler.openTag( "argumentField" ) ).append( Const.CR );
+      retval.append( "        " ).append( XMLHandler.addTagValue( "argumentFieldName", argumentFieldNames[i] ) );
+      retval.append( "      " ).append( XMLHandler.closeTag( "argumentField" ) ).append( Const.CR );
+    }
+    retval.append( "    " ).append( XMLHandler.closeTag( "argumentFields" ) ).append( Const.CR );
     return retval.toString();
   }
 
@@ -222,12 +257,27 @@ public class ExecProcessMeta extends BaseStepMeta implements StepMetaInterface {
       if ( outputLineDelimiter == null ) {
         outputLineDelimiter = ""; // default to empty string for backward compatibility
       }
+
+      argumentsInFields = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "argumentsInFields" ) );
+      Node argumentFieldsNode = XMLHandler.getSubNode( stepnode, "argumentFields" );
+      if ( argumentFieldsNode == null ) {
+        argumentFieldNames = new String[0];
+      } else {
+        int argumentFieldCount = XMLHandler.countNodes( argumentFieldsNode, "argumentField" );
+        argumentFieldNames = new String[argumentFieldCount];
+        for ( int i = 0; i < argumentFieldCount; i++ ) {
+          Node fnode = XMLHandler.getSubNodeByNr( argumentFieldsNode, "argumentField", i );
+          argumentFieldNames[i] = XMLHandler.getTagValue( fnode, "argumentFieldName" );
+        }
+      }
+
     } catch ( Exception e ) {
       throw new KettleXMLException(
         BaseMessages.getString( PKG, "ExecProcessMeta.Exception.UnableToReadStepInfo" ), e );
     }
   }
 
+  @Override
   public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
       processfield = rep.getStepAttributeString( id_step, "processfield" );
@@ -239,12 +289,20 @@ public class ExecProcessMeta extends BaseStepMeta implements StepMetaInterface {
       if ( outputLineDelimiter == null ) {
         outputLineDelimiter = ""; // default to empty string for backward compatibility
       }
+      argumentsInFields = rep.getStepAttributeBoolean( id_step, "argumentsInFields" );
+
+      int argCount = rep.countNrStepAttributes( id_step, "argumentFieldName" );
+      argumentFieldNames = new String[argCount];
+      for ( int i = 0; i < argCount; i++ ) {
+        argumentFieldNames[i] = rep.getStepAttributeString( id_step, i, "argumentFieldName" );
+      }
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString(
         PKG, "ExecProcessMeta.Exception.UnexpectedErrorReadingStepInfo" ), e );
     }
   }
 
+  @Override
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       rep.saveStepAttribute( id_transformation, id_step, "processfield", processfield );
@@ -253,12 +311,17 @@ public class ExecProcessMeta extends BaseStepMeta implements StepMetaInterface {
       rep.saveStepAttribute( id_transformation, id_step, "exitvaluefieldname", exitvaluefieldname );
       rep.saveStepAttribute( id_transformation, id_step, "failwhennotsuccess", failwhennotsuccess );
       rep.saveStepAttribute( id_transformation, id_step, "outputlinedelimiter", outputLineDelimiter );
+      rep.saveStepAttribute( id_transformation, id_step, "argumentsInFields", argumentsInFields );
+      for ( int i = 0; i < argumentFieldNames.length; i++ ) {
+        rep.saveStepAttribute( id_transformation, id_step, i, "argumentFieldName", argumentFieldNames[i] );
+      }
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString( PKG, "ExecProcessMeta.Exception.UnableToSaveStepInfo" )
         + id_step, e );
     }
   }
 
+  @Override
   public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
     RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
@@ -297,15 +360,18 @@ public class ExecProcessMeta extends BaseStepMeta implements StepMetaInterface {
 
   }
 
+  @Override
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
     TransMeta transMeta, Trans trans ) {
     return new ExecProcess( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 
+  @Override
   public StepDataInterface getStepData() {
     return new ExecProcessData();
   }
 
+  @Override
   public boolean supportsErrorHandling() {
     return failwhennotsuccess;
   }
@@ -316,6 +382,22 @@ public class ExecProcessMeta extends BaseStepMeta implements StepMetaInterface {
 
   public String getOutputLineDelimiter() {
     return outputLineDelimiter;
+  }
+
+  public boolean isArgumentsInFields() {
+    return argumentsInFields;
+  }
+
+  public void setArgumentsInFields( boolean argumentsInFields ) {
+    this.argumentsInFields = argumentsInFields;
+  }
+
+  public String[] getArgumentFieldNames() {
+    return argumentFieldNames;
+  }
+
+  public void setArgumentFieldNames( String[] argumentFieldNames ) {
+    this.argumentFieldNames = argumentFieldNames;
   }
 
 }
