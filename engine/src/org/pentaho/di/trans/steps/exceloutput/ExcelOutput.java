@@ -379,6 +379,9 @@ public class ExcelOutput extends BaseStep implements StepInterface {
             }
             break;
           }
+          default:
+            // fallthrough
+            // Output the data value as a string
           case ValueMetaInterface.TYPE_STRING:
           case ValueMetaInterface.TYPE_BOOLEAN:
           case ValueMetaInterface.TYPE_BINARY: {
@@ -427,9 +430,6 @@ public class ExcelOutput extends BaseStep implements StepInterface {
             } else if ( !meta.isNullBlank() ) {
               data.sheet.addCell( new Label( data.positionX, data.positionY, "" ) );
             }
-            break;
-          }
-          default: {
             break;
           }
         }
