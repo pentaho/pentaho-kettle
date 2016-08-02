@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,7 +23,9 @@
 package org.pentaho.di.core.row.value;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -62,7 +64,7 @@ public class ValueMetaInternetAddress extends ValueMetaDate {
           case STORAGE_TYPE_BINARY_STRING:
             return (InetAddress) convertBinaryStringToNativeType( (byte[]) object );
           case STORAGE_TYPE_INDEXED:
-            return (InetAddress) index[( (Integer) object ).intValue()];
+            return (InetAddress) index[( (Integer) object )];
           default:
             throw new KettleValueException( toString() + " : Unknown storage type " + storageType + " specified." );
         }
@@ -180,6 +182,40 @@ public class ValueMetaInternetAddress extends ValueMetaDate {
   @Override
   public String getString( Object object ) throws KettleValueException {
     return convertInternetAddressToString( getInternetAddress( object ) );
+  }
+
+  @Override
+  public byte[] getBinaryString( Object object ) throws KettleValueException {
+    if ( isStorageBinaryString() && identicalFormat ) {
+      return (byte[]) object; // shortcut it directly for better performance.
+    }
+    if ( object == null ) {
+      return null;
+    }
+    switch ( storageType ) {
+      case STORAGE_TYPE_NORMAL:
+        return convertStringToBinaryString( getString( object ) );
+      case STORAGE_TYPE_BINARY_STRING:
+        return convertStringToBinaryString( getString(
+          convertStringToInternetAddress( convertBinaryStringToString( (byte[]) object ) ) ) );
+      case STORAGE_TYPE_INDEXED:
+        return convertStringToBinaryString(
+          convertInternetAddressToString( (InetAddress) index[( (Integer) object )] ) );
+      default:
+        throw new KettleValueException( toString() + " : Unknown storage type " + storageType + " specified." );
+    }
+  }
+
+  @Override
+  public Object convertBinaryStringToNativeType( byte[] binary ) throws KettleValueException {
+    if ( binary == null || binary.length <= 0 ) {
+      return null;
+    }
+    try {
+      return InetAddress.getByAddress( binary );
+    } catch ( UnknownHostException e ) {
+      throw new KettleValueException( e );
+    }
   }
 
   protected InetAddress convertBigNumberToInternetAddress( BigDecimal bd ) throws KettleValueException {
@@ -476,5 +512,30 @@ public class ValueMetaInternetAddress extends ValueMetaDate {
     }
 
     return retval;
+  }
+
+  @Override
+  public int compare( Object data1, Object data2 ) throws KettleValueException {
+    InetAddress inet1 = getInternetAddress( data1 );
+    InetAddress inet2 = getInternetAddress( data2 );
+    int cmp;
+    if ( inet1 == null ) {
+      if ( inet2 == null ) {
+        cmp = 0;
+      } else {
+        cmp = -1;
+      }
+    } else if ( inet2 == null ) {
+      cmp = 1;
+    } else {
+      BigInteger bigint1 = new BigInteger( inet1.getAddress() );
+      BigInteger bigint2 = new BigInteger( inet2.getAddress() );
+      cmp = bigint1.compareTo( bigint2 );
+    }
+    if ( isSortedDescending() ) {
+      return -cmp;
+    } else {
+      return cmp;
+    }
   }
 }
