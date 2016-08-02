@@ -25,6 +25,7 @@ package org.pentaho.di.core.row.value;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -87,7 +88,7 @@ public class ValueMetaInternetAddress extends ValueMetaDate {
           case STORAGE_TYPE_BINARY_STRING:
             return (InetAddress) convertBinaryStringToNativeType( (byte[]) object );
           case STORAGE_TYPE_INDEXED:
-            return (InetAddress) index[( (Integer) object ).intValue()];
+            return (InetAddress) index[( (Integer) object )];
           default:
             throw new KettleValueException( toString() + " : Unknown storage type " + storageType + " specified." );
         }
@@ -205,6 +206,40 @@ public class ValueMetaInternetAddress extends ValueMetaDate {
   @Override
   public String getString( Object object ) throws KettleValueException {
     return convertInternetAddressToString( getInternetAddress( object ) );
+  }
+
+  @Override
+  public byte[] getBinaryString( Object object ) throws KettleValueException {
+    if ( isStorageBinaryString() && identicalFormat ) {
+      return (byte[]) object; // shortcut it directly for better performance.
+    }
+    if ( object == null ) {
+      return null;
+    }
+    switch ( storageType ) {
+      case STORAGE_TYPE_NORMAL:
+        return convertStringToBinaryString( getString( object ) );
+      case STORAGE_TYPE_BINARY_STRING:
+        return convertStringToBinaryString( getString(
+          convertStringToInternetAddress( convertBinaryStringToString( (byte[]) object ) ) ) );
+      case STORAGE_TYPE_INDEXED:
+        return convertStringToBinaryString(
+          convertInternetAddressToString( (InetAddress) index[( (Integer) object )] ) );
+      default:
+        throw new KettleValueException( toString() + " : Unknown storage type " + storageType + " specified." );
+    }
+  }
+
+  @Override
+  public Object convertBinaryStringToNativeType( byte[] binary ) throws KettleValueException {
+    if ( binary == null || binary.length <= 0 ) {
+      return null;
+    }
+    try {
+      return InetAddress.getByAddress( binary );
+    } catch ( UnknownHostException e ) {
+      throw new KettleValueException( e );
+    }
   }
 
   protected InetAddress convertBigNumberToInternetAddress( BigDecimal bd ) throws KettleValueException {
