@@ -22,15 +22,13 @@
 
 package org.pentaho.di.core.row.value;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.pentaho.di.core.exception.KettleValueException;
+import org.pentaho.di.core.row.ValueMetaInterface;
 
 public class ValueMetaInternetAddressTest {
 
@@ -39,23 +37,51 @@ public class ValueMetaInternetAddressTest {
     ValueMetaInternetAddress vm = new ValueMetaInternetAddress();
     InetAddress smaller = InetAddress.getByName( "127.0.0.1" );
     InetAddress larger = InetAddress.getByName( "127.0.1.1" );
-    assertTrue( vm.isSortedAscending() );
-    assertFalse( vm.isSortedDescending() );
-    assertEquals( 0, vm.compare( null, null ) );
-    assertEquals( -1, vm.compare( null, smaller ) );
-    assertEquals( 1, vm.compare( smaller, null ) );
-    assertEquals( 0, vm.compare( smaller, smaller ) );
-    assertEquals( -1, vm.compare( smaller, larger ) );
-    assertEquals( 1, vm.compare( larger, smaller ) );
+    Assert.assertTrue( vm.isSortedAscending() );
+    Assert.assertFalse( vm.isSortedDescending() );
+    Assert.assertEquals( 0, vm.compare( null, null ) );
+    Assert.assertEquals( -1, vm.compare( null, smaller ) );
+    Assert.assertEquals( 1, vm.compare( smaller, null ) );
+    Assert.assertEquals( 0, vm.compare( smaller, smaller ) );
+    Assert.assertEquals( -1, vm.compare( smaller, larger ) );
+    Assert.assertEquals( 1, vm.compare( larger, smaller ) );
 
     vm.setSortedDescending( true );
-    assertFalse( vm.isSortedAscending() );
-    assertTrue( vm.isSortedDescending() );
-    assertEquals( 0, vm.compare( null, null ) );
-    assertEquals( 1, vm.compare( null, smaller ) );
-    assertEquals( -1, vm.compare( smaller, null ) );
-    assertEquals( 0, vm.compare( smaller, smaller ) );
-    assertEquals( 1, vm.compare( smaller, larger ) );
-    assertEquals( -1, vm.compare( larger, smaller ) );
+    Assert.assertFalse( vm.isSortedAscending() );
+    Assert.assertTrue( vm.isSortedDescending() );
+    Assert.assertEquals( 0, vm.compare( null, null ) );
+    Assert.assertEquals( 1, vm.compare( null, smaller ) );
+    Assert.assertEquals( -1, vm.compare( smaller, null ) );
+    Assert.assertEquals( 0, vm.compare( smaller, smaller ) );
+    Assert.assertEquals( 1, vm.compare( smaller, larger ) );
+    Assert.assertEquals( -1, vm.compare( larger, smaller ) );
+  }
+
+  @Test
+  public void testGetBinaryString() throws KettleValueException, UnknownHostException {
+    // Test normal storage type
+    ValueMetaInternetAddress vmInet = new ValueMetaInternetAddress();
+    final ValueMetaString vmString = new ValueMetaString();
+    InetAddress inetAddress = InetAddress.getByName( "127.0.0.1" );
+    byte[] output = vmInet.getBinaryString( inetAddress );
+    Assert.assertNotNull( output );
+    Assert.assertArrayEquals( vmString.getBinaryString( "127.0.0.1" ), output );
+
+    // Test binary string storage type
+    vmInet.setStorageType( ValueMetaInterface.STORAGE_TYPE_BINARY_STRING );
+    output = vmInet.getBinaryString( vmString.getBinaryString( "127.0.0.1" ) );
+    Assert.assertNotNull( output );
+    Assert.assertArrayEquals( vmString.getBinaryString( "127.0.0.1" ), output );
+
+    // Test indexed storage
+    vmInet.setStorageType( ValueMetaInterface.STORAGE_TYPE_INDEXED );
+    vmInet.setIndex( new InetAddress[] { inetAddress } );
+    Assert.assertArrayEquals( vmString.getBinaryString( "127.0.0.1" ), vmInet.getBinaryString( 0 ) );
+    try {
+      vmInet.getBinaryString( 1 );
+      Assert.fail();
+    } catch ( ArrayIndexOutOfBoundsException e ) {
+      // expected
+    }
   }
 }
