@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -60,7 +60,8 @@ import org.w3c.dom.Node;
  * 
  */
 @Step( id = "JsonOutput", image = "JSO.svg", i18nPackageName = "org.pentaho.di.trans.steps.jsonoutput",
-    name = "JsonOutput.name", description = "JsonOutput.description", categoryDescription = "JsonOutput.category" )
+    name = "JsonOutput.name", description = "JsonOutput.description",
+    documentationUrl = "http://wiki.pentaho.com/display/EAI/JSON+output", categoryDescription = "JsonOutput.category" )
 public class JsonOutputMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = JsonOutputMeta.class; // for i18n purposes, needed by Translator2!!
 
