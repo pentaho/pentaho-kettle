@@ -488,6 +488,11 @@ public class MSSQLServerDatabaseMeta extends BaseDatabaseMeta implements Databas
   }
 
   @Override
+  public boolean supportsSequenceNoMaxValueOption() {
+    return true;
+  }
+
+  @Override
   public String getSQLListOfSequences() {
     return "SELECT name FROM sys.sequences";
   }
