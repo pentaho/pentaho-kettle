@@ -73,7 +73,7 @@ public class RepositoryConnectMenu {
         StringBuilder connectionLabel = new StringBuilder();
         if ( spoon.rep.getUserInfo() != null ) {
           connectionLabel.append( spoon.rep.getUserInfo().getLogin() );
-          connectionLabel.append( " | " );
+          connectionLabel.append( "  |  " );
         }
         if ( repoConnectController != null && repoConnectController.getConnectedRepository() != null ) {
           connectionLabel.append( repoConnectController.getConnectedRepository().getName() );
