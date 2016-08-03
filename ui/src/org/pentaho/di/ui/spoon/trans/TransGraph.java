@@ -842,7 +842,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     //
     if ( e.button == 1 || e.button == 2 ) {
       AreaOwner areaOwner = getVisibleAreaOwner( real.x, real.y );
-      if ( areaOwner != null ) {
+      if ( areaOwner != null && areaOwner.getAreaType() != null ) {
         switch ( areaOwner.getAreaType() ) {
           case STEP_OUTPUT_HOP_ICON:
             // Click on the output icon means: start of drag
@@ -1007,7 +1007,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 
     // Quick new hop option? (drag from one step to another)
     //
-    if ( candidate != null && areaOwner != null ) {
+    if ( candidate != null && areaOwner != null && areaOwner.getAreaType() != null ) {
       switch ( areaOwner.getAreaType() ) {
         case STEP_ICON:
           currentStep = (StepMeta) areaOwner.getOwner();
@@ -1252,7 +1252,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     // Moved over an area?
     //
     AreaOwner areaOwner = getVisibleAreaOwner( real.x, real.y );
-    if ( areaOwner != null ) {
+    if ( areaOwner != null && areaOwner.getAreaType() != null ) {
       switch ( areaOwner.getAreaType() ) {
         case STEP_ICON:
           StepMeta stepMeta = (StepMeta) areaOwner.getOwner();
@@ -1432,7 +1432,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     Point real = screen2real( e.x, e.y );
 
     AreaOwner areaOwner = getVisibleAreaOwner( real.x, real.y );
-    if ( areaOwner != null ) {
+    if ( areaOwner != null && areaOwner.getAreaType() != null ) {
       switch ( areaOwner.getAreaType() ) {
         case STEP_ICON:
           StepMeta stepMeta = (StepMeta) areaOwner.getOwner();
@@ -2771,7 +2771,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     //
     StringBuilder tip = new StringBuilder();
     AreaOwner areaOwner = getVisibleAreaOwner( x, y );
-    if ( areaOwner != null ) {
+    if ( areaOwner != null && areaOwner.getAreaType() != null ) {
       switch ( areaOwner.getAreaType() ) {
         case REMOTE_INPUT_STEP:
           StepMeta step = (StepMeta) areaOwner.getParent();
@@ -2888,7 +2888,6 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
           break;
         default:
           break;
-
       }
     }
 
@@ -2937,17 +2936,36 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
       }
 
     } else if ( !newTip.equalsIgnoreCase( getToolTipText() ) ) {
+      Image tooltipImage = null;
       if ( tipImage != null ) {
-        toolTip.setImage( tipImage );
+        tooltipImage = tipImage;
       } else {
-        toolTip.setImage( GUIResource.getInstance().getImageSpoon() );
+        tooltipImage = GUIResource.getInstance().getImageSpoon();
       }
-      toolTip.setText( newTip );
-      toolTip.hide();
-      toolTip.show( new org.eclipse.swt.graphics.Point( screenX, screenY ) );
+      showTooltip( newTip, tooltipImage, screenX, screenY  );
+    }
+
+    if ( areaOwner != null && areaOwner.getExtensionAreaType() != null ) {
+      try {
+        TransPainterFlyoutTooltipExtension extension =
+            new TransPainterFlyoutTooltipExtension( areaOwner, this, new Point( screenX, screenY ) );
+
+        ExtensionPointHandler.callExtensionPoint(
+            LogChannel.GENERAL, KettleExtensionPoint.TransPainterFlyoutTooltip.id, extension );
+
+      } catch ( Exception e ) {
+        LogChannel.GENERAL.logError( "Error calling extension point(s) for the transformation painter step", e );
+      }
     }
 
     return subject;
+  }
+
+  public void showTooltip( String label, Image image, int screenX, int screenY ) {
+    toolTip.setImage( image );
+    toolTip.setText( label );
+    toolTip.hide();
+    toolTip.show( new org.eclipse.swt.graphics.Point( screenX, screenY ) );
   }
 
   public AreaOwner getVisibleAreaOwner( int x, int y ) {
