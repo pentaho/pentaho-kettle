@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -79,23 +79,26 @@ public class JobEntryWriteToLog extends JobEntryBase implements Cloneable, JobEn
     this( "" );
   }
 
+  @Override
   public Object clone() {
     JobEntryWriteToLog je = (JobEntryWriteToLog) super.clone();
     return je;
   }
 
+  @Override
   public String getXML() {
     StringBuilder retval = new StringBuilder( 200 );
 
     retval.append( super.getXML() );
     retval.append( "      " ).append( XMLHandler.addTagValue( "logmessage", logmessage ) );
     retval.append( "      " ).append(
-      XMLHandler.addTagValue( "loglevel", ( entryLogLevel == null ) ? null : entryLogLevel.getCode() ) );
+      XMLHandler.addTagValue( "loglevel", ( getEntryLogLevel() == null ) ? null : getEntryLogLevel().getCode() ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "logsubject", logsubject ) );
 
     return retval.toString();
   }
 
+  @Override
   public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers,
     Repository rep, IMetaStore metaStore ) throws KettleXMLException {
     try {
@@ -109,6 +112,7 @@ public class JobEntryWriteToLog extends JobEntryBase implements Cloneable, JobEn
     }
   }
 
+  @Override
   public void loadRep( Repository rep, IMetaStore metaStore, ObjectId id_jobentry, List<DatabaseMeta> databases,
     List<SlaveServer> slaveServers ) throws KettleException {
     try {
@@ -124,6 +128,7 @@ public class JobEntryWriteToLog extends JobEntryBase implements Cloneable, JobEn
 
   // Save the attributes of this job entry
   //
+  @Override
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_job ) throws KettleException {
     try {
       rep.saveJobEntryAttribute( id_job, getObjectId(), "logmessage", logmessage );
@@ -153,38 +158,47 @@ public class JobEntryWriteToLog extends JobEntryBase implements Cloneable, JobEn
       this.containerObjectId = writerLog.getContainerObjectId();
     }
 
+    @Override
     public String getFilename() {
       return null;
     }
 
+    @Override
     public String getLogChannelId() {
       return writerLog.getLogChannelId();
     }
 
+    @Override
     public String getObjectCopy() {
       return null;
     }
 
+    @Override
     public ObjectId getObjectId() {
       return null;
     }
 
+    @Override
     public String getObjectName() {
       return subject;
     }
 
+    @Override
     public ObjectRevision getObjectRevision() {
       return null;
     }
 
+    @Override
     public LoggingObjectType getObjectType() {
       return LoggingObjectType.STEP;
     }
 
+    @Override
     public LoggingObjectInterface getParent() {
       return parent;
     }
 
+    @Override
     public RepositoryDirectory getRepositoryDirectory() {
       return null;
     }
@@ -193,6 +207,7 @@ public class JobEntryWriteToLog extends JobEntryBase implements Cloneable, JobEn
       return writerLog;
     }
 
+    @Override
     public LogLevel getLogLevel() {
       return logLevel;
     }
@@ -200,6 +215,7 @@ public class JobEntryWriteToLog extends JobEntryBase implements Cloneable, JobEn
     /**
      * @return the execution container object id
      */
+    @Override
     public String getContainerObjectId() {
       return containerObjectId;
     }
@@ -207,6 +223,7 @@ public class JobEntryWriteToLog extends JobEntryBase implements Cloneable, JobEn
     /**
      * Stub
      */
+    @Override
     public Date getRegistrationDate() {
       return null;
     }
@@ -245,24 +262,34 @@ public class JobEntryWriteToLog extends JobEntryBase implements Cloneable, JobEn
     }
 
     try {
-      switch ( logWriterObject.getLogLevel() ) {
+      switch ( getEntryLogLevel() ) {
         case ERROR:
-          logChannel.logError( message + Const.CR );
+          if ( logChannel.isError() ) {
+            logChannel.logError( message + Const.CR );
+          }
           break;
         case MINIMAL:
           logChannel.logMinimal( message + Const.CR );
           break;
         case BASIC:
-          logChannel.logBasic( message + Const.CR );
+          if ( logChannel.isBasic() ) {
+            logChannel.logBasic( message + Const.CR );
+          }
           break;
         case DETAILED:
-          logChannel.logDetailed( message + Const.CR );
+          if ( logChannel.isDetailed() ) {
+            logChannel.logDetailed( message + Const.CR );
+          }
           break;
         case DEBUG:
-          logChannel.logDebug( message + Const.CR );
+          if ( logChannel.isDebug() ) {
+            logChannel.logDebug( message + Const.CR );
+          }
           break;
         case ROWLEVEL:
-          logChannel.logRowlevel( message + Const.CR );
+          if ( logChannel.isRowLevel() ) {
+            logChannel.logRowlevel( message + Const.CR );
+          }
           break;
         default: // NOTHING
           break;
@@ -287,21 +314,25 @@ public class JobEntryWriteToLog extends JobEntryBase implements Cloneable, JobEn
    *          The result of the previous execution
    * @return The Result of the execution.
    */
+  @Override
   public Result execute( Result prev_result, int nr ) {
     prev_result.setResult( evaluate( prev_result ) );
     return prev_result;
   }
 
+  @Override
   public boolean resetErrorsBeforeExecution() {
     // we should be able to evaluate the errors in
     // the previous jobentry.
     return false;
   }
 
+  @Override
   public boolean evaluates() {
     return true;
   }
 
+  @Override
   public boolean isUnconditional() {
     return false;
   }
