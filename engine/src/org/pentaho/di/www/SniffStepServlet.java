@@ -369,8 +369,14 @@ public class SniffStepServlet extends BaseHttpServlet implements CartePluginInte
           out.println( "<HEAD>" );
           out.println( "<TITLE>" + BaseMessages.getString( PKG, "SniffStepServlet.SniffResults" ) + "</TITLE>" );
           out.println( "<META http-equiv=\"Refresh\" content=\"10;url="
-            + convertContextPath( CONTEXT_PATH ) + "?name=" + URLEncoder.encode( transName, "UTF-8" ) + "&id="
-            + URLEncoder.encode( id, "UTF-8" ) + "\">" );
+            		  + convertContextPath( CONTEXT_PATH )
+            		  + "?trans=" + URLEncoder.encode( transName, "UTF-8" )
+            		  + "&id=" + URLEncoder.encode( id, "UTF-8" ) 
+            		  + "&lines=" + URLEncoder.encode( Integer.toString(nrLines), "UTF-8" )
+            		  + "&copynr=" + URLEncoder.encode( Integer.toString(copyNr), "UTF-8" )
+            		  + "&type=" + URLEncoder.encode( type, "UTF-8" )
+            		  + "&step=" + URLEncoder.encode( stepName, "UTF-8" )
+            		  + "\">" );
           out.println( "<META http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">" );
           out.println( "</HEAD>" );
           out.println( "<BODY>" );
