@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -71,6 +71,7 @@ public class AreaOwner {
   private Object parent;
   private Object owner;
   private AreaType areaType;
+  private Object extensionAreaType;
 
   /**
    * @param x
@@ -83,6 +84,15 @@ public class AreaOwner {
     Object owner ) {
     super();
     this.areaType = areaType;
+    this.area = new Rectangle( x - offset.x, y - offset.y, width, heigth );
+    this.parent = parent;
+    this.owner = owner;
+  }
+
+  public AreaOwner( Object extensionAreaType, int x, int y, int width, int heigth, Point offset, Object parent,
+      Object owner ) {
+    super();
+    this.extensionAreaType = extensionAreaType;
     this.area = new Rectangle( x - offset.x, y - offset.y, width, heigth );
     this.parent = parent;
     this.owner = owner;
@@ -159,5 +169,13 @@ public class AreaOwner {
    */
   public void setAreaType( AreaType areaType ) {
     this.areaType = areaType;
+  }
+
+  public Object getExtensionAreaType() {
+    return extensionAreaType;
+  }
+
+  public void setExtensionAreaType( Object extensionAreaType ) {
+    this.extensionAreaType = extensionAreaType;
   }
 }
