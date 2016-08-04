@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -284,8 +284,17 @@ public class RowMeta implements RowMetaInterface {
       lock.writeLock().lock();
       try {
         ValueMetaInterface old = valueMetaList.get( index );
-        valueMetaList.set( index, valueMeta );
-        cache.replaceMapping( old.getName(), valueMeta.getName(), index );
+        ValueMetaInterface newMeta = valueMeta;
+
+        // try to check if a ValueMeta with the same name already exists 
+        int existsIndex = indexOfValue( valueMeta.getName() );
+        // if it exists and it's not in the requested position
+        // we need to take care of renaming
+        if ( existsIndex >= 0 && existsIndex != index ) {
+          newMeta = renameValueMetaIfInRow( valueMeta, null );
+        }
+        valueMetaList.set( index, newMeta );
+        cache.replaceMapping( old.getName(), newMeta.getName(), index );
       } finally {
         lock.writeLock().unlock();
       }
