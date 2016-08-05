@@ -45,7 +45,7 @@ public class RepositoryConnectMenu {
   private static Class<?> PKG = RepositoryConnectMenu.class;
   private static LogChannelInterface log = KettleLogStore.getLogChannelInterfaceFactory().create(
       RepositoryConnectMenu.class );
-  private static final int MAX_REPO_NAME_PIXEL_LENGTH = 280;
+  private static final int MAX_REPO_NAME_PIXEL_LENGTH = 230;
 
   private Spoon spoon;
   private ToolBar toolBar;
@@ -75,10 +75,13 @@ public class RepositoryConnectMenu {
           connectionLabel.append( spoon.rep.getUserInfo().getLogin() );
           connectionLabel.append( "  |  " );
         }
+        StringBuilder connectionLabelTip = new StringBuilder( connectionLabel.toString() );
         if ( repoConnectController != null && repoConnectController.getConnectedRepository() != null ) {
-          connectionLabel.append( repoConnectController.getConnectedRepository().getName() );
+          connectionLabel.append( truncateName( repoConnectController.getConnectedRepository().getName() ) );
+          connectionLabelTip.append( repoConnectController.getConnectedRepository().getName() );
         }
         connectDropdown.setText( connectionLabel.toString() );
+        connectDropdown.setToolTipText( connectionLabelTip.toString() );
       } else {
         connectDropdown.setText( BaseMessages.getString( PKG, "RepositoryConnectMenu.Connect" ) );
       }
@@ -197,21 +200,22 @@ public class RepositoryConnectMenu {
         connectionMenu.setVisible( true );
       }
 
-      private String truncateName( String name ) {
-        GC gc = new GC( toolBar );
-        Point size = gc.textExtent( name );
-        if ( size.x <= MAX_REPO_NAME_PIXEL_LENGTH ) { // repository name is small enough to fit just return it.
-          gc.dispose();
-          return name;
-        }
-        String originalName = name;
-        while ( gc.textExtent( name + "..." ).x > MAX_REPO_NAME_PIXEL_LENGTH ) {
-          name = name.substring( 0, name.length() - 1 );
-        }
-        gc.dispose();
-        name = name + "...";
-        return name;
-      }
     } );
+  }
+
+  private String truncateName( String name ) {
+    GC gc = new GC( toolBar );
+    Point size = gc.textExtent( name );
+    if ( size.x <= MAX_REPO_NAME_PIXEL_LENGTH ) { // repository name is small enough to fit just return it.
+      gc.dispose();
+      return name;
+    }
+    String originalName = name;
+    while ( gc.textExtent( name + "..." ).x > MAX_REPO_NAME_PIXEL_LENGTH ) {
+      name = name.substring( 0, name.length() - 1 );
+    }
+    gc.dispose();
+    name = name + "...";
+    return name;
   }
 }

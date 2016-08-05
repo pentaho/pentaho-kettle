@@ -627,3 +627,17 @@ hr {
   margin-right: 10px;
   margin-top: 4px;
 }
+
+.popover {
+  height: 20px !important;
+  font-size: 10px; 
+  width: auto;
+  text-align: center;
+  background-color: #FFFFFF ;
+  border: 1px solid #F2F2F2 ;
+  box-shadow: 0 0 4px 0 rgba(0,0,0,0.4);
+  color: #666666 ;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}

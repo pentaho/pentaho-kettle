@@ -25,7 +25,8 @@ define(
         'angular',
         'angular-route',
         'angular-animate',
-        'angular-sanitize'
+        'angular-sanitize',
+        'angular-bootstrap_1.3.3'
     ],
 
 function(angular) {
@@ -34,7 +35,8 @@ function(angular) {
     'ngRoute',
     'ngAnimate',
     'ngSanitize',
-    'repoConnectionAppControllers'
+    'repoConnectionAppControllers',
+    'ui.bootstrap'
   ]);
 
   repoConnectionApp.config(['$routeProvider',
