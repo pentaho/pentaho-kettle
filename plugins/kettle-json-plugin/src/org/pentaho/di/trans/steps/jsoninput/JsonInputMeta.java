@@ -68,7 +68,8 @@ import org.w3c.dom.Node;
  * Store run-time data on the JsonInput step.
  */
 @Step( id = "JsonInput", image = "JSI.svg", i18nPackageName = "org.pentaho.di.trans.steps.jsoninput",
-    name = "JsonInput.name", description = "JsonInput.description", categoryDescription = "JsonInput.category" )
+    documentationUrl = "http://wiki.pentaho.com/display/EAI/JSON+Input", name = "JsonInput.name",
+    description = "JsonInput.description", categoryDescription = "JsonInput.category" )
 @InjectionSupported( localizationPrefix = "JsonInput.Injection.", groups = { "FILENAME_LINES", "FIELDS" }, hide = {
   "ACCEPT_FILE_NAMES", "ACCEPT_FILE_STEP", "PASS_THROUGH_FIELDS", "ACCEPT_FILE_FIELD", "ADD_FILES_TO_RESULT",
   "IGNORE_ERRORS", "FILE_ERROR_FIELD", "FILE_ERROR_MESSAGE_FIELD", "SKIP_BAD_FILES", "WARNING_FILES_TARGET_DIR",

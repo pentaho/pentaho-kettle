@@ -46,6 +46,7 @@ import org.w3c.dom.Node;
 
 @Step( id = "HL7Input", image = "hl7-input.svg", i18nPackageName = "org.pentaho.di.trans.steps.hl7input",
     name = "HL7Input.Name", description = "HL7Input.TooltipDesc",
+    documentationUrl = "http://wiki.pentaho.com/display/EAI/HL7+Input",
     categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Input" )
 public class HL7InputMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = HL7InputMeta.class; // for i18n purposes, needed by Translator2!!

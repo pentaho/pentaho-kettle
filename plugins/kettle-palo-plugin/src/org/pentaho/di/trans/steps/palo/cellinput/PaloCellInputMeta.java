@@ -16,7 +16,7 @@
  *
  *   Portions Copyright 2008 Stratebi Business Solutions, S.L.
  *   Portions Copyright 2011 De Bortoli Wines Pty Limited (Australia)
- *   Portions Copyright 2011 - 2013 Pentaho Corporation
+ *   Portions Copyright 2011 - 2016 Pentaho Corporation
  */
 
 package org.pentaho.di.trans.steps.palo.cellinput;
@@ -51,9 +51,9 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
-@Step( id = "PaloCellInput", image = "PaloCellInput.svg",
-    i18nPackageName = "org.pentaho.di.trans.steps.palo.cellinput", name = "PaloCellInput.TransName",
-    description = "PaloCellInput.TransDescription",
+@Step( id = "PaloCellInput", image = "PaloCellInput.svg", i18nPackageName = "org.pentaho.di.trans.steps.palo.cellinput",
+    name = "PaloCellInput.TransName", description = "PaloCellInput.TransDescription",
+    documentationUrl = "http://wiki.pentaho.com/display/EAI/Palo+Cell+Input",
     categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Palo" )
 public class PaloCellInputMeta extends BaseStepMeta implements StepMetaInterface {
   private DatabaseMeta databaseMeta = null;
@@ -257,7 +257,7 @@ public class PaloCellInputMeta extends BaseStepMeta implements StepMetaInterface
           }
         }
       } catch ( KettleException e ) {
-        cr = new CheckResult( 
+        cr = new CheckResult(
             CheckResultInterface.TYPE_RESULT_ERROR, "An error occurred: " + e.getMessage(), stepMeta );
         remarks.add( cr );
       } finally {

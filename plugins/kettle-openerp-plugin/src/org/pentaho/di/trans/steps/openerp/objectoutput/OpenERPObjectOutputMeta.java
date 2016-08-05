@@ -13,6 +13,7 @@
  *   along with this software.  If not, see <http://www.gnu.org/licenses/>.
  *
  *   Copyright 2011 De Bortoli Wines Pty Limited (Australia)
+ *   Portions Copyright 2011 - 2016 Pentaho Corporation
  */
 
 package org.pentaho.di.trans.steps.openerp.objectoutput;
@@ -46,7 +47,7 @@ import org.w3c.dom.Node;
 
 @Step( id = "OpenERPObjectOutputImport", image = "OpenERPObjectOutput.svg",
   i18nPackageName = "org.pentaho.di.trans.steps.openerp.objectoutput", name = "OpenERPObjectOutput.TransName",
-  description = "OpenERPObjectOutput.TransDescription",
+  description = "OpenERPObjectOutput.TransDescription", documentationUrl = "http://wiki.pentaho.com/display/EAI/OpenERP+Object+Output",
   categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.OpenERP" )
 public class OpenERPObjectOutputMeta extends BaseStepMeta implements StepMetaInterface {
 

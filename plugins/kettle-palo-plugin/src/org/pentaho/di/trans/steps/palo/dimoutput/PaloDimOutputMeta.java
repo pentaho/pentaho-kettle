@@ -16,7 +16,7 @@
  *
  *   Portions Copyright 2008 Stratebi Business Solutions, S.L.
  *   Portions Copyright 2011 De Bortoli Wines Pty Limited (Australia)
- *   Portions Copyright 2011 - 2013 Pentaho Corporation
+ *   Portions Copyright 2011 - 2016 Pentaho Corporation
  */
 
 package org.pentaho.di.trans.steps.palo.dimoutput;
@@ -56,6 +56,7 @@ import org.w3c.dom.Node;
 @Step( id = "PaloDimOutput", image = "PaloDimOutput.svg",
     i18nPackageName = "org.pentaho.di.trans.steps.palo.dimoutput", name = "PaloDimOutput.TransName",
     description = "PaloDimOutput.TransDescription",
+    documentationUrl = "http://wiki.pentaho.com/display/EAI/Palo+Dimension+Output",
     categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Palo" )
 public class PaloDimOutputMeta extends BaseStepMeta implements StepMetaInterface {
 
@@ -261,7 +262,7 @@ public class PaloDimOutputMeta extends BaseStepMeta implements StepMetaInterface
         }
 
         if ( this.levels == null || this.levels.size() == 0 ) {
-          cr = new CheckResult( 
+          cr = new CheckResult(
               CheckResultInterface.TYPE_RESULT_ERROR, "Dimension Output Fields are empty.", stepMeta );
           remarks.add( cr );
         } else {
@@ -287,7 +288,7 @@ public class PaloDimOutputMeta extends BaseStepMeta implements StepMetaInterface
           }
         }
       } catch ( KettleException e ) {
-        cr = new CheckResult( 
+        cr = new CheckResult(
             CheckResultInterface.TYPE_RESULT_ERROR, "An error occurred: " + e.getMessage(), stepMeta );
         remarks.add( cr );
       } finally {
