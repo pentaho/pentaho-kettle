@@ -15,7 +15,7 @@
  *   along with PaloKettlePlugin.  If not, see <http://www.gnu.org/licenses/>.
  *
  *   Portions Copyright 2011 De Bortoli Wines Pty Limited (Australia)
- *   Portions Copyright 2011 - 2013 Pentaho Corporation
+ *   Portions Copyright 2011 - 2016 Pentaho Corporation
  */
 
 package org.pentaho.di.job.entries.palo.JobEntryCubeCreate;
