@@ -15,7 +15,7 @@
  *   along with PaloKettlePlugin.  If not, see <http://www.gnu.org/licenses/>.
  *
  *   Portions Copyright 2011 De Bortoli Wines Pty Limited (Australia)
- *   Portions Copyright 2011 - 2013 Pentaho Corporation
+ *   Portions Copyright 2011 - 2016 Pentaho Corporation
  */
 
 package org.pentaho.di.job.entries.palo.JobEntryCubeCreate;
@@ -43,7 +43,7 @@ import org.w3c.dom.Node;
 
 /**
  * Job to create a cube in palo
- * 
+ *
  * @author Pieter van der Merwe
  * @since 03-08-2011
  */
@@ -51,6 +51,7 @@ import org.w3c.dom.Node;
 @org.pentaho.di.core.annotations.JobEntry( id = "PALO_CUBE_CREATE",
     i18nPackageName = "org.pentaho.di.job.entries.palo.JobEntryCubeCreate", image = "PaloCubeCreate.svg",
     name = "PaloCubeCreate.JobName", description = "PaloCubeCreate.JobDescription",
+    documentationUrl = "http://wiki.pentaho.com/display/EAI/Palo+Cube+Create",
     categoryDescription = "i18n:org.pentaho.di.job:JobCategory.Category.Palo" )
 public class PaloCubeCreate extends JobEntryBase implements Cloneable, JobEntryInterface {
 
@@ -101,7 +102,7 @@ public class PaloCubeCreate extends JobEntryBase implements Cloneable, JobEntryI
       Node dimensionNode = XMLHandler.getSubNode( entrynode, "dimensions" );
       int nrDimensions = XMLHandler.countNodes( dimensionNode, "dimensionname" );
       for ( int i = 0; i < nrDimensions; i++ ) {
-        String dimensionName = 
+        String dimensionName =
             XMLHandler.getNodeValue( XMLHandler.getSubNodeByNr( dimensionNode, "dimensionname", i ) );
         this.dimensionNames.add( dimensionName );
       }

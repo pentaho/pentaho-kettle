@@ -15,7 +15,7 @@
  *   along with PaloKettlePlugin.  If not, see <http://www.gnu.org/licenses/>.
  *
  *   Portions Copyright 2011 De Bortoli Wines Pty Limited (Australia)
- *   Portions Copyright 2011 - 2013 Pentaho Corporation
+ *   Portions Copyright 2011 - 2016 Pentaho Corporation
  */
 
 package org.pentaho.di.job.entries.palo.JobEntryCubeDelete;
@@ -40,7 +40,7 @@ import org.w3c.dom.Node;
 
 /**
  * Job to delete a cube in palo
- * 
+ *
  * @author Pieter van der Merwe
  * @since 03-08-2011
  */
@@ -48,6 +48,7 @@ import org.w3c.dom.Node;
 @org.pentaho.di.core.annotations.JobEntry( id = "PALO_CUBE_DELETE",
     i18nPackageName = "org.pentaho.di.job.entries.palo.JobEntryCubeDelete", image = "PaloCubeDelete.svg",
     name = "PaloCubeDelete.JobName", description = "PaloCubeDelete.JobDescription",
+    documentationUrl = "http://wiki.pentaho.com/display/EAI/Palo+Cube+Delete",
     categoryDescription = "i18n:org.pentaho.di.job:JobCategory.Category.Palo" )
 public class PaloCubeDelete extends JobEntryBase implements Cloneable, JobEntryInterface {
 
