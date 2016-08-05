@@ -267,9 +267,17 @@ public class TransPainter extends BasePainter {
       }
     }
 
+    int selectedStepsCount = 0;
     for ( int i = transMeta.nrSteps() - 1; i >= 0; i-- ) {
       StepMeta stepMeta = transMeta.getStep( i );
-      if ( stepMeta.isSelected() && stepMeta.isDrawn() ) {
+      if ( stepMeta.isSelected() ) {
+        selectedStepsCount++;
+      }
+    }
+
+    for ( int i = transMeta.nrSteps() - 1; i >= 0; i-- ) {
+      StepMeta stepMeta = transMeta.getStep( i );
+      if ( stepMeta.isSelected() && stepMeta.isDrawn() && selectedStepsCount == 1 ) {
         TransPainterFlyoutExtension extension =
           new TransPainterFlyoutExtension(
             gc, areaOwners, transMeta, stepMeta, translationX, translationY, magnification, area, offset );
