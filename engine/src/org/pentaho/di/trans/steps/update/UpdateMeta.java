@@ -33,6 +33,8 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.injection.Injection;
+import org.pentaho.di.core.injection.InjectionSupported;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaBoolean;
@@ -58,54 +60,70 @@ import org.w3c.dom.Node;
  * Created on 26-apr-2003
  *
  */
-
+@InjectionSupported( localizationPrefix = "InsertUpdateMeta.Injection.", groups = { "KEYS", "UPDATES" } )
 public class UpdateMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = UpdateMeta.class; // for i18n purposes, needed by Translator2!!
 
+  private List<? extends SharedObjectInterface> databases;
+
   /** The lookup table name */
+  @Injection( name = "SCHEMA_NAME" )
   private String schemaName;
 
   /** The lookup table name */
+  @Injection( name = "TABLE_NAME" )
   private String tableName;
 
   /** database connection */
   private DatabaseMeta databaseMeta;
 
   /** which field in input stream to compare with? */
+  @Injection( name = "KEY_STREAM", group = "KEYS" )
   private String[] keyStream;
 
   /** field in table */
+  @Injection( name = "KEY_LOOKUP", group = "KEYS" )
   private String[] keyLookup;
 
   /** Comparator: =, <>, BETWEEN, ... */
+  @Injection( name = "KEY_CONDITION", group = "KEYS" )
   private String[] keyCondition;
 
   /** Extra field for between... */
+  @Injection( name = "KEY_STREAM2", group = "KEYS" )
   private String[] keyStream2;
 
   /** Field value to update after lookup */
+  @Injection( name = "UPDATE_LOOKUP", group = "UPDATES" )
   private String[] updateLookup;
 
   /** Stream name to update value with */
+  @Injection( name = "UPDATE_STREAM", group = "UPDATES" )
   private String[] updateStream;
 
   /** Commit size for inserts/updates */
+  @Injection( name = "COMMIT_SIZE" )
   private String commitSize;
 
   /** update errors are ignored if this flag is set to true */
+  @Injection( name = "IGNORE_LOOKUP_FAILURE" )
   private boolean errorIgnored;
 
   /** adds a boolean field to the output indicating success of the update */
+  @Injection( name = "FLAG_FIELD" )
   private String ignoreFlagField;
 
   /** adds a boolean field to skip lookup and directly update selected fields */
+  @Injection( name = "SKIP_LOOKUP" )
   private boolean skipLookup;
 
   /** Flag to indicate the use of batch updates, enabled by default but disabled for backward compatibility */
+  @Injection( name = "BATCH_UPDATE" )
   private boolean useBatchUpdate;
 
-  public UpdateMeta() {
-    super(); // allocate BaseStepMeta
+  @Injection( name = "CONNECTIONNAME" )
+  public void setConnection( String connectionName ) {
+    databaseMeta = DatabaseMeta.findDatabase( databases, connectionName );
   }
 
   /**
@@ -321,6 +339,7 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface {
 
   @Override
   public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
+    this.databases = databases;
     readData( stepnode, databases );
   }
 
@@ -466,6 +485,7 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface {
 
   @Override
   public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
+    this.databases = databases;
     try {
       databaseMeta = rep.loadDatabaseMetaFromStepAttribute( id_step, "id_connection", databases );
       skipLookup = rep.getStepAttributeBoolean( id_step, "skip_lookup" );
