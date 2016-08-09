@@ -73,7 +73,7 @@ import org.w3c.dom.Node;
  * @since 2007-07-05
  */
 @Step( id = "MetaInject", image = "org/pentaho/di/ui/trans/steps/metainject/img/GenericTransform.svg", name = "ETL "
-    + "Metadata Injection", categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Flow" )
+      + "Metadata Injection", categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Flow" )
 @InjectionSupported( localizationPrefix = "MetaInject.Injection.", groups = { "SOURCE_OUTPUT_FIELDS",
   "MAPPING_FIELDS" } )
 public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface, StepMetaChangeListenerInterface {
@@ -489,7 +489,7 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface, S
       resolver.resolveCurrentDirectory( injectMeta.getSpecificationMethod(), space, rep, injectMeta
         .getParentStepMeta(), injectMeta.getFileName() );
 
-    switch( injectMeta.getSpecificationMethod() ) {
+    switch ( injectMeta.getSpecificationMethod() ) {
       case FILENAME:
         String realFilename = tmpSpace.environmentSubstitute( injectMeta.getFileName() );
         try {
