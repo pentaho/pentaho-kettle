@@ -22,12 +22,14 @@
       "jquery": "common-ui/jquery",
       "angular-sanitize": "angular-sanitize_1.2.15",
       "angular-animate": "repositories/web/js/angular-animate",
+      "angular-bootstrap": "repositories/web/js/ui-bootstrap-tpls",
       "repositories": "repositories_7.0"
     },
     "repositoriesMain_7.0": {
       "jquery": "common-ui/jquery",
       "angular-sanitize": "angular-sanitize_1.2.15",
       "angular-animate": "repositories/web/js/angular-animate",
+      "angular-bootstrap": "repositories/web/js/ui-bootstrap-tpls",
       "repositories": "repositories_7.0",
       "repositoriesMain": "repositoriesMain_7.0"
     }
@@ -38,6 +40,9 @@
       "deps": [ "common-ui/jquery" ]
     },
     "repositories/web/js/angular-animate": {
+      "deps": [ "angular" ]
+    },
+    "repositories/web/js/ui-bootstrap-tpls": {
       "deps": [ "angular" ]
     }
   }
