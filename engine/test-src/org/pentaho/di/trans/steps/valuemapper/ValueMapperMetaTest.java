@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.di.core.KettleEnvironment;
@@ -45,10 +46,19 @@ public class ValueMapperMetaTest implements InitializerInterface<StepMetaInterfa
 
   @Before
   public void setUpLoadSave() throws Exception {
+    FieldLoadSaveValidator<String[]> stringArrayLoadSaveValidator =
+        new ArrayLoadSaveValidator<String>( new StringLoadSaveValidator(), 7 );
+
+    init( stringArrayLoadSaveValidator, stringArrayLoadSaveValidator );
+  }
+
+  private void init( FieldLoadSaveValidator<String[]> sourceStringArrayLoadSaveValidator,
+    FieldLoadSaveValidator<String[]> targetStringArrayLoadSaveValidator ) throws KettleException {
+
     KettleEnvironment.init();
     PluginRegistry.init( true );
     List<String> attributes =
-        Arrays.asList( "fieldToUse", "targetField", "nonMatchDefault", "sourceValue", "targetValue" );
+      Arrays.asList( "fieldToUse", "targetField", "nonMatchDefault", "sourceValue", "targetValue" );
 
     Map<String, String> getterMap = new HashMap<String, String>() {
       {
@@ -68,31 +78,71 @@ public class ValueMapperMetaTest implements InitializerInterface<StepMetaInterfa
         put( "targetValue", "setTargetValue" );
       }
     };
-    FieldLoadSaveValidator<String[]> stringArrayLoadSaveValidator =
-        new ArrayLoadSaveValidator<String>( new StringLoadSaveValidator(), 5 );
-
 
     Map<String, FieldLoadSaveValidator<?>> attrValidatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();
-    attrValidatorMap.put( "sourceValue", stringArrayLoadSaveValidator );
-    attrValidatorMap.put( "targetValue", stringArrayLoadSaveValidator );
+    attrValidatorMap.put( "sourceValue", sourceStringArrayLoadSaveValidator );
+    attrValidatorMap.put( "targetValue", targetStringArrayLoadSaveValidator );
 
     Map<String, FieldLoadSaveValidator<?>> typeValidatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();
 
     loadSaveTester =
-        new LoadSaveTester( testMetaClass, attributes, new ArrayList<String>(), new ArrayList<String>(),
-            getterMap, setterMap, attrValidatorMap, typeValidatorMap, this );
+      new LoadSaveTester( testMetaClass, attributes, new ArrayList<String>(), new ArrayList<String>(),
+        getterMap, setterMap, attrValidatorMap, typeValidatorMap, this );
   }
 
   // Call the allocate method on the LoadSaveTester meta class
   @Override
   public void modify( StepMetaInterface someMeta ) {
     if ( someMeta instanceof ValueMapperMeta ) {
-      ( (ValueMapperMeta) someMeta ).allocate( 5 );
+      ( (ValueMapperMeta) someMeta ).allocate( 7 );
     }
   }
 
   @Test
   public void testSerialization() throws KettleException {
     loadSaveTester.testSerialization();
+  }
+
+  @Test
+  public void testSerializationWithNullAttr() throws KettleException {
+    String abc = "abc";
+    String stringNull = "null";
+    String[] sourceAttrs = { abc, null, abc, null, stringNull, null, stringNull };
+    String[] targetAttrs = { abc, null, null, abc, null, stringNull, stringNull };
+
+    FieldLoadSaveValidator<String[]> sourceValidator =
+      new ArrayLoadSaveValidator<String>( new CustomStringLoadSaveValidator( sourceAttrs ), sourceAttrs.length );
+    FieldLoadSaveValidator<String[]> targetValidator =
+      new ArrayLoadSaveValidator<String>( new CustomStringLoadSaveValidator( targetAttrs ), targetAttrs.length );
+
+    init( sourceValidator, targetValidator );
+
+    loadSaveTester.testSerialization();
+  }
+
+  private static class CustomStringLoadSaveValidator extends StringLoadSaveValidator {
+
+    private String[] values;
+    private int index = 0;
+
+    public CustomStringLoadSaveValidator( String... values ) {
+      this.values = values;
+    }
+
+    @Override
+    public String getTestObject() {
+      int i = index;
+      index = ++index % values.length;
+      return values[i];
+    }
+
+    @Override
+    public boolean validateTestObject( String test, Object actual ) {
+      return test == null ? nullOrEmpty( actual ) : test.equals( actual );
+    }
+
+    private boolean nullOrEmpty( Object o ) {
+      return o == null || StringUtils.isEmpty( o.toString() );
+    }
   }
 }

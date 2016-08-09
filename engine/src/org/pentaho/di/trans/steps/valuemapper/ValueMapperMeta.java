@@ -24,6 +24,7 @@ package org.pentaho.di.trans.steps.valuemapper;
 
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -252,14 +253,18 @@ public class ValueMapperMeta extends BaseStepMeta implements StepMetaInterface {
       rep.saveStepAttribute( id_transformation, id_step, "non_match_default", nonMatchDefault );
 
       for ( int i = 0; i < sourceValue.length; i++ ) {
-        rep.saveStepAttribute( id_transformation, id_step, i, "source_value", sourceValue[i] );
-        rep.saveStepAttribute( id_transformation, id_step, i, "target_value", targetValue[i] );
+        rep.saveStepAttribute( id_transformation, id_step, i, "source_value", getNullOrEmpty( sourceValue[i] ) );
+        rep.saveStepAttribute( id_transformation, id_step, i, "target_value", getNullOrEmpty( targetValue[i] ) );
       }
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString(
         PKG, "ValueMapperMeta.RuntimeError.UnableToSaveRepository.VALUEMAPPER0006", "" + id_step ), e );
     }
 
+  }
+
+  private String getNullOrEmpty( String str ) {
+    return str == null ? StringUtils.EMPTY : str;
   }
 
   @Override
