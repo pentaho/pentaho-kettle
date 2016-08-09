@@ -26,7 +26,7 @@ define(
         'angular-route',
         'angular-animate',
         'angular-sanitize',
-        'angular-bootstrap_1.3.3'
+        'angular-bootstrap'
     ],
 
 function(angular) {
