@@ -26,6 +26,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
@@ -34,8 +38,13 @@ import org.junit.Test;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleMissingPluginsException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.plugins.Plugin;
+import org.pentaho.di.core.plugins.PluginInterface;
+import org.pentaho.di.core.plugins.PluginRegistry;
+import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.step.StepMetaInterface;
 
 public class NormaliserMetaInjectionIT {
 
@@ -49,6 +58,15 @@ public class NormaliserMetaInjectionIT {
   @BeforeClass
   public static void initKettle() throws Exception {
     KettleEnvironment.init( false );
+
+    Map<Class<?>, String> classMap = new HashMap<>();
+    classMap.put( StepMetaInterface.class, "org.pentaho.di.trans.steps.metainject.MetaInjectMeta" );
+    List<String> libraries = new ArrayList<>();
+
+    PluginInterface plugin =
+      new Plugin( new String[] { "MetaInject" }, StepPluginType.class, StepMetaInterface.class, "Flow",
+        "MetaInjectMeta", null, null, false, false, classMap, libraries, null, null );
+    PluginRegistry.getInstance().registerPlugin( StepPluginType.class, plugin );
   }
 
   @After

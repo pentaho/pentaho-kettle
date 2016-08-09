@@ -32,17 +32,15 @@ import static org.mockito.Mockito.when;
 import java.util.Collections;
 
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.logging.LogChannelInterface;
-import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.metainject.MetaInjectMeta;
 
+import org.pentaho.di.trans.steps.metainject.RepositoryImporterExtension;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -69,7 +67,7 @@ public class RepositoryImporterTest {
   }
 
   @Test
-  public void testPatchTransSteps_with_meta_inject_step() {
+  public void testPatchTransSteps_with_meta_inject_step() throws Exception {
     Repository repository = mock( Repository.class );
     LogChannelInterface log = mock( LogChannelInterface.class );
     RepositoryImporter importer = spy( new RepositoryImporter( repository, log ) );
@@ -84,7 +82,15 @@ public class RepositoryImporterTest {
     TransMeta transMeta = mock( TransMeta.class );
     doReturn( Collections.singletonList( stepMeta ) ).when( transMeta ).getSteps();
 
-    importer.patchTransSteps( transMeta );
+    Object[] object = new Object[4];
+    object[0] = "TEST_PATH";
+    object[1] = mock( RepositoryDirectoryInterface.class );
+    object[2] = stepMeta;
+    object[3] = true;
+
+    RepositoryImporterExtension repositoryImporterExtension = new RepositoryImporterExtension();
+    repositoryImporterExtension.callExtensionPoint( log, object );
+
     verify( metaInjectMeta ).setDirectoryPath( "TEST_PATH" );
   }
 }
