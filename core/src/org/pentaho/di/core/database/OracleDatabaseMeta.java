@@ -224,6 +224,11 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
     return "SELECT " + sequenceName + ".nextval FROM dual";
   }
 
+  @Override
+  public boolean supportsSequenceNoMaxValueOption() {
+    return true;
+  }
+
   /**
    * @return true if we need to supply the schema-name to getTables in order to get a correct list of items.
    */
