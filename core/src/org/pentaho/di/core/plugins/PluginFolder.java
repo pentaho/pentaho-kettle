@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -133,7 +133,8 @@ public class PluginFolder implements PluginFolderInterface {
 
         @Override
         public boolean includeFile( FileSelectInfo fileSelectInfo ) throws Exception {
-          return fileSelectInfo.getFile().toString().endsWith( ".jar" );
+          FileObject file = fileSelectInfo.getFile();
+          return file.isFile() && file.toString().endsWith( ".jar" );
         }
       } );
 
