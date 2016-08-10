@@ -596,7 +596,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
         }
       } catch ( SQLException ex ) {
         // cannot do anything about this but log it
-        log.logError( "Error closing statement:" + Const.CR + ex.getMessage() );
+        log.logError( "Error checking closing connection:" + Const.CR + ex.getMessage() );
         log.logError( Const.getStackTracker( ex ) );
       }
 
