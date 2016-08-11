@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,11 +22,6 @@
 
 package org.pentaho.di.job.entries.delay;
 
-import static org.pentaho.di.job.entry.validator.AndValidator.putValidators;
-import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.andValidator;
-import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.integerValidator;
-import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.longValidator;
-
 import java.util.List;
 
 import org.pentaho.di.cluster.SlaveServer;
@@ -43,6 +38,8 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
+import org.pentaho.di.job.entry.validator.AndValidator;
+import org.pentaho.di.job.entry.validator.JobEntryValidatorUtils;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.metastore.api.IMetaStore;
@@ -71,11 +68,13 @@ public class JobEntryDelay extends JobEntryBase implements Cloneable, JobEntryIn
     this( "" );
   }
 
+  @Override
   public Object clone() {
     JobEntryDelay je = (JobEntryDelay) super.clone();
     return je;
   }
 
+  @Override
   public String getXML() {
     StringBuilder retval = new StringBuilder( 200 );
 
@@ -86,6 +85,7 @@ public class JobEntryDelay extends JobEntryBase implements Cloneable, JobEntryIn
     return retval.toString();
   }
 
+  @Override
   public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers,
     Repository rep, IMetaStore metaStore ) throws KettleXMLException {
     try {
@@ -97,6 +97,7 @@ public class JobEntryDelay extends JobEntryBase implements Cloneable, JobEntryIn
     }
   }
 
+  @Override
   public void loadRep( Repository rep, IMetaStore metaStore, ObjectId id_jobentry, List<DatabaseMeta> databases,
     List<SlaveServer> slaveServers ) throws KettleException {
     try {
@@ -111,6 +112,7 @@ public class JobEntryDelay extends JobEntryBase implements Cloneable, JobEntryIn
   //
   // Save the attributes of this job entry
   //
+  @Override
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_job ) throws KettleException {
     try {
       rep.saveJobEntryAttribute( id_job, getObjectId(), "maximumTimeout", maximumTimeout );
@@ -129,6 +131,7 @@ public class JobEntryDelay extends JobEntryBase implements Cloneable, JobEntryIn
    *          The result of the previous execution
    * @return The Result of the execution.
    */
+  @Override
   public Result execute( Result previousResult, int nr ) {
     Result result = previousResult;
     result.setResult( false );
@@ -158,7 +161,7 @@ public class JobEntryDelay extends JobEntryBase implements Cloneable, JobEntryIn
       // starttime (in seconds ,Minutes or Hours)
       long timeStart = System.currentTimeMillis() / Multiple;
 
-      long iMaximumTimeout = Const.toInt( getrealMaximumTimeout(), Const.toInt( DEFAULT_MAXIMUM_TIMEOUT, 0 ) );
+      long iMaximumTimeout = Const.toInt( getRealMaximumTimeout(), Const.toInt( DEFAULT_MAXIMUM_TIMEOUT, 0 ) );
 
       if ( isDetailed() ) {
         logDetailed( BaseMessages.getString( PKG, "JobEntryDelay.LetsWaitFor.Label", iMaximumTimeout, Waitscale ) );
@@ -201,16 +204,19 @@ public class JobEntryDelay extends JobEntryBase implements Cloneable, JobEntryIn
     return result;
   }
 
+  @Override
   public boolean resetErrorsBeforeExecution() {
     // we should be able to evaluate the errors in
     // the previous jobentry.
     return false;
   }
 
+  @Override
   public boolean evaluates() {
     return true;
   }
 
+  @Override
   public boolean isUnconditional() {
     return false;
   }
@@ -219,18 +225,26 @@ public class JobEntryDelay extends JobEntryBase implements Cloneable, JobEntryIn
     return maximumTimeout;
   }
 
+  public String getRealMaximumTimeout() {
+    return Const.trim( environmentSubstitute( getMaximumTimeout() ) );
+  }
+
+  @Deprecated
   public String getrealMaximumTimeout() {
-    return environmentSubstitute( getMaximumTimeout() );
+    return getRealMaximumTimeout();
   }
 
   public void setMaximumTimeout( String s ) {
     maximumTimeout = s;
   }
 
+  @Override
   public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
-    andValidator().validate( this, "maximumTimeout", remarks, putValidators( longValidator() ) );
-    andValidator().validate( this, "scaleTime", remarks, putValidators( integerValidator() ) );
+    JobEntryValidatorUtils.andValidator().validate( this, "maximumTimeout", remarks,
+        AndValidator.putValidators( JobEntryValidatorUtils.longValidator() ) );
+    JobEntryValidatorUtils.andValidator().validate( this, "scaleTime", remarks,
+        AndValidator.putValidators( JobEntryValidatorUtils.integerValidator() ) );
   }
 
   public int getScaleTime() {
