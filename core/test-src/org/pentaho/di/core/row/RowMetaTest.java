@@ -53,6 +53,7 @@ public class RowMetaTest {
   ValueMetaInterface date;
 
   ValueMetaInterface charly;
+  ValueMetaInterface dup;
 
   @BeforeClass
   public static void setUpBeforeClass() throws Exception {
@@ -73,6 +74,8 @@ public class RowMetaTest {
     rowMeta.addValueMeta( date );
 
     charly = ValueMetaFactory.createValueMeta( "charly", ValueMetaInterface.TYPE_SERIALIZABLE );
+
+    dup = ValueMetaFactory.createValueMeta( "dup", ValueMetaInterface.TYPE_SERIALIZABLE );
   }
 
   private List<ValueMetaInterface> generateVList( String[] names, int[] types ) throws KettlePluginException {
@@ -164,6 +167,23 @@ public class RowMetaTest {
     assertEquals( 1, rowMeta.getValueMetaList().indexOf( charly ) );
     assertEquals( "There is still 3 elements:", 3, rowMeta.size() );
     assertEquals( -1, rowMeta.indexOfValue( "integer" ) );
+  }
+
+  @Test
+  public void testSetValueMetaDup() throws KettlePluginException {
+    rowMeta.setValueMeta( 1, dup );
+    assertEquals( "There is still 3 elements:", 3, rowMeta.size() );
+    assertEquals( -1, rowMeta.indexOfValue( "integer" ) );
+
+    rowMeta.setValueMeta( 1, dup );
+    assertEquals( "There is still 3 elements:", 3, rowMeta.size() );
+    assertEquals( -1, rowMeta.indexOfValue( "integer" ) );
+
+    rowMeta.setValueMeta( 2, dup );
+    assertEquals( "There is still 3 elements:", 3, rowMeta.size() );
+    assertEquals( "Original is still the same (object)", 1, rowMeta.getValueMetaList().indexOf( dup ) );
+    assertEquals( "Original is still the same (name)", 1, rowMeta.indexOfValue( "dup" ) );
+    assertEquals( "Renaming happened", 2, rowMeta.indexOfValue( "dup_1" ) );
   }
 
   @Test
