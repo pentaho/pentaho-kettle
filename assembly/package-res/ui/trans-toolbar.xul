@@ -43,9 +43,10 @@
     <menu id="trans-graph-entry-launch" label="${TransGraph.PopupMenu.OpenReferencedObject}">
       <menupopup id="trans-graph-entry-launch-popup">
         <menuitem id="trans-graph-entry-launch-popup-nothing" label="${TransGraph.PopupMenu.Launch.Nothing}" command="transgraph.openMapping()" />
-	  </menupopup>
-	</menu>
+      </menupopup>
+    </menu>
       
+    <menuseparator id="trans-graph-edit-separator" />    
     <menuseparator />
     
     <menu id="trans-graph-entry-data-movement" label="${TransGraph.PopupMenu.DataMovement}">
