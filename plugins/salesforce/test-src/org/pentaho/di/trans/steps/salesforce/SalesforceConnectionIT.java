@@ -115,8 +115,8 @@ public class SalesforceConnectionIT {
 
     verify( connection ).createBinding( captorConfig.capture() );
     assertEquals( username, captorConfig.getValue().getUsername() );
-    assertEquals( Encr.decryptPasswordOptionallyEncrypted( password ),
-      captorConfig.getValue().getPassword() );
+    // Password is unchanged (not decrypted) when setting in ConnectorConfig
+    assertEquals( password, captorConfig.getValue().getPassword() );
   }
 
   @Test
