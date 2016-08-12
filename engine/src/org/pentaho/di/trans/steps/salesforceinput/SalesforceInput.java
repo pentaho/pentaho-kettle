@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -57,6 +57,7 @@ public class SalesforceInput extends BaseStep implements StepInterface {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
+  @Override
   public boolean processRow( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
     if ( first ) {
       first = false;
@@ -322,6 +323,7 @@ public class SalesforceInput extends BaseStep implements StepInterface {
     return rowData;
   }
 
+  @Override
   public boolean init( StepMetaInterface smi, StepDataInterface sdi ) {
     meta = (SalesforceInputMeta) smi;
     data = (SalesforceInputData) sdi;
@@ -437,13 +439,13 @@ public class SalesforceInput extends BaseStep implements StepInterface {
       } catch ( KettleException ke ) {
         logError( BaseMessages.getString( PKG, "SalesforceInput.Log.ErrorOccurredDuringStepInitialize" )
           + ke.getMessage() );
+        return false;
       }
-
-      return true;
     }
     return false;
   }
 
+  @Override
   public void dispose( StepMetaInterface smi, StepDataInterface sdi ) {
     meta = (SalesforceInputMeta) smi;
     data = (SalesforceInputData) sdi;
