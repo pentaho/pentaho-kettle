@@ -1262,9 +1262,19 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
           stepMeta = (StepMeta) areaOwner.getParent();
           resetDelayTimer( stepMeta );
           break;
+
         default:
           break;
       }
+    }
+
+    try {
+      TransGraphExtension ext = new TransGraphExtension( this, e, real );
+      ExtensionPointHandler.callExtensionPoint(
+          LogChannel.GENERAL, KettleExtensionPoint.TransGraphMouseMoved.id, ext );
+
+    } catch ( Exception ex ) {
+      LogChannel.GENERAL.logError( "Error calling TransGraphMouseMoved extension point", ex );
     }
 
     //

@@ -50,6 +50,7 @@ public enum KettleExtensionPoint {
     TransAfterClose( "TransAfterClose", "A transformation file was closed" ),
     TransChanged( "TransChanged", "A transformation has been changed" ),
     TransStepRightClick( "TransStepRightClick", "A right button was clicked on a step" ),
+    TransGraphMouseMoved( "TransGraphMouseMoved", "The mouse was moved on the canvas" ),
     TransGraphMouseDoubleClick( "TransGraphMouseDoubleClick",
       "A left or right button was double-clicked in a transformation" ),
     TransBeforeDeleteSteps( "TransBeforeDeleteSteps", "Transformation steps about to be deleted" ),
