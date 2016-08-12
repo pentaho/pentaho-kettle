@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -76,6 +76,7 @@ public class Vertica5DatabaseMeta extends VerticaDatabaseMeta {
 
     try {
       switch ( val.getType() ) {
+        case ValueMetaInterface.TYPE_TIMESTAMP:
         case ValueMetaInterface.TYPE_DATE:
           if ( val.getOriginalColumnType() == java.sql.Types.TIMESTAMP ) {
             data = rs.getTimestamp( index + 1 );
