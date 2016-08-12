@@ -22,8 +22,11 @@
 
 package org.pentaho.di.trans.steps.synchronizeaftermerge;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.injection.BaseMetadataInjectionTest;
 
 public class SynchronizeAfterMergeMetaInjectionTest extends BaseMetadataInjectionTest<SynchronizeAfterMergeMeta> {
@@ -151,4 +154,55 @@ public class SynchronizeAfterMergeMetaInjectionTest extends BaseMetadataInjectio
       }
     }, "My Connection" );
   }
+
+  @Test
+  public void getXML() throws KettleException {
+    skipProperties( "CONNECTION_NAME", "TABLE_NAME", "STREAM_FIELD2", "PERFORM_LOOKUP", "COMPARATOR",
+        "OPERATION_ORDER_FIELD", "ORDER_DELETE", "SHEMA_NAME", "TABLE_NAME_IN_FIELD", "ORDER_UPDATE", "ORDER_INSERT",
+        "USE_BATCH_UPDATE", "STREAM_FIELD", "TABLE_FIELD", "COMMIT_SIZE", "TABLE_NAME_FIELD" );
+    meta.setDefault();
+    check( "STREAM_FIELD1", new StringGetter() {
+      @Override
+      public String get() {
+        return meta.getKeyStream()[0];
+      }
+    } );
+    check( "UPDATE_TABLE_FIELD", new StringGetter() {
+      @Override
+      public String get() {
+        return meta.getUpdateLookup()[0];
+      }
+    } );
+    check( "UPDATE", new BooleanGetter() {
+      @Override
+      public boolean get() {
+        return meta.getUpdate()[0];
+      }
+    } );
+
+    meta.getXML();
+
+    String[] actualKeyLookup = meta.getKeyLookup();
+    assertNotNull( actualKeyLookup );
+    assertEquals( 1, actualKeyLookup.length );
+
+    String[] actualKeyCondition = meta.getKeyCondition();
+    assertNotNull( actualKeyCondition );
+    assertEquals( 1, actualKeyCondition.length );
+
+    String[] actualKeyStream2 = meta.getKeyCondition();
+    assertNotNull( actualKeyStream2 );
+    assertEquals( 1, actualKeyStream2.length );
+
+    String[] actualUpdateStream = meta.getUpdateStream();
+    assertNotNull( actualUpdateStream );
+    assertEquals( 1, actualUpdateStream.length );
+  }
+
+  private void skipProperties( String... propertyName ) {
+    for ( String property : propertyName ) {
+      skipPropertyTest( property );
+    }
+  }
+
 }

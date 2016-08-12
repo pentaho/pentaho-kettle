@@ -364,9 +364,9 @@ public class SynchronizeAfterMergeMeta extends BaseStepMeta implements StepMetaI
   }
 
   public void normalizeAllocationFields() {
-    if ( keyLookup != null ) {
-      int keyGroupSize = keyLookup.length;
-      keyStream = normalizeAllocation( keyStream, keyGroupSize );
+    if ( keyStream != null ) {
+      int keyGroupSize = keyStream.length;
+      keyLookup = normalizeAllocation( keyLookup, keyGroupSize );
       keyCondition = normalizeAllocation( keyCondition, keyGroupSize );
       keyStream2 = normalizeAllocation( keyStream2, keyGroupSize );
     }
@@ -509,6 +509,7 @@ public class SynchronizeAfterMergeMeta extends BaseStepMeta implements StepMetaI
   }
 
   public String getXML() {
+    normalizeAllocationFields();
     StringBuilder retval = new StringBuilder( 200 );
 
     retval
