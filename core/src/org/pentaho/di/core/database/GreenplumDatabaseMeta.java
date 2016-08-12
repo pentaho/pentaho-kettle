@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -32,19 +32,12 @@ package org.pentaho.di.core.database;
 public class GreenplumDatabaseMeta extends PostgreSQLDatabaseMeta implements DatabaseInterface {
   @Override
   public String[] getReservedWords() {
-    int extraWords = 1;
-
+    String[] newWords = new String[] { "ERRORS" };
     String[] pgWords = super.getReservedWords();
-    String[] gpWords = new String[pgWords.length + extraWords];
-    for ( int i = 0; i < pgWords.length; i++ ) {
-      gpWords[i] = pgWords[i];
-    }
+    String[] gpWords = new String[ pgWords.length + newWords.length ];
 
-    int index = pgWords.length;
-
-    // Just add the ERRORS keyword for now
-    //
-    gpWords[index++] = "ERRORS";
+    System.arraycopy( pgWords, 0, gpWords, 0, pgWords.length );
+    System.arraycopy( newWords, 0, gpWords, pgWords.length, newWords.length );
 
     return gpWords;
   }

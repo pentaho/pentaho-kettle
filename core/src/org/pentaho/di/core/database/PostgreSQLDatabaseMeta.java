@@ -310,6 +310,7 @@ public class PostgreSQLDatabaseMeta extends BaseDatabaseMeta implements Database
 
     int type = v.getType();
     switch ( type ) {
+      case ValueMetaInterface.TYPE_TIMESTAMP:
       case ValueMetaInterface.TYPE_DATE:
         retval += "TIMESTAMP";
         break;

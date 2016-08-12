@@ -828,7 +828,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterfaceEx
    */
   @Deprecated
   public String getBackwardsCompatibleTable( String tablePart ) {
-    if ( tablePart != null && tablePart.contains( getStartQuote() ) || tablePart.contains( getEndQuote() ) ) {
+    if ( tablePart != null && ( tablePart.contains( getStartQuote() ) || tablePart.contains( getEndQuote() ) ) ) {
       return tablePart;
     } else {
       return getStartQuote() + tablePart + getEndQuote();
