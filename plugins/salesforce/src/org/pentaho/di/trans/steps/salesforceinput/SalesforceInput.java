@@ -58,6 +58,7 @@ public class SalesforceInput extends SalesforceStep {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
+  @Override
   public boolean processRow( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
     if ( first ) {
       first = false;
@@ -323,6 +324,7 @@ public class SalesforceInput extends SalesforceStep {
     return rowData;
   }
 
+  @Override
   public boolean init( StepMetaInterface smi, StepDataInterface sdi ) {
     meta = (SalesforceInputMeta) smi;
     data = (SalesforceInputData) sdi;
@@ -404,13 +406,13 @@ public class SalesforceInput extends SalesforceStep {
       } catch ( KettleException ke ) {
         logError( BaseMessages.getString( PKG, "SalesforceInput.Log.ErrorOccurredDuringStepInitialize" )
           + ke.getMessage() );
+        return false;
       }
-
-      return true;
     }
     return false;
   }
 
+  @Override
   public void dispose( StepMetaInterface smi, StepDataInterface sdi ) {
     if ( data.outputRowMeta != null ) {
       data.outputRowMeta = null;

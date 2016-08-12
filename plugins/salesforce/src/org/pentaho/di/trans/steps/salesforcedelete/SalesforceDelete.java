@@ -233,8 +233,8 @@ public class SalesforceDelete extends SalesforceStep {
       } catch ( KettleException ke ) {
         logError( BaseMessages.getString( PKG, "SalesforceDelete.Log.ErrorOccurredDuringStepInitialize" )
           + ke.getMessage() );
+        return false;
       }
-      return true;
     }
     return false;
   }
