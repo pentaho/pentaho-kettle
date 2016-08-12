@@ -228,6 +228,7 @@ public class MSSQLServerDatabaseMeta extends BaseDatabaseMeta implements Databas
 
     int type = v.getType();
     switch ( type ) {
+      case ValueMetaInterface.TYPE_TIMESTAMP:
       case ValueMetaInterface.TYPE_DATE:
         retval += "DATETIME";
         break;
