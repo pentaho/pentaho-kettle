@@ -56,7 +56,7 @@ import org.xml.sax.InputSource;
 
 /**
  * Converts input rows to one or more XML files.
- * 
+ *
  * @author Matt
  * @since 14-jan-2006
  */
@@ -72,6 +72,7 @@ public class XMLJoin extends BaseStep implements StepInterface {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
+  @Override
   public boolean processRow( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
     meta = (XMLJoinMeta) smi;
     data = (XMLJoinData) sdi;
@@ -221,6 +222,7 @@ public class XMLJoin extends BaseStep implements StepInterface {
     return true;
   }
 
+  @Override
   public boolean init( StepMetaInterface smi, StepDataInterface sdi ) {
     meta = (XMLJoinMeta) smi;
     data = (XMLJoinData) sdi;
@@ -256,12 +258,14 @@ public class XMLJoin extends BaseStep implements StepInterface {
         }
       }
     } catch ( Exception e ) {
+      log.logError( BaseMessages.getString( PKG, "XMLJoin.Error.Init" ), e );
       return false;
     }
 
     return true;
   }
 
+  @Override
   public void dispose( StepMetaInterface smi, StepDataInterface sdi ) {
     meta = (XMLJoinMeta) smi;
     data = (XMLJoinData) sdi;
