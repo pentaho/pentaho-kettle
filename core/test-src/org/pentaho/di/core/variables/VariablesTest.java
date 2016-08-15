@@ -22,9 +22,16 @@
 
 package org.pentaho.di.core.variables;
 
-import org.junit.Test;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doCallRealMethod;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,11 +40,12 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.*;
+import org.junit.Test;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
+import org.pentaho.di.core.exception.KettleValueException;
+import org.pentaho.di.core.row.RowMeta;
+import org.pentaho.di.core.row.value.ValueMetaString;
 
 /**
  * Variables tests.
@@ -116,7 +124,7 @@ public class VariablesTest {
   }
 
   // Note:  Not using lambda so this can be ported to older version compatible with 1.7
-  private Callable newCallable() {
+  private Callable<Boolean> newCallable() {
     return new Callable<Boolean>() {
       @Override
       public Boolean call() throws Exception {
@@ -130,4 +138,33 @@ public class VariablesTest {
     };
   }
 
+  @Test
+  public void testFieldSubstitution() throws KettleValueException {
+    Object[] rowData = new Object[]{ "DataOne", "DataTwo" };
+    RowMeta rm = new RowMeta();
+    rm.addValueMeta( new ValueMetaString( "FieldOne" ) );
+    rm.addValueMeta( new ValueMetaString( "FieldTwo" ) );
+
+    Variables vars = new Variables();
+    assertNull( vars.fieldSubstitute( null, rm, rowData ) );
+    assertEquals( "", vars.fieldSubstitute( "", rm, rowData ) );
+    assertEquals( "DataOne", vars.fieldSubstitute( "?{FieldOne}", rm, rowData ) );
+    assertEquals( "TheDataOne", vars.fieldSubstitute( "The?{FieldOne}", rm, rowData ) );
+  }
+
+  @Test
+  public void testEnvironmentSubstitute() {
+    Variables vars = new Variables();
+    vars.setVariable( "VarOne", "DataOne" );
+    vars.setVariable( "VarTwo", "DataTwo" );
+
+    assertNull( vars.environmentSubstitute( (String) null ) );
+    assertEquals( "", vars.environmentSubstitute( "" ) );
+    assertEquals( "DataTwo", vars.environmentSubstitute( "${VarTwo}" ) );
+    assertEquals( "DataTwoEnd", vars.environmentSubstitute( "${VarTwo}End" ) );
+
+    assertEquals( 0, vars.environmentSubstitute( new String[0] ).length );
+    assertArrayEquals( new String[]{ "DataOne", "TheDataOne" },
+      vars.environmentSubstitute( new String[]{ "${VarOne}", "The${VarOne}" } ) );
+  }
 }
