@@ -87,7 +87,7 @@ public class ExcelOutput extends BaseStep implements StepInterface {
       data.previousMeta = getInputRowMeta().clone();
       // do not set first=false, below is another part that uses first
 
-      if ( meta.isAutoSizeColums() ) {
+      if ( meta.isAutoSizeColumns() ) {
         if ( meta.getOutputFields() != null && meta.getOutputFields().length > 0 ) {
           data.fieldsWidth = new int[meta.getOutputFields().length];
         } else {
@@ -326,7 +326,7 @@ public class ExcelOutput extends BaseStep implements StepInterface {
           // ignore if the column is not found, format as usual
         }
       }
-      if ( meta.isAutoSizeColums() ) {
+      if ( meta.isAutoSizeColumns() ) {
         // prepare auto size colums
         int vlen = vMeta.getName().length();
         if ( !isHeader && v != null ) {
@@ -379,6 +379,9 @@ public class ExcelOutput extends BaseStep implements StepInterface {
             }
             break;
           }
+          default:
+            // fallthrough
+            // Output the data value as a string
           case ValueMetaInterface.TYPE_STRING:
           case ValueMetaInterface.TYPE_BOOLEAN:
           case ValueMetaInterface.TYPE_BINARY: {
@@ -427,9 +430,6 @@ public class ExcelOutput extends BaseStep implements StepInterface {
             } else if ( !meta.isNullBlank() ) {
               data.sheet.addCell( new Label( data.positionX, data.positionY, "" ) );
             }
-            break;
-          }
-          default: {
             break;
           }
         }
@@ -612,7 +612,7 @@ public class ExcelOutput extends BaseStep implements StepInterface {
 
       if ( data.workbook != null ) {
         if ( data.fieldsWidth != null ) {
-          if ( meta.isAutoSizeColums() ) {
+          if ( meta.isAutoSizeColumns() ) {
             // auto resize columns
             int nrfields = data.fieldsWidth.length;
             for ( int i = 0; i < nrfields; i++ ) {
