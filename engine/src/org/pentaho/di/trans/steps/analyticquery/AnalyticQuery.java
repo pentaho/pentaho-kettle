@@ -95,9 +95,9 @@ public class AnalyticQuery extends BaseStep implements StepInterface {
 
       // Setup of "window size" and "queue_size"
       int max_offset = 0;
-      for ( int i = 0; i < meta.getNumberOfFields(); i++ ) {
-        if ( meta.getValueField()[i] > max_offset ) {
-          max_offset = meta.getValueField()[i];
+      for ( int i = 0; i < meta.getOutputFields().length; i++ ) {
+        if ( meta.getOutputFields()[i].getValueField() > max_offset ) {
+          max_offset = meta.getOutputFields()[i].getValueField();
         }
       }
       data.window_size = max_offset;
@@ -172,19 +172,19 @@ public class AnalyticQuery extends BaseStep implements StepInterface {
     int index = i - 1;
     Object[] rows = data.data.toArray();
 
-    Object[] fields = new Object[meta.getNumberOfFields()];
-    for ( int j = 0; j < meta.getNumberOfFields(); j++ ) {
+    Object[] fields = new Object[meta.getOutputFields().length];
+    for ( int j = 0; j < meta.getOutputFields().length; j++ ) {
       // field_index is the location inside a row of the subject of this
       // ie, ORDERTOTAL might be the subject ofthis field lag or lead
       // so we determine that ORDERTOTAL's index in the row
-      int field_index = data.inputRowMeta.indexOfValue( meta.getSubjectField()[j] );
+      int field_index = data.inputRowMeta.indexOfValue( meta.getOutputFields()[j].getSubjectField() );
       int row_index = 0;
-      switch ( meta.getAggregateType()[j] ) {
+      switch ( meta.getOutputFields()[j].getAggregateType() ) {
         case AnalyticQueryMeta.TYPE_FUNCT_LAG:
-          row_index = index - meta.getValueField()[j];
+          row_index = index - meta.getOutputFields()[j].getValueField();
           break;
         case AnalyticQueryMeta.TYPE_FUNCT_LEAD:
-          row_index = index + meta.getValueField()[j];
+          row_index = index + meta.getOutputFields()[j].getValueField();
           break;
         default:
           break;

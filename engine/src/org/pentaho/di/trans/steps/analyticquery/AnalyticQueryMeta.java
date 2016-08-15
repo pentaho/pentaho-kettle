@@ -31,6 +31,9 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.injection.Injection;
+import org.pentaho.di.core.injection.InjectionDeep;
+import org.pentaho.di.core.injection.InjectionSupported;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
@@ -54,7 +57,7 @@ import org.w3c.dom.Node;
  * @author ngoodman
  * @since 27-jan-2009
  */
-
+@InjectionSupported( localizationPrefix = "AnalyticQuery.Injection." )
 public class AnalyticQueryMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = AnalyticQuery.class; // for i18n purposes, needed by Translator2!!
 
@@ -69,54 +72,16 @@ public class AnalyticQueryMeta extends BaseStepMeta implements StepMetaInterface
     BaseMessages.getString( PKG, "AnalyticQueryMeta.TypeGroupLongDesc.LAG" ) };
 
   /** Fields to partition by ie, CUSTOMER, PRODUCT */
+  @Injection( name = "GROUP_FIELDS" )
   private String[] groupField;
 
-  private int number_of_fields;
-  /** BEGIN arrays (each of size number_of_fields) */
-
-  /** Name of OUTPUT fieldname "MYNEWLEADFUNCTION" */
-  private String[] aggregateField;
-  /** Name of the input fieldname it operates on "ORDERTOTAL" */
-  private String[] subjectField;
-  /** Aggregate type (LEAD/LAG, etc) */
-  private int[] aggregateType;
-  /** Offset "N" of how many rows to go forward/back */
-  private int[] valueField;
+  @InjectionDeep(prefix="OUTPUT")
+  private OutputField[] outputFields;
 
   /** END arrays are one for each configured analytic function */
 
   public AnalyticQueryMeta() {
     super(); // allocate BaseStepMeta
-  }
-
-  /**
-   * @return Returns the aggregateField.
-   */
-  public String[] getAggregateField() {
-    return aggregateField;
-  }
-
-  /**
-   * @param aggregateField
-   *          The aggregateField to set.
-   */
-  public void setAggregateField( String[] aggregateField ) {
-    this.aggregateField = aggregateField;
-  }
-
-  /**
-   * @return Returns the aggregateTypes.
-   */
-  public int[] getAggregateType() {
-    return aggregateType;
-  }
-
-  /**
-   * @param aggregateType
-   *          The aggregateType to set.
-   */
-  public void setAggregateType( int[] aggregateType ) {
-    this.aggregateType = aggregateType;
   }
 
   /**
@@ -134,48 +99,13 @@ public class AnalyticQueryMeta extends BaseStepMeta implements StepMetaInterface
     this.groupField = groupField;
   }
 
-  /**
-   * @return Returns the subjectField.
-   */
-  public String[] getSubjectField() {
-    return subjectField;
-  }
-
-  /**
-   * @param subjectField
-   *          The subjectField to set.
-   */
-  public void setSubjectField( String[] subjectField ) {
-    this.subjectField = subjectField;
-  }
-
-  /**
-   * @return Returns the valueField.
-   */
-  public int[] getValueField() {
-    return valueField;
-  }
-
-  /**
-   * @param The
-   *          valueField to set.
-   */
-  public void setValueField( int[] valueField ) {
-    this.valueField = valueField;
-  }
-
   public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     readData( stepnode );
   }
 
   public void allocate( int sizegroup, int nrfields ) {
     groupField = new String[sizegroup];
-    aggregateField = new String[nrfields];
-    subjectField = new String[nrfields];
-    aggregateType = new int[nrfields];
-    valueField = new int[nrfields];
-
-    number_of_fields = nrfields;
+    outputFields = new OutputField[nrfields];
   }
 
   public Object clone() {
@@ -199,12 +129,14 @@ public class AnalyticQueryMeta extends BaseStepMeta implements StepMetaInterface
         groupField[i] = XMLHandler.getTagValue( fnode, "name" );
       }
       for ( int i = 0; i < nrfields; i++ ) {
+        OutputField of = new OutputField();
+        outputFields[i] = of;
         Node fnode = XMLHandler.getSubNodeByNr( fields, "field", i );
-        aggregateField[i] = XMLHandler.getTagValue( fnode, "aggregate" );
-        subjectField[i] = XMLHandler.getTagValue( fnode, "subject" );
-        aggregateType[i] = getType( XMLHandler.getTagValue( fnode, "type" ) );
+        of.setAggregateField( XMLHandler.getTagValue( fnode, "aggregate" ) );
+        of.setSubjectField( XMLHandler.getTagValue( fnode, "subject" ) );
+        of.setAggregateType( getType( XMLHandler.getTagValue( fnode, "type" ) ) );
 
-        valueField[i] = Integer.parseInt( XMLHandler.getTagValue( fnode, "valuefield" ) );
+        of.setValueField( Integer.parseInt( XMLHandler.getTagValue( fnode, "valuefield" ) ) );
       }
 
     } catch ( Exception e ) {
@@ -249,6 +181,10 @@ public class AnalyticQueryMeta extends BaseStepMeta implements StepMetaInterface
     allocate( sizegroup, nrfields );
   }
 
+  public OutputField[] getOutputFields() {
+    return outputFields;
+  }
+
   public void getFields( RowMetaInterface r, String origin, RowMetaInterface[] info, StepMeta nextStep,
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     // re-assemble a new row of metadata
@@ -259,16 +195,17 @@ public class AnalyticQueryMeta extends BaseStepMeta implements StepMetaInterface
     fields.addRowMeta( r );
 
     // add analytic values
-    for ( int i = 0; i < number_of_fields; i++ ) {
+    for ( int i = 0; i < outputFields.length; i++ ) {
+      OutputField of = outputFields[i];
 
       int index_of_subject = -1;
-      index_of_subject = r.indexOfValue( subjectField[i] );
+      index_of_subject = r.indexOfValue( of.getSubjectField() );
 
       // if we found the subjectField in the RowMetaInterface, and we should....
       if ( index_of_subject > -1 ) {
         ValueMetaInterface vmi = r.getValueMeta( index_of_subject ).clone();
         vmi.setOrigin( origin );
-        vmi.setName( aggregateField[i] );
+        vmi.setName( of.getAggregateField() );
         fields.addValueMeta( r.size() + i, vmi );
       } else {
         // we have a condition where the subjectField can't be found from the rowMetaInterface
@@ -277,9 +214,8 @@ public class AnalyticQueryMeta extends BaseStepMeta implements StepMetaInterface
         for ( int j = 0; j < fieldNames.length; j++ ) {
           sbfieldNames.append( "[" + fieldNames[j] + "]" + ( j < fieldNames.length - 1 ? ", " : "" ) );
         }
-        throw new KettleStepException( BaseMessages.getString(
-          PKG, "AnalyticQueryMeta.Exception.SubjectFieldNotFound", getParentStepMeta().getName(),
-          subjectField[i], sbfieldNames.toString() ) );
+        throw new KettleStepException( BaseMessages.getString( PKG, "AnalyticQueryMeta.Exception.SubjectFieldNotFound",
+            getParentStepMeta().getName(), of.getSubjectField(), sbfieldNames.toString() ) );
       }
     }
 
@@ -300,12 +236,14 @@ public class AnalyticQueryMeta extends BaseStepMeta implements StepMetaInterface
     retval.append( "      </group>" ).append( Const.CR );
 
     retval.append( "      <fields>" ).append( Const.CR );
-    for ( int i = 0; i < subjectField.length; i++ ) {
+    for ( int i = 0; i < outputFields.length; i++ ) {
       retval.append( "        <field>" ).append( Const.CR );
-      retval.append( "          " ).append( XMLHandler.addTagValue( "aggregate", aggregateField[i] ) );
-      retval.append( "          " ).append( XMLHandler.addTagValue( "subject", subjectField[i] ) );
-      retval.append( "          " ).append( XMLHandler.addTagValue( "type", getTypeDesc( aggregateType[i] ) ) );
-      retval.append( "          " ).append( XMLHandler.addTagValue( "valuefield", valueField[i] ) );
+      retval.append( "          " ).append( XMLHandler.addTagValue( "aggregate", outputFields[i]
+          .getAggregateField() ) );
+      retval.append( "          " ).append( XMLHandler.addTagValue( "subject", outputFields[i].getSubjectField() ) );
+      retval.append( "          " ).append( XMLHandler.addTagValue( "type", getTypeDesc( outputFields[i]
+          .getAggregateType() ) ) );
+      retval.append( "          " ).append( XMLHandler.addTagValue( "valuefield", outputFields[i].getValueField() ) );
       retval.append( "        </field>" ).append( Const.CR );
     }
     retval.append( "      </fields>" ).append( Const.CR );
@@ -326,10 +264,12 @@ public class AnalyticQueryMeta extends BaseStepMeta implements StepMetaInterface
       }
 
       for ( int i = 0; i < nrvalues; i++ ) {
-        aggregateField[i] = rep.getStepAttributeString( id_step, i, "aggregate_name" );
-        subjectField[i] = rep.getStepAttributeString( id_step, i, "aggregate_subject" );
-        aggregateType[i] = getType( rep.getStepAttributeString( id_step, i, "aggregate_type" ) );
-        valueField[i] = (int) rep.getStepAttributeInteger( id_step, i, "aggregate_value_field" );
+        OutputField of = new OutputField();
+        outputFields[i] = of;
+        of.setAggregateField( rep.getStepAttributeString( id_step, i, "aggregate_name" ) );
+        of.setSubjectField( rep.getStepAttributeString( id_step, i, "aggregate_subject" ) );
+        of.setAggregateType( getType( rep.getStepAttributeString( id_step, i, "aggregate_type" ) ) );
+        of.setValueField( (int) rep.getStepAttributeInteger( id_step, i, "aggregate_value_field" ) );
       }
 
     } catch ( Exception e ) {
@@ -345,11 +285,13 @@ public class AnalyticQueryMeta extends BaseStepMeta implements StepMetaInterface
         rep.saveStepAttribute( id_transformation, id_step, i, "group_name", groupField[i] );
       }
 
-      for ( int i = 0; i < subjectField.length; i++ ) {
-        rep.saveStepAttribute( id_transformation, id_step, i, "aggregate_name", aggregateField[i] );
-        rep.saveStepAttribute( id_transformation, id_step, i, "aggregate_subject", subjectField[i] );
-        rep.saveStepAttribute( id_transformation, id_step, i, "aggregate_type", getTypeDesc( aggregateType[i] ) );
-        rep.saveStepAttribute( id_transformation, id_step, i, "aggregate_value_field", valueField[i] );
+      for ( int i = 0; i < outputFields.length; i++ ) {
+        rep.saveStepAttribute( id_transformation, id_step, i, "aggregate_name", outputFields[i].getAggregateField() );
+        rep.saveStepAttribute( id_transformation, id_step, i, "aggregate_subject", outputFields[i].getSubjectField() );
+        rep.saveStepAttribute( id_transformation, id_step, i, "aggregate_type", getTypeDesc( outputFields[i]
+            .getAggregateType() ) );
+        rep.saveStepAttribute( id_transformation, id_step, i, "aggregate_value_field", outputFields[i]
+            .getValueField() );
       }
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString(
@@ -385,15 +327,84 @@ public class AnalyticQueryMeta extends BaseStepMeta implements StepMetaInterface
     return new AnalyticQueryData();
   }
 
-  public int getNumberOfFields() {
-    return number_of_fields;
-  }
-
-  public void setNumberOfFields( int number_of_fields ) {
-    this.number_of_fields = number_of_fields;
-  }
-
   public TransformationType[] getSupportedTransformationTypes() {
     return new TransformationType[] { TransformationType.Normal, };
+  }
+
+  public static class OutputField {
+    /** Name of OUTPUT fieldname "MYNEWLEADFUNCTION" */
+    @Injection( name = "AGGREGATE_FIELD" )
+    private String aggregateField;
+    /** Name of the input fieldname it operates on "ORDERTOTAL" */
+    @Injection( name = "SUBJECT_FIELD" )
+    private String subjectField;
+    /** Aggregate type (LEAD/LAG, etc) */
+    @Injection( name = "AGGREGATE_TYPE" )
+    private int aggregateType;
+    /** Offset "N" of how many rows to go forward/back */
+    @Injection( name = "VALUE_FIELD" )
+    private int valueField;
+    
+
+    /**
+     * @return Returns the aggregateField.
+     */
+    public String getAggregateField() {
+      return aggregateField;
+    }
+
+    /**
+     * @param aggregateField
+     *          The aggregateField to set.
+     */
+    public void setAggregateField( String aggregateField ) {
+      this.aggregateField = aggregateField;
+    }
+
+    /**
+     * @return Returns the aggregateTypes.
+     */
+    public int getAggregateType() {
+      return aggregateType;
+    }
+
+    /**
+     * @param aggregateType
+     *          The aggregateType to set.
+     */
+    public void setAggregateType( int aggregateType ) {
+      this.aggregateType = aggregateType;
+    }
+
+    /**
+     * @return Returns the subjectField.
+     */
+    public String getSubjectField() {
+      return subjectField;
+    }
+
+    /**
+     * @param subjectField
+     *          The subjectField to set.
+     */
+    public void setSubjectField( String subjectField ) {
+      this.subjectField = subjectField;
+    }
+
+    /**
+     * @return Returns the valueField.
+     */
+    public int getValueField() {
+      return valueField;
+    }
+
+    /**
+     * @param The
+     *          valueField to set.
+     */
+    public void setValueField( int valueField ) {
+      this.valueField = valueField;
+    }
+
   }
 }
