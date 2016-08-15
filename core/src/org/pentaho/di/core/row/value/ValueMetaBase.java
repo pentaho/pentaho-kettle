@@ -3831,12 +3831,19 @@ public class ValueMetaBase implements ValueMetaInterface {
 
     // See if the polled value is empty
     // In that case, we have a null value on our hands...
-    //
-    Object emptyValue = ( outValueType == Value.VALUE_TYPE_STRING ) ? Const.NULL_STRING : null;
+    boolean isStringValue = outValueType == Value.VALUE_TYPE_STRING;
+    Object emptyValue = isStringValue ? Const.NULL_STRING : null;
+
+    Boolean isEmptyAndNullDiffer = convertStringToBoolean(
+        Const.NVL( System.getProperty( Const.KETTLE_EMPTY_STRING_DIFFERS_FROM_NULL, "N" ), "N" ) );
+
+    if ( pol == null && isStringValue && isEmptyAndNullDiffer ) {
+      pol = Const.NULL_STRING;
+    }
 
     if ( pol == null ) {
       return null;
-    } else if ( Const.isEmpty( pol ) && outValueType != Value.VALUE_TYPE_STRING ) {
+    } else if ( Const.isEmpty( pol ) && !isStringValue ) {
       return null;
     } else {
       // if the null_value is specified, we try to match with that.
