@@ -31,6 +31,7 @@ import org.pentaho.di.core.row.value.ValueMetaInteger;
 import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.step.errorhandling.StreamInterface;
 import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
 import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidatorFactory;
@@ -165,5 +166,31 @@ public class MergeJoinMetaTest {
     assertTrue( field3 instanceof ValueMetaString );
     assertEquals( "inputStep2", field3.getOrigin() );
 
+  }
+
+  @Test
+  public void cloneTest() throws Exception {
+    MergeJoinMeta meta = new MergeJoinMeta();
+    meta.allocate( 2, 3 );
+    meta.setKeyFields1( new String[] { "kf1-1", "kf1-2" } );
+    meta.setKeyFields2( new String[] { "kf2-1", "kf2-2", "kf2-3" } );
+    // scalars should be cloned using super.clone() - makes sure they're calling super.clone()
+    meta.setJoinType( "INNER" );
+    MergeJoinMeta aClone = (MergeJoinMeta) meta.clone();
+    assertFalse( aClone == meta ); // Not same object returned by clone
+    assertTrue( Arrays.equals( meta.getKeyFields1(), aClone.getKeyFields1() ) );
+    assertTrue( Arrays.equals( meta.getKeyFields2(), aClone.getKeyFields2() ) );
+    assertEquals( meta.getJoinType(), aClone.getJoinType() );
+
+    assertNotNull( aClone.getStepIOMeta() );
+    assertFalse( meta.getStepIOMeta() == aClone.getStepIOMeta() );
+    List<StreamInterface> infoStreams = meta.getStepIOMeta().getInfoStreams();
+    List<StreamInterface> cloneInfoStreams = aClone.getStepIOMeta().getInfoStreams();
+    assertFalse( infoStreams == cloneInfoStreams );
+    int streamSize = infoStreams.size();
+    assertTrue( streamSize == cloneInfoStreams.size() );
+    for ( int i = 0; i < streamSize; i++ ) {
+      assertFalse( infoStreams.get( i ) == cloneInfoStreams.get( i ) );
+    }
   }
 }
