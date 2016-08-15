@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -46,6 +46,11 @@ public class Stream implements StreamInterface {
     this.description = description;
     this.streamIcon = streamIcon;
     this.subject = subject;
+  }
+
+  public Stream( StreamInterface stream ) {
+    this( stream.getStreamType(), stream.getStepMeta(), stream.getDescription(), stream.getStreamIcon(),
+      stream.getSubject() );
   }
 
   public String toString() {
