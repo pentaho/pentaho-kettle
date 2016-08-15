@@ -1023,6 +1023,14 @@ public class Const {
   public static final String KETTLE_SPLIT_FIELDS_REMOVE_ENCLOSURE = "KETTLE_SPLIT_FIELDS_REMOVE_ENCLOSURE";
 
   /**
+   * Compatibility settings for {@link org.pentaho.di.core.row.ValueDataUtil#hourOfDay(ValueMetaInterface, Object)}.
+   *
+   * Switches off the fix for calculation of timezone decomposition.
+   */
+  public static final String KETTLE_COMPATIBILITY_CALCULATION_TIMEZONE_DECOMPOSITION =
+    "KETTLE_COMPATIBILITY_CALCULATION_TIMEZONE_DECOMPOSITION";
+
+  /**
    * Compatibility settings for setNrErrors
    */
   // see PDI-10270 for details.
