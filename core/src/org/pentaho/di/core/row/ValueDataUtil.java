@@ -1376,6 +1376,13 @@ public class ValueDataUtil {
 
     Calendar calendar = Calendar.getInstance();
     calendar.setTime( metaA.getDate( dataA ) );
+
+    Boolean oldDateCalculation = Boolean.parseBoolean(
+      Const.getEnvironmentVariable( Const.KETTLE_COMPATIBILITY_CALCULATION_TIMEZONE_DECOMPOSITION, "false" ) );
+    if ( !oldDateCalculation ) {
+      calendar.setTimeZone( metaA.getDateFormatTimeZone() );
+    }
+
     return new Long( calendar.get( Calendar.HOUR_OF_DAY ) );
   }
 
