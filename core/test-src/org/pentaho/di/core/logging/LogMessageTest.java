@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -21,18 +21,18 @@
  ******************************************************************************/
 package org.pentaho.di.core.logging;
 
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
-import static org.pentaho.di.core.Const.KETTLE_LOG_MARK_MAPPINGS;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
+import org.pentaho.di.core.Const;
 
 /**
  * @author Tatsiana_Kasiankova
- * 
+ *
  */
 public class LogMessageTest {
 
@@ -117,11 +117,11 @@ public class LogMessageTest {
   }
 
   private void turnOnLogMarkMapping() {
-    System.getProperties().put( KETTLE_LOG_MARK_MAPPINGS, "Y" );
+    System.getProperties().put( Const.KETTLE_LOG_MARK_MAPPINGS, "Y" );
   }
 
   private void turnOffLogMarkMapping() {
-    System.getProperties().put( KETTLE_LOG_MARK_MAPPINGS, "N" );
+    System.getProperties().put( Const.KETTLE_LOG_MARK_MAPPINGS, "N" );
   }
 
   private static LoggingObjectInterface getTreeLoggingObject() {

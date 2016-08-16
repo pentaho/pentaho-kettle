@@ -22,17 +22,17 @@
 
 package org.pentaho.di.concurrency;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.pentaho.di.cluster.SlaveServer;
-import org.pentaho.di.repository.StringObjectId;
+import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static junit.framework.Assert.assertEquals;
+import org.junit.Before;
+import org.junit.Test;
+import org.pentaho.di.cluster.SlaveServer;
+import org.pentaho.di.repository.StringObjectId;
 
 /**
  * We have a {@link SlaveServer} with a bunch of attributes (userName, password, port and others).

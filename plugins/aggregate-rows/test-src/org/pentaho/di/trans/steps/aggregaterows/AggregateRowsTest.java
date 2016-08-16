@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2014 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -21,9 +21,8 @@
  ******************************************************************************/
 package org.pentaho.di.trans.steps.aggregaterows;
 
-import static java.util.Arrays.asList;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyString;
@@ -31,6 +30,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.junit.After;
 import org.junit.Before;
@@ -69,7 +69,7 @@ public class AggregateRowsTest {
   public void testProcessRow() throws KettleException {
     AggregateRows aggregateRows =  new AggregateRows( stepMockHelper.stepMeta, stepMockHelper.stepDataInterface, 0, stepMockHelper.transMeta, stepMockHelper.trans );
     aggregateRows.init( stepMockHelper.initStepMetaInterface, stepMockHelper.initStepDataInterface );
-    aggregateRows.setInputRowSets( new ArrayList<RowSet>( asList( createSourceRowSet( "TEST" ) ) ) );
+    aggregateRows.setInputRowSets( new ArrayList<RowSet>( Arrays.asList( createSourceRowSet( "TEST" ) ) ) );
 
     int fieldSize = stepMockHelper.initStepMetaInterface.getFieldName().length;
     AggregateRowsData data = new AggregateRowsData();

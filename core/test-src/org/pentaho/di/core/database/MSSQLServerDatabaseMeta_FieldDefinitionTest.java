@@ -22,15 +22,15 @@
 
 package org.pentaho.di.core.database;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaNone;
 import org.pentaho.di.core.row.value.ValueMetaNumber;
 import org.pentaho.di.core.row.value.ValueMetaString;
-
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertTrue;
 
 public class MSSQLServerDatabaseMeta_FieldDefinitionTest {
   private MSSQLServerDatabaseMeta dbMeta;
