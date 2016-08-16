@@ -31,6 +31,7 @@ import org.pentaho.di.core.row.value.ValueMetaInteger;
 import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.step.errorhandling.StreamInterface;
 import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
 import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidatorFactory;
@@ -175,5 +176,16 @@ public class MergeJoinMetaTest {
     assertTrue( Arrays.equals( meta.getKeyFields1(), aClone.getKeyFields1() ) );
     assertTrue( Arrays.equals( meta.getKeyFields2(), aClone.getKeyFields2() ) );
     assertEquals( meta.getJoinType(), aClone.getJoinType() );
+
+    assertNotNull( aClone.getStepIOMeta() );
+    assertFalse( meta.getStepIOMeta() == aClone.getStepIOMeta() );
+    List<StreamInterface> infoStreams = meta.getStepIOMeta().getInfoStreams();
+    List<StreamInterface> cloneInfoStreams = aClone.getStepIOMeta().getInfoStreams();
+    assertFalse( infoStreams == cloneInfoStreams );
+    int streamSize = infoStreams.size();
+    assertTrue( streamSize == cloneInfoStreams.size() );
+    for ( int i = 0; i < streamSize; i++ ) {
+      assertFalse( infoStreams.get( i ) == cloneInfoStreams.get( i ) );
+    }
   }
 }
