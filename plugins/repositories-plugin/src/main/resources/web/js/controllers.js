@@ -34,6 +34,7 @@ define(
     repoConnectionAppControllers.controller("PentahoRepositoryController", function($scope, $location, $rootScope, $filter, pentahoRepositoryModel, repositoryTypesModel) {
       $scope.model = pentahoRepositoryModel.model;
       $scope.getStarted = function() {
+        $rootScope.fromEdit = false;
         pentahoRepositoryModel.reset();
         $location.path("/pentaho-repository-connection-details");
         $rootScope.next();
@@ -86,7 +87,7 @@ define(
        $rootScope.next();
       }
       $scope.createNewConnection = function() {
-       $location.path("/pentaho-repository");
+       $location.path("/repository-manager");
        $rootScope.next();
        reset();
       }
@@ -109,7 +110,7 @@ define(
       $scope.help = function() {
         help();
       }
-      $scope.successText = "Your connection was created and is ready to use.";
+      $scope.successText = $rootScope.fromEdit ? "Your connection has been edited and is ready to use." : "Your connection was created and is ready to use.";
     });
 
     repoConnectionAppControllers.controller("KettleFileRepositoryController", function($scope, $rootScope, $location, $filter, kettleFileRepositoryModel) {
@@ -157,7 +158,7 @@ define(
         $rootScope.next();
       }
       $scope.createNewConnection = function() {
-        $location.path("/pentaho-repository");
+        $location.path("/repository-manager");
         $rootScope.next();
         reset();
       }
@@ -183,7 +184,7 @@ define(
       $scope.help = function() {
         help();
       }
-      $scope.successText = "Your Kettle file repository was created and is ready to use.";
+      $scope.successText = $rootScope.fromEdit ? "Your connection has been edited and is ready to use." : "Your Kettle file repository was created and is ready to use.";
     });
 
     repoConnectionAppControllers.controller("KettleDatabaseRepositoryController", function($scope, $rootScope, $location, $filter, kettleDatabaseRepositoryModel) {
@@ -233,7 +234,7 @@ define(
         $rootScope.next();
       }
       $scope.createNewConnection = function() {
-        $location.path("/pentaho-repository");
+        $location.path("/repository-manager"); 
         $rootScope.next();
         reset();
       }
@@ -260,7 +261,7 @@ define(
       $scope.help = function() {
         help();
       }
-      $scope.successText = "Your Kettle database repository was created and is ready to use.";
+      $scope.successText = $rootScope.fromEdit ? "Your connection has been edited and is ready to use." : "Your Kettle database repository was created and is ready to use.";
     });
 
     repoConnectionAppControllers.controller("CreateNewConnectionController", function($scope, $location, $rootScope, repositoryTypesModel, kettleDatabaseRepositoryModel, kettleFileRepositoryModel) {
@@ -272,6 +273,7 @@ define(
         close();
       };
       $scope.getStarted = function(repositoryType) {
+        $rootScope.fromEdit = false;
         if (repositoryType.id == "KettleFileRepository") {
           kettleFileRepositoryModel.reset();
           $location.path("/kettle-file-repository-details");
@@ -349,6 +351,8 @@ define(
     });
 
     repoConnectionAppControllers.controller("RepositoryManagerController", function($scope, $rootScope, $location, repositoriesModel, pentahoRepositoryModel, kettleFileRepositoryModel, kettleDatabaseRepositoryModel) {
+      repositoriesModel.repositories = JSON.parse(getRepositories());
+      repositoriesModel.selectedRepository = null;
       $scope.model = repositoriesModel;
       $scope.selectRepository = function(repository) {
         repositoriesModel.selectedRepository = repository;
@@ -364,6 +368,7 @@ define(
         }
       }
       $scope.edit = function(repository) {
+        $rootScope.fromEdit = true;
         var repositoryString = loadRepository(repository.displayName);
         var repository = JSON.parse(repositoryString);
         if (repository.id == "KettleFileRepository") {
