@@ -308,8 +308,8 @@ public class SalesforceUpsert extends SalesforceStep {
       } catch ( KettleException ke ) {
         logError( BaseMessages.getString( PKG, "SalesforceUpsert.Log.ErrorOccurredDuringStepInitialize" )
           + ke.getMessage() );
+        return false;
       }
-      return true;
     }
     return false;
   }

@@ -287,9 +287,9 @@ public class SalesforceUpdate extends SalesforceStep {
         return true;
       } catch ( KettleException ke ) {
         logError( BaseMessages.getString( PKG, "SalesforceUpdate.Log.ErrorOccurredDuringStepInitialize" ) + ke
-            .getMessage() );
+          .getMessage() );
+        return false;
       }
-      return true;
     }
     return false;
   }
