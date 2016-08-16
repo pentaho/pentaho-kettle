@@ -103,6 +103,7 @@ function(angular) {
       });
     }]).
     run(function($rootScope, $window) {
+    $rootScope.fromEdit = false;
     $rootScope.slide = '';
     $rootScope.$on('$routeChangeStart', function() {
         $rootScope.back = function() {
