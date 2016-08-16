@@ -4,9 +4,9 @@
   </div>
   <div class="middle_div2">
     <label class="block text_left">Connect to</label>
-    <div 
-      uib-popover="{{model.currentRepositoryName}}" popover-placement="bottom" popover-trigger="mouseenter" popover-popup-delay="500"
-      class="connection_name_label block text_left" style="margin-bottom:18px;">{{model.currentRepositoryName}}</div>
+    <div ng-init="addToolTips()"
+      class="connection_name_label block text_left mightOverflow" style="margin-bottom:18px;">{{model.currentRepositoryName}}
+    </div>
     <form>
     <div style="margin-bottom:18px;">
       <label for="userName" class="margin_bottom_5 block text_left">User Name</label>

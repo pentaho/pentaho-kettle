@@ -3,14 +3,10 @@
   <div id="table-wrapper" class="margin_bottom_20 table_border">
     <div id="table-scroll">
       <table id="repoMngTable">
-        <tr ng-repeat="repository in model.repositories" ng-class="{active : repository === model.selectedRepository}"  ng-click="selectRepository(repository)">
+        <tr ng-repeat="repository in model.repositories" ng-class="{active : repository === model.selectedRepository}"  ng-click="selectRepository(repository)" ng-init="$last && addToolTips()">
           <td class="bullet" />
           <td class="repo_type text_left">
-            <div class="repoType" 
-              uib-popover="{{repository.displayName}}" 
-              popover-trigger="mouseenter" 
-              popover-popup-delay="500"
-              popover-placement="bottom-left">
+            <div class="repoType mightOverflow">
                 {{repository.displayName}}
             </div>
             <div id="repoDesc">{{repository.description}}</div>
