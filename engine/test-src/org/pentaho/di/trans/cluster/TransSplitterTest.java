@@ -22,6 +22,13 @@
 
 package org.pentaho.di.trans.cluster;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,13 +42,6 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.TransMetaFactory;
 import org.pentaho.di.trans.TransMetaFactoryImpl;
 import org.w3c.dom.Node;
-
-import static junit.framework.Assert.assertEquals;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 public class TransSplitterTest {
   private LogChannelInterfaceFactory oldLogChannelInterfaceFactory;

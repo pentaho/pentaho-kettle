@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -58,9 +58,9 @@ import org.w3c.dom.Node;
  */
 
 @Step( id = "GetPreviousRowField", image = "PRV.svg",
-i18nPackageName = "org.pentaho.di.trans.steps.getpreviousrowfield", name = "GetPreviousRowFieldMeta.Name",
-description = "GetPreviousRowFieldMeta.Description",
-categoryDescription = "i18n:org.pentaho.di.job:JobCategory.Category.Deprecated" )
+  i18nPackageName = "org.pentaho.di.trans.steps.getpreviousrowfield", name = "GetPreviousRowFieldMeta.Name",
+  description = "GetPreviousRowFieldMeta.Description",
+  categoryDescription = "i18n:org.pentaho.di.job:JobCategory.Category.Deprecated" )
 
 public class GetPreviousRowFieldMeta extends BaseStepMeta implements StepMetaInterface {
 
@@ -109,6 +109,7 @@ public class GetPreviousRowFieldMeta extends BaseStepMeta implements StepMetaInt
     this.fieldOutStream = keyStream;
   }
 
+  @Override
   public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     readData( stepnode );
   }
@@ -118,6 +119,7 @@ public class GetPreviousRowFieldMeta extends BaseStepMeta implements StepMetaInt
     fieldOutStream = new String[nrkeys];
   }
 
+  @Override
   public Object clone() {
     GetPreviousRowFieldMeta retval = (GetPreviousRowFieldMeta) super.clone();
     int nrkeys = fieldInStream.length;
@@ -153,6 +155,7 @@ public class GetPreviousRowFieldMeta extends BaseStepMeta implements StepMetaInt
     }
   }
 
+  @Override
   public void setDefault() {
     fieldInStream = null;
     fieldOutStream = null;
@@ -163,6 +166,7 @@ public class GetPreviousRowFieldMeta extends BaseStepMeta implements StepMetaInt
     allocate( nrkeys );
   }
 
+  @Override
   public String getXML() {
     StringBuffer retval = new StringBuffer( 500 );
 
@@ -180,6 +184,7 @@ public class GetPreviousRowFieldMeta extends BaseStepMeta implements StepMetaInt
     return retval.toString();
   }
 
+  @Override
   public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
 
     try {
@@ -199,6 +204,7 @@ public class GetPreviousRowFieldMeta extends BaseStepMeta implements StepMetaInt
     }
   }
 
+  @Override
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       rep.saveStepAttribute( id_transformation, id_step, "schema", schema );
@@ -214,6 +220,7 @@ public class GetPreviousRowFieldMeta extends BaseStepMeta implements StepMetaInt
     }
   }
 
+  @Override
   public void getFields( RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info, StepMeta nextStep,
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
 
@@ -240,6 +247,7 @@ public class GetPreviousRowFieldMeta extends BaseStepMeta implements StepMetaInt
     }
   }
 
+  @Override
   public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
     RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
@@ -335,11 +343,13 @@ public class GetPreviousRowFieldMeta extends BaseStepMeta implements StepMetaInt
     }
   }
 
+  @Override
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
     TransMeta transMeta, Trans trans ) {
     return new GetPreviousRowField( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 
+  @Override
   public StepDataInterface getStepData() {
     return new GetPreviousRowFieldData();
   }
@@ -359,6 +369,7 @@ public class GetPreviousRowFieldMeta extends BaseStepMeta implements StepMetaInt
     this.schema = schemaName;
   }
 
+  @Override
   public boolean supportsErrorHandling() {
     return true;
   }

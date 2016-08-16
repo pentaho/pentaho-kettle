@@ -39,31 +39,37 @@ public class MemoryGroupByMetaInjectionTest extends BaseMetadataInjectionTest<Me
   @Test
   public void test() throws Exception {
     check( "GROUPFIELD", new StringGetter() {
+      @Override
       public String get() {
         return meta.getGroupField()[0];
       }
     } );
     check( "AGGREGATEFIELD", new StringGetter() {
+      @Override
       public String get() {
         return meta.getAggregateField()[0];
       }
     } );
     check( "SUBJECTFIELD", new StringGetter() {
+      @Override
       public String get() {
         return meta.getSubjectField()[0];
       }
     } );
     check( "AGGREGATETYPE", new IntGetter() {
+      @Override
       public int get() {
         return meta.getAggregateType()[0];
       }
     } );
     check( "VALUEFIELD", new StringGetter() {
+      @Override
       public String get() {
         return meta.getValueField()[0];
       }
     } );
     check( "ALWAYSGIVINGBACKONEROW", new BooleanGetter() {
+        @Override
         public boolean get() {
           return meta.isAlwaysGivingBackOneRow();
         }

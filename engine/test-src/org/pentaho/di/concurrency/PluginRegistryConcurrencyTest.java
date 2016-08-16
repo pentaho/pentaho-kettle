@@ -22,6 +22,17 @@
 
 package org.pentaho.di.concurrency;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -35,17 +46,6 @@ import org.pentaho.di.core.extension.ExtensionPointPluginType;
 import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.PluginTypeInterface;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import static java.util.Arrays.asList;
-import static java.util.Collections.singletonList;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 /**
  * @author Andrey Khayrutdinov
@@ -104,7 +104,7 @@ public class PluginRegistryConcurrencyTest {
     PluginTypeInterface type = mock( PluginTypeInterface.class );
 
     ConcurrencyTestRunner.runAndCheckNoExceptionRaised(
-      singletonList( new Registrar( condition, type.getClass(), 1, "" ) ), getters, condition );
+      Collections.singletonList( new Registrar( condition, type.getClass(), 1, "" ) ), getters, condition );
   }
 
 
@@ -120,7 +120,7 @@ public class PluginRegistryConcurrencyTest {
       getters.add( new Getter( condition, type ) );
     }
 
-    List<Registrar> registrars = asList(
+    List<Registrar> registrars = Arrays.asList(
       new Registrar( condition, type1, cycles, type1.getName() ),
       new Registrar( condition, type2, cycles, type2.getName() )
     );

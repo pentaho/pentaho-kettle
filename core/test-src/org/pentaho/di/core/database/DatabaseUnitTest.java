@@ -22,10 +22,20 @@
 
 package org.pentaho.di.core.database;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
-import static org.pentaho.di.core.database.DataSourceProviderInterface.DatasourceType.JNDI;
-import static org.pentaho.di.core.database.DataSourceProviderInterface.DatasourceType.POOLED;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.lang.reflect.Field;
 import java.sql.BatchUpdateException;
@@ -37,10 +47,13 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.List;
 
+import javax.sql.DataSource;
+
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.pentaho.di.core.KettleClientEnvironment;
+import org.pentaho.di.core.database.DataSourceProviderInterface.DatasourceType;
 import org.pentaho.di.core.exception.KettleDatabaseBatchException;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.logging.LogLevel;
@@ -50,8 +63,6 @@ import org.pentaho.di.core.logging.SimpleLoggingObject;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
-
-import javax.sql.DataSource;
 
 public class DatabaseUnitTest {
 
@@ -507,8 +518,8 @@ public class DatabaseUnitTest {
     meta.setUsingConnectionPool( true );
 
     DataSourceProviderInterface provider = testUsesCustomDsProviderIfSet( meta );
-    verify( provider ).getNamedDataSource( anyString(), eq( JNDI ) );
-    verify( provider, never() ).getNamedDataSource( anyString(), eq( POOLED ) );
+    verify( provider ).getNamedDataSource( anyString(), eq( DatasourceType.JNDI ) );
+    verify( provider, never() ).getNamedDataSource( anyString(), eq( DatasourceType.POOLED ) );
   }
 
   @Test

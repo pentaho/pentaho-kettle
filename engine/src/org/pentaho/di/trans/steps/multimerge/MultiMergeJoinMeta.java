@@ -49,7 +49,6 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.step.errorhandling.Stream;
 import org.pentaho.di.trans.step.errorhandling.StreamIcon;
-import org.pentaho.di.trans.step.errorhandling.StreamInterface;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface.StreamType;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
@@ -243,7 +242,7 @@ public class MultiMergeJoinMeta extends BaseStepMeta implements StepMetaInterfac
       String inputStepName = inputSteps[i];
       if ( i >= getStepIOMeta().getInfoStreams().size() ) {
         getStepIOMeta().addStream(
-          new Stream( StreamType.INFO, StepMeta.findStep( steps, inputStepName ), 
+          new Stream( StreamType.INFO, StepMeta.findStep( steps, inputStepName ),
               BaseMessages.getString( PKG, "MultiMergeJoin.InfoStream.Description" ), StreamIcon.INFO, inputStepName ) );
       }
     }

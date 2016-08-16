@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,13 +22,12 @@
 package org.pentaho.di.core.parameters;
 
 
-import org.junit.Test;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.pentaho.di.core.parameters.NamedParamsExceptionTest.assertMessage;
+
+import org.junit.Test;
 
 /**
  * Created by mburgess on 10/13/15.
@@ -41,10 +40,10 @@ public class UnknownParamExceptionTest {
   public void testConstructors() {
     exception = new UnknownParamException();
     assertNotNull( exception );
-    assertMessage( "null", exception );
+    NamedParamsExceptionTest.assertMessage( "null", exception );
 
     exception = new UnknownParamException( "message" );
-    assertMessage( "message", exception );
+    NamedParamsExceptionTest.assertMessage( "message", exception );
 
     Throwable t = mock( Throwable.class );
     when( t.getStackTrace() ).thenReturn( new StackTraceElement[0] );
@@ -52,7 +51,7 @@ public class UnknownParamExceptionTest {
     assertEquals( t, exception.getCause() );
 
     exception = new UnknownParamException( "message", t );
-    assertMessage( "message", exception );
+    NamedParamsExceptionTest.assertMessage( "message", exception );
     assertEquals( t, exception.getCause() );
   }
 }
