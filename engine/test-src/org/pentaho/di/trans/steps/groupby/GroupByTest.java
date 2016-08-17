@@ -22,20 +22,13 @@
 
 package org.pentaho.di.trans.steps.groupby;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.vfs2.FileSystemException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -55,6 +48,17 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
 import org.pentaho.metastore.api.IMetaStore;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class GroupByTest  {
   private StepMockHelper<GroupByMeta, GroupByData> mockHelper;
@@ -178,5 +182,40 @@ public class GroupByTest  {
     // check file is deleted
     assertFalse( groupByData.tempFile.exists() );
 
+  }
+
+  @Test
+  public void testAddToBuffer() throws KettleException, FileSystemException {
+    GroupByData groupByData = new GroupByData();
+    ArrayList listMock = mock( ArrayList.class );
+    when( listMock.size() ).thenReturn( 5001 );
+    groupByData.bufferList = listMock;
+    groupByData.rowsOnFile = 0;
+    RowMetaInterface inputRowMetaMock = mock( RowMetaInterface.class );
+    groupByData.inputRowMeta = inputRowMetaMock;
+
+    GroupBy groupBySpy = Mockito.spy(
+        new GroupBy( mockHelper.stepMeta, groupByData, 0, mockHelper.transMeta, mockHelper.trans ) );
+
+    GroupByMeta groupByMetaMock = mock( GroupByMeta.class );
+    when( groupByMetaMock.getPrefix() ).thenReturn( "group-by-test-temp-file-" );
+    when( groupBySpy.getMeta() ).thenReturn( groupByMetaMock );
+
+    String userDir = System.getProperty( "user.dir" );
+    String vfsFilePath = "file:///" + userDir;
+    when( groupBySpy.environmentSubstitute( anyString() ) ).thenReturn( vfsFilePath );
+
+    Object[] row = { "abc" };
+    // tested method itself
+    groupBySpy.addToBuffer( row );
+
+    // check if file is created
+    assertTrue( groupByData.tempFile.exists() );
+    groupBySpy.dispose( groupByMetaMock, groupByData );
+    // check file is deleted
+    assertFalse( groupByData.tempFile.exists() );
+
+    // since path started with "file:///"
+    verify( groupBySpy, times( 1 ) ).retrieveVfsPath( anyString() );
   }
 }
