@@ -63,6 +63,9 @@ public class H2DatabaseMetaTest {
     assertEquals( "jdbc:h2:WIBBLE", nativeMeta.getURL( "", "-1", "WIBBLE" ) );
     assertEquals( "jdbc:h2:mem:WIBBLE", nativeMeta.getURL( "", "", "mem:WIBBLE" ) );
 
+    assertEquals( 0, nativeMeta.getNotFoundTK( true ) );
+    assertEquals( 0, nativeMeta.getNotFoundTK( false ) );
+
     assertArrayEquals( new String[] { "h2.jar" }, nativeMeta.getUsedLibraries() );
     assertArrayEquals( new String[] {
       "CURRENT_TIMESTAMP", "CURRENT_TIME", "CURRENT_DATE", "CROSS", "DISTINCT", "EXCEPT", "EXISTS", "FROM",
@@ -140,6 +143,9 @@ public class H2DatabaseMetaTest {
 
     assertEquals( "ALTER TABLE FOO ADD BAR IDENTITY",
         nativeMeta.getAddColumnStatement( "FOO", new ValueMetaNumber( "BAR", 26, 8 ), "BAR", true, "", false ) );
+
+    assertEquals( "ALTER TABLE FOO ADD BAR IDENTITY",
+        nativeMeta.getAddColumnStatement( "FOO", new ValueMetaNumber( "BAR", 26, 8 ), "", true, "BAR", false ) );
 
     String lineSep = System.getProperty( "line.separator" );
     assertEquals( "ALTER TABLE FOO DROP BAR" + lineSep,
