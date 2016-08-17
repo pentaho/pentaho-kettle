@@ -237,6 +237,7 @@ public class NeoviewDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 
     int type = v.getType();
     switch ( type ) {
+      case ValueMetaInterface.TYPE_TIMESTAMP:
       case ValueMetaInterface.TYPE_DATE:
         retval += "TIMESTAMP";
         break;
@@ -447,6 +448,7 @@ public class NeoviewDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
             data = rs.getBytes( i + 1 );
           }
           break;
+        case ValueMetaInterface.TYPE_TIMESTAMP:
         case ValueMetaInterface.TYPE_DATE:
           if ( val.getOriginalColumnType() == java.sql.Types.TIME ) {
             // Neoview can not handle getDate / getTimestamp for a Time column
