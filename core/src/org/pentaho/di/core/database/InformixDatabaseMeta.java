@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -172,6 +172,9 @@ public class InformixDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 
     int type = v.getType();
     switch ( type ) {
+      case ValueMetaInterface.TYPE_TIMESTAMP:
+        retval += "DATETIME";
+        break;
       case ValueMetaInterface.TYPE_DATE:
         retval += "DATETIME YEAR to FRACTION";
         break;
