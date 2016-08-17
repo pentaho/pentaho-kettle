@@ -22,9 +22,6 @@
 
 package org.pentaho.di.core.database;
 
-import java.util.Collection;
-import java.util.HashSet;
-
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.row.ValueMetaInterface;
 
@@ -45,94 +42,23 @@ public class MonetDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 
   private static final int MAX_VARCHAR_LENGTH = Integer.MAX_VALUE;
 
-  private static Collection<String> reservedWordAlt = new HashSet<String>();
-
-  static {
-    reservedWordAlt.add( "IS" );
-    reservedWordAlt.add( "ISNULL" );
-    reservedWordAlt.add( "NOTNULL" );
-    reservedWordAlt.add( "IN" );
-    reservedWordAlt.add( "BETWEEN" );
-    reservedWordAlt.add( "OVERLAPS" );
-    reservedWordAlt.add( "LIKE" );
-    reservedWordAlt.add( "ILIKE" );
-    reservedWordAlt.add( "NOT" );
-    reservedWordAlt.add( "AND" );
-    reservedWordAlt.add( "OR" );
-    reservedWordAlt.add( "CHAR" );
-    reservedWordAlt.add( "VARCHAR" );
-    reservedWordAlt.add( "CLOB" );
-    reservedWordAlt.add( "BLOB" );
-    reservedWordAlt.add( "DECIMAL" );
-    reservedWordAlt.add( "DEC" );
-    reservedWordAlt.add( "NUMERIC" );
-    reservedWordAlt.add( "TINYINT" );
-    reservedWordAlt.add( "SMALLINT" );
-    reservedWordAlt.add( "INT" );
-    reservedWordAlt.add( "BIGINT" );
-    reservedWordAlt.add( "REAL" );
-    reservedWordAlt.add( "DOUBLE" );
-    reservedWordAlt.add( "BOOLEAN" );
-    reservedWordAlt.add( "DATE" );
-    reservedWordAlt.add( "TIME" );
-    reservedWordAlt.add( "TIMESTAMP" );
-    reservedWordAlt.add( "INTERVAL" );
-    reservedWordAlt.add( "YEAR" );
-    reservedWordAlt.add( "MONTH" );
-    reservedWordAlt.add( "DAY" );
-    reservedWordAlt.add( "HOUR" );
-    reservedWordAlt.add( "MINUTE" );
-    reservedWordAlt.add( "SECOND" );
-    reservedWordAlt.add( "TIMEZONE" );
-    reservedWordAlt.add( "EXTRACT" );
-    reservedWordAlt.add( "CURRENT_DATE" );
-    reservedWordAlt.add( "CURRENT_TIME" );
-    reservedWordAlt.add( "CURRENT_TIMESTAMP" );
-    reservedWordAlt.add( "LOCALTIME" );
-    reservedWordAlt.add( "LOCALTIMESTAMP" );
-    reservedWordAlt.add( "CURRENT_TIME" );
-    reservedWordAlt.add( "SERIAL" );
-    reservedWordAlt.add( "START" );
-    reservedWordAlt.add( "WITH" );
-    reservedWordAlt.add( "INCREMENT" );
-    reservedWordAlt.add( "CACHE" );
-    reservedWordAlt.add( "CYCLE" );
-    reservedWordAlt.add( "SEQUENCE" );
-    reservedWordAlt.add( "GETANCHOR" );
-    reservedWordAlt.add( "GETBASENAME" );
-    reservedWordAlt.add( "GETCONTENT" );
-    reservedWordAlt.add( "GETCONTEXT" );
-    reservedWordAlt.add( "GETDOMAIN" );
-    reservedWordAlt.add( "GETEXTENSION" );
-    reservedWordAlt.add( "GETFILE" );
-    reservedWordAlt.add( "GETHOST" );
-    reservedWordAlt.add( "GETPORT" );
-    reservedWordAlt.add( "GETPROTOCOL" );
-    reservedWordAlt.add( "GETQUERY" );
-    reservedWordAlt.add( "GETUSER" );
-    reservedWordAlt.add( "GETROBOTURL" );
-    reservedWordAlt.add( "ISURL" );
-    reservedWordAlt.add( "NEWURL" );
-    reservedWordAlt.add( "BROADCAST" );
-    reservedWordAlt.add( "MASKLEN" );
-    reservedWordAlt.add( "SETMASKLEN" );
-    reservedWordAlt.add( "NETMASK" );
-    reservedWordAlt.add( "HOSTMASK" );
-    reservedWordAlt.add( "NETWORK" );
-    reservedWordAlt.add( "TEXT" );
-    reservedWordAlt.add( "ABBREV" );
-    reservedWordAlt.add( "CREATE" );
-    reservedWordAlt.add( "TYPE" );
-    reservedWordAlt.add( "NAME" );
-    reservedWordAlt.add( "DROP" );
-    reservedWordAlt.add( "USER" );
-  }
-
   @Override
   public int[] getAccessTypeList() {
     return new int[] {
       DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI };
   }
+
+  /**
+   * @see DatabaseInterface#getDefaultDatabasePort()
+   */
+  @Override
+  public int getDefaultDatabasePort() {
+    if ( getAccessType() == DatabaseMeta.TYPE_ACCESS_NATIVE ) {
+      return 50000; // According to https://www.monetdb.org/Documentation/monetdb-man-page
+    } else {
+      return -1;
+    }
+  };
 
   /**
    * @see DatabaseInterface#getNotFoundTK(boolean)
@@ -260,7 +186,15 @@ public class MonetDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 
   @Override
   public String[] getReservedWords() {
-    return reservedWordAlt.toArray( new String[] {} );
+    return new String[] {
+      "IS", "ISNULL", "NOTNULL", "IN", "BETWEEN", "OVERLAPS", "LIKE", "ILIKE", "NOT", "AND", "OR", "CHAR", "VARCHAR",
+      "CLOB", "BLOB", "DECIMAL", "DEC", "NUMERIC", "TINYINT", "SMALLINT", "INT", "BIGINT", "REAL", "DOUBLE", "BOOLEAN",
+      "DATE", "TIME", "TIMESTAMP", "INTERVAL", "YEAR", "MONTH", "DAY", "HOUR", "MINUTE", "SECOND", "TIMEZONE", "EXTRACT",
+      "CURRENT_DATE", "CURRENT_TIME", "CURRENT_TIMESTAMP", "LOCALTIME", "LOCALTIMESTAMP", "CURRENT_TIME", "SERIAL", "START",
+      "WITH", "INCREMENT", "CACHE", "CYCLE", "SEQUENCE", "GETANCHOR", "GETBASENAME", "GETCONTENT", "GETCONTEXT", "GETDOMAIN",
+      "GETEXTENSION", "GETFILE", "GETHOST", "GETPORT", "GETPROTOCOL", "GETQUERY", "GETUSER", "GETROBOTURL", "ISURL", "NEWURL",
+      "BROADCAST", "MASKLEN", "SETMASKLEN", "NETMASK", "HOSTMASK", "NETWORK", "TEXT", "ABBREV", "CREATE", "TYPE", "NAME", "DROP",
+      "USER" };
   }
 
   @Override
