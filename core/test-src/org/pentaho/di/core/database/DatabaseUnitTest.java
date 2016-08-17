@@ -38,13 +38,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.lang.reflect.Field;
-import java.sql.BatchUpdateException;
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.List;
 
 import javax.sql.DataSource;
@@ -62,6 +56,7 @@ import org.pentaho.di.core.logging.LoggingObjectType;
 import org.pentaho.di.core.logging.SimpleLoggingObject;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaNumber;
 import org.pentaho.di.core.variables.VariableSpace;
 
 public class DatabaseUnitTest {
@@ -71,6 +66,93 @@ public class DatabaseUnitTest {
   @BeforeClass
   public static void setUp() throws Exception {
     KettleClientEnvironment.init();
+  }
+
+  @Test
+  public void testGetQueryFieldsFromPreparedStatement() throws Exception {
+    String sql = "select * from employees";
+    String columnName = "salary";
+
+    DatabaseMeta meta = Mockito.mock( DatabaseMeta.class );
+    PreparedStatement ps = Mockito.mock( PreparedStatement.class );
+    Connection conn = mockConnection( mock( DatabaseMetaData.class ) );
+    ResultSetMetaData rsMetaData = mock( ResultSetMetaData.class );
+
+    when( rsMetaData.getColumnCount() ).thenReturn( 1 );
+    when( rsMetaData.getColumnName( 1 ) ).thenReturn( columnName );
+    when( rsMetaData.getColumnLabel( 1 ) ).thenReturn( columnName );
+    when( rsMetaData.getColumnType( 1 ) ).thenReturn( Types.DECIMAL );
+
+    Mockito.when( meta.stripCR( anyString() ) ).thenReturn( sql );
+    Mockito.when( meta.getDatabaseInterface() ).thenReturn( new MySQLDatabaseMeta() );
+    Mockito.when( conn.prepareStatement( sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY ) )
+        .thenReturn( ps );
+    Mockito.when( ps.getMetaData() ).thenReturn( rsMetaData );
+
+    Database db = new Database( log, meta );
+    db.setConnection( conn );
+    RowMetaInterface rowMetaInterface = db.getQueryFieldsFromPreparedStatement( sql );
+
+    assertEquals( rowMetaInterface.size(), 1 );
+    assertEquals( rowMetaInterface.getValueMeta( 0 ).getName(), columnName );
+    assertTrue( rowMetaInterface.getValueMeta( 0 ) instanceof ValueMetaNumber );
+  }
+
+  @Test
+  public void testGetQueryFieldsFromDatabaseMetaData() throws Exception {
+    DatabaseMeta meta = Mockito.mock( DatabaseMeta.class );
+    DatabaseMetaData dbMetaData = mock( DatabaseMetaData.class );
+    Connection conn = mockConnection( dbMetaData );
+    ResultSet columns = mock( ResultSet.class );
+    String columnName = "year";
+    String columnType = "Integer";
+    int columnSize = 15;
+
+    Mockito.when( dbMetaData.getColumns( anyString(), anyString(), anyString(), anyString() ) ).thenReturn( columns );
+    Mockito.when( columns.next() ).thenReturn( true ).thenReturn( false );
+    Mockito.when( columns.getString( "COLUMN_NAME" ) ).thenReturn( columnName );
+    Mockito.when( columns.getString( "SOURCE_DATA_TYPE" ) ).thenReturn( columnType );
+    Mockito.when( columns.getInt( "COLUMN_SIZE" ) ).thenReturn( columnSize );
+
+    Database db = new Database( log, meta );
+    db.setConnection( conn );
+    RowMetaInterface rowMetaInterface = db.getQueryFieldsFromDatabaseMetaData();
+
+    assertEquals( rowMetaInterface.size(), 1 );
+    assertEquals( rowMetaInterface.getValueMeta( 0 ).getName(), columnName );
+    assertEquals( rowMetaInterface.getValueMeta( 0 ).getOriginalColumnTypeName(), columnType );
+    assertEquals( rowMetaInterface.getValueMeta( 0 ).getLength(), columnSize );
+  }
+
+  @Test
+  public void testGetQueryFieldsFallback() throws Exception {
+    String sql = "select * from employees";
+    String columnName = "salary";
+
+    DatabaseMeta meta = Mockito.mock( DatabaseMeta.class );
+    PreparedStatement ps = Mockito.mock( PreparedStatement.class );
+    Connection conn = mockConnection( mock( DatabaseMetaData.class ) );
+    ResultSetMetaData rsMetaData = mock( ResultSetMetaData.class );
+    ResultSet rs = Mockito.mock( ResultSet.class );
+
+    when( rsMetaData.getColumnCount() ).thenReturn( 1 );
+    when( rsMetaData.getColumnName( 1 ) ).thenReturn( columnName );
+    when( rsMetaData.getColumnLabel( 1 ) ).thenReturn( columnName );
+    when( rsMetaData.getColumnType( 1 ) ).thenReturn( Types.DECIMAL );
+    when( ps.executeQuery() ).thenReturn( rs );
+
+    Mockito.when( meta.stripCR( anyString() ) ).thenReturn( sql );
+    Mockito.when( meta.getDatabaseInterface() ).thenReturn( new MySQLDatabaseMeta() );
+    Mockito.when( conn.prepareStatement( sql ) ).thenReturn( ps );
+    Mockito.when( rs.getMetaData() ).thenReturn( rsMetaData );
+
+    Database db = new Database( log, meta );
+    db.setConnection( conn );
+    RowMetaInterface rowMetaInterface = db.getQueryFieldsFallback( sql, false, null, null );
+
+    assertEquals( rowMetaInterface.size(), 1 );
+    assertEquals( rowMetaInterface.getValueMeta( 0 ).getName(), columnName );
+    assertTrue( rowMetaInterface.getValueMeta( 0 ) instanceof ValueMetaNumber );
   }
 
   /**
