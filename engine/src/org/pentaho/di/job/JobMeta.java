@@ -126,6 +126,8 @@ public class JobMeta extends AbstractMeta
    */
   public static final RepositoryObjectType REPOSITORY_ELEMENT_TYPE = RepositoryObjectType.JOB;
 
+  static final int BORDER_INDENT = 20;
+
   protected String jobVersion;
 
   protected int jobStatus;
@@ -1923,13 +1925,13 @@ public class JobMeta extends AbstractMeta
       }
     }
 
-    if ( minx > 20 ) {
-      minx -= 20;
+    if ( minx > BORDER_INDENT && minx != Integer.MAX_VALUE ) {
+      minx -= BORDER_INDENT;
     } else {
       minx = 0;
     }
-    if ( miny > 20 ) {
-      miny -= 20;
+    if ( miny > BORDER_INDENT && miny != Integer.MAX_VALUE ) {
+      miny -= BORDER_INDENT;
     } else {
       miny = 0;
     }

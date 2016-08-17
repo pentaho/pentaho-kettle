@@ -25,10 +25,12 @@ package org.pentaho.di.job;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.pentaho.di.core.NotePadMeta;
 import org.pentaho.di.core.exception.IdNotFoundException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.exception.LookupReferencesException;
+import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.listeners.ContentChangedListener;
 import org.pentaho.di.job.entries.empty.JobEntryEmpty;
 import org.pentaho.di.job.entries.trans.JobEntryTrans;
@@ -42,6 +44,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.same;
 import static org.mockito.Mockito.*;
 
@@ -180,5 +183,33 @@ public class JobMetaTest {
 
     // assert
     verify( clone ).setRepositoryDirectory( directory );
+  }
+
+  @Test
+  public void shouldUseCoordinatesOfItsStepsAndNotesWhenCalculatingMinimumPoint() {
+    JobMeta jobMeta = new JobMeta();
+    Point jobEntryPoint = new Point( 500, 500 );
+    Point notePadMetaPoint = new Point( 400, 400 );
+    JobEntryCopy jobEntryCopy = mock( JobEntryCopy.class );
+    when( jobEntryCopy.getLocation() ).thenReturn( jobEntryPoint );
+    NotePadMeta notePadMeta = mock( NotePadMeta.class );
+    when( notePadMeta.getLocation() ).thenReturn( notePadMetaPoint );
+
+    // empty Job return 0 coordinate point
+    Point point = jobMeta.getMinimum();
+    assertEquals( 0, point.x );
+    assertEquals( 0, point.y );
+
+    // when Job contains a single step or note, then jobMeta should return coordinates of it, subtracting borders
+    jobMeta.addJobEntry( 0, jobEntryCopy );
+    Point actualStepPoint = jobMeta.getMinimum();
+    assertEquals( jobEntryPoint.x - JobMeta.BORDER_INDENT, actualStepPoint.x );
+    assertEquals( jobEntryPoint.y - JobMeta.BORDER_INDENT, actualStepPoint.y );
+
+    // when Job contains step or notes, then jobMeta should return minimal coordinates of them, subtracting borders
+    jobMeta.addNote( notePadMeta );
+    Point stepPoint = jobMeta.getMinimum();
+    assertEquals( notePadMetaPoint.x - JobMeta.BORDER_INDENT, stepPoint.x );
+    assertEquals( notePadMetaPoint.y - JobMeta.BORDER_INDENT, stepPoint.y );
   }
 }
