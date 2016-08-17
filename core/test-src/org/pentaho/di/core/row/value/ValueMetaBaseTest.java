@@ -55,6 +55,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.owasp.esapi.ESAPI;
 import org.owasp.esapi.Encoder;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseInterface;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.database.NetezzaDatabaseMeta;
@@ -331,13 +332,27 @@ public class ValueMetaBaseTest {
     int trim_type = 0;
     Object result;
 
+    System.setProperty( Const.KETTLE_EMPTY_STRING_DIFFERS_FROM_NULL, "N" );
     result =
       outValueMetaString.convertDataFromString( inputValueEmptyString, inValueMetaString, nullIf, ifNull, trim_type );
-    assertEquals( "Conversion from empty string to string must return empty string", result, StringUtils.EMPTY );
+    assertEquals( "KETTLE_EMPTY_STRING_DIFFERS_FROM_NULL = N: "
+        + "Conversion from empty string to string must return empty string", StringUtils.EMPTY, result );
 
     result =
       outValueMetaString.convertDataFromString( inputValueNullString, inValueMetaString, nullIf, ifNull, trim_type );
-    assertEquals( "Conversion from null string must return null", result, null );
+    assertEquals( "KETTLE_EMPTY_STRING_DIFFERS_FROM_NULL = N: "
+        + "Conversion from null string must return null", null, result );
+
+    System.setProperty( Const.KETTLE_EMPTY_STRING_DIFFERS_FROM_NULL, "Y" );
+    result =
+        outValueMetaString.convertDataFromString( inputValueEmptyString, inValueMetaString, nullIf, ifNull, trim_type );
+    assertEquals( "KETTLE_EMPTY_STRING_DIFFERS_FROM_NULL = Y: "
+        + "Conversion from empty string to string must return empty string", StringUtils.EMPTY, result );
+
+    result =
+        outValueMetaString.convertDataFromString( inputValueNullString, inValueMetaString, nullIf, ifNull, trim_type );
+    assertEquals( "KETTLE_EMPTY_STRING_DIFFERS_FROM_NULL = Y: "
+        + "Conversion from null string must return empty string", StringUtils.EMPTY, result );
   }
 
   @Test
