@@ -1688,9 +1688,11 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
             if ( areaType == AreaType.STEP_ICON ) {
               StepMeta selectedStepMeta = (StepMeta) areaOwner.getOwner();
               return selectedStepMeta == stepMeta;
-            } else if ( areaType.belongsToTransContextMenu() ) {
+            } else if ( areaType != null && areaType.belongsToTransContextMenu() ) {
               StepMeta selectedStepMeta = (StepMeta) areaOwner.getParent();
               return selectedStepMeta == stepMeta;
+            } else if ( areaOwner.getExtensionAreaType() != null ) {
+              return true;
             }
           }
         }
