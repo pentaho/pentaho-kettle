@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -261,6 +261,12 @@ public class UniVerseDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
   @Override
   public boolean supportsNewLinesInSQL() {
     return true;
+  }
+
+
+  @Override
+  public int getMaxVARCHARLength() {
+    return UniVerseDatabaseMeta.MAX_VARCHAR_LENGTH;
   }
 
 }

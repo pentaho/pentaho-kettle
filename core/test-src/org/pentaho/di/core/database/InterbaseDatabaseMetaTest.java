@@ -170,6 +170,8 @@ public class InterbaseDatabaseMetaTest {
 
     assertEquals( "INTEGER NOT NULL PRIMARY KEY",
         nativeMeta.getFieldDefinition( new ValueMetaNumber( "FOO", 10, 0 ), "FOO", "", false, false, false ) );
+    assertEquals( "INTEGER NOT NULL PRIMARY KEY",
+        nativeMeta.getFieldDefinition( new ValueMetaNumber( "FOO", 10, 0 ), "", "FOO", false, false, false ) );
 
     assertEquals( "NUMERIC(10)",
         nativeMeta.getFieldDefinition( new ValueMetaNumber( "FOO", 10, 0 ), "", "", false, false, false ) );
