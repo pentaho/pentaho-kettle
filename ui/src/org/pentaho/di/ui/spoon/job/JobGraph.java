@@ -685,7 +685,7 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
     //
     if ( e.button == 1 || e.button == 2 ) {
       AreaOwner areaOwner = getVisibleAreaOwner( real.x, real.y );
-      if ( areaOwner != null ) {
+      if ( areaOwner != null && areaOwner.getAreaType() != null ) {
         switch ( areaOwner.getAreaType() ) {
           case JOB_ENTRY_MINI_ICON_OUTPUT:
             // Click on the output icon means: start of drag
@@ -1035,7 +1035,7 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
     // Moved over an area?
     //
     AreaOwner areaOwner = getVisibleAreaOwner( real.x, real.y );
-    if ( areaOwner != null ) {
+    if ( areaOwner != null && areaOwner.getAreaType() != null ) {
       JobEntryCopy jobEntryCopy = null;
       switch ( areaOwner.getAreaType() ) {
         case JOB_ENTRY_ICON:
@@ -1208,7 +1208,7 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
     Point real = screen2real( e.x, e.y );
 
     AreaOwner areaOwner = getVisibleAreaOwner( real.x, real.y );
-    if ( areaOwner != null ) {
+    if ( areaOwner != null && areaOwner.getAreaType() != null ) {
       switch ( areaOwner.getAreaType() ) {
         case JOB_ENTRY_ICON:
           JobEntryCopy jobEntryCopy = (JobEntryCopy) areaOwner.getOwner();
@@ -1334,7 +1334,7 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
         Point cursor = getLastMove();
         if ( cursor != null ) {
           AreaOwner areaOwner = getVisibleAreaOwner( cursor.x, cursor.y );
-          if ( areaOwner != null ) {
+          if ( areaOwner != null && areaOwner.getAreaType() != null ) {
             AreaType areaType = areaOwner.getAreaType();
             if ( areaType == AreaType.JOB_ENTRY_ICON || areaType.belongsToJobContextMenu() ) {
               JobEntryCopy selectedJobEntryCopy = (JobEntryCopy) areaOwner.getOwner();
@@ -2287,7 +2287,7 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
     //
     StringBuilder tip = new StringBuilder();
     AreaOwner areaOwner = getVisibleAreaOwner( x, y );
-    if ( areaOwner != null ) {
+    if ( areaOwner != null && areaOwner.getAreaType() != null ) {
       JobEntryCopy jobEntryCopy;
       switch ( areaOwner.getAreaType() ) {
         case JOB_HOP_ICON:
