@@ -93,13 +93,16 @@ import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaBase;
 import org.pentaho.di.core.row.value.ValueMetaBigNumber;
+import org.pentaho.di.core.row.value.ValueMetaBinary;
 import org.pentaho.di.core.row.value.ValueMetaBoolean;
 import org.pentaho.di.core.row.value.ValueMetaDate;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.row.value.ValueMetaInteger;
+import org.pentaho.di.core.row.value.ValueMetaInternetAddress;
 import org.pentaho.di.core.row.value.ValueMetaNone;
 import org.pentaho.di.core.row.value.ValueMetaNumber;
 import org.pentaho.di.core.row.value.ValueMetaString;
+import org.pentaho.di.core.row.value.ValueMetaTimestamp;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.vfs.KettleVFS;
@@ -2188,20 +2191,24 @@ public class Database implements VariableSpace, LoggingObjectInterface {
       String name = columns.getString( "COLUMN_NAME" );
       String type = columns.getString( "SOURCE_DATA_TYPE" );
       int size = columns.getInt( "COLUMN_SIZE" );
-      if ( type.equals( "Integer" ) ) {
+      if ( type.equals( "Integer" ) || type.equals( "Long" ) ) {
         valueMeta = new ValueMetaInteger();
-      } else if ( type.equals( "BigDecimal" ) ) {
+      } else if ( type.equals( "BigDecimal" ) || type.equals( "BigNumber" ) ) {
         valueMeta = new ValueMetaBigNumber();
-      } else if ( type.equals( "Double" ) ) {
+      } else if ( type.equals( "Double" ) || type.equals( "Number" ) ) {
         valueMeta = new ValueMetaNumber();
-      } else if ( type.equals( "Long" ) ) {
-        valueMeta = new ValueMetaInteger();
       } else if ( type.equals( "String" ) ) {
         valueMeta = new ValueMetaString();
       } else if ( type.equals( "Date" ) ) {
         valueMeta = new ValueMetaDate();
       } else if ( type.equals( "Boolean" ) ) {
         valueMeta = new ValueMetaBoolean();
+      } else if ( type.equals( "Binary" ) ) {
+        valueMeta = new ValueMetaBinary();
+      } else if ( type.equals( "Timestamp" ) ) {
+        valueMeta = new ValueMetaTimestamp();
+      } else if ( type.equals( "Internet Address" ) ) {
+        valueMeta = new ValueMetaInternetAddress();
       }
       if ( valueMeta != null ) {
         valueMeta.setName( name );
