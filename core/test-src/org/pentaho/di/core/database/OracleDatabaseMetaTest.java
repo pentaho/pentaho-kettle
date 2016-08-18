@@ -29,10 +29,16 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.sql.ResultSet;
+
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.exception.KettleDatabaseException;
+import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaBigNumber;
 import org.pentaho.di.core.row.value.ValueMetaBinary;
 import org.pentaho.di.core.row.value.ValueMetaBoolean;
@@ -260,5 +266,43 @@ public class OracleDatabaseMetaTest {
         nativeMeta.getFieldDefinition( new ValueMetaInternetAddress( "FOO" ), "", "", false, false, true ) );
 
   }
+
+  private int rowCnt = 0;
+  private String[] row1 = new String[] { "ROW1COL1", "ROW1COL2" };
+  private String[] row2 = new String[] { "ROW2COL1", "ROW2COL2" };
+
+  @Test
+  public void testCheckIndexExists() throws Exception {
+    String expectedSQL = "SELECT * FROM USER_IND_COLUMNS WHERE TABLE_NAME = 'FOO'";
+    Database db = Mockito.mock(  Database.class );
+    RowMetaInterface rm = Mockito.mock( RowMetaInterface.class );
+    ResultSet rs = Mockito.mock( ResultSet.class );
+    DatabaseMeta dm = Mockito.mock( DatabaseMeta.class );
+    Mockito.when( dm.getQuotedSchemaTableCombination( "", "FOO" ) ).thenReturn( "FOO" );
+    Mockito.when( rs.next() ).thenReturn( rowCnt < 2 );
+    Mockito.when( db.openQuery( expectedSQL ) ).thenReturn( rs );
+    Mockito.when( db.getReturnRowMeta() ).thenReturn( rm );
+    Mockito.when( rm.getString( row1, "COLUMN_NAME", "" ) ).thenReturn( "ROW1COL2" );
+    Mockito.when( rm.getString( row2, "COLUMN_NAME", "" ) ).thenReturn( "ROW2COL2" );
+    Mockito.when( db.getRow( rs ) ).thenAnswer( new Answer<Object[]>() {
+        @Override
+        public Object[] answer( InvocationOnMock invocation ) throws Throwable {
+          rowCnt++;
+          if ( rowCnt == 1 ) {
+            return row1;
+          } else if ( rowCnt == 2 ) {
+            return row2;
+          } else {
+            return null;
+          }
+        }
+    } );
+    Mockito.when(  db.getDatabaseMeta() ).thenReturn( dm );
+    assertTrue( nativeMeta.checkIndexExists( db, "", "FOO", new String[] { "ROW1COL2", "ROW2COL2" } ) );
+    assertFalse( nativeMeta.checkIndexExists( db, "", "FOO", new String[] { "ROW2COL2", "NOTTHERE" } ) );
+    assertFalse( nativeMeta.checkIndexExists( db, "", "FOO", new String[] { "NOTTHERE", "ROW1COL2" } ) );
+
+  }
+
 
 }

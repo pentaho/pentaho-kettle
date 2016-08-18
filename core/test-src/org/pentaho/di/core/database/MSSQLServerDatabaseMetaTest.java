@@ -27,8 +27,14 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.sql.ResultSet;
+
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
+import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaBigNumber;
 import org.pentaho.di.core.row.value.ValueMetaBoolean;
 import org.pentaho.di.core.row.value.ValueMetaDate;
@@ -141,58 +147,6 @@ public class MSSQLServerDatabaseMetaTest {
     assertEquals( "ALTER TABLE FOO ADD BAR DATETIME",
         nativeMeta.getAddColumnStatement( "FOO", new ValueMetaTimestamp( "BAR" ), "", false, "", false ) );
 
-    assertEquals( "ALTER TABLE FOO ADD BAR CHAR(1)",
-        nativeMeta.getAddColumnStatement( "FOO", new ValueMetaBoolean( "BAR" ), "", false, "", false ) );
-
-    assertEquals( "ALTER TABLE FOO ADD BAR BIGINT",
-        nativeMeta.getAddColumnStatement( "FOO", new ValueMetaNumber( "BAR", 10, 0 ), "", false, "", false ) );
-
-    assertEquals( "ALTER TABLE FOO ADD BAR BIGINT",
-        nativeMeta.getAddColumnStatement( "FOO", new ValueMetaBigNumber( "BAR", 10, 0 ), "", false, "", false ) );
-
-    assertEquals( "ALTER TABLE FOO ADD BAR BIGINT",
-        nativeMeta.getAddColumnStatement( "FOO", new ValueMetaInteger( "BAR", 10, 0 ), "", false, "", false ) );
-
-    assertEquals( "ALTER TABLE FOO ADD BAR INT",
-        nativeMeta.getAddColumnStatement( "FOO", new ValueMetaNumber( "BAR", 0, 0 ), "", false, "", false ) );
-
-    assertEquals( "ALTER TABLE FOO ADD BAR INT",
-        nativeMeta.getAddColumnStatement( "FOO", new ValueMetaNumber( "BAR", 5, 0 ), "", false, "", false ) );
-
-
-    assertEquals( "ALTER TABLE FOO ADD BAR DECIMAL(10,3)",
-        nativeMeta.getAddColumnStatement( "FOO", new ValueMetaNumber( "BAR", 10, 3 ), "", false, "", false ) );
-
-    assertEquals( "ALTER TABLE FOO ADD BAR DECIMAL(10,3)",
-        nativeMeta.getAddColumnStatement( "FOO", new ValueMetaBigNumber( "BAR", 10, 3 ), "", false, "", false ) );
-
-    assertEquals( "ALTER TABLE FOO ADD BAR DECIMAL(21,4)",
-        nativeMeta.getAddColumnStatement( "FOO", new ValueMetaBigNumber( "BAR", 21, 4 ), "", false, "", false ) );
-
-    assertEquals( "ALTER TABLE FOO ADD BAR TEXT",
-        nativeMeta.getAddColumnStatement( "FOO", new ValueMetaString( "BAR", nativeMeta.getMaxVARCHARLength() + 2, 0 ), "", false, "", false ) );
-
-    assertEquals( "ALTER TABLE FOO ADD BAR VARCHAR(15)",
-        nativeMeta.getAddColumnStatement( "FOO", new ValueMetaString( "BAR", 15, 0 ), "", false, "", false ) );
-
-    assertEquals( "ALTER TABLE FOO ADD BAR ",
-        nativeMeta.getAddColumnStatement( "FOO", new ValueMetaNumber( "BAR", 10, -7 ), "", false, "", false ) ); // Bug here - invalid SQL
-
-    assertEquals( "ALTER TABLE FOO ADD BAR DECIMAL(22,7)",
-        nativeMeta.getAddColumnStatement( "FOO", new ValueMetaBigNumber( "BAR", 22, 7 ), "", false, "", false ) );
-    assertEquals( "ALTER TABLE FOO ADD BAR FLOAT(53)",
-        nativeMeta.getAddColumnStatement( "FOO", new ValueMetaNumber( "BAR", -10, 7 ), "", false, "", false ) );
-    assertEquals( "ALTER TABLE FOO ADD BAR DECIMAL(5,7)",
-        nativeMeta.getAddColumnStatement( "FOO", new ValueMetaNumber( "BAR", 5, 7 ), "", false, "", false ) );
-    assertEquals( "ALTER TABLE FOO ADD BAR  UNKNOWN",
-        nativeMeta.getAddColumnStatement( "FOO", new ValueMetaInternetAddress( "BAR" ), "", false, "", false ) );
-
-    assertEquals( "ALTER TABLE FOO ADD BAR BIGINT PRIMARY KEY IDENTITY(0,1)",
-        nativeMeta.getAddColumnStatement( "FOO", new ValueMetaInteger( "BAR" ), "BAR", true, "", false ) );
-
-    assertEquals( "ALTER TABLE FOO ADD BAR BIGINT PRIMARY KEY IDENTITY(0,1)",
-        nativeMeta.getAddColumnStatement( "FOO", new ValueMetaNumber( "BAR", 26, 8 ), "BAR", true, "", false ) );
-
     assertEquals( "ALTER TABLE FOO DROP COLUMN BAR" + lineSep,
         nativeMeta.getDropColumnStatement( "FOO", new ValueMetaString( "BAR", 15, 0 ), "", false, "", true ) );
 
@@ -217,4 +171,102 @@ public class MSSQLServerDatabaseMetaTest {
     assertEquals( "SELECT * FROM sys.sequences WHERE name = 'FOO'", nativeMeta.getSQLSequenceExists( "FOO" ) );
     assertEquals( "SELECT name FROM sys.sequences", nativeMeta.getSQLListOfSequences() );
   }
+
+  @Test
+  public void testGetFieldDefinition( ) throws Exception {
+    assertEquals( "CHAR(1)",
+        nativeMeta.getFieldDefinition( new ValueMetaBoolean( "BAR" ), "", "", false, false, false ) );
+
+    assertEquals( "BIGINT",
+        nativeMeta.getFieldDefinition( new ValueMetaNumber( "BAR", 10, 0 ), "", "", false, false, false ) );
+
+    assertEquals( "BIGINT",
+        nativeMeta.getFieldDefinition( new ValueMetaBigNumber( "BAR", 10, 0 ), "", "", false, false, false ) );
+
+    assertEquals( "BIGINT",
+        nativeMeta.getFieldDefinition( new ValueMetaInteger( "BAR", 10, 0 ), "", "", false, false, false ) );
+
+    assertEquals( "INT",
+        nativeMeta.getFieldDefinition( new ValueMetaNumber( "BAR", 0, 0 ), "", "", false, false, false ) );
+
+    assertEquals( "INT",
+        nativeMeta.getFieldDefinition( new ValueMetaNumber( "BAR", 5, 0 ), "", "", false, false, false ) );
+
+    assertEquals( "DECIMAL(10,3)",
+        nativeMeta.getFieldDefinition( new ValueMetaNumber( "BAR", 10, 3 ), "", "", false, false, false ) );
+
+    assertEquals( "DECIMAL(10,3)",
+        nativeMeta.getFieldDefinition( new ValueMetaBigNumber( "BAR", 10, 3 ), "", "", false, false, false ) );
+
+    assertEquals( "DECIMAL(21,4)",
+        nativeMeta.getFieldDefinition( new ValueMetaBigNumber( "BAR", 21, 4 ), "", "", false, false, false ) );
+
+    assertEquals( "TEXT",
+        nativeMeta.getFieldDefinition( new ValueMetaString( "BAR", nativeMeta.getMaxVARCHARLength() + 2, 0 ), "", "", false, false, false ) );
+
+    assertEquals( "VARCHAR(15)",
+        nativeMeta.getFieldDefinition( new ValueMetaString( "BAR", 15, 0 ), "", "", false, false, false ) );
+
+    assertEquals( "",
+        nativeMeta.getFieldDefinition( new ValueMetaNumber( "BAR", 10, -7 ), "", "", false, false, false ) ); // Bug here - invalid SQL
+
+    assertEquals( "DECIMAL(22,7)",
+        nativeMeta.getFieldDefinition( new ValueMetaBigNumber( "BAR", 22, 7 ), "", "", false, false, false ) );
+    assertEquals( "FLOAT(53)",
+        nativeMeta.getFieldDefinition( new ValueMetaNumber( "BAR", -10, 7 ), "", "", false, false, false ) );
+    assertEquals( "DECIMAL(5,7)",
+        nativeMeta.getFieldDefinition( new ValueMetaNumber( "BAR", 5, 7 ), "", "", false, false, false ) );
+    assertEquals( " UNKNOWN",
+        nativeMeta.getFieldDefinition( new ValueMetaInternetAddress( "BAR" ), "", "", false, false, false ) );
+
+    assertEquals( "BIGINT PRIMARY KEY IDENTITY(0,1)",
+        nativeMeta.getFieldDefinition( new ValueMetaInteger( "BAR" ), "BAR", "", true, false, false ) );
+
+    assertEquals( "BIGINT PRIMARY KEY",
+        nativeMeta.getFieldDefinition( new ValueMetaNumber( "BAR" ), "BAR", "", false, false, false ) );
+
+    assertEquals( "BIGINT PRIMARY KEY IDENTITY(0,1)",
+        nativeMeta.getFieldDefinition( new ValueMetaInteger( "BAR" ), "", "BAR", true, false, false ) );
+    assertEquals( "BIGINT PRIMARY KEY",
+        nativeMeta.getFieldDefinition( new ValueMetaNumber( "BAR" ), "", "BAR", false, false, false ) );
+
+  }
+
+  private int rowCnt = 0;
+  private String[] row1 = new String[] { "ROW1COL1", "ROW1COL2" };
+  private String[] row2 = new String[] { "ROW2COL1", "ROW2COL2" };
+
+  @Test
+  public void testCheckIndexExists() throws Exception {
+    String expectedSQL = "select i.name table_name, c.name column_name from     sysindexes i, sysindexkeys k, syscolumns c where    i.name = 'FOO' AND      i.id = k.id AND      i.id = c.id AND      k.colid = c.colid "; // yes, space at the end like in the dbmeta
+    Database db = Mockito.mock(  Database.class );
+    RowMetaInterface rm = Mockito.mock( RowMetaInterface.class );
+    ResultSet rs = Mockito.mock( ResultSet.class );
+    DatabaseMeta dm = Mockito.mock( DatabaseMeta.class );
+    Mockito.when( dm.getQuotedSchemaTableCombination( "", "FOO" ) ).thenReturn( "FOO" );
+    Mockito.when( rs.next() ).thenReturn( rowCnt < 2 );
+    Mockito.when( db.openQuery( expectedSQL ) ).thenReturn( rs );
+    Mockito.when( db.getReturnRowMeta() ).thenReturn( rm );
+    Mockito.when( rm.getString( row1, "column_name", "" ) ).thenReturn( "ROW1COL2" );
+    Mockito.when( rm.getString( row2, "column_name", "" ) ).thenReturn( "ROW2COL2" );
+    Mockito.when( db.getRow( rs ) ).thenAnswer( new Answer<Object[]>() {
+        @Override
+        public Object[] answer( InvocationOnMock invocation ) throws Throwable {
+          rowCnt++;
+          if ( rowCnt == 1 ) {
+            return row1;
+          } else if ( rowCnt == 2 ) {
+            return row2;
+          } else {
+            return null;
+          }
+        }
+    } );
+    Mockito.when(  db.getDatabaseMeta() ).thenReturn( dm );
+    assertTrue( nativeMeta.checkIndexExists( db, "", "FOO", new String[] { "ROW1COL2", "ROW2COL2" } ) );
+    assertFalse( nativeMeta.checkIndexExists( db, "", "FOO", new String[] { "ROW2COL2", "NOTTHERE" } ) );
+    assertFalse( nativeMeta.checkIndexExists( db, "", "FOO", new String[] { "NOTTHERE", "ROW1COL2" } ) );
+
+  }
+
 }
