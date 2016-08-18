@@ -16,7 +16,7 @@
  *
  *   Portions Copyright 2008 Stratebi Business Solutions, S.L.
  *   Portions Copyright 2011 De Bortoli Wines Pty Limited (Australia)
- *   Portions Copyright 2011 - 2013 Pentaho Corporation
+ *   Portions Copyright 2011 - 2016 Pentaho Corporation
  */
 
 package org.pentaho.di.trans.steps.palo.celloutput;
@@ -41,6 +41,7 @@ public class PaloCellOutput extends BaseStep implements StepInterface {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
+  @Override
   public final boolean processRow( final StepMetaInterface smi, final StepDataInterface sdi ) throws KettleException {
 
     meta = (PaloCellOutputMeta) smi;
@@ -90,8 +91,9 @@ public class PaloCellOutput extends BaseStep implements StepInterface {
       if ( data.batchCache.size() == meta.getCommitSize() ) {
         try {
           data.helper.addCells( data.batchCache, meta.getUpdateMode(), meta.getSplashMode() );
-          for ( int i = 0; i < data.batchCache.size(); i++ )
+          for ( int i = 0; i < data.batchCache.size(); i++ ) {
             incrementLinesOutput();
+          }
         } finally {
           data.batchCache.clear();
         }
@@ -103,6 +105,7 @@ public class PaloCellOutput extends BaseStep implements StepInterface {
     return true;
   }
 
+  @Override
   public final boolean init( StepMetaInterface smi, StepDataInterface sdi ) {
     meta = (PaloCellOutputMeta) smi;
     data = (PaloCellOutputData) sdi;
@@ -124,12 +127,14 @@ public class PaloCellOutput extends BaseStep implements StepInterface {
     return false;
   }
 
+  @Override
   public void dispose( StepMetaInterface smi, StepDataInterface sdi ) {
     try {
       if ( getErrors() == 0 && data.batchCache.size() > 0 ) {
         data.helper.addCells( data.batchCache, meta.getUpdateMode(), meta.getSplashMode() );
-        for ( int i = 0; i < data.batchCache.size(); i++ )
+        for ( int i = 0; i < data.batchCache.size(); i++ ) {
           incrementLinesOutput();
+        }
       }
     } catch ( Exception ex ) {
       logError( "Unexpected error processing batch error", ex );

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -21,13 +21,6 @@
  ******************************************************************************/
 
 package org.pentaho.di.job.entries.ssh2get;
-
-import static org.pentaho.di.job.entry.validator.AndValidator.putValidators;
-import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.andValidator;
-import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.fileExistsValidator;
-import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.integerValidator;
-import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notBlankValidator;
-import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notNullValidator;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -58,6 +51,8 @@ import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entries.FTPUtils;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
+import org.pentaho.di.job.entry.validator.AndValidator;
+import org.pentaho.di.job.entry.validator.JobEntryValidatorUtils;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.resource.ResourceEntry;
@@ -81,14 +76,13 @@ import com.trilead.ssh2.SFTPv3FileHandle;
  * @since 17-12-2007
  *
  */
-@JobEntry(  
+@JobEntry(
     id = "SSH2_GET",
     image = "SHG.svg",
-    i18nPackageName="org.pentaho.di.job.entries.ssh2get",
-    name="JobSSH2GET.TypeDesc",
+    i18nPackageName = "org.pentaho.di.job.entries.ssh2get",
+    name = "JobSSH2GET.TypeDesc",
     description = "JobSSH2GET.Tooltip",
-    categoryDescription="i18n:org.pentaho.di.job:JobCategory.Category.Deprecated"
-)
+    categoryDescription = "i18n:org.pentaho.di.job:JobCategory.Category.Deprecated" )
 public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntryInterface {
   private static Class<?> PKG = JobEntrySSH2GET.class; // for i18n purposes, needed by Translator2!!
 
@@ -148,11 +142,13 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
     this( "" );
   }
 
+  @Override
   public Object clone() {
     JobEntrySSH2GET je = (JobEntrySSH2GET) super.clone();
     return je;
   }
 
+  @Override
   public String getXML() {
     StringBuffer retval = new StringBuffer( 128 );
 
@@ -191,6 +187,7 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
     return retval.toString();
   }
 
+  @Override
   public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers,
     Repository rep, IMetaStore metaStore ) throws KettleXMLException {
     try {
@@ -232,6 +229,7 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
     }
   }
 
+  @Override
   public void loadRep( Repository rep, IMetaStore metaStore, ObjectId id_jobentry, List<DatabaseMeta> databases,
     List<SlaveServer> slaveServers ) throws KettleException {
     try {
@@ -272,6 +270,7 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
     }
   }
 
+  @Override
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_job ) throws KettleException {
     try {
       rep.saveJobEntryAttribute( id_job, getObjectId(), "servername", serverName );
@@ -649,6 +648,7 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
     return timeout;
   }
 
+  @Override
   public Result execute( Result previousResult, int nr ) {
     Result result = previousResult;
     result.setResult( false );
@@ -1310,10 +1310,12 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
     return retval;
   }
 
+  @Override
   public boolean evaluates() {
     return true;
   }
 
+  @Override
   public List<ResourceReference> getResourceDependencies( JobMeta jobMeta ) {
     List<ResourceReference> references = super.getResourceDependencies( jobMeta );
     if ( !Const.isEmpty( serverName ) ) {
@@ -1328,12 +1330,18 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
   @Override
   public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
-    andValidator().validate( this, "serverName", remarks, putValidators( notBlankValidator() ) );
-    andValidator().validate(
-      this, "localDirectory", remarks, putValidators( notBlankValidator(), fileExistsValidator() ) );
-    andValidator().validate( this, "userName", remarks, putValidators( notBlankValidator() ) );
-    andValidator().validate( this, "password", remarks, putValidators( notNullValidator() ) );
-    andValidator().validate( this, "serverPort", remarks, putValidators( integerValidator() ) );
+    JobEntryValidatorUtils.andValidator().validate( this, "serverName", remarks,
+      AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
+    JobEntryValidatorUtils.andValidator().validate( this, "localDirectory", remarks,
+      AndValidator.putValidators(
+        JobEntryValidatorUtils.notBlankValidator(),
+        JobEntryValidatorUtils.fileExistsValidator() ) );
+    JobEntryValidatorUtils.andValidator().validate( this, "userName", remarks,
+      AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
+    JobEntryValidatorUtils.andValidator().validate( this, "password", remarks,
+      AndValidator.putValidators( JobEntryValidatorUtils.notNullValidator() ) );
+    JobEntryValidatorUtils.andValidator().validate( this, "serverPort", remarks,
+      AndValidator.putValidators( JobEntryValidatorUtils.integerValidator() ) );
   }
 
 }

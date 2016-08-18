@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -28,7 +28,6 @@ import java.util.Map;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
@@ -137,6 +136,7 @@ public class TransDebugDialog extends Dialog {
     wOK = new Button( shell, SWT.PUSH );
     wOK.setText( BaseMessages.getString( PKG, "TransDebugDialog.Configure.Label" ) );
     wOK.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         ok( true );
       }
@@ -144,6 +144,7 @@ public class TransDebugDialog extends Dialog {
     wLaunch = new Button( shell, SWT.PUSH );
     wLaunch.setText( BaseMessages.getString( PKG, "TransDebugDialog.Launch.Label" ) );
     wLaunch.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         ok( false );
       }
@@ -151,6 +152,7 @@ public class TransDebugDialog extends Dialog {
     wCancel = new Button( shell, SWT.PUSH );
     wCancel.setText( BaseMessages.getString( PKG, "System.Button.Cancel" ) );
     wCancel.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         cancel();
       }
@@ -188,6 +190,7 @@ public class TransDebugDialog extends Dialog {
     //
     wSteps.table.addSelectionListener( new SelectionAdapter() {
 
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         // Before we show anything, make sure to save the content of the screen...
         //
@@ -394,6 +397,7 @@ public class TransDebugDialog extends Dialog {
     fdRowCount.top = new FormAttachment( 0, 0 );
     wRowCount.setLayoutData( fdRowCount );
     wRowCount.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetDefaultSelected( SelectionEvent arg0 ) {
         ok( false );
       }
@@ -472,6 +476,7 @@ public class TransDebugDialog extends Dialog {
     wClear.setLayoutData( fdClear );
 
     wClear.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent event ) {
         // Clear the preview step information for this step...
         //
