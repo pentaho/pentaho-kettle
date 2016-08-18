@@ -29,6 +29,7 @@
     <dependency org="org.eclipse" name="jface" rev="3.3.0-I20070606-0010" transitive="false"/> 
     
     <dependency org="junit" name="junit" rev="4.7" conf="test->default"/> 
+    <dependency org="pentaho-kettle" name="kettle-engine-test" rev="${dependency.kettle.revision}" changing="true" conf="test->default"/>
     
   </dependencies>
 </ivy-module>
