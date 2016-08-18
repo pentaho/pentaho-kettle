@@ -1824,6 +1824,7 @@ public class ExcelWriterStepDialog extends BaseStepDialog implements StepDialogI
 
   private void enableTemplateSheet() {
     wTemplateSheetname.setEnabled( wTemplateSheet.getSelection() );
+    wTemplateSheetHide.setEnabled( wTemplateSheet.getSelection() );
   }
 
   private void enableExtension() {
