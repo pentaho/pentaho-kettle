@@ -41,15 +41,15 @@ import org.pentaho.di.core.row.value.ValueMetaTimestamp;
 
 public class AS400DatabaseMetaTest {
 
-  AS400DatabaseMeta a4;
-  AS400DatabaseMeta a4ODBC;
+  AS400DatabaseMeta nativeMeta;
+  AS400DatabaseMeta odbcMeta;
 
   @Before
   public void setupOnce() throws Exception {
-    a4 = new AS400DatabaseMeta();
-    a4.setAccessType( DatabaseMeta.TYPE_ACCESS_NATIVE );
-    a4ODBC = new AS400DatabaseMeta();
-    a4ODBC.setAccessType( DatabaseMeta.TYPE_ACCESS_ODBC );
+    nativeMeta = new AS400DatabaseMeta();
+    nativeMeta.setAccessType( DatabaseMeta.TYPE_ACCESS_NATIVE );
+    odbcMeta = new AS400DatabaseMeta();
+    odbcMeta.setAccessType( DatabaseMeta.TYPE_ACCESS_ODBC );
     KettleClientEnvironment.init();
   }
 
@@ -57,12 +57,12 @@ public class AS400DatabaseMetaTest {
   public void testSettings() throws Exception {
     int[] aTypes =
         new int[] { DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI };
-    assertArrayEquals( aTypes, a4.getAccessTypeList() );
-    assertEquals( "sun.jdbc.odbc.JdbcOdbcDriver", a4ODBC.getDriverClass() );
-    assertEquals( "com.ibm.as400.access.AS400JDBCDriver", a4.getDriverClass() );
-    assertEquals( 65536, a4.getMaxTextFieldLength() );
-    assertEquals( "jdbc:odbc:FOO", a4ODBC.getURL( null, null, "FOO" ) );
-    assertEquals( "jdbc:as400://foo/bar", a4.getURL( "foo", "1500", "bar" ) ); // note - AS400 driver ignores the port
+    assertArrayEquals( aTypes, nativeMeta.getAccessTypeList() );
+    assertEquals( "sun.jdbc.odbc.JdbcOdbcDriver", odbcMeta.getDriverClass() );
+    assertEquals( "com.ibm.as400.access.AS400JDBCDriver", nativeMeta.getDriverClass() );
+    assertEquals( 65536, nativeMeta.getMaxTextFieldLength() );
+    assertEquals( "jdbc:odbc:FOO", odbcMeta.getURL( null, null, "FOO" ) );
+    assertEquals( "jdbc:as400://foo/bar", nativeMeta.getURL( "foo", "1500", "bar" ) ); // note - AS400 driver ignores the port
     String[] expectedReservedWords = new String[] {
       // http://publib.boulder.ibm.com/infocenter/iseries/v5r4/index.jsp
       // This is the list of currently reserved DB2 UDB for iSeries words. Words may be added at any time.
@@ -100,64 +100,67 @@ public class AS400DatabaseMetaTest {
       "UPDATE", "USAGE", "USER", "USING", "VALUE", "VALUES", "VARIABLE", "VARIANT", "VERSION", "VIEW", "VOLATILE",
       "WHEN", "WHERE", "WHILE", "WITH", "WITHOUT", "WRITE", "YEAR", "YEARS" };
 
-    assertArrayEquals( expectedReservedWords, a4.getReservedWords() );
-    assertArrayEquals( new String[] { "jt400.jar" }, a4.getUsedLibraries() );
-    assertFalse( a4.supportsFloatRoundingOnUpdate() );
-    assertEquals( 32672, a4.getMaxVARCHARLength() );
-    assertTrue( a4.supportsSequences() );
-    assertTrue( a4.supportsSequenceNoMaxValueOption() );
+    assertArrayEquals( expectedReservedWords, nativeMeta.getReservedWords() );
+    assertArrayEquals( new String[] { "jt400.jar" }, nativeMeta.getUsedLibraries() );
+    assertFalse( nativeMeta.supportsFloatRoundingOnUpdate() );
+    assertEquals( 32672, nativeMeta.getMaxVARCHARLength() );
+    assertTrue( nativeMeta.supportsSequences() );
+    assertTrue( nativeMeta.supportsSequenceNoMaxValueOption() );
 
   }
 
   @Test
   public void testSQLStatements() {
-    assertEquals( "DELETE FROM FOO", a4.getTruncateTableStatement( "FOO" ) );
-    assertEquals( "ALTER TABLE FOO ADD BAR VARCHAR(100)", a4.getAddColumnStatement( "FOO", new ValueMetaString( "BAR",
+    assertEquals( "DELETE FROM FOO", nativeMeta.getTruncateTableStatement( "FOO" ) );
+    assertEquals( "ALTER TABLE FOO ADD BAR VARCHAR(100)", nativeMeta.getAddColumnStatement( "FOO", new ValueMetaString( "BAR",
         100, 0 ), "", false, "", false ) );
 
-    assertEquals( "ALTER TABLE FOO ALTER COLUMN BAR SET TIMESTAMP", a4.getModifyColumnStatement( "FOO",
+    assertEquals( "ALTER TABLE FOO ALTER COLUMN BAR SET TIMESTAMP", nativeMeta.getModifyColumnStatement( "FOO",
         new ValueMetaTimestamp( "BAR" ), "", false, "", false ) ); // Fixed: http://jira.pentaho.com/browse/PDI-15570
 
-    assertEquals( "ALTER TABLE FOO ALTER COLUMN BAR SET TIMESTAMP", a4.getModifyColumnStatement( "FOO",
-        new ValueMetaDate( "BAR" ), "", false, "", false ) );
+    assertEquals( "SELECT SEQNAME FROM SYSCAT.SEQUENCES", nativeMeta.getSQLListOfSequences() );
+    assertEquals( "SELECT * FROM SYSCAT.SEQUENCES WHERE SEQNAME = 'FOO'", nativeMeta.getSQLSequenceExists( "FOO" ) );
+    assertEquals( "SELECT PREVIOUS VALUE FOR FOO FROM SYSIBM.SYSDUMMY1", nativeMeta.getSQLCurrentSequenceValue( "FOO" ) );
+    assertEquals( "SELECT NEXT VALUE FOR FOO FROM SYSIBM.SYSDUMMY1", nativeMeta.getSQLNextSequenceValue( "FOO" ) );
+  }
 
-    assertEquals( "ALTER TABLE FOO ALTER COLUMN BAR SET CHAR(1)", a4.getModifyColumnStatement( "FOO",
-        new ValueMetaBoolean( "BAR" ), "", false, "", false ) );
+  @Test
+  public void testGetFieldDefinition() {
+    assertEquals( "FOO TIMESTAMP",
+        nativeMeta.getFieldDefinition( new ValueMetaDate( "FOO" ), "", "", false, true, false ) );
+    assertEquals( "TIMESTAMP",
+        nativeMeta.getFieldDefinition( new ValueMetaTimestamp( "FOO" ), "", "", false, false, false ) );
+    assertEquals( "CHAR(1)",
+        nativeMeta.getFieldDefinition( new ValueMetaBoolean( "FOO" ), "", "", false, false, false ) );
 
-    assertEquals( "ALTER TABLE FOO ALTER COLUMN BAR SET DOUBLE", a4.getModifyColumnStatement( "FOO",
-        new ValueMetaNumber( "BAR", 0, 0 ), "", false, "", false ) );
+    assertEquals( "DOUBLE",
+        nativeMeta.getFieldDefinition( new ValueMetaNumber( "FOO" ), "", "", false, false, false ) );
+    assertEquals( "DECIMAL(5)",
+        nativeMeta.getFieldDefinition( new ValueMetaInteger( "FOO", 5, 0 ), "", "", false, false, false ) );
+    assertEquals( "DECIMAL(5, 3)",
+        nativeMeta.getFieldDefinition( new ValueMetaNumber( "FOO", 5, 3 ), "", "", false, false, false ) );
 
-    assertEquals( "ALTER TABLE FOO ALTER COLUMN BAR SET DOUBLE", a4.getModifyColumnStatement( "FOO",
-        new ValueMetaInteger( "BAR", 0, 0 ), "", false, "", false ) );
+    assertEquals( "DECIMAL",
+        nativeMeta.getFieldDefinition( new ValueMetaBigNumber( "FOO", 0, 3 ), "", "", false, false, false ) ); // This is a bug
 
-    assertEquals( "ALTER TABLE FOO ALTER COLUMN BAR SET DOUBLE", a4.getModifyColumnStatement( "FOO",
-        new ValueMetaBigNumber( "BAR", 0, 0 ), "", false, "", false ) );
+    assertEquals( "CLOB",
+        nativeMeta.getFieldDefinition( new ValueMetaString( "FOO", DatabaseMeta.CLOB_LENGTH + 1, 0 ), "", "", false, false, false ) );
 
-    assertEquals( "ALTER TABLE FOO ALTER COLUMN BAR SET DECIMAL(10, 15)", a4.getModifyColumnStatement( "FOO",
-        new ValueMetaNumber( "BAR", 10, 15 ), "", false, "", false ) );
+    assertEquals( String.format( "VARCHAR(%d)", ( nativeMeta.getMaxVARCHARLength() - 1 ) ),
+        nativeMeta.getFieldDefinition( new ValueMetaString( "FOO", nativeMeta.getMaxVARCHARLength() - 1, 0 ), "", "", false, false, false ) );
 
-    assertEquals( "ALTER TABLE FOO ALTER COLUMN BAR SET DECIMAL(10)", a4.getModifyColumnStatement( "FOO",
-        new ValueMetaBigNumber( "BAR", 10, 0 ), "", false, "", false ) );
+    assertEquals( "CLOB",
+        nativeMeta.getFieldDefinition( new ValueMetaString( "FOO", nativeMeta.getMaxVARCHARLength() + 1, 0 ), "", "", false, false, false ) );
 
-    assertEquals( "ALTER TABLE FOO ALTER COLUMN BAR SET DOUBLE", a4.getModifyColumnStatement( "FOO",
-        new ValueMetaInteger( "BAR", 0, 10 ), "", false, "", false ) );
+    assertEquals( "CLOB",
+        nativeMeta.getFieldDefinition( new ValueMetaString( "FOO", DatabaseMeta.CLOB_LENGTH - 1, 0 ), "", "", false, false, false ) );
 
-    assertEquals( "ALTER TABLE FOO ALTER COLUMN BAR SET DECIMAL(10)", a4.getModifyColumnStatement( "FOO",
-        new ValueMetaInteger( "BAR", 10, 0 ), "", false, "", false ) );
+    assertEquals( " UNKNOWN",
+        nativeMeta.getFieldDefinition( new ValueMetaInternetAddress( "FOO" ), "", "", false, false, false ) );
 
-    assertEquals( "ALTER TABLE FOO ALTER COLUMN BAR SET CLOB", a4.getModifyColumnStatement( "FOO", new ValueMetaString(
-        "BAR", 32673, 0 ), "", false, "", false ) );
+    assertEquals( " UNKNOWN" + System.getProperty( "line.separator" ),
+        nativeMeta.getFieldDefinition( new ValueMetaInternetAddress( "FOO" ), "", "", false, false, true ) );
 
-    assertEquals( "ALTER TABLE FOO ALTER COLUMN BAR SET VARCHAR(32672)", a4.getModifyColumnStatement( "FOO",
-        new ValueMetaString( "BAR", 32672, 0 ), "", false, "", false ) );
-
-    assertEquals( "ALTER TABLE FOO ALTER COLUMN BAR SET  UNKNOWN", a4.getModifyColumnStatement( "FOO",
-        new ValueMetaInternetAddress( "BAR" ), "", false, "", false ) );
-
-    assertEquals( "SELECT SEQNAME FROM SYSCAT.SEQUENCES", a4.getSQLListOfSequences() );
-    assertEquals( "SELECT * FROM SYSCAT.SEQUENCES WHERE SEQNAME = 'FOO'", a4.getSQLSequenceExists( "FOO" ) );
-    assertEquals( "SELECT PREVIOUS VALUE FOR FOO FROM SYSIBM.SYSDUMMY1", a4.getSQLCurrentSequenceValue( "FOO" ) );
-    assertEquals( "SELECT NEXT VALUE FOR FOO FROM SYSIBM.SYSDUMMY1", a4.getSQLNextSequenceValue( "FOO" ) );
   }
 
 }

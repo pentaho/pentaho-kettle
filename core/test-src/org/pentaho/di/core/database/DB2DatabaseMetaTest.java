@@ -147,32 +147,6 @@ public class DB2DatabaseMetaTest {
 
     assertEquals( "ALTER TABLE FOO ADD COLUMN BAR VARCHAR(15)",
         nativeMeta.getAddColumnStatement( "FOO", new ValueMetaString( "BAR", 15, 0 ), "", false, "", false ) );
-    assertEquals( "ALTER TABLE FOO ADD COLUMN BAR TIMESTAMP",
-        nativeMeta.getAddColumnStatement( "FOO", new ValueMetaDate( "BAR" ), "", false, "", false ) );
-    assertEquals( "ALTER TABLE FOO ADD COLUMN BAR TIMESTAMP",
-        nativeMeta.getAddColumnStatement( "FOO", new ValueMetaTimestamp( "BAR" ), "", false, "", false ) );
-    assertEquals( "ALTER TABLE FOO ADD COLUMN BAR CHARACTER(1)",
-        nativeMeta.getAddColumnStatement( "FOO", new ValueMetaBoolean( "BAR" ), "", false, "", false ) );
-    assertEquals( "ALTER TABLE FOO ADD COLUMN BAR FLOAT",
-        nativeMeta.getAddColumnStatement( "FOO", new ValueMetaNumber( "BAR", 0, 0 ), "", false, "", false ) );
-    assertEquals( "ALTER TABLE FOO ADD COLUMN BAR INTEGER",
-        nativeMeta.getAddColumnStatement( "FOO", new ValueMetaInteger( "BAR" ), "", false, "", false ) );
-    assertEquals( "ALTER TABLE FOO ADD COLUMN BAR DECIMAL(10)",
-        nativeMeta.getAddColumnStatement( "FOO", new ValueMetaNumber( "BAR", 10, -7 ), "", false, "", false ) );
-    assertEquals( "ALTER TABLE FOO ADD COLUMN BAR DECIMAL(22, 7)",
-        nativeMeta.getAddColumnStatement( "FOO", new ValueMetaBigNumber( "BAR", 22, 7 ), "", false, "", false ) );
-    assertEquals( "ALTER TABLE FOO ADD COLUMN BAR FLOAT",
-        nativeMeta.getAddColumnStatement( "FOO", new ValueMetaNumber( "BAR", -10, 7 ), "", false, "", false ) );
-    assertEquals( "ALTER TABLE FOO ADD COLUMN BAR DECIMAL(5, 7)",
-        nativeMeta.getAddColumnStatement( "FOO", new ValueMetaNumber( "BAR", 5, 7 ), "", false, "", false ) );
-    assertEquals( "ALTER TABLE FOO ADD COLUMN BAR  UNKNOWN",
-        nativeMeta.getAddColumnStatement( "FOO", new ValueMetaInternetAddress( "BAR" ), "", false, "", false ) );
-
-    assertEquals( "ALTER TABLE FOO ADD COLUMN BAR INTEGER NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 0, INCREMENT BY 1, NOCACHE)",
-        nativeMeta.getAddColumnStatement( "FOO", new ValueMetaInteger( "BAR" ), "BAR", true, "", false ) );
-
-    assertEquals( "ALTER TABLE FOO ADD COLUMN BAR BIGINT NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 0, INCREMENT BY 1, NOCACHE)",
-        nativeMeta.getAddColumnStatement( "FOO", new ValueMetaNumber( "BAR", 26, 8 ), "BAR", true, "", false ) );
 
     String lineSep = System.getProperty( "line.separator" );
 
@@ -193,4 +167,65 @@ public class DB2DatabaseMetaTest {
     assertEquals( "SELECT NEXT VALUE FOR FOO FROM SYSIBM.SYSDUMMY1", nativeMeta.getSQLNextSequenceValue( "FOO" ) );
     assertEquals( "insert into FOO(FOOVERSION) values (1)", nativeMeta.getSQLInsertAutoIncUnknownDimensionRow( "FOO", "FOOKEY", "FOOVERSION" ) );
   }
+
+  @Test
+  public void testGetFieldDefinition() {
+    assertEquals( "FOO TIMESTAMP",
+        nativeMeta.getFieldDefinition( new ValueMetaDate( "FOO" ), "", "", false, true, false ) );
+    assertEquals( "TIMESTAMP",
+        nativeMeta.getFieldDefinition( new ValueMetaTimestamp( "FOO" ), "", "", false, false, false ) );
+    assertEquals( "CHARACTER(1)",
+        nativeMeta.getFieldDefinition( new ValueMetaBoolean( "FOO" ), "", "", false, false, false ) );
+
+    assertEquals( "BIGINT NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 0, INCREMENT BY 1, NOCACHE)",
+        nativeMeta.getFieldDefinition( new ValueMetaBigNumber( "FOO", 8, 0 ), "FOO", "", true, false, false ) );
+
+    assertEquals( "BIGINT NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 0, INCREMENT BY 1, NOCACHE)",
+        nativeMeta.getFieldDefinition( new ValueMetaNumber( "FOO", 12, 0 ), "FOO", "", true, false, false ) );
+    assertEquals( "INTEGER NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 0, INCREMENT BY 1, NOCACHE)",
+        nativeMeta.getFieldDefinition( new ValueMetaInteger( "FOO", 12, 0 ), "FOO", "", true, false, false ) );
+
+    assertEquals( "FLOAT",
+        nativeMeta.getFieldDefinition( new ValueMetaNumber( "FOO", 0, 0 ), "", "", false, false, false ) );
+    assertEquals( "DECIMAL(12)",
+        nativeMeta.getFieldDefinition( new ValueMetaBigNumber( "FOO", 12, 0 ), "", "", false, false, false ) ); // Pretty sure this is a bug - should be an Integer here.
+    assertEquals( "DECIMAL(12, 4)",
+        nativeMeta.getFieldDefinition( new ValueMetaBigNumber( "FOO", 12, 4 ), "", "", false, false, false ) );
+
+    assertEquals( "INTEGER",
+        nativeMeta.getFieldDefinition( new ValueMetaInteger( "FOO", 10, 0 ), "", "", false, false, false ) );
+
+    int realMaxBeforeCLOB = Math.max( nativeMeta.getMaxVARCHARLength(), DatabaseMeta.CLOB_LENGTH );
+
+    int realMinBeforeCLOB = Math.min( nativeMeta.getMaxVARCHARLength(), DatabaseMeta.CLOB_LENGTH );
+
+    assertEquals( "CLOB",
+        nativeMeta.getFieldDefinition( new ValueMetaString( "FOO", realMaxBeforeCLOB + 1, 0 ), "", "", false, false, false ) );
+
+    assertEquals( "CLOB",
+        nativeMeta.getFieldDefinition( new ValueMetaString( "FOO", realMaxBeforeCLOB, 0 ), "", "", false, false, false ) );
+    assertEquals( String.format( "VARCHAR(%d)", realMinBeforeCLOB - 1 ),
+        nativeMeta.getFieldDefinition( new ValueMetaString( "FOO", realMinBeforeCLOB - 1, 0 ), "", "", false, false, false ) );
+    assertEquals( "VARCHAR()",
+        nativeMeta.getFieldDefinition( new ValueMetaString( "FOO", 0, 0 ), "", "", false, false, false ) ); // Definitely a bug here - VARCHAR() is not valid SQL anywhere . . .
+
+    // Binary Stuff . . .
+    assertEquals( String.format( "BLOB(%d)", realMaxBeforeCLOB + 1 ),
+        nativeMeta.getFieldDefinition( new ValueMetaBinary( "FOO", realMaxBeforeCLOB + 1, 0 ), "", "", false, false, false ) );
+
+    assertEquals( "BLOB",
+        nativeMeta.getFieldDefinition( new ValueMetaBinary( "FOO", 0, 0 ), "", "", false, false, false ) );
+    assertEquals( "CHAR(150) FOR BIT DATA",
+        nativeMeta.getFieldDefinition( new ValueMetaBinary( "FOO", 150, 0 ), "", "", false, false, false ) );
+
+
+
+    // Then unknown . . .
+    assertEquals( " UNKNOWN",
+        nativeMeta.getFieldDefinition( new ValueMetaInternetAddress( "FOO" ), "", "", false, false, false ) );
+
+    assertEquals( " UNKNOWN" + System.getProperty( "line.separator" ),
+        nativeMeta.getFieldDefinition( new ValueMetaInternetAddress( "FOO" ), "", "", false, false, true ) );
+  }
+
 }

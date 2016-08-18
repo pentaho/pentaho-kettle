@@ -26,8 +26,14 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
+
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import org.pentaho.di.core.row.value.ValueMetaBigNumber;
 import org.pentaho.di.core.row.value.ValueMetaBinary;
 import org.pentaho.di.core.row.value.ValueMetaBoolean;
@@ -186,6 +192,42 @@ public class MSAccessDatabaseMetaTest {
     assertEquals( " UNKNOWN" + System.getProperty( "line.separator" ),
         odbcMeta.getFieldDefinition( new ValueMetaInternetAddress( "FOO" ), "", "", false, false, true ) );
 
+  }
+
+  private int rowCnt = 0;
+
+  @Test
+  public void testCheckIndexExists() throws Exception {
+    Database db = Mockito.mock(  Database.class );
+    ResultSet rs = Mockito.mock( ResultSet.class );
+    DatabaseMetaData dmd = Mockito.mock( DatabaseMetaData.class );
+    DatabaseMeta dm = Mockito.mock( DatabaseMeta.class );
+    Mockito.when( dm.getQuotedSchemaTableCombination( "", "FOO" ) ).thenReturn( "FOO" );
+    Mockito.when( rs.next() ).thenAnswer( new Answer<Boolean>() {
+      public Boolean answer( InvocationOnMock invocation ) throws Throwable {
+        rowCnt++;
+        return new Boolean( rowCnt < 3 );
+      }
+    } );
+    Mockito.when( db.getDatabaseMetaData() ).thenReturn( dmd );
+    Mockito.when( dmd.getIndexInfo( null, null, "FOO", false, true ) ).thenReturn( rs );
+    Mockito.when( rs.getString( "COLUMN_NAME" ) ).thenAnswer( new Answer<String>() {
+      @Override
+      public String answer( InvocationOnMock invocation ) throws Throwable {
+        if ( rowCnt == 1 ) {
+          return "ROW1COL2";
+        } else if ( rowCnt == 2 ) {
+          return "ROW2COL2";
+        } else {
+          return null;
+        }
+      }
+    } );
+    Mockito.when(  db.getDatabaseMeta() ).thenReturn( dm );
+    assertTrue( odbcMeta.checkIndexExists( db, "", "FOO", new String[] { "ROW1COL2", "ROW2COL2" } ) );
+    assertFalse( odbcMeta.checkIndexExists( db, "", "FOO", new String[] { "ROW2COL2", "NOTTHERE" } ) );
+    assertFalse( odbcMeta.checkIndexExists( db, "", "FOO", new String[] { "NOTTHERE", "ROW1COL2" } ) );
 
   }
+
 }
