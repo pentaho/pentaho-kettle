@@ -28,6 +28,8 @@ import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
+import static org.junit.Assert.*;
+import org.pentaho.di.core.Condition;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.plugins.PluginRegistry;
@@ -61,6 +63,22 @@ public class FilterRowsMetaTest {
   @Test
   public void testSerialization() throws KettleException {
     loadSaveTester.testSerialization();
+  }
+
+  @Test
+  public void testClone() {
+    FilterRowsMeta filterRowsMeta = new FilterRowsMeta();
+    filterRowsMeta.setCondition( new Condition() );
+    filterRowsMeta.setTrueStepname( "true" );
+    filterRowsMeta.setFalseStepname( "false" );
+
+    FilterRowsMeta clone = (FilterRowsMeta) filterRowsMeta.clone();
+    assertNotNull( clone.getCondition() );
+    assertNotNull( clone.getTrueStepname() );
+    assertTrue( "true" == clone.getTrueStepname() );
+    assertNotNull( clone.getFalseStepname() );
+    assertTrue( "false" == clone.getFalseStepname() );
+
   }
 
 }

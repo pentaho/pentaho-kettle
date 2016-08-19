@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -72,6 +72,10 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface {
    */
   private Condition condition;
 
+  private String trueStepname;
+
+  private String falseStepname;
+
   public FilterRowsMeta() {
     super(); // allocate BaseStepMeta
     condition = new Condition();
@@ -115,9 +119,9 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface {
   public String getXML() throws KettleException {
     StringBuilder retval = new StringBuilder( 200 );
 
-    List<StreamInterface> targetStreams = getStepIOMeta().getTargetStreams();
-    retval.append( XMLHandler.addTagValue( "send_true_to", targetStreams.get( 0 ).getStepname() ) );
-    retval.append( XMLHandler.addTagValue( "send_false_to", targetStreams.get( 1 ).getStepname() ) );
+    retval.append( XMLHandler.addTagValue( "send_true_to", trueStepname ) );
+    retval.append( XMLHandler.addTagValue( "send_false_to", falseStepname ) );
+
     retval.append( "    <compare>" ).append( Const.CR );
 
     if ( condition != null ) {
@@ -135,6 +139,9 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface {
 
       targetStreams.get( 0 ).setSubject( XMLHandler.getTagValue( stepnode, "send_true_to" ) );
       targetStreams.get( 1 ).setSubject( XMLHandler.getTagValue( stepnode, "send_false_to" ) );
+
+      this.trueStepname = targetStreams.get( 0 ).getStepname();
+      this.falseStepname = targetStreams.get( 1 ).getStepname();
 
       Node compare = XMLHandler.getSubNode( stepnode, "compare" );
       Node condnode = XMLHandler.getSubNode( compare, "condition" );
@@ -203,6 +210,9 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface {
       targetStreams.get( 0 ).setSubject( rep.getStepAttributeString( id_step, "send_true_to" ) );
       targetStreams.get( 1 ).setSubject( rep.getStepAttributeString( id_step, "send_false_to" ) );
 
+      this.trueStepname = targetStreams.get( 0 ).getStepname();
+      this.falseStepname = targetStreams.get( 1 ).getStepname();
+
       condition = rep.loadConditionFromStepAttribute( id_step, "id_condition" );
 
     } catch ( Exception e ) {
@@ -213,9 +223,13 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface {
 
   @Override
   public void searchInfoAndTargetSteps( List<StepMeta> steps ) {
-    for ( StreamInterface stream : getStepIOMeta().getTargetStreams() ) {
+    List<StreamInterface> targetStreams = getStepIOMeta().getTargetStreams();
+    for ( StreamInterface stream : targetStreams ) {
       stream.setStepMeta( StepMeta.findStep( steps, (String) stream.getSubject() ) );
     }
+
+    this.trueStepname = targetStreams.get( 0 ).getStepname();
+    this.falseStepname = targetStreams.get( 1 ).getStepname();
   }
 
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
@@ -382,6 +396,7 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface {
       StepMeta falseStep = targets.get( 1 ).getStepMeta();
       if ( falseStep != null && falseStep.equals( stream.getStepMeta() ) ) {
         targets.get( 1 ).setStepMeta( null );
+        this.falseStepname = null;
       }
     }
     if ( index == 1 ) {
@@ -390,6 +405,7 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface {
       StepMeta trueStep = targets.get( 0 ).getStepMeta();
       if ( trueStep != null && trueStep.equals( stream.getStepMeta() ) ) {
         targets.get( 0 ).setStepMeta( null );
+        this.trueStepname = null;
       }
     }
   }
@@ -423,4 +439,19 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface {
     return orphans;
   }
 
+  public String getTrueStepname() {
+    return trueStepname;
+  }
+
+  public void setTrueStepname( String trueStepname ) {
+    this.trueStepname = trueStepname;
+  }
+
+  public String getFalseStepname() {
+    return falseStepname;
+  }
+
+  public void setFalseStepname( String falseStepname ) {
+    this.falseStepname = falseStepname;
+  }
 }
