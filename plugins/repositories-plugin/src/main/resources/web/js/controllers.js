@@ -350,22 +350,24 @@ define(
       }
     });
 
-    repoConnectionAppControllers.controller("RepositoryManagerController", function($scope, $rootScope, $location, repositoriesModel, pentahoRepositoryModel, kettleFileRepositoryModel, kettleDatabaseRepositoryModel) {
-      repositoriesModel.repositories = JSON.parse(getRepositories());
-      repositoriesModel.selectedRepository = null;
+    repoConnectionAppControllers.controller("RepositoryManagerController", function($scope, $rootScope, $location, $timeout, repositoriesModel, pentahoRepositoryModel, kettleFileRepositoryModel, kettleDatabaseRepositoryModel) {
       $scope.model = repositoriesModel;
       $scope.selectRepository = function(repository) {
         repositoriesModel.selectedRepository = repository;
       }
-      $scope.setDefault = function(name) {
-        setDefaultRepository(name);
-        for ( i = 0; i < repositoriesModel.repositories.length; i++) {
-          if ( repositoriesModel.repositories[i].displayName == name) {
-            repositoriesModel.repositories[i].isDefault = true;
-          } else {
-            repositoriesModel.repositories[i].isDefault = false;
+      $scope.setDefault = function(repository) {
+        $timeout(function(){
+          var name = repository != null ? repository.displayName : null;
+          setDefaultRepository(name);
+          for ( i = 0; i < repositoriesModel.repositories.length; i++) {
+            if ( repositoriesModel.repositories[i].displayName == name) {
+              repositoriesModel.repositories[i].isDefault = true;
+            } else {
+              repositoriesModel.repositories[i].isDefault = false;
+            }
           }
-        }
+          repositoriesModel.selectedRepository = repository;
+        },0);
       }
       $scope.edit = function(repository) {
         $rootScope.fromEdit = true;

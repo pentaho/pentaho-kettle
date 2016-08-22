@@ -313,7 +313,7 @@ select:focus {
 }
 
 /* The actual checkmark */
-input[type="checkbox"]:checked + label::after {
+.checkbox-control input[type="checkbox"]:checked + label::after {
    content: '';
    position: absolute;
    width: 9px;
@@ -344,7 +344,7 @@ input[type="checkbox"] + label {
 }
 
 /* New checkbox unchecked */
-input[type="checkbox"] + label::before {
+.checkbox-control input[type="checkbox"] + label::before {
    content: "";
    display: inline-block;
    vertical-align: -25%;
@@ -357,7 +357,7 @@ input[type="checkbox"] + label::before {
 }
 
 /* New checkbox checked */
-input[type="checkbox"]:checked + label::before {
+.checkbox-control input[type="checkbox"]:checked + label::before {
    content: "";
    display: inline-block;
    vertical-align: -25%;
@@ -492,7 +492,7 @@ td.default {
 }
 
 #repoMngTable tr td.repo_type {
-  width: 380px;
+  width: 430px;
 }
 
 tr.active td {
@@ -513,21 +513,66 @@ tr:hover td.bullet {
   background: #005EAA;
 }
 
-tr:hover td button.defaultBtn,
-tr.active:not(.hover):hover td button.defaultBtn {
-  background: #CCCCCC;
-  color: #666666;
-  cursor: pointer;
+tr:not(:hover) td div#defaultDivNot input[type="checkbox"] + label::before {
+   display: none;
 }
 
-tr.active:not(:hover) td button.defaultBtn {
-  color: #005EAA;
-  background: #005EAA;
+tr:hover td#defaultDivNot [type="checkbox"] + label::before
+{
+   content: "";
+   display: inline-block;
+   vertical-align: -25%;
+   height: 20px;
+   width: 20px;
+   background-color: white;
+   border: 1px solid #666666;
+   border-radius: 4px;
+   float: right;
+   margin-right: 36px;
+}
+
+tr td#defaultDiv input[type="checkbox"]:checked + label::before
+ {
+   content: "";
+   display: inline-block;
+   vertical-align: -25%;
+   height: 20px;
+   width: 20px;
+   background-color: #00CC66;
+   border: 1px solid #00CC66;
+   border-radius: 4px;
+   float: right;
+   margin-right: 36px;
+}
+
+tr td#defaultDiv input[type="checkbox"]:checked + label::after {
+   content: '';
+   position: absolute;
+   width: 9px;
+   height: 4px;
+   background: rgba(0, 0, 0, 0);
+   top: 6px;
+   border: 3px solid white;
+   border-top: none;
+   border-right: none;
+   -webkit-transform: rotate(-45deg);
+   -moz-transform: rotate(-45deg);
+   -o-transform: rotate(-45deg);
+   -ms-transform: rotate(-45deg);
+   transform: rotate(-45deg);
+}
+
+tr td:not(.scroller) input[type="checkbox"]:checked + label::after {
+  left: 39px;
+}
+
+tr td.scroller input[type="checkbox"]:checked + label::after {
+  left: 22px;
 }
 
 #repoDesc {
   white-space: nowrap;
-  width: 400px; 
+  width: 450px;
   overflow: hidden;
   text-overflow: ellipsis !important;
   font-size: 14px;
@@ -541,7 +586,7 @@ tr.active #repoDesc {
 .repoType {
   font-family: OpenSansLight;
   font-size: 24px;
-  width: 400px;
+  width: 450px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis !important;
