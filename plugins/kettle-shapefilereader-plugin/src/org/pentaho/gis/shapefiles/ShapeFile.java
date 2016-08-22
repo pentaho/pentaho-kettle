@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -42,149 +42,132 @@ import org.pentaho.di.trans.steps.xbaseinput.XBase;
  *
  */
 
-public class ShapeFile 
-{
-	private List<ShapeInterface> shapes;
-	private ShapeFileHeader fileheader;
-	private LogChannelInterface log;
-	
-	private String dbfFilename;
-	private String shapeFilename;
+public class ShapeFile {
+  private List<ShapeInterface> shapes;
+  private ShapeFileHeader fileheader;
+  private LogChannelInterface log;
 
-	public ShapeFile(LogChannelInterface log, String name)
-	{
-	  this.log = log;
-		dbfFilename = name+".dbf";
-		shapeFilename = name+".shp";
+  private String dbfFilename;
+  private String shapeFilename;
 
-		shapes = new ArrayList<ShapeInterface>();
-	}
-	
-	public ShapeFile(LogChannelInterface log, String shapeFilename, String dbfFilename)
-	{
-	  this.log = log;
-		this.shapeFilename = shapeFilename;
-		this.dbfFilename = dbfFilename;
+  public ShapeFile( LogChannelInterface log, String name ) {
+    this.log = log;
+    dbfFilename = name + ".dbf";
+    shapeFilename = name + ".shp";
 
-		shapes = new ArrayList<ShapeInterface>();
-	}
+    shapes = new ArrayList<ShapeInterface>();
+  }
 
-	/**
-     * @return Returns the shapeFilename.
-     */
-    public String getShapeFilename()
-    {
-        return shapeFilename;
+  public ShapeFile( LogChannelInterface log, String shapeFilename, String dbfFilename ) {
+    this.log = log;
+    this.shapeFilename = shapeFilename;
+    this.dbfFilename = dbfFilename;
+
+    shapes = new ArrayList<ShapeInterface>();
+  }
+
+  /**
+   * @return Returns the shapeFilename.
+   */
+  public String getShapeFilename() {
+    return shapeFilename;
+  }
+
+  /**
+   * @return Returns the dbfFilename.
+   */
+  public String getDbfFilename() {
+    return dbfFilename;
+  }
+
+  public void readFile() throws GisException, KettleException {
+    File file = new File( shapeFilename );
+    try {
+      // Open shape file & DBF file...
+      DataInputStream dis = new DataInputStream( new FileInputStream( file ) );
+
+      XBase xbase = new XBase( log, dbfFilename );
+      xbase.open(); // throws exception now
+
+      // First determine the meta-data for this dbf file...
+      RowMetaInterface fields = xbase.getFields();
+
+      // Read the header data...
+      byte[] header = new byte[100];
+      dis.read( header );
+      fileheader = new ShapeFileHeader( header );
+      int id = 0;
+      while ( dis.available() > 0 ) {
+        // Read the record header to see the length of the next shape...
+        byte[] record_header = new byte[8];
+        dis.read( record_header );
+        ShapeRecordHeader erh = new ShapeRecordHeader( record_header );
+
+        // Read the actual content of the shape
+        if ( erh.length <= dis.available() ) {
+          byte[] content = new byte[erh.length];
+          dis.read( content );
+
+          // Determine the shape type...
+          int btype = Converter.getIntegerLittle( content, 0 );
+          ShapeInterface esi = null;
+
+          switch ( btype ) {
+            case Shape.SHAPE_TYPE_NULL:
+              esi = new ShapeNull( content );
+              break;
+            case Shape.SHAPE_TYPE_POINT:
+              esi = new ShapePoint( content );
+              break;
+            case Shape.SHAPE_TYPE_POLYLINE:
+              esi = new ShapePolyLine( content );
+              break;
+            case Shape.SHAPE_TYPE_POLYGON:
+              esi = new ShapePolygon( content );
+              break;
+            case Shape.SHAPE_TYPE_POLYLINE_M:
+              esi = new ShapePolyLineM( content );
+              break;
+            default:
+              throw new GisException( "shape type : " + btype + " not recognized! (" + Shape.getEsriTypeDesc( btype ) + ")" );
+          }
+
+          // Get a row from the associated DBF file...
+          Object[] row = xbase.getRow( fields );
+          if ( row != null ) {
+            esi.setDbfData( row );
+            esi.setDbfMeta( xbase.getFields() );
+          }
+
+          shapes.add( esi );
+          id++;
+        }
+      }
+
+      dis.close();
+      xbase.close();
+    } catch ( IOException e ) {
+      throw new GisException( "Error reading shape file", e );
     }
-    
-    /**
-     * @return Returns the dbfFilename.
-     */
-    public String getDbfFilename()
-    {
-        return dbfFilename;
-    }
-	
-	public void readFile() throws GisException, KettleException
-	{
-		File file = new File(shapeFilename);
-		try
-		{
-			// Open shape file & DBF file...
-			DataInputStream  dis = new DataInputStream(new FileInputStream(file));
-			
-			XBase xbase = new XBase(log, dbfFilename);
-			xbase.open(); // throws exception now
-			
-			// First determine the meta-data for this dbf file...
-			RowMetaInterface fields = xbase.getFields();
-			
-			// Read the header data...
-			byte header[] = new byte[100];
-			dis.read(header);
-			fileheader = new ShapeFileHeader(header);
-			int id=0;
-			while (dis.available()>0)
-			{
-				// Read the record header to see the length of the next shape...
-				byte record_header[] = new byte[8];
-				dis.read(record_header);
-				ShapeRecordHeader erh = new ShapeRecordHeader(record_header);
-				
-				// Read the actual content of the shape
-				if (erh.length<=dis.available())
-				{
-					byte content[] = new byte[erh.length];
-					dis.read(content);
-					
-					// Determine the shape type...
-					int btype = Converter.getIntegerLittle(content, 0);
-					ShapeInterface esi = null;
-					
-					switch(btype)
-					{
-						case Shape.SHAPE_TYPE_NULL:
-							esi = new ShapeNull(content);
-							break;
-						case Shape.SHAPE_TYPE_POINT:
-							esi = new ShapePoint(content);
-							break;
-						case Shape.SHAPE_TYPE_POLYLINE:
-							esi = new ShapePolyLine(content);
-							break;
-						case Shape.SHAPE_TYPE_POLYGON:
-							esi = new ShapePolygon(content);  
-							break;
-						case Shape.SHAPE_TYPE_POLYLINE_M:
-							esi = new ShapePolyLineM(content);  
-							break;
-						default: 
-							throw new GisException("shape type : "+btype+" not recognized! ("+Shape.getEsriTypeDesc(btype)+")");
-					}
-					
-					// Get a row from the associated DBF file...
-					Object[] row = xbase.getRow(fields);
-					if (row!=null) {
-						esi.setDbfData(row);
-						esi.setDbfMeta(xbase.getFields());
-					}
-					
-					shapes.add(esi);
-					id++;
-				}
-			}
-			
-			dis.close();
-			xbase.close();
-		}
-		catch(IOException e)
-		{
-			throw new GisException("Error reading shape file", e);
-		}
-	}
-	
-	public int getNrShapes()
-	{
-		return shapes.size();
-	}
-	
-	public ShapeInterface getShape(int i)
-	{
-		return (ShapeInterface)shapes.get(i);
-	}
+  }
 
-	public void addShape(ShapeInterface esi)
-	{
-		shapes.add(esi);
-	}
+  public int getNrShapes() {
+    return shapes.size();
+  }
 
-	public ShapeFileHeader getFileHeader()
-	{
-		return fileheader;
-	}
-	
-	public String getFilename()
-	{
-		return shapeFilename;
-	}
+  public ShapeInterface getShape( int i ) {
+    return shapes.get( i );
+  }
+
+  public void addShape( ShapeInterface esi ) {
+    shapes.add( esi );
+  }
+
+  public ShapeFileHeader getFileHeader() {
+    return fileheader;
+  }
+
+  public String getFilename() {
+    return shapeFilename;
+  }
 }

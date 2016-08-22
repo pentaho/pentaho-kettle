@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,14 +27,11 @@
  */
 package pdi.jobentry.dummy;
 
-import pdi.jobentry.dummy.DummyJob;
-
-
 public class TestDummyJob {
 
   // @Test
   public void testDummyJob() throws Exception {
-    DummyJob sp = new DummyJob("testdata","testout",".*.xml");
+    DummyJob sp = new DummyJob( "testdata", "testout", ".*.xml" );
     sp.process();
   }
 }
