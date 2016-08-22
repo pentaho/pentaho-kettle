@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.junit.Before;
 import org.junit.Test;
@@ -49,7 +50,10 @@ public class ExcelInputMetaTest {
   public void setUp() throws Exception {
     KettleEnvironment.init();
     PluginRegistry.init( true );
+  }
 
+  @Test
+  public void testSerialization() throws KettleException {
     List<String> attributes =
         Arrays.asList( "fileName", "fileMask", "excludeFileMask", "fileRequired", "includeSubFolders", "field",
             "sheetName", "startRow", "startColumn", "spreadSheetType", "fileField", "sheetField", "sheetRowNumberField",
@@ -99,10 +103,7 @@ public class ExcelInputMetaTest {
 
     loadSaveTester =
         new LoadSaveTester( ExcelInputMeta.class, attributes, getterMap, setterMap, attrValidatorMap, typeValidatorMap );
-  }
 
-  @Test
-  public void testSerialization() throws KettleException {
     loadSaveTester.testSerialization();
   }
 
@@ -153,6 +154,99 @@ public class ExcelInputMetaTest {
 
     @Override public boolean validateTestObject( SpreadSheetType testObject, Object actual ) {
       return true;
+    }
+  }
+
+  @Test
+  public void testRepoRoundTripWithNullAttr() throws KettleException {
+    List<String> attributes =
+      Arrays.asList( "fileName", "fileMask", "excludeFileMask", "fileRequired", "includeSubFolders", "field",
+        "sheetName", "startRow", "startColumn", "spreadSheetType", "fileField", "sheetField", "sheetRowNumberField",
+        "rowNumberField", "shortFileFieldName", "extensionFieldName", "pathFieldName", "sizeFieldName",
+        "hiddenFieldName", "lastModificationTimeFieldName", "uriNameFieldName", "rootUriNameFieldName" );
+
+    Map<String, String> getterMap = new HashMap<String, String>() {
+      {
+        put( "excludeFileMask", "getExludeFileMask" );
+        put( "shortFileFieldName", "getShortFileNameField" );
+        put( "extensionFieldName", "getExtensionField" );
+        put( "pathFieldName", "getPathField" );
+        put( "sizeFieldName", "getSizeField" );
+        put( "hiddenFieldName", "isHiddenField" );
+        put( "lastModificationTimeFieldName", "getLastModificationDateField" );
+        put( "uriNameFieldName", "getUriField" );
+        put( "rootUriNameFieldName", "getRootUriField" );
+      }
+    };
+    Map<String, String> setterMap = new HashMap<String, String>() {
+      {
+        put( "shortFileFieldName", "setShortFileNameField" );
+        put( "extensionFieldName", "setExtensionField" );
+        put( "pathFieldName", "setPathField" );
+        put( "sizeFieldName", "setSizeField" );
+        put( "hiddenFieldName", "setIsHiddenField" );
+        put( "lastModificationTimeFieldName", "setLastModificationDateField" );
+        put( "uriNameFieldName", "setUriField" );
+        put( "rootUriNameFieldName", "setRootUriField" );
+      }
+    };
+
+    FieldLoadSaveValidator<String[]> nullStringArrayLoadSaveValidator = new NullStringArrayLoadSaveValidator();
+
+    FieldLoadSaveValidator<String[]> stringArrayLoadSaveValidator =
+      new ArrayLoadSaveValidator<String>( new StringLoadSaveValidator(), 1 );
+
+    NullNameExcelInputArrayFieldLoadSaveValidator nullNameExcelInputArrayFieldLoadSaveValidator =
+      new NullNameExcelInputArrayFieldLoadSaveValidator();
+
+    Map<String, FieldLoadSaveValidator<?>> attrValidatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();
+    attrValidatorMap.put( "fileName", nullStringArrayLoadSaveValidator );
+    attrValidatorMap.put( "fileMask", stringArrayLoadSaveValidator );
+    attrValidatorMap.put( "excludeFileMask", stringArrayLoadSaveValidator );
+    attrValidatorMap.put( "fileRequired", stringArrayLoadSaveValidator );
+    attrValidatorMap.put( "includeSubFolders", stringArrayLoadSaveValidator );
+    attrValidatorMap.put( "sheetName", nullStringArrayLoadSaveValidator );
+    attrValidatorMap.put( "field", nullNameExcelInputArrayFieldLoadSaveValidator );
+    attrValidatorMap.put( "spreadSheetType", new SpreadSheetTypeFieldLoadSaveValidator() );
+
+    Map<String, FieldLoadSaveValidator<?>> typeValidatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();
+    typeValidatorMap.put( int[].class.getCanonicalName(), new PrimitiveIntArrayLoadSaveValidator(
+      new IntLoadSaveValidator(), 1 ) );
+
+    loadSaveTester = new LoadSaveTester( ExcelInputMeta.class, attributes, getterMap,
+      setterMap, attrValidatorMap, typeValidatorMap );
+
+    loadSaveTester.testRepoRoundTrip();
+  }
+
+  public class NullStringArrayLoadSaveValidator implements FieldLoadSaveValidator<String[]> {
+    @Override public String[] getTestObject() {
+      return new String[] { null };
+    }
+
+    @Override public boolean validateTestObject( String[] original, Object actualObject ) {
+      String[] actual = actualObject instanceof String[] ? ( (String[]) actualObject ) : null;
+      if ( actual == null || actual.length != 1 || original.length != 1 || original[ 0 ] != null ) {
+        return false;
+      }
+      return StringUtils.EMPTY.equals( actual[ 0 ] );
+    }
+  }
+
+  public class NullNameExcelInputArrayFieldLoadSaveValidator implements FieldLoadSaveValidator<ExcelInputField[]> {
+    @Override public ExcelInputField[] getTestObject() {
+      ExcelInputField rtn = new ExcelInputField();
+      rtn.setName( null );
+      return new ExcelInputField[] { rtn };
+    }
+
+    @Override public boolean validateTestObject( ExcelInputField[] original, Object actualObject ) {
+      ExcelInputField[] actual =
+        actualObject instanceof ExcelInputField[] ? ( (ExcelInputField[]) actualObject ) : null;
+      if ( actual == null || actual.length != 1 || original.length != 1 || original[ 0 ].getName() != null ) {
+        return false;
+      }
+      return StringUtils.EMPTY.equals( actual[ 0 ].getName() );
     }
   }
 

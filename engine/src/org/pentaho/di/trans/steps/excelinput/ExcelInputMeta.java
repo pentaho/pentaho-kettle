@@ -25,6 +25,7 @@ package org.pentaho.di.trans.steps.excelinput;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
@@ -1163,7 +1164,7 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface {
         ? acceptingStep.getName() : "" ) );
 
       for ( int i = 0; i < fileName.length; i++ ) {
-        rep.saveStepAttribute( id_transformation, id_step, i, "file_name", fileName[i] );
+        rep.saveStepAttribute( id_transformation, id_step, i, "file_name", getValueOrEmptyIfNull( fileName[i] ) );
         rep.saveStepAttribute( id_transformation, id_step, i, "file_mask", fileMask[i] );
         rep.saveStepAttribute( id_transformation, id_step, i, "exclude_file_mask", excludeFileMask[i] );
         rep.saveStepAttribute( id_transformation, id_step, i, "file_required", fileRequired[i] );
@@ -1171,13 +1172,13 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface {
       }
 
       for ( int i = 0; i < sheetName.length; i++ ) {
-        rep.saveStepAttribute( id_transformation, id_step, i, "sheet_name", sheetName[i] );
+        rep.saveStepAttribute( id_transformation, id_step, i, "sheet_name", getValueOrEmptyIfNull( sheetName[i] ) );
         rep.saveStepAttribute( id_transformation, id_step, i, "sheet_startrow", startRow[i] );
         rep.saveStepAttribute( id_transformation, id_step, i, "sheet_startcol", startColumn[i] );
       }
 
       for ( int i = 0; i < field.length; i++ ) {
-        rep.saveStepAttribute( id_transformation, id_step, i, "field_name", field[i].getName() );
+        rep.saveStepAttribute( id_transformation, id_step, i, "field_name", getValueOrEmptyIfNull( field[i].getName() ) );
         rep.saveStepAttribute( id_transformation, id_step, i, "field_type", field[i].getTypeDesc() );
         rep.saveStepAttribute( id_transformation, id_step, i, "field_length", field[i].getLength() );
         rep.saveStepAttribute( id_transformation, id_step, i, "field_precision", field[i].getPrecision() );
@@ -1220,6 +1221,10 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface {
       throw new KettleException( "Unable to save step information to the repository for id_step=" + id_step, e );
     }
 
+  }
+
+  private String getValueOrEmptyIfNull( String str ) {
+    return str == null ? StringUtils.EMPTY : str;
   }
 
   public static final int getTrimTypeByCode( String tt ) {
