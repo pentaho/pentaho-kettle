@@ -590,28 +590,64 @@ public class Database implements VariableSpace, LoggingObjectInterface {
       if ( connection == null ) {
         return; // Nothing to do...
       }
-      if ( connection.isClosed() ) {
-        return; // Nothing to do...
+      try {
+        if ( connection.isClosed() ) {
+          return; // Nothing to do...
+        }
+      } catch ( SQLException ex ) {
+        // cannot do anything about this but log it
+        log.logError( "Error checking closing connection:" + Const.CR + ex.getMessage() );
+        log.logError( Const.getStackTracker( ex ) );
       }
 
       if ( pstmt != null ) {
-        pstmt.close();
+        try {
+          pstmt.close();
+        } catch ( SQLException ex ) {
+          // cannot do anything about this but log it
+          log.logError( "Error closing statement:" + Const.CR + ex.getMessage() );
+          log.logError( Const.getStackTracker( ex ) );
+        }
         pstmt = null;
       }
       if ( prepStatementLookup != null ) {
-        prepStatementLookup.close();
+        try {
+          prepStatementLookup.close();
+        } catch ( SQLException ex ) {
+          // cannot do anything about this but log it
+          log.logError( "Error closing lookup statement:" + Const.CR + ex.getMessage() );
+          log.logError( Const.getStackTracker( ex ) );
+        }
         prepStatementLookup = null;
       }
       if ( prepStatementInsert != null ) {
-        prepStatementInsert.close();
+        try {
+          prepStatementInsert.close();
+        } catch ( SQLException ex ) {
+          // cannot do anything about this but log it
+          log.logError( "Error closing insert statement:" + Const.CR + ex.getMessage() );
+          log.logError( Const.getStackTracker( ex ) );
+        }
         prepStatementInsert = null;
       }
       if ( prepStatementUpdate != null ) {
-        prepStatementUpdate.close();
+        try {
+          prepStatementUpdate.close();
+        } catch ( SQLException ex ) {
+          // cannot do anything about this but log it
+          log.logError( "Error closing update statement:" + Const.CR + ex.getMessage() );
+          log.logError( Const.getStackTracker( ex ) );
+        }
         prepStatementUpdate = null;
       }
       if ( pstmt_seq != null ) {
-        pstmt_seq.close();
+        try {
+          pstmt_seq.close();
+        } catch ( SQLException ex ) {
+          // cannot do anything about this but log it
+          log.logError( "Error closing seq statement:" + Const.CR + ex.getMessage() );
+          log.logError( Const.getStackTracker( ex ) );
+        }
         pstmt_seq = null;
       }
 
@@ -624,23 +660,34 @@ public class Database implements VariableSpace, LoggingObjectInterface {
       } else {
         if ( !isAutoCommit() ) {
           // Do we really still need this commit??
-          commit();
+          try {
+            commit();
+          } catch ( KettleDatabaseException ex ) {
+            // cannot do anything about this but log it
+            log.logError( "Error committing:" + Const.CR + ex.getMessage() );
+            log.logError( Const.getStackTracker( ex ) );
+          }
         }
       }
-
-      closeConnectionOnly();
 
       try {
         ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.DatabaseDisconnected.id, this );
       } catch ( KettleException e ) {
         throw new KettleDatabaseException( e );
       }
-    } catch ( SQLException ex ) {
-      log.logError( "Error disconnecting from database:" + Const.CR + ex.getMessage() );
-      log.logError( Const.getStackTracker( ex ) );
     } catch ( KettleDatabaseException dbe ) {
       log.logError( "Error disconnecting from database:" + Const.CR + dbe.getMessage() );
       log.logError( Const.getStackTracker( dbe ) );
+    } finally {
+      // Always close the connection, irrespective of what happens above...
+      try {
+        closeConnectionOnly();
+      } catch ( KettleDatabaseException ignoredKde ) { // The only exception thrown from closeConnectionOnly()
+        // cannot do anything about this but log it
+        log.logError(
+          "Error disconnecting from database - closeConnectionOnly failed:" + Const.CR + ignoredKde.getMessage() );
+        log.logError( Const.getStackTracker( ignoredKde ) );
+      }
     }
   }
 
