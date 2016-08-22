@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,6 +25,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.jets3t.service.S3Service;
 import org.jets3t.service.S3ServiceException;
 import org.junit.BeforeClass;
@@ -36,11 +41,17 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.core.variables.Variables;
+import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
+import org.pentaho.di.trans.steps.loadsave.validator.ArrayLoadSaveValidator;
+import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
+import org.pentaho.di.trans.steps.loadsave.validator.TextFileInputFieldValidator;
+import org.pentaho.di.trans.steps.textfileinput.TextFileInputField;
 
 /**
  * @author Tatsiana_Kasiankova
  *
  */
+@SuppressWarnings( "deprecation" )
 public class S3CsvInputMetaTest {
 
   private static final String TEST_AWS_SECRET_KEY = "TestAwsSecretKey";
@@ -53,8 +64,24 @@ public class S3CsvInputMetaTest {
     PluginRegistry.addPluginType( TwoWayPasswordEncoderPluginType.getInstance() );
     PluginRegistry.init( true );
     String passwordEncoderPluginID =
-        Const.NVL( EnvUtil.getSystemProperty( Const.KETTLE_PASSWORD_ENCODER_PLUGIN ), "Kettle" );
+      Const.NVL( EnvUtil.getSystemProperty( Const.KETTLE_PASSWORD_ENCODER_PLUGIN ), "Kettle" );
     Encr.init( passwordEncoderPluginID );
+  }
+
+  @Test
+  public void testSerialization() throws KettleException {
+    List<String> attributes = Arrays.asList( "AwsAccessKey", "AwsSecretKey", "Bucket", "Filename", "FilenameField",
+      "RowNumField", "IncludingFilename", "Delimiter", "Enclosure", "HeaderPresent", "MaxLineSize",
+      "LazyConversionActive", "RunningInParallel", "InputFields" );
+
+    Map<String, FieldLoadSaveValidator<?>> typeMap = new HashMap<>();
+    typeMap.put( TextFileInputField[].class.getCanonicalName(),
+      new ArrayLoadSaveValidator<>( new TextFileInputFieldValidator() ) );
+    Map<String, String> getterMap = new HashMap<>();
+    Map<String, String> setterMap = new HashMap<>();
+    LoadSaveTester<S3CsvInputMeta> tester = new LoadSaveTester<>( S3CsvInputMeta.class, attributes,
+      getterMap, setterMap, new HashMap<String, FieldLoadSaveValidator<?>>(), typeMap );
+    tester.testSerialization();
   }
 
   @Test

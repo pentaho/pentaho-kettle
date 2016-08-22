@@ -24,17 +24,15 @@ package org.pentaho.di.trans.steps.s3csvinput;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.jets3t.service.S3Service;
 import org.jets3t.service.S3ServiceException;
 import org.jets3t.service.impl.rest.httpclient.RestS3Service;
 import org.jets3t.service.security.AWSCredentials;
-import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.Counter;
+import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
@@ -46,13 +44,16 @@ import org.pentaho.di.core.injection.InjectionSupported;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.resource.ResourceEntry;
-import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.resource.ResourceEntry.ResourceType;
+import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
@@ -124,16 +125,19 @@ public class S3CsvInputMeta extends BaseStepMeta implements StepMetaInterface, I
     allocate( 0 );
   }
 
-  public void loadXML( Node stepnode, List<DatabaseMeta> databases, Map<String, Counter> counters )
+  @Override
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore )
     throws KettleXMLException {
     readData( stepnode );
   }
 
+  @Override
   public Object clone() {
     Object retval = super.clone();
     return retval;
   }
 
+  @Override
   public void setDefault() {
     delimiter = ",";
     enclosure = "\"";
@@ -169,14 +173,14 @@ public class S3CsvInputMeta extends BaseStepMeta implements StepMetaInterface, I
         Node fnode = XMLHandler.getSubNodeByNr( fields, "field", i );
 
         inputFields[i].setName( XMLHandler.getTagValue( fnode, "name" ) );
-        inputFields[i].setType( ValueMeta.getType( XMLHandler.getTagValue( fnode, "type" ) ) );
+        inputFields[i].setType( ValueMetaFactory.getIdForValueMeta( XMLHandler.getTagValue( fnode, "type" ) ) );
         inputFields[i].setFormat( XMLHandler.getTagValue( fnode, "format" ) );
         inputFields[i].setCurrencySymbol( XMLHandler.getTagValue( fnode, "currency" ) );
         inputFields[i].setDecimalSymbol( XMLHandler.getTagValue( fnode, "decimal" ) );
         inputFields[i].setGroupSymbol( XMLHandler.getTagValue( fnode, "group" ) );
         inputFields[i].setLength( Const.toInt( XMLHandler.getTagValue( fnode, "length" ), -1 ) );
         inputFields[i].setPrecision( Const.toInt( XMLHandler.getTagValue( fnode, "precision" ), -1 ) );
-        inputFields[i].setTrimType( ValueMeta.getTrimTypeByCode( XMLHandler.getTagValue( fnode, "trim_type" ) ) );
+        inputFields[i].setTrimType( ValueMetaString.getTrimTypeByCode( XMLHandler.getTagValue( fnode, "trim_type" ) ) );
       }
     } catch ( Exception e ) {
       throw new KettleXMLException( "Unable to load step info from XML", e );
@@ -187,6 +191,7 @@ public class S3CsvInputMeta extends BaseStepMeta implements StepMetaInterface, I
     inputFields = new TextFileInputField[nrFields];
   }
 
+  @Override
   public String getXML() {
     StringBuffer retval = new StringBuffer( 500 );
 
@@ -212,14 +217,14 @@ public class S3CsvInputMeta extends BaseStepMeta implements StepMetaInterface, I
 
       retval.append( "      <field>" ).append( Const.CR );
       retval.append( "        " ).append( XMLHandler.addTagValue( "name", field.getName() ) );
-      retval.append( "        " ).append( XMLHandler.addTagValue( "type", ValueMeta.getTypeDesc( field.getType() ) ) );
+      retval.append( "        " ).append( XMLHandler.addTagValue( "type", ValueMetaFactory.getValueMetaName( field.getType() ) ) );
       retval.append( "        " ).append( XMLHandler.addTagValue( "format", field.getFormat() ) );
       retval.append( "        " ).append( XMLHandler.addTagValue( "currency", field.getCurrencySymbol() ) );
       retval.append( "        " ).append( XMLHandler.addTagValue( "decimal", field.getDecimalSymbol() ) );
       retval.append( "        " ).append( XMLHandler.addTagValue( "group", field.getGroupSymbol() ) );
       retval.append( "        " ).append( XMLHandler.addTagValue( "length", field.getLength() ) );
       retval.append( "        " ).append( XMLHandler.addTagValue( "precision", field.getPrecision() ) );
-      retval.append( "        " ).append( XMLHandler.addTagValue( "trim_type", ValueMeta.getTrimTypeCode( field
+      retval.append( "        " ).append( XMLHandler.addTagValue( "trim_type", ValueMetaString.getTrimTypeCode( field
           .getTrimType() ) ) );
       retval.append( "      </field>" ).append( Const.CR );
     }
@@ -228,7 +233,9 @@ public class S3CsvInputMeta extends BaseStepMeta implements StepMetaInterface, I
     return retval.toString();
   }
 
-  public void readRep( Repository rep, ObjectId id_step, List<DatabaseMeta> databases, Map<String, Counter> counters )
+
+  @Override
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
     throws KettleException {
     try {
       awsAccessKey = Encr.decryptPasswordOptionallyEncrypted( rep.getStepAttributeString( id_step, "aws_access_key" ) );
@@ -253,14 +260,14 @@ public class S3CsvInputMeta extends BaseStepMeta implements StepMetaInterface, I
         inputFields[i] = new TextFileInputField();
 
         inputFields[i].setName( rep.getStepAttributeString( id_step, i, "field_name" ) );
-        inputFields[i].setType( ValueMeta.getType( rep.getStepAttributeString( id_step, i, "field_type" ) ) );
+        inputFields[i].setType( ValueMetaFactory.getIdForValueMeta( rep.getStepAttributeString( id_step, i, "field_type" ) ) );
         inputFields[i].setFormat( rep.getStepAttributeString( id_step, i, "field_format" ) );
         inputFields[i].setCurrencySymbol( rep.getStepAttributeString( id_step, i, "field_currency" ) );
         inputFields[i].setDecimalSymbol( rep.getStepAttributeString( id_step, i, "field_decimal" ) );
         inputFields[i].setGroupSymbol( rep.getStepAttributeString( id_step, i, "field_group" ) );
         inputFields[i].setLength( (int) rep.getStepAttributeInteger( id_step, i, "field_length" ) );
         inputFields[i].setPrecision( (int) rep.getStepAttributeInteger( id_step, i, "field_precision" ) );
-        inputFields[i].setTrimType( ValueMeta.getTrimTypeByCode( rep.getStepAttributeString( id_step, i,
+        inputFields[i].setTrimType( ValueMetaString.getTrimTypeByCode( rep.getStepAttributeString( id_step, i,
             "field_trim_type" ) ) );
       }
     } catch ( Exception e ) {
@@ -268,7 +275,9 @@ public class S3CsvInputMeta extends BaseStepMeta implements StepMetaInterface, I
     }
   }
 
-  public void saveRep( Repository rep, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
+  @Override
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
+      throws KettleException {
     try {
       rep.saveStepAttribute( id_transformation, id_step, "aws_secret_key", Encr.encryptPasswordIfNotUsingVariables(
           awsSecretKey ) );
@@ -290,14 +299,14 @@ public class S3CsvInputMeta extends BaseStepMeta implements StepMetaInterface, I
         TextFileInputField field = inputFields[i];
 
         rep.saveStepAttribute( id_transformation, id_step, i, "field_name", field.getName() );
-        rep.saveStepAttribute( id_transformation, id_step, i, "field_type", ValueMeta.getTypeDesc( field.getType() ) );
+        rep.saveStepAttribute( id_transformation, id_step, i, "field_type", ValueMetaFactory.getValueMetaName( field.getType() ) );
         rep.saveStepAttribute( id_transformation, id_step, i, "field_format", field.getFormat() );
         rep.saveStepAttribute( id_transformation, id_step, i, "field_currency", field.getCurrencySymbol() );
         rep.saveStepAttribute( id_transformation, id_step, i, "field_decimal", field.getDecimalSymbol() );
         rep.saveStepAttribute( id_transformation, id_step, i, "field_group", field.getGroupSymbol() );
         rep.saveStepAttribute( id_transformation, id_step, i, "field_length", field.getLength() );
         rep.saveStepAttribute( id_transformation, id_step, i, "field_precision", field.getPrecision() );
-        rep.saveStepAttribute( id_transformation, id_step, i, "field_trim_type", ValueMeta.getTrimTypeCode( field
+        rep.saveStepAttribute( id_transformation, id_step, i, "field_trim_type", ValueMetaString.getTrimTypeCode( field
             .getTrimType() ) );
       }
     } catch ( Exception e ) {
@@ -343,28 +352,30 @@ public class S3CsvInputMeta extends BaseStepMeta implements StepMetaInterface, I
     }
 
     if ( !Const.isEmpty( filenameField ) && includingFilename ) {
-      ValueMetaInterface filenameMeta = new ValueMeta( filenameField, ValueMetaInterface.TYPE_STRING );
+      ValueMetaInterface filenameMeta = new ValueMetaString( filenameField );
       filenameMeta.setOrigin( origin );
       if ( lazyConversionActive ) {
         filenameMeta.setStorageType( ValueMetaInterface.STORAGE_TYPE_BINARY_STRING );
-        filenameMeta.setStorageMetadata( new ValueMeta( filenameField, ValueMetaInterface.TYPE_STRING ) );
+        filenameMeta.setStorageMetadata( new ValueMetaString( filenameField ) );
       }
       rowMeta.addValueMeta( filenameMeta );
     }
 
     if ( !Const.isEmpty( rowNumField ) ) {
-      ValueMetaInterface rowNumMeta = new ValueMeta( rowNumField, ValueMetaInterface.TYPE_INTEGER );
+      ValueMetaInterface rowNumMeta = new ValueMetaInteger( rowNumField );
       rowNumMeta.setLength( 10 );
       rowNumMeta.setOrigin( origin );
       rowMeta.addValueMeta( rowNumMeta );
     }
   }
 
+  @Override
   public void getFields( RowMetaInterface rowMeta, String origin, RowMetaInterface[] info, StepMeta nextStep,
       VariableSpace space ) throws KettleStepException {
     getFields( rowMeta, origin, info, nextStep, space, null, null );
   }
 
+  @Override
   public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepinfo, RowMetaInterface prev,
       String[] input, String[] output, RowMetaInterface info ) {
     CheckResult cr;
@@ -399,11 +410,13 @@ public class S3CsvInputMeta extends BaseStepMeta implements StepMetaInterface, I
     return S3CsvInputDialog.class.getName();
   }
 
+  @Override
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta tr,
       Trans trans ) {
     return new S3CsvInput( stepMeta, stepDataInterface, cnr, tr, trans );
   }
 
+  @Override
   public StepDataInterface getStepData() {
     return new S3CsvInputData();
   }
@@ -488,6 +501,7 @@ public class S3CsvInputMeta extends BaseStepMeta implements StepMetaInterface, I
   /**
    * @return the enclosure
    */
+  @Override
   public String getEnclosure() {
     return enclosure;
   }
@@ -518,6 +532,7 @@ public class S3CsvInputMeta extends BaseStepMeta implements StepMetaInterface, I
   /**
    * @return the inputFields
    */
+  @Override
   public TextFileInputField[] getInputFields() {
     return inputFields;
   }
@@ -530,58 +545,72 @@ public class S3CsvInputMeta extends BaseStepMeta implements StepMetaInterface, I
     this.inputFields = inputFields;
   }
 
+  @Override
   public int getFileFormatTypeNr() {
     return TextFileInputMeta.FILE_FORMAT_MIXED; // TODO: check this
   }
 
+  @Override
   public String[] getFilePaths( VariableSpace space ) {
     return new String[] { space.environmentSubstitute( filename ), };
   }
 
+  @Override
   public int getNrHeaderLines() {
     return 1;
   }
 
+  @Override
   public boolean hasHeader() {
     return isHeaderPresent();
   }
 
+  @Override
   public String getErrorCountField() {
     return null;
   }
 
+  @Override
   public String getErrorFieldsField() {
     return null;
   }
 
+  @Override
   public String getErrorTextField() {
     return null;
   }
 
+  @Override
   public String getEscapeCharacter() {
     return null;
   }
 
+  @Override
   public String getFileType() {
     return "CSV";
   }
 
+  @Override
   public String getSeparator() {
     return delimiter;
   }
 
+  @Override
   public boolean includeFilename() {
     return false;
   }
 
+  @Override
   public boolean includeRowNumber() {
     return false;
   }
 
+  @Override
   public boolean isErrorIgnored() {
     return false;
   }
 
+  @Override
   public boolean isErrorLineSkipped() {
     return false;
   }
