@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -162,6 +162,9 @@ public class FilterRows extends BaseStep implements StepInterface {
       List<StreamInterface> targetStreams = meta.getStepIOMeta().getTargetStreams();
       data.trueStepname = targetStreams.get( 0 ).getStepname();
       data.falseStepname = targetStreams.get( 1 ).getStepname();
+
+      meta.setTrueStepname( data.trueStepname );
+      meta.setFalseStepname( data.falseStepname );
 
       data.chosesTargetSteps =
         targetStreams.get( 0 ).getStepMeta() != null || targetStreams.get( 1 ).getStepMeta() != null;
