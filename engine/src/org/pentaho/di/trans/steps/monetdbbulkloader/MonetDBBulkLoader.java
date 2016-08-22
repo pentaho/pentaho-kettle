@@ -176,15 +176,17 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface {
       if ( r == null ) { // no more input to be expected...
 
         setOutputDone();
-        try {
-          writeBufferToMonetDB();
-          data.out.flush();
-        } catch ( KettleException ke ) {
-          throw ke;
-        } finally {
-          data.mserver.close();
+        if ( !first ) {
+          try {
+            writeBufferToMonetDB();
+            data.out.flush();
+          } catch ( KettleException ke ) {
+            throw ke;
+          } finally {
+            data.mserver.close();
+          }
+          util.updateMetadata( meta, rowsWritten );
         }
-        util.updateMetadata( meta, rowsWritten );
         return false;
       }
 

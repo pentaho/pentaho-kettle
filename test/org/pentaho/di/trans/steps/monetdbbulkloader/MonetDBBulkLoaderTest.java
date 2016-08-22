@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,8 +22,21 @@
 
 package org.pentaho.di.trans.steps.monetdbbulkloader;
 
+import static org.junit.Assert.fail;
+
+import java.util.ArrayList;
+
+import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.pentaho.di.core.KettleEnvironment;
+import org.pentaho.di.core.RowMetaAndData;
+import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.database.MonetDBDatabaseMeta;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.variables.Variables;
+import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.TransTestFactory;
 
 public class MonetDBBulkLoaderTest {
 
@@ -32,6 +45,11 @@ public class MonetDBBulkLoaderTest {
   static final String USER = "monetdb";
   static final String PASSWORD = "monetdb";
   static final String HOST = "localhost";
+
+  @BeforeClass
+  public static void setUpBeforeClass() throws KettleException {
+    KettleEnvironment.init( false );
+  }
 
   // not a real unit test: ignore it. depends on monetdb running and a specific table existing in it.
   // was created to help test/verify the transition away from mclient process to MapiSocket API.
@@ -47,4 +65,21 @@ public class MonetDBBulkLoaderTest {
 
   }
 
+  @Test
+  public void testNoInput() {
+    String oneStepname = "Monet Bulk Loader";
+    MonetDBBulkLoaderMeta meta = new MonetDBBulkLoaderMeta();
+    DatabaseMeta database = new DatabaseMeta();
+    database.setDatabaseInterface( new MonetDBDatabaseMeta() );
+    meta.setDefault();
+    meta.setDatabaseMeta( database );
+    TransMeta transMeta = TransTestFactory.generateTestTransformation( new Variables(), meta, oneStepname );
+
+    try {
+      TransTestFactory.executeTestTransformation( transMeta, oneStepname, new ArrayList<RowMetaAndData>() );
+    } catch ( KettleException e ) {
+      // The Monet DB Bulk Loader step should finish quietly if no input rows
+      fail();
+    }
+  }
 }
