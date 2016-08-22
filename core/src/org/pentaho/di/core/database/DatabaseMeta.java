@@ -524,11 +524,15 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
     PluginInterface mySqlPlugin = PluginRegistry.getInstance().getPlugin( DatabasePluginType.class, "MYSQL" );
     PluginInterface infoBrightPlugin =
       PluginRegistry.getInstance().getPlugin( DatabasePluginType.class, new InfobrightDatabaseMeta() );
+    PluginInterface mariaDBPlugin = PluginRegistry.getInstance().getPlugin( DatabasePluginType.class, "MARIADB" );
 
     String mySQL = mySqlPlugin.getIds()[0];
+    String mariaDB = mariaDBPlugin.getIds()[0];
 
     addExtraOption( mySQL, "defaultFetchSize", "500" );
     addExtraOption( mySQL, "useCursorFetch", "true" );
+    addExtraOption( mariaDB, "defaultFetchSize", "500" );
+    addExtraOption( mariaDB, "useCursorFetch", "true" );
 
     String infoBright = infoBrightPlugin.getIds()[0];
 

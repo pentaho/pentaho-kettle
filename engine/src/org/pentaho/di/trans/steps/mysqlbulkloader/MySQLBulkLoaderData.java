@@ -52,6 +52,7 @@ public class MySQLBulkLoaderData extends BaseStepData implements StepDataInterfa
   public ValueMetaInterface bulkTimestampMeta;
   public ValueMetaInterface bulkDateMeta;
   public ValueMetaInterface bulkNumberMeta;
+  protected String dbDescription;
 
   public String schemaTable;
 
