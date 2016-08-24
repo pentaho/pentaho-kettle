@@ -35,6 +35,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.commons.math.stat.descriptive.rank.Percentile;
+import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
@@ -48,6 +49,7 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaBase;
 import org.pentaho.di.core.row.value.ValueMetaInteger;
 import org.pentaho.di.core.row.value.ValueMetaNumber;
+import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -81,6 +83,7 @@ public class GroupBy extends BaseStep implements StepInterface {
     data = (GroupByData) stepDataInterface;
   }
 
+  @Override
   public boolean processRow( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
     meta = (GroupByMeta) smi;
     data = (GroupByData) sdi;
@@ -159,7 +162,7 @@ public class GroupBy extends BaseStep implements StepInterface {
 
       data.groupnrs = new int[ meta.getGroupField().length ];
       for ( int i = 0; i < meta.getGroupField().length; i++ ) {
-        data.groupnrs[ i ] = data.inputRowMeta.indexOfValue( meta.getGroupField()[ i ] );
+        data.groupnrs[ i ] = data.inputRowMeta.indexOfValue( meta.getGroupField()[i] );
         if ( ( r != null ) && ( data.groupnrs[ i ] < 0 ) ) {
           logError( BaseMessages.getString( PKG, "GroupBy.Log.GroupFieldCouldNotFound", meta.getGroupField()[ i ] ) );
           setErrors( 1 );
@@ -206,31 +209,18 @@ public class GroupBy extends BaseStep implements StepInterface {
       data.previous = data.inputRowMeta.cloneRow( r ); // copy the row to previous
     } else {
       calcAggregate( data.previous );
-      // System.out.println("After calc, agg="+agg);
 
       if ( meta.passAllRows() ) {
         addToBuffer( data.previous );
       }
     }
 
-    // System.out.println("Check for same group...");
-
     if ( !sameGroup( data.previous, r ) ) {
-      // System.out.println("Different group!");
-
       if ( meta.passAllRows() ) {
-        // System.out.println("Close output...");
-
         // Not the same group: close output (if any)
         closeOutput();
-
-        // System.out.println("getAggregateResult()");
-
         // Get all rows from the buffer!
         data.groupResult = getAggregateResult();
-
-        // System.out.println("dump rows from the buffer");
-
         Object[] row = getRowFromBuffer();
 
         long lineNr = 0;
@@ -413,8 +403,8 @@ public class GroupBy extends BaseStep implements StepInterface {
 
   }
 
-  // Is the row row of the same group as previous?
-  private boolean sameGroup( Object[] previous, Object[] r ) throws KettleValueException {
+  // Is the row r of the same group as previous?
+  boolean sameGroup( Object[] previous, Object[] r ) throws KettleValueException {
     return data.inputRowMeta.compare( previous, r, data.groupnrs ) == 0;
   }
 
@@ -593,8 +583,8 @@ public class GroupBy extends BaseStep implements StepInterface {
         case GroupByMeta.TYPE_GROUP_CUMULATIVE_SUM:
         case GroupByMeta.TYPE_GROUP_CUMULATIVE_AVERAGE:
           vMeta =
-            new ValueMeta( meta.getAggregateField()[ i ], subjMeta.isNumeric()
-              ? subjMeta.getType() : ValueMetaInterface.TYPE_NUMBER );
+              new ValueMeta( meta.getAggregateField()[ i ], subjMeta.isNumeric()
+                  ? subjMeta.getType() : ValueMetaInterface.TYPE_NUMBER );
           break;
         case GroupByMeta.TYPE_GROUP_MEDIAN:
         case GroupByMeta.TYPE_GROUP_PERCENTILE:
@@ -674,8 +664,6 @@ public class GroupBy extends BaseStep implements StepInterface {
     for ( int i = 0; i < data.groupnrs.length; i++ ) {
       data.groupMeta.addValueMeta( previousRowMeta.getValueMeta( data.groupnrs[ i ] ) );
     }
-
-    return;
   }
 
   /**
@@ -750,21 +738,24 @@ public class GroupBy extends BaseStep implements StepInterface {
 
   }
 
-  private void addToBuffer( Object[] row ) throws KettleFileException {
+  // Method is defined as package-protected in order to be accessible by unit tests
+  void addToBuffer( Object[] row ) throws KettleFileException {
     data.bufferList.add( row );
-    if ( data.bufferList.size() > 5000 ) {
-      if ( data.rowsOnFile == 0 ) {
-        try {
-          data.tempFile =
-            File.createTempFile(
-              meta.getPrefix(), ".tmp", new File( environmentSubstitute( meta.getDirectory() ) ) );
-          data.fosToTempFile = new FileOutputStream( data.tempFile );
-          data.dosToTempFile = new DataOutputStream( data.fosToTempFile );
-          data.firstRead = true;
-        } catch ( IOException e ) {
-          throw new KettleFileException( BaseMessages.getString(
-            PKG, "GroupBy.Exception.UnableToCreateTemporaryFile" ), e );
+    if ( data.bufferList.size() > 5000 && data.rowsOnFile == 0 ) {
+      String pathToTmp = environmentSubstitute( getMeta().getDirectory() );
+      try {
+        File ioFile = new File( pathToTmp );
+        if ( !ioFile.exists() ) {
+          // try to resolve as Apache VFS file
+          pathToTmp = retrieveVfsPath( pathToTmp );
         }
+        data.tempFile = File.createTempFile( getMeta().getPrefix(), ".tmp", new File( pathToTmp ) );
+        data.fosToTempFile = new FileOutputStream( data.tempFile );
+        data.dosToTempFile = new DataOutputStream( data.fosToTempFile );
+        data.firstRead = true;
+      } catch ( IOException e ) {
+        throw new KettleFileException( BaseMessages.getString( PKG, "GroupBy.Exception.UnableToCreateTemporaryFile" ),
+            e );
       }
       // OK, save the oldest rows to disk!
       Object[] oldest = data.bufferList.get( 0 );
@@ -772,6 +763,13 @@ public class GroupBy extends BaseStep implements StepInterface {
       data.bufferList.remove( 0 );
       data.rowsOnFile++;
     }
+  }
+
+  // Method is defined as package-protected in order to be accessible by unit tests
+  String retrieveVfsPath( String pathToTmp ) throws KettleFileException {
+    FileObject vfsFile = KettleVFS.getFileObject( pathToTmp );
+    String path = vfsFile.getName().getPath();
+    return path;
   }
 
   private Object[] getRowFromBuffer() throws KettleFileException {
@@ -784,7 +782,7 @@ public class GroupBy extends BaseStep implements StepInterface {
           data.firstRead = false;
         } catch ( IOException e ) {
           throw new KettleFileException( BaseMessages.getString(
-            PKG, "GroupBy.Exception.UnableToReadBackRowFromTemporaryFile" ), e );
+              PKG, "GroupBy.Exception.UnableToReadBackRowFromTemporaryFile" ), e );
         }
       }
 
@@ -822,7 +820,7 @@ public class GroupBy extends BaseStep implements StepInterface {
       data.firstRead = true;
     } catch ( IOException e ) {
       throw new KettleFileException(
-        BaseMessages.getString( PKG, "GroupBy.Exception.UnableToCloseInputStream", data.tempFile.getPath() ), e );
+          BaseMessages.getString( PKG, "GroupBy.Exception.UnableToCloseInputStream", data.tempFile.getPath() ), e );
     }
   }
 
@@ -838,7 +836,7 @@ public class GroupBy extends BaseStep implements StepInterface {
       }
     } catch ( IOException e ) {
       throw new KettleFileException(
-        BaseMessages.getString( PKG, "GroupBy.Exception.UnableToCloseInputStream", data.tempFile.getPath() ), e );
+          BaseMessages.getString( PKG, "GroupBy.Exception.UnableToCloseInputStream", data.tempFile.getPath() ), e );
     }
   }
 
@@ -869,7 +867,7 @@ public class GroupBy extends BaseStep implements StepInterface {
 
       if ( !tempFileDeleted && log.isDetailed() ) {
         log.logDetailed(
-          BaseMessages.getString( PKG, "GroupBy.Exception.UnableToDeleteTemporaryFile", data.tempFile.getPath() ) );
+            BaseMessages.getString( PKG, "GroupBy.Exception.UnableToDeleteTemporaryFile", data.tempFile.getPath() ) );
       }
     }
 
@@ -897,5 +895,9 @@ public class GroupBy extends BaseStep implements StepInterface {
    */
   void setMinNullIsValued( boolean minNullIsValued ) {
     this.minNullIsValued = minNullIsValued;
+  }
+
+  public GroupByMeta getMeta() {
+    return meta;
   }
 }
