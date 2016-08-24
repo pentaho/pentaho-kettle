@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -28,8 +28,10 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
+import org.junit.Test;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.trans.RowStepCollector;
@@ -40,6 +42,7 @@ import org.pentaho.di.trans.step.StepIOMetaInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.steps.mapping.MappingMeta;
 import org.pentaho.di.trans.steps.rowgenerator.RowGeneratorMeta;
 
 public class MappingTest extends TestCase {
@@ -300,5 +303,18 @@ public class MappingTest extends TestCase {
     List<StepInterface> list = trans.findBaseSteps( "Last" );
     assertEquals( 1, list.size() );
     assertEquals( 9, list.get( 0 ).getLinesRead() );
+  }
+  
+  @Test
+  public void testLoadTransFromAnyPath() throws KettleException {
+    final String TEST_LOCAL_PATH = "testfiles/org/pentaho/di/trans/steps/mapping/pdi-13435/PDI-13435-sub-p1.ktr";
+
+    MappingMeta.loadTransFromAnyPath( TEST_LOCAL_PATH, null, null );
+  }
+
+  @Test( expected = KettleException.class )
+  public void testLoadTransFromAnyPathForException() throws KettleException {
+    final String TEST_WRONG_LOCAL_PATH = "testfiles/org/pentaho/di/trans/steps/mapping/pdi-13435/PDI-13435-sub-p12ss.ktr";
+    MappingMeta.loadTransFromAnyPath( TEST_WRONG_LOCAL_PATH, null, null );
   }
 }
