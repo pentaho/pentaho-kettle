@@ -41,7 +41,6 @@ import java.util.Random;
 
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpState;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.ByteArrayRequestEntity;
@@ -100,7 +99,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
 public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectInterface, VariableSpace,
-  RepositoryElementInterface, XMLInterface {
+    RepositoryElementInterface, XMLInterface {
   private static Class<?> PKG = SlaveServer.class; // for i18n purposes, needed by Translator2!!
 
   public static final String STRING_SLAVESERVER = "Slave Server";
@@ -140,41 +139,41 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
 
   private LogChannelInterface log;
 
-  private volatile String name;
+  private String name;
 
-  private volatile String hostname;
+  private String hostname;
 
-  private volatile String port;
+  private String port;
 
-  private volatile String webAppName;
+  private String webAppName;
 
-  private volatile String username;
+  private String username;
 
-  private volatile String password;
+  private String password;
 
-  private volatile String proxyHostname;
+  private String proxyHostname;
 
-  private volatile String proxyPort;
+  private String proxyPort;
 
-  private volatile String nonProxyHosts;
+  private String nonProxyHosts;
 
   private String propertiesMasterName;
 
   private boolean overrideExistingProperties;
 
-  private volatile boolean master;
+  private boolean master;
 
-  private volatile boolean shared;
+  private boolean shared;
 
-  private volatile ObjectId id;
+  private ObjectId id;
 
-  private volatile VariableSpace variables = new Variables();
+  private VariableSpace variables = new Variables();
 
-  private volatile ObjectRevision objectRevision;
+  private ObjectRevision objectRevision;
 
   private Date changedDate;
 
-  private volatile boolean sslMode;
+  private boolean sslMode;
 
   private SslConfiguration sslConfig;
 
@@ -225,7 +224,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
     this.nonProxyHosts = XMLHandler.getTagValue( slaveNode, "non_proxy_hosts" );
     this.propertiesMasterName = XMLHandler.getTagValue( slaveNode, "get_properties_from_master" );
     this.overrideExistingProperties =
-      "Y".equalsIgnoreCase( XMLHandler.getTagValue( slaveNode, "override_existing_properties" ) );
+        "Y".equalsIgnoreCase( XMLHandler.getTagValue( slaveNode, "override_existing_properties" ) );
     this.master = "Y".equalsIgnoreCase( XMLHandler.getTagValue( slaveNode, "master" ) );
     initializeVariablesFrom( null );
     this.log = new LogChannel( this );
@@ -242,7 +241,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
     return log;
   }
 
-  public synchronized String getXML() {
+  public String getXML() {
     StringBuilder xml = new StringBuilder();
 
     xml.append( "<" ).append( XML_TAG ).append( ">" );
@@ -267,13 +266,13 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
     return xml.toString();
   }
 
-  public synchronized Object clone() {
+  public Object clone() {
     SlaveServer slaveServer = new SlaveServer();
     slaveServer.replaceMeta( this );
     return slaveServer;
   }
 
-  public synchronized void replaceMeta( SlaveServer slaveServer ) {
+  public void replaceMeta( SlaveServer slaveServer ) {
     this.name = slaveServer.name;
     this.hostname = slaveServer.hostname;
     this.port = slaveServer.port;
@@ -287,9 +286,8 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
 
     this.id = slaveServer.id;
     this.shared = slaveServer.shared;
-    this.sslMode = slaveServer.sslMode;
-
     this.setChanged( true );
+    this.sslMode = slaveServer.sslMode;
   }
 
   public String toString() {
@@ -445,16 +443,14 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
     return portSpec;
   }
 
-  public synchronized String constructUrl( String serviceAndArguments ) throws UnsupportedEncodingException {
+  public String constructUrl( String serviceAndArguments ) throws UnsupportedEncodingException {
     String realHostname = environmentSubstitute( hostname );
     if ( !StringUtils.isBlank( webAppName ) ) {
       serviceAndArguments = "/" + environmentSubstitute( getWebAppName() ) + serviceAndArguments;
     }
-
-    String result =
-      ( isSslMode() ? HTTPS : HTTP ) + "://" + realHostname + getPortSpecification() + serviceAndArguments;
-    result = Const.replace( result, " ", "%20" );
-    return result;
+    String retval = ( isSslMode() ? HTTPS : HTTP ) + "://" + realHostname + getPortSpecification() + serviceAndArguments;
+    retval = Const.replace( retval, " ", "%20" );
+    return retval;
   }
 
   // Method is defined as package-protected in order to be accessible by unit tests
@@ -478,7 +474,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
     return postMethod;
   }
 
-  public String sendXML( String xml, String service ) throws Exception {
+  public synchronized String sendXML( String xml, String service ) throws Exception {
     PostMethod method = buildSendXMLMethod( xml.getBytes( Const.XML_ENCODING ), service );
 
     // Execute request
@@ -608,35 +604,25 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
   }
 
   public void addProxy( HttpClient client ) {
-    String hostName;
-    String proxyHost;
-    String proxyPort;
-    String nonProxyHosts;
+    String host = environmentSubstitute( this.hostname );
+    String phost = environmentSubstitute( this.proxyHostname );
+    String pport = environmentSubstitute( this.proxyPort );
+    String nonprox = environmentSubstitute( this.nonProxyHosts );
 
-    synchronized ( this ) {
-      hostName = environmentSubstitute( this.hostname );
-      proxyHost = environmentSubstitute( this.proxyHostname );
-      proxyPort = environmentSubstitute( this.proxyPort );
-      nonProxyHosts = environmentSubstitute( this.nonProxyHosts );
-    }
-
-    if ( !Const.isEmpty( proxyHost ) && !Const.isEmpty( proxyPort ) ) {
+    if ( !Const.isEmpty( phost ) && !Const.isEmpty( pport ) ) {
       // skip applying proxy if non-proxy host matches
-      if ( !Const.isEmpty( nonProxyHosts ) && !Const.isEmpty( hostName ) && hostName.matches( nonProxyHosts ) ) {
+      if ( !Const.isEmpty( nonprox ) && !Const.isEmpty( host ) && host.matches( nonprox ) ) {
         return;
       }
-      client.getHostConfiguration().setProxy( proxyHost, Integer.parseInt( proxyPort ) );
+      client.getHostConfiguration().setProxy( phost, Integer.parseInt( pport ) );
     }
   }
 
   public void addCredentials( HttpClient client ) {
-    HttpState state = client.getState();
-    synchronized ( this ) {
-      state.setCredentials(
+    client.getState().setCredentials(
         new AuthScope( environmentSubstitute( hostname ), Const.toInt( environmentSubstitute( port ), 80 ) ),
         new UsernamePasswordCredentials( environmentSubstitute( username ), Encr
-          .decryptPasswordOptionallyEncrypted( environmentSubstitute( password ) ) ) );
-    }
+            .decryptPasswordOptionallyEncrypted( environmentSubstitute( password ) ) ) );
     client.getParams().setAuthenticationPreemptive( true );
   }
 
@@ -689,7 +675,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
     return current + RANDOM.nextInt( (int) Math.min( Integer.MAX_VALUE, current / 4L ) );
   }
 
-  public String execService( String service ) throws Exception {
+  public synchronized String execService( String service ) throws Exception {
     return execService( service, new HashMap<String, String>() );
   }
 
@@ -721,7 +707,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
     return method;
   }
 
-  public String execService( String service, Map<String, String> headerValues ) throws Exception {
+  public synchronized String execService( String service, Map<String, String> headerValues ) throws Exception {
     // Prepare HTTP get
     //
     GetMethod method = buildExecuteServiceMethod( service, headerValues );
@@ -860,7 +846,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
     return WebResult.fromXMLString( xml );
   }
 
-  public WebResult deAllocateServerSockets( String transName, String clusteredRunId ) throws Exception {
+  public synchronized WebResult deAllocateServerSockets( String transName, String clusteredRunId ) throws Exception {
     String xml =
         execService( CleanupTransServlet.CONTEXT_PATH + "/?name=" + URLEncoder.encode( transName, "UTF-8" ) + "&id="
             + Const.NVL( clusteredRunId, "" ) + "&xml=Y&sockets=Y" );
@@ -903,10 +889,10 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
     return names;
   }
 
-  public int allocateServerSocket( String runId, int portRangeStart, String hostname,
-                                   String transformationName, String sourceSlaveName,
-                                   String sourceStepName, String sourceStepCopy,
-                                   String targetSlaveName, String targetStepName, String targetStepCopy )
+  public synchronized int allocateServerSocket( String runId, int portRangeStart, String hostname,
+                                                String transformationName, String sourceSlaveName,
+                                                String sourceStepName, String sourceStepCopy,
+                                                String targetSlaveName, String targetStepName, String targetStepCopy )
     throws Exception {
 
     // Look up the IP address of the given hostname
@@ -1137,7 +1123,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
     }
   }
 
-  public synchronized SlaveServer getClient() {
+  public SlaveServer getClient() {
     String pHostName = getHostname();
     String pPort = getPort();
     String name = MessageFormat.format( "Dynamic slave [{0}:{1}]", pHostName, pPort );
