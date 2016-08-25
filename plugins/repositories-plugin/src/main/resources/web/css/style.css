@@ -234,14 +234,48 @@ button#connect {
   width: 278px;
 }
 
+/* default */
 button.defaultBtn {
-  outline: none;
-  border: none;
-  font-size: 12px;
-  padding: 5px 10px 5px 10px;
-  border-radius: 15px;
+  cursor: pointer;
+  border-radius: 4px;
+  height: 20px;
+  width: 20px;
+  float: right;
+  margin-right: 36px;
   background-color: #FFFFFF;
-  color: #FFFFFF;
+  visibility: hidden;
+  position: relative;
+}
+
+/* hover */
+tr:hover td.default button.defaultBtn:not(.activate) {
+  visibility: visible !important;
+  border: 1px solid #666666;
+}
+
+/* selected */
+tr td.default button.activate {
+  border: 1px solid #00CC66;
+  background-color: #00CC66 !important;
+  visibility: visible !important;
+}
+
+/* checkmark */
+#defaultBtnCheckmark {
+  position: absolute;
+  width: 9px;
+  height: 4px;
+  background: rgba(0, 0, 0, 0);
+  top: 4px;
+  right: 3px;
+  border: 3px solid white;
+  border-top: none;
+  border-right: none;
+  -webkit-transform: rotate(-45deg);
+  -moz-transform: rotate(-45deg);
+  -o-transform: rotate(-45deg);
+  -ms-transform: rotate(-45deg);
+  transform: rotate(-45deg);
 }
 
 button#delete, button#edit {
@@ -500,74 +534,12 @@ tr.active td {
   color: #FFFFFF;
 }
 
-td button.activate {
-  background-color: #00CC66 !important;
-  color: #FFFFFF !important;
-}
-
 tr:not(.active)>td.repo_type>div:nth-child(1){
   color: #2873B0;
 }
 
 tr:hover td.bullet {
   background: #005EAA;
-}
-
-tr:not(:hover) td div#defaultDivNot input[type="checkbox"] + label::before {
-   display: none;
-}
-
-tr:hover td#defaultDivNot [type="checkbox"] + label::before
-{
-   content: "";
-   display: inline-block;
-   vertical-align: -25%;
-   height: 20px;
-   width: 20px;
-   background-color: white;
-   border: 1px solid #666666;
-   border-radius: 4px;
-   float: right;
-   margin-right: 36px;
-}
-
-tr td#defaultDiv input[type="checkbox"]:checked + label::before
- {
-   content: "";
-   display: inline-block;
-   vertical-align: -25%;
-   height: 20px;
-   width: 20px;
-   background-color: #00CC66;
-   border: 1px solid #00CC66;
-   border-radius: 4px;
-   float: right;
-   margin-right: 36px;
-}
-
-tr td#defaultDiv input[type="checkbox"]:checked + label::after {
-   content: '';
-   position: absolute;
-   width: 9px;
-   height: 4px;
-   background: rgba(0, 0, 0, 0);
-   top: 6px;
-   border: 3px solid white;
-   border-top: none;
-   border-right: none;
-   -webkit-transform: rotate(-45deg);
-   -moz-transform: rotate(-45deg);
-   -o-transform: rotate(-45deg);
-   -ms-transform: rotate(-45deg);
-   transform: rotate(-45deg);
-}
-
-tr td:not(.scroller) input[type="checkbox"]:checked + label::after {
-  left: 39px;
-}
-
-tr td.scroller input[type="checkbox"]:checked + label::after {
-  left: 22px;
 }
 
 #repoDesc {
