@@ -1806,6 +1806,61 @@ public class ConstTest extends TestCase {
   }
 
   @Test
+  public void testReplace() {
+    final String source = "A journey of a thousand miles never begins";
+    assertEquals( "A journey of a thousand miles begins with a single step", Const.replace( source, "never begins",
+        "begins with a single step" ) );
+    assertEquals( source, Const.replace( source, "evil", "good" ) );
+    assertEquals( "short", Const.replace( "short", "long pattern", "replacement" ) );
+    assertEquals( "", Const.replace( "", "anything", "something" ) );
+    assertEquals( null, Const.replace( null, "test", "junk" ) );
+    assertEquals( null, Const.replace( "test", null, "junk" ) );
+    assertEquals( null, Const.replace( "test", "junk", null ) );
+  }
+
+  @Test
+  public void testRepl() {
+    String source = "A journey of a thousand miles never begins";
+    StringBuffer sb = new StringBuffer( source );
+    Const.repl( sb, "never begins", "begins with a single step" );
+    assertEquals( "A journey of a thousand miles begins with a single step", sb.toString() );
+    sb = new StringBuffer( source );
+    Const.repl( sb, "evil", "good" );
+    assertEquals( source, sb.toString() );
+    sb = new StringBuffer( "short" );
+    Const.repl( sb, "long pattern", "replacement" );
+    assertEquals( "short", sb.toString() );
+    sb = new StringBuffer( "" );
+    Const.repl( sb, "anything", "something" );
+    assertEquals( "", sb.toString() );
+    sb = new StringBuffer("Replace what looks like a regex '[a-z1-3*+]' with '$1'");
+    Const.repl( sb, "[a-z1-3*+]", "$1" );
+    assertEquals( "Replace what looks like a regex '$1' with '$1'", sb.toString() );
+
+    // StringBuilder version
+    StringBuilder sb2 = new StringBuilder( source );
+    Const.repl( sb2, "never begins", "begins with a single step" );
+    assertEquals( "A journey of a thousand miles begins with a single step", sb2.toString() );
+    sb2 = new StringBuilder( source );
+    Const.repl( sb2, "evil", "good" );
+    assertEquals( source, sb2.toString() );
+    sb2 = new StringBuilder( "short" );
+    Const.repl( sb2, "long pattern", "replacement" );
+    assertEquals( "short", sb2.toString() );
+    sb2 = new StringBuilder( "" );
+    Const.repl( sb2, "anything", "something" );
+    assertEquals( "", sb2.toString() );
+    sb2 = new StringBuilder("Replace what looks like a regex '[a-z1-3*+]' with '$1'");
+    Const.repl( sb2, "[a-z1-3*+]", "$1" );
+    assertEquals( "Replace what looks like a regex '$1' with '$1'", sb2.toString() );
+
+    sb2 = new StringBuilder( "JUNK" );
+    Const.repl(  sb2, null, "wibble" );
+    assertEquals( "JUNK", sb2.toString() );
+    Const.repl(  sb2, "JUNK", null );
+  }
+
+  @Test
   public void testGetOS() {
     final String key = "os.name";
     final String os = System.getProperty( key );
@@ -1874,6 +1929,65 @@ public class ConstTest extends TestCase {
         "Value for testProp property is %%testProp%%." ) );
     assertEquals( "Value for testProp property is testValue.", Const.replEnv( new String[] {
       "Value for testProp property is %%testProp%%." } )[0] );
+  }
+
+  @Test
+  public void testRemoveCRLF() {
+    assertEquals( "foo\tbar", Const.removeCRLF( "foo\r\n\tbar" ) );
+    assertEquals( "", Const.removeCRLF( "" ) );
+    assertEquals( "", Const.removeCRLF( null ) );
+    assertEquals( "", Const.removeCRLF( "\r\n" ) );
+    assertEquals( "This is a test of the emergency broadcast system",
+        Const.removeCRLF( "This \r\nis \ra \ntest \rof \n\rthe \r\nemergency \rbroadcast \nsystem\r\n" ) );
+  }
+
+  @Test
+  public void testRemoveCR() {
+    assertEquals( "foo\r\tbar", Const.removeCR( "foo\r\n\tbar" ) );
+    assertEquals( "", Const.removeCR( "" ) );
+    assertEquals( "", Const.removeCR( null ) );
+    assertEquals( "", Const.removeCR( "\n" ) );
+    assertEquals( "\r", Const.removeCR( "\n\r\n" ) );
+    assertEquals( "This \ris \ra test \rof \rthe \remergency \rbroadcast system\r",
+        Const.removeCR( "This \r\nis \ra \ntest \rof \n\rthe \r\nemergency \rbroadcast \nsystem\r\n" ) );
+  }
+
+  @Test
+  public void testRemoveLF() {
+    assertEquals( "foo\n\tbar", Const.removeLF( "foo\r\n\tbar" ) );
+    assertEquals( "", Const.removeLF( "" ) );
+    assertEquals( "", Const.removeLF( null ) );
+    assertEquals( "", Const.removeLF( "\r" ) );
+    assertEquals( "\n", Const.removeLF( "\r\n\r" ) );
+    assertEquals( "This \nis a \ntest of \nthe \nemergency broadcast \nsystem\n",
+        Const.removeLF( "This \r\nis \ra \ntest \rof \n\rthe \r\nemergency \rbroadcast \nsystem\r\n" ) );
+  }
+
+  @Test
+  public void testRemoveTAB() {
+    assertEquals( "foo\r\nbar", Const.removeTAB( "foo\r\n\tbar" ) );
+    assertEquals( "", Const.removeTAB( "" ) );
+    assertEquals( "", Const.removeTAB( null ) );
+    assertEquals( "", Const.removeTAB( "\t" ) );
+    assertEquals( "\r", Const.removeTAB( "\t\r\t" ) );
+    assertEquals( "Thisisatest",
+        Const.removeTAB( "\tThis\tis\ta\ttest" ) );
+  }
+
+  @Test
+  public void testRpad() {
+    final String s = "pad me";
+    assertEquals( s, Const.Rpad( s, "-", 0 ) );
+    assertEquals( s, Const.Rpad( s, "-", 3 ) );
+    assertEquals( s + "--", Const.Rpad( s, "-", 8 ) );
+    // add in some edge cases
+    assertEquals( s, Const.Rpad( s, null, 15 )); // No NPE
+    assertEquals( s, Const.Rpad( s, "", 15 ));
+    assertEquals( s, Const.Rpad( s, "*", 5 ));
+    assertEquals( null, Const.Rpad( null, "*", 15 ));
+    assertEquals( "Test****", Const.Rpad( "Test", "**********", 8 ) );
+    assertEquals( "Test*", Const.Rpad( "Test", "**", 5 ) );
+    assertEquals( "****", Const.Rpad( "", "*", 4 ) );
   }
 
   @Test
