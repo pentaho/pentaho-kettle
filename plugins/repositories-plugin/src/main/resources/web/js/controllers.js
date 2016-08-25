@@ -351,6 +351,8 @@ define(
     });
 
     repoConnectionAppControllers.controller("RepositoryManagerController", function($scope, $rootScope, $location, $timeout, repositoriesModel, pentahoRepositoryModel, kettleFileRepositoryModel, kettleDatabaseRepositoryModel) {
+      repositoriesModel.repositories = JSON.parse(getRepositories());
+      repositoriesModel.selectedRepository = null;
       $scope.model = repositoriesModel;
       $scope.selectRepository = function(repository) {
         repositoriesModel.selectedRepository = repository;
