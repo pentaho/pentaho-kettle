@@ -11,13 +11,13 @@
             </div>
             <div id="repoDesc">{{repository.description}}</div>
           </td>
-          <td id="defaultDivNot" class="default" ng-show="repository.isDefault === false" >
-            <input id="makeDefault" type="checkbox" ng-model="repository.isDefault" />
-            <label for="makeDefault" title="Launch connection on startup" ng-click="setDefault(repository)"></label>
-          </td>
-          <td id="defaultDiv" class="default" ng-show="repository.isDefault === true" ng-class="{scroller : model.repositories.length > 4}">
-            <input id="makeDefault" type="checkbox" ng-model="repository.isDefault" />
-            <label for="makeDefault" title="Launch connection on startup" ng-click="setDefault(null)"></label>
+          <td class="default">
+            <button class="defaultBtn" ng-click="setDefault(repository)"
+            ng-show="repository.isDefault == false" title="Launch connection on startup"></button>
+            <button class="defaultBtn activate" ng-click="setDefault(null)"
+            ng-show="repository.isDefault == true" title="Launch connection on startup">
+              <div id="defaultBtnCheckmark"></div>
+            </button>
           </td>
         </tr>
       </table>
