@@ -13,12 +13,11 @@
       <label for="description" class="margin_bottom_5 block text_left">Description</label>
       <textarea id="description" class="block" rows="4" cols="50" ng-model="model.description"></textarea>
     </div>
-    <div class="text_left checkbox-control">
-      <input id="makeDefault" type="checkbox" ng-model="model.isDefault" />
-      <label for="makeDefault"></label>
-    </div>
-    <div id="makeDefaultDiv" class="checkbox-label text_left">
-      Launch connection on startup
+    <div class="text_left">
+      <button id="isDefault" class="detailsBtn inline" ng-class="{activate : model.isDefault}" ng-click="setDefaultConn(!model.isDefault)">
+        <div class="detailsBtnCheckmark" ng-show="model.isDefault"></div>
+      </button>
+      <label for="isDefault" class="inline margin_left_3">Launch connection on startup</label>
     </div>
   </div>
   <div class="bottom">

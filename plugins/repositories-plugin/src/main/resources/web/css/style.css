@@ -169,6 +169,10 @@ a:visited {
   margin-left: 10px;
 }
 
+.margin_left_3 {
+  margin-left: 3px;
+}
+
 /*
 * FLOATING
 */
@@ -183,7 +187,7 @@ a:visited {
 /*
 * BUTTONS
 */
-button:not(.defaultBtn) {
+button:not(.defaultBtn):not(.detailsBtn) {
   outline: none;
   height: 36px;
   border-radius: 4px;
@@ -237,6 +241,7 @@ button#connect {
 /* default */
 button.defaultBtn {
   cursor: pointer;
+  outline: none;
   border-radius: 4px;
   height: 20px;
   width: 20px;
@@ -247,6 +252,18 @@ button.defaultBtn {
   position: relative;
 }
 
+button.detailsBtn {
+  cursor: pointer;
+  outline: none;
+  border-radius: 4px;
+  height: 22px;
+  width: 22px;
+  vertical-align: -6px;
+  border: 1px solid #999999;
+  background-color: #FFFFFF;
+  position: relative;
+}
+
 /* hover */
 tr:hover td.default button.defaultBtn:not(.activate) {
   visibility: visible !important;
@@ -254,14 +271,16 @@ tr:hover td.default button.defaultBtn:not(.activate) {
 }
 
 /* selected */
-tr td.default button.activate {
+tr td.default button.activate,
+button.activate {
   border: 1px solid #00CC66;
   background-color: #00CC66 !important;
   visibility: visible !important;
 }
 
 /* checkmark */
-#defaultBtnCheckmark {
+#defaultBtnCheckmark,
+.detailsBtnCheckmark {
   position: absolute;
   width: 9px;
   height: 4px;
@@ -276,6 +295,11 @@ tr td.default button.activate {
   -o-transform: rotate(-45deg);
   -ms-transform: rotate(-45deg);
   transform: rotate(-45deg);
+}
+
+div.detailsBtnCheckmark {
+  top: 5px !important;
+  right: 4px !important;
 }
 
 button#delete, button#edit {
@@ -344,73 +368,6 @@ textarea#description:focus,
 select:focus {
   outline: none;
   border: 1px solid #005EAA;
-}
-
-/* The actual checkmark */
-.checkbox-control input[type="checkbox"]:checked + label::after {
-   content: '';
-   position: absolute;
-   width: 9px;
-   height: 4px;
-   background: rgba(0, 0, 0, 0);
-   top: 4px;
-   left: 5px;
-   border: 3px solid white;
-   border-top: none;
-   border-right: none;
-   -webkit-transform: rotate(-45deg);
-   -moz-transform: rotate(-45deg);
-   -o-transform: rotate(-45deg);
-   -ms-transform: rotate(-45deg);
-   transform: rotate(-45deg);
-}
-
-/* Move checkbox off screen */
-input[type="checkbox"] {
-    position: absolute;
-    left: -999px;
-}
-
-input[type="checkbox"] + label {
-    position: relative;
-    overflow: hidden;
-    cursor: pointer;
-}
-
-/* New checkbox unchecked */
-.checkbox-control input[type="checkbox"] + label::before {
-   content: "";
-   display: inline-block;
-   vertical-align: -25%;
-   height: 20px;
-   width: 20px;
-   background-color: white;
-   border: 1px solid #999999;
-   border-radius: 4px;
-   margin-right: 0.5px;
-}
-
-/* New checkbox checked */
-.checkbox-control input[type="checkbox"]:checked + label::before {
-   content: "";
-   display: inline-block;
-   vertical-align: -25%;
-   height: 20px;
-   width: 20px;
-   background-color: #00CC66;
-   border: 1px solid #00CC66;
-   border-radius: 4px;
-   margin-right: 0.5px;
-}
-
-/* position div that actually contains checkbox label */
-.checkbox-label {
-  margin-left:30px;
-  position:relative;
-  width:300px;
-  font-family: OpenSansRegular;
-  color: #666666;
-  font-size: 14px;
 }
 
 #dontModDiv,
@@ -567,6 +524,10 @@ tr.active #repoDesc {
 /*
 * MISC
 */
+.inline {
+  display: inline;
+}
+
 .repo_conn_txt {
   width: 272px !important;
 }

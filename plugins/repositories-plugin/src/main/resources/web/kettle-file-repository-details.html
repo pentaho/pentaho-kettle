@@ -10,32 +10,29 @@
       <input id="location" class="block left" type="text" ng-model="model.location" />
       <button id="browse" class="left standard margin_bottom_20" ng-click="selectLocation()">Browse</button>
     </div>
-    <div class="text_left">
-      <div class="text_left checkbox-control">
-        <input id="dont_modify" type="checkbox" ng-model="model.doNotModify" />
-        <label for="dont_modify"></label>
+    <div class="text_left" style="margin-bottom: 27px;">
+      <div style="margin-bottom: 17px;">
+        <button id="dont_modify" class="detailsBtn inline" ng-class="{activate : model.doNotModify}" ng-click="setDoNotModify(!model.doNotModify)">
+          <div class="detailsBtnCheckmark" ng-show="model.doNotModify"></div>
+        </button>
+        <label for="dont_modify" class="inline margin_left_3">Don't modify items in this location</label>
       </div>
-      <div id="dontModDiv" class="checkbox-label">
-        Don't modify items in this location
-      </div>
-      <div class="margin_bottom_10 text_left checkbox-control">
-        <input id="show_hidden" type="checkbox" ng-model="model.showHiddenFolders" />
-        <label for="show_hidden"></label>
-      </div>
-      <div id="showHiddenDiv" class="checkbox-label">
-        Show hidden folders
+      <div>
+        <button id="showFolders" class="detailsBtn inline" ng-class="{activate : model.showHiddenFolders}" ng-click="setShowHiddenFolders(!model.showHiddenFolders)">
+          <div class="detailsBtnCheckmark" ng-show="model.showHiddenFolders"></div>
+        </button>
+        <label for="showFolders" class="inline margin_left_3">Show hidden folders</label>
       </div>
     </div>
     <div class="margin_bottom_20">
       <label for="description" class="margin_bottom_5 block text_left">Description</label>
       <textarea id="description" class="block" rows="4" cols="50" ng-model="model.description"></textarea>
     </div>
-    <div class="text_left checkbox-control">
-      <input id="makeDefault" type="checkbox" ng-model="model.isDefault" />
-      <label for="makeDefault"></label>
-    </div>
-    <div id="makeDefaultDiv" class="checkbox-label text_left">
-      Launch connection on startup
+    <div class="text_left">
+      <button id="isDefault" class="detailsBtn inline" ng-class="{activate : model.isDefault}" ng-click="setDefaultConn(!model.isDefault)">
+        <div class="detailsBtnCheckmark" ng-show="model.isDefault"></div>
+      </button>
+      <label for="isDefault" class="inline margin_left_3">Launch connection on startup</label>
     </div>
   </div>
   <div class="bottom">
