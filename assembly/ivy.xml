@@ -102,9 +102,6 @@
     <dependency org="pentaho" name="pentaho-cassandra-plugin" rev="${dependency.pentaho-cassandra-plugin.revision}" changing="true" transitive="false" conf="plugins->default">
       <artifact name="pentaho-cassandra-plugin" type="zip"/>
     </dependency>
-    <dependency org="pentaho" name="pdi-spark-plugin" rev="${dependency.pdi-spark-plugin.revision}" changing="true" transitive="false" conf="plugins->default">
-      <artifact name="pdi-spark-plugin" type="zip"/>
-    </dependency>
     <dependency org="pentaho" name="pdi-teradata-tpt-plugin-package" rev="${dependency.pdi-teradata-tpt-plugin.revision}" changing="true" transitive="false" conf="plugins->default">
       <artifact name="pdi-teradata-tpt-plugin-package" type="zip"/>
     </dependency>
