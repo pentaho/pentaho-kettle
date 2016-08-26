@@ -95,6 +95,9 @@ define(
         $location.path("/pentaho-repository-connection-details");
         $rootScope.back();
       }
+      $scope.setDefaultConn = function(value) {
+        this.model.isDefault = value;
+      }
       $scope.back = function() {
         $rootScope.clearError();
         if (this.model.id) {
@@ -168,6 +171,15 @@ define(
       $scope.changeSettings = function() {
         $location.path("/kettle-file-repository-details");
         $rootScope.back();
+      }
+      $scope.setDoNotModify = function(value) {
+        this.model.doNotModify = value;
+      }
+      $scope.setShowHiddenFolders = function(value) {
+        this.model.showHiddenFolders = value;
+      }
+      $scope.setDefaultConn = function(value) {
+        this.model.isDefault = value;
       }
       $scope.back = function() {
         $rootScope.clearError();
@@ -245,6 +257,9 @@ define(
       $scope.changeSettings = function() {
         $location.path("/kettle-database-repository-details");
         $rootScope.back();
+      }
+      $scope.setDefaultConn = function(value) {
+        this.model.isDefault = value;
       }
       $scope.back = function() {
         $rootScope.clearError();
