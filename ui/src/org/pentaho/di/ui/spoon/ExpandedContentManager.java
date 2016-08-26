@@ -25,6 +25,11 @@ package org.pentaho.di.ui.spoon;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.custom.SashForm;
+import org.eclipse.swt.dnd.Clipboard;
+import org.eclipse.swt.dnd.TextTransfer;
+import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.widgets.Control;
@@ -84,6 +89,19 @@ public final class ExpandedContentManager {
     Browser browser = getExpandedContentForTransGraph( parent );
     if ( browser == null ) {
       browser = new Browser( parent, SWT.NONE );
+      browser.addKeyListener( new KeyListener() {
+        @Override public void keyPressed( KeyEvent keyEvent ) {
+          if ( keyEvent.stateMask == SWT.CTRL && keyEvent.keyCode == SWT.F6 ) {
+            Browser thisBrowser = (Browser) keyEvent.getSource();
+            Clipboard clipboard = new Clipboard( thisBrowser.getDisplay() );
+            clipboard.setContents( new String[]{thisBrowser.getUrl()}, new Transfer[]{ TextTransfer.getInstance()} );
+            clipboard.dispose();
+          }
+        }
+
+        @Override public void keyReleased( KeyEvent keyEvent ) {
+        }
+      } );
     }
     browser.setUrl( url );
   }
