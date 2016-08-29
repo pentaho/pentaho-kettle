@@ -173,7 +173,7 @@
         <extensions>true</extensions>
         <configuration>
           <instructions>
-            <Import-Package>org.pentaho.di.osgi, !org.junit, !org.mockito, !org.mockito.*, *</Import-Package>
+            <Import-Package>org.pentaho.di.osgi, !org.junit, !org.mockito, !org.mockito.*, org.eclipse.swt*;resolution:=optional, *</Import-Package>
             <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
           </instructions>
