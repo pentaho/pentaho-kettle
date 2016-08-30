@@ -1982,17 +1982,30 @@ public class PurRepository extends AbstractRepository implements Repository, Rep
 
         // update title
         final String title = ( (DatabaseMeta) element ).getDisplayName();
-        file = new RepositoryFile.Builder( file ).title( RepositoryFile.DEFAULT_LOCALE, title ).build();
+        Date modifiedDate = null;
+        if ( versionDate != null && versionDate.getTime() != null ) {
+          modifiedDate = versionDate.getTime();
+        } else {
+          modifiedDate = new Date();
+        }
+        file = new RepositoryFile.Builder( file ).title( RepositoryFile.DEFAULT_LOCALE, title )
+          .lastModificationDate( modifiedDate ).build();
         renameIfNecessary( element, file );
         file =
             pur.updateFile( file, new NodeRepositoryFileData( databaseMetaTransformer.elementToDataNode( element ) ),
                 versionComment );
       } else {
+        Date createdDate = null;
+        if ( versionDate != null && versionDate.getTime() != null ) {
+          createdDate = versionDate.getTime();
+        } else {
+          createdDate = new Date();
+        }
         file =
             new RepositoryFile.Builder(
                 checkAndSanitize( RepositoryFilenameUtils.escape( element.getName(), pur.getReservedChars() )
                     + RepositoryObjectType.DATABASE.getExtension() ) ).title( RepositoryFile.DEFAULT_LOCALE,
-                element.getName() ).versioned( VERSION_SHARED_OBJECTS ).build();
+                element.getName() ).createdDate( createdDate ).versioned( VERSION_SHARED_OBJECTS ).build();
         file =
             pur.createFile( getDatabaseMetaParentFolderId(), file,
                 new NodeRepositoryFileData( databaseMetaTransformer.elementToDataNode( element ) ), versionComment );
