@@ -243,8 +243,8 @@ button.defaultBtn {
   cursor: pointer;
   outline: none;
   border-radius: 4px;
-  height: 20px;
-  width: 20px;
+  height: 22px;
+  width: 22px;
   float: right;
   margin-right: 36px;
   background-color: #FFFFFF;
@@ -285,8 +285,8 @@ button.activate {
   width: 9px;
   height: 4px;
   background: rgba(0, 0, 0, 0);
-  top: 4px;
-  right: 3px;
+  top: 5px;
+  right: 4px;
   border: 3px solid white;
   border-top: none;
   border-right: none;
@@ -295,11 +295,6 @@ button.activate {
   -o-transform: rotate(-45deg);
   -ms-transform: rotate(-45deg);
   transform: rotate(-45deg);
-}
-
-div.detailsBtnCheckmark {
-  top: 5px !important;
-  right: 4px !important;
 }
 
 button#delete, button#edit {
