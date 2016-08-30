@@ -258,7 +258,6 @@ button.detailsBtn {
   border-radius: 4px;
   height: 22px;
   width: 22px;
-  vertical-align: -6px;
   border: 1px solid #999999;
   background-color: #FFFFFF;
   position: relative;
@@ -521,6 +520,7 @@ tr.active #repoDesc {
 */
 .inline {
   display: inline;
+  vertical-align: middle;
 }
 
 .repo_conn_txt {
