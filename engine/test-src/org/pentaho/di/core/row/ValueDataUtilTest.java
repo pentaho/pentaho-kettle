@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,30 +22,38 @@
 
 package org.pentaho.di.core.row;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 
-import junit.framework.Assert;
-import junit.framework.TestCase;
-
 import org.apache.commons.lang.StringUtils;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.KettleEnvironment;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.exception.KettleValueException;
+import org.pentaho.di.core.row.value.ValueMetaBinary;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.row.value.ValueMetaInteger;
 import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.trans.steps.calculator.CalculatorMetaFunction;
 
-/**
- * Not yet completely finished.
- *
- * @author sboden
- *
- */
-public class ValueDataUtilTest extends TestCase {
+public class ValueDataUtilTest {
   private static String yyyy_MM_dd = "yyyy-MM-dd";
+
+  @BeforeClass
+  public static void setUpBeforeClass() throws KettleException {
+    KettleEnvironment.init( false );
+  }
 
   // private enum DateCalc {WORKING_DAYS, DATE_DIFF};
 
@@ -54,6 +62,7 @@ public class ValueDataUtilTest extends TestCase {
    * @throws KettleValueException
    */
   @Deprecated
+  @Test
   public void testLeftTrim() throws KettleValueException {
     assertEquals( "", ValueDataUtil.leftTrim( "" ) );
     assertEquals( "string", ValueDataUtil.leftTrim( "string" ) );
@@ -77,6 +86,7 @@ public class ValueDataUtilTest extends TestCase {
    * @throws KettleValueException
    */
   @Deprecated
+  @Test
   public void testRightTrim() throws KettleValueException {
     assertEquals( "", ValueDataUtil.rightTrim( "" ) );
     assertEquals( "string", ValueDataUtil.rightTrim( "string" ) );
@@ -100,6 +110,7 @@ public class ValueDataUtilTest extends TestCase {
    * @throws KettleValueException
    */
   @Deprecated
+  @Test
   public void testIsSpace() throws KettleValueException {
     assertTrue( ValueDataUtil.isSpace( ' ' ) );
     assertTrue( ValueDataUtil.isSpace( '\t' ) );
@@ -115,6 +126,7 @@ public class ValueDataUtilTest extends TestCase {
    * @throws KettleValueException
    */
   @Deprecated
+  @Test
   public void testTrim() throws KettleValueException {
     assertEquals( "", ValueDataUtil.trim( "" ) );
     assertEquals( "string", ValueDataUtil.trim( "string" ) );
@@ -138,18 +150,21 @@ public class ValueDataUtilTest extends TestCase {
     assertEquals( "", ValueDataUtil.rightTrim( "   " ) );
   }
 
+  @Test
   public void testDateDiff_A_GT_B() {
     Object daysDiff =
         calculate( "2010-05-12", "2010-01-01", ValueMetaInterface.TYPE_DATE, CalculatorMetaFunction.CALC_DATE_DIFF );
     assertEquals( new Long( 131 ), daysDiff );
   }
 
+  @Test
   public void testDateDiff_A_LT_B() {
     Object daysDiff =
         calculate( "2010-12-31", "2011-02-10", ValueMetaInterface.TYPE_DATE, CalculatorMetaFunction.CALC_DATE_DIFF );
     assertEquals( new Long( -41 ), daysDiff );
   }
 
+  @Test
   public void testWorkingDaysDays_A_GT_B() {
     Object daysDiff =
         calculate( "2010-05-12", "2010-01-01", ValueMetaInterface.TYPE_DATE,
@@ -157,6 +172,7 @@ public class ValueDataUtilTest extends TestCase {
     assertEquals( new Long( 93 ), daysDiff );
   }
 
+  @Test
   public void testWorkingDaysDays_A_LT_B() {
     Object daysDiff =
         calculate( "2010-12-31", "2011-02-10", ValueMetaInterface.TYPE_DATE,
@@ -174,6 +190,7 @@ public class ValueDataUtilTest extends TestCase {
 
   }
 
+  @Test
   public void testAdd() {
 
     // Test Kettle number types
@@ -207,6 +224,7 @@ public class ValueDataUtilTest extends TestCase {
         ValueMetaInterface.TYPE_BIGNUMBER, CalculatorMetaFunction.CALC_ADD ) ) );
   }
 
+  @Test
   public void testAdd3() {
 
     // Test Kettle number types
@@ -240,6 +258,7 @@ public class ValueDataUtilTest extends TestCase {
         ValueMetaInterface.TYPE_BIGNUMBER, CalculatorMetaFunction.CALC_ADD3 ) ) );
   }
 
+  @Test
   public void testSubtract() {
 
     // Test Kettle number types
@@ -261,6 +280,7 @@ public class ValueDataUtilTest extends TestCase {
         ValueMetaInterface.TYPE_BIGNUMBER, CalculatorMetaFunction.CALC_SUBTRACT ) ) );
   }
 
+  @Test
   public void testDivide() {
 
     // Test Kettle number types
@@ -294,6 +314,7 @@ public class ValueDataUtilTest extends TestCase {
         CalculatorMetaFunction.CALC_DIVIDE ) );
   }
 
+  @Test
   public void testPercent1() {
 
     // Test Kettle number types
@@ -327,6 +348,7 @@ public class ValueDataUtilTest extends TestCase {
         ValueMetaInterface.TYPE_BIGNUMBER, CalculatorMetaFunction.CALC_PERCENT_1 ) );
   }
 
+  @Test
   public void testPercent2() {
 
     // Test Kettle number types
@@ -360,6 +382,7 @@ public class ValueDataUtilTest extends TestCase {
         ValueMetaInterface.TYPE_BIGNUMBER, CalculatorMetaFunction.CALC_PERCENT_2 ) );
   }
 
+  @Test
   public void testPercent3() {
 
     // Test Kettle number types
@@ -393,6 +416,7 @@ public class ValueDataUtilTest extends TestCase {
         ValueMetaInterface.TYPE_BIGNUMBER, CalculatorMetaFunction.CALC_PERCENT_3 ) ) );
   }
 
+  @Test
   public void testCombination1() {
 
     // Test Kettle number types
@@ -426,6 +450,7 @@ public class ValueDataUtilTest extends TestCase {
         ValueMetaInterface.TYPE_BIGNUMBER, CalculatorMetaFunction.CALC_COMBINATION_1 ) ) );
   }
 
+  @Test
   public void testCombination2() {
 
     // Test Kettle number types
@@ -459,6 +484,7 @@ public class ValueDataUtilTest extends TestCase {
         ValueMetaInterface.TYPE_BIGNUMBER, CalculatorMetaFunction.CALC_COMBINATION_2 ) ) );
   }
 
+  @Test
   public void testRound() {
 
     // Test Kettle number types
@@ -487,23 +513,24 @@ public class ValueDataUtilTest extends TestCase {
         CalculatorMetaFunction.CALC_ROUND_1 ) );
 
     // Test Kettle big Number types
-    assertEquals( BigDecimal.valueOf( Double.valueOf( "1.0" ) ), calculate( "1", ValueMetaInterface.TYPE_BIGNUMBER,
+    assertEquals( BigDecimal.ONE, calculate( "1", ValueMetaInterface.TYPE_BIGNUMBER,
         CalculatorMetaFunction.CALC_ROUND_1 ) );
-    assertEquals( BigDecimal.valueOf( Double.valueOf( "103.0" ) ), calculate( "103.01",
+    assertEquals( BigDecimal.valueOf( Long.valueOf( "103" ) ), calculate( "103.01",
         ValueMetaInterface.TYPE_BIGNUMBER, CalculatorMetaFunction.CALC_ROUND_1 ) );
-    assertEquals( BigDecimal.valueOf( Double.valueOf( "1235.0" ) ), calculate( "1234.6",
+    assertEquals( BigDecimal.valueOf( Long.valueOf( "1235" ) ), calculate( "1234.6",
         ValueMetaInterface.TYPE_BIGNUMBER, CalculatorMetaFunction.CALC_ROUND_1 ) );
     // half
-    assertEquals( BigDecimal.valueOf( Double.valueOf( "1235.0" ) ), calculate( "1234.5",
+    assertEquals( BigDecimal.valueOf( Long.valueOf( "1235" ) ), calculate( "1234.5",
         ValueMetaInterface.TYPE_BIGNUMBER, CalculatorMetaFunction.CALC_ROUND_1 ) );
-    assertEquals( BigDecimal.valueOf( Double.valueOf( "1236.0" ) ), calculate( "1235.5",
+    assertEquals( BigDecimal.valueOf( Long.valueOf( "1236" ) ), calculate( "1235.5",
         ValueMetaInterface.TYPE_BIGNUMBER, CalculatorMetaFunction.CALC_ROUND_1 ) );
-    assertEquals( BigDecimal.valueOf( Double.valueOf( "-1234.0" ) ), calculate( "-1234.5",
+    assertEquals( BigDecimal.valueOf( Long.valueOf( "-1234" ) ), calculate( "-1234.5",
         ValueMetaInterface.TYPE_BIGNUMBER, CalculatorMetaFunction.CALC_ROUND_1 ) );
-    assertEquals( BigDecimal.valueOf( Double.valueOf( "-1235.0" ) ), calculate( "-1235.5",
+    assertEquals( BigDecimal.valueOf( Long.valueOf( "-1235" ) ), calculate( "-1235.5",
         ValueMetaInterface.TYPE_BIGNUMBER, CalculatorMetaFunction.CALC_ROUND_1 ) );
   }
 
+  @Test
   public void testRound2() {
 
     // Test Kettle number types
@@ -560,7 +587,7 @@ public class ValueDataUtilTest extends TestCase {
     assertEquals( BigDecimal.valueOf( Double.valueOf( "12.35" ) ), calculate( "12.346", "2",
         ValueMetaInterface.TYPE_BIGNUMBER, CalculatorMetaFunction.CALC_ROUND_2 ) );
     // scale < 0
-    assertEquals( BigDecimal.valueOf( Double.valueOf( "10.0" ) ), calculate( "12.0", "-1",
+    assertEquals( BigDecimal.valueOf( Double.valueOf( "10.0" ) ).setScale( -1 ), calculate( "12.0", "-1",
         ValueMetaInterface.TYPE_BIGNUMBER, CalculatorMetaFunction.CALC_ROUND_2 ) );
     // half
     assertEquals( BigDecimal.valueOf( Double.valueOf( "12.35" ) ), calculate( "12.345", "2",
@@ -573,6 +600,7 @@ public class ValueDataUtilTest extends TestCase {
         ValueMetaInterface.TYPE_BIGNUMBER, CalculatorMetaFunction.CALC_ROUND_2 ) );
   }
 
+  @Test
   public void testNVL() {
 
     // Test Kettle number types
@@ -635,7 +663,7 @@ public class ValueDataUtilTest extends TestCase {
     // assertEquals(null, calculate("", "", ValueMetaInterface.TYPE_DATE, CalculatorMetaFunction.CALC_NVL));
 
     // binary
-    ValueMeta stringValueMeta = new ValueMeta( "string", ValueMeta.TYPE_STRING );
+    ValueMetaInterface stringValueMeta = new ValueMetaString( "string" );
     try {
       byte[] data = stringValueMeta.getBinary( "101" );
       byte[] calculated =
@@ -660,6 +688,42 @@ public class ValueDataUtilTest extends TestCase {
     }
   }
 
+  @Test
+  public void testRemainder() throws Exception {
+    assertNull( calculate( null, null, ValueMetaInterface.TYPE_INTEGER, CalculatorMetaFunction.CALC_REMAINDER ) );
+    assertNull( calculate( null, "3", ValueMetaInterface.TYPE_INTEGER, CalculatorMetaFunction.CALC_REMAINDER ) );
+    assertNull( calculate( "10", null, ValueMetaInterface.TYPE_INTEGER, CalculatorMetaFunction.CALC_REMAINDER ) );
+    assertEquals( new Long( "1" ),
+      calculate( "10", "3", ValueMetaInterface.TYPE_INTEGER, CalculatorMetaFunction.CALC_REMAINDER ) );
+    assertEquals( new Long( "-1" ),
+      calculate( "-10", "3", ValueMetaInterface.TYPE_INTEGER, CalculatorMetaFunction.CALC_REMAINDER ) );
+
+    Double comparisonDelta = new Double( "0.0000000000001" );
+    assertNull( calculate( null, null, ValueMetaInterface.TYPE_NUMBER, CalculatorMetaFunction.CALC_REMAINDER ) );
+    assertNull( calculate( null, "4.1", ValueMetaInterface.TYPE_NUMBER, CalculatorMetaFunction.CALC_REMAINDER ) );
+    assertNull( calculate( "17.8", null, ValueMetaInterface.TYPE_NUMBER, CalculatorMetaFunction.CALC_REMAINDER ) );
+    assertEquals( new Double( "1.4" ).doubleValue(),
+      ( (Double) calculate( "17.8", "4.1", ValueMetaInterface.TYPE_NUMBER, CalculatorMetaFunction.CALC_REMAINDER )
+      ).doubleValue(),
+      comparisonDelta.doubleValue() );
+    assertEquals( new Double( "1.4" ).doubleValue(),
+      ( (Double) calculate( "17.8", "-4.1", ValueMetaInterface.TYPE_NUMBER, CalculatorMetaFunction.CALC_REMAINDER )
+      ).doubleValue(),
+      comparisonDelta.doubleValue() );
+
+    assertEquals( new Double( "-1.4" ).doubleValue(),
+      ( (Double) calculate( "-17.8", "-4.1", ValueMetaInterface.TYPE_NUMBER, CalculatorMetaFunction.CALC_REMAINDER )
+      ).doubleValue(),
+      comparisonDelta.doubleValue() );
+
+    assertNull( calculate( null, null, ValueMetaInterface.TYPE_BIGNUMBER, CalculatorMetaFunction.CALC_REMAINDER ) );
+    assertNull( calculate( null, "16.12", ValueMetaInterface.TYPE_BIGNUMBER, CalculatorMetaFunction.CALC_REMAINDER ) );
+    assertNull( calculate( "-144.144", null, ValueMetaInterface.TYPE_BIGNUMBER, CalculatorMetaFunction.CALC_REMAINDER ) );
+
+    assertEquals( new BigDecimal( "-15.184" ),
+      calculate( "-144.144", "16.12", ValueMetaInterface.TYPE_BIGNUMBER, CalculatorMetaFunction.CALC_REMAINDER ) );
+  }
+
   private Object calculate( String string_dataA, int valueMetaInterfaceType, int calculatorMetaFunction ) {
     return calculate( string_dataA, null, null, valueMetaInterfaceType, calculatorMetaFunction );
   }
@@ -675,12 +739,12 @@ public class ValueDataUtilTest extends TestCase {
     try {
 
       //
-      ValueMeta parameterValueMeta = new ValueMeta( "parameter", ValueMeta.TYPE_STRING );
+      ValueMetaInterface parameterValueMeta = new ValueMetaString( "parameter" );
 
       // We create the meta information for
-      ValueMeta valueMetaA = createValueMeta( "data_A", valueMetaInterfaceType );
-      ValueMeta valueMetaB = createValueMeta( "data_B", valueMetaInterfaceType );
-      ValueMeta valueMetaC = createValueMeta( "data_C", valueMetaInterfaceType );
+      ValueMetaInterface valueMetaA = createValueMeta( "data_A", valueMetaInterfaceType );
+      ValueMetaInterface valueMetaB = createValueMeta( "data_B", valueMetaInterfaceType );
+      ValueMetaInterface valueMetaC = createValueMeta( "data_C", valueMetaInterfaceType );
 
       Object dataA = null;
       Object dataB = null;
@@ -713,7 +777,7 @@ public class ValueDataUtilTest extends TestCase {
         dataB = ( !Const.isEmpty( string_dataB ) ? string_dataB : null );
         dataC = ( !Const.isEmpty( string_dataC ) ? string_dataC : null );
       } else if ( valueMetaInterfaceType == ValueMetaInterface.TYPE_BINARY ) {
-        ValueMeta binaryValueMeta = new ValueMeta( "binary_data", ValueMeta.TYPE_BINARY );
+        ValueMetaInterface binaryValueMeta = new ValueMetaBinary( "binary_data" );
 
         dataA =
             ( !Const.isEmpty( string_dataA ) ? binaryValueMeta.convertData( parameterValueMeta, string_dataA ) : null );
@@ -772,6 +836,8 @@ public class ValueDataUtilTest extends TestCase {
         return ValueDataUtil.DateDiff( valueMetaA, dataA, valueMetaB, dataB, "" );
       } else if ( calculatorMetaFunction == CalculatorMetaFunction.CALC_DATE_WORKING_DIFF ) {
         return ValueDataUtil.DateWorkingDiff( valueMetaA, dataA, valueMetaB, dataB );
+      } else if ( calculatorMetaFunction == CalculatorMetaFunction.CALC_REMAINDER ) {
+        return ValueDataUtil.remainder( valueMetaA, dataA, valueMetaB, dataB );
       } else {
         fail( "Invalid CalculatorMetaFunction specified." );
         return null;
@@ -782,22 +848,11 @@ public class ValueDataUtilTest extends TestCase {
     }
   }
 
-  private ValueMeta createValueMeta( String name, int valueType ) {
-    ValueMeta valueMeta = new ValueMeta( name, valueType );
-    return valueMeta;
-  }
-
-  public static void assertEquals( Object expected, Object actual ) {
-    assertEquals( "", expected, actual );
-  }
-
-  public static void assertEquals( String msg, Object expected, Object actual ) {
-    if ( expected instanceof BigDecimal && actual instanceof BigDecimal ) {
-      if ( ( (BigDecimal) expected ).compareTo( (BigDecimal) actual ) != 0 ) {
-        Assert.assertEquals( msg, expected, actual );
-      }
-    } else {
-      Assert.assertEquals( msg, expected, actual );
+  private ValueMetaInterface createValueMeta( String name, int valueType ) {
+    try {
+      return ValueMetaFactory.createValueMeta( name, valueType );
+    } catch ( KettlePluginException e ) {
+      throw new RuntimeException( e );
     }
   }
 }

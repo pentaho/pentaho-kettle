@@ -585,6 +585,9 @@ public class Calculator extends BaseStep implements StepInterface {
             calcData[index] = ValueDataUtil.addSeconds( metaA, dataA, metaB, dataB );
             resultType = CalculatorMetaFunction.calcDefaultResultType[calcType];
             break;
+          case CalculatorMetaFunction.CALC_REMAINDER:
+            calcData[index] = ValueDataUtil.remainder( metaA, dataA, metaB, dataB );
+            break;
           default:
             throw new KettleValueException( BaseMessages.getString( PKG, "Calculator.Log.UnknownCalculationType" )
               + fn.getCalcType() );

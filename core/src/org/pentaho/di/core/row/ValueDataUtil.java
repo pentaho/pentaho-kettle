@@ -1082,6 +1082,35 @@ public class ValueDataUtil {
     }
   }
 
+  /**
+   * Returns the remainder (modulus) of A / B.
+   *
+   * @param metaA
+   * @param dataA
+   *          The dividend
+   * @param metaB
+   * @param dataB
+   *          The divisor
+   * @return The remainder
+   * @throws KettleValueException
+   */
+  public static Object remainder( ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB ) throws KettleValueException {
+    if ( dataA == null || dataB == null ) {
+      return null;
+    }
+
+    switch ( metaA.getType() ) {
+      case ValueMetaInterface.TYPE_NUMBER:
+        return new Double( Math.IEEEremainder( metaA.getNumber( dataA ).doubleValue(), metaB.getNumber( dataB ).doubleValue() ) );
+      case ValueMetaInterface.TYPE_INTEGER:
+        return new Long( metaA.getInteger( dataA ) % metaB.getInteger( dataB ) );
+      case ValueMetaInterface.TYPE_BIGNUMBER:
+        return metaA.getBigNumber( dataA ).remainder( metaB.getBigNumber( dataB ), MathContext.DECIMAL64 );
+      default:
+        throw new KettleValueException( "The 'remainder' function only works on numeric data" );
+    }
+  }
+
   public static Object nvl( ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB ) throws KettleValueException {
     switch ( metaA.getType() ) {
       case ValueMetaInterface.TYPE_STRING:
