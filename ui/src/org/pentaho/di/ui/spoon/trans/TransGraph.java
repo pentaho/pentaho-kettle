@@ -4269,6 +4269,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
         shell.getDisplay().asyncExec( new Runnable() {
           @Override
           public void run() {
+            spoon.fireMenuControlers();
             redraw();
           }
         } );
