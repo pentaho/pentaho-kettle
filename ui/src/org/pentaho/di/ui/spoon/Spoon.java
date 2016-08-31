@@ -1031,36 +1031,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     boolean closed = true;
     EngineMetaInterface meta = getActiveMeta();
     if ( meta != null ) {
-
-      String beforeCloseId = null;
-      String afterCloseId = null;
-
-      if ( meta instanceof TransMeta ) {
-        beforeCloseId = KettleExtensionPoint.TransBeforeClose.id;
-        afterCloseId = KettleExtensionPoint.TransAfterClose.id;
-      } else if ( meta instanceof JobMeta ) {
-        beforeCloseId = KettleExtensionPoint.JobBeforeClose.id;
-        afterCloseId = KettleExtensionPoint.JobAfterClose.id;
-      }
-
-      if ( beforeCloseId != null ) {
-        try {
-          ExtensionPointHandler.callExtensionPoint( log, beforeCloseId, meta );
-        } catch ( KettleException e ) {
-          // fails gracefully but perhaps should return false?
-        }
-      }
-
       // If a transformation or job is the current active tab, close it
       closed = tabCloseSelected( force );
-
-      if ( closed && ( afterCloseId != null ) ) {
-        try {
-          ExtensionPointHandler.callExtensionPoint( log, afterCloseId, meta );
-        } catch ( KettleException e ) {
-          // fails gracefully but perhaps should return false?
-        }
-      }
     }
 
     return closed;
