@@ -38,6 +38,8 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.EngineMetaInterface;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
+import org.pentaho.di.core.extension.ExtensionPointHandler;
+import org.pentaho.di.core.extension.KettleExtensionPoint;
 import org.pentaho.di.core.gui.SpoonInterface;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
@@ -90,12 +92,15 @@ public class SpoonTabsDelegate extends SpoonDelegate {
     boolean canSave = true;
     for ( TabMapEntry entry : collection ) {
       if ( item.equals( entry.getTabItem() ) ) {
+        final TabItemInterface itemInterface = entry.getObject();
+        final Object managedObject = itemInterface.getManagedObject();
+
         if ( !force ) {
-          TabItemInterface itemInterface = entry.getObject();
-          if ( itemInterface.getManagedObject() != null
-            && AbstractMeta.class.isAssignableFrom( itemInterface.getManagedObject().getClass() ) ) {
-            canSave = !( (AbstractMeta) itemInterface.getManagedObject() ).hasMissingPlugins();
+          if ( managedObject != null
+            && AbstractMeta.class.isAssignableFrom( managedObject.getClass() ) ) {
+            canSave = !( (AbstractMeta) managedObject ).hasMissingPlugins();
           }
+
           if ( canSave ) {
             // Can we close this tab? Only allow users with create content perms to save
             if ( !itemInterface.canBeClosed() && createPerms ) {
@@ -113,27 +118,55 @@ public class SpoonTabsDelegate extends SpoonDelegate {
           }
         }
 
+        String beforeCloseId = null;
+        String afterCloseId = null;
+
+        if ( itemInterface instanceof TransGraph ) {
+          beforeCloseId = KettleExtensionPoint.TransBeforeClose.id;
+          afterCloseId = KettleExtensionPoint.TransAfterClose.id;
+        } else if ( itemInterface instanceof JobGraph ) {
+          beforeCloseId = KettleExtensionPoint.JobBeforeClose.id;
+          afterCloseId = KettleExtensionPoint.JobAfterClose.id;
+        }
+
+        if ( beforeCloseId != null ) {
+          try {
+            ExtensionPointHandler.callExtensionPoint( log, beforeCloseId, managedObject );
+          } catch ( KettleException e ) {
+            // prevent tab close
+            close = false;
+          }
+        }
+
         // Also clean up the log/history associated with this
         // transformation/job
         //
         if ( close ) {
-          if ( entry.getObject() instanceof TransGraph ) {
-            TransMeta transMeta = (TransMeta) entry.getObject().getManagedObject();
+          if ( itemInterface instanceof TransGraph ) {
+            TransMeta transMeta = (TransMeta) managedObject;
             spoon.delegates.trans.closeTransformation( transMeta );
             spoon.refreshTree();
             // spoon.refreshCoreObjects();
-          } else if ( entry.getObject() instanceof JobGraph ) {
-            JobMeta jobMeta = (JobMeta) entry.getObject().getManagedObject();
+          } else if ( itemInterface instanceof JobGraph ) {
+            JobMeta jobMeta = (JobMeta) managedObject;
             spoon.delegates.jobs.closeJob( jobMeta );
             spoon.refreshTree();
             // spoon.refreshCoreObjects();
-          } else if ( entry.getObject() instanceof SpoonBrowser ) {
+          } else if ( itemInterface instanceof SpoonBrowser ) {
             this.removeTab( entry );
             spoon.refreshTree();
-          } else if ( entry.getObject() instanceof Composite ) {
-            Composite comp = (Composite) entry.getObject();
+          } else if ( itemInterface instanceof Composite ) {
+            Composite comp = (Composite) itemInterface;
             if ( comp != null && !comp.isDisposed() ) {
               comp.dispose();
+            }
+          }
+
+          if ( afterCloseId != null ) {
+            try {
+              ExtensionPointHandler.callExtensionPoint( log, afterCloseId, managedObject );
+            } catch ( KettleException e ) {
+              // fails gracefully... what else could we do?
             }
           }
         }
