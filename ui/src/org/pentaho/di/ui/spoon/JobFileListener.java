@@ -151,7 +151,23 @@ public class JobFileListener implements FileListener {
       lmeta = meta;
     }
 
-    return spoon.saveMeta( lmeta, fname );
+    try {
+      ExtensionPointHandler.callExtensionPoint( spoon.getLog(), KettleExtensionPoint.JobBeforeSave.id, lmeta );
+    } catch ( KettleException e ) {
+      // fails gracefully
+    }
+
+    boolean saveStatus = spoon.saveMeta( lmeta, fname );
+
+    if ( saveStatus ) {
+      try {
+        ExtensionPointHandler.callExtensionPoint( spoon.getLog(), KettleExtensionPoint.JobAfterSave.id, lmeta );
+      } catch ( KettleException e ) {
+        // fails gracefully
+      }
+    }
+
+    return saveStatus;
   }
 
   public void syncMetaName( EngineMetaInterface meta, String name ) {

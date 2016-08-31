@@ -184,7 +184,7 @@ public class TransFileListener implements FileListener {
     }
 
     try {
-      ExtensionPointHandler.callExtensionPoint( spoon.getLog(), KettleExtensionPoint.TransBeforeClose.id, lmeta );
+      ExtensionPointHandler.callExtensionPoint( spoon.getLog(), KettleExtensionPoint.TransBeforeSave.id, lmeta );
     } catch ( KettleException e ) {
       // fails gracefully
     }
@@ -193,7 +193,7 @@ public class TransFileListener implements FileListener {
 
     if ( saveStatus ) {
       try {
-        ExtensionPointHandler.callExtensionPoint( spoon.getLog(), KettleExtensionPoint.TransAfterClose.id, lmeta );
+        ExtensionPointHandler.callExtensionPoint( spoon.getLog(), KettleExtensionPoint.TransAfterSave.id, lmeta );
       } catch ( KettleException e ) {
         // fails gracefully
       }
