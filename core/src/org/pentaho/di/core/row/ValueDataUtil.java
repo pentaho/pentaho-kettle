@@ -547,7 +547,9 @@ public class ValueDataUtil {
       return null;
     }
     if ( dataA == null && dataB != null ) {
-      return metaA.convertData( metaB, dataB );
+      Object value = metaA.convertData( metaB, dataB );
+      metaA.setStorageType( ValueMetaInterface.STORAGE_TYPE_NORMAL );
+      return value;
     }
     if ( dataA != null && dataB == null ) {
       return dataA;

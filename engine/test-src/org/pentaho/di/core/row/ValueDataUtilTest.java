@@ -27,6 +27,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.mockito.Mockito.*;
 
 import java.math.BigDecimal;
 import java.text.ParseException;
@@ -36,6 +37,8 @@ import java.util.Arrays;
 import org.apache.commons.lang.StringUtils;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
@@ -722,6 +725,41 @@ public class ValueDataUtilTest {
 
     assertEquals( new BigDecimal( "-15.184" ),
       calculate( "-144.144", "16.12", ValueMetaInterface.TYPE_BIGNUMBER, CalculatorMetaFunction.CALC_REMAINDER ) );
+  }
+
+  @Test
+  public void testSumWithNullValues() throws Exception {
+    ValueMetaInterface metaA = new ValueMetaInteger();
+    metaA.setStorageType( ValueMetaInterface.STORAGE_TYPE_NORMAL );
+    ValueMetaInterface metaB = new ValueMetaInteger();
+    metaA.setStorageType( ValueMetaInterface.STORAGE_TYPE_NORMAL );
+
+    assertNull( ValueDataUtil.sum( metaA, null, metaB, null ) );
+
+    Long valueB = new Long( 2 );
+    ValueDataUtil.sum( metaA, null, metaB, valueB );
+  }
+
+  @Test
+  public void testSumConvertingStorageTypeToNormal() throws Exception {
+    ValueMetaInterface metaA = mock( ValueMetaInteger.class );
+    metaA.setStorageType( ValueMetaInterface.STORAGE_TYPE_BINARY_STRING );
+
+    ValueMetaInterface metaB = new ValueMetaInteger();
+    metaB.setStorageType( ValueMetaInterface.STORAGE_TYPE_BINARY_STRING );
+    Object valueB = "2";
+
+    when( metaA.convertData( metaB, valueB ) ).thenAnswer( new Answer<Long>() {
+      @Override
+      public Long answer( InvocationOnMock invocation ) throws Throwable {
+        return new Long( 2 );
+      }
+    } );
+
+    Object returnValue = ValueDataUtil.sum( metaA, null, metaB, valueB );
+    verify( metaA ).convertData( metaB, valueB );
+    assertEquals( 2L, returnValue );
+    assertEquals( metaA.getStorageType(), ValueMetaInterface.STORAGE_TYPE_NORMAL );
   }
 
   private Object calculate( String string_dataA, int valueMetaInterfaceType, int calculatorMetaFunction ) {
