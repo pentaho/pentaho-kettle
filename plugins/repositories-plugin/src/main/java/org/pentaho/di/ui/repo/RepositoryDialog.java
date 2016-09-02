@@ -22,6 +22,8 @@
 
 package org.pentaho.di.ui.repo;
 
+import java.util.HashMap;
+
 import org.codehaus.jackson.map.ObjectMapper;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.BrowserFunction;
@@ -39,8 +41,6 @@ import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.util.HelpUtils;
 import org.pentaho.platform.settings.ServerPort;
 import org.pentaho.platform.settings.ServerPortRegistry;
-
-import java.util.HashMap;
 
 /**
  * Created by bmorrise on 2/21/16.
@@ -68,6 +68,7 @@ public class RepositoryDialog extends ThinDialog {
 
   private RepositoryConnectController controller;
   private Shell shell;
+  private boolean result = false;
 
   public RepositoryDialog( Shell shell, RepositoryConnectController controller ) {
     super( shell, WIDTH, HEIGHT );
@@ -75,11 +76,15 @@ public class RepositoryDialog extends ThinDialog {
     this.shell = shell;
   }
 
-  private void open() {
-    open( null );
+  private boolean open() {
+    return open( null );
   }
 
-  private void open( RepositoryMeta repositoryMeta ) {
+  private boolean open( RepositoryMeta repositoryMeta ) {
+    return open( repositoryMeta, false, null );
+  }
+
+  private boolean open( RepositoryMeta repositoryMeta, boolean relogin, String errorMessage ) {
 
     new BrowserFunction( browser, "close" ) {
       @Override public Object function( Object[] arguments ) {
@@ -87,6 +92,19 @@ public class RepositoryDialog extends ThinDialog {
         dialog.close();
         dialog.dispose();
         return true;
+      }
+    };
+    
+    new BrowserFunction( browser, "setResult" ) {
+      @Override public Object function( Object[] arguments ) {   
+        setResult( (boolean) arguments[0] );
+        return true;
+      }
+    };
+    
+    new BrowserFunction( browser, "getErrorMessage" ) {
+      @Override public Object function( Object[] objects ) {
+        return errorMessage == null ? "" : errorMessage;
       }
     };
 
@@ -152,9 +170,13 @@ public class RepositoryDialog extends ThinDialog {
 
     new BrowserFunction( browser, "loginToRepository" ) {
       @Override public Object function( Object[] objects ) {
-        String username = (String) objects[ 0 ];
-        String password = (String) objects[ 1 ];
-        return controller.connectToRepository( username, password );
+        String username = (String) objects[0];
+        String password = (String) objects[1];
+        if ( relogin ) {
+          return controller.reconnectToRepository( username, password );
+        } else {
+          return controller.connectToRepository( username, password );
+        }
       }
     };
 
@@ -232,6 +254,7 @@ public class RepositoryDialog extends ThinDialog {
         display.sleep();
       }
     }
+    return result;
   }
 
   public void openManager() {
@@ -243,10 +266,19 @@ public class RepositoryDialog extends ThinDialog {
     super.createDialog( CREATION_TITLE, getRepoURL( CREATION_WEB_CLIENT_PATH ), OPTIONS, LOGO );
     open();
   }
+  
+  public boolean openRelogin( RepositoryMeta repositoryMeta, String errorMessage ) {
+    super.createDialog( LOGIN_TITLE, getRepoURL( LOGIN_WEB_CLIENT_PATH ), OPTIONS, LOGO );
+    return open( repositoryMeta, true, errorMessage );
+  }
 
   public void openLogin( RepositoryMeta repositoryMeta ) {
     super.createDialog( LOGIN_TITLE, getRepoURL( LOGIN_WEB_CLIENT_PATH ), OPTIONS, LOGO );
     open( repositoryMeta );
+  }
+  
+  private void setResult( boolean result ) {
+    this.result = result;
   }
 
   private static Integer getOsgiServicePort() {

@@ -22,6 +22,7 @@
 
 package org.pentaho.di.ui.repo;
 
+import org.apache.commons.lang.ClassUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -34,12 +35,14 @@ import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.RepositoryPluginType;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.AbstractRepository;
+import org.pentaho.di.repository.ReconnectableRepository;
 import org.pentaho.di.repository.RepositoriesMeta;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.spoon.Spoon;
 
+import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -185,7 +188,10 @@ public class RepositoryConnectController {
     JSONObject jsonObject = new JSONObject();
     try {
       Repository repository =
-        pluginRegistry.loadClass( RepositoryPluginType.class, repositoryMeta.getId(), Repository.class );
+          pluginRegistry.loadClass( RepositoryPluginType.class, repositoryMeta.getId(), Repository.class );
+      if ( repository instanceof ReconnectableRepository ) {
+        repository = wrapWithRepositoryTimeoutHandler( (ReconnectableRepository) repository );
+      }
       repository.init( repositoryMeta );
       repository.connect( username, password );
       if ( username != null ) {
@@ -200,6 +206,37 @@ public class RepositoryConnectController {
       spoon.setRepository( repository );
       setConnectedRepository( repositoryMeta );
       fireListeners();
+      jsonObject.put( "success", true );
+    } catch ( KettleException ke ) {
+      if ( ke.getMessage().contains( ERROR_401 ) ) {
+        jsonObject.put( ERROR_MESSAGE, BaseMessages.getString( PKG, "RepositoryConnection.Error.InvalidCredentials" ) );
+      } else {
+        jsonObject.put( ERROR_MESSAGE, BaseMessages.getString( PKG, "RepositoryConnection.Error.InvalidServer" ) );
+      }
+      jsonObject.put( "success", false );
+      log.logError( "Unable to connect to repository", ke );
+    }
+    return jsonObject.toString();
+  }
+
+  public String reconnectToRepository( String username, String password ) {
+    Repository currentRepositoryInstance = getConnectedRepositoryInstance();
+    return reconnectToRepository( currentRepository, (ReconnectableRepository) currentRepositoryInstance, username,
+        password );
+  }
+
+  public String reconnectToRepository( RepositoryMeta repositoryMeta, ReconnectableRepository repository,
+      String username, String password ) {
+    JSONObject jsonObject = new JSONObject();
+    try {
+      if ( username != null ) {
+        getPropsUI().setLastRepositoryLogin( username );
+      }
+      if (repository.isConnected()) {
+        repository.disconnect();
+      }
+      repository.init( repositoryMeta );
+      repository.connect( username, password );
       jsonObject.put( "success", true );
     } catch ( KettleException ke ) {
       if ( ke.getMessage().contains( ERROR_401 ) ) {
@@ -312,6 +349,10 @@ public class RepositoryConnectController {
     return getSpoon().rep != null;
   }
 
+  public Repository getConnectedRepositoryInstance() {
+    return getSpoon().rep;
+  }
+
   public void save() {
     try {
       repositoriesMeta.writeData();
@@ -325,6 +366,14 @@ public class RepositoryConnectController {
       spoon = Spoon.getInstance();
     }
     return spoon;
+  }
+  
+  @SuppressWarnings( "unchecked" )
+  private Repository wrapWithRepositoryTimeoutHandler( ReconnectableRepository repository ) {
+    List<Class<?>> repositoryIntrerfaces = ClassUtils.getAllInterfaces( repository.getClass() );
+    Class<?>[] repositoryIntrerfacesArray = repositoryIntrerfaces.toArray( new Class<?>[repositoryIntrerfaces.size()] );
+    return (Repository) Proxy.newProxyInstance( repository.getClass().getClassLoader(), repositoryIntrerfacesArray,
+        new RepositorySessionTimeoutHandler( repository, this ) );
   }
 
   public PropsUI getPropsUI() {

@@ -65,6 +65,7 @@ import org.pentaho.di.repository.IRepositoryService;
 import org.pentaho.di.repository.IUser;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.ObjectRevision;
+import org.pentaho.di.repository.ReconnectableRepository;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
@@ -115,7 +116,7 @@ import org.pentaho.platform.repository2.unified.webservices.jaxws.IUnifiedReposi
 @RepositoryPlugin( id = "PentahoEnterpriseRepository", name = "RepositoryType.Name.EnterpriseRepository",
     description = "RepositoryType.Description.EnterpriseRepository",
     metaClass = "org.pentaho.di.repository.pur.PurRepositoryMeta", i18nPackageName = "org.pentaho.di.repository.pur" )
-public class PurRepository extends AbstractRepository implements Repository, RepositoryExtended, java.io.Serializable {
+public class PurRepository extends AbstractRepository implements Repository, ReconnectableRepository, RepositoryExtended, java.io.Serializable {
 
   private static final long serialVersionUID = 7460109109707189479L; /* EESOURCE: UPDATE SERIALVERUID */
 
@@ -248,6 +249,7 @@ public class PurRepository extends AbstractRepository implements Repository, Rep
   }
 
   @Override public void connect( final String username, final String password ) throws KettleException {
+    connected = false;
     if ( isTest() ) {
       connected = true;
       purRepositoryServiceRegistry
