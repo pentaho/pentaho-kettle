@@ -208,11 +208,11 @@ public abstract class BasePluginType implements PluginTypeInterface {
       String translation;
       if ( !Const.isEmpty( packageName ) ) {
         LogLevel oldLogLevel = DefaultLogLevel.getLogLevel();
-        
+
         // avoid i18n messages for missing locale
         //
         DefaultLogLevel.setLogLevel( LogLevel.BASIC );
-        
+
         translation = BaseMessages.getString( packageName, string, resourceClass );
         if ( translation.startsWith( "!" ) && translation.endsWith( "!" ) ) {
           translation = BaseMessages.getString( PKG, string, resourceClass );
