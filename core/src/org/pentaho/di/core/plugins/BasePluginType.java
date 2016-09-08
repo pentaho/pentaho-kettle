@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -203,16 +203,16 @@ public abstract class BasePluginType implements PluginTypeInterface {
         return BaseMessages.getString( parts[1], parts[2] );
       }
     } else {
-      LogLevel oldLogLevel = DefaultLogLevel.getLogLevel();
-
-      // avoid i18n messages for missing locale
-      //
-      DefaultLogLevel.setLogLevel( LogLevel.BASIC );
-
       // Try the default package name
       //
       String translation;
       if ( !Const.isEmpty( packageName ) ) {
+        LogLevel oldLogLevel = DefaultLogLevel.getLogLevel();
+
+        // avoid i18n messages for missing locale
+        //
+        DefaultLogLevel.setLogLevel( LogLevel.BASIC );
+
         translation = BaseMessages.getString( packageName, string, resourceClass );
         if ( translation.startsWith( "!" ) && translation.endsWith( "!" ) ) {
           translation = BaseMessages.getString( PKG, string, resourceClass );
