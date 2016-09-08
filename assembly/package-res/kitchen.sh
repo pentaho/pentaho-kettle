@@ -1,5 +1,6 @@
 #!/bin/sh
 
+INITIALDIR="`pwd`"
 BASEDIR="`dirname $0`"
 cd "$BASEDIR"
 DIR="`pwd`"
@@ -14,4 +15,4 @@ fi
 
 export IS_KITCHEN="true"
 
-"$DIR/spoon.sh" -main org.pentaho.di.kitchen.Kitchen "$@"
+"$DIR/spoon.sh" -main org.pentaho.di.kitchen.Kitchen -initialDir "$INITIALDIR/" "$@"
