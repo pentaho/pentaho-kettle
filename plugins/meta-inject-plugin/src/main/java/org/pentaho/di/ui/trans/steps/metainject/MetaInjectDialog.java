@@ -331,7 +331,9 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
   private void checkInvalidMapping() {
     if ( injectTransMeta == null ) {
       try {
-        loadTransformation();
+        if ( !loadTransformation() ) {
+          return;
+        }
       } catch ( KettleException e ) {
         showErrorOnLoadTransformationDialog( e );
         return;
@@ -1083,12 +1085,19 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
     }
   }
 
-  private void loadTransformation() throws KettleException {
+  private boolean loadTransformation() throws KettleException {
     switch ( specificationMethod ) {
       case FILENAME:
+        if ( Const.isEmpty( wFilename.getText() ) ) {
+          return false;
+        }
         loadFileTrans( wFilename.getText() );
         break;
       case REPOSITORY_BY_NAME:
+        if ( Const.isEmpty( wDirectory.getText() ) && Const.isEmpty( wTransname.getText() ) ) {
+          return false;
+        }
+
         String realDirectory = transMeta.environmentSubstitute( wDirectory.getText() );
         String realTransname = transMeta.environmentSubstitute( wTransname.getText() );
 
@@ -1104,12 +1113,16 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
         loadRepositoryTrans( realTransname, repdir );
         break;
       case REPOSITORY_BY_REFERENCE:
+        if ( referenceObjectId == null ) {
+          return false;
+        }
         injectTransMeta = repository.loadTransformation( referenceObjectId, null ); // load the last version
         injectTransMeta.clearChanged();
         break;
       default:
         break;
     }
+    return true;
   }
 
   public void setActive() {
@@ -1170,17 +1183,19 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
       case REPOSITORY_BY_REFERENCE:
         referenceObjectId = metaInjectMeta.getTransObjectId();
         wByReference.setText( "" );
-        try {
-          RepositoryObject transInf =
-            repository.getObjectInformation(
-              metaInjectMeta.getTransObjectId(), RepositoryObjectType.TRANSFORMATION );
-          if ( transInf != null ) {
-            getByReferenceData( transInf );
+        if ( referenceObjectId != null ) {
+          try {
+            RepositoryObject transInf =
+                repository.getObjectInformation( metaInjectMeta.getTransObjectId(),
+                    RepositoryObjectType.TRANSFORMATION );
+            if ( transInf != null ) {
+              getByReferenceData( transInf );
+            }
+          } catch ( KettleException e ) {
+            new ErrorDialog( shell,
+                BaseMessages.getString( PKG, "MetaInjectDialog.Exception.UnableToReferenceObjectId.Title" ),
+                BaseMessages.getString( PKG, "MetaInjectDialog.Exception.UnableToReferenceObjectId.Message" ), e );
           }
-        } catch ( KettleException e ) {
-          new ErrorDialog( shell,
-            BaseMessages.getString( PKG, "MetaInjectDialog.Exception.UnableToReferenceObjectId.Title" ),
-            BaseMessages.getString( PKG, "MetaInjectDialog.Exception.UnableToReferenceObjectId.Message" ), e );
         }
         break;
       default:
