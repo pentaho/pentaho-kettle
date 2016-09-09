@@ -2561,6 +2561,40 @@ public class Const {
   }
 
   /**
+   * Check if the string supplied is empty. A String is empty when it is null or when the length is 0
+   *
+   * @param string
+   *          The string to check
+   * @return true if the string supplied is empty
+   */
+  public static boolean isEmpty( String string ) {
+    return string == null || string.length() == 0;
+  }
+
+  /**
+   * Check if the stringBuffer supplied is empty. A StringBuffer is empty when it is null or when the length is 0
+   *
+   * @param string
+   *          The stringBuffer to check
+   * @return true if the stringBuffer supplied is empty
+   */
+  public static boolean isEmpty( StringBuffer string ) {
+    return string == null || string.length() == 0;
+  }
+
+  /**
+   * Check if the string array supplied is empty. A String array is empty when it is null or when the number of elements
+   * is 0
+   *
+   * @param strings
+   *          The string array to check
+   * @return true if the string array supplied is empty
+   */
+  public static boolean isEmpty( String[] strings ) {
+    return strings == null || strings.length == 0;
+  }
+
+  /**
    * Check if the CharSequence (String, StringBuffer, StringBuilder) supplied is empty. 
    * A CharSequence is empty when it is null or when the length is 0
    *
