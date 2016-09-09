@@ -320,7 +320,7 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
     fdlFields.top = new FormAttachment( wUniqueRows, margin );
     wlFields.setLayoutData( fdlFields );
 
-    final int FieldsRows = input.getFieldName().length;
+    final int FieldsRows = input.getSortFields().length;
 
     colinf =
       new ColumnInfo[] {
@@ -495,22 +495,25 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
     wUniqueRows.setSelection( input.isOnlyPassingUniqueRows() );
 
     Table table = wFields.table;
-    if ( input.getFieldName().length > 0 ) {
+
+    int fieldsNum = input.getSortFields().length;
+
+    if ( fieldsNum > 0 ) {
       table.removeAll();
     }
-    for ( int i = 0; i < input.getFieldName().length; i++ ) {
+    for ( int i = 0; i < fieldsNum; i++ ) {
       TableItem ti = new TableItem( table, SWT.NONE );
       ti.setText( 0, "" + ( i + 1 ) );
-      ti.setText( 1, input.getFieldName()[i] );
-      ti.setText( 2, input.getAscending()[i] ? BaseMessages.getString( PKG, "System.Combo.Yes" ) : BaseMessages
+      ti.setText( 1, input.getSortFields()[i].getFieldName() );
+      ti.setText( 2, input.getSortFields()[i].getAscending() ? BaseMessages.getString( PKG, "System.Combo.Yes" ) : BaseMessages
         .getString( PKG, "System.Combo.No" ) );
-      ti.setText( 3, input.getCaseSensitive()[i]
+      ti.setText( 3, input.getSortFields()[i].getCaseSensitive()
         ? BaseMessages.getString( PKG, "System.Combo.Yes" ) : BaseMessages.getString( PKG, "System.Combo.No" ) );
-      ti.setText( 4, input.getCollatorEnabled()[i]
+      ti.setText( 4, input.getSortFields()[i].getCollatorEnabled()
         ? BaseMessages.getString( PKG, "System.Combo.Yes" ) : BaseMessages.getString( PKG, "System.Combo.No" ) );
-      ti.setText( 5, input.getCollatorStrength()[i] == 0
-        ? BaseMessages.getString( PKG, "System.Combo.Primary" ) : Integer.toString( input.getCollatorStrength()[i] ) );
-      ti.setText( 6, input.getPreSortedField()[i]
+      ti.setText( 5, input.getSortFields()[i].getCollatorStrength() == 0
+        ? BaseMessages.getString( PKG, "System.Combo.Primary" ) : Integer.toString( input.getSortFields()[i].getCollatorStrength() ) );
+      ti.setText( 6, input.getSortFields()[i].getPreSortedField()
         ? BaseMessages.getString( PKG, "System.Combo.Yes" ) : BaseMessages.getString( PKG, "System.Combo.No" ) );
     }
 
@@ -553,16 +556,16 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
     //CHECKSTYLE:LineLength:OFF
     for ( int i = 0; i < nrfields; i++ ) {
       TableItem ti = wFields.getNonEmpty( i );
-      input.getFieldName()[i] = ti.getText( 1 );
-      input.getAscending()[i] = Const.isEmpty( ti.getText( 2 ) ) || BaseMessages.getString( PKG, "System.Combo.Yes" ).equalsIgnoreCase( ti.getText( 2 ) );
-      input.getCaseSensitive()[i] = BaseMessages.getString( PKG, "System.Combo.Yes" ).equalsIgnoreCase( ti.getText( 3 ) );
-      input.getCollatorEnabled()[i] = BaseMessages.getString( PKG, "System.Combo.Yes" ).equalsIgnoreCase( ti.getText( 4 ) );
+      input.getSortFields()[i].setFieldName(ti.getText( 1 ));
+      input.getSortFields()[i].setAscending(Const.isEmpty( ti.getText( 2 ) ) || BaseMessages.getString( PKG, "System.Combo.Yes" ).equalsIgnoreCase( ti.getText( 2 ) ));
+      input.getSortFields()[i].setCaseSensitive(BaseMessages.getString( PKG, "System.Combo.Yes" ).equalsIgnoreCase( ti.getText( 3 ) ));
+      input.getSortFields()[i].setCollatorEnabled(BaseMessages.getString( PKG, "System.Combo.Yes" ).equalsIgnoreCase( ti.getText( 4 ) ));
       if ( ti.getText( 5 ) == "" ) {
-        input.getCollatorStrength()[i] = Integer.parseInt( BaseMessages.getString( PKG, "System.Combo.Primary" ) );
+        input.getSortFields()[i].setCollatorStrength(Integer.parseInt( BaseMessages.getString( PKG, "System.Combo.Primary" ) ));
       } else {
-        input.getCollatorStrength()[i] = Integer.parseInt( ti.getText( 5 ) );
+        input.getSortFields()[i].setCollatorStrength(Integer.parseInt( ti.getText( 5 ) ));
       }
-      input.getPreSortedField()[i] = BaseMessages.getString( PKG, "System.Combo.Yes" ).equalsIgnoreCase( ti.getText( 6 ) );
+      input.getSortFields()[i].setPreSortedField(BaseMessages.getString( PKG, "System.Combo.Yes" ).equalsIgnoreCase( ti.getText( 4 ) ));
     }
 
     dispose();

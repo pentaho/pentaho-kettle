@@ -73,37 +73,25 @@ public class SortRowsMetaInjectionTest extends BaseMetadataInjectionTest<SortRow
     check( "NAME", new StringGetter() {
       @Override
       public String get() {
-        return meta.getFieldName()[0];
+        return meta.getSortFields()[0].getFieldName();
       }
     } );
     check( "SORT_ASCENDING", new BooleanGetter() {
       @Override
       public boolean get() {
-        return meta.getAscending()[0];
+        return meta.getSortFields()[0].getAscending();
       }
     } );
     check( "IGNORE_CASE", new BooleanGetter() {
       @Override
       public boolean get() {
-        return meta.getCaseSensitive()[0];
+        return meta.getSortFields()[0].getCaseSensitive();
       }
     } );
     check( "PRESORTED", new BooleanGetter() {
       @Override
       public boolean get() {
-        return meta.getPreSortedField()[0];
-      }
-    } );
-    check( "COLLATOR_STRENGTH", new IntGetter() {
-      @Override
-      public int get() {
-        return meta.getCollatorStrength()[0];
-      }
-    } );
-    check( "COLLATOR_ENABLED", new BooleanGetter() {
-      @Override
-      public boolean get() {
-        return meta.getCollatorEnabled()[0];
+        return meta.getSortFields()[0].getPreSortedField();
       }
     } );
   }
