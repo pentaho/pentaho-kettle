@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,9 +22,8 @@
 
 package org.pentaho.di.job.entries.evaluatetablecontent;
 
-import static org.pentaho.di.job.entry.validator.AndValidator.putValidators;
-import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.andValidator;
-import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notBlankValidator;
+import org.pentaho.di.job.entry.validator.AndValidator;
+import org.pentaho.di.job.entry.validator.JobEntryValidatorUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -64,21 +63,16 @@ import org.w3c.dom.Node;
 public class JobEntryEvalTableContent extends JobEntryBase implements Cloneable, JobEntryInterface {
   private static Class<?> PKG = JobEntryEvalTableContent.class; // for i18n purposes, needed by Translator2!!
 
-  public boolean isAddRowsResult;
-
-  public boolean isClearResultList;
-
-  public boolean isUseVars;
-
-  public boolean iscustomSQL;
-
-  public String customSQL;
-
+  private boolean addRowsResult;
+  private boolean clearResultList;
+  private boolean useVars;
+  private boolean useCustomSQL;
+  private String customSQL;
   private DatabaseMeta connection;
-
-  public String tablename;
-
-  public String schemaname;
+  private String tablename;
+  private String schemaname;
+  private String limit;
+  private int successCondition;
 
   private static final String selectCount = "SELECT count(*) FROM ";
 
@@ -102,17 +96,14 @@ public class JobEntryEvalTableContent extends JobEntryBase implements Cloneable,
   public static final int SUCCESS_CONDITION_ROWS_COUNT_GREATER = 4;
   public static final int SUCCESS_CONDITION_ROWS_COUNT_GREATER_EQUAL = 5;
 
-  public String limit;
-  public int successCondition;
-
   public JobEntryEvalTableContent( String n ) {
     super( n, "" );
     limit = "0";
     successCondition = SUCCESS_CONDITION_ROWS_COUNT_GREATER;
-    iscustomSQL = false;
-    isUseVars = false;
-    isAddRowsResult = false;
-    isClearResultList = true;
+    useCustomSQL = false;
+    useVars = false;
+    addRowsResult = false;
+    clearResultList = true;
     customSQL = null;
     schemaname = null;
     tablename = null;
@@ -128,7 +119,19 @@ public class JobEntryEvalTableContent extends JobEntryBase implements Cloneable,
     return je;
   }
 
+  /**
+   * @deprecated due to typo. Use {@link #getSuccessCondition()} instead.
+   * @return the successCondition
+   */
+  @Deprecated
   public int getSuccessCobdition() {
+    return successCondition;
+  }
+
+  /**
+   * @return the successCondition
+   */
+  public int getSuccessCondition() {
     return successCondition;
   }
 
@@ -148,7 +151,7 @@ public class JobEntryEvalTableContent extends JobEntryBase implements Cloneable,
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 200 );
+    StringBuilder retval = new StringBuilder( 200 );
 
     retval.append( super.getXML() );
     retval.append( "      " ).append(
@@ -158,11 +161,11 @@ public class JobEntryEvalTableContent extends JobEntryBase implements Cloneable,
     retval.append( "      " ).append(
       XMLHandler.addTagValue( "success_condition", getSuccessConditionCode( successCondition ) ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "limit", limit ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "is_custom_sql", iscustomSQL ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "is_usevars", isUseVars ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "is_custom_sql", useCustomSQL ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "is_usevars", useVars ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "custom_sql", customSQL ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "add_rows_result", isAddRowsResult ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "clear_result_rows", isClearResultList ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "add_rows_result", addRowsResult ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "clear_result_rows", clearResultList ) );
 
     return retval.toString();
   }
@@ -205,11 +208,11 @@ public class JobEntryEvalTableContent extends JobEntryBase implements Cloneable,
       successCondition =
         getSucessConditionByCode( Const.NVL( XMLHandler.getTagValue( entrynode, "success_condition" ), "" ) );
       limit = Const.NVL( XMLHandler.getTagValue( entrynode, "limit" ), "0" );
-      iscustomSQL = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "is_custom_sql" ) );
-      isUseVars = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "is_usevars" ) );
+      useCustomSQL = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "is_custom_sql" ) );
+      useVars = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "is_usevars" ) );
       customSQL = XMLHandler.getTagValue( entrynode, "custom_sql" );
-      isAddRowsResult = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "add_rows_result" ) );
-      isClearResultList = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "clear_result_rows" ) );
+      addRowsResult = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "add_rows_result" ) );
+      clearResultList = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "clear_result_rows" ) );
 
     } catch ( KettleException e ) {
       throw new KettleXMLException( BaseMessages.getString( PKG, "JobEntryEvalTableContent.UnableLoadXML" ), e );
@@ -227,10 +230,10 @@ public class JobEntryEvalTableContent extends JobEntryBase implements Cloneable,
         getSuccessConditionByCode( Const.NVL(
           rep.getJobEntryAttributeString( id_jobentry, "success_condition" ), "" ) );
       limit = rep.getJobEntryAttributeString( id_jobentry, "limit" );
-      iscustomSQL = rep.getJobEntryAttributeBoolean( id_jobentry, "is_custom_sql" );
-      isUseVars = rep.getJobEntryAttributeBoolean( id_jobentry, "is_usevars" );
-      isAddRowsResult = rep.getJobEntryAttributeBoolean( id_jobentry, "add_rows_result" );
-      isClearResultList = rep.getJobEntryAttributeBoolean( id_jobentry, "clear_result_rows" );
+      useCustomSQL = rep.getJobEntryAttributeBoolean( id_jobentry, "is_custom_sql" );
+      useVars = rep.getJobEntryAttributeBoolean( id_jobentry, "is_usevars" );
+      addRowsResult = rep.getJobEntryAttributeBoolean( id_jobentry, "add_rows_result" );
+      clearResultList = rep.getJobEntryAttributeBoolean( id_jobentry, "clear_result_rows" );
 
       customSQL = rep.getJobEntryAttributeString( id_jobentry, "custom_sql" );
     } catch ( KettleDatabaseException dbe ) {
@@ -262,10 +265,10 @@ public class JobEntryEvalTableContent extends JobEntryBase implements Cloneable,
         id_job, getObjectId(), "success_condition", getSuccessConditionCode( successCondition ) );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "limit", limit );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "custom_sql", customSQL );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "is_custom_sql", iscustomSQL );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "is_usevars", isUseVars );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "add_rows_result", isAddRowsResult );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "clear_result_rows", isClearResultList );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), "is_custom_sql", useCustomSQL );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), "is_usevars", useVars );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), "add_rows_result", addRowsResult );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), "clear_result_rows", clearResultList );
     } catch ( KettleDatabaseException dbe ) {
       throw new KettleException( BaseMessages.getString( PKG, "JobEntryEvalTableContent.UnableSaveRep", ""
         + id_job ), dbe );
@@ -313,9 +316,9 @@ public class JobEntryEvalTableContent extends JobEntryBase implements Cloneable,
       try {
         db.connect( parentJob.getTransactionId(), null );
 
-        if ( iscustomSQL ) {
+        if ( useCustomSQL ) {
           String realCustomSQL = customSQL;
-          if ( isUseVars ) {
+          if ( useVars ) {
             realCustomSQL = environmentSubstitute( realCustomSQL );
           }
           if ( log.isDebug() ) {
@@ -353,8 +356,8 @@ public class JobEntryEvalTableContent extends JobEntryBase implements Cloneable,
               PKG, "JobEntryEvalTableContent.Log.RunSQLStatement", countSQLStatement ) );
           }
 
-          if ( iscustomSQL ) {
-            if ( isClearResultList ) {
+          if ( useCustomSQL ) {
+            if ( clearResultList ) {
               result.getRows().clear();
             }
 
@@ -369,7 +372,7 @@ public class JobEntryEvalTableContent extends JobEntryBase implements Cloneable,
               for ( int i = 0; i < ar.size(); i++ ) {
                 rows.add( new RowMetaAndData( rowMeta, ar.get( i ) ) );
               }
-              if ( isAddRowsResult && iscustomSQL ) {
+              if ( addRowsResult && useCustomSQL ) {
                 if ( rows != null ) {
                   result.getRows().addAll( rows );
                 }
@@ -456,7 +459,84 @@ public class JobEntryEvalTableContent extends JobEntryBase implements Cloneable,
   @Override
   public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
-    andValidator().validate( this, "WaitForSQL", remarks, putValidators( notBlankValidator() ) );
+    JobEntryValidatorUtils.andValidator().validate( this, "WaitForSQL", remarks,
+        AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
+  }
+
+  public boolean isAddRowsResult() {
+    return addRowsResult;
+  }
+
+  public void setAddRowsResult( boolean addRowsResult ) {
+    this.addRowsResult = addRowsResult;
+  }
+
+  public boolean isClearResultList() {
+    return clearResultList;
+  }
+
+  public void setClearResultList( boolean clearResultList ) {
+    this.clearResultList = clearResultList;
+  }
+
+  public boolean isUseVars() {
+    return useVars;
+  }
+
+  public void setUseVars( boolean useVars ) {
+    this.useVars = useVars;
+  }
+
+  public boolean isUseCustomSQL() {
+    return useCustomSQL;
+  }
+
+  public void setUseCustomSQL( boolean useCustomSQL ) {
+    this.useCustomSQL = useCustomSQL;
+  }
+
+  public String getCustomSQL() {
+    return customSQL;
+  }
+
+  public void setCustomSQL( String customSQL ) {
+    this.customSQL = customSQL;
+  }
+
+  public DatabaseMeta getConnection() {
+    return connection;
+  }
+
+  public void setConnection( DatabaseMeta connection ) {
+    this.connection = connection;
+  }
+
+  public String getTablename() {
+    return tablename;
+  }
+
+  public void setTablename( String tablename ) {
+    this.tablename = tablename;
+  }
+
+  public String getSchemaname() {
+    return schemaname;
+  }
+
+  public void setSchemaname( String schemaname ) {
+    this.schemaname = schemaname;
+  }
+
+  public String getLimit() {
+    return limit;
+  }
+
+  public void setLimit( String limit ) {
+    this.limit = limit;
+  }
+
+  public void setSuccessCondition( int successCondition ) {
+    this.successCondition = successCondition;
   }
 
 }

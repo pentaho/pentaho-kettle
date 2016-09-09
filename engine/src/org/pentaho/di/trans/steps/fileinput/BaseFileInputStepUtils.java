@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -29,13 +29,13 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.fileinput.FileInputList;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.trans.step.errorhandling.FileErrorHandler;
 
 /**
  * Utils for file-based input steps.
- * 
+ *
  * @author Alexander Buloichik
  */
 public class BaseFileInputStepUtils {
@@ -82,7 +82,7 @@ public class BaseFileInputStepUtils {
    * @return Index in row meta of value meta with <code>fieldName</code>
    */
   public static int addValueMeta( String stepName, RowMetaInterface rowMeta, String fieldName ) {
-    ValueMetaInterface valueMeta = new ValueMeta( fieldName, ValueMetaInterface.TYPE_STRING );
+    ValueMetaInterface valueMeta = new ValueMetaString( fieldName );
     valueMeta.setOrigin( stepName );
     // add if doesn't exist
     int index = -1;

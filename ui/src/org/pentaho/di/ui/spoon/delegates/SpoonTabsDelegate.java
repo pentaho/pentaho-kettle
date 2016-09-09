@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -38,6 +38,8 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.EngineMetaInterface;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
+import org.pentaho.di.core.extension.ExtensionPointHandler;
+import org.pentaho.di.core.extension.KettleExtensionPoint;
 import org.pentaho.di.core.gui.SpoonInterface;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
@@ -45,6 +47,7 @@ import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.repository.ObjectRevision;
 import org.pentaho.di.repository.RepositoryOperation;
 import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.repository.RepositorySecurityUI;
 import org.pentaho.di.ui.spoon.Spoon;
@@ -73,6 +76,10 @@ public class SpoonTabsDelegate extends SpoonDelegate {
   }
 
   public boolean tabClose( TabItem item ) throws KettleException {
+    return tabClose( item, false );
+  }
+
+  public boolean tabClose( TabItem item, boolean force ) throws KettleException {
     // Try to find the tab-item that's being closed.
     List<TabMapEntry> collection = new ArrayList<TabMapEntry>();
     collection.addAll( tabMap );
@@ -85,24 +92,49 @@ public class SpoonTabsDelegate extends SpoonDelegate {
     boolean canSave = true;
     for ( TabMapEntry entry : collection ) {
       if ( item.equals( entry.getTabItem() ) ) {
-        TabItemInterface itemInterface = entry.getObject();
-        if ( itemInterface.getManagedObject() != null
-            && AbstractMeta.class.isAssignableFrom( itemInterface.getManagedObject().getClass() ) ) {
-          canSave = !( (AbstractMeta) itemInterface.getManagedObject() ).hasMissingPlugins();
-        }
-        if ( canSave ) {
-          // Can we close this tab? Only allow users with create content perms to save
-          if ( !itemInterface.canBeClosed() && createPerms ) {
-            int reply = itemInterface.showChangedWarning();
-            if ( reply == SWT.YES ) {
-              close = itemInterface.applyChanges();
-            } else {
-              if ( reply == SWT.CANCEL ) {
-                close = false;
+        final TabItemInterface itemInterface = entry.getObject();
+        final Object managedObject = itemInterface.getManagedObject();
+
+        if ( !force ) {
+          if ( managedObject != null
+            && AbstractMeta.class.isAssignableFrom( managedObject.getClass() ) ) {
+            canSave = !( (AbstractMeta) managedObject ).hasMissingPlugins();
+          }
+
+          if ( canSave ) {
+            // Can we close this tab? Only allow users with create content perms to save
+            if ( !itemInterface.canBeClosed() && createPerms ) {
+              int reply = itemInterface.showChangedWarning();
+              if ( reply == SWT.YES ) {
+                close = itemInterface.applyChanges();
               } else {
-                close = true;
+                if ( reply == SWT.CANCEL ) {
+                  close = false;
+                } else {
+                  close = true;
+                }
               }
             }
+          }
+        }
+
+        String beforeCloseId = null;
+        String afterCloseId = null;
+
+        if ( itemInterface instanceof TransGraph ) {
+          beforeCloseId = KettleExtensionPoint.TransBeforeClose.id;
+          afterCloseId = KettleExtensionPoint.TransAfterClose.id;
+        } else if ( itemInterface instanceof JobGraph ) {
+          beforeCloseId = KettleExtensionPoint.JobBeforeClose.id;
+          afterCloseId = KettleExtensionPoint.JobAfterClose.id;
+        }
+
+        if ( beforeCloseId != null ) {
+          try {
+            ExtensionPointHandler.callExtensionPoint( log, beforeCloseId, managedObject );
+          } catch ( KettleException e ) {
+            // prevent tab close
+            close = false;
           }
         }
 
@@ -110,23 +142,31 @@ public class SpoonTabsDelegate extends SpoonDelegate {
         // transformation/job
         //
         if ( close ) {
-          if ( entry.getObject() instanceof TransGraph ) {
-            TransMeta transMeta = (TransMeta) entry.getObject().getManagedObject();
+          if ( itemInterface instanceof TransGraph ) {
+            TransMeta transMeta = (TransMeta) managedObject;
             spoon.delegates.trans.closeTransformation( transMeta );
             spoon.refreshTree();
             // spoon.refreshCoreObjects();
-          } else if ( entry.getObject() instanceof JobGraph ) {
-            JobMeta jobMeta = (JobMeta) entry.getObject().getManagedObject();
+          } else if ( itemInterface instanceof JobGraph ) {
+            JobMeta jobMeta = (JobMeta) managedObject;
             spoon.delegates.jobs.closeJob( jobMeta );
             spoon.refreshTree();
             // spoon.refreshCoreObjects();
-          } else if ( entry.getObject() instanceof SpoonBrowser ) {
+          } else if ( itemInterface instanceof SpoonBrowser ) {
             this.removeTab( entry );
             spoon.refreshTree();
-          } else if ( entry.getObject() instanceof Composite ) {
-            Composite comp = (Composite) entry.getObject();
+          } else if ( itemInterface instanceof Composite ) {
+            Composite comp = (Composite) itemInterface;
             if ( comp != null && !comp.isDisposed() ) {
               comp.dispose();
+            }
+          }
+
+          if ( afterCloseId != null ) {
+            try {
+              ExtensionPointHandler.callExtensionPoint( log, afterCloseId, managedObject );
+            } catch ( KettleException e ) {
+              // fails gracefully... what else could we do?
             }
           }
         }
@@ -240,8 +280,8 @@ public class SpoonTabsDelegate extends SpoonDelegate {
             }
           }
         } );
-
-        TabItem tabItem = new TabItem( tabfolder, name, name );
+        PropsUI props = PropsUI.getInstance();
+        TabItem tabItem = new TabItem( tabfolder, name, name, props.getSashWeights() );
         tabItem.setImage( GUIResource.getInstance().getImageLogoSmall() );
         tabItem.setControl( browser.getComposite() );
 

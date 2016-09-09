@@ -1,20 +1,19 @@
 /*!
-* Copyright 2010 - 2015 Pentaho Corporation.  All rights reserved.
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-*/
-
+ * Copyright 2010 - 2015 Pentaho Corporation.  All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
 package org.pentaho.di.repository.pur;
 
 import org.junit.Test;
@@ -52,7 +51,7 @@ public class UserRoleHelperTest {
     when( manager.constructUser() ).thenThrow( new KettleException() );
 
     IUser user =
-      convertFromProxyPentahoUser( new ProxyPentahoUser(), Collections.<UserToRoleAssignment>emptyList(), manager );
+        convertFromProxyPentahoUser( new ProxyPentahoUser(), Collections.<UserToRoleAssignment> emptyList(), manager );
     assertNull( user );
   }
 
@@ -65,8 +64,7 @@ public class UserRoleHelperTest {
     pentahoUser.setDescription( "desc" );
     pentahoUser.setEnabled( true );
 
-    IUser user =
-      convertFromProxyPentahoUser( pentahoUser, Collections.<UserToRoleAssignment>emptyList(), manager );
+    IUser user = convertFromProxyPentahoUser( pentahoUser, Collections.<UserToRoleAssignment> emptyList(), manager );
     assertNotNull( user );
     assertEquals( pentahoUser.getName(), user.getName() );
     assertEquals( pentahoUser.getName(), user.getLogin() );
@@ -88,7 +86,6 @@ public class UserRoleHelperTest {
     assertEquals( 1, user.getRoles().size() );
     assertEquals( "role", user.getRoles().iterator().next().getName() );
   }
-
 
   @Test
   public void convertFromProxyPentahoUsers_ReturnsEmptyList_WhenUsersAreAbsent() throws Exception {
@@ -116,13 +113,11 @@ public class UserRoleHelperTest {
     assertEquals( "user2", users.get( 1 ).getName() );
   }
 
-
   private static ProxyPentahoUser pentahoUser( String name ) {
     ProxyPentahoUser pentahoUser = new ProxyPentahoUser();
     pentahoUser.setName( name );
     return pentahoUser;
   }
-
 
   private static IRoleSupportSecurityManager mockSecurityManager( final boolean eeUsers ) throws KettleException {
     IRoleSupportSecurityManager manager = mock( IRoleSupportSecurityManager.class );

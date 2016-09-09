@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -61,8 +61,8 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
@@ -290,6 +290,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
     inputFields = new HashMap<String, Integer>();
   }
 
+  @Override
   public String open() {
     Shell parent = getParent();
     Display display = parent.getDisplay();
@@ -299,6 +300,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
     setShellImage( shell, input );
 
     ModifyListener lsMod = new ModifyListener() {
+      @Override
       public void modifyText( ModifyEvent e ) {
         input.setChanged();
       }
@@ -397,6 +399,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
     fdCreateParentFolder.right = new FormAttachment( 100, 0 );
     wCreateParentFolder.setLayoutData( fdCreateParentFolder );
     wCreateParentFolder.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         input.setChanged();
       }
@@ -421,6 +424,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
     fdDoNotOpenNewFileInit.right = new FormAttachment( 100, 0 );
     wDoNotOpenNewFileInit.setLayoutData( fdDoNotOpenNewFileInit );
     wDoNotOpenNewFileInit.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         input.setChanged();
       }
@@ -462,6 +466,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
     fdAddStepnr.right = new FormAttachment( 100, 0 );
     wAddStepnr.setLayoutData( fdAddStepnr );
     wAddStepnr.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         input.setChanged();
       }
@@ -484,6 +489,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
     fdAddDate.right = new FormAttachment( 100, 0 );
     wAddDate.setLayoutData( fdAddDate );
     wAddDate.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         input.setChanged();
         // System.out.println("wAddDate.getSelection()="+wAddDate.getSelection());
@@ -506,6 +512,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
     fdAddTime.right = new FormAttachment( 100, 0 );
     wAddTime.setLayoutData( fdAddTime );
     wAddTime.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         input.setChanged();
       }
@@ -528,6 +535,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
     fdSpecifyFormat.right = new FormAttachment( 100, 0 );
     wSpecifyFormat.setLayoutData( fdSpecifyFormat );
     wSpecifyFormat.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         input.setChanged();
         setDateTimeFormat();
@@ -567,6 +575,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
     fdbShowFiles.top = new FormAttachment( wDateTimeFormat, margin * 3 );
     wbShowFiles.setLayoutData( fdbShowFiles );
     wbShowFiles.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         ExcelOutputMeta tfoi = new ExcelOutputMeta();
         getInfo( tfoi );
@@ -605,6 +614,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
     fdAddToResult.right = new FormAttachment( 100, 0 );
     wAddToResult.setLayoutData( fdAddToResult );
     SelectionAdapter lsSelR = new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent arg0 ) {
         input.setChanged();
       }
@@ -657,6 +667,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
     fdAppend.right = new FormAttachment( 100, 0 );
     wAppend.setLayoutData( fdAppend );
     wAppend.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent arg0 ) {
         input.setChanged();
       }
@@ -678,6 +689,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
     fdHeader.right = new FormAttachment( 100, 0 );
     wHeader.setLayoutData( fdHeader );
     wHeader.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         input.setChanged();
       }
@@ -699,6 +711,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
     fdFooter.right = new FormAttachment( 100, 0 );
     wFooter.setLayoutData( fdFooter );
     wFooter.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         input.setChanged();
       }
@@ -722,9 +735,11 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
     fdEncoding.right = new FormAttachment( 100, 0 );
     wEncoding.setLayoutData( fdEncoding );
     wEncoding.addFocusListener( new FocusListener() {
+      @Override
       public void focusLost( org.eclipse.swt.events.FocusEvent e ) {
       }
 
+      @Override
       public void focusGained( org.eclipse.swt.events.FocusEvent e ) {
         Cursor busy = new Cursor( shell.getDisplay(), SWT.CURSOR_WAIT );
         shell.setCursor( busy );
@@ -787,6 +802,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
     fdProtectSheet.right = new FormAttachment( 100, 0 );
     wProtectSheet.setLayoutData( fdProtectSheet );
     wProtectSheet.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
 
         EnablePassword();
@@ -830,6 +846,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
     fdAutoSize.right = new FormAttachment( 100, 0 );
     wAutoSize.setLayoutData( fdAutoSize );
     wAutoSize.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         EnableAutoSize();
       }
@@ -871,6 +888,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
     fduseTempFiles.right = new FormAttachment( 100, 0 );
     wuseTempFiles.setLayoutData( fduseTempFiles );
     wuseTempFiles.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         input.setChanged();
         useTempFile();
@@ -906,6 +924,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
     fdTempDirectory.right = new FormAttachment( wbTempDir, -margin );
     wTempDirectory.setLayoutData( fdTempDirectory );
     wTempDirectory.addModifyListener( new ModifyListener() {
+      @Override
       public void modifyText( ModifyEvent e ) {
         input.setChanged();
       }
@@ -941,6 +960,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
     fdTemplate.right = new FormAttachment( 100, 0 );
     wTemplate.setLayoutData( fdTemplate );
     wTemplate.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         EnableTemplate();
       }
@@ -990,6 +1010,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
     fdTemplateAppend.right = new FormAttachment( 100, 0 );
     wTemplateAppend.setLayoutData( fdTemplateAppend );
     wTemplateAppend.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         input.setChanged();
       }
@@ -1100,6 +1121,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
     fdHeaderFontBold.right = new FormAttachment( 100, 0 );
     wHeaderFontBold.setLayoutData( fdHeaderFontBold );
     wHeaderFontBold.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         input.setChanged();
       }
@@ -1122,6 +1144,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
     fdHeaderFontItalic.right = new FormAttachment( 100, 0 );
     wHeaderFontItalic.setLayoutData( fdHeaderFontItalic );
     wHeaderFontItalic.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         input.setChanged();
       }
@@ -1252,6 +1275,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
     fdbImage.top = new FormAttachment( wHeaderAlignment, margin );
     wbImage.setLayoutData( fdbImage );
     wbImage.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         FileDialog dialog = new FileDialog( shell, SWT.OPEN );
         dialog.setFilterExtensions( new String[] { "*.png", "*.*" } );
@@ -1454,7 +1478,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
           ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false ),
         new ColumnInfo(
           BaseMessages.getString( PKG, "ExcelOutputDialog.TypeColumn.Column" ),
-          ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes() ),
+          ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMetaFactory.getValueMetaNames() ),
         new ColumnInfo(
           BaseMessages.getString( PKG, "ExcelOutputDialog.FormatColumn.Column" ),
           ColumnInfo.COLUMN_TYPE_CCOMBO, formats ), };
@@ -1474,6 +1498,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
     // Search the fields in the background
 
     final Runnable runnable = new Runnable() {
+      @Override
       public void run() {
         StepMeta stepMeta = transMeta.findStep( stepname );
         if ( stepMeta != null ) {
@@ -1520,21 +1545,25 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 
     // Add listeners
     lsOK = new Listener() {
+      @Override
       public void handleEvent( Event e ) {
         ok();
       }
     };
     lsGet = new Listener() {
+      @Override
       public void handleEvent( Event e ) {
         get();
       }
     };
     lsMinWidth = new Listener() {
+      @Override
       public void handleEvent( Event e ) {
         setMinimalWidth();
       }
     };
     lsCancel = new Listener() {
+      @Override
       public void handleEvent( Event e ) {
         cancel();
       }
@@ -1546,6 +1575,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
     wCancel.addListener( SWT.Selection, lsCancel );
 
     lsDef = new SelectionAdapter() {
+      @Override
       public void widgetDefaultSelected( SelectionEvent e ) {
         ok();
       }
@@ -1557,17 +1587,20 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 
     // Whenever something changes, set the tooltip to the expanded version:
     wFilename.addModifyListener( new ModifyListener() {
+      @Override
       public void modifyText( ModifyEvent e ) {
         wFilename.setToolTipText( transMeta.environmentSubstitute( wFilename.getText() ) );
       }
     } );
     wTemplateFilename.addModifyListener( new ModifyListener() {
+      @Override
       public void modifyText( ModifyEvent e ) {
         wTemplateFilename.setToolTipText( transMeta.environmentSubstitute( wTemplateFilename.getText() ) );
       }
     } );
 
     wbFilename.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         FileDialog dialog = new FileDialog( shell, SWT.SAVE );
         dialog.setFilterExtensions( new String[] { "*.xls", "*.*" } );
@@ -1585,6 +1618,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
     } );
 
     wbTemplateFilename.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         FileDialog dialog = new FileDialog( shell, SWT.OPEN );
         dialog.setFilterExtensions( new String[] { "*.xls", "*.*" } );
@@ -1603,12 +1637,14 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 
     // Detect X or ALT-F4 or something that kills this window...
     shell.addShellListener( new ShellAdapter() {
+      @Override
       public void shellClosed( ShellEvent e ) {
         cancel();
       }
     } );
 
     lsResize = new Listener() {
+      @Override
       public void handleEvent( Event event ) {
         Point size = shell.getSize();
         wFields.setSize( size.x - 10, size.y - 50 );
@@ -1907,6 +1943,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
       RowMetaInterface r = transMeta.getPrevStepFields( stepname );
       if ( r != null ) {
         TableItemInsertListener listener = new TableItemInsertListener() {
+          @Override
           public boolean tableItemInserted( TableItem tableItem, ValueMetaInterface v ) {
             if ( v.isNumber() ) {
               if ( v.getLength() > 0 ) {
@@ -1954,7 +1991,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
       item.setText( 4, "" );
       item.setText( 5, "" );
 
-      int type = ValueMeta.getType( item.getText( 2 ) );
+      int type = ValueMetaFactory.getIdForValueMeta( item.getText( 2 ) );
       switch ( type ) {
         case ValueMetaInterface.TYPE_STRING:
           item.setText( 3, "" );

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -34,8 +34,8 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -217,10 +217,12 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface {
     this.valuename = valuename;
   }
 
+  @Override
   public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     readData( stepnode, databases );
   }
 
+  @Override
   public Object clone() {
     Object retval = super.clone();
     return retval;
@@ -251,6 +253,7 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
+  @Override
   public void setDefault() {
     valuename = "valuename";
 
@@ -266,16 +269,18 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface {
     maxValue = "999999999";
   }
 
+  @Override
   public void getFields( RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep,
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
-    ValueMetaInterface v = new ValueMeta( valuename, ValueMetaInterface.TYPE_INTEGER );
+    ValueMetaInterface v = new ValueMetaInteger( valuename );
     // v.setLength(ValueMetaInterface.DEFAULT_INTEGER_LENGTH, 0); Removed for 2.5.x compatibility reasons.
     v.setOrigin( name );
     row.addValueMeta( v );
   }
 
+  @Override
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 300 );
+    StringBuilder retval = new StringBuilder( 300 );
 
     retval.append( "      " ).append( XMLHandler.addTagValue( "valuename", valuename ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "use_database", useDatabase ) );
@@ -293,6 +298,7 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface {
     return retval.toString();
   }
 
+  @Override
   public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
       valuename = rep.getStepAttributeString( id_step, "valuename" );
@@ -333,6 +339,7 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
+  @Override
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       rep.saveStepAttribute( id_transformation, id_step, "valuename", valuename );
@@ -360,6 +367,7 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
+  @Override
   public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
     RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
@@ -403,6 +411,7 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
+  @Override
   public SQLStatement getSQLStatements( TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
     Repository repository, IMetaStore metaStore ) {
     SQLStatement retval = new SQLStatement( stepMeta.getName(), database, null ); // default: nothing to do!
@@ -434,15 +443,18 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface {
     return retval;
   }
 
+  @Override
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
     TransMeta transMeta, Trans trans ) {
     return new AddSequence( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 
+  @Override
   public StepDataInterface getStepData() {
     return new AddSequenceData();
   }
 
+  @Override
   public DatabaseMeta[] getUsedDatabaseConnections() {
     if ( database != null ) {
       return new DatabaseMeta[] { database };

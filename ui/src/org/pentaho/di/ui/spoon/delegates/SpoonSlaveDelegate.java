@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -30,6 +30,7 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.HasSlaveServersInterface;
 import org.pentaho.di.ui.cluster.dialog.SlaveServerDialog;
+import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.SpoonSlave;
@@ -53,7 +54,8 @@ public class SpoonSlaveDelegate extends SpoonDelegate {
     TabMapEntry tabMapEntry = spoon.delegates.tabs.findTabMapEntry( tabName, ObjectType.SLAVE_SERVER );
     if ( tabMapEntry == null ) {
       SpoonSlave spoonSlave = new SpoonSlave( tabfolder.getSwtTabset(), SWT.NONE, spoon, slaveServer );
-      TabItem tabItem = new TabItem( tabfolder, tabName, tabName );
+      PropsUI props = PropsUI.getInstance();
+      TabItem tabItem = new TabItem( tabfolder, tabName, tabName, props.getSashWeights() );
       tabItem.setToolTipText( "Status of slave server : "
         + slaveServer.getName() + " : " + slaveServer.getServerAndPort() );
       tabItem.setControl( spoonSlave );
@@ -82,7 +84,7 @@ public class SpoonSlaveDelegate extends SpoonDelegate {
 
   public void newSlaveServer( HasSlaveServersInterface hasSlaveServersInterface ) {
     SlaveServer slaveServer = new SlaveServer();
-    
+
     SlaveServerDialog dialog =
         new SlaveServerDialog( spoon.getShell(), slaveServer, hasSlaveServersInterface.getSlaveServers() );
     if ( dialog.open() ) {

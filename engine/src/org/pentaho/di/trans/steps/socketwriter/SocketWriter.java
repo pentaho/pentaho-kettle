@@ -146,10 +146,10 @@ public class SocketWriter extends BaseStep implements StepInterface {
 
     if ( super.init( smi, sdi ) ) {
       try {
-        int port = Integer.parseInt( environmentSubstitute( meta.getPort() ) );
+        data.serverSocketPort = Integer.parseInt( environmentSubstitute( meta.getPort() ) );
         data.serverSocket =
           getTrans().getSocketRepository().openServerSocket(
-            port, getTransMeta().getName() + " - " + this.toString() );
+            data.serverSocketPort, getTransMeta().getName() + " - " + this.toString() );
 
         return true;
       } catch ( Exception e ) {
@@ -165,27 +165,40 @@ public class SocketWriter extends BaseStep implements StepInterface {
     // If we are here, it means all work is done
     // It's a lot of work to keep it all in sync for now we don't need to do that.
     //
-    try {
-      data.outputStream.close();
-    } catch ( Exception e ) {
-      // Ignore errors
+    if ( data.outputStream != null ) {
+      try {
+        data.outputStream.close();
+      } catch ( Exception e ) {
+        // Ignore errors
+      }
     }
-    if ( data.clientSocket != null ) {
+
+    if ( data.clientSocket != null && !data.clientSocket.isClosed() ) {
       try {
         data.clientSocket.shutdownInput();
         data.clientSocket.shutdownOutput();
         data.clientSocket.close();
-        logError( "Closed connection to SocketWriter" );
+        if ( log.isDetailed() ) {
+          logDetailed( "Closed connection to SocketWriter" );
+        }
       } catch ( IOException e1 ) {
         logError( "Failed to close connection to SocketWriter" );
       }
     }
-    try {
-      data.serverSocket.close();
-    } catch ( Exception e ) {
-      // Ignore errors
+
+    if ( data.serverSocket != null && !data.serverSocket.isClosed() ) {
+      try {
+        data.serverSocket.close();
+      } catch ( IOException e ) {
+        // Ignore errors
+      }
     }
 
+    try {
+      getTrans().getSocketRepository().releaseSocket( data.serverSocketPort );
+    } catch ( IOException ignore ) {
+      // Ignore errors
+    }
     super.dispose( smi, sdi );
   }
 

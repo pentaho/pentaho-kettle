@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,11 +24,13 @@ package org.pentaho.di.trans.steps.loadsave.validator;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.trans.steps.loadsave.getter.Getter;
 
 public class DefaultFieldLoadSaveValidatorFactory implements FieldLoadSaveValidatorFactory {
@@ -48,16 +50,21 @@ public class DefaultFieldLoadSaveValidatorFactory implements FieldLoadSaveValida
       new StringLoadSaveValidator() ) {
     } );
     registerValidator( String[].class.getCanonicalName(), new ArrayLoadSaveValidator<String>(
-        new StringLoadSaveValidator() ) );
+      new StringLoadSaveValidator() ) );
     registerValidator( boolean[].class.getCanonicalName(), new PrimitiveBooleanArrayLoadSaveValidator(
-        new BooleanLoadSaveValidator() ) );
+      new BooleanLoadSaveValidator() ) );
     registerValidator( Boolean[].class.getCanonicalName(), new ArrayLoadSaveValidator<Boolean>(
-        new BooleanLoadSaveValidator() ) );
+      new BooleanLoadSaveValidator() ) );
     registerValidator( int[].class.getCanonicalName(), new PrimitiveIntArrayLoadSaveValidator(
-        new IntLoadSaveValidator() ) );
+      new IntLoadSaveValidator() ) );
     registerValidator( Locale.class.getCanonicalName(), new LocaleLoadSaveValidator() );
+    registerValidator( DatabaseMeta.class.getCanonicalName(), new DatabaseMetaLoadSaveValidator() );
+    registerValidator( DatabaseMeta[].class.getCanonicalName(), new ArrayLoadSaveValidator<DatabaseMeta>(
+      new DatabaseMetaLoadSaveValidator() ) );
+    registerValidator( Date.class.getCanonicalName(), new DateLoadSaveValidator() );
   }
 
+  @Override
   public void registerValidator( String typeString, FieldLoadSaveValidator<?> validator ) {
     this.typeMap.put( typeString, validator );
   }

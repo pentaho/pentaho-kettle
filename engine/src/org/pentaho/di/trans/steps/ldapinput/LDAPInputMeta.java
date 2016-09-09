@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -33,9 +33,10 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -138,6 +139,7 @@ public class LDAPInputMeta extends BaseStepMeta implements LdapMeta {
   /**
    * @return Returns the input useCertificate.
    */
+  @Override
   public boolean isUseCertificate() {
     return useCertificate;
   }
@@ -152,6 +154,7 @@ public class LDAPInputMeta extends BaseStepMeta implements LdapMeta {
   /**
    * @return Returns the input trustAllCertificates.
    */
+  @Override
   public boolean isTrustAllCertificates() {
     return trustAllCertificates;
   }
@@ -166,6 +169,7 @@ public class LDAPInputMeta extends BaseStepMeta implements LdapMeta {
   /**
    * @return Returns the trustStorePath.
    */
+  @Override
   public String getTrustStorePassword() {
     return trustStorePassword;
   }
@@ -181,6 +185,7 @@ public class LDAPInputMeta extends BaseStepMeta implements LdapMeta {
   /**
    * @return Returns the trustStorePath.
    */
+  @Override
   public String getTrustStorePath() {
     return trustStorePath;
   }
@@ -196,6 +201,7 @@ public class LDAPInputMeta extends BaseStepMeta implements LdapMeta {
   /**
    * @return Returns the protocol.
    */
+  @Override
   public String getProtocol() {
     return protocol;
   }
@@ -328,6 +334,7 @@ public class LDAPInputMeta extends BaseStepMeta implements LdapMeta {
   /**
    * @return Returns the host name.
    */
+  @Override
   public String getHost() {
     return Host;
   }
@@ -373,6 +380,7 @@ public class LDAPInputMeta extends BaseStepMeta implements LdapMeta {
   /**
    * @return Returns the Port.
    */
+  @Override
   public String getPort() {
     return port;
   }
@@ -490,10 +498,12 @@ public class LDAPInputMeta extends BaseStepMeta implements LdapMeta {
     this.rowNumberField = rowNumberField;
   }
 
+  @Override
   public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     readData( stepnode );
   }
 
+  @Override
   public Object clone() {
     LDAPInputMeta retval = (LDAPInputMeta) super.clone();
 
@@ -510,8 +520,9 @@ public class LDAPInputMeta extends BaseStepMeta implements LdapMeta {
     return retval;
   }
 
+  @Override
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 500 );
+    StringBuilder retval = new StringBuilder( 500 );
 
     retval.append( "    " ).append( XMLHandler.addTagValue( "usepaging", usePaging ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "pagesize", pagesize ) );
@@ -615,7 +626,7 @@ public class LDAPInputMeta extends BaseStepMeta implements LdapMeta {
         } else {
           inputFields[i].setSortedKey( false );
         }
-        inputFields[i].setType( ValueMeta.getType( XMLHandler.getTagValue( fnode, "type" ) ) );
+        inputFields[i].setType( ValueMetaFactory.getIdForValueMeta( XMLHandler.getTagValue( fnode, "type" ) ) );
         inputFields[i].setLength( Const.toInt( XMLHandler.getTagValue( fnode, "length" ), -1 ) );
         inputFields[i].setPrecision( Const.toInt( XMLHandler.getTagValue( fnode, "precision" ), -1 ) );
         String srepeat = XMLHandler.getTagValue( fnode, "repeat" );
@@ -624,7 +635,7 @@ public class LDAPInputMeta extends BaseStepMeta implements LdapMeta {
         } else {
           inputFields[i].setRepeated( false );
         }
-        inputFields[i].setTrimType( ValueMeta.getTrimTypeByCode( XMLHandler.getTagValue( fnode, "trim_type" ) ) );
+        inputFields[i].setTrimType( ValueMetaString.getTrimTypeByCode( XMLHandler.getTagValue( fnode, "trim_type" ) ) );
 
         inputFields[i].setFormat( XMLHandler.getTagValue( fnode, "format" ) );
         inputFields[i].setCurrencySymbol( XMLHandler.getTagValue( fnode, "currency" ) );
@@ -676,6 +687,7 @@ public class LDAPInputMeta extends BaseStepMeta implements LdapMeta {
     inputFields = new LDAPInputField[nrfields];
   }
 
+  @Override
   public void setDefault() {
     this.usePaging = false;
     this.pagesize = "1000";
@@ -711,6 +723,7 @@ public class LDAPInputMeta extends BaseStepMeta implements LdapMeta {
     this.useCertificate = false;
   }
 
+  @Override
   public void getFields( RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep,
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
 
@@ -719,8 +732,8 @@ public class LDAPInputMeta extends BaseStepMeta implements LdapMeta {
       LDAPInputField field = inputFields[i];
 
       int type = field.getType();
-      if ( type == ValueMeta.TYPE_NONE ) {
-        type = ValueMeta.TYPE_STRING;
+      if ( type == ValueMetaInterface.TYPE_NONE ) {
+        type = ValueMetaInterface.TYPE_STRING;
       }
       try {
         ValueMetaInterface v =
@@ -735,13 +748,14 @@ public class LDAPInputMeta extends BaseStepMeta implements LdapMeta {
     }
 
     if ( includeRowNumber ) {
-      ValueMetaInterface v = new ValueMeta( space.environmentSubstitute( rowNumberField ), ValueMeta.TYPE_INTEGER );
+      ValueMetaInterface v = new ValueMetaInteger( space.environmentSubstitute( rowNumberField ) );
       v.setLength( ValueMetaInterface.DEFAULT_INTEGER_LENGTH, 0 );
       v.setOrigin( name );
       r.addValueMeta( v );
     }
   }
 
+  @Override
   public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
 
     try {
@@ -784,7 +798,7 @@ public class LDAPInputMeta extends BaseStepMeta implements LdapMeta {
         field.setFetchAttributeAs( LDAPInputField.getFetchAttributeAsByCode( rep.getStepAttributeString(
           id_step, i, "field_attribute_fetch_as" ) ) );
         field.setSortedKey( rep.getStepAttributeBoolean( id_step, i, "sorted_key" ) );
-        field.setType( ValueMeta.getType( rep.getStepAttributeString( id_step, i, "field_type" ) ) );
+        field.setType( ValueMetaFactory.getIdForValueMeta( rep.getStepAttributeString( id_step, i, "field_type" ) ) );
         field.setFormat( rep.getStepAttributeString( id_step, i, "field_format" ) );
         field.setCurrencySymbol( rep.getStepAttributeString( id_step, i, "field_currency" ) );
         field.setDecimalSymbol( rep.getStepAttributeString( id_step, i, "field_decimal" ) );
@@ -836,6 +850,7 @@ public class LDAPInputMeta extends BaseStepMeta implements LdapMeta {
     return searchScope;
   }
 
+  @Override
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       rep.saveStepAttribute( id_transformation, id_step, "usepaging", usePaging );
@@ -892,6 +907,7 @@ public class LDAPInputMeta extends BaseStepMeta implements LdapMeta {
     }
   }
 
+  @Override
   public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
     RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
@@ -985,19 +1001,23 @@ public class LDAPInputMeta extends BaseStepMeta implements LdapMeta {
 
   }
 
+  @Override
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta tr,
     Trans trans ) {
     return new LDAPInput( stepMeta, stepDataInterface, cnr, tr, trans );
   }
 
+  @Override
   public StepDataInterface getStepData() {
     return new LDAPInputData();
   }
 
+  @Override
   public boolean supportsErrorHandling() {
     return true;
   }
 
+  @Override
   public String toString() {
     return "LDAPConnection " + getName();
   }

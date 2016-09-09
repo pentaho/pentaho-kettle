@@ -212,7 +212,7 @@ public class JobEntryPluginType extends BasePluginType implements PluginTypeInte
 
   @Override
   protected String extractDocumentationUrl( Annotation annotation ) {
-    return ( (JobEntry) annotation ).documentationUrl();
+    return Const.getDocUrl( ( (JobEntry) annotation ).documentationUrl() );
   }
 
   @Override

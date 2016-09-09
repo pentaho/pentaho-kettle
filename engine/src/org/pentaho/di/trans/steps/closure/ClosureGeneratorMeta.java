@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -32,8 +32,8 @@ import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.ObjectId;
@@ -64,10 +64,12 @@ public class ClosureGeneratorMeta extends BaseStepMeta implements StepMetaInterf
     super();
   }
 
+  @Override
   public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     readData( stepnode, databases );
   }
 
+  @Override
   public Object clone() {
     ClosureGeneratorMeta retval = (ClosureGeneratorMeta) super.clone();
     return retval;
@@ -84,9 +86,11 @@ public class ClosureGeneratorMeta extends BaseStepMeta implements StepMetaInterf
     }
   }
 
+  @Override
   public void setDefault() {
   }
 
+  @Override
   public void getFields( RowMetaInterface row, String origin, RowMetaInterface[] info, StepMeta nextStep,
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     // The output for the closure table is:
@@ -108,7 +112,7 @@ public class ClosureGeneratorMeta extends BaseStepMeta implements StepMetaInterf
       result.addValueMeta( childValueMeta );
     }
 
-    ValueMetaInterface distanceValueMeta = new ValueMeta( distanceFieldName, ValueMetaInterface.TYPE_INTEGER );
+    ValueMetaInterface distanceValueMeta = new ValueMetaInteger( distanceFieldName );
     distanceValueMeta.setLength( ValueMetaInterface.DEFAULT_INTEGER_LENGTH );
     result.addValueMeta( distanceValueMeta );
 
@@ -116,8 +120,9 @@ public class ClosureGeneratorMeta extends BaseStepMeta implements StepMetaInterf
     row.addRowMeta( result );
   }
 
+  @Override
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 300 );
+    StringBuilder retval = new StringBuilder( 300 );
 
     retval.append( "    " ).append( XMLHandler.addTagValue( "parent_id_field", parentIdFieldName ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "child_id_field", childIdFieldName ) );
@@ -127,6 +132,7 @@ public class ClosureGeneratorMeta extends BaseStepMeta implements StepMetaInterf
     return retval.toString();
   }
 
+  @Override
   public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
       parentIdFieldName = rep.getStepAttributeString( id_step, "parent_id_field" );
@@ -138,6 +144,7 @@ public class ClosureGeneratorMeta extends BaseStepMeta implements StepMetaInterf
     }
   }
 
+  @Override
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       rep.saveStepAttribute( id_transformation, id_step, "parent_id_field", parentIdFieldName );
@@ -149,6 +156,7 @@ public class ClosureGeneratorMeta extends BaseStepMeta implements StepMetaInterf
     }
   }
 
+  @Override
   public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
     RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
@@ -183,11 +191,13 @@ public class ClosureGeneratorMeta extends BaseStepMeta implements StepMetaInterf
     }
   }
 
+  @Override
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
     TransMeta transMeta, Trans trans ) {
     return new ClosureGenerator( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 
+  @Override
   public StepDataInterface getStepData() {
     return new ClosureGeneratorData();
   }

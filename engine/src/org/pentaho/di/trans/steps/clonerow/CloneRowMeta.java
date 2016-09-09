@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -32,8 +32,9 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaBoolean;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -79,7 +80,7 @@ public class CloneRowMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer();
+    StringBuilder retval = new StringBuilder();
     retval.append( "    " + XMLHandler.addTagValue( "nrclones", nrclones ) );
     retval.append( "    " + XMLHandler.addTagValue( "addcloneflag", addcloneflag ) );
     retval.append( "    " + XMLHandler.addTagValue( "cloneflagfield", cloneflagfield ) );
@@ -223,7 +224,7 @@ public class CloneRowMeta extends BaseStepMeta implements StepMetaInterface {
     if ( addcloneflag ) {
       String realfieldValue = space.environmentSubstitute( cloneflagfield );
       if ( !Const.isEmpty( realfieldValue ) ) {
-        ValueMetaInterface v = new ValueMeta( realfieldValue, ValueMeta.TYPE_BOOLEAN );
+        ValueMetaInterface v = new ValueMetaBoolean( realfieldValue );
         v.setOrigin( origin );
         rowMeta.addValueMeta( v );
       }
@@ -232,7 +233,7 @@ public class CloneRowMeta extends BaseStepMeta implements StepMetaInterface {
     if ( addclonenum ) {
       String realfieldValue = space.environmentSubstitute( clonenumfield );
       if ( !Const.isEmpty( realfieldValue ) ) {
-        ValueMetaInterface v = new ValueMeta( realfieldValue, ValueMeta.TYPE_INTEGER );
+        ValueMetaInterface v = new ValueMetaInteger( realfieldValue );
         v.setOrigin( origin );
         rowMeta.addValueMeta( v );
       }

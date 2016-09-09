@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -26,8 +26,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import junit.framework.TestCase;
-
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleValueException;
@@ -35,12 +33,14 @@ import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.dummytrans.DummyTransMeta;
 import org.pentaho.di.trans.steps.injector.InjectorMeta;
+
+import junit.framework.TestCase;
 
 /**
  * Test class for the use of hops, specifically we want to check the copy and distribute mode.
@@ -52,7 +52,7 @@ public class HopTest extends TestCase {
   public RowMetaInterface createRowMetaInterface() {
     RowMetaInterface rm = new RowMeta();
 
-    ValueMetaInterface[] valuesMeta = { new ValueMeta( "field1", ValueMeta.TYPE_INTEGER ), };
+    ValueMetaInterface[] valuesMeta = { new ValueMetaInteger( "field1" ), };
 
     for ( int i = 0; i < valuesMeta.length; i++ ) {
       rm.addValueMeta( valuesMeta[i] );

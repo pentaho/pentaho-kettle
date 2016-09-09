@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,6 +23,7 @@
 package org.pentaho.di.trans.steps.elasticsearchbulk;
 
 import java.io.IOException;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -42,9 +43,7 @@ import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.NoNodeAvailableException;
 import org.elasticsearch.client.transport.TransportClient;
-import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentFactory;
 import org.elasticsearch.node.Node;
@@ -109,8 +108,8 @@ public class ElasticSearchBulk extends BaseStep implements StepInterface {
 
   private IndexRequest.OpType opType = OpType.CREATE;
 
-  public ElasticSearchBulk( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr,
-                            TransMeta transMeta, Trans trans ) {
+  public ElasticSearchBulk( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
+      Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -197,8 +196,10 @@ public class ElasticSearchBulk extends BaseStep implements StepInterface {
   }
 
   /**
-   * @param rowMeta The metadata for the row to be indexed
-   * @param row     The data for the row to be indexed
+   * @param rowMeta
+   *          The metadata for the row to be indexed
+   * @param row
+   *          The data for the row to be indexed
    */
 
   private boolean indexRow( RowMetaInterface rowMeta, Object[] row ) throws KettleStepException {
@@ -232,7 +233,7 @@ public class ElasticSearchBulk extends BaseStep implements StepInterface {
       throw new KettleStepException( BaseMessages.getString( PKG, "ElasticSearchBulkDialog.Error.NoNodesFound" ) );
     } catch ( Exception e ) {
       throw new KettleStepException( BaseMessages.getString( PKG, "ElasticSearchBulk.Log.Exception", e
-        .getLocalizedMessage() ), e );
+          .getLocalizedMessage() ), e );
     }
   }
 
@@ -257,7 +258,8 @@ public class ElasticSearchBulk extends BaseStep implements StepInterface {
    * @param row
    * @throws IOException
    */
-  private void addSourceFromRowFields( IndexRequestBuilder requestBuilder, RowMetaInterface rowMeta, Object[] row ) throws IOException {
+  private void addSourceFromRowFields( IndexRequestBuilder requestBuilder, RowMetaInterface rowMeta, Object[] row )
+    throws IOException {
     XContentBuilder jsonBuilder = XContentFactory.jsonBuilder().startObject();
 
     for ( int i = 0; i < rowMeta.size(); i++ ) {
@@ -299,7 +301,7 @@ public class ElasticSearchBulk extends BaseStep implements StepInterface {
 
       } catch ( Exception e ) {
         logError( BaseMessages.getString( PKG, "ElasticSearchBulk.Log.ErrorOccurredDuringStepInitialize" )
-          + e.getMessage() );
+            + e.getMessage() );
       }
       return true;
     }
@@ -320,11 +322,11 @@ public class ElasticSearchBulk extends BaseStep implements StepInterface {
     useOutput = meta.isUseOutput();
     stopOnError = meta.isStopOnError();
 
-    columnsToJson = meta.getFields();
+    columnsToJson = meta.getFieldsMap();
     this.hasFields = columnsToJson.size() > 0;
 
     this.opType =
-      StringUtils.isNotBlank( meta.getIdInField() ) && meta.isOverWriteIfSameId() ? OpType.INDEX : OpType.CREATE;
+        StringUtils.isNotBlank( meta.getIdInField() ) && meta.isOverWriteIfSameId() ? OpType.INDEX : OpType.CREATE;
 
   }
 
@@ -341,8 +343,7 @@ public class ElasticSearchBulk extends BaseStep implements StepInterface {
         response = actionFuture.actionGet();
       }
     } catch ( ElasticsearchException e ) {
-      String msg =
-        BaseMessages.getString( PKG, "ElasticSearchBulk.Error.BatchExecuteFail", e.getLocalizedMessage() );
+      String msg = BaseMessages.getString( PKG, "ElasticSearchBulk.Error.BatchExecuteFail", e.getLocalizedMessage() );
       if ( e instanceof ElasticsearchTimeoutException ) {
         msg = BaseMessages.getString( PKG, "ElasticSearchBulk.Error.Timeout" );
       }
@@ -419,7 +420,7 @@ public class ElasticSearchBulk extends BaseStep implements StepInterface {
   private void addIdToRow( String id, int rowIndex ) {
 
     data.inputRowBuffer[rowIndex] =
-      RowDataUtil.resizeArray( data.inputRowBuffer[rowIndex], getInputRowMeta().size() + 1 );
+        RowDataUtil.resizeArray( data.inputRowBuffer[rowIndex], getInputRowMeta().size() + 1 );
     data.inputRowBuffer[rowIndex][getInputRowMeta().size()] = id;
 
   }
@@ -465,24 +466,23 @@ public class ElasticSearchBulk extends BaseStep implements StepInterface {
     }
   }
 
-  private void initClient() {
+  private void initClient() throws UnknownHostException {
+    Settings.Builder settingsBuilder = Settings.builder();
+    settingsBuilder.put( Settings.Builder.EMPTY_SETTINGS ); // keep default classloader
+    settingsBuilder.put( meta.getSettingsMap() );
+    // Settings settings = settingsBuilder.build();
+    TransportClient.Builder tClientBuilder = TransportClient.builder().settings( settingsBuilder );
 
-    ImmutableSettings.Builder settingsBuilder = ImmutableSettings.settingsBuilder();
-    settingsBuilder.put( ImmutableSettings.Builder.EMPTY_SETTINGS ); // keep default classloader
-    settingsBuilder.put( meta.getSettings() );
-    Settings settings = settingsBuilder.build();
-
-    if ( meta.getServers().length > 0 ) {
+    if ( !meta.servers.isEmpty() ) {
       node = null;
-      TransportClient tClient = new TransportClient( settings );
-      for ( InetSocketTransportAddress address : meta.getServers() ) {
-        tClient.addTransportAddress( address );
+      TransportClient tClient = tClientBuilder.build();
+      for ( ElasticSearchBulkMeta.Server s : meta.servers ) {
+        tClient.addTransportAddress( s.getAddr() );
       }
       client = tClient;
-
     } else {
       NodeBuilder nodeBuilder = NodeBuilder.nodeBuilder();
-      nodeBuilder.settings( settings );
+      nodeBuilder.settings( settingsBuilder );
       node = nodeBuilder.client( true ).node(); // this node will not hold data
       client = node.client();
       node.start();

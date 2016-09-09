@@ -1306,6 +1306,8 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
     wDoNotOpenNewFileInit.setEnabled( enableFilename );
     wlCreateParentFolder.setEnabled( enableFilename );
     wCreateParentFolder.setEnabled( enableFilename );
+    wlFileNameField.setEnabled( enableFilename );
+    wFileNameField.setEnabled( enableFilename );
     wlExtension.setEnabled( enableFilename );
     wExtension.setEnabled( enableFilename );
     wlSplitEvery.setEnabled( enableFilename );
@@ -1332,8 +1334,6 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
   private void activeFileNameField() {
     wlFileNameField.setEnabled( wFileNameInField.getSelection() );
     wFileNameField.setEnabled( wFileNameInField.getSelection() );
-    wlExtension.setEnabled( !wFileNameInField.getSelection() );
-    wExtension.setEnabled( !wFileNameInField.getSelection() );
     wlFilename.setEnabled( !wFileNameInField.getSelection() );
     wFilename.setEnabled( !wFileNameInField.getSelection() );
 

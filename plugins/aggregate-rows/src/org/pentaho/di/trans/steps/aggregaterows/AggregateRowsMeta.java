@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -56,9 +56,9 @@ import org.w3c.dom.Node;
  */
 
 @Step( id = "AggregateRows", image = "AGG.svg",
-i18nPackageName = "org.pentaho.di.trans.steps.aggregaterows", name = "AggregateRowsMeta.Name",
-description = "AggregateRowsMeta.Description",
-categoryDescription = "i18n:org.pentaho.di.job:JobCategory.Category.Deprecated" )
+  i18nPackageName = "org.pentaho.di.trans.steps.aggregaterows", name = "AggregateRowsMeta.Name",
+  description = "AggregateRowsMeta.Description",
+  categoryDescription = "i18n:org.pentaho.di.job:JobCategory.Category.Deprecated" )
 
 public class AggregateRowsMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = AggregateRowsMeta.class; // for i18n purposes, needed by Translator2!!
@@ -139,6 +139,7 @@ public class AggregateRowsMeta extends BaseStepMeta implements StepMetaInterface
     this.fieldNewName = fieldNewName;
   }
 
+  @Override
   public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     readData( stepnode );
   }
@@ -166,6 +167,7 @@ public class AggregateRowsMeta extends BaseStepMeta implements StepMetaInterface
     return TYPE_AGGREGATE_NONE;
   }
 
+  @Override
   public Object clone() {
     AggregateRowsMeta retval = (AggregateRowsMeta) super.clone();
 
@@ -204,6 +206,7 @@ public class AggregateRowsMeta extends BaseStepMeta implements StepMetaInterface
     }
   }
 
+  @Override
   public void setDefault() {
     int i, nrfields;
 
@@ -218,6 +221,7 @@ public class AggregateRowsMeta extends BaseStepMeta implements StepMetaInterface
     }
   }
 
+  @Override
   public void getFields( RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep,
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     try {
@@ -254,6 +258,7 @@ public class AggregateRowsMeta extends BaseStepMeta implements StepMetaInterface
     }
   }
 
+  @Override
   public String getXML() {
     StringBuffer retval = new StringBuffer( 300 );
 
@@ -270,6 +275,7 @@ public class AggregateRowsMeta extends BaseStepMeta implements StepMetaInterface
     return retval.toString();
   }
 
+  @Override
   public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
 
     try {
@@ -289,6 +295,7 @@ public class AggregateRowsMeta extends BaseStepMeta implements StepMetaInterface
 
   }
 
+  @Override
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       for ( int i = 0; i < fieldName.length; i++ ) {
@@ -302,6 +309,7 @@ public class AggregateRowsMeta extends BaseStepMeta implements StepMetaInterface
     }
   }
 
+  @Override
   public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
     RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
@@ -373,11 +381,13 @@ public class AggregateRowsMeta extends BaseStepMeta implements StepMetaInterface
 
   }
 
+  @Override
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
     TransMeta transMeta, Trans trans ) {
     return new AggregateRows( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 
+  @Override
   public StepDataInterface getStepData() {
     return new AggregateRowsData();
   }

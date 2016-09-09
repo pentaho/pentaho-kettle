@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -26,8 +26,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import junit.framework.TestCase;
-
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleValueException;
@@ -35,8 +33,8 @@ import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.trans.RowProducer;
 import org.pentaho.di.trans.RowStepCollector;
 import org.pentaho.di.trans.Trans;
@@ -48,12 +46,14 @@ import org.pentaho.di.trans.steps.dummytrans.DummyTransMeta;
 import org.pentaho.di.trans.steps.injector.InjectorMeta;
 import org.pentaho.di.trans.steps.textfileinput.TextFileInputField;
 
+import junit.framework.TestCase;
+
 public abstract class CsvInputBase extends TestCase {
 
   public RowMetaInterface createRowMetaInterface() {
     RowMetaInterface rm = new RowMeta();
 
-    ValueMetaInterface[] valuesMeta = { new ValueMeta( "filename", ValueMeta.TYPE_STRING ), };
+    ValueMetaInterface[] valuesMeta = { new ValueMetaString( "filename" ), };
 
     for ( int i = 0; i < valuesMeta.length; i++ ) {
       rm.addValueMeta( valuesMeta[i] );

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,8 +23,7 @@
 package org.pentaho.di.www;
 
 import java.io.IOException;
-import java.io.PrintStream;
-import java.io.PrintWriter; 
+import java.io.PrintWriter;
 import java.lang.management.OperatingSystemMXBean;
 import java.lang.management.RuntimeMXBean;
 import java.lang.management.ThreadMXBean;
@@ -213,23 +212,21 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
       getSystemInfo( serverStatus );
 
       for ( CarteObjectEntry entry : transEntries ) {
-        String name = entry.getName();
-        String id = entry.getId();
         Trans trans = getTransformationMap().getTransformation( entry );
         String status = trans.getStatus();
 
-        SlaveServerTransStatus sstatus = new SlaveServerTransStatus( name, id, status );
+        SlaveServerTransStatus sstatus = new SlaveServerTransStatus( entry.getName(), entry.getId(), status );
+        sstatus.setLogDate( trans.getLogDate() );
         sstatus.setPaused( trans.isPaused() );
         serverStatus.getTransStatusList().add( sstatus );
       }
 
       for ( CarteObjectEntry entry : jobEntries ) {
-        String name = entry.getName();
-        String id = entry.getId();
         Job job = getJobMap().getJob( entry );
         String status = job.getStatus();
-
-        serverStatus.getJobStatusList().add( new SlaveServerJobStatus( name, id, status ) );
+        SlaveServerJobStatus jobStatus = new SlaveServerJobStatus( entry.getName(), entry.getId(), status );
+        jobStatus.setLogDate( job.getLogDate() );
+        serverStatus.getJobStatusList().add( jobStatus );
       }
 
       try {

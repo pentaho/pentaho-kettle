@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -32,8 +32,8 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaBoolean;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -138,7 +138,7 @@ public class WebServiceAvailableMeta extends BaseStepMeta implements StepMetaInt
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
 
     if ( !Const.isEmpty( resultfieldname ) ) {
-      ValueMetaInterface v = new ValueMeta( resultfieldname, ValueMeta.TYPE_BOOLEAN );
+      ValueMetaInterface v = new ValueMetaBoolean( resultfieldname );
       v.setOrigin( name );
       inputRowMeta.addValueMeta( v );
     }
@@ -146,7 +146,7 @@ public class WebServiceAvailableMeta extends BaseStepMeta implements StepMetaInt
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer();
+    StringBuilder retval = new StringBuilder();
 
     retval.append( "    " + XMLHandler.addTagValue( "urlField", urlField ) );
     retval.append( "    " + XMLHandler.addTagValue( "readTimeOut", readTimeOut ) );

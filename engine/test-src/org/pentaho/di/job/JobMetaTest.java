@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,18 +25,26 @@ package org.pentaho.di.job;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.pentaho.di.core.NotePadMeta;
 import org.pentaho.di.core.exception.IdNotFoundException;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.exception.LookupReferencesException;
+import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.listeners.ContentChangedListener;
 import org.pentaho.di.job.entries.empty.JobEntryEmpty;
 import org.pentaho.di.job.entries.trans.JobEntryTrans;
 import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.RepositoryDirectoryInterface;
+import org.pentaho.di.resource.ResourceDefinition;
+import org.pentaho.di.resource.ResourceNamingInterface;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.HashMap;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.same;
 import static org.mockito.Mockito.*;
 
@@ -145,6 +153,63 @@ public class JobMetaTest {
     }
 
     verify( jobEntryMock, times( 2 ) ).lookupRepositoryReferences( any( Repository.class ) );
+  }
 
+  /**
+   * Given job meta object.
+   * <br/>
+   * When the job is called to export resources,
+   * then the existing current directory should be used as a context to locate resources.
+   */
+  @Test
+  public void shouldUseExistingRepositoryDirectoryWhenExporting() throws KettleException {
+    // prepare
+    final JobMeta clone = spy( new JobMeta() );
+    RepositoryDirectoryInterface directory = mock( RepositoryDirectoryInterface.class );
+    when( directory.getPath() ).thenReturn( "directoryPath" );
+
+    JobMeta jobMeta = new JobMeta(  ) {
+      @Override
+      public Object realClone( boolean doClear ) {
+        return clone;
+      }
+    };
+    jobMeta.setRepositoryDirectory( directory );
+    jobMeta.setName( "jobName" );
+
+    // run
+    jobMeta.exportResources( null, new HashMap<String, ResourceDefinition>( 4 ), mock( ResourceNamingInterface.class ),
+      null, null );
+
+    // assert
+    verify( clone ).setRepositoryDirectory( directory );
+  }
+
+  @Test
+  public void shouldUseCoordinatesOfItsStepsAndNotesWhenCalculatingMinimumPoint() {
+    JobMeta jobMeta = new JobMeta();
+    Point jobEntryPoint = new Point( 500, 500 );
+    Point notePadMetaPoint = new Point( 400, 400 );
+    JobEntryCopy jobEntryCopy = mock( JobEntryCopy.class );
+    when( jobEntryCopy.getLocation() ).thenReturn( jobEntryPoint );
+    NotePadMeta notePadMeta = mock( NotePadMeta.class );
+    when( notePadMeta.getLocation() ).thenReturn( notePadMetaPoint );
+
+    // empty Job return 0 coordinate point
+    Point point = jobMeta.getMinimum();
+    assertEquals( 0, point.x );
+    assertEquals( 0, point.y );
+
+    // when Job contains a single step or note, then jobMeta should return coordinates of it, subtracting borders
+    jobMeta.addJobEntry( 0, jobEntryCopy );
+    Point actualStepPoint = jobMeta.getMinimum();
+    assertEquals( jobEntryPoint.x - JobMeta.BORDER_INDENT, actualStepPoint.x );
+    assertEquals( jobEntryPoint.y - JobMeta.BORDER_INDENT, actualStepPoint.y );
+
+    // when Job contains step or notes, then jobMeta should return minimal coordinates of them, subtracting borders
+    jobMeta.addNote( notePadMeta );
+    Point stepPoint = jobMeta.getMinimum();
+    assertEquals( notePadMetaPoint.x - JobMeta.BORDER_INDENT, stepPoint.x );
+    assertEquals( notePadMetaPoint.y - JobMeta.BORDER_INDENT, stepPoint.y );
   }
 }

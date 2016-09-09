@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -21,11 +21,6 @@
  ******************************************************************************/
 
 package org.pentaho.di.job.entries.job;
-
-import static org.pentaho.di.job.entry.validator.AndValidator.putValidators;
-import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.andValidator;
-import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notBlankValidator;
-import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notNullValidator;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -64,6 +59,8 @@ import org.pentaho.di.job.JobExecutionConfiguration;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
+import org.pentaho.di.job.entry.validator.AndValidator;
+import org.pentaho.di.job.entry.validator.JobEntryValidatorUtils;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
@@ -140,8 +137,31 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
     clear();
   }
 
+  private void allocateArgs( int nrArgs ) {
+    arguments = new String[nrArgs];
+  }
+
+  private void allocateParams( int nrParameters ) {
+    parameters = new String[nrParameters];
+    parameterFieldNames = new String[nrParameters];
+    parameterValues = new String[nrParameters];
+  }
+
+  @Override
   public Object clone() {
     JobEntryJob je = (JobEntryJob) super.clone();
+    if ( arguments != null ) {
+      int nrArgs = arguments.length;
+      je.allocateArgs( nrArgs );
+      System.arraycopy( arguments, 0, je.arguments, 0, nrArgs );
+    }
+    if ( parameters != null ) {
+      int nrParameters = parameters.length;
+      je.allocateParams( nrParameters );
+      System.arraycopy( parameters, 0, je.parameters, 0, nrParameters );
+      System.arraycopy( parameterFieldNames, 0, je.parameterFieldNames, 0, nrParameters );
+      System.arraycopy( parameterValues, 0, je.parameterValues, 0, nrParameters );
+    }
     return je;
   }
 
@@ -158,10 +178,12 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
     return filename;
   }
 
+  @Override
   public String getFilename() {
     return filename;
   }
 
+  @Override
   public String getRealFilename() {
     return environmentSubstitute( getFilename() );
   }
@@ -210,8 +232,9 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
     return retval;
   }
 
+  @Override
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 200 );
+    StringBuilder retval = new StringBuilder( 400 );
 
     retval.append( super.getXML() );
 
@@ -310,6 +333,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
     }
   }
 
+  @Override
   public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers,
     Repository rep, IMetaStore metaStore ) throws KettleXMLException {
     try {
@@ -361,7 +385,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
       while ( XMLHandler.getTagValue( entrynode, "argument" + argnr ) != null ) {
         argnr++;
       }
-      arguments = new String[argnr];
+      allocateArgs( argnr );
 
       // Read them all... This is a very BAD way to do it by the way. Sven
       // Boden.
@@ -375,10 +399,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
       passingAllParameters = Const.isEmpty( passAll ) || "Y".equalsIgnoreCase( passAll );
 
       int nrParameters = XMLHandler.countNodes( parametersNode, "parameter" );
-
-      parameters = new String[nrParameters];
-      parameterFieldNames = new String[nrParameters];
-      parameterValues = new String[nrParameters];
+      allocateParams( nrParameters );
 
       for ( int i = 0; i < nrParameters; i++ ) {
         Node knode = XMLHandler.getSubNodeByNr( parametersNode, "parameter", i );
@@ -395,6 +416,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
   /**
    * Load the jobentry from repository
    */
+  @Override
   public void loadRep( Repository rep, IMetaStore metaStore, ObjectId id_jobentry, List<DatabaseMeta> databases,
     List<SlaveServer> slaveServers ) throws KettleException {
     try {
@@ -429,7 +451,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 
       // How many arguments?
       int argnr = rep.countNrJobEntryAttributes( id_jobentry, "argument" );
-      arguments = new String[argnr];
+      allocateArgs( argnr );
 
       // Read all arguments ...
       for ( int a = 0; a < argnr; a++ ) {
@@ -438,9 +460,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 
       // How many arguments?
       int parameternr = rep.countNrJobEntryAttributes( id_jobentry, "parameter_name" );
-      parameters = new String[parameternr];
-      parameterFieldNames = new String[parameternr];
-      parameterValues = new String[parameternr];
+      allocateParams( parameternr );
 
       // Read all parameters ...
       for ( int a = 0; a < parameternr; a++ ) {
@@ -459,6 +479,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 
   // Save the attributes of this job entry
   //
+  @Override
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_job ) throws KettleException {
     try {
       rep.saveJobEntryAttribute( id_job, getObjectId(), "specification_method", specificationMethod == null
@@ -511,6 +532,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
     }
   }
 
+  @Override
   public Result execute( Result result, int nr ) throws KettleException {
     result.setEntryNr( nr );
 
@@ -1146,6 +1168,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
     verifyRecursiveExecution( parentJob.getParentJob(), jobMeta );
   }
 
+  @Override
   public void clear() {
     super.clear();
 
@@ -1163,20 +1186,30 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
     setAppendLogfile = false;
   }
 
+  @Override
   public boolean evaluates() {
     return true;
   }
 
+  @Override
   public boolean isUnconditional() {
     return true;
   }
 
+  @Override
   public List<SQLStatement> getSQLStatements( Repository repository, IMetaStore metaStore, VariableSpace space ) throws KettleException {
     this.copyVariablesFrom( space );
     JobMeta jobMeta = getJobMeta( repository, metaStore, space );
     return jobMeta.getSQLStatements( repository, null );
   }
 
+  /**
+   * @deprecated use {@link #getJobMeta(Repository, IMetaStore, VariableSpace)}
+   * @param rep
+   * @param space
+   * @return
+   * @throws KettleException
+   */
   @Deprecated
   public JobMeta getJobMeta( Repository rep, VariableSpace space ) throws KettleException {
     if ( rep != null ) {
@@ -1294,6 +1327,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
     this.execPerRow = runEveryResultRow;
   }
 
+  @Override
   public List<ResourceReference> getResourceDependencies( JobMeta jobMeta ) {
     List<ResourceReference> references = super.getResourceDependencies( jobMeta );
     if ( !Const.isEmpty( filename ) ) {
@@ -1325,6 +1359,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
    * @throws KettleException
    *           in case something goes wrong during the export
    */
+  @Override
   public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
     ResourceNamingInterface namingInterface, Repository repository, IMetaStore metaStore ) throws KettleException {
     // Try to load the transformation from repository or file.
@@ -1373,16 +1408,20 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
   public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
     if ( setLogfile ) {
-      andValidator().validate( this, "logfile", remarks, putValidators( notBlankValidator() ) );
+      JobEntryValidatorUtils.andValidator().validate( this, "logfile", remarks,
+          AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
     }
 
     if ( null != directory ) {
       // if from repo
-      andValidator().validate( this, "directory", remarks, putValidators( notNullValidator() ) );
-      andValidator().validate( this, "jobName", remarks, putValidators( notBlankValidator() ) );
+      JobEntryValidatorUtils.andValidator().validate( this, "directory", remarks,
+          AndValidator.putValidators( JobEntryValidatorUtils.notNullValidator() ) );
+      JobEntryValidatorUtils.andValidator().validate( this, "jobName", remarks,
+          AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
     } else {
       // else from xml file
-      andValidator().validate( this, "filename", remarks, putValidators( notBlankValidator() ) );
+      JobEntryValidatorUtils.andValidator().validate( this, "filename", remarks,
+          AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
     }
   }
 
@@ -1501,6 +1540,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
    * @param repository
    *          the repository to reference.
    */
+  @Override
   public void lookupRepositoryReferences( Repository repository ) throws KettleException {
     // The correct reference is stored in the job name and directory attributes...
     //
@@ -1514,6 +1554,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
       || jobObjectId != null || ( !Const.isEmpty( this.directory ) && !Const.isEmpty( jobname ) );
   }
 
+  @Override
   public boolean[] isReferencedObjectEnabled() {
     return new boolean[] { isJobDefined(), };
   }
@@ -1521,6 +1562,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
   /**
    * @return The objects referenced in the step, like a a transformation, a job, a mapper, a reducer, a combiner, ...
    */
+  @Override
   public String[] getReferencedObjectDescriptions() {
     return new String[] { BaseMessages.getString( PKG, "JobEntryJob.ReferencedObject.Description" ), };
   }
@@ -1539,6 +1581,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
    * @return the referenced object once loaded
    * @throws KettleException
    */
+  @Override
   public Object loadReferencedObject( int index, Repository rep, IMetaStore metaStore, VariableSpace space ) throws KettleException {
     return getJobMeta( rep, metaStore, space );
   }

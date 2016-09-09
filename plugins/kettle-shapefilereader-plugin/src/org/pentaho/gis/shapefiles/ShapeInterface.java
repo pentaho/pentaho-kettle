@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -31,13 +31,12 @@ import org.pentaho.di.core.row.RowMetaInterface;
  *
  */
 
-public interface ShapeInterface 
-{
-	public int getType();
-	
-	public void setDbfData(Object[] row);
-	public Object[] getDbfData();
+public interface ShapeInterface {
+  public int getType();
 
-	public void setDbfMeta(RowMetaInterface rowMeta);
-	public RowMetaInterface getDbfMeta();
+  public void setDbfData( Object[] row );
+  public Object[] getDbfData();
+
+  public void setDbfMeta( RowMetaInterface rowMeta );
+  public RowMetaInterface getDbfMeta();
 }

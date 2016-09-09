@@ -12,7 +12,7 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
+ * Copyright (c) 2002-2016 Pentaho Corporation..  All rights reserved.
  */
 
 package org.pentaho.di.trans.steps.hl7input;
@@ -27,8 +27,8 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -46,6 +46,7 @@ import org.w3c.dom.Node;
 
 @Step( id = "HL7Input", image = "hl7-input.svg", i18nPackageName = "org.pentaho.di.trans.steps.hl7input",
     name = "HL7Input.Name", description = "HL7Input.TooltipDesc",
+    documentationUrl = "http://wiki.pentaho.com/display/EAI/HL7+Input",
     categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Input" )
 public class HL7InputMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = HL7InputMeta.class; // for i18n purposes, needed by Translator2!!
@@ -56,10 +57,12 @@ public class HL7InputMeta extends BaseStepMeta implements StepMetaInterface {
     super(); // allocate BaseStepMeta
   }
 
+  @Override
   public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     readData( stepnode );
   }
 
+  @Override
   public Object clone() {
     Object retval = super.clone();
     return retval;
@@ -74,63 +77,68 @@ public class HL7InputMeta extends BaseStepMeta implements StepMetaInterface {
     messageField = XMLHandler.getTagValue( stepnode, "message_field" );
   }
 
+  @Override
   public void setDefault() {
   }
 
+  @Override
   public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
     throws KettleException {
     messageField = rep.getStepAttributeString( id_step, "message_field" );
   }
 
+  @Override
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
     throws KettleException {
     rep.saveStepAttribute( id_transformation, id_step, "message_field", messageField );
   }
 
+  @Override
   public void getFields( RowMetaInterface rowMeta, String origin, RowMetaInterface[] info, StepMeta nextStep,
       VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
-    ValueMetaInterface valueMeta = new ValueMeta( "ParentGroup", ValueMetaInterface.TYPE_STRING );
+    ValueMetaInterface valueMeta = new ValueMetaString( "ParentGroup" );
     valueMeta.setOrigin( origin );
     rowMeta.addValueMeta( valueMeta );
 
-    valueMeta = new ValueMeta( "Group", ValueMetaInterface.TYPE_STRING );
+    valueMeta = new ValueMetaString( "Group" );
     valueMeta.setOrigin( origin );
     rowMeta.addValueMeta( valueMeta );
 
-    valueMeta = new ValueMeta( "HL7Version", ValueMetaInterface.TYPE_STRING );
+    valueMeta = new ValueMetaString( "HL7Version" );
     valueMeta.setOrigin( origin );
     rowMeta.addValueMeta( valueMeta );
 
-    valueMeta = new ValueMeta( "StructureName", ValueMetaInterface.TYPE_STRING );
+    valueMeta = new ValueMetaString( "StructureName" );
     valueMeta.setOrigin( origin );
     rowMeta.addValueMeta( valueMeta );
 
-    valueMeta = new ValueMeta( "StructureNumber", ValueMetaInterface.TYPE_STRING );
+    valueMeta = new ValueMetaString( "StructureNumber" );
     valueMeta.setOrigin( origin );
     rowMeta.addValueMeta( valueMeta );
 
-    valueMeta = new ValueMeta( "FieldName", ValueMetaInterface.TYPE_STRING );
+    valueMeta = new ValueMetaString( "FieldName" );
     valueMeta.setOrigin( origin );
     rowMeta.addValueMeta( valueMeta );
 
-    valueMeta = new ValueMeta( "Coordinates", ValueMetaInterface.TYPE_STRING );
+    valueMeta = new ValueMetaString( "Coordinates" );
     valueMeta.setOrigin( origin );
     rowMeta.addValueMeta( valueMeta );
 
-    valueMeta = new ValueMeta( "HL7DataType", ValueMetaInterface.TYPE_STRING );
+    valueMeta = new ValueMetaString( "HL7DataType" );
     valueMeta.setOrigin( origin );
     rowMeta.addValueMeta( valueMeta );
 
-    valueMeta = new ValueMeta( "FieldDescription", ValueMetaInterface.TYPE_STRING );
+    valueMeta = new ValueMetaString( "FieldDescription" );
     valueMeta.setOrigin( origin );
     rowMeta.addValueMeta( valueMeta );
 
-    valueMeta = new ValueMeta( "Value", ValueMetaInterface.TYPE_STRING );
+    valueMeta = new ValueMetaString( "Value" );
     valueMeta.setOrigin( origin );
     rowMeta.addValueMeta( valueMeta );
 
   }
 
+  @Override
   public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
       String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
       IMetaStore metaStore ) {
@@ -161,11 +169,13 @@ public class HL7InputMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
+  @Override
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta tr,
       Trans trans ) {
     return new HL7Input( stepMeta, stepDataInterface, cnr, tr, trans );
   }
 
+  @Override
   public StepDataInterface getStepData() {
     return new HL7InputData();
   }

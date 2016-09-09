@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -40,6 +40,20 @@ import java.util.List;
 
 import javax.sql.DataSource;
 
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.DBCache;
+import org.pentaho.di.core.DBCacheEntry;
+import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.database.util.DatabaseUtil;
+import org.pentaho.di.core.exception.KettleDatabaseException;
+import org.pentaho.di.core.row.RowMeta;
+import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
+import org.pentaho.di.core.row.value.ValueMetaString;
+import org.pentaho.di.core.variables.VariableSpace;
+
 import mondrian.olap.Axis;
 import mondrian.olap.Cell;
 import mondrian.olap.Connection;
@@ -49,20 +63,6 @@ import mondrian.olap.Member;
 import mondrian.olap.Position;
 import mondrian.olap.Query;
 import mondrian.olap.Result;
-
-import org.pentaho.di.core.Const;
-import org.pentaho.di.core.DBCache;
-import org.pentaho.di.core.DBCacheEntry;
-import org.pentaho.di.core.database.DataSourceProviderFactory;
-import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.di.core.database.util.DatabaseUtil;
-import org.pentaho.di.core.exception.KettleDatabaseException;
-import org.pentaho.di.core.row.RowMeta;
-import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
-import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.core.row.value.ValueMetaFactory;
-import org.pentaho.di.core.variables.VariableSpace;
 
 /**
  * <code>Mondrian Helper class</code> ...
@@ -289,7 +289,7 @@ public class MondrianHelper {
         } else {
           // If the entire column is null, assume the missing data as String.
           // Irrelevant, anyway
-          ValueMetaInterface valueMeta = new ValueMeta( headings.get( c ), ValueMetaInterface.TYPE_STRING );
+          ValueMetaInterface valueMeta = new ValueMetaString( headings.get( c ) );
           valueMetaList.add( valueMeta );
         }
 

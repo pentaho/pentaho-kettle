@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -32,8 +32,9 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -95,12 +96,9 @@ public class StepsMetricsMeta extends BaseStepMeta implements StepMetaInterface 
 
     retval.allocate( nrfields );
 
-    for ( int i = 0; i < nrfields; i++ ) {
-      retval.stepName[i] = stepName[i];
-      retval.stepCopyNr[i] = stepCopyNr[i];
-      retval.stepRequired[i] = stepRequired[i];
-
-    }
+    System.arraycopy( stepName, 0, retval.stepName, 0, nrfields );
+    System.arraycopy( stepCopyNr, 0, retval.stepCopyNr, 0, nrfields );
+    System.arraycopy( stepRequired, 0, retval.stepRequired, 0, nrfields );
     return retval;
   }
 
@@ -156,62 +154,62 @@ public class StepsMetricsMeta extends BaseStepMeta implements StepMetaInterface 
     r.clear();
     String stepname = space.environmentSubstitute( stepnamefield );
     if ( !Const.isEmpty( stepname ) ) {
-      ValueMetaInterface v = new ValueMeta( stepname, ValueMeta.TYPE_STRING );
+      ValueMetaInterface v = new ValueMetaString( stepname );
       v.setOrigin( name );
       r.addValueMeta( v );
     }
     String stepid = space.environmentSubstitute( stepidfield );
     if ( !Const.isEmpty( stepid ) ) {
-      ValueMetaInterface v = new ValueMeta( stepid, ValueMeta.TYPE_STRING );
+      ValueMetaInterface v = new ValueMetaString( stepid );
       v.setOrigin( name );
       v.setLength( ValueMetaInterface.DEFAULT_INTEGER_LENGTH, 0 );
       r.addValueMeta( v );
     }
     String steplinesinput = space.environmentSubstitute( steplinesinputfield );
     if ( !Const.isEmpty( steplinesinput ) ) {
-      ValueMetaInterface v = new ValueMeta( steplinesinput, ValueMeta.TYPE_INTEGER );
+      ValueMetaInterface v = new ValueMetaInteger( steplinesinput );
       v.setOrigin( name );
       v.setLength( ValueMetaInterface.DEFAULT_INTEGER_LENGTH, 0 );
       r.addValueMeta( v );
     }
     String steplinesoutput = space.environmentSubstitute( steplinesoutputfield );
     if ( !Const.isEmpty( steplinesoutput ) ) {
-      ValueMetaInterface v = new ValueMeta( steplinesoutput, ValueMeta.TYPE_INTEGER );
+      ValueMetaInterface v = new ValueMetaInteger( steplinesoutput );
       v.setOrigin( name );
       v.setLength( ValueMetaInterface.DEFAULT_INTEGER_LENGTH, 0 );
       r.addValueMeta( v );
     }
     String steplinesread = space.environmentSubstitute( steplinesreadfield );
     if ( !Const.isEmpty( steplinesread ) ) {
-      ValueMetaInterface v = new ValueMeta( steplinesread, ValueMeta.TYPE_INTEGER );
+      ValueMetaInterface v = new ValueMetaInteger( steplinesread );
       v.setOrigin( name );
       v.setLength( ValueMetaInterface.DEFAULT_INTEGER_LENGTH, 0 );
       r.addValueMeta( v );
     }
     String steplinesupdated = space.environmentSubstitute( steplinesupdatedfield );
     if ( !Const.isEmpty( steplinesupdated ) ) {
-      ValueMetaInterface v = new ValueMeta( steplinesupdated, ValueMeta.TYPE_INTEGER );
+      ValueMetaInterface v = new ValueMetaInteger( steplinesupdated );
       v.setOrigin( name );
       v.setLength( ValueMetaInterface.DEFAULT_INTEGER_LENGTH, 0 );
       r.addValueMeta( v );
     }
     String steplineswritten = space.environmentSubstitute( steplineswrittentfield );
     if ( !Const.isEmpty( steplineswritten ) ) {
-      ValueMetaInterface v = new ValueMeta( steplineswritten, ValueMeta.TYPE_INTEGER );
+      ValueMetaInterface v = new ValueMetaInteger( steplineswritten );
       v.setOrigin( name );
       v.setLength( ValueMetaInterface.DEFAULT_INTEGER_LENGTH, 0 );
       r.addValueMeta( v );
     }
     String steplineserrors = space.environmentSubstitute( steplineserrorsfield );
     if ( !Const.isEmpty( steplineserrors ) ) {
-      ValueMetaInterface v = new ValueMeta( steplineserrors, ValueMeta.TYPE_INTEGER );
+      ValueMetaInterface v = new ValueMetaInteger( steplineserrors );
       v.setOrigin( name );
       v.setLength( ValueMetaInterface.DEFAULT_INTEGER_LENGTH, 0 );
       r.addValueMeta( v );
     }
     String stepseconds = space.environmentSubstitute( stepsecondsfield );
     if ( !Const.isEmpty( stepseconds ) ) {
-      ValueMetaInterface v = new ValueMeta( stepseconds, ValueMeta.TYPE_INTEGER );
+      ValueMetaInterface v = new ValueMetaInteger( stepseconds );
       v.setOrigin( name );
       r.addValueMeta( v );
     }
@@ -246,7 +244,7 @@ public class StepsMetricsMeta extends BaseStepMeta implements StepMetaInterface 
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer();
+    StringBuilder retval = new StringBuilder();
 
     retval.append( "    <steps>" + Const.CR );
     for ( int i = 0; i < stepName.length; i++ ) {

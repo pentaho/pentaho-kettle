@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -34,8 +34,8 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.ObjectId;
@@ -83,8 +83,9 @@ public class NumberRangeMeta extends BaseStepMeta implements StepMetaInterface {
     readRep( rep, metaStore, id_step, databases );
   }
 
+  @Override
   public String getXML() {
-    StringBuffer retval = new StringBuffer();
+    StringBuilder retval = new StringBuilder();
 
     retval.append( "    " ).append( XMLHandler.addTagValue( "inputField", inputField ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "outputField", outputField ) );
@@ -103,19 +104,22 @@ public class NumberRangeMeta extends BaseStepMeta implements StepMetaInterface {
     return retval.toString();
   }
 
+  @Override
   public void getFields( RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep,
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
-    ValueMetaInterface mcValue = new ValueMeta( outputField, ValueMetaInterface.TYPE_STRING );
+    ValueMetaInterface mcValue = new ValueMetaString( outputField );
     mcValue.setOrigin( name );
     mcValue.setLength( 255 );
     row.addValueMeta( mcValue );
   }
 
+  @Override
   public Object clone() {
     Object retval = super.clone();
     return retval;
   }
 
+  @Override
   public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     try {
       inputField = XMLHandler.getTagValue( stepnode, "inputField" );
@@ -145,6 +149,7 @@ public class NumberRangeMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
+  @Override
   public void setDefault() {
     emptyRules();
     setFallBackValue( "unknown" );
@@ -155,6 +160,7 @@ public class NumberRangeMeta extends BaseStepMeta implements StepMetaInterface {
     outputField = "range";
   }
 
+  @Override
   public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
       inputField = rep.getStepAttributeString( id_step, "inputField" );
@@ -180,6 +186,7 @@ public class NumberRangeMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
+  @Override
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       rep.saveStepAttribute( id_transformation, id_step, "inputField", inputField );
@@ -202,6 +209,7 @@ public class NumberRangeMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
+  @Override
   public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepinfo,
     RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
@@ -228,11 +236,13 @@ public class NumberRangeMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
+  @Override
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
     TransMeta transMeta, Trans disp ) {
     return new NumberRange( stepMeta, stepDataInterface, cnr, transMeta, disp );
   }
 
+  @Override
   public StepDataInterface getStepData() {
     return new NumberRangeData();
   }
@@ -274,6 +284,7 @@ public class NumberRangeMeta extends BaseStepMeta implements StepMetaInterface {
     this.rules = rules;
   }
 
+  @Override
   public boolean supportsErrorHandling() {
     return true;
   }

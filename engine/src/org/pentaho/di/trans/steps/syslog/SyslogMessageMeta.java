@@ -161,7 +161,16 @@ public class SyslogMessageMeta extends BaseStepMeta implements StepMetaInterface
     this.port = port;
   }
 
+  /**
+   * @deprecated use {@link #setAddTimestamp(boolean)} instead
+   * @param value
+   */
+  @Deprecated
   public void addTimestamp( boolean value ) {
+    setAddTimestamp( value );
+  }
+
+  public void setAddTimestamp( boolean value ) {
     this.addTimestamp = value;
   }
 
@@ -187,7 +196,16 @@ public class SyslogMessageMeta extends BaseStepMeta implements StepMetaInterface
     return datePattern;
   }
 
+  /**
+   * @deprecated use {@link #setAddHostName(boolean)} instead
+   * @param value
+   */
+  @Deprecated
   public void addHostName( boolean value ) {
+    setAddHostName( value );
+  }
+
+  public void setAddHostName( boolean value ) {
     this.addHostName = value;
   }
 
@@ -199,7 +217,7 @@ public class SyslogMessageMeta extends BaseStepMeta implements StepMetaInterface
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer();
+    StringBuilder retval = new StringBuilder();
 
     retval.append( "    " + XMLHandler.addTagValue( "messagefieldname", messagefieldname ) );
     retval.append( "    " + XMLHandler.addTagValue( "port", port ) );

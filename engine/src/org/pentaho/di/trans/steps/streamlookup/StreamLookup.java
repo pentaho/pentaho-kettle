@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -36,8 +36,8 @@ import org.pentaho.di.core.hash.ByteArrayHashIndex;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -125,7 +125,7 @@ public class StreamLookup extends BaseStep implements StepInterface {
           if ( meta.getValueDefault()[i] != null && meta.getValueDefault()[i].trim().length() > 0 ) {
             throw new RuntimeException( BaseMessages.getString(
               PKG, "StreamLookup.Exception.ConversionNotImplemented" )
-              + " " + ValueMeta.getTypeDesc( meta.getValueDefaultType()[i] ) );
+              + " " + ValueMetaFactory.getValueMetaName( meta.getValueDefaultType()[i] ) );
           } else {
             // no default value given: just set it to null
             data.nullIf[i] = null;
@@ -285,8 +285,7 @@ public class StreamLookup extends BaseStep implements StepInterface {
       }
     }
 
-    if ( add == null ) // nothing was found, unknown code: add the specified default value...
-    {
+    if ( add == null ) { // nothing was found, unknown code: add the specified default value...
       add = data.nullIf;
     }
 
@@ -372,6 +371,7 @@ public class StreamLookup extends BaseStep implements StepInterface {
     }
   }
 
+  @Override
   public boolean processRow( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
     meta = (StreamLookupMeta) smi;
     data = (StreamLookupData) sdi;
@@ -461,6 +461,7 @@ public class StreamLookup extends BaseStep implements StepInterface {
     return true;
   }
 
+  @Override
   public boolean init( StepMetaInterface smi, StepDataInterface sdi ) {
     meta = (StreamLookupMeta) smi;
     data = (StreamLookupData) sdi;
@@ -474,6 +475,7 @@ public class StreamLookup extends BaseStep implements StepInterface {
     return false;
   }
 
+  @Override
   public void dispose( StepMetaInterface smi, StepDataInterface sdi ) {
     // Recover memory immediately, allow in-memory data to be garbage collected
     //

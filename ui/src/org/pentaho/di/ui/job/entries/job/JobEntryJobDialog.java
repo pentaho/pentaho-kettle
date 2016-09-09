@@ -1137,6 +1137,7 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
           saved = spoon.saveToRepository( newJobMeta, false );
           if ( rep.getRepositoryMeta().getRepositoryCapabilities().supportsReferences() ) {
             specificationMethod = ObjectLocationSpecificationMethod.REPOSITORY_BY_REFERENCE;
+            referenceObjectId = newJobMeta.getObjectId();
           } else {
             specificationMethod = ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME;
           }

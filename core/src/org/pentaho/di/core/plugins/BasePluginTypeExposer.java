@@ -1,9 +1,28 @@
+/*! ******************************************************************************
+ *
+ * Pentaho Data Integration
+ *
+ * Copyright (C) 2016 by Pentaho : http://www.pentaho.com
+ *
+ *******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
+
 package org.pentaho.di.core.plugins;
 
-import org.pentaho.di.core.exception.KettlePluginException;
-
 import java.lang.annotation.Annotation;
-import java.util.Map;
 
 /**
  * This Class serves only one purpose, defeat the package protection modifiers on the BasePluginType. We normally would
@@ -22,7 +41,7 @@ public class BasePluginTypeExposer {
   private String packageName;
   private final String altPackageName;
 
-  public BasePluginTypeExposer(BasePluginType pluginType, Object target ) {
+  public BasePluginTypeExposer( BasePluginType pluginType, Object target ) {
     this.target = target;
     this.pluginType = pluginType;
 

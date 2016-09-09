@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -26,39 +26,27 @@ package org.pentaho.gis.shapefiles;
  * Created on 30-jun-2004
  *
  * @author Matt
- * 
+ *
  * Contains the information in the header of the Esri Shape file...
  *
  */
 
-public class ShapeRecordHeader 
-{
-	public int number;
-	public int length;
-	
-	/*
-		Position 	Field 			Value 			Type 		Order
-		---------------------------------------------------------------
-		Byte 0 		Record Number 	Record Number 	Integer 	Big
-		Byte 4 		Content Length 	Content Length 	Integer 	Big
-	
-	*/
-	
-	public ShapeRecordHeader(byte header[])
-	{
-		number    = Converter.getIntegerBig(header,  0);
-		
-		// The length is in 16-bit words: nr of bytes x 2!!
-		length    = Converter.getIntegerBig(header,  4) * 2;
-		
-		// System.out.println("header : length="+length);
-		
-		/*
-		System.out.println("Header[4]="+header[4]);
-		System.out.println("Header[5]="+header[5]);
-		System.out.println("Header[6]="+header[6]);
-		System.out.println("Header[7]="+header[7]);
-		System.out.println("--> lenght = "+length);
-		*/
-	}
+public class ShapeRecordHeader {
+  public int number;
+  public int length;
+
+  /*
+    Position  Field           Value           Type     Order
+    --------------------------------------------------------
+    Byte 0    Record Number   Record Number   Integer  Big
+    Byte 4    Content Length  Content Length  Integer  Big
+
+  */
+
+  public ShapeRecordHeader( byte[] header ) {
+    number = Converter.getIntegerBig( header,  0 );
+
+    // The length is in 16-bit words: nr of bytes x 2!!
+    length = Converter.getIntegerBig( header,  4 ) * 2;
+  }
 }

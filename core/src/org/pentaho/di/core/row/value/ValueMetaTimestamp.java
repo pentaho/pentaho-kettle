@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -37,7 +37,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-import org.pentaho.di.compatibility.Value;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseInterface;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -191,20 +190,23 @@ public class ValueMetaTimestamp extends ValueMetaDate {
   public int compare( Object data1, Object data2 ) throws KettleValueException {
     Timestamp timestamp1 = getTimestamp( data1 );
     Timestamp timestamp2 = getTimestamp( data2 );
+    int cmp = 0;
     if ( timestamp1 == null ) {
       if ( timestamp2 == null ) {
-        return 0;
+        cmp = 0;
       } else {
-        return -1;
+        cmp = -1;
       }
+    } else if ( timestamp2 == null ) {
+      cmp = 1;
     } else {
-      if ( timestamp2 == null ) {
-        return 1;
-      } else {
-        return timestamp1.compareTo( timestamp2 );
-      }
+      cmp = timestamp1.compareTo( timestamp2 );
     }
-
+    if ( isSortedDescending() ) {
+      return -cmp;
+    } else {
+      return cmp;
+    }
   }
 
   protected Timestamp convertBigNumberToTimestamp( BigDecimal bd ) {
@@ -275,25 +277,25 @@ public class ValueMetaTimestamp extends ValueMetaDate {
     String null_value = nullIf;
     if ( null_value == null ) {
       switch ( convertMeta.getType() ) {
-        case Value.VALUE_TYPE_BOOLEAN:
+        case ValueMetaInterface.TYPE_BOOLEAN:
           null_value = Const.NULL_BOOLEAN;
           break;
-        case Value.VALUE_TYPE_STRING:
+        case ValueMetaInterface.TYPE_STRING:
           null_value = Const.NULL_STRING;
           break;
-        case Value.VALUE_TYPE_BIGNUMBER:
+        case ValueMetaInterface.TYPE_BIGNUMBER:
           null_value = Const.NULL_BIGNUMBER;
           break;
-        case Value.VALUE_TYPE_NUMBER:
+        case ValueMetaInterface.TYPE_NUMBER:
           null_value = Const.NULL_NUMBER;
           break;
-        case Value.VALUE_TYPE_INTEGER:
+        case ValueMetaInterface.TYPE_INTEGER:
           null_value = Const.NULL_INTEGER;
           break;
-        case Value.VALUE_TYPE_DATE:
+        case ValueMetaInterface.TYPE_DATE:
           null_value = Const.NULL_DATE;
           break;
-        case Value.VALUE_TYPE_BINARY:
+        case ValueMetaInterface.TYPE_BINARY:
           null_value = Const.NULL_BINARY;
           break;
         default:
@@ -310,7 +312,7 @@ public class ValueMetaTimestamp extends ValueMetaDate {
       // because you could get an NPE since you haven't checked isEmpty(pol)
       // yet!
       if ( Const.isEmpty( pol )
-          || pol.equalsIgnoreCase( Const.rightPad( new StringBuffer( null_value ), pol.length() ) ) ) {
+          || pol.equalsIgnoreCase( Const.rightPad( new StringBuilder( null_value ), pol.length() ) ) ) {
         pol = ifNull;
       }
     }
@@ -328,7 +330,7 @@ public class ValueMetaTimestamp extends ValueMetaDate {
           // If the polled value is equal to the spaces right-padded null_value,
           // we have a match
           //
-          if ( pol.equalsIgnoreCase( Const.rightPad( new StringBuffer( null_value ), pol.length() ) ) ) {
+          if ( pol.equalsIgnoreCase( Const.rightPad( new StringBuilder( null_value ), pol.length() ) ) ) {
             return null;
           }
         }
@@ -343,10 +345,10 @@ public class ValueMetaTimestamp extends ValueMetaDate {
     }
 
     // Trimming
-    StringBuffer strpol;
+    StringBuilder strpol;
     switch ( trim_type ) {
       case ValueMetaInterface.TRIM_TYPE_LEFT:
-        strpol = new StringBuffer( pol );
+        strpol = new StringBuilder( pol );
         while ( strpol.length() > 0 && strpol.charAt( 0 ) == ' ' ) {
           strpol.deleteCharAt( 0 );
         }
@@ -354,14 +356,14 @@ public class ValueMetaTimestamp extends ValueMetaDate {
 
         break;
       case ValueMetaInterface.TRIM_TYPE_RIGHT:
-        strpol = new StringBuffer( pol );
+        strpol = new StringBuilder( pol );
         while ( strpol.length() > 0 && strpol.charAt( strpol.length() - 1 ) == ' ' ) {
           strpol.deleteCharAt( strpol.length() - 1 );
         }
         pol = strpol.toString();
         break;
       case ValueMetaInterface.TRIM_TYPE_BOTH:
-        strpol = new StringBuffer( pol );
+        strpol = new StringBuilder( pol );
         while ( strpol.length() > 0 && strpol.charAt( 0 ) == ' ' ) {
           strpol.deleteCharAt( 0 );
         }
@@ -408,6 +410,8 @@ public class ValueMetaTimestamp extends ValueMetaDate {
   @Override
   public Object convertData( ValueMetaInterface meta2, Object data2 ) throws KettleValueException {
     switch ( meta2.getType() ) {
+      case TYPE_TIMESTAMP:
+        return ( (ValueMetaTimestamp) meta2 ).getTimestamp( data2 );
       case TYPE_STRING:
         return convertStringToTimestamp( meta2.getString( data2 ) );
       case TYPE_INTEGER:
@@ -651,5 +655,10 @@ public class ValueMetaTimestamp extends ValueMetaDate {
       dateFormatChanged = false;
     }
     return dateFormat;
+  }
+
+  @Override
+  public Class<?> getNativeDataTypeClass() throws KettleValueException {
+    return Timestamp.class;
   }
 }

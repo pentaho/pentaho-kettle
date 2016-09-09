@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,18 +24,16 @@ package org.pentaho.di.trans;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URISyntaxException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.concurrent.CountDownLatch;
 
 import org.apache.commons.io.IOUtils;
@@ -46,18 +44,17 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.ProgressMonitorListener;
+import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.core.logging.StepLogTable;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
-import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.step.StepMetaChangeListenerInterface;
-import org.pentaho.di.trans.steps.metainject.MetaInjectMeta;
-import org.pentaho.di.trans.steps.metainject.SourceStepField;
-import org.pentaho.di.trans.steps.metainject.TargetStepAttribute;
+import org.pentaho.di.trans.step.StepMetaDataCombi;
 
 public class TransTest {
 
@@ -77,6 +74,23 @@ public class TransTest {
     trans.setLog( Mockito.mock( LogChannelInterface.class ) );
     trans.prepareExecution( null );
     trans.startThreads();
+  }
+
+  /**
+   * PDI-14948 - Execution of trans with no steps never ends
+   */
+  @Test( timeout = 1000 )
+  public void transWithNoStepsIsNotEndless() throws Exception {
+    Trans transWithNoSteps = new Trans( new TransMeta() );
+    transWithNoSteps = spy( transWithNoSteps );
+
+    transWithNoSteps.prepareExecution( new String[] {} );
+
+    transWithNoSteps.startThreads();
+
+    // check trans lifecycle is not corrupted
+    verify( transWithNoSteps ).fireTransStartedListeners();
+    verify( transWithNoSteps ).fireTransFinishedListeners();
   }
 
   @Test
@@ -194,69 +208,45 @@ public class TransTest {
   }
 
   @Test
-  public void testTransListeners() {
-    TransMeta TransMeta = new TransMeta();
+  public void testRecordsCleanUpMethodIsCalled() throws Exception {
+    Database mockedDataBase = mock( Database.class );
+    Trans trans = mock( Trans.class );
 
-    StepMeta oldFormStep = new StepMeta();
-    oldFormStep.setName( "Generate_1" );
+    StepLogTable stepLogTable = StepLogTable.getDefault( mock( VariableSpace.class ), mock( HasDatabasesInterface.class )  );
+    stepLogTable.setConnectionName( "connection" );
 
-    StepMeta newFormStep = new StepMeta();
-    newFormStep.setName( "Generate_2" );
+    TransMeta transMeta = new TransMeta(  );
+    transMeta.setStepLogTable( stepLogTable );
 
-    StepMeta toStep = new StepMeta();
-    toStep.setStepMetaInterface( new MetaInjectMeta() );
-    toStep.setName( "ETL Inject Metadata" );
+    when( trans.getTransMeta() ).thenReturn( transMeta );
+    when( trans.createDataBase( any( DatabaseMeta.class ) ) ).thenReturn( mockedDataBase );
+    when( trans.getSteps() ).thenReturn( new ArrayList<StepMetaDataCombi>() );
 
-    StepMeta deletedStep = new StepMeta();
-    deletedStep.setStepMetaInterface( new MetaInjectMeta() );
-    deletedStep.setName( "ETL Inject Metadata for delete" );
+    doCallRealMethod().when( trans ).writeStepLogInformation();
+    trans.writeStepLogInformation();
 
-    // Verify add & remove listeners
+    verify( mockedDataBase ).cleanupLogRecords( stepLogTable );
+  }
 
-    TransMeta.addStep( oldFormStep );
-    TransMeta.addStep( toStep );
-    TransMeta.addStep( deletedStep );
+  @Test
+  public void testFireTransFinishedListeners() throws Exception {
+    Trans trans = new Trans();
+    TransListener mockListener = mock( TransListener.class );
+    trans.setTransListeners( Collections.singletonList( mockListener ) );
 
-    assertEquals( TransMeta.nrStepChangeListeners(), 2 );
-    TransMeta.removeStepChangeListener( (StepMetaChangeListenerInterface) deletedStep.getStepMetaInterface() );
-    assertEquals( TransMeta.nrStepChangeListeners(), 1 );
-    TransMeta.removeStep( 2 );
+    trans.fireTransFinishedListeners();
 
-    TransHopMeta hi = new TransHopMeta( oldFormStep, toStep );
-    TransMeta.addTransHop( hi );
+    verify( mockListener ).transFinished( trans );
+  }
 
-    // Verify MetaInjectMeta.onStepChange()
+  @Test( expected = KettleException.class )
+  public void testFireTransFinishedListenersExceprionOnTransFinished() throws Exception {
+    Trans trans = new Trans();
+    TransListener mockListener = mock( TransListener.class );
+    doThrow( KettleException.class ).when( mockListener ).transFinished( trans );
+    trans.setTransListeners( Collections.singletonList( mockListener ) );
 
-    // add new TargetStepAttribute
-    MetaInjectMeta toMeta = (MetaInjectMeta) toStep.getStepMetaInterface();
-
-    Map<TargetStepAttribute, SourceStepField> sourceMapping = new HashMap<TargetStepAttribute, SourceStepField>();
-    TargetStepAttribute keyTest = new TargetStepAttribute( "File", "key", true );
-    SourceStepField valueTest = new SourceStepField( oldFormStep.getName(), oldFormStep.getName() );
-    sourceMapping.put( keyTest, valueTest );
-
-    toMeta.setTargetSourceMapping( sourceMapping );
-
-    // Run all listeners
-    TransMeta.notifyAllListeners( oldFormStep, newFormStep );
-
-    // Verify changes, which listeners makes
-    sourceMapping = toMeta.getTargetSourceMapping();
-    for ( Entry<TargetStepAttribute, SourceStepField> entry : sourceMapping.entrySet() ) {
-      SourceStepField value = entry.getValue();
-      if ( !value.getStepname().equals( newFormStep.getName() ) ) {
-        fail();
-      }
-    }
-
-    // verify another functions
-    TransMeta.addStep( 1, deletedStep );
-    assertEquals( TransMeta.nrSteps(), 3 );
-    assertEquals( TransMeta.nrStepChangeListeners(), 2 );
-
-    TransMeta.removeStep( 0 );
-    assertEquals( TransMeta.nrSteps(), 2 );
-
+    trans.fireTransFinishedListeners();
   }
 
   private void startThreads( Runnable one, Runnable two, CountDownLatch start ) throws InterruptedException {

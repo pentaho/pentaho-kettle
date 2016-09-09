@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -41,6 +41,10 @@ public class ValueMetaDate extends ValueMetaBase implements ValueMetaInterface {
     super( name, type );
   }
 
+  public ValueMetaDate( String name, int length, int precision ) {
+    super( name, ValueMetaInterface.TYPE_DATE, length, precision );
+  }
+
   @Override
   public Date getDate( Object object ) throws KettleValueException {
     return super.getDate( object );
@@ -49,5 +53,10 @@ public class ValueMetaDate extends ValueMetaBase implements ValueMetaInterface {
   @Override
   public Object getNativeDataType( Object object ) throws KettleValueException {
     return getDate( object );
+  }
+
+  @Override
+  public Class<?> getNativeDataTypeClass() throws KettleValueException {
+    return Date.class;
   }
 }

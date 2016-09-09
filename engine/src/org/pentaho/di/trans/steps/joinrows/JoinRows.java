@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -444,8 +444,10 @@ public class JoinRows extends BaseStep implements StepInterface {
     data = (JoinRowsData) sdi;
 
     // Remove the temporary files...
-    for ( int i = 1; i < data.file.length; i++ ) {
-      data.file[i].delete();
+    if ( data.file != null ) {
+      for ( int i = 1; i < data.file.length; i++ ) {
+        data.file[i].delete();
+      }
     }
 
     super.dispose( meta, data );

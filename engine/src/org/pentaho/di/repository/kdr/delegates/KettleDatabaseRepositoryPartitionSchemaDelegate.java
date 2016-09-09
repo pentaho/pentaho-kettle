@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,8 +27,9 @@ import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleDependencyException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleObjectExistsException;
-import org.pentaho.di.core.row.ValueMeta;
-import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaBoolean;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.kdr.KettleDatabaseRepository;
@@ -152,23 +153,13 @@ public class KettleDatabaseRepositoryPartitionSchemaDelegate extends KettleDatab
 
     RowMetaAndData table = new RowMetaAndData();
 
-    table
-      .addValue(
-        new ValueMeta(
-          KettleDatabaseRepository.FIELD_PARTITION_SCHEMA_ID_PARTITION_SCHEMA,
-          ValueMetaInterface.TYPE_INTEGER ), id );
-    table.addValue( new ValueMeta(
-      KettleDatabaseRepository.FIELD_PARTITION_SCHEMA_NAME, ValueMetaInterface.TYPE_STRING ), partitionSchema
-      .getName() );
-    table.addValue(
-      new ValueMeta(
-        KettleDatabaseRepository.FIELD_PARTITION_SCHEMA_DYNAMIC_DEFINITION, ValueMetaInterface.TYPE_BOOLEAN ),
+    table.addValue( new ValueMetaInteger( KettleDatabaseRepository.FIELD_PARTITION_SCHEMA_ID_PARTITION_SCHEMA ), id );
+    table.addValue( new ValueMetaString( KettleDatabaseRepository.FIELD_PARTITION_SCHEMA_NAME ),
+      partitionSchema.getName() );
+    table.addValue( new ValueMetaBoolean( KettleDatabaseRepository.FIELD_PARTITION_SCHEMA_DYNAMIC_DEFINITION ),
       partitionSchema.isDynamicallyDefined() );
-    table
-      .addValue(
-        new ValueMeta(
-          KettleDatabaseRepository.FIELD_PARTITION_SCHEMA_PARTITIONS_PER_SLAVE,
-          ValueMetaInterface.TYPE_STRING ), partitionSchema.getNumberOfPartitionsPerSlave() );
+    table.addValue( new ValueMetaString( KettleDatabaseRepository.FIELD_PARTITION_SCHEMA_PARTITIONS_PER_SLAVE ),
+      partitionSchema.getNumberOfPartitionsPerSlave() );
 
     repository.connectionDelegate.getDatabase().prepareInsert(
       table.getRowMeta(), KettleDatabaseRepository.TABLE_R_PARTITION_SCHEMA );
@@ -181,18 +172,12 @@ public class KettleDatabaseRepositoryPartitionSchemaDelegate extends KettleDatab
 
   public synchronized void updatePartitionSchema( PartitionSchema partitionSchema ) throws KettleException {
     RowMetaAndData table = new RowMetaAndData();
-    table.addValue( new ValueMeta(
-      KettleDatabaseRepository.FIELD_PARTITION_SCHEMA_NAME, ValueMetaInterface.TYPE_STRING ), partitionSchema
-      .getName() );
-    table.addValue(
-      new ValueMeta(
-        KettleDatabaseRepository.FIELD_PARTITION_SCHEMA_DYNAMIC_DEFINITION, ValueMetaInterface.TYPE_BOOLEAN ),
+    table.addValue( new ValueMetaString( KettleDatabaseRepository.FIELD_PARTITION_SCHEMA_NAME ),
+      partitionSchema.getName() );
+    table.addValue( new ValueMetaBoolean( KettleDatabaseRepository.FIELD_PARTITION_SCHEMA_DYNAMIC_DEFINITION ),
       partitionSchema.isDynamicallyDefined() );
-    table
-      .addValue(
-        new ValueMeta(
-          KettleDatabaseRepository.FIELD_PARTITION_SCHEMA_PARTITIONS_PER_SLAVE,
-          ValueMetaInterface.TYPE_STRING ), partitionSchema.getNumberOfPartitionsPerSlave() );
+    table.addValue( new ValueMetaString( KettleDatabaseRepository.FIELD_PARTITION_SCHEMA_PARTITIONS_PER_SLAVE ),
+      partitionSchema.getNumberOfPartitionsPerSlave() );
 
     repository.connectionDelegate.updateTableRow(
       KettleDatabaseRepository.TABLE_R_PARTITION_SCHEMA,
@@ -204,14 +189,14 @@ public class KettleDatabaseRepositoryPartitionSchemaDelegate extends KettleDatab
 
     RowMetaAndData table = new RowMetaAndData();
 
-    table.addValue( new ValueMeta(
-      KettleDatabaseRepository.FIELD_PARTITION_ID_PARTITION, ValueMetaInterface.TYPE_INTEGER ), id );
+    table.addValue( new ValueMetaInteger(
+      KettleDatabaseRepository.FIELD_PARTITION_ID_PARTITION ), id );
     table.addValue(
-      new ValueMeta(
-        KettleDatabaseRepository.FIELD_PARTITION_ID_PARTITION_SCHEMA, ValueMetaInterface.TYPE_INTEGER ),
+      new ValueMetaInteger(
+        KettleDatabaseRepository.FIELD_PARTITION_ID_PARTITION_SCHEMA ),
       id_partition_schema );
-    table.addValue( new ValueMeta(
-      KettleDatabaseRepository.FIELD_PARTITION_PARTITION_ID, ValueMetaInterface.TYPE_STRING ), partition_id );
+    table.addValue( new ValueMetaString(
+      KettleDatabaseRepository.FIELD_PARTITION_PARTITION_ID ), partition_id );
 
     repository.connectionDelegate.getDatabase().prepareInsert(
       table.getRowMeta(), KettleDatabaseRepository.TABLE_R_PARTITION );
@@ -239,7 +224,7 @@ public class KettleDatabaseRepositoryPartitionSchemaDelegate extends KettleDatab
           + quote( KettleDatabaseRepository.FIELD_PARTITION_SCHEMA_ID_PARTITION_SCHEMA ) + " = ? ",
         id_partition_schema );
     } else {
-      StringBuffer message = new StringBuffer();
+      StringBuilder message = new StringBuilder( 100 );
 
       message.append( "The partition schema is used by the following transformations:" ).append( Const.CR );
       for ( int i = 0; i < transList.length; i++ ) {

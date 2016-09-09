@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -32,24 +32,51 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
 import org.pentaho.di.trans.steps.loadsave.validator.ArrayLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
-import org.pentaho.di.trans.steps.loadsave.validator.StringLoadSaveValidator;
 import org.pentaho.di.trans.steps.normaliser.NormaliserMeta;
+import org.pentaho.di.trans.steps.normaliser.NormaliserMeta.NormaliserField;
 
 public class NormalizerMetaTest {
 
   @Test
   public void loadSaveTest() throws KettleException {
-    List<String> attributes =
-      Arrays.asList( "fieldName", "fieldValue", "fieldNorm" );
+    List<String> attributes = Arrays.asList( "normaliserFields" );
 
-    Map<String, FieldLoadSaveValidator<?>> fieldLoadSaveValidatorTypeMap = new HashMap<String, FieldLoadSaveValidator<?>>();
-    fieldLoadSaveValidatorTypeMap.put( String[].class.getCanonicalName(),
-      new ArrayLoadSaveValidator<String>( new StringLoadSaveValidator(), 50 ) );
+    NormaliserField testField = new NormaliserField();
+    testField.setName( "TEST_NAME" );
+    testField.setValue( "TEST_VALUE" );
+    testField.setNorm( "TEST" );
 
-    LoadSaveTester tester = new LoadSaveTester( NormaliserMeta.class, attributes, new HashMap<String, String>(),
-      new HashMap<String, String>(), new HashMap<String, FieldLoadSaveValidator<?>>(), fieldLoadSaveValidatorTypeMap );
+    Map<String, FieldLoadSaveValidator<?>> fieldLoadSaveValidatorTypeMap =
+        new HashMap<String, FieldLoadSaveValidator<?>>();
+    fieldLoadSaveValidatorTypeMap.put( NormaliserField[].class.getCanonicalName(),
+        new ArrayLoadSaveValidator<NormaliserField>( new NormaliserFieldLoadSaveValidator( testField ), 50 ) );
 
-    tester.testRepoRoundTrip();
-    tester.testXmlRoundTrip();
+    LoadSaveTester<NormaliserMeta> tester =
+        new LoadSaveTester<NormaliserMeta>( NormaliserMeta.class, attributes, new HashMap<String, String>(),
+            new HashMap<String, String>(), new HashMap<String, FieldLoadSaveValidator<?>>(),
+            fieldLoadSaveValidatorTypeMap );
+
+    tester.testSerialization();
   }
+
+  public static class NormaliserFieldLoadSaveValidator implements FieldLoadSaveValidator<NormaliserField> {
+
+    private final NormaliserField defaultValue;
+
+    public NormaliserFieldLoadSaveValidator( NormaliserField defaultValue ) {
+      this.defaultValue = defaultValue;
+    }
+
+    @Override
+    public NormaliserField getTestObject() {
+      return defaultValue;
+    }
+
+    @Override
+    public boolean validateTestObject( NormaliserField testObject, Object actual ) {
+      return testObject.equals( actual );
+    }
+
+  }
+
 }

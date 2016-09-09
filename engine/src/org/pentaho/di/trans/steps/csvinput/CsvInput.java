@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -21,13 +21,6 @@
  ******************************************************************************/
 
 package org.pentaho.di.trans.steps.csvinput;
-
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.provider.local.LocalFile;
@@ -51,6 +44,13 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.textfileinput.EncodingType;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Read a simple CSV file Just output Strings found in the file...
@@ -341,9 +341,10 @@ public class CsvInput extends BaseStep implements StepInterface {
         if ( data.bytesToSkipInFirstFile > 0 ) {
           data.fc.position( data.bytesToSkipInFirstFile );
 
-          // Now, we need to skip the first row, until the first CR that is.
-          //
-          readOneRow( true, true );
+          // evaluate whether there is a need to skip a row
+          if ( needToSkipRow() ) {
+            readOneRow( true, true );
+          }
         }
       }
 
@@ -388,6 +389,50 @@ public class CsvInput extends BaseStep implements StepInterface {
   }
 
   /**
+   * We need to skip row only if a line, that we are currently on is read by the previous step <b>partly</b>.
+   * In other words, we DON'T skip a line if we are just beginning to read it from the first symbol.
+   * We have to do some work for this: read last byte from the previous step and make sure that it is a new line byte.
+   * But it's not enough. There could be a situation, where new line is indicated by '\r\n' construction. And if we are
+   * <b>between</b> this construction, we want to skip last '\n', and don't want to include it in our line.
+   *
+   * So, we DON'T skip line only if the previous char is new line indicator AND we are not between '\r\n'.
+   *
+   */
+  private boolean needToSkipRow() {
+    try {
+      // first we move pointer to the last byte of the previous step
+      data.fc.position( data.fc.position() - 1 );
+      // read data, if not yet
+      data.resizeBufferIfNeeded();
+
+      // check whether the last symbol from the previous step is a new line
+      if ( data.newLineFound() ) {
+        // don't increase bytes read for this step, as it is actually content of another step
+        // and we are reading this just for evaluation.
+        data.moveEndBufferPointer( false );
+        // now we are at the first char of our thread.
+        // there is still a situation we want to avoid: when there is a windows style "/r/n", and we are between two
+        // of this chars. In this case we need to skip a line. Otherwise we don't skip it.
+        return data.newLineFound();
+      } else {
+        // moving to the first char of our line.
+        data.moveEndBufferPointer( false );
+      }
+
+    } catch ( IOException e ) {
+      e.printStackTrace();
+    } finally {
+      try {
+        data.fc.position( data.fc.position() + 1 );
+      } catch ( IOException e ) {
+        // nothing to do here
+      }
+    }
+
+    return true;
+  }
+
+  /**
    * Read a single row of data from the file...
    *
    * @param skipRow          if row should be skipped: header row or part of row in case of parallel read
@@ -425,6 +470,21 @@ public class CsvInput extends BaseStep implements StepInterface {
             // Make certain that at least one record exists before
             // filling the rest of them with null
             if ( outputIndex > 0 ) {
+              // Optionally add the current filename to the mix as well...
+              //
+              if ( meta.isIncludingFilename() && !Const.isEmpty( meta.getFilenameField() ) ) {
+                if ( meta.isLazyConversionActive() ) {
+                  outputRowData[ data.filenameFieldIndex ] = data.binaryFilename;
+                } else {
+                  outputRowData[ data.filenameFieldIndex ] = data.filenames[ data.filenr - 1 ];
+                }
+              }
+
+              if ( data.isAddingRowNumber ) {
+                outputRowData[data.rownumFieldIndex] = data.rowNumber++;
+              }
+
+              incrementLinesInput();
               return outputRowData;
             }
           }
@@ -642,6 +702,7 @@ public class CsvInput extends BaseStep implements StepInterface {
     }
   }
 
+
   public boolean init( StepMetaInterface smi, StepDataInterface sdi ) {
     meta = (CsvInputMeta) smi;
     data = (CsvInputData) sdi;
@@ -727,7 +788,7 @@ public class CsvInput extends BaseStep implements StepInterface {
         }
       }
 
-      switch( data.encodingType ) {
+      switch ( data.encodingType ) {
         case DOUBLE_BIG_ENDIAN:
           data.crLfMatcher = new MultiByteBigCrLfMatcher();
           break;

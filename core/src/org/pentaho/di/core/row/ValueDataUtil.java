@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -547,7 +547,9 @@ public class ValueDataUtil {
       return null;
     }
     if ( dataA == null && dataB != null ) {
-      return metaA.convertData( metaB, dataB );
+      Object value = metaA.convertData( metaB, dataB );
+      metaA.setStorageType( ValueMetaInterface.STORAGE_TYPE_NORMAL );
+      return value;
     }
     if ( dataA != null && dataB == null ) {
       return dataA;
@@ -1082,6 +1084,35 @@ public class ValueDataUtil {
     }
   }
 
+  /**
+   * Returns the remainder (modulus) of A / B.
+   *
+   * @param metaA
+   * @param dataA
+   *          The dividend
+   * @param metaB
+   * @param dataB
+   *          The divisor
+   * @return The remainder
+   * @throws KettleValueException
+   */
+  public static Object remainder( ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB ) throws KettleValueException {
+    if ( dataA == null || dataB == null ) {
+      return null;
+    }
+
+    switch ( metaA.getType() ) {
+      case ValueMetaInterface.TYPE_NUMBER:
+        return new Double( Math.IEEEremainder( metaA.getNumber( dataA ).doubleValue(), metaB.getNumber( dataB ).doubleValue() ) );
+      case ValueMetaInterface.TYPE_INTEGER:
+        return new Long( metaA.getInteger( dataA ) % metaB.getInteger( dataB ) );
+      case ValueMetaInterface.TYPE_BIGNUMBER:
+        return metaA.getBigNumber( dataA ).remainder( metaB.getBigNumber( dataB ), MathContext.DECIMAL64 );
+      default:
+        throw new KettleValueException( "The 'remainder' function only works on numeric data" );
+    }
+  }
+
   public static Object nvl( ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB ) throws KettleValueException {
     switch ( metaA.getType() ) {
       case ValueMetaInterface.TYPE_STRING:
@@ -1197,6 +1228,15 @@ public class ValueDataUtil {
     return cal.getTime();
   }
 
+  public static Object addSeconds( ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB ) throws KettleValueException {
+
+    Calendar cal = Calendar.getInstance();
+    cal.setTime( metaA.getDate( dataA ) );
+    cal.add( Calendar.SECOND, metaB.getInteger( dataB ).intValue() );
+
+    return cal.getTime();
+  }
+
   public static Object addMonths( ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB ) throws KettleValueException {
 
     if ( dataA != null && dataB != null ) {
@@ -1301,7 +1341,7 @@ public class ValueDataUtil {
           iNoOfWorkingDays += 1;
         }
         calFrom.add( Calendar.DATE, 1 );
-      } while ( calFrom.getTimeInMillis() < calTo.getTimeInMillis() );
+      } while ( calFrom.getTimeInMillis() <= calTo.getTimeInMillis() );
       return new Long( singminus ? -iNoOfWorkingDays : iNoOfWorkingDays );
     } else {
       return null;
@@ -1367,6 +1407,13 @@ public class ValueDataUtil {
 
     Calendar calendar = Calendar.getInstance();
     calendar.setTime( metaA.getDate( dataA ) );
+
+    Boolean oldDateCalculation = Boolean.parseBoolean(
+      Const.getEnvironmentVariable( Const.KETTLE_COMPATIBILITY_CALCULATION_TIMEZONE_DECOMPOSITION, "false" ) );
+    if ( !oldDateCalculation ) {
+      calendar.setTimeZone( metaA.getDateFormatTimeZone() );
+    }
+
     return new Long( calendar.get( Calendar.HOUR_OF_DAY ) );
   }
 
@@ -1643,11 +1690,7 @@ public class ValueDataUtil {
    * @return The padded String.
    */
   public static final String rightPad( String ret, int limit ) {
-    if ( ret == null ) {
-      return rightPad( new StringBuffer(), limit );
-    } else {
-      return rightPad( new StringBuffer( ret ), limit );
-    }
+    return Const.rightPad( ret, limit );
   }
 
   /**
@@ -1661,17 +1704,7 @@ public class ValueDataUtil {
    * @return The padded String.
    */
   public static final String rightPad( StringBuffer ret, int limit ) {
-    int len = ret.length();
-    int l;
-
-    if ( len > limit ) {
-      ret.setLength( limit );
-    } else {
-      for ( l = len; l < limit; l++ ) {
-        ret.append( ' ' );
-      }
-    }
-    return ret.toString();
+    return Const.rightPad( ret, limit );
   }
 
   /**
@@ -1845,7 +1878,7 @@ public class ValueDataUtil {
   /**
    *  Default utility method to get exact zero value according to ValueMetaInterface. Using
    *  this utility method saves from ClassCastExceptions later.
-   *  
+   *
    * @param type
    * @return
    * @throws KettleValueException

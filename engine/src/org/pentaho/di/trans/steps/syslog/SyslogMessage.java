@@ -38,7 +38,7 @@ import org.productivity.java.syslog4j.SyslogIF;
 
 /**
  * Write message to SyslogMessage *
- * 
+ *
  * @author Samatar
  * @since 03-Juin-2008
  *

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -78,6 +78,8 @@ import org.xml.sax.InputSource;
  *
  */
 public class XMLHandler {
+  //TODO Change impl for some standard XML processing (like StAX, for example) because ESAPI has charset processing issues.
+
   private static XMLHandlerCache cache = XMLHandlerCache.getInstance();
   private static final SimpleDateFormat simpleDateFormat = new SimpleDateFormat( ValueMeta.DEFAULT_DATE_FORMAT_MASK );
   private static final SimpleDateFormat simpleTimeStampFormat = new SimpleDateFormat( ValueMeta.DEFAULT_TIMESTAMP_FORMAT_MASK );
@@ -92,7 +94,7 @@ public class XMLHandler {
 
   /**
    * The header string to specify encoding in an XML file
-   *
+   * 
    * @param encoding
    *          The desired encoding to use in the XML file
    * @return The XML header.
@@ -454,11 +456,9 @@ public class XMLHandler {
       lastChildNr++; // we left off at the previouso one, so continue with the next.
     }
 
-    for ( int i = lastChildNr; i < children.getLength(); i++ ) // Try all children
-    {
+    for ( int i = lastChildNr; i < children.getLength(); i++ ) { // Try all children
       childnode = children.item( i );
-      if ( childnode.getNodeName().equalsIgnoreCase( tag ) ) // We found the right tag
-      {
+      if ( childnode.getNodeName().equalsIgnoreCase( tag ) ) { // We found the right tag
         if ( count == nr ) {
           if ( useCache ) {
             cache.storeCache( entry, i );
@@ -531,8 +531,8 @@ public class XMLHandler {
   /**
    * Load a file into an XML document
    *
-   * @param filename
-   *          The filename to load into a document
+   * @param fileObject
+   *          The fileObject to load into a document
    * @return the Document if all went well, null if an error occured!
    */
   public static Document loadXMLFile( FileObject fileObject ) throws KettleXMLException {
@@ -542,9 +542,9 @@ public class XMLHandler {
   /**
    * Load a file into an XML document
    *
-   * @param filename
-   *          The filename to load into a document
-   * @param systemId
+   * @param fileObject
+   *          The fileObject to load into a document
+   * @param systemID
    *          Provide a base for resolving relative URIs.
    * @param ignoreEntities
    *          Ignores external entities and returns an empty dummy.
@@ -577,7 +577,7 @@ public class XMLHandler {
    *
    * @param inputStream
    *          The stream to load a document from
-   * @param systemId
+   * @param systemID
    *          Provide a base for resolving relative URIs.
    * @param ignoreEntities
    *          Ignores external entities and returns an empty dummy.
@@ -587,17 +587,13 @@ public class XMLHandler {
    */
   public static Document loadXMLFile( InputStream inputStream, String systemID, boolean ignoreEntities,
     boolean namespaceAware ) throws KettleXMLException {
-    DocumentBuilderFactory dbf;
-    DocumentBuilder db;
-    Document doc;
-
     try {
       // Check and open XML document
       //
-      dbf = DocumentBuilderFactory.newInstance();
+      DocumentBuilderFactory dbf = XMLParserFactoryProducer.createSecureDocBuilderFactory();
       dbf.setIgnoringComments( true );
       dbf.setNamespaceAware( namespaceAware );
-      db = dbf.newDocumentBuilder();
+      DocumentBuilder db = dbf.newDocumentBuilder();
 
       // even dbf.setValidating(false) will the parser NOT prevent from checking the existance of the DTD
       // thus we need to give the BaseURI (systemID) below to have a chance to get it
@@ -607,6 +603,7 @@ public class XMLHandler {
         db.setEntityResolver( new DTDIgnoringEntityResolver() );
       }
 
+      Document doc;
       try {
         if ( Const.isEmpty( systemID ) ) {
           // Normal parsing
@@ -649,8 +646,8 @@ public class XMLHandler {
   /**
    * Load a file into an XML document
    *
-   * @param file
-   *          The file to load into a document
+   * @param resource
+   *          The resource to load into a document
    * @return the Document if all went well, null if an error occured!
    */
   public static Document loadXMLFile( URL resource ) throws KettleXMLException {
@@ -660,7 +657,7 @@ public class XMLHandler {
 
     try {
       // Check and open XML document
-      dbf = DocumentBuilderFactory.newInstance();
+      dbf = XMLParserFactoryProducer.createSecureDocBuilderFactory();
       db = dbf.newDocumentBuilder();
       InputStream inputStream = resource.openStream();
       try {
@@ -711,7 +708,7 @@ public class XMLHandler {
    *
    * @param string
    *          The XML text to load into a document
-   * @param Boolean
+   * @param deferNodeExpansion
    *          true to defer node expansion, false to not defer.
    * @return the Document if all went well, null if an error occurred!
    */
@@ -744,7 +741,7 @@ public class XMLHandler {
   public static DocumentBuilder createDocumentBuilder( boolean namespaceAware, boolean deferNodeExpansion )
     throws KettleXMLException {
     try {
-      DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+      DocumentBuilderFactory dbf = XMLParserFactoryProducer.createSecureDocBuilderFactory();
       dbf.setFeature( "http://apache.org/xml/features/dom/defer-node-expansion", deferNodeExpansion );
       dbf.setNamespaceAware( namespaceAware );
       return dbf.newDocumentBuilder();
@@ -769,9 +766,8 @@ public class XMLHandler {
    * @return The XML String for the tag.
    */
   public static String addTagValue( String tag, String val, boolean cr, String... attributes ) {
-    StringBuffer value;
+    StringBuilder value = new StringBuilder( "<" );
     Encoder encoder = ESAPI.encoder();
-    value = new StringBuffer( "<" );
     value.append( tag );
 
     for ( int i = 0; i < attributes.length; i += 2 ) {
@@ -795,20 +791,6 @@ public class XMLHandler {
     }
 
     return value.toString();
-  }
-
-  /**
-   * Take the characters from string val and append them to the value stringbuffer In case a character is not allowed in
-   * XML, we convert it to an XML code
-   *
-   * @param value
-   *          the stringbuffer to append to
-   * @param string
-   *          the string to "encode"
-   */
-  public static void appendReplacedChars( StringBuffer value, String string ) {
-    Encoder encoder = ESAPI.encoder();
-    value.append( encoder.encodeForXML( string ) );
   }
 
   public static void appendReplacedChars( StringBuilder value, String string ) {
@@ -951,7 +933,7 @@ public class XMLHandler {
    * @return The XML String for the tag.
    */
   public static String addTagValue( String tag, int i, boolean cr ) {
-    return addTagValue( tag, "" + i, cr );
+    return addTagValue( tag, String.valueOf( i ), cr );
   }
 
   /**
@@ -979,7 +961,7 @@ public class XMLHandler {
    * @return The XML String for the tag.
    */
   public static String addTagValue( String tag, double d, boolean cr ) {
-    return addTagValue( tag, "" + d, cr );
+    return addTagValue( tag, String.valueOf( d ), cr );
   }
 
   /**
@@ -1034,7 +1016,7 @@ public class XMLHandler {
    * @return The XML String for the tag.
    */
   public static String addTagValue( String tag, BigDecimal val, boolean cr ) {
-    return addTagValue( tag, val != null ? val.toString() : (String) null, true );
+    return addTagValue( tag, val != null ? val.toString() : (String) null, cr );
   }
 
   /**
@@ -1071,7 +1053,7 @@ public class XMLHandler {
       string = encodeBinaryData( val );
     }
 
-    return addTagValue( tag, string, true );
+    return addTagValue( tag, string, cr );
   }
 
   public static String encodeBinaryData( byte[] val ) throws IOException {
@@ -1257,10 +1239,6 @@ public class XMLHandler {
  *
  */
 class DTDIgnoringEntityResolver implements EntityResolver {
-  public DTDIgnoringEntityResolver() {
-    // nothing
-  }
-
   @Override
   public InputSource resolveEntity( java.lang.String publicID, java.lang.String systemID ) throws IOException {
     System.out.println( "Public-ID: " + publicID.toString() );

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -68,6 +68,7 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.laf.BasePropertyHandler;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryElementMetaInterface;
+import org.pentaho.di.shared.SharedObjects;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepInterface;
@@ -86,6 +87,8 @@ import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.util.DialogUtils;
 import org.pentaho.di.ui.util.HelpUtils;
 import org.pentaho.metastore.api.IMetaStore;
+
+import com.google.common.annotations.VisibleForTesting;
 
 /**
  * This class provides functionality common to Step Dialogs.
@@ -365,7 +368,7 @@ public class BaseStepDialog extends Dialog {
     }
 
     // Compute the left side of the 1st button
-    switch( alignment ) {
+    switch ( alignment ) {
       case BUTTON_ALIGNMENT_CENTER:
         centerButtons( buttons, largest.width, margin, lastControl );
         break;
@@ -705,9 +708,7 @@ public class BaseStepDialog extends Dialog {
         DatabaseMeta newDBInfo = cdw.createAndRunDatabaseWizard( shell, props, transMeta.getDatabases() );
         if ( newDBInfo != null ) {
           transMeta.addDatabase( newDBInfo );
-          wConnection.removeAll();
-          addDatabases( wConnection );
-          selectDatabase( wConnection, newDBInfo.getName() );
+          reinitConnectionDropDown( wConnection, newDBInfo.getName() );
         }
       }
     } );
@@ -724,21 +725,7 @@ public class BaseStepDialog extends Dialog {
     // NEW button
     //
     wbnConnection.setText( BaseMessages.getString( PKG, "BaseStepDialog.NewConnectionButton.Label" ) );
-    wbnConnection.addSelectionListener( new SelectionAdapter() {
-      public void widgetSelected( SelectionEvent e ) {
-        DatabaseMeta databaseMeta = new DatabaseMeta();
-        databaseMeta.shareVariablesWith( transMeta );
-        DatabaseDialog cid = getDatabaseDialog( shell );
-        cid.setDatabaseMeta( databaseMeta );
-        cid.setModalDialog( true );
-        if ( cid.open() != null ) {
-          transMeta.addDatabase( databaseMeta );
-          wConnection.removeAll();
-          addDatabases( wConnection, databaseType );
-          selectDatabase( wConnection, databaseMeta.getName() );
-        }
-      }
-    } );
+    wbnConnection.addSelectionListener( new AddConnectionListener( wConnection ) );
     fdbConnection = new FormData();
     fdbConnection.right = new FormAttachment( wbwConnection, -margin );
     if ( previous != null ) {
@@ -752,23 +739,7 @@ public class BaseStepDialog extends Dialog {
     // Edit button
     //
     wbeConnection.setText( BaseMessages.getString( PKG, "BaseStepDialog.EditConnectionButton.Label" ) );
-    wbeConnection.addSelectionListener( new SelectionAdapter() {
-      public void widgetSelected( SelectionEvent e ) {
-        DatabaseMeta databaseMeta = transMeta.findDatabase( wConnection.getText() );
-        if ( databaseMeta != null ) {
-          databaseMeta.shareVariablesWith( transMeta );
-
-          DatabaseDialog cid = getDatabaseDialog( shell );
-          cid.setDatabaseMeta( databaseMeta );
-          cid.setModalDialog( true );
-          if ( cid.open() != null ) {
-            wConnection.removeAll();
-            addDatabases( wConnection );
-            selectDatabase( wConnection, databaseMeta.getName() );
-          }
-        }
-      }
-    } );
+    wbeConnection.addSelectionListener( new EditConnectionListener( wConnection ) );
     fdeConnection = new FormData();
     fdeConnection.right = new FormAttachment( wbnConnection, -margin );
     if ( previous != null ) {
@@ -792,6 +763,45 @@ public class BaseStepDialog extends Dialog {
     wConnection.setLayoutData( fdConnection );
 
     return wConnection;
+  }
+
+  @VisibleForTesting
+  String showDbDialogUnlessCancelledOrValid( DatabaseMeta changing, DatabaseMeta origin ) {
+    changing.shareVariablesWith( transMeta );
+    DatabaseDialog cid = getDatabaseDialog( shell );
+    cid.setDatabaseMeta( changing );
+    cid.setModalDialog( true );
+
+    String name = null;
+    boolean repeat = true;
+    while ( repeat ) {
+      name = cid.open();
+      if ( name == null ) {
+        // Cancel was pressed
+        repeat = false;
+      } else {
+        name = name.trim();
+        DatabaseMeta same = transMeta.findDatabase( name );
+        if ( same == null || same == origin ) {
+          // OK was pressed and input is valid
+          repeat = false;
+        } else {
+          showDbExistsDialog( changing );
+        }
+      }
+    }
+    return name;
+  }
+
+  @VisibleForTesting
+  void showDbExistsDialog( DatabaseMeta changing ) {
+    DatabaseDialog.showDatabaseExistsDialog( shell, changing );
+  }
+
+  private void reinitConnectionDropDown( CCombo dropDown, String selected ) {
+    dropDown.removeAll();
+    addDatabases( dropDown );
+    selectDatabase( dropDown, selected );
   }
 
   /**
@@ -1345,5 +1355,77 @@ public class BaseStepDialog extends Dialog {
 
   protected String getPathOf( RepositoryElementMetaInterface object ) {
     return DialogUtils.getPathOf( object );
+  }
+
+
+  @VisibleForTesting
+  class AddConnectionListener extends SelectionAdapter {
+
+    private final CCombo wConnection;
+
+    public AddConnectionListener( CCombo wConnection ) {
+      this.wConnection = wConnection;
+    }
+
+    @Override
+    public void widgetSelected( SelectionEvent e ) {
+      DatabaseMeta databaseMeta = new DatabaseMeta();
+      String connectionName = showDbDialogUnlessCancelledOrValid( databaseMeta, null );
+      if ( connectionName != null ) {
+        transMeta.addDatabase( databaseMeta );
+        reinitConnectionDropDown( wConnection, databaseMeta.getName() );
+      }
+    }
+  }
+
+  @VisibleForTesting
+  class EditConnectionListener extends SelectionAdapter {
+
+    private final CCombo wConnection;
+
+    public EditConnectionListener( CCombo wConnection ) {
+      this.wConnection = wConnection;
+    }
+
+    public void widgetSelected( SelectionEvent e ) {
+      DatabaseMeta databaseMeta = transMeta.findDatabase( wConnection.getText() );
+      if ( databaseMeta != null ) {
+        // cloning to avoid spoiling data on cancel or incorrect input
+        DatabaseMeta clone = (DatabaseMeta) databaseMeta.clone();
+        // setting old Id, so a repository (if it used) could find and replace the existing connection
+        clone.setObjectId( databaseMeta.getObjectId() );
+        String connectionName = showDbDialogUnlessCancelledOrValid( clone, databaseMeta );
+        if ( connectionName != null ) {
+          // need to replace the old connection with a new one
+          if ( databaseMeta.isShared() ) {
+            if ( !replaceSharedConnection( databaseMeta, clone ) ) {
+              return;
+            }
+          }
+          transMeta.removeDatabase( transMeta.indexOfDatabase( databaseMeta ) );
+          transMeta.addDatabase( clone );
+          reinitConnectionDropDown( wConnection, connectionName );
+        }
+      }
+    }
+
+    boolean replaceSharedConnection( DatabaseMeta dbConnection, DatabaseMeta newDbConnection ) {
+      try {
+        SharedObjects sharedObjects = transMeta.getSharedObjects();
+        sharedObjects.removeObject( dbConnection );
+        sharedObjects.storeObject( newDbConnection );
+        sharedObjects.saveToFile();
+        return true;
+      } catch ( Exception e ) {
+        showErrorDialog( e );
+        return false;
+      }
+    }
+
+    void showErrorDialog( Exception e ) {
+      new ErrorDialog( wConnection.getShell(), BaseMessages.getString( PKG,
+          "BaseStep.Exception.UnexpectedErrorEditingConnection.DialogTitle" ), BaseMessages.getString( PKG,
+              "BaseStep.Exception.UnexpectedErrorEditingConnection.DialogMessage" ), e );
+    }
   }
 }

@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -79,6 +79,7 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
+import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.steps.loadfileinput.LoadFileInput;
 
@@ -106,6 +107,15 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
     "moveFile", "execProcess", "isEmpty", "isMailValid", "escapeXml", "removeDigits", "initCap",
     "protectXMLCDATA", "unEscapeXml", "escapeSQL", "escapeHtml", "unEscapeHtml", "loadFileContent",
     "getOcuranceString", "removeCRLF" };
+
+
+  enum VariableScope {
+    SYSTEM,
+    ROOT,
+    PARENT,
+    GRAND_PARENT
+  }
+
 
   // This is only used for reading, so no concurrency problems.
   // todo: move in the real variables of the step.
@@ -395,11 +405,11 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
     if ( ArgList.length == 1 ) {
       try {
         if ( isNull( ArgList[0] ) ) {
-          return new Double( Double.NaN );
+          return Double.NaN;
         } else if ( isUndefined( ArgList[0] ) ) {
           return Context.getUndefinedValue();
         } else {
-          return new Double( Math.ceil( Context.toNumber( ArgList[0] ) ) );
+          return Math.ceil( Context.toNumber( ArgList[ 0 ] ) );
         }
       } catch ( Exception e ) {
         return null;
@@ -1692,14 +1702,14 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
   // Resolve an IP address
   public static String resolveIP( Context actualContext, Scriptable actualObject, Object[] ArgList,
     Function FunctionContext ) {
-    String sRC = "";
+    String sRC;
     if ( ArgList.length == 2 ) {
       try {
-        InetAddress addr = InetAddress.getByName( Context.toString( ArgList[0] ) );
+        InetAddress address = InetAddress.getByName( Context.toString( ArgList[0] ) );
         if ( Context.toString( ArgList[1] ).equals( "IP" ) ) {
-          sRC = addr.getHostName();
+          sRC = address.getHostName();
         } else {
-          sRC = addr.getHostAddress();
+          sRC = address.getHostAddress();
         }
         if ( sRC.equals( Context.toString( ArgList[0] ) ) ) {
           sRC = "-";
@@ -1790,77 +1800,92 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
     }
   }
 
-  // Setting Variable
-  public static void setVariable( Context actualContext, Scriptable actualObject, Object[] ArgList,
-    Function FunctionContext ) {
-    String sArg1 = "";
-    String sArg2 = "";
-    String sArg3 = "";
-    if ( ArgList.length == 3 ) {
-      try {
-        Object scmo = actualObject.get( "_step_", actualObject );
-        Object scmO = Context.jsToJava( scmo, StepInterface.class );
-        if ( scmO instanceof StepInterface ) {
-          StepInterface scm = (StepInterface) scmO;
+  public static void setVariable( Context actualContext, Scriptable actualObject, Object[] arguments,
+    Function functionContext ) {
 
-          sArg1 = Context.toString( ArgList[0] );
-          sArg2 = Context.toString( ArgList[1] );
-          sArg3 = Context.toString( ArgList[2] );
-
-          if ( "s".equals( sArg3 ) ) {
-            // System wide properties
-            System.setProperty( sArg1, sArg2 );
-
-            // Set also all the way to the root as else we will take
-            // stale values
-            scm.setVariable( sArg1, sArg2 );
-
-            VariableSpace parentSpace = scm.getParentVariableSpace();
-            while ( parentSpace != null ) {
-              parentSpace.setVariable( sArg1, sArg2 );
-              parentSpace = parentSpace.getParentVariableSpace();
-            }
-          } else if ( "r".equals( sArg3 ) ) {
-            // Upto the root... this should be the default.
-            scm.setVariable( sArg1, sArg2 );
-
-            VariableSpace parentSpace = scm.getParentVariableSpace();
-            while ( parentSpace != null ) {
-              parentSpace.setVariable( sArg1, sArg2 );
-              parentSpace = parentSpace.getParentVariableSpace();
-            }
-          } else if ( "p".equals( sArg3 ) ) {
-            // Upto the parent
-            scm.setVariable( sArg1, sArg2 );
-
-            VariableSpace parentSpace = scm.getParentVariableSpace();
-            if ( parentSpace != null ) {
-              parentSpace.setVariable( sArg1, sArg2 );
-            }
-          } else if ( "g".equals( sArg3 ) ) {
-            // Upto the grand parent
-            scm.setVariable( sArg1, sArg2 );
-
-            VariableSpace parentSpace = scm.getParentVariableSpace();
-            if ( parentSpace != null ) {
-              parentSpace.setVariable( sArg1, sArg2 );
-              VariableSpace grandParentSpace = parentSpace.getParentVariableSpace();
-              if ( grandParentSpace != null ) {
-                grandParentSpace.setVariable( sArg1, sArg2 );
-              }
-            }
-          } else {
-            throw Context.reportRuntimeError( "The argument type of function call "
-              + "setVariable should either be \"s\", \"r\", \"p\", or \"g\"." );
-          }
-        }
-        // Ignore else block for now... if we're executing via the Test Button
-
-      } catch ( Exception e ) {
-        throw Context.reportRuntimeError( e.toString() );
-      }
-    } else {
+    if ( arguments.length != 3 ) {
       throw Context.reportRuntimeError( "The function call setVariable requires 3 arguments." );
+    }
+
+    Object stepObject = Context.jsToJava( actualObject.get( "_step_", actualObject ), StepInterface.class );
+    if ( stepObject instanceof StepInterface ) {
+      StepInterface step = (StepInterface) stepObject;
+      Trans trans = step.getTrans();
+      final String variableName = Context.toString( arguments[ 0 ] );
+      final String variableValue = Context.toString( arguments[ 1 ] );
+      final VariableScope variableScope = getVariableScope( Context.toString( arguments[ 2 ] ) );
+
+      switch ( variableScope ) {
+        case PARENT:
+          setParentScopeVariable( trans, variableName, variableValue );
+          break;
+        case GRAND_PARENT:
+          setGrandParentScopeVariable( trans, variableName, variableValue );
+          break;
+        case ROOT:
+          setRootScopeVariable( trans, variableName, variableValue );
+          break;
+        case SYSTEM:
+          setSystemScopeVariable( trans, variableName, variableValue );
+          break;
+      }
+    }
+  }
+
+  static void setRootScopeVariable( Trans trans, String variableName, String variableValue ) {
+    trans.setVariable( variableName, variableValue );
+
+    VariableSpace parentSpace = trans.getParentVariableSpace();
+    while ( parentSpace != null ) {
+      parentSpace.setVariable( variableName, variableValue );
+      parentSpace = parentSpace.getParentVariableSpace();
+    }
+  }
+
+  static void setSystemScopeVariable( Trans trans, final String variableName, final String variableValue ) {
+    System.setProperty( variableName, variableValue );
+
+    // Set also all the way to the root as else we will take
+    //  stale values
+    setRootScopeVariable( trans, variableName, variableValue );
+  }
+
+  static void setParentScopeVariable( Trans trans, String variableName, String variableValue ) {
+    trans.setVariable( variableName, variableValue );
+
+    VariableSpace parentSpace = trans.getParentVariableSpace();
+    if ( parentSpace != null ) {
+      parentSpace.setVariable( variableName, variableValue );
+    }
+  }
+
+  static void setGrandParentScopeVariable( Trans trans, String variableName, String variableValue ) {
+    trans.setVariable( variableName, variableValue );
+
+    VariableSpace parentSpace = trans.getParentVariableSpace();
+    if ( parentSpace != null ) {
+      parentSpace.setVariable( variableName, variableValue );
+      VariableSpace grandParentSpace = parentSpace.getParentVariableSpace();
+      if ( grandParentSpace != null ) {
+        grandParentSpace.setVariable( variableName, variableValue );
+      }
+    }
+  }
+
+
+  static VariableScope getVariableScope( String codeOfScope ) {
+    switch ( codeOfScope ) {
+      case "s":
+        return VariableScope.SYSTEM;
+      case "r":
+        return VariableScope.ROOT;
+      case "p":
+        return VariableScope.PARENT;
+      case "g":
+        return VariableScope.GRAND_PARENT;
+      default:
+        throw Context.reportRuntimeError( "The argument type of function call "
+          + "setVariable should either be \"s\", \"r\", \"p\", or \"g\"." );
     }
   }
 
@@ -2570,7 +2595,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
       try {
 
         String ligne = "";
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         processrun = Runtime.getRuntime().exec( Context.toString( ArgList[0] ) );
 
         // Get process response
@@ -2580,7 +2605,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
         while ( ( ligne = br.readLine() ) != null ) {
           buffer.append( ligne );
         }
-        // if (processrun.exitValue()!=0) throw Context.reportRuntimeError("Error while running " + ArgList[0]);
+        // if (processrun.exitValue()!=0) throw Context.reportRuntimeError("Error while running " + arguments[0]);
 
         retval = buffer.toString();
 
@@ -2623,7 +2648,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 
   public static Boolean isMailValid( Context actualContext, Scriptable actualObject, Object[] ArgList,
     Function FunctionContext ) {
-    Boolean retval = Boolean.FALSE;
+    Boolean isValid;
     if ( ArgList.length == 1 ) {
       try {
         if ( isUndefined( ArgList[0] ) ) {
@@ -2641,12 +2666,12 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
           return Boolean.FALSE;
         }
 
-        retval = Boolean.TRUE;
+        isValid = Boolean.TRUE;
 
       } catch ( Exception e ) {
         throw Context.reportRuntimeError( "Error in isMailValid function: " + e.getMessage() );
       }
-      return retval;
+      return isValid;
     } else {
       throw Context.reportRuntimeError( "The function call isMailValid is not valid" );
     }

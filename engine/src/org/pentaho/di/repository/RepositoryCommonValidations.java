@@ -23,7 +23,7 @@
 package org.pentaho.di.repository;
 
 
-import static org.apache.commons.lang.StringUtils.isBlank;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * @author Andrey Khayrutdinov
@@ -39,7 +39,7 @@ public class RepositoryCommonValidations {
    * @throws NullPointerException is {@code user} is {@code null}
    */
   public static boolean checkUserInfo( IUser user ) {
-    return !isBlank( user.getLogin() ) && !isBlank( user.getName() );
+    return !StringUtils.isBlank( user.getLogin() ) && !StringUtils.isBlank( user.getName() );
   }
 
   /**

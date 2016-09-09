@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -36,8 +36,9 @@ import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
-import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaBoolean;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.partition.PartitionSchema;
@@ -79,7 +80,7 @@ public class KettleDatabaseRepositoryStepDelegate extends KettleDatabaseReposito
       quote( KettleDatabaseRepository.FIELD_STEP_TYPE_ID_STEP_TYPE ),
       quote( KettleDatabaseRepository.FIELD_STEP_TYPE_CODE ), codes );
   }
-  
+
   public Map<String, LongObjectId> getStepTypeCodeToIdMap() throws KettleException {
     return repository.connectionDelegate.getValueToIdMap(
         quoteTable( KettleDatabaseRepository.TABLE_R_STEP_TYPE ),
@@ -163,7 +164,7 @@ public class KettleDatabaseRepositoryStepDelegate extends KettleDatabaseReposito
         // Generate the appropriate class...
         PluginInterface sp = registry.findPluginWithId( StepPluginType.class, stepMeta.getStepID() );
         if ( sp == null ) {
-          stepMeta.setStepMetaInterface( (StepMetaInterface) new MissingTrans( stepMeta.getName(), stepMeta.getStepID() ) );
+          stepMeta.setStepMetaInterface( new MissingTrans( stepMeta.getName(), stepMeta.getStepID() ) );
         } else {
           stepMeta.setStepMetaInterface( (StepMetaInterface) registry.loadClass( sp ) );
         }
@@ -367,17 +368,17 @@ public class KettleDatabaseRepositoryStepDelegate extends KettleDatabaseReposito
 
     RowMetaAndData table = new RowMetaAndData();
 
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_STEP_ID_STEP, ValueMetaInterface.TYPE_INTEGER ), id );
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_STEP_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER ), id_transformation );
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_STEP_NAME, ValueMetaInterface.TYPE_STRING ), name );
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_STEP_DESCRIPTION, ValueMetaInterface.TYPE_STRING ), description );
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_STEP_ID_STEP_TYPE, ValueMetaInterface.TYPE_INTEGER ), id_step_type );
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_STEP_DISTRIBUTE, ValueMetaInterface.TYPE_BOOLEAN ), Boolean.valueOf( distribute ) );
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_STEP_COPIES, ValueMetaInterface.TYPE_INTEGER ), new Long( copies ) );
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_STEP_GUI_LOCATION_X, ValueMetaInterface.TYPE_INTEGER ), new Long( gui_location_x ) );
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_STEP_GUI_LOCATION_Y, ValueMetaInterface.TYPE_INTEGER ), new Long( gui_location_y ) );
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_STEP_GUI_DRAW, ValueMetaInterface.TYPE_BOOLEAN ), Boolean.valueOf( gui_draw ) );
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_STEP_COPIES_STRING, ValueMetaInterface.TYPE_STRING ), copiesString );
+    table.addValue( new ValueMetaInteger( KettleDatabaseRepository.FIELD_STEP_ID_STEP ), id );
+    table.addValue( new ValueMetaInteger( KettleDatabaseRepository.FIELD_STEP_ID_TRANSFORMATION ), id_transformation );
+    table.addValue( new ValueMetaString( KettleDatabaseRepository.FIELD_STEP_NAME ), name );
+    table.addValue( new ValueMetaString( KettleDatabaseRepository.FIELD_STEP_DESCRIPTION ), description );
+    table.addValue( new ValueMetaInteger( KettleDatabaseRepository.FIELD_STEP_ID_STEP_TYPE ), id_step_type );
+    table.addValue( new ValueMetaBoolean( KettleDatabaseRepository.FIELD_STEP_DISTRIBUTE ), Boolean.valueOf( distribute ) );
+    table.addValue( new ValueMetaInteger( KettleDatabaseRepository.FIELD_STEP_COPIES ), new Long( copies ) );
+    table.addValue( new ValueMetaInteger( KettleDatabaseRepository.FIELD_STEP_GUI_LOCATION_X ), new Long( gui_location_x ) );
+    table.addValue( new ValueMetaInteger( KettleDatabaseRepository.FIELD_STEP_GUI_LOCATION_Y ), new Long( gui_location_y ) );
+    table.addValue( new ValueMetaBoolean( KettleDatabaseRepository.FIELD_STEP_GUI_DRAW ), Boolean.valueOf( gui_draw ) );
+    table.addValue( new ValueMetaString( KettleDatabaseRepository.FIELD_STEP_COPIES_STRING ), copiesString );
 
     repository.connectionDelegate.getDatabase().prepareInsert( table.getRowMeta(), KettleDatabaseRepository.TABLE_R_STEP );
     repository.connectionDelegate.getDatabase().setValuesInsert( table );

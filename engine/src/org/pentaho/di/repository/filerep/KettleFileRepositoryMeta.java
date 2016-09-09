@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,17 +23,23 @@
 package org.pentaho.di.repository.filerep;
 
 import java.util.List;
+import java.util.Map;
 
+import org.json.simple.JSONObject;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.BaseRepositoryMeta;
+import org.pentaho.di.repository.RepositoriesMeta;
 import org.pentaho.di.repository.RepositoryCapabilities;
 import org.pentaho.di.repository.RepositoryMeta;
 import org.w3c.dom.Node;
 
 public class KettleFileRepositoryMeta extends BaseRepositoryMeta implements RepositoryMeta {
 
+  public static final String SHOW_HIDDEN_FOLDERS = "showHiddenFolders";
+  public static final String LOCATION = "location";
+  public static final String DO_NOT_MODIFY = "doNotModify";
   public static String REPOSITORY_TYPE_ID = "KettleFileRepository";
 
   private String baseDirectory;
@@ -90,7 +96,7 @@ public class KettleFileRepositoryMeta extends BaseRepositoryMeta implements Repo
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 100 );
+    StringBuilder retval = new StringBuilder( 100 );
 
     retval.append( "  " ).append( XMLHandler.openTag( XML_TAG ) );
     retval.append( super.getXML() );
@@ -145,6 +151,26 @@ public class KettleFileRepositoryMeta extends BaseRepositoryMeta implements Repo
 
   public RepositoryMeta clone() {
     return new KettleFileRepositoryMeta( REPOSITORY_TYPE_ID, getName(), getDescription(), getBaseDirectory() );
+  }
+
+  @Override public void populate( Map<String, Object> properties, RepositoriesMeta repositoriesMeta ) {
+    super.populate( properties, repositoriesMeta );
+    Boolean showHiddenFolders = (Boolean) properties.get( SHOW_HIDDEN_FOLDERS );
+    String location = (String) properties.get( LOCATION );
+    Boolean doNotModify = (Boolean) properties.get( DO_NOT_MODIFY );
+
+    setHidingHiddenFiles( showHiddenFolders );
+    setBaseDirectory( location );
+    setReadOnly( doNotModify );
+  }
+
+  @SuppressWarnings( "unchecked" )
+  @Override public JSONObject toJSONObject() {
+    JSONObject object = super.toJSONObject();
+    object.put( SHOW_HIDDEN_FOLDERS, isHidingHiddenFiles() );
+    object.put( LOCATION, getBaseDirectory() );
+    object.put( DO_NOT_MODIFY, isReadOnly() );
+    return object;
   }
 
   /**

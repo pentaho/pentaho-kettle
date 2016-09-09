@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,6 +24,8 @@ package org.pentaho.di.core.extension;
 
 public enum KettleExtensionPoint {
 
+    SpoonStart( "SpoonStart", "Spoon has started" ),
+    OpenRecent( "OpenRecent", "A recent file is opened" ),
   // Some transformation points
   //
     TransformationPrepareExecution( "TransformationPrepareExecution", "A transformation begins to prepare execution" ),
@@ -35,9 +37,12 @@ public enum KettleExtensionPoint {
     TransformationMetaLoaded( "TransformationMetaLoaded", "Transformation metadata was loaded" ),
     TransPainterArrow( "TransPainterArrow", "Draw additional information on top of a transformation hop (arrow)" ),
     TransPainterStep( "TransPainterStep", "Draw additional information on top of a transformation step icon" ),
+    TransPainterFlyout( "TransPainterFlyout", "Draw step flyout when step is clicked" ),
+    TransPainterFlyoutTooltip( "TransPainterFlyoutTooltip", "Draw the flyout tooltips" ),
     TransPainterStart( "TransPainterStart", "Draw transformation or plugin metadata at the start (below the rest)" ),
     TransPainterEnd( "TransPainterEnd", "Draw transformation or plugin metadata at the end (on top of all the rest)" ),
-    TransGraphMouseDown( "TransGraphMouseDown", "A left or right button was clicked in a transformation" ),
+    TransGraphMouseDown( "TransGraphMouseDown", "A mouse down event occurred on the canvas" ),
+    TransGraphMouseUp( "TransGraphMouseUp", "A mouse up event occurred on the canvas" ),
     TransBeforeOpen( "TransBeforeOpen", "A transformation file is about to be opened" ),
     TransAfterOpen( "TransAfterOpen", "A transformation file was opened" ),
     TransBeforeSave( "TransBeforeSave", "A transformation file is about to be saved" ),
@@ -46,8 +51,12 @@ public enum KettleExtensionPoint {
     TransAfterClose( "TransAfterClose", "A transformation file was closed" ),
     TransChanged( "TransChanged", "A transformation has been changed" ),
     TransStepRightClick( "TransStepRightClick", "A right button was clicked on a step" ),
+    TransGraphMouseMoved( "TransGraphMouseMoved", "The mouse was moved on the canvas" ),
     TransGraphMouseDoubleClick( "TransGraphMouseDoubleClick",
       "A left or right button was double-clicked in a transformation" ),
+    TransBeforeDeleteSteps( "TransBeforeDeleteSteps", "Transformation steps about to be deleted" ),
+    TransImportAfterSaveToRepo( "TransImportAfterSaveToRepo",
+      "Transformation's shared objects created and it's content saved to repository" ),
     SpoonTransMetaExecutionStart( "SpoonTransMetaExecutionStart",
       "Spoon initiates the execution of a trans (TransMeta)" ),
     SpoonTransExecutionConfiguration( "SpoonTransExecutionConfiguration",
@@ -99,9 +108,14 @@ public enum KettleExtensionPoint {
     CarteStartup( "CarteStartup", "Right after the Carte webserver has started and is fully functional" ),
     CarteShutdown( "CarteShutdown", "Right before the Carte webserver will shut down" ),
 
-    SpoonViewTreeExtension ( "SpoonViewTreeExtension" , "View tree spoon extension" ),
-    SpoonPopupMenuExtension ( "SpoonPopupMenuExtension" , "Pop up menu extension for the view tree" ),
-    SpoonTreeDelegateExtension ( "SpoonTreeDelegateExtension" , "During the SpoonTreeDelegate execution" ),
+    SpoonViewTreeExtension( "SpoonViewTreeExtension", "View tree spoon extension" ),
+    SpoonPopupMenuExtension( "SpoonPopupMenuExtension", "Pop up menu extension for the view tree" ),
+    SpoonTreeDelegateExtension( "SpoonTreeDelegateExtension", "During the SpoonTreeDelegate execution" ),
+
+    RepositoryImporterPatchTransStep( "RepositoryImporterPatchTransStep", "Patch the step in a transformation during repository import" ),
+    RepositoryExporterPatchTransStep( "RepositoryExporterPatchTransStep", "Patch the step in a transformation during repository export" ),
+
+    OpenMapping( "OpenMapping", "Trigger when opening a mapping from TransGraph" ),
 
     AfterDeleteRepositoryObject( "AfterDeleteRepositoryObject",
       "After an object has been deleted from the repository" );

@@ -94,13 +94,14 @@ public class GraphTest {
     TransGraph graph = mock( TransGraph.class );
     StepMeta meta1 = mock( StepMeta.class );
     wireSelected( meta1 );
-    List<StepMeta> selected = Collections.<StepMeta>emptyList();
+    List<StepMeta> selected = new ArrayList<>();
 
     doCallRealMethod().when( graph ).doRightClickSelection( meta1, selected );
     graph.doRightClickSelection( meta1, selected );
 
-    assertTrue( selected.isEmpty() );
-    assertFalse( meta1.isSelected() );
+    assertEquals( 1, selected.size() );
+    assertTrue( selected.contains( meta1 ) );
+    assertTrue( meta1.isSelected() );
   }
 
   @Test

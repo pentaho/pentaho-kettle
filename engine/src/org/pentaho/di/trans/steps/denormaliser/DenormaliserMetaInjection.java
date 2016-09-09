@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,8 +27,8 @@ import java.util.List;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.trans.step.StepInjectionMetaEntry;
 import org.pentaho.di.trans.step.StepMetaInjectionInterface;
 
@@ -102,7 +102,7 @@ public class DenormaliserMetaInjection implements StepMetaInjectionInterface {
                         inputField.setTargetName( value );
                         break;
                       case TARGET_TYPE:
-                        inputField.setTargetType( ValueMeta.getType( value ) );
+                        inputField.setTargetType( ValueMetaFactory.getIdForValueMeta( value ) );
                         break;
                       case TARGET_LENGTH:
                         inputField.setTargetLength( Const.toInt( value, -1 ) );
@@ -139,13 +139,16 @@ public class DenormaliserMetaInjection implements StepMetaInjectionInterface {
       }
     }
 
-    // Pass the grid to the step metadata
-    //
-    meta.setDenormaliserTargetField( denormaliserTargetFields
-      .toArray( new DenormaliserTargetField[denormaliserTargetFields.size()] ) );
+    if ( !denormaliserTargetFields.isEmpty() ) {
+      // Pass the grid to the step metadata
+      //
+      meta.setDenormaliserTargetField( denormaliserTargetFields.toArray(
+          new DenormaliserTargetField[denormaliserTargetFields.size()] ) );
+    }
 
   }
 
+  @Override
   public List<StepInjectionMetaEntry> extractStepMetadataEntries() throws KettleException {
     return null;
   }

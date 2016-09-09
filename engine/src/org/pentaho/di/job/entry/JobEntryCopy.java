@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -91,7 +91,7 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer();
+    StringBuilder retval = new StringBuilder( 100 );
 
     retval.append( "    " ).append( XMLHandler.openTag( XML_TAG ) ).append( Const.CR );
     retval.append( entry.getXML() );
@@ -104,7 +104,7 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
 
     retval.append( AttributesUtil.getAttributesXml( attributesMap ) );
 
-    retval.append( "      " ).append( XMLHandler.closeTag( XML_TAG ) ).append( Const.CR );
+    retval.append( "    " ).append( XMLHandler.closeTag( XML_TAG ) ).append( Const.CR );
     return retval.toString();
   }
 
@@ -353,7 +353,7 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
   public boolean isDummy() {
     return entry.isDummy();
   }
-  
+
   public boolean isMissing() {
     return entry instanceof MissingEntry;
   }

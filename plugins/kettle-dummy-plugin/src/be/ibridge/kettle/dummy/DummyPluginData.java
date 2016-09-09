@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -32,12 +32,10 @@ import org.pentaho.di.trans.step.StepDataInterface;
  * @author Matt
  * @since  24-mrt-2005
  */
-public class DummyPluginData extends BaseStepData implements StepDataInterface
-{
-	public RowMetaInterface outputRowMeta;
+public class DummyPluginData extends BaseStepData implements StepDataInterface {
+  public RowMetaInterface outputRowMeta;
 
-    public DummyPluginData()
-	{
-		super();
-	}
+  public DummyPluginData() {
+    super();
+  }
 }

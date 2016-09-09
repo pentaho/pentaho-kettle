@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -31,9 +31,11 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.injection.Injection;
+import org.pentaho.di.core.injection.InjectionSupported;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -60,13 +62,16 @@ import org.w3c.dom.Node;
  * Created on 02-jun-2003
  *
  */
-
+@InjectionSupported( localizationPrefix = "MergeRows.Injection." )
 public class MergeRowsMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = MergeRowsMeta.class; // for i18n purposes, needed by Translator2!!
 
+  @Injection( name = "FLAG_FIELD" )
   private String flagField;
 
+  @Injection( name = "KEY_FIELDS" )
   private String[] keyFields;
+  @Injection( name = "VALUE_FIELDS" )
   private String[] valueFields;
 
   /**
@@ -103,6 +108,7 @@ public class MergeRowsMeta extends BaseStepMeta implements StepMetaInterface {
     super(); // allocate BaseStepMeta
   }
 
+  @Override
   public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     readData( stepnode );
   }
@@ -127,14 +133,20 @@ public class MergeRowsMeta extends BaseStepMeta implements StepMetaInterface {
     valueFields = new String[nrValues];
   }
 
+  @Override
   public Object clone() {
     MergeRowsMeta retval = (MergeRowsMeta) super.clone();
-
+    int nrKeys = keyFields.length;
+    int nrValues = valueFields.length;
+    retval.allocate( nrKeys, nrValues );
+    System.arraycopy( keyFields, 0, retval.keyFields, 0, nrKeys );
+    System.arraycopy( valueFields, 0, retval.valueFields, 0, nrValues );
     return retval;
   }
 
+  @Override
   public String getXML() {
-    StringBuffer retval = new StringBuffer();
+    StringBuilder retval = new StringBuilder();
 
     retval.append( "    <keys>" + Const.CR );
     for ( int i = 0; i < keyFields.length; i++ ) {
@@ -195,11 +207,13 @@ public class MergeRowsMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
+  @Override
   public void setDefault() {
     flagField = "flagfield";
     allocate( 0, 0 );
   }
 
+  @Override
   public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
       int nrKeys = rep.countNrStepAttributes( id_step, "key_field" );
@@ -235,6 +249,7 @@ public class MergeRowsMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
+  @Override
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       for ( int i = 0; i < keyFields.length; i++ ) {
@@ -267,6 +282,7 @@ public class MergeRowsMeta extends BaseStepMeta implements StepMetaInterface {
     return null;
   }
 
+  @Override
   public void getFields( RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep,
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     // We don't have any input fields here in "r" as they are all info fields.
@@ -285,12 +301,13 @@ public class MergeRowsMeta extends BaseStepMeta implements StepMetaInterface {
     if ( Const.isEmpty( flagField ) ) {
       throw new KettleStepException( BaseMessages.getString( PKG, "MergeRowsMeta.Exception.FlagFieldNotSpecified" ) );
     }
-    ValueMetaInterface flagFieldValue = new ValueMeta( flagField, ValueMetaInterface.TYPE_STRING );
+    ValueMetaInterface flagFieldValue = new ValueMetaString( flagField );
     flagFieldValue.setOrigin( name );
     r.addValueMeta( flagFieldValue );
 
   }
 
+  @Override
   public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
     RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
@@ -318,11 +335,13 @@ public class MergeRowsMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
+  @Override
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta tr,
     Trans trans ) {
     return new MergeRows( stepMeta, stepDataInterface, cnr, tr, trans );
   }
 
+  @Override
   public StepDataInterface getStepData() {
     return new MergeRowsData();
   }
@@ -330,6 +349,7 @@ public class MergeRowsMeta extends BaseStepMeta implements StepMetaInterface {
   /**
    * Returns the Input/Output metadata for this step.
    */
+  @Override
   public StepIOMetaInterface getStepIOMeta() {
     if ( ioMeta == null ) {
 
@@ -344,9 +364,11 @@ public class MergeRowsMeta extends BaseStepMeta implements StepMetaInterface {
     return ioMeta;
   }
 
+  @Override
   public void resetStepIoMeta() {
   }
 
+  @Override
   public TransformationType[] getSupportedTransformationTypes() {
     return new TransformationType[] { TransformationType.Normal, };
   }

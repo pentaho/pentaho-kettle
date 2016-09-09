@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -28,8 +28,8 @@ import java.util.List;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.row.ValueMeta;
-import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.LongObjectId;
 import org.pentaho.di.repository.ObjectId;
@@ -152,14 +152,14 @@ public class KettleDatabaseRepositoryDirectoryDelegate extends KettleDatabaseRep
 
     String tablename = KettleDatabaseRepository.TABLE_R_DIRECTORY;
     RowMetaAndData table = new RowMetaAndData();
-    table.addValue( new ValueMeta(
-      KettleDatabaseRepository.FIELD_DIRECTORY_ID_DIRECTORY, ValueMetaInterface.TYPE_INTEGER ), id );
+    table.addValue( new ValueMetaInteger(
+      KettleDatabaseRepository.FIELD_DIRECTORY_ID_DIRECTORY ), id );
     table.addValue(
-      new ValueMeta(
-        KettleDatabaseRepository.FIELD_DIRECTORY_ID_DIRECTORY_PARENT, ValueMetaInterface.TYPE_INTEGER ),
+      new ValueMetaInteger(
+        KettleDatabaseRepository.FIELD_DIRECTORY_ID_DIRECTORY_PARENT ),
       id_directory_parent );
-    table.addValue( new ValueMeta(
-      KettleDatabaseRepository.FIELD_DIRECTORY_DIRECTORY_NAME, ValueMetaInterface.TYPE_STRING ), dir.getName() );
+    table.addValue( new ValueMetaString(
+      KettleDatabaseRepository.FIELD_DIRECTORY_DIRECTORY_NAME ), dir.getName() );
 
     repository.connectionDelegate.getDatabase().prepareInsert( table.getRowMeta(), tablename );
     repository.connectionDelegate.getDatabase().setValuesInsert( table );
@@ -247,8 +247,8 @@ public class KettleDatabaseRepositoryDirectoryDelegate extends KettleDatabaseRep
       if ( newName != null ) {
         additionalParameter = true;
         sql += quote( KettleDatabaseRepository.FIELD_DIRECTORY_DIRECTORY_NAME ) + " = ?";
-        r.addValue( new ValueMeta(
-          KettleDatabaseRepository.FIELD_DIRECTORY_DIRECTORY_NAME, ValueMetaInterface.TYPE_STRING ), newName );
+        r.addValue( new ValueMetaString(
+          KettleDatabaseRepository.FIELD_DIRECTORY_DIRECTORY_NAME ), newName );
       }
       if ( id_directory_parent != null ) {
         // Add a parameter separator if the first parm was added
@@ -257,13 +257,13 @@ public class KettleDatabaseRepositoryDirectoryDelegate extends KettleDatabaseRep
         }
         sql += quote( KettleDatabaseRepository.FIELD_DIRECTORY_ID_DIRECTORY_PARENT ) + " = ?";
         r.addValue(
-          new ValueMeta(
-            KettleDatabaseRepository.FIELD_DIRECTORY_ID_DIRECTORY_PARENT, ValueMetaInterface.TYPE_INTEGER ),
+          new ValueMetaInteger(
+            KettleDatabaseRepository.FIELD_DIRECTORY_ID_DIRECTORY_PARENT ),
           id_directory_parent );
       }
 
       sql += " WHERE " + quote( KettleDatabaseRepository.FIELD_DIRECTORY_ID_DIRECTORY ) + " = ? ";
-      r.addValue( new ValueMeta( "id_directory", ValueMetaInterface.TYPE_INTEGER ), Long.valueOf( id_directory
+      r.addValue( new ValueMetaInteger( "id_directory" ), Long.valueOf( id_directory
         .toString() ) );
 
       repository.connectionDelegate.getDatabase().execStatement( sql, r.getRowMeta(), r.getData() );
@@ -334,6 +334,13 @@ public class KettleDatabaseRepositoryDirectoryDelegate extends KettleDatabaseRep
     }
   }
 
+  /**
+   * @deprecated use {@link #renameRepositoryDirectory(ObjectId, RepositoryDirectoryInterface, String)}
+   *
+   * @param dir
+   * @return
+   * @throws KettleException
+   */
   @Deprecated
   public ObjectId renameRepositoryDirectory( RepositoryDirectory dir ) throws KettleException {
     try {

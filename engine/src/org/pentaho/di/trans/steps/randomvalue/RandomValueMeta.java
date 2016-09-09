@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -32,8 +32,11 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
+import org.pentaho.di.core.row.value.ValueMetaNone;
+import org.pentaho.di.core.row.value.ValueMetaNumber;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -127,6 +130,7 @@ public class RandomValueMeta extends BaseStepMeta implements StepMetaInterface {
     this.fieldType = fieldType;
   }
 
+  @Override
   public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     readData( stepnode );
   }
@@ -136,17 +140,15 @@ public class RandomValueMeta extends BaseStepMeta implements StepMetaInterface {
     fieldType = new int[count];
   }
 
+  @Override
   public Object clone() {
     RandomValueMeta retval = (RandomValueMeta) super.clone();
 
     int count = fieldName.length;
 
     retval.allocate( count );
-
-    for ( int i = 0; i < count; i++ ) {
-      retval.fieldName[i] = fieldName[i];
-      retval.fieldType[i] = fieldType[i];
-    }
+    System.arraycopy( fieldName, 0, retval.fieldName, 0, count );
+    System.arraycopy( fieldType, 0, retval.fieldType, 0, count );
 
     return retval;
   }
@@ -193,6 +195,7 @@ public class RandomValueMeta extends BaseStepMeta implements StepMetaInterface {
     return functions[t].getDescription();
   }
 
+  @Override
   public void setDefault() {
     int count = 0;
 
@@ -204,6 +207,7 @@ public class RandomValueMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
+  @Override
   public void getFields( RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep,
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     for ( int i = 0; i < fieldName.length; i++ ) {
@@ -211,28 +215,28 @@ public class RandomValueMeta extends BaseStepMeta implements StepMetaInterface {
 
       switch ( fieldType[i] ) {
         case TYPE_RANDOM_NUMBER:
-          v = new ValueMeta( fieldName[i], ValueMetaInterface.TYPE_NUMBER, 10, 5 );
+          v = new ValueMetaNumber( fieldName[i], 10, 5 );
           break;
         case TYPE_RANDOM_INTEGER:
-          v = new ValueMeta( fieldName[i], ValueMetaInterface.TYPE_INTEGER, 10, 0 );
+          v = new ValueMetaInteger( fieldName[i], 10, 0 );
           break;
         case TYPE_RANDOM_STRING:
-          v = new ValueMeta( fieldName[i], ValueMetaInterface.TYPE_STRING, 13, 0 );
+          v = new ValueMetaString( fieldName[i], 13, 0 );
           break;
         case TYPE_RANDOM_UUID:
-          v = new ValueMeta( fieldName[i], ValueMetaInterface.TYPE_STRING, 36, 0 );
+          v = new ValueMetaString( fieldName[i], 36, 0 );
           break;
         case TYPE_RANDOM_UUID4:
-          v = new ValueMeta( fieldName[i], ValueMetaInterface.TYPE_STRING, 36, 0 );
+          v = new ValueMetaString( fieldName[i], 36, 0 );
           break;
         case TYPE_RANDOM_MAC_HMACMD5:
-          v = new ValueMeta( fieldName[i], ValueMetaInterface.TYPE_STRING, 100, 0 );
+          v = new ValueMetaString( fieldName[i], 100, 0 );
           break;
         case TYPE_RANDOM_MAC_HMACSHA1:
-          v = new ValueMeta( fieldName[i], ValueMetaInterface.TYPE_STRING, 100, 0 );
+          v = new ValueMetaString( fieldName[i], 100, 0 );
           break;
         default:
-          v = new ValueMeta( fieldName[i], ValueMetaInterface.TYPE_NONE );
+          v = new ValueMetaNone( fieldName[i] );
           break;
       }
       v.setOrigin( name );
@@ -240,8 +244,9 @@ public class RandomValueMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
+  @Override
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 200 );
+    StringBuilder retval = new StringBuilder( 200 );
 
     retval.append( "    <fields>" ).append( Const.CR );
 
@@ -258,6 +263,7 @@ public class RandomValueMeta extends BaseStepMeta implements StepMetaInterface {
     return retval.toString();
   }
 
+  @Override
   public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
       int nrfields = rep.countNrStepAttributes( id_step, "field_name" );
@@ -273,6 +279,7 @@ public class RandomValueMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
+  @Override
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       for ( int i = 0; i < fieldName.length; i++ ) {
@@ -286,6 +293,7 @@ public class RandomValueMeta extends BaseStepMeta implements StepMetaInterface {
 
   }
 
+  @Override
   public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
     RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
@@ -307,11 +315,13 @@ public class RandomValueMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
+  @Override
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
     TransMeta transMeta, Trans trans ) {
     return new RandomValue( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 
+  @Override
   public StepDataInterface getStepData() {
     return new RandomValueData();
   }

@@ -64,7 +64,7 @@ public class StopCarteServlet extends BaseHttpServlet implements CartePluginInte
     }
 
     if ( log.isDebug() ) {
-      logDebug( BaseMessages.getString(PKG, "StopCarteServlet.shutdownRequest" ) );
+      logDebug( BaseMessages.getString( PKG, "StopCarteServlet.shutdownRequest" ) );
     }
 
     response.setStatus( HttpServletResponse.SC_OK );

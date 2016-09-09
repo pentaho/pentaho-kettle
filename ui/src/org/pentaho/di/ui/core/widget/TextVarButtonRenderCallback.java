@@ -23,7 +23,7 @@
 package org.pentaho.di.ui.core.widget;
 
 public interface TextVarButtonRenderCallback {
-  
+
   public boolean shouldRenderButton();
-  
+
 }

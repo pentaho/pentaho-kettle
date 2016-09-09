@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2014 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,16 +22,22 @@
 
 package org.pentaho.di.trans.steps.webservices;
 
-import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
-import com.sun.net.httpserver.HttpServer;
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.net.InetSocketAddress;
+import java.util.List;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.value.ValueMetaBigNumber;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.trans.RowProducer;
 import org.pentaho.di.trans.RowStepCollector;
 import org.pentaho.di.trans.Trans;
@@ -46,12 +52,9 @@ import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.net.InetSocketAddress;
-import java.util.List;
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpHandler;
+import com.sun.net.httpserver.HttpServer;
 
 /**
  * User: Dzmitry Stsiapanau Date: 2/12/14 Time: 5:15 PM
@@ -162,10 +165,12 @@ public class WebServiceTest extends TransformationTestCase {
     super();
   }
 
+  @Override
   public void setUp() throws Exception {
     startHttpAnswer();
   }
 
+  @Override
   public void tearDown() throws Exception {
     httpServer.stop( 0 );
   }
@@ -271,12 +276,12 @@ public class WebServiceTest extends TransformationTestCase {
   }
 
   public RowMetaInterface createRowMetaInterface() {
-    return createRowMetaInterface( new ValueMeta( "integer_20", ValueMeta.TYPE_STRING ) );
+    return createRowMetaInterface( new ValueMetaString( "integer_20" ) );
   }
 
   public RowMetaInterface createOutputRowMetaInterface() {
-    return createRowMetaInterface( new ValueMeta( "integer_20", ValueMeta.TYPE_STRING ), new ValueMeta(
-      "CelciusToFahrenheitResult", ValueMeta.TYPE_BIGNUMBER ) );
+    return createRowMetaInterface( new ValueMetaString( "integer_20" ), new ValueMetaBigNumber(
+      "CelciusToFahrenheitResult" ) );
   }
 
   private static void startHttpAnswer() throws IOException {

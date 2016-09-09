@@ -650,7 +650,6 @@
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.core.database.DatabaseTest" haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.core.database.SelectCountTests" haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.core.database.SQLStatementParserTest" haltonerror="false"/>
-      <test todir="${testreports.xml.dir}" name="org.pentaho.di.core.database.ReleaseSavePointTest" haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.core.database.TablespaceDDLFragmentTest" haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.core.database.VerticaDatabaseMetaTest" haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.core.database.util.DatabaseUtilTest" haltonerror="false"/>
@@ -779,6 +778,8 @@
             haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.trans.steps.pentahoreporting.PentahoReportingOutputTest"
             haltonerror="false"/>
+      <test todir="${testreports.xml.dir}" name="org.pentaho.di.trans.steps.pentahoreporting.PDI7502IT"
+            haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.trans.steps.regexeval.RegexEvalTest"
             haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.trans.steps.rowgenerator.RowGeneratorTest"
@@ -808,13 +809,12 @@
             haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.trans.steps.xsdvalidator.XsdValidatorIntTest" haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.trans.steps.xslt.XsltTest" haltonerror="false"/>
-      <test todir="${testreports.xml.dir}" name="org.pentaho.di.core.database.SequenceMetaTests" haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.trans.steps.terafast.FastloadControlBuilderTest"
             haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.trans.steps.gpload.GPLoadTest"
             haltonerror="false"/>
-    	<test todir="${testreports.xml.dir}" name="org.pentaho.di.trans.steps.rest.RestInputTest"
-    	            haltonerror="false"/>
+      <test todir="${testreports.xml.dir}" name="org.pentaho.di.trans.steps.rest.RestInputTest"
+            haltonerror="false"/>
     </junit>
     <junitreport todir="${testreports.html.dir}">
       <fileset dir="${testreports.xml.dir}">
@@ -893,6 +893,7 @@
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.job.entries.ftpsget.FTPSConnectionTest" haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.job.entries.ftpsget.JobEntryFTPSGetTest" haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.job.entries.ftpput.JobEntryFTPPUTTest" haltonerror="false"/>
+      <test todir="${testreports.xml.dir}" name="org.pentaho.di.job.entries.waitforsql.JobEntryWaitForSQLTest" haltonerror="false"/>
 
       <!-- Some extra things to run -->
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.job.entries.copyfiles.CopyFilesTest"

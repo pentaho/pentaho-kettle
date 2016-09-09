@@ -1,7 +1,7 @@
 /*
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  * **************************************************************************
  *
@@ -21,7 +21,10 @@
 package org.pentaho.di.trans.steps.transexecutor;
 
 import static java.util.Arrays.asList;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.matchers.JUnitMatchers.hasItem;
 
 import org.junit.Before;
@@ -34,8 +37,8 @@ import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.trans.RowProducer;
 import org.pentaho.di.trans.RowStepCollector;
 import org.pentaho.di.trans.Trans;
@@ -154,7 +157,7 @@ public class TransExecutorTest {
 
   private static RowMetaInterface createRowMetaForOneField() {
     RowMetaInterface rm = new RowMeta();
-    ValueMetaInterface[] valuesMeta = { new ValueMeta( "field1", ValueMeta.TYPE_STRING ), };
+    ValueMetaInterface[] valuesMeta = { new ValueMetaString( "field1" ), };
     for ( ValueMetaInterface aValuesMeta : valuesMeta ) {
       rm.addValueMeta( aValuesMeta );
     }

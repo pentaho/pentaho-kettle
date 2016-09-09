@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -26,13 +26,15 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
 
-import junit.framework.Assert;
+import java.util.Arrays;
 
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.QueueRowSet;
 import org.pentaho.di.core.RowSet;
+import org.pentaho.di.core.SingleRowRowSet;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
@@ -46,6 +48,8 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
 import org.pentaho.metastore.api.IMetaStore;
 
+import static org.junit.Assert.*;
+
 /**
  * Tests for FieldSplitter step
  *
@@ -54,6 +58,11 @@ import org.pentaho.metastore.api.IMetaStore;
  */
 public class FieldSplitterTest {
   StepMockHelper<FieldSplitterMeta, FieldSplitterData> smh;
+
+  @BeforeClass
+  public static void initKettle() throws Exception {
+    KettleEnvironment.init();
+  }
 
   @Before
   public void setUp() {
@@ -90,6 +99,7 @@ public class FieldSplitterTest {
     doReturn( new String[] { null, null } ).when( processRowMeta ).getFieldNullIf();
     doReturn( new String[] { null, null } ).when( processRowMeta ).getFieldIfNull();
     doReturn( ";" ).when( processRowMeta ).getDelimiter();
+    doReturn( 2 ).when( processRowMeta ).getFieldsCount();
 
     return processRowMeta;
   }
@@ -105,8 +115,6 @@ public class FieldSplitterTest {
 
   @Test
   public void testSplitFields() throws KettleException {
-    KettleEnvironment.init();
-
     FieldSplitter step = new FieldSplitter( smh.stepMeta, smh.stepDataInterface, 0, smh.transMeta, smh.trans );
     step.init( smh.initStepMetaInterface, smh.stepDataInterface );
     step.setInputRowMeta( getInputRowMeta() );
@@ -122,10 +130,47 @@ public class FieldSplitterTest {
     Object[] actualRow = outputRowSet.getRow();
     Object[] expectedRow = new Object[] { "before", null, "b=b", "after" };
 
-    Assert.assertEquals( "Output row is of an unexpected length", expectedRow.length, outputRowSet.getRowMeta().size() );
+    assertEquals( "Output row is of an unexpected length", expectedRow.length, outputRowSet.getRowMeta().size() );
 
     for ( int i = 0; i < expectedRow.length; i++ ) {
-      Assert.assertEquals( "Unexpected output value at index " + i, expectedRow[i], actualRow[i] );
+      assertEquals( "Unexpected output value at index " + i, expectedRow[i], actualRow[i] );
     }
+  }
+
+  @Test
+  public void testSplitFieldsDup() throws Exception {
+    FieldSplitterMeta meta = new FieldSplitterMeta();
+    meta.allocate( 2 );
+    meta.setDelimiter( " " );
+    meta.setEnclosure( "" );
+    meta.setSplitField( "split" );
+    meta.setFieldName( new String[] { "key", "val" } );
+    meta.setFieldType( new int[] { ValueMetaInterface.TYPE_STRING, ValueMetaInterface.TYPE_STRING } );
+
+    FieldSplitter step = new FieldSplitter( smh.stepMeta, smh.stepDataInterface, 0, smh.transMeta, smh.trans );
+    step.init( meta, smh.stepDataInterface );
+
+    RowMetaInterface rowMeta = new RowMeta();
+    rowMeta.addValueMeta( new ValueMetaString( "key" ) );
+    rowMeta.addValueMeta( new ValueMetaString( "val" ) );
+    rowMeta.addValueMeta( new ValueMetaString( "split" ) );
+
+    step.setInputRowMeta( rowMeta );
+    step.getInputRowSets().add( smh.getMockInputRowSet( new Object[] { "key", "string", "part1 part2" } ) );
+    step.getOutputRowSets().add( new SingleRowRowSet() );
+
+    assertTrue( step.processRow( meta, smh.stepDataInterface ) );
+
+    RowSet rs = step.getOutputRowSets().get( 0 );
+    Object[] row = rs.getRow();
+    RowMetaInterface rm = rs.getRowMeta();
+
+    assertArrayEquals(
+        new Object[] { "key", "string", "part1", "part2" },
+        Arrays.copyOf( row, 4 ) );
+
+    assertArrayEquals(
+        new Object[] { "key", "val", "key_1", "val_1" },
+        rm.getFieldNames() );
   }
 }

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -32,7 +32,7 @@ import org.pentaho.di.core.changed.ChangedFlag;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -157,24 +157,24 @@ public class ClusterSchema extends ChangedFlag implements Cloneable, SharedObjec
   }
 
   public String getXML() {
-    StringBuffer xml = new StringBuffer( 500 );
+    StringBuilder xml = new StringBuilder( 500 );
 
-    xml.append( "        <" ).append( XML_TAG ).append( ">" ).append( Const.CR );
+    xml.append( "      " ).append( XMLHandler.openTag( XML_TAG ) ).append( Const.CR );
 
-    xml.append( "          " ).append( XMLHandler.addTagValue( "name", name ) );
-    xml.append( "          " ).append( XMLHandler.addTagValue( "base_port", basePort ) );
-    xml.append( "          " ).append( XMLHandler.addTagValue( "sockets_buffer_size", socketsBufferSize ) );
-    xml.append( "          " ).append( XMLHandler.addTagValue( "sockets_flush_interval", socketsFlushInterval ) );
-    xml.append( "          " ).append( XMLHandler.addTagValue( "sockets_compressed", socketsCompressed ) );
-    xml.append( "          " ).append( XMLHandler.addTagValue( "dynamic", dynamic ) );
+    xml.append( "        " ).append( XMLHandler.addTagValue( "name", name ) );
+    xml.append( "        " ).append( XMLHandler.addTagValue( "base_port", basePort ) );
+    xml.append( "        " ).append( XMLHandler.addTagValue( "sockets_buffer_size", socketsBufferSize ) );
+    xml.append( "        " ).append( XMLHandler.addTagValue( "sockets_flush_interval", socketsFlushInterval ) );
+    xml.append( "        " ).append( XMLHandler.addTagValue( "sockets_compressed", socketsCompressed ) );
+    xml.append( "        " ).append( XMLHandler.addTagValue( "dynamic", dynamic ) );
 
-    xml.append( "          <slaveservers>" ).append( Const.CR );
+    xml.append( "        " ).append( XMLHandler.openTag( "slaveservers" ) ).append( Const.CR );
     for ( int i = 0; i < slaveServers.size(); i++ ) {
       SlaveServer slaveServer = slaveServers.get( i );
-      xml.append( "            " ).append( XMLHandler.addTagValue( "name", slaveServer.getName() ) );
+      xml.append( "          " ).append( XMLHandler.addTagValue( "name", slaveServer.getName() ) );
     }
-    xml.append( "          </slaveservers>" ).append( Const.CR );
-    xml.append( "        </" ).append( XML_TAG ).append( ">" ).append( Const.CR );
+    xml.append( "        " ).append( XMLHandler.closeTag( "slaveservers" ) ).append( Const.CR );
+    xml.append( "      " ).append( XMLHandler.closeTag( XML_TAG ) ).append( Const.CR );
     return xml.toString();
   }
 
@@ -397,7 +397,7 @@ public class ClusterSchema extends ChangedFlag implements Cloneable, SharedObjec
     if ( !Const.isEmpty( variableName ) ) {
       String value = environmentSubstitute( variableName );
       if ( !Const.isEmpty( value ) ) {
-        return ValueMeta.convertStringToBoolean( value );
+        return ValueMetaString.convertStringToBoolean( value );
       }
     }
     return defaultValue;

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,14 +22,16 @@
 
 package org.pentaho.di.job.entries.deletefiles;
 
-import static org.pentaho.di.job.entry.validator.AbstractFileValidator.putVariableSpace;
-import static org.pentaho.di.job.entry.validator.AndValidator.putValidators;
-import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.andValidator;
-import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.fileExistsValidator;
-import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notNullValidator;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
+import org.pentaho.di.core.exception.KettleValueException;
+import org.pentaho.di.job.entry.validator.AbstractFileValidator;
+import org.pentaho.di.job.entry.validator.AndValidator;
+import org.pentaho.di.job.entry.validator.JobEntryValidatorUtils;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -73,16 +75,16 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
 
   private static Class<?> PKG = JobEntryDeleteFiles.class; // for i18n purposes, needed by Translator2!!
 
-  public boolean argFromPrevious;
+  private boolean argFromPrevious;
 
-  public boolean includeSubfolders;
+  private boolean includeSubfolders;
 
-  public String[] arguments;
+  private String[] arguments;
 
-  public String[] filemasks;
+  private String[] filemasks;
 
-  public JobEntryDeleteFiles( String n ) {
-    super( n, "" );
+  public JobEntryDeleteFiles( String jobName ) {
+    super( jobName, "" );
     argFromPrevious = false;
     arguments = null;
 
@@ -93,9 +95,20 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
     this( "" );
   }
 
+  public void allocate( int numberOfFields ) {
+    arguments = new String[ numberOfFields ];
+    filemasks = new String[ numberOfFields ];
+  }
+
   public Object clone() {
-    JobEntryDeleteFiles je = (JobEntryDeleteFiles) super.clone();
-    return je;
+    JobEntryDeleteFiles jobEntry = (JobEntryDeleteFiles) super.clone();
+    if ( arguments != null ) {
+      int nrFields = arguments.length;
+      jobEntry.allocate( nrFields );
+      System.arraycopy( arguments, 0, jobEntry.arguments, 0, nrFields );
+      System.arraycopy( filemasks, 0, jobEntry.filemasks, 0, nrFields );
+    }
+    return jobEntry;
   }
 
   public String getXML() {
@@ -128,13 +141,10 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
 
       Node fields = XMLHandler.getSubNode( entrynode, "fields" );
 
-      // How many field arguments?
-      int nrFields = XMLHandler.countNodes( fields, "field" );
-      arguments = new String[nrFields];
-      filemasks = new String[nrFields];
+      int numberOfFields = XMLHandler.countNodes( fields, "field" );
+      allocate( numberOfFields );
 
-      // Read them all...
-      for ( int i = 0; i < nrFields; i++ ) {
+      for ( int i = 0; i < numberOfFields; i++ ) {
         Node fnode = XMLHandler.getSubNodeByNr( fields, "field", i );
 
         arguments[i] = XMLHandler.getTagValue( fnode, "name" );
@@ -151,15 +161,12 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
       argFromPrevious = rep.getJobEntryAttributeBoolean( id_jobentry, "arg_from_previous" );
       includeSubfolders = rep.getJobEntryAttributeBoolean( id_jobentry, "include_subfolders" );
 
-      // How many arguments?
-      int argnr = rep.countNrJobEntryAttributes( id_jobentry, "name" );
-      arguments = new String[argnr];
-      filemasks = new String[argnr];
+      int numberOfArgs = rep.countNrJobEntryAttributes( id_jobentry, "name" );
+      allocate( numberOfArgs );
 
-      // Read them all...
-      for ( int a = 0; a < argnr; a++ ) {
-        arguments[a] = rep.getJobEntryAttributeString( id_jobentry, a, "name" );
-        filemasks[a] = rep.getJobEntryAttributeString( id_jobentry, a, "filemask" );
+      for ( int i = 0; i < numberOfArgs; i++ ) {
+        arguments[i] = rep.getJobEntryAttributeString( id_jobentry, i, "name" );
+        filemasks[i] = rep.getJobEntryAttributeString( id_jobentry, i, "filemask" );
       }
     } catch ( KettleException dbe ) {
       throw new KettleException( BaseMessages.getString( PKG, "JobEntryDeleteFiles.UnableToLoadFromRepo", String
@@ -186,125 +193,151 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
   }
 
   public Result execute( Result result, int nr ) throws KettleException {
-    List<RowMetaAndData> rows = result.getRows();
-    RowMetaAndData resultRow = null;
+    List<RowMetaAndData> resultRows = result.getRows();
 
-    int NrErrFiles = 0;
-
+    int numberOfErrFiles = 0;
     result.setResult( false );
     result.setNrErrors( 1 );
 
-    if ( argFromPrevious ) {
-      if ( log.isDetailed() ) {
-        logDetailed( BaseMessages.getString( PKG, "JobEntryDeleteFiles.FoundPreviousRows", String
-          .valueOf( ( rows != null ? rows.size() : 0 ) ) ) );
-      }
+    if ( argFromPrevious && log.isDetailed() ) {
+      logDetailed( BaseMessages.getString( PKG, "JobEntryDeleteFiles.FoundPreviousRows", String
+        .valueOf( ( resultRows != null ? resultRows.size() : 0 ) ) ) );
     }
 
-    if ( argFromPrevious && rows != null ) // Copy the input row to the (command line) arguments
-    {
-      for ( int iteration = 0; iteration < rows.size() && !parentJob.isStopped(); iteration++ ) {
-        resultRow = rows.get( iteration );
+    Multimap<String, String> pathToMaskMap = populateDataForJobExecution( resultRows );
 
-        String args_previous = resultRow.getString( 0, null );
-        String fmasks_previous = resultRow.getString( 1, null );
-
-        // ok we can process this file/folder
+    for ( Map.Entry<String, String> pathToMask : pathToMaskMap.entries() ) {
+      final String filePath = environmentSubstitute( pathToMask.getKey() );
+      if ( filePath.trim().isEmpty() ) {
+        // Relative paths are permitted, and providing an empty path means deleting all files inside a root pdi-folder.
+        // It is much more likely to be a mistake than a desirable action, so we don't delete anything (see PDI-15181)
         if ( log.isDetailed() ) {
-          logDetailed( BaseMessages.getString(
-            PKG, "JobEntryDeleteFiles.ProcessingRow", args_previous, fmasks_previous ) );
+          logDetailed( BaseMessages.getString( PKG, "JobEntryDeleteFiles.NoPathProvided" ) );
+        }
+      } else {
+        final String fileMask = environmentSubstitute( pathToMask.getValue() );
+
+        if ( parentJob.isStopped() ) {
+          break;
         }
 
-        if ( !ProcessFile( args_previous, fmasks_previous, parentJob ) ) {
-          NrErrFiles++;
-        }
-      }
-    } else if ( arguments != null ) {
-
-      for ( int i = 0; i < arguments.length && !parentJob.isStopped(); i++ ) {
-
-        // ok we can process this file/folder
-        if ( log.isDetailed() ) {
-          logDetailed( BaseMessages.getString(
-            PKG, "JobEntryDeleteFiles.ProcessingArg", arguments[i], filemasks[i] ) );
-        }
-        if ( !ProcessFile( arguments[i], filemasks[i], parentJob ) ) {
-          NrErrFiles++;
+        if ( !processFile( filePath, fileMask, parentJob ) ) {
+          numberOfErrFiles++;
         }
       }
     }
 
-    if ( NrErrFiles == 0 ) {
+    if ( numberOfErrFiles == 0 ) {
       result.setResult( true );
       result.setNrErrors( 0 );
     } else {
-      result.setNrErrors( NrErrFiles );
+      result.setNrErrors( numberOfErrFiles );
       result.setResult( false );
     }
 
     return result;
   }
 
-  private boolean ProcessFile( String filename, String wildcard, Job parentJob ) {
-    boolean rcode = false;
-    FileObject filefolder = null;
-    String realFilefoldername = environmentSubstitute( filename );
-    String realwildcard = environmentSubstitute( wildcard );
+  /**
+   * For job execution path to files and file masks should be provided.
+   * These values can be obtained in two ways:
+   * 1. As an argument of a current job entry
+   * 2. As a table, that comes as a result of execution previous job/transformation.
+   *
+   * As the logic of processing this data is the same for both of this cases, we first
+   * populate this data (in this method) and then process it.
+   *
+   * We are using guava multimap here, because if allows key duplication and there could be a
+   * situation where two paths to one folder with different wildcards are provided.
+   */
+  private Multimap<String, String> populateDataForJobExecution( List<RowMetaAndData> rowsFromPreviousMeta ) throws KettleValueException {
+    Multimap<String, String> pathToMaskMap = ArrayListMultimap.create();
+    if ( argFromPrevious && rowsFromPreviousMeta != null ) {
+      for ( RowMetaAndData resultRow : rowsFromPreviousMeta ) {
+        if ( resultRow.size() < 2 ) {
+          logError( BaseMessages.getString(
+            PKG, "JobDeleteFiles.Error.InvalidNumberOfRowsFromPrevMeta", resultRow.size() ) );
+          return pathToMaskMap;
+        }
+        String pathToFile = resultRow.getString( 0, null );
+        String fileMask = resultRow.getString( 1, null );
+
+        if ( log.isDetailed() ) {
+          logDetailed( BaseMessages.getString(
+            PKG, "JobEntryDeleteFiles.ProcessingRow", pathToFile, fileMask ) );
+        }
+
+        pathToMaskMap.put( pathToFile, fileMask );
+      }
+    } else if ( arguments != null ) {
+      for ( int i = 0; i < arguments.length; i++ ) {
+        if ( log.isDetailed() ) {
+          logDetailed( BaseMessages.getString(
+            PKG, "JobEntryDeleteFiles.ProcessingArg", arguments[ i ], filemasks[ i ] ) );
+        }
+        pathToMaskMap.put( arguments[ i ], filemasks[ i ] );
+      }
+    }
+
+    return pathToMaskMap;
+  }
+
+  boolean processFile( String path, String wildcard, Job parentJob ) {
+    boolean isDeleted = false;
+    FileObject fileFolder = null;
 
     try {
-      filefolder = KettleVFS.getFileObject( realFilefoldername, this );
+      fileFolder = KettleVFS.getFileObject( path, this );
 
-      if ( filefolder.exists() ) {
-        // the file or folder exists
-        if ( filefolder.getType() == FileType.FOLDER ) {
-          // It's a folder
-          if ( log.isDetailed() ) {
-            logDetailed( BaseMessages.getString( PKG, "JobEntryDeleteFiles.ProcessingFolder", realFilefoldername ) );
-            // Delete Files
-          }
-
-          int Nr = filefolder.delete( new TextFileSelector( filefolder.toString(), realwildcard, parentJob ) );
+      if ( fileFolder.exists() ) {
+        if ( fileFolder.getType() == FileType.FOLDER ) {
 
           if ( log.isDetailed() ) {
-            logDetailed( BaseMessages.getString( PKG, "JobEntryDeleteFiles.TotalDeleted", String.valueOf( Nr ) ) );
+            logDetailed( BaseMessages.getString( PKG, "JobEntryDeleteFiles.ProcessingFolder", path ) );
           }
-          rcode = true;
+
+          int totalDeleted = fileFolder.delete( new TextFileSelector( fileFolder.toString(), wildcard, parentJob ) );
+
+          if ( log.isDetailed() ) {
+            logDetailed(
+              BaseMessages.getString( PKG, "JobEntryDeleteFiles.TotalDeleted", String.valueOf( totalDeleted ) ) );
+          }
+          isDeleted = true;
         } else {
-          // It's a file
+
           if ( log.isDetailed() ) {
-            logDetailed( BaseMessages.getString( PKG, "JobEntryDeleteFiles.ProcessingFile", realFilefoldername ) );
+            logDetailed( BaseMessages.getString( PKG, "JobEntryDeleteFiles.ProcessingFile", path ) );
           }
-          boolean deleted = filefolder.delete();
-          if ( !deleted ) {
-            logError( BaseMessages.getString( PKG, "JobEntryDeleteFiles.CouldNotDeleteFile", realFilefoldername ) );
+          isDeleted = fileFolder.delete();
+          if ( !isDeleted ) {
+            logError( BaseMessages.getString( PKG, "JobEntryDeleteFiles.CouldNotDeleteFile", path ) );
           } else {
             if ( log.isBasic() ) {
-              logBasic( BaseMessages.getString( PKG, "JobEntryDeleteFiles.FileDeleted", filename ) );
+              logBasic( BaseMessages.getString( PKG, "JobEntryDeleteFiles.FileDeleted", path ) );
             }
-            rcode = true;
           }
         }
       } else {
         // File already deleted, no reason to try to delete it
         if ( log.isBasic() ) {
-          logBasic( BaseMessages.getString( PKG, "JobEntryDeleteFiles.FileAlreadyDeleted", realFilefoldername ) );
+          logBasic( BaseMessages.getString( PKG, "JobEntryDeleteFiles.FileAlreadyDeleted", path ) );
         }
-        rcode = true;
+        isDeleted = true;
       }
     } catch ( Exception e ) {
-      logError( BaseMessages.getString( PKG, "JobEntryDeleteFiles.CouldNotProcess", realFilefoldername, e
+      logError( BaseMessages.getString( PKG, "JobEntryDeleteFiles.CouldNotProcess", path, e
         .getMessage() ), e );
     } finally {
-      if ( filefolder != null ) {
+      if ( fileFolder != null ) {
         try {
-          filefolder.close();
+          fileFolder.close();
         } catch ( IOException ex ) {
           // Ignore
         }
       }
     }
 
-    return rcode;
+    return isDeleted;
   }
 
   private class TextFileSelector implements FileSelector {
@@ -325,55 +358,44 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
     }
 
     public boolean includeFile( FileSelectInfo info ) {
-      boolean returncode = false;
+      boolean doReturnCode = false;
       try {
 
         if ( !info.getFile().toString().equals( sourceFolder ) && !parentjob.isStopped() ) {
           // Pass over the Base folder itself
-
-          String short_filename = info.getFile().getName().getBaseName();
+          String shortFilename = info.getFile().getName().getBaseName();
 
           if ( !info.getFile().getParent().equals( info.getBaseFolder() ) ) {
-
             // Not in the Base Folder..Only if include sub folders
             if ( includeSubfolders
-              && ( info.getFile().getType() == FileType.FILE ) && GetFileWildcard( short_filename, fileWildcard ) ) {
+              && ( info.getFile().getType() == FileType.FILE ) && GetFileWildcard( shortFilename, fileWildcard ) ) {
               if ( log.isDetailed() ) {
                 logDetailed( BaseMessages.getString( PKG, "JobEntryDeleteFiles.DeletingFile", info
                   .getFile().toString() ) );
               }
-
-              returncode = true;
-
+              doReturnCode = true;
             }
           } else {
             // In the Base Folder...
-
-            if ( ( info.getFile().getType() == FileType.FILE ) && GetFileWildcard( short_filename, fileWildcard ) ) {
+            if ( ( info.getFile().getType() == FileType.FILE ) && GetFileWildcard( shortFilename, fileWildcard ) ) {
               if ( log.isDetailed() ) {
                 logDetailed( BaseMessages.getString( PKG, "JobEntryDeleteFiles.DeletingFile", info
                   .getFile().toString() ) );
               }
-
-              returncode = true;
-
+              doReturnCode = true;
             }
-
           }
-
         }
-
       } catch ( Exception e ) {
-
         log.logError(
           BaseMessages.getString( PKG, "JobDeleteFiles.Error.Exception.DeleteProcessError" ), BaseMessages
             .getString( PKG, "JobDeleteFiles.Error.Exception.DeleteProcess", info.getFile().toString(), e
               .getMessage() ) );
 
-        returncode = false;
+        doReturnCode = false;
       }
 
-      return returncode;
+      return doReturnCode;
     }
 
     public boolean traverseDescendents( FileSelectInfo info ) {
@@ -393,10 +415,8 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
     if ( !Const.isEmpty( wildcard ) ) {
       Pattern pattern = Pattern.compile( wildcard );
       // First see if the file matches the regular expression!
-      if ( pattern != null ) {
-        Matcher matcher = pattern.matcher( selectedfile );
-        getIt = matcher.matches();
-      }
+      Matcher matcher = pattern.matcher( selectedfile );
+      getIt = matcher.matches();
     }
 
     return getIt;
@@ -416,18 +436,20 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
 
   public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
-    boolean res = andValidator().validate( this, "arguments", remarks, putValidators( notNullValidator() ) );
+    boolean isValid = JobEntryValidatorUtils.andValidator().validate( this, "arguments", remarks,
+        AndValidator.putValidators( JobEntryValidatorUtils.notNullValidator() ) );
 
-    if ( !res ) {
+    if ( !isValid ) {
       return;
     }
 
     ValidatorContext ctx = new ValidatorContext();
-    putVariableSpace( ctx, getVariables() );
-    putValidators( ctx, notNullValidator(), fileExistsValidator() );
+    AbstractFileValidator.putVariableSpace( ctx, getVariables() );
+    AndValidator.putValidators( ctx, JobEntryValidatorUtils.notNullValidator(),
+        JobEntryValidatorUtils.fileExistsValidator() );
 
     for ( int i = 0; i < arguments.length; i++ ) {
-      andValidator().validate( this, "arguments[" + i + "]", remarks, ctx );
+      JobEntryValidatorUtils.andValidator().validate( this, "arguments[" + i + "]", remarks, ctx );
     }
   }
 
@@ -445,6 +467,18 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
       }
     }
     return references;
+  }
+
+  public void setArguments( String[] arguments ) {
+    this.arguments = arguments;
+  }
+
+  public void setFilemasks( String[] filemasks ) {
+    this.filemasks = filemasks;
+  }
+
+  public void setArgFromPrevious( boolean argFromPrevious ) {
+    this.argFromPrevious = argFromPrevious;
   }
 
   public boolean isArgFromPrevious() {

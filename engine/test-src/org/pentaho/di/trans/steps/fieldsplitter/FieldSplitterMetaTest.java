@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -26,7 +26,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -95,60 +94,38 @@ public class FieldSplitterMetaTest {
       new HashMap<String, FieldLoadSaveValidator<?>>();
 
     fieldLoadSaveValidatorAttributeMap.put( "name",
-      new ArrayLoadSaveValidator<String>( new StringLoadSaveValidator(), 50 ) );
+      new ArrayLoadSaveValidator<String>( new StringLoadSaveValidator(), 5 ) );
     fieldLoadSaveValidatorAttributeMap.put( "id",
-      new ArrayLoadSaveValidator<String>( new StringLoadSaveValidator(), 50 ) );
+      new ArrayLoadSaveValidator<String>( new StringLoadSaveValidator(), 5 ) );
     fieldLoadSaveValidatorAttributeMap.put( "idrem",
-      new PrimitiveBooleanArrayLoadSaveValidator( new BooleanLoadSaveValidator(), 50 ) );
+      new PrimitiveBooleanArrayLoadSaveValidator( new BooleanLoadSaveValidator(), 5 ) );
     fieldLoadSaveValidatorAttributeMap.put( "type",
-      new PrimitiveIntArrayLoadSaveValidator( new FieldTypeFieldLoadSaveTester(), 50 ) );
+      new PrimitiveIntArrayLoadSaveValidator(
+        new IntLoadSaveValidator( ValueMetaFactory.getAllValueMetaNames().length ), 5 ) );
     fieldLoadSaveValidatorAttributeMap.put( "format",
-      new ArrayLoadSaveValidator<String>( new StringLoadSaveValidator(), 50 ) );
+      new ArrayLoadSaveValidator<String>( new StringLoadSaveValidator(), 5 ) );
     fieldLoadSaveValidatorAttributeMap.put( "group",
-      new ArrayLoadSaveValidator<String>( new StringLoadSaveValidator(), 50 ) );
+      new ArrayLoadSaveValidator<String>( new StringLoadSaveValidator(), 5 ) );
     fieldLoadSaveValidatorAttributeMap.put( "decimal",
-      new ArrayLoadSaveValidator<String>( new StringLoadSaveValidator(), 50 ) );
+      new ArrayLoadSaveValidator<String>( new StringLoadSaveValidator(), 5 ) );
     fieldLoadSaveValidatorAttributeMap.put( "currency",
-      new ArrayLoadSaveValidator<String>( new StringLoadSaveValidator(), 50 ) );
+      new ArrayLoadSaveValidator<String>( new StringLoadSaveValidator(), 5 ) );
     fieldLoadSaveValidatorAttributeMap.put( "length",
-      new PrimitiveIntArrayLoadSaveValidator( new IntLoadSaveValidator(), 50 ) );
+      new PrimitiveIntArrayLoadSaveValidator( new IntLoadSaveValidator(), 5 ) );
     fieldLoadSaveValidatorAttributeMap.put( "precision",
-      new PrimitiveIntArrayLoadSaveValidator( new IntLoadSaveValidator(), 50 ) );
+      new PrimitiveIntArrayLoadSaveValidator( new IntLoadSaveValidator(), 5 ) );
     fieldLoadSaveValidatorAttributeMap.put( "nullif",
-      new ArrayLoadSaveValidator<String>( new StringLoadSaveValidator(), 50 ) );
+      new ArrayLoadSaveValidator<String>( new StringLoadSaveValidator(), 5 ) );
     fieldLoadSaveValidatorAttributeMap.put( "ifnull",
-      new ArrayLoadSaveValidator<String>( new StringLoadSaveValidator(), 50 ) );
+      new ArrayLoadSaveValidator<String>( new StringLoadSaveValidator(), 5 ) );
     fieldLoadSaveValidatorAttributeMap.put( "trimtype",
-      new PrimitiveIntArrayLoadSaveValidator( new TrimTypeFieldLoadSaveValidator(), 50 ) );
+      new PrimitiveIntArrayLoadSaveValidator(
+        new IntLoadSaveValidator( ValueMetaBase.getTrimTypeCodes().length ), 5 ) );
 
     LoadSaveTester loadSaveTester = new LoadSaveTester( FieldSplitterMeta.class, attributes, getterMap, setterMap,
       fieldLoadSaveValidatorAttributeMap, new HashMap<String, FieldLoadSaveValidator<?>>() );
 
-    loadSaveTester.testRepoRoundTrip();
-    loadSaveTester.testXmlRoundTrip();
+    loadSaveTester.testSerialization();
   }
 
-  public class TrimTypeFieldLoadSaveValidator implements FieldLoadSaveValidator<Integer> {
-    @Override
-    public Integer getTestObject() {
-      return new Random().nextInt( ValueMetaBase.getTrimTypeCodes().length );
-    }
-
-    @Override
-    public boolean validateTestObject( Integer testObject, Object actual ) {
-      return testObject.equals( (Integer) actual );
-    }
-  }
-
-  public class FieldTypeFieldLoadSaveTester implements FieldLoadSaveValidator<Integer> {
-    @Override
-    public Integer getTestObject() {
-      return new Random().nextInt( ValueMetaFactory.getAllValueMetaNames().length );
-    }
-
-    @Override
-    public boolean validateTestObject( Integer testObject, Object actual ) {
-      return testObject.equals( (Integer) actual );
-    }
-  }
 }

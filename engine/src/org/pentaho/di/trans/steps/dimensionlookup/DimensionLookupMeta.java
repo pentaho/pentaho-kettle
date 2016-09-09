@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -41,8 +41,11 @@ import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaBoolean;
+import org.pentaho.di.core.row.value.ValueMetaDate;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -94,9 +97,9 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
     BaseMessages.getString( PKG, "DimensionLookupMeta.TypeDesc.LastVersion" ), };
 
   public static final String[] typeCodes = { // for saving to the repository
-      "Insert", "Update", "Punch through", "DateInsertedOrUpdated", "DateInserted", "DateUpdated", "LastVersion", };
+    "Insert", "Update", "Punch through", "DateInsertedOrUpdated", "DateInserted", "DateUpdated", "LastVersion", };
 
-  public static final String[] typeDescLookup = ValueMeta.getTypes();
+  public static final String[] typeDescLookup = ValueMetaFactory.getValueMetaNames();
 
   public static final int START_DATE_ALTERNATIVE_NONE = 0;
   public static final int START_DATE_ALTERNATIVE_SYSDATE = 1;
@@ -105,10 +108,10 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
   public static final int START_DATE_ALTERNATIVE_COLUMN_VALUE = 4;
 
   private static final String[] startDateAlternativeCodes = { "none",
-      "sysdate",
-      "trans_start",
-      "null",
-      "column_value",
+    "sysdate",
+    "trans_start",
+    "null",
+    "column_value",
   };
 
   private static final String[] startDateAlternativeDescs = {
@@ -209,6 +212,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
   /**
    * @return Returns the tablename.
    */
+  @Override
   public String getTableName() {
     return tableName;
   }
@@ -224,6 +228,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
   /**
    * @return Returns the database.
    */
+  @Override
   public DatabaseMeta getDatabaseMeta() {
     return databaseMeta;
   }
@@ -510,6 +515,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
     this.versionField = versionField;
   }
 
+  @Override
   public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     readData( stepnode, databases );
   }
@@ -523,6 +529,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
     fieldUpdate = new int[nrfields];
   }
 
+  @Override
   public Object clone() {
     DimensionLookupMeta retval = (DimensionLookupMeta) super.clone();
 
@@ -531,16 +538,12 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 
     retval.allocate( nrkeys, nrfields );
 
-    for ( int i = 0; i < nrkeys; i++ ) {
-      retval.keyStream[i] = keyStream[i];
-      retval.keyLookup[i] = keyLookup[i];
-    }
+    System.arraycopy( keyStream, 0, retval.keyStream, 0, nrkeys );
+    System.arraycopy( keyLookup, 0, retval.keyLookup, 0, nrkeys );
 
-    for ( int i = 0; i < nrfields; i++ ) {
-      retval.fieldStream[i] = fieldStream[i];
-      retval.fieldLookup[i] = fieldLookup[i];
-      retval.fieldUpdate[i] = fieldUpdate[i];
-    }
+    System.arraycopy( fieldStream, 0, retval.fieldStream, 0, nrfields );
+    System.arraycopy( fieldLookup, 0, retval.fieldLookup, 0, nrfields );
+    System.arraycopy( fieldUpdate, 0, retval.fieldUpdate, 0, nrfields );
 
     return retval;
   }
@@ -564,7 +567,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 
       return TYPE_UPDATE_DIM_INSERT; // INSERT is the default: don't lose information.
     } else {
-      int retval = ValueMeta.getType( ty );
+      int retval = ValueMetaFactory.getIdForValueMeta( ty );
       if ( retval == ValueMetaInterface.TYPE_NONE ) {
         retval = ValueMetaInterface.TYPE_STRING;
       }
@@ -574,7 +577,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 
   public static final String getUpdateType( boolean upd, int t ) {
     if ( !upd ) {
-      return ValueMeta.getTypeDesc( t );
+      return ValueMetaFactory.getValueMetaName( t );
     } else {
       return typeDesc[t];
     }
@@ -582,7 +585,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 
   public static final String getUpdateTypeCode( boolean upd, int t ) {
     if ( !upd ) {
-      return ValueMeta.getTypeDesc( t );
+      return ValueMetaFactory.getValueMetaName( t );
     } else {
       return typeCodes[t];
     }
@@ -634,6 +637,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
     }
   }
 
+  @Override
   public void setDefault() {
     int nrkeys, nrfields;
 
@@ -678,6 +682,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
     preloadingCache = false;
   }
 
+  @Override
   public void getFields( RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep,
       VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
 
@@ -701,7 +706,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
       throw new KettleStepException( message );
     }
 
-    ValueMetaInterface v = new ValueMeta( keyField, ValueMetaInterface.TYPE_INTEGER );
+    ValueMetaInterface v = new ValueMetaInteger( keyField );
     if ( keyRename != null && keyRename.length() > 0 ) {
       v.setName( keyRename );
     }
@@ -758,8 +763,9 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
     }
   }
 
+  @Override
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 512 );
+    StringBuilder retval = new StringBuilder( 512 );
 
     retval.append( "      " ).append( XMLHandler.addTagValue( "schema", schemaName ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "table", tableName ) );
@@ -817,6 +823,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
     retval.append( "      " ).append(
         XMLHandler.addTagValue( "start_date_alternative", getStartDateAlternativeCode( startDateAlternative ) ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "start_date_field_name", startDateFieldName ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "useBatch", useBatchUpdate ) );
 
     return retval.toString();
   }
@@ -889,6 +896,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 
       cacheSize = Const.toInt( XMLHandler.getTagValue( stepnode, "cache_size" ), -1 );
       preloadingCache = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "preload_cache" ) );
+      useBatchUpdate = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "useBatch" ) );
 
       usingStartDateAlternative =
         "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "use_start_date_alternative" ) );
@@ -901,6 +909,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
     }
   }
 
+  @Override
   public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
       databaseMeta = rep.loadDatabaseMetaFromStepAttribute( id_step, "id_connection", databases );
@@ -935,13 +944,15 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
       autoIncrement = rep.getStepAttributeBoolean( id_step, "use_autoinc" );
       versionField = rep.getStepAttributeString( id_step, "version_field" );
       techKeyCreation = rep.getStepAttributeString( id_step, "creation_method" );
-
-      sequenceName = rep.getStepAttributeString( id_step, "sequence" );
+      if ( update ) { // symmetry with readData above ...
+        sequenceName = rep.getStepAttributeString( id_step, "sequence" );
+      }
       minYear = (int) rep.getStepAttributeInteger( id_step, "min_year" );
       maxYear = (int) rep.getStepAttributeInteger( id_step, "max_year" );
 
       cacheSize = (int) rep.getStepAttributeInteger( id_step, "cache_size" );
       preloadingCache = rep.getStepAttributeBoolean( id_step, "preload_cache" );
+      useBatchUpdate = rep.getStepAttributeBoolean( id_step, "useBatch" );
 
       usingStartDateAlternative = rep.getStepAttributeBoolean( id_step, "use_start_date_alternative" );
       startDateAlternative =
@@ -953,6 +964,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
     }
   }
 
+  @Override
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       rep.saveStepAttribute( id_transformation, id_step, "schema", schemaName );
@@ -994,6 +1006,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 
       rep.saveStepAttribute( id_transformation, id_step, "cache_size", cacheSize );
       rep.saveStepAttribute( id_transformation, id_step, "preload_cache", preloadingCache );
+      rep.saveStepAttribute( id_transformation, id_step, "useBatch", useBatchUpdate );
 
       rep.saveStepAttribute( id_transformation, id_step, "use_start_date_alternative", usingStartDateAlternative );
       rep
@@ -1039,6 +1052,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
     return mincal.getTime();
   }
 
+  @Override
   public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
       RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
       Repository repository, IMetaStore metaStore ) {
@@ -1477,6 +1491,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
     }
   }
 
+  @Override
   public RowMetaInterface getTableFields() {
     RowMetaInterface fields = null;
     if ( databaseMeta != null ) {
@@ -1494,6 +1509,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
     return fields;
   }
 
+  @Override
   public SQLStatement getSQLStatements( TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
       Repository repository, IMetaStore metaStore ) {
     SQLStatement retval = new SQLStatement( stepMeta.getName(), databaseMeta, null ); // default: nothing to do!
@@ -1517,24 +1533,24 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 
               // First the technical key
               //
-              ValueMetaInterface vkeyfield = new ValueMeta( keyField, ValueMetaInterface.TYPE_INTEGER );
+              ValueMetaInterface vkeyfield = new ValueMetaInteger( keyField );
               vkeyfield.setLength( 10 );
               fields.addValueMeta( vkeyfield );
 
               // The the version
               //
-              ValueMetaInterface vversion = new ValueMeta( versionField, ValueMetaInterface.TYPE_INTEGER );
+              ValueMetaInterface vversion = new ValueMetaInteger( versionField );
               vversion.setLength( 5 );
               fields.addValueMeta( vversion );
 
               // The date from
               //
-              ValueMetaInterface vdatefrom = new ValueMeta( dateFrom, ValueMetaInterface.TYPE_DATE );
+              ValueMetaInterface vdatefrom = new ValueMetaDate( dateFrom );
               fields.addValueMeta( vdatefrom );
 
               // The date to
               //
-              ValueMetaInterface vdateto = new ValueMeta( dateTo, ValueMetaInterface.TYPE_DATE );
+              ValueMetaInterface vdateto = new ValueMetaDate( dateTo );
               fields.addValueMeta( vdateto );
 
               String errors = "";
@@ -1580,10 +1596,10 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
                   case TYPE_UPDATE_DATE_INSUP:
                   case TYPE_UPDATE_DATE_INSERTED:
                   case TYPE_UPDATE_DATE_UPDATED:
-                    valueMeta = new ValueMeta( fieldLookup[i], ValueMetaInterface.TYPE_DATE );
+                    valueMeta = new ValueMetaDate( fieldLookup[i] );
                     break;
                   case TYPE_UPDATE_LAST_VERSION:
-                    valueMeta = new ValueMeta( fieldLookup[i], ValueMetaInterface.TYPE_BOOLEAN );
+                    valueMeta = new ValueMetaBoolean( fieldLookup[i] );
                     break;
                   default:
                     break;
@@ -1676,6 +1692,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
     return retval;
   }
 
+  @Override
   public void analyseImpact( List<DatabaseImpact> impact, TransMeta transMeta, StepMeta stepMeta,
       RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, Repository repository,
       IMetaStore metaStore ) {
@@ -1733,15 +1750,18 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
     }
   }
 
+  @Override
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta tr,
       Trans trans ) {
     return new DimensionLookup( stepMeta, stepDataInterface, cnr, tr, trans );
   }
 
+  @Override
   public StepDataInterface getStepData() {
     return new DimensionLookupData();
   }
 
+  @Override
   public DatabaseMeta[] getUsedDatabaseConnections() {
     if ( databaseMeta != null ) {
       return new DatabaseMeta[] { databaseMeta };
@@ -1753,6 +1773,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
   /**
    * @return the schemaName
    */
+  @Override
   public String getSchemaName() {
     return schemaName;
   }

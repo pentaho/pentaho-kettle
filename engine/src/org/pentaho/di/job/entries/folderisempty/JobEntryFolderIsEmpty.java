@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,9 +22,8 @@
 
 package org.pentaho.di.job.entries.folderisempty;
 
-import static org.pentaho.di.job.entry.validator.AndValidator.putValidators;
-import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.andValidator;
-import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notBlankValidator;
+import org.pentaho.di.job.entry.validator.AndValidator;
+import org.pentaho.di.job.entry.validator.JobEntryValidatorUtils;
 
 import java.io.IOException;
 import java.util.List;
@@ -92,7 +91,7 @@ public class JobEntryFolderIsEmpty extends JobEntryBase implements Cloneable, Jo
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 50 );
+    StringBuilder retval = new StringBuilder( 50 );
 
     retval.append( super.getXML() );
     retval.append( "      " ).append( XMLHandler.addTagValue( "foldername", foldername ) );
@@ -336,7 +335,7 @@ public class JobEntryFolderIsEmpty extends JobEntryBase implements Cloneable, Jo
   /**********************************************************
    *
    * @param selectedfile
-   * @param wildcard
+   * @param sourceWildcard
    * @return True if the selectedfile matches the wildcard
    **********************************************************/
   private boolean GetFileWildcard( String selectedfile ) {
@@ -357,6 +356,7 @@ public class JobEntryFolderIsEmpty extends JobEntryBase implements Cloneable, Jo
   @Override
   public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
-    andValidator().validate( this, "filename", remarks, putValidators( notBlankValidator() ) );
+    JobEntryValidatorUtils.andValidator().validate( this, "filename", remarks,
+        AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
   }
 }

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,6 +22,9 @@
 
 package org.pentaho.di.trans.steps.combinationlookup;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -33,10 +36,13 @@ import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.injection.Injection;
+import org.pentaho.di.core.injection.InjectionSupported;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaDate;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -54,15 +60,13 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
-import java.util.Arrays;
-import java.util.List;
-
 /*
  * Created on 14-may-2003
  *
  * TODO: In the distant future the use_autoinc flag should be removed since its
  *       functionality is now taken over by techKeyCreation (which is cleaner).
  */
+@InjectionSupported( localizationPrefix = "CombinationLookup.Injection." )
 public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInterface,
     ProvidesModelerMeta {
   private static Class<?> PKG = CombinationLookupMeta.class; // for i18n purposes, needed by Translator2!!
@@ -70,66 +74,85 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
   /** Default cache size: 0 will cache everything */
   public static final int DEFAULT_CACHE_SIZE = 9999;
 
+  private List<? extends SharedObjectInterface> databases;
+
   /** what's the lookup schema? */
+  @Injection( name = "SCHEMA_NAME" )
   private String schemaName;
 
   /** what's the lookup table? */
+  @Injection( name = "TABLE_NAME" )
   private String tablename;
 
   /** database connection */
   private DatabaseMeta databaseMeta;
 
   /** replace fields with technical key? */
+  @Injection( name = "REPLACE_FIELDS" )
   private boolean replaceFields;
 
   /** which fields do we use to look up a value? */
+  @Injection( name = "KEY_FIELDS" )
   private String[] keyField;
 
   /** With which fields in dimension do we look up? */
+  @Injection( name = "KEY_LOOKUP" )
   private String[] keyLookup;
 
   /** Use checksum algorithm to limit index size? */
+  @Injection( name = "USE_HASH" )
   private boolean useHash;
 
   /** Name of the CRC field in the dimension */
+  @Injection( name = "HASH_FIELD" )
   private String hashField;
 
   /** Technical Key field to return */
+  @Injection( name = "TECHNICAL_KEY_FIELD" )
   private String technicalKeyField;
 
   /** Where to get the sequence from... */
+  @Injection( name = "SEQUENCE_FROM" )
   private String sequenceFrom;
 
   /** Commit size for insert / update */
+  @Injection( name = "COMMIT_SIZE" )
   private int commitSize;
 
-  /** Preload the cache, defaults to false 
+  /** Preload the cache, defaults to false
    * @author nicow2
    * */
+  @Injection( name = "PRELOAD_CACHE" )
   private boolean preloadCache = false;
 
   /** Limit the cache size to this! */
+  @Injection( name = "CACHE_SIZE" )
   private int cacheSize;
 
   /** Use the auto-increment feature of the database to generate keys. */
+  @Injection( name = "AUTO_INC" )
   private boolean useAutoinc;
 
   /** Which method to use for the creation of the tech key */
+  @Injection( name = "TECHNICAL_KEY_CREATION" )
   private String techKeyCreation = null;
 
+  @Injection( name = "LAST_UPDATE_FIELD" )
   private String lastUpdateField;
 
   public static String CREATION_METHOD_AUTOINC = "autoinc";
   public static String CREATION_METHOD_SEQUENCE = "sequence";
   public static String CREATION_METHOD_TABLEMAX = "tablemax";
 
-  public CombinationLookupMeta() {
-    super(); // allocate BaseStepMeta
+  @Injection( name = "CONNECTIONNAME" )
+  public void setConnection( String connectionName ) {
+    databaseMeta = DatabaseMeta.findDatabase( databases, connectionName );
   }
 
   /**
    * @return Returns the database.
    */
+  @Override
   public DatabaseMeta getDatabaseMeta() {
     return databaseMeta;
   }
@@ -283,6 +306,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
   /**
    * @return Returns the tablename.
    */
+  @Override
   public String getTableName() {
     return tablename;
   }
@@ -340,6 +364,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
     this.useHash = useHash;
   }
 
+  @Override
   public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     readData( stepnode, databases );
   }
@@ -349,23 +374,21 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
     keyLookup = new String[nrkeys];
   }
 
+  @Override
   public Object clone() {
     CombinationLookupMeta retval = (CombinationLookupMeta) super.clone();
 
     int nrkeys = keyField.length;
 
     retval.allocate( nrkeys );
-
-    // Read keys to dimension
-    for ( int i = 0; i < nrkeys; i++ ) {
-      retval.keyField[i] = keyField[i];
-      retval.keyLookup[i] = keyLookup[i];
-    }
+    System.arraycopy( keyField, 0, retval.keyField, 0, nrkeys );
+    System.arraycopy( keyLookup, 0, retval.keyLookup, 0, nrkeys );
 
     return retval;
   }
 
   private void readData( Node stepnode, List<? extends SharedObjectInterface> databases ) throws KettleXMLException {
+    this.databases = databases;
     try {
       String commit, csize;
 
@@ -412,6 +435,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
     }
   }
 
+  @Override
   public void setDefault() {
     schemaName = "";
     tablename = BaseMessages.getString( PKG, "CombinationLookupMeta.DimensionTableName.Label" );
@@ -436,9 +460,10 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
     useAutoinc = false;
   }
 
+  @Override
   public void getFields( RowMetaInterface row, String origin, RowMetaInterface[] info, StepMeta nextStep,
       VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
-    ValueMetaInterface v = new ValueMeta( technicalKeyField, ValueMetaInterface.TYPE_INTEGER );
+    ValueMetaInterface v = new ValueMetaInteger( technicalKeyField );
     v.setLength( 10 );
     v.setPrecision( 0 );
     v.setOrigin( origin );
@@ -454,8 +479,9 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
     }
   }
 
+  @Override
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 512 );
+    StringBuilder retval = new StringBuilder( 512 );
 
     retval.append( "      " ).append( XMLHandler.addTagValue( "schema", schemaName ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "table", tablename ) );
@@ -491,7 +517,9 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
     return retval.toString();
   }
 
+  @Override
   public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
+    this.databases = databases;
     try {
       databaseMeta = rep.loadDatabaseMetaFromStepAttribute( id_step, "id_connection", databases );
 
@@ -524,6 +552,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
     }
   }
 
+  @Override
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       rep.saveStepAttribute( id_transformation, id_step, "schema", schemaName );
@@ -562,6 +591,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
     }
   }
 
+  @Override
   public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
       RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
       Repository repository, IMetaStore metaStore ) {
@@ -728,6 +758,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
     }
   }
 
+  @Override
   public SQLStatement getSQLStatements( TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
       Repository repository, IMetaStore metaStore ) {
     SQLStatement retval = new SQLStatement( stepMeta.getName(), databaseMeta, null ); // default: nothing to do!
@@ -749,14 +780,14 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
             RowMetaInterface fields = new RowMeta();
 
             // First, the new technical key...
-            ValueMetaInterface vkeyfield = new ValueMeta( technicalKeyField, ValueMetaInterface.TYPE_INTEGER );
+            ValueMetaInterface vkeyfield = new ValueMetaInteger( technicalKeyField );
             vkeyfield.setLength( 10 );
             vkeyfield.setPrecision( 0 );
 
             // Then the hashcode (optional)
             ValueMetaInterface vhashfield = null;
             if ( useHash && !Const.isEmpty( hashField ) ) {
-              vhashfield = new ValueMeta( hashField, ValueMetaInterface.TYPE_INTEGER );
+              vhashfield = new ValueMetaInteger( hashField );
               vhashfield.setLength( 15 );
               vhashfield.setPrecision( 0 );
               doHash = true;
@@ -765,7 +796,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
             // Then the last update field (optional)
             ValueMetaInterface vLastUpdateField = null;
             if ( !Const.isEmpty( lastUpdateField ) ) {
-              vLastUpdateField = new ValueMeta( lastUpdateField, ValueMetaInterface.TYPE_DATE );
+              vLastUpdateField = new ValueMetaDate( lastUpdateField );
             }
 
             if ( !db.checkTableExists( schemaTable ) ) {
@@ -948,15 +979,18 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
     return retval;
   }
 
+  @Override
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
       TransMeta transMeta, Trans trans ) {
     return new CombinationLookup( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 
+  @Override
   public StepDataInterface getStepData() {
     return new CombinationLookupData();
   }
 
+  @Override
   public void analyseImpact( List<DatabaseImpact> impact, TransMeta transMeta, StepMeta stepMeta,
       RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, Repository repository,
       IMetaStore metaStore ) {
@@ -983,6 +1017,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
     }
   }
 
+  @Override
   public DatabaseMeta[] getUsedDatabaseConnections() {
     if ( databaseMeta != null ) {
       return new DatabaseMeta[] { databaseMeta };
@@ -991,6 +1026,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
     }
   }
 
+  @Override
   public boolean equals( Object other ) {
     if ( other == this ) {
       return true;
@@ -1064,6 +1100,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
   /**
    * @return the schemaName
    */
+  @Override
   public String getSchemaName() {
     return schemaName;
   }

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -61,10 +61,10 @@ import org.w3c.dom.Node;
  */
 @Step( id = "RuleExecutor",
         image = "rules_exec.svg",
-        i18nPackageName="org.pentaho.di.trans.steps.rules",
-        name="RulesExecutor.StepConfigruationDialog.Title",
+        i18nPackageName = "org.pentaho.di.trans.steps.rules",
+        name = "RulesExecutor.StepConfigruationDialog.Title",
         description = "RulesExecutor.StepConfigruationDialog.TooltipDesc",
-        categoryDescription="i18n:org.pentaho.di.trans.step:BaseStep.Category.Scripting" )
+        categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Scripting" )
 public class RulesExecutorMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = Rules.class; // for i18n purposes
 
@@ -160,6 +160,7 @@ public class RulesExecutorMeta extends BaseStepMeta implements StepMetaInterface
     }
   }
 
+  @Override
   public String getXML() {
     StringBuffer retval = new StringBuffer( 300 );
 

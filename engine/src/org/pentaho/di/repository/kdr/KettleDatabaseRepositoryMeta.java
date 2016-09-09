@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,11 +23,14 @@
 package org.pentaho.di.repository.kdr;
 
 import java.util.List;
+import java.util.Map;
 
+import org.json.simple.JSONObject;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.BaseRepositoryMeta;
+import org.pentaho.di.repository.RepositoriesMeta;
 import org.pentaho.di.repository.RepositoryCapabilities;
 import org.pentaho.di.repository.RepositoryMeta;
 import org.w3c.dom.Node;
@@ -36,6 +39,10 @@ import org.w3c.dom.Node;
  * Created on 31-mar-2004
  */
 public class KettleDatabaseRepositoryMeta extends BaseRepositoryMeta implements RepositoryMeta {
+
+  public static final String ID = "id";
+  public static final String DATABASE_CONNECTION = "databaseConnection";
+
   /** The id as specified in the repository plugin meta, used for backward compatibility only */
   public static String REPOSITORY_TYPE_ID = "KettleDatabaseRepository";
 
@@ -111,6 +118,14 @@ public class KettleDatabaseRepositoryMeta extends BaseRepositoryMeta implements 
     return description;
   }
 
+  public Boolean isDefault() {
+    return isDefault;
+  }
+
+  public void setDefault( Boolean isDefault ) {
+    this.isDefault = isDefault;
+  }
+
   public void setConnection( DatabaseMeta connection ) {
     this.databaseMeta = connection;
   }
@@ -120,7 +135,7 @@ public class KettleDatabaseRepositoryMeta extends BaseRepositoryMeta implements 
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 100 );
+    StringBuilder retval = new StringBuilder( 100 );
 
     retval.append( "  " ).append( XMLHandler.openTag( XML_TAG ) );
     retval.append( super.getXML() );
@@ -143,6 +158,23 @@ public class KettleDatabaseRepositoryMeta extends BaseRepositoryMeta implements 
 
   public RepositoryMeta clone() {
     return new KettleDatabaseRepositoryMeta( REPOSITORY_TYPE_ID, getName(), getDescription(), getConnection() );
+  }
+
+  @Override public void populate( Map<String, Object> properties, RepositoriesMeta repositoriesMeta ) {
+    super.populate( properties, repositoriesMeta );
+    String databaseConnection = (String) properties.get( DATABASE_CONNECTION );
+
+    DatabaseMeta databaseMeta = repositoriesMeta.searchDatabase( databaseConnection );
+    if ( databaseMeta != null ) {
+      setConnection( databaseMeta );
+    }
+  }
+
+  @SuppressWarnings( "unchecked" )
+  @Override public JSONObject toJSONObject() {
+    JSONObject object = super.toJSONObject();
+    object.put( DATABASE_CONNECTION, databaseMeta != null ? databaseMeta.getName() : "" );
+    return object;
   }
 
 }

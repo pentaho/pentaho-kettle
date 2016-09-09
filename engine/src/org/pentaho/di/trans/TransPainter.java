@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -41,6 +41,7 @@ import org.pentaho.di.core.gui.PrimitiveGCInterface.EImage;
 import org.pentaho.di.core.gui.PrimitiveGCInterface.ELineStyle;
 import org.pentaho.di.core.gui.Rectangle;
 import org.pentaho.di.core.gui.ScrollBarInterface;
+import org.pentaho.di.core.injection.bean.BeanInjectionInfo;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.partition.PartitionSchema;
@@ -48,7 +49,7 @@ import org.pentaho.di.trans.step.BaseStepData.StepExecutionStatus;
 import org.pentaho.di.trans.step.StepIOMetaInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.step.StepMetaInjectionInterface;
+import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.step.StepPartitioningMeta;
 import org.pentaho.di.trans.step.StepStatus;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface;
@@ -263,6 +264,30 @@ public class TransPainter extends BasePainter {
       StepMeta stepMeta = transMeta.getStep( i );
       if ( stepMeta.isDrawn() ) {
         drawStepPerformanceTable( stepMeta );
+      }
+    }
+
+    int selectedStepsCount = 0;
+    for ( int i = transMeta.nrSteps() - 1; i >= 0; i-- ) {
+      StepMeta stepMeta = transMeta.getStep( i );
+      if ( stepMeta.isSelected() ) {
+        selectedStepsCount++;
+      }
+    }
+
+    for ( int i = transMeta.nrSteps() - 1; i >= 0; i-- ) {
+      StepMeta stepMeta = transMeta.getStep( i );
+      if ( stepMeta.isSelected() && stepMeta.isDrawn() && selectedStepsCount == 1 ) {
+        TransPainterFlyoutExtension extension =
+          new TransPainterFlyoutExtension(
+            gc, areaOwners, transMeta, stepMeta, translationX, translationY, magnification, area, offset );
+        try {
+          ExtensionPointHandler.callExtensionPoint(
+            LogChannel.GENERAL, KettleExtensionPoint.TransPainterFlyout.id, extension );
+        } catch ( Exception e ) {
+          LogChannel.GENERAL.logError( "Error calling extension point(s) for the transformation painter step", e );
+        }
+        break;
       }
     }
 
@@ -696,14 +721,25 @@ public class TransPainter extends BasePainter {
     } else {
       gc.setForeground( EColor.CRYSTAL );
     }
+    if ( stepMeta.isSelected() ) {
+      gc.setForeground( 0, 93, 166 );
+    }
     gc.drawRoundRectangle( x - 1, y - 1, iconsize + 1, iconsize + 1, 8, 8 );
 
     Point namePosition = getNamePosition( name, screen, iconsize );
 
+    if ( stepMeta.isSelected() ) {
+      int tmpAlpha = gc.getAlpha();
+      gc.setAlpha( 192 );
+      gc.setBackground( 216, 230, 241 );
+      gc.fillRoundRectangle( namePosition.x - 8, namePosition.y - 2, gc.textExtent( name ).x + 15, 25,
+          BasePainter.CORNER_RADIUS_5 + 15, BasePainter.CORNER_RADIUS_5 + 15 );
+      gc.setAlpha( tmpAlpha );
+    }
+
     gc.setForeground( EColor.BLACK );
     gc.setFont( EFont.GRAPH );
-    gc.drawText( name, namePosition.x, namePosition.y, true );
-
+    gc.drawText( name, namePosition.x, namePosition.y + 2, true );
     boolean partitioned = false;
 
     StepPartitioningMeta meta = stepMeta.getStepPartitioningMeta();
@@ -759,11 +795,13 @@ public class TransPainter extends BasePainter {
     if ( mouseOverSteps.contains( stepMeta ) ) {
       gc.setTransform( translationX, translationY, 0, BasePainter.FACTOR_1_TO_1 );
 
-      StepMetaInjectionInterface injectionInterface =
-        stepMeta.getStepMetaInterface().getStepMetaInjectionInterface();
+      StepMetaInterface stepMetaInterface = stepMeta.getStepMetaInterface();
+      boolean mdiSupport =
+          stepMetaInterface.getStepMetaInjectionInterface() != null || BeanInjectionInfo.isInjectionSupported(
+              stepMetaInterface.getClass() );
 
       EImage[] miniIcons;
-      if ( injectionInterface != null ) {
+      if ( mdiSupport ) {
         miniIcons = new EImage[] { EImage.INPUT, EImage.EDIT, EImage.CONTEXT_MENU, EImage.OUTPUT, EImage.INJECT, };
       } else {
         miniIcons = new EImage[] { EImage.INPUT, EImage.EDIT, EImage.CONTEXT_MENU, EImage.OUTPUT, };
@@ -860,10 +898,11 @@ public class TransPainter extends BasePainter {
                 ioMeta ) );
             break;
           case 4: // INJECT
-            enabled = injectionInterface != null;
+            enabled = mdiSupport;
+            StepMetaInterface mdiObject = mdiSupport ? stepMetaInterface : null;
             areaOwners.add( new AreaOwner( AreaType.STEP_INJECT_ICON, translateTo1To1( xIcon ),
                 translateTo1To1( yIcon ), translateTo1To1( bounds.x ), translateTo1To1( bounds.y ), offset, stepMeta,
-                injectionInterface ) );
+                mdiObject ) );
             break;
           default:
             break;

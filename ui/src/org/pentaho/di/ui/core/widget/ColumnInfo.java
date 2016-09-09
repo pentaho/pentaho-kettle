@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,8 +24,9 @@ package org.pentaho.di.ui.core.widget;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionListener;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
+import org.pentaho.di.core.row.value.ValueMetaString;
 
 /**
  * Used to define the behaviour and the content of a Table column in a TableView object.
@@ -53,6 +54,7 @@ public class ColumnInfo {
   private boolean readonly;
   private String button_text;
   private boolean hide_negative;
+  private int width = -1;
 
   private ValueMetaInterface valueMeta;
 
@@ -60,7 +62,7 @@ public class ColumnInfo {
   private SelectionListener textVarButtonSelectionListener;
 
   private TextVarButtonRenderCallback renderTextVarButtonCallback;
-  
+
   private FieldDisabledListener disabledListener;
 
   private boolean usingVariables;
@@ -86,7 +88,7 @@ public class ColumnInfo {
     allignement = SWT.LEFT;
     readonly = false;
     hide_negative = false;
-    valueMeta = new ValueMeta( colname, ValueMetaInterface.TYPE_STRING );
+    valueMeta = new ValueMetaString( colname );
   }
 
   /**
@@ -108,7 +110,7 @@ public class ColumnInfo {
     allignement = SWT.LEFT;
     readonly = false;
     hide_negative = false;
-    valueMeta = new ValueMeta( colname, ValueMetaInterface.TYPE_STRING );
+    valueMeta = new ValueMetaString( colname );
   }
 
   /**
@@ -131,9 +133,9 @@ public class ColumnInfo {
     this.readonly = false;
     this.hide_negative = false;
     if ( numeric ) {
-      valueMeta = new ValueMeta( colname, ValueMetaInterface.TYPE_INTEGER );
+      valueMeta = new ValueMetaInteger( colname );
     } else {
-      valueMeta = new ValueMeta( colname, ValueMetaInterface.TYPE_STRING );
+      valueMeta = new ValueMetaString( colname );
     }
   }
 
@@ -174,6 +176,28 @@ public class ColumnInfo {
   }
 
   /**
+   * Creates a column info class for use with the TableView class.
+   *
+   * @param colname
+   *          The column name
+   * @param coltype
+   *          The column type (see: COLUMN_TYPE_...)
+   * @param num
+   *          true if the column type is numeric. Use setValueType() to specify the type of numeric:
+   *          ValueMetaInterface.TYPE_INTEGER is the default.
+   * @param ro
+   *          true if the column is read-only.
+   *
+   * @param width
+   *          The column width
+   */
+  public ColumnInfo( String colname, int coltype, boolean num, boolean ro, int width ) {
+    this( colname, coltype, num );
+    readonly = ro;
+    this.width = width;
+  }
+
+  /**
    * Creates a column info class for use with the TableView class. The type of column info to be created is :
    * COLUMN_TYPE_FORMAT
    *
@@ -189,6 +213,7 @@ public class ColumnInfo {
     this.fieldTypeColumn = fieldTypeColumn;
   }
 
+  @Override
   public String toString() {
     return name;
   }
@@ -367,13 +392,16 @@ public class ColumnInfo {
   public void setTextVarButtonSelectionListener( SelectionListener textVarButtonSelectionListener ) {
     this.textVarButtonSelectionListener = textVarButtonSelectionListener;
   }
-  
+
   public void setRenderTextVarButtonCallback( TextVarButtonRenderCallback callback ) {
     this.renderTextVarButtonCallback = callback;
   }
-  
+
   public boolean shouldRenderTextVarButton() {
     return this.renderTextVarButtonCallback == null || this.renderTextVarButtonCallback.shouldRenderButton();
   }
-  
+
+  public int getWidth() {
+    return this.width;
+  }
 }

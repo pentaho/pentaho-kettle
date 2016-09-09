@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,88 +22,89 @@
 
 package org.pentaho.di.trans.steps.sort;
 
-import static org.junit.Assert.*;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
-import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.trans.step.StepInjectionMetaEntry;
+import org.pentaho.di.core.injection.BaseMetadataInjectionTest;
 
-public class SortRowsMetaInjectionTest {
-
-  @BeforeClass
-  public static void setUpBeforeClass() throws Exception {
-  }
-
-  @AfterClass
-  public static void tearDownAfterClass() throws Exception {
-  }
-
+public class SortRowsMetaInjectionTest extends BaseMetadataInjectionTest<SortRowsMeta> {
   @Before
-  public void setUp() throws Exception {
-  }
-
-  @After
-  public void tearDown() throws Exception {
+  public void setup() {
+    setup( new SortRowsMeta() );
   }
 
   @Test
-  public void sortRowsMetaInjectTest() throws Exception {
-    boolean[] origAscending = new boolean[] { false, true };
-    boolean[] origCaseSensitive = new boolean[] { false, true };
-    boolean[] origPresorted = new boolean[] { false, true };
-    String[] origNames = new String[] {"field1", "field2"};
-
-    SortRowsMeta meta = new SortRowsMeta();
-    meta.setAscending( origAscending );
-    meta.setCaseSensitive( origCaseSensitive );
-    meta.setPreSortedField( origPresorted );
-    meta.setFieldName( origNames );
-    meta.setFreeMemoryLimit( "50" );
-
-    SortRowsMetaInjection inj = meta.getStepMetaInjectionInterface();
-
-    List<StepInjectionMetaEntry> injected = new ArrayList<StepInjectionMetaEntry>();
-    inj.injectStepMetadataEntries( injected );
-
-    assertTrue( "Empty Injection - the same values: acscending", Arrays.equals( origAscending, meta.getAscending() ) );
-    assertTrue( "Empty Injection - the same values: case-sensitive", Arrays.equals( origCaseSensitive, meta.getCaseSensitive() ) );
-    assertTrue( "Empty Injection - the same values: presorted", Arrays.equals( origPresorted, meta.getPreSortedField() ) );
-    assertArrayEquals( "Empty Injection - the same values: field-names", origNames, meta.getFieldName() );
-
-    String memStr = "90";
-    injected.add( new StepInjectionMetaEntry( SortRowsMetaInjection.Entry.FREE_MEMORY_TRESHOLD.toString(), memStr, ValueMetaInterface.TYPE_INTEGER, "descrition" ) );
-    inj.injectStepMetadataEntries( injected );
-
-    assertTrue( "Scalar Injection - the same values: acscending", Arrays.equals( origAscending, meta.getAscending() ) );
-    assertTrue( "Scalar Injection - the same values: case-sensitive", Arrays.equals( origCaseSensitive, meta.getCaseSensitive() ) );
-    assertTrue( "Scalar Injection - the same values: presorted", Arrays.equals( origPresorted, meta.getPreSortedField() ) );
-    assertArrayEquals( "Scalar Injection - the same values: field-names", origNames, meta.getFieldName() );
-    assertEquals( "Memory Treshold has been injected", memStr, meta.getFreeMemoryLimit() );
-
-    injected.clear();
-    String name = "injectedFieldName";
-    StepInjectionMetaEntry fieldsEntry = new StepInjectionMetaEntry( SortRowsMetaInjection.Entry.FIELDS.toString(), memStr, ValueMetaInterface.TYPE_NONE, "descrition" );
-    StepInjectionMetaEntry fieldEntry = new StepInjectionMetaEntry( SortRowsMetaInjection.Entry.FIELD.toString(), memStr, ValueMetaInterface.TYPE_NONE, "descrition" );
-    StepInjectionMetaEntry nameEntry = new StepInjectionMetaEntry( SortRowsMetaInjection.Entry.NAME.toString(), name, ValueMetaInterface.TYPE_STRING, "descrition" );
-
-    fieldsEntry.getDetails().add( fieldEntry );
-    fieldEntry.getDetails().add( nameEntry );
-    injected.add( fieldsEntry );
-    inj.injectStepMetadataEntries( injected );
-
-    boolean[] defBooleanArray = new boolean[] { false };
-    assertTrue( "Grid Injection - new values: acscending", Arrays.equals( defBooleanArray, meta.getAscending() ) );
-    assertTrue( "Grid Injection - new values: case-sensitive", Arrays.equals( defBooleanArray, meta.getCaseSensitive() ) );
-    assertTrue( "Grid Injection - new values: presorted", Arrays.equals( defBooleanArray, meta.getPreSortedField() ) );
-    assertArrayEquals( "Grid Injection - new values: field-names", new String[] {name}, meta.getFieldName() );
+  public void test() throws Exception {
+    check( "SORT_DIRECTORY", new StringGetter() {
+      @Override
+      public String get() {
+        return meta.getDirectory();
+      }
+    } );
+    check( "SORT_FILE_PREFIX", new StringGetter() {
+      @Override
+      public String get() {
+        return meta.getPrefix();
+      }
+    } );
+    check( "SORT_SIZE_ROWS", new StringGetter() {
+      @Override
+      public String get() {
+        return meta.getSortSize();
+      }
+    } );
+    check( "FREE_MEMORY_TRESHOLD", new StringGetter() {
+      @Override
+      public String get() {
+        return meta.getFreeMemoryLimit();
+      }
+    } );
+    check( "ONLY_PASS_UNIQUE_ROWS", new BooleanGetter() {
+      @Override
+      public boolean get() {
+        return meta.isOnlyPassingUniqueRows();
+      }
+    } );
+    check( "COMPRESS_TEMP_FILES", new BooleanGetter() {
+      @Override
+      public boolean get() {
+        return meta.getCompressFiles();
+      }
+    } );
+    check( "NAME", new StringGetter() {
+      @Override
+      public String get() {
+        return meta.getFieldName()[0];
+      }
+    } );
+    check( "SORT_ASCENDING", new BooleanGetter() {
+      @Override
+      public boolean get() {
+        return meta.getAscending()[0];
+      }
+    } );
+    check( "IGNORE_CASE", new BooleanGetter() {
+      @Override
+      public boolean get() {
+        return meta.getCaseSensitive()[0];
+      }
+    } );
+    check( "PRESORTED", new BooleanGetter() {
+      @Override
+      public boolean get() {
+        return meta.getPreSortedField()[0];
+      }
+    } );
+    check( "COLLATOR_STRENGTH", new IntGetter() {
+      @Override
+      public int get() {
+        return meta.getCollatorStrength()[0];
+      }
+    } );
+    check( "COLLATOR_ENABLED", new BooleanGetter() {
+      @Override
+      public boolean get() {
+        return meta.getCollatorEnabled()[0];
+      }
+    } );
   }
-
 }

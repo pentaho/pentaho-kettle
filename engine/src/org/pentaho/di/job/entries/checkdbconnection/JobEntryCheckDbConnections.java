@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -19,11 +19,11 @@
  * limitations under the License.
  *
  ******************************************************************************/
+
 package org.pentaho.di.job.entries.checkdbconnection;
 
-import static org.pentaho.di.job.entry.validator.AndValidator.putValidators;
-import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.andValidator;
-import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notBlankValidator;
+import org.pentaho.di.job.entry.validator.AndValidator;
+import org.pentaho.di.job.entry.validator.JobEntryValidatorUtils;
 
 import java.util.List;
 
@@ -61,7 +61,7 @@ import org.w3c.dom.Node;
 public class JobEntryCheckDbConnections extends JobEntryBase implements Cloneable, JobEntryInterface {
   private static Class<?> PKG = JobEntryCheckDbConnections.class; // for i18n purposes, needed by Translator2!!
 
-  public DatabaseMeta[] connections;
+  private DatabaseMeta[] connections;
 
   public static final String[] unitTimeDesc = new String[] {
     BaseMessages.getString( PKG, "JobEntryCheckDbConnections.UnitTimeMilliSecond.Label" ),
@@ -75,8 +75,8 @@ public class JobEntryCheckDbConnections extends JobEntryBase implements Cloneabl
   public static final int UNIT_TIME_MINUTE = 2;
   public static final int UNIT_TIME_HOUR = 3;
 
-  public String[] waitfors;
-  public int[] waittimes;
+  private String[] waitfors;
+  private int[] waittimes;
 
   public JobEntryCheckDbConnections( String n ) {
     super( n, "" );
@@ -92,6 +92,30 @@ public class JobEntryCheckDbConnections extends JobEntryBase implements Cloneabl
   public Object clone() {
     JobEntryCheckDbConnections je = (JobEntryCheckDbConnections) super.clone();
     return je;
+  }
+
+  public DatabaseMeta[] getConnections() {
+    return connections;
+  }
+
+  public void setConnections( DatabaseMeta[] connections ) {
+    this.connections = connections;
+  }
+
+  public String[] getWaitfors() {
+    return waitfors;
+  }
+
+  public void setWaitfors( String[] waitfors ) {
+    this.waitfors = waitfors;
+  }
+
+  public int[] getWaittimes() {
+    return waittimes;
+  }
+
+  public void setWaittimes( int[] waittimes ) {
+    this.waittimes = waittimes;
   }
 
   private static String getWaitTimeCode( int i ) {
@@ -137,7 +161,7 @@ public class JobEntryCheckDbConnections extends JobEntryBase implements Cloneabl
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer();
+    StringBuilder retval = new StringBuilder( 120 );
     retval.append( super.getXML() );
     retval.append( "      <connections>" ).append( Const.CR );
     if ( connections != null ) {
@@ -259,6 +283,10 @@ public class JobEntryCheckDbConnections extends JobEntryBase implements Cloneabl
             int Multiple = 1;
             String waitTimeMessage = unitTimeDesc[0];
             switch ( waittimes[i] ) {
+              case JobEntryCheckDbConnections.UNIT_TIME_MILLI_SECOND:
+                Multiple = 1;
+                waitTimeMessage = unitTimeDesc[0];
+                break;
               case JobEntryCheckDbConnections.UNIT_TIME_SECOND:
                 Multiple = 1000; // Second
                 waitTimeMessage = unitTimeDesc[1];
@@ -371,8 +399,8 @@ public class JobEntryCheckDbConnections extends JobEntryBase implements Cloneabl
   @Override
   public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
-    andValidator().validate( this, "tablename", remarks, putValidators( notBlankValidator() ) );
-    andValidator().validate( this, "columnname", remarks, putValidators( notBlankValidator() ) );
+    JobEntryValidatorUtils.andValidator().validate( this, "tablename", remarks, AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
+    JobEntryValidatorUtils.andValidator().validate( this, "columnname", remarks, AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
   }
 
 }

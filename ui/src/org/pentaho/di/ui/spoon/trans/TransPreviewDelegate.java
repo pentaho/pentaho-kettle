@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,13 +22,6 @@
 
 package org.pentaho.di.ui.spoon.trans;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.ResourceBundle;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -46,6 +39,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
+import org.pentaho.di.core.extension.ExtensionPointHandler;
 import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
@@ -72,6 +66,13 @@ import org.pentaho.ui.xul.XulLoader;
 import org.pentaho.ui.xul.containers.XulToolbar;
 import org.pentaho.ui.xul.impl.XulEventHandler;
 import org.pentaho.ui.xul.swt.tags.SwtRadio;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.ResourceBundle;
 
 public class TransPreviewDelegate extends SpoonDelegate implements XulEventHandler {
   private static Class<?> PKG = Spoon.class; // for i18n purposes, needed by Translator2!!
@@ -156,6 +157,7 @@ public class TransPreviewDelegate extends SpoonDelegate implements XulEventHandl
 
     transPreviewComposite = new Composite( transGraph.extraViewTabFolder, SWT.NONE );
     transPreviewComposite.setLayout( new FormLayout() );
+    PropsUI.getInstance().setLook( transPreviewComposite, Props.WIDGET_STYLE_TOOLBAR );
 
     addToolBar();
 
@@ -175,7 +177,11 @@ public class TransPreviewDelegate extends SpoonDelegate implements XulEventHandl
     FormData fdPreview = new FormData();
     fdPreview.left = new FormAttachment( 0, 0 );
     fdPreview.right = new FormAttachment( 100, 0 );
-    fdPreview.top = new FormAttachment( (Control) toolbar.getManagedObject(), 0 );
+    if ( Const.isLinux() ) {
+      fdPreview.top = new FormAttachment( (Control) toolbar.getManagedObject(), 4 );
+    } else {
+      fdPreview.top = new FormAttachment( (Control) toolbar.getManagedObject(), 10 );
+    }
     fdPreview.bottom = new FormAttachment( 100, 0 );
     previewComposite.setLayoutData( fdPreview );
 
@@ -189,6 +195,13 @@ public class TransPreviewDelegate extends SpoonDelegate implements XulEventHandl
         refreshView();
       }
     } );
+    TransPreviewExtension extension = new TransPreviewExtension(
+        transPreviewComposite, toolbarControl, previewComposite );
+    try {
+      ExtensionPointHandler.callExtensionPoint( log, "TransPreviewCreated", extension );
+    } catch ( KettleException ex ) {
+      log.logError( "Extension point call failed.", ex );
+    }
   }
 
   private void addToolBar() {
@@ -209,9 +222,9 @@ public class TransPreviewDelegate extends SpoonDelegate implements XulEventHandl
       lastRadio = (SwtRadio) xulDomContainer.getDocumentRoot().getElementById( "preview-last" );
       offRadio = (SwtRadio) xulDomContainer.getDocumentRoot().getElementById( "preview-off" );
 
-      PropsUI.getInstance().setLook( (Control) firstRadio.getManagedObject() );
-      PropsUI.getInstance().setLook( (Control) lastRadio.getManagedObject() );
-      PropsUI.getInstance().setLook( (Control) offRadio.getManagedObject() );
+      PropsUI.getInstance().setLook( (Control) firstRadio.getManagedObject(), Props.WIDGET_STYLE_TOOLBAR );
+      PropsUI.getInstance().setLook( (Control) lastRadio.getManagedObject(), Props.WIDGET_STYLE_TOOLBAR );
+      PropsUI.getInstance().setLook( (Control) offRadio.getManagedObject(), Props.WIDGET_STYLE_TOOLBAR );
 
     } catch ( Throwable t ) {
       log.logError( toString(), Const.getStackTracker( t ) );
@@ -240,6 +253,7 @@ public class TransPreviewDelegate extends SpoonDelegate implements XulEventHandl
     //
     StepMeta stepMeta = selectedStep; // copy to prevent race conditions and so on.
     if ( stepMeta == null ) {
+      hidePreviewGrid();
       return;
     } else {
       lastSelectedStep = selectedStep;
@@ -275,6 +289,12 @@ public class TransPreviewDelegate extends SpoonDelegate implements XulEventHandl
         logText.append( Const.getStackTracker( e ) );
         showLogText( stepMeta, logText.toString() );
       }
+    }
+  }
+
+  protected void hidePreviewGrid() {
+    if ( tableView != null && !tableView.isDisposed() ) {
+      tableView.dispose();
     }
   }
 
@@ -561,5 +581,9 @@ public class TransPreviewDelegate extends SpoonDelegate implements XulEventHandl
     firstRadio.setSelected( false );
     lastRadio.setSelected( false );
     offRadio.setSelected( true );
+  }
+
+  public Map<StepMeta, List<Object[]>> getPreviewDataMap() {
+    return previewDataMap;
   }
 }

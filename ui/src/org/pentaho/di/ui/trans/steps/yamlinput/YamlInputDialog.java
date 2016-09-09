@@ -928,8 +928,7 @@ public class YamlInputDialog extends BaseStepDialog implements StepDialogInterfa
     // Listen to the Browse... button
     wbbFilename.addSelectionListener( new SelectionAdapter() {
       public void widgetSelected( SelectionEvent e ) {
-        if ( wFilemask.getText() != null && wFilemask.getText().length() > 0 ) // A mask: a directory!
-        {
+        if ( wFilemask.getText() != null && wFilemask.getText().length() > 0 ) { // A mask: a directory!
           DirectoryDialog dialog = new DirectoryDialog( shell, SWT.OPEN );
           if ( wFilename.getText() != null ) {
             String fpath = transMeta.environmentSubstitute( wFilename.getText() );

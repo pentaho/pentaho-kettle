@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,10 +24,28 @@ package org.pentaho.di.trans.steps.exceloutput;
 
 import java.awt.Dimension;
 import java.io.File;
+import java.io.UnsupportedEncodingException;
 import java.util.Locale;
+
+import org.apache.commons.vfs2.FileObject;
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.ResultFile;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaString;
+import org.pentaho.di.core.vfs.KettleVFS;
+import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.trans.Trans;
+import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.step.BaseStep;
+import org.pentaho.di.trans.step.StepDataInterface;
+import org.pentaho.di.trans.step.StepInterface;
+import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.step.StepMetaInterface;
 
 import jxl.Workbook;
 import jxl.WorkbookSettings;
+import jxl.biff.StringHelper;
 import jxl.format.CellFormat;
 import jxl.format.Colour;
 import jxl.format.UnderlineStyle;
@@ -40,22 +58,6 @@ import jxl.write.WritableCellFormat;
 import jxl.write.WritableFont;
 import jxl.write.WritableFont.FontName;
 import jxl.write.WritableImage;
-
-import org.apache.commons.vfs2.FileObject;
-import org.pentaho.di.core.Const;
-import org.pentaho.di.core.ResultFile;
-import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.row.ValueMeta;
-import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.core.vfs.KettleVFS;
-import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.trans.Trans;
-import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.trans.step.BaseStep;
-import org.pentaho.di.trans.step.StepDataInterface;
-import org.pentaho.di.trans.step.StepInterface;
-import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Converts input rows to excel cells and then writes this information to one or more files.
@@ -74,6 +76,7 @@ public class ExcelOutput extends BaseStep implements StepInterface {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
+  @Override
   public boolean processRow( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
     meta = (ExcelOutputMeta) smi;
     data = (ExcelOutputData) sdi;
@@ -84,7 +87,7 @@ public class ExcelOutput extends BaseStep implements StepInterface {
       data.previousMeta = getInputRowMeta().clone();
       // do not set first=false, below is another part that uses first
 
-      if ( meta.isAutoSizeColums() ) {
+      if ( meta.isAutoSizeColumns() ) {
         if ( meta.getOutputFields() != null && meta.getOutputFields().length > 0 ) {
           data.fieldsWidth = new int[meta.getOutputFields().length];
         } else {
@@ -323,7 +326,7 @@ public class ExcelOutput extends BaseStep implements StepInterface {
           // ignore if the column is not found, format as usual
         }
       }
-      if ( meta.isAutoSizeColums() ) {
+      if ( meta.isAutoSizeColumns() ) {
         // prepare auto size colums
         int vlen = vMeta.getName().length();
         if ( !isHeader && v != null ) {
@@ -376,6 +379,9 @@ public class ExcelOutput extends BaseStep implements StepInterface {
             }
             break;
           }
+          default:
+            // fallthrough
+            // Output the data value as a string
           case ValueMetaInterface.TYPE_STRING:
           case ValueMetaInterface.TYPE_BOOLEAN:
           case ValueMetaInterface.TYPE_BINARY: {
@@ -426,9 +432,6 @@ public class ExcelOutput extends BaseStep implements StepInterface {
             }
             break;
           }
-          default: {
-            break;
-          }
         }
       }
     } catch ( Exception e ) {
@@ -449,14 +452,14 @@ public class ExcelOutput extends BaseStep implements StepInterface {
       if ( meta.getOutputFields() != null && meta.getOutputFields().length > 0 ) {
         for ( int i = 0; i < meta.getOutputFields().length; i++ ) {
           String fieldName = meta.getOutputFields()[i].getName();
-          ValueMetaInterface vMeta = new ValueMeta( fieldName, ValueMetaInterface.TYPE_STRING );
+          ValueMetaInterface vMeta = new ValueMetaString( fieldName );
           writeField( fieldName, vMeta, null, i, true );
         }
       } else {
         if ( data.previousMeta != null ) { // Just put all field names in the header/footer
           for ( int i = 0; i < data.previousMeta.size(); i++ ) {
             String fieldName = data.previousMeta.getFieldNames()[i];
-            ValueMetaInterface vMeta = new ValueMeta( fieldName, ValueMetaInterface.TYPE_STRING );
+            ValueMetaInterface vMeta = new ValueMetaString( fieldName );
             writeField( fieldName, vMeta, null, i, true );
           }
         }
@@ -578,12 +581,12 @@ public class ExcelOutput extends BaseStep implements StepInterface {
       }
 
       try {
-          setFonts();
+        setFonts();
       } catch ( Exception we ) {
-          logError( "Error preparing fonts, colors for header and rows: " + we.toString() );
-          return retval;
+        logError( "Error preparing fonts, colors for header and rows: " + we.toString() );
+        return retval;
       }
-      
+
       data.headerWrote = false;
       data.splitnr++;
       data.oneFileOpened = true;
@@ -609,7 +612,7 @@ public class ExcelOutput extends BaseStep implements StepInterface {
 
       if ( data.workbook != null ) {
         if ( data.fieldsWidth != null ) {
-          if ( meta.isAutoSizeColums() ) {
+          if ( meta.isAutoSizeColumns() ) {
             // auto resize columns
             int nrfields = data.fieldsWidth.length;
             for ( int i = 0; i < nrfields; i++ ) {
@@ -618,6 +621,7 @@ public class ExcelOutput extends BaseStep implements StepInterface {
           }
           data.fieldsWidth = null;
         }
+        data.ws.setWriteAccess( reEncodeWriteAccessIfNecessary( data.ws.getWriteAccess() ) );
         data.workbook.write();
         data.workbook.close();
         data.workbook = null;
@@ -651,6 +655,7 @@ public class ExcelOutput extends BaseStep implements StepInterface {
     return retval;
   }
 
+  @Override
   public boolean init( StepMetaInterface smi, StepDataInterface sdi ) {
     meta = (ExcelOutputMeta) smi;
     data = (ExcelOutputData) sdi;
@@ -712,6 +717,7 @@ public class ExcelOutput extends BaseStep implements StepInterface {
     }
   }
 
+  @Override
   public void dispose( StepMetaInterface smi, StepDataInterface sdi ) {
     meta = (ExcelOutputMeta) smi;
     data = (ExcelOutputData) sdi;
@@ -822,5 +828,30 @@ public class ExcelOutput extends BaseStep implements StepInterface {
     if ( meta.getRowBackGroundColor() != ExcelOutputMeta.FONT_COLOR_NONE ) {
       data.rowFontBackgoundColour = ExcelFontMap.getColour( meta.getRowBackGroundColor(), null );
     }
+  }
+  /*
+   * Returns the writeAccess, re-encoded if necessary
+   * fixes http://jira.pentaho.com/browse/PDI-14022
+   **/
+  private String reEncodeWriteAccessIfNecessary( String writeAccess ) {
+
+    if ( writeAccess == null || writeAccess.length() == 0 ) {
+      return writeAccess;
+    }
+    byte[] data = new byte[112];
+    try {
+      // jxl reads writeAccess with "UnicodeLittle" encoding, but will try to write later with "file.encoding"
+      // this throws an ArrayIndexOutOfBoundsException in *nix systems
+      StringHelper.getBytes( writeAccess, data, 0 );
+    } catch ( ArrayIndexOutOfBoundsException e ) {
+      try {
+        // properly re-encoding string from UnicodeLittle, removing BOM characters
+        return new String( writeAccess.getBytes( "UnicodeLittle" ),
+                System.getProperty( "file.encoding" ) ).substring( 2 );
+      } catch ( UnsupportedEncodingException e1 ) {
+        logError( Const.getStackTracker( e ) );
+      }
+    }
+    return writeAccess;
   }
 }

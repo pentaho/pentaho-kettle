@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -45,7 +45,6 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.database.GenericDatabaseMeta;
 import org.pentaho.di.core.database.MSSQLServerNativeDatabaseMeta;
 import org.pentaho.di.core.database.PartitionDatabaseMeta;
-import org.pentaho.di.core.database.SAPR3DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.plugins.DatabasePluginType;
@@ -86,6 +85,11 @@ public class DataHandler extends AbstractXulEventHandler {
 
   public static final SortedMap<String, DatabaseInterface> connectionMap = new TreeMap<>();
   public static final Map<String, String> connectionNametoID = new HashMap<>();
+
+  // Kettle thin related
+  private static final String WEB_APPLICATION_NAME = "WEB_APPLICATION_NAME";
+  private static final String EXTRA_OPTION_WEB_APPLICATION_NAME = BaseDatabaseMeta.ATTRIBUTE_PREFIX_EXTRA_OPTION
+      + "KettleThin.webappname";
 
   // The connectionMap allows us to keep track of the connection
   // type we are working with and the correlating database interface
@@ -167,10 +171,12 @@ public class DataHandler extends AbstractXulEventHandler {
 
   // MS SQL Server specific
   private XulCheckbox doubleDecimalSeparatorCheck;
-  // private XulCheckbox mssqlIntegratedSecurity;
 
   // MySQL specific
   private XulCheckbox resultStreamingCursorCheck;
+
+  // Pentaho data services specific
+  private XulTextbox webAppName;
 
   // ==== Options Panel ==== //
 
@@ -782,6 +788,12 @@ public class DataHandler extends AbstractXulEventHandler {
       return;
     }
 
+    if ( meta.getAttributes().containsKey( EXTRA_OPTION_WEB_APPLICATION_NAME ) ) {
+      meta.setDBName( (String) meta.getAttributes().get( EXTRA_OPTION_WEB_APPLICATION_NAME ) );
+      meta.getAttributes().remove( EXTRA_OPTION_WEB_APPLICATION_NAME );
+      meta.setChanged();
+    }
+
     getControls();
 
     // Name:
@@ -1229,13 +1241,13 @@ public class DataHandler extends AbstractXulEventHandler {
 
     // SAP Attributes...
     if ( languageBox != null ) {
-      meta.getAttributes().put( SAPR3DatabaseMeta.ATTRIBUTE_SAP_LANGUAGE, languageBox.getValue() );
+      meta.getAttributes().put( "SAPLanguage", languageBox.getValue() );
     }
     if ( systemNumberBox != null ) {
-      meta.getAttributes().put( SAPR3DatabaseMeta.ATTRIBUTE_SAP_SYSTEM_NUMBER, systemNumberBox.getValue() );
+      meta.getAttributes().put( "SAPSystemNumber", systemNumberBox.getValue() );
     }
     if ( clientBox != null ) {
-      meta.getAttributes().put( SAPR3DatabaseMeta.ATTRIBUTE_SAP_CLIENT, clientBox.getValue() );
+      meta.getAttributes().put( "SAPClient", clientBox.getValue() );
     }
 
     // Generic settings...
@@ -1259,6 +1271,10 @@ public class DataHandler extends AbstractXulEventHandler {
       meta.getAttributes().put(
         MSSQLServerNativeDatabaseMeta.ATTRIBUTE_USE_INTEGRATED_SECURITY,
         useIntegratedSecurity != null ? useIntegratedSecurity.toString() : "false" );
+    }
+
+    if ( webAppName != null ) {
+      meta.setDBName( webAppName.getValue() );
     }
   }
 
@@ -1315,13 +1331,13 @@ public class DataHandler extends AbstractXulEventHandler {
 
     // SAP Attributes...
     if ( languageBox != null ) {
-      languageBox.setValue( meta.getAttributes().getProperty( SAPR3DatabaseMeta.ATTRIBUTE_SAP_LANGUAGE ) );
+      languageBox.setValue( meta.getAttributes().getProperty( "SAPLanguage" ) );
     }
     if ( systemNumberBox != null ) {
-      systemNumberBox.setValue( meta.getAttributes().getProperty( SAPR3DatabaseMeta.ATTRIBUTE_SAP_SYSTEM_NUMBER ) );
+      systemNumberBox.setValue( meta.getAttributes().getProperty( "SAPSystemNumber" ) );
     }
     if ( clientBox != null ) {
-      clientBox.setValue( meta.getAttributes().getProperty( SAPR3DatabaseMeta.ATTRIBUTE_SAP_CLIENT ) );
+      clientBox.setValue( meta.getAttributes().getProperty( "SAPClient" ) );
     }
 
     // Generic settings...
@@ -1346,6 +1362,14 @@ public class DataHandler extends AbstractXulEventHandler {
         useIntegratedSecurityCheck.setChecked( Boolean.parseBoolean( useIntegratedSecurity ) );
       } else {
         useIntegratedSecurityCheck.setChecked( false );
+      }
+    }
+
+    if ( webAppName != null ) {
+      if ( Const.isEmpty( meta.getDatabaseName() ) ) {
+        webAppName.setValue( "pentaho-di" );
+      } else {
+        webAppName.setValue( meta.getDatabaseName() );
       }
     }
   }
@@ -1376,6 +1400,7 @@ public class DataHandler extends AbstractXulEventHandler {
     clientBox = (XulTextbox) document.getElementById( "client-text" );
     doubleDecimalSeparatorCheck = (XulCheckbox) document.getElementById( "decimal-separator-check" );
     resultStreamingCursorCheck = (XulCheckbox) document.getElementById( "result-streaming-check" );
+    webAppName = (XulTextbox) document.getElementById( "web-application-name-text" );
     poolingCheck = (XulCheckbox) document.getElementById( "use-pool-check" );
     clusteringCheck = (XulCheckbox) document.getElementById( "use-cluster-check" );
     clusterParameterDescriptionLabel = (XulLabel) document.getElementById( "cluster-parameter-description-label" );

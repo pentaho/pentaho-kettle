@@ -1,7 +1,7 @@
 /*
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
  *
  * **************************************************************************
  *
@@ -21,9 +21,12 @@
 package org.pentaho.di.core.logging;
 
 
-import junit.framework.Assert;
-import org.junit.Test;
+import org.junit.Assert;
 
+import org.junit.Test;
+import org.pentaho.di.core.Const;
+
+import java.util.Iterator;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -97,5 +100,47 @@ public class LoggingBufferTest {
     // check
     Assert.assertEquals( "Failed", true, done.get() );
 
+  }
+
+  @Test
+  public void testBufferSizeRestrictions() {
+    final LoggingBuffer buff = new LoggingBuffer( 10 );
+
+    Assert.assertEquals( 10, buff.getMaxNrLines() );
+    Assert.assertEquals( 0, buff.getLastBufferLineNr() );
+    Assert.assertEquals( 0, buff.getNrLines() );
+
+    // Load 20 records.  Only last 10 should be kept
+    for ( int i = 1; i <= 20; i++ ) {
+      buff.addLogggingEvent(
+        new KettleLoggingEvent( "Test #" + i + Const.CR + "Hello World!", Long.valueOf( i ), LogLevel.DETAILED ) );
+    }
+    Assert.assertEquals( 10, buff.getNrLines() );
+
+    // Check remaining records, confirm that they are the proper records
+    int i = 11;
+    Iterator<BufferLine> it = buff.getBufferIterator();
+    Assert.assertNotNull( it );
+    while ( it.hasNext() ) {
+      BufferLine bl = it.next();
+      Assert.assertNotNull( bl.getEvent() );
+      Assert.assertEquals( "Test #" + i + Const.CR + "Hello World!", bl.getEvent().getMessage() );
+      Assert.assertEquals( Long.valueOf( i ).longValue(), bl.getEvent().getTimeStamp() );
+      Assert.assertEquals( LogLevel.DETAILED, bl.getEvent().getLevel() );
+      i++;
+    }
+    Assert.assertEquals( i, 21 ); // Confirm that only 10 lines were iterated over
+
+    Assert.assertEquals( 0, buff.getBufferLinesBefore( 10L ).size() );
+    Assert.assertEquals( 5, buff.getBufferLinesBefore( 16L ).size() );
+    Assert.assertEquals( 10, buff.getBufferLinesBefore( System.currentTimeMillis() ).size() );
+
+    buff.clear();
+    Assert.assertEquals( 0, buff.getNrLines() );
+    it = buff.getBufferIterator();
+    Assert.assertNotNull( it );
+    while ( it.hasNext() ) {
+      Assert.fail( "This should never be reached, as the LogBuffer is empty" );
+    }
   }
 }

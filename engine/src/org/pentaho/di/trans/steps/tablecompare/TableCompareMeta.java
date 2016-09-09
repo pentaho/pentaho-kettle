@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,6 +22,7 @@
 
 package org.pentaho.di.trans.steps.tablecompare;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.pentaho.di.core.CheckResult;
@@ -32,8 +33,8 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -192,6 +193,24 @@ public class TableCompareMeta extends BaseStepMeta implements StepMetaInterface 
     this.compareConnection = compareConnection;
   }
 
+  @Override
+  public DatabaseMeta[] getUsedDatabaseConnections() {
+    List<DatabaseMeta> connList = new ArrayList<DatabaseMeta>( 2 );
+    if ( compareConnection != null ) {
+      connList.add( compareConnection );
+    }
+    if ( referenceConnection != null ) {
+      connList.add( referenceConnection );
+    }
+    if ( connList.size() > 0 ) {
+      DatabaseMeta[] rtn = new DatabaseMeta[ connList.size() ];
+      connList.toArray( rtn );
+      return rtn;
+    } else {
+      return super.getUsedDatabaseConnections();
+    }
+  }
+
   /**
    * @return the keyFieldsField
    */
@@ -342,10 +361,12 @@ public class TableCompareMeta extends BaseStepMeta implements StepMetaInterface 
     this.valueCompareField = valueCompareField;
   }
 
+  @Override
   public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     readData( stepnode, databases );
   }
 
+  @Override
   public Object clone() {
     TableCompareMeta retval = (TableCompareMeta) super.clone();
 
@@ -381,33 +402,33 @@ public class TableCompareMeta extends BaseStepMeta implements StepMetaInterface 
         PKG, "TableCompareMeta.Exception.NrErrorsRightJoinFieldNotSpecified" ) );
     }
 
-    ValueMetaInterface nrErrorsValueMeta = new ValueMeta( nrErrorsField, ValueMetaInterface.TYPE_INTEGER );
+    ValueMetaInterface nrErrorsValueMeta = new ValueMetaInteger( nrErrorsField );
     nrErrorsValueMeta.setLength( 9 );
     nrErrorsValueMeta.setOrigin( origin );
     inputRowMeta.addValueMeta( nrErrorsValueMeta );
 
     ValueMetaInterface nrRecordsReference =
-      new ValueMeta( nrRecordsReferenceField, ValueMetaInterface.TYPE_INTEGER );
+      new ValueMetaInteger( nrRecordsReferenceField );
     nrRecordsReference.setLength( 9 );
     nrRecordsReference.setOrigin( origin );
     inputRowMeta.addValueMeta( nrRecordsReference );
 
-    ValueMetaInterface nrRecordsCompare = new ValueMeta( nrRecordsCompareField, ValueMetaInterface.TYPE_INTEGER );
+    ValueMetaInterface nrRecordsCompare = new ValueMetaInteger( nrRecordsCompareField );
     nrRecordsCompare.setLength( 9 );
     nrRecordsCompare.setOrigin( origin );
     inputRowMeta.addValueMeta( nrRecordsCompare );
 
-    ValueMetaInterface nrErrorsLeft = new ValueMeta( nrErrorsLeftJoinField, ValueMetaInterface.TYPE_INTEGER );
+    ValueMetaInterface nrErrorsLeft = new ValueMetaInteger( nrErrorsLeftJoinField );
     nrErrorsLeft.setLength( 9 );
     nrErrorsLeft.setOrigin( origin );
     inputRowMeta.addValueMeta( nrErrorsLeft );
 
-    ValueMetaInterface nrErrorsInner = new ValueMeta( nrErrorsInnerJoinField, ValueMetaInterface.TYPE_INTEGER );
+    ValueMetaInterface nrErrorsInner = new ValueMetaInteger( nrErrorsInnerJoinField );
     nrErrorsInner.setLength( 9 );
     nrErrorsInner.setOrigin( origin );
     inputRowMeta.addValueMeta( nrErrorsInner );
 
-    ValueMetaInterface nrErrorsRight = new ValueMeta( nrErrorsRightJoinField, ValueMetaInterface.TYPE_INTEGER );
+    ValueMetaInterface nrErrorsRight = new ValueMetaInteger( nrErrorsRightJoinField );
     nrErrorsRight.setLength( 9 );
     nrErrorsRight.setOrigin( origin );
     inputRowMeta.addValueMeta( nrErrorsRight );
@@ -444,8 +465,9 @@ public class TableCompareMeta extends BaseStepMeta implements StepMetaInterface 
     }
   }
 
+  @Override
   public String getXML() {
-    StringBuffer retval = new StringBuffer();
+    StringBuilder retval = new StringBuilder();
 
     retval.append( "      " ).append(
       XMLHandler.addTagValue( "reference_connection", referenceConnection == null ? null : referenceConnection
@@ -480,6 +502,7 @@ public class TableCompareMeta extends BaseStepMeta implements StepMetaInterface 
     return retval.toString();
   }
 
+  @Override
   public void setDefault() {
     nrErrorsField = "nrErrors";
     nrRecordsReferenceField = "nrRecordsReferenceTable";
@@ -489,6 +512,7 @@ public class TableCompareMeta extends BaseStepMeta implements StepMetaInterface 
     nrErrorsRightJoinField = "nrErrorsRightJoin";
   }
 
+  @Override
   public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
 
@@ -518,6 +542,7 @@ public class TableCompareMeta extends BaseStepMeta implements StepMetaInterface 
     }
   }
 
+  @Override
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       rep.saveDatabaseMetaStepAttribute(
@@ -547,6 +572,7 @@ public class TableCompareMeta extends BaseStepMeta implements StepMetaInterface 
     }
   }
 
+  @Override
   public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
     RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
@@ -577,15 +603,18 @@ public class TableCompareMeta extends BaseStepMeta implements StepMetaInterface 
     }
   }
 
+  @Override
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta tr,
     Trans trans ) {
     return new TableCompare( stepMeta, stepDataInterface, cnr, tr, trans );
   }
 
+  @Override
   public StepDataInterface getStepData() {
     return new TableCompareData();
   }
 
+  @Override
   public boolean supportsErrorHandling() {
     return true;
   }

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -65,8 +65,8 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
@@ -1098,6 +1098,16 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
                 }
                 // ignore any errors here. drop downs will not be
                 // filled, but no problem for the user
+              } finally {
+                try {
+                  if ( db != null ) {
+                    db.disconnect();
+                  }
+                } catch ( Exception ignored ) {
+                  // ignore any errors here. Nothing we can do if
+                  // connection fails to close properly
+                  db = null;
+                }
               }
             }
           }
@@ -1192,8 +1202,8 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
 
     // If people specify the fields we don't want them to use the "store name
     // in table" button.
-    wlNameInTable.setEnabled( !specifyFields );
-    wNameInTable.setEnabled( !specifyFields );
+    wlNameInTable.setEnabled( isTableNameInField && !specifyFields );
+    wNameInTable.setEnabled( isTableNameInField && !specifyFields );
 
     DatabaseMeta databaseMeta = transMeta.findDatabase( wConnection.getText() );
     if ( databaseMeta != null ) {
@@ -1423,7 +1433,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
       // Add the auto-increment field too if any is present.
       //
       if ( info.isReturningGeneratedKeys() && !Const.isEmpty( info.getGeneratedKeyField() ) ) {
-        ValueMetaInterface valueMeta = new ValueMeta( info.getGeneratedKeyField(), ValueMeta.TYPE_INTEGER );
+        ValueMetaInterface valueMeta = new ValueMetaInteger( info.getGeneratedKeyField() );
         valueMeta.setLength( 15 );
         prev.addValueMeta( 0, valueMeta );
         autoInc = true;

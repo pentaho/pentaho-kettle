@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -132,6 +132,7 @@ public class VectorWiseDatabaseMeta extends IngresDatabaseMeta implements Databa
 
     int type = v.getType();
     switch ( type ) {
+      case ValueMetaInterface.TYPE_TIMESTAMP:
       case ValueMetaInterface.TYPE_DATE:
         retval += "TIMESTAMP";
         break;
@@ -155,8 +156,7 @@ public class VectorWiseDatabaseMeta extends IngresDatabaseMeta implements Databa
             if ( length > 9 ) {
               retval += "BIGINT";
             } else {
-              if ( length == -1 || length > 4 ) // If the length is undefined or greater than 4, use a standard INTEGER
-              {
+              if ( length == -1 || length > 4 ) { // If the length is undefined or greater than 4, use a standard INTEGER
                 retval += "INTEGER";
               } else {
                 if ( length > 2 ) {

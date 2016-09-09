@@ -22,12 +22,8 @@
 
 package org.pentaho.di.job.entries.mail;
 
-import static org.pentaho.di.job.entry.validator.AndValidator.putValidators;
-import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.andValidator;
-import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.emailValidator;
-import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.integerValidator;
-import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notBlankValidator;
-import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notNullValidator;
+import org.pentaho.di.job.entry.validator.AndValidator;
+import org.pentaho.di.job.entry.validator.JobEntryValidatorUtils;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -167,13 +163,33 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
     allocate( 0 );
   }
 
+  public void allocate( int nrFileTypes ) {
+    fileType = new int[nrFileTypes];
+  }
+
+  public void allocateImages( int nrImages ) {
+    embeddedimages = new String[nrImages];
+    contentids = new String[nrImages];
+  }
+
   public Object clone() {
     JobEntryMail je = (JobEntryMail) super.clone();
+    if ( fileType != null ) {
+      int nrFileTypes = fileType.length;
+      je.allocate( nrFileTypes );
+      System.arraycopy( fileType, 0, je.fileType, 0, nrFileTypes );
+    }
+    if ( embeddedimages != null ) {
+      int nrImages = embeddedimages.length;
+      je.allocateImages( nrImages );
+      System.arraycopy( embeddedimages, 0, je.embeddedimages, 0, nrImages );
+      System.arraycopy( contentids, 0, je.contentids, 0, nrImages );
+    }
     return je;
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 300 );
+    StringBuilder retval = new StringBuilder( 600 );
 
     retval.append( super.getXML() );
 
@@ -235,10 +251,6 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
     return retval.toString();
   }
 
-  public void allocate( int nrFileTypes ) {
-    fileType = new int[nrFileTypes];
-  }
-
   public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers,
     Repository rep, IMetaStore metaStore ) throws KettleXMLException {
     try {
@@ -290,8 +302,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
 
       // How many field embedded images ?
       int nrImages = XMLHandler.countNodes( images, "embeddedimage" );
-      embeddedimages = new String[nrImages];
-      contentids = new String[nrImages];
+      allocateImages( nrImages );
 
       // Read them all...
       for ( int i = 0; i < nrImages; i++ ) {
@@ -352,8 +363,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
 
       // How many arguments?
       int imagesnr = rep.countNrJobEntryAttributes( id_jobentry, "embeddedimage" );
-      embeddedimages = new String[imagesnr];
-      contentids = new String[imagesnr];
+      allocateImages( imagesnr );
 
       // Read them all...
       for ( int a = 0; a < imagesnr; a++ ) {
@@ -877,7 +887,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
       }
 
       msg.setSentDate( new Date() );
-      StringBuffer messageText = new StringBuffer();
+      StringBuilder messageText = new StringBuilder();
       String endRow = isUseHTML() ? "<br>" : Const.CR;
       String realComment = environmentSubstitute( comment );
       if ( !Const.isEmpty( realComment ) ) {
@@ -1233,11 +1243,11 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
     return result;
   }
 
-  private void addBacktracking( JobTracker jobTracker, StringBuffer messageText ) {
+  private void addBacktracking( JobTracker jobTracker, StringBuilder messageText ) {
     addBacktracking( jobTracker, messageText, 0 );
   }
 
-  private void addBacktracking( JobTracker jobTracker, StringBuffer messageText, int level ) {
+  private void addBacktracking( JobTracker jobTracker, StringBuilder messageText, int level ) {
     int nr = jobTracker.nrJobTrackers();
 
     messageText.append( Const.rightPad( " ", level * 2 ) );
@@ -1326,18 +1336,24 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
   public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
 
-    andValidator().validate( this, "server", remarks, putValidators( notBlankValidator() ) );
-    andValidator()
-      .validate( this, "replyAddress", remarks, putValidators( notBlankValidator(), emailValidator() ) );
+    JobEntryValidatorUtils.andValidator().validate( this, "server", remarks,
+        AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
+    JobEntryValidatorUtils.andValidator()
+      .validate( this, "replyAddress", remarks, AndValidator.putValidators(
+          JobEntryValidatorUtils.notBlankValidator(), JobEntryValidatorUtils.emailValidator() ) );
 
-    andValidator().validate( this, "destination", remarks, putValidators( notBlankValidator() ) );
+    JobEntryValidatorUtils.andValidator().validate( this, "destination", remarks,
+        AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
 
     if ( usingAuthentication ) {
-      andValidator().validate( this, "authenticationUser", remarks, putValidators( notBlankValidator() ) );
-      andValidator().validate( this, "authenticationPassword", remarks, putValidators( notNullValidator() ) );
+      JobEntryValidatorUtils.andValidator().validate( this, "authenticationUser", remarks,
+          AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
+      JobEntryValidatorUtils.andValidator().validate( this, "authenticationPassword", remarks,
+          AndValidator.putValidators( JobEntryValidatorUtils.notNullValidator() ) );
     }
 
-    andValidator().validate( this, "port", remarks, putValidators( integerValidator() ) );
+    JobEntryValidatorUtils.andValidator().validate( this, "port", remarks,
+        AndValidator.putValidators( JobEntryValidatorUtils.integerValidator() ) );
 
   }
 

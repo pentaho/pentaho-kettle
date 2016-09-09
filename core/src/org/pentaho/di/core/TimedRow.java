@@ -48,7 +48,7 @@ public class TimedRow {
 
   @Override
   public String toString() {
-    StringBuffer str = new StringBuffer();
+    StringBuilder str = new StringBuilder();
     for ( int i = 0; i < row.length; i++ ) {
       if ( i > 0 ) {
         str.append( ", " );

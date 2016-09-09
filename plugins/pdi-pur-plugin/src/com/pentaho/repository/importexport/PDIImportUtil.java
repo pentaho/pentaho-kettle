@@ -1,20 +1,19 @@
 /*!
-* Copyright 2010 - 2015 Pentaho Corporation.  All rights reserved.
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-*/
-
+ * Copyright 2010 - 2016 Pentaho Corporation.  All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
 package com.pentaho.repository.importexport;
 
 import java.io.ByteArrayInputStream;
@@ -37,34 +36,32 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.exception.KettleSecurityException;
+import org.pentaho.di.core.logging.LogChannel;
+import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.core.xml.XMLParserFactoryProducer;
 import org.pentaho.di.repository.Repository;
-import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.repository.utils.IRepositoryFactory;
-import org.pentaho.platform.api.engine.ActionExecutionException;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
 public class PDIImportUtil {
 
   private static IRepositoryFactory repositoryFactory = new IRepositoryFactory.CachingRepositoryFactory();
+  private static final LogChannelInterface log = new LogChannel( PDIImportUtil.class );
 
   /**
    * Connects to the PDI repository
-   *
+   * 
    * @param repositoryName
    * @return
    * @throws KettleException
-   * @throws KettleSecurityException
-   * @throws ActionExecutionException
    */
   public static Repository connectToRepository( String repositoryName ) throws KettleException {
     return repositoryFactory.connect( repositoryName );
   }
 
-  public static void setRepositoryFactory( IRepositoryFactory factory ){
+  public static void setRepositoryFactory( IRepositoryFactory factory ) {
     repositoryFactory = factory;
   }
 
@@ -72,14 +69,23 @@ public class PDIImportUtil {
     return loadXMLFrom( new ByteArrayInputStream( xml.getBytes() ) );
   }
 
-  public static Document loadXMLFrom( InputStream is )  {
-    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+  /**
+   * @return instance of {@link Document}, if xml is loaded successfully null in case any error occurred during loading
+   */
+  public static Document loadXMLFrom( InputStream is ) {
+    DocumentBuilderFactory factory;
+    try {
+      factory = XMLParserFactoryProducer.createSecureDocBuilderFactory();
+    } catch ( ParserConfigurationException e ) {
+      log.logError( e.getLocalizedMessage() );
+      factory = DocumentBuilderFactory.newInstance();
+    }
     DocumentBuilder builder = null;
     Document doc = null;
     try {
       builder = factory.newDocumentBuilder();
     } catch ( ParserConfigurationException ex ) {
-      //ignore
+      // ignore
     }
     try {
       File file = File.createTempFile( "tempFile", "temp" );
@@ -89,11 +95,13 @@ public class PDIImportUtil {
       fous.flush();
       fous.close();
       doc = builder.parse( file );
-      is.close();
-    } catch(Throwable th) {
+    } catch ( IOException | SAXException e ) {
+      log.logError( e.getLocalizedMessage() );
+    } finally {
       try {
         is.close();
       } catch ( IOException e ) {
+        // nothing to do here
       }
     }
     return doc;
@@ -117,37 +125,5 @@ public class PDIImportUtil {
     }
   }
 
-  public static String checkAndSanitize(final String in) {
-    if (in == null) {
-      throw new IllegalArgumentException();
-    }
-    String extension = null;
-    if (in.endsWith(RepositoryObjectType.CLUSTER_SCHEMA.getExtension())) {
-      extension = RepositoryObjectType.CLUSTER_SCHEMA.getExtension();
-    } else if (in.endsWith(RepositoryObjectType.DATABASE.getExtension())) {
-      extension = RepositoryObjectType.DATABASE.getExtension();
-    } else if (in.endsWith(RepositoryObjectType.JOB.getExtension())) {
-      extension = RepositoryObjectType.JOB.getExtension();
-    } else if (in.endsWith(RepositoryObjectType.PARTITION_SCHEMA.getExtension())) {
-      extension = RepositoryObjectType.PARTITION_SCHEMA.getExtension();
-    } else if (in.endsWith(RepositoryObjectType.SLAVE_SERVER.getExtension())) {
-      extension = RepositoryObjectType.SLAVE_SERVER.getExtension();
-    } else if (in.endsWith(RepositoryObjectType.TRANSFORMATION.getExtension())) {
-      extension = RepositoryObjectType.TRANSFORMATION.getExtension();
-    }
-    String out = in;
-    if (extension != null) {
-      out = out.substring(0, out.length()-extension.length());
-    }
-    if (out.contains("/") || out.equals("..") || out.equals(".") || StringUtils.isBlank(out)) {
-      throw new IllegalArgumentException();
-    }
-    out = out.replaceAll("[/:\\[\\]\\*'\"\\|\\s\\.]", "_");  //$NON-NLS-1$//$NON-NLS-2$
-    if (extension != null) {
-      return out + extension;
-    } else {
-      return out;
-    }
-  }
 
 }

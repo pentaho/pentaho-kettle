@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -92,7 +92,17 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaBase;
+import org.pentaho.di.core.row.value.ValueMetaBigNumber;
+import org.pentaho.di.core.row.value.ValueMetaBinary;
+import org.pentaho.di.core.row.value.ValueMetaBoolean;
+import org.pentaho.di.core.row.value.ValueMetaDate;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
+import org.pentaho.di.core.row.value.ValueMetaInternetAddress;
+import org.pentaho.di.core.row.value.ValueMetaNone;
+import org.pentaho.di.core.row.value.ValueMetaNumber;
+import org.pentaho.di.core.row.value.ValueMetaString;
+import org.pentaho.di.core.row.value.ValueMetaTimestamp;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.vfs.KettleVFS;
@@ -583,28 +593,64 @@ public class Database implements VariableSpace, LoggingObjectInterface {
       if ( connection == null ) {
         return; // Nothing to do...
       }
-      if ( connection.isClosed() ) {
-        return; // Nothing to do...
+      try {
+        if ( connection.isClosed() ) {
+          return; // Nothing to do...
+        }
+      } catch ( SQLException ex ) {
+        // cannot do anything about this but log it
+        log.logError( "Error checking closing connection:" + Const.CR + ex.getMessage() );
+        log.logError( Const.getStackTracker( ex ) );
       }
 
       if ( pstmt != null ) {
-        pstmt.close();
+        try {
+          pstmt.close();
+        } catch ( SQLException ex ) {
+          // cannot do anything about this but log it
+          log.logError( "Error closing statement:" + Const.CR + ex.getMessage() );
+          log.logError( Const.getStackTracker( ex ) );
+        }
         pstmt = null;
       }
       if ( prepStatementLookup != null ) {
-        prepStatementLookup.close();
+        try {
+          prepStatementLookup.close();
+        } catch ( SQLException ex ) {
+          // cannot do anything about this but log it
+          log.logError( "Error closing lookup statement:" + Const.CR + ex.getMessage() );
+          log.logError( Const.getStackTracker( ex ) );
+        }
         prepStatementLookup = null;
       }
       if ( prepStatementInsert != null ) {
-        prepStatementInsert.close();
+        try {
+          prepStatementInsert.close();
+        } catch ( SQLException ex ) {
+          // cannot do anything about this but log it
+          log.logError( "Error closing insert statement:" + Const.CR + ex.getMessage() );
+          log.logError( Const.getStackTracker( ex ) );
+        }
         prepStatementInsert = null;
       }
       if ( prepStatementUpdate != null ) {
-        prepStatementUpdate.close();
+        try {
+          prepStatementUpdate.close();
+        } catch ( SQLException ex ) {
+          // cannot do anything about this but log it
+          log.logError( "Error closing update statement:" + Const.CR + ex.getMessage() );
+          log.logError( Const.getStackTracker( ex ) );
+        }
         prepStatementUpdate = null;
       }
       if ( pstmt_seq != null ) {
-        pstmt_seq.close();
+        try {
+          pstmt_seq.close();
+        } catch ( SQLException ex ) {
+          // cannot do anything about this but log it
+          log.logError( "Error closing seq statement:" + Const.CR + ex.getMessage() );
+          log.logError( Const.getStackTracker( ex ) );
+        }
         pstmt_seq = null;
       }
 
@@ -617,23 +663,34 @@ public class Database implements VariableSpace, LoggingObjectInterface {
       } else {
         if ( !isAutoCommit() ) {
           // Do we really still need this commit??
-          commit();
+          try {
+            commit();
+          } catch ( KettleDatabaseException ex ) {
+            // cannot do anything about this but log it
+            log.logError( "Error committing:" + Const.CR + ex.getMessage() );
+            log.logError( Const.getStackTracker( ex ) );
+          }
         }
       }
-
-      closeConnectionOnly();
 
       try {
         ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.DatabaseDisconnected.id, this );
       } catch ( KettleException e ) {
         throw new KettleDatabaseException( e );
       }
-    } catch ( SQLException ex ) {
-      log.logError( "Error disconnecting from database:" + Const.CR + ex.getMessage() );
-      log.logError( Const.getStackTracker( ex ) );
     } catch ( KettleDatabaseException dbe ) {
       log.logError( "Error disconnecting from database:" + Const.CR + dbe.getMessage() );
       log.logError( Const.getStackTracker( dbe ) );
+    } finally {
+      // Always close the connection, irrespective of what happens above...
+      try {
+        closeConnectionOnly();
+      } catch ( KettleDatabaseException ignoredKde ) { // The only exception thrown from closeConnectionOnly()
+        // cannot do anything about this but log it
+        log.logError(
+          "Error disconnecting from database - closeConnectionOnly failed:" + Const.CR + ignoredKde.getMessage() );
+        log.logError( Const.getStackTracker( ignoredKde ) );
+      }
     }
   }
 
@@ -1066,7 +1123,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
       RowMetaInterface rowMeta;
       if ( resultSetMetaData == null ) {
         rowMeta = new RowMeta();
-        rowMeta.addValueMeta( new ValueMeta( "ai-key", ValueMetaInterface.TYPE_INTEGER ) );
+        rowMeta.addValueMeta( new ValueMetaInteger( "ai-key" ) );
       } else {
         rowMeta = getRowInfo( resultSetMetaData, false, false );
       }
@@ -1135,7 +1192,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   }
 
   public String getInsertStatement( String schemaName, String tableName, RowMetaInterface fields ) {
-    StringBuffer ins = new StringBuffer( 128 );
+    StringBuilder ins = new StringBuilder( 128 );
 
     String schemaTable = databaseMeta.getQuotedSchemaTableCombination( schemaName, tableName );
     ins.append( "INSERT INTO " ).append( schemaTable ).append( " (" );
@@ -2078,31 +2135,15 @@ public class Database implements VariableSpace, LoggingObjectInterface {
     // For now, we just try to get the field layout on the re-bound in the
     // exception block below.
     //
-    if ( databaseMeta.supportsPreparedStatementMetadataRetrieval() ) {
-      // On with the regular program.
-      //
-
-      PreparedStatement preparedStatement = null;
-      try {
-        preparedStatement =
-          connection.prepareStatement(
-            databaseMeta.stripCR( sql ), ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY );
-        preparedStatement.setMaxRows( 1 );
-        ResultSetMetaData rsmd = preparedStatement.getMetaData();
-        fields = getRowInfo( rsmd, false, false );
-      } catch ( Exception e ) {
-        fields = getQueryFieldsFallback( sql, param, inform, data );
-      } finally {
-        if ( preparedStatement != null ) {
-          try {
-            preparedStatement.close();
-          } catch ( SQLException e ) {
-            throw new KettleDatabaseException(
-              "Unable to close prepared statement after determining SQL layout", e );
-          }
-        }
+    try {
+      if ( databaseMeta.supportsPreparedStatementMetadataRetrieval() ) {
+        // On with the regular program.
+        //
+        fields = getQueryFieldsFromPreparedStatement( sql );
+      } else {
+        fields = getQueryFieldsFromDatabaseMetaData();
       }
-    } else {
+    } catch ( Exception e ) {
       /*
        * databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_SYBASEIQ ) {
        */
@@ -2119,7 +2160,76 @@ public class Database implements VariableSpace, LoggingObjectInterface {
     return fields;
   }
 
-  private RowMetaInterface getQueryFieldsFallback( String sql, boolean param, RowMetaInterface inform,
+  public RowMetaInterface getQueryFieldsFromPreparedStatement( String sql ) throws Exception {
+    PreparedStatement preparedStatement = null;
+    try {
+      preparedStatement =
+          connection.prepareStatement( databaseMeta.stripCR( sql ), ResultSet.TYPE_FORWARD_ONLY,
+              ResultSet.CONCUR_READ_ONLY );
+      preparedStatement.setMaxRows( 1 );
+      ResultSetMetaData rsmd = preparedStatement.getMetaData();
+      return getRowInfo( rsmd, false, false );
+    } catch ( Exception e ) {
+      throw new Exception( e );
+    } finally {
+      if ( preparedStatement != null ) {
+        try {
+          preparedStatement.close();
+        } catch ( SQLException e ) {
+          throw new KettleDatabaseException( "Unable to close prepared statement after determining SQL layout", e );
+        }
+      }
+    }
+  }
+
+  public RowMetaInterface getQueryFieldsFromDatabaseMetaData() throws Exception {
+
+    ResultSet columns = connection.getMetaData().getColumns( "", "", databaseMeta.getName(), "" );
+    RowMetaInterface rowMeta = new RowMeta();
+    while ( columns.next() ) {
+      ValueMetaInterface valueMeta = null;
+      String name = columns.getString( "COLUMN_NAME" );
+      String type = columns.getString( "SOURCE_DATA_TYPE" );
+      int size = columns.getInt( "COLUMN_SIZE" );
+      if ( type.equals( "Integer" ) || type.equals( "Long" ) ) {
+        valueMeta = new ValueMetaInteger();
+      } else if ( type.equals( "BigDecimal" ) || type.equals( "BigNumber" ) ) {
+        valueMeta = new ValueMetaBigNumber();
+      } else if ( type.equals( "Double" ) || type.equals( "Number" ) ) {
+        valueMeta = new ValueMetaNumber();
+      } else if ( type.equals( "String" ) ) {
+        valueMeta = new ValueMetaString();
+      } else if ( type.equals( "Date" ) ) {
+        valueMeta = new ValueMetaDate();
+      } else if ( type.equals( "Boolean" ) ) {
+        valueMeta = new ValueMetaBoolean();
+      } else if ( type.equals( "Binary" ) ) {
+        valueMeta = new ValueMetaBinary();
+      } else if ( type.equals( "Timestamp" ) ) {
+        valueMeta = new ValueMetaTimestamp();
+      } else if ( type.equals( "Internet Address" ) ) {
+        valueMeta = new ValueMetaInternetAddress();
+      }
+      if ( valueMeta != null ) {
+        valueMeta.setName( name );
+        valueMeta.setComments( name );
+        valueMeta.setLength( size );
+        valueMeta.setOriginalColumnTypeName( type );
+        rowMeta.addValueMeta( valueMeta );
+      } else {
+        log.logBasic( "Database.getQueryFields() ValueMetaInterface mapping not resolved for the column " + name );
+        rowMeta = null;
+        break;
+      }
+    }
+    if ( rowMeta != null && !rowMeta.isEmpty() ) {
+      return rowMeta;
+    } else {
+      throw new Exception( "Error in Database.getQueryFields()" );
+    }
+  }
+
+  public RowMetaInterface getQueryFieldsFallback( String sql, boolean param, RowMetaInterface inform,
                                                    Object[] data ) throws KettleDatabaseException {
     RowMetaInterface fields;
 
@@ -2130,47 +2240,66 @@ public class Database implements VariableSpace, LoggingObjectInterface {
         && databaseMeta.getDatabaseInterface() instanceof MSSQLServerDatabaseMeta )
         || databaseMeta.getDatabaseInterface().supportsResultSetMetadataRetrievalOnly() ) {
         sel_stmt = connection.createStatement( ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY );
-
-        if ( databaseMeta.isFetchSizeSupported() && sel_stmt.getMaxRows() >= 1 ) {
-          if ( databaseMeta.getDatabaseInterface() instanceof MySQLDatabaseMeta ) {
-            sel_stmt.setFetchSize( Integer.MIN_VALUE );
-          } else {
-            sel_stmt.setFetchSize( 1 );
+        try {
+          if ( databaseMeta.isFetchSizeSupported() && sel_stmt.getMaxRows() >= 1 ) {
+            if ( databaseMeta.getDatabaseInterface() instanceof MySQLDatabaseMeta ) {
+              sel_stmt.setFetchSize( Integer.MIN_VALUE );
+            } else {
+              sel_stmt.setFetchSize( 1 );
+            }
           }
-        }
-        if ( databaseMeta.supportsSetMaxRows() ) {
-          sel_stmt.setMaxRows( 1 );
-        }
+          if ( databaseMeta.supportsSetMaxRows() ) {
+            sel_stmt.setMaxRows( 1 );
+          }
 
-        ResultSet r = sel_stmt.executeQuery( databaseMeta.stripCR( sql ) );
-        fields = getRowInfo( r.getMetaData(), false, false );
-        r.close();
-        sel_stmt.close();
-        sel_stmt = null;
+          ResultSet r = sel_stmt.executeQuery( databaseMeta.stripCR( sql ) );
+          try {
+            fields = getRowInfo( r.getMetaData(), false, false );
+          } finally { // avoid leaking resources
+            r.close();
+          }
+        } finally { // avoid leaking resources
+          sel_stmt.close();
+          sel_stmt = null;
+        }
       } else {
         PreparedStatement ps = connection.prepareStatement( databaseMeta.stripCR( sql ) );
-        if ( param ) {
-          RowMetaInterface par = inform;
+        try {
+          if ( param ) {
+            RowMetaInterface par = inform;
 
-          if ( par == null || par.isEmpty() ) {
-            par = getParameterMetaData( ps );
+            if ( par == null || par.isEmpty() ) {
+              par = getParameterMetaData( ps );
+            }
+
+            if ( par == null || par.isEmpty() ) {
+              par = getParameterMetaData( sql, inform, data );
+            }
+
+            setValues( par, data, ps );
           }
-
-          if ( par == null || par.isEmpty() ) {
-            par = getParameterMetaData( sql, inform, data );
+          ResultSet r = ps.executeQuery();
+          try {
+            //
+            // See PDI-14893
+            // If we're in this private fallback method, it's because the databasemeta returns false for
+            // supportsPreparedStatementMetadataRetrieval() or because we got an exception trying to do
+            // it the other way. In either case, there is no reason for us to ever try getting the prepared
+            // statement's metadata. The right answer is to directly get the resultset metadata.
+            //
+            // ResultSetMetaData metadata = ps.getMetaData();
+            // If the PreparedStatement can't get us the metadata, try using the ResultSet's metadata
+            // if ( metadata == null ) {
+            //  metadata = r.getMetaData();
+            // }
+            ResultSetMetaData metadata = r.getMetaData();
+            fields = getRowInfo( metadata, false, false );
+          } finally { // should always use a try/finally to avoid leaks
+            r.close();
           }
-
-          setValues( par, data, ps );
+        } finally { // should always use a try/finally to avoid leaks
+          ps.close();
         }
-        ResultSet r = ps.executeQuery();
-        ResultSetMetaData metadata = ps.getMetaData();
-        // If the PreparedStatement can't get us the metadata, try using the ResultSet's metadata
-        if ( metadata == null ) {
-          metadata = r.getMetaData();
-        }
-        fields = getRowInfo( metadata, false, false );
-        r.close();
-        ps.close();
       }
     } catch ( Exception ex ) {
       throw new KettleDatabaseException( "Couldn't get field info from [" + sql + "]" + Const.CR, ex );
@@ -2469,7 +2598,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
     try {
       log.snap( Metrics.METRIC_DATABASE_PREPARE_UPDATE_START, databaseMeta.getName() );
 
-      StringBuffer sql = new StringBuffer( 128 );
+      StringBuilder sql = new StringBuilder( 128 );
 
       String schemaTable = databaseMeta.getQuotedSchemaTableCombination( schemaName, tableName );
 
@@ -2614,7 +2743,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
         cstmt = connection.prepareCall( sql );
         pos = 1;
         if ( !Const.isEmpty( returnvalue ) ) {
-          switch( returntype ) {
+          switch ( returntype ) {
             case ValueMetaInterface.TYPE_NUMBER:
               cstmt.registerOutParameter( pos, java.sql.Types.DOUBLE );
               break;
@@ -2640,7 +2769,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
         }
         for ( int i = 0; i < arg.length; i++ ) {
           if ( argdir[ i ].equalsIgnoreCase( "OUT" ) || argdir[ i ].equalsIgnoreCase( "INOUT" ) ) {
-            switch( argtype[ i ] ) {
+            switch ( argtype[ i ] ) {
               case ValueMetaInterface.TYPE_NUMBER:
                 cstmt.registerOutParameter( i + pos, java.sql.Types.DOUBLE );
                 break;
@@ -3035,42 +3164,42 @@ public class Database implements VariableSpace, LoggingObjectInterface {
         int sqltype = pmd.getParameterType( i );
         int length = pmd.getPrecision( i );
         int precision = pmd.getScale( i );
-        ValueMeta val;
+        ValueMetaInterface val;
 
-        switch( sqltype ) {
+        switch ( sqltype ) {
           case java.sql.Types.CHAR:
           case java.sql.Types.VARCHAR:
-            val = new ValueMeta( name, ValueMetaInterface.TYPE_STRING );
+            val = new ValueMetaString( name );
             break;
           case java.sql.Types.BIGINT:
           case java.sql.Types.INTEGER:
           case java.sql.Types.NUMERIC:
           case java.sql.Types.SMALLINT:
           case java.sql.Types.TINYINT:
-            val = new ValueMeta( name, ValueMetaInterface.TYPE_INTEGER );
+            val = new ValueMetaInteger( name );
             break;
           case java.sql.Types.DECIMAL:
           case java.sql.Types.DOUBLE:
           case java.sql.Types.FLOAT:
           case java.sql.Types.REAL:
-            val = new ValueMeta( name, ValueMetaInterface.TYPE_NUMBER );
+            val = new ValueMetaNumber( name );
             break;
           case java.sql.Types.DATE:
           case java.sql.Types.TIME:
           case java.sql.Types.TIMESTAMP:
-            val = new ValueMeta( name, ValueMetaInterface.TYPE_DATE );
+            val = new ValueMetaDate( name );
             break;
           case java.sql.Types.BOOLEAN:
           case java.sql.Types.BIT:
-            val = new ValueMeta( name, ValueMetaInterface.TYPE_BOOLEAN );
+            val = new ValueMetaBoolean( name );
             break;
           default:
-            val = new ValueMeta( name, ValueMetaInterface.TYPE_NONE );
+            val = new ValueMetaNone( name );
             break;
         }
 
         if ( val.isNumeric() && ( length > 18 || precision > 18 ) ) {
-          val = new ValueMeta( name, ValueMetaInterface.TYPE_BIGNUMBER );
+          val = new ValueMetaBigNumber( name );
         }
 
         par.addValueMeta( val );
@@ -3095,7 +3224,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
     for ( int x = 0; x < sql.length(); x++ ) {
       char c = sql.charAt( x );
 
-      switch( c ) {
+      switch ( c ) {
         case '\'':
           quote_opened = !quote_opened;
           break;
@@ -3130,7 +3259,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
       }
     } else {
       for ( int i = 0; i < q; i++ ) {
-        ValueMetaInterface v = new ValueMeta( "name" + i, ValueMetaInterface.TYPE_NUMBER );
+        ValueMetaInterface v = new ValueMetaNumber( "name" + i );
         par.addValueMeta( v );
       }
     }
@@ -3158,11 +3287,10 @@ public class Database implements VariableSpace, LoggingObjectInterface {
         RowMetaInterface updateRowMeta = new RowMeta();
         Object[] updateRowData = new Object[ rowMeta.size() ];
         ValueMetaInterface keyValueMeta = rowMeta.getValueMeta( 0 );
-        StringBuffer sqlBuff = new StringBuffer( 250 );
+        StringBuilder sqlBuff = new StringBuilder( 250 );
         sqlBuff.append( "UPDATE " ).append( schemaTable ).append( " SET " );
 
-        for ( int i = 1; i < rowMeta.size(); i++ ) // Without ID_JOB or ID_BATCH
-        {
+        for ( int i = 1; i < rowMeta.size(); i++ ) { // Without ID_JOB or ID_BATCH
           ValueMetaInterface valueMeta = rowMeta.getValueMeta( i );
           if ( i > 1 ) {
             sqlBuff.append( ", " );
@@ -3187,7 +3315,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
 
       }
     } catch ( Exception e ) {
-      DatabaseLogExceptionFactory.getExceptionStrategy( logTable )
+      DatabaseLogExceptionFactory.getExceptionStrategy( logTable, e )
         .registerException( log, e, PKG, "Database.Error.WriteLogTable",
           environmentSubstitute( logTable.getActualTableName() ) );
     }
@@ -3258,7 +3386,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
       pstmt = connection.prepareStatement( databaseMeta.stripCR( sql ) );
 
       RowMetaInterface r = new RowMeta();
-      r.addValueMeta( new ValueMeta( "TRANSNAME", ValueMetaInterface.TYPE_STRING ) );
+      r.addValueMeta( new ValueMetaString( "TRANSNAME" ) );
       setValues( r, new Object[] { name } );
 
       ResultSet res = pstmt.executeQuery();
@@ -4115,7 +4243,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
       if ( resultname != null && resultname.length() != 0 ) {
         ValueMeta vMeta = new ValueMeta( resultname, resulttype );
         Object v = null;
-        switch( resulttype ) {
+        switch ( resulttype ) {
           case ValueMetaInterface.TYPE_BOOLEAN:
             v = Boolean.valueOf( cstmt.getBoolean( pos ) );
             break;
@@ -4160,7 +4288,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
         if ( argdir[ i ].equalsIgnoreCase( "OUT" ) || argdir[ i ].equalsIgnoreCase( "INOUT" ) ) {
           ValueMetaInterface vMeta = ValueMetaFactory.createValueMeta( arg[ i ], argtype[ i ] );
           Object v = null;
-          switch( argtype[ i ] ) {
+          switch ( argtype[ i ] ) {
             case ValueMetaInterface.TYPE_BOOLEAN:
               v = Boolean.valueOf( cstmt.getBoolean( pos + i ) );
               break;
@@ -4305,7 +4433,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
 
   public String getSQLOutput( String schemaName, String tableName, RowMetaInterface fields, Object[] r,
                               String dateFormat ) throws KettleDatabaseException {
-    StringBuffer ins = new StringBuffer( 128 );
+    StringBuilder ins = new StringBuilder( 128 );
 
     try {
       String schemaTable = databaseMeta.getQuotedSchemaTableCombination( schemaName, tableName );
@@ -4340,7 +4468,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
         } else {
           // Normal cases...
           //
-          switch( valueMeta.getType() ) {
+          switch ( valueMeta.getType() ) {
             case ValueMetaInterface.TYPE_BOOLEAN:
             case ValueMetaInterface.TYPE_STRING:
               String string = valueMeta.getString( valueData );
@@ -4601,8 +4729,8 @@ public class Database implements VariableSpace, LoggingObjectInterface {
 
       is = KettleVFS.getInputStream( sqlFile );
       bis = new InputStreamReader( new BufferedInputStream( is, 500 ) );
-      StringBuffer lineStringBuffer = new StringBuffer( 256 );
-      lineStringBuffer.setLength( 0 );
+      StringBuilder lineStringBuilder = new StringBuilder( 256 );
+      lineStringBuilder.setLength( 0 );
 
       BufferedReader buff = new BufferedReader( bis );
       String sLine = null;

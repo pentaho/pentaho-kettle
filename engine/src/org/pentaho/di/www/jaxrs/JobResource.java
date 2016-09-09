@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -111,7 +111,7 @@ public class JobResource {
         // Create a new job object to start from a sane state. Then replace
         // the new job in the job map
         //
-        synchronized ( CarteSingleton.getInstance().getJobMap() ) {
+        synchronized ( this ) {
           JobConfiguration jobConfiguration = CarteSingleton.getInstance().getJobMap().getConfiguration( entry );
 
           String carteObjectId = UUID.randomUUID().toString();

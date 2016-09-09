@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,14 +23,15 @@
 package org.pentaho.di.core.row.value;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.Types;
 import java.util.Date;
 
-import org.pentaho.di.compatibility.Value;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseInterface;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -40,6 +41,31 @@ import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.ValueMetaInterface;
 
 public class ValueMetaInternetAddress extends ValueMetaDate {
+
+  @Override
+  public int compare( Object data1, Object data2 ) throws KettleValueException {
+    InetAddress inet1 = getInternetAddress( data1 );
+    InetAddress inet2 = getInternetAddress( data2 );
+    int cmp = 0;
+    if ( inet1 == null ) {
+      if ( inet2 == null ) {
+        cmp = 0;
+      } else {
+        cmp = -1;
+      }
+    } else if ( inet2 == null ) {
+      cmp = 1;
+    } else {
+      BigInteger bigint1 = new BigInteger( inet1.getAddress() );
+      BigInteger bigint2 = new BigInteger( inet2.getAddress() );
+      cmp = bigint1.compareTo( bigint2 );
+    }
+    if ( isSortedDescending() ) {
+      return -cmp;
+    } else {
+      return cmp;
+    }
+  }
 
   public ValueMetaInternetAddress() {
     this( null );
@@ -62,7 +88,7 @@ public class ValueMetaInternetAddress extends ValueMetaDate {
           case STORAGE_TYPE_BINARY_STRING:
             return (InetAddress) convertBinaryStringToNativeType( (byte[]) object );
           case STORAGE_TYPE_INDEXED:
-            return (InetAddress) index[( (Integer) object ).intValue()];
+            return (InetAddress) index[( (Integer) object )];
           default:
             throw new KettleValueException( toString() + " : Unknown storage type " + storageType + " specified." );
         }
@@ -182,6 +208,40 @@ public class ValueMetaInternetAddress extends ValueMetaDate {
     return convertInternetAddressToString( getInternetAddress( object ) );
   }
 
+  @Override
+  public byte[] getBinaryString( Object object ) throws KettleValueException {
+    if ( isStorageBinaryString() && identicalFormat ) {
+      return (byte[]) object; // shortcut it directly for better performance.
+    }
+    if ( object == null ) {
+      return null;
+    }
+    switch ( storageType ) {
+      case STORAGE_TYPE_NORMAL:
+        return convertStringToBinaryString( getString( object ) );
+      case STORAGE_TYPE_BINARY_STRING:
+        return convertStringToBinaryString( getString(
+          convertStringToInternetAddress( convertBinaryStringToString( (byte[]) object ) ) ) );
+      case STORAGE_TYPE_INDEXED:
+        return convertStringToBinaryString(
+          convertInternetAddressToString( (InetAddress) index[( (Integer) object )] ) );
+      default:
+        throw new KettleValueException( toString() + " : Unknown storage type " + storageType + " specified." );
+    }
+  }
+
+  @Override
+  public Object convertBinaryStringToNativeType( byte[] binary ) throws KettleValueException {
+    if ( binary == null || binary.length <= 0 ) {
+      return null;
+    }
+    try {
+      return InetAddress.getByAddress( binary );
+    } catch ( UnknownHostException e ) {
+      throw new KettleValueException( e );
+    }
+  }
+
   protected InetAddress convertBigNumberToInternetAddress( BigDecimal bd ) throws KettleValueException {
     if ( bd == null ) {
       return null;
@@ -256,25 +316,25 @@ public class ValueMetaInternetAddress extends ValueMetaDate {
     String null_value = nullIf;
     if ( null_value == null ) {
       switch ( convertMeta.getType() ) {
-        case Value.VALUE_TYPE_BOOLEAN:
+        case ValueMetaInterface.TYPE_BOOLEAN:
           null_value = Const.NULL_BOOLEAN;
           break;
-        case Value.VALUE_TYPE_STRING:
+        case ValueMetaInterface.TYPE_STRING:
           null_value = Const.NULL_STRING;
           break;
-        case Value.VALUE_TYPE_BIGNUMBER:
+        case ValueMetaInterface.TYPE_BIGNUMBER:
           null_value = Const.NULL_BIGNUMBER;
           break;
-        case Value.VALUE_TYPE_NUMBER:
+        case ValueMetaInterface.TYPE_NUMBER:
           null_value = Const.NULL_NUMBER;
           break;
-        case Value.VALUE_TYPE_INTEGER:
+        case ValueMetaInterface.TYPE_INTEGER:
           null_value = Const.NULL_INTEGER;
           break;
-        case Value.VALUE_TYPE_DATE:
+        case ValueMetaInterface.TYPE_DATE:
           null_value = Const.NULL_DATE;
           break;
-        case Value.VALUE_TYPE_BINARY:
+        case ValueMetaInterface.TYPE_BINARY:
           null_value = Const.NULL_BINARY;
           break;
         default:
@@ -291,7 +351,7 @@ public class ValueMetaInternetAddress extends ValueMetaDate {
       // because you could get an NPE since you haven't checked isEmpty(pol)
       // yet!
       if ( Const.isEmpty( pol )
-        || pol.equalsIgnoreCase( Const.rightPad( new StringBuffer( null_value ), pol.length() ) ) ) {
+        || pol.equalsIgnoreCase( Const.rightPad( new StringBuilder( null_value ), pol.length() ) ) ) {
         pol = ifNull;
       }
     }
@@ -309,7 +369,7 @@ public class ValueMetaInternetAddress extends ValueMetaDate {
           // If the polled value is equal to the spaces right-padded null_value,
           // we have a match
           //
-          if ( pol.equalsIgnoreCase( Const.rightPad( new StringBuffer( null_value ), pol.length() ) ) ) {
+          if ( pol.equalsIgnoreCase( Const.rightPad( new StringBuilder( null_value ), pol.length() ) ) ) {
             return null;
           }
         }
@@ -323,11 +383,11 @@ public class ValueMetaInternetAddress extends ValueMetaDate {
       }
     }
 
-    StringBuffer strpol;
+    StringBuilder strpol;
     // Trimming
     switch ( trim_type ) {
       case ValueMetaInterface.TRIM_TYPE_LEFT:
-        strpol = new StringBuffer( pol );
+        strpol = new StringBuilder( pol );
         while ( strpol.length() > 0 && strpol.charAt( 0 ) == ' ' ) {
           strpol.deleteCharAt( 0 );
         }
@@ -335,7 +395,7 @@ public class ValueMetaInternetAddress extends ValueMetaDate {
 
         break;
       case ValueMetaInterface.TRIM_TYPE_RIGHT:
-        strpol = new StringBuffer( pol );
+        strpol = new StringBuilder( pol );
         while ( strpol.length() > 0 && strpol.charAt( strpol.length() - 1 ) == ' ' ) {
           strpol.deleteCharAt( strpol.length() - 1 );
         }
@@ -343,7 +403,7 @@ public class ValueMetaInternetAddress extends ValueMetaDate {
 
         break;
       case ValueMetaInterface.TRIM_TYPE_BOTH:
-        strpol = new StringBuffer( pol );
+        strpol = new StringBuilder( pol );
         while ( strpol.length() > 0 && strpol.charAt( 0 ) == ' ' ) {
           strpol.deleteCharAt( 0 );
         }
@@ -476,5 +536,10 @@ public class ValueMetaInternetAddress extends ValueMetaDate {
     }
 
     return retval;
+  }
+
+  @Override
+  public Class<?> getNativeDataTypeClass() throws KettleValueException {
+    return InetAddress.class;
   }
 }

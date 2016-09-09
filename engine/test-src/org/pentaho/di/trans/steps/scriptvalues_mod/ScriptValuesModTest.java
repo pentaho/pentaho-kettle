@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,18 +24,15 @@ package org.pentaho.di.trans.steps.scriptvalues_mod;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.pentaho.di.core.BlockingRowSet;
 import org.pentaho.di.core.KettleEnvironment;
-import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaBigNumber;
+import org.pentaho.di.trans.TransTestingUtil;
 import org.pentaho.di.trans.steps.StepMockUtil;
 
 import java.math.BigDecimal;
-import java.util.Collections;
 
-import static org.junit.Assert.*;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
 
@@ -58,9 +55,6 @@ public class ScriptValuesModTest {
     input.addValueMeta( new ValueMetaBigNumber( "value_double" ) );
     step.setInputRowMeta( input );
 
-    RowSet output = new BlockingRowSet( 5 );
-    step.setOutputRowSets( Collections.singletonList( output ) );
-
     step = spy( step );
     doReturn( new Object[] { BigDecimal.ONE, BigDecimal.ONE } ).when( step ).getRow();
 
@@ -77,15 +71,10 @@ public class ScriptValuesModTest {
     } );
 
     ScriptValuesModData data = new ScriptValuesModData();
-
     step.init( meta, data );
-    step.processRow( meta, data );
 
-    Object[] row = output.getRowImmediate();
-    assertNotNull( row );
-    assertNotNull( row[ 0 ] );
-    assertEquals( BigDecimal.TEN, row[ 0 ] );
-    assertNotNull( row[ 1 ] );
-    assertEquals( new BigDecimal( "10.5" ), row[ 1 ] );
+    Object[] expectedRow = { BigDecimal.TEN, new BigDecimal( "10.5" ) };
+    Object[] row = TransTestingUtil.execute( step, meta, data, 1, false ).get( 0 );
+    TransTestingUtil.assertResult( expectedRow, row );
   }
 }

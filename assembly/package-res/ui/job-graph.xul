@@ -1,8 +1,6 @@
 <window xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" align="stretch">
 
   <toolbar id="nav-toolbar" mode="icons">
-    <toolbarbutton id="job-run" label="${Spoon.Menu.Job.Run}" image="images/run.svg" tooltiptext="${Spoon.Tooltip.RunJob}"
-      onclick="jobgraph.runJob()" />
     <toolbarbutton id="job-stop" label="${Spoon.Menu.Job.Stop}" image="images/stop.svg" tooltiptext="${Spoon.Tooltip.StopJob}"
       onclick="jobgraph.stopJob()" />
     <toolbarseparator />

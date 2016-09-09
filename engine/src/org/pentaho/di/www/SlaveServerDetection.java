@@ -91,7 +91,7 @@ public class SlaveServerDetection {
   }
 
   public String getXML() {
-    StringBuffer xml = new StringBuffer();
+    StringBuilder xml = new StringBuilder();
 
     xml.append( XMLHandler.openTag( XML_TAG ) ).append( Const.CR );
     xml.append( slaveServer.getXML() );

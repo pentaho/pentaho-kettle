@@ -33,7 +33,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     files.
     ============================================================================-->
 
-<project name="subfloor-pkg" basedir="." default="default" xmlns:ivy="antlib:org.apache.ivy.ant">
+<project name="subfloor-pkg" basedir="." default="default" xmlns:ivy="antlib:org.apache.ivy.ant" xmlns:artifact="antlib:org.apache.maven.artifact.ant">
 
   <!-- Define the default location of the common build file -->
   <property name="subfloor.file"
@@ -126,6 +126,83 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     </zip>
   </target>
 
+	
+  <!-- ======================================== EULA assembly packaging ========================================= -->
+
+  <target name="package-eula" depends="install-antcontrib">
+    <property name="pentaho.resolve.repo" value="http://nexus.pentaho.org/content/groups/omni" />
+    <property name="artifactName" value="${package.basename}" />
+    <property name="pentaho-eula-wrap-config.version" value="${pentaho-eula-wrap-config.version}" />
+    <property name="izpack.version" value="${izpack.version}" />
+    <property name="maven-ant-tasks.version" value="2.1.3" />
+    <property name="izpack.type" value="zip" />
+    <property name="artifactBaseDir" value="${bin.dir}" />
+    <property name="artifactIncludes" value="*/*" />
+    
+    <if>
+      <not>
+        <available file="${subfloor.tmp.dir}/maven-ant-tasks-${maven-ant-tasks.version}.jar" />
+      </not>
+      <then>
+        <get src="${pentaho.resolve.repo}/org/apache/maven/maven-ant-tasks/${maven-ant-tasks.version}/maven-ant-tasks-${maven-ant-tasks.version}.jar"
+             dest="${subfloor.tmp.dir}/maven-ant-tasks-${maven-ant-tasks.version}.jar"
+             verbose="true"
+        />        
+      </then>
+    </if>
+     
+    <path id="maven-ant-tasks.classpath" path="${subfloor.tmp.dir}/maven-ant-tasks-${maven-ant-tasks.version}.jar" />
+    <typedef resource="org/apache/maven/artifact/ant/antlib.xml"
+               uri="antlib:org.apache.maven.artifact.ant"
+               classpathref="maven-ant-tasks.classpath" />
+    
+    <artifact:dependencies pathId="izpack.classpath">
+      <dependency groupId="org.codehaus.izpack" artifactId="izpack-ant" version="${izpack.version}" />
+    </artifact:dependencies>
+    
+    <taskdef name="izpack" classpathref="izpack.classpath" classname="com.izforge.izpack.ant.IzPackTask" />
+    
+    <artifact:dependencies>
+      <dependency groupId="pentaho" artifactId="pentaho-eula-wrap-config" version="${pentaho-eula-wrap-config.version}" classifier="install" type="bat" />
+      <dependency groupId="pentaho" artifactId="pentaho-eula-wrap-config" version="${pentaho-eula-wrap-config.version}" classifier="install" type="sh" />
+      <dependency groupId="pentaho" artifactId="pentaho-eula-wrap-config" version="${pentaho-eula-wrap-config.version}" classifier="README" type="txt" />
+      <dependency groupId="pentaho" artifactId="pentaho-eula-wrap-config" version="${pentaho-eula-wrap-config.version}" classifier="eula" type="txt" />
+      <dependency groupId="pentaho" artifactId="pentaho-eula-wrap-config" version="${pentaho-eula-wrap-config.version}" classifier="izpack-sidebar" type="png" />
+      <dependency groupId="pentaho" artifactId="pentaho-eula-wrap-config" version="${pentaho-eula-wrap-config.version}" classifier="eula" type="html" />
+      <dependency groupId="pentaho" artifactId="pentaho-eula-wrap-config" version="${pentaho-eula-wrap-config.version}" classifier="izpack-zip" type="xml" />
+      <dependency groupId="pentaho" artifactId="pentaho-eula-wrap-config" version="${pentaho-eula-wrap-config.version}" classifier="izpack-dir" type="xml" />
+      <dependency groupId="pentaho" artifactId="pentaho-eula-wrap-config" version="${pentaho-eula-wrap-config.version}" type="jar" />
+    </artifact:dependencies>
+        
+    <if>
+       <equals arg1="${izpack.type}" arg2="dir" />
+       <then>
+         <var name="izpackConfigFile" value="${pentaho:pentaho-eula-wrap-config:xml:izpack-dir}" />
+         <echo>constructing EULA wrapped dist from ${artifactIncludes} in directory ${artifactBaseDir} ...</echo>
+       </then>
+       <else>
+         <var name="izpackConfigFile" value="${pentaho:pentaho-eula-wrap-config:xml:izpack-zip}" />
+         <echo>constructing EULA wrapped dist from ${artifactName}.zip in directory ${dist.dir} ...</echo>
+       </else>
+     </if>
+
+    <izpack input="${izpackConfigFile}"
+            output="${dist.dir}/installer.jar"
+            installerType="standard"
+            inheritAll="true"
+            basedir="${dist.dir}"
+    />
+    
+    <zip destfile="${dist.dir}/${artifactName}-dist.zip" preserve0permissions="true">
+      <zipfileset file="${pentaho:pentaho-eula-wrap-config:txt:README}" fullpath="${artifactName}/README.txt" />
+      <zipfileset file="${pentaho:pentaho-eula-wrap-config:bat:install}" fullpath="${artifactName}/install.bat" />
+      <zipfileset file="${pentaho:pentaho-eula-wrap-config:sh:install}" fullpath="${artifactName}/install.sh" filemode="755" />
+      <zipfileset file="${pentaho:pentaho-eula-wrap-config:txt:eula}" fullpath="${artifactName}/license.txt" />
+      <zipfileset dir="${dist.dir}" includes="installer.jar" fullpath="${artifactName}/installer.jar"/>
+    </zip>
+    <delete file="${dist.dir}/installer.jar"/>
+
+  </target>
 
 
   <!-- ============================================linuxPackage===================================================== -->

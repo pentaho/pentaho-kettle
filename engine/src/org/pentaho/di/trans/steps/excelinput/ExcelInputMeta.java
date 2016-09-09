@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,6 +25,7 @@ package org.pentaho.di.trans.steps.excelinput;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
@@ -34,11 +35,18 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.fileinput.FileInputList;
+import org.pentaho.di.core.injection.Injection;
+import org.pentaho.di.core.injection.InjectionDeep;
+import org.pentaho.di.core.injection.InjectionSupported;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaBoolean;
+import org.pentaho.di.core.row.value.ValueMetaDate;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -53,7 +61,6 @@ import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.step.StepMetaInjectionInterface;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
@@ -61,6 +68,7 @@ import org.w3c.dom.Node;
 /**
  * Meta data for the Excel step.
  */
+@InjectionSupported( localizationPrefix = "ExcelInput.Injection.", groups = { "FIELDS", "SHEETS", "FILENAME_LINES" } )
 public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = ExcelInputMeta.class; // for i18n purposes, needed by Translator2!!
 
@@ -89,17 +97,21 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface {
   /**
    * The filenames to load or directory in case a filemask was set.
    */
+  @Injection( name = "FILENAME", group = "FILENAME_LINES" )
   private String[] fileName;
 
   /**
    * The regular expression to use (null means: no mask)
    */
+  @Injection( name = "FILEMASK", group = "FILENAME_LINES" )
   private String[] fileMask;
 
   /** Wildcard or filemask to exclude (regular expression) */
+  @Injection( name = "EXCLUDE_FILEMASK", group = "FILENAME_LINES" )
   private String[] excludeFileMask;
 
   /** Array of boolean values as string, indicating if a file is required. */
+  @Injection( name = "FILE_REQUIRED", group = "FILENAME_LINES" )
   private String[] fileRequired;
 
   /**
@@ -110,16 +122,19 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface {
   /**
    * The names of the sheets to load. Null means: all sheets...
    */
+  @Injection( name = "SHEET_NAME", group = "SHEETS" )
   private String[] sheetName;
 
   /**
    * The row-nr where we start processing.
    */
+  @Injection( name = "SHEET_START_ROW", group = "SHEETS" )
   private int[] startRow;
 
   /**
    * The column-nr where we start processing.
    */
+  @Injection( name = "SHEET_START_COL", group = "SHEETS" )
   private int[] startColumn;
 
   /**
@@ -162,6 +177,7 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface {
   /**
    * The fields to read in the range. Note: the number of columns in the range has to match field.length
    */
+  @InjectionDeep
   private ExcelInputField[] field;
 
   /** Strict types : will generate erros */
@@ -201,6 +217,7 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface {
   private String acceptingStepName;
 
   /** Array of boolean values as string, indicating if we need to fetch sub folders. */
+  @Injection( name = "INCLUDE_SUBFOLDERS", group = "FILENAME_LINES" )
   private String[] includeSubFolders;
 
   /** The step to accept filenames from */
@@ -222,6 +239,7 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface {
   private String extensionFieldName;
   private String sizeFieldName;
 
+  @Injection( name = "SPREADSHEET_TYPE" )
   private SpreadSheetType spreadSheetType;
 
   public ExcelInputMeta() {
@@ -395,8 +413,17 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface {
 
   /**
    * @return Returns the excludeFileMask.
+   * Deprecated due to typo
    */
+  @Deprecated
   public String[] getExludeFileMask() {
+    return getExcludeFileMask();
+  }
+
+  /**
+   * @return Returns the excludeFileMask.
+   */
+  public String[] getExcludeFileMask() {
     return excludeFileMask;
   }
 
@@ -606,10 +633,12 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface {
     this.stopOnEmpty = stopOnEmpty;
   }
 
+  @Override
   public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     readData( stepnode );
   }
 
+  @Override
   public Object clone() {
     ExcelInputMeta retval = (ExcelInputMeta) super.clone();
 
@@ -623,19 +652,15 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface {
       retval.field[i] = (ExcelInputField) field[i].clone();
     }
 
-    for ( int i = 0; i < nrfiles; i++ ) {
-      retval.fileName[i] = fileName[i];
-      retval.fileMask[i] = fileMask[i];
-      retval.excludeFileMask[i] = excludeFileMask[i];
-      retval.fileRequired[i] = fileRequired[i];
-      retval.includeSubFolders[i] = includeSubFolders[i];
-    }
+    System.arraycopy( fileName, 0, retval.fileName, 0, nrfiles );
+    System.arraycopy( fileMask, 0, retval.fileMask, 0, nrfiles );
+    System.arraycopy( excludeFileMask, 0, retval.excludeFileMask, 0, nrfiles );
+    System.arraycopy( fileRequired, 0, retval.fileRequired, 0, nrfiles );
+    System.arraycopy( includeSubFolders, 0, retval.includeSubFolders, 0, nrfiles );
 
-    for ( int i = 0; i < nrsheets; i++ ) {
-      retval.sheetName[i] = sheetName[i];
-      retval.startColumn[i] = startColumn[i];
-      retval.startRow[i] = startRow[i];
-    }
+    System.arraycopy( sheetName, 0, retval.sheetName, 0, nrsheets );
+    System.arraycopy( startColumn, 0, retval.startColumn, 0, nrsheets );
+    System.arraycopy( startRow, 0, retval.startRow, 0, nrsheets );
 
     return retval;
   }
@@ -692,7 +717,7 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface {
         field[i] = new ExcelInputField();
 
         field[i].setName( XMLHandler.getTagValue( fnode, "name" ) );
-        field[i].setType( ValueMeta.getType( XMLHandler.getTagValue( fnode, "type" ) ) );
+        field[i].setType( ValueMetaFactory.getIdForValueMeta( XMLHandler.getTagValue( fnode, "type" ) ) );
         field[i].setLength( Const.toInt( XMLHandler.getTagValue( fnode, "length" ), -1 ) );
         field[i].setPrecision( Const.toInt( XMLHandler.getTagValue( fnode, "precision" ), -1 ) );
         String srepeat = XMLHandler.getTagValue( fnode, "repeat" );
@@ -765,6 +790,7 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface {
     includeSubFolders = new String[nrfiles];
   }
 
+  @Override
   public void setDefault() {
     startsWithHeader = true;
     ignoreEmptyRows = true;
@@ -810,6 +836,7 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface {
     spreadSheetType = SpreadSheetType.JXL; // default.
   }
 
+  @Override
   public void getFields( RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep,
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     for ( int i = 0; i < field.length; i++ ) {
@@ -832,27 +859,27 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface {
       }
     }
     if ( fileField != null && fileField.length() > 0 ) {
-      ValueMetaInterface v = new ValueMeta( fileField, ValueMetaInterface.TYPE_STRING );
+      ValueMetaInterface v = new ValueMetaString( fileField );
       v.setLength( 250 );
       v.setPrecision( -1 );
       v.setOrigin( name );
       row.addValueMeta( v );
     }
     if ( sheetField != null && sheetField.length() > 0 ) {
-      ValueMetaInterface v = new ValueMeta( sheetField, ValueMetaInterface.TYPE_STRING );
+      ValueMetaInterface v = new ValueMetaString( sheetField );
       v.setLength( 250 );
       v.setPrecision( -1 );
       v.setOrigin( name );
       row.addValueMeta( v );
     }
     if ( sheetRowNumberField != null && sheetRowNumberField.length() > 0 ) {
-      ValueMetaInterface v = new ValueMeta( sheetRowNumberField, ValueMetaInterface.TYPE_INTEGER );
+      ValueMetaInterface v = new ValueMetaInteger( sheetRowNumberField );
       v.setLength( ValueMetaInterface.DEFAULT_INTEGER_LENGTH, 0 );
       v.setOrigin( name );
       row.addValueMeta( v );
     }
     if ( rowNumberField != null && rowNumberField.length() > 0 ) {
-      ValueMetaInterface v = new ValueMeta( rowNumberField, ValueMetaInterface.TYPE_INTEGER );
+      ValueMetaInterface v = new ValueMetaInteger( rowNumberField );
       v.setLength( ValueMetaInterface.DEFAULT_INTEGER_LENGTH, 0 );
       v.setOrigin( name );
       row.addValueMeta( v );
@@ -862,49 +889,49 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface {
 
     if ( getShortFileNameField() != null && getShortFileNameField().length() > 0 ) {
       ValueMetaInterface v =
-        new ValueMeta( space.environmentSubstitute( getShortFileNameField() ), ValueMetaInterface.TYPE_STRING );
+        new ValueMetaString( space.environmentSubstitute( getShortFileNameField() ) );
       v.setLength( 100, -1 );
       v.setOrigin( name );
       row.addValueMeta( v );
     }
     if ( getExtensionField() != null && getExtensionField().length() > 0 ) {
       ValueMetaInterface v =
-        new ValueMeta( space.environmentSubstitute( getExtensionField() ), ValueMetaInterface.TYPE_STRING );
+        new ValueMetaString( space.environmentSubstitute( getExtensionField() ) );
       v.setLength( 100, -1 );
       v.setOrigin( name );
       row.addValueMeta( v );
     }
     if ( getPathField() != null && getPathField().length() > 0 ) {
       ValueMetaInterface v =
-        new ValueMeta( space.environmentSubstitute( getPathField() ), ValueMetaInterface.TYPE_STRING );
+        new ValueMetaString( space.environmentSubstitute( getPathField() ) );
       v.setLength( 100, -1 );
       v.setOrigin( name );
       row.addValueMeta( v );
     }
     if ( getSizeField() != null && getSizeField().length() > 0 ) {
       ValueMetaInterface v =
-        new ValueMeta( space.environmentSubstitute( getSizeField() ), ValueMetaInterface.TYPE_INTEGER );
+        new ValueMetaInteger( space.environmentSubstitute( getSizeField() ) );
       v.setOrigin( name );
       v.setLength( 9 );
       row.addValueMeta( v );
     }
     if ( isHiddenField() != null && isHiddenField().length() > 0 ) {
       ValueMetaInterface v =
-        new ValueMeta( space.environmentSubstitute( isHiddenField() ), ValueMetaInterface.TYPE_BOOLEAN );
+        new ValueMetaBoolean( space.environmentSubstitute( isHiddenField() ) );
       v.setOrigin( name );
       row.addValueMeta( v );
     }
 
     if ( getLastModificationDateField() != null && getLastModificationDateField().length() > 0 ) {
       ValueMetaInterface v =
-        new ValueMeta(
-          space.environmentSubstitute( getLastModificationDateField() ), ValueMetaInterface.TYPE_DATE );
+        new ValueMetaDate(
+          space.environmentSubstitute( getLastModificationDateField() ) );
       v.setOrigin( name );
       row.addValueMeta( v );
     }
     if ( getUriField() != null && getUriField().length() > 0 ) {
       ValueMetaInterface v =
-        new ValueMeta( space.environmentSubstitute( getUriField() ), ValueMetaInterface.TYPE_STRING );
+        new ValueMetaString( space.environmentSubstitute( getUriField() ) );
       v.setLength( 100, -1 );
       v.setOrigin( name );
       row.addValueMeta( v );
@@ -912,7 +939,7 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface {
 
     if ( getRootUriField() != null && getRootUriField().length() > 0 ) {
       ValueMetaInterface v =
-        new ValueMeta( space.environmentSubstitute( getRootUriField() ), ValueMetaInterface.TYPE_STRING );
+        new ValueMetaString( space.environmentSubstitute( getRootUriField() ) );
       v.setLength( 100, -1 );
       v.setOrigin( name );
       row.addValueMeta( v );
@@ -920,8 +947,9 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface {
 
   }
 
+  @Override
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 1024 );
+    StringBuilder retval = new StringBuilder( 1024 );
 
     retval.append( "    " ).append( XMLHandler.addTagValue( "header", startsWithHeader ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "noempty", ignoreEmptyRows ) );
@@ -1020,6 +1048,7 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface {
     return retval.toString();
   }
 
+  @Override
   public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
       startsWithHeader = rep.getStepAttributeBoolean( id_step, "header" );
@@ -1073,7 +1102,7 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface {
         field[i] = new ExcelInputField();
 
         field[i].setName( rep.getStepAttributeString( id_step, i, "field_name" ) );
-        field[i].setType( ValueMeta.getType( rep.getStepAttributeString( id_step, i, "field_type" ) ) );
+        field[i].setType( ValueMetaFactory.getIdForValueMeta( rep.getStepAttributeString( id_step, i, "field_type" ) ) );
         field[i].setLength( (int) rep.getStepAttributeInteger( id_step, i, "field_length" ) );
         field[i].setPrecision( (int) rep.getStepAttributeInteger( id_step, i, "field_precision" ) );
         field[i].setTrimType( getTrimTypeByCode( rep.getStepAttributeString( id_step, i, "field_trim_type" ) ) );
@@ -1115,6 +1144,7 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
+  @Override
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       rep.saveStepAttribute( id_transformation, id_step, "header", startsWithHeader );
@@ -1134,7 +1164,7 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface {
         ? acceptingStep.getName() : "" ) );
 
       for ( int i = 0; i < fileName.length; i++ ) {
-        rep.saveStepAttribute( id_transformation, id_step, i, "file_name", fileName[i] );
+        rep.saveStepAttribute( id_transformation, id_step, i, "file_name", getValueOrEmptyIfNull( fileName[i] ) );
         rep.saveStepAttribute( id_transformation, id_step, i, "file_mask", fileMask[i] );
         rep.saveStepAttribute( id_transformation, id_step, i, "exclude_file_mask", excludeFileMask[i] );
         rep.saveStepAttribute( id_transformation, id_step, i, "file_required", fileRequired[i] );
@@ -1142,13 +1172,13 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface {
       }
 
       for ( int i = 0; i < sheetName.length; i++ ) {
-        rep.saveStepAttribute( id_transformation, id_step, i, "sheet_name", sheetName[i] );
+        rep.saveStepAttribute( id_transformation, id_step, i, "sheet_name", getValueOrEmptyIfNull( sheetName[i] ) );
         rep.saveStepAttribute( id_transformation, id_step, i, "sheet_startrow", startRow[i] );
         rep.saveStepAttribute( id_transformation, id_step, i, "sheet_startcol", startColumn[i] );
       }
 
       for ( int i = 0; i < field.length; i++ ) {
-        rep.saveStepAttribute( id_transformation, id_step, i, "field_name", field[i].getName() );
+        rep.saveStepAttribute( id_transformation, id_step, i, "field_name", getValueOrEmptyIfNull( field[i].getName() ) );
         rep.saveStepAttribute( id_transformation, id_step, i, "field_type", field[i].getTypeDesc() );
         rep.saveStepAttribute( id_transformation, id_step, i, "field_length", field[i].getLength() );
         rep.saveStepAttribute( id_transformation, id_step, i, "field_precision", field[i].getPrecision() );
@@ -1191,6 +1221,10 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface {
       throw new KettleException( "Unable to save step information to the repository for id_step=" + id_step, e );
     }
 
+  }
+
+  private String getValueOrEmptyIfNull( String str ) {
+    return str == null ? StringUtils.EMPTY : str;
   }
 
   public static final int getTrimTypeByCode( String tt ) {
@@ -1255,6 +1289,7 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface {
     return null;
   }
 
+  @Override
   public void searchInfoAndTargetSteps( List<StepMeta> steps ) {
     acceptingStep = StepMeta.findStep( steps, acceptingStepName );
   }
@@ -1263,6 +1298,7 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface {
     return null;
   }
 
+  @Override
   public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
     RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
@@ -1314,11 +1350,13 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface {
     return row;
   }
 
+  @Override
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
     TransMeta transMeta, Trans trans ) {
     return new ExcelInput( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 
+  @Override
   public StepDataInterface getStepData() {
     return new ExcelInputData();
   }
@@ -1466,6 +1504,7 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface {
     this.acceptingStepName = acceptingStepName;
   }
 
+  @Override
   public String[] getUsedLibraries() {
     return new String[] { "jxl.jar", };
   }
@@ -1521,6 +1560,7 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface {
    *
    * @return the filename of the exported resource
    */
+  @Override
   public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
     ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore ) throws KettleException {
     try {
@@ -1550,9 +1590,4 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface {
   public void setSpreadSheetType( SpreadSheetType spreadSheetType ) {
     this.spreadSheetType = spreadSheetType;
   }
-
-  public StepMetaInjectionInterface getStepMetaInjectionInterface() {
-    return new ExcelInputMetaInjection( this );
-  }
-
 }

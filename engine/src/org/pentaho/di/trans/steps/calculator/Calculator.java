@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -66,6 +66,7 @@ public class Calculator extends BaseStep implements StepInterface {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
+  @Override
   public boolean processRow( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
     meta = (CalculatorMeta) smi;
     data = (CalculatorData) sdi;
@@ -580,6 +581,13 @@ public class Calculator extends BaseStep implements StepInterface {
             calcData[index] = ValueDataUtil.secondOfMinute( metaA, dataA );
             resultType = CalculatorMetaFunction.calcDefaultResultType[calcType];
             break;
+          case CalculatorMetaFunction.CALC_ADD_SECONDS: // Add B seconds to date field A
+            calcData[index] = ValueDataUtil.addSeconds( metaA, dataA, metaB, dataB );
+            resultType = CalculatorMetaFunction.calcDefaultResultType[calcType];
+            break;
+          case CalculatorMetaFunction.CALC_REMAINDER:
+            calcData[index] = ValueDataUtil.remainder( metaA, dataA, metaB, dataB );
+            break;
           default:
             throw new KettleValueException( BaseMessages.getString( PKG, "Calculator.Log.UnknownCalculationType" )
               + fn.getCalcType() );
@@ -626,6 +634,7 @@ public class Calculator extends BaseStep implements StepInterface {
     return RowDataUtil.removeItems( calcData, data.getTempIndexes() );
   }
 
+  @Override
   public boolean init( StepMetaInterface smi, StepDataInterface sdi ) {
     meta = (CalculatorMeta) smi;
     data = (CalculatorData) sdi;

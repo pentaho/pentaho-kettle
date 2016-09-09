@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -58,6 +58,7 @@ import org.pentaho.di.core.logging.LogTableInterface;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryCopy;
@@ -412,9 +413,11 @@ public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler
    */
   private void refreshHistory( final int index, final Mode fetchMode ) {
     new Thread( new Runnable() {
+      @Override
       public void run() {
         // do gui stuff here
         spoon.getDisplay().syncExec( new Runnable() {
+          @Override
           public void run() {
             setQueryInProgress( true );
             JobHistoryLogTab model = models[index];
@@ -426,6 +429,7 @@ public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler
 
         // do gui stuff here
         spoon.getDisplay().syncExec( new Runnable() {
+          @Override
           public void run() {
             displayHistoryData( index );
             setQueryInProgress( false );
@@ -519,7 +523,7 @@ public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler
             .append( " WHERE " ).append( logConnection.quoteField( nameField.getFieldName() ) ).append(
               " LIKE ?" );
           params
-            .addValue( new ValueMeta( "transname_literal", ValueMetaInterface.TYPE_STRING ), jobMeta.getName() );
+            .addValue( new ValueMetaString( "transname_literal" ), jobMeta.getName() );
         }
 
         if ( keyField != null && keyField.isEnabled() ) {
@@ -705,6 +709,7 @@ public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler
    *
    * @see org.pentaho.ui.xul.impl.XulEventHandler#getData()
    */
+  @Override
   public Object getData() {
     return null;
   }
@@ -714,6 +719,7 @@ public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler
    *
    * @see org.pentaho.ui.xul.impl.XulEventHandler#getName()
    */
+  @Override
   public String getName() {
     return "history";
   }
@@ -723,6 +729,7 @@ public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler
    *
    * @see org.pentaho.ui.xul.impl.XulEventHandler#getXulDomContainer()
    */
+  @Override
   public XulDomContainer getXulDomContainer() {
     return null;
   }
@@ -732,6 +739,7 @@ public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler
    *
    * @see org.pentaho.ui.xul.impl.XulEventHandler#setData(java.lang.Object)
    */
+  @Override
   public void setData( Object data ) {
   }
 
@@ -740,6 +748,7 @@ public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler
    *
    * @see org.pentaho.ui.xul.impl.XulEventHandler#setName(java.lang.String)
    */
+  @Override
   public void setName( String name ) {
   }
 
@@ -748,6 +757,7 @@ public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler
    *
    * @see org.pentaho.ui.xul.impl.XulEventHandler#setXulDomContainer(org.pentaho.ui.xul.XulDomContainer)
    */
+  @Override
   public void setXulDomContainer( XulDomContainer xulDomContainer ) {
   }
 
@@ -897,6 +907,7 @@ public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler
         spoon.props );
 
       tableView.table.addSelectionListener( new SelectionAdapter() {
+        @Override
         public void widgetSelected( SelectionEvent arg0 ) {
           showLogEntry();
         }

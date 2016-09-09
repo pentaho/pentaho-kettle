@@ -23,6 +23,7 @@
 package org.pentaho.di.trans.steps.selectvalues;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.injection.Injection;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.xml.XMLInterface;
@@ -35,37 +36,50 @@ public class SelectMetadataChange implements Cloneable, XMLInterface {
 
   // META-DATA mode
   /** Fields of which we want to change the meta data */
+  @Injection( name = "META_NAME", group = "METAS" )
   private String name;
   /** Meta: new name of field */
+  @Injection( name = "META_RENAME", group = "METAS" )
   private String rename;
   /** Meta: new Value type for this field or TYPE_NONE if no change needed! */
   private int type;
   /** Meta: new length of field */
-  private int length;
+  @Injection( name = "META_LENGTH", group = "METAS" )
+  private int length = -1;
   /** Meta: new precision of field (for numbers) */
-  private int precision;
+  @Injection( name = "META_PRECISION", group = "METAS" )
+  private int precision = -1;
   /** Meta: the storage type, NORMAL or BINARY_STRING */
   private int storageType;
   /** The conversion metadata if any conversion needs to take place */
+  @Injection( name = "META_CONVERSION_MASK", group = "METAS" )
   private String conversionMask;
   /** Treat the date format as lenient */
+  @Injection( name = "META_DATE_FORMAT_LENIENT", group = "METAS" )
   private boolean dateFormatLenient;
 
   /** This is the locale to use for date parsing */
+  @Injection( name = "META_DATE_FORMAT_LOCALE", group = "METAS" )
   private String dateFormatLocale;
 
   /** This is the time zone to use for date parsing */
+  @Injection( name = "META_DATE_FORMAT_TIMEZONE", group = "METAS" )
   private String dateFormatTimeZone;
 
   /** Treat string to number format as lenient */
+  @Injection( name = "META_LENIENT_STRING_TO_NUMBER", group = "METAS" )
   private boolean lenientStringToNumber;
   /** The decimal symbol for number conversions */
+  @Injection( name = "META_DECIMAL", group = "METAS" )
   private String decimalSymbol;
   /** The grouping symbol for number conversions */
+  @Injection( name = "META_GROUPING", group = "METAS" )
   private String groupingSymbol;
   /** The currency symbol for number conversions */
+  @Injection( name = "META_CURRENCY", group = "METAS" )
   private String currencySymbol;
   /** The encoding to use when decoding binary data to Strings */
+  @Injection( name = "META_ENCODING", group = "METAS" )
   private String encoding;
 
   private StepAttributesInterface attributesInterface;
@@ -128,7 +142,7 @@ public class SelectMetadataChange implements Cloneable, XMLInterface {
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer();
+    StringBuilder retval = new StringBuilder();
     retval.append( "      " ).append( XMLHandler.openTag( XML_TAG ) );
     retval.append( "        " ).append(
       XMLHandler.addTagValue( attributesInterface.getXmlCode( "META_NAME" ), name ) );
@@ -250,6 +264,11 @@ public class SelectMetadataChange implements Cloneable, XMLInterface {
     this.type = type;
   }
 
+  @Injection( name = "META_TYPE", group = "METAS" )
+  public void setType( String value ) {
+    type = ValueMeta.getType( value );
+  }
+
   /**
    * @return the length
    */
@@ -293,6 +312,11 @@ public class SelectMetadataChange implements Cloneable, XMLInterface {
    */
   public void setStorageType( int storageType ) {
     this.storageType = storageType;
+  }
+
+  @Injection( name = "META_STORAGE_TYPE", group = "METAS" )
+  public void setStorageType( String storageType ) {
+    this.storageType = ValueMeta.getStorageType( storageType );
   }
 
   /**

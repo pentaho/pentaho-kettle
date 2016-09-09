@@ -231,6 +231,9 @@ public class ExecSQLMeta extends BaseStepMeta implements StepMetaInterface {
 
   public Object clone() {
     ExecSQLMeta retval = (ExecSQLMeta) super.clone();
+    int nrArgs = arguments.length;
+    retval.allocate( nrArgs );
+    System.arraycopy( arguments, 0, retval.arguments, 0, nrArgs );
     return retval;
   }
 
@@ -283,7 +286,7 @@ public class ExecSQLMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 300 );
+    StringBuilder retval = new StringBuilder( 300 );
 
     retval
       .append( "    " ).append(

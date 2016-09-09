@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -37,15 +37,16 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleRepositoryNotSupportedException;
 import org.pentaho.di.core.logging.LogChannel;
+import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.RepositoryPluginType;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.core.xml.XMLParserFactoryProducer;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.kdr.KettleDatabaseRepositoryMeta;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
-
-//import java.util.ArrayList;
 
 /*
  * Created on 31-mrt-2004
@@ -69,7 +70,14 @@ public class RepositoriesMeta {
     errorMessage = null;
     databases = new ArrayList<DatabaseMeta>();
     repositories = new ArrayList<RepositoryMeta>();
+    LogLevel level = null;
+    if ( log != null ) {
+      level = log.getLogLevel();
+    }
     setLog( newLogChannel() );
+    if ( level != null ) {
+      log.setLogLevel( level );
+    }
   }
 
   LogChannel newLogChannel() {
@@ -182,24 +190,25 @@ public class RepositoriesMeta {
 
     File file = new File( getKettleLocalRepositoriesFile() );
     if ( !file.exists() || !file.isFile() ) {
-      log.logDetailed( BaseMessages.getString( PKG, "RepositoryMeta.Log.NoRepositoryFileInLocalDirectory", file
-        .getAbsolutePath() ) );
+      if ( log.isDetailed() ) {
+        log.logDetailed( BaseMessages.getString( PKG, "RepositoryMeta.Log.NoRepositoryFileInLocalDirectory", file
+          .getAbsolutePath() ) );
+      }
       file = new File( getKettleUserRepositoriesFile() );
       if ( !file.exists() || !file.isFile() ) {
         return true; // nothing to read!
       }
     }
 
-    log.logBasic( BaseMessages.getString( PKG, "RepositoryMeta.Log.ReadingXMLFile", file.getAbsoluteFile() ) );
-
-    DocumentBuilderFactory dbf;
-    DocumentBuilder db;
-    Document doc;
+    if ( log.isBasic() ) {
+      log.logBasic( BaseMessages.getString( PKG, "RepositoryMeta.Log.ReadingXMLFile", file.getAbsoluteFile() ) );
+    }
 
     try {
       // Check and open XML document
-      dbf = DocumentBuilderFactory.newInstance();
-      db = dbf.newDocumentBuilder();
+      DocumentBuilderFactory dbf = XMLParserFactoryProducer.createSecureDocBuilderFactory();
+      DocumentBuilder db = dbf.newDocumentBuilder();
+      Document doc;
       try {
         doc = db.parse( file );
       } catch ( FileNotFoundException ef ) {
@@ -233,16 +242,15 @@ public class RepositoriesMeta {
     //
     clear();
 
-    log.logBasic( BaseMessages.getString( PKG, "RepositoryMeta.Log.ReadingXMLFile", "FromInputStream" ) );
+    if ( log.isBasic() ) {
+      log.logBasic( BaseMessages.getString( PKG, "RepositoryMeta.Log.ReadingXMLFile", "FromInputStream" ) );
+    }
 
-    DocumentBuilderFactory dbf;
-    DocumentBuilder db;
-    Document doc;
     try {
       // Check and open XML document
-      dbf = DocumentBuilderFactory.newInstance();
-      db = dbf.newDocumentBuilder();
-      doc = db.parse( is );
+      DocumentBuilderFactory dbf = XMLParserFactoryProducer.createSecureDocBuilderFactory();
+      DocumentBuilder db = dbf.newDocumentBuilder();
+      Document doc = db.parse( is );
       parseRepositoriesDoc( doc );
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString( PKG, "RepositoryMeta.Error.ReadingInfo" ), e );
@@ -255,10 +263,14 @@ public class RepositoriesMeta {
 
     // Handle connections
     int nrconn = XMLHandler.countNodes( repsnode, "connection" );
-    log.logDebug( BaseMessages.getString( PKG, "RepositoryMeta.Log.ConnectionNumber", nrconn ) );
+    if ( log.isDebug() ) {
+      log.logDebug( BaseMessages.getString( PKG, "RepositoryMeta.Log.ConnectionNumber", nrconn ) );
+    }
 
     for ( int i = 0; i < nrconn; i++ ) {
-      log.logDebug( BaseMessages.getString( PKG, "RepositoryMeta.Log.LookingConnection", i ) );
+      if ( log.isDebug() ) {
+        log.logDebug( BaseMessages.getString( PKG, "RepositoryMeta.Log.LookingConnection", i ) );
+      }
 
       Node dbnode = XMLHandler.getSubNodeByNr( repsnode, "connection", i );
 
@@ -266,7 +278,9 @@ public class RepositoriesMeta {
       try {
         dbcon = new DatabaseMeta( dbnode );
         addDatabase( dbcon );
-        log.logDebug( BaseMessages.getString( PKG, "RepositoryMeta.Log.ReadConnection", dbcon.getName() ) );
+        if ( log.isDebug() ) {
+          log.logDebug( BaseMessages.getString( PKG, "RepositoryMeta.Log.ReadConnection", dbcon.getName() ) );
+        }
       } catch ( Exception kpe ) {
 
         log.logError( BaseMessages.getString( PKG, "RepositoryMeta.Error.CreatingDatabaseMeta", dbcon.getName() ) );
@@ -276,12 +290,16 @@ public class RepositoriesMeta {
 
     // Handle repositories...
     int nrreps = XMLHandler.countNodes( repsnode, RepositoryMeta.XML_TAG );
-    log.logDebug( BaseMessages.getString( PKG, "RepositoryMeta.Log.RepositoryNumber", nrreps ) );
-    StringBuffer unableToReadIds = new StringBuffer();
+    if ( log.isDebug() ) {
+      log.logDebug( BaseMessages.getString( PKG, "RepositoryMeta.Log.RepositoryNumber", nrreps ) );
+    }
+    StringBuilder unableToReadIds = new StringBuilder();
     KettleException kettleException = null;
     for ( int i = 0; i < nrreps; i++ ) {
       Node repnode = XMLHandler.getSubNodeByNr( repsnode, RepositoryMeta.XML_TAG, i );
-      log.logDebug( BaseMessages.getString( PKG, "RepositoryMeta.Log.LookingRepository", i ) );
+      if ( log.isDebug() ) {
+        log.logDebug( BaseMessages.getString( PKG, "RepositoryMeta.Log.LookingRepository", i ) );
+      }
       String id = XMLHandler.getTagValue( repnode, "id" );
       if ( Const.isEmpty( id ) ) {
         // Backward compatibility : if the id is not defined, it's the database repository!
@@ -299,12 +317,16 @@ public class RepositoriesMeta {
             repositoryMeta.setDescription( repositoryMeta.getName() );
           }
           addRepository( repositoryMeta );
-          log.logDebug( BaseMessages
-            .getString( PKG, "RepositoryMeta.Log.ReadRepository", repositoryMeta.getName() ) );
+          if ( log.isDebug() ) {
+            log.logDebug( BaseMessages
+              .getString( PKG, "RepositoryMeta.Log.ReadRepository", repositoryMeta.getName() ) );
+          }
         } else {
           unableToReadIds.append( id );
           unableToReadIds.append( "," );
-          log.logDebug( BaseMessages.getString( PKG, "RepositoryMeta.Error.ReadRepositoryId", id ) );
+          if ( log.isDebug() ) {
+            log.logDebug( BaseMessages.getString( PKG, "RepositoryMeta.Error.ReadRepositoryId", id ) );
+          }
         }
       } catch ( KettleException ex ) {
         // Get to the root cause
@@ -316,8 +338,9 @@ public class RepositoriesMeta {
 
         if ( cause instanceof KettleRepositoryNotSupportedException ) {
           // If the root cause is a KettleRepositoryNotSupportedException, do not fail
-          log.logDebug( BaseMessages.getString( PKG, "RepositoryMeta.Error.UnrecognizedRepositoryType", id ) );
-
+          if ( log.isDebug() ) {
+            log.logDebug( BaseMessages.getString( PKG, "RepositoryMeta.Error.UnrecognizedRepositoryType", id ) );
+          }
         }
       }
     }
@@ -379,5 +402,9 @@ public class RepositoriesMeta {
 
   public String getErrorMessage() {
     return errorMessage;
+  }
+
+  public LogChannelInterface getLog() {
+    return log;
   }
 }

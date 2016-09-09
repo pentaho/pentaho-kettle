@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -237,10 +237,10 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
     fdlFields.top = new FormAttachment( 0, 0 );
     wlFields.setLayoutData( fdlFields );
 
-    final int FieldsCols = 4;
-    final int FieldsRows = input.getSelectName().length;
+    final int fieldsCols = 4;
+    final int fieldsRows = input.getSelectFields().length;
 
-    ColumnInfo[] colinf = new ColumnInfo[FieldsCols];
+    ColumnInfo[] colinf = new ColumnInfo[fieldsCols];
     colinf[0] =
       new ColumnInfo(
         BaseMessages.getString( PKG, "SelectValuesDialog.ColumnInfo.Fieldname" ),
@@ -262,7 +262,7 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
     fieldColumns.add( colinf[0] );
     wFields =
       new TableView(
-        transMeta, wSelectComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
+        transMeta, wSelectComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, fieldsRows, lsMod, props );
 
     wGetSelect = new Button( wSelectComp, SWT.PUSH );
     wGetSelect.setText( BaseMessages.getString( PKG, "SelectValuesDialog.GetSelect.Button" ) );
@@ -603,17 +603,20 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
     /*
      * Select fields
      */
-    if ( input.getSelectName() != null && input.getSelectName().length > 0 ) {
-      for ( int i = 0; i < input.getSelectName().length; i++ ) {
+    if ( input.getSelectFields() != null && input.getSelectFields().length > 0 ) {
+      for ( int i = 0; i < input.getSelectFields().length; i++ ) {
         TableItem item = wFields.table.getItem( i );
-        if ( input.getSelectName()[i] != null ) {
-          item.setText( 1, input.getSelectName()[i] );
+        if ( input.getSelectFields()[i].getName() != null ) {
+          item.setText( 1, input.getSelectFields()[i].getName() );
         }
-        if ( input.getSelectRename()[i] != null && !input.getSelectRename()[i].equals( input.getSelectName()[i] ) ) {
-          item.setText( 2, input.getSelectRename()[i] );
+        if ( input.getSelectFields()[i].getRename() != null && !input.getSelectFields()[i].getRename().equals( input
+            .getSelectFields()[i].getName() ) ) {
+          item.setText( 2, input.getSelectFields()[i].getRename() );
         }
-        item.setText( 3, input.getSelectLength()[i] < 0 ? "" : "" + input.getSelectLength()[i] );
-        item.setText( 4, input.getSelectPrecision()[i] < 0 ? "" : "" + input.getSelectPrecision()[i] );
+        item.setText( 3, input.getSelectFields()[i].getLength() < 0 ? "" : "" + input.getSelectFields()[i]
+            .getLength() );
+        item.setText( 4, input.getSelectFields()[i].getPrecision() < 0 ? "" : "" + input.getSelectFields()[i]
+            .getPrecision() );
       }
       wFields.setRowNums();
       wFields.optWidth( true );
@@ -719,19 +722,19 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
     //CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < nrfields; i++ ) {
       TableItem item = wFields.getNonEmpty( i );
-      input.getSelectName()[i] = item.getText( 1 );
-      input.getSelectRename()[i] = item.getText( 2 );
-      if ( input.getSelectRename()[i] == null || input.getSelectName()[i].length() == 0 ) {
-        input.getSelectRename()[i] = input.getSelectName()[i];
+      input.getSelectFields()[i].setName( item.getText( 1 ) );
+      input.getSelectFields()[i].setRename( item.getText( 2 ) );
+      if ( input.getSelectFields()[i].getRename() == null || input.getSelectFields()[i].getName().length() == 0 ) {
+        input.getSelectFields()[i].setRename( input.getSelectFields()[i].getName() );
       }
-      input.getSelectLength()[i] = Const.toInt( item.getText( 3 ), -2 );
-      input.getSelectPrecision()[i] = Const.toInt( item.getText( 4 ), -2 );
+      input.getSelectFields()[i].setLength( Const.toInt( item.getText( 3 ), -2 ) );
+      input.getSelectFields()[i].setPrecision( Const.toInt( item.getText( 4 ), -2 ) );
 
-      if ( input.getSelectLength()[i] < -2 ) {
-        input.getSelectLength()[i] = -2;
+      if ( input.getSelectFields()[i].getLength() < -2 ) {
+        input.getSelectFields()[i].setLength( -2 );
       }
-      if ( input.getSelectPrecision()[i] < -2 ) {
-        input.getSelectPrecision()[i] = -2;
+      if ( input.getSelectFields()[i].getPrecision() < -2 ) {
+        input.getSelectFields()[i].setPrecision( -2 );
       }
     }
     input.setSelectingAndSortingUnspecifiedFields( wUnspecified.getSelection() );
@@ -884,7 +887,7 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
     }
 
     List<SourceToTargetMapping> mappings = new ArrayList<SourceToTargetMapping>();
-    StringBuffer missingFields = new StringBuffer();
+    StringBuilder missingFields = new StringBuilder();
     for ( int i = 0; i < selectName.length; i++ ) {
       String valueName = selectName[i];
       String valueRename = selectRename[i];

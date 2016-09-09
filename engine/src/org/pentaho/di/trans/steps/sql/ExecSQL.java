@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -32,8 +32,8 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -65,25 +65,25 @@ public class ExecSQL extends BaseStep implements StepInterface {
     RowMetaAndData resultRow = new RowMetaAndData();
 
     if ( upd != null && upd.length() > 0 ) {
-      ValueMeta meta = new ValueMeta( upd, ValueMetaInterface.TYPE_INTEGER );
+      ValueMetaInterface meta = new ValueMetaInteger( upd );
       meta.setLength( ValueMetaInterface.DEFAULT_INTEGER_LENGTH, 0 );
       resultRow.addValue( meta, new Long( result.getNrLinesUpdated() ) );
     }
 
     if ( ins != null && ins.length() > 0 ) {
-      ValueMeta meta = new ValueMeta( ins, ValueMetaInterface.TYPE_INTEGER );
+      ValueMetaInterface meta = new ValueMetaInteger( ins );
       meta.setLength( ValueMetaInterface.DEFAULT_INTEGER_LENGTH, 0 );
       resultRow.addValue( meta, new Long( result.getNrLinesOutput() ) );
     }
 
     if ( del != null && del.length() > 0 ) {
-      ValueMeta meta = new ValueMeta( del, ValueMetaInterface.TYPE_INTEGER );
+      ValueMetaInterface meta = new ValueMetaInteger( del );
       meta.setLength( ValueMetaInterface.DEFAULT_INTEGER_LENGTH, 0 );
       resultRow.addValue( meta, new Long( result.getNrLinesDeleted() ) );
     }
 
     if ( read != null && read.length() > 0 ) {
-      ValueMeta meta = new ValueMeta( read, ValueMetaInterface.TYPE_INTEGER );
+      ValueMetaInterface meta = new ValueMetaInteger( read );
       meta.setLength( ValueMetaInterface.DEFAULT_INTEGER_LENGTH, 0 );
       resultRow.addValue( meta, new Long( result.getNrLinesRead() ) );
     }
@@ -91,6 +91,7 @@ public class ExecSQL extends BaseStep implements StepInterface {
     return resultRow;
   }
 
+  @Override
   public boolean processRow( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
     meta = (ExecSQLMeta) smi;
     data = (ExecSQLData) sdi;
@@ -168,7 +169,7 @@ public class ExecSQL extends BaseStep implements StepInterface {
     } else {
       int numMarkers = data.markerPositions.size();
       if ( numMarkers > 0 ) {
-        StringBuffer buf = new StringBuffer( data.sql );
+        StringBuilder buf = new StringBuilder( data.sql );
 
         // Replace the values in the SQL string...
         //
@@ -243,6 +244,7 @@ public class ExecSQL extends BaseStep implements StepInterface {
     return true;
   }
 
+  @Override
   public void dispose( StepMetaInterface smi, StepDataInterface sdi ) {
     meta = (ExecSQLMeta) smi;
     data = (ExecSQLData) sdi;
@@ -259,6 +261,7 @@ public class ExecSQL extends BaseStep implements StepInterface {
   }
 
   /** Stop the running query */
+  @Override
   public void stopRunning( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
     meta = (ExecSQLMeta) smi;
     data = (ExecSQLData) sdi;
@@ -271,6 +274,7 @@ public class ExecSQL extends BaseStep implements StepInterface {
     }
   }
 
+  @Override
   public boolean init( StepMetaInterface smi, StepDataInterface sdi ) {
     meta = (ExecSQLMeta) smi;
     data = (ExecSQLData) sdi;

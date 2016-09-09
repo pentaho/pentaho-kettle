@@ -66,8 +66,7 @@ public class CubeOutput extends BaseStep implements StepInterface {
 
     r = getRow(); // This also waits for a row to be finished.
 
-    if ( first ) // Always run this code once, even if stream is empty (r==null)
-    {
+    if ( first ) { // Always run this code once, even if stream is empty (r==null)
       if ( getInputRowMeta() != null ) {
         data.outputMeta = getInputRowMeta().clone();
       } else {

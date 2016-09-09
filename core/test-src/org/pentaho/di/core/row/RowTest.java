@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -30,12 +30,17 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import junit.framework.TestCase;
-
 import org.pentaho.di.core.exception.KettleEOFException;
 import org.pentaho.di.core.exception.KettleFileException;
+import org.pentaho.di.core.row.value.ValueMetaBigNumber;
+import org.pentaho.di.core.row.value.ValueMetaBoolean;
+import org.pentaho.di.core.row.value.ValueMetaDate;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
+import org.pentaho.di.core.row.value.ValueMetaNumber;
 import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.row.value.ValueMetaTimestamp;
+
+import junit.framework.TestCase;
 
 public class RowTest extends TestCase {
   public void testNormalStringConversion() throws Exception {
@@ -129,29 +134,29 @@ public class RowTest extends TestCase {
     RowMetaInterface rowMeta = new RowMeta();
 
     // A string object
-    ValueMetaInterface meta1 = new ValueMeta( "stringValue", ValueMetaInterface.TYPE_STRING, 30, 0 );
+    ValueMetaInterface meta1 = new ValueMetaString( "stringValue", 30, 0 );
     rowMeta.addValueMeta( meta1 );
 
-    ValueMetaInterface meta2 = new ValueMeta( "dateValue", ValueMetaInterface.TYPE_DATE );
+    ValueMetaInterface meta2 = new ValueMetaDate( "dateValue", ValueMetaInterface.TYPE_DATE );
     rowMeta.addValueMeta( meta2 );
 
-    ValueMetaInterface meta3 = new ValueMeta( "numberValue", ValueMetaInterface.TYPE_NUMBER, 5, 2 );
+    ValueMetaInterface meta3 = new ValueMetaNumber( "numberValue", 5, 2 );
     meta3.setConversionMask( "#,##0.00" );
     meta3.setDecimalSymbol( "." );
     meta3.setGroupingSymbol( "," );
     rowMeta.addValueMeta( meta3 );
 
-    ValueMetaInterface meta4 = new ValueMeta( "integerValue", ValueMetaInterface.TYPE_INTEGER, 7, 0 );
+    ValueMetaInterface meta4 = new ValueMetaInteger( "integerValue", 7, 0 );
     meta4.setConversionMask( "0000000" );
     meta4.setDecimalSymbol( "." );
     meta4.setGroupingSymbol( "," );
     rowMeta.addValueMeta( meta4 );
 
-    ValueMetaInterface meta5 = new ValueMeta( "bigNumberValue", ValueMetaInterface.TYPE_BIGNUMBER, 30, 7 );
+    ValueMetaInterface meta5 = new ValueMetaBigNumber( "bigNumberValue", 30, 7 );
     meta5.setDecimalSymbol( "." );
     rowMeta.addValueMeta( meta5 );
 
-    ValueMetaInterface meta6 = new ValueMeta( "booleanValue", ValueMetaInterface.TYPE_BOOLEAN );
+    ValueMetaInterface meta6 = new ValueMetaBoolean( "booleanValue" );
     rowMeta.addValueMeta( meta6 );
 
     return rowMeta;
@@ -174,31 +179,31 @@ public class RowTest extends TestCase {
     RowMetaInterface rowMeta = new RowMeta();
 
     // A string object
-    ValueMetaInterface meta1 = new ValueMeta( "stringValue", ValueMetaInterface.TYPE_STRING, 30, 0 );
+    ValueMetaInterface meta1 = new ValueMetaString( "stringValue", 30, 0 );
     meta1.setStorageType( ValueMetaInterface.STORAGE_TYPE_INDEXED );
     rowMeta.addValueMeta( meta1 );
 
-    ValueMetaInterface meta2 = new ValueMeta( "dateValue", ValueMetaInterface.TYPE_DATE );
+    ValueMetaInterface meta2 = new ValueMetaDate( "dateValue" );
     meta2.setConversionMask( "yyyyMMddHHmmss" );
     rowMeta.addValueMeta( meta2 );
 
-    ValueMetaInterface meta3 = new ValueMeta( "numberValue", ValueMetaInterface.TYPE_NUMBER, 5, 2 );
+    ValueMetaInterface meta3 = new ValueMetaNumber( "numberValue", 5, 2 );
     meta3.setConversionMask( "###,##0.##" );
     meta3.setDecimalSymbol( "," );
     meta3.setGroupingSymbol( "." );
     rowMeta.addValueMeta( meta3 );
 
-    ValueMetaInterface meta4 = new ValueMeta( "integerValue", ValueMetaInterface.TYPE_INTEGER, 7, 0 );
+    ValueMetaInterface meta4 = new ValueMetaInteger( "integerValue", 7, 0 );
     meta4.setConversionMask( "0000000" );
     meta4.setDecimalSymbol( "," );
     meta4.setGroupingSymbol( "." );
     rowMeta.addValueMeta( meta4 );
 
-    ValueMetaInterface meta5 = new ValueMeta( "bigNumberValue", ValueMetaInterface.TYPE_BIGNUMBER, 30, 7 );
+    ValueMetaInterface meta5 = new ValueMetaBigNumber( "bigNumberValue", 30, 7 );
     meta5.setDecimalSymbol( "." );
     rowMeta.addValueMeta( meta5 );
 
-    ValueMetaInterface meta6 = new ValueMeta( "booleanValue", ValueMetaInterface.TYPE_BOOLEAN, 3, 0 );
+    ValueMetaInterface meta6 = new ValueMetaBoolean( "booleanValue", 3, 0 );
     rowMeta.addValueMeta( meta6 );
 
     return rowMeta;
@@ -208,12 +213,12 @@ public class RowTest extends TestCase {
     RowMetaInterface rowMeta = new RowMeta();
 
     // A string object, indexed.
-    ValueMetaInterface meta1 = new ValueMeta( "stringValue", ValueMetaInterface.TYPE_STRING, 30, 0 );
+    ValueMetaInterface meta1 = new ValueMetaString( "stringValue", 30, 0 );
     meta1.setIndex( colors );
     meta1.setStorageType( ValueMetaInterface.STORAGE_TYPE_INDEXED );
     rowMeta.addValueMeta( meta1 );
 
-    ValueMetaInterface meta2 = new ValueMeta( "dateValue", ValueMetaInterface.TYPE_DATE );
+    ValueMetaInterface meta2 = new ValueMetaDate( "dateValue" );
     meta2.setIndex( dates );
     meta2.setStorageType( ValueMetaInterface.STORAGE_TYPE_INDEXED );
     rowMeta.addValueMeta( meta2 );

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,7 +25,8 @@ package org.pentaho.di.trans.steps.sasinput;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
-import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.xml.XMLInterface;
 import org.pentaho.di.repository.ObjectId;
@@ -84,17 +85,17 @@ public class SasInputField implements XMLInterface, Cloneable {
 
   @Override
   public String getXML() {
-    StringBuffer retval = new StringBuffer();
+    StringBuilder retval = new StringBuilder();
 
     retval.append( "    " + XMLHandler.addTagValue( "name", name ) );
     retval.append( "    " + XMLHandler.addTagValue( "rename", rename ) );
-    retval.append( "    " + XMLHandler.addTagValue( "type", ValueMeta.getTypeDesc( type ) ) );
+    retval.append( "    " + XMLHandler.addTagValue( "type", ValueMetaFactory.getValueMetaName( type ) ) );
     retval.append( "    " + XMLHandler.addTagValue( "length", length ) );
     retval.append( "    " + XMLHandler.addTagValue( "precision", precision ) );
     retval.append( "    " + XMLHandler.addTagValue( "conversion_mask", conversionMask ) );
     retval.append( "    " + XMLHandler.addTagValue( "decimal", decimalSymbol ) );
     retval.append( "    " + XMLHandler.addTagValue( "grouping", groupingSymbol ) );
-    retval.append( "    " + XMLHandler.addTagValue( "trim_type", ValueMeta.getTrimTypeCode( trimType ) ) );
+    retval.append( "    " + XMLHandler.addTagValue( "trim_type", ValueMetaString.getTrimTypeCode( trimType ) ) );
 
     return retval.toString();
   }
@@ -103,38 +104,38 @@ public class SasInputField implements XMLInterface, Cloneable {
     int fieldNr ) throws KettleException {
     rep.saveStepAttribute( transformationId, stepId, fieldNr, "field_name", name );
     rep.saveStepAttribute( transformationId, stepId, fieldNr, "field_rename", rename );
-    rep.saveStepAttribute( transformationId, stepId, fieldNr, "field_type", ValueMeta.getTypeDesc( type ) );
+    rep.saveStepAttribute( transformationId, stepId, fieldNr, "field_type", ValueMetaFactory.getValueMetaName( type ) );
     rep.saveStepAttribute( transformationId, stepId, fieldNr, "field_length", length );
     rep.saveStepAttribute( transformationId, stepId, fieldNr, "field_precision", precision );
     rep.saveStepAttribute( transformationId, stepId, fieldNr, "field_conversion_mask", conversionMask );
     rep.saveStepAttribute( transformationId, stepId, fieldNr, "field_decimal", decimalSymbol );
     rep.saveStepAttribute( transformationId, stepId, fieldNr, "field_grouping", groupingSymbol );
-    rep.saveStepAttribute( transformationId, stepId, fieldNr, "field_trim_type", ValueMeta
+    rep.saveStepAttribute( transformationId, stepId, fieldNr, "field_trim_type", ValueMetaString
       .getTrimTypeCode( trimType ) );
   }
 
   public SasInputField( Repository rep, ObjectId stepId, int fieldNr ) throws KettleException {
     name = rep.getStepAttributeString( stepId, fieldNr, "field_name" );
     rename = rep.getStepAttributeString( stepId, fieldNr, "field_rename" );
-    type = ValueMeta.getType( rep.getStepAttributeString( stepId, fieldNr, "field_type" ) );
+    type = ValueMetaFactory.getIdForValueMeta( rep.getStepAttributeString( stepId, fieldNr, "field_type" ) );
     length = (int) rep.getStepAttributeInteger( stepId, fieldNr, "field_length" );
     precision = (int) rep.getStepAttributeInteger( stepId, fieldNr, "field_precision" );
     conversionMask = rep.getStepAttributeString( stepId, fieldNr, "field_conversion_mask" );
     decimalSymbol = rep.getStepAttributeString( stepId, fieldNr, "field_decimal" );
     groupingSymbol = rep.getStepAttributeString( stepId, fieldNr, "field_grouping" );
-    trimType = ValueMeta.getTrimTypeByCode( rep.getStepAttributeString( stepId, fieldNr, "field_trim_type" ) );
+    trimType = ValueMetaString.getTrimTypeByCode( rep.getStepAttributeString( stepId, fieldNr, "field_trim_type" ) );
   }
 
   public SasInputField( Node node ) throws KettleXMLException {
     name = XMLHandler.getTagValue( node, "name" );
     rename = XMLHandler.getTagValue( node, "rename" );
-    type = ValueMeta.getType( XMLHandler.getTagValue( node, "type" ) );
+    type = ValueMetaFactory.getIdForValueMeta( XMLHandler.getTagValue( node, "type" ) );
     length = Const.toInt( XMLHandler.getTagValue( node, "length" ), -1 );
     precision = Const.toInt( XMLHandler.getTagValue( node, "precision" ), -1 );
     conversionMask = XMLHandler.getTagValue( node, "conversion_mask" );
     decimalSymbol = XMLHandler.getTagValue( node, "decimal" );
     groupingSymbol = XMLHandler.getTagValue( node, "grouping" );
-    trimType = ValueMeta.getTrimTypeByCode( XMLHandler.getTagValue( node, "trim_type" ) );
+    trimType = ValueMetaString.getTrimTypeByCode( XMLHandler.getTagValue( node, "trim_type" ) );
   }
 
   /**
@@ -273,6 +274,6 @@ public class SasInputField implements XMLInterface, Cloneable {
   }
 
   public String getTrimTypeDesc() {
-    return ValueMeta.getTrimTypeDesc( trimType );
+    return ValueMetaString.getTrimTypeDesc( trimType );
   }
 }

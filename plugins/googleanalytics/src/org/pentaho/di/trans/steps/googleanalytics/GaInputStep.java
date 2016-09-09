@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,8 +25,6 @@ package org.pentaho.di.trans.steps.googleanalytics;
 import java.io.IOException;
 import java.util.List;
 
-import com.google.api.client.auth.oauth2.TokenResponseException;
-import com.google.api.services.analytics.Analytics;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
@@ -41,6 +39,9 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+
+import com.google.api.client.auth.oauth2.TokenResponseException;
+import com.google.api.services.analytics.Analytics;
 
 
 public class GaInputStep extends BaseStep implements StepInterface {
@@ -57,6 +58,7 @@ public class GaInputStep extends BaseStep implements StepInterface {
     super( s, stepDataInterface, c, t, dis );
   }
 
+  @Override
   public boolean processRow( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
 
     meta = (GaInputStepMeta) smi;
@@ -70,9 +72,9 @@ public class GaInputStep extends BaseStep implements StepInterface {
       meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
 
       // stores the indices where to look for the key fields in the input rows
-      data.conversionMeta = new ValueMetaInterface[ meta.getFeedField().length ];
+      data.conversionMeta = new ValueMetaInterface[ meta.getFieldsCount() ];
 
-      for ( int i = 0; i < meta.getFeedField().length; i++ ) {
+      for ( int i = 0; i < meta.getFieldsCount(); i++ ) {
 
         // get output and from-string conversion format for each field
         ValueMetaInterface returnMeta = data.outputRowMeta.getValueMeta( i );
@@ -95,7 +97,7 @@ public class GaInputStep extends BaseStep implements StepInterface {
 
     if ( entry != null && ( meta.getRowLimit() <= 0 || getLinesWritten() < meta.getRowLimit() ) ) { // another record to
       // fill the output fields with look up data
-      for ( int i = 0, j = 0; i < meta.getFeedField().length; i++ ) {
+      for ( int i = 0, j = 0; i < meta.getFieldsCount(); i++ ) {
         String fieldName = environmentSubstitute( meta.getFeedField()[ i ] );
         Object dataObject;
         String type = environmentSubstitute( meta.getFeedFieldType()[ i ] );
@@ -183,7 +185,11 @@ public class GaInputStep extends BaseStep implements StepInterface {
         }
       }
 
-      if ( !Const.isEmpty( meta.getFilters() ) ) {
+      if ( !Const.isEmpty( meta.getSamplingLevel() ) ) {
+        query.setSamplingLevel( environmentSubstitute( meta.getSamplingLevel() ) );
+      }
+
+      if ( !Const.isEmpty( meta.getFilters() ) && !Const.isEmpty( environmentSubstitute( meta.getFilters() ) ) ) {
         query.setFilters( environmentSubstitute( meta.getFilters() ) );
       }
       if ( !Const.isEmpty( meta.getSort() ) ) {
@@ -197,6 +203,7 @@ public class GaInputStep extends BaseStep implements StepInterface {
 
   }
 
+  @Override
   public boolean init( StepMetaInterface smi, StepDataInterface sdi ) {
     meta = (GaInputStepMeta) smi;
     data = (GaInputStepData) sdi;
@@ -301,6 +308,7 @@ public class GaInputStep extends BaseStep implements StepInterface {
     }
   }
 
+  @Override
   public void dispose( StepMetaInterface smi, StepDataInterface sdi ) {
     meta = (GaInputStepMeta) smi;
     data = (GaInputStepData) sdi;

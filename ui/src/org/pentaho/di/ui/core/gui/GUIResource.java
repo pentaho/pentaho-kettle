@@ -23,6 +23,12 @@
 
 package org.pentaho.di.ui.core.gui;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
+
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.eclipse.swt.SWT;
@@ -56,12 +62,6 @@ import org.pentaho.di.ui.core.ConstUI;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.util.ImageUtil;
 import org.pentaho.di.ui.util.SwtSvgImageUtil;
-
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
 
 /*
  * colors etc. are allocated once and released once at the end of the program.
@@ -205,6 +205,10 @@ public class GUIResource {
 
   private SwtUniversalImage imageFolder;
 
+  private SwtUniversalImage imageTransRepo;
+
+  private SwtUniversalImage imageJobRepo;
+
   private Image imageWizard;
 
   private Image imageCredits;
@@ -226,6 +230,8 @@ public class GUIResource {
   private SwtUniversalImage imageVariable;
 
   private SwtUniversalImage imageTransGraph;
+
+  private SwtUniversalImage imagePartitionSchema;
 
   private SwtUniversalImage imageJobGraph;
 
@@ -563,6 +569,8 @@ public class GUIResource {
       imageSlave.dispose();
       imageArrow.dispose();
       imageFolder.dispose();
+      imageTransRepo.dispose();
+      imageJobRepo.dispose();
       imageWizard.dispose();
       imageCredits.dispose();
       imageStart.dispose();
@@ -574,6 +582,7 @@ public class GUIResource {
       imagePentahoSwirl.dispose();
       imageVariable.dispose();
       imageTransGraph.dispose();
+      imagePartitionSchema.dispose();
       imageJobGraph.dispose();
       imageTransTree.dispose();
       imageJobTree.dispose();
@@ -1116,6 +1125,10 @@ public class GUIResource {
 
     imageTransGraph = SwtSvgImageUtil.getUniversalImage( display, getClass().getClassLoader(),
       BasePropertyHandler.getProperty( "SpoonIcon_image" ) );
+
+    imagePartitionSchema = SwtSvgImageUtil.getUniversalImage( display, getClass().getClassLoader(),
+        BasePropertyHandler.getProperty( "Image_Partition_Schema" ) );
+
     imageJobGraph = SwtSvgImageUtil.getUniversalImage( display, getClass().getClassLoader(),
       BasePropertyHandler.getProperty( "ChefIcon_image" ) );
 
@@ -1135,6 +1148,15 @@ public class GUIResource {
     // "ui/images/folder.png"
     imageFolder = SwtSvgImageUtil.getUniversalImage( display, getClass().getClassLoader(),
       BasePropertyHandler.getProperty( "Folder_image" ) );
+
+    // "ui/images/transrepo.png"
+    imageTransRepo = SwtSvgImageUtil.getUniversalImage( display, getClass().getClassLoader(),
+      BasePropertyHandler.getProperty( "TransRepo_image" ) );
+
+    // "ui/images/jobrepo.png"
+    imageJobRepo = SwtSvgImageUtil.getUniversalImage( display, getClass().getClassLoader(),
+      BasePropertyHandler.getProperty( "JobRepo_image" ) );
+
 
     // Makes transparent images "on the fly"
     //
@@ -1760,6 +1782,10 @@ public class GUIResource {
     return imageTransGraph.getAsBitmapForSize( display, ConstUI.MEDIUM_ICON_SIZE, ConstUI.MEDIUM_ICON_SIZE );
   }
 
+  public Image getImagePartitionSchema() {
+    return imagePartitionSchema.getAsBitmapForSize( display, ConstUI.MEDIUM_ICON_SIZE, ConstUI.MEDIUM_ICON_SIZE );
+  }
+
   public Image getImageJobGraph() {
     return imageJobGraph.getAsBitmapForSize( display, ConstUI.SMALL_ICON_SIZE, ConstUI.SMALL_ICON_SIZE );
   }
@@ -1800,6 +1826,28 @@ public class GUIResource {
    */
   public Image getImageFolder() {
     return imageFolder.getAsBitmapForSize( display, ConstUI.MEDIUM_ICON_SIZE, ConstUI.MEDIUM_ICON_SIZE );
+  }
+
+  /**
+   * @return the imageJobRepo
+   */
+  public Image getImageJobRepo() {
+    return imageJobRepo.getAsBitmapForSize( display, ConstUI.MEDIUM_ICON_SIZE, ConstUI.MEDIUM_ICON_SIZE );
+  }
+
+  public SwtUniversalImage getSwtImageJobRepo() {
+    return imageJobRepo;
+  }
+
+  /**
+   * @return the imageTransRepo
+   */
+  public Image getImageTransRepo() {
+    return imageTransRepo.getAsBitmapForSize( display, ConstUI.MEDIUM_ICON_SIZE, ConstUI.MEDIUM_ICON_SIZE );
+  }
+
+  public SwtUniversalImage getSwtImageTransRepo() {
+    return imageTransRepo;
   }
 
   /**
@@ -1974,14 +2022,14 @@ public class GUIResource {
 
     /*
      * Point location = control.getLocation();
-     * 
+     *
      * Composite parent = control.getParent(); while (parent!=null) {
-     * 
+     *
      * Composite newParent = parent.getParent(); if (newParent!=null) { location.x+=parent.getLocation().x;
      * location.y+=parent.getLocation().y; } else { if (parent instanceof Shell) { // Top level shell. Shell shell =
      * (Shell)parent; Rectangle bounds = shell.getBounds(); Rectangle clientArea = shell.getClientArea(); location.x +=
      * bounds.width-clientArea.width; location.y += bounds.height-clientArea.height; } } parent = newParent; }
-     * 
+     *
      * return location;
      */
   }

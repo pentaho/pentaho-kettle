@@ -23,6 +23,7 @@
 package org.pentaho.di.ui.spoon;
 
 import org.eclipse.swt.widgets.Text;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -43,7 +44,12 @@ public class SpoonFilterMatchingTest {
   @Before
   public void setUp() throws Exception {
     spoon = mock( Spoon.class );
-    spoon.selectionFilter = mock( Text.class );
+    try {
+      spoon.selectionFilter = mock( Text.class );
+    } catch ( Throwable err ) {
+      // skip if unable to mock widgets
+      Assume.assumeNoException( err );
+    }
 
     doCallRealMethod().when( spoon ).filterMatch( anyString() );
   }

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -43,6 +43,7 @@ import org.pentaho.di.trans.step.BaseStep;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.step.StepMetaDataCombi;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface;
 
@@ -544,6 +545,13 @@ public class Validator extends BaseStep implements StepInterface {
     data = (ValidatorData) sdi;
 
     if ( super.init( smi, sdi ) ) {
+      // initialize steps by names
+      List<StepMeta> steps = new ArrayList<>();
+      for ( StepMetaDataCombi s : getTrans().getSteps() ) {
+        steps.add( s.stepMeta );
+      }
+      meta.searchInfoAndTargetSteps( steps );
+
       // initialize arrays of validation data
       data.constantsMeta = new ValueMetaInterface[meta.getValidations().size()];
       data.minimumValueAsString = new String[meta.getValidations().size()];

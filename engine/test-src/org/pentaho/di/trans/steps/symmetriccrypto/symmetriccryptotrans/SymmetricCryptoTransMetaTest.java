@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -26,27 +26,15 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 import org.junit.Test;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
 import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
+import org.pentaho.di.trans.steps.loadsave.validator.IntLoadSaveValidator;
 
 public class SymmetricCryptoTransMetaTest {
-
-  public class OperationTypeLoadSaveValidator implements FieldLoadSaveValidator<Integer> {
-    @Override
-    public Integer getTestObject() {
-      return new Random().nextInt( SymmetricCryptoTransMeta.operationTypeCode.length );
-    }
-
-    @Override
-    public boolean validateTestObject( Integer original, Object actual ) {
-      return original.equals( actual );
-    }
-  }
 
   @Test
   public void testRoundTrip() throws KettleException {
@@ -80,12 +68,12 @@ public class SymmetricCryptoTransMetaTest {
     setterMap.put( "outputResultAsBinary", "setOutputResultAsBinary" );
 
     Map<String, FieldLoadSaveValidator<?>> fieldLoadSaveValidator = new HashMap<String, FieldLoadSaveValidator<?>>();
-    fieldLoadSaveValidator.put( "operation_type", new OperationTypeLoadSaveValidator() );
+    fieldLoadSaveValidator.put( "operation_type",
+      new IntLoadSaveValidator( SymmetricCryptoTransMeta.operationTypeCode.length ) );
 
     LoadSaveTester loadSaveTester = new LoadSaveTester( SymmetricCryptoTransMeta.class, attributes,
       getterMap, setterMap, fieldLoadSaveValidator, new HashMap<String, FieldLoadSaveValidator<?>>() );
 
-    loadSaveTester.testRepoRoundTrip();
-    loadSaveTester.testXmlRoundTrip();
+    loadSaveTester.testSerialization();
   }
 }

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,7 +22,8 @@
 
 package org.pentaho.di.trans.steps.exceloutput;
 
-import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.injection.Injection;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 
 /**
  * Describes a single field in an excel file
@@ -35,8 +36,10 @@ import org.pentaho.di.core.row.ValueMeta;
  *
  */
 public class ExcelField implements Cloneable {
+  @Injection( name = "NAME", group = "FIELDS" )
   private String name;
   private int type;
+  @Injection( name = "FORMAT", group = "FIELDS" )
   private String format;
 
   public ExcelField( String name, int type, String format ) {
@@ -60,6 +63,7 @@ public class ExcelField implements Cloneable {
     return name.equals( field.getName() );
   }
 
+  @Override
   public Object clone() {
     try {
       Object retval = super.clone();
@@ -82,15 +86,16 @@ public class ExcelField implements Cloneable {
   }
 
   public String getTypeDesc() {
-    return ValueMeta.getTypeDesc( type );
+    return ValueMetaFactory.getValueMetaName( type );
   }
 
   public void setType( int type ) {
     this.type = type;
   }
 
+  @Injection( name = "TYPE", group = "FIELDS" )
   public void setType( String typeDesc ) {
-    this.type = ValueMeta.getType( typeDesc );
+    this.type = ValueMetaFactory.getIdForValueMeta( typeDesc );
   }
 
   public String getFormat() {
@@ -101,6 +106,7 @@ public class ExcelField implements Cloneable {
     this.format = format;
   }
 
+  @Override
   public String toString() {
     return name + ":" + getTypeDesc();
   }

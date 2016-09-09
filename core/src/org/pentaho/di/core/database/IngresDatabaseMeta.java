@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -170,6 +170,9 @@ public class IngresDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 
     int type = v.getType();
     switch ( type ) {
+      case ValueMetaInterface.TYPE_TIMESTAMP:
+        retval += "TIMESTAMP";
+        break;
       case ValueMetaInterface.TYPE_DATE:
         retval += "DATE";
         break;

@@ -16,7 +16,7 @@
  *
  *   Portions Copyright 2008 Stratebi Business Solutions, S.L.
  *   Portions Copyright 2011 De Bortoli Wines Pty Limited (Australia)
- *   Portions Copyright 2011 - 2013 Pentaho Corporation
+ *   Portions Copyright 2011 - 2016 Pentaho Corporation
  */
 
 package org.pentaho.di.ui.trans.steps.palo.dimoutput;
@@ -106,6 +106,7 @@ public class PaloDimOutputDialog extends BaseStepDialog implements StepDialogInt
     this.meta = (PaloDimOutputMeta) in;
   }
 
+  @Override
   public String open() {
 
     final Display display = getParent().getDisplay();
@@ -124,6 +125,7 @@ public class PaloDimOutputDialog extends BaseStepDialog implements StepDialogInt
     FormData fd;
 
     ModifyListener lsMod = new ModifyListener() {
+      @Override
       public void modifyText( ModifyEvent e ) {
         for ( int i = 0; i < tableViewFields.table.getItemCount(); i++ ) {
           tableViewFields.setText( String.valueOf( i ), 1, i );
@@ -302,50 +304,59 @@ public class PaloDimOutputDialog extends BaseStepDialog implements StepDialogInt
     setButtonPositions( new Button[]{ buttonOk, buttonCancel }, margin, null );
 
     addConnectionLine.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         doSelectConnection( false );
       }
     } );
 
     buttonGetLevels.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         doGetFields();
       }
     } );
 
     buttonOk.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         ok();
       }
     } );
     buttonCancel.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         cancel();
       }
     } );
     buttonClearLevels.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         doClearFields();
       }
     } );
     comboDimension.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         doSelectDimension();
       }
     } );
     buttonRecreateDimension.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent arg0 ) {
         buttonClearDimension.setEnabled( !buttonRecreateDimension.getSelection() );
         buttonClearConsolidations.setEnabled( !buttonRecreateDimension.getSelection() );
       }
     } );
     buttonClearDimension.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent arg0 ) {
         buttonClearConsolidations.setEnabled( !buttonClearDimension.getSelection() );
       }
     } );
 
     buttonEnableElementCache.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent arg0 ) {
         buttonPreloadElementCache.setEnabled( buttonEnableElementCache.getSelection() );
       }
@@ -386,6 +397,7 @@ public class PaloDimOutputDialog extends BaseStepDialog implements StepDialogInt
     props.setLook( labelPreloadElementCache );
 
     shell.addShellListener( new ShellAdapter() {
+      @Override
       public void shellClosed( ShellEvent e ) {
         cancel();
       }
@@ -447,11 +459,12 @@ public class PaloDimOutputDialog extends BaseStepDialog implements StepDialogInt
       String[] fieldTypes = r.getFieldNamesAndTypes( 0 );
       ArrayList<String> intFields = new ArrayList<String>();
       intFields.add( BaseMessages.getString( PKG, "PaloDimOutputDialog.ConsolidationFactorDefault" ) );
-      for ( int i = 0; i < fieldNames.length; i++ )
+      for ( int i = 0; i < fieldNames.length; i++ ) {
         if ( fieldTypes[i].toLowerCase().indexOf( "integer" ) >= 0
           || fieldTypes[i].toLowerCase().indexOf( "number" ) > 0 ) {
           intFields.add( fieldNames[i] );
         }
+      }
 
       String[] fieldNamesDefault = intFields.toArray( new String[intFields.size()] );
       colinf[3] = new ColumnInfo( getLocalizedColumn( 3 ), ColumnInfo.COLUMN_TYPE_CCOMBO, fieldNamesDefault, true );

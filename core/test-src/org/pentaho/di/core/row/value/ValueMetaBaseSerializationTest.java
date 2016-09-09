@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -21,8 +21,8 @@
  ******************************************************************************/
 package org.pentaho.di.core.row.value;
 
-import org.junit.Test;
-import org.pentaho.di.core.row.ValueMetaInterface;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -32,9 +32,8 @@ import java.util.Locale;
 import java.util.Random;
 import java.util.TimeZone;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.pentaho.di.core.row.ValueMetaInterface.TYPE_STRING;
+import org.junit.Test;
+import org.pentaho.di.core.row.ValueMetaInterface;
 
 /**
  * @author Andrey Khayrutdinov
@@ -59,13 +58,14 @@ public class ValueMetaBaseSerializationTest {
   @Test
   public void restoresMetaData_storageTypeBinaryString() throws Exception {
     ValueMetaBase vmb = createTestObject( ValueMetaInterface.STORAGE_TYPE_BINARY_STRING );
-    vmb.setStorageMetadata( new ValueMetaBase( "storageMetadataInstance", TYPE_STRING ) );
+    vmb.setStorageMetadata( new ValueMetaBase( "storageMetadataInstance", ValueMetaInterface.TYPE_STRING ) );
 
     checkRestoring( vmb );
   }
 
   private static ValueMetaBase createTestObject( int storageType ) {
-    ValueMetaBase vmb = new ValueMetaBase( "test", TYPE_STRING, storageType );
+    ValueMetaBase vmb = new ValueMetaBase( "test", ValueMetaInterface.TYPE_STRING );
+    vmb.setStorageType( storageType );
     vmb.setLength( 10, 5 );
     vmb.setOrigin( "origin" );
     vmb.setComments( "comments" );
@@ -80,6 +80,9 @@ public class ValueMetaBaseSerializationTest {
     vmb.setDateFormatLenient( true );
     vmb.setLenientStringToNumber( true );
     vmb.setDateFormatLocale( Locale.JAPAN );
+    vmb.setCollatorDisabled( false );
+    vmb.setCollatorLocale( Locale.JAPANESE );
+    vmb.setCollatorStrength( 1 );
 
     String[] zones = TimeZone.getAvailableIDs();
     vmb.setDateFormatTimeZone( TimeZone.getTimeZone( zones[ new Random().nextInt( zones.length ) ] ) );
@@ -102,7 +105,6 @@ public class ValueMetaBaseSerializationTest {
     assertMetaDataAreEqual( initial, restored );
   }
 
-  @SuppressWarnings( "deprecation" )
   private static void assertMetaDataAreEqual( ValueMetaInterface expected, ValueMetaInterface actual ) {
     assertEquals( "storageType", expected.getStorageType(), actual.getStorageType() );
 
@@ -137,5 +139,8 @@ public class ValueMetaBaseSerializationTest {
     assertEquals( "dateFormatLocale", expected.getDateFormatLocale(), actual.getDateFormatLocale() );
     assertEquals( "dateFormatTimeZone", expected.getDateFormatTimeZone(), actual.getDateFormatTimeZone() );
     assertEquals( "lenientStringToNumber", expected.isLenientStringToNumber(), actual.isLenientStringToNumber() );
+    assertEquals( "collatorDisabled", expected.isCollatorDisabled(), actual.isCollatorDisabled() );
+    assertEquals( "collatorLocale", expected.getCollatorLocale(), actual.getCollatorLocale() );
+    assertEquals( "collatorStrength", expected.getCollatorStrength(), actual.getCollatorStrength() );
   }
 }

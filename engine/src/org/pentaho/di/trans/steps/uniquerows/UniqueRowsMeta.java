@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -31,8 +31,8 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -155,22 +155,20 @@ public class UniqueRowsMeta extends BaseStepMeta implements StepMetaInterface {
     this.errorDescription = errorDescription;
   }
 
+  @Override
   public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     readData( stepnode );
   }
 
+  @Override
   public Object clone() {
     UniqueRowsMeta retval = (UniqueRowsMeta) super.clone();
 
     int nrfields = compareFields.length;
 
     retval.allocate( nrfields );
-
-    //CHECKSTYLE:Indentation:OFF
-    for ( int i = 0; i < nrfields; i++ ) {
-      retval.getCompareFields()[i] = compareFields[i];
-      retval.getCaseInsensitive()[i] = caseInsensitive[i];
-    }
+    System.arraycopy( compareFields, 0, retval.compareFields, 0, nrfields );
+    System.arraycopy( caseInsensitive, 0, retval.caseInsensitive, 0, nrfields );
 
     return retval;
   }
@@ -200,6 +198,7 @@ public class UniqueRowsMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
+  @Override
   public void setDefault() {
     countRows = false;
     countField = "";
@@ -216,6 +215,7 @@ public class UniqueRowsMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
+  @Override
   public void getFields( RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep,
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     // change the case insensitive flag too
@@ -226,15 +226,16 @@ public class UniqueRowsMeta extends BaseStepMeta implements StepMetaInterface {
       }
     }
     if ( countRows ) {
-      ValueMetaInterface v = new ValueMeta( countField, ValueMetaInterface.TYPE_INTEGER );
+      ValueMetaInterface v = new ValueMetaInteger( countField );
       v.setLength( ValueMetaInterface.DEFAULT_INTEGER_LENGTH, 0 );
       v.setOrigin( name );
       row.addValueMeta( v );
     }
   }
 
+  @Override
   public String getXML() {
-    StringBuffer retval = new StringBuffer();
+    StringBuilder retval = new StringBuilder();
 
     retval.append( "      " + XMLHandler.addTagValue( "count_rows", countRows ) );
     retval.append( "      " + XMLHandler.addTagValue( "count_field", countField ) );
@@ -253,6 +254,7 @@ public class UniqueRowsMeta extends BaseStepMeta implements StepMetaInterface {
     return retval.toString();
   }
 
+  @Override
   public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
       countRows = rep.getStepAttributeBoolean( id_step, "count_rows" );
@@ -274,6 +276,7 @@ public class UniqueRowsMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
+  @Override
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       rep.saveStepAttribute( id_transformation, id_step, "count_rows", countRows );
@@ -290,6 +293,7 @@ public class UniqueRowsMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
+  @Override
   public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
     RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
@@ -308,11 +312,13 @@ public class UniqueRowsMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
+  @Override
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
     TransMeta transMeta, Trans trans ) {
     return new UniqueRows( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 
+  @Override
   public StepDataInterface getStepData() {
     return new UniqueRowsData();
   }
@@ -332,6 +338,7 @@ public class UniqueRowsMeta extends BaseStepMeta implements StepMetaInterface {
     this.caseInsensitive = caseInsensitive;
   }
 
+  @Override
   public boolean supportsErrorHandling() {
     return isRejectDuplicateRow();
   }

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -98,12 +98,11 @@ public class GetFileNamesMetaTest {
     fieldLoadSaveValidatorAttributeMap.put( "file_required", fileRequiredArrayLoadSaveValidator );
     fieldLoadSaveValidatorAttributeMap.put( "include_subfolders", stringArrayLoadSaveValidator );
 
-    LoadSaveTester loadSaveTester =
-      new LoadSaveTester( GetFileNamesMeta.class, attributes, getterMap, setterMap,
+    LoadSaveTester<GetFileNamesMeta> loadSaveTester =
+      new LoadSaveTester<>( GetFileNamesMeta.class, attributes, getterMap, setterMap,
           fieldLoadSaveValidatorAttributeMap, new HashMap<String, FieldLoadSaveValidator<?>>() );
 
-    loadSaveTester.testRepoRoundTrip();
-    loadSaveTester.testXmlRoundTrip();
+    loadSaveTester.testSerialization();
   }
 
   public class FileTypeFilterLoadSaveValidator implements FieldLoadSaveValidator<FileInputList.FileTypeFilter> {
@@ -135,4 +134,7 @@ public class GetFileNamesMetaTest {
       return testObject.equals( actual );
     }
   }
+
+  // cloneTest() removed as it's now covered by the load/save tester.
+
 }

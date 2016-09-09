@@ -193,13 +193,10 @@ public class SetVariableMeta extends BaseStepMeta implements StepMetaInterface {
     int count = fieldName.length;
 
     retval.allocate( count );
-
-    for ( int i = 0; i < count; i++ ) {
-      retval.fieldName[i] = fieldName[i];
-      retval.variableName[i] = variableName[i];
-      retval.variableType[i] = variableType[i];
-      retval.defaultValue[i] = defaultValue[i];
-    }
+    System.arraycopy( fieldName, 0, retval.fieldName, 0, count );
+    System.arraycopy( variableName, 0, retval.variableName, 0, count );
+    System.arraycopy( variableType, 0, retval.variableType, 0, count );
+    System.arraycopy( defaultValue, 0, retval.defaultValue, 0, count );
 
     return retval;
   }
@@ -245,7 +242,7 @@ public class SetVariableMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 150 );
+    StringBuilder retval = new StringBuilder( 150 );
 
     retval.append( "    <fields>" ).append( Const.CR );
 

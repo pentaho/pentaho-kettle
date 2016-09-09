@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -32,8 +32,9 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -178,12 +179,9 @@ public class RandomCCNumberGeneratorMeta extends BaseStepMeta implements StepMet
     int count = fieldCCType.length;
 
     retval.allocate( count );
-
-    for ( int i = 0; i < count; i++ ) {
-      retval.fieldCCType[i] = fieldCCType[i];
-      retval.fieldCCLength[i] = fieldCCLength[i];
-      retval.fieldCCSize[i] = fieldCCSize[i];
-    }
+    System.arraycopy( fieldCCType, 0, retval.fieldCCType, 0, count );
+    System.arraycopy( fieldCCLength, 0, retval.fieldCCLength, 0, count );
+    System.arraycopy( fieldCCSize, 0, retval.fieldCCSize, 0, count );
 
     return retval;
   }
@@ -229,19 +227,19 @@ public class RandomCCNumberGeneratorMeta extends BaseStepMeta implements StepMet
   public void getFields( RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep,
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
 
-    ValueMetaInterface v = new ValueMeta( cardNumberFieldName, ValueMeta.TYPE_STRING );
+    ValueMetaInterface v = new ValueMetaString( cardNumberFieldName );
     v.setOrigin( name );
     row.addValueMeta( v );
 
     if ( !Const.isEmpty( getCardTypeFieldName() ) ) {
-      v = new ValueMeta( cardTypeFieldName, ValueMeta.TYPE_STRING );
+      v = new ValueMetaString( cardTypeFieldName );
       v.setOrigin( name );
       row.addValueMeta( v );
     }
 
     if ( !Const.isEmpty( getCardLengthFieldName() ) ) {
-      v = new ValueMeta( cardLengthFieldName, ValueMeta.TYPE_INTEGER );
-      v.setLength( ValueMeta.DEFAULT_INTEGER_LENGTH, 0 );
+      v = new ValueMetaInteger( cardLengthFieldName );
+      v.setLength( ValueMetaInterface.DEFAULT_INTEGER_LENGTH, 0 );
       v.setOrigin( name );
       row.addValueMeta( v );
     }
@@ -249,7 +247,7 @@ public class RandomCCNumberGeneratorMeta extends BaseStepMeta implements StepMet
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 200 );
+    StringBuilder retval = new StringBuilder( 200 );
 
     retval.append( "    <fields>" ).append( Const.CR );
 

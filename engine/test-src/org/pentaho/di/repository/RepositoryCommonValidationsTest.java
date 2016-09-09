@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,8 +25,6 @@ package org.pentaho.di.repository;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
-import static org.pentaho.di.repository.RepositoryCommonValidations.checkUserInfo;
-import static org.pentaho.di.repository.RepositoryCommonValidations.normalizeUserInfo;
 
 /**
  * @author Andrey Khayrutdinov
@@ -35,47 +33,47 @@ public class RepositoryCommonValidationsTest {
 
   @Test( expected = NullPointerException.class )
   public void checkUserInfo_Null() {
-    checkUserInfo( null );
+    RepositoryCommonValidations.checkUserInfo( null );
   }
 
 
   @Test
   public void checkUserInfo_LoginIsNull() {
-    assertFalse( checkUserInfo( user( null, "name" ) ) );
+    assertFalse( RepositoryCommonValidations.checkUserInfo( user( null, "name" ) ) );
   }
 
   @Test
   public void checkUserInfo_LoginIsBlank() {
-    assertFalse( checkUserInfo( user( "", "name" ) ) );
+    assertFalse( RepositoryCommonValidations.checkUserInfo( user( "", "name" ) ) );
   }
 
   @Test
   public void checkUserInfo_LoginContainsSpaces() {
-    assertFalse( checkUserInfo( user( "  \t\n ", "name" ) ) );
+    assertFalse( RepositoryCommonValidations.checkUserInfo( user( "  \t\n ", "name" ) ) );
   }
 
 
   @Test
   public void checkUserInfo_BothAreMeaningful() {
-    assertTrue( checkUserInfo( user( "login", "name" ) ) );
+    assertTrue( RepositoryCommonValidations.checkUserInfo( user( "login", "name" ) ) );
   }
 
 
   @Test( expected = NullPointerException.class )
   public void normalizeUserInfo_Null() {
-    normalizeUserInfo( null );
+    RepositoryCommonValidations.normalizeUserInfo( null );
   }
 
   @Test
   public void normalizeUserInfo_Valid() {
-    IUser normalized = normalizeUserInfo( user( "login", "name" ) );
+    IUser normalized = RepositoryCommonValidations.normalizeUserInfo( user( "login", "name" ) );
     assertEquals( "login", normalized.getLogin() );
     assertEquals( "login", normalized.getName() );
   }
 
   @Test
   public void normalizeUserInfo_WithSpaces() {
-    IUser normalized = normalizeUserInfo( user( "  login \t\n ", "name" ) );
+    IUser normalized = RepositoryCommonValidations.normalizeUserInfo( user( "  login \t\n ", "name" ) );
     assertEquals( "login", normalized.getLogin() );
     assertEquals( "login", normalized.getName() );
   }

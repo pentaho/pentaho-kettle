@@ -414,7 +414,7 @@ public class RepositoryDirectory implements RepositoryDirectoryInterface {
 
   public String getXML( int level ) {
     String spaces = Const.rightPad( " ", level );
-    StringBuffer retval = new StringBuffer( 200 );
+    StringBuilder retval = new StringBuilder( 200 );
 
     retval.append( spaces ).append( "<repdir>" ).append( Const.CR );
     retval.append( spaces ).append( "  " ).append( XMLHandler.addTagValue( "name", getName() ) );

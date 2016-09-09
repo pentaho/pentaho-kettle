@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -35,9 +35,10 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -102,15 +103,23 @@ public class ParGzipCsvInputMeta extends BaseStepMeta implements StepMetaInterfa
     allocate( 0 );
   }
 
+  @Override
   public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     readData( stepnode );
   }
 
+  @Override
   public Object clone() {
-    Object retval = super.clone();
+    ParGzipCsvInputMeta retval = (ParGzipCsvInputMeta) super.clone();
+    int nrFields = inputFields.length;
+    retval.allocate( nrFields );
+    for ( int i = 0; i < nrFields; i++ ) {
+      retval.inputFields[ i ] = (TextFileInputField) inputFields [ i ].clone();
+    }
     return retval;
   }
 
+  @Override
   public void setDefault() {
     delimiter = ",";
     enclosure = "\"";
@@ -146,14 +155,14 @@ public class ParGzipCsvInputMeta extends BaseStepMeta implements StepMetaInterfa
         Node fnode = XMLHandler.getSubNodeByNr( fields, "field", i );
 
         inputFields[i].setName( XMLHandler.getTagValue( fnode, "name" ) );
-        inputFields[i].setType( ValueMeta.getType( XMLHandler.getTagValue( fnode, "type" ) ) );
+        inputFields[i].setType( ValueMetaFactory.getIdForValueMeta( XMLHandler.getTagValue( fnode, "type" ) ) );
         inputFields[i].setFormat( XMLHandler.getTagValue( fnode, "format" ) );
         inputFields[i].setCurrencySymbol( XMLHandler.getTagValue( fnode, "currency" ) );
         inputFields[i].setDecimalSymbol( XMLHandler.getTagValue( fnode, "decimal" ) );
         inputFields[i].setGroupSymbol( XMLHandler.getTagValue( fnode, "group" ) );
         inputFields[i].setLength( Const.toInt( XMLHandler.getTagValue( fnode, "length" ), -1 ) );
         inputFields[i].setPrecision( Const.toInt( XMLHandler.getTagValue( fnode, "precision" ), -1 ) );
-        inputFields[i].setTrimType( ValueMeta.getTrimTypeByCode( XMLHandler.getTagValue( fnode, "trim_type" ) ) );
+        inputFields[i].setTrimType( ValueMetaString.getTrimTypeByCode( XMLHandler.getTagValue( fnode, "trim_type" ) ) );
       }
     } catch ( Exception e ) {
       throw new KettleXMLException( "Unable to load step info from XML", e );
@@ -164,8 +173,9 @@ public class ParGzipCsvInputMeta extends BaseStepMeta implements StepMetaInterfa
     inputFields = new TextFileInputField[nrFields];
   }
 
+  @Override
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 500 );
+    StringBuilder retval = new StringBuilder( 500 );
 
     retval.append( "    " ).append( XMLHandler.addTagValue( "filename", filename ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "filename_field", filenameField ) );
@@ -187,7 +197,7 @@ public class ParGzipCsvInputMeta extends BaseStepMeta implements StepMetaInterfa
       retval.append( "      <field>" ).append( Const.CR );
       retval.append( "        " ).append( XMLHandler.addTagValue( "name", field.getName() ) );
       retval.append( "        " ).append(
-        XMLHandler.addTagValue( "type", ValueMeta.getTypeDesc( field.getType() ) ) );
+        XMLHandler.addTagValue( "type", ValueMetaFactory.getValueMetaName( field.getType() ) ) );
       retval.append( "        " ).append( XMLHandler.addTagValue( "format", field.getFormat() ) );
       retval.append( "        " ).append( XMLHandler.addTagValue( "currency", field.getCurrencySymbol() ) );
       retval.append( "        " ).append( XMLHandler.addTagValue( "decimal", field.getDecimalSymbol() ) );
@@ -195,7 +205,7 @@ public class ParGzipCsvInputMeta extends BaseStepMeta implements StepMetaInterfa
       retval.append( "        " ).append( XMLHandler.addTagValue( "length", field.getLength() ) );
       retval.append( "        " ).append( XMLHandler.addTagValue( "precision", field.getPrecision() ) );
       retval.append( "        " ).append(
-        XMLHandler.addTagValue( "trim_type", ValueMeta.getTrimTypeCode( field.getTrimType() ) ) );
+        XMLHandler.addTagValue( "trim_type", ValueMetaString.getTrimTypeCode( field.getTrimType() ) ) );
       retval.append( "      </field>" ).append( Const.CR );
     }
     retval.append( "    </fields>" ).append( Const.CR );
@@ -203,6 +213,7 @@ public class ParGzipCsvInputMeta extends BaseStepMeta implements StepMetaInterfa
     return retval.toString();
   }
 
+  @Override
   public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
       filename = rep.getStepAttributeString( id_step, "filename" );
@@ -226,14 +237,14 @@ public class ParGzipCsvInputMeta extends BaseStepMeta implements StepMetaInterfa
         inputFields[i] = new TextFileInputField();
 
         inputFields[i].setName( rep.getStepAttributeString( id_step, i, "field_name" ) );
-        inputFields[i].setType( ValueMeta.getType( rep.getStepAttributeString( id_step, i, "field_type" ) ) );
+        inputFields[i].setType( ValueMetaFactory.getIdForValueMeta( rep.getStepAttributeString( id_step, i, "field_type" ) ) );
         inputFields[i].setFormat( rep.getStepAttributeString( id_step, i, "field_format" ) );
         inputFields[i].setCurrencySymbol( rep.getStepAttributeString( id_step, i, "field_currency" ) );
         inputFields[i].setDecimalSymbol( rep.getStepAttributeString( id_step, i, "field_decimal" ) );
         inputFields[i].setGroupSymbol( rep.getStepAttributeString( id_step, i, "field_group" ) );
         inputFields[i].setLength( (int) rep.getStepAttributeInteger( id_step, i, "field_length" ) );
         inputFields[i].setPrecision( (int) rep.getStepAttributeInteger( id_step, i, "field_precision" ) );
-        inputFields[i].setTrimType( ValueMeta.getTrimTypeByCode( rep.getStepAttributeString(
+        inputFields[i].setTrimType( ValueMetaString.getTrimTypeByCode( rep.getStepAttributeString(
           id_step, i, "field_trim_type" ) ) );
       }
     } catch ( Exception e ) {
@@ -241,6 +252,7 @@ public class ParGzipCsvInputMeta extends BaseStepMeta implements StepMetaInterfa
     }
   }
 
+  @Override
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       rep.saveStepAttribute( id_transformation, id_step, "filename", filename );
@@ -260,22 +272,23 @@ public class ParGzipCsvInputMeta extends BaseStepMeta implements StepMetaInterfa
         TextFileInputField field = inputFields[i];
 
         rep.saveStepAttribute( id_transformation, id_step, i, "field_name", field.getName() );
-        rep.saveStepAttribute( id_transformation, id_step, i, "field_type", ValueMeta
-          .getTypeDesc( field.getType() ) );
+        rep.saveStepAttribute( id_transformation, id_step, i, "field_type",
+          ValueMetaFactory.getValueMetaName( field.getType() ) );
         rep.saveStepAttribute( id_transformation, id_step, i, "field_format", field.getFormat() );
         rep.saveStepAttribute( id_transformation, id_step, i, "field_currency", field.getCurrencySymbol() );
         rep.saveStepAttribute( id_transformation, id_step, i, "field_decimal", field.getDecimalSymbol() );
         rep.saveStepAttribute( id_transformation, id_step, i, "field_group", field.getGroupSymbol() );
         rep.saveStepAttribute( id_transformation, id_step, i, "field_length", field.getLength() );
         rep.saveStepAttribute( id_transformation, id_step, i, "field_precision", field.getPrecision() );
-        rep.saveStepAttribute( id_transformation, id_step, i, "field_trim_type", ValueMeta.getTrimTypeCode( field
-          .getTrimType() ) );
+        rep.saveStepAttribute( id_transformation, id_step, i, "field_trim_type",
+          ValueMetaString.getTrimTypeCode( field.getTrimType() ) );
       }
     } catch ( Exception e ) {
       throw new KettleException( "Unable to save step information to the repository for id_step=" + id_step, e );
     }
   }
 
+  @Override
   public void getFields( RowMetaInterface rowMeta, String origin, RowMetaInterface[] info, StepMeta nextStep,
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     try {
@@ -315,17 +328,17 @@ public class ParGzipCsvInputMeta extends BaseStepMeta implements StepMetaInterfa
       }
 
       if ( !Const.isEmpty( filenameField ) && includingFilename ) {
-        ValueMetaInterface filenameMeta = new ValueMeta( filenameField, ValueMetaInterface.TYPE_STRING );
+        ValueMetaInterface filenameMeta = new ValueMetaString( filenameField );
         filenameMeta.setOrigin( origin );
         if ( lazyConversionActive ) {
           filenameMeta.setStorageType( ValueMetaInterface.STORAGE_TYPE_BINARY_STRING );
-          filenameMeta.setStorageMetadata( new ValueMeta( filenameField, ValueMetaInterface.TYPE_STRING ) );
+          filenameMeta.setStorageMetadata( new ValueMetaString( filenameField ) );
         }
         rowMeta.addValueMeta( filenameMeta );
       }
 
       if ( !Const.isEmpty( rowNumField ) ) {
-        ValueMetaInterface rowNumMeta = new ValueMeta( rowNumField, ValueMetaInterface.TYPE_INTEGER );
+        ValueMetaInterface rowNumMeta = new ValueMetaInteger( rowNumField );
         rowNumMeta.setLength( 10 );
         rowNumMeta.setOrigin( origin );
         rowMeta.addValueMeta( rowNumMeta );
@@ -336,6 +349,7 @@ public class ParGzipCsvInputMeta extends BaseStepMeta implements StepMetaInterfa
 
   }
 
+  @Override
   public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
     RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
@@ -366,11 +380,13 @@ public class ParGzipCsvInputMeta extends BaseStepMeta implements StepMetaInterfa
     }
   }
 
+  @Override
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta tr,
     Trans trans ) {
     return new ParGzipCsvInput( stepMeta, stepDataInterface, cnr, tr, trans );
   }
 
+  @Override
   public StepDataInterface getStepData() {
     return new ParGzipCsvInputData();
   }
@@ -455,6 +471,7 @@ public class ParGzipCsvInputMeta extends BaseStepMeta implements StepMetaInterfa
   /**
    * @return the enclosure
    */
+  @Override
   public String getEnclosure() {
     return enclosure;
   }
@@ -486,6 +503,7 @@ public class ParGzipCsvInputMeta extends BaseStepMeta implements StepMetaInterfa
   /**
    * @return the inputFields
    */
+  @Override
   public TextFileInputField[] getInputFields() {
     return inputFields;
   }
@@ -498,58 +516,72 @@ public class ParGzipCsvInputMeta extends BaseStepMeta implements StepMetaInterfa
     this.inputFields = inputFields;
   }
 
+  @Override
   public int getFileFormatTypeNr() {
     return TextFileInputMeta.FILE_FORMAT_MIXED; // TODO: check this
   }
 
+  @Override
   public String[] getFilePaths( VariableSpace space ) {
     return new String[] { space.environmentSubstitute( filename ), };
   }
 
+  @Override
   public int getNrHeaderLines() {
     return 1;
   }
 
+  @Override
   public boolean hasHeader() {
     return isHeaderPresent();
   }
 
+  @Override
   public String getErrorCountField() {
     return null;
   }
 
+  @Override
   public String getErrorFieldsField() {
     return null;
   }
 
+  @Override
   public String getErrorTextField() {
     return null;
   }
 
+  @Override
   public String getEscapeCharacter() {
     return null;
   }
 
+  @Override
   public String getFileType() {
     return "CSV";
   }
 
+  @Override
   public String getSeparator() {
     return delimiter;
   }
 
+  @Override
   public boolean includeFilename() {
     return false;
   }
 
+  @Override
   public boolean includeRowNumber() {
     return false;
   }
 
+  @Override
   public boolean isErrorIgnored() {
     return false;
   }
 
+  @Override
   public boolean isErrorLineSkipped() {
     return false;
   }
@@ -661,6 +693,7 @@ public class ParGzipCsvInputMeta extends BaseStepMeta implements StepMetaInterfa
    *
    * @return the filename of the exported resource
    */
+  @Override
   public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
     ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore ) throws KettleException {
     try {

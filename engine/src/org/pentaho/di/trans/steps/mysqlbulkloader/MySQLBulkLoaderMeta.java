@@ -33,7 +33,11 @@ import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
+import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.injection.Injection;
+import org.pentaho.di.core.injection.InjectionSupported;
+import org.pentaho.di.core.injection.InjectionTypeConverter;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
@@ -65,12 +69,13 @@ import org.w3c.dom.Node;
  * - Write to the FIFO file<br>
  * - At the end, close the output stream to the FIFO file<br>
  * * At the end, remove the FIFO file <br>
- * 
- * 
+ *
+ *
  * Created on 24-oct-2007<br>
- * 
+ *
  * @author Matt Casters<br>
  */
+@InjectionSupported( localizationPrefix = "MySQLBulkLoader.Injection.", groups = { "FIELDS" } )
 public class MySQLBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface,
     ProvidesDatabaseConnectionInformation {
   private static Class<?> PKG = MySQLBulkLoaderMeta.class; // for i18n purposes, needed by Translator2!!
@@ -90,53 +95,63 @@ public class MySQLBulkLoaderMeta extends BaseStepMeta implements StepMetaInterfa
     BaseMessages.getString( PKG, "MySQLBulkLoaderMeta.FieldFormatType.StringEscape.Description" ), };
 
   /** what's the schema for the target? */
+  @Injection( name = "SCHEMA_NAME" )
   private String schemaName;
 
   /** what's the table for the target? */
+  @Injection( name = "TABLE_NAME" )
   private String tableName;
 
   /** The name of the FIFO file to create */
+  @Injection( name = "FIFO_FILE" )
   private String fifoFileName;
 
   /** database connection */
   private DatabaseMeta databaseMeta;
 
   /** Field name of the target table */
+  @Injection( name = "FIELD_TABLE", group = "FIELDS" )
   private String[] fieldTable;
 
   /** Field name in the stream */
+  @Injection( name = "FIELD_STREAM", group = "FIELDS" )
   private String[] fieldStream;
 
   /** flag to indicate what to do with the formatting */
+  @Injection( name = "FIELD_FORMAT", group = "FIELDS", converter = FieldFormatTypeConverter.class )
   private int[] fieldFormatType;
 
   /** Encoding to use */
+  @Injection( name = "ENCODING" )
   private String encoding;
 
   /** REPLACE clause flag */
+  @Injection( name = "USE_REPLACE_CLAUSE" )
   private boolean replacingData;
 
   /** IGNORE clause flag */
+  @Injection( name = "USE_IGNORE_CLAUSE" )
   private boolean ignoringErrors;
 
   /** allows specification of the LOCAL clause */
+  @Injection( name = "LOCAL_FILE" )
   private boolean localFile;
 
   /** The delimiter to use */
+  @Injection( name = "DELIMITER" )
   private String delimiter;
 
   /** The enclosure to use */
+  @Injection( name = "ENCLOSURE" )
   private String enclosure;
 
   /** The escape character */
+  @Injection( name = "ESCAPE_CHAR" )
   private String escapeChar;
 
   /** The number of rows to load per bulk statement */
+  @Injection( name = "BULK_SIZE" )
   private String bulkSize;
-
-  public MySQLBulkLoaderMeta() {
-    super();
-  }
 
   /**
    * @return Returns the database.
@@ -213,11 +228,10 @@ public class MySQLBulkLoaderMeta extends BaseStepMeta implements StepMetaInterfa
     int nrvalues = fieldTable.length;
 
     retval.allocate( nrvalues );
+    System.arraycopy( fieldTable, 0, retval.fieldTable, 0, nrvalues );
+    System.arraycopy( fieldStream, 0, retval.fieldStream, 0, nrvalues );
+    System.arraycopy( fieldFormatType, 0, retval.fieldFormatType, 0, nrvalues );
 
-    for ( int i = 0; i < nrvalues; i++ ) {
-      retval.fieldTable[i] = fieldTable[i];
-      retval.fieldStream[i] = fieldStream[i];
-    }
     return retval;
   }
 
@@ -280,7 +294,7 @@ public class MySQLBulkLoaderMeta extends BaseStepMeta implements StepMetaInterfa
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 300 );
+    StringBuilder retval = new StringBuilder( 300 );
 
     retval.append( "    " ).append(
         XMLHandler.addTagValue( "connection", databaseMeta == null ? "" : databaseMeta.getName() ) );
@@ -809,4 +823,15 @@ public class MySQLBulkLoaderMeta extends BaseStepMeta implements StepMetaInterfa
     return null;
   }
 
+  public static class FieldFormatTypeConverter extends InjectionTypeConverter {
+    @Override
+    public int string2intPrimitive( String v ) throws KettleValueException {
+      for ( int i = 0; i < fieldFormatTypeCodes.length; i++ ) {
+        if ( fieldFormatTypeCodes[i].equalsIgnoreCase( v ) ) {
+          return i;
+        }
+      }
+      return FIELD_FORMAT_TYPE_OK;
+    }
+  }
 }

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -158,6 +158,16 @@ public class SWTDirectGC implements GCInterface {
     if ( img != null ) {
       Rectangle bounds = img.getBounds();
       gc.drawImage( img, 0, 0, bounds.width, bounds.height, x, y, small_icon_size, small_icon_size );
+    }
+  }
+
+  public void drawImage( EImage image, int x, int y, int width, int height, float magnification ) {
+    Image img =
+        getNativeImage( image ).getAsBitmapForSize( gc.getDevice(), Math.round( width * magnification ),
+            Math.round( height * magnification ) );
+    if ( img != null ) {
+      Rectangle bounds = img.getBounds();
+      gc.drawImage( img, 0, 0, bounds.width, bounds.height, x, y, width, height );
     }
   }
 
@@ -439,7 +449,7 @@ public class SWTDirectGC implements GCInterface {
 
   @Override
   public void drawJobEntryIcon( int x, int y, JobEntryCopy jobEntryCopy ) {
-    drawJobEntryIcon( x, y , jobEntryCopy, currentMagnification );
+    drawJobEntryIcon( x, y, jobEntryCopy, currentMagnification );
   }
 
   @Override

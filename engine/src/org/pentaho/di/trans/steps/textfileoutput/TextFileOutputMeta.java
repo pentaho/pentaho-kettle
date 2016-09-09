@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -35,9 +35,12 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.injection.Injection;
+import org.pentaho.di.core.injection.InjectionDeep;
+import org.pentaho.di.core.injection.InjectionSupported;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -53,7 +56,6 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInjectionMetaEntry;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.step.StepMetaInjectionInterface;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
@@ -62,6 +64,7 @@ import org.w3c.dom.Node;
  * Created on 4-apr-2003
  *
  */
+@InjectionSupported( localizationPrefix = "TextFileOutput.Injection.", groups = { "OUTPUT_FIELDS" } )
 public class TextFileOutputMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = TextFileOutputMeta.class; // for i18n purposes, needed by Translator2!!
 
@@ -74,99 +77,130 @@ public class TextFileOutputMeta extends BaseStepMeta implements StepMetaInterfac
   public static final String[] formatMapperLineTerminator = new String[] { "DOS", "UNIX", "CR", "None" };
 
   /** The base name of the output file */
+  @Injection( name = "FILENAME" )
   private String fileName;
 
   /** Whether to treat this as a command to be executed and piped into */
+  @Injection( name = "RUN_AS_COMMAND" )
   private boolean fileAsCommand;
 
   /** Whether to push the output into the output of a servlet with the executeTrans Carte/DI-Server servlet */
+  @Injection( name = "PASS_TO_SERVLET" )
   private boolean servletOutput;
 
   /** Flag: create parent folder, default to true */
+  @Injection( name = "CREATE_PARENT_FOLDER" )
   private boolean createparentfolder = true;
 
   /** The file extention in case of a generated filename */
+  @Injection( name = "EXTENSION" )
   private String extension;
 
   /** The separator to choose for the CSV file */
+  @Injection( name = "SEPARATOR" )
   private String separator;
 
   /** The enclosure to use in case the separator is part of a field's value */
+  @Injection( name = "ENCLOSURE" )
   private String enclosure;
 
   /** Setting to allow the enclosure to be always surrounding a String value, even when there is no separator inside */
+  @Injection( name = "FORCE_ENCLOSURE" )
   private boolean enclosureForced;
 
   /**
    * Setting to allow for backwards compatibility where the enclosure did not show up at all if Force Enclosure was not
    * checked
    */
+  @Injection( name = "DISABLE_ENCLOSURE_FIX" )
   private boolean disableEnclosureFix;
 
   /** Add a header at the top of the file? */
+  @Injection( name = "HEADER" )
   private boolean headerEnabled;
 
   /** Add a footer at the bottom of the file? */
+  @Injection( name = "FOOTER" )
   private boolean footerEnabled;
 
   /** The file format: DOS or Unix */
+  @Injection( name = "FORMAT" )
   private String fileFormat;
 
   /** The file compression: None, Zip or Gzip */
+  @Injection( name = "COMPRESSION" )
   private String fileCompression;
 
   /** if this value is larger then 0, the text file is split up into parts of this number of lines */
+  @Injection( name = "SPLIT_EVERY" )
   private int splitEvery;
 
   /** Flag to indicate the we want to append to the end of an existing file (if it exists) */
+  @Injection( name = "APPEND" )
   private boolean fileAppended;
 
   /** Flag: add the stepnr in the filename */
+  @Injection( name = "INC_STEPNR_IN_FILENAME" )
   private boolean stepNrInFilename;
 
   /** Flag: add the partition number in the filename */
+  @Injection( name = "INC_PARTNR_IN_FILENAME" )
   private boolean partNrInFilename;
 
   /** Flag: add the date in the filename */
+  @Injection( name = "INC_DATE_IN_FILENAME" )
   private boolean dateInFilename;
 
   /** Flag: add the time in the filename */
+  @Injection( name = "INC_TIME_IN_FILENAME" )
   private boolean timeInFilename;
 
   /** Flag: pad fields to their specified length */
+  @Injection( name = "RIGHT_PAD_FIELDS" )
   private boolean padded;
 
   /** Flag: Fast dump data without field formatting */
+  @Injection( name = "FAST_DATA_DUMP" )
   private boolean fastDump;
 
   /* THE FIELD SPECIFICATIONS ... */
 
   /** The output fields */
+  @InjectionDeep
   private TextFileField[] outputFields;
 
   /** The encoding to use for reading: null or empty string means system default encoding */
+  @Injection( name = "ENCODING" )
   private String encoding;
 
   /** The string to use for append to end line of the whole file: null or empty string means no line needed */
+  @Injection( name = "ADD_ENDING_LINE" )
   private String endedLine;
 
   /* Specification if file name is in field */
 
+  @Injection( name = "FILENAME_IN_FIELD" )
   private boolean fileNameInField;
 
+  @Injection( name = "FILENAME_FIELD" )
   private String fileNameField;
 
   /** Calculated value ... */
+  @Injection( name = "NEW_LINE" )
   private String newline;
 
   /** Flag: add the filenames to result filenames */
+  @Injection( name = "ADD_TO_RESULT" )
   private boolean addToResultFilenames;
 
   /** Flag : Do not open new file when transformation start */
+  @Injection( name = "DO_NOT_CREATE_FILE_AT_STARTUP" )
   private boolean doNotOpenNewFileInit;
 
+  @Injection( name = "SPECIFY_DATE_FORMAT" )
   private boolean specifyingFormat;
 
+  @Injection( name = "DATE_FORMAT" )
   private String dateTimeFormat;
 
   public TextFileOutputMeta() {
@@ -624,6 +658,7 @@ public class TextFileOutputMeta extends BaseStepMeta implements StepMetaInterfac
     this.fileNameField = fileNameField;
   }
 
+  @Override
   public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     readData( stepnode, metaStore );
   }
@@ -632,6 +667,7 @@ public class TextFileOutputMeta extends BaseStepMeta implements StepMetaInterfac
     outputFields = new TextFileField[nrfields];
   }
 
+  @Override
   public Object clone() {
     TextFileOutputMeta retval = (TextFileOutputMeta) super.clone();
     int nrfields = outputFields.length;
@@ -735,7 +771,7 @@ public class TextFileOutputMeta extends BaseStepMeta implements StepMetaInterfac
         outputFields[i].setCurrencySymbol( XMLHandler.getTagValue( fnode, "currency" ) );
         outputFields[i].setDecimalSymbol( XMLHandler.getTagValue( fnode, "decimal" ) );
         outputFields[i].setGroupingSymbol( XMLHandler.getTagValue( fnode, "group" ) );
-        outputFields[i].setTrimType( ValueMeta.getTrimTypeByCode( XMLHandler.getTagValue( fnode, "trim_type" ) ) );
+        outputFields[i].setTrimType( ValueMetaString.getTrimTypeByCode( XMLHandler.getTagValue( fnode, "trim_type" ) ) );
         outputFields[i].setNullString( XMLHandler.getTagValue( fnode, "nullif" ) );
         outputFields[i].setLength( Const.toInt( XMLHandler.getTagValue( fnode, "length" ), -1 ) );
         outputFields[i].setPrecision( Const.toInt( XMLHandler.getTagValue( fnode, "precision" ), -1 ) );
@@ -767,6 +803,7 @@ public class TextFileOutputMeta extends BaseStepMeta implements StepMetaInterfac
     return nl;
   }
 
+  @Override
   public void setDefault() {
     createparentfolder = true; // Default createparentfolder to true
     separator = ";";
@@ -918,6 +955,7 @@ public class TextFileOutputMeta extends BaseStepMeta implements StepMetaInterfac
     return retval;
   }
 
+  @Override
   public void getFields( RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep,
       VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     // No values are added to the row in this type of step
@@ -954,8 +992,9 @@ public class TextFileOutputMeta extends BaseStepMeta implements StepMetaInterfac
     getFields( inputRowMeta, name, info, nextStep, space, null, null );
   }
 
+  @Override
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 800 );
+    StringBuilder retval = new StringBuilder( 800 );
 
     retval.append( "    " ).append( XMLHandler.addTagValue( "separator", separator ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "enclosure", enclosure ) );
@@ -1014,6 +1053,7 @@ public class TextFileOutputMeta extends BaseStepMeta implements StepMetaInterfac
     return retval.toString();
   }
 
+  @Override
   public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
     throws KettleException {
     try {
@@ -1076,7 +1116,7 @@ public class TextFileOutputMeta extends BaseStepMeta implements StepMetaInterfac
         outputFields[i].setCurrencySymbol( rep.getStepAttributeString( id_step, i, "field_currency" ) );
         outputFields[i].setDecimalSymbol( rep.getStepAttributeString( id_step, i, "field_decimal" ) );
         outputFields[i].setGroupingSymbol( rep.getStepAttributeString( id_step, i, "field_group" ) );
-        outputFields[i].setTrimType( ValueMeta.getTrimTypeByCode( rep.getStepAttributeString( id_step, i,
+        outputFields[i].setTrimType( ValueMetaString.getTrimTypeByCode( rep.getStepAttributeString( id_step, i,
             "field_trim_type" ) ) );
         outputFields[i].setNullString( rep.getStepAttributeString( id_step, i, "field_nullif" ) );
         outputFields[i].setLength( (int) rep.getStepAttributeInteger( id_step, i, "field_length" ) );
@@ -1089,6 +1129,7 @@ public class TextFileOutputMeta extends BaseStepMeta implements StepMetaInterfac
     }
   }
 
+  @Override
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
     throws KettleException {
     try {
@@ -1142,6 +1183,7 @@ public class TextFileOutputMeta extends BaseStepMeta implements StepMetaInterfac
     }
   }
 
+  @Override
   public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
       String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
       IMetaStore metaStore ) {
@@ -1196,11 +1238,13 @@ public class TextFileOutputMeta extends BaseStepMeta implements StepMetaInterfac
     remarks.add( cr );
   }
 
+  @Override
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta,
       Trans trans ) {
     return new TextFileOutput( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 
+  @Override
   public StepDataInterface getStepData() {
     return new TextFileOutputData();
   }
@@ -1220,6 +1264,7 @@ public class TextFileOutputMeta extends BaseStepMeta implements StepMetaInterfac
    *
    * @return the filename of the exported resource
    */
+  @Override
   public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
       ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore )
     throws KettleException {
@@ -1247,10 +1292,6 @@ public class TextFileOutputMeta extends BaseStepMeta implements StepMetaInterfac
   }
 
   @Override
-  public StepMetaInjectionInterface getStepMetaInjectionInterface() {
-    return new TextFileOutputMetaInjection( this );
-  }
-
   public List<StepInjectionMetaEntry> extractStepMetadataEntries() throws KettleException {
     return getStepMetaInjectionInterface().extractStepMetadataEntries();
   }
@@ -1259,7 +1300,7 @@ public class TextFileOutputMeta extends BaseStepMeta implements StepMetaInterfac
     return XMLHandler.getTagValue( stepnode, "file", "name" );
   }
 
-  protected void saveSource( StringBuffer retVal, String value ) {
+  protected void saveSource( StringBuilder retVal, String value ) {
     retVal.append( "      " ).append( XMLHandler.addTagValue( "name", fileName ) );
   }
 

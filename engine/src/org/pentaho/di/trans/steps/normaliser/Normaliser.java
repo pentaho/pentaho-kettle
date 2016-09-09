@@ -77,12 +77,12 @@ public class Normaliser extends BaseStep implements StepInterface {
       //
       data.type_occ = new ArrayList<String>();
       data.maxlen = 0;
-      for ( int i = 0; i < meta.getFieldValue().length; i++ ) {
-        if ( !data.type_occ.contains( meta.getFieldValue()[i] ) ) {
-          data.type_occ.add( meta.getFieldValue()[i] );
+      for ( int i = 0; i < meta.getNormaliserFields().length; i++ ) {
+        if ( !data.type_occ.contains( meta.getNormaliserFields()[i].getValue() ) ) {
+          data.type_occ.add( meta.getNormaliserFields()[i].getValue() );
         }
-        if ( meta.getFieldValue()[i].length() > data.maxlen ) {
-          data.maxlen = meta.getFieldValue()[i].length();
+        if ( meta.getNormaliserFields()[i].getValue().length() > data.maxlen ) {
+          data.maxlen = meta.getNormaliserFields()[i].getValue().length();
         }
       }
 
@@ -92,18 +92,18 @@ public class Normaliser extends BaseStep implements StepInterface {
 
       for ( int i = 0; i < data.inputRowMeta.size(); i++ ) {
         ValueMetaInterface v = data.inputRowMeta.getValueMeta( i );
-        if ( Const.indexOfString( v.getName(), meta.getFieldName() ) < 0 ) {
+        if ( Const.indexOfString( v.getName(), meta.getFieldNames() ) < 0 ) {
           data.copy_fieldnrs.add( Integer.valueOf( i ) );
         }
       }
 
       // Cache lookup indexes of fields
       //
-      data.fieldnrs = new int[meta.getFieldName().length];
-      for ( int i = 0; i < meta.getFieldName().length; i++ ) {
-        data.fieldnrs[i] = data.inputRowMeta.indexOfValue( meta.getFieldName()[i] );
+      data.fieldnrs = new int[meta.getNormaliserFields().length];
+      for ( int i = 0; i < meta.getNormaliserFields().length; i++ ) {
+        data.fieldnrs[i] = data.inputRowMeta.indexOfValue( meta.getNormaliserFields()[i].getName() );
         if ( data.fieldnrs[i] < 0 ) {
-          logError( BaseMessages.getString( PKG, "Normaliser.Log.CouldNotFindFieldInRow", meta.getFieldName()[i] ) );
+          logError( BaseMessages.getString( PKG, "Normaliser.Log.CouldNotFindFieldInRow", meta.getNormaliserFields()[i].getName() ) );
           setErrors( 1 );
           stopAll();
           return false;
@@ -137,7 +137,8 @@ public class Normaliser extends BaseStep implements StepInterface {
       //
       for ( int i = 0; i < data.fieldnrs.length; i++ ) {
         Object value = r[data.fieldnrs[i]];
-        if ( meta.getFieldValue()[i].equalsIgnoreCase( typevalue ) ) {
+        String fieldValue = meta.getNormaliserFields()[i].getValue();
+        if ( fieldValue.equalsIgnoreCase( typevalue ) ) {
           outputRowData[outputIndex++] = value;
         }
       }

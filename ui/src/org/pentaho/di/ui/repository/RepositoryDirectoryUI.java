@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,6 +24,8 @@ package org.pentaho.di.ui.repository;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -33,7 +35,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TreeItem;
-
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
@@ -80,10 +81,17 @@ public class RepositoryDirectoryUI {
     ti.setData( "isFolder", true );
 
     // First, we draw the directories
-    for ( int i = 0; i < dir.getNrSubdirectories(); i++ ) {
-      RepositoryDirectory subdir = dir.getSubdirectory( i );
+    List<RepositoryDirectoryInterface> children = dir.getChildren();
+    Collections.sort( children, new Comparator<RepositoryDirectoryInterface>() {
+      @Override
+      public int compare( RepositoryDirectoryInterface o1, RepositoryDirectoryInterface o2 ) {
+        return o1.getName().compareToIgnoreCase( o2.getName() );
+      }
+    } );
+    for ( int i = 0; i < children.size(); i++ ) {
+      RepositoryDirectory subdir = (RepositoryDirectory) children.get( i );
       TreeItem subti = new TreeItem( ti, SWT.NONE );
-      subti.setImage( GUIResource.getInstance().getImageArrow() );
+      subti.setImage( GUIResource.getInstance().getImageFolder() );
       subti.setData( "isFolder", true );
       getTreeWithNames(
         subti, rep, dircolor, sortPosition, includeDeleted, ascending, getTransformations, getJobs, subdir,
@@ -169,9 +177,9 @@ public class RepositoryDirectoryUI {
           TreeItem tiObject = new TreeItem( ti, SWT.NONE );
           tiObject.setData( repositoryObject );
           if ( repositoryObject.getObjectType() == RepositoryObjectType.TRANSFORMATION ) {
-            tiObject.setImage( GUIResource.getInstance().getImageTransGraph() );
+            tiObject.setImage( GUIResource.getInstance().getImageTransRepo() );
           } else if ( repositoryObject.getObjectType() == RepositoryObjectType.JOB ) {
-            tiObject.setImage( GUIResource.getInstance().getImageJobGraph() );
+            tiObject.setImage( GUIResource.getInstance().getImageJobRepo() );
           }
 
           SimpleDateFormat simpleDateFormat = new SimpleDateFormat( "yyyy/MM/dd HH:mm:ss" );
@@ -228,7 +236,7 @@ public class RepositoryDirectoryUI {
     for ( int i = 0; i < dir.getNrSubdirectories(); i++ ) {
       RepositoryDirectory subdir = dir.getSubdirectory( i );
       TreeItem subti = new TreeItem( ti, SWT.NONE );
-      subti.setImage( GUIResource.getInstance().getImageArrow() );
+      subti.setImage( GUIResource.getInstance().getImageFolder() );
       getDirectoryTree( subti, dircolor, subdir );
     }
   }

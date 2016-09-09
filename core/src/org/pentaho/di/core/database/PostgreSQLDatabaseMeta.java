@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,7 +27,7 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 
 /**
  * Contains PostgreSQL specific information through static final members
- * 
+ *
  * @author Matt
  * @since 11-mrt-2005
  */
@@ -82,7 +82,7 @@ public class PostgreSQLDatabaseMeta extends BaseDatabaseMeta implements Database
 
   /**
    * Checks whether or not the command setFetchSize() is supported by the JDBC driver...
-   * 
+   *
    * @return true is setFetchSize() is supported!
    */
   @Override
@@ -108,6 +108,11 @@ public class PostgreSQLDatabaseMeta extends BaseDatabaseMeta implements Database
 
   @Override
   public boolean supportsSequences() {
+    return true;
+  }
+
+  @Override
+  public boolean supportsSequenceNoMaxValueOption() {
     return true;
   }
 
@@ -157,7 +162,7 @@ public class PostgreSQLDatabaseMeta extends BaseDatabaseMeta implements Database
 
   /**
    * Get the SQL to get the next value of a sequence. (PostgreSQL version)
-   * 
+   *
    * @param sequenceName
    *          The sequence name
    * @return the SQL to get the next value of a sequence.
@@ -169,7 +174,7 @@ public class PostgreSQLDatabaseMeta extends BaseDatabaseMeta implements Database
 
   /**
    * Get the SQL to get the next value of a sequence. (PostgreSQL version)
-   * 
+   *
    * @param sequenceName
    *          The sequence name
    * @return the SQL to get the next value of a sequence.
@@ -181,7 +186,7 @@ public class PostgreSQLDatabaseMeta extends BaseDatabaseMeta implements Database
 
   /**
    * Check if a sequence exists.
-   * 
+   *
    * @param sequenceName
    *          The sequence to check
    * @return The SQL to get the name of the sequence back from the databases data dictionary
@@ -194,7 +199,7 @@ public class PostgreSQLDatabaseMeta extends BaseDatabaseMeta implements Database
 
   /**
    * Generates the SQL statement to add a column to the specified table
-   * 
+   *
    * @param tablename
    *          The table to add
    * @param v
@@ -217,7 +222,7 @@ public class PostgreSQLDatabaseMeta extends BaseDatabaseMeta implements Database
 
   /**
    * Generates the SQL statement to drop a column from the specified table
-   * 
+   *
    * @param tablename
    *          The table to add
    * @param v
@@ -240,7 +245,7 @@ public class PostgreSQLDatabaseMeta extends BaseDatabaseMeta implements Database
 
   /**
    * Generates the SQL statement to modify a column in the specified table
-   * 
+   *
    * @param tablename
    *          The table to add
    * @param v
@@ -305,6 +310,7 @@ public class PostgreSQLDatabaseMeta extends BaseDatabaseMeta implements Database
 
     int type = v.getType();
     switch ( type ) {
+      case ValueMetaInterface.TYPE_TIMESTAMP:
       case ValueMetaInterface.TYPE_DATE:
         retval += "TIMESTAMP";
         break;
@@ -365,7 +371,7 @@ public class PostgreSQLDatabaseMeta extends BaseDatabaseMeta implements Database
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.core.database.DatabaseInterface#getSQLListOfProcedures()
    */
   @Override
@@ -376,7 +382,7 @@ public class PostgreSQLDatabaseMeta extends BaseDatabaseMeta implements Database
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.core.database.DatabaseInterface#getReservedWords()
    */
   @Override
@@ -521,7 +527,7 @@ public class PostgreSQLDatabaseMeta extends BaseDatabaseMeta implements Database
 
   /**
    * PG needs the extra E in front of the string before it allows you to quote it. Imagine that.
-   * 
+   *
    * @param string
    * @return A string that is properly quoted for use in a SQL statement (insert, update, delete, etc)
    */

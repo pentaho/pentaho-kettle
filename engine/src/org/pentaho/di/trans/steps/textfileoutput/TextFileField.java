@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,7 +22,9 @@
 
 package org.pentaho.di.trans.steps.textfileoutput;
 
-import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.injection.Injection;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
+import org.pentaho.di.core.row.value.ValueMetaString;
 
 /**
  * Describes a single field in a text file
@@ -32,22 +34,30 @@ import org.pentaho.di.core.row.ValueMeta;
  *
  */
 public class TextFileField implements Cloneable {
+  @Injection( name = "OUTPUT_FIELDNAME", group = "OUTPUT_FIELDS" )
   private String name;
 
   private int type;
 
+  @Injection( name = "OUTPUT_FORMAT", group = "OUTPUT_FIELDS" )
   private String format;
 
-  private int length;
+  @Injection( name = "OUTPUT_LENGTH", group = "OUTPUT_FIELDS" )
+  private int length = -1;
 
-  private int precision;
+  @Injection( name = "OUTPUT_PRECISION", group = "OUTPUT_FIELDS" )
+  private int precision = -1;
 
+  @Injection( name = "OUTPUT_CURRENCY", group = "OUTPUT_FIELDS" )
   private String currencySymbol;
 
+  @Injection( name = "OUTPUT_DECIMAL", group = "OUTPUT_FIELDS" )
   private String decimalSymbol;
 
+  @Injection( name = "OUTPUT_GROUP", group = "OUTPUT_FIELDS" )
   private String groupingSymbol;
 
+  @Injection( name = "OUTPUT_NULL", group = "OUTPUT_FIELDS" )
   private String nullString;
 
   private int trimType;
@@ -80,6 +90,7 @@ public class TextFileField implements Cloneable {
     return name.equals( field.getName() );
   }
 
+  @Override
   public Object clone() {
     try {
       Object retval = super.clone();
@@ -110,15 +121,16 @@ public class TextFileField implements Cloneable {
   }
 
   public String getTypeDesc() {
-    return ValueMeta.getTypeDesc( type );
+    return ValueMetaFactory.getValueMetaName( type );
   }
 
   public void setType( int type ) {
     this.type = type;
   }
 
+  @Injection( name = "OUTPUT_TYPE", group = "OUTPUT_FIELDS" )
   public void setType( String typeDesc ) {
-    this.type = ValueMeta.getType( typeDesc );
+    this.type = ValueMetaFactory.getIdForValueMeta( typeDesc );
   }
 
   public String getFormat() {
@@ -169,6 +181,7 @@ public class TextFileField implements Cloneable {
     this.nullString = null_string;
   }
 
+  @Override
   public String toString() {
     return name + ":" + getTypeDesc();
   }
@@ -181,11 +194,16 @@ public class TextFileField implements Cloneable {
     this.trimType = trimType;
   }
 
+  @Injection( name = "OUTPUT_TRIM", group = "OUTPUT_FIELDS" )
+  public void setTrimTypeByDesc( String value ) {
+    this.trimType = ValueMetaString.getTrimTypeByDesc( value );
+  }
+
   public String getTrimTypeCode() {
-    return ValueMeta.getTrimTypeCode( trimType );
+    return ValueMetaString.getTrimTypeCode( trimType );
   }
 
   public String getTrimTypeDesc() {
-    return ValueMeta.getTrimTypeDesc( trimType );
+    return ValueMetaString.getTrimTypeDesc( trimType );
   }
 }

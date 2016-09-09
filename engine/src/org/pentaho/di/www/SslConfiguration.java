@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,6 +23,7 @@ package org.pentaho.di.www;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -139,17 +140,17 @@ public class SslConfiguration {
 
   public String getXML() {
     StringBuilder xml = new StringBuilder();
-    xml.append( "<" ).append( XML_TAG ).append( ">" );
+    xml.append( "        " ).append( XMLHandler.openTag( XML_TAG ) ).append( Const.CR );
     addXmlValue( xml, XML_TAG_KEY_STORE, keyStore );
     addXmlValue( xml, XML_TAG_KEY_STORE_PASSWORD, encrypt( keyStorePassword ) );
     addXmlValue( xml, XML_TAG_KEY_PASSWORD, encrypt( keyPassword ) );
-    xml.append( "</" ).append( XML_TAG ).append( ">" );
+    xml.append( "        " ).append( XMLHandler.closeTag( XML_TAG ) ).append( Const.CR );
     return xml.toString();
   }
 
   private static void addXmlValue( StringBuilder xml, String key, String value ) {
     if ( !StringUtils.isBlank( value ) ) {
-      xml.append( XMLHandler.addTagValue( key, value, false ) );
+      xml.append( "          " ).append( XMLHandler.addTagValue( key, value, false ) );
     }
   }
 

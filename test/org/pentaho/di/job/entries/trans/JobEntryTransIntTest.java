@@ -29,7 +29,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 
-import org.apache.commons.vfs.FileObject;
+import org.apache.commons.vfs2.FileObject;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.pentaho.di.TestUtilities;

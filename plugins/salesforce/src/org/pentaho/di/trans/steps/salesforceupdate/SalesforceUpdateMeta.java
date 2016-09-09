@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -29,7 +29,6 @@ import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
@@ -41,30 +40,23 @@ import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.step.StepMetaInterface;
-import org.pentaho.di.trans.steps.salesforceinput.SalesforceConnectionUtils;
+import org.pentaho.di.trans.steps.salesforce.SalesforceStepMeta;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
-@Step(id="SalesforceUpdate", i18nPackageName="org.pentaho.di.trans.steps.salesforceupdate", name="SalesforceUpdate.TypeLongDesc.SalesforceUpdate", description="SalesforceUpdate.TypeTooltipDesc.SalesforceUpdate", categoryDescription="i18n:org.pentaho.di.trans.step:BaseStep.Category.Output", image="SFUD.svg", documentationUrl="http://wiki.pentaho.com/display/EAI/Salesforce+Update")
-public class SalesforceUpdateMeta extends BaseStepMeta implements StepMetaInterface {
+@Step(
+    id = "SalesforceUpdate",
+    i18nPackageName = "org.pentaho.di.trans.steps.salesforceupdate",
+    name = "SalesforceUpdate.TypeLongDesc.SalesforceUpdate",
+    description = "SalesforceUpdate.TypeTooltipDesc.SalesforceUpdate",
+    categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Output",
+    image = "SFUD.svg",
+    documentationUrl = "http://wiki.pentaho.com/display/EAI/Salesforce+Update" )
+public class SalesforceUpdateMeta extends SalesforceStepMeta {
   private static Class<?> PKG = SalesforceUpdateMeta.class; // for i18n purposes, needed by Translator2!!
-
-  /** The salesforce url */
-  private String targeturl;
-
-  /** The userName */
-  private String username;
-
-  /** The password */
-  private String password;
-
-  /** The module */
-  private String module;
 
   /** Field value to update */
   private String[] updateLookup;
@@ -77,11 +69,6 @@ public class SalesforceUpdateMeta extends BaseStepMeta implements StepMetaInterf
 
   /** Batch size */
   private String batchSize;
-
-  /** The time out */
-  private String timeout;
-
-  private boolean useCompression;
 
   private boolean rollbackAllChangesOnError;
 
@@ -102,36 +89,6 @@ public class SalesforceUpdateMeta extends BaseStepMeta implements StepMetaInterf
    */
   public void setRollbackAllChangesOnError( boolean rollbackAllChangesOnError ) {
     this.rollbackAllChangesOnError = rollbackAllChangesOnError;
-  }
-
-  /**
-   * @return Returns the useCompression.
-   */
-  public boolean isUsingCompression() {
-    return useCompression;
-  }
-
-  /**
-   * @param useCompression
-   *          The useCompression to set.
-   */
-  public void setUseCompression( boolean useCompression ) {
-    this.useCompression = useCompression;
-  }
-
-  /**
-   * @param TimeOut
-   *          The TimeOut to set.
-   */
-  public void setTimeOut( String TimeOut ) {
-    this.timeout = TimeOut;
-  }
-
-  /**
-   * @return Returns the TimeOut.
-   */
-  public String getTimeOut() {
-    return timeout;
   }
 
   /**
@@ -180,51 +137,6 @@ public class SalesforceUpdateMeta extends BaseStepMeta implements StepMetaInterf
   }
 
   /**
-   * @return Returns the UserName.
-   */
-  public String getUserName() {
-    return username;
-  }
-
-  /**
-   * @param user_name
-   *          The UserNAme to set.
-   */
-  public void setUserName( String user_name ) {
-    this.username = user_name;
-  }
-
-  /**
-   * @return Returns the Password.
-   */
-  public String getPassword() {
-    return password;
-  }
-
-  /**
-   * @param passwd
-   *          The password to set.
-   */
-  public void setPassword( String passwd ) {
-    this.password = passwd;
-  }
-
-  /**
-   * @return Returns the module.
-   */
-  public String getModule() {
-    return module;
-  }
-
-  /**
-   * @param module
-   *          The module to set.
-   */
-  public void setModule( String module ) {
-    this.module = module;
-  }
-
-  /**
    * @param batch
    *          size.
    */
@@ -243,22 +155,8 @@ public class SalesforceUpdateMeta extends BaseStepMeta implements StepMetaInterf
     return Const.toInt( this.batchSize, 10 );
   }
 
-  /**
-   * @return Returns the targeturl.
-   */
-  public String getTargetURL() {
-    return targeturl;
-  }
-
-  /**
-   * @param url
-   *          The url to set.
-   */
-  public void setTargetURL( String urlvalue ) {
-    this.targeturl = urlvalue;
-  }
-
   public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
+    super.loadXML( stepnode, databases, metaStore );
     readData( stepnode );
   }
 
@@ -279,44 +177,28 @@ public class SalesforceUpdateMeta extends BaseStepMeta implements StepMetaInterf
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer();
-    retval.append( "    " + XMLHandler.addTagValue( "targeturl", targeturl ) );
-    retval.append( "    " + XMLHandler.addTagValue( "username", username ) );
-    retval.append( "    "
-      + XMLHandler.addTagValue( "password", Encr.encryptPasswordIfNotUsingVariables( password ), false ) );
-    retval.append( "    " + XMLHandler.addTagValue( "module", module ) );
-    retval.append( "    " + XMLHandler.addTagValue( "batchSize", batchSize ) );
+    StringBuilder retval = new StringBuilder( super.getXML() );
+    retval.append( "    " + XMLHandler.addTagValue( "batchSize", getBatchSize() ) );
 
     retval.append( "    <fields>" + Const.CR );
 
     for ( int i = 0; i < updateLookup.length; i++ ) {
       retval.append( "      <field>" ).append( Const.CR );
-      retval.append( "        " ).append( XMLHandler.addTagValue( "name", updateLookup[i] ) );
-      retval.append( "        " ).append( XMLHandler.addTagValue( "field", updateStream[i] ) );
+      retval.append( "        " ).append( XMLHandler.addTagValue( "name", getUpdateLookup()[i] ) );
+      retval.append( "        " ).append( XMLHandler.addTagValue( "field", getUpdateStream()[i] ) );
       retval.append( "        " ).append(
-        XMLHandler.addTagValue( "useExternalId", useExternalId[i].booleanValue() ) );
+        XMLHandler.addTagValue( "useExternalId", getUseExternalId()[i].booleanValue() ) );
       retval.append( "      </field>" ).append( Const.CR );
     }
 
     retval.append( "      </fields>" + Const.CR );
-    retval.append( "    " + XMLHandler.addTagValue( "timeout", timeout ) );
-    retval.append( "    " + XMLHandler.addTagValue( "useCompression", useCompression ) );
-    retval.append( "    " + XMLHandler.addTagValue( "rollbackAllChangesOnError", rollbackAllChangesOnError ) );
+    retval.append( "    " + XMLHandler.addTagValue( "rollbackAllChangesOnError", isRollbackAllChangesOnError() ) );
     return retval.toString();
   }
 
   private void readData( Node stepnode ) throws KettleXMLException {
     try {
-      targeturl = XMLHandler.getTagValue( stepnode, "targeturl" );
-      username = XMLHandler.getTagValue( stepnode, "username" );
-      password = XMLHandler.getTagValue( stepnode, "password" );
-      if ( password != null && password.startsWith( "Encrypted" ) ) {
-        password = Encr.decryptPassword( password.replace( "Encrypted", "" ).replace( " ", "" ) );
-      }
-
-      module = XMLHandler.getTagValue( stepnode, "module" );
-
-      batchSize = XMLHandler.getTagValue( stepnode, "batchSize" );
+      setBatchSize( XMLHandler.getTagValue( stepnode, "batchSize" ) );
 
       Node fields = XMLHandler.getSubNode( stepnode, "fields" );
       int nrFields = XMLHandler.countNodes( fields, "field" );
@@ -344,38 +226,26 @@ public class SalesforceUpdateMeta extends BaseStepMeta implements StepMetaInterf
         }
 
       }
-      useCompression = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "useCompression" ) );
-      rollbackAllChangesOnError =
-        "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "rollbackAllChangesOnError" ) );
-      timeout = XMLHandler.getTagValue( stepnode, "timeout" );
+      setRollbackAllChangesOnError(
+        "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "rollbackAllChangesOnError" ) ) );
     } catch ( Exception e ) {
       throw new KettleXMLException( "Unable to load step info from XML", e );
     }
   }
 
   public void allocate( int nrvalues ) {
-    updateLookup = new String[nrvalues];
-    updateStream = new String[nrvalues];
-    useExternalId = new Boolean[nrvalues];
+    setUpdateLookup( new String[nrvalues] );
+    setUpdateStream( new String[nrvalues] );
+    setUseExternalId( new Boolean[nrvalues] );
   }
 
   public void setDefault() {
-    targeturl = SalesforceConnectionUtils.TARGET_DEFAULT_URL;
-    password = "";
-    module = "Account";
-    batchSize = "10";
+    super.setDefault();
+    setBatchSize( "10" );
 
-    int nrFields = 0;
-    allocate( nrFields );
+    allocate( 0 );
 
-    for ( int i = 0; i < nrFields; i++ ) {
-      updateLookup[i] = "name" + ( i + 1 );
-      updateStream[i] = "field" + ( i + 1 );
-      useExternalId[i] = Boolean.FALSE;
-    }
-    useCompression = false;
-    rollbackAllChangesOnError = false;
-    timeout = "60000";
+    setRollbackAllChangesOnError( false );
   }
 
   /* This function adds meta data to the rows being pushed out */
@@ -385,12 +255,9 @@ public class SalesforceUpdateMeta extends BaseStepMeta implements StepMetaInterf
   }
 
   public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
+    super.readRep( rep, metaStore, id_step, databases );
     try {
-      targeturl = rep.getStepAttributeString( id_step, "targeturl" );
-      module = rep.getStepAttributeString( id_step, "module" );
-      username = rep.getStepAttributeString( id_step, "username" );
-      password = rep.getStepAttributeString( id_step, "password" );
-      batchSize = rep.getStepAttributeString( id_step, "batchSize" );
+      setBatchSize( rep.getStepAttributeString( id_step, "batchSize" ) );
       int nrFields = rep.countNrStepAttributes( id_step, "field_name" );
       allocate( nrFields );
 
@@ -400,9 +267,7 @@ public class SalesforceUpdateMeta extends BaseStepMeta implements StepMetaInterf
         useExternalId[i] =
           Boolean.valueOf( rep.getStepAttributeBoolean( id_step, i, "field_useExternalId", false ) );
       }
-      useCompression = rep.getStepAttributeBoolean( id_step, "useCompression" );
-      timeout = rep.getStepAttributeString( id_step, "timeout" );
-      rollbackAllChangesOnError = rep.getStepAttributeBoolean( id_step, "rollbackAllChangesOnError" );
+      setRollbackAllChangesOnError( rep.getStepAttributeBoolean( id_step, "rollbackAllChangesOnError" ) );
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString(
         PKG, "SalesforceUpdateMeta.Exception.ErrorReadingRepository" ), e );
@@ -410,23 +275,18 @@ public class SalesforceUpdateMeta extends BaseStepMeta implements StepMetaInterf
   }
 
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
+    super.saveRep( rep, metaStore, id_transformation, id_step );
     try {
-      rep.saveStepAttribute( id_transformation, id_step, "targeturl", targeturl );
-      rep.saveStepAttribute( id_transformation, id_step, "batchSize", batchSize );
-      rep.saveStepAttribute( id_transformation, id_step, "module", module );
-      rep.saveStepAttribute( id_transformation, id_step, "username", username );
-      rep.saveStepAttribute( id_transformation, id_step, "password", password );
+      rep.saveStepAttribute( id_transformation, id_step, "batchSize", getBatchSize() );
 
       for ( int i = 0; i < updateLookup.length; i++ ) {
-        rep.saveStepAttribute( id_transformation, id_step, i, "field_name", updateLookup[i] );
-        rep.saveStepAttribute( id_transformation, id_step, i, "field_attribut", updateStream[i] );
-        rep.saveStepAttribute( id_transformation, id_step, i, "field_useExternalId", useExternalId[i]
+        rep.saveStepAttribute( id_transformation, id_step, i, "field_name", getUpdateLookup()[i] );
+        rep.saveStepAttribute( id_transformation, id_step, i, "field_attribut", getUpdateStream()[i] );
+        rep.saveStepAttribute( id_transformation, id_step, i, "field_useExternalId", getUseExternalId()[i]
           .booleanValue() );
 
       }
-      rep.saveStepAttribute( id_transformation, id_step, "useCompression", useCompression );
-      rep.saveStepAttribute( id_transformation, id_step, "timeout", timeout );
-      rep.saveStepAttribute( id_transformation, id_step, "rollbackAllChangesOnError", rollbackAllChangesOnError );
+      rep.saveStepAttribute( id_transformation, id_step, "rollbackAllChangesOnError", isRollbackAllChangesOnError() );
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString(
         PKG, "SalesforceUpdateMeta.Exception.ErrorSavingToRepository", "" + id_step ), e );
@@ -436,10 +296,11 @@ public class SalesforceUpdateMeta extends BaseStepMeta implements StepMetaInterf
   public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
     RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
+    super.check( remarks, transMeta, stepMeta, prev, input, output, info, space, repository, metaStore );
     CheckResult cr;
 
     // See if we get input...
-    if ( input.length > 0 ) {
+    if ( input != null && input.length > 0 ) {
       cr =
         new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
           PKG, "SalesforceUpdateMeta.CheckResult.NoInputExpected" ), stepMeta );
@@ -450,44 +311,8 @@ public class SalesforceUpdateMeta extends BaseStepMeta implements StepMetaInterf
     }
     remarks.add( cr );
 
-    // check URL
-    if ( Const.isEmpty( targeturl ) ) {
-      cr =
-        new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
-          PKG, "SalesforceUpdateMeta.CheckResult.NoURL" ), stepMeta );
-    } else {
-      cr =
-        new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
-          PKG, "SalesforceUpdateMeta.CheckResult.URLOk" ), stepMeta );
-    }
-    remarks.add( cr );
-
-    // check username
-    if ( Const.isEmpty( username ) ) {
-      cr =
-        new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
-          PKG, "SalesforceUpdateMeta.CheckResult.NoUsername" ), stepMeta );
-    } else {
-      cr =
-        new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
-          PKG, "SalesforceUpdateMeta.CheckResult.UsernameOk" ), stepMeta );
-    }
-    remarks.add( cr );
-
-    // check module
-    if ( Const.isEmpty( module ) ) {
-      cr =
-        new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
-          PKG, "SalesforceUpdateMeta.CheckResult.NoModule" ), stepMeta );
-    } else {
-      cr =
-        new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
-          PKG, "SalesforceUpdateMeta.CheckResult.ModuleOk" ), stepMeta );
-    }
-    remarks.add( cr );
-
     // check return fields
-    if ( updateLookup.length == 0 ) {
+    if ( getUpdateLookup().length == 0 ) {
       cr =
         new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
           PKG, "SalesforceUpdateMeta.CheckResult.NoFields" ), stepMeta );

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -29,29 +29,25 @@ package org.pentaho.gis.shapefiles;
  *
  */
 
-public class ShapeNull extends Shape implements ShapeInterface
-{
-	public ShapeNull(byte[] content)
-	{
-		super(Shape.SHAPE_TYPE_NULL);
-	}
-	
-	public ShapeNull()
-	{
-		super(Shape.SHAPE_TYPE_NULL);
-	}
-	
-	// X & Y can be "slighly" different when working whith doubles.
-	// Therefor, we calculate the distance between the 2 points
-	// If the distance is smaller then 0.0001 we consider them equal!
-	//
-	public boolean equals(ShapeNull p)
-	{
-		return false;
-	}
-	
-	public String toString()
-	{
-		return getTypeDesc();
-	}
+public class ShapeNull extends Shape implements ShapeInterface {
+  public ShapeNull( byte[] content ) {
+    super( Shape.SHAPE_TYPE_NULL );
+  }
+
+  public ShapeNull() {
+    super( Shape.SHAPE_TYPE_NULL );
+  }
+
+  // X & Y can be "slightly" different when working with doubles.
+  // Therefore, we calculate the distance between the 2 points
+  // If the distance is smaller then 0.0001 we consider them equal!
+  //
+  public boolean equals( ShapeNull p ) {
+    return false;
+  }
+
+  @Override
+  public String toString() {
+    return getTypeDesc();
+  }
 }

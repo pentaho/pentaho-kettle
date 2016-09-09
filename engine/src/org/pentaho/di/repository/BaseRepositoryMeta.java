@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,7 +23,9 @@
 package org.pentaho.di.repository;
 
 import java.util.List;
+import java.util.Map;
 
+import org.json.simple.JSONObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
@@ -32,9 +34,15 @@ import org.w3c.dom.Node;
 
 public class BaseRepositoryMeta {
 
+  public static final String ID = "id";
+  public static final String DISPLAY_NAME = "displayName";
+  public static final String DESCRIPTION = "description";
+  public static final String IS_DEFAULT = "isDefault";
+
   protected String id;
   protected String name;
   protected String description;
+  protected Boolean isDefault = false;
 
   public BaseRepositoryMeta( String id ) {
     this.id = id;
@@ -95,6 +103,19 @@ public class BaseRepositoryMeta {
     this.description = description;
   }
 
+  /**
+   * @param id
+   * @param name
+   * @param description
+   * @param isDefault
+   */
+  public BaseRepositoryMeta( String id, String name, String description, boolean isDefault ) {
+    this.id = id;
+    this.name = name;
+    this.description = description;
+    this.isDefault = isDefault;
+  }
+
   /*
    * (non-Javadoc)
    *
@@ -106,6 +127,7 @@ public class BaseRepositoryMeta {
       id = Const.NVL( XMLHandler.getTagValue( repnode, "id" ), id );
       name = XMLHandler.getTagValue( repnode, "name" );
       description = XMLHandler.getTagValue( repnode, "description" );
+      isDefault = Boolean.valueOf( XMLHandler.getTagValue( repnode, "is_default" ) );
     } catch ( Exception e ) {
       throw new KettleException( "Unable to load repository meta object", e );
     }
@@ -117,11 +139,12 @@ public class BaseRepositoryMeta {
    * @see org.pentaho.di.repository.RepositoryMeta#getXML()
    */
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 100 );
+    StringBuilder retval = new StringBuilder( 100 );
 
     retval.append( "    " ).append( XMLHandler.addTagValue( "id", id ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "name", name ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "description", description ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "is_default", isDefault.toString() ) );
 
     return retval.toString();
   }
@@ -179,5 +202,43 @@ public class BaseRepositoryMeta {
   public void setDescription( String description ) {
     this.description = description;
   }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.pentaho.di.repository.RepositoryMeta#isDefault()
+   */
+  public Boolean isDefault() {
+    return isDefault;
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.pentaho.di.repository.RepositoryMeta#setDefault(java.lang.Boolean)
+   */
+  public void setDefault( Boolean isDefault ) {
+    this.isDefault = isDefault;
+  }
+
+  @SuppressWarnings( "unchecked" )
+  public JSONObject toJSONObject() {
+    JSONObject jsonObject = new JSONObject();
+    jsonObject.put( ID, getId() );
+    jsonObject.put( DISPLAY_NAME, getName() );
+    jsonObject.put( DESCRIPTION, getDescription() );
+    jsonObject.put( IS_DEFAULT, isDefault() );
+    return jsonObject;
+  }
+
+  public void populate( Map<String, Object> properties, RepositoriesMeta repositoriesMeta ) {
+    String displayName = (String) properties.get( DISPLAY_NAME );
+    String description = (String) properties.get( DESCRIPTION );
+    Boolean isDefault = (Boolean) properties.get( IS_DEFAULT );
+    setName( displayName );
+    setDescription( description );
+    setDefault( isDefault );
+  }
+
 
 }

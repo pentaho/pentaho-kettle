@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,11 +27,16 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Random;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
@@ -41,6 +46,11 @@ import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepInjectionMetaEntry;
 import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
+import org.pentaho.di.trans.steps.loadsave.validator.ArrayLoadSaveValidator;
+import org.pentaho.di.trans.steps.loadsave.validator.DatabaseMetaLoadSaveValidator;
+import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
+import org.pentaho.di.trans.steps.loadsave.validator.StringLoadSaveValidator;
 
 /**
  * Created by gmoran on 2/25/14.
@@ -51,6 +61,72 @@ public class PGBulkLoaderMetaTest {
   private PGBulkLoader loader;
   private PGBulkLoaderData ld;
   private PGBulkLoaderMeta lm;
+
+  LoadSaveTester loadSaveTester;
+  Class<PGBulkLoaderMeta> testMetaClass = PGBulkLoaderMeta.class;
+
+  @Before
+  public void setUpLoadSave() throws Exception {
+    KettleEnvironment.init();
+    PluginRegistry.init( true );
+    List<String> attributes =
+        Arrays.asList( "schemaName", "tableName", "PsqlPath", "loadAction", "dbNameOverride", "delimiter",
+            "enclosure", "stopOnError", "fieldTable", "fieldStream", "dateMask", "databaseMeta" );
+
+    Map<String, String> getterMap = new HashMap<String, String>() {
+      {
+        put( "schemaName", "getSchemaName" );
+        put( "tableName", "getTableName" );
+        put( "PsqlPath", "getPsqlPath" );
+        put( "loadAction", "getLoadAction" );
+        put( "dbNameOverride", "getDbNameOverride" );
+        put( "delimiter", "getDelimiter" );
+        put( "enclosure", "getEnclosure" );
+        put( "stopOnError", "isStopOnError" );
+        put( "fieldTable", "getFieldTable" );
+        put( "fieldStream", "getFieldStream" );
+        put( "dateMask", "getDateMask" );
+        put( "databaseMeta", "getDatabaseMeta" );
+      }
+    };
+    Map<String, String> setterMap = new HashMap<String, String>() {
+      {
+        put( "schemaName", "setSchemaName" );
+        put( "tableName", "setTableName" );
+        put( "PsqlPath", "setPsqlPath" );
+        put( "loadAction", "setLoadAction" );
+        put( "dbNameOverride", "setDbNameOverride" );
+        put( "delimiter", "setDelimiter" );
+        put( "enclosure", "setEnclosure" );
+        put( "stopOnError", "setStopOnError" );
+        put( "fieldTable", "setFieldTable" );
+        put( "fieldStream", "setFieldStream" );
+        put( "dateMask", "setDateMask" );
+        put( "databaseMeta", "setDatabaseMeta" );
+      }
+    };
+    FieldLoadSaveValidator<String[]> stringArrayLoadSaveValidator =
+        new ArrayLoadSaveValidator<String>( new StringLoadSaveValidator(), 5 );
+    FieldLoadSaveValidator<String[]> datemaskArrayLoadSaveValidator =
+        new ArrayLoadSaveValidator<String>( new DateMaskLoadSaveValidator(), 5 );
+
+    Map<String, FieldLoadSaveValidator<?>> attrValidatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();
+    attrValidatorMap.put( "fieldTable", stringArrayLoadSaveValidator );
+    attrValidatorMap.put( "fieldStream", stringArrayLoadSaveValidator );
+    attrValidatorMap.put( "dateMask", datemaskArrayLoadSaveValidator );
+    attrValidatorMap.put( "databaseMeta", new DatabaseMetaLoadSaveValidator() );
+
+    Map<String, FieldLoadSaveValidator<?>> typeValidatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();
+    // typeValidatorMap.put( int[].class.getCanonicalName(), new PrimitiveIntArrayLoadSaveValidator( new IntLoadSaveValidator(), 1 ) );
+
+    loadSaveTester =
+        new LoadSaveTester( testMetaClass, attributes, getterMap, setterMap, attrValidatorMap, typeValidatorMap );
+  }
+
+  @Test
+  public void testSerialization() throws KettleException {
+    loadSaveTester.testSerialization();
+  }
 
   @BeforeClass
   public static void setUpBeforeClass() throws Exception {
@@ -191,4 +267,19 @@ public class PGBulkLoaderMetaTest {
 
   }
 
+  public class DateMaskLoadSaveValidator implements FieldLoadSaveValidator<String> {
+    Random r = new Random();
+    private final String[] masks = new String[] { PGBulkLoaderMeta.DATE_MASK_PASS_THROUGH, PGBulkLoaderMeta.DATE_MASK_DATE, PGBulkLoaderMeta.DATE_MASK_DATETIME };
+
+    @Override
+    public String getTestObject() {
+      int idx = r.nextInt( 3 );
+      return masks[ idx ];
+    }
+
+    @Override
+    public boolean validateTestObject( String test, Object actual ) {
+      return test.equals( actual );
+    }
+  }
 }

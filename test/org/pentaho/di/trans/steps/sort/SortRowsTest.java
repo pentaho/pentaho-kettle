@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -42,7 +42,6 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaDate;
 import org.pentaho.di.core.row.value.ValueMetaInteger;
@@ -53,7 +52,7 @@ import org.pentaho.di.trans.TransTestFactory;
 
 /**
  * Test class for the Sort step.
- * 
+ *
  * @author Sven Boden
  */
 public class SortRowsTest {
@@ -72,8 +71,8 @@ public class SortRowsTest {
     RowMetaInterface rm = new RowMeta();
 
     ValueMetaInterface[] valuesMeta =
-    { new ValueMeta( "KEY1", ValueMeta.TYPE_STRING ),
-      new ValueMeta( "KEY2", ValueMeta.TYPE_STRING ), };
+    { new ValueMetaString( "KEY1" ),
+      new ValueMetaString( "KEY2" ), };
 
     for ( int i = 0; i < valuesMeta.length; i++ ) {
       rm.addValueMeta( valuesMeta[i] );
@@ -103,7 +102,7 @@ public class SortRowsTest {
    * <li>Integer (pre-sorted) 1 grp
    * <li>String (pre-sorted) 2 grp
    * </ul>
-   * 
+   *
    * @return
    */
   List<RowMetaAndData> createGlobalData() {
@@ -339,7 +338,7 @@ public class SortRowsTest {
 
   /**
    * Test for empty input step does not turn into infinity loop
-   * 
+   *
    * @throws Exception
    */
   @Test( timeout = 4000 )
@@ -373,7 +372,7 @@ public class SortRowsTest {
 
   /**
    * Uses 2 fields as a group, sort descending
-   * 
+   *
    * @throws KettleException
    */
   @Test
@@ -408,7 +407,7 @@ public class SortRowsTest {
 
   /**
    * Test that rows can be sorted with one grouping field
-   * 
+   *
    * @throws KettleException
    */
   @Test
@@ -441,7 +440,7 @@ public class SortRowsTest {
 
   /**
    * Test rows are sorted case sensitive
-   * 
+   *
    * @throws KettleException
    */
   @Test
@@ -477,7 +476,7 @@ public class SortRowsTest {
 
   /**
    * Check rows are sorted case insensitive descending.
-   * 
+   *
    * @throws KettleException
    */
   @Test

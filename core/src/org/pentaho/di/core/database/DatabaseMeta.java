@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -36,9 +36,9 @@ import org.pentaho.di.core.plugins.DatabasePluginType;
 import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaBase;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.util.ExecutorUtil;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
@@ -84,6 +84,8 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
   public static final String XML_TAG = "connection";
 
   public static final RepositoryObjectType REPOSITORY_ELEMENT_TYPE = RepositoryObjectType.DATABASE;
+
+  private static final String DROP_TABLE_STATEMENT = "DROP TABLE IF EXISTS ";
 
   // Comparator for sorting databases alphabetically by name
   public static final Comparator<DatabaseMeta> comparator = new Comparator<DatabaseMeta>() {
@@ -1027,7 +1029,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   @Override
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 250 );
+    StringBuilder retval = new StringBuilder( 250 );
 
     retval.append( "  <" ).append( XML_TAG ).append( '>' ).append( Const.CR );
     retval.append( "    " ).append( XMLHandler.addTagValue( "name", getName() ) );
@@ -1112,51 +1114,95 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
     }
     baseUrl = databaseInterface.getURL( environmentSubstitute( hostname ), environmentSubstitute( port ),
       environmentSubstitute( databaseName ) );
-    StringBuffer url = new StringBuffer( environmentSubstitute( baseUrl ) );
+    String url =  environmentSubstitute( baseUrl );
 
     if ( databaseInterface.supportsOptionsInURL() ) {
-      // OK, now add all the options...
-      String optionIndicator = getExtraOptionIndicator();
-      String optionSeparator = getExtraOptionSeparator();
-      String valueSeparator = getExtraOptionValueSeparator();
-
-      Map<String, String> map = getExtraOptions();
-      if ( map.size() > 0 ) {
-        Iterator<String> iterator = map.keySet().iterator();
-        boolean first = true;
-        while ( iterator.hasNext() ) {
-          String typedParameter = iterator.next();
-          int dotIndex = typedParameter.indexOf( '.' );
-          if ( dotIndex >= 0 ) {
-            String typeCode = typedParameter.substring( 0, dotIndex );
-            String parameter = typedParameter.substring( dotIndex + 1 );
-            String value = map.get( typedParameter );
-
-            // Only add to the URL if it's the same database type code...
-            //
-            if ( databaseInterface.getPluginId().equals( typeCode ) ) {
-              if ( first && url.indexOf( valueSeparator ) == -1 ) {
-                url.append( optionIndicator );
-              } else {
-                url.append( optionSeparator );
-              }
-
-              url.append( parameter );
-              if ( !Const.isEmpty( value ) && !value.equals( EMPTY_OPTIONS_STRING ) ) {
-                url.append( valueSeparator ).append( value );
-              }
-              first = false;
-            }
-          }
-        }
-      }
+      url = appendExtraOptions( url, getExtraOptions() );
     }
     // else {
     // We need to put all these options in a Properties file later (Oracle & Co.)
     // This happens at connect time...
     // }
 
-    return url.toString();
+    return url;
+  }
+
+  protected String appendExtraOptions( String url, Map<String, String> extraOptions ) {
+    if ( extraOptions.isEmpty() ) {
+      return url;
+    }
+
+    StringBuilder urlBuilder = new StringBuilder( url );
+
+    final String optionIndicator = getExtraOptionIndicator();
+    final String optionSeparator = getExtraOptionSeparator();
+    final String valueSeparator = getExtraOptionValueSeparator();
+
+    Iterator<String> iterator = extraOptions.keySet().iterator();
+    boolean first = true;
+    while ( iterator.hasNext() ) {
+      String typedParameter = iterator.next();
+      int dotIndex = typedParameter.indexOf( '.' );
+      if ( dotIndex == -1 ) {
+        continue;
+      }
+
+      final String value = extraOptions.get( typedParameter );
+      if ( Const.isEmpty( value ) || value.equals( EMPTY_OPTIONS_STRING ) ) {
+        // skip this science no value is provided
+        continue;
+      }
+
+      final String typeCode = typedParameter.substring( 0, dotIndex );
+      final String parameter = typedParameter.substring( dotIndex + 1 );
+
+      // Only add to the URL if it's the same database type code,
+      // or underlying database is the same for both id's, and any subset of
+      // connection settings for one database is valid for another
+      boolean dbForBothDbInterfacesIsSame = false;
+      try {
+        DatabaseInterface primaryDb = getDbInterface( typeCode );
+        dbForBothDbInterfacesIsSame = databaseForBothDbInterfacesIsTheSame( primaryDb, getDatabaseInterface() );
+      } catch ( KettleDatabaseException e ) {
+        getGeneralLogger().logError(
+          "DatabaseInterface with " + typeCode + " database type is not found! Parameter " + parameter
+            + "won't be appended to URL" );
+      }
+      if ( dbForBothDbInterfacesIsSame ) {
+        if ( first && url.indexOf( valueSeparator ) == -1 ) {
+          urlBuilder.append( optionIndicator );
+        } else {
+          urlBuilder.append( optionSeparator );
+        }
+
+        urlBuilder.append( parameter ).append( valueSeparator ).append( value );
+        first = false;
+      }
+    }
+
+    return urlBuilder.toString();
+  }
+
+  /**
+   * This method is designed to identify whether the actual database for two database connection types is the same.
+   * This situation can occur in two cases:
+   * 1. plugin id of {@code primary} is the same as plugin id of {@code secondary}
+   * 2. {@code secondary} is a descendant {@code primary} (with any deepness).
+   */
+  protected boolean databaseForBothDbInterfacesIsTheSame( DatabaseInterface primary, DatabaseInterface secondary ) {
+    if ( primary == null || secondary == null ) {
+      throw new IllegalArgumentException( "DatabaseInterface shouldn't be null!" );
+    }
+
+    if ( primary.getPluginId() == null || secondary.getPluginId() == null ) {
+      return false;
+    }
+
+    if ( primary.getPluginId().equals( secondary.getPluginId() ) ) {
+      return true;
+    }
+
+    return primary.getClass().isAssignableFrom( secondary.getClass() );
   }
 
   public Properties getConnectionProperties() {
@@ -1189,21 +1235,21 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
   }
 
   public String getExtraOptionIndicator() {
-    return databaseInterface.getExtraOptionIndicator();
+    return getDatabaseInterface().getExtraOptionIndicator();
   }
 
   /**
    * @return The extra option separator in database URL for this platform (usually this is semicolon ; )
    */
   public String getExtraOptionSeparator() {
-    return databaseInterface.getExtraOptionSeparator();
+    return getDatabaseInterface().getExtraOptionSeparator();
   }
 
   /**
    * @return The extra option value separator in database URL for this platform (usually this is the equal sign = )
    */
   public String getExtraOptionValueSeparator() {
-    return databaseInterface.getExtraOptionValueSeparator();
+    return getDatabaseInterface().getExtraOptionValueSeparator();
   }
 
   /**
@@ -1451,10 +1497,24 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
     if ( sbsql == null ) {
       return null;
     }
-    return stripCR( new StringBuffer( sbsql ) );
+    return stripCR( new StringBuilder( sbsql ) );
   }
 
   public String stripCR( StringBuffer sbsql ) {
+    // DB2 Can't handle \n in SQL Statements...
+    if ( !supportsNewLinesInSQL() ) {
+      // Remove CR's
+      for ( int i = sbsql.length() - 1; i >= 0; i-- ) {
+        if ( sbsql.charAt( i ) == '\n' || sbsql.charAt( i ) == '\r' ) {
+          sbsql.setCharAt( i, ' ' );
+        }
+      }
+    }
+
+    return sbsql.toString();
+  }
+
+  public String stripCR( StringBuilder sbsql ) {
     // DB2 Can't handle \n in SQL Statements...
     if ( !supportsNewLinesInSQL() ) {
       // Remove CR's
@@ -1526,8 +1586,8 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
     }
 
     if ( !isPartitioned()
-      && !( getDatabaseInterface() instanceof SAPR3DatabaseMeta
-      || getDatabaseInterface() instanceof GenericDatabaseMeta ) ) {
+      && ( ( (BaseDatabaseMeta) getDatabaseInterface() ).requiresName()
+      && !( getDatabaseInterface() instanceof GenericDatabaseMeta ) ) ) {
       if ( getDatabaseName() == null || getDatabaseName().length() == 0 ) {
         remarks.add( "Please specify the name of the database" );
       }
@@ -1964,7 +2024,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
     final String par = "Parameter";
     final String val = "Value";
 
-    ValueMetaInterface testValue = new ValueMeta( "FIELD", ValueMetaInterface.TYPE_STRING );
+    ValueMetaInterface testValue = new ValueMetaString( "FIELD" );
     testValue.setLength( 30 );
 
     if ( databaseInterface != null ) {
@@ -2725,7 +2785,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   public String testConnection() {
 
-    StringBuffer report = new StringBuffer();
+    StringBuilder report = new StringBuilder();
 
     // If the plug-in needs to provide connection information, we ask the DatabaseInterface...
     //
@@ -2940,5 +3000,35 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
    */
   public String getCreateTableStatement() {
     return databaseInterface.getCreateTableStatement();
+  }
+
+  /**
+   * Forms the drop table statement specific for a certain RDBMS.
+   *
+   * @param tableName Name of the table to drop
+   * @return Drop table statement specific for the current database
+   * @see <a href="http://jira.pentaho.com/browse/BISERVER-13024">BISERVER-13024</a>
+   */
+  public String getDropTableIfExistsStatement( String tableName ) {
+    if ( databaseInterface instanceof DatabaseInterfaceExtended ) {
+      return ( (DatabaseInterfaceExtended) databaseInterface ).getDropTableIfExistsStatement( tableName );
+    }
+    // A fallback statement in case somehow databaseInterface is of an old version.
+    // This is the previous, and in fact, buggy implementation. See BISERVER-13024.
+    return DROP_TABLE_STATEMENT + tableName;
+  }
+
+  /**
+   * For testing
+   */
+  protected LogChannelInterface getGeneralLogger() {
+    return LogChannel.GENERAL;
+  }
+
+  /**
+   * For testing
+   */
+  protected DatabaseInterface getDbInterface( String typeCode ) throws KettleDatabaseException {
+    return getDatabaseInterface( typeCode );
   }
 }

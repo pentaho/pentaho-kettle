@@ -1,20 +1,19 @@
 /*!
-* Copyright 2010 - 2015 Pentaho Corporation.  All rights reserved.
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-*/
-
+ * Copyright 2010 - 2016 Pentaho Corporation.  All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
 package org.pentaho.di.repository.pur;
 
 import static org.mockito.Mockito.*;
@@ -24,12 +23,18 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
+import org.pentaho.di.repository.RepositoriesMeta;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
@@ -39,7 +44,11 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.RepositoryMeta;
 
+@RunWith( MockitoJUnitRunner.class )
 public class PurRepositoryMetaTest {
+
+  @Mock
+  private RepositoriesMeta repositoriesMeta;
 
   private static final String URL_WITHOUT_TRAILING = "http://host:0000/pentaho-di";
   private static final String EXAMPLE_RESOURCES =
@@ -80,5 +89,22 @@ public class PurRepositoryMetaTest {
     repositoryMeta.loadXML( repnode2, databases );
 
     assertEquals( repositoryMeta.getRepositoryLocation().getUrl(), URL_WITHOUT_TRAILING );
+  }
+
+  @Test
+  public void testPopulate() throws Exception {
+    Map<String, Object> properties = new HashMap<String, Object>();
+    properties.put( "displayName", "Display Name" );
+    properties.put( "url", "URL" );
+    properties.put( "description", "Description" );
+    properties.put( "isDefault", true );
+
+    PurRepositoryMeta purRepositoryMeta = new PurRepositoryMeta();
+    purRepositoryMeta.populate( properties, repositoriesMeta );
+
+    assertEquals( "Display Name", purRepositoryMeta.getName() );
+    assertEquals( "URL", purRepositoryMeta.getRepositoryLocation().getUrl() );
+    assertEquals( "Description", purRepositoryMeta.getDescription() );
+    assertEquals( true, purRepositoryMeta.isDefault() );
   }
 }

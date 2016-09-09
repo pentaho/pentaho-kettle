@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -32,7 +32,6 @@ import java.util.List;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.Database;
-import org.pentaho.di.core.database.DatabaseInterface;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.database.MySQLDatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
@@ -42,9 +41,11 @@ import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.hash.ByteArrayHashMap;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaBoolean;
+import org.pentaho.di.core.row.value.ValueMetaDate;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -107,6 +108,7 @@ public class DimensionLookup extends BaseStep implements StepInterface {
     }
   }
 
+  @Override
   public boolean processRow( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
     meta = (DimensionLookupMeta) smi;
     data = (DimensionLookupData) sdi;
@@ -890,16 +892,16 @@ public class DimensionLookup extends BaseStep implements StepInterface {
       sql += " AND ( " + dateFromField + " IS NULL OR " + dateFromField + " <= ? )" + Const.CR;
       sql += " AND " + dateToField + " > ?" + Const.CR;
 
-      data.lookupRowMeta.addValueMeta( new ValueMeta( meta.getDateFrom(), ValueMetaInterface.TYPE_DATE ) );
-      data.lookupRowMeta.addValueMeta( new ValueMeta( meta.getDateTo(), ValueMetaInterface.TYPE_DATE ) );
+      data.lookupRowMeta.addValueMeta( new ValueMetaDate( meta.getDateFrom() ) );
+      data.lookupRowMeta.addValueMeta( new ValueMetaDate( meta.getDateTo() ) );
     } else {
       // Null as a start date is NOT possible
       //
       sql += " AND ? >= " + dateFromField + Const.CR;
       sql += " AND ? < " + dateToField + Const.CR;
 
-      data.lookupRowMeta.addValueMeta( new ValueMeta( meta.getDateFrom(), ValueMetaInterface.TYPE_DATE ) );
-      data.lookupRowMeta.addValueMeta( new ValueMeta( meta.getDateTo(), ValueMetaInterface.TYPE_DATE ) );
+      data.lookupRowMeta.addValueMeta( new ValueMetaDate( meta.getDateFrom() ) );
+      data.lookupRowMeta.addValueMeta( new ValueMetaDate( meta.getDateTo() ) );
     }
 
     try {
@@ -929,9 +931,7 @@ public class DimensionLookup extends BaseStep implements StepInterface {
     Long versionNr, Date dateFrom, Date dateTo ) throws KettleException {
     DatabaseMeta databaseMeta = meta.getDatabaseMeta();
 
-    if ( data.prepStatementInsert == null && data.prepStatementUpdate == null ) // first time: construct prepared
-                                                                                // statement
-    {
+    if ( data.prepStatementInsert == null && data.prepStatementUpdate == null ) { // first time: construct prepared statement
       RowMetaInterface insertRowMeta = new RowMeta();
 
       /*
@@ -959,9 +959,9 @@ public class DimensionLookup extends BaseStep implements StepInterface {
         databaseMeta.quoteField( meta.getVersionField() )
           + ", " + databaseMeta.quoteField( meta.getDateFrom() ) + ", "
           + databaseMeta.quoteField( meta.getDateTo() );
-      insertRowMeta.addValueMeta( new ValueMeta( meta.getVersionField(), ValueMetaInterface.TYPE_INTEGER ) );
-      insertRowMeta.addValueMeta( new ValueMeta( meta.getDateFrom(), ValueMetaInterface.TYPE_DATE ) );
-      insertRowMeta.addValueMeta( new ValueMeta( meta.getDateTo(), ValueMetaInterface.TYPE_DATE ) );
+      insertRowMeta.addValueMeta( new ValueMetaInteger( meta.getVersionField() ) );
+      insertRowMeta.addValueMeta( new ValueMetaDate( meta.getDateFrom() ) );
+      insertRowMeta.addValueMeta( new ValueMetaDate( meta.getDateTo() ) );
 
       for ( int i = 0; i < meta.getKeyLookup().length; i++ ) {
         sql += ", " + databaseMeta.quoteField( meta.getKeyLookup()[i] );
@@ -985,10 +985,10 @@ public class DimensionLookup extends BaseStep implements StepInterface {
         switch ( meta.getFieldUpdate()[i] ) {
           case DimensionLookupMeta.TYPE_UPDATE_DATE_INSUP:
           case DimensionLookupMeta.TYPE_UPDATE_DATE_INSERTED:
-            valueMeta = new ValueMeta( meta.getFieldLookup()[i], ValueMetaInterface.TYPE_DATE );
+            valueMeta = new ValueMetaDate( meta.getFieldLookup()[i] );
             break;
           case DimensionLookupMeta.TYPE_UPDATE_LAST_VERSION:
-            valueMeta = new ValueMeta( meta.getFieldLookup()[i], ValueMetaInterface.TYPE_BOOLEAN );
+            valueMeta = new ValueMetaBoolean( meta.getFieldLookup()[i] );
             break;
           default:
             break;
@@ -1060,7 +1060,7 @@ public class DimensionLookup extends BaseStep implements StepInterface {
       // The end of the date range
       //
       sql_upd += "SET " + databaseMeta.quoteField( meta.getDateTo() ) + " = ?" + Const.CR;
-      updateRowMeta.addValueMeta( new ValueMeta( meta.getDateTo(), ValueMetaInterface.TYPE_DATE ) );
+      updateRowMeta.addValueMeta( new ValueMetaDate( meta.getDateTo() ) );
 
       // The special update fields...
       //
@@ -1069,10 +1069,10 @@ public class DimensionLookup extends BaseStep implements StepInterface {
         switch ( meta.getFieldUpdate()[i] ) {
           case DimensionLookupMeta.TYPE_UPDATE_DATE_INSUP:
           case DimensionLookupMeta.TYPE_UPDATE_DATE_UPDATED:
-            valueMeta = new ValueMeta( meta.getFieldLookup()[i], ValueMetaInterface.TYPE_DATE );
+            valueMeta = new ValueMetaDate( meta.getFieldLookup()[i] );
             break;
           case DimensionLookupMeta.TYPE_UPDATE_LAST_VERSION:
-            valueMeta = new ValueMeta( meta.getFieldLookup()[i], ValueMetaInterface.TYPE_BOOLEAN );
+            valueMeta = new ValueMetaBoolean( meta.getFieldLookup()[i] );
             break;
           default:
             break;
@@ -1092,7 +1092,7 @@ public class DimensionLookup extends BaseStep implements StepInterface {
         updateRowMeta.addValueMeta( inputRowMeta.getValueMeta( data.keynrs[i] ) );
       }
       sql_upd += "AND   " + databaseMeta.quoteField( meta.getVersionField() ) + " = ? ";
-      updateRowMeta.addValueMeta( new ValueMeta( meta.getVersionField(), ValueMetaInterface.TYPE_INTEGER ) );
+      updateRowMeta.addValueMeta( new ValueMetaInteger( meta.getVersionField() ) );
 
       try {
         logDetailed( "Preparing update: " + Const.CR + sql_upd + Const.CR );
@@ -1194,8 +1194,7 @@ public class DimensionLookup extends BaseStep implements StepInterface {
       }
     }
 
-    if ( !newEntry ) // we have to update the previous version in the dimension!
-    {
+    if ( !newEntry ) { // we have to update the previous version in the dimension!
       /*
        * UPDATE d_customer SET dateto = val_datfrom , last_updated = <now> , last_version = false WHERE keylookup[] =
        * keynrs[] AND versionfield = val_version - 1 ;
@@ -1269,10 +1268,12 @@ public class DimensionLookup extends BaseStep implements StepInterface {
     return technicalKey;
   }
 
+  @Override
   public boolean isRowLevel() {
     return log.isRowLevel();
   }
 
+  @Override
   public boolean isDebug() {
     return log.isDebug();
   }
@@ -1310,7 +1311,7 @@ public class DimensionLookup extends BaseStep implements StepInterface {
         switch ( meta.getFieldUpdate()[i] ) {
           case DimensionLookupMeta.TYPE_UPDATE_DATE_INSUP:
           case DimensionLookupMeta.TYPE_UPDATE_DATE_UPDATED:
-            valueMeta = new ValueMeta( meta.getFieldLookup()[i], ValueMetaInterface.TYPE_DATE );
+            valueMeta = new ValueMetaDate( meta.getFieldLookup()[i] );
             break;
           default:
             break;
@@ -1329,8 +1330,7 @@ public class DimensionLookup extends BaseStep implements StepInterface {
 
       sql += "WHERE  " + meta.getDatabaseMeta().quoteField( meta.getKeyField() ) + " = ?";
       data.dimensionUpdateRowMeta
-        .addValueMeta( new ValueMeta( meta.getKeyField(), ValueMetaInterface.TYPE_INTEGER ) ); // The
-                                                                                               // tk
+        .addValueMeta( new ValueMetaInteger( meta.getKeyField() ) ); // The tk
 
       try {
         if ( isDebug() ) {
@@ -1373,8 +1373,7 @@ public class DimensionLookup extends BaseStep implements StepInterface {
   // This updates all versions of a dimension entry.
   //
   public void dimPunchThrough( RowMetaInterface rowMeta, Object[] row ) throws KettleDatabaseException {
-    if ( data.prepStatementPunchThrough == null ) // first time: construct prepared statement
-    {
+    if ( data.prepStatementPunchThrough == null ) { // first time: construct prepared statement
       DatabaseMeta databaseMeta = meta.getDatabaseMeta();
       data.punchThroughRowMeta = new RowMeta();
 
@@ -1404,7 +1403,7 @@ public class DimensionLookup extends BaseStep implements StepInterface {
         switch ( meta.getFieldUpdate()[i] ) {
           case DimensionLookupMeta.TYPE_UPDATE_DATE_INSUP:
           case DimensionLookupMeta.TYPE_UPDATE_DATE_UPDATED:
-            valueMeta = new ValueMeta( meta.getFieldLookup()[i], ValueMetaInterface.TYPE_DATE );
+            valueMeta = new ValueMetaDate( meta.getFieldLookup()[i] );
             break;
           default:
             break;
@@ -1632,8 +1631,7 @@ public class DimensionLookup extends BaseStep implements StepInterface {
       long time = dateValue.getTime();
       long from = ( (Date) row[row.length - 2] ).getTime();
       long to = ( (Date) row[row.length - 1] ).getTime();
-      if ( time >= from && time < to ) // sanity check to see if we have the right version
-      {
+      if ( time >= from && time < to ) { // sanity check to see if we have the right version
         if ( isRowLevel() ) {
           logRowlevel( "Cache hit: key="
             + data.cacheKeyRowMeta.getString( keyValues ) + "  values=" + data.cacheValueRowMeta.getString( row ) );
@@ -1695,6 +1693,7 @@ public class DimensionLookup extends BaseStep implements StepInterface {
     }
   }
 
+  @Override
   public boolean init( StepMetaInterface smi, StepDataInterface sdi ) {
     meta = (DimensionLookupMeta) smi;
     data = (DimensionLookupData) sdi;
@@ -1738,6 +1737,7 @@ public class DimensionLookup extends BaseStep implements StepInterface {
     return false;
   }
 
+  @Override
   public void dispose( StepMetaInterface smi, StepDataInterface sdi ) {
     meta = (DimensionLookupMeta) smi;
     data = (DimensionLookupData) sdi;

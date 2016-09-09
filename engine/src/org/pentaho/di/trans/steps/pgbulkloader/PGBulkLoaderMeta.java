@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -154,11 +154,38 @@ public class PGBulkLoaderMeta extends BaseStepMeta implements StepMetaInjectionI
     this.tableName = tableName;
   }
 
+  /**
+   * 
+   * @return PSQL Path
+   * @deprecated doesn't follow naming standards - use getPsqlPath
+   */
+  @Deprecated
   public String getPsqlpath() {
     return PsqlPath;
   }
 
+  /**
+   * Gets the PostgreSQL path
+   */
+  public String getPsqlPath() {
+    return PsqlPath;
+  }
+
+  /**
+   * 
+   * @param PSQL Path
+   * @deprecated doesn't follow naming standards - use setPsqlPath
+   */
+  @Deprecated
   public void setPsqlpath( String PsqlPath ) {
+    this.PsqlPath = PsqlPath;
+  }
+
+  /**
+   * Sets the PostgreSQL path
+   * @param PsqlPath
+   */
+  public void setPsqlPath( String PsqlPath ) {
     this.PsqlPath = PsqlPath;
   }
 
@@ -215,12 +242,9 @@ public class PGBulkLoaderMeta extends BaseStepMeta implements StepMetaInjectionI
     int nrvalues = fieldTable.length;
 
     retval.allocate( nrvalues );
-
-    for ( int i = 0; i < nrvalues; i++ ) {
-      retval.fieldTable[i] = fieldTable[i];
-      retval.fieldStream[i] = fieldStream[i];
-      retval.dateMask[i] = dateMask[i];
-    }
+    System.arraycopy( fieldTable, 0, retval.fieldTable, 0, nrvalues );
+    System.arraycopy( fieldStream, 0, retval.fieldStream, 0, nrvalues );
+    System.arraycopy( dateMask, 0, retval.dateMask, 0, nrvalues );
     return retval;
   }
 
@@ -285,7 +309,7 @@ public class PGBulkLoaderMeta extends BaseStepMeta implements StepMetaInjectionI
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 300 );
+    StringBuilder retval = new StringBuilder( 300 );
 
     retval
       .append( "    " ).append(
@@ -690,6 +714,10 @@ public class PGBulkLoaderMeta extends BaseStepMeta implements StepMetaInjectionI
   }
 
   public void setStopOnError( Boolean value ) {
+    this.stopOnError = value;
+  }
+
+  public void setStopOnError( boolean value ) {
     this.stopOnError = value;
   }
 

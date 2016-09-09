@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -130,5 +130,13 @@ public abstract class AbstractRepository implements Repository {
   public void saveDatabaseMetaJobEntryAttribute( ObjectId id_job, ObjectId id_jobentry, String nameCode,
     String idCode, DatabaseMeta database ) throws KettleException {
     saveDatabaseMetaJobEntryAttribute( id_job, id_jobentry, 0, nameCode, idCode, database );
+  }
+
+  public boolean test() {
+    return true;
+  }
+
+  public void create() {
+
   }
 }

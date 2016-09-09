@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -31,15 +31,24 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.TimeZone;
+import java.util.UUID;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.encryption.Encr;
+import org.pentaho.di.core.encryption.TwoWayPasswordEncoderPluginType;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
+import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.row.RowMeta;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaDate;
+import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
+import org.pentaho.di.trans.steps.salesforce.SalesforceConnection;
 
 import com.sforce.soap.partner.sobject.SObject;
 
@@ -51,6 +60,15 @@ import com.sforce.soap.partner.sobject.SObject;
  */
 public class PDI_10836_Test {
   private StepMockHelper<SalesforceInsertMeta, SalesforceInsertData> smh;
+
+  @BeforeClass
+  public static void setUpBeforeClass() throws KettleException {
+    PluginRegistry.addPluginType( TwoWayPasswordEncoderPluginType.getInstance() );
+    PluginRegistry.init();
+    String passwordEncoderPluginID =
+        Const.NVL( EnvUtil.getSystemProperty( Const.KETTLE_PASSWORD_ENCODER_PLUGIN ), "Kettle" );
+    Encr.init( passwordEncoderPluginID );
+  }
 
   @Before
   public void init() {
@@ -65,6 +83,10 @@ public class PDI_10836_Test {
   public void testDateInsert() throws Exception {
     SalesforceInsert step = new SalesforceInsert( smh.stepMeta, smh.stepDataInterface, 0, smh.transMeta, smh.trans );
     SalesforceInsertMeta meta = smh.initStepMetaInterface;
+    doReturn( UUID.randomUUID().toString() ).when( meta ).getTargetURL();
+    doReturn( UUID.randomUUID().toString() ).when( meta ).getUsername();
+    doReturn( UUID.randomUUID().toString() ).when( meta ).getPassword();
+    doReturn( UUID.randomUUID().toString() ).when( meta ).getModule();
     doReturn( 2 ).when( meta ).getBatchSizeInt();
     doReturn( new String[] { "Date" } ).when( meta ).getUpdateLookup();
     doReturn( new Boolean[] {false}  ).when( meta ).getUseExternalId();
@@ -78,7 +100,7 @@ public class PDI_10836_Test {
     step.init( meta, data );
 
     RowMeta rowMeta = new RowMeta();
-    ValueMeta valueMeta = new ValueMeta( "date", ValueMetaInterface.TYPE_DATE );
+    ValueMetaInterface valueMeta = new ValueMetaDate( "date" );
     valueMeta.setDateFormatTimeZone( TimeZone.getTimeZone( "Europe/Minsk" ) );
     rowMeta.addValueMeta( valueMeta );
     smh.initStepDataInterface.inputRowMeta = rowMeta;
@@ -96,6 +118,7 @@ public class PDI_10836_Test {
     DateFormat utc = new SimpleDateFormat( "yyyy-MM-dd" );
     utc.setTimeZone( TimeZone.getTimeZone( "UTC" ) );
 
-    Assert.assertEquals( "2013-10-16", utc.format( data.sfBuffer[0].get_any()[0].getObjectValue() ) );
+    Assert.assertEquals( "2013-10-16",
+      utc.format( SalesforceConnection.getChildren( data.sfBuffer[0] )[0].getValue() ) );
   }
 }

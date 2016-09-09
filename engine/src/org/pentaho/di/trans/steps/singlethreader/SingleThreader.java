@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -266,7 +266,7 @@ public class SingleThreader extends BaseStep implements StepInterface {
 
     // Add the mapping transformation to the active sub-transformations map in the parent transformation
     //
-    getTrans().getActiveSubtransformations().put( getStepname(), singleThreaderData.mappingTrans );
+    getTrans().addActiveSubTransformation( getStepname(), singleThreaderData.mappingTrans );
   }
 
   void initServletConfig() {

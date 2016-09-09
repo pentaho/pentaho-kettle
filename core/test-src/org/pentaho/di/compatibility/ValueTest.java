@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -29,6 +29,7 @@ import java.util.Date;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleValueException;
+import org.pentaho.di.core.row.ValueMetaInterface;
 
 import junit.framework.TestCase;
 
@@ -1253,5 +1254,17 @@ public class ValueTest extends TestCase {
     assertTrue( vs2.isNull() );
     assertNull( vs2.getName() );
     assertNull( vs2.getOrigin() );
+  }
+
+  public void testValueMetaInterfaceEquality() {
+    assertEquals( ValueMetaInterface.TYPE_NONE, Value.VALUE_TYPE_NONE );
+    assertEquals( ValueMetaInterface.TYPE_NUMBER, Value.VALUE_TYPE_NUMBER );
+    assertEquals( ValueMetaInterface.TYPE_STRING, Value.VALUE_TYPE_STRING );
+    assertEquals( ValueMetaInterface.TYPE_DATE, Value.VALUE_TYPE_DATE );
+    assertEquals( ValueMetaInterface.TYPE_BOOLEAN, Value.VALUE_TYPE_BOOLEAN );
+    assertEquals( ValueMetaInterface.TYPE_INTEGER, Value.VALUE_TYPE_INTEGER );
+    assertEquals( ValueMetaInterface.TYPE_BIGNUMBER, Value.VALUE_TYPE_BIGNUMBER );
+    assertEquals( ValueMetaInterface.TYPE_SERIALIZABLE, Value.VALUE_TYPE_SERIALIZABLE );
+    assertEquals( ValueMetaInterface.TYPE_BINARY, Value.VALUE_TYPE_BINARY );
   }
 }

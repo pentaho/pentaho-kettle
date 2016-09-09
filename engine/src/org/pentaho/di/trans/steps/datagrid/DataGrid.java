@@ -59,8 +59,8 @@ public class DataGrid extends BaseStep implements StepInterface {
   }
 
   public boolean processRow( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
-    if ( data.linesWritten >= meta.getDataLines().size() ) // no more rows to be written
-    {
+    if ( data.linesWritten >= meta.getDataLines().size() ) {
+      // no more rows to be written
       setOutputDone();
       return false;
     }
@@ -84,16 +84,19 @@ public class DataGrid extends BaseStep implements StepInterface {
     List<String> outputLine = meta.getDataLines().get( data.linesWritten );
 
     for ( int i = 0; i < data.outputRowMeta.size(); i++ ) {
-      if ( meta.isSetEmptyString()[i] ) {
+      if ( meta.isSetEmptyString()[ i ] ) {
         // Set empty string
-        outputRowData[i] = StringUtil.EMPTY_STRING;
+        outputRowData[ i ] = StringUtil.EMPTY_STRING;
       } else {
 
         ValueMetaInterface valueMeta = data.outputRowMeta.getValueMeta( i );
         ValueMetaInterface convertMeta = data.convertMeta.getValueMeta( i );
         String valueData = outputLine.get( i );
 
-        outputRowData[i] = valueMeta.convertDataFromString( valueData, convertMeta, null, null, 0 );
+        if ( valueData != null && valueMeta.isNull( valueData ) ) {
+          valueData = null;
+        }
+        outputRowData[ i ] = valueMeta.convertDataFromString( valueData, convertMeta, null, null, 0 );
       }
     }
 

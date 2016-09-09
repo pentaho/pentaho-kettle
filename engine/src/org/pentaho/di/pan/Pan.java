@@ -84,78 +84,78 @@ public class Pan {
     Trans trans = null;
 
     // The options:
-    StringBuffer optionRepname, optionUsername, optionPassword, optionTransname, optionDirname;
-    StringBuffer optionFilename, optionLoglevel, optionLogfile, optionLogfileOld, optionListdir;
-    StringBuffer optionListtrans, optionListrep, optionExprep, optionNorep, optionSafemode;
-    StringBuffer optionVersion, optionJarFilename, optionListParam, optionMetrics;
+    StringBuilder optionRepname, optionUsername, optionPassword, optionTransname, optionDirname;
+    StringBuilder optionFilename, optionLoglevel, optionLogfile, optionLogfileOld, optionListdir;
+    StringBuilder optionListtrans, optionListrep, optionExprep, optionNorep, optionSafemode;
+    StringBuilder optionVersion, optionJarFilename, optionListParam, optionMetrics;
 
     NamedParams optionParams = new NamedParamsDefault();
 
     CommandLineOption maxLogLinesOption =
       new CommandLineOption(
-        "maxloglines", BaseMessages.getString( PKG, "Pan.CmdLine.MaxLogLines" ), new StringBuffer() );
+        "maxloglines", BaseMessages.getString( PKG, "Pan.CmdLine.MaxLogLines" ), new StringBuilder() );
     CommandLineOption maxLogTimeoutOption =
       new CommandLineOption(
-        "maxlogtimeout", BaseMessages.getString( PKG, "Pan.CmdLine.MaxLogTimeout" ), new StringBuffer() );
+        "maxlogtimeout", BaseMessages.getString( PKG, "Pan.CmdLine.MaxLogTimeout" ), new StringBuilder() );
 
     CommandLineOption[] options =
       new CommandLineOption[]{
         new CommandLineOption( "rep", BaseMessages.getString( PKG, "Pan.ComdLine.RepName" ), optionRepname =
-          new StringBuffer() ),
+          new StringBuilder() ),
         new CommandLineOption(
           "user", BaseMessages.getString( PKG, "Pan.ComdLine.RepUsername" ), optionUsername =
-          new StringBuffer() ),
+          new StringBuilder() ),
         new CommandLineOption(
           "pass", BaseMessages.getString( PKG, "Pan.ComdLine.RepPassword" ), optionPassword =
-          new StringBuffer() ),
+          new StringBuilder() ),
         new CommandLineOption(
           "trans", BaseMessages.getString( PKG, "Pan.ComdLine.TransName" ), optionTransname =
-          new StringBuffer() ),
+          new StringBuilder() ),
         new CommandLineOption( "dir", BaseMessages.getString( PKG, "Pan.ComdLine.RepDir" ), optionDirname =
-          new StringBuffer() ),
+          new StringBuilder() ),
         new CommandLineOption(
           "file", BaseMessages.getString( PKG, "Pan.ComdLine.XMLTransFile" ), optionFilename =
-          new StringBuffer() ),
+          new StringBuilder() ),
         new CommandLineOption(
           "level", BaseMessages.getString( PKG, "Pan.ComdLine.LogLevel" ), optionLoglevel =
-          new StringBuffer() ),
+          new StringBuilder() ),
         new CommandLineOption(
           "logfile", BaseMessages.getString( PKG, "Pan.ComdLine.LogFile" ), optionLogfile =
-          new StringBuffer() ),
+          new StringBuilder() ),
         new CommandLineOption(
           "log", BaseMessages.getString( PKG, "Pan.ComdLine.LogOldFile" ), optionLogfileOld =
-          new StringBuffer(), false, true ),
+          new StringBuilder(), false, true ),
         new CommandLineOption(
           "listdir", BaseMessages.getString( PKG, "Pan.ComdLine.ListDirRep" ), optionListdir =
-          new StringBuffer(), true, false ),
+          new StringBuilder(), true, false ),
         new CommandLineOption(
           "listtrans", BaseMessages.getString( PKG, "Pan.ComdLine.ListTransDir" ), optionListtrans =
-          new StringBuffer(), true, false ),
+          new StringBuilder(), true, false ),
         new CommandLineOption(
           "listrep", BaseMessages.getString( PKG, "Pan.ComdLine.ListReps" ), optionListrep =
-          new StringBuffer(), true, false ),
+          new StringBuilder(), true, false ),
         new CommandLineOption(
           "exprep", BaseMessages.getString( PKG, "Pan.ComdLine.ExpObjectsXML" ), optionExprep =
-          new StringBuffer(), true, false ),
+          new StringBuilder(), true, false ),
         new CommandLineOption( "norep", BaseMessages.getString( PKG, "Pan.ComdLine.NoRep" ), optionNorep =
-          new StringBuffer(), true, false ),
+          new StringBuilder(), true, false ),
         new CommandLineOption(
           "safemode", BaseMessages.getString( PKG, "Pan.ComdLine.SafeMode" ), optionSafemode =
-          new StringBuffer(), true, false ),
+          new StringBuilder(), true, false ),
         new CommandLineOption(
           "version", BaseMessages.getString( PKG, "Pan.ComdLine.Version" ), optionVersion =
-          new StringBuffer(), true, false ),
+          new StringBuilder(), true, false ),
         new CommandLineOption(
           "jarfile", BaseMessages.getString( PKG, "Pan.ComdLine.JarFile" ), optionJarFilename =
-          new StringBuffer(), false, true ),
+          new StringBuilder(), false, true ),
         new CommandLineOption(
           "param", BaseMessages.getString( PKG, "Pan.ComdLine.Param" ), optionParams, false ),
         new CommandLineOption(
           "listparam", BaseMessages.getString( PKG, "Pan.ComdLine.ListParam" ), optionListParam =
-          new StringBuffer(), true, false ),
+          new StringBuilder(), true, false ),
         new CommandLineOption(
           "metrics", BaseMessages.getString( PKG, "Pan.ComdLine.Metrics" ), optionMetrics =
-          new StringBuffer(), true, false ), maxLogLinesOption, maxLogTimeoutOption };
+          new StringBuilder(), true, false ), maxLogLinesOption, maxLogTimeoutOption };
 
     if ( args.size() == 0 ) {
       CommandLineOption.printUsage( options );
@@ -178,13 +178,13 @@ public class Pan {
     String kettlePassword = Const.getEnvironmentVariable( "KETTLE_PASSWORD", null );
 
     if ( kettleRepname != null && kettleRepname.length() > 0 ) {
-      optionRepname = new StringBuffer( kettleRepname );
+      optionRepname = new StringBuilder( kettleRepname );
     }
     if ( kettleUsername != null && kettleUsername.length() > 0 ) {
-      optionUsername = new StringBuffer( kettleUsername );
+      optionUsername = new StringBuilder( kettleUsername );
     }
     if ( kettlePassword != null && kettlePassword.length() > 0 ) {
-      optionPassword = new StringBuffer( kettlePassword );
+      optionPassword = new StringBuilder( kettlePassword );
     }
 
     if ( Const.isEmpty( optionLogfile ) && !Const.isEmpty( optionLogfileOld ) ) {
@@ -268,6 +268,7 @@ public class Pan {
           }
 
           RepositoriesMeta repsinfo = new RepositoriesMeta();
+          repsinfo.getLog().setLogLevel( log.getLogLevel() );
 
           try {
             repsinfo.readData();
@@ -290,7 +291,7 @@ public class Pan {
               PluginRegistry.getInstance().loadClass(
                 RepositoryPluginType.class, repositoryMeta, Repository.class );
             rep.init( repositoryMeta );
-
+            rep.getLog().setLogLevel( log.getLogLevel() );
             rep.connect( optionUsername != null ? optionUsername.toString() : null, optionPassword != null
               ? optionPassword.toString() : null );
 
@@ -391,7 +392,7 @@ public class Pan {
             }
 
             InputStream inputStream = Pan.class.getResourceAsStream( optionJarFilename.toString() );
-            StringBuffer xml = new StringBuffer();
+            StringBuilder xml = new StringBuilder();
             int c;
             while ( ( c = inputStream.read() ) != -1 ) {
               xml.append( (char) c );

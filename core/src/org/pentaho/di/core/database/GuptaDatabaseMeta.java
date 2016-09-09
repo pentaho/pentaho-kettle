@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -171,6 +171,7 @@ public class GuptaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 
     int type = v.getType();
     switch ( type ) {
+      case ValueMetaInterface.TYPE_TIMESTAMP:
       case ValueMetaInterface.TYPE_DATE:
         retval += "DATETIME NULL";
         break;
@@ -181,7 +182,7 @@ public class GuptaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
       case ValueMetaInterface.TYPE_INTEGER:
       case ValueMetaInterface.TYPE_BIGNUMBER:
         if ( fieldname.equalsIgnoreCase( tk ) || // Technical key
-          fieldname.equalsIgnoreCase( tk ) // Primary key
+          fieldname.equalsIgnoreCase( pk ) // Primary key
         ) {
           retval += "INTEGER NOT NULL";
         } else {
@@ -225,6 +226,18 @@ public class GuptaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
     if ( tableName.startsWith( "SYS" ) ) {
       return true;
     }
+    return false;
+  }
+
+  /**
+   * Most databases allow you to retrieve result metadata by preparing a SELECT statement. Gupta though doesn't.
+   * See PDI-14893
+   *
+   * @return true if the database supports retrieval of query metadata from a prepared statement. False if the query
+   *         needs to be executed first.
+   */
+  @Override
+  public boolean supportsPreparedStatementMetadataRetrieval() {
     return false;
   }
 

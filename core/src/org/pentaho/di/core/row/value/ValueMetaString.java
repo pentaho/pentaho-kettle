@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -35,8 +35,17 @@ public class ValueMetaString extends ValueMetaBase implements ValueMetaInterface
     super( name, ValueMetaInterface.TYPE_STRING );
   }
 
+  public ValueMetaString( String name, int length, int precision ) {
+    super( name, ValueMetaInterface.TYPE_STRING, length, precision );
+  }
+
   @Override
   public Object getNativeDataType( Object object ) throws KettleValueException {
     return getString( object );
+  }
+
+  @Override
+  public Class<?> getNativeDataTypeClass() throws KettleValueException {
+    return String.class;
   }
 }

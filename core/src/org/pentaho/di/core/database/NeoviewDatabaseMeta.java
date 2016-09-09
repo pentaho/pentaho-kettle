@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -237,6 +237,7 @@ public class NeoviewDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 
     int type = v.getType();
     switch ( type ) {
+      case ValueMetaInterface.TYPE_TIMESTAMP:
       case ValueMetaInterface.TYPE_DATE:
         retval += "TIMESTAMP";
         break;
@@ -358,7 +359,7 @@ public class NeoviewDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 
   @Override
   public String getSQLLockTables( String[] tableNames ) {
-    StringBuffer sql = new StringBuffer( 128 );
+    StringBuilder sql = new StringBuilder( 128 );
     for ( int i = 0; i < tableNames.length; i++ ) {
       sql.append( "LOCK TABLE " ).append( tableNames[i] ).append( " IN EXCLUSIVE MODE;" ).append( Const.CR );
     }
@@ -447,6 +448,7 @@ public class NeoviewDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
             data = rs.getBytes( i + 1 );
           }
           break;
+        case ValueMetaInterface.TYPE_TIMESTAMP:
         case ValueMetaInterface.TYPE_DATE:
           if ( val.getOriginalColumnType() == java.sql.Types.TIME ) {
             // Neoview can not handle getDate / getTimestamp for a Time column

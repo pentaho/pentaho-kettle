@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -26,8 +26,8 @@ import junit.framework.TestCase;
 
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
 
 /**
  * Test class for the basic functionality of RowSet.
@@ -38,7 +38,7 @@ public class RowSetTest extends TestCase {
   public RowMetaInterface createRowMetaInterface() {
     RowMetaInterface rm = new RowMeta();
 
-    ValueMetaInterface[] valuesMeta = { new ValueMeta( "ROWNR", ValueMeta.TYPE_INTEGER ), };
+    ValueMetaInterface[] valuesMeta = { new ValueMetaInteger( "ROWNR" ), };
 
     for ( int i = 0; i < valuesMeta.length; i++ ) {
       rm.addValueMeta( valuesMeta[i] );

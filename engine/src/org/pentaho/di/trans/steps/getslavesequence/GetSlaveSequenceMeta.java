@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -31,8 +31,8 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -62,10 +62,12 @@ public class GetSlaveSequenceMeta extends BaseStepMeta implements StepMetaInterf
   private String sequenceName;
   private String increment;
 
+  @Override
   public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     readData( stepnode, databases );
   }
 
+  @Override
   public Object clone() {
     Object retval = super.clone();
     return retval;
@@ -83,6 +85,7 @@ public class GetSlaveSequenceMeta extends BaseStepMeta implements StepMetaInterf
     }
   }
 
+  @Override
   public void setDefault() {
     valuename = "id";
     slaveServerName = "slave server name";
@@ -90,15 +93,17 @@ public class GetSlaveSequenceMeta extends BaseStepMeta implements StepMetaInterf
     increment = "10000";
   }
 
+  @Override
   public void getFields( RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep,
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
-    ValueMetaInterface v = new ValueMeta( valuename, ValueMetaInterface.TYPE_INTEGER );
+    ValueMetaInterface v = new ValueMetaInteger( valuename );
     v.setOrigin( name );
     row.addValueMeta( v );
   }
 
+  @Override
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 300 );
+    StringBuilder retval = new StringBuilder( 300 );
 
     retval.append( "      " ).append( XMLHandler.addTagValue( "valuename", valuename ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "slave", slaveServerName ) );
@@ -108,6 +113,7 @@ public class GetSlaveSequenceMeta extends BaseStepMeta implements StepMetaInterf
     return retval.toString();
   }
 
+  @Override
   public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
       valuename = rep.getStepAttributeString( id_step, "valuename" );
@@ -120,6 +126,7 @@ public class GetSlaveSequenceMeta extends BaseStepMeta implements StepMetaInterf
     }
   }
 
+  @Override
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       rep.saveStepAttribute( id_transformation, id_step, "valuename", valuename );
@@ -132,6 +139,7 @@ public class GetSlaveSequenceMeta extends BaseStepMeta implements StepMetaInterf
     }
   }
 
+  @Override
   public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
     RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
@@ -150,11 +158,13 @@ public class GetSlaveSequenceMeta extends BaseStepMeta implements StepMetaInterf
     }
   }
 
+  @Override
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
     TransMeta transMeta, Trans trans ) {
     return new GetSlaveSequence( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 
+  @Override
   public StepDataInterface getStepData() {
     return new GetSlaveSequenceData();
   }

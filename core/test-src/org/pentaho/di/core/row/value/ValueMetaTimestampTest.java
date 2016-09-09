@@ -22,6 +22,8 @@
 package org.pentaho.di.core.row.value;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyObject;
@@ -67,12 +69,25 @@ public class ValueMetaTimestampTest {
     ValueMetaTimestamp vm = new ValueMetaTimestamp();
     Timestamp earlier = Timestamp.valueOf( "2012-12-12 12:12:12.121212" );
     Timestamp later = Timestamp.valueOf( "2013-12-12 12:12:12.121212" );
+    assertTrue( vm.isSortedAscending() );
+    assertFalse( vm.isSortedDescending() );
     assertEquals( vm.compare( null, null ), 0 );
     assertEquals( vm.compare( null, earlier ), -1 );
     assertEquals( vm.compare( earlier, null ), 1 );
     assertEquals( vm.compare( earlier, earlier ), 0 );
     assertEquals( vm.compare( earlier, later ), -1 );
     assertEquals( vm.compare( later, earlier ), 1 );
+
+    // Check Descending comparison
+    vm.setSortedDescending( true );
+    assertFalse( vm.isSortedAscending() );
+    assertTrue( vm.isSortedDescending() );
+    assertEquals( vm.compare( null, null ), 0 );
+    assertEquals( vm.compare( null, earlier ), 1 );
+    assertEquals( vm.compare( earlier, null ), -1 );
+    assertEquals( vm.compare( earlier, earlier ), 0 );
+    assertEquals( vm.compare( earlier, later ), 1 );
+    assertEquals( vm.compare( later, earlier ), -1 );
   }
 
   @Test

@@ -1,20 +1,19 @@
 /*!
-* Copyright 2010 - 2015 Pentaho Corporation.  All rights reserved.
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-*/
-
+ * Copyright 2010 - 2016 Pentaho Corporation.  All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
 package org.pentaho.di.repository.pur;
 
 import org.junit.Test;
@@ -25,17 +24,23 @@ import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.platform.api.repository2.unified.VersionSummary;
 
+import java.util.Arrays;
 import java.util.List;
 
-import static java.util.Arrays.asList;
-import static org.junit.Assert.*;
-import static org.junit.matchers.JUnitMatchers.hasItem;
+import static org.hamcrest.CoreMatchers.hasItem;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public class PurRepository_MoveAndRename_IT extends PurRepositoryTestBase {
 
   private final JobAssistant jobAssistant = new JobAssistant();
   private final TransAssistant transAssistant = new TransAssistant();
 
+  public PurRepository_MoveAndRename_IT( Boolean lazyRepo ) {
+    super( lazyRepo );
+  }
 
   @Test
   public void renameJob_Successfully() throws Exception {
@@ -57,7 +62,6 @@ public class PurRepository_MoveAndRename_IT extends PurRepositoryTestBase {
 
     assistant.rename( meta, renamed );
   }
-
 
   @Test
   public void renameJob_CreatesNewRevision() throws Exception {
@@ -85,10 +89,9 @@ public class PurRepository_MoveAndRename_IT extends PurRepositoryTestBase {
     assertEquals( historyBefore.size() + 1, historyAfter.size() );
 
     long newRevisionTs = historyAfter.get( historyAfter.size() - 1 ).getDate().getTime();
-    assertTrue( String.format( "%d <= %d <= %d", before, newRevisionTs, after ),
-      ( before <= newRevisionTs ) && ( newRevisionTs <= after ) );
+    assertTrue( String.format( "%d <= %d <= %d", before, newRevisionTs, after ), ( before <= newRevisionTs )
+        && ( newRevisionTs <= after ) );
   }
-
 
   @Test( expected = KettleException.class )
   public void renameJob_FailsIfANameConflictOccurs() throws Exception {
@@ -107,7 +110,6 @@ public class PurRepository_MoveAndRename_IT extends PurRepositoryTestBase {
     assistant.save( meta, name, getPublicDir() );
     assistant.rename( meta, name );
   }
-
 
   @Test
   public void moveJob_Successfully() throws Exception {
@@ -131,7 +133,6 @@ public class PurRepository_MoveAndRename_IT extends PurRepositoryTestBase {
     assistant.move( meta, destFolder );
   }
 
-
   @Test
   public void moveJob_DoesNotCreateRevision() throws Exception {
     move_DoesNotCreateRevision( jobAssistant );
@@ -154,7 +155,6 @@ public class PurRepository_MoveAndRename_IT extends PurRepositoryTestBase {
 
     assertEquals( historyBefore.size(), historyAfter.size() );
   }
-
 
   @Test( expected = KettleException.class )
   public void moveJob_FailsIfANameConflictOccurs() throws Exception {
@@ -180,7 +180,6 @@ public class PurRepository_MoveAndRename_IT extends PurRepositoryTestBase {
     assistant.move( meta, destFolder );
   }
 
-
   @Test
   public void moveAndRenameJob_Successfully() throws Exception {
     moveAndRename_Successfully( jobAssistant );
@@ -203,7 +202,6 @@ public class PurRepository_MoveAndRename_IT extends PurRepositoryTestBase {
 
     assistant.rename( meta, destFolder, renamed );
   }
-
 
   @Test( expected = KettleException.class )
   public void moveAndRenameTrans_FailsIfANameConflictOccurs() throws Exception {
@@ -230,7 +228,6 @@ public class PurRepository_MoveAndRename_IT extends PurRepositoryTestBase {
     assistant.rename( meta, destFolder, renamed );
   }
 
-
   private RepositoryDirectoryInterface getPublicDir() throws Exception {
     return purRepository.findDirectory( "public" );
   }
@@ -240,14 +237,12 @@ public class PurRepository_MoveAndRename_IT extends PurRepositoryTestBase {
     return ( child == null ) ? purRepository.createRepositoryDirectory( getPublicDir(), dirName ) : child;
   }
 
-
   private abstract class Assistant {
     public abstract AbstractMeta createNew();
 
     abstract String getType();
 
-    public void save( AbstractMeta meta, String name, RepositoryDirectoryInterface directory )
-      throws Exception {
+    public void save( AbstractMeta meta, String name, RepositoryDirectoryInterface directory ) throws Exception {
       assertNotNull( directory );
 
       meta.setName( name );
@@ -263,7 +258,6 @@ public class PurRepository_MoveAndRename_IT extends PurRepositoryTestBase {
 
     abstract List<String> getNames( RepositoryDirectoryInterface dir ) throws Exception;
 
-
     public void rename( AbstractMeta meta, String newName ) throws Exception {
       rename( meta, meta.getRepositoryDirectory(), newName );
     }
@@ -272,8 +266,7 @@ public class PurRepository_MoveAndRename_IT extends PurRepositoryTestBase {
       rename( meta, destFolder, null );
     }
 
-    public void rename( AbstractMeta meta, RepositoryDirectoryInterface destFolder, String newName )
-      throws Exception {
+    public void rename( AbstractMeta meta, RepositoryDirectoryInterface destFolder, String newName ) throws Exception {
       doRename( meta, destFolder, newName );
 
       String checkedName = ( newName == null ) ? meta.getName() : newName;
@@ -304,7 +297,7 @@ public class PurRepository_MoveAndRename_IT extends PurRepositoryTestBase {
 
     @Override
     List<String> getNames( RepositoryDirectoryInterface dir ) throws Exception {
-      return asList( purRepository.getJobNames( dir.getObjectId(), false ) );
+      return Arrays.asList( purRepository.getJobNames( dir.getObjectId(), false ) );
     }
 
   }
@@ -328,7 +321,7 @@ public class PurRepository_MoveAndRename_IT extends PurRepositoryTestBase {
 
     @Override
     List<String> getNames( RepositoryDirectoryInterface dir ) throws Exception {
-      return asList( purRepository.getTransformationNames( dir.getObjectId(), false ) );
+      return Arrays.asList( purRepository.getTransformationNames( dir.getObjectId(), false ) );
     }
   }
 }

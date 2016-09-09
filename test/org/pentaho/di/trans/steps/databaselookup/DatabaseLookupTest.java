@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -43,8 +43,9 @@ import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.trans.RowProducer;
 import org.pentaho.di.trans.RowStepCollector;
 import org.pentaho.di.trans.Trans;
@@ -114,9 +115,9 @@ public class DatabaseLookupTest {
 
     ValueMetaInterface[] valuesMeta =
     {
-      new ValueMeta( "ID", ValueMeta.TYPE_INTEGER, 8, 0 ),
-      new ValueMeta( "CODE", ValueMeta.TYPE_INTEGER, 8, 0 ),
-      new ValueMeta( "STRING", ValueMeta.TYPE_STRING, 30, 0 ) };
+      new ValueMetaInteger( "ID", 8, 0 ),
+      new ValueMetaInteger( "CODE", 8, 0 ),
+      new ValueMetaString( "STRING", 30, 0 ) };
 
     for ( int i = 0; i < valuesMeta.length; i++ ) {
       rm.addValueMeta( valuesMeta[i] );
@@ -154,8 +155,8 @@ public class DatabaseLookupTest {
     RowMetaInterface rm = new RowMeta();
 
     ValueMetaInterface[] valuesMeta = {
-      new ValueMeta( "int_field", ValueMeta.TYPE_INTEGER ),
-      new ValueMeta( "str_field", ValueMeta.TYPE_STRING ),
+      new ValueMetaInteger( "int_field" ),
+      new ValueMetaString( "str_field" ),
     };
 
     for ( int i = 0; i < valuesMeta.length; i++ ) {
@@ -189,10 +190,10 @@ public class DatabaseLookupTest {
 
     ValueMetaInterface[] valuesMeta =
     {
-      new ValueMeta( "int_field", ValueMeta.TYPE_INTEGER, 8, 0 ),
-      new ValueMeta( "str_field", ValueMeta.TYPE_STRING, 30, 0 ),
-      new ValueMeta( "RET_CODE", ValueMeta.TYPE_INTEGER, 8, 0 ),
-      new ValueMeta( "RET_STRING", ValueMeta.TYPE_STRING, 30, 0 ) };
+      new ValueMetaInteger( "int_field", 8, 0 ),
+      new ValueMetaString( "str_field", 30, 0 ),
+      new ValueMetaInteger( "RET_CODE", 8, 0 ),
+      new ValueMetaString( "RET_STRING", 30, 0 ) };
 
     for ( int i = 0; i < valuesMeta.length; i++ ) {
       rm.addValueMeta( valuesMeta[i] );
@@ -333,7 +334,7 @@ public class DatabaseLookupTest {
     dbl.setStreamKeyField2( new String[] { "" } );
 
     dbl.setReturnValueField( new String[] { "CODE", "STRING" } );
-    dbl.setReturnValueDefaultType( new int[] { ValueMeta.TYPE_INTEGER, ValueMeta.TYPE_STRING } );
+    dbl.setReturnValueDefaultType( new int[] { ValueMetaInterface.TYPE_INTEGER, ValueMetaInterface.TYPE_STRING } );
     dbl.setReturnValueDefault( new String[] { "-1", "UNDEF" } );
     dbl.setReturnValueNewName( new String[] { "RET_CODE", "RET_STRING" } );
 
@@ -426,7 +427,7 @@ public class DatabaseLookupTest {
     dbl.setStreamKeyField2( new String[] { "" } );
 
     dbl.setReturnValueField( new String[] { "CODE", "STRING" } );
-    dbl.setReturnValueDefaultType( new int[] { ValueMeta.TYPE_INTEGER, ValueMeta.TYPE_STRING } );
+    dbl.setReturnValueDefaultType( new int[] { ValueMetaInterface.TYPE_INTEGER, ValueMetaInterface.TYPE_STRING } );
     dbl.setReturnValueDefault( new String[] { "-1", "UNDEF" } );
     dbl.setReturnValueNewName( new String[] { "RET_CODE", "RET_STRING" } );
 
@@ -519,7 +520,7 @@ public class DatabaseLookupTest {
     dbl.setStreamKeyField2( new String[] { "" } );
 
     dbl.setReturnValueField( new String[] { "CODE", "STRING" } );
-    dbl.setReturnValueDefaultType( new int[] { ValueMeta.TYPE_INTEGER, ValueMeta.TYPE_STRING } );
+    dbl.setReturnValueDefaultType( new int[] { ValueMetaInterface.TYPE_INTEGER, ValueMetaInterface.TYPE_STRING } );
     dbl.setReturnValueDefault( new String[] { "-1", "UNDEF" } );
     dbl.setReturnValueNewName( new String[] { "RET_CODE", "RET_STRING" } );
 
@@ -612,7 +613,7 @@ public class DatabaseLookupTest {
     dbl.setStreamKeyField2( new String[] { "" } );
 
     dbl.setReturnValueField( new String[] { "CODE", "STRING" } );
-    dbl.setReturnValueDefaultType( new int[] { ValueMeta.TYPE_INTEGER, ValueMeta.TYPE_STRING } );
+    dbl.setReturnValueDefaultType( new int[] { ValueMetaInterface.TYPE_INTEGER, ValueMetaInterface.TYPE_STRING } );
     dbl.setReturnValueDefault( new String[] { "-1", "UNDEF" } );
     dbl.setReturnValueNewName( new String[] { "RET_CODE", "RET_STRING" } );
 

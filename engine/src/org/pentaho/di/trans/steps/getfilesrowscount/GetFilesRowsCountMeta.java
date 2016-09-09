@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -35,8 +35,8 @@ import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.fileinput.FileInputList;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -141,8 +141,8 @@ public class GetFilesRowsCountMeta extends BaseStepMeta implements StepMetaInter
   }
 
   /**
-   * @param isaddresult
-   *          The isaddresult to set.
+   * @param smartCount
+   *          The smartCount to set.
    */
   public void setSmartCount( boolean smartCount ) {
     this.smartCount = smartCount;
@@ -150,8 +150,17 @@ public class GetFilesRowsCountMeta extends BaseStepMeta implements StepMetaInter
 
   /**
    * @return Returns the excludeFileMask.
+   * Deprecated due to typo
    */
+  @Deprecated
   public String[] getExludeFileMask() {
+    return excludeFileMask;
+  }
+
+  /**
+   * @return Returns the excludeFileMask.
+   */
+  public String[] getExcludeFileMask() {
     return excludeFileMask;
   }
 
@@ -179,8 +188,17 @@ public class GetFilesRowsCountMeta extends BaseStepMeta implements StepMetaInter
 
   /**
    * @return Returns the output filename_Field.
+   * Deprecated due to typo
    */
+  @Deprecated
   public String setOutputFilenameField() {
+    return outputFilenameField;
+  }
+
+  /**
+   * @return Returns the output filename_Field.
+   */
+  public String getOutputFilenameField() {
     return outputFilenameField;
   }
 
@@ -342,18 +360,17 @@ public class GetFilesRowsCountMeta extends BaseStepMeta implements StepMetaInter
     int nrFiles = fileName.length;
 
     retval.allocate( nrFiles );
-    for ( int i = 0; i < nrFiles; i++ ) {
-      retval.fileName[i] = fileName[i];
-      retval.fileMask[i] = fileMask[i];
-      retval.excludeFileMask[i] = excludeFileMask[i];
-      retval.fileRequired[i] = fileRequired[i];
-      retval.includeSubFolders[i] = includeSubFolders[i];
-    }
+    System.arraycopy( fileName, 0, retval.fileName, 0, nrFiles );
+    System.arraycopy( fileMask, 0, retval.fileMask, 0, nrFiles );
+    System.arraycopy( excludeFileMask, 0, retval.excludeFileMask, 0, nrFiles );
+    System.arraycopy( fileRequired, 0, retval.fileRequired, 0, nrFiles );
+    System.arraycopy( includeSubFolders, 0, retval.includeSubFolders, 0, nrFiles );
+
     return retval;
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 300 );
+    StringBuilder retval = new StringBuilder( 300 );
 
     retval.append( "    " ).append( XMLHandler.addTagValue( "files_count", includeFilesCount ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "files_count_fieldname", filesCountFieldName ) );
@@ -409,7 +426,7 @@ public class GetFilesRowsCountMeta extends BaseStepMeta implements StepMetaInter
 
       smartCount = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "smartCount" ) );
 
-      String addresult = XMLHandler.getTagValue( stepnode, "addresult" );
+      String addresult = XMLHandler.getTagValue( stepnode, "isaddresult" );
       if ( Const.isEmpty( addresult ) ) {
         isaddresult = true;
       } else {
@@ -476,13 +493,13 @@ public class GetFilesRowsCountMeta extends BaseStepMeta implements StepMetaInter
   public void getFields( RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep,
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     ValueMetaInterface v =
-      new ValueMeta( space.environmentSubstitute( rowsCountFieldName ), ValueMeta.TYPE_INTEGER );
+      new ValueMetaInteger( space.environmentSubstitute( rowsCountFieldName ) );
     v.setLength( ValueMetaInterface.DEFAULT_INTEGER_LENGTH, 0 );
     v.setOrigin( name );
     r.addValueMeta( v );
 
     if ( includeFilesCount ) {
-      v = new ValueMeta( space.environmentSubstitute( filesCountFieldName ), ValueMeta.TYPE_INTEGER );
+      v = new ValueMetaInteger( space.environmentSubstitute( filesCountFieldName ) );
       v.setLength( ValueMetaInterface.DEFAULT_INTEGER_LENGTH, 0 );
       v.setOrigin( name );
       r.addValueMeta( v );

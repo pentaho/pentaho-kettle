@@ -305,7 +305,7 @@ public class LibFormulaEditor extends Dialog implements KeyListener {
     // We need to provide an array of styles for this event.
     //
     Vector<StyleRange> styles = new Vector<StyleRange>();
-    StringBuffer report = new StringBuffer();
+    StringBuilder report = new StringBuilder();
 
     for ( FormulaMessage message : messages.values() ) {
       ParsePosition position = message.getPosition();
@@ -385,7 +385,7 @@ public class LibFormulaEditor extends Dialog implements KeyListener {
     if ( ctrl && e.character == ' ' ) {
       // Gab the content before the cursor position...
       //
-      StringBuffer beforeBuffer = new StringBuffer();
+      StringBuilder beforeBuffer = new StringBuilder();
       String editor = expressionEditor.getText();
       int pos = expressionEditor.getCaretOffset() - 1;
       while ( pos >= 0 && pos < editor.length() ) {

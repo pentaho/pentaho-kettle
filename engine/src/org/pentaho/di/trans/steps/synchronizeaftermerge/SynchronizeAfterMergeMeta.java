@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -33,6 +33,8 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.injection.Injection;
+import org.pentaho.di.core.injection.InjectionSupported;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
@@ -57,58 +59,87 @@ import org.w3c.dom.Node;
  * Created on 13-10-2008
  *
  */
+@InjectionSupported( localizationPrefix = "SynchronizeAfterMerge.Injection.", groups = { "KEYS_TO_LOOKUP",
+  "UPDATE_FIELDS" } )
 public class SynchronizeAfterMergeMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = SynchronizeAfterMergeMeta.class; // for i18n purposes, needed by Translator2!!
 
   /** what's the lookup schema? */
+  @Injection( name = "SHEMA_NAME" )
   private String schemaName;
 
   /** what's the lookup table? */
+  @Injection( name = "TABLE_NAME" )
   private String tableName;
+
+  private List<? extends SharedObjectInterface> databases;
 
   /** database connection */
   private DatabaseMeta databaseMeta;
 
   /** which field in input stream to compare with? */
+  @Injection( name = "STREAM_FIELD1", group = "KEYS_TO_LOOKUP" )
   private String[] keyStream;
 
   /** field in table */
+  @Injection( name = "TABLE_FIELD", group = "KEYS_TO_LOOKUP" )
   private String[] keyLookup;
 
   /** Comparator: =, <>, BETWEEN, ... */
+  @Injection( name = "COMPARATOR", group = "KEYS_TO_LOOKUP" )
   private String[] keyCondition;
 
   /** Extra field for between... */
+  @Injection( name = "STREAM_FIELD2", group = "KEYS_TO_LOOKUP" )
   private String[] keyStream2;
 
   /** Field value to update after lookup */
+  @Injection( name = "UPDATE_TABLE_FIELD", group = "UPDATE_FIELDS" )
   private String[] updateLookup;
 
   /** Stream name to update value with */
+  @Injection( name = "STREAM_FIELD", group = "UPDATE_FIELDS" )
   private String[] updateStream;
 
   /** boolean indicating if field needs to be updated */
+  @Injection( name = "UPDATE", group = "UPDATE_FIELDS" )
   private Boolean[] update;
 
   /** Commit size for inserts/updates */
+  @Injection( name = "COMMIT_SIZE" )
   private int commitSize;
 
+  @Injection( name = "TABLE_NAME_IN_FIELD" )
   private boolean tablenameInField;
 
+  @Injection( name = "TABLE_NAME_FIELD" )
   private String tablenameField;
 
+  @Injection( name = "OPERATION_ORDER_FIELD" )
   private String operationOrderField;
 
+  @Injection( name = "USE_BATCH_UPDATE" )
   private boolean useBatchUpdate;
 
+  @Injection( name = "PERFORM_LOOKUP" )
   private boolean performLookup;
 
+  @Injection( name = "ORDER_INSERT" )
   private String OrderInsert;
+
+  @Injection( name = "ORDER_UPDATE" )
   private String OrderUpdate;
+
+  @Injection( name = "ORDER_DELETE" )
   private String OrderDelete;
 
   public SynchronizeAfterMergeMeta() {
     super(); // allocate BaseStepMeta
+  }
+
+  @Injection( name = "CONNECTION_NAME" )
+  public void setConnection( String connectionName ) {
+    databaseMeta = DatabaseMeta.findDatabase( databases, connectionName );
   }
 
   /**
@@ -332,6 +363,20 @@ public class SynchronizeAfterMergeMeta extends BaseStepMeta implements StepMetaI
     this.update = update;
   }
 
+  public void normalizeAllocationFields() {
+    if ( keyStream != null ) {
+      int keyGroupSize = keyStream.length;
+      keyLookup = normalizeAllocation( keyLookup, keyGroupSize );
+      keyCondition = normalizeAllocation( keyCondition, keyGroupSize );
+      keyStream2 = normalizeAllocation( keyStream2, keyGroupSize );
+    }
+    if ( updateLookup != null ) {
+      int updateGroupSize = updateLookup.length;
+      updateStream = normalizeAllocation( updateStream, updateGroupSize );
+      update = normalizeAllocation( update, updateGroupSize );
+    }
+  }
+
   public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     readData( stepnode, databases );
   }
@@ -352,19 +397,14 @@ public class SynchronizeAfterMergeMeta extends BaseStepMeta implements StepMetaI
     int nrvalues = updateLookup.length;
 
     retval.allocate( nrkeys, nrvalues );
+    System.arraycopy( keyStream, 0, retval.keyStream, 0, nrkeys );
+    System.arraycopy( keyLookup, 0, retval.keyLookup, 0, nrkeys );
+    System.arraycopy( keyCondition, 0, retval.keyCondition, 0, nrkeys );
+    System.arraycopy( keyStream2, 0, retval.keyStream2, 0, nrkeys );
 
-    for ( int i = 0; i < nrkeys; i++ ) {
-      retval.keyStream[i] = keyStream[i];
-      retval.keyLookup[i] = keyLookup[i];
-      retval.keyCondition[i] = keyCondition[i];
-      retval.keyStream2[i] = keyStream2[i];
-    }
-
-    for ( int i = 0; i < nrvalues; i++ ) {
-      retval.updateLookup[i] = updateLookup[i];
-      retval.updateStream[i] = updateStream[i];
-      retval.update[i] = update[i];
-    }
+    System.arraycopy( updateLookup, 0, retval.updateLookup, 0, nrvalues );
+    System.arraycopy( updateStream, 0, retval.updateStream, 0, nrvalues );
+    System.arraycopy( update, 0, retval.update, 0, nrvalues );
     return retval;
   }
 
@@ -372,7 +412,7 @@ public class SynchronizeAfterMergeMeta extends BaseStepMeta implements StepMetaI
     try {
       String csize;
       int nrkeys, nrvalues;
-
+      this.databases = databases;
       String con = XMLHandler.getTagValue( stepnode, "connection" );
       databaseMeta = DatabaseMeta.findDatabase( databases, con );
       csize = XMLHandler.getTagValue( stepnode, "commit" );
@@ -469,7 +509,8 @@ public class SynchronizeAfterMergeMeta extends BaseStepMeta implements StepMetaI
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 200 );
+    normalizeAllocationFields();
+    StringBuilder retval = new StringBuilder( 200 );
 
     retval
       .append( "    " ).append(
@@ -515,6 +556,7 @@ public class SynchronizeAfterMergeMeta extends BaseStepMeta implements StepMetaI
   public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
 
     try {
+      this.databases = databases;
       databaseMeta = rep.loadDatabaseMetaFromStepAttribute( id_step, "id_connection", databases );
 
       commitSize = (int) rep.getStepAttributeInteger( id_step, "commit" );
@@ -1046,6 +1088,32 @@ public class SynchronizeAfterMergeMeta extends BaseStepMeta implements StepMetaI
 
   public boolean supportsErrorHandling() {
     return true;
+  }
+
+  private String[] normalizeAllocation( String[] oldAllocation, int length ) {
+    String[] newAllocation = null;
+    if ( oldAllocation.length < length ) {
+      newAllocation = new String[length];
+      for ( int i = 0; i < oldAllocation.length; i++ ) {
+        newAllocation[i] = oldAllocation[i];
+      }
+    } else {
+      newAllocation = oldAllocation;
+    }
+    return newAllocation;
+  }
+
+  private Boolean[] normalizeAllocation( Boolean[] oldAllocation, int length ) {
+    Boolean[] newAllocation = null;
+    if ( oldAllocation.length < length ) {
+      newAllocation = new Boolean[length];
+      for ( int i = 0; i < oldAllocation.length; i++ ) {
+        newAllocation[i] = oldAllocation[i];
+      }
+    } else {
+      newAllocation = oldAllocation;
+    }
+    return newAllocation;
   }
 
 }

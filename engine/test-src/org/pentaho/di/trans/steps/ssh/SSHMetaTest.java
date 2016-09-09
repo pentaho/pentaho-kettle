@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -64,7 +64,7 @@ public class SSHMetaTest {
     sshMeta.setPassphrase( plaintextPassphrase );
     sshMeta.setProxyPassword( plaintextProxyPassword );
 
-    StringBuffer xmlString = new StringBuffer();
+    StringBuilder xmlString = new StringBuilder( 50 );
     xmlString.append( XMLHandler.getXMLHeader() ).append( Const.CR );
     xmlString.append( XMLHandler.openTag( "step" ) ).append( Const.CR );
     xmlString.append( sshMeta.getXML() );
@@ -123,10 +123,9 @@ public class SSHMetaTest {
     setterMap.put( "proxyUsername", "setProxyUsername" );
     setterMap.put( "proxyPassword", "setProxyPassword" );
 
-    LoadSaveTester tester = new LoadSaveTester( SSHMeta.class, commonFields , getterMap, setterMap );
+    LoadSaveTester tester = new LoadSaveTester( SSHMeta.class, commonFields, getterMap, setterMap );
 
-    tester.testXmlRoundTrip();
-    tester.testRepoRoundTrip();
+    tester.testSerialization();
   }
 
 }

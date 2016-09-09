@@ -36,7 +36,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 /**
  * @author Matt
  * @since 18-mar-2013
- * 
+ *
  */
 public class TransExecutorData extends BaseStepData implements StepDataInterface {
   private Trans executorTrans;

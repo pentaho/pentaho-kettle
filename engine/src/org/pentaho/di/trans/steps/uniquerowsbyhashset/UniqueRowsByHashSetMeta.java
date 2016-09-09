@@ -130,11 +130,7 @@ public class UniqueRowsByHashSetMeta extends BaseStepMeta implements StepMetaInt
 
     retval.allocate( nrfields );
 
-    for ( int i = 0; i < nrfields; i++ ) {
-      //CHECKSTYLE:Indentation:OFF
-      retval.getCompareFields()[i] = compareFields[i];
-    }
-
+    System.arraycopy( compareFields, 0, retval.compareFields, 0, nrfields );
     return retval;
   }
 
@@ -178,7 +174,7 @@ public class UniqueRowsByHashSetMeta extends BaseStepMeta implements StepMetaInt
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer();
+    StringBuilder retval = new StringBuilder();
 
     retval.append( "      " + XMLHandler.addTagValue( "store_values", storeValues ) );
     retval.append( "      " + XMLHandler.addTagValue( "reject_duplicate_row", rejectDuplicateRow ) );

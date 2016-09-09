@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -34,7 +34,6 @@ import org.pentaho.di.trans.steps.mock.StepMockHelper;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
-import static org.pentaho.di.trans.steps.excelwriter.ExcelWriterStep.STREAMER_FORCE_RECALC_PROP_NAME;
 
 /**
  * @author Andrey Khayrutdinov
@@ -76,7 +75,7 @@ public class ExcelWriterStep_FormulaRecalculationTest {
   }
 
   private void forcesToRecalculate_Sxssf( String property, boolean expectedFlag ) throws Exception {
-    step.setVariable( STREAMER_FORCE_RECALC_PROP_NAME, property );
+    step.setVariable( ExcelWriterStep.STREAMER_FORCE_RECALC_PROP_NAME, property );
     data.wb = spy( new SXSSFWorkbook() );
     step.recalculateAllWorkbookFormulas();
     if ( expectedFlag ) {

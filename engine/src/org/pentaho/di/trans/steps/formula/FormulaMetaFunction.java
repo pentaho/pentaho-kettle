@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,7 +24,7 @@ package org.pentaho.di.trans.steps.formula;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
@@ -49,7 +49,7 @@ public class FormulaMetaFunction implements Cloneable {
   private transient boolean needDataConversion = false;
 
   /**
-   * 
+   *
    * @param fieldName
    * @param formula
    * @param valueType
@@ -67,6 +67,7 @@ public class FormulaMetaFunction implements Cloneable {
     this.replaceField = replaceField;
   }
 
+  @Override
   public boolean equals( Object obj ) {
     if ( obj != null && ( obj.getClass().equals( this.getClass() ) ) ) {
       FormulaMetaFunction mf = (FormulaMetaFunction) obj;
@@ -76,6 +77,7 @@ public class FormulaMetaFunction implements Cloneable {
     return false;
   }
 
+  @Override
   public Object clone() {
     try {
       FormulaMetaFunction retval = (FormulaMetaFunction) super.clone();
@@ -92,7 +94,7 @@ public class FormulaMetaFunction implements Cloneable {
 
     xml += XMLHandler.addTagValue( "field_name", fieldName );
     xml += XMLHandler.addTagValue( "formula_string", formula );
-    xml += XMLHandler.addTagValue( "value_type", ValueMeta.getTypeDesc( valueType ) );
+    xml += XMLHandler.addTagValue( "value_type", ValueMetaFactory.getValueMetaName( valueType ) );
     xml += XMLHandler.addTagValue( "value_length", valueLength );
     xml += XMLHandler.addTagValue( "value_precision", valuePrecision );
     xml += XMLHandler.addTagValue( "replace_field", replaceField );
@@ -105,7 +107,7 @@ public class FormulaMetaFunction implements Cloneable {
   public FormulaMetaFunction( Node calcnode ) {
     fieldName = XMLHandler.getTagValue( calcnode, "field_name" );
     formula = XMLHandler.getTagValue( calcnode, "formula_string" );
-    valueType = ValueMeta.getType( XMLHandler.getTagValue( calcnode, "value_type" ) );
+    valueType = ValueMetaFactory.getIdForValueMeta( XMLHandler.getTagValue( calcnode, "value_type" ) );
     valueLength = Const.toInt( XMLHandler.getTagValue( calcnode, "value_length" ), -1 );
     valuePrecision = Const.toInt( XMLHandler.getTagValue( calcnode, "value_precision" ), -1 );
     replaceField = XMLHandler.getTagValue( calcnode, "replace_field" );
@@ -114,7 +116,8 @@ public class FormulaMetaFunction implements Cloneable {
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step, int nr ) throws KettleException {
     rep.saveStepAttribute( id_transformation, id_step, nr, "field_name", fieldName );
     rep.saveStepAttribute( id_transformation, id_step, nr, "formula_string", formula );
-    rep.saveStepAttribute( id_transformation, id_step, nr, "value_type", ValueMeta.getTypeDesc( valueType ) );
+    rep.saveStepAttribute( id_transformation, id_step, nr, "value_type",
+      ValueMetaFactory.getValueMetaName( valueType ) );
     rep.saveStepAttribute( id_transformation, id_step, nr, "value_length", valueLength );
     rep.saveStepAttribute( id_transformation, id_step, nr, "value_precision", valuePrecision );
     rep.saveStepAttribute( id_transformation, id_step, nr, "replace_field", replaceField );
@@ -123,7 +126,7 @@ public class FormulaMetaFunction implements Cloneable {
   public FormulaMetaFunction( Repository rep, ObjectId id_step, int nr ) throws KettleException {
     fieldName = rep.getStepAttributeString( id_step, nr, "field_name" );
     formula = rep.getStepAttributeString( id_step, nr, "formula_string" );
-    valueType = ValueMeta.getType( rep.getStepAttributeString( id_step, nr, "value_type" ) );
+    valueType = ValueMetaFactory.getIdForValueMeta( rep.getStepAttributeString( id_step, nr, "value_type" ) );
     valueLength = (int) rep.getStepAttributeInteger( id_step, nr, "value_length" );
     valuePrecision = (int) rep.getStepAttributeInteger( id_step, nr, "value_precision" );
     replaceField = rep.getStepAttributeString( id_step, nr, "replace_field" );

@@ -244,7 +244,7 @@ public class KettleURLClassLoader extends URLClassLoader {
             //Fix for BACKLOG-2149 - Do nothing - while loop will try again.
           }
         }
-        
+
         for ( Object file : set ) {
           if ( file instanceof JarFile ) {
             JarFile jar = (JarFile) file;
@@ -286,11 +286,11 @@ public class KettleURLClassLoader extends URLClassLoader {
   }
 
   @Override
-  public URL getResource(String name) {
+  public URL getResource( String name ) {
     URL url;
-    url = findResource(name);
-    if (url == null && getParent() != null) {
-      url = getParent().getResource(name);
+    url = findResource( name );
+    if ( url == null && getParent() != null ) {
+      url = getParent().getResource( name );
     }
     return url;
   }

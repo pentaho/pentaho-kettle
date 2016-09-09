@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -106,6 +106,7 @@ public class KettleFileRepository extends AbstractRepository {
 
   public XmlMetaStore metaStore;
 
+  @Override
   public void connect( String username, String password ) throws KettleException {
     try {
       String metaStoreRootFolder = this.repositoryMeta.getBaseDirectory() + File.separator + ".meta";
@@ -133,11 +134,17 @@ public class KettleFileRepository extends AbstractRepository {
     connected = true;
   }
 
+  @Override public boolean test() {
+    return new File( this.repositoryMeta.getBaseDirectory() ).exists();
+  }
+
+  @Override
   public void disconnect() {
     this.metaStore = null;
     connected = false;
   }
 
+  @Override
   public void init( RepositoryMeta repositoryMeta ) {
     this.serviceMap = new HashMap<Class<? extends IRepositoryService>, IRepositoryService>();
     this.serviceList = new ArrayList<Class<? extends IRepositoryService>>();
@@ -149,18 +156,22 @@ public class KettleFileRepository extends AbstractRepository {
     this.log = new LogChannel( this );
   }
 
+  @Override
   public LogChannelInterface getLog() {
     return log;
   }
 
+  @Override
   public boolean isConnected() {
     return connected;
   }
 
+  @Override
   public RepositorySecurityProvider getSecurityProvider() {
     return securityProvider;
   }
 
+  @Override
   public RepositorySecurityManager getSecurityManager() {
     return null;
   }
@@ -261,6 +272,7 @@ public class KettleFileRepository extends AbstractRepository {
       .getRepositoryElementType().getExtension() ) );
   }
 
+  @Override
   public boolean exists( final String name, final RepositoryDirectoryInterface repositoryDirectory,
     final RepositoryObjectType objectType ) throws KettleException {
     try {
@@ -278,6 +290,7 @@ public class KettleFileRepository extends AbstractRepository {
     save( repositoryElement, versionComment, null );
   }
 
+  @Override
   public void save( RepositoryElementInterface repositoryElement, String versionComment,
     ProgressMonitorListener monitor, boolean overwrite ) throws KettleException {
     // We always overwrite so no further changes necessary
@@ -343,6 +356,7 @@ public class KettleFileRepository extends AbstractRepository {
     }
   }
 
+  @Override
   public RepositoryDirectoryInterface createRepositoryDirectory( RepositoryDirectoryInterface parentDirectory,
     String directoryPath ) throws KettleException {
     String folder = calcDirectoryName( parentDirectory );
@@ -369,6 +383,7 @@ public class KettleFileRepository extends AbstractRepository {
     return newDir;
   }
 
+  @Override
   public void saveRepositoryDirectory( RepositoryDirectoryInterface dir ) throws KettleException {
     try {
       String filename = calcDirectoryName( dir );
@@ -390,14 +405,17 @@ public class KettleFileRepository extends AbstractRepository {
     deleteFile( filename );
   }
 
+  @Override
   public void deleteJob( ObjectId id_job ) throws KettleException {
     delObject( id_job );
   }
 
+  @Override
   public void deleteTransformation( ObjectId id_transformation ) throws KettleException {
     delObject( id_transformation );
   }
 
+  @Override
   public void deleteClusterSchema( ObjectId id_cluster ) throws KettleException {
     // ID and filename are the same
     deleteFile( id_cluster.getId() );
@@ -407,20 +425,24 @@ public class KettleFileRepository extends AbstractRepository {
 
   }
 
+  @Override
   public void deletePartitionSchema( ObjectId id_partition_schema ) throws KettleException {
     // ID and filename are the same
     deleteFile( id_partition_schema.getId() );
   }
 
+  @Override
   public void deleteRepositoryDirectory( RepositoryDirectoryInterface dir ) throws KettleException {
-
+    delObject( dir.getObjectId() );
   }
 
+  @Override
   public void deleteSlave( ObjectId id_slave ) throws KettleException {
     // ID and filename are the same
     deleteFile( calcDirectoryName( null ) + id_slave.getId() );
   }
 
+  @Override
   public void deleteDatabaseMeta( String databaseName ) throws KettleException {
     deleteRootObject( databaseName, EXT_DATABASE );
   }
@@ -445,16 +467,19 @@ public class KettleFileRepository extends AbstractRepository {
     }
   }
 
+  @Override
   public ObjectId getClusterID( String name ) throws KettleException {
     // The ID is the filename relative to the base directory, including the file extension
     //
     return new StringObjectId( calcObjectId( (RepositoryDirectory) null ) + name + EXT_SLAVE_SERVER );
   }
 
+  @Override
   public ObjectId[] getClusterIDs( boolean includeDeleted ) throws KettleException {
     return getRootObjectIDs( EXT_CLUSTER_SCHEMA );
   }
 
+  @Override
   public String[] getClusterNames( boolean includeDeleted ) throws KettleException {
     return convertRootIDsToNames( getClusterIDs( false ) );
   }
@@ -496,6 +521,7 @@ public class KettleFileRepository extends AbstractRepository {
     }
   }
 
+  @Override
   public ObjectId getDatabaseID( String name ) throws KettleException {
     ObjectId match = getObjectId( null, name, EXT_DATABASE );
     if ( match == null ) {
@@ -515,10 +541,12 @@ public class KettleFileRepository extends AbstractRepository {
     return new ObjectId[] {};
   }
 
+  @Override
   public ObjectId[] getDatabaseIDs( boolean includeDeleted ) throws KettleException {
     return getRootObjectIDs( EXT_DATABASE );
   }
 
+  @Override
   public String[] getDatabaseNames( boolean includeDeleted ) throws KettleException {
     return convertRootIDsToNames( getDatabaseIDs( false ) );
   }
@@ -527,6 +555,7 @@ public class KettleFileRepository extends AbstractRepository {
     return convertRootIDsToNames( databaseIds );
   }
 
+  @Override
   public String[] getDirectoryNames( ObjectId id_directory ) throws KettleException {
     RepositoryDirectoryInterface tree = loadRepositoryDirectoryTree();
     RepositoryDirectoryInterface directory = tree.findDirectory( id_directory );
@@ -537,10 +566,12 @@ public class KettleFileRepository extends AbstractRepository {
     return names;
   }
 
+  @Override
   public ObjectId getJobId( String name, RepositoryDirectoryInterface repositoryDirectory ) throws KettleException {
     return getObjectId( repositoryDirectory, name, EXT_JOB );
   }
 
+  @Override
   public String[] getJobNames( ObjectId id_directory, boolean includeDeleted ) throws KettleException {
     try {
       List<String> list = new ArrayList<String>();
@@ -576,25 +607,30 @@ public class KettleFileRepository extends AbstractRepository {
     return new ObjectId[] {};
   }
 
+  @Override
   public String[] getJobsUsingDatabase( ObjectId id_database ) throws KettleException {
     return new String[] {};
   }
 
+  @Override
   public String getName() {
 
     return repositoryMeta.getName();
   }
 
+  @Override
   public ObjectId getPartitionSchemaID( String name ) throws KettleException {
     // The ID is the filename relative to the base directory, including the file extension
     //
     return new StringObjectId( calcObjectId( (RepositoryDirectory) null ) + name + EXT_SLAVE_SERVER );
   }
 
+  @Override
   public ObjectId[] getPartitionSchemaIDs( boolean includeDeleted ) throws KettleException {
     return getRootObjectIDs( EXT_PARTITION_SCHEMA );
   }
 
+  @Override
   public String[] getPartitionSchemaNames( boolean includeDeleted ) throws KettleException {
     return convertRootIDsToNames( getPartitionSchemaIDs( false ) );
   }
@@ -604,6 +640,7 @@ public class KettleFileRepository extends AbstractRepository {
     return null;
   }
 
+  @Override
   public ObjectId getSlaveID( String name ) throws KettleException {
     // Only return the ID if the slave server exists
     Object slaveID = name + EXT_SLAVE_SERVER;
@@ -645,6 +682,7 @@ public class KettleFileRepository extends AbstractRepository {
     }
   }
 
+  @Override
   public ObjectId[] getSlaveIDs( boolean includeDeleted ) throws KettleException {
     return getRootObjectIDs( EXT_SLAVE_SERVER );
   }
@@ -653,10 +691,12 @@ public class KettleFileRepository extends AbstractRepository {
     return new ObjectId[] {};
   }
 
+  @Override
   public String[] getSlaveNames( boolean includeDeleted ) throws KettleException {
     return convertRootIDsToNames( getSlaveIDs( false ) );
   }
 
+  @Override
   public List<SlaveServer> getSlaveServers() throws KettleException {
     List<SlaveServer> list = new ArrayList<SlaveServer>();
     for ( ObjectId id : getSlaveIDs( false ) ) {
@@ -665,26 +705,32 @@ public class KettleFileRepository extends AbstractRepository {
     return list;
   }
 
+  @Override
   public boolean getStepAttributeBoolean( ObjectId id_step, int nr, String code, boolean def ) throws KettleException {
     return false;
   }
 
+  @Override
   public long getStepAttributeInteger( ObjectId id_step, int nr, String code ) throws KettleException {
     return 0;
   }
 
+  @Override
   public String getStepAttributeString( ObjectId id_step, int nr, String code ) throws KettleException {
     return null;
   }
 
+  @Override
   public long getJobEntryAttributeInteger( ObjectId id_jobentry, int nr, String code ) throws KettleException {
     return 0;
   }
 
+  @Override
   public String getJobEntryAttributeString( ObjectId id_jobentry, int nr, String code ) throws KettleException {
     return null;
   }
 
+  @Override
   public boolean getJobEntryAttributeBoolean( ObjectId id_jobentry, int nr, String code, boolean def ) throws KettleException {
     return false;
   }
@@ -712,10 +758,12 @@ public class KettleFileRepository extends AbstractRepository {
     return new ObjectId[] {};
   }
 
+  @Override
   public ObjectId getTransformationID( String name, RepositoryDirectoryInterface repositoryDirectory ) throws KettleException {
     return getObjectId( repositoryDirectory, name, EXT_TRANSFORMATION );
   }
 
+  @Override
   public String[] getTransformationNames( ObjectId id_directory, boolean includeDeleted ) throws KettleException {
     try {
       List<String> list = new ArrayList<String>();
@@ -755,6 +803,7 @@ public class KettleFileRepository extends AbstractRepository {
     return new String[] {};
   }
 
+  @Override
   public String[] getTransformationsUsingDatabase( ObjectId id_database ) throws KettleException {
     return new String[] {};
   }
@@ -767,6 +816,7 @@ public class KettleFileRepository extends AbstractRepository {
     return new String[] {};
   }
 
+  @Override
   public String getVersion() {
     return FILE_REPOSITORY_VERSION;
   }
@@ -775,12 +825,14 @@ public class KettleFileRepository extends AbstractRepository {
     return null;
   }
 
+  @Override
   public void insertJobEntryDatabase( ObjectId id_job, ObjectId id_jobentry, ObjectId id_database ) throws KettleException {
   }
 
   public void insertJobNote( ObjectId id_job, ObjectId id_note ) throws KettleException {
   }
 
+  @Override
   public ObjectId insertLogEntry( String description ) throws KettleException {
     String logfile = calcDirectoryName( null ) + LOG_FILE;
     try {
@@ -795,6 +847,7 @@ public class KettleFileRepository extends AbstractRepository {
     }
   }
 
+  @Override
   public void insertStepDatabase( ObjectId id_transformation, ObjectId id_step, ObjectId id_database ) throws KettleException {
 
   }
@@ -822,6 +875,7 @@ public class KettleFileRepository extends AbstractRepository {
     return null;
   }
 
+  @Override
   public ClusterSchema loadClusterSchema( ObjectId id_cluster_schema, List<SlaveServer> slaveServers,
     String versionName ) throws KettleException {
     try {
@@ -836,6 +890,7 @@ public class KettleFileRepository extends AbstractRepository {
     return null;
   }
 
+  @Override
   public Condition loadConditionFromStepAttribute( ObjectId id_step, String code ) throws KettleException {
 
     return null;
@@ -857,6 +912,7 @@ public class KettleFileRepository extends AbstractRepository {
     }
   }
 
+  @Override
   public DatabaseMeta loadDatabaseMeta( ObjectId id_database, String versionName ) throws KettleException {
     try {
       return new DatabaseMeta( loadNodeFromXML( id_database, DatabaseMeta.XML_TAG ) );
@@ -865,20 +921,24 @@ public class KettleFileRepository extends AbstractRepository {
     }
   }
 
+  @Override
   public DatabaseMeta loadDatabaseMetaFromJobEntryAttribute( ObjectId id_jobentry, String nameCode, int nr,
     String idCode, List<DatabaseMeta> databases ) throws KettleException {
     return null;
   }
 
+  @Override
   public void saveDatabaseMetaJobEntryAttribute( ObjectId id_job, ObjectId id_jobentry, int nr, String nameCode,
     String idCode, DatabaseMeta database ) throws KettleException {
   }
 
+  @Override
   public DatabaseMeta loadDatabaseMetaFromStepAttribute( ObjectId id_step, String code,
     List<DatabaseMeta> databases ) throws KettleException {
     return null;
   }
 
+  @Override
   public JobMeta loadJob( String jobname, RepositoryDirectoryInterface repdir, ProgressMonitorListener monitor,
     String versionName ) throws KettleException {
 
@@ -897,6 +957,7 @@ public class KettleFileRepository extends AbstractRepository {
 
   }
 
+  @Override
   public PartitionSchema loadPartitionSchema( ObjectId id_partition_schema, String versionName ) throws KettleException {
     try {
       return new PartitionSchema( loadNodeFromXML( id_partition_schema, PartitionSchema.XML_TAG ) );
@@ -905,6 +966,7 @@ public class KettleFileRepository extends AbstractRepository {
     }
   }
 
+  @Override
   public RepositoryDirectoryInterface loadRepositoryDirectoryTree() throws KettleException {
     RepositoryDirectory root = new RepositoryDirectory();
     root.setObjectId( new StringObjectId( "/" ) );
@@ -936,14 +998,17 @@ public class KettleFileRepository extends AbstractRepository {
     }
   }
 
+  @Override
   public RepositoryDirectoryInterface findDirectory( String directory ) throws KettleException {
     return loadRepositoryDirectoryTree().findDirectory( directory );
   }
 
+  @Override
   public RepositoryDirectoryInterface findDirectory( ObjectId directory ) throws KettleException {
     return loadRepositoryDirectoryTree().findDirectory( directory );
   }
 
+  @Override
   public List<RepositoryElementMetaInterface> getTransformationObjects( ObjectId idDirectory,
     boolean includeDeleted ) throws KettleException {
 
@@ -981,6 +1046,7 @@ public class KettleFileRepository extends AbstractRepository {
     }
   }
 
+  @Override
   public List<RepositoryElementMetaInterface> getJobObjects( ObjectId id_directory, boolean includeDeleted ) throws KettleException {
 
     try {
@@ -1021,6 +1087,7 @@ public class KettleFileRepository extends AbstractRepository {
     return 0;
   }
 
+  @Override
   public SlaveServer loadSlaveServer( ObjectId id_slave_server, String versionName ) throws KettleException {
     try {
       return new SlaveServer( loadNodeFromXML( id_slave_server, SlaveServer.XML_TAG ) );
@@ -1029,6 +1096,7 @@ public class KettleFileRepository extends AbstractRepository {
     }
   }
 
+  @Override
   public TransMeta loadTransformation( String transname, RepositoryDirectoryInterface repdir,
     ProgressMonitorListener monitor, boolean setInternalVariables, String versionName ) throws KettleException {
 
@@ -1068,8 +1136,7 @@ public class KettleFileRepository extends AbstractRepository {
 
         DatabaseMeta check = transMeta.findDatabase( databaseMeta.getName() ); // Check if there already is one in the
                                                                                // transformation
-        if ( check == null || overWriteShared ) // We only add, never overwrite database connections.
-        {
+        if ( check == null || overWriteShared ) { // We only add, never overwrite database connections.
           if ( databaseMeta.getName() != null ) {
             transMeta.addOrReplaceDatabase( databaseMeta );
             if ( !overWriteShared ) {
@@ -1096,6 +1163,7 @@ public class KettleFileRepository extends AbstractRepository {
 
   }
 
+  @Override
   public List<DatabaseMeta> readDatabases() throws KettleException {
     List<DatabaseMeta> list = new ArrayList<DatabaseMeta>();
     for ( ObjectId id : getDatabaseIDs( false ) ) {
@@ -1108,10 +1176,12 @@ public class KettleFileRepository extends AbstractRepository {
   /**
    * Clear the shared object cache, if applicable.
    */
+  @Override
   public void clearSharedObjectCache() {
     // no op
   }
 
+  @Override
   public SharedObjects readJobMetaSharedObjects( JobMeta jobMeta ) throws KettleException {
 
     // First the normal shared objects...
@@ -1135,6 +1205,7 @@ public class KettleFileRepository extends AbstractRepository {
     return sharedObjects;
   }
 
+  @Override
   public SharedObjects readTransSharedObjects( TransMeta transMeta ) throws KettleException {
 
     // First the normal shared objects...
@@ -1201,11 +1272,13 @@ public class KettleFileRepository extends AbstractRepository {
     return id.getId().substring( slashIndex + 1, dotIndex );
   }
 
+  @Override
   public ObjectId renameJob( ObjectId id_job, RepositoryDirectoryInterface newDir, String newName )
     throws KettleException {
     return renameJob( id_job, null, newDir, newName );
   }
 
+  @Override
   public ObjectId renameJob( ObjectId id_job, String versionComment, RepositoryDirectoryInterface newDir,
     String newName ) throws KettleException {
     ObjectId objectId = renameObject( id_job, newDir, newName, EXT_JOB );
@@ -1215,6 +1288,7 @@ public class KettleFileRepository extends AbstractRepository {
     return objectId;
   }
 
+  @Override
   public ObjectId renameRepositoryDirectory( ObjectId id, RepositoryDirectoryInterface newParentDir, String newName ) throws KettleException {
     if ( newParentDir != null || newName != null ) {
       try {
@@ -1252,11 +1326,13 @@ public class KettleFileRepository extends AbstractRepository {
     return ( id );
   }
 
+  @Override
   public ObjectId renameTransformation( ObjectId id_transformation, RepositoryDirectoryInterface newDir, String newName )
     throws KettleException {
     return renameTransformation( id_transformation, null, newDir, newName );
   }
 
+  @Override
   public ObjectId renameTransformation( ObjectId id_transformation, String versionComment,
       RepositoryDirectoryInterface newDir, String newName ) throws KettleException {
     ObjectId objectId = renameObject( id_transformation, newDir, newName, EXT_TRANSFORMATION );
@@ -1274,6 +1350,7 @@ public class KettleFileRepository extends AbstractRepository {
     return null;
   }
 
+  @Override
   public void saveConditionStepAttribute( ObjectId id_transformation, ObjectId id_step, String code,
     Condition condition ) throws KettleException {
   }
@@ -1282,28 +1359,36 @@ public class KettleFileRepository extends AbstractRepository {
     DatabaseMeta database ) throws KettleException {
   }
 
+  @Override
   public void saveDatabaseMetaStepAttribute( ObjectId id_transformation, ObjectId id_step, String code,
     DatabaseMeta database ) throws KettleException {
   }
 
+  @Override
   public void saveJobEntryAttribute( ObjectId id_job, ObjectId id_jobentry, int nr, String code, String value ) throws KettleException {
   }
 
+  @Override
   public void saveJobEntryAttribute( ObjectId id_job, ObjectId id_jobentry, int nr, String code, boolean value ) throws KettleException {
   }
 
+  @Override
   public void saveJobEntryAttribute( ObjectId id_job, ObjectId id_jobentry, int nr, String code, long value ) throws KettleException {
   }
 
+  @Override
   public void saveStepAttribute( ObjectId id_transformation, ObjectId id_step, int nr, String code, String value ) throws KettleException {
   }
 
+  @Override
   public void saveStepAttribute( ObjectId id_transformation, ObjectId id_step, int nr, String code, boolean value ) throws KettleException {
   }
 
+  @Override
   public void saveStepAttribute( ObjectId id_transformation, ObjectId id_step, int nr, String code, long value ) throws KettleException {
   }
 
+  @Override
   public void saveStepAttribute( ObjectId id_transformation, ObjectId id_step, int nr, String code, double value ) throws KettleException {
   }
 
@@ -1318,6 +1403,7 @@ public class KettleFileRepository extends AbstractRepository {
     return new ObjectId[] {};
   }
 
+  @Override
   public IUser getUserInfo() {
     return null;
   }
@@ -1341,10 +1427,12 @@ public class KettleFileRepository extends AbstractRepository {
   }
 
   // Not used...
+  @Override
   public int countNrJobEntryAttributes( ObjectId id_jobentry, String code ) throws KettleException {
     return 0;
   }
 
+  @Override
   public int countNrStepAttributes( ObjectId id_step, String code ) throws KettleException {
     return 0;
   }
@@ -1352,6 +1440,7 @@ public class KettleFileRepository extends AbstractRepository {
   /**
    * @return the repositoryMeta
    */
+  @Override
   public KettleFileRepositoryMeta getRepositoryMeta() {
     return repositoryMeta;
   }
@@ -1364,10 +1453,12 @@ public class KettleFileRepository extends AbstractRepository {
     this.repositoryMeta = repositoryMeta;
   }
 
+  @Override
   public void undeleteObject( RepositoryElementMetaInterface repositoryObject ) throws KettleException {
     throw new UnsupportedOperationException();
   }
 
+  @Override
   public List<RepositoryElementMetaInterface> getJobAndTransformationObjects( ObjectId id_directory,
     boolean includeDeleted ) throws KettleException {
     // TODO not the most efficient impl; also, no sorting is done
@@ -1377,28 +1468,34 @@ public class KettleFileRepository extends AbstractRepository {
     return objs;
   }
 
+  @Override
   public IRepositoryService getService( Class<? extends IRepositoryService> clazz ) throws KettleException {
     return serviceMap.get( clazz );
   }
 
+  @Override
   public List<Class<? extends IRepositoryService>> getServiceInterfaces() throws KettleException {
     return serviceList;
   }
 
+  @Override
   public boolean hasService( Class<? extends IRepositoryService> clazz ) throws KettleException {
     return serviceMap.containsKey( clazz );
   }
 
+  @Override
   public RepositoryDirectoryInterface getDefaultSaveDirectory( RepositoryElementInterface repositoryElement ) throws KettleException {
     return getUserHomeDirectory();
   }
 
+  @Override
   public RepositoryDirectoryInterface getUserHomeDirectory() throws KettleException {
     RepositoryDirectory root = new RepositoryDirectory();
     root.setObjectId( null );
     return loadRepositoryDirectoryTree( root );
   }
 
+  @Override
   public RepositoryObject getObjectInformation( ObjectId objectId, RepositoryObjectType objectType ) throws KettleException {
     try {
       String filename = calcDirectoryName( null );
@@ -1432,28 +1529,34 @@ public class KettleFileRepository extends AbstractRepository {
     }
   }
 
+  @Override
   public JobMeta loadJob( ObjectId idJob, String versionLabel ) throws KettleException {
     RepositoryObject jobInfo = getObjectInformation( idJob, RepositoryObjectType.JOB );
     return loadJob( jobInfo.getName(), jobInfo.getRepositoryDirectory(), null, versionLabel );
   }
 
+  @Override
   public TransMeta loadTransformation( ObjectId idTransformation, String versionLabel ) throws KettleException {
     RepositoryObject jobInfo = getObjectInformation( idTransformation, RepositoryObjectType.TRANSFORMATION );
     return loadTransformation( jobInfo.getName(), jobInfo.getRepositoryDirectory(), null, true, versionLabel );
   }
 
+  @Override
   public String getConnectMessage() {
     return null;
   }
 
+  @Override
   public IRepositoryExporter getExporter() {
     return new RepositoryExporter( this );
   }
 
+  @Override
   public IRepositoryImporter getImporter() {
     return new RepositoryImporter( this );
   }
 
+  @Override
   public XmlMetaStore getMetaStore() {
     return metaStore;
   }

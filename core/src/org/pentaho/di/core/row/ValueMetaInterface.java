@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -518,6 +518,47 @@ public interface ValueMetaInterface extends Cloneable {
    *          the caseInsensitive to set
    */
   public void setCaseInsensitive( boolean caseInsensitive );
+
+  /**
+   * Returns a true of the value object is case insensitive, false if it is case sensitive,
+   *
+   * @return the collatorDisabled
+   */
+  public boolean isCollatorDisabled();
+
+  /**
+   * Sets whether or not the value object should be sorted according to a locale using a collator
+   *
+   * @param collatorDisabled
+   *          the collatorDisabled to set
+   */
+  public void setCollatorDisabled( boolean collatorDisabled );
+
+  /**
+   * Get the current Locale of the collator
+   * @return the current Collator Locale
+   */
+  public Locale getCollatorLocale();
+
+  /**
+   * Sets the Locale of the collator
+   */
+  public void setCollatorLocale( Locale locale );
+
+  /**
+   * Returns the strength of the collator.
+   *
+   * @return the collatorStrength
+   */
+  public int getCollatorStrength();
+
+ /**
+   * Sets the strength of the collator.
+   *
+   * @param collatorStrength
+   *          the collatorStrength to set
+   */
+  public void setCollatorStrength( int collatorStrength ) throws IllegalArgumentException;
 
   /**
    * Returns whether or not the value should be sorted in descending order.
@@ -1241,6 +1282,13 @@ public interface ValueMetaInterface extends Cloneable {
    *           in case there is an unexpected data conversion error.
    */
   public Object getNativeDataType( Object object ) throws KettleValueException;
+
+  /**
+   * Return the Java class that represents the "native" storage type of this ValueMeta
+   *
+   * @return A Java class
+   */
+  public Class<?> getNativeDataTypeClass() throws KettleValueException;
 
   /**
    * Ask for suggestions as to how this plugin data type should be represented in the specified database interface

@@ -42,7 +42,7 @@ import org.pentaho.di.trans.steps.mapping.MappingValueRename;
 
 /**
  * Do nothing. Pass all input data to the next steps.
- * 
+ *
  * @author Matt
  * @since 2-jun-2003
  */

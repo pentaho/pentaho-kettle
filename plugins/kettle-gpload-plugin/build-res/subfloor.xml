@@ -155,8 +155,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   <property name="javac.deprecation"
             value="true"
             description="Indicates whether source should be compiled with deprecation information"/>
-  <property name="javac.source" value="7" description="Provide source compatibility with specified release"/>
-  <property name="javac.target" value="7" description="Generate class files for specific VM version"/>
+  <property name="javac.source" value="8" description="Provide source compatibility with specified release"/>
+  <property name="javac.target" value="8" description="Generate class files for specific VM version"/>
   <property name="javac.maxmemory" value="256M" description="Max memory alloted to java compile"/>
   <property name="javac.xlint" value="-Xlint:all"/>
 
@@ -228,7 +228,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
               value="${inttestbin.dir}/classes"
               description="Classes compiled from project test code are placed here"/>
     <property name="inttestreports.dir"
-              value="${bin.dir}/reports/integration-test"
+              value="${testreports.dir}"
               description="Base directory that holds all integration test report files"/>
     <property name="inttestreports.xml.dir"
               value="${inttestreports.dir}/xml"
@@ -242,7 +242,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             value="${testbin.dir}/instrumented-classes"
             description="Directory where instrumented project classes are placed for use by code coverage utility"/>
   <property name="jacoco.version"
-            value="0.7.4.201502262128"
+            value="0.7.6.201602180812"
             description="The version of jacoco to use for code coverage"/>
   <property name="cobertura.version"
             value="2.1.1"
@@ -326,9 +326,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
   <!-- Sonar properties -->
 
-  <property name="sonar-ant-task-version" value="2.2"/>
+  <property name="sonar-ant-task-version" value="2.4"/>
   <property name="sonar.classname" value="org.sonar.ant.SonarTask"/>
-  <property name="sonar.hostname" value="10.177.176.23"/>
+  <property name="sonar.hostname" value="sonar.pentaho.com"/>
   <property name="sonar.port" value="9000"/>
   <property name="sonar.host.url" value="http://${sonar.hostname}:${sonar.port}"/>
   <property name="sonar.jdbc.username" value="sonar"/>
@@ -366,7 +366,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             value="6.12"
             description="The version of CheckStyle to use for coding standards"/>
   <property name="pentaho.coding.standards.version"
-			value="1.0.2"/>
+			value="1.0.5"/>
   <property name="checkstyle.dir"
             value="${basedir}/checkstyle"/>
   <property name="checkstyle.lib.dir"
@@ -665,22 +665,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       Fetches ant-contrib from sourceforge
       ====================================================================-->
   <target name="antcontrib.download" unless="antcontrib.available">
-    <mkdir dir="${subfloor.tmp.dir}"/>
-    <get src="http://downloads.sourceforge.net/ant-contrib/ant-contrib-1.0b3-bin.zip"
-         dest="${subfloor.tmp.dir}/antcontrib.zip"
+    <mkdir dir="${antcontrib.build.cache.dir}"/>
+    <get src="http://nexus.pentaho.org/content/groups/omni/ant-contrib/ant-contrib/1.0b3/ant-contrib-1.0b3.jar"
+         dest="${antcontrib.build.cache.dir}"
          usetimestamp="true"/>
-    <unzip src="${subfloor.tmp.dir}/antcontrib.zip" dest="${subfloor.tmp.dir}">
-      <patternset>
-        <include name="**/*.jar"/>
-      </patternset>
-    </unzip>
-    <copy todir="${antcontrib.build.cache.dir}">
-      <fileset dir="${subfloor.tmp.dir}/ant-contrib">
-        <include name="**/*.jar"/>
-      </fileset>
-    </copy>
   </target>
-
 
   <!--=======================================================================
       init
@@ -1846,18 +1835,24 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     init-test-reports
 
     Prepare directories for JUnit test reports
+
+    Do not chain the clean-test-reports target because running unit tests
+    followed by integration tests is resulting in missing unit test reports.
+    These directories will be cleaned by a top level "clean" call or a user
+    can call "clean-test-reports" directly if desired.
     ====================================================================-->
-  <target name="init-test-reports" depends="clean-test-reports">
+  <target name="init-test-reports" >
     <mkdir dir="${testreports.xml.dir}"/>
     <mkdir dir="${testreports.html.dir}"/>
   </target>
+
 
   <!--=======================================================================
         integration-test
 
         Compiles and runs all the integration tests for the project
         ====================================================================-->
-    <target name="integration-test" depends="compile,compile-tests, init-integration-test-reports" description="Compiles and runs unit tests">
+    <target name="integration-test" depends="compile,compile-tests, init-test-reports" description="Compiles and runs unit tests">
         <junit maxmemory="${junit.maxmemory}"
                dir="${junit.base.dir}"
                fork="yes"
@@ -1950,7 +1945,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   <target name="javadoc" depends="javadoc.init, compile">
     <javadoc destdir="${javadoc.dir}/docs/api"
              access="public"
-             source="7"
+             source="${javac.source}"
              use="true"
              notree="false"
              nonavbar="false"
@@ -2189,7 +2184,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
       Compiles and runs all the tests for the project
       ====================================================================-->
-  <target name="jacoco-integration" depends="install-jacoco,compile,compile-tests,init-integration-test-reports"
+  <target name="jacoco-integration" depends="install-jacoco,compile,compile-tests,init-test-reports"
           description="Compiles and runs integration tests with Jacoco code coverage.">
 
     <mkdir dir = "${jacoco.integration.report.dir}" />

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -135,7 +135,7 @@ public class MSSQLServerDatabaseMeta extends BaseDatabaseMeta implements Databas
    */
   @Override
   public String getSQLLockTables( String[] tableNames ) {
-    StringBuffer sql = new StringBuffer( 128 );
+    StringBuilder sql = new StringBuilder( 128 );
     for ( int i = 0; i < tableNames.length; i++ ) {
       sql.append( "SELECT top 0 * FROM " ).append( tableNames[i] ).append( " WITH (UPDLOCK, HOLDLOCK);" ).append(
         Const.CR );
@@ -228,6 +228,7 @@ public class MSSQLServerDatabaseMeta extends BaseDatabaseMeta implements Databas
 
     int type = v.getType();
     switch ( type ) {
+      case ValueMetaInterface.TYPE_TIMESTAMP:
       case ValueMetaInterface.TYPE_DATE:
         retval += "DATETIME";
         break;
@@ -264,9 +265,9 @@ public class MSSQLServerDatabaseMeta extends BaseDatabaseMeta implements Databas
             if ( precision > 0 ) {
               if ( length > 0 ) {
                 retval += "DECIMAL(" + length + "," + precision + ")";
+              } else {
+                retval += "FLOAT(53)";
               }
-            } else {
-              retval += "FLOAT(53)";
             }
           }
         }
@@ -396,7 +397,7 @@ public class MSSQLServerDatabaseMeta extends BaseDatabaseMeta implements Databas
       //
       // Get the info from the data dictionary...
       //
-      StringBuffer sql = new StringBuffer( 128 );
+      StringBuilder sql = new StringBuilder( 128 );
       sql.append( "select i.name table_name, c.name column_name " );
       sql.append( "from     sysindexes i, sysindexkeys k, syscolumns c " );
       sql.append( "where    i.name = '" + tablename + "' " );
@@ -465,6 +466,36 @@ public class MSSQLServerDatabaseMeta extends BaseDatabaseMeta implements Databas
   @Override
   public String getSQLInsertAutoIncUnknownDimensionRow( String schemaTable, String keyField, String versionField ) {
     return "insert into " + schemaTable + "(" + versionField + ") values (1)";
+  }
+
+  @Override
+  public String getSQLNextSequenceValue( String sequenceName ) {
+    return String.format( "SELECT NEXT VALUE FOR %s", sequenceName );
+  }
+
+  @Override
+  public String getSQLCurrentSequenceValue( String sequenceName ) {
+    return String.format( "SELECT current_value FROM sys.sequences WHERE name = '%s'", sequenceName );
+  }
+
+  @Override
+  public String getSQLSequenceExists( String sequenceName ) {
+    return String.format( "SELECT * FROM sys.sequences WHERE name = '%s'", sequenceName );
+  }
+
+  @Override
+  public boolean supportsSequences() {
+    return true;
+  }
+
+  @Override
+  public boolean supportsSequenceNoMaxValueOption() {
+    return true;
+  }
+
+  @Override
+  public String getSQLListOfSequences() {
+    return "SELECT name FROM sys.sequences";
   }
 
   /**

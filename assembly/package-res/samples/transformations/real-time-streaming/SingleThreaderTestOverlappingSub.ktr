@@ -60,7 +60,7 @@
          <slaveserver><name>Slave3</name><hostname>localhost</hostname><port>8084</port><webAppName/><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
          <slaveserver><name>Slave2</name><hostname>localhost</hostname><port>8083</port><webAppName/><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
          <slaveserver><name>Slave1</name><hostname>localhost</hostname><port>8082</port><webAppName/><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
-         <slaveserver><name>DI Server</name><hostname>localhost</hostname><port>9080</port><webAppName>pentaho-di</webAppName><username>joe</username><password>Encrypted 2be98afc86aa7f2e4bb18bd63c99dbdde</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
+         <slaveserver><name>Pentaho Server</name><hostname>localhost</hostname><port>8080</port><webAppName>pentaho</webAppName><username>joe</username><password>Encrypted 2be98afc86aa7f2e4bb18bd63c99dbdde</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
          <slaveserver><name>Master</name><hostname>localhost</hostname><port>8081</port><webAppName/><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>Y</master></slaveserver>
     </slaveservers>
     <clusterschemas>

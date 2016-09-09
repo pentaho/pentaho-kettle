@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,8 +24,8 @@ package org.pentaho.di.trans.steps.janino;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.trans.step.StepInjectionMetaEntry;
 import org.pentaho.di.trans.step.StepInjectionUtil;
 import org.pentaho.di.trans.step.StepMetaInjectionEntryInterface;
@@ -130,7 +130,6 @@ public class JaninoMetaInjection implements StepMetaInjectionInterface {
         continue;
       }
 
-      String lookValue = (String) lookFields.getValue();
       switch ( fieldsEntry ) {
         case EXPRESSION_FIELDS:
           for ( StepInjectionMetaEntry lookField : lookFields.getDetails() ) {
@@ -204,8 +203,8 @@ public class JaninoMetaInjection implements StepMetaInjectionInterface {
 
       while ( iFieldNames.hasNext() ) {
         fields[i] = new JaninoMetaFunction( iFieldNames.next(), iJavaExpressions.next(),
-          ValueMeta.getType( iValueTypes.next() ), Const.toInt( iLengths.next() , -1 ),
-          Const.toInt( iPrecisions.next(), -1 ), iReplaceValues.next() );
+          ValueMetaFactory.getIdForValueMeta( iValueTypes.next() ), Const.toInt( iLengths.next(), -1 ),
+            Const.toInt( iPrecisions.next(), -1 ), iReplaceValues.next() );
 
         i++;
       }
@@ -224,7 +223,7 @@ public class JaninoMetaInjection implements StepMetaInjectionInterface {
       List<StepInjectionMetaEntry> details = fieldEntry.getDetails();
       details.add( StepInjectionUtil.getEntry( Entry.NEW_FIELDNAME, meta.getFormula()[i].getFieldName() ) );
       details.add( StepInjectionUtil.getEntry( Entry.JAVA_EXPRESSION, meta.getFormula()[i].getFormula() ) );
-      details.add( StepInjectionUtil.getEntry( Entry.VALUE_TYPE, ValueMeta.getTypeDesc( meta.getFormula()[i].getValueType() ) ) );
+      details.add( StepInjectionUtil.getEntry( Entry.VALUE_TYPE, ValueMetaFactory.getValueMetaName( meta.getFormula()[i].getValueType() ) ) );
       details.add( StepInjectionUtil.getEntry( Entry.LENGTH, meta.getFormula()[i].getValueLength() ) );
       details.add( StepInjectionUtil.getEntry( Entry.PRECISION, meta.getFormula()[i].getValuePrecision() ) );
       details.add( StepInjectionUtil.getEntry( Entry.REPLACE_VALUE, meta.getFormula()[i].getReplaceField() ) );

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,7 +27,7 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 
 /**
  * Contains Hypersonic specific information through static final members
- * 
+ *
  * @author Matt
  * @since 11-mrt-2005
  */
@@ -80,7 +80,7 @@ public class HypersonicDatabaseMeta extends BaseDatabaseMeta implements Database
 
   /**
    * Generates the SQL statement to add a column to the specified table
-   * 
+   *
    * @param tablename
    *          The table to add
    * @param v
@@ -94,7 +94,7 @@ public class HypersonicDatabaseMeta extends BaseDatabaseMeta implements Database
    * @param semicolon
    *          whether or not to add a semi-colon behind the statement.
    * @return the SQL statement to add a column to the specified table
-   * 
+   *
    */
   @Override
   public String getAddColumnStatement( String tablename, ValueMetaInterface v, String tk, boolean use_autoinc,
@@ -104,7 +104,7 @@ public class HypersonicDatabaseMeta extends BaseDatabaseMeta implements Database
 
   /**
    * Generates the SQL statement to modify a column in the specified table
-   * 
+   *
    * @param tablename
    *          The table to add
    * @param v
@@ -128,7 +128,7 @@ public class HypersonicDatabaseMeta extends BaseDatabaseMeta implements Database
   @Override
   public String getFieldDefinition( ValueMetaInterface v, String tk, String pk, boolean use_autoinc,
       boolean add_fieldname, boolean add_cr ) {
-    StringBuffer retval = new StringBuffer( 128 );
+    StringBuilder retval = new StringBuilder( 128 );
 
     String fieldname = v.getName();
     int length = v.getLength();
@@ -140,6 +140,7 @@ public class HypersonicDatabaseMeta extends BaseDatabaseMeta implements Database
 
     int type = v.getType();
     switch ( type ) {
+      case ValueMetaInterface.TYPE_TIMESTAMP:
       case ValueMetaInterface.TYPE_DATE:
         retval.append( "TIMESTAMP" );
         break;
@@ -259,7 +260,7 @@ public class HypersonicDatabaseMeta extends BaseDatabaseMeta implements Database
 
   /**
    * Check if a sequence exists.
-   * 
+   *
    * @param sequenceName
    *          The sequence to check
    * @return The SQL to get the name of the sequence back from the databases data dictionary
@@ -269,9 +270,14 @@ public class HypersonicDatabaseMeta extends BaseDatabaseMeta implements Database
     return "SELECT * FROM INFORMATION_SCHEMA.SYSTEM_SEQUENCES WHERE SEQUENCE_NAME = '" + sequenceName + "'";
   }
 
+  @Override
+  public String getSQLListOfSequences() {
+    return "SELECT SEQUENCE_NAME FROM INFORMATION_SCHEMA.SYSTEM_SEQUENCES";
+  }
+
   /**
    * Get the current value of a database sequence
-   * 
+   *
    * @param sequenceName
    *          The sequence to check
    * @return The current value of a database sequence
@@ -285,7 +291,7 @@ public class HypersonicDatabaseMeta extends BaseDatabaseMeta implements Database
 
   /**
    * Get the SQL to get the next value of a sequence.
-   * 
+   *
    * @param sequenceName
    *          The sequence name
    * @return the SQL to get the next value of a sequence.

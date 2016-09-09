@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -29,7 +29,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -44,6 +43,7 @@ import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
 import org.pentaho.di.trans.steps.loadsave.validator.ArrayLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.BooleanLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
+import org.pentaho.di.trans.steps.loadsave.validator.IntLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.PrimitiveBooleanArrayLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.PrimitiveIntegerArrayLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.StringLoadSaveValidator;
@@ -53,35 +53,6 @@ public class ReplaceStringMetaTest {
 
   private static final String FIELD_NAME = "test";
   private static final String ENCODING_NAME = "UTF-8";
-
-  public class UseRegExLoadSaveValidator implements FieldLoadSaveValidator<Integer> {
-    public Integer getTestObject() {
-      return new Random().nextInt( ReplaceStringMeta.useRegExCode.length );
-    }
-
-    public boolean validateTestObject( Integer testObject, Object actual ) {
-      return testObject.equals( actual );
-    }
-  }
-  public class WholeWordLoadSaveValidator implements FieldLoadSaveValidator<Integer> {
-    public Integer getTestObject() {
-      return new Random().nextInt( ReplaceStringMeta.wholeWordCode.length );
-    }
-
-    public boolean validateTestObject( Integer testObject, Object actual ) {
-      return testObject.equals( actual );
-    }
-  }
-
-  public class CaseSensitiveLoadSaveValidator implements FieldLoadSaveValidator<Integer> {
-    public Integer getTestObject() {
-      return new Random().nextInt( ReplaceStringMeta.caseSensitiveCode.length );
-    }
-
-    public boolean validateTestObject( Integer testObject, Object actual ) {
-      return testObject.equals( actual );
-    }
-  }
 
   @Test
   public void testGetFields() throws KettleStepException {
@@ -140,11 +111,14 @@ public class ReplaceStringMetaTest {
     FieldLoadSaveValidator<boolean[]> booleanArrayLoadSaveValidator =
       new PrimitiveBooleanArrayLoadSaveValidator( new BooleanLoadSaveValidator(), 25 );
     FieldLoadSaveValidator<int[]> useRegExArrayLoadSaveValidator =
-      new PrimitiveIntegerArrayLoadSaveValidator( new UseRegExLoadSaveValidator(), 25 );
+      new PrimitiveIntegerArrayLoadSaveValidator(
+        new IntLoadSaveValidator( ReplaceStringMeta.useRegExCode.length ), 25 );
     FieldLoadSaveValidator<int[]> wholeWordArrayLoadSaveValidator =
-      new PrimitiveIntegerArrayLoadSaveValidator( new WholeWordLoadSaveValidator(), 25 );
+      new PrimitiveIntegerArrayLoadSaveValidator(
+        new IntLoadSaveValidator( ReplaceStringMeta.wholeWordCode.length ), 25 );
     FieldLoadSaveValidator<int[]> caseSensitiveArrayLoadSaveValidator =
-      new PrimitiveIntegerArrayLoadSaveValidator( new CaseSensitiveLoadSaveValidator(), 25 );
+      new PrimitiveIntegerArrayLoadSaveValidator(
+        new IntLoadSaveValidator( ReplaceStringMeta.caseSensitiveCode.length ), 25 );
 
     fieldLoadSaveValidatorAttributeMap.put( "in_stream_name", stringArrayLoadSaveValidator );
     fieldLoadSaveValidatorAttributeMap.put( "out_stream_name", stringArrayLoadSaveValidator );
@@ -160,7 +134,6 @@ public class ReplaceStringMetaTest {
       new LoadSaveTester( ReplaceStringMeta.class, attributes, getterMap, setterMap,
         fieldLoadSaveValidatorAttributeMap, new HashMap<String, FieldLoadSaveValidator<?>>() );
 
-    loadSaveTester.testRepoRoundTrip();
-    loadSaveTester.testXmlRoundTrip();
+    loadSaveTester.testSerialization();
   }
 }

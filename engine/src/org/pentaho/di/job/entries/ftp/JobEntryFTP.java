@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,11 +22,8 @@
 
 package org.pentaho.di.job.entries.ftp;
 
-import static org.pentaho.di.job.entry.validator.AndValidator.putValidators;
-import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.andValidator;
-import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.fileExistsValidator;
-import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notBlankValidator;
-import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notNullValidator;
+import org.pentaho.di.job.entry.validator.AndValidator;
+import org.pentaho.di.job.entry.validator.JobEntryValidatorUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -226,7 +223,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 128 );
+    StringBuilder retval = new StringBuilder( 650 ); // 528 chars in spaces and tags alone
 
     retval.append( super.getXML() );
     retval.append( "      " ).append( XMLHandler.addTagValue( "port", port ) );
@@ -375,16 +372,16 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
       movetodirectory = rep.getJobEntryAttributeString( id_jobentry, "movetodirectory" );
 
       adddate = rep.getJobEntryAttributeBoolean( id_jobentry, "adddate" );
-      addtime = rep.getJobEntryAttributeBoolean( id_jobentry, "adddate" );
+      addtime = rep.getJobEntryAttributeBoolean( id_jobentry, "addtime" );
       SpecifyFormat = rep.getJobEntryAttributeBoolean( id_jobentry, "SpecifyFormat" );
       date_time_format = rep.getJobEntryAttributeString( id_jobentry, "date_time_format" );
       AddDateBeforeExtension = rep.getJobEntryAttributeBoolean( id_jobentry, "AddDateBeforeExtension" );
 
-      String addToResult = rep.getStepAttributeString( id_jobentry, "add_to_result_filenames" );
+      String addToResult = rep.getJobEntryAttributeString( id_jobentry, "isaddresult" );
       if ( Const.isEmpty( addToResult ) ) {
         isaddresult = true;
       } else {
-        isaddresult = rep.getStepAttributeBoolean( id_jobentry, "add_to_result_filenames" );
+        isaddresult = rep.getJobEntryAttributeBoolean( id_jobentry, "isaddresult" );
       }
 
       createmovefolder = rep.getJobEntryAttributeBoolean( id_jobentry, "createmovefolder" );
@@ -1443,11 +1440,15 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 
   public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
-    andValidator().validate( this, "serverName", remarks, putValidators( notBlankValidator() ) );
-    andValidator().validate(
-      this, "targetDirectory", remarks, putValidators( notBlankValidator(), fileExistsValidator() ) );
-    andValidator().validate( this, "userName", remarks, putValidators( notBlankValidator() ) );
-    andValidator().validate( this, "password", remarks, putValidators( notNullValidator() ) );
+    JobEntryValidatorUtils.andValidator().validate( this, "serverName", remarks,
+        AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
+    JobEntryValidatorUtils.andValidator().validate(
+      this, "targetDirectory", remarks, AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator(),
+          JobEntryValidatorUtils.fileExistsValidator() ) );
+    JobEntryValidatorUtils.andValidator().validate( this, "userName", remarks,
+        AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
+    JobEntryValidatorUtils.andValidator().validate( this, "password", remarks,
+        AndValidator.putValidators( JobEntryValidatorUtils.notNullValidator() ) );
   }
 
   public List<ResourceReference> getResourceDependencies( JobMeta jobMeta ) {

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -46,8 +46,8 @@ import org.pentaho.di.core.playlist.FilePlayListReplay;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
@@ -72,9 +72,10 @@ import org.pentaho.di.trans.step.errorhandling.FileErrorHandlerMissingFiles;
  *
  * @author Matt
  * @since 4-apr-2003
- * 
+ *
  * @deprecated replaced by implementation in the ...steps.fileinput.text package
  */
+@Deprecated
 public class TextFileInput extends BaseStep implements StepInterface {
   private static Class<?> PKG = TextFileInputMeta.class; // for i18n purposes, needed by Translator2!!
 
@@ -678,10 +679,9 @@ public class TextFileInput extends BaseStep implements StepInterface {
           String pol = strings[ fieldnr ];
           try {
             if ( valueMeta.isNull( pol ) ) {
-              value = null;
-            } else {
-              value = valueMeta.convertDataFromString( pol, convertMeta, nullif, ifnull, trim_type );
+              pol = null;
             }
+            value = valueMeta.convertDataFromString( pol, convertMeta, nullif, ifnull, trim_type );
           } catch ( Exception e ) {
             // OK, give some feedback!
             String message =
@@ -942,8 +942,8 @@ public class TextFileInput extends BaseStep implements StepInterface {
      * If the buffer is empty: open the next file. (if nothing in there, open the next, etc.)
      */
     while ( data.lineBuffer.size() == 0 ) {
-      if ( !openNextFile() ) // Open fails: done processing unless set to skip bad files
-      {
+      if ( !openNextFile() ) {
+        // Open fails: done processing unless set to skip bad files
         if ( failAfterBadFile( null ) ) {
           closeLastFile();
           setOutputDone(); // signal end to receiver(s)
@@ -965,8 +965,8 @@ public class TextFileInput extends BaseStep implements StepInterface {
       /*
        * Different rules apply: on each page: a header a number of data lines a footer
        */
-      if ( !data.doneWithHeader && data.pageLinesRead == 0 ) // We are reading header lines
-      {
+      if ( !data.doneWithHeader && data.pageLinesRead == 0 ) {
+        // We are reading header lines
         if ( log.isRowLevel() ) {
           logRowlevel( "P-HEADER (" + data.headerLinesRead + ") : " + textLine.line );
         }
@@ -1220,7 +1220,7 @@ public class TextFileInput extends BaseStep implements StepInterface {
    * @return Index in row meta of value meta with <code>fieldName</code>
    */
   private int addValueMeta( RowMetaInterface rowMeta, String fieldName ) {
-    ValueMetaInterface valueMeta = new ValueMeta( fieldName, ValueMetaInterface.TYPE_STRING );
+    ValueMetaInterface valueMeta = new ValueMetaString( fieldName );
     valueMeta.setOrigin( getStepname() );
     // add if doesn't exist
     int index = -1;

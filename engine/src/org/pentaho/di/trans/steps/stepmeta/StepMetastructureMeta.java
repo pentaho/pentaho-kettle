@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -31,8 +31,9 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -63,17 +64,20 @@ public class StepMetastructureMeta extends BaseStepMeta implements StepMetaInter
   private boolean outputRowcount;
   private String rowcountField;
 
+  @Override
   public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     readData( stepnode );
   }
 
+  @Override
   public Object clone() {
     Object retval = super.clone();
     return retval;
   }
 
+  @Override
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 500 );
+    StringBuilder retval = new StringBuilder( 500 );
 
     retval.append( "      " ).append( XMLHandler.addTagValue( "outputRowcount", outputRowcount ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "rowcountField", rowcountField ) );
@@ -90,6 +94,7 @@ public class StepMetastructureMeta extends BaseStepMeta implements StepMetaInter
     }
   }
 
+  @Override
   public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
       outputRowcount = rep.getStepAttributeBoolean( id_step, "outputRowcount" );
@@ -100,6 +105,7 @@ public class StepMetastructureMeta extends BaseStepMeta implements StepMetaInter
     }
   }
 
+  @Override
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       rep.saveStepAttribute( id_transformation, id_step, "outputRowcount", outputRowcount );
@@ -110,15 +116,18 @@ public class StepMetastructureMeta extends BaseStepMeta implements StepMetaInter
     }
   }
 
+  @Override
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta tr,
     Trans trans ) {
     return new StepMetastructure( stepMeta, stepDataInterface, cnr, tr, trans );
   }
 
+  @Override
   public StepDataInterface getStepData() {
     return new StepMetastructureData();
   }
 
+  @Override
   public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
     RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
@@ -129,6 +138,7 @@ public class StepMetastructureMeta extends BaseStepMeta implements StepMetaInter
 
   }
 
+  @Override
   public void getFields( RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep,
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     // we create a new output row structure - clear r
@@ -137,43 +147,44 @@ public class StepMetastructureMeta extends BaseStepMeta implements StepMetaInter
     this.setDefault();
     // create the new fields
     // Position
-    ValueMetaInterface positionFieldValue = new ValueMeta( positionName, ValueMetaInterface.TYPE_INTEGER );
+    ValueMetaInterface positionFieldValue = new ValueMetaInteger( positionName );
     positionFieldValue.setOrigin( name );
     r.addValueMeta( positionFieldValue );
     // field name
-    ValueMetaInterface nameFieldValue = new ValueMeta( fieldName, ValueMetaInterface.TYPE_STRING );
+    ValueMetaInterface nameFieldValue = new ValueMetaString( fieldName );
     nameFieldValue.setOrigin( name );
     r.addValueMeta( nameFieldValue );
     // comments
-    ValueMetaInterface commentsFieldValue = new ValueMeta( comments, ValueMetaInterface.TYPE_STRING );
+    ValueMetaInterface commentsFieldValue = new ValueMetaString( comments );
     nameFieldValue.setOrigin( name );
     r.addValueMeta( commentsFieldValue );
     // Type
-    ValueMetaInterface typeFieldValue = new ValueMeta( typeName, ValueMetaInterface.TYPE_STRING );
+    ValueMetaInterface typeFieldValue = new ValueMetaString( typeName );
     typeFieldValue.setOrigin( name );
     r.addValueMeta( typeFieldValue );
     // Length
-    ValueMetaInterface lengthFieldValue = new ValueMeta( lengthName, ValueMetaInterface.TYPE_INTEGER );
+    ValueMetaInterface lengthFieldValue = new ValueMetaInteger( lengthName );
     lengthFieldValue.setOrigin( name );
     r.addValueMeta( lengthFieldValue );
     // Precision
-    ValueMetaInterface precisionFieldValue = new ValueMeta( precisionName, ValueMetaInterface.TYPE_INTEGER );
+    ValueMetaInterface precisionFieldValue = new ValueMetaInteger( precisionName );
     precisionFieldValue.setOrigin( name );
     r.addValueMeta( precisionFieldValue );
     // Origin
-    ValueMetaInterface originFieldValue = new ValueMeta( originName, ValueMetaInterface.TYPE_STRING );
+    ValueMetaInterface originFieldValue = new ValueMetaString( originName );
     originFieldValue.setOrigin( name );
     r.addValueMeta( originFieldValue );
 
     if ( isOutputRowcount() ) {
       // RowCount
-      ValueMetaInterface v = new ValueMeta( this.getRowcountField(), ValueMetaInterface.TYPE_INTEGER );
+      ValueMetaInterface v = new ValueMetaInteger( this.getRowcountField() );
       v.setOrigin( name );
       r.addValueMeta( v );
     }
 
   }
 
+  @Override
   public void setDefault() {
     positionName = BaseMessages.getString( PKG, "StepMetastructureMeta.PositionName" );
     fieldName = BaseMessages.getString( PKG, "StepMetastructureMeta.FieldName" );

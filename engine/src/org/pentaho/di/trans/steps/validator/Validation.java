@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,8 +27,12 @@ import java.util.List;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.injection.Injection;
+import org.pentaho.di.core.injection.InjectionTypeConverter;
 import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
@@ -40,39 +44,64 @@ public class Validation implements Cloneable {
   public static final String XML_TAG = "validator_field";
   public static final String XML_TAG_ALLOWED = "allowed_value";
 
+  @Injection( name = "NAME", group = "VALIDATIONS" )
   private String name;
+  @Injection( name = "FIELD_NAME", group = "VALIDATIONS" )
   private String fieldName;
 
+  @Injection( name = "MAX_LENGTH", group = "VALIDATIONS" )
   private String maximumLength;
+  @Injection( name = "MIN_LENGTH", group = "VALIDATIONS" )
   private String minimumLength;
 
+  @Injection( name = "NULL_ALLOWED", group = "VALIDATIONS" )
   private boolean nullAllowed;
+  @Injection( name = "ONLY_NULL_ALLOWED", group = "VALIDATIONS" )
   private boolean onlyNullAllowed;
+  @Injection( name = "ONLY_NUMERIC_ALLOWED", group = "VALIDATIONS" )
   private boolean onlyNumericAllowed;
 
+  @Injection( name = "DATA_TYPE", group = "VALIDATIONS", converter = DataTypeConverter.class )
   private int dataType;
+  @Injection( name = "DATA_TYPE_VERIFIED", group = "VALIDATIONS" )
   private boolean dataTypeVerified;
+  @Injection( name = "CONVERSION_MASK", group = "VALIDATIONS" )
   private String conversionMask;
+  @Injection( name = "DECIMAL_SYMBOL", group = "VALIDATIONS" )
   private String decimalSymbol;
+  @Injection( name = "GROUPING_SYMBOL", group = "VALIDATIONS" )
   private String groupingSymbol;
 
+  @Injection( name = "MIN_VALUE", group = "VALIDATIONS" )
   private String minimumValue;
+  @Injection( name = "MAX_VALUE", group = "VALIDATIONS" )
   private String maximumValue;
   private String[] allowedValues;
+  @Injection( name = "SOURCING_VALUES", group = "VALIDATIONS" )
   private boolean sourcingValues;
+  @Injection( name = "SOURCING_STEP_NAME", group = "VALIDATIONS" )
   private String sourcingStepName;
   private StepMeta sourcingStep;
+  @Injection( name = "SOURCING_FIELD", group = "VALIDATIONS" )
   private String sourcingField;
 
+  @Injection( name = "START_STRING", group = "VALIDATIONS" )
   private String startString;
+  @Injection( name = "START_STRING_NOT_ALLOWED", group = "VALIDATIONS" )
   private String startStringNotAllowed;
+  @Injection( name = "END_STRING", group = "VALIDATIONS" )
   private String endString;
+  @Injection( name = "END_STRING_NOT_ALLOWED", group = "VALIDATIONS" )
   private String endStringNotAllowed;
 
+  @Injection( name = "REGULAR_EXPRESSION_EXPECTED", group = "VALIDATIONS" )
   private String regularExpression;
+  @Injection( name = "REGULAR_EXPRESSION_NOT_ALLOWED", group = "VALIDATIONS" )
   private String regularExpressionNotAllowed;
 
+  @Injection( name = "ERROR_CODE", group = "VALIDATIONS" )
   private String errorCode;
+  @Injection( name = "ERROR_CODE_DESCRIPTION", group = "VALIDATIONS" )
   private String errorDescription;
 
   public Validation() {
@@ -102,7 +131,7 @@ public class Validation implements Cloneable {
   }
 
   public String getXML() {
-    StringBuffer xml = new StringBuffer();
+    StringBuilder xml = new StringBuilder();
 
     xml.append( XMLHandler.openTag( XML_TAG ) );
 
@@ -725,5 +754,12 @@ public class Validation implements Cloneable {
    */
   public void setSourcingStep( StepMeta sourcingStep ) {
     this.sourcingStep = sourcingStep;
+  }
+
+  public static class DataTypeConverter extends InjectionTypeConverter {
+    @Override
+    public int string2intPrimitive( String v ) throws KettleValueException {
+      return ValueMetaFactory.getIdForValueMeta( v );
+    }
   }
 }

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,6 +23,7 @@
 package org.pentaho.di.trans.steps.switchcase;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,7 +44,7 @@ import org.pentaho.di.trans.steps.loadsave.validator.ListLoadSaveValidator;
  */
 public class SwitchCaseMetaTest {
 
-  LoadSaveTester loadSaveTester;
+  LoadSaveTester<SwitchCaseMeta> loadSaveTester;
 
   public SwitchCaseMetaTest() {
     //SwitchCaseMeta bean-like attributes
@@ -67,7 +68,7 @@ public class SwitchCaseMetaTest {
     Map<String, FieldLoadSaveValidator<?>> typeValidatorMap =
       new HashMap<String, FieldLoadSaveValidator<?>>();
 
-    this.loadSaveTester = new LoadSaveTester( SwitchCaseMeta.class,
+    this.loadSaveTester = new LoadSaveTester<>( SwitchCaseMeta.class,
       attributes,
       getterMap, setterMap,
       attrValidatorMap, typeValidatorMap );
@@ -101,13 +102,23 @@ public class SwitchCaseMetaTest {
   }
 
   @Test
-  public void testLoadSaveXML() throws KettleException {
-    loadSaveTester.testXmlRoundTrip();
+  public void testSerialization() throws KettleException {
+    loadSaveTester.testSerialization();
   }
+
+  // Note - cloneTest removed because it's now covered by the load/save tester
+
 
   @Test
-  public void testLoadSaveRepo() throws KettleException {
-    loadSaveTester.testRepoRoundTrip();
-  }
+  public void testsearchInfoAndTargetStepsTwice() {
+    StepMetaInterface defStep = new DummyTransMeta();
+    StepMeta stepMeta = new StepMeta( "id", "default", defStep );
 
+    SwitchCaseMeta meta = new SwitchCaseMeta();
+    meta.allocate();
+    meta.setDefaultTargetStepname( stepMeta.getName() );
+    meta.searchInfoAndTargetSteps( Collections.singletonList( stepMeta ) );
+    // would throw npe
+    meta.searchInfoAndTargetSteps( Collections.singletonList( stepMeta ) );
+  }
 }

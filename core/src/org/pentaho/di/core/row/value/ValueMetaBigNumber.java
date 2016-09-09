@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,6 +22,8 @@
 
 package org.pentaho.di.core.row.value;
 
+import java.math.BigDecimal;
+
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.ValueMetaInterface;
 
@@ -35,8 +37,17 @@ public class ValueMetaBigNumber extends ValueMetaBase implements ValueMetaInterf
     super( name, ValueMetaInterface.TYPE_BIGNUMBER );
   }
 
+  public ValueMetaBigNumber( String name, int length, int precision ) {
+    super( name, ValueMetaInterface.TYPE_BIGNUMBER, length, precision );
+  }
+
   @Override
   public Object getNativeDataType( Object object ) throws KettleValueException {
     return getBigNumber( object );
+  }
+
+  @Override
+  public Class<?> getNativeDataTypeClass() throws KettleValueException {
+    return BigDecimal.class;
   }
 }

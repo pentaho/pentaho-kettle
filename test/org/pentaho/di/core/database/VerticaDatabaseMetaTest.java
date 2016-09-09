@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,13 +22,14 @@
 
 package org.pentaho.di.core.database;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.core.row.value.ValueMetaBase;
+import org.pentaho.di.core.row.value.ValueMetaBinary;
+import org.pentaho.di.core.row.value.ValueMetaString;
 
 /**
  * Tests for the Vertica Database Meta classes.
@@ -39,11 +40,11 @@ import org.pentaho.di.core.row.value.ValueMetaBase;
 public class VerticaDatabaseMetaTest {
 
   /**
-   * 
+   *
    */
   private static final String PRIMARY_KEY_NAME = "PrimaryKeyName";
   /**
-   * 
+   *
    */
   private static final String TECHNICAL_KEY_NAME = "TechnicalKeyName";
 
@@ -75,7 +76,7 @@ public class VerticaDatabaseMetaTest {
   @Test
   public void testGetDefaultBinaryFieldDefinition() {
 
-    ValueMetaInterface vm = new ValueMetaBase( "TestFieldBinary", ValueMetaInterface.TYPE_BINARY, -1, 1 );
+    ValueMetaInterface vm = new ValueMetaBinary( "TestFieldBinary", -1, 1 );
     String expDefaultBinaryField = "VARBINARY";
 
     DatabaseInterface databaseInterface = new VerticaDatabaseMeta();
@@ -89,7 +90,7 @@ public class VerticaDatabaseMetaTest {
   @Test
   public void testGetOneByteBinaryFieldDefinition() {
 
-    ValueMetaInterface vm = new ValueMetaBase( "TestFieldBinary", ValueMetaInterface.TYPE_BINARY, 1, 1 );
+    ValueMetaInterface vm = new ValueMetaBinary( "TestFieldBinary", 1, 1 );
     String expDefaultBinaryField = "VARBINARY(1)";
 
     DatabaseInterface databaseInterface = new VerticaDatabaseMeta();
@@ -103,7 +104,7 @@ public class VerticaDatabaseMetaTest {
   @Test
   public void testGetMaximumByteBinaryFieldDefinition() {
 
-    ValueMetaInterface vm = new ValueMetaBase( "TestFieldBinary", ValueMetaInterface.TYPE_BINARY, 65000, 1 );
+    ValueMetaInterface vm = new ValueMetaBinary( "TestFieldBinary", 65000, 1 );
     String expDefaultBinaryField = "VARBINARY(65000)";
 
     DatabaseInterface databaseInterface = new VerticaDatabaseMeta();
@@ -121,7 +122,7 @@ public class VerticaDatabaseMetaTest {
    */
   @Test
   public void testModifyColumn() {
-    ValueMetaInterface valueMeta = new ValueMetaBase( "field1", ValueMetaInterface.TYPE_STRING, 9, -1 );
+    ValueMetaInterface valueMeta = new ValueMetaString( "field1", 9, -1 );
     DatabaseInterface databaseInterface = new VerticaDatabaseMeta();
     String alterColumn =
       databaseInterface.getModifyColumnStatement( "table1", valueMeta, null, false, null, false );

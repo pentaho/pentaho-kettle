@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -34,8 +34,9 @@ import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.textfileinput.TextFileInputField;
@@ -82,9 +83,9 @@ public class CsvInput1Test extends CsvInputBase {
 
     ValueMetaInterface[] valuesMeta =
     {
-      new ValueMeta( "a", ValueMeta.TYPE_INTEGER ), new ValueMeta( "b", ValueMeta.TYPE_STRING ),
-      new ValueMeta( "c", ValueMeta.TYPE_STRING ), new ValueMeta( "d", ValueMeta.TYPE_STRING ),
-      new ValueMeta( "e", ValueMeta.TYPE_STRING ), new ValueMeta( "filename", ValueMeta.TYPE_STRING ), };
+      new ValueMetaInteger( "a" ), new ValueMetaString( "b" ),
+      new ValueMetaString( "c" ), new ValueMetaString( "d" ),
+      new ValueMetaString( "e" ), new ValueMetaString( "filename" ), };
 
     for ( int i = 0; i < valuesMeta.length; i++ ) {
       rm.addValueMeta( valuesMeta[i] );
@@ -98,6 +99,7 @@ public class CsvInput1Test extends CsvInputBase {
    *
    * @return list of metadata/data couples of how the result should look like.
    */
+  @Override
   public List<RowMetaAndData> createResultData1() {
     List<RowMetaAndData> list = new ArrayList<RowMetaAndData>();
 
@@ -114,6 +116,7 @@ public class CsvInput1Test extends CsvInputBase {
     return list;
   }
 
+  @Override
   protected TextFileInputField[] createTextFileInputFields() {
     TextFileInputField[] fields = new TextFileInputField[5];
 

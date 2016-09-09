@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,6 +22,7 @@
 
 package org.pentaho.di.trans.steps.writetolog;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.pentaho.di.core.CheckResult;
@@ -76,6 +77,11 @@ public class WriteToLogMeta extends BaseStepMeta implements StepMetaInterface {
     super(); // allocate BaseStepMeta
   }
 
+  // For testing purposes only
+  public int getLogLevel() {
+    return Arrays.asList( logLevelCodes ).indexOf( loglevel );
+  }
+
   public void setLogLevel( int i ) {
     loglevel = logLevelCodes[i];
   }
@@ -103,20 +109,20 @@ public class WriteToLogMeta extends BaseStepMeta implements StepMetaInterface {
     return retval;
   }
 
+  @Override
   public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     readData( stepnode );
   }
 
+  @Override
   public Object clone() {
     WriteToLogMeta retval = (WriteToLogMeta) super.clone();
 
     int nrfields = fieldName.length;
 
     retval.allocate( nrfields );
+    System.arraycopy( fieldName, 0, retval.fieldName, 0, nrfields );
 
-    for ( int i = 0; i < nrfields; i++ ) {
-      retval.fieldName[i] = fieldName[i];
-    }
     return retval;
   }
 
@@ -139,11 +145,29 @@ public class WriteToLogMeta extends BaseStepMeta implements StepMetaInterface {
     this.fieldName = fieldName;
   }
 
+  /**
+   * @deprecated use {@link #isDisplayHeader()} instead
+   * @return
+   */
+  @Deprecated
   public boolean isdisplayHeader() {
+    return isDisplayHeader();
+  }
+
+  public boolean isDisplayHeader() {
     return displayHeader;
   }
 
+  /**
+   * @deprecated use {@link #setDisplayHeader(boolean)} instead
+   * @param displayheader
+   */
+  @Deprecated
   public void setdisplayHeader( boolean displayheader ) {
+    setDisplayHeader( displayheader );
+  }
+
+  public void setDisplayHeader( boolean displayheader ) {
     this.displayHeader = displayheader;
   }
 
@@ -199,8 +223,9 @@ public class WriteToLogMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
+  @Override
   public String getXML() {
-    StringBuffer retval = new StringBuffer();
+    StringBuilder retval = new StringBuilder();
     retval.append( "      " + XMLHandler.addTagValue( "loglevel", loglevel ) );
     retval.append( "      " + XMLHandler.addTagValue( "displayHeader", displayHeader ) );
     retval.append( "      " + XMLHandler.addTagValue( "limitRows", limitRows ) );
@@ -219,6 +244,7 @@ public class WriteToLogMeta extends BaseStepMeta implements StepMetaInterface {
     return retval.toString();
   }
 
+  @Override
   public void setDefault() {
     loglevel = logLevelCodes[3];
     displayHeader = true;
@@ -233,13 +259,19 @@ public class WriteToLogMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
+  @Override
   public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
       loglevel = rep.getStepAttributeString( id_step, "loglevel" );
       displayHeader = rep.getStepAttributeBoolean( id_step, "displayHeader" );
 
-      logmessage = rep.getStepAttributeString( id_step, "logmessage" );
+      limitRows = rep.getStepAttributeBoolean( id_step, "limitRows" );
+      String limitRowsNumberString = rep.getStepAttributeString( id_step, "limitRowsNumber" );
+      limitRowsNumber = Const.toInt( limitRowsNumberString, 5 );
 
+      logmessage = rep.getStepAttributeString( id_step, "logmessage" );
+      limitRows = rep.getStepAttributeBoolean( id_step, "limitRows" );
+      limitRowsNumber = (int) rep.getStepAttributeInteger( id_step, "limitRowsNumber" );
       int nrfields = rep.countNrStepAttributes( id_step, "field_name" );
 
       allocate( nrfields );
@@ -252,13 +284,17 @@ public class WriteToLogMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
+  @Override
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       rep.saveStepAttribute( id_transformation, id_step, "loglevel", loglevel );
       rep.saveStepAttribute( id_transformation, id_step, "displayHeader", displayHeader );
+      rep.saveStepAttribute( id_transformation, id_step, "limitRows", limitRows );
+      rep.saveStepAttribute( id_transformation, id_step, "limitRowsNumber", limitRowsNumber );
 
       rep.saveStepAttribute( id_transformation, id_step, "logmessage", logmessage );
-
+      rep.saveStepAttribute( id_transformation, id_step, "limitRows", limitRows );
+      rep.saveStepAttribute( id_transformation, id_step, "limitRowsNumber", limitRowsNumber );
       for ( int i = 0; i < fieldName.length; i++ ) {
         rep.saveStepAttribute( id_transformation, id_step, i, "field_name", fieldName[i] );
       }
@@ -267,6 +303,7 @@ public class WriteToLogMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
+  @Override
   public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
     RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
@@ -328,11 +365,13 @@ public class WriteToLogMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
+  @Override
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta tr,
     Trans trans ) {
     return new WriteToLog( stepMeta, stepDataInterface, cnr, tr, trans );
   }
 
+  @Override
   public StepDataInterface getStepData() {
     return new WriteToLogData();
   }

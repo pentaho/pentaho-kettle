@@ -33,6 +33,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.apache.commons.lang.StringUtils;
+import org.pentaho.di.ExecutionConfiguration;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
@@ -51,7 +52,7 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryMeta;
 import org.w3c.dom.Node;
 
-public class JobExecutionConfiguration implements Cloneable {
+public class JobExecutionConfiguration implements ExecutionConfiguration {
   public static final String XML_TAG = "job_execution_configuration";
 
   private final LogChannelInterface log = LogChannel.GENERAL;
@@ -314,7 +315,7 @@ public class JobExecutionConfiguration implements Cloneable {
   }
 
   public String getXML() throws IOException {
-    StringBuffer xml = new StringBuffer( 160 );
+    StringBuilder xml = new StringBuilder( 160 );
 
     xml.append( "  <" + XML_TAG + ">" ).append( Const.CR );
 
@@ -498,6 +499,7 @@ public class JobExecutionConfiguration implements Cloneable {
     // Verify that the repository exists on the slave server...
     //
     RepositoriesMeta repositoriesMeta = new RepositoriesMeta();
+    repositoriesMeta.getLog().setLogLevel( log.getLogLevel() );
     try {
       repositoriesMeta.readData();
     } catch ( Exception e ) {

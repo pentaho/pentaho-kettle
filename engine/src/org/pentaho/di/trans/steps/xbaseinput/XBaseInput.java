@@ -119,8 +119,7 @@ public class XBaseInput extends BaseStep implements StepInterface {
     // Allocate the output row in advance, because we possibly want to add a few extra fields...
     //
     Object[] row = data.xbi.getRow( RowDataUtil.allocateRowData( data.outputRowMeta.size() ) );
-    while ( row == null && data.fileNr < data.files.nrOfFiles() ) // No more rows left in this file
-    {
+    while ( row == null && data.fileNr < data.files.nrOfFiles() ) { // No more rows left in this file
       openNextFile();
       row = data.xbi.getRow( RowDataUtil.allocateRowData( data.outputRowMeta.size() ) );
     }
@@ -150,8 +149,7 @@ public class XBaseInput extends BaseStep implements StepInterface {
       logBasic( BaseMessages.getString( PKG, "XBaseInput.Log.LineNr" ) + getLinesInput() );
     }
 
-    if ( meta.getRowLimit() > 0 && getLinesInput() >= meta.getRowLimit() ) // limit has been reached: stop now.
-    {
+    if ( meta.getRowLimit() > 0 && getLinesInput() >= meta.getRowLimit() ) { // limit has been reached: stop now.
       setOutputDone();
       return false;
     }

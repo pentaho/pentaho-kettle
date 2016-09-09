@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -58,8 +58,9 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
@@ -169,6 +170,7 @@ public class ConcatFieldsDialog extends BaseStepDialog implements StepDialogInte
     inputFields = new HashMap<String, Integer>();
   }
 
+  @Override
   public String open() {
     Shell parent = getParent();
     Display display = parent.getDisplay();
@@ -178,6 +180,7 @@ public class ConcatFieldsDialog extends BaseStepDialog implements StepDialogInte
     setShellImage( shell, input );
 
     ModifyListener lsMod = new ModifyListener() {
+      @Override
       public void modifyText( ModifyEvent e ) {
         input.setChanged();
       }
@@ -271,6 +274,7 @@ public class ConcatFieldsDialog extends BaseStepDialog implements StepDialogInte
     fdbSeparator.top = new FormAttachment( wTargetFieldLength, margin );
     wbSeparator.setLayoutData( fdbSeparator );
     wbSeparator.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent se ) {
         // wSeparator.insert("\t");
         wSeparator.getTextWidget().insert( "\t" );
@@ -358,7 +362,7 @@ public class ConcatFieldsDialog extends BaseStepDialog implements StepDialogInte
     colinf[1] =
       new ColumnInfo(
         BaseMessages.getString( PKG, "ConcatFieldsDialog.TypeColumn.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
-        ValueMeta.getTypes() );
+        ValueMetaFactory.getValueMetaNames() );
     colinf[2] =
       new ColumnInfo(
         BaseMessages.getString( PKG, "ConcatFieldsDialog.FormatColumn.Column" ),
@@ -386,7 +390,7 @@ public class ConcatFieldsDialog extends BaseStepDialog implements StepDialogInte
     colinf[8] =
       new ColumnInfo(
         BaseMessages.getString( PKG, "ConcatFieldsDialog.TrimTypeColumn.Column" ),
-        ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.trimTypeDesc, true );
+        ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMetaString.trimTypeDesc, true );
     colinf[9] =
       new ColumnInfo(
         BaseMessages.getString( PKG, "ConcatFieldsDialog.NullColumn.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
@@ -407,6 +411,7 @@ public class ConcatFieldsDialog extends BaseStepDialog implements StepDialogInte
     // Search the fields in the background
 
     final Runnable runnable = new Runnable() {
+      @Override
       public void run() {
         StepMeta stepMeta = transMeta.findStep( stepname );
         if ( stepMeta != null ) {
@@ -470,6 +475,7 @@ public class ConcatFieldsDialog extends BaseStepDialog implements StepDialogInte
     fdRemoveSelectedFields.right = new FormAttachment( 100, 0 );
     wRemoveSelectedFields.setLayoutData( fdRemoveSelectedFields );
     wRemoveSelectedFields.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         input.setChanged();
       }
@@ -492,6 +498,7 @@ public class ConcatFieldsDialog extends BaseStepDialog implements StepDialogInte
     fdEnclForced.right = new FormAttachment( 100, 0 );
     wEnclForced.setLayoutData( fdEnclForced );
     wEnclForced.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         input.setChanged();
       }
@@ -514,6 +521,7 @@ public class ConcatFieldsDialog extends BaseStepDialog implements StepDialogInte
     fdDisableEnclosureFix.right = new FormAttachment( 100, 0 );
     wDisableEnclosureFix.setLayoutData( fdDisableEnclosureFix );
     wDisableEnclosureFix.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         input.setChanged();
       }
@@ -536,6 +544,7 @@ public class ConcatFieldsDialog extends BaseStepDialog implements StepDialogInte
     fdHeader.right = new FormAttachment( 100, 0 );
     wHeader.setLayoutData( fdHeader );
     wHeader.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         input.setChanged();
       }
@@ -558,6 +567,7 @@ public class ConcatFieldsDialog extends BaseStepDialog implements StepDialogInte
     fdFooter.right = new FormAttachment( 100, 0 );
     wFooter.setLayoutData( fdFooter );
     wFooter.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         input.setChanged();
       }
@@ -582,9 +592,11 @@ public class ConcatFieldsDialog extends BaseStepDialog implements StepDialogInte
     fdEncoding.right = new FormAttachment( 100, 0 );
     wEncoding.setLayoutData( fdEncoding );
     wEncoding.addFocusListener( new FocusListener() {
+      @Override
       public void focusLost( org.eclipse.swt.events.FocusEvent e ) {
       }
 
+      @Override
       public void focusGained( org.eclipse.swt.events.FocusEvent e ) {
         Cursor busy = new Cursor( shell.getDisplay(), SWT.CURSOR_WAIT );
         shell.setCursor( busy );
@@ -611,6 +623,7 @@ public class ConcatFieldsDialog extends BaseStepDialog implements StepDialogInte
     fdPad.right = new FormAttachment( 100, 0 );
     wPad.setLayoutData( fdPad );
     wPad.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         input.setChanged();
       }
@@ -633,6 +646,7 @@ public class ConcatFieldsDialog extends BaseStepDialog implements StepDialogInte
     fdFastDump.right = new FormAttachment( 100, 0 );
     wFastDump.setLayoutData( fdFastDump );
     wFastDump.addSelectionListener( new SelectionAdapter() {
+      @Override
       public void widgetSelected( SelectionEvent e ) {
         input.setChanged();
         setFlags();
@@ -706,21 +720,25 @@ public class ConcatFieldsDialog extends BaseStepDialog implements StepDialogInte
 
     // Add listeners
     lsOK = new Listener() {
+      @Override
       public void handleEvent( Event e ) {
         ok();
       }
     };
     lsGet = new Listener() {
+      @Override
       public void handleEvent( Event e ) {
         get();
       }
     };
     lsMinWidth = new Listener() {
+      @Override
       public void handleEvent( Event e ) {
         setMinimalWidth();
       }
     };
     lsCancel = new Listener() {
+      @Override
       public void handleEvent( Event e ) {
         cancel();
       }
@@ -732,6 +750,7 @@ public class ConcatFieldsDialog extends BaseStepDialog implements StepDialogInte
     wCancel.addListener( SWT.Selection, lsCancel );
 
     lsDef = new SelectionAdapter() {
+      @Override
       public void widgetDefaultSelected( SelectionEvent e ) {
         ok();
       }
@@ -744,6 +763,7 @@ public class ConcatFieldsDialog extends BaseStepDialog implements StepDialogInte
 
     // Whenever something changes, set the tooltip to the expanded version:
     wTargetFieldName.addModifyListener( new ModifyListener() {
+      @Override
       public void modifyText( ModifyEvent e ) {
         wTargetFieldName.setToolTipText( transMeta.environmentSubstitute( wTargetFieldName.getText() ) );
       }
@@ -751,12 +771,14 @@ public class ConcatFieldsDialog extends BaseStepDialog implements StepDialogInte
 
     // Detect X or ALT-F4 or something that kills this window...
     shell.addShellListener( new ShellAdapter() {
+      @Override
       public void shellClosed( ShellEvent e ) {
         cancel();
       }
     } );
 
     lsResize = new Listener() {
+      @Override
       public void handleEvent( Event event ) {
         Point size = shell.getSize();
         wFields.setSize( size.x - 10, size.y - 50 );
@@ -956,7 +978,7 @@ public class ConcatFieldsDialog extends BaseStepDialog implements StepDialogInte
       field.setCurrencySymbol( item.getText( 6 ) );
       field.setDecimalSymbol( item.getText( 7 ) );
       field.setGroupingSymbol( item.getText( 8 ) );
-      field.setTrimType( ValueMeta.getTrimTypeByDesc( item.getText( 9 ) ) );
+      field.setTrimType( ValueMetaString.getTrimTypeByDesc( item.getText( 9 ) ) );
       field.setNullString( item.getText( 10 ) );
       //CHECKSTYLE:Indentation:OFF
       tfoi.getOutputFields()[i] = field;
@@ -980,6 +1002,7 @@ public class ConcatFieldsDialog extends BaseStepDialog implements StepDialogInte
       RowMetaInterface r = transMeta.getPrevStepFields( stepname );
       if ( r != null ) {
         TableItemInsertListener listener = new TableItemInsertListener() {
+          @Override
           public boolean tableItemInserted( TableItem tableItem, ValueMetaInterface v ) {
             if ( v.isNumber() ) {
               if ( v.getLength() > 0 ) {
@@ -1026,9 +1049,9 @@ public class ConcatFieldsDialog extends BaseStepDialog implements StepDialogInte
 
       item.setText( 4, "" );
       item.setText( 5, "" );
-      item.setText( 9, ValueMeta.getTrimTypeDesc( ValueMetaInterface.TRIM_TYPE_BOTH ) );
+      item.setText( 9, ValueMetaString.getTrimTypeDesc( ValueMetaInterface.TRIM_TYPE_BOTH ) );
 
-      int type = ValueMeta.getType( item.getText( 2 ) );
+      int type = ValueMetaFactory.getIdForValueMeta( item.getText( 2 ) );
       switch ( type ) {
         case ValueMetaInterface.TYPE_STRING:
           item.setText( 3, "" );

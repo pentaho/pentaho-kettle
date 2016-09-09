@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,6 +22,7 @@
 
 package org.pentaho.di.ui.job.entry;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -199,9 +200,7 @@ public class JobEntryDialog extends Dialog {
         DatabaseMeta newDBInfo = cdw.createAndRunDatabaseWizard( shell, props, jobMeta.getDatabases() );
         if ( newDBInfo != null ) {
           jobMeta.addDatabase( newDBInfo );
-          wConnection.removeAll();
-          addDatabases( wConnection );
-          selectDatabase( wConnection, newDBInfo.getName() );
+          reinitConnectionDropDown( wConnection, newDBInfo.getName() );
         }
       }
     } );
@@ -218,21 +217,7 @@ public class JobEntryDialog extends Dialog {
     // NEW button
     //
     wbnConnection.setText( BaseMessages.getString( PKG, "BaseStepDialog.NewConnectionButton.Label" ) );
-    wbnConnection.addSelectionListener( new SelectionAdapter() {
-      public void widgetSelected( SelectionEvent e ) {
-        DatabaseMeta databaseMeta = new DatabaseMeta();
-        databaseMeta.shareVariablesWith( jobMeta );
-
-        getDatabaseDialog().setDatabaseMeta( databaseMeta );
-        if ( getDatabaseDialog().open() != null ) {
-          jobMeta.addDatabase( getDatabaseDialog().getDatabaseMeta() );
-          wConnection.removeAll();
-          addDatabases( wConnection );
-          selectDatabase( wConnection, getDatabaseDialog().getDatabaseMeta().getName() );
-        }
-
-      }
-    } );
+    wbnConnection.addSelectionListener( new AddConnectionListener( wConnection ) );
     fdbConnection = new FormData();
     fdbConnection.right = new FormAttachment( wbwConnection, -margin );
     if ( previous != null ) {
@@ -246,20 +231,7 @@ public class JobEntryDialog extends Dialog {
     // Edit button
     //
     wbeConnection.setText( BaseMessages.getString( PKG, "BaseStepDialog.EditConnectionButton.Label" ) );
-    wbeConnection.addSelectionListener( new SelectionAdapter() {
-      public void widgetSelected( SelectionEvent e ) {
-        DatabaseMeta databaseMeta = jobMeta.findDatabase( wConnection.getText() );
-        if ( databaseMeta != null ) {
-          databaseMeta.shareVariablesWith( jobMeta );
-          getDatabaseDialog().setDatabaseMeta( databaseMeta );
-          if ( getDatabaseDialog().open() != null ) {
-            wConnection.removeAll();
-            addDatabases( wConnection );
-            selectDatabase( wConnection, databaseMeta.getName() );
-          }
-        }
-      }
-    } );
+    wbeConnection.addSelectionListener( new EditConnectionListener( wConnection ) );
     fdeConnection = new FormData();
     fdeConnection.right = new FormAttachment( wbnConnection, -margin );
     if ( previous != null ) {
@@ -283,6 +255,45 @@ public class JobEntryDialog extends Dialog {
     wConnection.setLayoutData( fdConnection );
 
     return wConnection;
+  }
+
+  @VisibleForTesting
+  String showDbDialogUnlessCancelledOrValid( DatabaseMeta changing, DatabaseMeta origin ) {
+    changing.shareVariablesWith( jobMeta );
+    DatabaseDialog cid = getDatabaseDialog();
+    cid.setDatabaseMeta( changing );
+    cid.setModalDialog( true );
+
+    String name = null;
+    boolean repeat = true;
+    while ( repeat ) {
+      name = cid.open();
+      if ( name == null ) {
+        // Cancel was pressed
+        repeat = false;
+      } else {
+        name = name.trim();
+        DatabaseMeta same = jobMeta.findDatabase( name );
+        if ( same == null || same == origin ) {
+          // OK was pressed and input is valid
+          repeat = false;
+        } else {
+          showDbExistsDialog( changing );
+        }
+      }
+    }
+    return name;
+  }
+
+  @VisibleForTesting
+  void showDbExistsDialog( DatabaseMeta changing ) {
+    DatabaseDialog.showDatabaseExistsDialog( shell, changing );
+  }
+
+  private void reinitConnectionDropDown( CCombo dropDown, String selected ) {
+    dropDown.removeAll();
+    addDatabases( dropDown );
+    selectDatabase( dropDown, selected );
   }
 
   /**
@@ -323,5 +334,50 @@ public class JobEntryDialog extends Dialog {
 
   protected String getPathOf( RepositoryElementMetaInterface object ) {
     return DialogUtils.getPathOf( object );
+  }
+
+  @VisibleForTesting
+  class AddConnectionListener extends SelectionAdapter {
+
+    private final CCombo wConnection;
+
+    public AddConnectionListener( CCombo wConnection ) {
+      this.wConnection = wConnection;
+    }
+
+    @Override
+    public void widgetSelected( SelectionEvent e ) {
+      DatabaseMeta databaseMeta = new DatabaseMeta();
+      String connectionName = showDbDialogUnlessCancelledOrValid( databaseMeta, null );
+      if ( connectionName != null ) {
+        jobMeta.addDatabase( databaseMeta );
+        reinitConnectionDropDown( wConnection, databaseMeta.getName() );
+      }
+    }
+  }
+
+  @VisibleForTesting
+  class EditConnectionListener extends SelectionAdapter {
+
+    private final CCombo wConnection;
+
+    public EditConnectionListener( CCombo wConnection ) {
+      this.wConnection = wConnection;
+    }
+
+    public void widgetSelected( SelectionEvent e ) {
+      DatabaseMeta databaseMeta = jobMeta.findDatabase( wConnection.getText() );
+      if ( databaseMeta != null ) {
+        // cloning to avoid spoiling data on cancel or incorrect input
+        DatabaseMeta clone = (DatabaseMeta) databaseMeta.clone();
+        String connectionName = showDbDialogUnlessCancelledOrValid( clone, databaseMeta );
+        if ( connectionName != null ) {
+          // need to replace the old connection with a new one
+          jobMeta.removeDatabase( jobMeta.indexOfDatabase( databaseMeta ) );
+          jobMeta.addDatabase( clone );
+          reinitConnectionDropDown( wConnection, connectionName );
+        }
+      }
+    }
   }
 }

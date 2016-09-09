@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -31,8 +31,10 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaBinary;
+import org.pentaho.di.core.row.value.ValueMetaSerializable;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -86,15 +88,18 @@ public class AutoDocMeta extends BaseStepMeta implements StepMetaInterface, Auto
     outputType = OutputType.PDF;
   }
 
+  @Override
   public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     readData( stepnode );
   }
 
+  @Override
   public Object clone() {
     Object retval = super.clone();
     return retval;
   }
 
+  @Override
   public void setDefault() {
     outputType = OutputType.PDF;
     targetFilename = "${Internal.Transformation.Filename.Directory}/kettle-autodoc.pdf";
@@ -141,8 +146,9 @@ public class AutoDocMeta extends BaseStepMeta implements StepMetaInterface, Auto
   public void allocate() {
   }
 
+  @Override
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 500 );
+    StringBuilder retval = new StringBuilder( 500 );
 
     retval.append( "    " ).append( XMLHandler.addTagValue( "filename_field", filenameField ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "file_type_field", fileTypeField ) );
@@ -164,6 +170,7 @@ public class AutoDocMeta extends BaseStepMeta implements StepMetaInterface, Auto
     return retval.toString();
   }
 
+  @Override
   public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
       filenameField = rep.getStepAttributeString( id_step, "filename_field" );
@@ -188,6 +195,7 @@ public class AutoDocMeta extends BaseStepMeta implements StepMetaInterface, Auto
     }
   }
 
+  @Override
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       rep.saveStepAttribute( id_transformation, id_step, "filename_field", filenameField );
@@ -209,58 +217,59 @@ public class AutoDocMeta extends BaseStepMeta implements StepMetaInterface, Auto
     }
   }
 
+  @Override
   public void getFields( RowMetaInterface rowMeta, String origin, RowMetaInterface[] info, StepMeta nextStep,
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     if ( outputType == OutputType.METADATA ) {
 
       // Add a bunch of metadata to the output for each input row
       //
-      ValueMetaInterface valueMeta = new ValueMeta( "meta", ValueMetaInterface.TYPE_SERIALIZABLE );
+      ValueMetaInterface valueMeta = new ValueMetaSerializable( "meta" );
       valueMeta.setOrigin( origin );
       rowMeta.addValueMeta( valueMeta );
 
       if ( includingName ) {
-        valueMeta = new ValueMeta( "name", ValueMetaInterface.TYPE_STRING );
+        valueMeta = new ValueMetaString( "name" );
         valueMeta.setOrigin( origin );
         rowMeta.addValueMeta( valueMeta );
       }
       if ( includingDescription ) {
-        valueMeta = new ValueMeta( "description", ValueMetaInterface.TYPE_STRING );
+        valueMeta = new ValueMetaString( "description" );
         valueMeta.setOrigin( origin );
         rowMeta.addValueMeta( valueMeta );
       }
       if ( includingExtendedDescription ) {
-        valueMeta = new ValueMeta( "extended_description", ValueMetaInterface.TYPE_STRING );
+        valueMeta = new ValueMetaString( "extended_description" );
         valueMeta.setOrigin( origin );
         rowMeta.addValueMeta( valueMeta );
       }
       if ( includingCreated ) {
-        valueMeta = new ValueMeta( "created", ValueMetaInterface.TYPE_STRING );
+        valueMeta = new ValueMetaString( "created" );
         valueMeta.setOrigin( origin );
         rowMeta.addValueMeta( valueMeta );
       }
       if ( includingModified ) {
-        valueMeta = new ValueMeta( "modified", ValueMetaInterface.TYPE_STRING );
+        valueMeta = new ValueMetaString( "modified" );
         valueMeta.setOrigin( origin );
         rowMeta.addValueMeta( valueMeta );
       }
       if ( includingImage ) {
-        valueMeta = new ValueMeta( "image", ValueMetaInterface.TYPE_BINARY );
+        valueMeta = new ValueMetaBinary( "image" );
         valueMeta.setOrigin( origin );
         rowMeta.addValueMeta( valueMeta );
       }
       if ( includingLoggingConfiguration ) {
-        valueMeta = new ValueMeta( "logging", ValueMetaInterface.TYPE_STRING );
+        valueMeta = new ValueMetaString( "logging" );
         valueMeta.setOrigin( origin );
         rowMeta.addValueMeta( valueMeta );
       }
       if ( includingLastExecutionResult ) {
-        valueMeta = new ValueMeta( "last_result", ValueMetaInterface.TYPE_STRING );
+        valueMeta = new ValueMetaString( "last_result" );
         valueMeta.setOrigin( origin );
         rowMeta.addValueMeta( valueMeta );
       }
       if ( includingImageAreaList ) {
-        valueMeta = new ValueMeta( "area", ValueMetaInterface.TYPE_SERIALIZABLE );
+        valueMeta = new ValueMetaSerializable( "area" );
         valueMeta.setOrigin( origin );
         rowMeta.addValueMeta( valueMeta );
       }
@@ -270,12 +279,13 @@ public class AutoDocMeta extends BaseStepMeta implements StepMetaInterface, Auto
 
       // Generate one report in the output...
       //
-      ValueMetaInterface valueMeta = new ValueMeta( "filename", ValueMetaInterface.TYPE_STRING );
+      ValueMetaInterface valueMeta = new ValueMetaString( "filename" );
       valueMeta.setOrigin( origin );
       rowMeta.addValueMeta( valueMeta );
     }
   }
 
+  @Override
   public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepinfo,
     RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
@@ -306,11 +316,13 @@ public class AutoDocMeta extends BaseStepMeta implements StepMetaInterface, Auto
     }
   }
 
+  @Override
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta tr,
     Trans trans ) {
     return new AutoDoc( stepMeta, stepDataInterface, cnr, tr, trans );
   }
 
+  @Override
   public StepDataInterface getStepData() {
     return new AutoDocData();
   }
@@ -348,6 +360,7 @@ public class AutoDocMeta extends BaseStepMeta implements StepMetaInterface, Auto
   /**
    * @return the outputType
    */
+  @Override
   public OutputType getOutputType() {
     return outputType;
   }
@@ -363,6 +376,7 @@ public class AutoDocMeta extends BaseStepMeta implements StepMetaInterface, Auto
   /**
    * @return the includingDescription
    */
+  @Override
   public boolean isIncludingDescription() {
     return includingDescription;
   }
@@ -378,6 +392,7 @@ public class AutoDocMeta extends BaseStepMeta implements StepMetaInterface, Auto
   /**
    * @return the includingCreated
    */
+  @Override
   public boolean isIncludingCreated() {
     return includingCreated;
   }
@@ -393,6 +408,7 @@ public class AutoDocMeta extends BaseStepMeta implements StepMetaInterface, Auto
   /**
    * @return the includingModified
    */
+  @Override
   public boolean isIncludingModified() {
     return includingModified;
   }
@@ -408,6 +424,7 @@ public class AutoDocMeta extends BaseStepMeta implements StepMetaInterface, Auto
   /**
    * @return the includingImage
    */
+  @Override
   public boolean isIncludingImage() {
     return includingImage;
   }
@@ -423,6 +440,7 @@ public class AutoDocMeta extends BaseStepMeta implements StepMetaInterface, Auto
   /**
    * @return the includingLoggingConfiguration
    */
+  @Override
   public boolean isIncludingLoggingConfiguration() {
     return includingLoggingConfiguration;
   }
@@ -438,6 +456,7 @@ public class AutoDocMeta extends BaseStepMeta implements StepMetaInterface, Auto
   /**
    * @return the includingLastExecutionResult
    */
+  @Override
   public boolean isIncludingLastExecutionResult() {
     return includingLastExecutionResult;
   }
@@ -453,6 +472,7 @@ public class AutoDocMeta extends BaseStepMeta implements StepMetaInterface, Auto
   /**
    * @return the includingExtendedDescription
    */
+  @Override
   public boolean isIncludingExtendedDescription() {
     return includingExtendedDescription;
   }
@@ -468,6 +488,7 @@ public class AutoDocMeta extends BaseStepMeta implements StepMetaInterface, Auto
   /**
    * @return the includingName
    */
+  @Override
   public boolean isIncludingName() {
     return includingName;
   }

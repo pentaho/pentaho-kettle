@@ -21,15 +21,13 @@
  ******************************************************************************/
 package org.pentaho.di.trans.steps.monetdbbulkloader;
 
-import static java.util.regex.Pattern.compile;
-
 import java.util.regex.Pattern;
 
 import org.pentaho.di.i18n.BaseMessages;
 
 /**
  * @author Tatsiana_Kasiankova
- * 
+ *
  */
 public class MonetDbVersion implements Comparable<MonetDbVersion> {
   private static Class<?> PKG = MonetDbVersion.class; // for i18n purposes, needed by Translator2!!
@@ -58,9 +56,9 @@ public class MonetDbVersion implements Comparable<MonetDbVersion> {
    * <p>11.0
    * <p>11.5.17.1
    * </code>
-   * 
+   *
    */
-  private static final Pattern VERSION_PATTERN = compile( "^[0-9]+(\\.[0-9]+)*$" );
+  private static final Pattern VERSION_PATTERN = Pattern.compile( "^[0-9]+(\\.[0-9]+)*$" );
 
   /**
    * The major version of the Jan2014-SP2 release.
@@ -148,7 +146,7 @@ public class MonetDbVersion implements Comparable<MonetDbVersion> {
    * Parses string representation of MonetDb version. Sets up <code>majorVersion</code>. Also <code>minorVersion</code>
    * and <code>patchVersion</code> if they are present in the product version. Omits all other possible parts as
    * insignificant.
-   * 
+   *
    * @param productVersion
    *          a string representation of version
    * @throws MonetDbVersionException

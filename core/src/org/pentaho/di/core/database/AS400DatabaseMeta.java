@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -140,6 +140,7 @@ public class AS400DatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 
     int type = v.getType();
     switch ( type ) {
+      case ValueMetaInterface.TYPE_TIMESTAMP:
       case ValueMetaInterface.TYPE_DATE:
         retval += "TIMESTAMP";
         break;
@@ -270,6 +271,11 @@ public class AS400DatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
   @Override
   public boolean supportsSequences() {
     return true;
+  }
+
+  @Override
+  public String getSQLListOfSequences() {
+    return "SELECT SEQNAME FROM SYSCAT.SEQUENCES";
   }
 
   /**

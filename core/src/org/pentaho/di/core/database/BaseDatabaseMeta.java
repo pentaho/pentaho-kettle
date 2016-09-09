@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -52,7 +52,7 @@ import org.pentaho.di.repository.ObjectId;
  * @author Matt
  * @since 11-mrt-2005
  */
-public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface {
+public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterfaceExtended {
   /**
    * The port number of the database as string: allows for parameterization.
    */
@@ -828,7 +828,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface {
    */
   @Deprecated
   public String getBackwardsCompatibleTable( String tablePart ) {
-    if ( tablePart != null && tablePart.contains( getStartQuote() ) || tablePart.contains( getEndQuote() ) ) {
+    if ( tablePart != null && ( tablePart.contains( getStartQuote() ) || tablePart.contains( getEndQuote() ) ) ) {
       return tablePart;
     } else {
       return getStartQuote() + tablePart + getEndQuote();
@@ -1128,7 +1128,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface {
    */
   @Override
   public boolean preserveReservedCase() {
-    String usePool = attributes.getProperty( ATTRIBUTE_PRESERVE_RESERVED_WORD_CASE, "N" );
+    String usePool = attributes.getProperty( ATTRIBUTE_PRESERVE_RESERVED_WORD_CASE, "Y" );
     return "Y".equalsIgnoreCase( usePool );
   }
 
@@ -1896,7 +1896,8 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface {
         String stat = all.substring( from, to );
         if ( !onlySpaces( stat ) ) {
           String s = Const.trim( stat );
-          statements.add( new SqlScriptStatement( s, from, to, s.toUpperCase().startsWith( "SELECT" ) ) );
+          statements.add( new SqlScriptStatement(
+            s, from, to, s.toUpperCase().startsWith( "SELECT" ) || s.toLowerCase().startsWith( "show" ) ) );
         }
         to++;
         from = to;
@@ -1927,6 +1928,20 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface {
   @Override
   public boolean isMySQLVariant() {
     return false;
+  }
+
+  /**
+   * @return true if the database type can be tested against a database instance
+   */
+  public boolean canTest() {
+    return true;
+  }
+
+  /**
+   * @return true if the database name is a required parameter
+   */
+  public boolean requiresName() {
+    return true;
   }
 
   /**
@@ -2171,7 +2186,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface {
    */
   @Override
   public String getSafeFieldname( String fieldname ) {
-    StringBuffer newName = new StringBuffer( fieldname.length() );
+    StringBuilder newName = new StringBuilder( fieldname.length() );
 
     char[] protectors = getFieldnameProtector().toCharArray();
 
@@ -2251,5 +2266,23 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface {
   @Override
   public String getCreateTableStatement() {
     return "CREATE TABLE ";
+  }
+
+  /**
+   * Forms drop table statement.
+   * This standard construct syntax is not legal for certain RDBMSs,
+   * and should be overridden according to their specifics.
+   *
+   * @param tableName Name of the table to drop
+   * @return Standard drop table statement
+   */
+  @Override
+  public String getDropTableIfExistsStatement( String tableName ) {
+    return "DROP TABLE IF EXISTS " + tableName;
+  }
+
+  @Override
+  public boolean fullExceptionLog( Exception e ) {
+    return true;
   }
 }

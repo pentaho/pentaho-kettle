@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -35,8 +35,17 @@ public class ValueMetaInteger extends ValueMetaBase implements ValueMetaInterfac
     super( name, ValueMetaInterface.TYPE_INTEGER );
   }
 
+  public ValueMetaInteger( String name, int length, int precision ) {
+    super( name, ValueMetaInterface.TYPE_INTEGER, length, precision );
+  }
+
   @Override
   public Object getNativeDataType( Object object ) throws KettleValueException {
     return getInteger( object );
+  }
+
+  @Override
+  public Class<?> getNativeDataTypeClass() throws KettleValueException {
+    return Long.class;
   }
 }

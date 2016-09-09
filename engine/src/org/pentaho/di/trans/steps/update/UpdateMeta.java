@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -33,9 +33,11 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.injection.Injection;
+import org.pentaho.di.core.injection.InjectionSupported;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaBoolean;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -58,54 +60,70 @@ import org.w3c.dom.Node;
  * Created on 26-apr-2003
  *
  */
-
+@InjectionSupported( localizationPrefix = "UpdateMeta.Injection.", groups = { "KEYS", "UPDATES" } )
 public class UpdateMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = UpdateMeta.class; // for i18n purposes, needed by Translator2!!
 
+  private List<? extends SharedObjectInterface> databases;
+
   /** The lookup table name */
+  @Injection( name = "SCHEMA_NAME" )
   private String schemaName;
 
   /** The lookup table name */
+  @Injection( name = "TABLE_NAME" )
   private String tableName;
 
   /** database connection */
   private DatabaseMeta databaseMeta;
 
   /** which field in input stream to compare with? */
+  @Injection( name = "KEY_STREAM", group = "KEYS" )
   private String[] keyStream;
 
   /** field in table */
+  @Injection( name = "KEY_LOOKUP", group = "KEYS" )
   private String[] keyLookup;
 
   /** Comparator: =, <>, BETWEEN, ... */
+  @Injection( name = "KEY_CONDITION", group = "KEYS" )
   private String[] keyCondition;
 
   /** Extra field for between... */
+  @Injection( name = "KEY_STREAM2", group = "KEYS" )
   private String[] keyStream2;
 
   /** Field value to update after lookup */
+  @Injection( name = "UPDATE_LOOKUP", group = "UPDATES" )
   private String[] updateLookup;
 
   /** Stream name to update value with */
+  @Injection( name = "UPDATE_STREAM", group = "UPDATES" )
   private String[] updateStream;
 
   /** Commit size for inserts/updates */
+  @Injection( name = "COMMIT_SIZE" )
   private String commitSize;
 
   /** update errors are ignored if this flag is set to true */
+  @Injection( name = "IGNORE_LOOKUP_FAILURE" )
   private boolean errorIgnored;
 
   /** adds a boolean field to the output indicating success of the update */
+  @Injection( name = "FLAG_FIELD" )
   private String ignoreFlagField;
 
   /** adds a boolean field to skip lookup and directly update selected fields */
+  @Injection( name = "SKIP_LOOKUP" )
   private boolean skipLookup;
 
   /** Flag to indicate the use of batch updates, enabled by default but disabled for backward compatibility */
+  @Injection( name = "BATCH_UPDATE" )
   private boolean useBatchUpdate;
 
-  public UpdateMeta() {
-    super(); // allocate BaseStepMeta
+  @Injection( name = "CONNECTIONNAME" )
+  public void setConnection( String connectionName ) {
+    databaseMeta = DatabaseMeta.findDatabase( databases, connectionName );
   }
 
   /**
@@ -319,7 +337,9 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface {
     this.ignoreFlagField = ignoreFlagField;
   }
 
+  @Override
   public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
+    this.databases = databases;
     readData( stepnode, databases );
   }
 
@@ -332,6 +352,7 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface {
     updateStream = new String[nrvalues];
   }
 
+  @Override
   public Object clone() {
     UpdateMeta retval = (UpdateMeta) super.clone();
     int nrkeys = keyStream.length;
@@ -339,17 +360,13 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface {
 
     retval.allocate( nrkeys, nrvalues );
 
-    for ( int i = 0; i < nrkeys; i++ ) {
-      retval.keyStream[i] = keyStream[i];
-      retval.keyLookup[i] = keyLookup[i];
-      retval.keyCondition[i] = keyCondition[i];
-      retval.keyStream2[i] = keyStream2[i];
-    }
+    System.arraycopy( keyStream, 0, retval.keyStream, 0, nrkeys );
+    System.arraycopy( keyLookup, 0, retval.keyLookup, 0, nrkeys );
+    System.arraycopy( keyCondition, 0, retval.keyCondition, 0, nrkeys );
+    System.arraycopy( keyStream2, 0, retval.keyStream2, 0, nrkeys );
 
-    for ( int i = 0; i < nrvalues; i++ ) {
-      retval.updateLookup[i] = updateLookup[i];
-      retval.updateStream[i] = updateStream[i];
-    }
+    System.arraycopy( updateLookup, 0, retval.updateLookup, 0, nrvalues );
+    System.arraycopy( updateStream, 0, retval.updateStream, 0, nrvalues );
     return retval;
   }
 
@@ -402,6 +419,7 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
+  @Override
   public void setDefault() {
     skipLookup = false;
     keyStream = null;
@@ -429,8 +447,9 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
+  @Override
   public String getXML() {
-    StringBuffer retval = new StringBuffer();
+    StringBuilder retval = new StringBuilder();
 
     retval
       .append( "    " + XMLHandler.addTagValue( "connection", databaseMeta == null ? "" : databaseMeta.getName() ) );
@@ -464,7 +483,9 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface {
     return retval.toString();
   }
 
+  @Override
   public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
+    this.databases = databases;
     try {
       databaseMeta = rep.loadDatabaseMetaFromStepAttribute( id_step, "id_connection", databases );
       skipLookup = rep.getStepAttributeBoolean( id_step, "skip_lookup" );
@@ -509,6 +530,7 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
+  @Override
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       rep.saveDatabaseMetaStepAttribute( id_transformation, id_step, "id_connection", databaseMeta );
@@ -544,16 +566,18 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
+  @Override
   public void getFields( RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep,
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     if ( ignoreFlagField != null && ignoreFlagField.length() > 0 ) {
-      ValueMetaInterface v = new ValueMeta( ignoreFlagField, ValueMetaInterface.TYPE_BOOLEAN );
+      ValueMetaInterface v = new ValueMetaBoolean( ignoreFlagField );
       v.setOrigin( name );
 
       row.addValueMeta( v );
     }
   }
 
+  @Override
   public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
     RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
@@ -750,6 +774,7 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
+  @Override
   public SQLStatement getSQLStatements( TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
     Repository repository, IMetaStore metaStore ) throws KettleStepException  {
     SQLStatement retval = new SQLStatement( stepMeta.getName(), databaseMeta, null ); // default: nothing to do!
@@ -768,7 +793,7 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface {
             db.connect();
 
             if ( getIgnoreFlagField() != null && getIgnoreFlagField().length() > 0 ) {
-              prev.addValueMeta( new ValueMeta( getIgnoreFlagField(), ValueMetaInterface.TYPE_BOOLEAN ) );
+              prev.addValueMeta( new ValueMetaBoolean( getIgnoreFlagField() ) );
             }
 
             String cr_table = db.getDDL( schemaTable, tableFields, null, false, null, true );
@@ -848,15 +873,18 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
+  @Override
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta tr,
     Trans trans ) {
     return new Update( stepMeta, stepDataInterface, cnr, tr, trans );
   }
 
+  @Override
   public StepDataInterface getStepData() {
     return new UpdateData();
   }
 
+  @Override
   public DatabaseMeta[] getUsedDatabaseConnections() {
     if ( databaseMeta != null ) {
       return new DatabaseMeta[] { databaseMeta };
@@ -880,6 +908,7 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface {
     this.schemaName = schemaName;
   }
 
+  @Override
   public boolean supportsErrorHandling() {
     return true;
   }

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -43,22 +43,29 @@ import javax.net.ssl.X509TrustManager;
 public class SlaveConnectionManager {
 
   private static final String SSL = "SSL";
+  private static final String KEYSTORE_SYSTEM_PROPERTY = "javax.net.ssl.keyStore";
 
   private static SlaveConnectionManager slaveConnectionManager;
 
   private MultiThreadedHttpConnectionManager manager;
 
   private SlaveConnectionManager() {
-    try {
-      SSLContext context = SSLContext.getInstance( SSL );
-      context.init( new KeyManager[0], new X509TrustManager[] { getDefaultTrustManager() }, new SecureRandom() );
-      SSLContext.setDefault( context );
-    } catch ( Exception e ) {
-      //log.logError( "Default SSL context hasn't been initialized", e );
+    if ( needToInitializeSSLContext() ) {
+      try {
+        SSLContext context = SSLContext.getInstance( SSL );
+        context.init( new KeyManager[0], new X509TrustManager[] { getDefaultTrustManager() }, new SecureRandom() );
+        SSLContext.setDefault( context );
+      } catch ( Exception e ) {
+        //log.logError( "Default SSL context hasn't been initialized", e );
+      }
     }
     manager = new MultiThreadedHttpConnectionManager();
     manager.getParams().setDefaultMaxConnectionsPerHost( 100 );
     manager.getParams().setMaxTotalConnections( 200 );
+  }
+
+  private static boolean needToInitializeSSLContext() {
+    return System.getProperty( KEYSTORE_SYSTEM_PROPERTY ) == null;
   }
 
   public static SlaveConnectionManager getInstance() {
@@ -96,5 +103,9 @@ public class SlaveConnectionManager {
         return null;
       }
     };
+  }
+
+  static void reset() {
+    slaveConnectionManager = null;
   }
 }

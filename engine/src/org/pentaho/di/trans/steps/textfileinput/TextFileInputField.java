@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -31,8 +31,11 @@ import java.util.Date;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.gui.TextFileInputFieldInterface;
+import org.pentaho.di.core.injection.Injection;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaString;
+
 
 /**
  * Describes a single field in a text file
@@ -42,20 +45,47 @@ import org.pentaho.di.core.row.ValueMetaInterface;
  *
  * @deprecated replaced by implementation in the ...steps.fileinput.text package
  */
+@Deprecated
 public class TextFileInputField implements Cloneable, TextFileInputFieldInterface {
+
+  @Injection( name = "INPUT_NAME", group = "INPUT_FIELDS" )
   private String name;
+
+  @Injection( name = "INPUT_POSITION", group = "INPUT_FIELDS" )
   private int position;
+
+  @Injection( name = "INPUT_LENGTH", group = "INPUT_FIELDS" )
   private int length;
+
   private int type;
+
+  @Injection( name = "INPUT_IGNORE", group = "INPUT_FIELDS" )
   private boolean ignore;
+
+  @Injection( name = "INPUT_FORMAT", group = "INPUT_FIELDS" )
   private String format;
+
   private int trimtype;
+
+  @Injection( name = "INPUT_PRECISION", group = "INPUT_FIELDS" )
   private int precision;
+
+  @Injection( name = "INPUT_CURRENCY", group = "INPUT_FIELDS" )
   private String currencySymbol;
+
+  @Injection( name = "INPUT_DECIMAL", group = "INPUT_FIELDS" )
   private String decimalSymbol;
+
+  @Injection( name = "INPUT_GROUP", group = "INPUT_FIELDS" )
   private String groupSymbol;
+
+  @Injection( name = "INPUT_REPEAT", group = "INPUT_FIELDS" )
   private boolean repeat;
+
+  @Injection( name = "INPUT_NULL_STRING", group = "INPUT_FIELDS" )
   private String nullString;
+
+  @Injection( name = "INPUT_IF_NULL", group = "INPUT_FIELDS" )
   private String ifNullValue;
 
   private String[] samples;
@@ -106,6 +136,7 @@ public class TextFileInputField implements Cloneable, TextFileInputFieldInterfac
     return position - field.getPosition();
   }
 
+  @Override
   public int compareTo( TextFileInputFieldInterface field ) {
     return position - field.getPosition();
   }
@@ -116,6 +147,7 @@ public class TextFileInputField implements Cloneable, TextFileInputFieldInterfac
     return ( position == field.getPosition() );
   }
 
+  @Override
   public Object clone() {
     try {
       Object retval = super.clone();
@@ -125,6 +157,7 @@ public class TextFileInputField implements Cloneable, TextFileInputFieldInterfac
     }
   }
 
+  @Override
   public int getPosition() {
     return position;
   }
@@ -133,14 +166,17 @@ public class TextFileInputField implements Cloneable, TextFileInputFieldInterfac
     this.position = position;
   }
 
+  @Override
   public int getLength() {
     return length;
   }
 
+  @Override
   public void setLength( int length ) {
     this.length = length;
   }
 
+  @Override
   public String getName() {
     return name;
   }
@@ -185,16 +221,20 @@ public class TextFileInputField implements Cloneable, TextFileInputFieldInterfac
     this.samples = samples;
   }
 
+  public String[] getSamples( ) {
+    return this.samples;
+  }
+
   public int getTrimType() {
     return trimtype;
   }
 
   public String getTrimTypeCode() {
-    return ValueMeta.getTrimTypeCode( trimtype );
+    return ValueMetaString.getTrimTypeCode( trimtype );
   }
 
   public String getTrimTypeDesc() {
-    return ValueMeta.getTrimTypeDesc( trimtype );
+    return ValueMetaString.getTrimTypeDesc( trimtype );
   }
 
   public void setTrimType( int trimtype ) {
@@ -261,6 +301,7 @@ public class TextFileInputField implements Cloneable, TextFileInputFieldInterfac
     this.ifNullValue = ifNullValue;
   }
 
+  @Override
   public String toString() {
     return name + "@" + position + ":" + length;
   }
@@ -533,8 +574,7 @@ public class TextFileInputField implements Cloneable, TextFileInputFieldInterfac
     // System.out.println("d="+d+", diff="+diff);
 
     // remainder: 12.345678 --> 0.345678
-    for ( int i = 1; i < maxprec; i++ ) // cap off precision at a reasonable maximum
-    {
+    for ( int i = 1; i < maxprec; i++ ) { // cap off precision at a reasonable maximum
       double factor = Math.pow( 10.0, i );
       diff = Math.abs( Math.floor( d * factor ) - ( d * factor ) );
       if ( diff < maxdiff ) {
@@ -589,6 +629,7 @@ public class TextFileInputField implements Cloneable, TextFileInputFieldInterfac
     }
   }
 
+  @Override
   public TextFileInputFieldInterface createNewInstance( String newFieldname, int x, int newlength ) {
     return new TextFileInputField( newFieldname, x, newlength );
   }

@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -80,6 +80,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.ToolBar;
@@ -120,6 +122,7 @@ import org.pentaho.di.job.JobExecutionConfiguration;
 import org.pentaho.di.job.JobHopMeta;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.JobPainter;
+import org.pentaho.di.job.entries.abort.JobEntryAbort;
 import org.pentaho.di.job.entries.job.JobEntryJob;
 import org.pentaho.di.job.entries.trans.JobEntryTrans;
 import org.pentaho.di.job.entry.JobEntryCopy;
@@ -306,6 +309,7 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
     this.log = spoon.getLog();
     this.spoon = spoon;
     this.jobMeta = jobMeta;
+    spoon.selectionFilter.setText( "" );
 
     this.props = PropsUI.getInstance();
     this.areaOwners = new ArrayList<AreaOwner>();
@@ -681,7 +685,7 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
     //
     if ( e.button == 1 || e.button == 2 ) {
       AreaOwner areaOwner = getVisibleAreaOwner( real.x, real.y );
-      if ( areaOwner != null ) {
+      if ( areaOwner != null && areaOwner.getAreaType() != null ) {
         switch ( areaOwner.getAreaType() ) {
           case JOB_ENTRY_MINI_ICON_OUTPUT:
             // Click on the output icon means: start of drag
@@ -1031,7 +1035,7 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
     // Moved over an area?
     //
     AreaOwner areaOwner = getVisibleAreaOwner( real.x, real.y );
-    if ( areaOwner != null ) {
+    if ( areaOwner != null && areaOwner.getAreaType() != null ) {
       JobEntryCopy jobEntryCopy = null;
       switch ( areaOwner.getAreaType() ) {
         case JOB_ENTRY_ICON:
@@ -1204,7 +1208,7 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
     Point real = screen2real( e.x, e.y );
 
     AreaOwner areaOwner = getVisibleAreaOwner( real.x, real.y );
-    if ( areaOwner != null ) {
+    if ( areaOwner != null && areaOwner.getAreaType() != null ) {
       switch ( areaOwner.getAreaType() ) {
         case JOB_ENTRY_ICON:
           JobEntryCopy jobEntryCopy = (JobEntryCopy) areaOwner.getOwner();
@@ -1330,7 +1334,7 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
         Point cursor = getLastMove();
         if ( cursor != null ) {
           AreaOwner areaOwner = getVisibleAreaOwner( cursor.x, cursor.y );
-          if ( areaOwner != null ) {
+          if ( areaOwner != null && areaOwner.getAreaType() != null ) {
             AreaType areaType = areaOwner.getAreaType();
             if ( areaType == AreaType.JOB_ENTRY_ICON || areaType.belongsToJobContextMenu() ) {
               JobEntryCopy selectedJobEntryCopy = (JobEntryCopy) areaOwner.getOwner();
@@ -1385,6 +1389,45 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
       ToolBar swtToolbar = (ToolBar) toolbar.getManagedObject();
       swtToolbar.setBackground( GUIResource.getInstance().getColorDemoGray() );
       swtToolbar.pack();
+
+      // Added 1/11/2016 to implement dropdown option for "Run"
+      ToolItem runItem = new ToolItem( swtToolbar, SWT.DROP_DOWN, 0 );
+
+      runItem.setImage( GUIResource.getInstance().getImage( "ui/images/run.svg" ) );
+      runItem.setToolTipText( BaseMessages.getString( PKG, "Spoon.Tooltip.RunTranformation" ) );
+      runItem.addSelectionListener( new SelectionAdapter() {
+
+        @Override
+        public void widgetSelected( SelectionEvent e ) {
+          if ( e.detail == SWT.DROP_DOWN ) {
+            Menu menu = new Menu( shell, SWT.POP_UP );
+
+            MenuItem item1 = new MenuItem( menu, SWT.PUSH );
+            item1.setText( BaseMessages.getString( PKG, "Spoon.Run.Run" ) );
+            item1.setAccelerator( SWT.F9 );
+            item1.addSelectionListener( new SelectionAdapter() {
+              @Override
+              public void widgetSelected( SelectionEvent e1 ) {
+                runJob();
+              }
+            } );
+            MenuItem item2 = new MenuItem( menu, SWT.PUSH );
+            item2.setText( BaseMessages.getString( PKG, "Spoon.Run.RunOptions" ) );
+            item2.setAccelerator( SWT.F8 );
+            item2.addSelectionListener( new SelectionAdapter() {
+              @Override
+              public void widgetSelected( SelectionEvent e2 ) {
+                runOptionsJob();
+              }
+            } );
+
+            menu.setLocation( shell.getDisplay().map( mainComposite.getParent(), null, mainComposite.getLocation() ) );
+            menu.setVisible( true );
+          } else {
+            runJob();
+          }
+        }
+      } );
 
       // Hack alert : more XUL limitations...
       //
@@ -1914,6 +1957,7 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
           XulMenuitem miPopEvalTrue = (XulMenuitem) doc.getElementById( "job-graph-hop-evaluation-true" );
           XulMenuitem miPopEvalFalse = (XulMenuitem) doc.getElementById( "job-graph-hop-evaluation-false" );
           XulMenuitem miDisHop = (XulMenuitem) doc.getElementById( "job-graph-hop-enabled" );
+          XulMenuitem miFlipHop = (XulMenuitem) doc.getElementById( "job-graph-hop-flip" );
 
           // Set the checkboxes in the right places...
           //
@@ -1944,6 +1988,11 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
               miPopEvalUncond.setDisabled( true );
             } else {
               miPopEvalUncond.setDisabled( false );
+            }
+            if ( hi.getFromEntry().isStart() || hi.getToEntry().getEntry() instanceof JobEntryAbort ) {
+              miFlipHop.setDisabled( true );
+            } else {
+              miFlipHop.setDisabled( false );
             }
           }
 
@@ -2236,9 +2285,9 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
 
     // check the area owner list...
     //
-    StringBuffer tip = new StringBuffer();
+    StringBuilder tip = new StringBuilder();
     AreaOwner areaOwner = getVisibleAreaOwner( x, y );
-    if ( areaOwner != null ) {
+    if ( areaOwner != null && areaOwner.getAreaType() != null ) {
       JobEntryCopy jobEntryCopy;
       switch ( areaOwner.getAreaType() ) {
         case JOB_HOP_ICON:
@@ -3341,6 +3390,10 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
 
   public void runJob() {
     spoon.runFile();
+  }
+
+  public void runOptionsJob() {
+    spoon.runOptionsFile();
   }
 
   public void getSQL() {

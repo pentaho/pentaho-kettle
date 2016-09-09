@@ -8,11 +8,34 @@
   <classpathentry kind="src" path="engine/test-src"/>
   <classpathentry kind="src" path="ui/src"/>
   <classpathentry kind="src" path="test"/>
-  <classpathentry kind="src" path="plugins/kettle-palo-plugin/src"/>
-  <classpathentry kind="src" path="plugins/kettle-hl7-plugin/src"/>
+  <classpathentry kind="src" path="plugins/aggregate-rows/src"/>
+  <classpathentry kind="src" path="plugins/elasticsearch-bulk-insert/src"/>
+  <classpathentry kind="src" path="plugins/get-previous-row-field/src"/>
+  <classpathentry kind="src" path="plugins/googleanalytics/src"/>
+  <classpathentry kind="src" path="plugins/gp-bulk-loader/src"/>
+  <classpathentry kind="src" path="plugins/kettle-drools5-plugin/src"/>
+  <classpathentry kind="src" path="plugins/kettle-dummy-plugin/src"/>
   <classpathentry kind="src" path="plugins/kettle-gpload-plugin/src"/>
+  <classpathentry kind="src" path="plugins/kettle-hl7-plugin/src"/>
+  <classpathentry kind="src" path="plugins/kettle-json-plugin/src"/>
   <classpathentry kind="src" path="plugins/kettle-openerp-plugin/src"/>
+  <classpathentry kind="src" path="plugins/kettle-palo-plugin/src"/>
+  <classpathentry kind="src" path="plugins/kettle-s3csvinput-plugin/src"/>
+  <classpathentry kind="src" path="plugins/kettle-sap-plugin/src"/>
+  <classpathentry kind="src" path="plugins/kettle-shapefilereader-plugin/src"/>
+  <classpathentry kind="src" path="plugins/kettle-version-checker/src"/>
+  <classpathentry kind="src" path="plugins/kettle-xml-plugin/src"/>
+  <classpathentry kind="src" path="plugins/kettle5-log4j-plugin/src"/>
+  <classpathentry kind="src" path="plugins/lucid-db-bulk-loader/src"/>
+  <classpathentry kind="src" path="plugins/lucid-db-streaming-loader/src"/>
+  <classpathentry kind="src" path="plugins/ms-access-bulk-loader/src"/>
+  <classpathentry kind="src" path="plugins/pdi-pur-plugin/src"/>
+  <classpathentry kind="src" path="plugins/repositories-plugin/src"/>
+  <classpathentry kind="src" path="plugins/salesforce/src"/>
+  <classpathentry kind="src" path="plugins/ssh2-plugin/src"/>
   <classpathentry kind="src" path="plugins/star-modeler/src"/>
+  <classpathentry kind="src" path="plugins/xml-input-stream/src"/>
+  <classpathentry kind="src" path="plugins/xml-input/src"/>
   <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
   <classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Kettle extra"/>
   <classpathentry kind="output" path="eclipse-bin"/>

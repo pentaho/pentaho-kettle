@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -60,16 +60,21 @@ public class MemoryGroupByIntTest {
 
   @BeforeClass
   public static void before() throws KettleException {
-    KettleEnvironment.init();
+    KettleEnvironment.init( false );
   }
 
-  List<RowMetaAndData> getTestRowMetaAndData( int count, Integer[] nulls ) {
-    List<RowMetaAndData> list = new ArrayList<RowMetaAndData>();
+  RowMetaInterface getTestRowMeta() {
     RowMetaInterface rm = new RowMeta();
     rm.addValueMeta( new ValueMetaString( KEY1 ) );
     rm.addValueMeta( new ValueMetaInteger( KEY2 ) );
     rm.addValueMeta( new ValueMetaNumber( KEY3 ) );
     rm.addValueMeta( new ValueMetaBigNumber( KEY4 ) );
+    return rm;
+  }
+
+  List<RowMetaAndData> getTestRowMetaAndData( int count, Integer[] nulls ) {
+    List<RowMetaAndData> list = new ArrayList<RowMetaAndData>();
+    RowMetaInterface rm = getTestRowMeta();
 
     Object[] row = new Object[4];
     List<Integer> nullsList = Arrays.asList( nulls );
@@ -91,9 +96,68 @@ public class MemoryGroupByIntTest {
   }
 
   /**
+   * This case tests when the MemoryGroupBy step receives 0 input rows, and also no row meta is in the previous step,
+   * whether it throws an error and fails, or ends successfully without error, while passing no output rows.
+   * See PDI-12501 for details
+   */
+  @Test
+  public void testMemoryGroupByNoInputData() throws KettleException {
+    MemoryGroupByMeta meta = new MemoryGroupByMeta();
+    meta.setSubjectField( new String[]{ KEY2 } );
+    meta.setAggregateField( new String[]{ OUT1 } );
+    meta.setGroupField( new String[]{ KEY1 } );
+    meta.setAggregateType( new int[] { GroupByMeta.TYPE_GROUP_CONCAT_COMMA } );
+
+    TransMeta transMeta = TransTestFactory.generateTestTransformation( null, meta, stepName, getTestRowMeta() );
+    List<RowMetaAndData> inputList = new ArrayList<RowMetaAndData>();
+    List<RowMetaAndData> result = null;
+    try {
+      result =
+        TransTestFactory.executeTestTransformation( transMeta, stepName, inputList );
+    } catch ( KettleException e ) {
+      Assert.fail();
+    }
+    Assert.assertNotNull( result );
+    Assert.assertEquals( 0, result.size() );
+  }
+
+  /**
+   * This case tests when the MemoryGroupBy step receives 0 input rows, and also no row meta is in the previous step,
+   * whether it throws an error and fails, or ends successfully without error, while passing no output rows.
+   * See PDI-15415 for details
+   */
+  @Test
+  public void testMemoryGroupByAlwaysReturnARow() throws KettleException {
+    MemoryGroupByMeta meta = new MemoryGroupByMeta();
+    meta.setSubjectField( new String[]{ KEY2 } );
+    meta.setAggregateField( new String[]{ OUT1 } );
+    meta.setGroupField( new String[]{ KEY1 } );
+    meta.setAggregateType( new int[] { GroupByMeta.TYPE_GROUP_CONCAT_COMMA } );
+    meta.setAlwaysGivingBackOneRow( true );
+
+    TransMeta transMeta = TransTestFactory.generateTestTransformation( null, meta, stepName, getTestRowMeta() );
+    List<RowMetaAndData> inputList = new ArrayList<RowMetaAndData>();
+    List<RowMetaAndData> result = null;
+    try {
+      result =
+        TransTestFactory.executeTestTransformation( transMeta, stepName, inputList );
+    } catch ( KettleException e ) {
+      Assert.fail();
+    }
+    Assert.assertNotNull( result );
+    Assert.assertEquals( 1, result.size() );
+    Assert.assertEquals( KEY1, result.get( 0 ).getValueMeta( 0 ).getName() );
+    Assert.assertEquals( ValueMetaInterface.TYPE_STRING, result.get( 0 ).getValueMeta( 0 ).getType() );
+    Assert.assertNull( result.get( 0 ).getString( 0, null ) );
+    Assert.assertEquals( OUT1, result.get( 0 ).getValueMeta( 1 ).getName() );
+    Assert.assertEquals( ValueMetaInterface.TYPE_STRING, result.get( 0 ).getValueMeta( 1 ).getType() );
+    Assert.assertNull( result.get( 0 ).getString( 1, null ) );
+  }
+
+  /**
    * This case to test calculation value conversion for MemoryGroupBy, see PDI-11530
    * See PDI-11897 for additional details - this case has commented lines which can be real
-   * bugs. Uncomment code when PDI-11897 will be fixed some day. 
+   * bugs. Uncomment code when PDI-11897 will be fixed some day.
    */
   @Test
   public void testMemoryGroupByNullAggregationsConversion() throws KettleException {
@@ -110,8 +174,7 @@ public class MemoryGroupByIntTest {
     TransMeta transMeta = TransTestFactory.generateTestTransformation( null, meta, stepName );
     List<RowMetaAndData> inputList = getTestRowMetaAndData( 2, new Integer[] { 0, 1 } );
     List<RowMetaAndData> ret =
-        TransTestFactory.executeTestTransformation( transMeta, TransTestFactory.INJECTOR_STEPNAME, stepName,
-            TransTestFactory.DUMMY_STEPNAME, inputList );
+      TransTestFactory.executeTestTransformation( transMeta, stepName, inputList );
 
     Assert.assertNotNull( "At least it is not null", ret );
     Assert.assertEquals( "Ouput is just one row", 1, ret.size() );

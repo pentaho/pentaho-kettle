@@ -29,7 +29,6 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
-import org.pentaho.di.core.jdbc.TransDataService;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
@@ -64,8 +63,6 @@ public class SlaveServerConfig {
   public static final String XML_TAG_SEQUENCES = "sequences";
   public static final String XML_TAG_AUTOSEQUENCE = "autosequence";
   public static final String XML_TAG_AUTO_CREATE = "autocreate";
-  public static final String XML_TAG_SERVICES = "services";
-  public static final String XML_TAG_SERVICE = "service";
   public static final String XML_TAG_JETTY_OPTIONS = "jetty_options";
   public static final String XML_TAG_ACCEPTORS = "acceptors";
   public static final String XML_TAG_ACCEPT_QUEUE_SIZE = "acceptQueueSize";
@@ -94,8 +91,6 @@ public class SlaveServerConfig {
 
   private boolean automaticCreationAllowed;
 
-  private List<TransDataService> services;
-
   private Repository repository;
   private RepositoryMeta repositoryMeta;
   private String repositoryId;
@@ -111,7 +106,6 @@ public class SlaveServerConfig {
     databases = new ArrayList<DatabaseMeta>();
     slaveSequences = new ArrayList<SlaveSequence>();
     automaticCreationAllowed = false;
-    services = new ArrayList<TransDataService>();
     metaStore = new DelegatingMetaStore();
     // Add the local Pentaho MetaStore to the delegation.
     // This sets it as the active one.
@@ -149,7 +143,7 @@ public class SlaveServerConfig {
 
   public String getXML() {
 
-    StringBuffer xml = new StringBuffer();
+    StringBuilder xml = new StringBuilder();
 
     xml.append( XMLHandler.openTag( XML_TAG ) );
 
@@ -182,15 +176,6 @@ public class SlaveServerConfig {
       xml.append( XMLHandler.addTagValue( XML_TAG_AUTO_CREATE, automaticCreationAllowed ) );
       xml.append( XMLHandler.closeTag( XML_TAG_AUTOSEQUENCE ) );
     }
-
-    xml.append( XMLHandler.openTag( XML_TAG_SERVICES ) );
-
-    for ( TransDataService service : services ) {
-      xml.append( XMLHandler.openTag( XML_TAG_SERVICE ) );
-      xml.append( service.getXML() );
-      xml.append( XMLHandler.closeTag( XML_TAG_SERVICE ) );
-    }
-    xml.append( XMLHandler.closeTag( XML_TAG_SERVICES ) );
 
     if ( repositoryMeta != null ) {
       xml.append( XMLHandler.openTag( XML_TAG_REPOSITORY ) );
@@ -251,13 +236,6 @@ public class SlaveServerConfig {
         "Y".equalsIgnoreCase( XMLHandler.getTagValue( autoSequenceNode, XML_TAG_AUTO_CREATE ) );
     }
 
-    Node servicesNode = XMLHandler.getSubNode( node, XML_TAG_SERVICES );
-    List<Node> servicesNodes = XMLHandler.getNodes( servicesNode, XML_TAG_SERVICE );
-    for ( Node serviceNode : servicesNodes ) {
-      TransDataService service = new TransDataService( serviceNode );
-      services.add( service );
-    }
-
     // Set Jetty Options
     setUpJettyOptions( node );
 
@@ -282,7 +260,7 @@ public class SlaveServerConfig {
 
   /**
    * Read and parse jetty options
-   * 
+   *
    * @param node
    *          that contains jetty options nodes
    * @return map of not empty jetty options
@@ -601,21 +579,6 @@ public class SlaveServerConfig {
    */
   public void setAutomaticCreationAllowed( boolean automaticCreationAllowed ) {
     this.automaticCreationAllowed = automaticCreationAllowed;
-  }
-
-  /**
-   * @return the services
-   */
-  public List<TransDataService> getServices() {
-    return services;
-  }
-
-  /**
-   * @param services
-   *          the services to set
-   */
-  public void setServices( List<TransDataService> services ) {
-    this.services = services;
   }
 
   /**

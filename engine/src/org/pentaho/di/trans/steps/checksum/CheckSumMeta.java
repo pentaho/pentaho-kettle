@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,6 +22,7 @@
 
 package org.pentaho.di.trans.steps.checksum;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.pentaho.di.core.CheckResult;
@@ -32,8 +33,10 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaBinary;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -57,24 +60,19 @@ import org.w3c.dom.Node;
 public class CheckSumMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = CheckSumMeta.class; // for i18n purposes, needed by Translator2!!
 
-  /** by which fields to display? */
-  private String[] fieldName;
-
-  private String resultfieldName;
-
   public static final String TYPE_CRC32 = "CRC32";
   public static final String TYPE_ADLER32 = "ADLER32";
   public static final String TYPE_MD5 = "MD5";
   public static final String TYPE_SHA1 = "SHA-1";
+  public static final String TYPE_SHA256 = "SHA-256";
 
-  public static String[] checksumtypeCodes = { TYPE_CRC32, TYPE_ADLER32, TYPE_MD5, TYPE_SHA1 };
-
-  private String checksumtype;
-
-  private boolean compatibilityMode;
-
-  /** result type */
-  private int resultType;
+  public static String[] checksumtypeCodes = { TYPE_CRC32, TYPE_ADLER32, TYPE_MD5, TYPE_SHA1, TYPE_SHA256 };
+  public static String[] checksumtypeDescs = {
+    BaseMessages.getString( PKG, "CheckSumDialog.Type.CRC32" ),
+    BaseMessages.getString( PKG, "CheckSumDialog.Type.ADLER32" ),
+    BaseMessages.getString( PKG, "CheckSumDialog.Type.MD5" ),
+    BaseMessages.getString( PKG, "CheckSumDialog.Type.SHA1" ),
+    BaseMessages.getString( PKG, "CheckSumDialog.Type.SHA256" ) };
 
   /**
    * The result type description
@@ -92,29 +90,45 @@ public class CheckSumMeta extends BaseStepMeta implements StepMetaInterface {
   public static final int result_TYPE_HEXADECIMAL = 1;
   public static final int result_TYPE_BINARY = 2;
 
+  /** by which fields to display? */
+  private String[] fieldName;
+
+  private String resultfieldName;
+
+  private String checksumtype;
+
+  private boolean compatibilityMode;
+
+  /** result type */
+  private int resultType;
+
   public CheckSumMeta() {
     super(); // allocate BaseStepMeta
   }
 
+  // TODO Deprecate one of these setCheckSumType methods
   public void setCheckSumType( int i ) {
     checksumtype = checksumtypeCodes[i];
+  }
+
+  public void setCheckSumType( String type ) {
+    if ( Arrays.asList( checksumtypeCodes ).contains( type ) ) {
+      checksumtype = type;
+    } else {
+      checksumtype = checksumtypeCodes[0];
+    }
   }
 
   public int getTypeByDesc() {
     if ( checksumtype == null ) {
       return 0;
     }
-    int retval;
-    if ( checksumtype.equals( checksumtypeCodes[1] ) ) {
-      retval = 1;
-    } else if ( checksumtype.equals( checksumtypeCodes[2] ) ) {
-      retval = 2;
-    } else if ( checksumtype.equals( checksumtypeCodes[3] ) ) {
-      retval = 3;
-    } else {
-      retval = 0;
+    for ( int i = 0; i < checksumtypeCodes.length; i++ ) {
+      if ( checksumtype.equals( checksumtypeCodes[i] ) ) {
+        return i;
+      }
     }
-    return retval;
+    return 0;
   }
 
   public String getCheckSumType() {
@@ -178,20 +192,19 @@ public class CheckSumMeta extends BaseStepMeta implements StepMetaInterface {
     this.resultfieldName = resultfieldName;
   }
 
+  @Override
   public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     readData( stepnode );
   }
 
+  @Override
   public Object clone() {
     CheckSumMeta retval = (CheckSumMeta) super.clone();
 
     int nrfields = fieldName.length;
 
     retval.allocate( nrfields );
-
-    for ( int i = 0; i < nrfields; i++ ) {
-      retval.fieldName[i] = fieldName[i];
-    }
+    System.arraycopy( fieldName, 0, retval.fieldName, 0, nrfields );
     return retval;
   }
 
@@ -250,8 +263,9 @@ public class CheckSumMeta extends BaseStepMeta implements StepMetaInterface {
     return resultTypeCode[i];
   }
 
+  @Override
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 200 );
+    StringBuilder retval = new StringBuilder( 200 );
     retval.append( "      " ).append( XMLHandler.addTagValue( "checksumtype", checksumtype ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "resultfieldName", resultfieldName ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "resultType", getResultTypeCode( resultType ) ) );
@@ -268,6 +282,7 @@ public class CheckSumMeta extends BaseStepMeta implements StepMetaInterface {
     return retval.toString();
   }
 
+  @Override
   public void setDefault() {
     resultfieldName = null;
     checksumtype = checksumtypeCodes[0];
@@ -281,6 +296,7 @@ public class CheckSumMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
+  @Override
   public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
       checksumtype = rep.getStepAttributeString( id_step, "checksumtype" );
@@ -301,6 +317,7 @@ public class CheckSumMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
+  @Override
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       rep.saveStepAttribute( id_transformation, id_step, "checksumtype", checksumtype );
@@ -317,20 +334,21 @@ public class CheckSumMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
+  @Override
   public void getFields( RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info, StepMeta nextStep,
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     // Output field (String)
     if ( !Const.isEmpty( resultfieldName ) ) {
       ValueMetaInterface v = null;
       if ( checksumtype.equals( TYPE_CRC32 ) || checksumtype.equals( TYPE_ADLER32 ) ) {
-        v = new ValueMeta( space.environmentSubstitute( resultfieldName ), ValueMeta.TYPE_INTEGER );
+        v = new ValueMetaInteger( space.environmentSubstitute( resultfieldName ) );
       } else {
         switch ( resultType ) {
           case result_TYPE_BINARY:
-            v = new ValueMeta( space.environmentSubstitute( resultfieldName ), ValueMeta.TYPE_BINARY );
+            v = new ValueMetaBinary( space.environmentSubstitute( resultfieldName ) );
             break;
           default:
-            v = new ValueMeta( space.environmentSubstitute( resultfieldName ), ValueMeta.TYPE_STRING );
+            v = new ValueMetaString( space.environmentSubstitute( resultfieldName ) );
             break;
         }
       }
@@ -339,6 +357,7 @@ public class CheckSumMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
+  @Override
   public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
     RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
@@ -409,25 +428,50 @@ public class CheckSumMeta extends BaseStepMeta implements StepMetaInterface {
           PKG, "CheckSumMeta.CheckResult.NoInputReceivedFromOtherSteps" ), stepMeta );
       remarks.add( cr );
     }
+
+    if ( isCompatibilityMode() ) {
+      cr = new CheckResult( CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString(
+        PKG, "CheckSumMeta.CheckResult.CompatibilityModeWarning" ), stepMeta );
+      remarks.add( cr );
+    }
+
+    if ( isCompatibilityMode() && getCheckSumType() == TYPE_SHA256 ) {
+      cr = new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+        PKG, "CheckSumMeta.CheckResult.CompatibilityModeSHA256Error" ), stepMeta );
+      remarks.add( cr );
+    }
   }
 
+  @Override
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta tr,
     Trans trans ) {
     return new CheckSum( stepMeta, stepDataInterface, cnr, tr, trans );
   }
 
+  @Override
   public StepDataInterface getStepData() {
     return new CheckSumData();
   }
 
+  @Override
   public boolean supportsErrorHandling() {
     return true;
   }
 
+  /**
+   * @deprecated update to non-compatibility mode
+   * @return the Compatibility Mode
+   */
+  @Deprecated
   public boolean isCompatibilityMode() {
     return compatibilityMode;
   }
 
+  /**
+   * @deprecated Update to non-compatibility mode
+   * @param compatibilityMode
+   */
+  @Deprecated
   public void setCompatibilityMode( boolean compatibilityMode ) {
     this.compatibilityMode = compatibilityMode;
   }

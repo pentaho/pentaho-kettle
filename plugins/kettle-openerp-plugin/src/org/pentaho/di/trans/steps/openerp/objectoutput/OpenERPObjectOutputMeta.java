@@ -13,6 +13,7 @@
  *   along with this software.  If not, see <http://www.gnu.org/licenses/>.
  *
  *   Copyright 2011 De Bortoli Wines Pty Limited (Australia)
+ *   Portions Copyright 2011 - 2016 Pentaho Corporation
  */
 
 package org.pentaho.di.trans.steps.openerp.objectoutput;
@@ -27,8 +28,8 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.ObjectId;
@@ -46,7 +47,7 @@ import org.w3c.dom.Node;
 
 @Step( id = "OpenERPObjectOutputImport", image = "OpenERPObjectOutput.svg",
   i18nPackageName = "org.pentaho.di.trans.steps.openerp.objectoutput", name = "OpenERPObjectOutput.TransName",
-  description = "OpenERPObjectOutput.TransDescription",
+  description = "OpenERPObjectOutput.TransDescription", documentationUrl = "http://wiki.pentaho.com/display/EAI/OpenERP+Object+Output",
   categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.OpenERP" )
 public class OpenERPObjectOutputMeta extends BaseStepMeta implements StepMetaInterface {
 
@@ -67,7 +68,7 @@ public class OpenERPObjectOutputMeta extends BaseStepMeta implements StepMetaInt
         throw new KettleStepException( "Error while retrieving fields", new Exception( "ID field name is null" ) );
       }
 
-      ValueMetaInterface v = new ValueMeta( outputIDFieldName, ValueMetaInterface.TYPE_INTEGER );
+      ValueMetaInterface v = new ValueMetaInteger( outputIDFieldName );
       v.setOrigin( name );
 
       row.addValueMeta( v );
@@ -89,6 +90,7 @@ public class OpenERPObjectOutputMeta extends BaseStepMeta implements StepMetaInt
     }
   }
 
+  @Override
   public final String getXML() {
     StringBuffer retval = new StringBuffer();
 

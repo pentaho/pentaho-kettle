@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -148,22 +148,22 @@ public class PartitionSchema extends ChangedFlag implements Cloneable, SharedObj
   }
 
   public String getXML() {
-    StringBuffer xml = new StringBuffer( 200 );
+    StringBuilder xml = new StringBuilder( 200 );
 
-    xml.append( "        <" ).append( XML_TAG ).append( ">" ).append( Const.CR );
-    xml.append( "          " ).append( XMLHandler.addTagValue( "name", name ) );
+    xml.append( "      " ).append( XMLHandler.openTag( XML_TAG ) ).append( Const.CR );
+    xml.append( "        " ).append( XMLHandler.addTagValue( "name", name ) );
     for ( int i = 0; i < partitionIDs.size(); i++ ) {
-      xml.append( "          <partition>" );
-      xml.append( "            " ).append( XMLHandler.addTagValue( "id", partitionIDs.get( i ) ) );
-      xml.append( "          </partition>" );
+      xml.append( "        " ).append( XMLHandler.openTag( "partition" ) ).append( Const.CR );
+      xml.append( "          " ).append( XMLHandler.addTagValue( "id", partitionIDs.get( i ) ) );
+      xml.append( "        " ).append( XMLHandler.closeTag( "partition" ) ).append( Const.CR );
     }
 
-    xml.append( "          " ).append( XMLHandler.addTagValue( "dynamic", dynamicallyDefined ) );
+    xml.append( "        " ).append( XMLHandler.addTagValue( "dynamic", dynamicallyDefined ) );
     xml
-      .append( "          " ).append(
+      .append( "        " ).append(
         XMLHandler.addTagValue( "partitions_per_slave", numberOfPartitionsPerSlave ) );
 
-    xml.append( "        </" ).append( XML_TAG ).append( ">" ).append( Const.CR );
+    xml.append( "      " ).append( XMLHandler.closeTag( XML_TAG ) ).append( Const.CR );
     return xml.toString();
   }
 

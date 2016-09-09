@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -31,9 +31,11 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.injection.Injection;
+import org.pentaho.di.core.injection.InjectionSupported;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -50,27 +52,37 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
+@InjectionSupported( localizationPrefix = "ReplaceString.Injection.", groups = { "FIELDS" } )
 public class ReplaceStringMeta extends BaseStepMeta implements StepMetaInterface {
 
   private static Class<?> PKG = ReplaceStringMeta.class; // for i18n purposes, needed by Translator2!!
 
+  @Injection( name = "FIELD_IN_STREAM", group = "FIELDS" )
   private String[] fieldInStream;
 
+  @Injection( name = "FIELD_OUT_STREAM", group = "FIELDS" )
   private String[] fieldOutStream;
 
+  @Injection( name = "USE_REGEX", group = "FIELDS" )
   private int[] useRegEx;
 
+  @Injection( name = "REPLACE_STRING", group = "FIELDS" )
   private String[] replaceString;
 
+  @Injection( name = "REPLACE_BY", group = "FIELDS" )
   private String[] replaceByString;
 
   /** Flag : set empty string **/
+  @Injection( name = "EMPTY_STRING", group = "FIELDS" )
   private boolean[] setEmptyString;
 
+  @Injection( name = "REPLACE_WITH_FIELD", group = "FIELDS" )
   private String[] replaceFieldByString;
 
+  @Injection( name = "REPLACE_WHOLE_WORD", group = "FIELDS" )
   private int[] wholeWord;
 
+  @Injection( name = "CASE_SENSITIVE", group = "FIELDS" )
   private int[] caseSensitive;
 
   public static final String[] caseSensitiveCode = { "no", "yes" };
@@ -219,18 +231,15 @@ public class ReplaceStringMeta extends BaseStepMeta implements StepMetaInterface
 
     retval.allocate( nrkeys );
 
-    for ( int i = 0; i < nrkeys; i++ ) {
-      retval.fieldInStream[i] = fieldInStream[i];
-      retval.fieldOutStream[i] = fieldOutStream[i];
-      retval.useRegEx[i] = useRegEx[i];
-      retval.replaceString[i] = replaceString[i];
-      retval.replaceByString[i] = replaceByString[i];
-      retval.setEmptyString[i] = setEmptyString[i];
-      retval.replaceFieldByString[i] = replaceFieldByString[i];
-      retval.wholeWord[i] = wholeWord[i];
-      retval.caseSensitive[i] = caseSensitive[i];
-    }
-
+    System.arraycopy( fieldInStream, 0, retval.fieldInStream, 0, nrkeys );
+    System.arraycopy( fieldOutStream, 0, retval.fieldOutStream, 0, nrkeys );
+    System.arraycopy( useRegEx, 0, retval.useRegEx, 0, nrkeys );
+    System.arraycopy( replaceString, 0, retval.replaceString, 0, nrkeys );
+    System.arraycopy( replaceByString, 0, retval.replaceByString, 0, nrkeys );
+    System.arraycopy( setEmptyString, 0, retval.setEmptyString, 0, nrkeys );
+    System.arraycopy( replaceFieldByString, 0, retval.replaceFieldByString, 0, nrkeys );
+    System.arraycopy( wholeWord, 0, retval.wholeWord, 0, nrkeys );
+    System.arraycopy( caseSensitive, 0, retval.caseSensitive, 0, nrkeys );
     return retval;
   }
 
@@ -275,7 +284,7 @@ public class ReplaceStringMeta extends BaseStepMeta implements StepMetaInterface
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 500 );
+    StringBuilder retval = new StringBuilder( 500 );
 
     retval.append( "    <fields>" ).append( Const.CR );
 
@@ -357,7 +366,7 @@ public class ReplaceStringMeta extends BaseStepMeta implements StepMetaInterface
       ValueMetaInterface valueMeta;
       if ( !Const.isEmpty( fieldOutStream[i] ) ) {
         // We have a new field
-        valueMeta = new ValueMeta( fieldName, ValueMeta.TYPE_STRING );
+        valueMeta = new ValueMetaString( fieldName );
         valueMeta.setOrigin( name );
         //set encoding to new field from source field http://jira.pentaho.com/browse/PDI-11839
         ValueMetaInterface sourceField = inputRowMeta.searchValueMeta( fieldInStream[i] );
@@ -421,7 +430,7 @@ public class ReplaceStringMeta extends BaseStepMeta implements StepMetaInterface
 
         ValueMetaInterface v = prev.searchValueMeta( field );
         if ( v != null ) {
-          if ( v.getType() != ValueMeta.TYPE_STRING ) {
+          if ( v.getType() != ValueMetaInterface.TYPE_STRING ) {
             if ( first ) {
               first = false;
               error_message +=

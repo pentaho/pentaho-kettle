@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -87,18 +87,18 @@ public class Rules {
 
     public Column( String name, String type, Object payload  ) {
       this();
-      this.name=name;
-      this.type=type;
-      this.payload=payload;
+      this.name = name;
+      this.type = type;
+      this.payload = payload;
     }
 
     public Column( Boolean external, String name, String type, Object payload  ) {
-      this(external);
-      this.name=name;
-      this.type=type;
-      this.payload=payload;
+      this( external );
+      this.name = name;
+      this.type = type;
+      this.payload = payload;
     }
-    
+
     public String getName() {
       return name;
     }

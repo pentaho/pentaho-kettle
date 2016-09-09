@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -69,9 +69,9 @@ public abstract class BaseJobServlet extends BodyHttpServlet {
 
     // Create the transformation and store in the list...
     final Job job = new Job( repository, jobMeta, servletLoggingObject );
-
     // Setting variables
     job.initializeVariablesFrom( null );
+    job.getJobMeta().setMetaStore( jobMap.getSlaveServerConfig().getMetaStore() );
     job.getJobMeta().setInternalKettleVariables( job );
     job.injectVariables( jobConfiguration.getJobExecutionConfiguration().getVariables() );
     job.setArguments( jobExecutionConfiguration.getArgumentStrings() );
@@ -102,9 +102,8 @@ public abstract class BaseJobServlet extends BodyHttpServlet {
       } );
     }
 
-    synchronized ( getJobMap() ) {
-      getJobMap().addJob( job.getJobname(), carteObjectId, job, jobConfiguration );
-    }
+    getJobMap().addJob( job.getJobname(), carteObjectId, job, jobConfiguration );
+
     final Long passedBatchId = jobExecutionConfiguration.getPassedBatchId();
     if ( passedBatchId != null ) {
       job.setPassedBatchId( passedBatchId );
@@ -128,6 +127,7 @@ public abstract class BaseJobServlet extends BodyHttpServlet {
 
     // Create the transformation and store in the list...
     final Trans trans = new Trans( transMeta, servletLoggingObject );
+    trans.setMetaStore( transformationMap.getSlaveServerConfig().getMetaStore() );
 
     if ( transExecutionConfiguration.isSetLogfile() ) {
       String realLogFilename = transExecutionConfiguration.getLogFileName();

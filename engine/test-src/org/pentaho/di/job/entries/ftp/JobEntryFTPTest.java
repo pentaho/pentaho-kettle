@@ -154,8 +154,8 @@ public class JobEntryFTPTest {
   }
 
   @Test
-  public void testTargetFilenameNoDateTime() {
-    File destFolder = new TemporaryFolder().newFolder("pdi5558");
+  public void testTargetFilenameNoDateTime() throws Exception {
+    File destFolder = new TemporaryFolder().newFolder( "pdi5558" );
     destFolder.deleteOnExit();
     JobEntryFTP entry = new JobEntryFTP();
     entry.setTargetDirectory( destFolder.getAbsolutePath() );
@@ -169,11 +169,11 @@ public class JobEntryFTPTest {
   }
 
   @Test
-  public void testTargetFilenameWithDateTime() {
+  public void testTargetFilenameWithDateTime() throws Exception {
     SimpleDateFormat yyyyMMdd = new SimpleDateFormat( "yyyyMMdd" );
     SimpleDateFormat HHmmssSSS = new SimpleDateFormat( "HHmmssSSS" );
     SimpleDateFormat yyyyMMddHHmmssSSS = new SimpleDateFormat( "yyyyMMdd_HHmmssSSS" );
-    File destFolder = new TemporaryFolder().newFolder("pdi5558");
+    File destFolder = new TemporaryFolder().newFolder( "pdi5558" );
     destFolder.deleteOnExit();
     String destFolderName = destFolder.getAbsolutePath();
     JobEntryFTP entry = new JobEntryFTP();

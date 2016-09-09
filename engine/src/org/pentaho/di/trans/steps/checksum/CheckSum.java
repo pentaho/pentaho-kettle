@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -58,6 +58,8 @@ public class CheckSum extends BaseStep implements StepInterface {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
+  @SuppressWarnings( "deprecation" )
+  @Override
   public boolean processRow( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
     meta = (CheckSumMeta) smi;
     data = (CheckSumData) sdi;
@@ -97,7 +99,8 @@ public class CheckSum extends BaseStep implements StepInterface {
 
       try {
         if ( meta.getCheckSumType().equals( CheckSumMeta.TYPE_MD5 )
-          || meta.getCheckSumType().equals( CheckSumMeta.TYPE_SHA1 ) ) {
+          || meta.getCheckSumType().equals( CheckSumMeta.TYPE_SHA1 )
+          || meta.getCheckSumType().equals( CheckSumMeta.TYPE_SHA256 ) ) {
           data.digest = MessageDigest.getInstance( meta.getCheckSumType() );
         }
       } catch ( Exception e ) {
@@ -166,7 +169,7 @@ public class CheckSum extends BaseStep implements StepInterface {
   }
 
   private byte[] createCheckSum( Object[] r ) throws Exception {
-    StringBuffer Buff = new StringBuffer();
+    StringBuilder Buff = new StringBuilder();
 
     // Loop through fields
     for ( int i = 0; i < data.fieldnr; i++ ) {
@@ -184,7 +187,7 @@ public class CheckSum extends BaseStep implements StepInterface {
   }
 
   private static String getStringFromBytes( byte[] bytes ) {
-    StringBuffer sb = new StringBuffer();
+    StringBuilder sb = new StringBuilder();
     for ( int i = 0; i < bytes.length; i++ ) {
       byte b = bytes[i];
       sb.append( 0x00FF & b );
@@ -204,7 +207,7 @@ public class CheckSum extends BaseStep implements StepInterface {
     String hex = new String( in );
 
     char[] s = hex.toCharArray();
-    StringBuffer hexString = new StringBuffer( 2 * s.length );
+    StringBuilder hexString = new StringBuilder( 2 * s.length );
 
     for ( int i = 0; i < s.length; i++ ) {
       hexString.append( hexDigits[( s[i] & 0x00F0 ) >> 4] ); // hi nibble
@@ -216,7 +219,7 @@ public class CheckSum extends BaseStep implements StepInterface {
 
   private Long calculCheckSum( Object[] r ) throws Exception {
     Long retval;
-    StringBuffer Buff = new StringBuffer();
+    StringBuilder Buff = new StringBuilder();
 
     // Loop through fields
     for ( int i = 0; i < data.fieldnr; i++ ) {
@@ -237,6 +240,8 @@ public class CheckSum extends BaseStep implements StepInterface {
     return retval;
   }
 
+  @SuppressWarnings( "deprecation" )
+  @Override
   public boolean init( StepMetaInterface smi, StepDataInterface sdi ) {
     meta = (CheckSumMeta) smi;
     data = (CheckSumData) sdi;
@@ -244,6 +249,10 @@ public class CheckSum extends BaseStep implements StepInterface {
     if ( super.init( smi, sdi ) ) {
       if ( Const.isEmpty( meta.getResultFieldName() ) ) {
         logError( BaseMessages.getString( PKG, "CheckSum.Error.ResultFieldMissing" ) );
+        return false;
+      }
+      if ( meta.isCompatibilityMode() && meta.getCheckSumType() == CheckSumMeta.TYPE_SHA256 ) {
+        logError( BaseMessages.getString( PKG, "CheckSumMeta.CheckResult.CompatibilityModeSHA256Error" ) );
         return false;
       }
       return true;

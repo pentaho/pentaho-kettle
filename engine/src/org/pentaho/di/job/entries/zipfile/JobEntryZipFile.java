@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,12 +22,10 @@
 
 package org.pentaho.di.job.entries.zipfile;
 
-import static org.pentaho.di.job.entry.validator.AbstractFileValidator.putVariableSpace;
-import static org.pentaho.di.job.entry.validator.AndValidator.putValidators;
-import static org.pentaho.di.job.entry.validator.FileDoesNotExistValidator.putFailIfExists;
-import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.andValidator;
-import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.fileDoesNotExistValidator;
-import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notBlankValidator;
+import org.pentaho.di.job.entry.validator.AbstractFileValidator;
+import org.pentaho.di.job.entry.validator.AndValidator;
+import org.pentaho.di.job.entry.validator.FileDoesNotExistValidator;
+import org.pentaho.di.job.entry.validator.JobEntryValidatorUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -88,7 +86,7 @@ import org.w3c.dom.Node;
  *
  */
 public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntryInterface {
-  private static Class<?> PKG = JobEntryZipFile.class; // for i18n purposes, needed by Translator2!!
+  private static final Class<?> PKG = JobEntryZipFile.class; // for i18n purposes, needed by Translator2!!
 
   private String zipFilename;
   public int compressionRate;
@@ -144,7 +142,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 500 );
+    StringBuilder retval = new StringBuilder( 500 );
 
     retval.append( super.getXML() );
     retval.append( "      " ).append( XMLHandler.addTagValue( "zipfilename", zipFilename ) );
@@ -280,7 +278,6 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
       if ( parentfolder != null ) {
         try {
           parentfolder.close();
-          parentfolder = null;
         } catch ( Exception ex ) {
           // Ignore
         }
@@ -294,7 +291,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
     boolean createparentfolder ) {
     boolean Fileexists = false;
     File tempFile = null;
-    File fileZip = null;
+    File fileZip;
     boolean resultat = false;
     boolean renameOk = false;
     boolean orginExist = false;
@@ -302,11 +299,11 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
     // Check if target file/folder exists!
     FileObject originFile = null;
     ZipInputStream zin = null;
-    byte[] buffer = null;
+    byte[] buffer;
     OutputStream dest = null;
     BufferedOutputStreamWithCloseDetection buff = null;
     ZipOutputStream out = null;
-    ZipEntry entry = null;
+    ZipEntry entry;
     String localSourceFilename = realSourceDirectoryOrFile;
 
     try {
@@ -366,12 +363,12 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
           // After Zip, Move files..User must give a destination Folder
 
           // Let's see if we deal with file or folder
-          FileObject[] fileList = null;
+          FileObject[] fileList;
 
           FileObject sourceFileOrFolder = KettleVFS.getFileObject( localSourceFilename );
           boolean isSourceDirectory = sourceFileOrFolder.getType().equals( FileType.FOLDER );
           final Pattern pattern;
-          final Pattern patternexclude;
+          final Pattern patternExclude;
 
           if ( isSourceDirectory ) {
             // Let's prepare the pattern matcher for performance reasons.
@@ -383,49 +380,22 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
               pattern = null;
             }
             if ( !Const.isEmpty( realWildcardExclude ) ) {
-              patternexclude = Pattern.compile( realWildcardExclude );
+              patternExclude = Pattern.compile( realWildcardExclude );
             } else {
-              patternexclude = null;
+              patternExclude = null;
             }
 
             // Target is a directory
             // Get all the files in the directory...
             //
             if ( includingSubFolders ) {
-              fileList = sourceFileOrFolder.findFiles( new FileSelector() {
-
-                public boolean traverseDescendents( FileSelectInfo fileInfo ) throws Exception {
-                  return true;
-                }
-
-                public boolean includeFile( FileSelectInfo fileInfo ) throws Exception {
-                  boolean include;
-
-                  // Only include files in the sub-folders...
-                  // When we include sub-folders we match the whole filename, not just the base-name
-                  //
-                  if ( fileInfo.getFile().getType().equals( FileType.FILE ) ) {
-                    include = true;
-                    if ( pattern != null ) {
-                      String name = fileInfo.getFile().getName().getPath();
-                      include = pattern.matcher( name ).matches();
-                    }
-                    if ( include && patternexclude != null ) {
-                      String name = fileInfo.getFile().getName().getPath();
-                      include = !pattern.matcher( name ).matches();
-                    }
-                  } else {
-                    include = false;
-                  }
-                  return include;
-                }
-              } );
+              fileList = sourceFileOrFolder.findFiles( new ZipJobEntryPatternFileSelector( pattern, patternExclude ) );
             } else {
               fileList = sourceFileOrFolder.getChildren();
             }
           } else {
             pattern = null;
-            patternexclude = null;
+            patternExclude = null;
 
             // Target is a file
             fileList = new FileObject[] { sourceFileOrFolder };
@@ -562,8 +532,8 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
                   getIt = matcher.matches();
                 }
 
-                if ( patternexclude != null ) {
-                  Matcher matcherexclude = patternexclude.matcher( filename );
+                if ( patternExclude != null ) {
+                  Matcher matcherexclude = patternExclude.matcher( filename );
                   getItexclude = matcherexclude.matches();
                 }
               }
@@ -734,16 +704,13 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
           if ( zin != null ) {
             zin.close();
           }
-          if ( entry != null ) {
-            entry = null;
-          }
 
         } catch ( IOException ex ) {
           logError( "Error closing zip file entry for file '" + originFile.toString() + "'", ex );
         }
       }
     } else {
-      resultat = true;
+      resultat = false;
       if ( localrealZipfilename == null ) {
         logError( BaseMessages.getString( PKG, "JobZipFiles.No_ZipFile_Defined.Label" ) );
       }
@@ -839,10 +806,10 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
     List<RowMetaAndData> rows = result.getRows();
 
     // reset values
-    String realZipfilename = null;
+    String realZipfilename;
     String realWildcard = null;
     String realWildcardExclude = null;
-    String realTargetdirectory = null;
+    String realTargetdirectory;
     String realMovetodirectory = environmentSubstitute( movetoDirectory );
 
     // Sanity check
@@ -892,11 +859,9 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
             realMovetodirectory = KettleVFS.getFilename( moveToDirectory );
             try {
               moveToDirectory.close();
-              moveToDirectory = null;
             } catch ( Exception e ) {
               logError( "Error moving to directory", e );
-              result.setResult( false );
-              result.setNrErrors( 1 );
+              SanityControlOK = false;
             }
           }
         }
@@ -904,9 +869,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
     }
 
     if ( !SanityControlOK ) {
-      result.setNrErrors( 1 );
-      result.setResult( false );
-      return result;
+      return errorResult( result );
     }
 
     // arguments from previous
@@ -941,8 +904,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
               if ( !processRowFile(
                 parentJob, result, realZipfilename, realWildcard, realWildcardExclude, realTargetdirectory,
                 realMovetodirectory, createParentFolder ) ) {
-                result.setResult( false );
-                return result;
+                return errorResult( result );
               }
             } else {
               logError( "destination zip filename is empty! Ignoring row..." );
@@ -965,9 +927,13 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
         realWildcardExclude = environmentSubstitute( excludeWildCard );
         realTargetdirectory = environmentSubstitute( sourceDirectory );
 
-        result.setResult( processRowFile(
-          parentJob, result, realZipfilename, realWildcard, realWildcardExclude, realTargetdirectory,
-          realMovetodirectory, createParentFolder ) );
+        boolean success = processRowFile( parentJob, result, realZipfilename, realWildcard, realWildcardExclude,
+          realTargetdirectory, realMovetodirectory, createParentFolder );
+        if ( success ) {
+          result.setResult( true );
+        } else {
+          errorResult( result );
+        }
       } else {
         logError( "Source folder/file is empty! Ignoring row..." );
       }
@@ -977,9 +943,15 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
     return result;
   }
 
+  private Result errorResult( Result result ) {
+    result.setNrErrors( 1 );
+    result.setResult( false );
+    return result;
+  }
+
   public String getFullFilename( String filename, boolean add_date, boolean add_time, boolean specify_format,
     String datetime_folder ) {
-    String retval = "";
+    String retval;
     if ( Const.isEmpty( filename ) ) {
       return null;
     }
@@ -1130,20 +1102,20 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
   public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
     ValidatorContext ctx1 = new ValidatorContext();
-    putVariableSpace( ctx1, getVariables() );
-    putValidators( ctx1, notBlankValidator(), fileDoesNotExistValidator() );
+    AbstractFileValidator.putVariableSpace( ctx1, getVariables() );
+    AndValidator.putValidators( ctx1, JobEntryValidatorUtils.notBlankValidator(), JobEntryValidatorUtils.fileDoesNotExistValidator() );
     if ( 3 == ifZipFileExists ) {
       // execute method fails if the file already exists; we should too
-      putFailIfExists( ctx1, true );
+      FileDoesNotExistValidator.putFailIfExists( ctx1, true );
     }
-    andValidator().validate( this, "zipFilename", remarks, ctx1 );
+    JobEntryValidatorUtils.andValidator().validate( this, "zipFilename", remarks, ctx1 );
 
     if ( 2 == afterZip ) {
       // setting says to move
-      andValidator().validate( this, "moveToDirectory", remarks, putValidators( notBlankValidator() ) );
+      JobEntryValidatorUtils.andValidator().validate( this, "moveToDirectory", remarks, AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
     }
 
-    andValidator().validate( this, "sourceDirectory", remarks, putValidators( notBlankValidator() ) );
+    JobEntryValidatorUtils.andValidator().validate( this, "sourceDirectory", remarks, AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
 
   }
 
@@ -1169,4 +1141,46 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
   public void setStoredSourcePathDepth( String storedSourcePathDepth ) {
     this.storedSourcePathDepth = storedSourcePathDepth;
   }
+
+  /**
+   * Helper class providing pattern restrictions for
+   * file names to be zipped
+   */
+  public static class ZipJobEntryPatternFileSelector implements FileSelector {
+
+    private Pattern pattern;
+    private Pattern patternExclude;
+
+    public ZipJobEntryPatternFileSelector( Pattern pattern, Pattern patternExclude ) {
+      this.pattern = pattern;
+      this.patternExclude = patternExclude;
+    }
+
+    public boolean traverseDescendents( FileSelectInfo fileInfo ) throws Exception {
+      return true;
+    }
+
+    public boolean includeFile( FileSelectInfo fileInfo ) throws Exception {
+      boolean include;
+
+      // Only include files in the sub-folders...
+      // When we include sub-folders we match the whole filename, not just the base-name
+      //
+      if ( fileInfo.getFile().getType().equals( FileType.FILE ) ) {
+        include = true;
+        if ( pattern != null ) {
+          String name = fileInfo.getFile().getName().getBaseName();
+          include = pattern.matcher( name ).matches();
+        }
+        if ( include && patternExclude != null ) {
+          String name = fileInfo.getFile().getName().getBaseName();
+          include = !patternExclude.matcher( name ).matches();
+        }
+      } else {
+        include = false;
+      }
+      return include;
+    }
+  }
+
 }

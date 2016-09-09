@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -28,7 +28,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.plugins.ImportRulePluginType;
 import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
-import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.imp.rule.ImportRuleInterface;
 import org.pentaho.di.imp.rule.ImportValidationFeedback;
@@ -45,6 +45,7 @@ public abstract class BaseImportRule implements ImportRuleInterface {
     this.enabled = false;
   }
 
+  @Override
   public ImportRuleInterface clone() {
     try {
       return (ImportRuleInterface) super.clone();
@@ -53,12 +54,15 @@ public abstract class BaseImportRule implements ImportRuleInterface {
     }
   }
 
+  @Override
   public boolean isUnique() {
     return true;
   }
 
+  @Override
   public abstract List<ImportValidationFeedback> verifyRule( Object subject );
 
+  @Override
   public String getXML() {
     StringBuilder xml = new StringBuilder();
 
@@ -68,9 +72,10 @@ public abstract class BaseImportRule implements ImportRuleInterface {
     return xml.toString();
   }
 
+  @Override
   public void loadXML( Node ruleNode ) throws KettleException {
     id = XMLHandler.getTagValue( ruleNode, "id" );
-    enabled = ValueMeta.convertStringToBoolean( XMLHandler.getTagValue( ruleNode, "enabled" ) );
+    enabled = ValueMetaString.convertStringToBoolean( XMLHandler.getTagValue( ruleNode, "enabled" ) );
   }
 
   @Override
@@ -85,6 +90,7 @@ public abstract class BaseImportRule implements ImportRuleInterface {
   /**
    * @return the enabled
    */
+  @Override
   public boolean isEnabled() {
     return enabled;
   }
@@ -93,6 +99,7 @@ public abstract class BaseImportRule implements ImportRuleInterface {
    * @param enabled
    *          the enabled to set
    */
+  @Override
   public void setEnabled( boolean enabled ) {
     this.enabled = enabled;
   }
@@ -100,6 +107,7 @@ public abstract class BaseImportRule implements ImportRuleInterface {
   /**
    * @return the id
    */
+  @Override
   public String getId() {
     return id;
   }
@@ -108,6 +116,7 @@ public abstract class BaseImportRule implements ImportRuleInterface {
    * @param id
    *          the id to set
    */
+  @Override
   public void setId( String id ) {
     this.id = id;
   }

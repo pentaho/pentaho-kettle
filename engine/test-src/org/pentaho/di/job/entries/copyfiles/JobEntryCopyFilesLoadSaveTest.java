@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2014 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -21,25 +21,33 @@
  ******************************************************************************/
 package org.pentaho.di.job.entries.copyfiles;
 
-import org.pentaho.di.job.entry.loadSave.JobEntryLoadSaveTestSupport;
-
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
-import static java.util.Arrays.asList;
+import org.pentaho.di.job.entry.loadSave.JobEntryLoadSaveTestSupport;
+import org.pentaho.di.trans.steps.loadsave.validator.ArrayLoadSaveValidator;
+import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
+import org.pentaho.di.trans.steps.loadsave.validator.StringLoadSaveValidator;
 
 public class JobEntryCopyFilesLoadSaveTest extends JobEntryLoadSaveTestSupport<JobEntryCopyFiles> {
 
-  @Override protected Class<JobEntryCopyFiles> getJobEntryClass() {
+  @Override
+  protected Class<JobEntryCopyFiles> getJobEntryClass() {
     return JobEntryCopyFiles.class;
   }
 
-  @Override protected List<String> listCommonAttributes() {
-    return asList( "copy_empty_folders", "arg_from_previous", "overwrite_files", "include_subfolders",
-      "remove_source_files", "add_result_filesname", "destination_is_a_file", "create_destination_folder" );
+  @Override
+  protected List<String> listCommonAttributes() {
+    return Arrays.asList( "copy_empty_folders", "arg_from_previous", "overwrite_files", "include_subfolders",
+      "remove_source_files", "add_result_filesname", "destination_is_a_file", "create_destination_folder",
+      "source_filefolder", "destination_filefolder", "wildcard" );
   }
 
-  @Override protected Map<String, String> createGettersMap() {
+  @Override
+  protected Map<String, String> createGettersMap() {
     return toMap(
       "copy_empty_folders", "isCopyEmptyFolders",
       "arg_from_previous", "isArgFromPrevious",
@@ -52,7 +60,8 @@ public class JobEntryCopyFilesLoadSaveTest extends JobEntryLoadSaveTestSupport<J
     );
   }
 
-  @Override protected Map<String, String> createSettersMap() {
+  @Override
+  protected Map<String, String> createSettersMap() {
     return toMap(
       "copy_empty_folders", "setCopyEmptyFolders",
       "arg_from_previous", "setArgFromPrevious",
@@ -64,4 +73,17 @@ public class JobEntryCopyFilesLoadSaveTest extends JobEntryLoadSaveTestSupport<J
       "create_destination_folder", "setCreateDestinationFolder"
     );
   }
+
+  @Override
+  protected Map<String, FieldLoadSaveValidator<?>> createAttributeValidatorsMap() {
+    int fileArraySize = new Random().nextInt( 5 ) + 1;
+    Map<String, FieldLoadSaveValidator<?>> attrMap = new HashMap<>();
+    attrMap.put( "source_filefolder",
+      new ArrayLoadSaveValidator<String>( new StringLoadSaveValidator(), fileArraySize ) );
+    attrMap.put( "destination_filefolder",
+      new ArrayLoadSaveValidator<String>( new StringLoadSaveValidator(), fileArraySize ) );
+    attrMap.put( "wildcard", new ArrayLoadSaveValidator<String>( new StringLoadSaveValidator(), fileArraySize ) );
+    return attrMap;
+  }
+
 }

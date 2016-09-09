@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,7 +27,10 @@ import java.util.List;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaBoolean;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.TransTestFactory;
@@ -48,29 +51,29 @@ public class RegexEvalTest extends TransformationTestCase {
   }
 
   public RowMetaInterface createSourceRowMetaInterface() {
-    return createRowMetaInterface( new ValueMeta( "field1", ValueMeta.TYPE_STRING ) );
+    return createRowMetaInterface( new ValueMetaString( "field1" ) );
   }
 
   public RowMetaInterface createResultRowMetaInterface1() {
     RowMetaInterface rm = createSourceRowMetaInterface();
-    rm.addValueMeta( new ValueMeta( "res", ValueMeta.TYPE_BOOLEAN ) );
+    rm.addValueMeta( new ValueMetaBoolean( "res" ) );
     return rm;
   }
 
   public RowMetaInterface createResultRowMetaInterface2() {
     RowMetaInterface rm = createResultRowMetaInterface1();
-    rm.addValueMeta( new ValueMeta( "cap", ValueMeta.TYPE_INTEGER ) );
+    rm.addValueMeta( new ValueMetaInteger( "cap" ) );
     return rm;
   }
 
   public RowMetaInterface createResultRowMetaInterface3() {
     return createRowMetaInterface(
-      new ValueMeta( "field1", ValueMeta.TYPE_STRING ),
-      new ValueMeta( "res", ValueMeta.TYPE_BOOLEAN ),
-      new ValueMeta( "cap", ValueMeta.TYPE_STRING ),
-      new ValueMeta( "capIfNull", ValueMeta.TYPE_STRING ),
-      new ValueMeta( "capNullIf", ValueMeta.TYPE_STRING ),
-      new ValueMeta( "capIfNullNullIf", ValueMeta.TYPE_INTEGER ) );
+      new ValueMetaString( "field1" ),
+      new ValueMetaBoolean( "res" ),
+      new ValueMetaString( "cap" ),
+      new ValueMetaString( "capIfNull" ),
+      new ValueMetaString( "capNullIf" ),
+      new ValueMetaInteger( "capIfNullNullIf" ) );
   }
 
   public List<RowMetaAndData> createSourceData() {
@@ -132,7 +135,7 @@ public class RegexEvalTest extends TransformationTestCase {
     regexEvalMeta.allocate( 1 );
     //CHECKSTYLE:Indentation:OFF
     regexEvalMeta.getFieldName()[0] = "cap";
-    regexEvalMeta.getFieldType()[0] = ValueMeta.TYPE_INTEGER;
+    regexEvalMeta.getFieldType()[0] = ValueMetaInterface.TYPE_INTEGER;
 
     TransMeta transMeta =
       TransTestFactory.generateTestTransformation( new Variables(), regexEvalMeta, regexStepName );
@@ -159,18 +162,18 @@ public class RegexEvalTest extends TransformationTestCase {
     regexEvalMeta.allocate( 4 );
 
     regexEvalMeta.getFieldName()[0] = "cap";
-    regexEvalMeta.getFieldType()[0] = ValueMeta.TYPE_STRING;
+    regexEvalMeta.getFieldType()[0] = ValueMetaInterface.TYPE_STRING;
 
     regexEvalMeta.getFieldName()[1] = "capIfNull";
-    regexEvalMeta.getFieldType()[1] = ValueMeta.TYPE_STRING;
+    regexEvalMeta.getFieldType()[1] = ValueMetaInterface.TYPE_STRING;
     regexEvalMeta.getFieldIfNull()[1] = "x";
 
     regexEvalMeta.getFieldName()[2] = "capNullIf";
-    regexEvalMeta.getFieldType()[2] = ValueMeta.TYPE_STRING;
+    regexEvalMeta.getFieldType()[2] = ValueMetaInterface.TYPE_STRING;
     regexEvalMeta.getFieldNullIf()[2] = "1";
 
     regexEvalMeta.getFieldName()[3] = "capIfNullNullIf";
-    regexEvalMeta.getFieldType()[3] = ValueMeta.TYPE_INTEGER;
+    regexEvalMeta.getFieldType()[3] = ValueMetaInterface.TYPE_INTEGER;
     regexEvalMeta.getFieldIfNull()[3] = "0";
     regexEvalMeta.getFieldNullIf()[3] = "B";
 

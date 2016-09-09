@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -57,6 +57,7 @@ public class AnalyticQuery extends BaseStep implements StepInterface {
     data = (AnalyticQueryData) stepDataInterface;
   }
 
+  @Override
   public boolean processRow( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
     meta = (AnalyticQueryMeta) smi;
     data = (AnalyticQueryData) sdi;
@@ -128,6 +129,10 @@ public class AnalyticQuery extends BaseStep implements StepInterface {
       data.previous = r.clone();
 
       processQueue();
+    }
+
+    if ( log.isBasic() && checkFeedback( getLinesRead() ) ) {
+      logBasic( BaseMessages.getString( PKG, "LineNr", getLinesRead() ) );
     }
 
     return true;
@@ -219,6 +224,7 @@ public class AnalyticQuery extends BaseStep implements StepInterface {
 
   }
 
+  @Override
   public boolean init( StepMetaInterface smi, StepDataInterface sdi ) {
     meta = (AnalyticQueryMeta) smi;
     data = (AnalyticQueryData) sdi;

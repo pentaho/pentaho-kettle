@@ -1,20 +1,19 @@
 /*!
-* Copyright 2010 - 2015 Pentaho Corporation.  All rights reserved.
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-*/
-
+ * Copyright 2010 - 2015 Pentaho Corporation.  All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
 package org.pentaho.di.repository.pur;
 
 import java.util.ArrayList;
@@ -23,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.NotePadMeta;
@@ -117,6 +117,10 @@ public class JobDelegate extends AbstractDelegate implements ISharedObjectsTrans
   private static final String NODE_JOB = "job";
 
   static final String NODE_JOB_PRIVATE_DATABASES = "jobPrivateDatabases";
+
+  static final String PROP_JOB_PRIVATE_DATABASE_NAMES = "PROP_JOB_PRIVATE_DATABASE_NAMES";
+
+  static final String JOB_PRIVATE_DATABASE_DELIMITER = "\t";
 
   public static final String NODE_NOTES = "notes";
 
@@ -229,10 +233,23 @@ public class JobDelegate extends AbstractDelegate implements ISharedObjectsTrans
     Set<String> privateDatabases = null;
     // read the private databases
     DataNode privateDbsNode = rootNode.getNode( NODE_JOB_PRIVATE_DATABASES );
+    // if we have node than we use one of two new formats. The older format that took
+    // too long to save, uses a separate node for each database name, the new format
+    // puts all the database names in the PROP_JOB_PRIVATE_DATABASE_NAMES property.
+    // BACKLOG-6635
     if ( privateDbsNode != null ) {
       privateDatabases = new HashSet<String>();
-      for ( DataNode privateDatabase : privateDbsNode.getNodes() ) {
-        privateDatabases.add( privateDatabase.getName() );
+      if ( privateDbsNode.hasProperty( PROP_JOB_PRIVATE_DATABASE_NAMES ) ) {
+        for ( String privateDatabaseName : getString( privateDbsNode, PROP_JOB_PRIVATE_DATABASE_NAMES ).split(
+            JOB_PRIVATE_DATABASE_DELIMITER ) ) {
+          if ( !privateDatabaseName.isEmpty() ) {
+            privateDatabases.add( privateDatabaseName );
+          }
+        }
+      } else {
+        for ( DataNode privateDatabase : privateDbsNode.getNodes() ) {
+          privateDatabases.add( privateDatabase.getName() );
+        }
       }
     }
     jobMeta.setPrivateDatabases( privateDatabases );
@@ -432,7 +449,8 @@ public class JobDelegate extends AbstractDelegate implements ISharedObjectsTrans
       jobMetaInterface.setMetaStore( jobMeta.getMetaStore() ); // make sure metastore is passed
       if ( !isMissing ) {
         compatibleJobEntryLoadRep( jobMetaInterface, proxy, null, jobMeta.getDatabases(), jobMeta.getSlaveServers() );
-        jobMetaInterface.loadRep( proxy, jobMeta.getMetaStore(), null, jobMeta.getDatabases(), jobMeta.getSlaveServers() );
+        jobMetaInterface.loadRep( proxy, jobMeta.getMetaStore(), null, jobMeta.getDatabases(), jobMeta
+            .getSlaveServers() );
       }
       jobentries.add( jobMetaInterface );
       return jobMetaInterface;
@@ -456,10 +474,9 @@ public class JobDelegate extends AbstractDelegate implements ISharedObjectsTrans
 
     if ( jobMeta.getPrivateDatabases() != null ) {
       // save all private database names http://jira.pentaho.com/browse/PPP-3413
+      String privateDatabaseNames = StringUtils.join( jobMeta.getPrivateDatabases(), JOB_PRIVATE_DATABASE_DELIMITER );
       DataNode privateDatabaseNode = rootNode.addNode( NODE_JOB_PRIVATE_DATABASES );
-      for ( String privateDatabase : jobMeta.getPrivateDatabases() ) {
-        privateDatabaseNode.addNode( privateDatabase );
-      }
+      privateDatabaseNode.setProperty( PROP_JOB_PRIVATE_DATABASE_NAMES, privateDatabaseNames );
     }
 
     // Save the notes

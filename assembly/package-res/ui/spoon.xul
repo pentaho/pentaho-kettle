@@ -19,19 +19,13 @@
       tooltiptext="${Spoon.Tooltip.SaveDifferentNameTranformation}" onclick="spoon.saveFileAs()"/>
     <toolbarseparator />
     <toolbarspacer flex="1"/>
-    <toolbaritem>
-      <label value="${Spoon.Perspectives}:"/>
-    </toolbaritem>
   </toolbar>
   
-  <menupopup id="toolbar-perspectives-popup">
-  </menupopup>
-
   <menupopup id="new-file-popup">
     <menuitem label="${Spoon.Menubar.File.NewJob}" command="spoon.newJobFile()" image="images/chefgraph.svg"/>
     <menuitem id="menubar-new-trans" label="${Spoon.Menubar.File.NewTrans}" command="spoon.newTransFile()" image="images/spoongraph.svg"/>
     <menuseparator />
-    <menuitem label="${Spoon.Menubar.File.NewDatabaseConn}" command="spoon.newConnection()" image="images/CNC.svg"/>
+    <menuitem id="menubar-new-database" label="${Spoon.Menubar.File.NewDatabaseConn}" command="spoon.newConnection()" image="images/CNC.svg"/>
     <menuitem label="${Spoon.Menubar.File.NewSlave}" command="spoon.newSlaveServer()" image="images/slave.svg"/>
   </menupopup>
   

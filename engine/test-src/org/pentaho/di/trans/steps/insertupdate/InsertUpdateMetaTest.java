@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,7 +22,9 @@
 
 package org.pentaho.di.trans.steps.insertupdate;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -33,14 +35,23 @@ import static org.junit.Assert.*;
 
 import org.mockito.Mockito;
 import org.pentaho.di.core.KettleEnvironment;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
+import org.pentaho.di.trans.steps.loadsave.validator.ArrayLoadSaveValidator;
+import org.pentaho.di.trans.steps.loadsave.validator.BooleanLoadSaveValidator;
+import org.pentaho.di.trans.steps.loadsave.validator.DatabaseMetaLoadSaveValidator;
+import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
+import org.pentaho.di.trans.steps.loadsave.validator.PrimitiveBooleanArrayLoadSaveValidator;
+import org.pentaho.di.trans.steps.loadsave.validator.StringLoadSaveValidator;
 
 public class InsertUpdateMetaTest {
+  LoadSaveTester loadSaveTester;
 
   private StepMeta stepMeta;
   private InsertUpdate upd;
@@ -113,6 +124,70 @@ public class InsertUpdateMetaTest {
       fail();
     } catch ( Exception ex ) {
     }
+  }
+
+  @Before
+  public void setUpLoadSave() throws Exception {
+    List<String> attributes =
+        Arrays.asList( "schemaName", "tableName", "databaseMeta", "keyStream", "keyLookup", "keyCondition",
+            "keyStream2", "updateLookup", "updateStream", "update", "commitSize", "updateBypassed" );
+
+    Map<String, String> getterMap = new HashMap<String, String>() {
+      {
+        put( "schemaName", "getSchemaName" );
+        put( "tableName", "getTableName" );
+        put( "databaseMeta", "getDatabaseMeta" );
+        put( "keyStream", "getKeyStream" );
+        put( "keyLookup", "getKeyLookup" );
+        put( "keyCondition", "getKeyCondition" );
+        put( "keyStream2", "getKeyStream2" );
+        put( "updateLookup", "getUpdateLookup" );
+        put( "updateStream", "getUpdateStream" );
+        put( "update", "getUpdate" );
+        put( "commitSize", "getCommitSizeVar" );
+        put( "updateBypassed", "isUpdateBypassed" );
+      }
+    };
+
+    Map<String, String> setterMap = new HashMap<String, String>() {
+      {
+        put( "schemaName", "setSchemaName" );
+        put( "tableName", "setTableName" );
+        put( "databaseMeta", "setDatabaseMeta" );
+        put( "keyStream", "setKeyStream" );
+        put( "keyLookup", "setKeyLookup" );
+        put( "keyCondition", "setKeyCondition" );
+        put( "keyStream2", "setKeyStream2" );
+        put( "updateLookup", "setUpdateLookup" );
+        put( "updateStream", "setUpdateStream" );
+        put( "update", "setUpdate" );
+        put( "commitSize", "setCommitSize" );
+        put( "updateBypassed", "setUpdateBypassed" );
+      }
+    };
+    FieldLoadSaveValidator<String[]> stringArrayLoadSaveValidator =
+        new ArrayLoadSaveValidator<String>( new StringLoadSaveValidator(), 5 );
+
+    Map<String, FieldLoadSaveValidator<?>> attrValidatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();
+    attrValidatorMap.put( "keyStream", stringArrayLoadSaveValidator );
+    attrValidatorMap.put( "keyLookup", stringArrayLoadSaveValidator );
+    attrValidatorMap.put( "keyCondition", stringArrayLoadSaveValidator );
+    attrValidatorMap.put( "keyStream2", stringArrayLoadSaveValidator );
+    attrValidatorMap.put( "updateLookup", stringArrayLoadSaveValidator );
+    attrValidatorMap.put( "updateStream", stringArrayLoadSaveValidator );
+    attrValidatorMap.put( "databaseMeta", new DatabaseMetaLoadSaveValidator() );
+    attrValidatorMap.put( "update", new ArrayLoadSaveValidator<Boolean>( new BooleanLoadSaveValidator(), 5 ) );
+
+    Map<String, FieldLoadSaveValidator<?>> typeValidatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();
+
+    typeValidatorMap.put( boolean[].class.getCanonicalName(), new PrimitiveBooleanArrayLoadSaveValidator( new BooleanLoadSaveValidator(), 3 ) );
+
+    loadSaveTester = new LoadSaveTester( InsertUpdateMeta.class, attributes, getterMap, setterMap, attrValidatorMap, typeValidatorMap );
+  }
+
+  @Test
+  public void testSerialization() throws KettleException {
+    loadSaveTester.testSerialization();
   }
 
 }

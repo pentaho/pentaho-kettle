@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -35,6 +35,8 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.injection.Injection;
+import org.pentaho.di.core.injection.InjectionSupported;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
@@ -60,47 +62,62 @@ import org.w3c.dom.Node;
  * Created on 26-apr-2003
  *
  */
+@InjectionSupported( localizationPrefix = "InsertUpdateMeta.Injection.", groups = { "KEYS", "UPDATES" } )
 public class InsertUpdateMeta extends BaseStepMeta implements StepMetaInterface, ProvidesModelerMeta {
   private static Class<?> PKG = InsertUpdateMeta.class; // for i18n purposes, needed by Translator2!!
 
+  private List<? extends SharedObjectInterface> databases;
+
   /** what's the lookup schema? */
+  @Injection( name = "SCHEMA_NAME" )
   private String schemaName;
 
   /** what's the lookup table? */
+  @Injection( name = "TABLE_NAME" )
   private String tableName;
 
   /** database connection */
   private DatabaseMeta databaseMeta;
 
   /** which field in input stream to compare with? */
+  @Injection( name = "KEY_STREAM", group = "KEYS" )
   private String[] keyStream;
 
   /** field in table */
+  @Injection( name = "KEY_LOOKUP", group = "KEYS" )
   private String[] keyLookup;
 
   /** Comparator: =, <>, BETWEEN, ... */
+  @Injection( name = "KEY_CONDITION", group = "KEYS" )
   private String[] keyCondition;
 
   /** Extra field for between... */
+  @Injection( name = "KEY_STREAM2", group = "KEYS" )
   private String[] keyStream2;
 
   /** Field value to update after lookup */
+  @Injection( name = "UPDATE_LOOKUP", group = "UPDATES" )
   private String[] updateLookup;
 
   /** Stream name to update value with */
+  @Injection( name = "UPDATE_STREAM", group = "UPDATES" )
   private String[] updateStream;
 
   /** boolean indicating if field needs to be updated */
+  @Injection( name = "UPDATE_FLAG", group = "UPDATES" )
   private Boolean[] update;
 
   /** Commit size for inserts/updates */
+  @Injection( name = "COMMIT_SIZE" )
   private String commitSize;
 
   /** Bypass any updates */
+  @Injection( name = "DO_NOT" )
   private boolean updateBypassed;
 
-  public InsertUpdateMeta() {
-    super(); // allocate BaseStepMeta
+  @Injection( name = "CONNECTIONNAME" )
+  public void setConnection( String connectionName ) {
+    databaseMeta = DatabaseMeta.findDatabase( databases, connectionName );
   }
 
   /**
@@ -298,22 +315,20 @@ public class InsertUpdateMeta extends BaseStepMeta implements StepMetaInterface,
 
     retval.allocate( nrkeys, nrvalues );
 
-    for ( int i = 0; i < nrkeys; i++ ) {
-      retval.keyStream[i] = keyStream[i];
-      retval.keyLookup[i] = keyLookup[i];
-      retval.keyCondition[i] = keyCondition[i];
-      retval.keyStream2[i] = keyStream2[i];
-    }
+    System.arraycopy( keyStream, 0, retval.keyStream, 0, nrkeys );
+    System.arraycopy( keyLookup, 0, retval.keyLookup, 0, nrkeys );
+    System.arraycopy( keyCondition, 0, retval.keyCondition, 0, nrkeys );
+    System.arraycopy( keyStream2, 0, retval.keyStream2, 0, nrkeys );
 
-    for ( int i = 0; i < nrvalues; i++ ) {
-      retval.updateLookup[i] = updateLookup[i];
-      retval.updateStream[i] = updateStream[i];
-      retval.update[i] = update[i];
-    }
+    System.arraycopy( updateLookup, 0, retval.updateLookup, 0, nrvalues );
+    System.arraycopy( updateStream, 0, retval.updateStream, 0, nrvalues );
+    System.arraycopy( update, 0, retval.update, 0, nrvalues );
+
     return retval;
   }
 
   private void readData( Node stepnode, List<? extends SharedObjectInterface> databases ) throws KettleXMLException {
+    this.databases = databases;
     try {
       String csize;
       int nrkeys, nrvalues;
@@ -432,6 +447,7 @@ public class InsertUpdateMeta extends BaseStepMeta implements StepMetaInterface,
   }
 
   public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
+    this.databases = databases;
     try {
       databaseMeta = rep.loadDatabaseMetaFromStepAttribute( id_step, "id_connection", databases );
 

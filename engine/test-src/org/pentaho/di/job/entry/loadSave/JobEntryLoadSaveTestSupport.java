@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2014 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -19,11 +19,15 @@
  * limitations under the License.
  *
  ******************************************************************************/
+
 package org.pentaho.di.job.entry.loadSave;
 
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.pentaho.di.core.KettleEnvironment;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
 
@@ -42,6 +46,11 @@ public abstract class JobEntryLoadSaveTestSupport<T extends JobEntryInterface> {
 
   private LoadSaveTester<T> tester;
 
+  @BeforeClass
+  public static void setUpBeforeClass() throws KettleException {
+    KettleEnvironment.init( false );
+  }
+
   @Before
   public void setUp() throws Exception {
     List<String> commonAttributes = listCommonAttributes();
@@ -59,15 +68,9 @@ public abstract class JobEntryLoadSaveTestSupport<T extends JobEntryInterface> {
   }
 
   @Test
-  public void xmlSerialization() throws Exception {
-    tester.testXmlRoundTrip();
+  public void testSerialization() throws KettleException {
+    tester.testSerialization();
   }
-
-  @Test
-  public void repositorySerialization() throws Exception {
-    tester.testRepoRoundTrip();
-  }
-
 
   protected abstract Class<T> getJobEntryClass();
 

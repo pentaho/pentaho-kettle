@@ -101,7 +101,7 @@ public class SpoonTest {
         for ( StepMeta s:transMeta.getSelectedSteps() ) {
           if ( s.getStepMetaInterface() instanceof CsvInputMeta ) {
             //check that stepError was copied
-            assertNotNull(" Error hop was not copied" , s.getStepErrorMeta() );
+            assertNotNull( "Error hop was not copied", s.getStepErrorMeta() );
           }
         }
         return null;
@@ -142,7 +142,7 @@ public class SpoonTest {
         for ( StepMeta s:transMeta.getSelectedSteps() ) {
           if ( s.getStepMetaInterface() instanceof CsvInputMeta ) {
             //check that stepError was empty, because we copy only one step from pair
-            assertNull(" Error hop was not copied" , s.getStepErrorMeta() );
+            assertNull( "Error hop was not copied", s.getStepErrorMeta() );
           }
         }
         return null;

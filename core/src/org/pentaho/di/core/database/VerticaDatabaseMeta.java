@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -298,6 +298,16 @@ public class VerticaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
   @Override
   public boolean supportsSequences() {
     return true;
+  }
+
+  @Override
+  public String getSQLSequenceExists( String sequenceName ) {
+    return "SELECT sequence_name FROM sequences WHERE sequence_name = '" + sequenceName + "'";
+  }
+
+  @Override
+  public String getSQLListOfSequences() {
+    return "SELECT sequence_name FROM sequences";
   }
 
   /**

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -116,12 +116,10 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
       // the database name can be a SID (starting with :) or a Service (starting with /)
       // <host>:<port>/<service>
       // <host>:<port>:<SID>
-      if ( databaseName != null && databaseName.length() > 0
-          && ( databaseName.startsWith( "/" ) || databaseName.startsWith( ":" ) ) ) {
+      if ( !Const.isEmpty( databaseName ) && ( databaseName.startsWith( "/" ) || databaseName.startsWith( ":" ) ) ) {
         return "jdbc:oracle:thin:@" + hostname + ":" + port + databaseName;
-      } else if ( Const.isEmpty( hostname ) && ( Const.isEmpty( port ) || port.equals( "-1" ) ) ) { // -1 when file
-                                                                                                    // based stored
-                                                                                                    // connection
+      } else if ( Const.isEmpty( hostname ) && ( Const.isEmpty( port ) || port.equals( "-1" ) ) ) {
+        // -1 when file based stored                                                                                                    // connection
         // support RAC with a self defined URL in databaseName like
         // (DESCRIPTION = (ADDRESS = (PROTOCOL = TCP)(HOST = host1-vip)(PORT = 1521))(ADDRESS = (PROTOCOL = TCP)(HOST =
         // host2-vip)(PORT = 1521))(LOAD_BALANCE = yes)(CONNECT_DATA =(SERVER = DEDICATED)(SERVICE_NAME =
@@ -224,6 +222,11 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
     return "SELECT " + sequenceName + ".nextval FROM dual";
   }
 
+  @Override
+  public boolean supportsSequenceNoMaxValueOption() {
+    return true;
+  }
+
   /**
    * @return true if we need to supply the schema-name to getTables in order to get a correct list of items.
    */
@@ -285,6 +288,11 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
   public String getDropColumnStatement( String tablename, ValueMetaInterface v, String tk, boolean use_autoinc,
     String pk, boolean semicolon ) {
     return "ALTER TABLE " + tablename + " DROP ( " + v.getName() + " ) " + Const.CR;
+  }
+
+  @Override
+  public boolean supportsTimestampDataType() {
+    return true;
   }
 
   /**
@@ -352,7 +360,7 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
   @Override
   public String getFieldDefinition( ValueMetaInterface v, String tk, String pk, boolean use_autoinc,
     boolean add_fieldname, boolean add_cr ) {
-    StringBuffer retval = new StringBuffer( 128 );
+    StringBuilder retval = new StringBuilder( 128 );
 
     String fieldname = v.getName();
     int length = v.getLength();
@@ -456,7 +464,7 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 
   @Override
   public String getSQLLockTables( String[] tableNames ) {
-    StringBuffer sql = new StringBuffer( 128 );
+    StringBuilder sql = new StringBuilder( 128 );
     for ( int i = 0; i < tableNames.length; i++ ) {
       sql.append( "LOCK TABLE " ).append( tableNames[i] ).append( " IN EXCLUSIVE MODE;" ).append( Const.CR );
     }
@@ -639,4 +647,17 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
     return 2000;
   }
 
+  /**
+   * Oracle does not support a construct like 'drop table if exists',
+   * which is apparently legal syntax in many other RDBMSs.
+   * So we need to implement the same behavior and avoid throwing 'table does not exist' exception.
+   *
+   * @param tableName Name of the table to drop
+   * @return 'drop table if exists'-like statement for Oracle
+   */
+  @Override
+  public String getDropTableIfExistsStatement( String tableName ) {
+    return "BEGIN EXECUTE IMMEDIATE 'DROP TABLE " + tableName
+      + "'; EXCEPTION WHEN OTHERS THEN IF SQLCODE != -942 THEN RAISE; END IF; END;";
+  }
 }

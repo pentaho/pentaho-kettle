@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -35,8 +35,9 @@ import org.pentaho.di.core.plugins.JobEntryPluginType;
 import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
-import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaBoolean;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entries.missing.MissingEntry;
 import org.pentaho.di.job.entry.JobEntryBase;
@@ -107,7 +108,7 @@ public class KettleDatabaseRepositoryJobEntryDelegate extends KettleDatabaseRepo
    *          A list with all defined databases
    */
   public JobEntryCopy loadJobEntryCopy( ObjectId jobId, ObjectId jobEntryCopyId,
-    List<JobEntryInterface> jobentries, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, String jobname ) 
+    List<JobEntryInterface> jobentries, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, String jobname )
         throws KettleException {
     JobEntryCopy jobEntryCopy = new JobEntryCopy();
 
@@ -147,7 +148,7 @@ public class KettleDatabaseRepositoryJobEntryDelegate extends KettleDatabaseRepo
             } else {
               jobEntry = (JobEntryInterface) registry.loadClass( jobPlugin );
             }
-            if( jobEntry != null ) {
+            if ( jobEntry != null ) {
               jobEntryCopy.setEntry( jobEntry );
               // Load the attributes for that jobentry
               //
@@ -265,20 +266,20 @@ public class KettleDatabaseRepositoryJobEntryDelegate extends KettleDatabaseRepo
 
     RowMetaAndData table = new RowMetaAndData();
 
-    table.addValue( new ValueMeta(
-      KettleDatabaseRepository.FIELD_JOBENTRY_ID_JOBENTRY, ValueMetaInterface.TYPE_INTEGER ), id );
+    table.addValue( new ValueMetaInteger(
+      KettleDatabaseRepository.FIELD_JOBENTRY_ID_JOBENTRY ), id );
     table.addValue(
-      new ValueMeta( KettleDatabaseRepository.FIELD_JOBENTRY_ID_JOB, ValueMetaInterface.TYPE_INTEGER ), id_job );
+      new ValueMetaInteger( KettleDatabaseRepository.FIELD_JOBENTRY_ID_JOB ), id_job );
     table
       .addValue(
-        new ValueMeta(
-          KettleDatabaseRepository.FIELD_JOBENTRY_ID_JOBENTRY_TYPE, ValueMetaInterface.TYPE_INTEGER ),
+        new ValueMetaInteger(
+          KettleDatabaseRepository.FIELD_JOBENTRY_ID_JOBENTRY_TYPE ),
         id_jobentry_type );
     table.addValue(
-      new ValueMeta( KettleDatabaseRepository.FIELD_JOBENTRY_NAME, ValueMetaInterface.TYPE_STRING ),
+      new ValueMetaString( KettleDatabaseRepository.FIELD_JOBENTRY_NAME ),
       jobEntryBase.getName() );
-    table.addValue( new ValueMeta(
-      KettleDatabaseRepository.FIELD_JOBENTRY_DESCRIPTION, ValueMetaInterface.TYPE_STRING ), jobEntryBase
+    table.addValue( new ValueMetaString(
+      KettleDatabaseRepository.FIELD_JOBENTRY_DESCRIPTION ), jobEntryBase
       .getDescription() );
 
     repository.connectionDelegate.getDatabase().prepareInsert(
@@ -300,15 +301,15 @@ public class KettleDatabaseRepositoryJobEntryDelegate extends KettleDatabaseRepo
     RowMetaAndData table = new RowMetaAndData();
 
     //CHECKSTYLE:LineLength:OFF
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_JOBENTRY_COPY_ID_JOBENTRY_COPY, ValueMetaInterface.TYPE_INTEGER ), id );
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_JOBENTRY_COPY_ID_JOBENTRY, ValueMetaInterface.TYPE_INTEGER ), id_jobentry );
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_JOBENTRY_COPY_ID_JOB, ValueMetaInterface.TYPE_INTEGER ), id_job );
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_JOBENTRY_COPY_ID_JOBENTRY_TYPE, ValueMetaInterface.TYPE_INTEGER ), id_jobentry_type );
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_JOBENTRY_COPY_NR, ValueMetaInterface.TYPE_INTEGER ), new Long( nr ) );
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_JOBENTRY_COPY_GUI_LOCATION_X, ValueMetaInterface.TYPE_INTEGER ), new Long( gui_location_x ) );
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_JOBENTRY_COPY_GUI_LOCATION_Y, ValueMetaInterface.TYPE_INTEGER ), new Long( gui_location_y ) );
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_JOBENTRY_COPY_GUI_DRAW, ValueMetaInterface.TYPE_BOOLEAN ), Boolean.valueOf( gui_draw ) );
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_JOBENTRY_COPY_PARALLEL, ValueMetaInterface.TYPE_BOOLEAN ), Boolean.valueOf( parallel ) );
+    table.addValue( new ValueMetaInteger( KettleDatabaseRepository.FIELD_JOBENTRY_COPY_ID_JOBENTRY_COPY ), id );
+    table.addValue( new ValueMetaInteger( KettleDatabaseRepository.FIELD_JOBENTRY_COPY_ID_JOBENTRY ), id_jobentry );
+    table.addValue( new ValueMetaInteger( KettleDatabaseRepository.FIELD_JOBENTRY_COPY_ID_JOB ), id_job );
+    table.addValue( new ValueMetaInteger( KettleDatabaseRepository.FIELD_JOBENTRY_COPY_ID_JOBENTRY_TYPE ), id_jobentry_type );
+    table.addValue( new ValueMetaInteger( KettleDatabaseRepository.FIELD_JOBENTRY_COPY_NR ), new Long( nr ) );
+    table.addValue( new ValueMetaInteger( KettleDatabaseRepository.FIELD_JOBENTRY_COPY_GUI_LOCATION_X ), new Long( gui_location_x ) );
+    table.addValue( new ValueMetaInteger( KettleDatabaseRepository.FIELD_JOBENTRY_COPY_GUI_LOCATION_Y ), new Long( gui_location_y ) );
+    table.addValue( new ValueMetaBoolean( KettleDatabaseRepository.FIELD_JOBENTRY_COPY_GUI_DRAW ), Boolean.valueOf( gui_draw ) );
+    table.addValue( new ValueMetaBoolean( KettleDatabaseRepository.FIELD_JOBENTRY_COPY_PARALLEL ), Boolean.valueOf( parallel ) );
 
     repository.connectionDelegate.getDatabase().prepareInsert( table.getRowMeta(), KettleDatabaseRepository.TABLE_R_JOBENTRY_COPY );
     repository.connectionDelegate.getDatabase().setValuesInsert( table );

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -37,6 +37,7 @@ import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -190,6 +191,7 @@ public class DatabaseJoinMeta extends BaseStepMeta implements StepMetaInterface 
     this.sql = sql;
   }
 
+  @Override
   public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     parameterField = null;
     parameterType = null;
@@ -203,6 +205,7 @@ public class DatabaseJoinMeta extends BaseStepMeta implements StepMetaInterface 
     parameterType = new int[nrparam];
   }
 
+  @Override
   public Object clone() {
     DatabaseJoinMeta retval = (DatabaseJoinMeta) super.clone();
 
@@ -210,10 +213,8 @@ public class DatabaseJoinMeta extends BaseStepMeta implements StepMetaInterface 
 
     retval.allocate( nrparam );
 
-    for ( int i = 0; i < nrparam; i++ ) {
-      retval.parameterField[i] = parameterField[i];
-      retval.parameterType[i] = parameterType[i];
-    }
+    System.arraycopy( parameterField, 0, retval.parameterField, 0, nrparam );
+    System.arraycopy( parameterType, 0, retval.parameterType, 0, nrparam );
 
     return retval;
   }
@@ -236,7 +237,7 @@ public class DatabaseJoinMeta extends BaseStepMeta implements StepMetaInterface 
         Node pnode = XMLHandler.getSubNodeByNr( param, "field", i );
         parameterField[i] = XMLHandler.getTagValue( pnode, "name" );
         String ptype = XMLHandler.getTagValue( pnode, "type" );
-        parameterType[i] = ValueMeta.getType( ptype );
+        parameterType[i] = ValueMetaFactory.getIdForValueMeta( ptype );
       }
     } catch ( Exception e ) {
       throw new KettleXMLException( BaseMessages
@@ -244,6 +245,7 @@ public class DatabaseJoinMeta extends BaseStepMeta implements StepMetaInterface 
     }
   }
 
+  @Override
   public void setDefault() {
     databaseMeta = null;
     rowLimit = 0;
@@ -331,8 +333,9 @@ public class DatabaseJoinMeta extends BaseStepMeta implements StepMetaInterface 
     }
   }
 
+  @Override
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 300 );
+    StringBuilder retval = new StringBuilder( 300 );
 
     retval
       .append( "    " ).append(
@@ -346,7 +349,7 @@ public class DatabaseJoinMeta extends BaseStepMeta implements StepMetaInterface 
       retval.append( "      <field>" ).append( Const.CR );
       retval.append( "        " ).append( XMLHandler.addTagValue( "name", parameterField[i] ) );
       retval.append( "        " ).append(
-        XMLHandler.addTagValue( "type", ValueMeta.getTypeDesc( parameterType[i] ) ) );
+        XMLHandler.addTagValue( "type", ValueMetaFactory.getValueMetaName( parameterType[i] ) ) );
       retval.append( "      </field>" ).append( Const.CR );
     }
     retval.append( "    </parameter>" ).append( Const.CR );
@@ -354,6 +357,7 @@ public class DatabaseJoinMeta extends BaseStepMeta implements StepMetaInterface 
     return retval.toString();
   }
 
+  @Override
   public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
       databaseMeta = rep.loadDatabaseMetaFromStepAttribute( id_step, "id_connection", databases );
@@ -369,7 +373,7 @@ public class DatabaseJoinMeta extends BaseStepMeta implements StepMetaInterface 
       for ( int i = 0; i < nrparam; i++ ) {
         parameterField[i] = rep.getStepAttributeString( id_step, i, "parameter_field" );
         String stype = rep.getStepAttributeString( id_step, i, "parameter_type" );
-        parameterType[i] = ValueMeta.getType( stype );
+        parameterType[i] = ValueMetaFactory.getIdForValueMeta( stype );
       }
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString(
@@ -377,6 +381,7 @@ public class DatabaseJoinMeta extends BaseStepMeta implements StepMetaInterface 
     }
   }
 
+  @Override
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       rep.saveDatabaseMetaStepAttribute( id_transformation, id_step, "id_connection", databaseMeta );
@@ -387,8 +392,8 @@ public class DatabaseJoinMeta extends BaseStepMeta implements StepMetaInterface 
 
       for ( int i = 0; i < parameterField.length; i++ ) {
         rep.saveStepAttribute( id_transformation, id_step, i, "parameter_field", parameterField[i] );
-        rep.saveStepAttribute( id_transformation, id_step, i, "parameter_type", ValueMeta
-          .getTypeDesc( parameterType[i] ) );
+        rep.saveStepAttribute( id_transformation, id_step, i, "parameter_type", ValueMetaFactory
+            .getValueMetaName( parameterType[i] ) );
       }
 
       // Also, save the step-database relationship!
@@ -401,6 +406,7 @@ public class DatabaseJoinMeta extends BaseStepMeta implements StepMetaInterface 
     }
   }
 
+  @Override
   public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
     RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
@@ -516,6 +522,7 @@ public class DatabaseJoinMeta extends BaseStepMeta implements StepMetaInterface 
 
   }
 
+  @Override
   public RowMetaInterface getTableFields() {
     // Build a dummy parameter row...
     //
@@ -542,11 +549,13 @@ public class DatabaseJoinMeta extends BaseStepMeta implements StepMetaInterface 
     return fields;
   }
 
+  @Override
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta tr,
     Trans trans ) {
     return new DatabaseJoin( stepMeta, stepDataInterface, cnr, tr, trans );
   }
 
+  @Override
   public StepDataInterface getStepData() {
     return new DatabaseJoinData();
   }
@@ -576,6 +585,7 @@ public class DatabaseJoinMeta extends BaseStepMeta implements StepMetaInterface 
     }
   }
 
+  @Override
   public DatabaseMeta[] getUsedDatabaseConnections() {
     if ( databaseMeta != null ) {
       return new DatabaseMeta[] { databaseMeta };
@@ -584,6 +594,7 @@ public class DatabaseJoinMeta extends BaseStepMeta implements StepMetaInterface 
     }
   }
 
+  @Override
   public boolean supportsErrorHandling() {
     return true;
   }

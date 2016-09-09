@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -169,6 +169,7 @@ public class CacheDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 
     int type = v.getType();
     switch ( type ) {
+      case ValueMetaInterface.TYPE_TIMESTAMP:
       case ValueMetaInterface.TYPE_DATE:
         retval += "TIMESTAMP";
         break;
@@ -178,8 +179,7 @@ public class CacheDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
       case ValueMetaInterface.TYPE_NUMBER:
       case ValueMetaInterface.TYPE_INTEGER:
       case ValueMetaInterface.TYPE_BIGNUMBER:
-        if ( fieldname.equalsIgnoreCase( tk ) ) // Technical & primary key : see at bottom
-        {
+        if ( fieldname.equalsIgnoreCase( tk ) ) { // Technical & primary key : see at bottom
           retval += "DECIMAL";
         } else {
           if ( length < 0 || precision < 0 ) {

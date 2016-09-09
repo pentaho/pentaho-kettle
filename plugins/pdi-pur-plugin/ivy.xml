@@ -29,13 +29,23 @@
       changing="true" transitive="false" conf="compile->default"/>
     <dependency org="pentaho" name="pentaho-platform-repository" rev="${dependency.bi-platform.revision}"
       changing="true" transitive="false" />
+    <dependency org="org.yaml" name="snakeyaml" rev="1.7" conf="default->default" transitive="false"/>
     <dependency org="pentaho" name="pentaho-platform-extensions" rev="${dependency.bi-platform.revision}"
       changing="true" transitive="false" conf="compile->default"/>
+    <dependency org="pentaho" name="pentaho-xul-core" rev="${dependency.pentaho-xul.revision}"
+        changing="true" conf="compile->default" >
+        <!-- Xul dependency on jaxen->xom->icu4j-2.6.1 is breaking the build during obfuscation -->
+      <exclude org="com.ibm.icu" module="icu4j"/>
+    </dependency>
+    <dependency org="pentaho" name="pentaho-xul-swt" rev="${dependency.pentaho-xul.revision}"
+      changing="true" conf="compile->default" />
 
     <!-- kettle -->
     <dependency org="pentaho-kettle" name="kettle-core" rev="${dependency.kettle.revision}" transitive="false"
       changing="true" />
     <dependency org="pentaho-kettle" name="kettle-engine" rev="${dependency.kettle.revision}" transitive="false"
+      changing="true" />
+    <dependency org="pentaho-kettle" name="kettle-ui-swt" rev="${dependency.kettle.revision}" transitive="false"
       changing="true" />
 
     <!-- Metastore -->
@@ -82,6 +92,7 @@
       transitive="false" />
       
     <dependency org="org.json" name="json" rev="${dependency.json.revision}" transitive="false" changing="true"/>
+    <dependency org="com.googlecode.json-simple" name="json-simple" rev="1.1" transitive="false" conf="compile->default;test->default"/>
 
     <dependency org="org.aspectj" name="aspectjrt" rev="1.6.6" conf="test->default" />
     <dependency org="jta" name="jta" rev="1.0.1b" conf="test->default" />
@@ -93,7 +104,7 @@
         <artifact name="jackrabbit-data" type="jar"/>
     </dependency>
     <dependency org="org.slf4j" name="slf4j-log4j12" rev="1.6.4" conf="test->default" />
-    <dependency org="javassist" name="javassist" rev="3.12.1.GA" conf="test->default" transitive="false" />
+    <dependency org="org.javassist" name="javassist" rev="3.20.0-GA" conf="test->default" transitive="false" />
     <dependency org="org.scannotation" name="scannotation" rev="1.0.2" conf="test->default" transitive="false"/>
     <dependency org="javax.jcr" name="jcr" rev="2.0" conf="test->default"/>
     <dependency org="org.owasp.esapi" name="esapi" rev="2.0.1" transitive="false" conf="test->default"/>
@@ -106,9 +117,9 @@
     <dependency org="org.mortbay.jetty" name="jetty-util" rev="6.1.21" transitive="false" conf="test->default" />
 
     <!-- jersey -->
-    <dependency org="com.sun.jersey.contribs" name="jersey-multipart"     rev="1.16" transitive="false" conf="compile->default"/>
-    <dependency org="com.sun.jersey.contribs" name="jersey-apache-client" rev="1.16" transitive="false" conf="compile->default"/>
-    <dependency org="com.sun.jersey"          name="jersey-bundle"        rev="1.16" transitive="false" conf="compile->default"/>
+    <dependency org="com.sun.jersey.contribs" name="jersey-multipart"     rev="1.19.1" transitive="false" conf="compile->default"/>
+    <dependency org="com.sun.jersey.contribs" name="jersey-apache-client" rev="1.19.1" transitive="false" conf="compile->default"/>
+    <dependency org="com.sun.jersey"          name="jersey-bundle"        rev="1.19.1" transitive="false" conf="compile->default"/>
 
     <!-- To support Enunciate Annotations in Resource classes 1.21.1 -->
     <dependency org="org.codehaus.enunciate" name="enunciate-core-annotations" rev="1.28"/>

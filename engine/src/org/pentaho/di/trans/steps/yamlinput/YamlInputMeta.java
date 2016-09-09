@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -38,6 +38,9 @@ import org.pentaho.di.core.fileinput.FileInputList;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -373,10 +376,12 @@ public class YamlInputMeta extends BaseStepMeta implements StepMetaInterface {
     return includeSubFolders;
   }
 
+  @Override
   public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     readData( stepnode );
   }
 
+  @Override
   public Object clone() {
     YamlInputMeta retval = (YamlInputMeta) super.clone();
 
@@ -385,12 +390,10 @@ public class YamlInputMeta extends BaseStepMeta implements StepMetaInterface {
 
     retval.allocate( nrFiles, nrFields );
 
-    for ( int i = 0; i < nrFiles; i++ ) {
-      retval.fileName[i] = fileName[i];
-      retval.fileMask[i] = fileMask[i];
-      retval.fileRequired[i] = fileRequired[i];
-      retval.includeSubFolders[i] = includeSubFolders[i];
-    }
+    System.arraycopy( fileName, 0, retval.fileName, 0, nrFiles );
+    System.arraycopy( fileMask, 0, retval.fileMask, 0, nrFiles );
+    System.arraycopy( fileRequired, 0, retval.fileRequired, 0, nrFiles );
+    System.arraycopy( includeSubFolders, 0, retval.includeSubFolders, 0, nrFiles );
 
     for ( int i = 0; i < nrFields; i++ ) {
       if ( inputFields[i] != null ) {
@@ -400,8 +403,9 @@ public class YamlInputMeta extends BaseStepMeta implements StepMetaInterface {
     return retval;
   }
 
+  @Override
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 400 );
+    StringBuilder retval = new StringBuilder( 400 );
 
     retval.append( "    " ).append( XMLHandler.addTagValue( "include", includeFilename ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "include_field", filenameField ) );
@@ -518,6 +522,7 @@ public class YamlInputMeta extends BaseStepMeta implements StepMetaInterface {
     inputFields = new YamlInputField[nrfields];
   }
 
+  @Override
   public void setDefault() {
     IsIgnoreEmptyFile = false;
     doNotFailIfNoFile = true;
@@ -551,6 +556,7 @@ public class YamlInputMeta extends BaseStepMeta implements StepMetaInterface {
     yamlField = "";
   }
 
+  @Override
   public void getFields( RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep,
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     int i;
@@ -558,8 +564,8 @@ public class YamlInputMeta extends BaseStepMeta implements StepMetaInterface {
       YamlInputField field = inputFields[i];
 
       int type = field.getType();
-      if ( type == ValueMeta.TYPE_NONE ) {
-        type = ValueMeta.TYPE_STRING;
+      if ( type == ValueMetaInterface.TYPE_NONE ) {
+        type = ValueMetaInterface.TYPE_STRING;
       }
       ValueMetaInterface v = new ValueMeta( space.environmentSubstitute( field.getName() ), type );
       v.setLength( field.getLength() );
@@ -573,7 +579,7 @@ public class YamlInputMeta extends BaseStepMeta implements StepMetaInterface {
     }
 
     if ( includeFilename ) {
-      ValueMetaInterface v = new ValueMeta( space.environmentSubstitute( filenameField ), ValueMeta.TYPE_STRING );
+      ValueMetaInterface v = new ValueMetaString( space.environmentSubstitute( filenameField ) );
       v.setLength( 250 );
       v.setPrecision( -1 );
       v.setOrigin( name );
@@ -581,13 +587,14 @@ public class YamlInputMeta extends BaseStepMeta implements StepMetaInterface {
     }
 
     if ( includeRowNumber ) {
-      ValueMetaInterface v = new ValueMeta( space.environmentSubstitute( rowNumberField ), ValueMeta.TYPE_INTEGER );
+      ValueMetaInterface v = new ValueMetaInteger( space.environmentSubstitute( rowNumberField ) );
       v.setLength( ValueMetaInterface.DEFAULT_INTEGER_LENGTH, 0 );
       v.setOrigin( name );
       r.addValueMeta( v );
     }
   }
 
+  @Override
   public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
 
     try {
@@ -621,7 +628,7 @@ public class YamlInputMeta extends BaseStepMeta implements StepMetaInterface {
 
         field.setName( rep.getStepAttributeString( id_step, i, "field_name" ) );
         field.setPath( rep.getStepAttributeString( id_step, i, "field_path" ) );
-        field.setType( ValueMeta.getType( rep.getStepAttributeString( id_step, i, "field_type" ) ) );
+        field.setType( ValueMetaFactory.getIdForValueMeta( rep.getStepAttributeString( id_step, i, "field_type" ) ) );
         field.setFormat( rep.getStepAttributeString( id_step, i, "field_format" ) );
         field.setCurrencySymbol( rep.getStepAttributeString( id_step, i, "field_currency" ) );
         field.setDecimalSymbol( rep.getStepAttributeString( id_step, i, "field_decimal" ) );
@@ -643,6 +650,7 @@ public class YamlInputMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
+  @Override
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       rep.saveStepAttribute( id_transformation, id_step, "include", includeFilename );
@@ -669,7 +677,7 @@ public class YamlInputMeta extends BaseStepMeta implements StepMetaInterface {
         YamlInputField field = inputFields[i];
 
         rep.saveStepAttribute( id_transformation, id_step, i, "field_name", field.getName() );
-        rep.saveStepAttribute( id_transformation, id_step, i, "field_xpath", field.getPath() );
+        rep.saveStepAttribute( id_transformation, id_step, i, "field_path", field.getPath() );
         rep.saveStepAttribute( id_transformation, id_step, i, "field_type", field.getTypeDesc() );
         rep.saveStepAttribute( id_transformation, id_step, i, "field_format", field.getFormat() );
         rep.saveStepAttribute( id_transformation, id_step, i, "field_currency", field.getCurrencySymbol() );
@@ -702,6 +710,7 @@ public class YamlInputMeta extends BaseStepMeta implements StepMetaInterface {
     return includeSubFolderBoolean;
   }
 
+  @Override
   public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
     RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
@@ -756,15 +765,18 @@ public class YamlInputMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
+  @Override
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta tr,
     Trans trans ) {
     return new YamlInput( stepMeta, stepDataInterface, cnr, tr, trans );
   }
 
+  @Override
   public StepDataInterface getStepData() {
     return new YamlInputData();
   }
 
+  @Override
   public boolean supportsErrorHandling() {
     return true;
   }
@@ -786,6 +798,7 @@ public class YamlInputMeta extends BaseStepMeta implements StepMetaInterface {
    *
    * @return the filename of the exported resource
    */
+  @Override
   public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
     ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore ) throws KettleException {
     try {

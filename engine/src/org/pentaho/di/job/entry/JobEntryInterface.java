@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -297,6 +297,8 @@ public interface JobEntryInterface {
    * job entry's settings is passed in as an argument. Again, the helper class org.pentaho.di.core.xml.XMLHandler is
    * typically used to conveniently read the settings from the XML node.
    *
+   * @deprecated use {@link #loadXML(Node, List, List, Repository, IMetaStore)}
+   *
    * @param entrynode
    *          the top-level XML node
    * @param databases
@@ -349,6 +351,8 @@ public interface JobEntryInterface {
    * saveRep() as an argument, and the job entry id can be obtained by a call to getObjectId() inherited from the base
    * class.
    *
+   * @deprecated use {@link #saveRep(Repository, IMetaStore, ObjectId)}
+   *
    * @param rep
    *          the repository object
    * @param id_job
@@ -380,6 +384,8 @@ public interface JobEntryInterface {
   /**
    * This method is called by PDI whenever a job entry needs to read its configuration from a PDI repository. The job
    * entry id given in the arguments should be used as the identifier when using the repository's serialization methods.
+   *
+   * @deprecated use {@link #loadRep(Repository, IMetaStore, ObjectId, List, List)}
    *
    * @param rep
    *          the repository object
@@ -507,6 +513,8 @@ public interface JobEntryInterface {
   /**
    * Gets the SQL statements needed by this job entry to execute successfully.
    *
+   * @deprecated use {@link #getSQLStatements(Repository, IMetaStore, VariableSpace)}
+   *
    * @param repository
    *          the repository
    * @return a list of SQL statements
@@ -518,6 +526,8 @@ public interface JobEntryInterface {
 
   /**
    * Gets the SQL statements needed by this job entry to execute successfully, given a set of variables.
+   *
+   * @deprecated use {@link #getSQLStatements(Repository, IMetaStore, VariableSpace)}
    *
    * @param repository
    *          the repository object
@@ -581,7 +591,7 @@ public interface JobEntryInterface {
    *          List of CheckResult objects indicating consistency status
    * @param jobMeta
    *          the metadata object for the job entry
-   * @deprecated
+   * @deprecated use {@link #check(List, JobMeta, VariableSpace, Repository, IMetaStore)}
    */
   @Deprecated
   public void check( List<CheckResultInterface> remarks, JobMeta jobMeta );
@@ -627,7 +637,7 @@ public interface JobEntryInterface {
    * @return The filename for this object. (also contained in the definitions map)
    * @throws KettleException
    *           in case something goes wrong during the export
-   * @deprecated in favor of the same method with a MetaStore argument
+   * @deprecated use {@link #exportResources(VariableSpace, Map, ResourceNamingInterface, Repository, IMetaStore)}
    */
   @Deprecated
   public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
@@ -694,7 +704,7 @@ public interface JobEntryInterface {
    *          the variable space to use
    * @return the referenced object once loaded
    * @throws KettleException
-   * @deprecated
+   * @deprecated use {@link #loadReferencedObject(int, Repository, IMetaStore, VariableSpace)}
    */
   @Deprecated
   public Object loadReferencedObject( int index, Repository rep, VariableSpace space ) throws KettleException;

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -178,7 +178,8 @@ public class SpoonTransformationDelegate extends SpoonDelegate {
 
       if ( addTab ) {
         TransGraph transGraph = new TransGraph( spoon.tabfolder.getSwtTabset(), spoon, transMeta );
-        TabItem tabItem = new TabItem( spoon.tabfolder, tabName, tabName );
+        PropsUI props = PropsUI.getInstance();
+        TabItem tabItem = new TabItem( spoon.tabfolder, tabName, tabName, props.getSashWeights() );
         String toolTipText =
           BaseMessages.getString( PKG, "Spoon.TabTrans.Tooltip", spoon.delegates.tabs.makeTabName(
             transMeta, showLocation ) );
@@ -840,7 +841,7 @@ public class SpoonTransformationDelegate extends SpoonDelegate {
 
     boolean execConfigAnswer = true;
 
-    if ( debugAnswer == TransDebugDialog.DEBUG_CONFIG && replayDate == null ) {
+    if ( debugAnswer == TransDebugDialog.DEBUG_CONFIG && replayDate == null && transMeta.isShowDialog() ) {
       TransExecutionConfigurationDialog dialog =
         new TransExecutionConfigurationDialog( spoon.getShell(), executionConfiguration, transMeta );
       execConfigAnswer = dialog.open();
@@ -912,8 +913,8 @@ public class SpoonTransformationDelegate extends SpoonDelegate {
       }
     }
   }
-  
-  private static void showSaveTransformationBeforeRunningDialog(Shell shell) {
+
+  private static void showSaveTransformationBeforeRunningDialog( Shell shell ) {
     MessageBox m = new MessageBox( shell, SWT.OK | SWT.ICON_WARNING );
     m.setText( BaseMessages.getString( PKG, "TransLog.Dialog.SaveTransformationBeforeRunning.Title" ) );
     m.setMessage( BaseMessages.getString( PKG, "TransLog.Dialog.SaveTransformationBeforeRunning.Message" ) );

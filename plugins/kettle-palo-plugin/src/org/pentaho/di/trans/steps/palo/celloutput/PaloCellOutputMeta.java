@@ -16,7 +16,7 @@
  *
  *   Portions Copyright 2008 Stratebi Business Solutions, S.L.
  *   Portions Copyright 2011 De Bortoli Wines Pty Limited (Australia)
- *   Portions Copyright 2011 - 2013 Pentaho Corporation
+ *   Portions Copyright 2011 - 2016 Pentaho Corporation
  */
 
 package org.pentaho.di.trans.steps.palo.celloutput;
@@ -52,8 +52,9 @@ import org.w3c.dom.Node;
 
 @Step( id = "PaloCellOutput", image = "PaloCellOutput.svg",
   i18nPackageName = "org.pentaho.di.trans.steps.palo.celloutput", name = "PaloCellOutput.TransName",
-  description = "PaloCellOutput.TransDescription",
-  categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Palo" )
+    description = "PaloCellOutput.TransDescription",
+    documentationUrl = "http://wiki.pentaho.com/display/EAI/Palo+Cell+Output",
+    categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Palo" )
 public class PaloCellOutputMeta extends BaseStepMeta implements StepMetaInterface {
 
   private DatabaseMeta databaseMeta;

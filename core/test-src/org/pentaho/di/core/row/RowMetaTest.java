@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -29,6 +29,7 @@ import org.junit.Test;
 import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.exception.KettleValueException;
+import org.pentaho.di.core.row.value.ValueMetaBase;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
 
 import java.util.ArrayList;
@@ -52,6 +53,7 @@ public class RowMetaTest {
   ValueMetaInterface date;
 
   ValueMetaInterface charly;
+  ValueMetaInterface dup;
 
   @BeforeClass
   public static void setUpBeforeClass() throws Exception {
@@ -72,6 +74,8 @@ public class RowMetaTest {
     rowMeta.addValueMeta( date );
 
     charly = ValueMetaFactory.createValueMeta( "charly", ValueMetaInterface.TYPE_SERIALIZABLE );
+
+    dup = ValueMetaFactory.createValueMeta( "dup", ValueMetaInterface.TYPE_SERIALIZABLE );
   }
 
   private List<ValueMetaInterface> generateVList( String[] names, int[] types ) throws KettlePluginException {
@@ -140,7 +144,7 @@ public class RowMetaTest {
 
   @Test
   public void testAddValueMetaNullName() throws KettlePluginException {
-    ValueMetaInterface vmi = new ValueMeta();
+    ValueMetaInterface vmi = new ValueMetaBase();
     rowMeta.addValueMeta( vmi );
     assertTrue( rowMeta.getValueMetaList().contains( vmi ) );
   }
@@ -166,8 +170,25 @@ public class RowMetaTest {
   }
 
   @Test
+  public void testSetValueMetaDup() throws KettlePluginException {
+    rowMeta.setValueMeta( 1, dup );
+    assertEquals( "There is still 3 elements:", 3, rowMeta.size() );
+    assertEquals( -1, rowMeta.indexOfValue( "integer" ) );
+
+    rowMeta.setValueMeta( 1, dup );
+    assertEquals( "There is still 3 elements:", 3, rowMeta.size() );
+    assertEquals( -1, rowMeta.indexOfValue( "integer" ) );
+
+    rowMeta.setValueMeta( 2, dup );
+    assertEquals( "There is still 3 elements:", 3, rowMeta.size() );
+    assertEquals( "Original is still the same (object)", 1, rowMeta.getValueMetaList().indexOf( dup ) );
+    assertEquals( "Original is still the same (name)", 1, rowMeta.indexOfValue( "dup" ) );
+    assertEquals( "Renaming happened", 2, rowMeta.indexOfValue( "dup_1" ) );
+  }
+
+  @Test
   public void testSetValueMetaNullName() throws KettlePluginException {
-    ValueMetaInterface vmi = new ValueMeta();
+    ValueMetaInterface vmi = new ValueMetaBase();
     rowMeta.setValueMeta( 1, vmi );
     assertEquals( 1, rowMeta.getValueMetaList().indexOf( vmi ) );
     assertEquals( "There is still 3 elements:", 3, rowMeta.size() );
@@ -275,7 +296,7 @@ public class RowMetaTest {
 
   @Test
   public void testSwapNames() throws KettlePluginException {
-    ValueMetaInterface string2 = ValueMetaFactory.createValueMeta( "string2", ValueMeta.TYPE_STRING );
+    ValueMetaInterface string2 = ValueMetaFactory.createValueMeta( "string2", ValueMetaInterface.TYPE_STRING );
     rowMeta.addValueMeta( string2 );
     assertSame( string, rowMeta.searchValueMeta( "string" ) );
     assertSame( string2, rowMeta.searchValueMeta( "string2" ) );

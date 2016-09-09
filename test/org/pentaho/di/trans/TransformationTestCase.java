@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -34,24 +34,24 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.ValueMetaInterface;
 
 public abstract class TransformationTestCase extends TestCase {
 
   public TransformationTestCase() throws KettleException {
     super();
-    KettleEnvironment.init();
+    KettleEnvironment.init( false );
   }
 
   public TransformationTestCase( String name ) throws KettleException {
     super( name );
-    KettleEnvironment.init();
+    KettleEnvironment.init( false );
   }
 
-  public RowMetaInterface createRowMetaInterface( ValueMeta... valueMetas ) {
+  public RowMetaInterface createRowMetaInterface( ValueMetaInterface... valueMetas ) {
     RowMetaInterface rm = new RowMeta();
 
-    for ( ValueMeta vm : valueMetas ) {
+    for ( ValueMetaInterface vm : valueMetas ) {
       rm.addValueMeta( vm );
     }
 

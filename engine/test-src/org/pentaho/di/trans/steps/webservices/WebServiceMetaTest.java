@@ -41,6 +41,7 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.StringObjectId;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.utils.TestUtils;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
@@ -140,51 +141,51 @@ public class WebServiceMetaTest {
     when( rep.getStepAttributeString( id_step, 1, "fieldOut_xsd_type" ) ).thenReturn( "int" );
 
     WebServiceMeta webServiceMeta = new WebServiceMeta(  rep, metastore, id_step, Collections.singletonList( dbMeta )  );
-    assertEquals(
-      "    <wsURL/>\n"
-        + "    <wsOperation>GetCurrentExchangeRate</wsOperation>\n"
-        + "    <wsOperationRequest>opRequest</wsOperationRequest>\n"
-        + "    <wsOperationNamespace>opNamespace</wsOperationNamespace>\n"
-        + "    <wsInFieldContainer>ifc</wsInFieldContainer>\n"
-        + "    <wsInFieldArgument>ifa</wsInFieldArgument>\n"
-        + "    <wsOutFieldContainer>ofc</wsOutFieldContainer>\n"
-        + "    <wsOutFieldArgument>ofa</wsOutFieldArgument>\n"
-        + "    <proxyHost>phost</proxyHost>\n"
-        + "    <proxyPort>1234</proxyPort>\n"
-        + "    <httpLogin>user</httpLogin>\n"
-        + "    <httpPassword>password</httpPassword>\n"
-        + "    <callStep>2</callStep>\n"
-        + "    <passingInputData>Y</passingInputData>\n"
-        + "    <compatible>N</compatible>\n"
-        + "    <repeating_element>repeat</repeating_element>\n"
-        + "    <reply_as_string>Y</reply_as_string>\n"
-        + "    <fieldsIn>\n"
-        + "    <field>\n"
-        + "        <name>bank</name>\n"
-        + "        <wsName>inBank</wsName>\n"
-        + "        <xsdType>string</xsdType>\n"
-        + "    </field>\n"
-        + "    <field>\n"
-        + "        <name>branch</name>\n"
-        + "        <wsName>inBranch</wsName>\n"
-        + "        <xsdType>string</xsdType>\n"
-        + "    </field>\n"
-        + "      </fieldsIn>\n"
-        + "    <fieldsOut>\n"
-        + "    <field>\n"
-        + "        <name>balance</name>\n"
-        + "        <wsName>outBalance</wsName>\n"
-        + "        <xsdType>int</xsdType>\n"
-        + "    </field>\n"
-        + "    <field>\n"
-        + "        <name>transactions</name>\n"
-        + "        <wsName>outTransactions</wsName>\n"
-        + "        <xsdType>int</xsdType>\n"
-        + "    </field>\n"
-        + "      </fieldsOut>\n",
-      webServiceMeta.getXML()
-    );
 
+    String expectedXml = ""
+      + "    <wsURL/>\n"
+      + "    <wsOperation>GetCurrentExchangeRate</wsOperation>\n"
+      + "    <wsOperationRequest>opRequest</wsOperationRequest>\n"
+      + "    <wsOperationNamespace>opNamespace</wsOperationNamespace>\n"
+      + "    <wsInFieldContainer>ifc</wsInFieldContainer>\n"
+      + "    <wsInFieldArgument>ifa</wsInFieldArgument>\n"
+      + "    <wsOutFieldContainer>ofc</wsOutFieldContainer>\n"
+      + "    <wsOutFieldArgument>ofa</wsOutFieldArgument>\n"
+      + "    <proxyHost>phost</proxyHost>\n"
+      + "    <proxyPort>1234</proxyPort>\n"
+      + "    <httpLogin>user</httpLogin>\n"
+      + "    <httpPassword>password</httpPassword>\n"
+      + "    <callStep>2</callStep>\n"
+      + "    <passingInputData>Y</passingInputData>\n"
+      + "    <compatible>N</compatible>\n"
+      + "    <repeating_element>repeat</repeating_element>\n"
+      + "    <reply_as_string>Y</reply_as_string>\n"
+      + "    <fieldsIn>\n"
+      + "    <field>\n"
+      + "        <name>bank</name>\n"
+      + "        <wsName>inBank</wsName>\n"
+      + "        <xsdType>string</xsdType>\n"
+      + "    </field>\n"
+      + "    <field>\n"
+      + "        <name>branch</name>\n"
+      + "        <wsName>inBranch</wsName>\n"
+      + "        <xsdType>string</xsdType>\n"
+      + "    </field>\n"
+      + "      </fieldsIn>\n"
+      + "    <fieldsOut>\n"
+      + "    <field>\n"
+      + "        <name>balance</name>\n"
+      + "        <wsName>outBalance</wsName>\n"
+      + "        <xsdType>int</xsdType>\n"
+      + "    </field>\n"
+      + "    <field>\n"
+      + "        <name>transactions</name>\n"
+      + "        <wsName>outTransactions</wsName>\n"
+      + "        <xsdType>int</xsdType>\n"
+      + "    </field>\n"
+      + "      </fieldsOut>\n";
+    String actualXml = TestUtils.toUnixLineSeparators( webServiceMeta.getXML() );
+    assertEquals( expectedXml, actualXml );
   }
 
   @Test

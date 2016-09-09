@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -212,7 +212,7 @@ public class JobEntryDeleteFilesDialog extends JobEntryDialog implements JobEntr
     wlPrevious.setLayoutData( fdlPrevious );
     wPrevious = new Button( wSettings, SWT.CHECK );
     props.setLook( wPrevious );
-    wPrevious.setSelection( jobEntry.argFromPrevious );
+    wPrevious.setSelection( jobEntry.isArgFromPrevious() );
     wPrevious.setToolTipText( BaseMessages.getString( PKG, "JobDeleteFiles.Previous.Tooltip" ) );
     fdPrevious = new FormData();
     fdPrevious.left = new FormAttachment( middle, 0 );
@@ -369,8 +369,8 @@ public class JobEntryDeleteFilesDialog extends JobEntryDialog implements JobEntr
     fdlFields.top = new FormAttachment( wFilemask, margin );
     wlFields.setLayoutData( fdlFields );
 
-    int rows = jobEntry.arguments == null ? 1 : ( jobEntry.arguments.length == 0 ? 0 : jobEntry.arguments.length );
-    final int FieldsRows = rows;
+    String[] jobArgs = jobEntry.getArguments();
+    final int fieldsRows = ( jobArgs == null ) ? 1 : jobArgs.length;
 
     ColumnInfo[] colinf =
       new ColumnInfo[] {
@@ -388,7 +388,7 @@ public class JobEntryDeleteFilesDialog extends JobEntryDialog implements JobEntr
 
     wFields =
       new TableView(
-        jobMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
+        jobMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, fieldsRows, lsMod, props );
 
     fdFields = new FormData();
     fdFields.left = new FormAttachment( 0, 0 );
@@ -397,13 +397,13 @@ public class JobEntryDeleteFilesDialog extends JobEntryDialog implements JobEntr
     fdFields.bottom = new FormAttachment( 100, -50 );
     wFields.setLayoutData( fdFields );
 
-    wlFields.setEnabled( !jobEntry.argFromPrevious );
-    wFields.setEnabled( !jobEntry.argFromPrevious );
+    wlFields.setEnabled( !jobEntry.isArgFromPrevious() );
+    wFields.setEnabled( !jobEntry.isArgFromPrevious() );
 
     // Add the file to the list of files...
     SelectionAdapter selA = new SelectionAdapter() {
       public void widgetSelected( SelectionEvent arg0 ) {
-        wFields.add( new String[] { wFilename.getText(), wFilemask.getText() } );
+        wFields.add( wFilename.getText(), wFilemask.getText() );
         wFilename.setText( "" );
         wFilemask.setText( "" );
         wFields.removeEmptyRows();
@@ -522,22 +522,28 @@ public class JobEntryDeleteFilesDialog extends JobEntryDialog implements JobEntr
     if ( jobEntry.getName() != null ) {
       wName.setText( jobEntry.getName() );
     }
+    String[] arguments = jobEntry.getArguments();
+    String[] fileMasks = jobEntry.getFilemasks();
 
-    if ( jobEntry.arguments != null ) {
-      for ( int i = 0; i < jobEntry.arguments.length; i++ ) {
+    if ( arguments != null ) {
+      for ( int i = 0; i < arguments.length; i++ ) {
+        final String argument = arguments[i];
+        final String fileMask = fileMasks[i];
+
         TableItem ti = wFields.table.getItem( i );
-        if ( jobEntry.arguments[i] != null ) {
-          ti.setText( 1, jobEntry.arguments[i] );
+        if ( argument != null ) {
+          ti.setText( 1, argument );
         }
-        if ( jobEntry.filemasks[i] != null ) {
-          ti.setText( 2, jobEntry.filemasks[i] );
+        if ( fileMask != null ) {
+          ti.setText( 2, fileMask );
         }
       }
       wFields.setRowNums();
       wFields.optWidth( true );
     }
-    wPrevious.setSelection( jobEntry.argFromPrevious );
-    wIncludeSubfolders.setSelection( jobEntry.includeSubfolders );
+
+    wPrevious.setSelection( jobEntry.isArgFromPrevious() );
+    wIncludeSubfolders.setSelection( jobEntry.isIncludeSubfolders() );
 
     wName.selectAll();
     wName.setFocus();
@@ -562,26 +568,31 @@ public class JobEntryDeleteFilesDialog extends JobEntryDialog implements JobEntr
     jobEntry.setIncludeSubfolders( wIncludeSubfolders.getSelection() );
     jobEntry.setPrevious( wPrevious.getSelection() );
 
-    int nritems = wFields.nrNonEmpty();
-    int nr = 0;
-    for ( int i = 0; i < nritems; i++ ) {
+    int numberOfItems = wFields.nrNonEmpty();
+    int numberOfValidArgs = 0;
+    for ( int i = 0; i < numberOfItems; i++ ) {
       String arg = wFields.getNonEmpty( i ).getText( 1 );
       if ( arg != null && arg.length() != 0 ) {
-        nr++;
+        numberOfValidArgs++;
       }
     }
-    jobEntry.arguments = new String[nr];
-    jobEntry.filemasks = new String[nr];
-    nr = 0;
-    for ( int i = 0; i < nritems; i++ ) {
-      String arg = wFields.getNonEmpty( i ).getText( 1 );
+    String[] arguments = new String[numberOfValidArgs];
+    String[] fileMasks = new String[numberOfValidArgs];
+
+    numberOfValidArgs = 0;
+    for ( int i = 0; i < numberOfItems; i++ ) {
+      String path = wFields.getNonEmpty( i ).getText( 1 );
       String wild = wFields.getNonEmpty( i ).getText( 2 );
-      if ( arg != null && arg.length() != 0 ) {
-        jobEntry.arguments[nr] = arg;
-        jobEntry.filemasks[nr] = wild;
-        nr++;
+      if ( path != null && path.length() != 0 ) {
+        arguments[numberOfValidArgs] = path;
+        fileMasks[numberOfValidArgs] = wild;
+        numberOfValidArgs++;
       }
     }
+
+    jobEntry.setFilemasks( fileMasks );
+    jobEntry.setArguments( arguments );
+
     dispose();
   }
 

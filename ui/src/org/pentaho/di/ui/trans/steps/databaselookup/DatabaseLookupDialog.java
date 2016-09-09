@@ -35,7 +35,6 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
-import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
@@ -550,7 +549,7 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
 
     shell.pack();
     shell.setMinimumSize( shell.getSize() );
-    
+
     getData();
     input.setChanged( backupChanged );
 
@@ -615,6 +614,15 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
                 }
                 // ignore any errors here. drop downs will not be
                 // filled, but no problem for the user
+              } finally {
+                try {
+                  if ( db != null ) {
+                    db.disconnect();
+                  }
+                } catch ( Exception ignored ) {
+                  // ignore any errors here.
+                  db = null;
+                }
               }
             }
           }

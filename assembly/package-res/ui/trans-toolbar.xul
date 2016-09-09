@@ -1,7 +1,5 @@
 <window xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" align="stretch">
   <toolbar id="nav-toolbar" mode="icons">
-    <toolbarbutton id="trans-run" label="${Spoon.Menu.Transformation.Run}" image="images/run.svg"
-      tooltiptext="${Spoon.Tooltip.RunTranformation}" onclick="transgraph.runTransformation()" />
     <toolbarbutton id="trans-pause" label="${Spoon.Menu.Transformation.Pause}" image="images/pause.svg"
       tooltiptext="${Spoon.Tooltip.PauseTranformation}" onclick="transgraph.pauseTransformation()" />
     <toolbarbutton id="trans-stop" label="${Spoon.Menu.Transformation.Stop}" image="images/stop.svg"
@@ -45,9 +43,10 @@
     <menu id="trans-graph-entry-launch" label="${TransGraph.PopupMenu.OpenReferencedObject}">
       <menupopup id="trans-graph-entry-launch-popup">
         <menuitem id="trans-graph-entry-launch-popup-nothing" label="${TransGraph.PopupMenu.Launch.Nothing}" command="transgraph.openMapping()" />
-	  </menupopup>
-	</menu>
+      </menupopup>
+    </menu>
       
+    <menuseparator id="trans-graph-edit-separator" />    
     <menuseparator />
     
     <menu id="trans-graph-entry-data-movement" label="${TransGraph.PopupMenu.DataMovement}">
@@ -125,7 +124,7 @@
   <menupopup id="trans-graph-hop">
     <menuitem id="trans-graph-hop-edit" label="${TransGraph.PopupMenu.EditHop}" command="transgraph.editHop()" />
     <menuitem id="trans-graph-hop-enabled" label="${TransGraph.PopupMenu.DisableHop}" command="transgraph.enableHop() " />
-    <menuitem id="trans-graph-hop-delete" acceltext="del" accesskey="del" label="${TransGraph.PopupMenu.DeleteHop}" command="transgraph.deleteHop()" />
+    <menuitem id="trans-graph-hop-delete" label="${TransGraph.PopupMenu.DeleteHop}" command="transgraph.deleteHop()" />
     <menuitem id="trans-graph-hop-flip" label="${TransGraph.PopupMenu.FlipDirection}" command="transgraph.flipHopDirection()" />
     <menu id="trans-graph-graph-hop-bulk" label="${TransGraph.PopupMenu.BulkHop}">
       <menupopup id="trans-graph-entry-hop-bulk">

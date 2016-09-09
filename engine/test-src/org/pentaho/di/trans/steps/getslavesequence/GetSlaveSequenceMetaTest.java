@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -51,7 +51,6 @@ public class GetSlaveSequenceMetaTest {
 
     LoadSaveTester tester = new LoadSaveTester( GetSlaveSequenceMeta.class, attributes, getterMap, setterMap );
 
-    tester.testRepoRoundTrip();
-    tester.testXmlRoundTrip();
+    tester.testSerialization();
   }
 }

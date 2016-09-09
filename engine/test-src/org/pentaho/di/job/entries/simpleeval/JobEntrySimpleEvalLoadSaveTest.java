@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2014 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -26,7 +26,7 @@ import org.pentaho.di.job.entry.loadSave.JobEntryLoadSaveTestSupport;
 import java.util.List;
 import java.util.Map;
 
-import static java.util.Arrays.asList;
+import java.util.Arrays;
 
 public class JobEntrySimpleEvalLoadSaveTest extends JobEntryLoadSaveTestSupport<JobEntrySimpleEval> {
 
@@ -37,7 +37,7 @@ public class JobEntrySimpleEvalLoadSaveTest extends JobEntryLoadSaveTestSupport<
 
   @Override
   protected List<String> listCommonAttributes() {
-    return asList(
+    return Arrays.asList(
       "fieldname",
       "variablename",
       "mask",
@@ -50,7 +50,7 @@ public class JobEntrySimpleEvalLoadSaveTest extends JobEntryLoadSaveTestSupport<
 
   @Override
   protected List<String> listXmlAttributes() {
-    return asList( "name", "description" );
+    return Arrays.asList( "name", "description" );
   }
 
   @Override

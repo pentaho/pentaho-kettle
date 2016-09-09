@@ -148,6 +148,7 @@ public class SybaseIQDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 
     int type = v.getType();
     switch ( type ) {
+      case ValueMetaInterface.TYPE_TIMESTAMP:
       case ValueMetaInterface.TYPE_DATE:
         retval += "DATETIME NULL";
         break;

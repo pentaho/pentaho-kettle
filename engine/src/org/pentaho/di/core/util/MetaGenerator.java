@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,33 +23,33 @@
 package org.pentaho.di.core.util;
 
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.ValueMetaInterface;
 
 public class MetaGenerator {
 
   public static final TypeFieldDefinition[] FIELDS = new TypeFieldDefinition[] {
-    new TypeFieldDefinition( ValueMeta.TYPE_BOOLEAN, "UsingLines" ),
-    new TypeFieldDefinition( ValueMeta.TYPE_INTEGER, "MaxNumberOfSuggestions" ),
+    new TypeFieldDefinition( ValueMetaInterface.TYPE_BOOLEAN, "UsingLines" ),
+    new TypeFieldDefinition( ValueMetaInterface.TYPE_INTEGER, "MaxNumberOfSuggestions" ),
 
-    new TypeFieldDefinition( ValueMeta.TYPE_STRING, "NameField" ),
-    new TypeFieldDefinition( ValueMeta.TYPE_STRING, "OrganizationField" ),
-    new TypeFieldDefinition( ValueMeta.TYPE_STRING, "DepartmentField" ),
-    new TypeFieldDefinition( ValueMeta.TYPE_STRING, "PostBoxField" ),
-    new TypeFieldDefinition( ValueMeta.TYPE_STRING, "SubPremiseField" ),
-    new TypeFieldDefinition( ValueMeta.TYPE_STRING, "PremiseField" ),
-    new TypeFieldDefinition( ValueMeta.TYPE_STRING, "HouseNumberField" ),
-    new TypeFieldDefinition( ValueMeta.TYPE_STRING, "HouseNumberAdditionField" ),
-    new TypeFieldDefinition( ValueMeta.TYPE_STRING, "DependentThoroughfareField" ),
-    new TypeFieldDefinition( ValueMeta.TYPE_STRING, "ThoroughfareField" ),
-    new TypeFieldDefinition( ValueMeta.TYPE_STRING, "DependentLocalityField" ),
-    new TypeFieldDefinition( ValueMeta.TYPE_STRING, "LocalityField" ),
-    new TypeFieldDefinition( ValueMeta.TYPE_STRING, "PostTownField" ),
-    new TypeFieldDefinition( ValueMeta.TYPE_STRING, "DeliveryServiceQualifierField" ),
-    new TypeFieldDefinition( ValueMeta.TYPE_STRING, "PostalCodeField" ),
-    new TypeFieldDefinition( ValueMeta.TYPE_STRING, "SubAdministrativeAreaField" ),
-    new TypeFieldDefinition( ValueMeta.TYPE_STRING, "AdministrativeAreaField" ),
-    new TypeFieldDefinition( ValueMeta.TYPE_STRING, "CountryNameField" ),
-    new TypeFieldDefinition( ValueMeta.TYPE_STRING, "CountryCodeField" ), };
+    new TypeFieldDefinition( ValueMetaInterface.TYPE_STRING, "NameField" ),
+    new TypeFieldDefinition( ValueMetaInterface.TYPE_STRING, "OrganizationField" ),
+    new TypeFieldDefinition( ValueMetaInterface.TYPE_STRING, "DepartmentField" ),
+    new TypeFieldDefinition( ValueMetaInterface.TYPE_STRING, "PostBoxField" ),
+    new TypeFieldDefinition( ValueMetaInterface.TYPE_STRING, "SubPremiseField" ),
+    new TypeFieldDefinition( ValueMetaInterface.TYPE_STRING, "PremiseField" ),
+    new TypeFieldDefinition( ValueMetaInterface.TYPE_STRING, "HouseNumberField" ),
+    new TypeFieldDefinition( ValueMetaInterface.TYPE_STRING, "HouseNumberAdditionField" ),
+    new TypeFieldDefinition( ValueMetaInterface.TYPE_STRING, "DependentThoroughfareField" ),
+    new TypeFieldDefinition( ValueMetaInterface.TYPE_STRING, "ThoroughfareField" ),
+    new TypeFieldDefinition( ValueMetaInterface.TYPE_STRING, "DependentLocalityField" ),
+    new TypeFieldDefinition( ValueMetaInterface.TYPE_STRING, "LocalityField" ),
+    new TypeFieldDefinition( ValueMetaInterface.TYPE_STRING, "PostTownField" ),
+    new TypeFieldDefinition( ValueMetaInterface.TYPE_STRING, "DeliveryServiceQualifierField" ),
+    new TypeFieldDefinition( ValueMetaInterface.TYPE_STRING, "PostalCodeField" ),
+    new TypeFieldDefinition( ValueMetaInterface.TYPE_STRING, "SubAdministrativeAreaField" ),
+    new TypeFieldDefinition( ValueMetaInterface.TYPE_STRING, "AdministrativeAreaField" ),
+    new TypeFieldDefinition( ValueMetaInterface.TYPE_STRING, "CountryNameField" ),
+    new TypeFieldDefinition( ValueMetaInterface.TYPE_STRING, "CountryCodeField" ), };
 
   private TypeFieldDefinition[] fields;
 
@@ -88,19 +88,19 @@ public class MetaGenerator {
       + "IMetaStore metaStore) throws KettleXMLException {" ).append( Const.CR );
     for ( TypeFieldDefinition field : fields ) {
       switch ( field.getType() ) {
-        case ValueMeta.TYPE_STRING:
+        case ValueMetaInterface.TYPE_STRING:
           code.append(
             "    "
               + field.getMemberName() + " = XMLHandler.getTagValue(stepnode, \"" + field.getFieldName()
               + "\");" ).append( Const.CR );
           break;
-        case ValueMeta.TYPE_BOOLEAN:
+        case ValueMetaInterface.TYPE_BOOLEAN:
           code.append(
             "    "
               + field.getMemberName() + " = \"Y\".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, \""
               + field.getFieldName() + "\"));" ).append( Const.CR );
           break;
-        case ValueMeta.TYPE_INTEGER:
+        case ValueMetaInterface.TYPE_INTEGER:
           code.append(
             "    "
               + field.getMemberName() + " = Const.toInt(XMLHandler.getTagValue(stepnode, \""
@@ -133,19 +133,19 @@ public class MetaGenerator {
       + "List<DatabaseMeta> databases) throws KettleException {" ).append( Const.CR );
     for ( TypeFieldDefinition field : fields ) {
       switch ( field.getType() ) {
-        case ValueMeta.TYPE_STRING:
+        case ValueMetaInterface.TYPE_STRING:
           code.append(
             "    "
               + field.getMemberName() + " = rep.getStepAttributeString(id_step, \"" + field.getFieldName()
               + "\");" ).append( Const.CR );
           break;
-        case ValueMeta.TYPE_BOOLEAN:
+        case ValueMetaInterface.TYPE_BOOLEAN:
           code.append(
             "    "
               + field.getMemberName() + " = rep.getStepAttributeBoolean(id_step, \"" + field.getFieldName()
               + "\");" ).append( Const.CR );
           break;
-        case ValueMeta.TYPE_INTEGER:
+        case ValueMetaInterface.TYPE_INTEGER:
           code.append(
             "    "
               + field.getMemberName() + " = (int) rep.getStepAttributeInteger(id_step, \""
@@ -165,7 +165,7 @@ public class MetaGenerator {
       String getPrefix;
       String setPrefix;
       switch ( field.getType() ) {
-        case ValueMeta.TYPE_BOOLEAN:
+        case ValueMetaInterface.TYPE_BOOLEAN:
           getPrefix = "is";
           setPrefix = "set";
           break;

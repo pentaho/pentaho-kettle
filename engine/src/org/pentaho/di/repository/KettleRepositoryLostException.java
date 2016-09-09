@@ -61,7 +61,7 @@ public class KettleRepositoryLostException extends RuntimeException {
 
   /*
    * According to UX the verbiage to be displayed to user
-   * should consist of 2 parts: 
+   * should consist of 2 parts:
    * the first one is in Exception message
    * the second one is in the Preface.
    */
