@@ -31,6 +31,8 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.injection.Injection;
+import org.pentaho.di.core.injection.InjectionSupported;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
@@ -60,6 +62,7 @@ import org.w3c.dom.Node;
  * @since 24-nov-2006
  */
 
+@InjectionSupported( localizationPrefix = "MergeJoin.Injection.", groups = { "KEYS" } )
 public class MergeJoinMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = MergeJoinMeta.class; // for i18n purposes, needed by Translator2!!
 
@@ -69,7 +72,9 @@ public class MergeJoinMeta extends BaseStepMeta implements StepMetaInterface {
 
   private String joinType;
 
+  @Injection( name = "KEY_FIELD1", group = "KEYS" )
   private String[] keyFields1;
+  @Injection( name = "KEY_FIELD2", group = "KEYS" )
   private String[] keyFields2;
 
   /**
