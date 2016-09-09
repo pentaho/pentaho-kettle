@@ -2613,6 +2613,54 @@ public class Const {
   public static boolean isEmpty( List<?> list ) {
     return list == null || list.size() == 0;
   }
+  
+  /**
+   * Check if the supplied string is empty when it is null or the length is 0 Helper method to support previously
+   * compiled plugins using Const.isEmpty
+   * 
+   * @param string
+   *          The string to check
+   * @return true if the supplied string is empty
+   */
+  public static boolean isEmpty( String string ) {
+    return isEmpty( (CharSequence) string );
+  }
+
+  /**
+   * Check if the supplied string is empty when it is null or the length is 0 Helper method to support previously
+   * compiled plugins using Const.isEmpty
+   * 
+   * @param string
+   *          The string to check
+   * @return true if the supplied string is empty
+   */
+  public static boolean isEmpty( StringBuffer string ) {
+    return isEmpty( (CharSequence) string );
+  }
+
+  /**
+   * Check if the supplied string is empty when it is null or the length is 0 Helper method to support previously
+   * compiled plugins using Const.isEmpty
+   * 
+   * @param string
+   *          The string to check
+   * @return true if the supplied string is empty
+   */
+  public static boolean isEmpty( StringBuilder string ) {
+    return isEmpty( (CharSequence) string );
+  }
+
+  /**
+   * Check if the supplied string array is empty when it is null or the length is 0 Helper method to support previously
+   * compiled plugins using Const.isEmpty
+   * 
+   * @param string
+   *          The string array to check
+   * @return true if the supplied string array is empty
+   */
+  public static boolean isEmpty( String[] string ) {
+    return isEmpty( (CharSequence[]) string );
+  }
 
   /**
    * @return a new ClassLoader
