@@ -2613,7 +2613,7 @@ public class Const {
   public static boolean isEmpty( List<?> list ) {
     return list == null || list.size() == 0;
   }
-  
+
   /**
    * Check if the supplied string is empty when it is null or the length is 0 Helper method to support previously
    * compiled plugins using Const.isEmpty
