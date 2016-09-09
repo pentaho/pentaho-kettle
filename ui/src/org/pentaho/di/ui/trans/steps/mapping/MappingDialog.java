@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -678,7 +678,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
       String transName = sod.open();
       RepositoryDirectoryInterface repdir = sod.getDirectory();
       if ( transName != null && repdir != null ) {
-        loadRepositoryTrans( transName, repdir );
+        MappingMeta.loadRepositoryTrans( repository, transName, repdir );
         wTransname.setText( mappingTransMeta.getName() );
         wDirectory.setText( mappingTransMeta.getRepositoryDirectory().getPath() );
         wFilename.setText( "" );
@@ -691,14 +691,6 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
       new ErrorDialog( shell, BaseMessages.getString( PKG, "MappingDialog.ErrorSelectingObject.DialogTitle" ),
         BaseMessages.getString( PKG, "MappingDialog.ErrorSelectingObject.DialogMessage" ), ke );
     }
-  }
-
-  private void loadRepositoryTrans( String transName, RepositoryDirectoryInterface repdir ) throws KettleException {
-    // Read the transformation...
-    //
-    mappingTransMeta =
-      repository.loadTransformation( transMeta.environmentSubstitute( transName ), repdir, null, true, null );
-    mappingTransMeta.clearChanged();
   }
 
   private void selectFileTrans() {
@@ -721,7 +713,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 
       if ( fname != null ) {
 
-        loadFileTrans( fname );
+        mappingTransMeta = MappingMeta.loadTransFromAnyPath( fname, repository, null );
         wFilename.setText( mappingTransMeta.getFilename() );
         wTransname.setText( Const.NVL( mappingTransMeta.getName(), "" ) );
         wDirectory.setText( "" );
@@ -735,11 +727,6 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
       new ErrorDialog( shell, BaseMessages.getString( PKG, "MappingDialog.ErrorLoadingTransformation.DialogTitle" ),
         BaseMessages.getString( PKG, "MappingDialog.ErrorLoadingTransformation.DialogMessage" ), e );
     }
-  }
-
-  private void loadFileTrans( String fname ) throws KettleException {
-    mappingTransMeta = new TransMeta( transMeta.environmentSubstitute( fname ) );
-    mappingTransMeta.clearChanged();
   }
 
   private void editTrans() {
@@ -766,22 +753,17 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
   void loadTransformation() throws KettleException {
     switch ( getSpecificationMethod() ) {
       case FILENAME:
-        loadFileTrans( wFilename.getText() );
+        mappingTransMeta = MappingMeta.loadTransFromAnyPath(
+            transMeta.environmentSubstitute( wFilename.getText() ),
+            repository, null );
+        mappingTransMeta.clearChanged();
         break;
       case REPOSITORY_BY_NAME:
         String realDirectory = transMeta.environmentSubstitute( wDirectory.getText() );
         String realTransname = transMeta.environmentSubstitute( wTransname.getText() );
 
-        if ( Const.isEmpty( realDirectory ) || Const.isEmpty( realTransname ) ) {
-          throw new KettleException( BaseMessages.getString(
-            PKG, "MappingDialog.Exception.NoValidMappingDetailsFound" ) );
-        }
-        RepositoryDirectoryInterface repdir = repository.findDirectory( realDirectory );
-        if ( repdir == null ) {
-          throw new KettleException( BaseMessages.getString(
-            PKG, "MappingDialog.Exception.UnableToFindRepositoryDirectory)" ) );
-        }
-        loadRepositoryTrans( realTransname, repdir );
+        mappingTransMeta = MappingMeta.loadRepositoryTrans( repository, realTransname, realDirectory );
+        mappingTransMeta.clearChanged();
         break;
       case REPOSITORY_BY_REFERENCE:
         if ( getReferenceObjectId() == null ) {
