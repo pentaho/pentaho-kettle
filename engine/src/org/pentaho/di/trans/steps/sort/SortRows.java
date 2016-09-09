@@ -411,8 +411,9 @@ public class SortRows extends BaseStep implements StepInterface {
         }
       }
 
-      String[] fieldNames = meta.getFieldName();
-      data.fieldnrs = new int[fieldNames.length];
+      // String[] fieldNames = meta.getFieldName();
+      int fieldNum = meta.getSortFields().length;
+      data.fieldnrs = new int[fieldNum];
       List<Integer> toConvert = new ArrayList<Integer>();
 
       // Metadata
@@ -420,11 +421,11 @@ public class SortRows extends BaseStep implements StepInterface {
       meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
       data.comparator = new RowTemapFileComparator( data.outputRowMeta, data.fieldnrs );
 
-      for ( int i = 0; i < fieldNames.length; i++ ) {
-        data.fieldnrs[i] = inputRowMeta.indexOfValue( fieldNames[i] );
+      for ( int i = 0; i < fieldNum; i++ ) {
+        data.fieldnrs[i] = inputRowMeta.indexOfValue( meta.getSortFields()[i].getFieldName() );
         if ( data.fieldnrs[i] < 0 ) {
           throw new KettleException( BaseMessages.getString( PKG, "SortRowsMeta.CheckResult.StepFieldNotInInputStream",
-              meta.getFieldName()[i], getStepname() ) );
+              meta.getSortFields()[i].getFieldName(), getStepname() ) );
         }
         // do we need binary conversion for this type?
         if ( inputRowMeta.getValueMeta( data.fieldnrs[i] ).isStorageBinaryString() ) {
