@@ -70,10 +70,12 @@ public class PGBulkLoaderData extends BaseStepData implements StepDataInterface 
 
     db = null;
 
-    dateMeta = new ValueMetaDate( "date" );
-    dateMeta.setConversionMask( "yyyy/MM/dd" );
+    // Let's use ISO 8601 format. This in unambiguous with PostgreSQL
+    dateMeta = new ValueMetaDate( "date", ValueMetaInterface.TYPE_DATE );
+    dateMeta.setConversionMask( "yyyy-MM-dd" );
 
-    dateTimeMeta = new ValueMetaDate( "date" );
-    dateTimeMeta.setConversionMask( "yyyy/MM/dd HH:mm:ss" );
+    dateTimeMeta = new ValueMetaDate( "date", ValueMetaInterface.TYPE_DATE );
+    // Let's keep milliseconds. Didn't find a way to keep microseconds (max resolution with PG)
+    dateTimeMeta.setConversionMask( "yyyy-MM-dd HH:mm:ss.SSS" );
   }
 }
