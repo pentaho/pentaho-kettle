@@ -38,6 +38,7 @@ import javax.xml.soap.SOAPException;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.KettleLogStore;
@@ -130,12 +131,12 @@ public class SalesforceConnection {
     setRollbackAllChangesOnError( false );
 
     // check target URL
-    if ( Const.isEmpty( getURL() ) ) {
+    if ( Utils.isEmpty( getURL() ) ) {
       throw new KettleException( BaseMessages.getString( PKG, "SalesforceInput.TargetURLMissing.Error" ) );
     }
 
     // check username
-    if ( Const.isEmpty( getUsername() ) ) {
+    if ( Utils.isEmpty( getUsername() ) ) {
       throw new KettleException( BaseMessages.getString( PKG, "SalesforceInput.UsernameMissing.Error" ) );
     }
 

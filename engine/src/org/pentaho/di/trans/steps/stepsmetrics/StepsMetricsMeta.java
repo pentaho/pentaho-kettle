@@ -27,6 +27,7 @@ import java.util.List;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -153,62 +154,62 @@ public class StepsMetricsMeta extends BaseStepMeta implements StepMetaInterface 
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     r.clear();
     String stepname = space.environmentSubstitute( stepnamefield );
-    if ( !Const.isEmpty( stepname ) ) {
+    if ( !Utils.isEmpty( stepname ) ) {
       ValueMetaInterface v = new ValueMetaString( stepname );
       v.setOrigin( name );
       r.addValueMeta( v );
     }
     String stepid = space.environmentSubstitute( stepidfield );
-    if ( !Const.isEmpty( stepid ) ) {
+    if ( !Utils.isEmpty( stepid ) ) {
       ValueMetaInterface v = new ValueMetaString( stepid );
       v.setOrigin( name );
       v.setLength( ValueMetaInterface.DEFAULT_INTEGER_LENGTH, 0 );
       r.addValueMeta( v );
     }
     String steplinesinput = space.environmentSubstitute( steplinesinputfield );
-    if ( !Const.isEmpty( steplinesinput ) ) {
+    if ( !Utils.isEmpty( steplinesinput ) ) {
       ValueMetaInterface v = new ValueMetaInteger( steplinesinput );
       v.setOrigin( name );
       v.setLength( ValueMetaInterface.DEFAULT_INTEGER_LENGTH, 0 );
       r.addValueMeta( v );
     }
     String steplinesoutput = space.environmentSubstitute( steplinesoutputfield );
-    if ( !Const.isEmpty( steplinesoutput ) ) {
+    if ( !Utils.isEmpty( steplinesoutput ) ) {
       ValueMetaInterface v = new ValueMetaInteger( steplinesoutput );
       v.setOrigin( name );
       v.setLength( ValueMetaInterface.DEFAULT_INTEGER_LENGTH, 0 );
       r.addValueMeta( v );
     }
     String steplinesread = space.environmentSubstitute( steplinesreadfield );
-    if ( !Const.isEmpty( steplinesread ) ) {
+    if ( !Utils.isEmpty( steplinesread ) ) {
       ValueMetaInterface v = new ValueMetaInteger( steplinesread );
       v.setOrigin( name );
       v.setLength( ValueMetaInterface.DEFAULT_INTEGER_LENGTH, 0 );
       r.addValueMeta( v );
     }
     String steplinesupdated = space.environmentSubstitute( steplinesupdatedfield );
-    if ( !Const.isEmpty( steplinesupdated ) ) {
+    if ( !Utils.isEmpty( steplinesupdated ) ) {
       ValueMetaInterface v = new ValueMetaInteger( steplinesupdated );
       v.setOrigin( name );
       v.setLength( ValueMetaInterface.DEFAULT_INTEGER_LENGTH, 0 );
       r.addValueMeta( v );
     }
     String steplineswritten = space.environmentSubstitute( steplineswrittentfield );
-    if ( !Const.isEmpty( steplineswritten ) ) {
+    if ( !Utils.isEmpty( steplineswritten ) ) {
       ValueMetaInterface v = new ValueMetaInteger( steplineswritten );
       v.setOrigin( name );
       v.setLength( ValueMetaInterface.DEFAULT_INTEGER_LENGTH, 0 );
       r.addValueMeta( v );
     }
     String steplineserrors = space.environmentSubstitute( steplineserrorsfield );
-    if ( !Const.isEmpty( steplineserrors ) ) {
+    if ( !Utils.isEmpty( steplineserrors ) ) {
       ValueMetaInterface v = new ValueMetaInteger( steplineserrors );
       v.setOrigin( name );
       v.setLength( ValueMetaInterface.DEFAULT_INTEGER_LENGTH, 0 );
       r.addValueMeta( v );
     }
     String stepseconds = space.environmentSubstitute( stepsecondsfield );
-    if ( !Const.isEmpty( stepseconds ) ) {
+    if ( !Utils.isEmpty( stepseconds ) ) {
       ValueMetaInterface v = new ValueMetaInteger( stepseconds );
       v.setOrigin( name );
       r.addValueMeta( v );

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -28,6 +28,7 @@ import java.util.List;
 
 import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.fileinput.FileInputList;
@@ -92,7 +93,7 @@ public class GetSubFolders extends BaseStep implements StepInterface {
         data.totalpreviousfields = data.inputRowMeta.size();
 
         // Check is filename field is provided
-        if ( Const.isEmpty( meta.getDynamicFoldernameField() ) ) {
+        if ( Utils.isEmpty( meta.getDynamicFoldernameField() ) ) {
           logError( BaseMessages.getString( PKG, "GetSubFolders.Log.NoField" ) );
           throw new KettleException( BaseMessages.getString( PKG, "GetSubFolders.Log.NoField" ) );
         }
@@ -196,7 +197,7 @@ public class GetSubFolders extends BaseStep implements StepInterface {
         extraData[outputIndex++] = new Long( data.file.getChildren().length );
 
         // See if we need to add the row number to the row...
-        if ( meta.includeRowNumber() && !Const.isEmpty( meta.getRowNumberField() ) ) {
+        if ( meta.includeRowNumber() && !Utils.isEmpty( meta.getRowNumberField() ) ) {
           extraData[outputIndex++] = new Long( data.rownr );
         }
 

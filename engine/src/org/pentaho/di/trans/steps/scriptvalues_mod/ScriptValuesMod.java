@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -35,6 +35,7 @@ import org.pentaho.di.compatibility.Row;
 import org.pentaho.di.compatibility.Value;
 import org.pentaho.di.compatibility.ValueUsedListener;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleValueException;
@@ -159,7 +160,7 @@ public class ScriptValuesMod extends BaseStep implements StepInterface {
         if ( meta.getReplace()[ i ] ) {
           data.replaceIndex[ i ] = rowMeta.indexOfValue( meta.getFieldname()[ i ] );
           if ( data.replaceIndex[ i ] < 0 ) {
-            if ( Const.isEmpty( meta.getFieldname()[ i ] ) ) {
+            if ( Utils.isEmpty( meta.getFieldname()[ i ] ) ) {
               throw new KettleStepException( BaseMessages.getString(
                 PKG, "ScriptValuesMetaMod.Exception.FieldToReplaceNotFound", meta.getFieldname()[ i ] ) );
             }
@@ -179,7 +180,7 @@ public class ScriptValuesMod extends BaseStep implements StepInterface {
 
       try {
         String optimizationLevelAsString = environmentSubstitute( meta.getOptimizationLevel() );
-        if ( !Const.isEmpty( Const.trim( optimizationLevelAsString ) ) ) {
+        if ( !Utils.isEmpty( Const.trim( optimizationLevelAsString ) ) ) {
           data.cx.setOptimizationLevel( Integer.parseInt( optimizationLevelAsString.trim() ) );
           logBasic( BaseMessages.getString( PKG, "ScriptValuesMod.Optimization.Level", environmentSubstitute( meta
             .getOptimizationLevel() ) ) );
@@ -478,7 +479,7 @@ public class ScriptValuesMod extends BaseStep implements StepInterface {
 
   public Object getValueFromJScript( Object result, int i ) throws KettleValueException {
     String fieldName = meta.getFieldname()[ i ];
-    if ( !Const.isEmpty( fieldName ) ) {
+    if ( !Utils.isEmpty( fieldName ) ) {
       // res.setName(meta.getRename()[i]);
       // res.setType(meta.getType()[i]);
 

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -55,6 +55,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -781,7 +782,7 @@ public class FuzzyMatchDialog extends BaseStepDialog implements StepDialogInterf
   }
 
   private void ok() {
-    if ( Const.isEmpty( wStepname.getText() ) ) {
+    if ( Utils.isEmpty( wStepname.getText() ) ) {
       return;
     }
 
@@ -817,7 +818,7 @@ public class FuzzyMatchDialog extends BaseStepDialog implements StepDialogInterf
     infoStream.setStepMeta( transMeta.findStep( wStep.getText() ) );
     if ( infoStream.getStepMeta() == null ) {
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
-      if ( Const.isEmpty( wStep.getText() ) ) {
+      if ( Utils.isEmpty( wStep.getText() ) ) {
         mb.setMessage( BaseMessages.getString( PKG, "FuzzyMatchDialog.NotStepSpecified.DialogMessage", wStep
           .getText() ) );
       } else {
@@ -965,7 +966,7 @@ public class FuzzyMatchDialog extends BaseStepDialog implements StepDialogInterf
   private void getlookup() {
     try {
       String stepFrom = wStep.getText();
-      if ( !Const.isEmpty( stepFrom ) ) {
+      if ( !Utils.isEmpty( stepFrom ) ) {
         RowMetaInterface r = transMeta.getStepFields( stepFrom );
         if ( r != null && !r.isEmpty() ) {
           BaseStepDialog.getFieldsFromPrevious( r, wReturn, 1, new int[] { 1 }, new int[] { 4 }, -1, -1, null );

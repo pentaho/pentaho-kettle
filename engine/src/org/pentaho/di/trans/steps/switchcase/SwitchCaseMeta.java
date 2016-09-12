@@ -28,6 +28,7 @@ import java.util.List;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -268,7 +269,7 @@ public class SwitchCaseMeta extends BaseStepMeta implements StepMetaInterface {
       }
     }
 
-    if ( Const.isEmpty( fieldname ) ) {
+    if ( Utils.isEmpty( fieldname ) ) {
       cr =
         new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
           PKG, "SwitchCaseMeta.CheckResult.NoFieldSpecified" ), stepMeta );

@@ -25,6 +25,7 @@ package org.pentaho.di.trans.steps.filterrows;
 import java.util.List;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
@@ -93,7 +94,7 @@ public class FilterRows extends BaseStep implements StepInterface {
       //
       if ( data.chosesTargetSteps ) {
         List<StreamInterface> targetStreams = meta.getStepIOMeta().getTargetStreams();
-        if ( !Const.isEmpty( targetStreams.get( 0 ).getStepname() ) ) {
+        if ( !Utils.isEmpty( targetStreams.get( 0 ).getStepname() ) ) {
           data.trueRowSet = findOutputRowSet( getStepname(), getCopy(), targetStreams.get( 0 ).getStepname(), 0 );
           if ( data.trueRowSet == null ) {
             throw new KettleException( BaseMessages.getString(
@@ -103,7 +104,7 @@ public class FilterRows extends BaseStep implements StepInterface {
           data.trueRowSet = null;
         }
 
-        if ( !Const.isEmpty( targetStreams.get( 1 ).getStepname() ) ) {
+        if ( !Utils.isEmpty( targetStreams.get( 1 ).getStepname() ) ) {
           data.falseRowSet = findOutputRowSet( getStepname(), getCopy(), targetStreams.get( 1 ).getStepname(), 0 );
           if ( data.falseRowSet == null ) {
             throw new KettleException( BaseMessages.getString(

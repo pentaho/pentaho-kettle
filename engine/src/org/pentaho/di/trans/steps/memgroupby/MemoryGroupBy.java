@@ -30,6 +30,7 @@ import java.util.TreeSet;
 
 import org.apache.commons.math.stat.descriptive.rank.Percentile;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowDataUtil;
@@ -369,7 +370,7 @@ public class MemoryGroupBy extends BaseStep implements StepInterface {
         case MemoryGroupByMeta.TYPE_GROUP_CONCAT_STRING:
           if ( !( subj == null ) ) {
             String separator = "";
-            if ( !Const.isEmpty( meta.getValueField()[i] ) ) {
+            if ( !Utils.isEmpty( meta.getValueField()[i] ) ) {
               separator = environmentSubstitute( meta.getValueField()[i] );
             }
             StringBuilder sb = (StringBuilder) value;

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.jar.Attributes;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.util.EnvUtil;
@@ -55,7 +56,7 @@ public class JarfileGenerator {
     kar.mkdir();
 
     String filename = "kettle-engine-3.0.jar";
-    if ( !Const.isEmpty( transMeta.getFilename() ) ) {
+    if ( !Utils.isEmpty( transMeta.getFilename() ) ) {
       filename = Const.replace( transMeta.getFilename(), " ", "_" ).toLowerCase() + ".kar";
     }
 

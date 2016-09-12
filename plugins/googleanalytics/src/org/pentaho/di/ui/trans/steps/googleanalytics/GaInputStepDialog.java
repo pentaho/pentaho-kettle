@@ -52,6 +52,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaBase;
 import org.pentaho.di.i18n.BaseMessages;
@@ -1181,7 +1182,7 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
     meta.setOauthServiceAccount( wOauthAccount.getText() );
     meta.setOAuthKeyFile( keyFilename.getText() );
 
-    if ( !Const.isEmpty( wGaProfile.getText() ) ) {
+    if ( !Utils.isEmpty( wGaProfile.getText() ) ) {
       meta.setGaProfileTableId( profileTableIds.get( wGaProfile.getText() ) );
     } else {
       meta.setGaProfileTableId( null );
@@ -1190,8 +1191,8 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
     meta.setUseCustomTableId( wCustomProfileEnabled.getSelection() );
     meta.setGaCustomTableId( wGaCustomProfile.getText() );
 
-    meta.setSegmentName( Const.isEmpty( wQuSegment.getText() ) ? "All Visits" : wQuSegment.getText() );
-    if ( !Const.isEmpty( wQuSegment.getText() ) ) {
+    meta.setSegmentName( Utils.isEmpty( wQuSegment.getText() ) ? "All Visits" : wQuSegment.getText() );
+    if ( !Utils.isEmpty( wQuSegment.getText() ) ) {
       meta.setSegmentId( segmentIds.get( wQuSegment.getText() ) );
     } else {
       // all visits is default
@@ -1280,7 +1281,7 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
         : profileTableIds.get( wGaProfile.getText() );
 
       String metrics = transMeta.environmentSubstitute( wQuMetrics.getText() );
-      if ( Const.isEmpty( metrics ) ) {
+      if ( Utils.isEmpty( metrics ) ) {
         MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
         mb.setText( BaseMessages.getString( PKG, "GoogleAnalytics.Error.NoMetricsSpecified.Title" ) );
         mb.setMessage( BaseMessages.getString( PKG, "GoogleAnalytics.Error.NoMetricsSpecified.Message" ) );
@@ -1300,7 +1301,7 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
       );
 
       String dimensions = transMeta.environmentSubstitute( wQuDimensions.getText() );
-      if ( !Const.isEmpty( dimensions ) ) {
+      if ( !Utils.isEmpty( dimensions ) ) {
         query.setDimensions( dimensions );
       }
 
@@ -1312,14 +1313,14 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
         }
       }
 
-      if ( !Const.isEmpty( wQuSamplingLevel.getText() ) ) {
+      if ( !Utils.isEmpty( wQuSamplingLevel.getText() ) ) {
         query.setSamplingLevel( transMeta.environmentSubstitute( wQuSamplingLevel.getText() ) );
       }
 
-      if ( !Const.isEmpty( wQuFilters.getText() ) ) {
+      if ( !Utils.isEmpty( wQuFilters.getText() ) ) {
         query.setFilters( transMeta.environmentSubstitute( wQuFilters.getText() ) );
       }
-      if ( !Const.isEmpty( wQuSort.getText() ) ) {
+      if ( !Utils.isEmpty( wQuSort.getText() ) ) {
         query.setSort( transMeta.environmentSubstitute( wQuSort.getText() ) );
       }
 

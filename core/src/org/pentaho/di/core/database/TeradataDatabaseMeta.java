@@ -25,6 +25,7 @@ package org.pentaho.di.core.database;
 import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.row.ValueMetaInterface;
 
 /**
@@ -336,7 +337,7 @@ public class TeradataDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
   public Map<String, String> getExtraOptions() {
     Map<String, String> map = super.getExtraOptions();
 
-    if ( !Const.isEmpty( getDatabasePortNumberString() ) ) {
+    if ( !Utils.isEmpty( getDatabasePortNumberString() ) ) {
       map.put( getPluginId() + ".DBS_PORT", getDatabasePortNumberString() );
     }
 

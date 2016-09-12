@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -48,6 +48,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.i18n.BaseMessages;
@@ -617,7 +618,7 @@ public class EnterSelectionDialog extends Dialog {
   protected void updateFilter() {
     pattern = null;
     filterString = null;
-    if ( searchText != null && !searchText.isDisposed() && !Const.isEmpty( searchText.getText() ) ) {
+    if ( searchText != null && !searchText.isDisposed() && !Utils.isEmpty( searchText.getText() ) ) {
       if ( wbRegex.getSelection() ) {
         pattern = Pattern.compile( searchText.getText() );
       } else {

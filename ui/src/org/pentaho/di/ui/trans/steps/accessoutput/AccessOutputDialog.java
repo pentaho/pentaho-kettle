@@ -46,6 +46,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
@@ -382,7 +383,7 @@ public class AccessOutputDialog extends BaseStepDialog implements StepDialogInte
         FileDialog dialog = new FileDialog( shell, SWT.SAVE );
         dialog.setFilterExtensions( new String[] { "*.mdb;*.MDB;*.accdb;*.ACCDB", "*" } );
 
-        if ( !Const.isEmpty( wFilename.getText() ) ) {
+        if ( !Utils.isEmpty( wFilename.getText() ) ) {
           String fname = transMeta.environmentSubstitute( wFilename.getText() );
           dialog.setFileName( fname );
         }
@@ -462,7 +463,7 @@ public class AccessOutputDialog extends BaseStepDialog implements StepDialogInte
   }
 
   private void ok() {
-    if ( Const.isEmpty( wStepname.getText() ) ) {
+    if ( Utils.isEmpty( wStepname.getText() ) ) {
       return;
     }
 

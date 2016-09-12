@@ -34,6 +34,7 @@ import java.util.Map;
 
 import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -141,7 +142,7 @@ public class YamlReader {
         for ( int i = 0; i < rowMeta.size(); i++ ) {
           ValueMetaInterface valueMeta = rowMeta.getValueMeta( i );
           Object o = null;
-          if ( Const.isEmpty( valueMeta.getName() ) ) {
+          if ( Utils.isEmpty( valueMeta.getName() ) ) {
             o = getDocument().toString();
           } else {
             o = map.get( valueMeta.getName() );
@@ -163,7 +164,7 @@ public class YamlReader {
             for ( int i = 0; i < rowMeta.size(); i++ ) {
               ValueMetaInterface valueMeta = rowMeta.getValueMeta( i );
               Object o = null;
-              if ( Const.isEmpty( valueMeta.getName() ) ) {
+              if ( Utils.isEmpty( valueMeta.getName() ) ) {
                 o = getDocument().toString();
               } else {
                 o = map.get( valueMeta.getName() );

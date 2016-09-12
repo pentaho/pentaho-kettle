@@ -45,6 +45,7 @@ import org.apache.commons.vfs2.provider.url.UrlFileNameParser;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.RowMetaAndData;
@@ -349,7 +350,7 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
           String vdestinationfilefolder_previous = resultRow.getString( 1, null );
           String vwildcard_previous = resultRow.getString( 2, null );
 
-          if ( !Const.isEmpty( vsourcefilefolder_previous ) && !Const.isEmpty( vdestinationfilefolder_previous ) ) {
+          if ( !Utils.isEmpty( vsourcefilefolder_previous ) && !Utils.isEmpty( vdestinationfilefolder_previous ) ) {
             if ( isDetailed() ) {
               logDetailed( BaseMessages.getString( PKG, "JobCopyFiles.Log.ProcessingRow", vsourcefilefolder_previous,
                   vdestinationfilefolder_previous, vwildcard_previous ) );
@@ -369,7 +370,7 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
         }
       } else if ( vsourcefilefolder != null && vdestinationfilefolder != null ) {
         for ( int i = 0; i < vsourcefilefolder.length && !parentJob.isStopped(); i++ ) {
-          if ( !Const.isEmpty( vsourcefilefolder[i] ) && !Const.isEmpty( vdestinationfilefolder[i] ) ) {
+          if ( !Utils.isEmpty( vsourcefilefolder[i] ) && !Utils.isEmpty( vdestinationfilefolder[i] ) ) {
 
             // ok we can process this file/folder
 
@@ -744,7 +745,7 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
         destinationFolderObject = destinationfolderin;
         destinationFolder = destinationFolderObject.toString();
       }
-      if ( !Const.isEmpty( filewildcard ) ) {
+      if ( !Utils.isEmpty( filewildcard ) ) {
         fileWildcard = filewildcard;
         pattern = Pattern.compile( fileWildcard );
       }
@@ -775,7 +776,7 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
             if ( include_subfolders ) {
               // Folders..only if include subfolders
               if ( info.getFile().getType() == FileType.FOLDER ) {
-                if ( include_subfolders && copy_empty_folders && Const.isEmpty( fileWildcard ) ) {
+                if ( include_subfolders && copy_empty_folders && Utils.isEmpty( fileWildcard ) ) {
                   if ( ( file_name == null ) || ( !file_name.exists() ) ) {
                     if ( isDetailed() ) {
                       logDetailed( " ------ " );
@@ -836,7 +837,7 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
             // In the Base Folder...
             // Folders..only if include subfolders
             if ( info.getFile().getType() == FileType.FOLDER ) {
-              if ( include_subfolders && copy_empty_folders && Const.isEmpty( fileWildcard ) ) {
+              if ( include_subfolders && copy_empty_folders && Utils.isEmpty( fileWildcard ) ) {
                 if ( ( file_name == null ) || ( !file_name.exists() ) ) {
                   if ( isDetailed() ) {
                     logDetailed( "", " ------ " );
@@ -962,14 +963,14 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
     private int traverseCount;
 
     public TextOneFileSelector( String sourcefolderin, String sourcefilenamein, String destfolderin ) {
-      if ( !Const.isEmpty( sourcefilenamein ) ) {
+      if ( !Utils.isEmpty( sourcefilenamein ) ) {
         filename = sourcefilenamein;
       }
 
-      if ( !Const.isEmpty( sourcefolderin ) ) {
+      if ( !Utils.isEmpty( sourcefolderin ) ) {
         foldername = sourcefolderin;
       }
-      if ( !Const.isEmpty( destfolderin ) ) {
+      if ( !Utils.isEmpty( destfolderin ) ) {
         destfolder = destfolderin;
       }
     }
@@ -1130,7 +1131,7 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
   }
 
   public String loadURL( String url, String ncName, IMetaStore metastore, Map mappings ) {
-    if ( !Const.isEmpty( ncName ) && !Const.isEmpty( url ) ) {
+    if ( !Utils.isEmpty( ncName ) && !Utils.isEmpty( url ) ) {
       mappings.put( url, ncName );
     }
     return url;

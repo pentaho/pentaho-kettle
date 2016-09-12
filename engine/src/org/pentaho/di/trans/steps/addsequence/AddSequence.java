@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,7 +22,6 @@
 
 package org.pentaho.di.trans.steps.addsequence;
 
-import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.exception.KettleDatabaseException;
@@ -30,6 +29,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -204,7 +204,7 @@ public class AddSequence extends BaseStep implements StepInterface {
         }
 
         String realCounterName = environmentSubstitute( meta.getCounterName() );
-        if ( !Const.isEmpty( realCounterName ) ) {
+        if ( !Utils.isEmpty( realCounterName ) ) {
           data.setLookup( "@@sequence:" + meta.getCounterName() );
         } else {
           data.setLookup( "@@sequence:" + meta.getValuename() );

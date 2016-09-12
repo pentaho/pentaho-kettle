@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,7 +27,7 @@ import static org.junit.Assert.*;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.pentaho.di.TestUtilities;
-import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.job.Job;
@@ -64,7 +64,7 @@ public class CopyFilesTest {
     String sourceFolder = TestUtilities.createTempFolder( "testLocalFileCopy_source" );
     String destinationFolder = TestUtilities.createTempFolder( "testLocalFileCopy_destination" );
 
-    if ( Const.isEmpty( sourceFolder ) || Const.isEmpty( destinationFolder ) ) {
+    if ( Utils.isEmpty( sourceFolder ) || Utils.isEmpty( destinationFolder ) ) {
       fail( "Could not create the source and/or destination folder(s)." );
     }
 

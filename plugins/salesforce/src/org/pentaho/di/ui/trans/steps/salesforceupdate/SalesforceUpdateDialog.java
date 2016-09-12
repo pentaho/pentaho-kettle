@@ -55,6 +55,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.SourceToTargetMapping;
 import org.pentaho.di.core.exception.KettleException;
@@ -164,7 +165,7 @@ public class SalesforceUpdateDialog extends SalesforceStepDialog {
   private boolean getModulesListError = false; /* True if error getting modules list */
 
   public SalesforceUpdateDialog( Shell parent, Object in, TransMeta transMeta, String sname ) {
-    super( parent, (BaseStepMeta) in, transMeta, sname );
+    super( parent, in, transMeta, sname );
     input = (SalesforceUpdateMeta) in;
     inputFields = new HashMap<String, Integer>();
   }
@@ -424,8 +425,8 @@ public class SalesforceUpdateDialog extends SalesforceStepDialog {
 
       public void focusGained( org.eclipse.swt.events.FocusEvent e ) {
         // check if the URL and login credentials passed and not just had error
-        if ( Const.isEmpty( wURL.getText() )
-          || Const.isEmpty( wUserName.getText() ) || Const.isEmpty( wPassword.getText() )
+        if ( Utils.isEmpty( wURL.getText() )
+          || Utils.isEmpty( wUserName.getText() ) || Utils.isEmpty( wPassword.getText() )
           || ( getModulesListError ) ) {
           return;
         }
@@ -530,7 +531,7 @@ public class SalesforceUpdateDialog extends SalesforceStepDialog {
                 if ( !wReturn.isDisposed() ) {
                   for ( int i = 0; i < wReturn.table.getItemCount(); i++ ) {
                     TableItem it = wReturn.table.getItem( i );
-                    if ( !Const.isEmpty( it.getText( 2 ) ) ) {
+                    if ( !Utils.isEmpty( it.getText( 2 ) ) ) {
                       if ( !inputFields.containsKey( it.getText( 2 ) ) ) {
                         it.setBackground( GUIResource.getInstance().getColorRed() );
                       }
@@ -743,7 +744,7 @@ public class SalesforceUpdateDialog extends SalesforceStepDialog {
 
   // check if module, username is given
   private boolean checkInput() {
-    if ( Const.isEmpty( wModule.getText() ) ) {
+    if ( Utils.isEmpty( wModule.getText() ) ) {
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
       mb.setMessage( BaseMessages.getString( PKG, "SalesforceUpdateDialog.ModuleMissing.DialogMessage" ) );
       mb.setText( BaseMessages.getString( PKG, "System.Dialog.Error.Title" ) );
@@ -756,7 +757,7 @@ public class SalesforceUpdateDialog extends SalesforceStepDialog {
   // check if module, username is given
   private boolean checkUser() {
 
-    if ( Const.isEmpty( wUserName.getText() ) ) {
+    if ( Utils.isEmpty( wUserName.getText() ) ) {
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
       mb.setMessage( BaseMessages.getString( PKG, "SalesforceUpdateDialog.UsernameMissing.DialogMessage" ) );
       mb.setText( BaseMessages.getString( PKG, "System.Dialog.Error.Title" ) );
@@ -958,7 +959,7 @@ public class SalesforceUpdateDialog extends SalesforceStepDialog {
         // return
         wModule.setItems( connection.getAllAvailableObjects( false ) );
 
-        if ( !Const.isEmpty( selectedField ) ) {
+        if ( !Utils.isEmpty( selectedField ) ) {
           wModule.setText( selectedField );
         }
 
@@ -999,7 +1000,7 @@ public class SalesforceUpdateDialog extends SalesforceStepDialog {
             return;
           }
           String selectedModule = transMeta.environmentSubstitute( wModule.getText() );
-          if ( !Const.isEmpty( selectedModule ) ) {
+          if ( !Utils.isEmpty( selectedModule ) ) {
             try {
               // loop through the objects and find build the list of fields
               String[] fieldsName = getModuleFields();

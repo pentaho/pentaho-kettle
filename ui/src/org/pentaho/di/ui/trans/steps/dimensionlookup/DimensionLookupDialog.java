@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -63,6 +63,7 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.database.Database;
@@ -1403,7 +1404,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
   }
 
   private void ok() {
-    if ( Const.isEmpty( wStepname.getText() ) ) {
+    if ( Utils.isEmpty( wStepname.getText() ) ) {
       return;
     }
 
@@ -1576,7 +1577,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
           // Ensure other table field dropdowns are refreshed fields when they
           // next get focus
           gotTableFields = false;
-          if ( !Const.isEmpty( tableName ) ) {
+          if ( !Utils.isEmpty( tableName ) ) {
             DatabaseMeta ci = transMeta.findDatabase( connectionName );
             if ( ci != null ) {
               Database db = new Database( loggingObject, ci );
@@ -1681,7 +1682,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 
   private void getFieldsFromTable() {
     if ( !gotTableFields ) {
-      if ( !Const.isEmpty( wTable.getText() ) ) {
+      if ( !Utils.isEmpty( wTable.getText() ) ) {
         DatabaseMeta ci = transMeta.findDatabase( wConnection.getText() );
         if ( ci != null ) {
           Database db = new Database( loggingObject, ci );
@@ -1805,10 +1806,10 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
       RowMetaInterface prev = transMeta.getPrevStepFields( stepname );
 
       String message = null;
-      if ( Const.isEmpty( info.getKeyField() ) ) {
+      if ( Utils.isEmpty( info.getKeyField() ) ) {
         message = BaseMessages.getString( PKG, "DimensionLookupDialog.Error.NoTechnicalKeySpecified" );
       }
-      if ( Const.isEmpty( info.getTableName() ) ) {
+      if ( Utils.isEmpty( info.getTableName() ) ) {
         message = BaseMessages.getString( PKG, "DimensionLookupDialog.Error.NoTableNameSpecified" );
       }
 

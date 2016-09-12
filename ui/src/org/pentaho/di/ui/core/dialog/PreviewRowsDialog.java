@@ -40,6 +40,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
@@ -195,7 +196,7 @@ public class PreviewRowsDialog {
     } );
     buttons.add( wClose );
 
-    if ( !Const.isEmpty( loggingText ) ) {
+    if ( !Utils.isEmpty( loggingText ) ) {
       wLog = new Button( shell, SWT.PUSH );
       wLog.setText( BaseMessages.getString( PKG, "PreviewRowsDialog.Button.ShowLog" ) );
       wLog.addListener( SWT.Selection, new Listener() {

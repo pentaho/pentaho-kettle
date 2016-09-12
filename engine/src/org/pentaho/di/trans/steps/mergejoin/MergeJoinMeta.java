@@ -27,6 +27,7 @@ import java.util.List;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -299,7 +300,7 @@ public class MergeJoinMeta extends BaseStepMeta implements StepMetaInterface {
 
     for ( int i = 0; i < r.size(); i++ ) {
       ValueMetaInterface vmi = r.getValueMeta( i );
-      if ( vmi != null && Const.isEmpty( vmi.getName() ) ) {
+      if ( vmi != null && Utils.isEmpty( vmi.getName() ) ) {
         vmi.setOrigin( name );
       }
     }

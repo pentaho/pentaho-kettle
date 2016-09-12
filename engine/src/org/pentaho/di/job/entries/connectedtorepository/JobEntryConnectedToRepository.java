@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,7 +25,7 @@ package org.pentaho.di.job.entries.connectedtorepository;
 import java.util.List;
 
 import org.pentaho.di.cluster.SlaveServer;
-import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
@@ -179,7 +179,7 @@ public class JobEntryConnectedToRepository extends JobEntryBase implements Clone
       return result;
     }
     if ( isspecificrep ) {
-      if ( Const.isEmpty( repname ) ) {
+      if ( Utils.isEmpty( repname ) ) {
         logError( BaseMessages.getString( PKG, "JobEntryConnectedToRepository.Error.NoRep" ) );
         return result;
       }
@@ -191,7 +191,7 @@ public class JobEntryConnectedToRepository extends JobEntryBase implements Clone
       }
     }
     if ( isspecificuser ) {
-      if ( Const.isEmpty( username ) ) {
+      if ( Utils.isEmpty( username ) ) {
         logError( BaseMessages.getString( PKG, "JobEntryConnectedToRepository.Error.NoUser" ) );
         return result;
       }

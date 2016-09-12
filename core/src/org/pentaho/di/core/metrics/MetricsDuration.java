@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,7 +24,7 @@ package org.pentaho.di.core.metrics;
 
 import java.util.Date;
 
-import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.util.StringUtil;
 
 public class MetricsDuration {
@@ -67,7 +67,7 @@ public class MetricsDuration {
 
   @Override
   public String toString() {
-    if ( Const.isEmpty( subject ) ) {
+    if ( Utils.isEmpty( subject ) ) {
       return description
         + " @ " + StringUtil.getFormattedDateTime( date, true ) + " : "
         + ( duration == null ? "-" : duration.toString() ) + ( count == null ? "" : " (x" + count + ")" );

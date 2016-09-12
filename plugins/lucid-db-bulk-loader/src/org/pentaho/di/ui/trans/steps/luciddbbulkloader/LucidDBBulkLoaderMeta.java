@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,6 +27,7 @@ import java.util.List;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.ProvidesDatabaseConnectionInformation;
 import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.annotations.Step;
@@ -382,7 +383,7 @@ public class LucidDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
       try {
         db.connect();
 
-        if ( !Const.isEmpty( tableName ) ) {
+        if ( !Utils.isEmpty( tableName ) ) {
           cr =
             new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
               PKG, "LucidDBBulkLoaderMeta.CheckResult.TableNameOK" ), stepMeta );
@@ -528,7 +529,7 @@ public class LucidDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
           }
         }
 
-        if ( !Const.isEmpty( tableName ) ) {
+        if ( !Utils.isEmpty( tableName ) ) {
           Database db = new Database( loggingObject, databaseMeta );
           db.shareVariablesWith( transMeta );
           try {
@@ -539,7 +540,7 @@ public class LucidDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
                 transMeta.environmentSubstitute( schemaName ), transMeta.environmentSubstitute( tableName ) );
             String sql = db.getDDL( schemaTable, tableFields, null, false, null, true );
 
-            if ( Const.isEmpty( sql ) ) {
+            if ( Utils.isEmpty( sql ) ) {
               retval.setSQL( null );
             } else {
               retval.setSQL( sql );
@@ -607,7 +608,7 @@ public class LucidDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
       try {
         db.connect();
 
-        if ( !Const.isEmpty( realTableName ) ) {
+        if ( !Utils.isEmpty( realTableName ) ) {
           String schemaTable = databaseMeta.getQuotedSchemaTableCombination( realSchemaName, realTableName );
 
           // Check if this table exists...

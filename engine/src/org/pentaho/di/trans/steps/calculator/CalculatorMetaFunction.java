@@ -23,6 +23,7 @@
 package org.pentaho.di.trans.steps.calculator;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
@@ -511,24 +512,24 @@ public class CalculatorMetaFunction implements Cloneable {
 
   private void fixBackwardCompatibility() {
     if ( valueType == ValueMetaInterface.TYPE_INTEGER ) {
-      if ( Const.isEmpty( conversionMask ) ) {
+      if ( Utils.isEmpty( conversionMask ) ) {
         conversionMask = "0";
       }
-      if ( Const.isEmpty( decimalSymbol ) ) {
+      if ( Utils.isEmpty( decimalSymbol ) ) {
         decimalSymbol = ".";
       }
-      if ( Const.isEmpty( groupingSymbol ) ) {
+      if ( Utils.isEmpty( groupingSymbol ) ) {
         groupingSymbol = ",";
       }
     }
     if ( valueType == ValueMetaInterface.TYPE_NUMBER ) {
-      if ( Const.isEmpty( conversionMask ) ) {
+      if ( Utils.isEmpty( conversionMask ) ) {
         conversionMask = "0.0";
       }
-      if ( Const.isEmpty( decimalSymbol ) ) {
+      if ( Utils.isEmpty( decimalSymbol ) ) {
         decimalSymbol = ".";
       }
-      if ( Const.isEmpty( groupingSymbol ) ) {
+      if ( Utils.isEmpty( groupingSymbol ) ) {
         groupingSymbol = ",";
       }
     }

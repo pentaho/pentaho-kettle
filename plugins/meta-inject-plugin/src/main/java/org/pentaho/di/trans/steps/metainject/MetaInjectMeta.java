@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -231,7 +232,7 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface, S
       String method = XMLHandler.getTagValue( stepnode, SPECIFICATION_METHOD );
       specificationMethod = ObjectLocationSpecificationMethod.getSpecificationMethodByCode( method );
       String transId = XMLHandler.getTagValue( stepnode, TRANS_OBJECT_ID );
-      transObjectId = Const.isEmpty( transId ) ? null : new StringObjectId( transId );
+      transObjectId = Utils.isEmpty( transId ) ? null : new StringObjectId( transId );
 
       transName = XMLHandler.getTagValue( stepnode, TRANS_NAME );
       fileName = XMLHandler.getTagValue( stepnode, FILENAME );
@@ -282,7 +283,7 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface, S
       String method = rep.getStepAttributeString( id_step, SPECIFICATION_METHOD );
       specificationMethod = ObjectLocationSpecificationMethod.getSpecificationMethodByCode( method );
       String transId = rep.getStepAttributeString( id_step, TRANS_OBJECT_ID );
-      transObjectId = Const.isEmpty( transId ) ? null : new StringObjectId( transId );
+      transObjectId = Utils.isEmpty( transId ) ? null : new StringObjectId( transId );
       transName = rep.getStepAttributeString( id_step, TRANS_NAME );
       fileName = rep.getStepAttributeString( id_step, FILENAME );
       directoryPath = rep.getStepAttributeString( id_step, DIRECTORY_PATH );
@@ -368,7 +369,7 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface, S
                          VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
 
     rowMeta.clear(); // No defined output is expected from this step.
-    if ( !Const.isEmpty( sourceStepName ) ) {
+    if ( !Utils.isEmpty( sourceStepName ) ) {
       for ( MetaInjectOutputField field : sourceOutputFields ) {
         try {
           rowMeta.addValueMeta( field.createValueMeta() );
@@ -510,7 +511,7 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface, S
         String realTransname = tmpSpace.environmentSubstitute( injectMeta.getTransName() );
         String realDirectory = tmpSpace.environmentSubstitute( injectMeta.getDirectoryPath() );
 
-        if ( !Const.isEmpty( realTransname ) && !Const.isEmpty( realDirectory ) && rep != null ) {
+        if ( !Utils.isEmpty( realTransname ) && !Utils.isEmpty( realDirectory ) && rep != null ) {
           RepositoryDirectoryInterface repdir = rep.findDirectory( realDirectory );
           if ( repdir != null ) {
             try {
@@ -564,12 +565,12 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface, S
     ResourceReference reference = new ResourceReference( stepInfo );
     references.add( reference );
 
-    if ( !Const.isEmpty( realFilename ) ) {
+    if ( !Utils.isEmpty( realFilename ) ) {
       // Add the filename to the references, including a reference to this step
       // meta data.
       //
       reference.getEntries().add( new ResourceEntry( realFilename, ResourceType.ACTIONFILE ) );
-    } else if ( !Const.isEmpty( realTransname ) ) {
+    } else if ( !Utils.isEmpty( realTransname ) ) {
       // Add the filename to the references, including a reference to this step
       // meta data.
       //
@@ -688,7 +689,7 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface, S
   }
 
   private boolean isTransformationDefined() {
-    return !Const.isEmpty( fileName ) || transObjectId != null || ( !Const.isEmpty( this.directoryPath ) && !Const
+    return !Utils.isEmpty( fileName ) || transObjectId != null || ( !Utils.isEmpty( this.directoryPath ) && !Const
       .isEmpty( transName ) );
   }
 

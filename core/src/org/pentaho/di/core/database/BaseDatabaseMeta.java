@@ -37,6 +37,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleDatabaseException;
@@ -1412,7 +1413,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterfaceEx
     for ( Iterator<Object> iter = properties.keySet().iterator(); iter.hasNext(); ) {
       String element = (String) iter.next();
       String value = properties.getProperty( element );
-      if ( !Const.isEmpty( element ) && !Const.isEmpty( value ) ) {
+      if ( !Utils.isEmpty( element ) && !Utils.isEmpty( value ) ) {
         attributes.put( ATTRIBUTE_POOLING_PARAMETER_PREFIX + element, value );
       }
     }
@@ -2148,7 +2149,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterfaceEx
         case ValueMetaInterface.TYPE_DATE:
           Date date = valueMeta.getDate( valueData );
 
-          if ( Const.isEmpty( dateFormat ) ) {
+          if ( Utils.isEmpty( dateFormat ) ) {
             ins.append( "'" + valueMeta.getString( valueData ) + "'" );
           } else {
             try {

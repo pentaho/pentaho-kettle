@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,10 +24,10 @@ package org.pentaho.di.trans.steps.concatfields;
 
 import java.io.UnsupportedEncodingException;
 
-import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowDataUtil;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -312,10 +312,10 @@ public class ConcatFields extends TextFileOutput implements StepInterface {
     data.stringSeparator = "";
     data.stringEnclosure = "";
 
-    if ( !Const.isEmpty( meta.getSeparator() ) ) {
+    if ( !Utils.isEmpty( meta.getSeparator() ) ) {
       data.stringSeparator = environmentSubstitute( meta.getSeparator() );
     }
-    if ( !Const.isEmpty( meta.getEnclosure() ) ) {
+    if ( !Utils.isEmpty( meta.getEnclosure() ) ) {
       data.stringEnclosure = environmentSubstitute( meta.getEnclosure() );
     }
 
@@ -323,7 +323,7 @@ public class ConcatFields extends TextFileOutput implements StepInterface {
     for ( int i = 0; i < meta.getOutputFields().length; i++ ) {
       data.stringNullValue[i] = "";
       String nullString = meta.getOutputFields()[i].getNullString();
-      if ( !Const.isEmpty( nullString ) ) {
+      if ( !Utils.isEmpty( nullString ) ) {
         data.stringNullValue[i] = nullString;
       }
     }

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -30,9 +30,9 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 
 import org.apache.commons.vfs2.FileType;
-import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
@@ -79,13 +79,13 @@ public class ChangeFileEncoding extends BaseStep implements StepInterface {
       data.inputRowMeta = getInputRowMeta().clone();
 
       // Check is source filename field is provided
-      if ( Const.isEmpty( meta.getDynamicFilenameField() ) ) {
+      if ( Utils.isEmpty( meta.getDynamicFilenameField() ) ) {
         logError( BaseMessages.getString( PKG, "ChangeFileEncoding.Error.FilenameFieldMissing" ) );
         throw new KettleException( BaseMessages.getString( PKG, "ChangeFileEncoding.Error.FilenameFieldMissing" ) );
       }
 
       // Check is target filename field is provided
-      if ( Const.isEmpty( meta.getTargetFilenameField() ) ) {
+      if ( Utils.isEmpty( meta.getTargetFilenameField() ) ) {
         throw new KettleException( BaseMessages.getString(
           PKG, "ChangeFileEncoding.Error.TargetFilenameFieldMissing" ) );
       }
@@ -112,13 +112,13 @@ public class ChangeFileEncoding extends BaseStep implements StepInterface {
       // Check source encoding
       data.sourceEncoding = environmentSubstitute( meta.getSourceEncoding() );
 
-      // if(Const.isEmpty(data.sourceEncoding)) {
+      // if(Utils.isEmpty(data.sourceEncoding)) {
       // throw new KettleException(BaseMessages.getString(PKG, "ChangeFileEncoding.Exception.SourceEncodingEmpty"));
       // }
       // Check target encoding
       data.targetEncoding = environmentSubstitute( meta.getTargetEncoding() );
 
-      if ( Const.isEmpty( data.targetEncoding ) ) {
+      if ( Utils.isEmpty( data.targetEncoding ) ) {
         throw new KettleException( BaseMessages
           .getString( PKG, "ChangeFileEncoding.Exception.TargetEncodingEmpty" ) );
       }
@@ -129,14 +129,14 @@ public class ChangeFileEncoding extends BaseStep implements StepInterface {
     try {
       // get source filename
       String sourceFilename = data.inputRowMeta.getString( outputRow, data.indexOfFileename );
-      if ( Const.isEmpty( sourceFilename ) ) {
+      if ( Utils.isEmpty( sourceFilename ) ) {
         throw new KettleException( BaseMessages.getString( PKG, "ChangeFileEncoding.Error.SourceFileIsEmpty", meta
           .getDynamicFilenameField() ) );
       }
 
       // get target filename
       String targetFilename = data.inputRowMeta.getString( outputRow, data.indexOfTargetFileename );
-      if ( Const.isEmpty( targetFilename ) ) {
+      if ( Utils.isEmpty( targetFilename ) ) {
         throw new KettleException( BaseMessages.getString( PKG, "ChangeFileEncoding.Error.TargetFileIsEmpty", meta
           .getTargetFilenameField() ) );
       }
@@ -207,7 +207,7 @@ public class ChangeFileEncoding extends BaseStep implements StepInterface {
       buffWriter =
         new BufferedWriter( new OutputStreamWriter(
           new FileOutputStream( targetFilename, false ), data.targetEncoding ) );
-      if ( Const.isEmpty( data.sourceEncoding ) ) {
+      if ( Utils.isEmpty( data.sourceEncoding ) ) {
         buffReader = new BufferedReader( new InputStreamReader( new FileInputStream( sourceFilename ) ) );
       } else {
         buffReader =

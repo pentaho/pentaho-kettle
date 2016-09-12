@@ -24,7 +24,7 @@ package org.pentaho.di.ui.repo;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.MessageBox;
-import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.extension.ExtensionPoint;
 import org.pentaho.di.core.extension.ExtensionPointInterface;
@@ -69,9 +69,9 @@ public class RepositorySpoonStartExtensionPoint implements ExtensionPointInterfa
     StringBuilder optionUsername = getCommandLineOption( options, "user" ).getArgument();
     StringBuilder optionPassword = getCommandLineOption( options, "pass" ).getArgument();
 
-    if ( !Const.isEmpty( optionRepname ) && Const.isEmpty( optionFilename ) ) {
+    if ( !Utils.isEmpty( optionRepname ) && Utils.isEmpty( optionFilename ) ) {
       RepositoryMeta repositoryMeta = repositoryConnectController.getRepositoryMetaByName( optionRepname.toString() );
-      if ( repositoryMeta != null && !Const.isEmpty( optionUsername ) && !Const.isEmpty( optionPassword ) ) {
+      if ( repositoryMeta != null && !Utils.isEmpty( optionUsername ) && !Utils.isEmpty( optionPassword ) ) {
         repositoryConnectController
           .connectToRepository( repositoryMeta, optionUsername.toString(), optionPassword.toString() );
       } else if ( repositoryMeta != null ) {
@@ -87,7 +87,7 @@ public class RepositorySpoonStartExtensionPoint implements ExtensionPointInterfa
         mb.setText( BaseMessages.getString( PKG, "Repository.NoConnected.Message.Title" ) );
         mb.open();
       }
-    } else if ( Const.isEmpty( optionFilename ) ) {
+    } else if ( Utils.isEmpty( optionFilename ) ) {
       RepositoryMeta repositoryMeta = repositoryConnectController.getDefaultRepositoryMeta();
       if ( repositoryMeta != null ) {
         if ( repositoryMeta.getId().equals( "KettleFileRepository" ) ) {

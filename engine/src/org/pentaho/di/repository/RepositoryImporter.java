@@ -38,6 +38,7 @@ import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -213,7 +214,7 @@ public class RepositoryImporter implements IRepositoryImporter, CanLimitDirs {
       for ( int ii = 0; ii < filenames.length; ++ii ) {
 
         final String filename =
-            ( !Const.isEmpty( fileDirectory ) ) ? fileDirectory + Const.FILE_SEPARATOR + filenames[ii] : filenames[ii];
+            ( !Utils.isEmpty( fileDirectory ) ) ? fileDirectory + Const.FILE_SEPARATOR + filenames[ii] : filenames[ii];
         if ( log.isBasic() ) {
           log.logBasic( "Import objects from XML file [" + filename + "]" );
         }

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -33,6 +33,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.owasp.esapi.ESAPI;
 import org.owasp.esapi.Encoder;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
@@ -59,12 +60,12 @@ public class CleanupTransServlet extends BaseHttpServlet implements CartePluginI
     <p>Cleans up transformation on Carte server.
   Method is used for cleaning previously uploaded transformation by its name on Carte server. There are
   two modes for this method: 1) Clean the server sockets only or 2) Clean everything, including the transformation.</p>
-    
+
     <p><b>Example Request:</b><br />
     <pre function="syntax.xml">
     GET /kettle/cleanupTrans/?name=dummy-trans2&xml=Y
     </pre>
-    
+
     </p>
     <h3>Parameters</h3>
     <table class="pentaho-table">
@@ -97,7 +98,7 @@ public class CleanupTransServlet extends BaseHttpServlet implements CartePluginI
     </tr>
     </tbody>
     </table>
-  
+
   <h3>Response Body</h3>
 
   <table class="pentaho-table">
@@ -114,7 +115,7 @@ public class CleanupTransServlet extends BaseHttpServlet implements CartePluginI
   </table>
     <p>Response XML or HTML containing operation result. When using xml=Y <code>result</code> field indicates whether
   operation was successful (<code>OK</code>) or not (<code>ERROR</code>).</p>
-        
+
     <p><b>Example Response:</b></p>
   <pre function="syntax.xml">
   <?xml version="1.0" encoding="UTF-8"?>
@@ -192,7 +193,7 @@ public class CleanupTransServlet extends BaseHttpServlet implements CartePluginI
         //
         Trans trans;
         CarteObjectEntry entry;
-        if ( Const.isEmpty( id ) ) {
+        if ( Utils.isEmpty( id ) ) {
           // get the first transformation that matches...
           //
           entry = getTransformationMap().getFirstCarteObjectEntry( transName );

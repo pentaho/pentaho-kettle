@@ -40,6 +40,7 @@ import org.apache.commons.vfs2.FileType;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.RowMetaAndData;
@@ -433,7 +434,7 @@ public class JobEntryPGPEncryptFiles extends JobEntryBase implements Cloneable, 
       String[] vwildcard = wildcard;
 
       if ( iffileexists.equals( "move_file" ) ) {
-        if ( Const.isEmpty( MoveToFolder ) ) {
+        if ( Utils.isEmpty( MoveToFolder ) ) {
           logError( toString(), BaseMessages.getString( PKG, "JobPGPEncryptFiles.Log.Error.MoveToFolderMissing" ) );
           return result;
         }
@@ -502,7 +503,7 @@ public class JobEntryPGPEncryptFiles extends JobEntryBase implements Cloneable, 
           String vuserid_previous = resultRow.getString( 3, null );
           String vdestinationfilefolder_previous = resultRow.getString( 4, null );
 
-          if ( !Const.isEmpty( vsourcefilefolder_previous ) && !Const.isEmpty( vdestinationfilefolder_previous ) ) {
+          if ( !Utils.isEmpty( vsourcefilefolder_previous ) && !Utils.isEmpty( vdestinationfilefolder_previous ) ) {
             if ( isDetailed() ) {
               logDetailed( BaseMessages.getString(
                 PKG, "JobPGPEncryptFiles.Log.ProcessingRow", vsourcefilefolder_previous,
@@ -538,7 +539,7 @@ public class JobEntryPGPEncryptFiles extends JobEntryBase implements Cloneable, 
             return result;
           }
 
-          if ( !Const.isEmpty( vsourcefilefolder[i] ) && !Const.isEmpty( vdestinationfilefolder[i] ) ) {
+          if ( !Utils.isEmpty( vsourcefilefolder[i] ) && !Utils.isEmpty( vdestinationfilefolder[i] ) ) {
             // ok we can process this file/folder
             if ( isDetailed() ) {
               logDetailed( BaseMessages.getString(
@@ -646,7 +647,7 @@ public class JobEntryPGPEncryptFiles extends JobEntryBase implements Cloneable, 
 
       sourcefilefolder = KettleVFS.getFileObject( realSourceFilefoldername );
       destinationfilefolder = KettleVFS.getFileObject( realDestinationFilefoldername );
-      if ( !Const.isEmpty( MoveToFolder ) ) {
+      if ( !Utils.isEmpty( MoveToFolder ) ) {
         movetofolderfolder = KettleVFS.getFileObject( MoveToFolder );
       }
 
@@ -1164,7 +1165,7 @@ public class JobEntryPGPEncryptFiles extends JobEntryBase implements Cloneable, 
     Pattern pattern = null;
     boolean getIt = true;
 
-    if ( !Const.isEmpty( wildcard ) ) {
+    if ( !Utils.isEmpty( wildcard ) ) {
       pattern = Pattern.compile( wildcard );
       // First see if the file matches the regular expression!
       if ( pattern != null ) {
@@ -1193,7 +1194,7 @@ public class JobEntryPGPEncryptFiles extends JobEntryBase implements Cloneable, 
     }
     Date now = new Date();
 
-    if ( isSpecifyFormat() && !Const.isEmpty( getDateTimeFormat() ) ) {
+    if ( isSpecifyFormat() && !Utils.isEmpty( getDateTimeFormat() ) ) {
       daf.applyPattern( getDateTimeFormat() );
       String dt = daf.format( now );
       shortfilename += dt;
@@ -1237,7 +1238,7 @@ public class JobEntryPGPEncryptFiles extends JobEntryBase implements Cloneable, 
       shortfilename += dt;
     } else {
 
-      if ( isSpecifyMoveFormat() && !Const.isEmpty( getMovedDateTimeFormat() ) ) {
+      if ( isSpecifyMoveFormat() && !Utils.isEmpty( getMovedDateTimeFormat() ) ) {
         daf.applyPattern( getMovedDateTimeFormat() );
         String dt = daf.format( now );
         shortfilename += dt;

@@ -2,7 +2,7 @@
 *
 * Pentaho Data Integration
 *
-* Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+* Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
 *
 *******************************************************************************
 *
@@ -22,7 +22,7 @@
 
 package org.pentaho.di.starmodeler;
 
-import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 
 public enum DimensionType {
   SLOWLY_CHANGING_DIMENSION,
@@ -34,7 +34,7 @@ public enum DimensionType {
 
 
   public static DimensionType getDimensionType(String typeString) {
-    if (Const.isEmpty(typeString)) {
+    if (Utils.isEmpty(typeString)) {
       return DimensionType.OTHER;
     }
     return DimensionType.valueOf(typeString);

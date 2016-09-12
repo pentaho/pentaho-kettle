@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -31,6 +31,7 @@ import netscape.ldap.util.LDIFAttributeContent;
 import netscape.ldap.util.LDIFContent;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
@@ -165,7 +166,7 @@ public class LDIFInput extends BaseStep implements StepInterface {
 
         // Do we need to repeat this field if it is null?
         if ( meta.getInputFields()[i].isRepeated() ) {
-          if ( data.previousRow != null && Const.isEmpty( Value ) ) {
+          if ( data.previousRow != null && Utils.isEmpty( Value ) ) {
             outputRowData[data.totalpreviousfields + i] = data.previousRow[data.totalpreviousfields + i];
           }
         }
@@ -173,21 +174,21 @@ public class LDIFInput extends BaseStep implements StepInterface {
       int rowIndex = data.totalpreviousfields + meta.getInputFields().length;
 
       // See if we need to add the filename to the row...
-      if ( meta.includeFilename() && !Const.isEmpty( meta.getFilenameField() ) ) {
+      if ( meta.includeFilename() && !Utils.isEmpty( meta.getFilenameField() ) ) {
         outputRowData[rowIndex++] = data.filename;
       }
       // See if we need to add the row number to the row...
-      if ( meta.includeRowNumber() && !Const.isEmpty( meta.getRowNumberField() ) ) {
+      if ( meta.includeRowNumber() && !Utils.isEmpty( meta.getRowNumberField() ) ) {
         outputRowData[data.totalpreviousfields + rowIndex++] = new Long( data.rownr );
       }
 
       // See if we need to add the content type to the row...
-      if ( meta.includeContentType() && !Const.isEmpty( meta.getContentTypeField() ) ) {
+      if ( meta.includeContentType() && !Utils.isEmpty( meta.getContentTypeField() ) ) {
         outputRowData[data.totalpreviousfields + rowIndex++] = contentTYPE;
       }
 
       // See if we need to add the DN to the row...
-      if ( meta.IncludeDN() && !Const.isEmpty( meta.getDNField() ) ) {
+      if ( meta.IncludeDN() && !Utils.isEmpty( meta.getDNField() ) ) {
         outputRowData[data.totalpreviousfields + rowIndex++] = data.recordLDIF.getDN();
       }
       // Possibly add short filename...
@@ -319,7 +320,7 @@ public class LDIFInput extends BaseStep implements StepInterface {
           data.convertRowMeta = data.outputRowMeta.cloneToType( ValueMetaInterface.TYPE_STRING );
 
           // Check is filename field is provided
-          if ( Const.isEmpty( meta.getDynamicFilenameField() ) ) {
+          if ( Utils.isEmpty( meta.getDynamicFilenameField() ) ) {
             logError( BaseMessages.getString( PKG, "LDIFInput.Log.NoField" ) );
             throw new KettleException( BaseMessages.getString( PKG, "LDIFInput.Log.NoField" ) );
           }

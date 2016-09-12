@@ -31,6 +31,7 @@ import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
@@ -589,7 +590,7 @@ public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterfa
         "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "leaveExistingStylesUnchanged" ) );
 
       String addToResult = XMLHandler.getTagValue( stepnode, "add_to_result_filenames" );
-      if ( Const.isEmpty( addToResult ) ) {
+      if ( Utils.isEmpty( addToResult ) ) {
         addToResultFilenames = true;
       } else {
         addToResultFilenames = "Y".equalsIgnoreCase( addToResult );
@@ -744,7 +745,7 @@ public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterfa
 
     Date now = new Date();
 
-    if ( SpecifyFormat && !Const.isEmpty( date_time_format ) ) {
+    if ( SpecifyFormat && !Utils.isEmpty( date_time_format ) ) {
       daf.applyPattern( date_time_format );
       String dt = daf.format( now );
       retval += dt;
@@ -875,7 +876,7 @@ public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterfa
       leaveExistingStylesUnchanged = rep.getStepAttributeBoolean( id_step, "leaveExistingStylesUnchanged" );
 
       String addToResult = rep.getStepAttributeString( id_step, "add_to_result_filenames" );
-      if ( Const.isEmpty( addToResult ) ) {
+      if ( Utils.isEmpty( addToResult ) ) {
         addToResultFilenames = true;
       } else {
         addToResultFilenames = rep.getStepAttributeBoolean( id_step, "add_to_result_filenames" );
@@ -1072,11 +1073,11 @@ public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterfa
       // The object that we're modifying here is a copy of the original!
       // So let's change the filename from relative to absolute by grabbing the file object...
       //
-      if ( !Const.isEmpty( fileName ) ) {
+      if ( !Utils.isEmpty( fileName ) ) {
         FileObject fileObject = KettleVFS.getFileObject( space.environmentSubstitute( fileName ), space );
         fileName = resourceNamingInterface.nameResource( fileObject, space, true );
       }
-      if ( !Const.isEmpty( templateFileName ) ) {
+      if ( !Utils.isEmpty( templateFileName ) ) {
         FileObject fileObject = KettleVFS.getFileObject( space.environmentSubstitute( templateFileName ), space );
         templateFileName = resourceNamingInterface.nameResource( fileObject, space, true );
       }

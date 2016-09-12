@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -30,7 +30,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseTransactionListener;
 
@@ -104,7 +104,7 @@ public class DatabaseConnectionMap {
     StringBuilder key = new StringBuilder( connectionGroup );
 
     key.append( ':' ).append( database.getDatabaseMeta().getName() );
-    if ( !Const.isEmpty( partitionID ) ) {
+    if ( !Utils.isEmpty( partitionID ) ) {
       key.append( ':' ).append( partitionID );
     }
 

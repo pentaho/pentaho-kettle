@@ -27,6 +27,7 @@ import java.util.List;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -649,7 +650,7 @@ public class SynchronizeAfterMergeMeta extends BaseStepMeta implements StepMetaI
       try {
         db.connect();
 
-        if ( !Const.isEmpty( tableName ) ) {
+        if ( !Utils.isEmpty( tableName ) ) {
           cr =
             new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
               PKG, "SynchronizeAfterMergeMeta.CheckResult.TableNameOK" ), stepMeta );
@@ -934,7 +935,7 @@ public class SynchronizeAfterMergeMeta extends BaseStepMeta implements StepMetaI
           }
         }
 
-        if ( !Const.isEmpty( tableName ) ) {
+        if ( !Utils.isEmpty( tableName ) ) {
           Database db = new Database( loggingObject, databaseMeta );
           try {
             db.connect();
@@ -1044,7 +1045,7 @@ public class SynchronizeAfterMergeMeta extends BaseStepMeta implements StepMetaI
       try {
         db.connect();
 
-        if ( !Const.isEmpty( realTableName ) ) {
+        if ( !Utils.isEmpty( realTableName ) ) {
           String schemaTable = databaseMeta.getQuotedSchemaTableCombination( realSchemaName, realTableName );
 
           // Check if this table exists...

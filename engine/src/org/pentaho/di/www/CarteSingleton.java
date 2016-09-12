@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -31,6 +31,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.KettleLogStore;
@@ -77,7 +78,7 @@ public class CarteSingleton {
     SlaveServer slaveServer = config.getSlaveServer();
     if ( slaveServer != null ) {
       int port = WebServer.PORT;
-      if ( !Const.isEmpty( slaveServer.getPort() ) ) {
+      if ( !Utils.isEmpty( slaveServer.getPort() ) ) {
         try {
           port = Integer.parseInt( slaveServer.getPort() );
         } catch ( Exception e ) {
@@ -127,7 +128,7 @@ public class CarteSingleton {
     //
     if ( config.getObjectTimeoutMinutes() > 0 ) {
       objectTimeout = config.getObjectTimeoutMinutes();
-    } else if ( !Const.isEmpty( systemTimeout ) ) {
+    } else if ( !Utils.isEmpty( systemTimeout ) ) {
       objectTimeout = Const.toInt( systemTimeout, 1440 );
     } else {
       objectTimeout = 24 * 60; // 1440 : default is a one day time-out

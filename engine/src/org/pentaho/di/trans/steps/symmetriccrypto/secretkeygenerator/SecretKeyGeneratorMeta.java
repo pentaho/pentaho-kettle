@@ -27,6 +27,7 @@ import java.util.List;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -288,13 +289,13 @@ public class SecretKeyGeneratorMeta extends BaseStepMeta implements StepMetaInte
     v.setOrigin( name );
     row.addValueMeta( v );
 
-    if ( !Const.isEmpty( getAlgorithmFieldName() ) ) {
+    if ( !Utils.isEmpty( getAlgorithmFieldName() ) ) {
       v = new ValueMetaString( algorithmFieldName );
       v.setOrigin( name );
       row.addValueMeta( v );
     }
 
-    if ( !Const.isEmpty( getSecretKeyLengthFieldName() ) ) {
+    if ( !Utils.isEmpty( getSecretKeyLengthFieldName() ) ) {
       v = new ValueMetaInteger( secretKeyLengthFieldName );
       v.setLength( ValueMetaInterface.DEFAULT_INTEGER_LENGTH, 0 );
       v.setOrigin( name );
@@ -398,7 +399,7 @@ public class SecretKeyGeneratorMeta extends BaseStepMeta implements StepMetaInte
       remarks.add( cr );
     }
 
-    if ( Const.isEmpty( getSecretKeyFieldName() ) ) {
+    if ( Utils.isEmpty( getSecretKeyFieldName() ) ) {
       CheckResult cr =
         new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
           PKG, "SecretKeyGeneratorMeta.CheckResult.secretKeyFieldMissing" ), stepMeta );

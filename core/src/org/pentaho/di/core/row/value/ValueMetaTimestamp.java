@@ -38,6 +38,7 @@ import java.util.Date;
 import java.util.Locale;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseInterface;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
@@ -243,7 +244,7 @@ public class ValueMetaTimestamp extends ValueMetaDate {
     //
     string = Const.trimToType( string, getTrimType() );
 
-    if ( Const.isEmpty( string ) ) {
+    if ( Utils.isEmpty( string ) ) {
       return null;
     }
     Timestamp returnValue;
@@ -307,11 +308,11 @@ public class ValueMetaTimestamp extends ValueMetaDate {
     // See if we need to convert a null value into a String
     // For example, we might want to convert null into "Empty".
     //
-    if ( !Const.isEmpty( ifNull ) ) {
+    if ( !Utils.isEmpty( ifNull ) ) {
       // Note that you can't pull the pad method up here as a nullComp variable
       // because you could get an NPE since you haven't checked isEmpty(pol)
       // yet!
-      if ( Const.isEmpty( pol )
+      if ( Utils.isEmpty( pol )
           || pol.equalsIgnoreCase( Const.rightPad( new StringBuilder( null_value ), pol.length() ) ) ) {
         pol = ifNull;
       }
@@ -320,12 +321,12 @@ public class ValueMetaTimestamp extends ValueMetaDate {
     // See if the polled value is empty
     // In that case, we have a null value on our hands...
     //
-    if ( Const.isEmpty( pol ) ) {
+    if ( Utils.isEmpty( pol ) ) {
       return null;
     } else {
       // if the null_value is specified, we try to match with that.
       //
-      if ( !Const.isEmpty( null_value ) ) {
+      if ( !Utils.isEmpty( null_value ) ) {
         if ( null_value.length() <= pol.length() ) {
           // If the polled value is equal to the spaces right-padded null_value,
           // we have a match
@@ -398,7 +399,7 @@ public class ValueMetaTimestamp extends ValueMetaDate {
 
   /**
    * Convert the specified data to the data type specified in this object.
-   * 
+   *
    * @param meta2
    *          the metadata of the object to be converted
    * @param data2
@@ -628,7 +629,7 @@ public class ValueMetaTimestamp extends ValueMetaDate {
       dateFormat = new SimpleTimestampFormat( new SimpleDateFormat().toPattern() );
 
       String mask;
-      if ( Const.isEmpty( conversionMask ) ) {
+      if ( Utils.isEmpty( conversionMask ) ) {
         mask = DEFAULT_TIMESTAMP_FORMAT_MASK;
       } else {
         mask = conversionMask;

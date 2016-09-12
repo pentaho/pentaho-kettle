@@ -61,14 +61,14 @@ public class NextSequenceValueServlet extends BaseHttpServlet implements CartePl
     <a name="GET"></a>
     <h2>GET</h2>
     <p>Increments specified pre-configured sequence.
-  Method is used for reserving a number of IDs and incrementing a sequence pre-configured in Carte server configuration 
+  Method is used for reserving a number of IDs and incrementing a sequence pre-configured in Carte server configuration
   by specified amount. If no increment value provided 10000 is used by default.</p>
-    
+
     <p><b>Example Request:</b><br />
     <pre function="syntax.xml">
     GET /kettle/nextSequence?name=test_seq
     </pre>
-    
+
     </p>
     <h3>Parameters</h3>
     <table class="pentaho-table">
@@ -91,7 +91,7 @@ public class NextSequenceValueServlet extends BaseHttpServlet implements CartePl
     </tr>
     </tbody>
     </table>
-  
+
   <h3>Response Body</h3>
 
   <table class="pentaho-table">
@@ -107,7 +107,7 @@ public class NextSequenceValueServlet extends BaseHttpServlet implements CartePl
     </tbody>
   </table>
     <p>Response XML containing sequence value and the increment value used.</p>
-        
+
     <p><b>Example Response:</b></p>
   <pre function="syntax.xml">
   <seq><value>570000</value><increment>10000</increment></seq>

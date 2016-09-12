@@ -26,6 +26,7 @@ import java.util.List;
 
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
@@ -236,7 +237,7 @@ public class OlapInputMeta extends BaseStepMeta implements StepMetaInterface {
 
     for ( int i = 0; cellValues != null && cellValues.length > 0 && i < cellValues[0].length; i++ ) {
       String name = "";
-      if ( Const.isEmpty( headerValues ) ) {
+      if ( Utils.isEmpty( headerValues ) ) {
         name = "Column" + i;
       } else {
         name = headerValues[i];

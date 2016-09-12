@@ -34,6 +34,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.owasp.esapi.ESAPI;
 import org.owasp.esapi.Encoder;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LoggingObjectType;
@@ -185,7 +186,7 @@ public class StartJobServlet extends BaseHttpServlet implements CartePluginInter
       //
       Job job;
       CarteObjectEntry entry;
-      if ( Const.isEmpty( id ) ) {
+      if ( Utils.isEmpty( id ) ) {
         // get the first job that matches...
         //
         entry = getJobMap().getFirstCarteObjectEntry( jobName );

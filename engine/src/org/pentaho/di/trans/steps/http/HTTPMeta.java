@@ -27,6 +27,7 @@ import java.util.List;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
@@ -331,25 +332,25 @@ public class HTTPMeta extends BaseStepMeta implements StepMetaInterface {
 
   public void getFields( RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info, StepMeta nextStep,
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
-    if ( !Const.isEmpty( fieldName ) ) {
+    if ( !Utils.isEmpty( fieldName ) ) {
       ValueMetaInterface v = new ValueMetaString( fieldName );
       v.setOrigin( name );
       inputRowMeta.addValueMeta( v );
     }
-    if ( !Const.isEmpty( resultCodeFieldName ) ) {
+    if ( !Utils.isEmpty( resultCodeFieldName ) ) {
       ValueMetaInterface v =
         new ValueMetaInteger( space.environmentSubstitute( resultCodeFieldName ) );
       v.setOrigin( name );
       inputRowMeta.addValueMeta( v );
     }
-    if ( !Const.isEmpty( responseTimeFieldName ) ) {
+    if ( !Utils.isEmpty( responseTimeFieldName ) ) {
       ValueMetaInterface v =
         new ValueMetaInteger( space.environmentSubstitute( responseTimeFieldName ) );
       v.setOrigin( name );
       inputRowMeta.addValueMeta( v );
     }
     String headerFieldName = space.environmentSubstitute( responseHeaderFieldName );
-    if ( !Const.isEmpty( headerFieldName ) ) {
+    if ( !Utils.isEmpty( headerFieldName ) ) {
       ValueMetaInterface v =
         new ValueMetaString( headerFieldName );
       v.setOrigin( name );
@@ -538,7 +539,7 @@ public class HTTPMeta extends BaseStepMeta implements StepMetaInterface {
     }
     // check Url
     if ( urlInField ) {
-      if ( Const.isEmpty( urlField ) ) {
+      if ( Utils.isEmpty( urlField ) ) {
         cr =
           new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
             PKG, "HTTPMeta.CheckResult.UrlfieldMissing" ), stepMeta );
@@ -549,7 +550,7 @@ public class HTTPMeta extends BaseStepMeta implements StepMetaInterface {
       }
 
     } else {
-      if ( Const.isEmpty( url ) ) {
+      if ( Utils.isEmpty( url ) ) {
         cr =
           new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
             PKG, "HTTPMeta.CheckResult.UrlMissing" ), stepMeta );

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -26,6 +26,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowDataUtil;
@@ -83,7 +84,7 @@ public class Formula extends BaseStep implements StepInterface {
       data.replaceIndex = new int[meta.getFormula().length];
       for ( int i = 0; i < meta.getFormula().length; i++ ) {
         FormulaMetaFunction fn = meta.getFormula()[i];
-        if ( !Const.isEmpty( fn.getReplaceField() ) ) {
+        if ( !Utils.isEmpty( fn.getReplaceField() ) ) {
           data.replaceIndex[i] = getInputRowMeta().indexOfValue( fn.getReplaceField() );
           if ( data.replaceIndex[i] < 0 ) {
             throw new KettleException( "Unknown field specified to replace with a formula result: ["
@@ -128,7 +129,7 @@ public class Formula extends BaseStep implements StepInterface {
         data.formulas = new org.pentaho.reporting.libraries.formula.Formula[meta.getFormula().length];
         for ( int i = 0; i < meta.getFormula().length; i++ ) {
           FormulaMetaFunction fn = meta.getFormula()[i];
-          if ( !Const.isEmpty( fn.getFieldName() ) ) {
+          if ( !Utils.isEmpty( fn.getFieldName() ) ) {
             data.formulas[i] = data.createFormula( meta.getFormula()[i].getFormula() );
           } else {
             throw new KettleException( "Unable to find field name for formula ["
@@ -139,7 +140,7 @@ public class Formula extends BaseStep implements StepInterface {
 
       for ( int i = 0; i < meta.getFormula().length; i++ ) {
         FormulaMetaFunction fn = meta.getFormula()[i];
-        if ( !Const.isEmpty( fn.getFieldName() ) ) {
+        if ( !Utils.isEmpty( fn.getFieldName() ) ) {
           if ( data.formulas[i] == null ) {
             data.formulas[i] = data.createFormula( meta.getFormula()[i].getFormula() );
           }

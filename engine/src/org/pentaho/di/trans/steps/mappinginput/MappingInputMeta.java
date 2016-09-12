@@ -29,6 +29,7 @@ import java.util.List;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -314,7 +315,7 @@ public class MappingInputMeta extends BaseStepMeta implements StepMetaInterface 
       if ( row.isEmpty() ) {
         // We'll have to work with the statically provided information
         for ( int i = 0; i < fieldName.length; i++ ) {
-          if ( !Const.isEmpty( fieldName[ i ] ) ) {
+          if ( !Utils.isEmpty( fieldName[ i ] ) ) {
             int valueType = fieldType[ i ];
             if ( valueType == ValueMetaInterface.TYPE_NONE ) {
               valueType = ValueMetaInterface.TYPE_STRING;

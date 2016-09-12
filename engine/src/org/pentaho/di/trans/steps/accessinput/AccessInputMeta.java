@@ -31,6 +31,7 @@ import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -710,7 +711,7 @@ public class AccessInputMeta extends BaseStepMeta implements StepMetaInterface {
       includeRowNumber = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "rownum" ) );
 
       String addresult = XMLHandler.getTagValue( stepnode, "isaddresult" );
-      if ( Const.isEmpty( addresult ) ) {
+      if ( Utils.isEmpty( addresult ) ) {
         isaddresult = true;
       } else {
         isaddresult = "Y".equalsIgnoreCase( addresult );
@@ -971,7 +972,7 @@ public class AccessInputMeta extends BaseStepMeta implements StepMetaInterface {
       includeRowNumber = rep.getStepAttributeBoolean( id_step, "rownum" );
 
       String addresult = rep.getStepAttributeString( id_step, "isaddresult" );
-      if ( Const.isEmpty( addresult ) ) {
+      if ( Utils.isEmpty( addresult ) ) {
         isaddresult = true;
       } else {
         isaddresult = rep.getStepAttributeBoolean( id_step, "isaddresult" );
@@ -1135,7 +1136,7 @@ public class AccessInputMeta extends BaseStepMeta implements StepMetaInterface {
     }
 
     // Check table
-    if ( Const.isEmpty( getTableName() ) ) {
+    if ( Utils.isEmpty( getTableName() ) ) {
       cr =
         new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
           PKG, "AccessInputMeta.CheckResult.NoFiles" ), stepMeta );
@@ -1205,7 +1206,7 @@ public class AccessInputMeta extends BaseStepMeta implements StepMetaInterface {
       //
       for ( int i = 0; i < fileName.length; i++ ) {
         FileObject fileObject = KettleVFS.getFileObject( space.environmentSubstitute( fileName[i] ), space );
-        fileName[i] = resourceNamingInterface.nameResource( fileObject, space, Const.isEmpty( fileMask[i] ) );
+        fileName[i] = resourceNamingInterface.nameResource( fileObject, space, Utils.isEmpty( fileMask[i] ) );
       }
       return null;
     } catch ( Exception e ) {

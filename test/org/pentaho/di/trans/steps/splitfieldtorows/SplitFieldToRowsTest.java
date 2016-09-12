@@ -28,7 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
-import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleException;
@@ -168,7 +168,7 @@ public class SplitFieldToRowsTest {
       TransHopMeta hop_SplitFieldToRows_Dummy = new TransHopMeta( splitFieldToRows, dummyStep );
       transMeta.addTransHop( hop_SplitFieldToRows_Dummy );
 
-      if ( !Const.isEmpty( delimiterVariableValue ) ) {
+      if ( !Utils.isEmpty( delimiterVariableValue ) ) {
         String delimiterVariableName = delimiter.replace( "${", "" );
         delimiterVariableName = delimiterVariableName.replace( "}", "" );
         transMeta.setVariable( delimiterVariableName, delimiterVariableValue );

@@ -29,6 +29,7 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.util.Utils;
 
 /**
  * Contains the base RowSet class to help implement RowSet variants.
@@ -239,7 +240,7 @@ abstract class BaseRowSet implements Comparable<RowSet>, RowSet {
         .append( "." )
         .append( destinationStepCopy );
 
-      if ( !Const.isEmpty( remoteSlaveServerName ) ) {
+      if ( !Utils.isEmpty( remoteSlaveServerName ) ) {
         str.append( " (" )
           .append( remoteSlaveServerName )
           .append( ")" );

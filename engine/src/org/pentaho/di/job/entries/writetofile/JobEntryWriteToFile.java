@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -32,7 +32,7 @@ import java.util.List;
 import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
-import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
@@ -175,7 +175,7 @@ public class JobEntryWriteToFile extends JobEntryBase implements Cloneable, JobE
     result.setNrErrors( 1 );
 
     String realFilename = getRealFilename();
-    if ( !Const.isEmpty( realFilename ) ) {
+    if ( !Utils.isEmpty( realFilename ) ) {
       String content = environmentSubstitute( getContent() );
       String encoding = environmentSubstitute( getEncoding() );
 
@@ -189,7 +189,7 @@ public class JobEntryWriteToFile extends JobEntryBase implements Cloneable, JobE
         // Create / open file for writing
         os = KettleVFS.getOutputStream( realFilename, isAppendFile() );
 
-        if ( Const.isEmpty( encoding ) ) {
+        if ( Utils.isEmpty( encoding ) ) {
           if ( isDebug() ) {
             logDebug( BaseMessages.getString( PKG, "JobWriteToFile.Log.WritingToFile", realFilename ) );
           }
@@ -286,7 +286,7 @@ public class JobEntryWriteToFile extends JobEntryBase implements Cloneable, JobE
 
   public List<ResourceReference> getResourceDependencies( JobMeta jobMeta ) {
     List<ResourceReference> references = super.getResourceDependencies( jobMeta );
-    if ( !Const.isEmpty( getFilename() ) ) {
+    if ( !Utils.isEmpty( getFilename() ) ) {
       String realFileName = jobMeta.environmentSubstitute( getFilename() );
       ResourceReference reference = new ResourceReference( this );
       reference.getEntries().add( new ResourceEntry( realFileName, ResourceType.FILE ) );

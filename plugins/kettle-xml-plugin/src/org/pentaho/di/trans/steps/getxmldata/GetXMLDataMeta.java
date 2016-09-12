@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -31,6 +31,7 @@ import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -721,7 +722,7 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public String getRequiredFilesDesc( String tt ) {
-    if ( Const.isEmpty( tt ) ) {
+    if ( Utils.isEmpty( tt ) ) {
       return RequiredFilesDesc[0];
     }
     if ( tt.equalsIgnoreCase( RequiredFilesCode[1] ) ) {
@@ -1141,7 +1142,7 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface {
     }
 
     // control Xpath
-    if ( getLoopXPath() == null || Const.isEmpty( getLoopXPath() ) ) {
+    if ( getLoopXPath() == null || Utils.isEmpty( getLoopXPath() ) ) {
       cr =
           new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
               "GetXMLDataMeta.CheckResult.NoLoopXpath" ), stepMeta );
@@ -1155,7 +1156,7 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface {
     }
 
     if ( isInFields() ) {
-      if ( Const.isEmpty( getXMLField() ) ) {
+      if ( Utils.isEmpty( getXMLField() ) ) {
         cr =
             new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
                 "GetXMLDataMeta.CheckResult.NoField" ), stepMeta );

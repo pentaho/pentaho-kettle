@@ -30,6 +30,7 @@ import java.util.List;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettlePluginException;
@@ -396,7 +397,7 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface 
           ValueMetaInterface v = inputRowMeta.getValueMeta( idx );
 
           // Do we need to rename ?
-          if ( !v.getName().equals( metaChange.getRename() ) && !Const.isEmpty( metaChange.getRename() ) ) {
+          if ( !v.getName().equals( metaChange.getRename() ) && !Utils.isEmpty( metaChange.getRename() ) ) {
             v.setName( metaChange.getRename() );
             v.setOrigin( name );
           }
@@ -424,7 +425,7 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface 
             v.setStorageType( metaChange.getStorageType() );
             v.setOrigin( name );
           }
-          if ( !Const.isEmpty( metaChange.getConversionMask() ) ) {
+          if ( !Utils.isEmpty( metaChange.getConversionMask() ) ) {
             v.setConversionMask( metaChange.getConversionMask() );
             v.setOrigin( name );
           }
@@ -434,19 +435,19 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface 
           v.setDateFormatTimeZone( EnvUtil.createTimeZone( metaChange.getDateFormatTimeZone() ) );
           v.setLenientStringToNumber( metaChange.isLenientStringToNumber() );
 
-          if ( !Const.isEmpty( metaChange.getEncoding() ) ) {
+          if ( !Utils.isEmpty( metaChange.getEncoding() ) ) {
             v.setStringEncoding( metaChange.getEncoding() );
             v.setOrigin( name );
           }
-          if ( !Const.isEmpty( metaChange.getDecimalSymbol() ) ) {
+          if ( !Utils.isEmpty( metaChange.getDecimalSymbol() ) ) {
             v.setDecimalSymbol( metaChange.getDecimalSymbol() );
             v.setOrigin( name );
           }
-          if ( !Const.isEmpty( metaChange.getGroupingSymbol() ) ) {
+          if ( !Utils.isEmpty( metaChange.getGroupingSymbol() ) ) {
             v.setGroupingSymbol( metaChange.getGroupingSymbol() );
             v.setOrigin( name );
           }
-          if ( !Const.isEmpty( metaChange.getCurrencySymbol() ) ) {
+          if ( !Utils.isEmpty( metaChange.getCurrencySymbol() ) ) {
             v.setCurrencySymbol( metaChange.getCurrencySymbol() );
             v.setOrigin( name );
           }
@@ -857,7 +858,7 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface 
 
       // See if the select tab renames a column!
       //
-      if ( !Const.isEmpty( output ) && !input.equalsIgnoreCase( output ) ) {
+      if ( !Utils.isEmpty( output ) && !input.equalsIgnoreCase( output ) ) {
         // Yes, add it to the list
         //
         lineages.add( new FieldnameLineage( input, output ) );
@@ -872,7 +873,7 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface 
 
       // See if the select tab renames a column!
       //
-      if ( !Const.isEmpty( output ) && !input.equalsIgnoreCase( output ) ) {
+      if ( !Utils.isEmpty( output ) && !input.equalsIgnoreCase( output ) ) {
         // See if the input is not the output of a row in the Select tab
         //
         int idx = Const.indexOfString( input, getSelectRename() );

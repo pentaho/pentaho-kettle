@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -47,6 +47,7 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.LastUsedFile;
 import org.pentaho.di.core.ObjectUsageCount;
 import org.pentaho.di.core.Props;
@@ -1006,7 +1007,7 @@ public class PropsUI extends Props {
 
   public int getDialogStyle( String styleProperty ) {
     String prop = properties.getProperty( styleProperty );
-    if ( Const.isEmpty( prop ) ) {
+    if ( Utils.isEmpty( prop ) ) {
       return SWT.NONE;
     }
 
@@ -1033,7 +1034,7 @@ public class PropsUI extends Props {
 
   public void setDialogSize( Shell shell, String styleProperty ) {
     String prop = properties.getProperty( styleProperty );
-    if ( Const.isEmpty( prop ) ) {
+    if ( Utils.isEmpty( prop ) ) {
       return;
     }
 

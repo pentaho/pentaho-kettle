@@ -30,6 +30,7 @@ import java.util.Map;
 
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.NotePadMeta;
 import org.pentaho.di.core.ProgressMonitorListener;
 import org.pentaho.di.core.RowMetaAndData;
@@ -767,7 +768,7 @@ public class KettleDatabaseRepositoryJobDelegate extends KettleDatabaseRepositor
         SlaveServer check = jobMeta.findSlaveServer( slaveServer.getName() ); // Check if there already is one in the
                                                                               // transformation
         if ( check == null || overWriteShared ) {
-          if ( !Const.isEmpty( slaveServer.getName() ) ) {
+          if ( !Utils.isEmpty( slaveServer.getName() ) ) {
             jobMeta.addOrReplaceSlaveServer( slaveServer );
             if ( !overWriteShared ) {
               slaveServer.setChanged( false );

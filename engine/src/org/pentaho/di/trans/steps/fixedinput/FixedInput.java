@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -31,6 +31,7 @@ import java.nio.ByteBuffer;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
@@ -250,7 +251,7 @@ public class FixedInput extends BaseStep implements StepInterface {
         data.lineWidth = Integer.parseInt( environmentSubstitute( meta.getLineWidth() ) );
         data.filename = environmentSubstitute( meta.getFilename() );
 
-        if ( Const.isEmpty( data.filename ) ) {
+        if ( Utils.isEmpty( data.filename ) ) {
           logError( BaseMessages.getString( PKG, "FixedInput.MissingFilename.Message" ) );
           return false;
         }

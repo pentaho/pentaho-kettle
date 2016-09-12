@@ -34,6 +34,7 @@ import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaAndData;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.xml.XMLInterface;
 import org.pentaho.di.repository.ObjectId;
@@ -499,7 +500,7 @@ public class Condition implements Cloneable, XMLInterface {
             break;
           case FUNC_ENDS_WITH:
             String string = fieldMeta.getCompatibleString( field );
-            if ( !Const.isEmpty( string ) ) {
+            if ( !Utils.isEmpty( string ) ) {
               if ( right_string == null && field2 != null ) {
                 right_string = fieldMeta2.getCompatibleString( field2 );
               }

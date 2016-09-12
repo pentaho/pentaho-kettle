@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -36,7 +36,7 @@ import java.util.Random;
 
 import junit.framework.ComparisonFailure;
 
-import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.plugins.PluginRegistry;
@@ -199,7 +199,7 @@ public class TestUtilities {
    * @throws IOException
    */
   public static synchronized String createEmptyTempFile( String fileName, String suffix ) throws IOException {
-    File tempFile = File.createTempFile( fileName, ( Const.isEmpty( suffix ) ? "" : suffix ) );
+    File tempFile = File.createTempFile( fileName, ( Utils.isEmpty( suffix ) ? "" : suffix ) );
     tempFile.deleteOnExit();
     return tempFile.getAbsolutePath();
   }

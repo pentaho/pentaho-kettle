@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,10 +22,10 @@
 
 package org.pentaho.di.trans.steps.setvariable;
 
-import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
@@ -67,7 +67,7 @@ public class SetVariable extends BaseStep implements StepInterface {
         // We do not received any row !!
         logBasic( BaseMessages.getString( PKG, "SetVariable.Log.NoInputRowSetDefault" ) );
         for ( int i = 0; i < meta.getFieldName().length; i++ ) {
-          if ( !Const.isEmpty( meta.getDefaultValue()[i] ) ) {
+          if ( !Utils.isEmpty( meta.getDefaultValue()[i] ) ) {
             setValue( rowData, i, true );
           }
         }
@@ -128,8 +128,8 @@ public class SetVariable extends BaseStep implements StepInterface {
     // Get variable name
     String varname = meta.getVariableName()[i];
 
-    if ( Const.isEmpty( varname ) ) {
-      if ( Const.isEmpty( value ) ) {
+    if ( Utils.isEmpty( varname ) ) {
+      if ( Utils.isEmpty( value ) ) {
         throw new KettleException( "Variable name nor value was specified on line #" + ( i + 1 ) );
       } else {
         throw new KettleException( "There was no variable name specified for value [" + value + "]" );

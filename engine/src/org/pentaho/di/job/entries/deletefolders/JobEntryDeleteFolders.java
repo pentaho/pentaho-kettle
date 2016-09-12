@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -36,6 +36,7 @@ import org.apache.commons.vfs2.FileType;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -226,7 +227,7 @@ public class JobEntryDeleteFolders extends JobEntryBase implements Cloneable, Jo
         }
         RowMetaAndData resultRow = rows.get( iteration );
         String args_previous = resultRow.getString( 0, null );
-        if ( !Const.isEmpty( args_previous ) ) {
+        if ( !Utils.isEmpty( args_previous ) ) {
           if ( deleteFolder( args_previous ) ) {
             updateSuccess();
           } else {
@@ -247,7 +248,7 @@ public class JobEntryDeleteFolders extends JobEntryBase implements Cloneable, Jo
           return result;
         }
         String realfilename = environmentSubstitute( arguments[i] );
-        if ( !Const.isEmpty( realfilename ) ) {
+        if ( !Utils.isEmpty( realfilename ) ) {
           if ( deleteFolder( realfilename ) ) {
             updateSuccess();
           } else {

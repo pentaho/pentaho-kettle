@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -56,6 +56,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleException;
@@ -206,7 +207,7 @@ public class Translator2 {
             if ( showKey( keyOccurrence.getKey(), keyOccurrence.getMessagesPackage() ) ) {
               String value =
                 store.lookupKeyValue( locale, keyOccurrence.getMessagesPackage(), keyOccurrence.getKey() );
-              if ( !Const.isEmpty( value ) ) {
+              if ( !Utils.isEmpty( value ) ) {
                 keyCounts[i]++;
               }
               if ( locale.equals( referenceLocale ) ) {
@@ -1023,7 +1024,7 @@ public class Translator2 {
       //
       if ( showKey( keyOccurrence.getKey(), keyOccurrence.getMessagesPackage() ) ) {
         String value = store.lookupKeyValue( locale, messagesPackage, keyOccurrence.getKey() );
-        if ( Const.isEmpty( value ) || ( wAll.getSelection() && !strict ) ) {
+        if ( Utils.isEmpty( value ) || ( wAll.getSelection() && !strict ) ) {
           todo.add( keyOccurrence );
         }
       }
@@ -1042,7 +1043,7 @@ public class Translator2 {
       && selectedSourceFolder != null ) {
       // Store the last modified value
       //
-      if ( !Const.isEmpty( lastValue ) ) {
+      if ( !Utils.isEmpty( lastValue ) ) {
         store.storeValue( selectedLocale, selectedSourceFolder, selectedMessagesPackage, selectedKey, lastValue );
         lastValueChanged = false;
 

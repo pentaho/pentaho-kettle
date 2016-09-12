@@ -25,6 +25,7 @@ package org.pentaho.di.trans.step;
 import java.util.List;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.plugins.PartitionerPluginType;
@@ -189,7 +190,7 @@ public class StepPartitioningMeta implements XMLInterface, Cloneable {
   }
 
   public static final String getMethod( String name ) {
-    if ( Const.isEmpty( name ) ) {
+    if ( Utils.isEmpty( name ) ) {
       return methodCodes[PARTITIONING_METHOD_NONE];
     }
 

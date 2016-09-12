@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,6 +27,7 @@ import java.util.List;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.MessageBox;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.DBCache;
 import org.pentaho.di.core.NotePadMeta;
 import org.pentaho.di.core.SQLStatement;
@@ -87,7 +88,7 @@ public class SpoonDBDelegate extends SpoonDelegate {
     getDatabaseDialog().setDatabaseMeta( databaseMeta );
     getDatabaseDialog().setDatabases( hasDatabasesInterface.getDatabases() );
     String newname = getDatabaseDialog().open();
-    if ( !Const.isEmpty( newname ) ) { // null: CANCEL
+    if ( !Utils.isEmpty( newname ) ) { // null: CANCEL
 
       databaseMeta = getDatabaseDialog().getDatabaseMeta();
       if ( !newname.equals( originalName ) && DialogUtils.objectWithTheSameNameExists( databaseMeta,
@@ -427,7 +428,7 @@ public class SpoonDBDelegate extends SpoonDelegate {
       if ( !rep.getSecurityProvider().isReadOnly() ) {
         try {
 
-          if ( Const.isEmpty( versionComment ) ) {
+          if ( Utils.isEmpty( versionComment ) ) {
             rep.insertLogEntry( "Saving database '" + db.getName() + "'" );
           } else {
             rep.insertLogEntry( "Save database : " + versionComment );
@@ -472,7 +473,7 @@ public class SpoonDBDelegate extends SpoonDelegate {
 
     getDatabaseDialog().setDatabaseMeta( databaseMeta );
     String con_name = getDatabaseDialog().open();
-    if ( !Const.isEmpty( con_name ) ) {
+    if ( !Utils.isEmpty( con_name ) ) {
       databaseMeta = getDatabaseDialog().getDatabaseMeta();
 
       databaseMeta.verifyAndModifyDatabaseName( hasDatabasesInterface.getDatabases(), null );

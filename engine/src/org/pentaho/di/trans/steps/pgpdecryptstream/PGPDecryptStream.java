@@ -22,10 +22,10 @@
 
 package org.pentaho.di.trans.steps.pgpdecryptstream;
 
-import org.pentaho.di.core.Const;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.entries.pgpencryptfiles.GPG;
 import org.pentaho.di.trans.Trans;
@@ -79,14 +79,14 @@ public class PGPDecryptStream extends BaseStep implements StepInterface {
         meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
 
         // Check is stream data field is provided
-        if ( Const.isEmpty( meta.getStreamField() ) ) {
+        if ( Utils.isEmpty( meta.getStreamField() ) ) {
           throw new KettleException( BaseMessages.getString( PKG, "PGPDecryptStream.Error.DataStreamFieldMissing" ) );
         }
 
         if ( meta.isPassphraseFromField() ) {
           // Passphrase from field
           String fieldname = meta.getPassphraseFieldName();
-          if ( Const.isEmpty( fieldname ) ) {
+          if ( Utils.isEmpty( fieldname ) ) {
             throw new KettleException( BaseMessages.getString(
               PKG, "PGPDecryptStream.Error.PassphraseFieldMissing" ) );
           }
@@ -100,7 +100,7 @@ public class PGPDecryptStream extends BaseStep implements StepInterface {
           // Check is passphrase is provided
           data.passPhrase =
             Encr.decryptPasswordOptionallyEncrypted( environmentSubstitute( meta.getPassphrase() ) );
-          if ( Const.isEmpty( data.passPhrase ) ) {
+          if ( Utils.isEmpty( data.passPhrase ) ) {
             throw new KettleException( BaseMessages.getString( PKG, "PGPDecryptStream.Error.PassphraseMissing" ) );
           }
         }
@@ -124,14 +124,14 @@ public class PGPDecryptStream extends BaseStep implements StepInterface {
 
       if ( meta.isPassphraseFromField() ) {
         data.passPhrase = data.previousRowMeta.getString( r, data.indexOfPassphraseField );
-        if ( Const.isEmpty( data.passPhrase ) ) {
+        if ( Utils.isEmpty( data.passPhrase ) ) {
           throw new KettleException( BaseMessages.getString( PKG, "PGPDecryptStream.Error.PassphraseMissing" ) );
         }
       }
       // get stream, data to decrypt
       String encryptedData = data.previousRowMeta.getString( r, data.indexOfField );
 
-      if ( Const.isEmpty( encryptedData ) ) {
+      if ( Utils.isEmpty( encryptedData ) ) {
         // no data..we can not continue with this row
         throw new KettleException( BaseMessages.getString( PKG, "PGPDecryptStream.Error.DataToDecryptEmpty" ) );
       }
@@ -174,7 +174,7 @@ public class PGPDecryptStream extends BaseStep implements StepInterface {
     data = (PGPDecryptStreamData) sdi;
 
     if ( super.init( smi, sdi ) ) {
-      if ( Const.isEmpty( meta.getResultFieldName() ) ) {
+      if ( Utils.isEmpty( meta.getResultFieldName() ) ) {
         logError( BaseMessages.getString( PKG, "PGPDecryptStream.Error.ResultFieldMissing" ) );
         return false;
       }

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,6 +27,7 @@ import java.net.URL;
 import java.net.URLConnection;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.i18n.BaseMessages;
@@ -77,7 +78,7 @@ public class WebServiceAvailable extends BaseStep implements StepInterface {
       meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
 
       // Check is URL field is provided
-      if ( Const.isEmpty( meta.getURLField() ) ) {
+      if ( Utils.isEmpty( meta.getURLField() ) ) {
         logError( BaseMessages.getString( PKG, "WebServiceAvailable.Error.FilenameFieldMissing" ) );
         throw new KettleException( BaseMessages.getString( PKG, "WebServiceAvailable.Error.FilenameFieldMissing" ) );
       }
@@ -98,7 +99,7 @@ public class WebServiceAvailable extends BaseStep implements StepInterface {
       // get url
       String url = data.previousRowMeta.getString( r, data.indexOfURL );
 
-      if ( Const.isEmpty( url ) ) {
+      if ( Utils.isEmpty( url ) ) {
         throw new KettleException( BaseMessages.getString( PKG, "WebServiceAvailable.Error.URLEmpty" ) );
       }
 
@@ -168,7 +169,7 @@ public class WebServiceAvailable extends BaseStep implements StepInterface {
     data = (WebServiceAvailableData) sdi;
 
     if ( super.init( smi, sdi ) ) {
-      if ( Const.isEmpty( meta.getResultFieldName() ) ) {
+      if ( Utils.isEmpty( meta.getResultFieldName() ) ) {
         logError( BaseMessages.getString( PKG, "WebServiceAvailable.Error.ResultFieldMissing" ) );
         return false;
       }

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -33,10 +33,10 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.pentaho.di.core.Const;
 import org.pentaho.di.core.gui.AreaOwner;
 import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.gui.SwingGC;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
@@ -57,14 +57,14 @@ public class GetJobImageServlet extends BaseHttpServlet implements CartePluginIn
     <a name="GET"></a>
     <h2>GET</h2>
     <p>Generates and returns image of the specified job.
-  Generates PNG image of the specified job currently present on Carte server. Job name and Carte job ID (optional) 
+  Generates PNG image of the specified job currently present on Carte server. Job name and Carte job ID (optional)
   is used for specifying job to get information for. Response is binary of the PNG image.</p>
-    
+
     <p><b>Example Request:</b><br />
     <pre function="syntax.xml">
     GET /kettle/jobImage?name=dummy_job
     </pre>
-    
+
     </p>
     <h3>Parameters</h3>
     <table class="pentaho-table">
@@ -86,7 +86,7 @@ public class GetJobImageServlet extends BaseHttpServlet implements CartePluginIn
     </tr>
     </tbody>
     </table>
-  
+
   <h3>Response Body</h3>
 
   <table class="pentaho-table">
@@ -102,7 +102,7 @@ public class GetJobImageServlet extends BaseHttpServlet implements CartePluginIn
     </tbody>
   </table>
     <p>A binary PNG image or empty response if no job is found.</p>
-    
+
 
     <h3>Status Codes</h3>
     <table class="pentaho-table">
@@ -140,7 +140,7 @@ public class GetJobImageServlet extends BaseHttpServlet implements CartePluginIn
     //
     Job job;
     CarteObjectEntry entry;
-    if ( Const.isEmpty( id ) ) {
+    if ( Utils.isEmpty( id ) ) {
       // get the first transformation that matches...
       //
       entry = getJobMap().getFirstCarteObjectEntry( jobName );

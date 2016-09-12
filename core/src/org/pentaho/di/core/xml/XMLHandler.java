@@ -58,6 +58,7 @@ import org.apache.commons.vfs2.FileObject;
 import org.owasp.esapi.ESAPI;
 import org.owasp.esapi.Encoder;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.KettleAttributeInterface;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
@@ -94,7 +95,7 @@ public class XMLHandler {
 
   /**
    * The header string to specify encoding in an XML file
-   * 
+   *
    * @param encoding
    *          The desired encoding to use in the XML file
    * @return The XML header.
@@ -605,7 +606,7 @@ public class XMLHandler {
 
       Document doc;
       try {
-        if ( Const.isEmpty( systemID ) ) {
+        if ( Utils.isEmpty( systemID ) ) {
           // Normal parsing
           //
           doc = db.parse( inputStream );
@@ -1111,7 +1112,7 @@ public class XMLHandler {
   }
 
   public static Date stringToDate( String dateString ) {
-    if ( Const.isEmpty( dateString ) ) {
+    if ( Utils.isEmpty( dateString ) ) {
       return null;
     }
 

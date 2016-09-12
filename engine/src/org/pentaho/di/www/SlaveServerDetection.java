@@ -31,7 +31,7 @@ import org.w3c.dom.Node;
 
 /**
  * This class is what describes the information that we keep when we detect a slave server in the cloud / cluster.<br>
- * It contains the slave server information as well as the time it was last seen alive, 
+ * It contains the slave server information as well as the time it was last seen alive,
  * whether it is still alive, etc.<br>
  * <br>
  *

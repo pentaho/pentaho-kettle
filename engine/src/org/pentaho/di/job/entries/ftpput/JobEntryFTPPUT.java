@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -38,6 +38,7 @@ import java.util.regex.Pattern;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.encryption.Encr;
@@ -614,7 +615,7 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
 
       // move to spool dir ...
       String realRemoteDirectory = environmentSubstitute( remoteDirectory );
-      if ( !Const.isEmpty( realRemoteDirectory ) ) {
+      if ( !Utils.isEmpty( realRemoteDirectory ) ) {
         ftpclient.chdir( realRemoteDirectory );
         if ( log.isDetailed() ) {
           logDetailed( BaseMessages.getString( PKG, "JobFTPPUT.Log.ChangedDirectory", realRemoteDirectory ) );
@@ -652,7 +653,7 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
 
       String realWildcard = environmentSubstitute( wildcard );
       Pattern pattern;
-      if ( !Const.isEmpty( realWildcard ) ) {
+      if ( !Utils.isEmpty( realWildcard ) ) {
         pattern = Pattern.compile( realWildcard );
       } else {
         pattern = null;
@@ -740,11 +741,11 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
 
     FTPClient ftpClient = createFtpClient();
     ftpClient.setRemoteAddr( InetAddress.getByName( realServerName ) );
-    if ( !Const.isEmpty( realServerPort ) ) {
+    if ( !Utils.isEmpty( realServerPort ) ) {
       ftpClient.setRemotePort( Const.toInt( realServerPort, FTP_DEFAULT_PORT ) );
     }
 
-    if ( !Const.isEmpty( proxyHost ) ) {
+    if ( !Utils.isEmpty( proxyHost ) ) {
       String realProxyHost = environmentSubstitute( proxyHost );
       ftpClient.setRemoteAddr( InetAddress.getByName( realProxyHost ) );
       if ( log.isDetailed() ) {
@@ -789,18 +790,18 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
     }
 
     // If socks proxy server was provided
-    if ( !Const.isEmpty( socksProxyHost ) ) {
+    if ( !Utils.isEmpty( socksProxyHost ) ) {
       // if a port was provided
-      if ( !Const.isEmpty( socksProxyPort ) ) {
+      if ( !Utils.isEmpty( socksProxyPort ) ) {
         FTPClient.initSOCKS( environmentSubstitute( socksProxyPort ), environmentSubstitute( socksProxyHost ) );
       } else { // looks like we have a host and no port
         throw new FTPException( BaseMessages.getString(
           PKG, "JobFTPPUT.SocksProxy.PortMissingException", environmentSubstitute( socksProxyHost ) ) );
       }
       // now if we have authentication information
-      if ( !Const.isEmpty( socksProxyUsername )
-        && Const.isEmpty( socksProxyPassword ) || Const.isEmpty( socksProxyUsername )
-        && !Const.isEmpty( socksProxyPassword ) ) {
+      if ( !Utils.isEmpty( socksProxyUsername )
+        && Utils.isEmpty( socksProxyPassword ) || Utils.isEmpty( socksProxyUsername )
+        && !Utils.isEmpty( socksProxyPassword ) ) {
         // we have a username without a password or vica versa
         throw new FTPException( BaseMessages.getString(
           PKG, "JobFTPPUT.SocksProxy.IncompleteCredentials", environmentSubstitute( socksProxyHost ),
@@ -822,7 +823,7 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
 
   public List<ResourceReference> getResourceDependencies( JobMeta jobMeta ) {
     List<ResourceReference> references = super.getResourceDependencies( jobMeta );
-    if ( !Const.isEmpty( serverName ) ) {
+    if ( !Utils.isEmpty( serverName ) ) {
       String realServerName = jobMeta.environmentSubstitute( serverName );
       ResourceReference reference = new ResourceReference( this );
       reference.getEntries().add( new ResourceEntry( realServerName, ResourceType.SERVER ) );

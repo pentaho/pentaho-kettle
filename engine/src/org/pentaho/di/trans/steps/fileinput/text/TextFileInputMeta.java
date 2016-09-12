@@ -32,6 +32,7 @@ import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
@@ -283,7 +284,7 @@ public class TextFileInputMeta extends
       content.nrLinesPerPage = Const.toInt( XMLHandler.getTagValue( stepnode, "nr_lines_per_page" ), 1 );
       content.nrLinesDocHeader = Const.toInt( XMLHandler.getTagValue( stepnode, "nr_lines_doc_header" ), 1 );
       String addToResult = XMLHandler.getTagValue( stepnode, "add_to_result_filenames" );
-      if ( Const.isEmpty( addToResult ) ) {
+      if ( Utils.isEmpty( addToResult ) ) {
         inputFiles.isaddresult = true;
       } else {
         inputFiles.isaddresult = "Y".equalsIgnoreCase( addToResult );
@@ -816,7 +817,7 @@ public class TextFileInputMeta extends
   }
 
   public String getLookupStepname() {
-    if ( inputFiles.acceptingFilenames && acceptingStep != null && !Const.isEmpty( acceptingStep.getName() ) ) {
+    if ( inputFiles.acceptingFilenames && acceptingStep != null && !Utils.isEmpty( acceptingStep.getName() ) ) {
       return acceptingStep.getName();
     }
     return null;
@@ -871,7 +872,7 @@ public class TextFileInputMeta extends
       content.fileFormat = rep.getStepAttributeString( id_step, "format" );
       content.encoding = rep.getStepAttributeString( id_step, "encoding" );
       String addToResult = rep.getStepAttributeString( id_step, "add_to_result_filenames" );
-      if ( Const.isEmpty( addToResult ) ) {
+      if ( Utils.isEmpty( addToResult ) ) {
         inputFiles.isaddresult = true;
       } else {
         inputFiles.isaddresult = rep.getStepAttributeBoolean( id_step, "add_to_result_filenames" );
@@ -1252,7 +1253,7 @@ public class TextFileInputMeta extends
           FileObject fileObject = getFileObject( space.environmentSubstitute( fileName ), space );
 
           inputFiles.fileName[i] =
-              resourceNamingInterface.nameResource( fileObject, space, Const.isEmpty( inputFiles.fileMask[i] ) );
+              resourceNamingInterface.nameResource( fileObject, space, Utils.isEmpty( inputFiles.fileMask[i] ) );
         }
       }
       return null;

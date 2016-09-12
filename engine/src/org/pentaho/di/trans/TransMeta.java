@@ -46,6 +46,7 @@ import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.DBCache;
 import org.pentaho.di.core.LastUsedFile;
@@ -497,18 +498,18 @@ public class TransMeta extends AbstractMeta
   public int compare( TransMeta t1, TransMeta t2 ) {
     // If we don't have a filename, the transformation comes from a repository
     //
-    if ( Const.isEmpty( t1.getFilename() ) ) {
+    if ( Utils.isEmpty( t1.getFilename() ) ) {
 
-      if ( !Const.isEmpty( t2.getFilename() ) ) {
+      if ( !Utils.isEmpty( t2.getFilename() ) ) {
         return -1;
       }
 
       // First compare names...
       //
-      if ( Const.isEmpty( t1.getName() ) && !Const.isEmpty( t2.getName() ) ) {
+      if ( Utils.isEmpty( t1.getName() ) && !Utils.isEmpty( t2.getName() ) ) {
         return -1;
       }
-      if ( !Const.isEmpty( t1.getName() ) && Const.isEmpty( t2.getName() ) ) {
+      if ( !Utils.isEmpty( t1.getName() ) && Utils.isEmpty( t2.getName() ) ) {
         return 1;
       }
       int cmpName = t1.getName().compareTo( t2.getName() );
@@ -537,16 +538,16 @@ public class TransMeta extends AbstractMeta
       return t1.getObjectRevision().getName().compareTo( t2.getObjectRevision().getName() );
 
     } else {
-      if ( Const.isEmpty( t2.getFilename() ) ) {
+      if ( Utils.isEmpty( t2.getFilename() ) ) {
         return 1;
       }
 
       // First compare names
       //
-      if ( Const.isEmpty( t1.getName() ) && !Const.isEmpty( t2.getName() ) ) {
+      if ( Utils.isEmpty( t1.getName() ) && !Utils.isEmpty( t2.getName() ) ) {
         return -1;
       }
-      if ( !Const.isEmpty( t1.getName() ) && Const.isEmpty( t2.getName() ) ) {
+      if ( !Utils.isEmpty( t1.getName() ) && Utils.isEmpty( t2.getName() ) ) {
         return 1;
       }
       int cmpName = t1.getName().compareTo( t2.getName() );
@@ -2025,7 +2026,7 @@ public class TransMeta extends AbstractMeta
     StepMetaInterface stepint = stepMeta.getStepMetaInterface();
     RowMetaInterface[] inform = null;
     StepMeta[] lu = getInfoStep( stepMeta );
-    if ( Const.isEmpty( lu ) ) {
+    if ( Utils.isEmpty( lu ) ) {
       inform = new RowMetaInterface[] { stepint.getTableFields(), };
     } else {
       inform = new RowMetaInterface[lu.length];
@@ -2243,7 +2244,7 @@ public class TransMeta extends AbstractMeta
    * @return true if the transformation is referenced by a repository, false otherwise
    */
   public static boolean isRepReference( String exactFilename, String exactTransname ) {
-    return Const.isEmpty( exactFilename ) && !Const.isEmpty( exactTransname );
+    return Utils.isEmpty( exactFilename ) && !Utils.isEmpty( exactTransname );
   }
 
   /**
@@ -4270,12 +4271,12 @@ public class TransMeta extends AbstractMeta
     if ( monitor != null ) {
       monitor.subTask( BaseMessages.getString( PKG, "TransMeta.Monitor.GettingTheSQLForTransformationTask.Title2" ) );
     }
-    if ( transLogTable.getDatabaseMeta() != null && ( !Const.isEmpty( transLogTable.getTableName() ) || !Const
+    if ( transLogTable.getDatabaseMeta() != null && ( !Utils.isEmpty( transLogTable.getTableName() ) || !Utils
         .isEmpty( performanceLogTable.getTableName() ) ) ) {
       try {
         for ( LogTableInterface logTable : new LogTableInterface[] { transLogTable, performanceLogTable,
           channelLogTable, stepLogTable, } ) {
-          if ( logTable.getDatabaseMeta() != null && !Const.isEmpty( logTable.getTableName() ) ) {
+          if ( logTable.getDatabaseMeta() != null && !Utils.isEmpty( logTable.getTableName() ) ) {
 
             Database db = null;
             try {
@@ -4289,7 +4290,7 @@ public class TransMeta extends AbstractMeta
                   logTable.getDatabaseMeta()
                       .getQuotedSchemaTableCombination( logTable.getSchemaName(), logTable.getTableName() );
               String sql = db.getDDL( schemaTable, fields );
-              if ( !Const.isEmpty( sql ) ) {
+              if ( !Utils.isEmpty( sql ) ) {
                 SQLStatement stat = new SQLStatement( "<this transformation>", transLogTable.getDatabaseMeta(), sql );
                 stats.add( stat );
               }
@@ -4942,8 +4943,8 @@ public class TransMeta extends AbstractMeta
    */
   @Override
   public String toString() {
-    if ( !Const.isEmpty( filename ) ) {
-      if ( Const.isEmpty( name ) ) {
+    if ( !Utils.isEmpty( filename ) ) {
+      if ( Utils.isEmpty( name ) ) {
         return filename;
       } else {
         return filename + " : " + name;
@@ -5612,7 +5613,7 @@ public class TransMeta extends AbstractMeta
   protected void setInternalFilenameKettleVariables( VariableSpace var ) {
     // If we have a filename that's defined, set variables. If not, clear them.
     //
-    if ( !Const.isEmpty( filename ) ) {
+    if ( !Utils.isEmpty( filename ) ) {
       try {
         FileObject fileObject = KettleVFS.getFileObject( filename, var );
         FileName fileName = fileObject.getName();
@@ -5646,7 +5647,7 @@ public class TransMeta extends AbstractMeta
    *           if any errors occur during the search
    */
   public StepMeta findMappingInputStep( String stepname ) throws KettleStepException {
-    if ( !Const.isEmpty( stepname ) ) {
+    if ( !Utils.isEmpty( stepname ) ) {
       StepMeta stepMeta = findStep( stepname ); // TODO verify that it's a mapping input!!
       if ( stepMeta == null ) {
         throw new KettleStepException( BaseMessages.getString(
@@ -5684,7 +5685,7 @@ public class TransMeta extends AbstractMeta
    *           if any errors occur during the search
    */
   public StepMeta findMappingOutputStep( String stepname ) throws KettleStepException {
-    if ( !Const.isEmpty( stepname ) ) {
+    if ( !Utils.isEmpty( stepname ) ) {
       StepMeta stepMeta = findStep( stepname ); // TODO verify that it's a mapping output step.
       if ( stepMeta == null ) {
         throw new KettleStepException( BaseMessages.getString(
@@ -5754,7 +5755,7 @@ public class TransMeta extends AbstractMeta
       String originalPath;
       String fullname;
       String extension = "ktr";
-      if ( Const.isEmpty( getFilename() ) ) {
+      if ( Utils.isEmpty( getFilename() ) ) {
         // Assume repository...
         //
         originalPath = directory.getPath();
@@ -5822,7 +5823,7 @@ public class TransMeta extends AbstractMeta
 
         // Also remember the original filename (if any), including variables etc.
         //
-        if ( Const.isEmpty( this.getFilename() ) ) { // Repository
+        if ( Utils.isEmpty( this.getFilename() ) ) { // Repository
           definition.setOrigin( fullname );
         } else {
           definition.setOrigin( this.getFilename() );

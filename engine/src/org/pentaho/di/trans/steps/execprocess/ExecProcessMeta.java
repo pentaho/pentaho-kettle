@@ -27,6 +27,7 @@ import java.util.List;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -202,21 +203,21 @@ public class ExecProcessMeta extends BaseStepMeta implements StepMetaInterface {
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     // Output fields (String)
     String realOutputFieldname = space.environmentSubstitute( resultfieldname );
-    if ( !Const.isEmpty( realOutputFieldname ) ) {
+    if ( !Utils.isEmpty( realOutputFieldname ) ) {
       ValueMetaInterface v = new ValueMetaString( realOutputFieldname );
       v.setLength( 100, -1 );
       v.setOrigin( name );
       inputRowMeta.addValueMeta( v );
     }
     String realerrofieldname = space.environmentSubstitute( errorfieldname );
-    if ( !Const.isEmpty( realerrofieldname ) ) {
+    if ( !Utils.isEmpty( realerrofieldname ) ) {
       ValueMetaInterface v = new ValueMetaString( realerrofieldname );
       v.setLength( 100, -1 );
       v.setOrigin( name );
       inputRowMeta.addValueMeta( v );
     }
     String realexitvaluefieldname = space.environmentSubstitute( exitvaluefieldname );
-    if ( !Const.isEmpty( realexitvaluefieldname ) ) {
+    if ( !Utils.isEmpty( realexitvaluefieldname ) ) {
       ValueMetaInterface v = new ValueMetaInteger( realexitvaluefieldname );
       v.setLength( ValueMetaInterface.DEFAULT_INTEGER_LENGTH, 0 );
       v.setOrigin( name );
@@ -328,7 +329,7 @@ public class ExecProcessMeta extends BaseStepMeta implements StepMetaInterface {
     CheckResult cr;
     String error_message = "";
 
-    if ( Const.isEmpty( resultfieldname ) ) {
+    if ( Utils.isEmpty( resultfieldname ) ) {
       error_message = BaseMessages.getString( PKG, "ExecProcessMeta.CheckResult.ResultFieldMissing" );
       cr = new CheckResult( CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta );
     } else {
@@ -337,7 +338,7 @@ public class ExecProcessMeta extends BaseStepMeta implements StepMetaInterface {
     }
     remarks.add( cr );
 
-    if ( Const.isEmpty( processfield ) ) {
+    if ( Utils.isEmpty( processfield ) ) {
       error_message = BaseMessages.getString( PKG, "ExecProcessMeta.CheckResult.ProcessFieldMissing" );
       cr = new CheckResult( CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta );
     } else {

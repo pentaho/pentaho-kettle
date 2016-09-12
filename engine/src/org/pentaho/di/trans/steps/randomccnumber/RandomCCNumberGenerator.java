@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,6 +23,7 @@
 package org.pentaho.di.trans.steps.randomccnumber;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
@@ -126,7 +127,7 @@ public class RandomCCNumberGenerator extends BaseStep implements StepInterface {
         return false;
       }
 
-      if ( Const.isEmpty( meta.getCardNumberFieldName() ) ) {
+      if ( Utils.isEmpty( meta.getCardNumberFieldName() ) ) {
         logError( BaseMessages.getString( PKG, "RandomCCNumberGenerator.Log.CardNumberFieldMissing" ) );
         return false;
       }
@@ -153,8 +154,8 @@ public class RandomCCNumberGenerator extends BaseStep implements StepInterface {
         }
       }
 
-      data.addCardTypeOutput = !Const.isEmpty( meta.getCardTypeFieldName() );
-      data.addCardLengthOutput = !Const.isEmpty( meta.getCardLengthFieldName() );
+      data.addCardTypeOutput = !Utils.isEmpty( meta.getCardTypeFieldName() );
+      data.addCardLengthOutput = !Utils.isEmpty( meta.getCardLengthFieldName() );
 
       return true;
     }

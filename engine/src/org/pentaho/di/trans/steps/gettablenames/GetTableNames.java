@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,6 +23,7 @@
 package org.pentaho.di.trans.steps.gettablenames;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
@@ -91,7 +92,7 @@ public class GetTableNames extends BaseStep implements StepInterface {
         data.totalpreviousfields = data.inputRowMeta.size();
 
         // Check is filename field is provided
-        if ( Const.isEmpty( meta.getSchemaFieldName() ) ) {
+        if ( Utils.isEmpty( meta.getSchemaFieldName() ) ) {
           logError( BaseMessages.getString( PKG, "GetTableNames.Log.NoSchemaField" ) );
           throw new KettleException( BaseMessages.getString( PKG, "GetTableNames.Log.NoSchemaField" ) );
         }
@@ -143,13 +144,13 @@ public class GetTableNames extends BaseStep implements StepInterface {
         String catalogName = catalogsNames[i];
         outputRowCatalog[outputIndex++] = catalogName;
 
-        if ( !Const.isEmpty( data.realObjectTypeFieldName ) ) {
+        if ( !Utils.isEmpty( data.realObjectTypeFieldName ) ) {
           outputRowCatalog[outputIndex++] = ObjectType;
         }
-        if ( !Const.isEmpty( data.realIsSystemObjectFieldName ) ) {
+        if ( !Utils.isEmpty( data.realIsSystemObjectFieldName ) ) {
           outputRowCatalog[outputIndex++] = Boolean.valueOf( data.db.isSystemTable( catalogName ) );
         }
-        if ( !Const.isEmpty( data.realSQLCreationFieldName ) ) {
+        if ( !Utils.isEmpty( data.realSQLCreationFieldName ) ) {
           outputRowCatalog[outputIndex++] = null;
         }
         data.rownr++;
@@ -172,7 +173,7 @@ public class GetTableNames extends BaseStep implements StepInterface {
       String ObjectType = BaseMessages.getString( PKG, "GetTableNamesDialog.ObjectType.Schema" );
       // Views
       String[] schemaNames = new String[] {};
-      if ( !Const.isEmpty( data.realSchemaName ) ) {
+      if ( !Utils.isEmpty( data.realSchemaName ) ) {
         schemaNames = new String[] { data.realSchemaName };
       } else {
         schemaNames = data.db.getSchemas();
@@ -188,13 +189,13 @@ public class GetTableNames extends BaseStep implements StepInterface {
         String schemaName = schemaNames[i];
         outputRowSchema[outputIndex++] = schemaName;
 
-        if ( !Const.isEmpty( data.realObjectTypeFieldName ) ) {
+        if ( !Utils.isEmpty( data.realObjectTypeFieldName ) ) {
           outputRowSchema[outputIndex++] = ObjectType;
         }
-        if ( !Const.isEmpty( data.realIsSystemObjectFieldName ) ) {
+        if ( !Utils.isEmpty( data.realIsSystemObjectFieldName ) ) {
           outputRowSchema[outputIndex++] = Boolean.valueOf( data.db.isSystemTable( schemaName ) );
         }
-        if ( !Const.isEmpty( data.realSQLCreationFieldName ) ) {
+        if ( !Utils.isEmpty( data.realSQLCreationFieldName ) ) {
           outputRowSchema[outputIndex++] = null;
         }
         data.rownr++;
@@ -226,10 +227,10 @@ public class GetTableNames extends BaseStep implements StepInterface {
         String tableName = tableNames[i];
         outputRowTable[outputIndex++] = tableName;
 
-        if ( !Const.isEmpty( data.realObjectTypeFieldName ) ) {
+        if ( !Utils.isEmpty( data.realObjectTypeFieldName ) ) {
           outputRowTable[outputIndex++] = ObjectType;
         }
-        if ( !Const.isEmpty( data.realIsSystemObjectFieldName ) ) {
+        if ( !Utils.isEmpty( data.realIsSystemObjectFieldName ) ) {
           outputRowTable[outputIndex++] = Boolean.valueOf( data.db.isSystemTable( tableName ) );
         }
         // Get primary key
@@ -260,7 +261,7 @@ public class GetTableNames extends BaseStep implements StepInterface {
             sql += ")" + Const.CR + ")" + Const.CR + ";";
           }
         }
-        if ( !Const.isEmpty( data.realSQLCreationFieldName ) ) {
+        if ( !Utils.isEmpty( data.realSQLCreationFieldName ) ) {
           outputRowTable[outputIndex++] = sql;
         }
 
@@ -292,14 +293,14 @@ public class GetTableNames extends BaseStep implements StepInterface {
           String viewName = viewNames[i];
           outputRowView[outputIndex++] = viewName;
 
-          if ( !Const.isEmpty( data.realObjectTypeFieldName ) ) {
+          if ( !Utils.isEmpty( data.realObjectTypeFieldName ) ) {
             outputRowView[outputIndex++] = ObjectType;
           }
-          if ( !Const.isEmpty( data.realIsSystemObjectFieldName ) ) {
+          if ( !Utils.isEmpty( data.realIsSystemObjectFieldName ) ) {
             outputRowView[outputIndex++] = Boolean.valueOf( data.db.isSystemTable( viewName ) );
           }
 
-          if ( !Const.isEmpty( data.realSQLCreationFieldName ) ) {
+          if ( !Utils.isEmpty( data.realSQLCreationFieldName ) ) {
             outputRowView[outputIndex++] = null;
           }
           data.rownr++;
@@ -330,13 +331,13 @@ public class GetTableNames extends BaseStep implements StepInterface {
         String procName = procNames[i];
         outputRowProc[outputIndex++] = procName;
 
-        if ( !Const.isEmpty( data.realObjectTypeFieldName ) ) {
+        if ( !Utils.isEmpty( data.realObjectTypeFieldName ) ) {
           outputRowProc[outputIndex++] = ObjectType;
         }
-        if ( !Const.isEmpty( data.realIsSystemObjectFieldName ) ) {
+        if ( !Utils.isEmpty( data.realIsSystemObjectFieldName ) ) {
           outputRowProc[outputIndex++] = Boolean.valueOf( data.db.isSystemTable( procName ) );
         }
-        if ( !Const.isEmpty( data.realSQLCreationFieldName ) ) {
+        if ( !Utils.isEmpty( data.realSQLCreationFieldName ) ) {
           outputRowProc[outputIndex++] = null;
         }
         data.rownr++;
@@ -366,13 +367,13 @@ public class GetTableNames extends BaseStep implements StepInterface {
 
         outputRowSyn[outputIndex++] = Synonym;
 
-        if ( !Const.isEmpty( data.realObjectTypeFieldName ) ) {
+        if ( !Utils.isEmpty( data.realObjectTypeFieldName ) ) {
           outputRowSyn[outputIndex++] = ObjectType;
         }
-        if ( !Const.isEmpty( data.realIsSystemObjectFieldName ) ) {
+        if ( !Utils.isEmpty( data.realIsSystemObjectFieldName ) ) {
           outputRowSyn[outputIndex++] = Boolean.valueOf( data.db.isSystemTable( Synonym ) );
         }
-        if ( !Const.isEmpty( data.realSQLCreationFieldName ) ) {
+        if ( !Utils.isEmpty( data.realSQLCreationFieldName ) ) {
           outputRowSyn[outputIndex++] = null;
         }
         data.rownr++;
@@ -404,12 +405,12 @@ public class GetTableNames extends BaseStep implements StepInterface {
     data = (GetTableNamesData) sdi;
 
     if ( super.init( smi, sdi ) ) {
-      if ( Const.isEmpty( meta.getTablenameFieldName() ) ) {
+      if ( Utils.isEmpty( meta.getTablenameFieldName() ) ) {
         logError( BaseMessages.getString( PKG, "GetTableNames.Error.TablenameFieldNameMissing" ) );
         return false;
       }
       String realSchemaName = environmentSubstitute( meta.getSchemaName() );
-      if ( !Const.isEmpty( realSchemaName ) ) {
+      if ( !Utils.isEmpty( realSchemaName ) ) {
         data.realSchemaName = realSchemaName;
       }
       data.realTableNameFieldName = environmentSubstitute( meta.getTablenameFieldName() );

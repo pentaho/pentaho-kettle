@@ -37,6 +37,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
@@ -78,7 +79,7 @@ public class IngresVectorwiseTest {
     public String createCommandLine( IngresVectorwiseLoaderMeta meta ) throws KettleException {
 
       String bufferSizeString = environmentSubstitute( meta.getBufferSize() );
-      int bufferSize = Const.isEmpty( bufferSizeString ) ? 5000 : Const.toInt( bufferSizeString, 5000 );
+      int bufferSize = Utils.isEmpty( bufferSizeString ) ? 5000 : Const.toInt( bufferSizeString, 5000 );
 
       Class<?> vwload = VWLoadMocker.class;
 

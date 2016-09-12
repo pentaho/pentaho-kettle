@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,6 +27,7 @@ import java.util.List;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.Database;
@@ -294,7 +295,7 @@ public class ExecSQLRowMeta extends BaseStepMeta implements StepMetaInterface {
       sqlFromfile = rep.getStepAttributeBoolean( id_step, "sqlFromfile" );
 
       String sendOneStatementString = rep.getStepAttributeString( id_step, "sendOneStatement" );
-      if ( Const.isEmpty( sendOneStatementString ) ) {
+      if ( Utils.isEmpty( sendOneStatementString ) ) {
         sendOneStatement = true;
       } else {
         sendOneStatement = rep.getStepAttributeBoolean( id_step, "sendOneStatement" );

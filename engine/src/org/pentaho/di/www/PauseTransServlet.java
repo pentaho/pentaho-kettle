@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -33,6 +33,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.owasp.esapi.ESAPI;
 import org.owasp.esapi.Encoder;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
@@ -57,12 +58,12 @@ public class PauseTransServlet extends BaseHttpServlet implements CartePluginInt
     <h2>GET</h2>
     <p>Pauses transformation to be executed.
   Method is used for pausing running transformation by its name.</p>
-    
+
     <p><b>Example Request:</b><br />
     <pre function="syntax.xml">
     GET /kettle/pauseTrans/?name=dummy-trans&xml=Y
     </pre>
-    
+
     </p>
     <h3>Parameters</h3>
     <table class="pentaho-table">
@@ -89,7 +90,7 @@ public class PauseTransServlet extends BaseHttpServlet implements CartePluginInt
     </tr>
     </tbody>
     </table>
-  
+
   <h3>Response Body</h3>
 
   <table class="pentaho-table">
@@ -106,7 +107,7 @@ public class PauseTransServlet extends BaseHttpServlet implements CartePluginInt
   </table>
     <p>Response XML or HTML containing operation result. When using xml=Y <code>result</code> field indicates whether
   operation was successful (<code>OK</code>) or not (<code>ERROR</code>).</p>
-        
+
     <p><b>Example Response:</b></p>
   <pre function="syntax.xml">
   <?xml version="1.0" encoding="UTF-8"?>
@@ -176,7 +177,7 @@ public class PauseTransServlet extends BaseHttpServlet implements CartePluginInt
       //
       Trans trans;
       CarteObjectEntry entry;
-      if ( Const.isEmpty( id ) ) {
+      if ( Utils.isEmpty( id ) ) {
         // get the first transformation that matches...
         //
         entry = getTransformationMap().getFirstCarteObjectEntry( transName );

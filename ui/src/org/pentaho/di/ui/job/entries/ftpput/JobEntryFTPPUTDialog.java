@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -49,6 +49,7 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
@@ -981,7 +982,7 @@ public class JobEntryFTPPUTDialog extends JobEntryDialog implements JobEntryDial
   }
 
   private void checkRemoteFolder( String remoteFoldername ) {
-    if ( !Const.isEmpty( remoteFoldername ) ) {
+    if ( !Utils.isEmpty( remoteFoldername ) ) {
       if ( connectToFTP( true, remoteFoldername ) ) {
         MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_INFORMATION );
         mb.setMessage( BaseMessages.getString( PKG, "JobFTPPUT.FolderExists.OK", remoteFoldername ) + Const.CR );
@@ -1003,7 +1004,7 @@ public class JobEntryFTPPUTDialog extends JobEntryDialog implements JobEntryDial
         ftpclient.setRemoteAddr( InetAddress.getByName( realServername ) );
         ftpclient.setRemotePort( realPort );
 
-        if ( !Const.isEmpty( wProxyHost.getText() ) ) {
+        if ( !Utils.isEmpty( wProxyHost.getText() ) ) {
           String realProxy_host = jobMeta.environmentSubstitute( wProxyHost.getText() );
           ftpclient.setRemoteAddr( InetAddress.getByName( realProxy_host ) );
 
@@ -1017,13 +1018,13 @@ public class JobEntryFTPPUTDialog extends JobEntryDialog implements JobEntryDial
         ftpclient.connect();
         String realUsername =
           jobMeta.environmentSubstitute( wUserName.getText() )
-            + ( !Const.isEmpty( wProxyHost.getText() ) ? "@" + realServername : "" )
-            + ( !Const.isEmpty( wProxyUsername.getText() ) ? " "
+            + ( !Utils.isEmpty( wProxyHost.getText() ) ? "@" + realServername : "" )
+            + ( !Utils.isEmpty( wProxyUsername.getText() ) ? " "
               + jobMeta.environmentSubstitute( wProxyUsername.getText() ) : "" );
 
         String realPassword =
           jobMeta.environmentSubstitute( wPassword.getText() )
-            + ( !Const.isEmpty( wProxyPassword.getText() ) ? " "
+            + ( !Utils.isEmpty( wProxyPassword.getText() ) ? " "
               + jobMeta.environmentSubstitute( wProxyPassword.getText() ) : "" );
         // login now ...
         ftpclient.login( realUsername, realPassword );
@@ -1036,7 +1037,7 @@ public class JobEntryFTPPUTDialog extends JobEntryDialog implements JobEntryDial
           ftpclient.chdir( pwdFolder );
         }
         // move to spool dir ...
-        if ( !Const.isEmpty( remoteFoldername ) ) {
+        if ( !Utils.isEmpty( remoteFoldername ) ) {
           String realFtpDirectory = jobMeta.environmentSubstitute( remoteFoldername );
           ftpclient.chdir( realFtpDirectory );
         }
@@ -1111,7 +1112,7 @@ public class JobEntryFTPPUTDialog extends JobEntryDialog implements JobEntryDial
   }
 
   private void ok() {
-    if ( Const.isEmpty( wName.getText() ) ) {
+    if ( Utils.isEmpty( wName.getText() ) ) {
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
       mb.setText( BaseMessages.getString( PKG, "System.StepJobEntryNameMissing.Title" ) );
       mb.setMessage( BaseMessages.getString( PKG, "System.JobEntryNameMissing.Msg" ) );

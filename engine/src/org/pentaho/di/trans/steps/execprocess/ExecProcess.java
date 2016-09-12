@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.i18n.BaseMessages;
@@ -80,7 +81,7 @@ public class ExecProcess extends BaseStep implements StepInterface {
       meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
 
       // Check is process field is provided
-      if ( Const.isEmpty( meta.getProcessField() ) ) {
+      if ( Utils.isEmpty( meta.getProcessField() ) ) {
         logError( BaseMessages.getString( PKG, "ExecProcess.Error.ProcessFieldMissing" ) );
         throw new KettleException( BaseMessages.getString( PKG, "ExecProcess.Error.ProcessFieldMissing" ) );
       }
@@ -123,7 +124,7 @@ public class ExecProcess extends BaseStep implements StepInterface {
     ProcessResult processResult = new ProcessResult();
 
     try {
-      if ( Const.isEmpty( processString ) ) {
+      if ( Utils.isEmpty( processString ) ) {
         throw new KettleException( BaseMessages.getString( PKG, "ExecProcess.ProcessEmpty" ) );
       }
 
@@ -147,7 +148,7 @@ public class ExecProcess extends BaseStep implements StepInterface {
       if ( meta.isFailWhenNotSuccess() ) {
         if ( processResult.getExistStatus() != 0 ) {
           String errorString = processResult.getErrorStream();
-          if ( Const.isEmpty( errorString ) ) {
+          if ( Utils.isEmpty( errorString ) ) {
             errorString = processResult.getOutputStream();
           }
           throw new KettleException( errorString );
@@ -269,7 +270,7 @@ public class ExecProcess extends BaseStep implements StepInterface {
     data = (ExecProcessData) sdi;
 
     if ( super.init( smi, sdi ) ) {
-      if ( Const.isEmpty( meta.getResultFieldName() ) ) {
+      if ( Utils.isEmpty( meta.getResultFieldName() ) ) {
         logError( BaseMessages.getString( PKG, "ExecProcess.Error.ResultFieldMissing" ) );
         return false;
       }

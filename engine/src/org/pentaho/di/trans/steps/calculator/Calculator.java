@@ -25,7 +25,6 @@ package org.pentaho.di.trans.steps.calculator;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleValueException;
@@ -33,6 +32,7 @@ import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueDataUtil;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -97,7 +97,7 @@ public class Calculator extends BaseStep implements StepInterface {
         CalculatorMetaFunction function = meta.getCalculation()[i];
         data.getFieldIndexes()[i] = new FieldIndexes();
 
-        if ( !Const.isEmpty( function.getFieldName() ) ) {
+        if ( !Utils.isEmpty( function.getFieldName() ) ) {
           data.getFieldIndexes()[i].indexName = data.getCalcRowMeta().indexOfValue( function.getFieldName() );
           if ( data.getFieldIndexes()[i].indexName < 0 ) {
             // Nope: throw an exception
@@ -109,7 +109,7 @@ public class Calculator extends BaseStep implements StepInterface {
             + ( i + 1 ) ) );
         }
 
-        if ( !Const.isEmpty( function.getFieldA() ) ) {
+        if ( !Utils.isEmpty( function.getFieldA() ) ) {
           if ( function.getCalcType() != CalculatorMetaFunction.CALC_CONSTANT ) {
             data.getFieldIndexes()[i].indexA = data.getCalcRowMeta().indexOfValue( function.getFieldA() );
             if ( data.getFieldIndexes()[i].indexA < 0 ) {
@@ -124,7 +124,7 @@ public class Calculator extends BaseStep implements StepInterface {
           throw new KettleStepException( "There is no first argument specified for calculated field #" + ( i + 1 ) );
         }
 
-        if ( !Const.isEmpty( function.getFieldB() ) ) {
+        if ( !Utils.isEmpty( function.getFieldB() ) ) {
           data.getFieldIndexes()[i].indexB = data.getCalcRowMeta().indexOfValue( function.getFieldB() );
           if ( data.getFieldIndexes()[i].indexB < 0 ) {
             // Nope: throw an exception
@@ -133,7 +133,7 @@ public class Calculator extends BaseStep implements StepInterface {
           }
         }
         data.getFieldIndexes()[i].indexC = -1;
-        if ( !Const.isEmpty( function.getFieldC() ) ) {
+        if ( !Utils.isEmpty( function.getFieldC() ) ) {
           data.getFieldIndexes()[i].indexC = data.getCalcRowMeta().indexOfValue( function.getFieldC() );
           if ( data.getFieldIndexes()[i].indexC < 0 ) {
             // Nope: throw an exception
@@ -197,7 +197,7 @@ public class Calculator extends BaseStep implements StepInterface {
 
     for ( int i = 0, index = inputRowMeta.size() + i; i < meta.getCalculation().length; i++, index++ ) {
       CalculatorMetaFunction fn = meta.getCalculation()[i];
-      if ( !Const.isEmpty( fn.getFieldName() ) ) {
+      if ( !Utils.isEmpty( fn.getFieldName() ) ) {
         ValueMetaInterface targetMeta = data.getCalcRowMeta().getValueMeta( index );
 
         // Get the metadata & the data...

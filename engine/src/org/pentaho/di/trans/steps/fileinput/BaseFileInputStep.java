@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -32,6 +32,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemException;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.RowSet;
@@ -115,7 +116,7 @@ public abstract class BaseFileInputStep<M extends BaseFileInputStepMeta, D exten
     }
 
     String clusterSize = getVariable( Const.INTERNAL_VARIABLE_CLUSTER_SIZE );
-    if ( !Const.isEmpty( clusterSize ) && Integer.valueOf( clusterSize ) > 1 ) {
+    if ( !Utils.isEmpty( clusterSize ) && Integer.valueOf( clusterSize ) > 1 ) {
       // TODO: add metadata to configure this.
       String nr = getVariable( Const.INTERNAL_VARIABLE_SLAVE_SERVER_NUMBER );
       if ( log.isDetailed() ) {

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,9 +22,9 @@
 
 package org.pentaho.di.trans.steps.pgpencryptstream;
 
-import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.entries.pgpencryptfiles.GPG;
 import org.pentaho.di.trans.Trans;
@@ -78,14 +78,14 @@ public class PGPEncryptStream extends BaseStep implements StepInterface {
         meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
 
         // Check is stream data field is provided
-        if ( Const.isEmpty( meta.getStreamField() ) ) {
+        if ( Utils.isEmpty( meta.getStreamField() ) ) {
           throw new KettleException( BaseMessages.getString( PKG, "PGPEncryptStream.Error.DataStreamFieldMissing" ) );
         }
 
         if ( meta.isKeynameInField() ) {
           // keyname will be extracted from a field
           String keyField = meta.getKeynameFieldName();
-          if ( Const.isEmpty( keyField ) ) {
+          if ( Utils.isEmpty( keyField ) ) {
             throw new KettleException( BaseMessages.getString( PKG, "PGPEncryptStream.Error.KeyNameFieldMissing" ) );
           }
           data.indexOfKeyName = data.previousRowMeta.indexOfValue( keyField );
@@ -98,7 +98,7 @@ public class PGPEncryptStream extends BaseStep implements StepInterface {
           // Check is keyname is provided
           data.keyName = environmentSubstitute( meta.getKeyName() );
 
-          if ( Const.isEmpty( data.keyName ) ) {
+          if ( Utils.isEmpty( data.keyName ) ) {
             throw new KettleException( BaseMessages.getString( PKG, "PGPEncryptStream.Error.KeyNameMissing" ) );
           }
         }
@@ -124,7 +124,7 @@ public class PGPEncryptStream extends BaseStep implements StepInterface {
       if ( meta.isKeynameInField() ) {
         // get keyname
         data.keyName = data.previousRowMeta.getString( r, data.indexOfKeyName );
-        if ( Const.isEmpty( data.keyName ) ) {
+        if ( Utils.isEmpty( data.keyName ) ) {
           throw new KettleException( BaseMessages.getString( PKG, "PGPEncryptStream.Error.KeyNameMissing" ) );
         }
       }
@@ -132,7 +132,7 @@ public class PGPEncryptStream extends BaseStep implements StepInterface {
       // get stream, data to encrypt
       String dataToEncrypt = data.previousRowMeta.getString( r, data.indexOfField );
 
-      if ( Const.isEmpty( dataToEncrypt ) ) {
+      if ( Utils.isEmpty( dataToEncrypt ) ) {
         // no data..we can not continue with this row
         throw new KettleException( BaseMessages.getString( PKG, "PGPEncryptStream.Error.DataToEncryptEmpty" ) );
       }
@@ -175,7 +175,7 @@ public class PGPEncryptStream extends BaseStep implements StepInterface {
     data = (PGPEncryptStreamData) sdi;
 
     if ( super.init( smi, sdi ) ) {
-      if ( Const.isEmpty( meta.getResultFieldName() ) ) {
+      if ( Utils.isEmpty( meta.getResultFieldName() ) ) {
         logError( BaseMessages.getString( PKG, "PGPEncryptStream.Error.ResultFieldMissing" ) );
         return false;
       }

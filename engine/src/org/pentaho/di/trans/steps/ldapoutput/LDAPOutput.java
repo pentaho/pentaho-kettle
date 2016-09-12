@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.i18n.BaseMessages;
@@ -127,12 +128,12 @@ public class LDAPOutput extends BaseStep implements StepInterface {
 
       if ( meta.getOperationType() == LDAPOutputMeta.OPERATION_TYPE_RENAME ) {
         String oldDnField = environmentSubstitute( meta.getOldDnFieldName() );
-        if ( Const.isEmpty( oldDnField ) ) {
+        if ( Utils.isEmpty( oldDnField ) ) {
           throw new KettleException( BaseMessages.getString( PKG, "LDAPOutput.Error.OldDNFieldMissing" ) );
         }
 
         String newDnField = environmentSubstitute( meta.getNewDnFieldName() );
-        if ( Const.isEmpty( newDnField ) ) {
+        if ( Utils.isEmpty( newDnField ) ) {
           throw new KettleException( BaseMessages.getString( PKG, "LDAPOutput.Error.NewDNFieldMissing" ) );
         }
 
@@ -154,7 +155,7 @@ public class LDAPOutput extends BaseStep implements StepInterface {
       } else {
         String dnField = environmentSubstitute( meta.getDnField() );
         // Check Dn field
-        if ( Const.isEmpty( dnField ) ) {
+        if ( Utils.isEmpty( dnField ) ) {
           throw new KettleException( BaseMessages.getString( PKG, "LDAPOutput.Error.DNFieldMissing" ) );
         }
 

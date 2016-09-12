@@ -25,7 +25,7 @@ package org.pentaho.di.trans.steps.googleanalytics;
 import java.io.IOException;
 import java.util.List;
 
-import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
@@ -160,7 +160,7 @@ public class GaInputStep extends BaseStep implements StepInterface {
 
     try {
       String metrics = environmentSubstitute( meta.getMetrics() );
-      if ( Const.isEmpty( metrics ) ) {
+      if ( Utils.isEmpty( metrics ) ) {
         logError( BaseMessages.getString( PKG, "GoogleAnalytics.Error.NoMetricsSpecified.Message" ) );
         return null;
       }
@@ -173,7 +173,7 @@ public class GaInputStep extends BaseStep implements StepInterface {
       );
 
       String dimensions = environmentSubstitute( meta.getDimensions() );
-      if ( !Const.isEmpty( dimensions ) ) {
+      if ( !Utils.isEmpty( dimensions ) ) {
         query.setDimensions( dimensions );
       }
 
@@ -185,14 +185,14 @@ public class GaInputStep extends BaseStep implements StepInterface {
         }
       }
 
-      if ( !Const.isEmpty( meta.getSamplingLevel() ) ) {
+      if ( !Utils.isEmpty( meta.getSamplingLevel() ) ) {
         query.setSamplingLevel( environmentSubstitute( meta.getSamplingLevel() ) );
       }
 
-      if ( !Const.isEmpty( meta.getFilters() ) && !Const.isEmpty( environmentSubstitute( meta.getFilters() ) ) ) {
+      if ( !Utils.isEmpty( meta.getFilters() ) && !Utils.isEmpty( environmentSubstitute( meta.getFilters() ) ) ) {
         query.setFilters( environmentSubstitute( meta.getFilters() ) );
       }
-      if ( !Const.isEmpty( meta.getSort() ) ) {
+      if ( !Utils.isEmpty( meta.getSort() ) ) {
         query.setSort( environmentSubstitute( meta.getSort() ) );
       }
 

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -30,6 +30,7 @@ import java.util.List;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
@@ -468,14 +469,14 @@ public class JobEntrySendNagiosPassiveCheck extends JobEntryBase implements Clon
     String realSenderServiceName = environmentSubstitute( senderServiceName );
 
     try {
-      if ( Const.isEmpty( realServername ) ) {
+      if ( Utils.isEmpty( realServername ) ) {
         throw new KettleException( BaseMessages.getString(
           PKG, "JobSendNagiosPassiveCheck.Error.TargetServerMissing" ) );
       }
 
       String realMessageString = environmentSubstitute( message );
 
-      if ( Const.isEmpty( realMessageString ) ) {
+      if ( Utils.isEmpty( realMessageString ) ) {
         throw new KettleException( BaseMessages.getString( PKG, "JobSendNagiosPassiveCheck.Error.MessageMissing" ) );
       }
 
@@ -512,7 +513,7 @@ public class JobEntrySendNagiosPassiveCheck extends JobEntryBase implements Clon
       ns.withConnectionTimeout( realConnectionTimeOut );
       ns.withResponseTimeout( realResponseTimeOut );
       ns.withEncryption( encr );
-      if ( !Const.isEmpty( realPassword ) ) {
+      if ( !Utils.isEmpty( realPassword ) ) {
         ns.withPassword( realPassword );
       } else {
         ns.withNoPassword();
@@ -523,11 +524,11 @@ public class JobEntrySendNagiosPassiveCheck extends JobEntryBase implements Clon
 
       // sender
       MessagePayloadBuilder pb = new MessagePayloadBuilder();
-      if ( !Const.isEmpty( realSenderServerName ) ) {
+      if ( !Utils.isEmpty( realSenderServerName ) ) {
         pb.withHostname( realSenderServerName );
       }
       pb.withLevel( level );
-      if ( !Const.isEmpty( realSenderServiceName ) ) {
+      if ( !Utils.isEmpty( realSenderServiceName ) ) {
         pb.withServiceName( realSenderServiceName );
       }
       pb.withMessage( realMessageString );
@@ -553,7 +554,7 @@ public class JobEntrySendNagiosPassiveCheck extends JobEntryBase implements Clon
 
   public List<ResourceReference> getResourceDependencies( JobMeta jobMeta ) {
     List<ResourceReference> references = super.getResourceDependencies( jobMeta );
-    if ( !Const.isEmpty( serverName ) ) {
+    if ( !Utils.isEmpty( serverName ) ) {
       String realServername = jobMeta.environmentSubstitute( serverName );
       ResourceReference reference = new ResourceReference( this );
       reference.getEntries().add( new ResourceEntry( realServername, ResourceType.SERVER ) );

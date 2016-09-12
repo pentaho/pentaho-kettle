@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -42,6 +42,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.plugins.PartitionerPluginType;
 import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
@@ -215,7 +216,7 @@ public class ModPartitionerDialog extends BaseStepDialog implements StepDialogIn
 
   private void setShellImage( Shell shell ) {
     PluginInterface plugin = PluginRegistry.getInstance().getPlugin( PartitionerPluginType.class, partitioner.getId() );
-    if ( !Const.isEmpty( plugin.getDocumentationUrl() ) ) {
+    if ( !Utils.isEmpty( plugin.getDocumentationUrl() ) ) {
       createHelpButton( shell, stepMeta, plugin );
     }
 

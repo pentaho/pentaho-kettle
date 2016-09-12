@@ -27,6 +27,7 @@ import java.util.List;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
@@ -267,7 +268,7 @@ public class SalesforceInsertMeta extends SalesforceStepMeta {
   public void getFields( RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep,
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     String realfieldname = space.environmentSubstitute( getSalesforceIDFieldName() );
-    if ( !Const.isEmpty( realfieldname ) ) {
+    if ( !Utils.isEmpty( realfieldname ) ) {
       ValueMetaInterface v = new ValueMetaString( realfieldname );
       v.setLength( 18 );
       v.setOrigin( name );

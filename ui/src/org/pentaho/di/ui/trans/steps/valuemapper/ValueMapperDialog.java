@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -44,6 +44,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
@@ -347,7 +348,7 @@ public class ValueMapperDialog extends BaseStepDialog implements StepDialogInter
   }
 
   private void ok() {
-    if ( Const.isEmpty( wStepname.getText() ) ) {
+    if ( Utils.isEmpty( wStepname.getText() ) ) {
       return;
     }
 
@@ -363,7 +364,7 @@ public class ValueMapperDialog extends BaseStepDialog implements StepDialogInter
     //CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < count; i++ ) {
       TableItem item = wFields.getNonEmpty( i );
-      input.getSourceValue()[i] = Const.isEmpty( item.getText( 1 ) ) ? null : item.getText( 1 );
+      input.getSourceValue()[i] = Utils.isEmpty( item.getText( 1 ) ) ? null : item.getText( 1 );
       input.getTargetValue()[i] = item.getText( 2 );
     }
     dispose();

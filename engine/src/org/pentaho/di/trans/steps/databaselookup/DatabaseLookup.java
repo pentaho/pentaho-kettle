@@ -26,6 +26,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
@@ -262,7 +263,7 @@ public class DatabaseLookup extends BaseStep implements StepInterface {
     data.nullif = new Object[ returnFields.length ];
 
     for ( int i = 0; i < returnFields.length; i++ ) {
-      if ( !Const.isEmpty( meta.getReturnValueDefault()[ i ] ) ) {
+      if ( !Utils.isEmpty( meta.getReturnValueDefault()[ i ] ) ) {
         ValueMetaInterface stringMeta = new ValueMetaString( "string" );
         ValueMetaInterface returnMeta = data.outputRowMeta.getValueMeta( i + getInputRowMeta().size() );
         data.nullif[ i ] = returnMeta.convertData( stringMeta, meta.getReturnValueDefault()[ i ] );

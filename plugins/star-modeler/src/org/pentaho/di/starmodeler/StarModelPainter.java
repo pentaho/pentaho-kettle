@@ -2,7 +2,7 @@
 *
 * Pentaho Data Integration
 *
-* Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+* Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
 *
 *******************************************************************************
 *
@@ -25,7 +25,7 @@ package org.pentaho.di.starmodeler;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.gui.GCInterface;
 import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.gui.PrimitiveGCInterface.EColor;
@@ -86,7 +86,7 @@ public class StarModelPainter {
     int maxWidth = Integer.MIN_VALUE;
     for (LogicalTable table : tableList) {
       String name = table.getName(locale);
-      if (!Const.isEmpty(name)) {
+      if (!Utils.isEmpty(name)) {
         Point p = gc.textExtent(name);
         if (p.x>maxWidth) maxWidth=p.x;
       }
@@ -162,7 +162,7 @@ public class StarModelPainter {
 
   private void drawCircleName(Point center, LogicalTable logicalTable) {
     String name = ConceptUtil.getName(logicalTable, locale);
-    if (!Const.isEmpty(name)) {
+    if (!Utils.isEmpty(name)) {
       Point nameSize = gc.textExtent(name);
       int margin=20;
       nameSize.x+=margin;

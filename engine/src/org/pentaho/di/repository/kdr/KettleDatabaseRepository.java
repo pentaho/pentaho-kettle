@@ -38,6 +38,7 @@ import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Condition;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.NotePadMeta;
 import org.pentaho.di.core.ProgressMonitorListener;
 import org.pentaho.di.core.RowMetaAndData;
@@ -364,7 +365,7 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
       RepositoryDirectoryInterface newDir, String newName ) throws KettleException {
     securityProvider.validateAction( RepositoryOperation.MODIFY_TRANSFORMATION );
     transDelegate.renameTransformation( id_transformation, newDir, newName );
-    if ( !Const.isEmpty( versionComment ) ) {
+    if ( !Utils.isEmpty( versionComment ) ) {
       insertLogEntry( versionComment );
     }
     return id_transformation; // The same in our case.
@@ -412,7 +413,7 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
     String newname ) throws KettleException {
     securityProvider.validateAction( RepositoryOperation.MODIFY_TRANSFORMATION );
     jobDelegate.renameJob( id_job, dir, newname );
-    if ( !Const.isEmpty( versionComment ) ) {
+    if ( !Utils.isEmpty( versionComment ) ) {
       insertLogEntry( versionComment );
     }
     return id_job; // Same in this case
@@ -457,7 +458,7 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
     try {
       lockRepository();
 
-      if ( !Const.isEmpty( versionComment ) ) {
+      if ( !Utils.isEmpty( versionComment ) ) {
         insertLogEntry( versionComment );
       }
 

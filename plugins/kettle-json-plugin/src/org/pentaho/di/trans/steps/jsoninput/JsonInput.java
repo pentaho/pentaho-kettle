@@ -30,7 +30,7 @@ import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemException;
 import org.apache.poi.util.IOUtils;
-import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.QueueRowSet;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.RowSet;
@@ -174,7 +174,7 @@ public class JsonInput extends BaseFileInputStep<JsonInputMeta, JsonInputData> i
       data.outputRowMeta = data.inputRowMeta.clone();
 
       // Check if source field is provided
-      if ( Const.isEmpty( meta.getFieldValue() ) ) {
+      if ( Utils.isEmpty( meta.getFieldValue() ) ) {
         logError( BaseMessages.getString( PKG, "JsonInput.Log.NoField" ) );
         throw new KettleException( BaseMessages.getString( PKG, "JsonInput.Log.NoField" ) );
       }
@@ -409,11 +409,11 @@ public class JsonInput extends BaseFileInputStep<JsonInputMeta, JsonInputData> i
     int rowIndex = data.totalpreviousfields + data.nrInputFields;
 
     // See if we need to add the filename to the row...
-    if ( meta.includeFilename() && !Const.isEmpty( meta.getFilenameField() ) ) {
+    if ( meta.includeFilename() && !Utils.isEmpty( meta.getFilenameField() ) ) {
       outputRowData[rowIndex++] = data.filename;
     }
     // See if we need to add the row number to the row...
-    if ( meta.includeRowNumber() && !Const.isEmpty( meta.getRowNumberField() ) ) {
+    if ( meta.includeRowNumber() && !Utils.isEmpty( meta.getRowNumberField() ) ) {
       outputRowData[rowIndex++] = new Long( data.rownr );
     }
     // Possibly add short filename...

@@ -60,6 +60,7 @@ import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.BlockingBatchingRowSet;
 import org.pentaho.di.core.BlockingRowSet;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.ExecutorInterface;
 import org.pentaho.di.core.ExtensionDataInterface;
@@ -1257,7 +1258,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
       // Calculate the maximum number of snapshots to be kept in memory
       //
       String limitString = environmentSubstitute( transMeta.getStepPerformanceCapturingSizeLimit() );
-      if ( Const.isEmpty( limitString ) ) {
+      if ( Utils.isEmpty( limitString ) ) {
         limitString = EnvUtil.getSystemProperty( Const.KETTLE_STEP_PERFORMANCE_SNAPSHOT_LIMIT );
       }
       stepPerformanceSnapshotSizeLimit = Const.toInt( limitString, 0 );
@@ -2030,12 +2031,12 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
       if ( logConnection != null ) {
 
         String logSchemaAndTable = logConnection.getQuotedSchemaTableCombination( logSchema, logTable );
-        if ( Const.isEmpty( logTable ) ) {
+        if ( Utils.isEmpty( logTable ) ) {
           // It doesn't make sense to start database logging without a table
           // to log to.
           throw new KettleTransException( BaseMessages.getString( PKG, "Trans.Exception.NoLogTableDefined" ) );
         }
-        if ( Const.isEmpty( transMeta.getName() ) && logConnection != null && logTable != null ) {
+        if ( Utils.isEmpty( transMeta.getName() ) && logConnection != null && logTable != null ) {
           throw new KettleException( BaseMessages.getString( PKG, "Trans.Exception.NoTransnameAvailableForLogging" ) );
         }
         transLogTableDatabaseConnection = new Database( this, logConnection );
@@ -2247,7 +2248,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
           currentDate ) );
 
       try {
-        if ( transLogTableDatabaseConnection != null && !Const.isEmpty( logTable ) && !Const.isEmpty( transMeta
+        if ( transLogTableDatabaseConnection != null && !Utils.isEmpty( logTable ) && !Utils.isEmpty( transMeta
             .getName() ) ) {
           transLogTableDatabaseConnection.writeLogRecord( transLogTable, LogStatus.START, this, null );
 
@@ -2590,7 +2591,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
     }
 
     result.setRows( resultRows );
-    if ( !Const.isEmpty( resultFiles ) ) {
+    if ( !Utils.isEmpty( resultFiles ) ) {
       result.setResultFiles( new HashMap<String, ResultFile>() );
       for ( ResultFile resultFile : resultFiles ) {
         result.getResultFiles().put( resultFile.toString(), resultFile );
@@ -2651,7 +2652,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 
         // Write to the standard transformation log table...
         //
-        if ( !Const.isEmpty( logTable ) ) {
+        if ( !Utils.isEmpty( logTable ) ) {
           ldb.writeLogRecord( transLogTable, status, this, null );
         }
 
@@ -3101,7 +3102,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 
     // When we run a mapping we also set a mapping step name in there...
     //
-    if ( !Const.isEmpty( mappingStepName ) ) {
+    if ( !Utils.isEmpty( mappingStepName ) ) {
       string.append( '[' ).append( mappingStepName ).append( ']' ).append( '.' );
     }
 
@@ -3542,7 +3543,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
    */
   public static final TransSplitter executeClustered( final TransMeta transMeta,
       final TransExecutionConfiguration executionConfiguration ) throws KettleException {
-    if ( Const.isEmpty( transMeta.getName() ) ) {
+    if ( Utils.isEmpty( transMeta.getName() ) ) {
       throw new KettleException( "The transformation needs a name to uniquely identify it by on the remote server." );
     }
 
@@ -4155,7 +4156,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
     if ( slaveServer == null ) {
       throw new KettleException( "No slave server specified" );
     }
-    if ( Const.isEmpty( transMeta.getName() ) ) {
+    if ( Utils.isEmpty( transMeta.getName() ) ) {
       throw new KettleException( "The transformation needs a name to uniquely identify it by on the remote server." );
     }
 
@@ -4260,7 +4261,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
    *          the new internal kettle variables
    */
   public void setInternalKettleVariables( VariableSpace var ) {
-    if ( transMeta != null && !Const.isEmpty( transMeta.getFilename() ) ) { // we have a finename that's defined.
+    if ( transMeta != null && !Utils.isEmpty( transMeta.getFilename() ) ) { // we have a finename that's defined.
       try {
         FileObject fileObject = KettleVFS.getFileObject( transMeta.getFilename(), var );
         FileName fileName = fileObject.getName();
@@ -4425,9 +4426,9 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
    */
   @Override
   public boolean getBooleanValueOfVariable( String variableName, boolean defaultValue ) {
-    if ( !Const.isEmpty( variableName ) ) {
+    if ( !Utils.isEmpty( variableName ) ) {
       String value = environmentSubstitute( variableName );
-      if ( !Const.isEmpty( value ) ) {
+      if ( !Utils.isEmpty( value ) ) {
         return ValueMetaString.convertStringToBoolean( value );
       }
     }
@@ -4903,7 +4904,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
         defValue = "";
       }
 
-      if ( Const.isEmpty( value ) ) {
+      if ( Utils.isEmpty( value ) ) {
         setVariable( key, Const.NVL( defValue, "" ) );
       } else {
         setVariable( key, Const.NVL( value, "" ) );

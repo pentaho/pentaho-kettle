@@ -29,7 +29,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
@@ -379,7 +379,7 @@ public class KettleDatabaseRepositoryMetaStoreDelegate extends KettleDatabaseRep
    * @throws Exception in case of conversion trouble
    */
   public Object parseAttributeValue( String value ) throws Exception {
-    if ( Const.isEmpty( value ) || value.length() < 3 ) {
+    if ( Utils.isEmpty( value ) || value.length() < 3 ) {
       return null;
     }
     String valueString = value.substring( 2 );

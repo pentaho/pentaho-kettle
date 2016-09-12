@@ -24,6 +24,7 @@ package org.pentaho.di.core.database;
 
 import com.google.common.collect.Sets;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.row.ValueMetaInterface;
 
 import java.util.Set;
@@ -101,7 +102,7 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
     if ( getAccessType() == DatabaseMeta.TYPE_ACCESS_ODBC ) {
       return "jdbc:odbc:" + databaseName;
     } else {
-      if ( Const.isEmpty( port ) ) {
+      if ( Utils.isEmpty( port ) ) {
         return "jdbc:mysql://" + hostname + "/" + databaseName;
       } else {
         return "jdbc:mysql://" + hostname + ":" + port + "/" + databaseName;

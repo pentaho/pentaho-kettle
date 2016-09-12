@@ -28,7 +28,7 @@ import java.util.List;
 
 import org.jets3t.service.model.S3Bucket;
 import org.jets3t.service.model.S3Object;
-import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.row.RowDataUtil;
@@ -517,7 +517,7 @@ public class S3CsvInput extends BaseStep implements StepInterface {
 
       // Optionally add the current filename to the mix as well...
       //
-      if ( meta.isIncludingFilename() && !Const.isEmpty( meta.getFilenameField() ) ) {
+      if ( meta.isIncludingFilename() && !Utils.isEmpty( meta.getFilenameField() ) ) {
         if ( meta.isLazyConversionActive() ) {
           outputRowData[outputIndex++] = data.binaryFilename;
         } else {
@@ -572,7 +572,7 @@ public class S3CsvInput extends BaseStep implements StepInterface {
         if ( getTransMeta().findNrPrevSteps( getStepMeta() ) == 0 ) {
           String filename = environmentSubstitute( meta.getFilename() );
 
-          if ( Const.isEmpty( filename ) ) {
+          if ( Utils.isEmpty( filename ) ) {
             logError( Messages.getString( "S3CsvInput.MissingFilename.Message" ) );
             return false;
           }
@@ -587,13 +587,13 @@ public class S3CsvInput extends BaseStep implements StepInterface {
 
         data.delimiter = environmentSubstitute( meta.getDelimiter() ).getBytes();
 
-        if ( Const.isEmpty( meta.getEnclosure() ) ) {
+        if ( Utils.isEmpty( meta.getEnclosure() ) ) {
           data.enclosure = null;
         } else {
           data.enclosure = environmentSubstitute( meta.getEnclosure() ).getBytes();
         }
 
-        data.isAddingRowNumber = !Const.isEmpty( meta.getRowNumField() );
+        data.isAddingRowNumber = !Utils.isEmpty( meta.getRowNumField() );
 
         // Handle parallel reading capabilities...
         //

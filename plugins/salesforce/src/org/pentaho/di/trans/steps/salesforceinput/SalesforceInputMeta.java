@@ -27,6 +27,7 @@ import java.util.List;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
@@ -598,14 +599,14 @@ public class SalesforceInputMeta extends SalesforceStepMeta {
       }
     }
 
-    if ( includeTargetURL && !Const.isEmpty( targetURLField ) ) {
+    if ( includeTargetURL && !Utils.isEmpty( targetURLField ) ) {
       ValueMetaInterface v = new ValueMetaString( space.environmentSubstitute( targetURLField ) );
       v.setLength( 250 );
       v.setPrecision( -1 );
       v.setOrigin( name );
       r.addValueMeta( v );
     }
-    if ( includeModule && !Const.isEmpty( moduleField ) ) {
+    if ( includeModule && !Utils.isEmpty( moduleField ) ) {
       ValueMetaInterface v = new ValueMetaString( space.environmentSubstitute( moduleField ) );
       v.setLength( 250 );
       v.setPrecision( -1 );
@@ -613,26 +614,26 @@ public class SalesforceInputMeta extends SalesforceStepMeta {
       r.addValueMeta( v );
     }
 
-    if ( includeSQL && !Const.isEmpty( sqlField ) ) {
+    if ( includeSQL && !Utils.isEmpty( sqlField ) ) {
       ValueMetaInterface v = new ValueMetaString( space.environmentSubstitute( sqlField ) );
       v.setLength( 250 );
       v.setPrecision( -1 );
       v.setOrigin( name );
       r.addValueMeta( v );
     }
-    if ( includeTimestamp && !Const.isEmpty( timestampField ) ) {
+    if ( includeTimestamp && !Utils.isEmpty( timestampField ) ) {
       ValueMetaInterface v = new ValueMetaDate( space.environmentSubstitute( timestampField ) );
       v.setOrigin( name );
       r.addValueMeta( v );
     }
 
-    if ( includeRowNumber && !Const.isEmpty( rowNumberField ) ) {
+    if ( includeRowNumber && !Utils.isEmpty( rowNumberField ) ) {
       ValueMetaInterface v = new ValueMetaInteger( space.environmentSubstitute( rowNumberField ) );
       v.setLength( ValueMetaInterface.DEFAULT_INTEGER_LENGTH, 0 );
       v.setOrigin( name );
       r.addValueMeta( v );
     }
-    if ( includeDeletionDate && !Const.isEmpty( deletionDateField ) ) {
+    if ( includeDeletionDate && !Utils.isEmpty( deletionDateField ) ) {
       ValueMetaInterface v = new ValueMetaDate( space.environmentSubstitute( deletionDateField ) );
       v.setOrigin( name );
       r.addValueMeta( v );
@@ -754,37 +755,37 @@ public class SalesforceInputMeta extends SalesforceStepMeta {
     remarks.add( cr );
 
     // check additional fields
-    if ( includeTargetURL() && Const.isEmpty( getTargetURLField() ) ) {
+    if ( includeTargetURL() && Utils.isEmpty( getTargetURLField() ) ) {
       cr =
         new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
           PKG, "SalesforceInputMeta.CheckResult.NoTargetURLField" ), stepMeta );
       remarks.add( cr );
     }
-    if ( includeSQL() && Const.isEmpty( getSQLField() ) ) {
+    if ( includeSQL() && Utils.isEmpty( getSQLField() ) ) {
       cr =
         new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
           PKG, "SalesforceInputMeta.CheckResult.NoSQLField" ), stepMeta );
       remarks.add( cr );
     }
-    if ( includeModule() && Const.isEmpty( moduleField ) ) {
+    if ( includeModule() && Utils.isEmpty( moduleField ) ) {
       cr =
         new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
           PKG, "SalesforceInputMeta.CheckResult.NoModuleField" ), stepMeta );
       remarks.add( cr );
     }
-    if ( includeTimestamp() && Const.isEmpty( getTimestampField() ) ) {
+    if ( includeTimestamp() && Utils.isEmpty( getTimestampField() ) ) {
       cr =
         new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
           PKG, "SalesforceInputMeta.CheckResult.NoTimestampField" ), stepMeta );
       remarks.add( cr );
     }
-    if ( includeRowNumber() && Const.isEmpty( getRowNumberField() ) ) {
+    if ( includeRowNumber() && Utils.isEmpty( getRowNumberField() ) ) {
       cr =
         new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
           PKG, "SalesforceInputMeta.CheckResult.NoRowNumberField" ), stepMeta );
       remarks.add( cr );
     }
-    if ( includeDeletionDate() && Const.isEmpty( getDeletionDateField() ) ) {
+    if ( includeDeletionDate() && Utils.isEmpty( getDeletionDateField() ) ) {
       cr =
         new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
           PKG, "SalesforceInputMeta.CheckResult.NoDeletionDateField" ), stepMeta );

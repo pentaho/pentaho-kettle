@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,8 +22,8 @@
 
 package org.pentaho.di.trans.steps.validator;
 
-import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleValueException;
+import org.pentaho.di.core.util.Utils;
 
 public class KettleValidatorException extends KettleValueException {
 
@@ -98,7 +98,7 @@ public class KettleValidatorException extends KettleValueException {
    * @return the code in string format
    */
   public String getCodeDesc() {
-    if ( !Const.isEmpty( validatorField.getErrorCode() ) ) {
+    if ( !Utils.isEmpty( validatorField.getErrorCode() ) ) {
       String validatorCode = validator.environmentSubstitute( validatorField.getErrorCode() );
       return validatorCode;
     }
@@ -107,7 +107,7 @@ public class KettleValidatorException extends KettleValueException {
 
   @Override
   public String getMessage() {
-    if ( !Const.isEmpty( validatorField.getErrorDescription() ) ) {
+    if ( !Utils.isEmpty( validatorField.getErrorDescription() ) ) {
       return validator.environmentSubstitute( validatorField.getErrorDescription() );
     }
 

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -33,6 +33,7 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.variables.VariableSpace;
@@ -180,7 +181,7 @@ public class HttpUtil {
   public static String getPortSpecification( VariableSpace space, String port ) {
     String realPort = space.environmentSubstitute( port );
     String portSpec = ":" + realPort;
-    if ( Const.isEmpty( realPort ) || port.equals( "80" ) ) {
+    if ( Utils.isEmpty( realPort ) || port.equals( "80" ) ) {
       portSpec = "";
     }
     return portSpec;
@@ -194,9 +195,9 @@ public class HttpUtil {
     String nonprox = space.environmentSubstitute( nonProxyHosts );
 
     /** added by shingo.yamagami@ksk-sol.jp **/
-    if ( !Const.isEmpty( phost ) && !Const.isEmpty( pport ) ) {
+    if ( !Utils.isEmpty( phost ) && !Utils.isEmpty( pport ) ) {
       // skip applying proxy if non-proxy host matches
-      if ( !Const.isEmpty( nonprox ) && !Const.isEmpty( host ) && host.matches( nonprox ) ) {
+      if ( !Utils.isEmpty( nonprox ) && !Utils.isEmpty( host ) && host.matches( nonprox ) ) {
         return;
       }
       client.getHostConfiguration().setProxy( phost, Integer.parseInt( pport ) );

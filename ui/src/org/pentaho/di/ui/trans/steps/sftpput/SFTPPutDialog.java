@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -53,6 +53,7 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleJobException;
@@ -1023,7 +1024,7 @@ public class SFTPPutDialog extends BaseStepDialog implements StepDialogInterface
   }
 
   private void ok() {
-    if ( Const.isEmpty( wStepname.getText() ) ) {
+    if ( Utils.isEmpty( wStepname.getText() ) ) {
       return;
     }
 
@@ -1058,14 +1059,14 @@ public class SFTPPutDialog extends BaseStepDialog implements StepDialogInterface
 
   private void setDefaulProxyPort() {
     if ( wProxyType.getText().equals( SFTPClient.PROXY_TYPE_HTTP ) ) {
-      if ( Const.isEmpty( wProxyPort.getText() )
-        || ( !Const.isEmpty( wProxyPort.getText() ) && wProxyPort.getText().equals(
+      if ( Utils.isEmpty( wProxyPort.getText() )
+        || ( !Utils.isEmpty( wProxyPort.getText() ) && wProxyPort.getText().equals(
           SFTPClient.SOCKS5_DEFAULT_PORT ) ) ) {
         wProxyPort.setText( SFTPClient.HTTP_DEFAULT_PORT );
       }
     } else {
-      if ( Const.isEmpty( wProxyPort.getText() )
-        || ( !Const.isEmpty( wProxyPort.getText() ) && wProxyPort
+      if ( Utils.isEmpty( wProxyPort.getText() )
+        || ( !Utils.isEmpty( wProxyPort.getText() ) && wProxyPort
           .getText().equals( SFTPClient.HTTP_DEFAULT_PORT ) ) ) {
         wProxyPort.setText( SFTPClient.SOCKS5_DEFAULT_PORT );
       }
@@ -1146,7 +1147,7 @@ public class SFTPPutDialog extends BaseStepDialog implements StepDialogInterface
         transMeta.environmentSubstitute( wkeyfilePass.getText() ) );
     // Set proxy?
     String realProxyHost = transMeta.environmentSubstitute( wProxyHost.getText() );
-    if ( !Const.isEmpty( realProxyHost ) ) {
+    if ( !Utils.isEmpty( realProxyHost ) ) {
       // Set proxy
       sftpclient.setProxy(
         realProxyHost,

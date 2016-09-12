@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -39,6 +39,7 @@ import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.FileType;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.vfs.KettleVFS;
@@ -89,11 +90,11 @@ public class ZipFile extends BaseStep implements StepInterface {
         .getMetaStore() );
 
       // Check is source filename field is provided
-      if ( Const.isEmpty( meta.getDynamicSourceFileNameField() ) ) {
+      if ( Utils.isEmpty( meta.getDynamicSourceFileNameField() ) ) {
         throw new KettleException( BaseMessages.getString( PKG, "ZipFile.Error.SourceFilenameFieldMissing" ) );
       }
       // Check is target filename field is provided
-      if ( Const.isEmpty( meta.getDynamicTargetFileNameField() ) ) {
+      if ( Utils.isEmpty( meta.getDynamicTargetFileNameField() ) ) {
         throw new KettleException( BaseMessages.getString( PKG, "ZipFile.Error.TargetFilenameFieldMissing" ) );
       }
 
@@ -115,7 +116,7 @@ public class ZipFile extends BaseStep implements StepInterface {
       }
 
       if ( meta.isKeepSouceFolder() ) {
-        if ( !Const.isEmpty( meta.getBaseFolderField() ) ) {
+        if ( !Utils.isEmpty( meta.getBaseFolderField() ) ) {
           // cache the position of the source filename field
           data.indexOfBaseFolder = getInputRowMeta().indexOfValue( meta.getBaseFolderField() );
           if ( data.indexOfBaseFolder < 0 ) {
@@ -128,7 +129,7 @@ public class ZipFile extends BaseStep implements StepInterface {
 
       // Move to folder
       if ( meta.getOperationType() == ZipFileMeta.OPERATION_TYPE_MOVE ) {
-        if ( Const.isEmpty( meta.getMoveToFolderField() ) ) {
+        if ( Utils.isEmpty( meta.getMoveToFolderField() ) ) {
           throw new KettleException( BaseMessages.getString( PKG, "ZipFile.Exception.EmptyMovetoFolder" ) );
         }
         data.indexOfMoveToFolder = getInputRowMeta().indexOfValue( meta.getMoveToFolderField() );
@@ -148,7 +149,7 @@ public class ZipFile extends BaseStep implements StepInterface {
       // get source filename
       String sourceFilename = getInputRowMeta().getString( r, data.indexOfSourceFilename );
 
-      if ( Const.isEmpty( sourceFilename ) ) {
+      if ( Utils.isEmpty( sourceFilename ) ) {
         log.logError( toString(), BaseMessages.getString( PKG, "ZipFile.Error.SourceFileEmpty" ) );
         throw new KettleException( BaseMessages.getString( PKG, "ZipFile.Error.SourceFileEmpty" ) );
       }
@@ -180,7 +181,7 @@ public class ZipFile extends BaseStep implements StepInterface {
       String moveToFolder = null;
       if ( data.indexOfMoveToFolder > -1 ) {
         moveToFolder = getInputRowMeta().getString( r, data.indexOfMoveToFolder );
-        if ( Const.isEmpty( moveToFolder ) ) {
+        if ( Utils.isEmpty( moveToFolder ) ) {
           throw new KettleException( BaseMessages.getString( PKG, "ZipFile.Error.EmptyMoveToFolder" ) );
         }
       }
@@ -189,7 +190,7 @@ public class ZipFile extends BaseStep implements StepInterface {
         // get value for target filename
         String targetFilename = getInputRowMeta().getString( r, data.indexOfZipFilename );
 
-        if ( Const.isEmpty( targetFilename ) ) {
+        if ( Utils.isEmpty( targetFilename ) ) {
           log.logError( toString(), BaseMessages.getString( PKG, "ZipFile.Error.TargetFileEmpty" ) );
           throw new KettleException( BaseMessages.getString( PKG, "ZipFile.Error.TargetFileEmpty" ) );
         }

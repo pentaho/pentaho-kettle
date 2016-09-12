@@ -38,6 +38,7 @@ import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.MessageBox;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.NotePadMeta;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -723,7 +724,7 @@ public class SpoonJobDelegate extends SpoonDelegate {
             // If the table exists & has the correct format, nothing is
             // done
             //
-            if ( !Const.isEmpty( sql ) ) {
+            if ( !Utils.isEmpty( sql ) ) {
               String jesqlname = BaseMessages.getString( PKG, "Spoon.RipDB.JobEntrySQL.Name" ) + tables[i] + "]";
               JobEntrySQL jesql = new JobEntrySQL( jesqlname );
               jesql.setDatabase( targetDbInfo );
@@ -930,7 +931,7 @@ public class SpoonJobDelegate extends SpoonDelegate {
         String toolTipText =
           BaseMessages.getString( PKG, "Spoon.TabJob.Tooltip", spoon.delegates.tabs.makeTabName(
             jobMeta, showLocation ) );
-        if ( !Const.isEmpty( jobMeta.getFilename() ) ) {
+        if ( !Utils.isEmpty( jobMeta.getFilename() ) ) {
           toolTipText += Const.CR + Const.CR + jobMeta.getFilename();
         }
         tabItem.setToolTipText( toolTipText );
@@ -939,7 +940,7 @@ public class SpoonJobDelegate extends SpoonDelegate {
 
         // OK, also see if we need to open a new history window.
         if ( jobMeta.getJobLogTable().getDatabaseMeta() != null
-          && !Const.isEmpty( jobMeta.getJobLogTable().getTableName() ) ) {
+          && !Utils.isEmpty( jobMeta.getJobLogTable().getTableName() ) ) {
           jobGraph.addAllTabs();
           jobGraph.extraViewTabFolder.setSelection( jobGraph.jobHistoryDelegate.getJobHistoryTab() );
         }

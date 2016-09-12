@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -28,6 +28,7 @@ import java.io.OutputStreamWriter;
 
 import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.exception.KettleException;
@@ -219,7 +220,7 @@ public class SQLFileOutput extends BaseStep implements StepInterface {
       }
       data.writer = new OutputStreamWriter( new BufferedOutputStream( outputStream, 5000 ) );
 
-      if ( !Const.isEmpty( meta.getEncoding() ) ) {
+      if ( !Utils.isEmpty( meta.getEncoding() ) ) {
         if ( log.isBasic() ) {
           logDetailed( "Opening output stream in encoding: " + meta.getEncoding() );
         }
@@ -336,7 +337,7 @@ public class SQLFileOutput extends BaseStep implements StepInterface {
         tableName = environmentSubstitute( meta.getTablename() );
         schemaName = environmentSubstitute( meta.getSchemaName() );
 
-        if ( Const.isEmpty( tableName ) ) {
+        if ( Utils.isEmpty( tableName ) ) {
           throw new KettleStepException( "The tablename is not defined (empty)" );
         }
 

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -35,6 +35,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.Result;
@@ -204,17 +205,17 @@ public class Kitchen {
     String kettleUsername = Const.getEnvironmentVariable( "KETTLE_USER", null );
     String kettlePassword = Const.getEnvironmentVariable( "KETTLE_PASSWORD", null );
 
-    if ( !Const.isEmpty( kettleRepname ) ) {
+    if ( !Utils.isEmpty( kettleRepname ) ) {
       optionRepname = new StringBuilder( kettleRepname );
     }
-    if ( !Const.isEmpty( kettleUsername ) ) {
+    if ( !Utils.isEmpty( kettleUsername ) ) {
       optionUsername = new StringBuilder( kettleUsername );
     }
-    if ( !Const.isEmpty( kettlePassword ) ) {
+    if ( !Utils.isEmpty( kettlePassword ) ) {
       optionPassword = new StringBuilder( kettlePassword );
     }
 
-    if ( Const.isEmpty( optionLogfile ) && !Const.isEmpty( optionLogfileOld ) ) {
+    if ( Utils.isEmpty( optionLogfile ) && !Utils.isEmpty( optionLogfileOld ) ) {
       // if the old style of logging name is filled in, and the new one is not
       // overwrite the new by the old
       optionLogfile = optionLogfileOld;
@@ -229,19 +230,19 @@ public class Kitchen {
     }
     Future<KettleException> kettleInitFuture = repositoryRegisterResults.getValue();
 
-    if ( !Const.isEmpty( optionLogfile ) ) {
+    if ( !Utils.isEmpty( optionLogfile ) ) {
       fileAppender = new FileLoggingEventListener( optionLogfile.toString(), true );
       KettleLogStore.getAppender().addLoggingEventListener( fileAppender );
     } else {
       fileAppender = null;
     }
 
-    if ( !Const.isEmpty( optionLoglevel ) ) {
+    if ( !Utils.isEmpty( optionLoglevel ) ) {
       log.setLogLevel( LogLevel.getLogLevelForCode( optionLoglevel.toString() ) );
       log.logMinimal( BaseMessages.getString( PKG, "Kitchen.Log.LogLevel", log.getLogLevel().getDescription() ) );
     }
 
-    if ( !Const.isEmpty( optionVersion ) ) {
+    if ( !Utils.isEmpty( optionVersion ) ) {
       BuildVersion buildVersion = BuildVersion.getInstance();
       log.logBasic( BaseMessages.getString(
         PKG, "Kitchen.Log.KettleVersion", buildVersion.getVersion(), buildVersion.getRevision(), buildVersion
@@ -253,7 +254,7 @@ public class Kitchen {
 
     // Start the action...
     //
-    if ( !Const.isEmpty( optionRepname ) && !Const.isEmpty( optionUsername ) ) {
+    if ( !Utils.isEmpty( optionRepname ) && !Utils.isEmpty( optionUsername ) ) {
       if ( log.isDetailed() ) {
         log.logDetailed( BaseMessages.getString( PKG, "Kitchen.Log.RepUsernameSupplied" ) );
       }
@@ -277,11 +278,11 @@ public class Kitchen {
 
     try {
       // Read kettle job specified on command-line?
-      if ( !Const.isEmpty( optionRepname ) || !Const.isEmpty( optionFilename ) ) {
+      if ( !Utils.isEmpty( optionRepname ) || !Utils.isEmpty( optionFilename ) ) {
         if ( log.isDebug() ) {
           log.logDebug( BaseMessages.getString( PKG, "Kitchen.Log.ParsingCommandLine" ) );
         }
-        if ( !Const.isEmpty( optionRepname ) && !"Y".equalsIgnoreCase( optionNorep.toString() ) ) {
+        if ( !Utils.isEmpty( optionRepname ) && !"Y".equalsIgnoreCase( optionNorep.toString() ) ) {
           if ( log.isDebug() ) {
             log.logDebug( BaseMessages.getString( PKG, "Kitchen.Log.LoadingRep" ) );
           }
@@ -323,7 +324,7 @@ public class Kitchen {
             }
 
             // Find the directory name if one is specified...
-            if ( !Const.isEmpty( optionDirname ) ) {
+            if ( !Utils.isEmpty( optionDirname ) ) {
               directory = directory.findDirectory( optionDirname.toString() );
             }
 
@@ -334,7 +335,7 @@ public class Kitchen {
               }
 
               // Load a job
-              if ( !Const.isEmpty( optionJobname ) ) {
+              if ( !Utils.isEmpty( optionJobname ) ) {
                 if ( log.isDebug() ) {
                   log.logDebug( BaseMessages.getString( PKG, "Kitchen.Log.LoadingJobInfo" ) );
                 }
@@ -375,7 +376,7 @@ public class Kitchen {
         }
 
         // Try to load if from file anyway.
-        if ( !Const.isEmpty( optionFilename ) && job == null ) {
+        if ( !Utils.isEmpty( optionFilename ) && job == null ) {
           blockAndThrow( kettleInitFuture );
           jobMeta = new JobMeta( optionFilename.toString(), null, null );
           job = new Job( null, jobMeta );
@@ -410,7 +411,7 @@ public class Kitchen {
       exitJVM( 7 );
     }
 
-    if ( !Const.isEmpty( optionExport.toString() ) ) {
+    if ( !Utils.isEmpty( optionExport.toString() ) ) {
 
       try {
         // Export the resources linked to the currently loaded file...
@@ -584,11 +585,11 @@ public class Kitchen {
   public static void configureLogging( final CommandLineOption maxLogLinesOption,
                                        final CommandLineOption maxLogTimeoutOption ) throws KettleException {
     int maxLogLines = parseIntArgument( maxLogLinesOption, 0 );
-    if ( Const.isEmpty( maxLogLinesOption.getArgument() ) ) {
+    if ( Utils.isEmpty( maxLogLinesOption.getArgument() ) ) {
       maxLogLines = Const.toInt( EnvUtil.getSystemProperty( Const.KETTLE_MAX_LOG_SIZE_IN_LINES ), 5000 );
     }
     int maxLogTimeout = parseIntArgument( maxLogTimeoutOption, 0 );
-    if ( Const.isEmpty( maxLogTimeoutOption.getArgument() ) ) {
+    if ( Utils.isEmpty( maxLogTimeoutOption.getArgument() ) ) {
       maxLogTimeout = Const.toInt( EnvUtil.getSystemProperty( Const.KETTLE_MAX_LOG_TIMEOUT_IN_MINUTES ), 1440 );
     }
     KettleLogStore.init( maxLogLines, maxLogTimeout );
@@ -603,7 +604,7 @@ public class Kitchen {
    * @throws KettleException Error parsing provided argument as an integer
    */
   protected static int parseIntArgument( final CommandLineOption option, final int def ) throws KettleException {
-    if ( !Const.isEmpty( option.getArgument() ) ) {
+    if ( !Utils.isEmpty( option.getArgument() ) ) {
       try {
         return Integer.parseInt( option.getArgument().toString() );
       } catch ( NumberFormatException ex ) {

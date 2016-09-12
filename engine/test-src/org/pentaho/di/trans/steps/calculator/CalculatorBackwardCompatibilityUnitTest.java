@@ -64,7 +64,7 @@ public class CalculatorBackwardCompatibilityUnitTest {
 
   /**
    * Get value of private static field ValueDataUtil.ROUND_2_MODE.
-   * 
+   *
    * @return
    */
   private static int getRound2Mode() {
@@ -83,7 +83,7 @@ public class CalculatorBackwardCompatibilityUnitTest {
 
   /**
    * Set new value of value of private static field ValueDataUtil.ROUND_2_MODE.
-   * 
+   *
    * @param newValue
    */
   private static void setRound2Mode( int newValue ) {

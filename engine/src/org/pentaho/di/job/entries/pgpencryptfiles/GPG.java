@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -33,6 +33,7 @@ import java.io.OutputStreamWriter;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileType;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.vfs.KettleVFS;
@@ -116,7 +117,7 @@ public class GPG {
     this.log = logInterface;
     this.gpgexe = gpgFilename;
     // Let's check GPG filename
-    if ( Const.isEmpty( getGpgExeFile() ) ) {
+    if ( Utils.isEmpty( getGpgExeFile() ) ) {
       // No filename specified
       throw new KettleException( BaseMessages.getString( PKG, "GPG.GPGFilenameMissing" ) );
     }
@@ -268,7 +269,7 @@ public class GPG {
 
     try {
       execGnuPG( "--batch --yes "
-        + ( Const.isEmpty( passPhrase ) ? "" : "--passphrase " + "\"" + passPhrase + "\" " ) + "--output "
+        + ( Utils.isEmpty( passPhrase ) ? "" : "--passphrase " + "\"" + passPhrase + "\" " ) + "--output "
         + "\"" + decryptedFilename + "\" " + "--decrypt " + "\"" + cryptedFilename + "\"", null, true );
 
     } catch ( Exception e ) {
@@ -353,7 +354,7 @@ public class GPG {
 
       execGnuPG(
         "--batch --yes"
-          + ( asciiMode ? " -a" : "" ) + ( Const.isEmpty( userID ) ? "" : " -r " + "\"" + userID + "\"" )
+          + ( asciiMode ? " -a" : "" ) + ( Utils.isEmpty( userID ) ? "" : " -r " + "\"" + userID + "\"" )
           + " " + "--output " + "\"" + cryptedFilename + "\" " + "--encrypt --sign " + "\"" + filename + "\"",
         null, true );
     } catch ( Exception e ) {
@@ -377,7 +378,7 @@ public class GPG {
   public void signFile( String filename, String userID, String signedFilename, boolean asciiMode ) throws KettleException {
     try {
       execGnuPG( "--batch --yes"
-        + ( asciiMode ? " -a" : "" ) + ( Const.isEmpty( userID ) ? "" : " -r " + "\"" + userID + "\"" ) + " "
+        + ( asciiMode ? " -a" : "" ) + ( Utils.isEmpty( userID ) ? "" : " -r " + "\"" + userID + "\"" ) + " "
         + "--output " + "\"" + signedFilename + "\" " + ( asciiMode ? "--clearsign " : "--sign " ) + "\""
         + filename + "\"", null, true );
 

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -26,9 +26,9 @@ import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSelectInfo;
 import org.apache.commons.vfs2.FileSelector;
 import org.apache.commons.vfs2.FileType;
-import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
@@ -71,12 +71,12 @@ public class ProcessFiles extends BaseStep implements StepInterface {
     if ( first ) {
       first = false;
       // Check is source filename field is provided
-      if ( Const.isEmpty( meta.getDynamicSourceFileNameField() ) ) {
+      if ( Utils.isEmpty( meta.getDynamicSourceFileNameField() ) ) {
         throw new KettleException( BaseMessages.getString( PKG, "ProcessFiles.Error.SourceFilenameFieldMissing" ) );
       }
       // Check is target filename field is provided
       if ( meta.getOperationType() != ProcessFilesMeta.OPERATION_TYPE_DELETE
-        && Const.isEmpty( meta.getDynamicTargetFileNameField() ) ) {
+        && Utils.isEmpty( meta.getDynamicTargetFileNameField() ) ) {
         throw new KettleException( BaseMessages.getString( PKG, "ProcessFiles.Error.TargetFilenameFieldMissing" ) );
       }
 
@@ -109,7 +109,7 @@ public class ProcessFiles extends BaseStep implements StepInterface {
       // get source filename
       String sourceFilename = getInputRowMeta().getString( r, data.indexOfSourceFilename );
 
-      if ( Const.isEmpty( sourceFilename ) ) {
+      if ( Utils.isEmpty( sourceFilename ) ) {
         logError( BaseMessages.getString( PKG, "ProcessFiles.Error.SourceFileEmpty" ) );
         throw new KettleException( BaseMessages.getString( PKG, "ProcessFiles.Error.SourceFileEmpty" ) );
       }
@@ -130,7 +130,7 @@ public class ProcessFiles extends BaseStep implements StepInterface {
         // get value for target filename
         targetFilename = getInputRowMeta().getString( r, data.indexOfTargetFilename );
 
-        if ( Const.isEmpty( targetFilename ) ) {
+        if ( Utils.isEmpty( targetFilename ) ) {
           logError( BaseMessages.getString( PKG, "ProcessFiles.Error.TargetFileEmpty" ) );
           throw new KettleException( BaseMessages.getString( PKG, "ProcessFiles.Error.TargetFileEmpty" ) );
         }

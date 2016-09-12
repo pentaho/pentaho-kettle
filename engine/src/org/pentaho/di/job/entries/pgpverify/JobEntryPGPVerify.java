@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -31,7 +31,7 @@ import java.util.Map;
 import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
-import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
@@ -181,7 +181,7 @@ public class JobEntryPGPVerify extends JobEntryBase implements Cloneable, JobEnt
     try {
 
       String realFilename = environmentSubstitute( getFilename() );
-      if ( Const.isEmpty( realFilename ) ) {
+      if ( Utils.isEmpty( realFilename ) ) {
         logError( BaseMessages.getString( PKG, "JobPGPVerify.FilenameMissing" ) );
         return result;
       }
@@ -192,7 +192,7 @@ public class JobEntryPGPVerify extends JobEntryBase implements Cloneable, JobEnt
       if ( useDetachedfilename() ) {
         String signature = environmentSubstitute( getDetachedfilename() );
 
-        if ( Const.isEmpty( signature ) ) {
+        if ( Utils.isEmpty( signature ) ) {
           logError( BaseMessages.getString( PKG, "JobPGPVerify.DetachedSignatureMissing" ) );
           return result;
         }
@@ -229,7 +229,7 @@ public class JobEntryPGPVerify extends JobEntryBase implements Cloneable, JobEnt
 
   public List<ResourceReference> getResourceDependencies( JobMeta jobMeta ) {
     List<ResourceReference> references = super.getResourceDependencies( jobMeta );
-    if ( !Const.isEmpty( gpglocation ) ) {
+    if ( !Utils.isEmpty( gpglocation ) ) {
       String realFileName = jobMeta.environmentSubstitute( gpglocation );
       ResourceReference reference = new ResourceReference( this );
       reference.getEntries().add( new ResourceEntry( realFileName, ResourceType.FILE ) );
@@ -272,7 +272,7 @@ public class JobEntryPGPVerify extends JobEntryBase implements Cloneable, JobEnt
       // So let's change the gpglocation from relative to absolute by grabbing the file object...
       // In case the name of the file comes from previous steps, forget about this!
       //
-      if ( !Const.isEmpty( gpglocation ) ) {
+      if ( !Utils.isEmpty( gpglocation ) ) {
         // From : ${FOLDER}/../foo/bar.csv
         // To : /home/matt/test/files/foo/bar.csv
         //

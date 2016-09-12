@@ -27,6 +27,7 @@ import java.util.List;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
@@ -939,7 +940,7 @@ public class LDAPInputMeta extends BaseStepMeta implements LdapMeta {
     remarks.add( cr );
 
     // Check hostname
-    if ( Const.isEmpty( Host ) ) {
+    if ( Utils.isEmpty( Host ) ) {
       cr =
         new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
           PKG, "LDAPInputMeta.CheckResult.HostnameMissing" ), stepMeta );
@@ -951,7 +952,7 @@ public class LDAPInputMeta extends BaseStepMeta implements LdapMeta {
     remarks.add( cr );
 
     if ( isDynamicSearch() ) {
-      if ( Const.isEmpty( dynamicSeachFieldName ) ) {
+      if ( Utils.isEmpty( dynamicSeachFieldName ) ) {
         cr =
           new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
             PKG, "LDAPInputMeta.CheckResult.DynamicSearchBaseFieldNameMissing" ), stepMeta );
@@ -963,7 +964,7 @@ public class LDAPInputMeta extends BaseStepMeta implements LdapMeta {
       remarks.add( cr );
     } else {
       // Check search base
-      if ( Const.isEmpty( searchBase ) ) {
+      if ( Utils.isEmpty( searchBase ) ) {
         cr =
           new CheckResult( CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString(
             PKG, "LDAPInputMeta.CheckResult.SearchBaseMissing" ), stepMeta );
@@ -975,7 +976,7 @@ public class LDAPInputMeta extends BaseStepMeta implements LdapMeta {
       remarks.add( cr );
     }
     if ( isDynamicFilter() ) {
-      if ( Const.isEmpty( dynamicFilterFieldName ) ) {
+      if ( Utils.isEmpty( dynamicFilterFieldName ) ) {
         cr =
           new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
             PKG, "LDAPInputMeta.CheckResult.DynamicFilterFieldNameMissing" ), stepMeta );
@@ -987,7 +988,7 @@ public class LDAPInputMeta extends BaseStepMeta implements LdapMeta {
       remarks.add( cr );
     } else {
       // Check filter String
-      if ( Const.isEmpty( filterString ) ) {
+      if ( Utils.isEmpty( filterString ) ) {
         cr =
           new CheckResult( CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString(
             PKG, "LDAPInputMeta.CheckResult.FilterStringMissing" ), stepMeta );

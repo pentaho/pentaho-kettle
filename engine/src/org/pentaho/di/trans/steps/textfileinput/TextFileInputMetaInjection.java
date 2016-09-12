@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Locale;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
@@ -643,7 +644,7 @@ public class TextFileInputMetaInjection implements StepMetaInjectionInterface {
     result.add( StepInjectionUtil.getEntry( Entry.ERROR_LINES_SKIPPED, meta.isErrorLineSkipped() ) );
 
     StepInjectionMetaEntry filenameLinesEntry = StepInjectionUtil.getEntry( Entry.FILENAME_LINES );
-    if ( !Const.isEmpty( meta.getFileName() ) ) {
+    if ( !Utils.isEmpty( meta.getFileName() ) ) {
       for ( int i = 0, len = meta.getFileName().length; i < len; i++ ) {
         StepInjectionMetaEntry filenameLineEntry = StepInjectionUtil.getEntry( Entry.FILENAME_LINE );
         filenameLinesEntry.getDetails().add( filenameLineEntry );
@@ -659,7 +660,7 @@ public class TextFileInputMetaInjection implements StepMetaInjectionInterface {
     result.add( filenameLinesEntry );
 
     StepInjectionMetaEntry fieldsEntry = StepInjectionUtil.getEntry( Entry.FIELDS );
-    if ( !Const.isEmpty( meta.getInputFields() ) ) {
+    if ( !Utils.isEmpty( meta.getInputFields() ) ) {
       for ( TextFileInputField inputField : meta.getInputFields() ) {
         StepInjectionMetaEntry fieldEntry = StepInjectionUtil.getEntry( Entry.FIELD );
         fieldsEntry.getDetails().add( fieldEntry );

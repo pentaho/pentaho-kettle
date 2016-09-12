@@ -42,6 +42,7 @@ import org.apache.commons.vfs2.FileType;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -347,11 +348,11 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
 
     public TextFileSelector( String sourcefolderin, String filewildcard, Job parentJob ) {
 
-      if ( !Const.isEmpty( sourcefolderin ) ) {
+      if ( !Utils.isEmpty( sourcefolderin ) ) {
         sourceFolder = sourcefolderin;
       }
 
-      if ( !Const.isEmpty( filewildcard ) ) {
+      if ( !Utils.isEmpty( filewildcard ) ) {
         fileWildcard = filewildcard;
       }
       parentjob = parentJob;
@@ -412,7 +413,7 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
   private boolean GetFileWildcard( String selectedfile, String wildcard ) {
     boolean getIt = true;
 
-    if ( !Const.isEmpty( wildcard ) ) {
+    if ( !Utils.isEmpty( wildcard ) ) {
       Pattern pattern = Pattern.compile( wildcard );
       // First see if the file matches the regular expression!
       Matcher matcher = pattern.matcher( selectedfile );

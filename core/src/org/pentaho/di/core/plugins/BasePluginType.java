@@ -38,6 +38,7 @@ import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSelectInfo;
 import org.apache.commons.vfs2.FileSelector;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.logging.DefaultLogLevel;
 import org.pentaho.di.core.logging.LogChannel;
@@ -206,7 +207,7 @@ public abstract class BasePluginType implements PluginTypeInterface {
       // Try the default package name
       //
       String translation;
-      if ( !Const.isEmpty( packageName ) ) {
+      if ( !Utils.isEmpty( packageName ) ) {
         LogLevel oldLogLevel = DefaultLogLevel.getLogLevel();
 
         // avoid i18n messages for missing locale
@@ -221,7 +222,7 @@ public abstract class BasePluginType implements PluginTypeInterface {
         // restore loglevel, when the last alternative fails, log it when loglevel is detailed
         //
         DefaultLogLevel.setLogLevel( oldLogLevel );
-        if ( !Const.isEmpty( altPackageName ) ) {
+        if ( !Utils.isEmpty( altPackageName ) ) {
           if ( translation.startsWith( "!" ) && translation.endsWith( "!" ) ) {
             translation = BaseMessages.getString( altPackageName, string, resourceClass );
           }
@@ -382,7 +383,7 @@ public abstract class BasePluginType implements PluginTypeInterface {
 
       String iconFilename = ( path == null ) ? iconfile : path + Const.FILE_SEPARATOR + iconfile;
       String errorHelpFileFull = errorHelpfile;
-      if ( !Const.isEmpty( errorHelpfile ) ) {
+      if ( !Utils.isEmpty( errorHelpfile ) ) {
         errorHelpFileFull = ( path == null ) ? errorHelpfile : path + Const.FILE_SEPARATOR + errorHelpfile;
       }
 
@@ -439,7 +440,7 @@ public abstract class BasePluginType implements PluginTypeInterface {
    */
   protected String getAlternativeTranslation( String input, Map<String, String> localizedMap ) {
 
-    if ( Const.isEmpty( input ) ) {
+    if ( Utils.isEmpty( input ) ) {
       return null;
     }
 
@@ -448,12 +449,12 @@ public abstract class BasePluginType implements PluginTypeInterface {
     } else {
       String defLocale = LanguageChoice.getInstance().getDefaultLocale().toString().toLowerCase();
       String alt = localizedMap.get( defLocale );
-      if ( !Const.isEmpty( alt ) ) {
+      if ( !Utils.isEmpty( alt ) ) {
         return alt;
       }
       String failoverLocale = LanguageChoice.getInstance().getFailoverLocale().toString().toLowerCase();
       alt = localizedMap.get( failoverLocale );
-      if ( !Const.isEmpty( alt ) ) {
+      if ( !Utils.isEmpty( alt ) ) {
         return alt;
       }
       // Nothing found?
@@ -474,7 +475,7 @@ public abstract class BasePluginType implements PluginTypeInterface {
         String locale = XMLHandler.getTagAttribute( locTipNode, "locale" );
         String locTip = XMLHandler.getNodeValue( locTipNode );
 
-        if ( !Const.isEmpty( locale ) && !Const.isEmpty( locTip ) ) {
+        if ( !Utils.isEmpty( locale ) && !Utils.isEmpty( locTip ) ) {
           map.put( locale.toLowerCase(), locTip );
         }
       }
@@ -633,7 +634,7 @@ public abstract class BasePluginType implements PluginTypeInterface {
     List<String> libraries, boolean nativePluginType, URL pluginFolder ) throws KettlePluginException {
 
     String idList = extractID( annotation );
-    if ( Const.isEmpty( idList ) ) {
+    if ( Utils.isEmpty( idList ) ) {
       throw new KettlePluginException( "No ID specified for plugin with class: " + clazz.getName() );
     }
 

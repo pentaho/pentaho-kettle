@@ -25,10 +25,10 @@ package org.pentaho.di.trans.steps.getrepositorynames;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
@@ -194,10 +194,10 @@ public class GetRepositoryNames extends BaseStep implements StepInterface {
 
     for ( RepositoryElementMetaInterface object : objects ) {
       boolean add = false;
-      if ( Const.isEmpty( nameMask ) || object.getName().matches( nameMask ) ) {
+      if ( Utils.isEmpty( nameMask ) || object.getName().matches( nameMask ) ) {
         add = true;
       }
-      if ( !Const.isEmpty( excludeNameMask ) && object.getName().matches( excludeNameMask ) ) {
+      if ( !Utils.isEmpty( excludeNameMask ) && object.getName().matches( excludeNameMask ) ) {
         add = false;
       }
       if ( add ) {

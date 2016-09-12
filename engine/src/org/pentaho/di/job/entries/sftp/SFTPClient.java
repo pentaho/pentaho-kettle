@@ -31,6 +31,7 @@ import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileType;
 import org.apache.commons.vfs2.FileUtil;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.exception.KettleJobException;
 import org.pentaho.di.core.vfs.KettleVFS;
@@ -139,11 +140,11 @@ public class SFTPClient {
 
     JSch jsch = createJSch();
     try {
-      if ( !Const.isEmpty( privateKeyFilename ) ) {
+      if ( !Utils.isEmpty( privateKeyFilename ) ) {
         // We need to use private key authentication
         this.prvkey = privateKeyFilename;
         byte[] passphrasebytes = new byte[0];
-        if ( !Const.isEmpty( passPhrase ) ) {
+        if ( !Utils.isEmpty( passPhrase ) ) {
           // Set passphrase
           this.passphrase = passPhrase;
           passphrasebytes = GetPrivateKeyPassPhrase().getBytes();
@@ -376,7 +377,7 @@ public class SFTPClient {
 
   public void setProxy( String host, String port, String user, String pass, String proxyType ) throws KettleJobException {
 
-    if ( Const.isEmpty( host ) || Const.toInt( port, 0 ) == 0 ) {
+    if ( Utils.isEmpty( host ) || Const.toInt( port, 0 ) == 0 ) {
       throw new KettleJobException( "Proxy server name must be set and server port must be greater than zero." );
     }
     Proxy proxy = null;
@@ -384,12 +385,12 @@ public class SFTPClient {
 
     if ( proxyType.equals( PROXY_TYPE_HTTP ) ) {
       proxy = new ProxyHTTP( proxyhost );
-      if ( !Const.isEmpty( user ) ) {
+      if ( !Utils.isEmpty( user ) ) {
         ( (ProxyHTTP) proxy ).setUserPasswd( user, pass );
       }
     } else if ( proxyType.equals( PROXY_TYPE_SOCKS5 ) ) {
       proxy = new ProxySOCKS5( proxyhost );
-      if ( !Const.isEmpty( user ) ) {
+      if ( !Utils.isEmpty( user ) ) {
         ( (ProxySOCKS5) proxy ).setUserPasswd( user, pass );
       }
     }

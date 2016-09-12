@@ -30,6 +30,7 @@ import java.util.Map;
 import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.NotePadMeta;
 import org.pentaho.di.core.ProgressMonitorListener;
 import org.pentaho.di.core.RowMetaAndData;
@@ -999,7 +1000,7 @@ public class KettleDatabaseRepositoryTransDelegate extends KettleDatabaseReposit
         // Check if there already is one in the transformation
         ClusterSchema check = transMeta.findClusterSchema( clusterSchema.getName() );
         if ( check == null || overWriteShared ) {
-          if ( !Const.isEmpty( clusterSchema.getName() ) ) {
+          if ( !Utils.isEmpty( clusterSchema.getName() ) ) {
             transMeta.addOrReplaceClusterSchema( clusterSchema );
             if ( !overWriteShared ) {
               clusterSchema.setChanged( false );
@@ -1030,7 +1031,7 @@ public class KettleDatabaseRepositoryTransDelegate extends KettleDatabaseReposit
         PartitionSchema check = transMeta.findPartitionSchema( partitionSchema.getName() ); // Check if there already is
                                                                                             // one in the transformation
         if ( check == null || overWriteShared ) {
-          if ( !Const.isEmpty( partitionSchema.getName() ) ) {
+          if ( !Utils.isEmpty( partitionSchema.getName() ) ) {
             transMeta.addOrReplacePartitionSchema( partitionSchema );
             if ( !overWriteShared ) {
               partitionSchema.setChanged( false );
@@ -1062,7 +1063,7 @@ public class KettleDatabaseRepositoryTransDelegate extends KettleDatabaseReposit
         SlaveServer check = transMeta.findSlaveServer( slaveServer.getName() ); // Check if there already is one in the
                                                                                 // transformation
         if ( check == null || overWriteShared ) {
-          if ( !Const.isEmpty( slaveServer.getName() ) ) {
+          if ( !Utils.isEmpty( slaveServer.getName() ) ) {
             transMeta.addOrReplaceSlaveServer( slaveServer );
             if ( !overWriteShared ) {
               slaveServer.setChanged( false );

@@ -23,6 +23,7 @@
 package org.pentaho.di.trans.steps.salesforce;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
@@ -58,19 +59,19 @@ public abstract class SalesforceStep extends BaseStep implements StepInterface {
     String realPassword = environmentSubstitute( meta.getPassword() );
     String realModule = environmentSubstitute( meta.getModule() );
 
-    if ( Const.isEmpty( realUrl ) ) {
+    if ( Utils.isEmpty( realUrl ) ) {
       log.logError( BaseMessages.getString( PKG, "SalesforceStep.TargetURLMissing.Error" ) );
       return false;
     }
-    if ( Const.isEmpty( realUsername ) ) {
+    if ( Utils.isEmpty( realUsername ) ) {
       log.logError( BaseMessages.getString( PKG, "SalesforceInput.UsernameMissing.Error" ) );
       return false;
     }
-    if ( Const.isEmpty( realPassword ) ) {
+    if ( Utils.isEmpty( realPassword ) ) {
       log.logError( BaseMessages.getString( PKG, "SalesforceInput.PasswordMissing.Error" ) );
       return false;
     }
-    if ( Const.isEmpty( realModule ) ) {
+    if ( Utils.isEmpty( realModule ) ) {
       log.logError( BaseMessages.getString( PKG, "SalesforceInputDialog.ModuleMissing.DialogMessage" ) );
       return false;
     }

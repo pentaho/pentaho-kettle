@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -37,6 +37,7 @@ package org.pentaho.di.trans.steps.orabulkloader;
 
 import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
@@ -165,7 +166,7 @@ public class OraBulkLoader extends BaseStep implements StepInterface {
       // use terminator in hex representation due to character set
       // terminator in hex representation must be in character set
       // of data file
-      if ( Const.isEmpty( encoding ) ) {
+      if ( Utils.isEmpty( encoding ) ) {
         bytes = in.getBytes();
       } else {
         bytes = in.getBytes( encoding );
@@ -220,11 +221,11 @@ public class OraBulkLoader extends BaseStep implements StepInterface {
     contents.append( ")" ).append( Const.CR );
 
     contents.append( "LOAD DATA" ).append( Const.CR );
-    if ( !Const.isEmpty( meta.getCharacterSetName() ) ) {
+    if ( !Utils.isEmpty( meta.getCharacterSetName() ) ) {
       contents.append( "CHARACTERSET " ).append( meta.getCharacterSetName() ).append( Const.CR );
     }
     if ( !OraBulkLoaderMeta.METHOD_AUTO_CONCURRENT.equals( meta.getLoadMethod() )
-      || !Const.isEmpty( meta.getAltRecordTerm() ) ) {
+      || !Utils.isEmpty( meta.getAltRecordTerm() ) ) {
       String infile = inputName;
 
       if ( OraBulkLoaderMeta.METHOD_AUTO_CONCURRENT.equals( meta.getLoadMethod() ) ) {
@@ -233,7 +234,7 @@ public class OraBulkLoader extends BaseStep implements StepInterface {
 
       // For concurrent input, data command line argument must be specified
       contents.append( "INFILE " ).append( infile );
-      if ( !Const.isEmpty( meta.getAltRecordTerm() ) ) {
+      if ( !Utils.isEmpty( meta.getAltRecordTerm() ) ) {
         contents.append( " \"STR x'" ).append(
           encodeRecordTerminator( meta.getAltRecordTerm(), meta.getEncoding() ) ).append( "'\"" );
       }
@@ -430,7 +431,7 @@ public class OraBulkLoader extends BaseStep implements StepInterface {
         environmentSubstitute( pass ) ).append( "@" );
 
       String overrideName = meta.getDbNameOverride();
-      if ( Const.isEmpty( Const.rtrim( overrideName ) ) ) {
+      if ( Utils.isEmpty( Const.rtrim( overrideName ) ) ) {
         sb.append( environmentSubstitute( dns ) );
       } else {
         // if the database name override is filled in, do that one.
@@ -547,7 +548,7 @@ public class OraBulkLoader extends BaseStep implements StepInterface {
           first = false;
 
           String recTerm = Const.CR;
-          if ( !Const.isEmpty( meta.getAltRecordTerm() ) ) {
+          if ( !Utils.isEmpty( meta.getAltRecordTerm() ) ) {
             recTerm = substituteRecordTerminator( meta.getAltRecordTerm() );
           }
 

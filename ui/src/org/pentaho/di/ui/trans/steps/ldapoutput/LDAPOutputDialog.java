@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -56,6 +56,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.SourceToTargetMapping;
 import org.pentaho.di.core.encryption.Encr;
@@ -978,7 +979,7 @@ public class LDAPOutputDialog extends BaseStepDialog implements StepDialogInterf
     wBaseDN.addModifyListener( new ModifyListener() {
       public void modifyText( ModifyEvent e ) {
         input.setChanged();
-        if ( Const.isEmpty( wBaseDN.getText() ) ) {
+        if ( Utils.isEmpty( wBaseDN.getText() ) ) {
           wDoMapping.setEnabled( false );
         } else {
           setFieldsCombo();
@@ -1296,7 +1297,7 @@ public class LDAPOutputDialog extends BaseStepDialog implements StepDialogInterf
   }
 
   private void ok() {
-    if ( Const.isEmpty( wStepname.getText() ) ) {
+    if ( Utils.isEmpty( wStepname.getText() ) ) {
       return;
     }
 
@@ -1435,7 +1436,7 @@ public class LDAPOutputDialog extends BaseStepDialog implements StepDialogInterf
     wGetLU.setEnabled( activateFields );
     wBaseDN.setEnabled( activateFields );
     wlBaseDN.setEnabled( activateFields );
-    wDoMapping.setEnabled( activateFields && !Const.isEmpty( wBaseDN.getText() ) );
+    wDoMapping.setEnabled( activateFields && !Utils.isEmpty( wBaseDN.getText() ) );
 
     boolean activateMulTiValueSeparator =
       ( LDAPOutputMeta.getOperationTypeByDesc( wOperation.getText() ) != LDAPOutputMeta.OPERATION_TYPE_DELETE )
@@ -1627,7 +1628,7 @@ public class LDAPOutputDialog extends BaseStepDialog implements StepDialogInterf
             return;
           }
           String baseDn = transMeta.environmentSubstitute( wBaseDN.getText() );
-          if ( !Const.isEmpty( baseDn ) ) {
+          if ( !Utils.isEmpty( baseDn ) ) {
             try {
               RowMetaInterface fields = getLDAPFields();
               // loop through the objects and find build the list of fields

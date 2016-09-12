@@ -17,6 +17,7 @@
 package org.pentaho.di.repository.pur.metastore;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.repository.pur.PurRepository;
 import org.pentaho.metastore.api.IMetaStore;
@@ -308,7 +309,7 @@ public class PurRepositoryMetaStore extends MemoryMetaStore implements IMetaStor
   protected void elementToDataNode( IMetaStoreElement element, DataNode elementDataNode ) {
     elementDataNode.setProperty( PROP_NAME, element.getName() );
     DataNode childrenNode = elementDataNode.addNode( PROP_ELEMENT_CHILDREN );
-    if ( Const.isEmpty( element.getId() ) ) {
+    if ( Utils.isEmpty( element.getId() ) ) {
       element.setId( element.getName() );
     }
     attributeToDataNode( element, childrenNode );

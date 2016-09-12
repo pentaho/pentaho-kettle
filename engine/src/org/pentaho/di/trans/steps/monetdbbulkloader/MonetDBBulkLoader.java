@@ -26,6 +26,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -581,7 +582,7 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface {
 
       // Support parameterized database connection names
       String connectionName = meta.getDbConnectionName();
-      if ( !Const.isEmpty( connectionName ) && connectionName.startsWith( "${" ) && connectionName.endsWith( "}" ) ) {
+      if ( !Utils.isEmpty( connectionName ) && connectionName.startsWith( "${" ) && connectionName.endsWith( "}" ) ) {
         meta.setDatabaseMeta( localTransMeta.findDatabase( environmentSubstitute( connectionName ) ) );
       }
 

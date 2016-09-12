@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,6 +23,7 @@
 package org.pentaho.di.core;
 
 import org.pentaho.di.repository.RepositoryDirectory;
+import org.pentaho.di.core.util.Utils;
 
 public class LastUsedFile {
   public static final String FILE_TYPE_TRANSFORMATION = "Trans";
@@ -68,7 +69,7 @@ public class LastUsedFile {
   public String toString() {
     String string = "";
 
-    if ( sourceRepository && !Const.isEmpty( directory ) && !Const.isEmpty( repositoryName ) ) {
+    if ( sourceRepository && !Utils.isEmpty( directory ) && !Utils.isEmpty( repositoryName ) ) {
       string += "[" + repositoryName + "] ";
 
       if ( directory.endsWith( RepositoryDirectory.DIRECTORY_SEPARATOR ) ) {

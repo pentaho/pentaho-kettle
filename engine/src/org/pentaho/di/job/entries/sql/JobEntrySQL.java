@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -35,6 +35,7 @@ import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -269,7 +270,7 @@ public class JobEntrySQL extends JobEntryBase implements Cloneable, JobEntryInte
               mySQL = Const.CR;
 
               while ( ( sLine = buff.readLine() ) != null ) {
-                if ( Const.isEmpty( sLine ) ) {
+                if ( Utils.isEmpty( sLine ) ) {
                   mySQL = mySQL + Const.CR;
                 } else {
                   mySQL = mySQL + Const.CR + sLine;
@@ -285,7 +286,7 @@ public class JobEntrySQL extends JobEntryBase implements Cloneable, JobEntryInte
         } else {
           mySQL = sql;
         }
-        if ( !Const.isEmpty( mySQL ) ) {
+        if ( !Utils.isEmpty( mySQL ) ) {
           // let it run
           if ( useVariableSubstitution ) {
             mySQL = environmentSubstitute( mySQL );

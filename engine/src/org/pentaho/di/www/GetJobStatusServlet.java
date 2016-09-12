@@ -34,6 +34,7 @@ import org.owasp.esapi.ESAPI;
 import org.owasp.esapi.Encoder;
 import org.pentaho.di.cluster.HttpUtil;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.logging.KettleLogStore;
@@ -201,7 +202,7 @@ public class GetJobStatusServlet extends BaseHttpServlet implements CartePluginI
     //
     Job job;
     CarteObjectEntry entry;
-    if ( Const.isEmpty( id ) ) {
+    if ( Utils.isEmpty( id ) ) {
       // get the first job that matches...
       //
       entry = getJobMap().getFirstCarteObjectEntry( jobName );
@@ -214,7 +215,7 @@ public class GetJobStatusServlet extends BaseHttpServlet implements CartePluginI
     } else {
       // Actually, just providing the ID should be enough to identify the job
       //
-      if ( Const.isEmpty( jobName ) ) {
+      if ( Utils.isEmpty( jobName ) ) {
         // Take the ID into account!
         //
         job = getJobMap().findJob( id );

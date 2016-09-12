@@ -12,7 +12,7 @@
 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 * See the GNU Lesser General Public License for more details.
 *
-* Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
+* Copyright (c) 2002-2016 Pentaho Corporation..  All rights reserved.
 */
 
 package org.pentaho.di.starmodeler;
@@ -48,6 +48,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.gui.GCInterface;
@@ -581,7 +582,7 @@ public class StarModelDialog extends Dialog {
     getFactColumns();
     for (LogicalColumn column : factTable.getLogicalColumns()) {
       String dimensionName = ConceptUtil.getString(column, DefaultIDs.LOGICAL_COLUMN_DIMENSION_NAME);
-      if (!Const.isEmpty(dimensionName)) {
+      if (!Utils.isEmpty(dimensionName)) {
         LogicalTable dimensionTable = ConceptUtil.findDimensionWithName(logicalModel, dimensionName, locale);
         if (dimensionTable!=null) {
           LogicalColumn tk = ConceptUtil.findLogicalColumn(dimensionTable, AttributeType.TECHNICAL_KEY);
@@ -820,7 +821,7 @@ public class StarModelDialog extends Dialog {
 
   private void ok() {
 
-    if (Const.isEmpty(wModelName.getText())) {
+    if (Utils.isEmpty(wModelName.getText())) {
       MessageBox box = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
       box.setText(BaseMessages.getString(PKG, "StarModelDialog.ErrorModelHasNoName.Title"));
       box.setMessage(BaseMessages.getString(PKG, "StarModelDialog.ErrorModelHasNoName.Message"));

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -47,6 +47,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.KettleVariablesList;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.util.EnvUtil;
@@ -221,7 +222,7 @@ public class KettlePropertiesFileDialog extends Dialog {
       // Add the standard variables to the properties if they are not in there already
       //
       for ( String key : variablesList.getDescriptionMap().keySet() ) {
-        if ( Const.isEmpty( (String) properties.get( key ) ) ) {
+        if ( Utils.isEmpty( (String) properties.get( key ) ) ) {
           String defaultValue = variablesList.getDefaultValueMap().get( key );
           properties.put( key, Const.NVL( defaultValue, "" ) );
         }
@@ -282,7 +283,7 @@ public class KettlePropertiesFileDialog extends Dialog {
       String variable = item.getText( pos++ );
       String value = item.getText( pos++ );
 
-      if ( !Const.isEmpty( variable ) ) {
+      if ( !Utils.isEmpty( variable ) ) {
         properties.put( variable, value );
         kettleProperties.put( variable, value );
       }

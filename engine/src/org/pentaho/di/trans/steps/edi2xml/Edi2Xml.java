@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -28,6 +28,7 @@ import org.antlr.runtime.MismatchedTokenException;
 import org.antlr.runtime.RecognitionException;
 import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.i18n.BaseMessages;
@@ -101,7 +102,7 @@ public class Edi2Xml extends BaseStep implements StepInterface {
 
       data.inputMeta = data.inputRowMeta.getValueMeta( data.inputFieldIndex );
 
-      if ( Const.isEmpty( meta.getOutputField() ) ) {
+      if ( Utils.isEmpty( meta.getOutputField() ) ) {
         // same field
         data.outputMeta = data.outputRowMeta.getValueMeta( data.inputFieldIndex );
         data.outputFieldIndex = data.inputFieldIndex;

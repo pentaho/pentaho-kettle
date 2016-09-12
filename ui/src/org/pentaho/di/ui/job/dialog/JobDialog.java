@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -50,6 +50,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.DBCache;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.database.Database;
@@ -387,7 +388,7 @@ public class JobDialog extends Dialog {
     for ( int i = 0; i < count; i++ ) {
       TableItem item = wParamFields.getNonEmpty( i );
       String parameterName = item.getText( 1 );
-      if ( !Const.isEmpty( parameterName ) ) {
+      if ( !Utils.isEmpty( parameterName ) ) {
         if ( !list.contains( parameterName ) ) {
           list.add( parameterName );
         }
@@ -1562,7 +1563,7 @@ public class JobDialog extends Dialog {
     try {
 
       for ( LogTableInterface logTable : logTables ) {
-        if ( logTable.getDatabaseMeta() != null && !Const.isEmpty( logTable.getTableName() ) ) {
+        if ( logTable.getDatabaseMeta() != null && !Utils.isEmpty( logTable.getTableName() ) ) {
           // OK, we have something to work with!
           //
           Database db = null;
@@ -1581,7 +1582,7 @@ public class JobDialog extends Dialog {
                 db.environmentSubstitute( logTable.getTableName() ) );
             String createTable = db.getDDL( schemaTable, fields );
 
-            if ( !Const.isEmpty( createTable ) ) {
+            if ( !Utils.isEmpty( createTable ) ) {
               ddl.append( "-- " ).append( logTable.getLogTableType() ).append( Const.CR );
               ddl.append( "--" ).append( Const.CR ).append( Const.CR );
               ddl.append( createTable ).append( Const.CR );
@@ -1594,7 +1595,7 @@ public class JobDialog extends Dialog {
                 String createIndex =
                   db.getCreateIndexStatement( schemaTable, "IDX_" + tableName + "_" + ( i + 1 ), index
                     .getFieldNames(), false, false, false, true );
-                if ( !Const.isEmpty( createIndex ) ) {
+                if ( !Utils.isEmpty( createIndex ) ) {
                   ddl.append( createIndex );
                 }
               }

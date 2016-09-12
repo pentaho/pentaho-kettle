@@ -27,6 +27,7 @@ import java.util.List;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -226,7 +227,7 @@ public class StringCutMeta extends BaseStepMeta implements StepMetaInterface {
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     for ( int i = 0; i < fieldOutStream.length; i++ ) {
       ValueMetaInterface v;
-      if ( !Const.isEmpty( fieldOutStream[i] ) ) {
+      if ( !Utils.isEmpty( fieldOutStream[i] ) ) {
         v = new ValueMetaString( space.environmentSubstitute( fieldOutStream[i] ) );
         v.setLength( 100, -1 );
         v.setOrigin( name );
@@ -309,7 +310,7 @@ public class StringCutMeta extends BaseStepMeta implements StepMetaInterface {
 
       if ( fieldInStream.length > 0 ) {
         for ( int idx = 0; idx < fieldInStream.length; idx++ ) {
-          if ( Const.isEmpty( fieldInStream[idx] ) ) {
+          if ( Utils.isEmpty( fieldInStream[idx] ) ) {
             cr =
               new CheckResult(
                 CheckResult.TYPE_RESULT_ERROR,

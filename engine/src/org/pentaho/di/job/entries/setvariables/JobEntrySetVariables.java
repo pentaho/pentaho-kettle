@@ -36,6 +36,7 @@ import java.io.BufferedReader;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
@@ -232,7 +233,7 @@ public class JobEntrySetVariables extends JobEntryBase implements Cloneable, Job
 
       String realFilename = environmentSubstitute( filename );
       try {
-        if ( !Const.isEmpty( realFilename ) ) {
+        if ( !Utils.isEmpty( realFilename ) ) {
           Properties properties = new Properties();
           InputStream is = KettleVFS.getInputStream( realFilename );
           // for UTF8 properties files

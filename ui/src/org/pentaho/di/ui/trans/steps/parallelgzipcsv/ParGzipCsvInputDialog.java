@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -57,6 +57,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowMeta;
@@ -748,7 +749,7 @@ public class ParGzipCsvInputDialog extends BaseStepDialog implements StepDialogI
   }
 
   private void ok() {
-    if ( Const.isEmpty( wStepname.getText() ) ) {
+    if ( Utils.isEmpty( wStepname.getText() ) ) {
       return;
     }
 
@@ -798,7 +799,7 @@ public class ParGzipCsvInputDialog extends BaseStepDialog implements StepDialogI
           fieldNames[i] = "Field_" + df.format( i );
         }
       } else {
-        if ( !Const.isEmpty( meta.getEnclosure() ) ) {
+        if ( !Utils.isEmpty( meta.getEnclosure() ) ) {
           for ( int i = 0; i < fieldNames.length; i++ ) {
             if ( fieldNames[i].startsWith( meta.getEnclosure() )
               && fieldNames[i].endsWith( meta.getEnclosure() ) && fieldNames[i].length() > 1 ) {

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -34,6 +34,7 @@ import javax.mail.Message;
 import org.apache.commons.collections.iterators.ArrayIterator;
 import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
@@ -126,17 +127,17 @@ public class MailInput extends BaseStep implements StepInterface {
   private void applySearch( Date beginDate, Date endDate ) {
     // apply search term?
     String realSearchSender = environmentSubstitute( meta.getSenderSearchTerm() );
-    if ( !Const.isEmpty( realSearchSender ) ) {
+    if ( !Utils.isEmpty( realSearchSender ) ) {
       // apply FROM
       data.mailConn.setSenderTerm( realSearchSender, meta.isNotTermSenderSearch() );
     }
     String realSearchReceipient = environmentSubstitute( meta.getRecipientSearch() );
-    if ( !Const.isEmpty( realSearchReceipient ) ) {
+    if ( !Utils.isEmpty( realSearchReceipient ) ) {
       // apply TO
       data.mailConn.setReceipientTerm( realSearchReceipient );
     }
     String realSearchSubject = environmentSubstitute( meta.getSubjectSearch() );
-    if ( !Const.isEmpty( realSearchSubject ) ) {
+    if ( !Utils.isEmpty( realSearchSubject ) ) {
       // apply Subject
       data.mailConn.setSubjectTerm( realSearchSubject, meta.isNotTermSubjectSearch() );
     }
@@ -283,7 +284,7 @@ public class MailInput extends BaseStep implements StepInterface {
           // Get total previous fields
           data.totalpreviousfields = data.inputRowMeta.size();
 
-          if ( Const.isEmpty( meta.getFolderField() ) ) {
+          if ( Utils.isEmpty( meta.getFolderField() ) ) {
             logError( BaseMessages.getString( PKG, "MailInput.Error.DynamicFolderFieldMissing" ) );
             stopAll();
             setErrors( 1 );
@@ -333,13 +334,13 @@ public class MailInput extends BaseStep implements StepInterface {
       data.folderenr++;
 
       // open folder
-      if ( !data.usePOP && !Const.isEmpty( data.folder ) ) {
+      if ( !data.usePOP && !Utils.isEmpty( data.folder ) ) {
         data.mailConn.openFolder( data.folder, false );
       } else {
         data.mailConn.openFolder( false );
       }
 
-      if ( meta.useBatch() || ( !Const.isEmpty( environmentSubstitute( meta.getFirstMails() ) )
+      if ( meta.useBatch() || ( !Utils.isEmpty( environmentSubstitute( meta.getFirstMails() ) )
                                   && Integer.parseInt( environmentSubstitute( meta.getFirstMails() ) ) > 0  ) ) {
         // get data by pieces
         Integer batchSize = meta.useBatch() ? meta.getBatchSize()
@@ -428,7 +429,7 @@ public class MailInput extends BaseStep implements StepInterface {
         case MailConnectionMeta.CONDITION_DATE_GREATER:
         case MailConnectionMeta.CONDITION_DATE_SMALLER:
           String realBeginDate = environmentSubstitute( meta.getReceivedDate1() );
-          if ( Const.isEmpty( realBeginDate ) ) {
+          if ( Utils.isEmpty( realBeginDate ) ) {
             throw new KettleException( BaseMessages.getString(
               PKG, "MailInput.Error.ReceivedDateSearchTermEmpty" ) );
           }
@@ -436,13 +437,13 @@ public class MailInput extends BaseStep implements StepInterface {
           break;
         case MailConnectionMeta.CONDITION_DATE_BETWEEN:
           realBeginDate = environmentSubstitute( meta.getReceivedDate1() );
-          if ( Const.isEmpty( realBeginDate ) ) {
+          if ( Utils.isEmpty( realBeginDate ) ) {
             throw new KettleException( BaseMessages.getString(
               PKG, "MailInput.Error.ReceivedDatesSearchTermEmpty" ) );
           }
           beginDate = df.parse( realBeginDate );
           String realEndDate = environmentSubstitute( meta.getReceivedDate2() );
-          if ( Const.isEmpty( realEndDate ) ) {
+          if ( Utils.isEmpty( realEndDate ) ) {
             throw new KettleException( BaseMessages.getString(
               PKG, "MailInput.Error.ReceivedDatesSearchTermEmpty" ) );
           }

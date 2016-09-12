@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -26,9 +26,9 @@ import java.sql.Date;
 import java.util.TimeZone;
 
 import org.odftoolkit.odfdom.doc.table.OdfTableCell;
-import org.pentaho.di.core.Const;
 import org.pentaho.di.core.spreadsheet.KCell;
 import org.pentaho.di.core.spreadsheet.KCellType;
+import org.pentaho.di.core.util.Utils;
 
 public class OdfCell implements KCell {
 
@@ -49,30 +49,30 @@ public class OdfCell implements KCell {
   public KCellType getType() {
 
     String type = cell.getValueType();
-    if ( Const.isEmpty( type ) ) {
+    if ( Utils.isEmpty( type ) ) {
       return KCellType.EMPTY;
     }
 
     if ( TYPE_BOOLEAN.equals( type ) ) {
-      if ( Const.isEmpty( cell.getFormula() ) ) {
+      if ( Utils.isEmpty( cell.getFormula() ) ) {
         return KCellType.BOOLEAN;
       } else {
         return KCellType.BOOLEAN_FORMULA;
       }
     } else if ( TYPE_CURRENCY.equals( type ) || TYPE_FLOAT.equals( type ) || TYPE_PERCENTAGE.equals( type ) ) {
-      if ( Const.isEmpty( cell.getFormula() ) ) {
+      if ( Utils.isEmpty( cell.getFormula() ) ) {
         return KCellType.NUMBER;
       } else {
         return KCellType.NUMBER_FORMULA;
       }
     } else if ( TYPE_DATE.equals( type ) || TYPE_TIME.equals( type ) ) { // Validate!
-      if ( Const.isEmpty( cell.getFormula() ) ) {
+      if ( Utils.isEmpty( cell.getFormula() ) ) {
         return KCellType.DATE;
       } else {
         return KCellType.DATE_FORMULA;
       }
     } else if ( TYPE_STRING.equals( type ) ) {
-      if ( Const.isEmpty( cell.getFormula() ) ) {
+      if ( Utils.isEmpty( cell.getFormula() ) ) {
         return KCellType.LABEL;
       } else {
         return KCellType.STRING_FORMULA;

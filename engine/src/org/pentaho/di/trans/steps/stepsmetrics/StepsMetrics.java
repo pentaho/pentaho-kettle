@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -28,6 +28,7 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
@@ -147,31 +148,31 @@ public class StepsMetrics extends BaseStep implements StepInterface {
           int index = 0;
           // step finished
           // output step metrics
-          if ( !Const.isEmpty( data.realstepnamefield ) ) {
+          if ( !Utils.isEmpty( data.realstepnamefield ) ) {
             rowData[index++] = step.getStepname();
           }
-          if ( !Const.isEmpty( data.realstepidfield ) ) {
+          if ( !Utils.isEmpty( data.realstepidfield ) ) {
             rowData[index++] = step.getStepID();
           }
-          if ( !Const.isEmpty( data.realsteplinesinputfield ) ) {
+          if ( !Utils.isEmpty( data.realsteplinesinputfield ) ) {
             rowData[index++] = step.getLinesInput();
           }
-          if ( !Const.isEmpty( data.realsteplinesoutputfield ) ) {
+          if ( !Utils.isEmpty( data.realsteplinesoutputfield ) ) {
             rowData[index++] = step.getLinesOutput();
           }
-          if ( !Const.isEmpty( data.realsteplinesreadfield ) ) {
+          if ( !Utils.isEmpty( data.realsteplinesreadfield ) ) {
             rowData[index++] = step.getLinesRead();
           }
-          if ( !Const.isEmpty( data.realsteplinesupdatedfield ) ) {
+          if ( !Utils.isEmpty( data.realsteplinesupdatedfield ) ) {
             rowData[index++] = step.getLinesUpdated();
           }
-          if ( !Const.isEmpty( data.realsteplineswrittentfield ) ) {
+          if ( !Utils.isEmpty( data.realsteplineswrittentfield ) ) {
             rowData[index++] = step.getLinesWritten();
           }
-          if ( !Const.isEmpty( data.realsteplineserrorsfield ) ) {
+          if ( !Utils.isEmpty( data.realsteplineserrorsfield ) ) {
             rowData[index++] = step.getLinesRejected();
           }
-          if ( !Const.isEmpty( data.realstepsecondsfield ) ) {
+          if ( !Utils.isEmpty( data.realstepsecondsfield ) ) {
             rowData[index++] = step.getRuntime();
           }
 

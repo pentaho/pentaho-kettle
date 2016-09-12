@@ -1,7 +1,7 @@
 /*
  * ******************************************************************************
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  * ******************************************************************************
  *
@@ -21,7 +21,7 @@
 package org.pentaho.di.trans.steps.getxmldata;
 
 import org.apache.commons.vfs2.FileObject;
-import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -63,7 +63,7 @@ public class GetXMLDataExternalResourceConsumer
             resources = new ArrayList<IExternalResourceInfo>( paths.length );
 
             for ( String path : paths ) {
-              if ( !Const.isEmpty( path ) ) {
+              if ( !Utils.isEmpty( path ) ) {
                 try {
 
                   IExternalResourceInfo resource = ExternalResourceInfoFactory
@@ -98,7 +98,7 @@ public class GetXMLDataExternalResourceConsumer
     try {
       if ( meta.getIsAFile() ) {
         String filename = ( meta == null ) ? null : rowMeta.getString( row, meta.getXMLField(), null );
-        if ( !Const.isEmpty( filename ) ) {
+        if ( !Utils.isEmpty( filename ) ) {
           FileObject fileObject = KettleVFS.getFileObject( filename );
           resources.add( ExternalResourceInfoFactory.createFileResource( fileObject, true ) );
         }

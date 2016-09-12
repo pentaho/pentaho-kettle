@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -45,6 +45,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
@@ -334,7 +335,7 @@ public class NumberRangeDialog extends BaseStepDialog implements StepDialogInter
   }
 
   private void ok() {
-    if ( Const.isEmpty( wStepname.getText() ) ) {
+    if ( Utils.isEmpty( wStepname.getText() ) ) {
       return;
     }
 
@@ -354,9 +355,9 @@ public class NumberRangeDialog extends BaseStepDialog implements StepDialogInter
     for ( int i = 0; i < count; i++ ) {
       TableItem item = rulesControl.getNonEmpty( i );
       String lowerBoundStr =
-        Const.isEmpty( item.getText( 1 ) ) ? String.valueOf( -Double.MAX_VALUE ) : item.getText( 1 );
+        Utils.isEmpty( item.getText( 1 ) ) ? String.valueOf( -Double.MAX_VALUE ) : item.getText( 1 );
       String upperBoundStr =
-        Const.isEmpty( item.getText( 2 ) ) ? String.valueOf( Double.MAX_VALUE ) : item.getText( 2 );
+        Utils.isEmpty( item.getText( 2 ) ) ? String.valueOf( Double.MAX_VALUE ) : item.getText( 2 );
       String value = item.getText( 3 );
 
       try {

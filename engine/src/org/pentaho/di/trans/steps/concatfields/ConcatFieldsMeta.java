@@ -27,6 +27,7 @@ import java.util.List;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -143,7 +144,7 @@ public class ConcatFieldsMeta extends TextFileOutputMeta implements StepMetaInte
     }
 
     // Check Target Field Name
-    if ( Const.isEmpty( targetFieldName ) ) {
+    if ( Utils.isEmpty( targetFieldName ) ) {
       throw new KettleStepException( BaseMessages.getString(
         PKG, "ConcatFieldsMeta.CheckResult.TargetFieldNameMissing" ) );
     }
@@ -151,7 +152,7 @@ public class ConcatFieldsMeta extends TextFileOutputMeta implements StepMetaInte
     ValueMetaInterface vValue = new ValueMetaString( targetFieldName );
     vValue.setLength( targetFieldLength, 0 );
     vValue.setOrigin( name );
-    if ( !Const.isEmpty( getEncoding() ) ) {
+    if ( !Utils.isEmpty( getEncoding() ) ) {
       vValue.setStringEncoding( getEncoding() );
     }
     row.addValueMeta( vValue );
@@ -208,7 +209,7 @@ public class ConcatFieldsMeta extends TextFileOutputMeta implements StepMetaInte
     CheckResult cr;
 
     // Check Target Field Name
-    if ( Const.isEmpty( targetFieldName ) ) {
+    if ( Utils.isEmpty( targetFieldName ) ) {
       cr =
         new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
           PKG, "ConcatFieldsMeta.CheckResult.TargetFieldNameMissing" ), stepMeta );

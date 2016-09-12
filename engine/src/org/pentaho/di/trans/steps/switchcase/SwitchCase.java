@@ -25,11 +25,11 @@ package org.pentaho.di.trans.steps.switchcase;
 import java.util.List;
 import java.util.Set;
 
-import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -116,7 +116,7 @@ public class SwitchCase extends BaseStep implements StepInterface {
     }
     data.outputMap = meta.isContains() ? new ContainsKeyToRowSetMap() : new KeyToRowSetMap();
 
-    if ( Const.isEmpty( meta.getFieldname() ) ) {
+    if ( Utils.isEmpty( meta.getFieldname() ) ) {
       logError( BaseMessages.getString( PKG, "SwitchCase.Log.NoFieldSpecifiedToSwitchWith" ) );
       return false;
     }

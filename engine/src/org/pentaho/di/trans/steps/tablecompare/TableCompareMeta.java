@@ -27,7 +27,6 @@ import java.util.List;
 
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
-import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -35,6 +34,7 @@ import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaInteger;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -377,27 +377,27 @@ public class TableCompareMeta extends BaseStepMeta implements StepMetaInterface 
   public void getFields( RowMetaInterface inputRowMeta, String origin, RowMetaInterface[] info, StepMeta nextStep,
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
 
-    if ( Const.isEmpty( nrErrorsField ) ) {
+    if ( Utils.isEmpty( nrErrorsField ) ) {
       throw new KettleStepException( BaseMessages.getString(
         PKG, "TableCompareMeta.Exception.NrErrorsFieldIsNotSpecified" ) );
     }
-    if ( Const.isEmpty( nrRecordsReferenceField ) ) {
+    if ( Utils.isEmpty( nrRecordsReferenceField ) ) {
       throw new KettleStepException( BaseMessages.getString(
         PKG, "TableCompareMeta.Exception.NrRecordsReferenceFieldNotSpecified" ) );
     }
-    if ( Const.isEmpty( nrRecordsCompareField ) ) {
+    if ( Utils.isEmpty( nrRecordsCompareField ) ) {
       throw new KettleStepException( BaseMessages.getString(
         PKG, "TableCompareMeta.Exception.NrRecordsCompareFieldNotSpecified" ) );
     }
-    if ( Const.isEmpty( nrErrorsLeftJoinField ) ) {
+    if ( Utils.isEmpty( nrErrorsLeftJoinField ) ) {
       throw new KettleStepException( BaseMessages.getString(
         PKG, "TableCompareMeta.Exception.NrErrorsLeftJoinFieldNotSpecified" ) );
     }
-    if ( Const.isEmpty( nrErrorsInnerJoinField ) ) {
+    if ( Utils.isEmpty( nrErrorsInnerJoinField ) ) {
       throw new KettleStepException( BaseMessages.getString(
         PKG, "TableCompareMeta.Exception.NrErrorsInnerJoinFieldNotSpecified" ) );
     }
-    if ( Const.isEmpty( nrErrorsRightJoinField ) ) {
+    if ( Utils.isEmpty( nrErrorsRightJoinField ) ) {
       throw new KettleStepException( BaseMessages.getString(
         PKG, "TableCompareMeta.Exception.NrErrorsRightJoinFieldNotSpecified" ) );
     }

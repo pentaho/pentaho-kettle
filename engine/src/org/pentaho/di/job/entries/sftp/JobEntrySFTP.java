@@ -37,6 +37,7 @@ import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.RowMetaAndData;
@@ -171,7 +172,7 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
 
       String addresult = XMLHandler.getTagValue( entrynode, "isaddresult" );
 
-      if ( Const.isEmpty( addresult ) ) {
+      if ( Utils.isEmpty( addresult ) ) {
         isaddresult = true;
       } else {
         isaddresult = "Y".equalsIgnoreCase( addresult );
@@ -212,7 +213,7 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
       remove = rep.getJobEntryAttributeBoolean( id_jobentry, "remove" );
 
       String addToResult = rep.getJobEntryAttributeString( id_jobentry, "isaddresult" );
-      if ( Const.isEmpty( addToResult ) ) {
+      if ( Utils.isEmpty( addToResult ) ) {
         isaddresult = true;
       } else {
         isaddresult = rep.getJobEntryAttributeBoolean( id_jobentry, "isaddresult" );
@@ -534,7 +535,7 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
 
           // Get file names
           String file_previous = resultRow.getString( 0, null );
-          if ( !Const.isEmpty( file_previous ) ) {
+          if ( !Utils.isEmpty( file_previous ) ) {
             list_previous_filenames.add( file_previous );
             if ( log.isDebug() ) {
               logDebug( BaseMessages.getString( PKG, "JobSFTP.Log.FilenameFromResult", file_previous ) );
@@ -567,7 +568,7 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
       if ( isUseKeyFile() ) {
         // We must have here a private keyfilename
         realKeyFilename = environmentSubstitute( getKeyFilename() );
-        if ( Const.isEmpty( realKeyFilename ) ) {
+        if ( Utils.isEmpty( realKeyFilename ) ) {
           // Error..Missing keyfile
           logError( BaseMessages.getString( PKG, "JobSFTP.Error.KeyFileMissing" ) );
           result.setNrErrors( 1 );
@@ -582,7 +583,7 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
         realPassPhrase = environmentSubstitute( getKeyPassPhrase() );
       }
 
-      if ( !Const.isEmpty( realTargetDirectory ) ) {
+      if ( !Utils.isEmpty( realTargetDirectory ) ) {
         TargetFolder = KettleVFS.getFileObject( realTargetDirectory, this );
         boolean TargetFolderExists = TargetFolder.exists();
         if ( TargetFolderExists ) {
@@ -625,7 +626,7 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
 
       // Set proxy?
       String realProxyHost = environmentSubstitute( getProxyHost() );
-      if ( !Const.isEmpty( realProxyHost ) ) {
+      if ( !Utils.isEmpty( realProxyHost ) ) {
         // Set proxy
         sftpclient.setProxy(
           realProxyHost, environmentSubstitute( getProxyPort() ), environmentSubstitute( getProxyUsername() ),
@@ -638,7 +639,7 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
       // logDetailed("logged in using password "+realPassword); // Logging this seems a bad idea! Oh well.
 
       // move to spool dir ...
-      if ( !Const.isEmpty( realSftpDirString ) ) {
+      if ( !Utils.isEmpty( realSftpDirString ) ) {
         try {
           sftpclient.chdir( realSftpDirString );
         } catch ( Exception e ) {
@@ -665,7 +666,7 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
       }
 
       if ( !copyprevious ) {
-        if ( !Const.isEmpty( realWildcard ) ) {
+        if ( !Utils.isEmpty( realWildcard ) ) {
           pattern = Pattern.compile( realWildcard );
         }
       }
@@ -761,7 +762,7 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
 
   public List<ResourceReference> getResourceDependencies( JobMeta jobMeta ) {
     List<ResourceReference> references = super.getResourceDependencies( jobMeta );
-    if ( !Const.isEmpty( serverName ) ) {
+    if ( !Utils.isEmpty( serverName ) ) {
       String realServerName = jobMeta.environmentSubstitute( serverName );
       ResourceReference reference = new ResourceReference( this );
       reference.getEntries().add( new ResourceEntry( realServerName, ResourceType.SERVER ) );

@@ -24,6 +24,7 @@
 package org.pentaho.di.core.database;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleDatabaseException;
@@ -1063,7 +1064,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
     for ( Iterator<String> iter = list.iterator(); iter.hasNext(); ) {
       String code = iter.next();
       String attribute = getAttributes().getProperty( code );
-      if ( !Const.isEmpty( attribute ) ) {
+      if ( !Utils.isEmpty( attribute ) ) {
         retval.append( "      <attribute>"
           + XMLHandler.addTagValue( "code", code, false )
           + XMLHandler.addTagValue( "attribute", attribute, false ) + "</attribute>" + Const.CR );
@@ -1101,7 +1102,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
     String port;
     String databaseName;
 
-    if ( isPartitioned() && !Const.isEmpty( partitionId ) ) {
+    if ( isPartitioned() && !Utils.isEmpty( partitionId ) ) {
       // Get the cluster information...
       PartitionDatabaseMeta partition = getPartitionMeta( partitionId );
       hostname = environmentSubstitute( partition.getHostname() );
@@ -1148,7 +1149,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
       }
 
       final String value = extraOptions.get( typedParameter );
-      if ( Const.isEmpty( value ) || value.equals( EMPTY_OPTIONS_STRING ) ) {
+      if ( Utils.isEmpty( value ) || value.equals( EMPTY_OPTIONS_STRING ) ) {
         // skip this science no value is provided
         continue;
       }
@@ -1619,8 +1620,8 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
    * @return the schemaname-tablename combination
    */
   public String getQuotedSchemaTableCombination( String schemaName, String tableName ) {
-    if ( Const.isEmpty( schemaName ) ) {
-      if ( Const.isEmpty( getPreferredSchemaName() ) ) {
+    if ( Utils.isEmpty( schemaName ) ) {
+      if ( Utils.isEmpty( getPreferredSchemaName() ) ) {
         return quoteField( environmentSubstitute( tableName ) ); // no need to look further
       } else {
         return databaseInterface.getSchemaTableCombination(
@@ -1653,7 +1654,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
     String definition =
       v.getDatabaseColumnTypeDefinition( databaseInterface, tk, pk, use_autoinc, add_fieldname, add_cr );
-    if ( !Const.isEmpty( definition ) ) {
+    if ( !Utils.isEmpty( definition ) ) {
       return definition;
     }
 
@@ -1740,7 +1741,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
    * @return The quoted field (if this is needed.
    */
   public String quoteField( String field ) {
-    if ( Const.isEmpty( field ) ) {
+    if ( Utils.isEmpty( field ) ) {
       return null;
     }
 
@@ -2706,9 +2707,9 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   @Override
   public boolean getBooleanValueOfVariable( String variableName, boolean defaultValue ) {
-    if ( !Const.isEmpty( variableName ) ) {
+    if ( !Utils.isEmpty( variableName ) ) {
       String value = environmentSubstitute( variableName );
-      if ( !Const.isEmpty( value ) ) {
+      if ( !Utils.isEmpty( value ) ) {
         return ValueMetaBase.convertStringToBoolean( value );
       }
     }

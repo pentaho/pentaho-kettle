@@ -26,7 +26,6 @@ import java.util.List;
 
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
-import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -35,6 +34,7 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaBoolean;
 import org.pentaho.di.core.row.value.ValueMetaString;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -156,14 +156,14 @@ public class FileExistsMeta extends BaseStepMeta implements StepMetaInterface {
   public void getFields( RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info, StepMeta nextStep,
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     // Output fields (String)
-    if ( !Const.isEmpty( resultfieldname ) ) {
+    if ( !Utils.isEmpty( resultfieldname ) ) {
       ValueMetaInterface v =
         new ValueMetaBoolean( space.environmentSubstitute( resultfieldname ) );
       v.setOrigin( name );
       inputRowMeta.addValueMeta( v );
     }
 
-    if ( includefiletype && !Const.isEmpty( filetypefieldname ) ) {
+    if ( includefiletype && !Utils.isEmpty( filetypefieldname ) ) {
       ValueMetaInterface v =
         new ValueMetaString( space.environmentSubstitute( filetypefieldname ) );
       v.setOrigin( name );
@@ -227,7 +227,7 @@ public class FileExistsMeta extends BaseStepMeta implements StepMetaInterface {
     CheckResult cr;
     String error_message = "";
 
-    if ( Const.isEmpty( resultfieldname ) ) {
+    if ( Utils.isEmpty( resultfieldname ) ) {
       error_message = BaseMessages.getString( PKG, "FileExistsMeta.CheckResult.ResultFieldMissing" );
       cr = new CheckResult( CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta );
       remarks.add( cr );
@@ -236,7 +236,7 @@ public class FileExistsMeta extends BaseStepMeta implements StepMetaInterface {
       cr = new CheckResult( CheckResult.TYPE_RESULT_OK, error_message, stepMeta );
       remarks.add( cr );
     }
-    if ( Const.isEmpty( filenamefield ) ) {
+    if ( Utils.isEmpty( filenamefield ) ) {
       error_message = BaseMessages.getString( PKG, "FileExistsMeta.CheckResult.FileFieldMissing" );
       cr = new CheckResult( CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta );
       remarks.add( cr );

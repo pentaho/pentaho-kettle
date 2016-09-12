@@ -40,6 +40,7 @@ import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -305,7 +306,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 
       String addresult = XMLHandler.getTagValue( entrynode, "isaddresult" );
 
-      if ( Const.isEmpty( addresult ) ) {
+      if ( Utils.isEmpty( addresult ) ) {
         isaddresult = true;
       } else {
         isaddresult = "Y".equalsIgnoreCase( addresult );
@@ -324,7 +325,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
       socksProxyPassword =
         Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue( entrynode, "socksproxy_password" ) );
       SifFileExists = XMLHandler.getTagValue( entrynode, "ifFileExists" );
-      if ( Const.isEmpty( SifFileExists ) ) {
+      if ( Utils.isEmpty( SifFileExists ) ) {
         ifFileExists = ifFileExistsSkip;
       } else {
         if ( SifFileExists.equals( SifFileExistsCreateUniq ) ) {
@@ -378,7 +379,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
       AddDateBeforeExtension = rep.getJobEntryAttributeBoolean( id_jobentry, "AddDateBeforeExtension" );
 
       String addToResult = rep.getJobEntryAttributeString( id_jobentry, "isaddresult" );
-      if ( Const.isEmpty( addToResult ) ) {
+      if ( Utils.isEmpty( addToResult ) ) {
         isaddresult = true;
       } else {
         isaddresult = rep.getJobEntryAttributeBoolean( id_jobentry, "isaddresult" );
@@ -399,7 +400,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
         Encr.decryptPasswordOptionallyEncrypted( rep.getJobEntryAttributeString(
           id_jobentry, "socksproxy_password" ) );
       SifFileExists = rep.getJobEntryAttributeString( id_jobentry, "ifFileExists" );
-      if ( Const.isEmpty( SifFileExists ) ) {
+      if ( Utils.isEmpty( SifFileExists ) ) {
         ifFileExists = ifFileExistsSkip;
       } else {
         if ( SifFileExists.equals( SifFileExistsCreateUniq ) ) {
@@ -899,7 +900,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 
     // Here let's put some controls before stating the job
     if ( movefiles ) {
-      if ( Const.isEmpty( movetodirectory ) ) {
+      if ( Utils.isEmpty( movetodirectory ) ) {
         logError( BaseMessages.getString( PKG, "JobEntryFTP.MoveToFolderEmpty" ) );
         return result;
       }
@@ -919,11 +920,11 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
       String realServername = environmentSubstitute( serverName );
       String realServerPort = environmentSubstitute( port );
       ftpclient.setRemoteAddr( getInetAddress( realServername ) );
-      if ( !Const.isEmpty( realServerPort ) ) {
+      if ( !Utils.isEmpty( realServerPort ) ) {
         ftpclient.setRemotePort( Const.toInt( realServerPort, 21 ) );
       }
 
-      if ( !Const.isEmpty( proxyHost ) ) {
+      if ( !Utils.isEmpty( proxyHost ) ) {
         String realProxy_host = environmentSubstitute( proxyHost );
         ftpclient.setRemoteAddr( InetAddress.getByName( realProxy_host ) );
         if ( isDetailed() ) {
@@ -968,8 +969,8 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
       }
 
       // If socks proxy server was provided
-      if ( !Const.isEmpty( socksProxyHost ) ) {
-        if ( !Const.isEmpty( socksProxyPort ) ) {
+      if ( !Utils.isEmpty( socksProxyHost ) ) {
+        if ( !Utils.isEmpty( socksProxyPort ) ) {
           FTPClient.initSOCKS( environmentSubstitute( socksProxyPort ), environmentSubstitute( socksProxyHost ) );
         } else {
           throw new FTPException( BaseMessages.getString(
@@ -977,12 +978,12 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
             getName() ) );
         }
         // then if we have authentication information
-        if ( !Const.isEmpty( socksProxyUsername ) && !Const.isEmpty( socksProxyPassword ) ) {
+        if ( !Utils.isEmpty( socksProxyUsername ) && !Utils.isEmpty( socksProxyPassword ) ) {
           FTPClient.initSOCKSAuthentication(
             environmentSubstitute( socksProxyUsername ), environmentSubstitute( socksProxyPassword ) );
-        } else if ( !Const.isEmpty( socksProxyUsername )
-          && Const.isEmpty( socksProxyPassword ) || Const.isEmpty( socksProxyUsername )
-          && !Const.isEmpty( socksProxyPassword ) ) {
+        } else if ( !Utils.isEmpty( socksProxyUsername )
+          && Utils.isEmpty( socksProxyPassword ) || Utils.isEmpty( socksProxyUsername )
+          && !Utils.isEmpty( socksProxyPassword ) ) {
           // we have a username without a password or vica versa
           throw new FTPException( BaseMessages.getString(
             PKG, "JobEntryFTP.SocksProxy.IncompleteCredentials", environmentSubstitute( socksProxyHost ),
@@ -995,12 +996,12 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 
       String realUsername =
         environmentSubstitute( userName )
-          + ( !Const.isEmpty( proxyHost ) ? "@" + realServername : "" )
-          + ( !Const.isEmpty( proxyUsername ) ? " " + environmentSubstitute( proxyUsername ) : "" );
+          + ( !Utils.isEmpty( proxyHost ) ? "@" + realServername : "" )
+          + ( !Utils.isEmpty( proxyUsername ) ? " " + environmentSubstitute( proxyUsername ) : "" );
 
       String realPassword =
         Encr.decryptPasswordOptionallyEncrypted( environmentSubstitute( password ) )
-          + ( !Const.isEmpty( proxyPassword ) ? " "
+          + ( !Utils.isEmpty( proxyPassword ) ? " "
             + Encr.decryptPasswordOptionallyEncrypted( environmentSubstitute( proxyPassword ) ) : "" );
 
       ftpclient.login( realUsername, realPassword );
@@ -1013,7 +1014,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
       this.hookInOtherParsers( ftpclient );
 
       // move to spool dir ...
-      if ( !Const.isEmpty( ftpDirectory ) ) {
+      if ( !Utils.isEmpty( ftpDirectory ) ) {
         String realFtpDirectory = environmentSubstitute( ftpDirectory );
         realFtpDirectory = normalizePath( realFtpDirectory );
         ftpclient.chdir( realFtpDirectory );
@@ -1023,7 +1024,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
       }
 
       // Create move to folder if necessary
-      if ( movefiles && !Const.isEmpty( movetodirectory ) ) {
+      if ( movefiles && !Utils.isEmpty( movetodirectory ) ) {
         realMoveToFolder = environmentSubstitute( movetodirectory );
         realMoveToFolder = normalizePath( realMoveToFolder );
         // Folder exists?
@@ -1087,7 +1088,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 
         if ( ftpFiles.length == 1 ) {
           String translatedWildcard = environmentSubstitute( wildcard );
-          if ( !Const.isEmpty( translatedWildcard ) ) {
+          if ( !Utils.isEmpty( translatedWildcard ) ) {
             if ( ftpFiles[0].getName().startsWith( translatedWildcard ) ) {
               throw new FTPException( ftpFiles[0].getName() );
             }
@@ -1095,7 +1096,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
         }
 
         Pattern pattern = null;
-        if ( !Const.isEmpty( wildcard ) ) {
+        if ( !Utils.isEmpty( wildcard ) ) {
           String realWildcard = environmentSubstitute( wildcard );
           pattern = Pattern.compile( realWildcard );
         }
@@ -1338,7 +1339,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
     SimpleDateFormat daf = new SimpleDateFormat();
     Date now = new Date();
 
-    if ( SpecifyFormat && !Const.isEmpty( date_time_format ) ) {
+    if ( SpecifyFormat && !Utils.isEmpty( date_time_format ) ) {
       daf.applyPattern( date_time_format );
       String dt = daf.format( now );
       retval += dt;
@@ -1453,7 +1454,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 
   public List<ResourceReference> getResourceDependencies( JobMeta jobMeta ) {
     List<ResourceReference> references = super.getResourceDependencies( jobMeta );
-    if ( !Const.isEmpty( serverName ) ) {
+    if ( !Utils.isEmpty( serverName ) ) {
       String realServername = jobMeta.environmentSubstitute( serverName );
       ResourceReference reference = new ResourceReference( this );
       reference.getEntries().add( new ResourceEntry( realServername, ResourceType.SERVER ) );

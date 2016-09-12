@@ -60,6 +60,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.ValueMetaInterface;
@@ -391,8 +392,8 @@ public class SalesforceInputDialog extends SalesforceStepDialog {
       @Override
       public void focusGained( org.eclipse.swt.events.FocusEvent e ) {
         // check if the URL and login credentials passed and not just had error
-        if ( Const.isEmpty( wURL.getText() )
-          || Const.isEmpty( wUserName.getText() ) || Const.isEmpty( wPassword.getText() )
+        if ( Utils.isEmpty( wURL.getText() )
+          || Utils.isEmpty( wUserName.getText() ) || Utils.isEmpty( wPassword.getText() )
           || ( getModulesListError ) ) {
           return;
         }
@@ -1663,7 +1664,7 @@ public class SalesforceInputDialog extends SalesforceStepDialog {
   }
 
   private void ok() {
-    if ( Const.isEmpty( wStepname.getText() ) ) {
+    if ( Utils.isEmpty( wStepname.getText() ) ) {
       return;
     }
 
@@ -1820,7 +1821,7 @@ public class SalesforceInputDialog extends SalesforceStepDialog {
           PKG, "SalesforceInputDialog.ErrorRetrieveData.ErrorRetrieveModules" ), e );
         getModulesListError = true;
       } finally {
-        if ( !Const.isEmpty( selectedField ) ) {
+        if ( !Utils.isEmpty( selectedField ) ) {
           wModule.setText( selectedField );
         }
         if ( connection != null ) {

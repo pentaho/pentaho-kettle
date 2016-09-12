@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -30,6 +30,7 @@ import java.util.Map;
 
 import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.plugins.BasePluginType;
@@ -76,7 +77,7 @@ public class TwoWayPasswordEncoderPluginType extends BasePluginType implements P
     //
     String passwordEncoderPluginsXmlFile = Const.XML_FILE_KETTLE_PASSWORD_ENCODER_PLUGINS;
     String alternative = System.getProperty( Const.KETTLE_PASSWORD_ENCODER_PLUGINS_FILE, null );
-    if ( !Const.isEmpty( alternative ) ) {
+    if ( !Utils.isEmpty( alternative ) ) {
       passwordEncoderPluginsXmlFile = alternative;
     }
 
@@ -88,7 +89,7 @@ public class TwoWayPasswordEncoderPluginType extends BasePluginType implements P
         inputStream = getClass().getResourceAsStream( "/" + passwordEncoderPluginsXmlFile );
       }
       // Retry to load a regular file...
-      if ( inputStream == null && !Const.isEmpty( alternative ) ) {
+      if ( inputStream == null && !Utils.isEmpty( alternative ) ) {
         try {
           inputStream = new FileInputStream( passwordEncoderPluginsXmlFile );
         } catch ( Exception e ) {

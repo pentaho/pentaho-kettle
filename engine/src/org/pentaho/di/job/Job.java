@@ -46,6 +46,7 @@ import org.apache.commons.vfs2.FileName;
 import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.ExecutorInterface;
 import org.pentaho.di.core.ExtensionDataInterface;
 import org.pentaho.di.core.KettleEnvironment;
@@ -352,7 +353,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
    */
   @Override
   public String toString() {
-    if ( jobMeta == null || Const.isEmpty( jobMeta.getName() ) ) {
+    if ( jobMeta == null || Utils.isEmpty( jobMeta.getName() ) ) {
       return getName();
     } else {
       return jobMeta.getName();
@@ -1029,7 +1030,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
         }
 
         Object[] lastr = ldb.getLastLogDate( schemaAndTable, jobMeta.getName(), true, LogStatus.END );
-        if ( !Const.isEmpty( lastr ) ) {
+        if ( !Utils.isEmpty( lastr ) ) {
           Date last;
           try {
             last = ldb.getReturnRowMeta().getDate( lastr, 0 );
@@ -1664,9 +1665,9 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
    * @see org.pentaho.di.core.variables.VariableSpace#getBooleanValueOfVariable(java.lang.String, boolean)
    */
   public boolean getBooleanValueOfVariable( String variableName, boolean defaultValue ) {
-    if ( !Const.isEmpty( variableName ) ) {
+    if ( !Utils.isEmpty( variableName ) ) {
       String value = environmentSubstitute( variableName );
-      if ( !Const.isEmpty( value ) ) {
+      if ( !Utils.isEmpty( value ) ) {
         return ValueMetaString.convertStringToBoolean( value );
       }
     }
@@ -1774,7 +1775,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
     if ( slaveServer == null ) {
       throw new KettleException( BaseMessages.getString( PKG, "Job.Log.NoSlaveServerSpecified" ) );
     }
-    if ( Const.isEmpty( jobMeta.getName() ) ) {
+    if ( Utils.isEmpty( jobMeta.getName() ) ) {
       throw new KettleException( BaseMessages.getString( PKG, "Job.Log.UniqueJobName" ) );
     }
 
@@ -2020,7 +2021,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
         defValue = "";
       }
 
-      if ( Const.isEmpty( value ) ) {
+      if ( Utils.isEmpty( value ) ) {
         setVariable( key, Const.NVL( defValue, "" ) );
       } else {
         setVariable( key, Const.NVL( value, "" ) );

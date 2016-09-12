@@ -26,7 +26,6 @@ import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.util.Collections;
 
-import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleException;
@@ -38,6 +37,7 @@ import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -78,7 +78,7 @@ public class StreamLookup extends BaseStep implements StepInterface {
       data.nullIf[i] = null;
       switch ( meta.getValueDefaultType()[i] ) {
         case ValueMetaInterface.TYPE_STRING:
-          if ( Const.isEmpty( meta.getValueDefault()[i] ) ) {
+          if ( Utils.isEmpty( meta.getValueDefault()[i] ) ) {
             data.nullIf[i] = null;
           } else {
             data.nullIf[i] = meta.getValueDefault()[i];

@@ -42,6 +42,7 @@ import java.util.Set;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogChannel;
@@ -134,13 +135,13 @@ public class PluginRegistry {
         classLoaders.remove( plugin );
       }
 
-      if ( !Const.isEmpty( plugin.getClassLoaderGroup() ) ) {
+      if ( !Utils.isEmpty( plugin.getClassLoaderGroup() ) ) {
         // Straight away remove the class loader for the whole group...
         //
         classLoaderGroupsMap.remove( plugin.getClassLoaderGroup() );
       }
 
-      List<PluginTypeListener> listeners = (List<PluginTypeListener>) this.listeners.get( pluginType );
+      List<PluginTypeListener> listeners = this.listeners.get( pluginType );
       if ( listeners != null ) {
         for ( PluginTypeListener listener : listeners ) {
           listener.pluginRemoved( plugin );
@@ -198,7 +199,7 @@ public class PluginRegistry {
         }
       } );
 
-      if ( !Const.isEmpty( plugin.getCategory() ) ) {
+      if ( !Utils.isEmpty( plugin.getCategory() ) ) {
         List<String> categories = categoryMap.get( pluginType );
         if ( categories == null ) {
           categories = new ArrayList<String>();
@@ -304,7 +305,7 @@ public class PluginRegistry {
    * @return the plugin or null if nothing was found.
    */
   public PluginInterface getPlugin( Class<? extends PluginTypeInterface> pluginType, String id ) {
-    if ( Const.isEmpty( id ) ) {
+    if ( Utils.isEmpty( id ) ) {
       return null;
     }
 
@@ -525,7 +526,7 @@ public class PluginRegistry {
 
   /**
    * Added so we can tell when types have been added (but not necessarily registered)
-   * 
+   *
    * @return the list of added plugin types
    */
   public static List<PluginTypeInterface> getAddedPluginTypes() {
@@ -605,7 +606,7 @@ public class PluginRegistry {
     // Scan for plugin classes to facilitate debugging etc.
     //
     String pluginClasses = EnvUtil.getSystemProperty( Const.KETTLE_PLUGIN_CLASSES );
-    if ( !Const.isEmpty( pluginClasses ) ) {
+    if ( !Utils.isEmpty( pluginClasses ) ) {
       String[] classNames = pluginClasses.split( "," );
 
       for ( String className : classNames ) {
@@ -826,7 +827,7 @@ public class PluginRegistry {
       row[rowIndex++] = plugin.getIds()[0];
       row[rowIndex++] = plugin.getName();
       row[rowIndex++] = Const.NVL( plugin.getDescription(), "" );
-      row[rowIndex++] = Const.isEmpty( plugin.getLibraries() ) ? "" : plugin.getLibraries().toString();
+      row[rowIndex++] = Utils.isEmpty( plugin.getLibraries() ) ? "" : plugin.getLibraries().toString();
       row[rowIndex++] = Const.NVL( plugin.getImageFile(), "" );
       row[rowIndex++] = plugin.getClassMap().values().toString();
       row[rowIndex++] = Const.NVL( plugin.getCategory(), "" );
@@ -946,7 +947,7 @@ public class PluginRegistry {
               ucl = classLoaders.get( plugin );
             }
             if ( ucl == null ) {
-              if ( !Const.isEmpty( plugin.getClassLoaderGroup() ) ) {
+              if ( !Utils.isEmpty( plugin.getClassLoaderGroup() ) ) {
                 ucl = classLoaderGroupsMap.get( plugin.getClassLoaderGroup() );
                 if ( ucl == null ) {
                   ucl = createClassLoader( plugin );

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -30,8 +30,8 @@ import org.olap4j.OlapConnection;
 import org.olap4j.OlapException;
 import org.olap4j.OlapStatement;
 import org.olap4j.OlapWrapper;
-import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleDatabaseException;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.trans.steps.olapinput.olap4jhelper.AbstractBaseCell;
 import org.pentaho.di.trans.steps.olapinput.olap4jhelper.CellDataSet;
 import org.pentaho.di.trans.steps.olapinput.olap4jhelper.OlapUtil;
@@ -72,7 +72,7 @@ public class OlapHelper {
     Class.forName( olap4jDriver );
     OlapConnection connection = null;
 
-    if ( Const.isEmpty( username ) && Const.isEmpty( password ) ) {
+    if ( Utils.isEmpty( username ) && Utils.isEmpty( password ) ) {
       connection = (OlapConnection) DriverManager.getConnection( olap4jUrl );
     } else {
       connection = (OlapConnection) DriverManager.getConnection( olap4jUrl, username, password );
@@ -82,7 +82,7 @@ public class OlapHelper {
     olapConnection = wrapper.unwrap( OlapConnection.class );
 
     try {
-      if ( !Const.isEmpty( catalogName ) ) {
+      if ( !Utils.isEmpty( catalogName ) ) {
         olapConnection.setCatalog( catalogName );
       }
     } catch ( SQLException e ) {
@@ -91,7 +91,7 @@ public class OlapHelper {
 
     OlapStatement stmt = olapConnection.createStatement();
 
-    if ( !Const.isEmpty( mdx ) ) {
+    if ( !Utils.isEmpty( mdx ) ) {
       CellSet tmp = stmt.executeOlapQuery( mdx );
       result = tmp;
     } else {
@@ -166,7 +166,7 @@ public class OlapHelper {
             header = header + "[" + value + "]";
           }
         }
-        if ( Const.isEmpty( header ) ) {
+        if ( Utils.isEmpty( header ) ) {
           header = "Column" + k;
         }
         row[k] = header;

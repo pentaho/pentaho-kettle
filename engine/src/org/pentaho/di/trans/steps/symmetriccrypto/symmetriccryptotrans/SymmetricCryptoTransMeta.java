@@ -27,6 +27,7 @@ import java.util.List;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
@@ -295,7 +296,7 @@ public class SymmetricCryptoTransMeta extends BaseStepMeta implements StepMetaIn
   public void getFields( RowMetaInterface rowMeta, String origin, RowMetaInterface[] info, StepMeta nextStep,
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
 
-    if ( !Const.isEmpty( getResultfieldname() ) ) {
+    if ( !Utils.isEmpty( getResultfieldname() ) ) {
       int type = ValueMetaInterface.TYPE_STRING;
       if ( isOutputResultAsBinary() ) {
         type = ValueMetaInterface.TYPE_BINARY;

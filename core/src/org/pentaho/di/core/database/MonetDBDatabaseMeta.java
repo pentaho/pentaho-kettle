@@ -23,6 +23,7 @@
 package org.pentaho.di.core.database;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.row.ValueMetaInterface;
 
 /**
@@ -84,7 +85,7 @@ public class MonetDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
   @Override
   public String getURL( String hostname, String port, String databaseName ) {
     if ( getAccessType() == DatabaseMeta.TYPE_ACCESS_NATIVE ) {
-      if ( Const.isEmpty( port ) ) {
+      if ( Utils.isEmpty( port ) ) {
         return "jdbc:monetdb://" + hostname + "/" + databaseName;
       } else {
         return "jdbc:monetdb://" + hostname + ":" + port + "/" + databaseName;

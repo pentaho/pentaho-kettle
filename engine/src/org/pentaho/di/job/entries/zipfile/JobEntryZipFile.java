@@ -53,6 +53,7 @@ import org.apache.commons.vfs2.FileType;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.RowMetaAndData;
@@ -374,12 +375,12 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
             // Let's prepare the pattern matcher for performance reasons.
             // We only do this if the target is a folder !
             //
-            if ( !Const.isEmpty( realWildcard ) ) {
+            if ( !Utils.isEmpty( realWildcard ) ) {
               pattern = Pattern.compile( realWildcard );
             } else {
               pattern = null;
             }
-            if ( !Const.isEmpty( realWildcardExclude ) ) {
+            if ( !Utils.isEmpty( realWildcardExclude ) ) {
               patternExclude = Pattern.compile( realWildcardExclude );
             } else {
               patternExclude = null;
@@ -754,7 +755,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
    */
   private String determineZipfilenameForDepth( String filename, int depth ) throws KettleException {
     try {
-      if ( Const.isEmpty( filename ) ) {
+      if ( Utils.isEmpty( filename ) ) {
         return null;
       }
       if ( depth == 0 ) {
@@ -816,7 +817,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
     boolean SanityControlOK = true;
 
     if ( afterZip == 2 ) {
-      if ( Const.isEmpty( realMovetodirectory ) ) {
+      if ( Utils.isEmpty( realMovetodirectory ) ) {
         SanityControlOK = false;
         logError( BaseMessages.getString( PKG, "JobZipFiles.AfterZip_No_DestinationFolder_Defined.Label" ) );
       } else {
@@ -888,19 +889,19 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
           RowMetaAndData resultRow = rows.get( iteration );
           // get target directory
           realTargetdirectory = resultRow.getString( 0, null );
-          if ( !Const.isEmpty( realTargetdirectory ) ) {
+          if ( !Utils.isEmpty( realTargetdirectory ) ) {
             // get wildcard to include
-            if ( !Const.isEmpty( resultRow.getString( 1, null ) ) ) {
+            if ( !Utils.isEmpty( resultRow.getString( 1, null ) ) ) {
               realWildcard = resultRow.getString( 1, null );
             }
             // get wildcard to exclude
-            if ( !Const.isEmpty( resultRow.getString( 2, null ) ) ) {
+            if ( !Utils.isEmpty( resultRow.getString( 2, null ) ) ) {
               realWildcardExclude = resultRow.getString( 2, null );
             }
 
             // get destination zip file
             realZipfilename = resultRow.getString( 3, null );
-            if ( !Const.isEmpty( realZipfilename ) ) {
+            if ( !Utils.isEmpty( realZipfilename ) ) {
               if ( !processRowFile(
                 parentJob, result, realZipfilename, realWildcard, realWildcardExclude, realTargetdirectory,
                 realMovetodirectory, createParentFolder ) ) {
@@ -919,7 +920,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
         result.setNrErrors( 1 );
       }
     } else if ( !isFromPrevious ) {
-      if ( !Const.isEmpty( sourceDirectory ) ) {
+      if ( !Utils.isEmpty( sourceDirectory ) ) {
         // get values from job entry
         realZipfilename =
           getFullFilename( environmentSubstitute( zipFilename ), addDate, addTime, specifyFormat, dateTimeFormat );
@@ -952,7 +953,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
   public String getFullFilename( String filename, boolean add_date, boolean add_time, boolean specify_format,
     String datetime_folder ) {
     String retval;
-    if ( Const.isEmpty( filename ) ) {
+    if ( Utils.isEmpty( filename ) ) {
       return null;
     }
 
@@ -969,7 +970,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
     final SimpleDateFormat daf = new SimpleDateFormat();
     Date now = new Date();
 
-    if ( specify_format && !Const.isEmpty( datetime_folder ) ) {
+    if ( specify_format && !Utils.isEmpty( datetime_folder ) ) {
       daf.applyPattern( datetime_folder );
       String dt = daf.format( now );
       retval += dt;

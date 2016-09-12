@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -64,6 +64,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.libformula.editor.FormulaEvaluator;
@@ -411,7 +412,7 @@ public class LibFormulaEditor extends Dialog implements KeyListener {
           proposals.add( new CompletionProposal( "[" + fieldName + "] (input field)", fieldName + "]", fieldName
             .length() + 1 ) );
         }
-      } else if ( Const.isEmpty( before ) ) {
+      } else if ( Utils.isEmpty( before ) ) {
         for ( String fieldName : inputFields ) {
           proposals.add( new CompletionProposal(
             "[" + fieldName + "] (input field)", "[" + fieldName + "]", fieldName.length() + 2 ) );

@@ -27,6 +27,7 @@ import java.util.List;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -502,7 +503,7 @@ public class StringOperationsMeta extends BaseStepMeta implements StepMetaInterf
     for ( int i = 0; i < fieldOutStream.length; i++ ) {
       ValueMetaInterface v;
       String outputField = space.environmentSubstitute( fieldOutStream[i] );
-      if ( !Const.isEmpty( outputField ) ) {
+      if ( !Utils.isEmpty( outputField ) ) {
         // Add a new field
         v = new ValueMetaString( outputField );
         v.setLength( 100, -1 );
@@ -598,7 +599,7 @@ public class StringOperationsMeta extends BaseStepMeta implements StepMetaInterf
 
       if ( fieldInStream.length > 0 ) {
         for ( int idx = 0; idx < fieldInStream.length; idx++ ) {
-          if ( Const.isEmpty( fieldInStream[idx] ) ) {
+          if ( Utils.isEmpty( fieldInStream[idx] ) ) {
             cr =
               new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
                 PKG, "StringOperationsMeta.CheckResult.InStreamFieldMissing", new Integer( idx + 1 )

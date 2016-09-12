@@ -23,6 +23,7 @@
 package org.pentaho.di.core.database;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.row.ValueMetaInterface;
 
 /**
@@ -39,7 +40,7 @@ public class VectorWiseDatabaseMeta extends IngresDatabaseMeta implements Databa
     if ( getAccessType() == DatabaseMeta.TYPE_ACCESS_ODBC ) {
       return "jdbc:odbc:" + databaseName;
     } else {
-      if ( Const.isEmpty( port ) || "-1".equals( port ) ) {
+      if ( Utils.isEmpty( port ) || "-1".equals( port ) ) {
         return "jdbc:ingres://" + hostname + ":VW7/" + databaseName;
       } else {
         return "jdbc:ingres://" + hostname + ":" + port + "/" + databaseName;

@@ -48,7 +48,7 @@ import org.pentaho.di.repository.kdr.delegates.KettleDatabaseRepositoryConnectio
 
 /**
  * @author Tatsiana_Kasiankova
- * 
+ *
  */
 public class KettleDatabaseRepositoryCreationHelperTest {
 
@@ -76,7 +76,7 @@ public class KettleDatabaseRepositoryCreationHelperTest {
 
   /**
     * PDI-10237 test index name length.
-    * 
+    *
     * @throws KettleException
     */
   @Test

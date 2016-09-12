@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -54,6 +54,7 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -1052,7 +1053,7 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
   }
 
   public boolean spacesValidation( String text ) {
-    return Const.onlySpaces( text ) && !Const.isEmpty( text );
+    return Const.onlySpaces( text ) && !Utils.isEmpty( text );
   }
 
   /**
@@ -1074,7 +1075,7 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
         BaseMessages.getString( PKG, "ValidatorDialog.Dialog.AddAllowedValue.Title" ),
         BaseMessages.getString( PKG, "ValidatorDialog.Dialog.AddAllowedValue.Message" ), true, transMeta );
     String value = dialog.open();
-    if ( !Const.isEmpty( value ) ) {
+    if ( !Utils.isEmpty( value ) ) {
       wAllowedValues.add( value );
     }
   }
@@ -1256,7 +1257,7 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
   }
 
   private void ok() {
-    if ( Const.isEmpty( wStepname.getText() ) ) {
+    if ( Utils.isEmpty( wStepname.getText() ) ) {
       return;
     }
 
@@ -1294,7 +1295,7 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
 
     try {
       String sourceStepName = wSourceStep.getText();
-      if ( !Const.isEmpty( sourceStepName ) ) {
+      if ( !Utils.isEmpty( sourceStepName ) ) {
         String fieldName = wSourceField.getText();
         RowMetaInterface r = transMeta.getStepFields( sourceStepName );
         if ( r != null ) {

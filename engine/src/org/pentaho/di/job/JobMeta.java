@@ -31,6 +31,7 @@ import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.LastUsedFile;
 import org.pentaho.di.core.NotePadMeta;
 import org.pentaho.di.core.ProgressMonitorListener;
@@ -313,20 +314,20 @@ public class JobMeta extends AbstractMeta
    * Compares two transformation on name, filename
    */
   public int compare( JobMeta j1, JobMeta j2 ) {
-    if ( Const.isEmpty( j1.getName() ) && !Const.isEmpty( j2.getName() ) ) {
+    if ( Utils.isEmpty( j1.getName() ) && !Utils.isEmpty( j2.getName() ) ) {
       return -1;
     }
-    if ( !Const.isEmpty( j1.getName() ) && Const.isEmpty( j2.getName() ) ) {
+    if ( !Utils.isEmpty( j1.getName() ) && Utils.isEmpty( j2.getName() ) ) {
       return 1;
     }
-    if ( Const.isEmpty( j1.getName() ) && Const.isEmpty( j2.getName() ) || j1.getName().equals( j2.getName() ) ) {
-      if ( Const.isEmpty( j1.getFilename() ) && !Const.isEmpty( j2.getFilename() ) ) {
+    if ( Utils.isEmpty( j1.getName() ) && Utils.isEmpty( j2.getName() ) || j1.getName().equals( j2.getName() ) ) {
+      if ( Utils.isEmpty( j1.getFilename() ) && !Utils.isEmpty( j2.getFilename() ) ) {
         return -1;
       }
-      if ( !Const.isEmpty( j1.getFilename() ) && Const.isEmpty( j2.getFilename() ) ) {
+      if ( !Utils.isEmpty( j1.getFilename() ) && Utils.isEmpty( j2.getFilename() ) ) {
         return 1;
       }
-      if ( Const.isEmpty( j1.getFilename() ) && Const.isEmpty( j2.getFilename() ) ) {
+      if ( Utils.isEmpty( j1.getFilename() ) && Utils.isEmpty( j2.getFilename() ) ) {
         return 0;
       }
       return j1.getFilename().compareTo( j2.getFilename() );
@@ -811,7 +812,7 @@ public class JobMeta extends AbstractMeta
    * @return true, if is rep reference
    */
   public static boolean isRepReference( String fileName, String transName ) {
-    return Const.isEmpty( fileName ) && !Const.isEmpty( transName );
+    return Utils.isEmpty( fileName ) && !Utils.isEmpty( transName );
   }
 
   /**
@@ -2023,8 +2024,8 @@ public class JobMeta extends AbstractMeta
    * @return the textual representation of the job.
    */
   public String toString() {
-    if ( !Const.isEmpty( filename ) ) {
-      if ( Const.isEmpty( name ) ) {
+    if ( !Utils.isEmpty( filename ) ) {
+      if ( Utils.isEmpty( name ) ) {
         return filename;
       } else {
         return filename + " : " + name;
@@ -2100,7 +2101,7 @@ public class JobMeta extends AbstractMeta
     if ( monitor != null ) {
       monitor.subTask( BaseMessages.getString( PKG, "JobMeta.Monitor.GettingSQLStatementsForJobLogTables" ) );
     }
-    if ( jobLogTable.getDatabaseMeta() != null && !Const.isEmpty( jobLogTable.getTableName() ) ) {
+    if ( jobLogTable.getDatabaseMeta() != null && !Utils.isEmpty( jobLogTable.getTableName() ) ) {
       Database db = new Database( this, jobLogTable.getDatabaseMeta() );
       try {
         db.connect();
@@ -2529,7 +2530,7 @@ public class JobMeta extends AbstractMeta
       String originalPath;
       String fullname;
       String extension = "kjb";
-      if ( Const.isEmpty( getFilename() ) ) {
+      if ( Utils.isEmpty( getFilename() ) ) {
         // Assume repository...
         //
         originalPath = directory.getPath();
@@ -2590,7 +2591,7 @@ public class JobMeta extends AbstractMeta
 
         // Also remember the original filename (if any), including variables etc.
         //
-        if ( Const.isEmpty( this.getFilename() ) ) { // Repository
+        if ( Utils.isEmpty( this.getFilename() ) ) { // Repository
           definition.setOrigin( fullname );
         } else {
           definition.setOrigin( this.getFilename() );

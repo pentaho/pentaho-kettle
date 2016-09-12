@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -59,6 +59,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannel;
@@ -1446,7 +1447,7 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
   }
 
   private void ok() {
-    if ( Const.isEmpty( wStepname.getText() ) ) {
+    if ( Utils.isEmpty( wStepname.getText() ) ) {
       return;
     }
 
@@ -1576,23 +1577,23 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
     if ( refreshport ) {
       if ( wProtocol.getText().equals( MailConnectionMeta.PROTOCOL_STRING_POP3 ) ) {
         if ( wUseSSL.getSelection() ) {
-          if ( Const.isEmpty( wPort.getText() )
+          if ( Utils.isEmpty( wPort.getText() )
             || wPort.getText().equals( "" + MailConnectionMeta.DEFAULT_SSL_IMAP_PORT ) ) {
             wPort.setText( "" + MailConnectionMeta.DEFAULT_SSL_POP3_PORT );
           }
         } else {
-          if ( Const.isEmpty( wPort.getText() ) || wPort.getText().equals( MailConnectionMeta.DEFAULT_IMAP_PORT ) ) {
+          if ( Utils.isEmpty( wPort.getText() ) || wPort.getText().equals( MailConnectionMeta.DEFAULT_IMAP_PORT ) ) {
             wPort.setText( "" + MailConnectionMeta.DEFAULT_POP3_PORT );
           }
         }
       } else if ( wProtocol.getText().equals( MailConnectionMeta.PROTOCOL_STRING_IMAP ) ) {
         if ( wUseSSL.getSelection() ) {
-          if ( Const.isEmpty( wPort.getText() )
+          if ( Utils.isEmpty( wPort.getText() )
             || wPort.getText().equals( "" + MailConnectionMeta.DEFAULT_SSL_POP3_PORT ) ) {
             wPort.setText( "" + MailConnectionMeta.DEFAULT_SSL_IMAP_PORT );
           }
         } else {
-          if ( Const.isEmpty( wPort.getText() ) || wPort.getText().equals( MailConnectionMeta.DEFAULT_POP3_PORT ) ) {
+          if ( Utils.isEmpty( wPort.getText() ) || wPort.getText().equals( MailConnectionMeta.DEFAULT_POP3_PORT ) ) {
             wPort.setText( "" + MailConnectionMeta.DEFAULT_IMAP_PORT );
           }
         }
@@ -1737,7 +1738,7 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
   }
 
   private void checkFolder( String foldername ) {
-    if ( !Const.isEmpty( foldername ) ) {
+    if ( !Utils.isEmpty( foldername ) ) {
       if ( connect() ) {
         // check folder
         if ( mailConn.folderExists( foldername ) ) {
@@ -1869,7 +1870,7 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
   }
 
   private Integer getInteger( String toParse ) {
-    if ( Const.isEmpty( toParse ) ) {
+    if ( Utils.isEmpty( toParse ) ) {
       return null;
     }
 

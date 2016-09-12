@@ -27,6 +27,7 @@ import java.util.List;
 
 import org.codehaus.janino.ExpressionEvaluator;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowDataUtil;
@@ -83,7 +84,7 @@ public class Janino extends BaseStep implements StepInterface {
       for ( int i = 0; i < meta.getFormula().length; i++ ) {
         JaninoMetaFunction fn = meta.getFormula()[i];
         data.returnType[i] = ValueMetaFactory.createValueMeta( fn.getValueType() );
-        if ( !Const.isEmpty( fn.getReplaceField() ) ) {
+        if ( !Utils.isEmpty( fn.getReplaceField() ) ) {
           data.replaceIndex[i] = getInputRowMeta().indexOfValue( fn.getReplaceField() );
           if ( data.replaceIndex[i] < 0 ) {
             throw new KettleException( "Unknown field specified to replace with a formula result: ["
@@ -157,7 +158,7 @@ public class Janino extends BaseStep implements StepInterface {
           }
 
           JaninoMetaFunction fn = meta.getFormula()[m];
-          if ( !Const.isEmpty( fn.getFieldName() ) ) {
+          if ( !Utils.isEmpty( fn.getFieldName() ) ) {
 
             // Create the expression evaluator: is relatively slow so we do it only for the first row...
             //

@@ -12,7 +12,7 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
+ * Copyright (c) 2002-2016 Pentaho Corporation..  All rights reserved.
  */
 
 package org.pentaho.di.ui.trans.steps.gpload;
@@ -53,6 +53,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.SourceToTargetMapping;
 import org.pentaho.di.core.database.Database;
@@ -81,7 +82,7 @@ import org.pentaho.di.ui.trans.step.TableItemInsertListener;
 
 /**
  * Dialog class for the Greenplum bulk loader step. Created on 28mar2008, copied from Sven Boden's Oracle version
- * 
+ *
  * @author Luke Lonergan
  */
 public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface {
@@ -537,7 +538,7 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface 
           for ( ColumnInfo colInfo : tableFieldColumns ) {
             colInfo.setComboValues( new String[] {} );
           }
-          if ( !Const.isEmpty( tableName ) ) {
+          if ( !Utils.isEmpty( tableName ) ) {
             DatabaseMeta ci = transMeta.findDatabase( connectionName );
             if ( ci != null ) {
               Database db = new Database( loggingObject, ci );
@@ -817,7 +818,7 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface 
   }
 
   private void ok() {
-    if ( Const.isEmpty( wStepname.getText() ) ) {
+    if ( Utils.isEmpty( wStepname.getText() ) ) {
       return;
     }
 

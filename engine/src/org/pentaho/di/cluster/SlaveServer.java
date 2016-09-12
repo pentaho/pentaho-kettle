@@ -53,6 +53,7 @@ import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.RequestEntity;
 import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.changed.ChangedFlag;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
@@ -331,7 +332,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
       lock.readLock().unlock();
     }
 
-    if ( !Const.isEmpty( realHostname ) ) {
+    if ( !Utils.isEmpty( realHostname ) ) {
       return realHostname + getPortSpecification();
     }
     return "Slave Server";
@@ -545,7 +546,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
     try {
       String realPort = environmentSubstitute( port );
       String portSpec = ":" + realPort;
-      if ( Const.isEmpty( realPort ) || port.equals( "80" ) ) {
+      if ( Utils.isEmpty( realPort ) || port.equals( "80" ) ) {
         portSpec = "";
       }
       return portSpec;
@@ -740,9 +741,9 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
       lock.readLock().unlock();
     }
 
-    if ( !Const.isEmpty( proxyHost ) && !Const.isEmpty( proxyPort ) ) {
+    if ( !Utils.isEmpty( proxyHost ) && !Utils.isEmpty( proxyPort ) ) {
       // skip applying proxy if non-proxy host matches
-      if ( !Const.isEmpty( nonProxyHosts ) && !Const.isEmpty( hostName ) && hostName.matches( nonProxyHosts ) ) {
+      if ( !Utils.isEmpty( nonProxyHosts ) && !Utils.isEmpty( hostName ) && hostName.matches( nonProxyHosts ) ) {
         return;
       }
       client.getHostConfiguration().setProxy( proxyHost, Integer.parseInt( proxyPort ) );
@@ -1144,9 +1145,9 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
   }
 
   public boolean getBooleanValueOfVariable( String variableName, boolean defaultValue ) {
-    if ( !Const.isEmpty( variableName ) ) {
+    if ( !Utils.isEmpty( variableName ) ) {
       String value = environmentSubstitute( variableName );
-      if ( !Const.isEmpty( value ) ) {
+      if ( !Utils.isEmpty( value ) ) {
         return ValueMetaString.convertStringToBoolean( value );
       }
     }
@@ -1278,10 +1279,10 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
       String nextValueString = XMLHandler.getTagValue( seqNode, NextSequenceValueServlet.XML_TAG_VALUE );
       String errorString = XMLHandler.getTagValue( seqNode, NextSequenceValueServlet.XML_TAG_ERROR );
 
-      if ( !Const.isEmpty( errorString ) ) {
+      if ( !Utils.isEmpty( errorString ) ) {
         throw new KettleException( errorString );
       }
-      if ( Const.isEmpty( nextValueString ) ) {
+      if ( Utils.isEmpty( nextValueString ) ) {
         throw new KettleException( "No value retrieved from slave sequence '" + slaveSequenceName + "' on slave "
           + toString() );
       }

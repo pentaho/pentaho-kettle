@@ -27,7 +27,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
-import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 
 public class SequenceMetaTests {
 
@@ -96,16 +96,16 @@ public class SequenceMetaTests {
     String dbType = db.getClass().getSimpleName();
     if ( expected ) {
       assertTrue( dbType, db.supportsSequences() );
-      assertFalse( dbType + ": List of Sequences", Const.isEmpty( db.getSQLListOfSequences() ) );
-      assertFalse( dbType + ": Sequence Exists", Const.isEmpty( db.getSQLSequenceExists( "testSeq" ) ) );
-      assertFalse( dbType + ": Current Value", Const.isEmpty( db.getSQLCurrentSequenceValue( "testSeq" ) ) );
-      assertFalse( dbType + ": Next Value", Const.isEmpty( db.getSQLNextSequenceValue( "testSeq" ) ) );
+      assertFalse( dbType + ": List of Sequences", Utils.isEmpty( db.getSQLListOfSequences() ) );
+      assertFalse( dbType + ": Sequence Exists", Utils.isEmpty( db.getSQLSequenceExists( "testSeq" ) ) );
+      assertFalse( dbType + ": Current Value", Utils.isEmpty( db.getSQLCurrentSequenceValue( "testSeq" ) ) );
+      assertFalse( dbType + ": Next Value", Utils.isEmpty( db.getSQLNextSequenceValue( "testSeq" ) ) );
     } else {
       assertFalse( db.getClass().getSimpleName(), db.supportsSequences() );
-      assertTrue( dbType + ": List of Sequences", Const.isEmpty( db.getSQLListOfSequences() ) );
-      assertTrue( dbType + ": Sequence Exists", Const.isEmpty( db.getSQLSequenceExists( "testSeq" ) ) );
-      assertTrue( dbType + ": Current Value", Const.isEmpty( db.getSQLCurrentSequenceValue( "testSeq" ) ) );
-      assertTrue( dbType + ": Next Value", Const.isEmpty( db.getSQLNextSequenceValue( "testSeq" ) ) );
+      assertTrue( dbType + ": List of Sequences", Utils.isEmpty( db.getSQLListOfSequences() ) );
+      assertTrue( dbType + ": Sequence Exists", Utils.isEmpty( db.getSQLSequenceExists( "testSeq" ) ) );
+      assertTrue( dbType + ": Current Value", Utils.isEmpty( db.getSQLCurrentSequenceValue( "testSeq" ) ) );
+      assertTrue( dbType + ": Next Value", Utils.isEmpty( db.getSQLNextSequenceValue( "testSeq" ) ) );
     }
   }
 

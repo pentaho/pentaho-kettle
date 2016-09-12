@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,6 +24,7 @@ package org.pentaho.di.trans.steps.getfilesrowscount;
 
 import org.apache.commons.vfs2.FileType;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
@@ -225,7 +226,7 @@ public class GetFilesRowsCount extends BaseStep implements StepInterface {
           data.totalpreviousfields = data.inputRowMeta.size();
 
           // Check is filename field is provided
-          if ( Const.isEmpty( meta.setOutputFilenameField() ) ) {
+          if ( Utils.isEmpty( meta.setOutputFilenameField() ) ) {
             logError( BaseMessages.getString( PKG, "GetFilesRowsCount.Log.NoField" ) );
             throw new KettleException( BaseMessages.getString( PKG, "GetFilesRowsCount.Log.NoField" ) );
           }
@@ -292,7 +293,7 @@ public class GetFilesRowsCount extends BaseStep implements StepInterface {
     data = (GetFilesRowsCountData) sdi;
 
     if ( super.init( smi, sdi ) ) {
-      if ( ( meta.getRowSeparatorFormat().equals( "CUSTOM" ) ) && ( Const.isEmpty( meta.getRowSeparator() ) ) ) {
+      if ( ( meta.getRowSeparatorFormat().equals( "CUSTOM" ) ) && ( Utils.isEmpty( meta.getRowSeparator() ) ) ) {
         logError( BaseMessages.getString( PKG, "GetFilesRowsCount.Error.NoSeparator.Title" ), BaseMessages
           .getString( PKG, "GetFilesRowsCount.Error.NoSeparator.Msg" ) );
         setErrors( 1 );

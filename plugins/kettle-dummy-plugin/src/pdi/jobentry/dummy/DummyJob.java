@@ -32,7 +32,7 @@ import java.io.FileFilter;
 import java.io.FileNotFoundException;
 import java.util.regex.Pattern;
 
-import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleJobException;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
@@ -53,7 +53,7 @@ public class DummyJob {
     LogChannelInterface log = new LogChannel( this );
     File srcDir = getDir( _sourceDir );
     Pattern pattern = null;
-    if ( !Const.isEmpty( _wildcard ) ) {
+    if ( !Utils.isEmpty( _wildcard ) ) {
       pattern = Pattern.compile( _wildcard );
     }
     final Pattern fpat = pattern;

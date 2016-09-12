@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -26,10 +26,10 @@ import java.io.OutputStream;
 import java.util.Properties;
 
 import org.apache.commons.vfs2.FileObject;
-import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
@@ -96,7 +96,7 @@ public class PropertyOutput extends BaseStep implements StepInterface {
 
       if ( meta.isFileNameInField() ) {
         String realFieldName = environmentSubstitute( meta.getFileNameField() );
-        if ( Const.isEmpty( realFieldName ) ) {
+        if ( Utils.isEmpty( realFieldName ) ) {
           logError( BaseMessages.getString( PKG, "PropertyOutput.Log.FilenameInFieldEmpty" ) );
           throw new KettleException( BaseMessages.getString( PKG, "PropertyOutput.Log.FilenameInFieldEmpty" ) );
         }
@@ -111,7 +111,7 @@ public class PropertyOutput extends BaseStep implements StepInterface {
         // Let's check for filename...
         data.filename = buildFilename();
         // Check if filename is empty..
-        if ( Const.isEmpty( data.filename ) ) {
+        if ( Utils.isEmpty( data.filename ) ) {
           logError( BaseMessages.getString( PKG, "PropertyOutput.Log.FilenameEmpty" ) );
           throw new KettleException( BaseMessages.getString( PKG, "PropertyOutput.Log.FilenameEmpty" ) );
         }
@@ -128,7 +128,7 @@ public class PropertyOutput extends BaseStep implements StepInterface {
     try {
       if ( meta.isFileNameInField() ) {
         data.filename = data.inputRowMeta.getString( r, data.indexOfFieldfilename );
-        if ( Const.isEmpty( data.filename ) ) {
+        if ( Utils.isEmpty( data.filename ) ) {
           throw new KettleException( BaseMessages.getString( PKG, "PropertyOutputMeta.Log.FileNameEmty" ) );
         }
         if ( !checkSameFile() ) {

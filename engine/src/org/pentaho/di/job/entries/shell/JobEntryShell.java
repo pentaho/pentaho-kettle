@@ -40,6 +40,7 @@ import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.RowMetaAndData;
@@ -339,7 +340,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
       String realLogFilename = environmentSubstitute( getLogFilename() );
       // We need to check here the log filename
       // if we do not have one, we must fail
-      if ( Const.isEmpty( realLogFilename ) ) {
+      if ( Utils.isEmpty( realLogFilename ) ) {
         logError( BaseMessages.getString( PKG, "JobEntryShell.Exception.LogFilenameMissing" ) );
         result.setNrErrors( 1 );
         result.setResult( false );
@@ -586,7 +587,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
         env.put( variables[i], getVariable( variables[i] ) );
       }
 
-      if ( getWorkDirectory() != null && !Const.isEmpty( Const.rtrim( getWorkDirectory() ) ) ) {
+      if ( getWorkDirectory() != null && !Utils.isEmpty( Const.rtrim( getWorkDirectory() ) ) ) {
         String vfsFilename = environmentSubstitute( getWorkDirectory() );
         File file = new File( KettleVFS.getFilename( KettleVFS.getFileObject( vfsFilename, this ) ) );
         procBuilder.directory( file );
@@ -717,7 +718,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 
   public List<ResourceReference> getResourceDependencies( JobMeta jobMeta ) {
     List<ResourceReference> references = super.getResourceDependencies( jobMeta );
-    if ( !Const.isEmpty( filename ) ) {
+    if ( !Utils.isEmpty( filename ) ) {
       String realFileName = jobMeta.environmentSubstitute( filename );
       ResourceReference reference = new ResourceReference( this );
       reference.getEntries().add( new ResourceEntry( realFileName, ResourceType.FILE ) );

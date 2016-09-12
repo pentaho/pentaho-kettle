@@ -23,6 +23,7 @@
 package org.pentaho.di.trans.steps.salesforcedelete;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.i18n.BaseMessages;
@@ -77,7 +78,7 @@ public class SalesforceDelete extends SalesforceStep {
 
       // Check deleteKeyField
       String realFieldName = environmentSubstitute( meta.getDeleteField() );
-      if ( Const.isEmpty( realFieldName ) ) {
+      if ( Utils.isEmpty( realFieldName ) ) {
         throw new KettleException( BaseMessages.getString( PKG, "SalesforceDelete.Error.DeleteKeyFieldMissing" ) );
       }
 

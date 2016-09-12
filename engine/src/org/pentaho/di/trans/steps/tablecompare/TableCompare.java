@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,6 +25,7 @@ package org.pentaho.di.trans.steps.tablecompare;
 import java.sql.ResultSet;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
@@ -80,7 +81,7 @@ public class TableCompare extends BaseStep implements StepInterface {
 
       // Reference schema
       //
-      if ( Const.isEmpty( meta.getReferenceSchemaField() ) ) {
+      if ( Utils.isEmpty( meta.getReferenceSchemaField() ) ) {
         throw new KettleException( BaseMessages.getString(
           PKG, "TableCompare.Exception.ReferenceSchemaNotSpecified" ) );
       }
@@ -92,7 +93,7 @@ public class TableCompare extends BaseStep implements StepInterface {
 
       // Reference table
       //
-      if ( Const.isEmpty( meta.getReferenceTableField() ) ) {
+      if ( Utils.isEmpty( meta.getReferenceTableField() ) ) {
         throw new KettleException( BaseMessages.getString(
           PKG, "TableCompare.Exception.ReferenceTableNotSpecified" ) );
       }
@@ -104,7 +105,7 @@ public class TableCompare extends BaseStep implements StepInterface {
 
       // Compare schema
       //
-      if ( Const.isEmpty( meta.getCompareSchemaField() ) ) {
+      if ( Utils.isEmpty( meta.getCompareSchemaField() ) ) {
         throw new KettleException( BaseMessages
           .getString( PKG, "TableCompare.Exception.CompareSchemaNotSpecified" ) );
       }
@@ -116,7 +117,7 @@ public class TableCompare extends BaseStep implements StepInterface {
 
       // Compare table
       //
-      if ( Const.isEmpty( meta.getCompareTableField() ) ) {
+      if ( Utils.isEmpty( meta.getCompareTableField() ) ) {
         throw new KettleException( BaseMessages.getString( PKG, "TableCompare.Exception.CompareTableNotSpecified" ) );
       }
       data.cmpTableIndex = getInputRowMeta().indexOfValue( meta.getCompareTableField() );
@@ -127,7 +128,7 @@ public class TableCompare extends BaseStep implements StepInterface {
 
       // Key fields
       //
-      if ( Const.isEmpty( meta.getKeyFieldsField() ) ) {
+      if ( Utils.isEmpty( meta.getKeyFieldsField() ) ) {
         throw new KettleException( BaseMessages.getString( PKG, "TableCompare.Exception.KeyFieldsNotSpecified" ) );
       }
       data.keyFieldsIndex = getInputRowMeta().indexOfValue( meta.getKeyFieldsField() );
@@ -138,7 +139,7 @@ public class TableCompare extends BaseStep implements StepInterface {
 
       // Exclude fields
       //
-      if ( Const.isEmpty( meta.getExcludeFieldsField() ) ) {
+      if ( Utils.isEmpty( meta.getExcludeFieldsField() ) ) {
         throw new KettleException( BaseMessages
           .getString( PKG, "TableCompare.Exception.ExcludeFieldsNotSpecified" ) );
       }
@@ -150,7 +151,7 @@ public class TableCompare extends BaseStep implements StepInterface {
 
       // error handling: Key description
       //
-      if ( Const.isEmpty( meta.getKeyDescriptionField() ) ) {
+      if ( Utils.isEmpty( meta.getKeyDescriptionField() ) ) {
         throw new KettleException( BaseMessages.getString(
           PKG, "TableCompare.Exception.KeyDescriptionFieldNotSpecified" ) );
       }
@@ -162,7 +163,7 @@ public class TableCompare extends BaseStep implements StepInterface {
 
       // error handling: reference value
       //
-      if ( Const.isEmpty( meta.getValueReferenceField() ) ) {
+      if ( Utils.isEmpty( meta.getValueReferenceField() ) ) {
         throw new KettleException( BaseMessages.getString(
           PKG, "TableCompare.Exception.ValueReferenceFieldNotSpecified" ) );
       }
@@ -174,7 +175,7 @@ public class TableCompare extends BaseStep implements StepInterface {
 
       // error handling: compare value
       //
-      if ( Const.isEmpty( meta.getValueCompareField() ) ) {
+      if ( Utils.isEmpty( meta.getValueCompareField() ) ) {
         throw new KettleException( BaseMessages.getString(
           PKG, "TableCompare.Exception.ValueCompareFieldNotSpecified" ) );
       }
@@ -220,14 +221,14 @@ public class TableCompare extends BaseStep implements StepInterface {
 
     Object[] result = new Object[6];
 
-    if ( Const.isEmpty( referenceTable ) ) {
+    if ( Utils.isEmpty( referenceTable ) ) {
       Object[] errorRowData = constructErrorRow( rowMeta, r, null, null, null );
       putError( data.errorRowMeta, errorRowData, 1, BaseMessages.getString(
         PKG, "TableCompare.Exception.NoReferenceTableDefined" ), null, "TAC008" );
       nrErrors++;
     }
 
-    if ( Const.isEmpty( compareTable ) ) {
+    if ( Utils.isEmpty( compareTable ) ) {
       Object[] errorRowData = constructErrorRow( rowMeta, r, null, null, null );
       putError( data.errorRowMeta, errorRowData, 1, BaseMessages.getString(
         PKG, "TableCompare.Exception.NoCompareTableDefined" ), null, "TAC008" );
@@ -239,7 +240,7 @@ public class TableCompare extends BaseStep implements StepInterface {
     String cmpSchemaTable =
       meta.getCompareConnection().getQuotedSchemaTableCombination( compareSchema, compareTable );
 
-    if ( Const.isEmpty( keyFields ) ) {
+    if ( Utils.isEmpty( keyFields ) ) {
       Object[] errorRowData = constructErrorRow( rowMeta, r, null, null, null );
       putError( data.errorRowMeta, errorRowData, 1, BaseMessages.getString(
         PKG, "TableCompare.Exception.NoKeyFieldsDefined", refSchemaTable, cmpSchemaTable ), null, "TAC007" );
@@ -257,7 +258,7 @@ public class TableCompare extends BaseStep implements StepInterface {
     for ( int i = 0; i < keys.length; i++ ) {
       keys[i] = Kjube.trim( keys[i] );
     }
-    String[] excluded = Const.isEmpty( excludeFields ) ? new String[0] : excludeFields.split( "," );
+    String[] excluded = Utils.isEmpty( excludeFields ) ? new String[0] : excludeFields.split( "," );
     for ( int i = 0; i < excluded.length; i++ ) {
       excluded[i] = Kjube.trim( excluded[i] );
     }

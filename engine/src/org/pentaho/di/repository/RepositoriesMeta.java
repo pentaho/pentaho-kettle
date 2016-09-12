@@ -33,6 +33,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleRepositoryNotSupportedException;
@@ -301,7 +302,7 @@ public class RepositoriesMeta {
         log.logDebug( BaseMessages.getString( PKG, "RepositoryMeta.Log.LookingRepository", i ) );
       }
       String id = XMLHandler.getTagValue( repnode, "id" );
-      if ( Const.isEmpty( id ) ) {
+      if ( Utils.isEmpty( id ) ) {
         // Backward compatibility : if the id is not defined, it's the database repository!
         //
         id = KettleDatabaseRepositoryMeta.REPOSITORY_TYPE_ID;

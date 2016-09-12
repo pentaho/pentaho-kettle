@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,6 +23,7 @@
 package org.pentaho.di.trans.steps.syslog;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.entries.syslog.SyslogDefs;
@@ -68,7 +69,7 @@ public class SyslogMessage extends BaseStep implements StepInterface {
     if ( first ) {
       first = false;
       // Check if message field is provided
-      if ( Const.isEmpty( meta.getMessageFieldName() ) ) {
+      if ( Utils.isEmpty( meta.getMessageFieldName() ) ) {
         throw new KettleException( BaseMessages.getString( PKG, "SyslogMessage.Error.MessageFieldMissing" ) );
       }
 
@@ -86,7 +87,7 @@ public class SyslogMessage extends BaseStep implements StepInterface {
       // get message
       String message = getInputRowMeta().getString( r, data.indexOfMessageFieldName );
 
-      if ( Const.isEmpty( message ) ) {
+      if ( Utils.isEmpty( message ) ) {
         throw new KettleException( BaseMessages.getString( PKG, "SyslogMessage.Error.MessageEmpty" ) );
       }
 
@@ -133,12 +134,12 @@ public class SyslogMessage extends BaseStep implements StepInterface {
       String servername = environmentSubstitute( meta.getServerName() );
 
       // Check target server
-      if ( Const.isEmpty( servername ) ) {
+      if ( Utils.isEmpty( servername ) ) {
         logError( BaseMessages.getString( PKG, "SyslogMessage.MissingServerName" ) );
       }
 
       // Check if message field is provided
-      if ( Const.isEmpty( meta.getMessageFieldName() ) ) {
+      if ( Utils.isEmpty( meta.getMessageFieldName() ) ) {
         logError( BaseMessages.getString( PKG, "SyslogMessage.Error.MessageFieldMissing" ) );
         return false;
       }
@@ -148,7 +149,7 @@ public class SyslogMessage extends BaseStep implements StepInterface {
       if ( meta.isAddTimestamp() ) {
         // add timestamp to message
         data.datePattern = environmentSubstitute( meta.getDatePattern() );
-        if ( Const.isEmpty( data.datePattern ) ) {
+        if ( Utils.isEmpty( data.datePattern ) ) {
           logError( BaseMessages.getString( PKG, "SyslogMessage.DatePatternEmpty" ) );
           return false;
         }

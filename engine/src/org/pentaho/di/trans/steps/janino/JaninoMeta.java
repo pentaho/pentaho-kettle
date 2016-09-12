@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,6 +25,7 @@ package org.pentaho.di.trans.steps.janino;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -145,9 +146,9 @@ public class JaninoMeta extends BaseStepMeta implements StepMetaInterface {
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     for ( int i = 0; i < formula.length; i++ ) {
       JaninoMetaFunction fn = formula[i];
-      if ( Const.isEmpty( fn.getReplaceField() ) ) {
+      if ( Utils.isEmpty( fn.getReplaceField() ) ) {
         // Not replacing a field.
-        if ( !Const.isEmpty( fn.getFieldName() ) ) {
+        if ( !Utils.isEmpty( fn.getFieldName() ) ) {
           // It's a new field!
 
           try {

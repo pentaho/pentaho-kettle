@@ -35,6 +35,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.RowSet;
@@ -151,7 +152,7 @@ public class MetaInject extends BaseStep implements StepInterface {
       //
       getTrans().addActiveSubTransformation( getStepname(), injectTrans );
 
-      if ( !Const.isEmpty( meta.getSourceStepName() ) ) {
+      if ( !Utils.isEmpty( meta.getSourceStepName() ) ) {
         StepInterface stepInterface = injectTrans.getStepInterface( meta.getSourceStepName(), 0 );
         if ( stepInterface == null ) {
           throw new KettleException( "Unable to find step '" + meta.getSourceStepName() + "' to read from." );
@@ -204,7 +205,7 @@ public class MetaInject extends BaseStep implements StepInterface {
       logDetailed( "XML of transformation after injection: " + data.transMeta.getXML() );
     }
     String targetFile = environmentSubstitute( meta.getTargetFile() );
-    if ( !Const.isEmpty( targetFile ) ) {
+    if ( !Utils.isEmpty( targetFile ) ) {
       writeInjectedKtr( targetFile );
     }
 
@@ -531,7 +532,7 @@ public class MetaInject extends BaseStep implements StepInterface {
 
         // See if we need to stream data from a specific step into the template
         //
-        if ( meta.getStreamSourceStep() != null && !Const.isEmpty( meta.getStreamTargetStepname() ) ) {
+        if ( meta.getStreamSourceStep() != null && !Utils.isEmpty( meta.getStreamTargetStepname() ) ) {
           data.streaming = true;
           data.streamingSourceStepname = meta.getStreamSourceStep().getName();
           data.streamingTargetStepname = meta.getStreamTargetStepname();

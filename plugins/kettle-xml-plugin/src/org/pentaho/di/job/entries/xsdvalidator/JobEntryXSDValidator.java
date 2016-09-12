@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -41,7 +41,7 @@ import javax.xml.validation.Validator;
 import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
-import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.annotations.JobEntry;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -256,7 +256,7 @@ public class JobEntryXSDValidator extends JobEntryBase implements Cloneable, Job
 
   public List<ResourceReference> getResourceDependencies( JobMeta jobMeta ) {
     List<ResourceReference> references = super.getResourceDependencies( jobMeta );
-    if ( ( !Const.isEmpty( xsdfilename ) ) && ( !Const.isEmpty( xmlfilename ) ) ) {
+    if ( ( !Utils.isEmpty( xsdfilename ) ) && ( !Utils.isEmpty( xmlfilename ) ) ) {
       String realXmlFileName = jobMeta.environmentSubstitute( xmlfilename );
       String realXsdFileName = jobMeta.environmentSubstitute( xsdfilename );
       ResourceReference reference = new ResourceReference( this );

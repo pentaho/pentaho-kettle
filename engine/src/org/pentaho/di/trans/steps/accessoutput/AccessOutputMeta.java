@@ -33,6 +33,7 @@ import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettlePluginException;
@@ -136,7 +137,7 @@ public class AccessOutputMeta extends BaseStepMeta implements StepMetaInterface 
       tableCreated = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "create_table" ) );
       commitSize = Const.toInt( XMLHandler.getTagValue( stepnode, "commit_size" ), AccessOutput.COMMIT_SIZE );
       String addToResultFiles = XMLHandler.getTagValue( stepnode, "add_to_result_filenames" );
-      if ( Const.isEmpty( addToResultFiles ) ) {
+      if ( Utils.isEmpty( addToResultFiles ) ) {
         addToResultFilenames = true;
       } else {
         addToResultFilenames = "Y".equalsIgnoreCase( addToResultFiles );
@@ -182,7 +183,7 @@ public class AccessOutputMeta extends BaseStepMeta implements StepMetaInterface 
       tableCreated = rep.getStepAttributeBoolean( id_step, "create_table" );
       commitSize = (int) rep.getStepAttributeInteger( id_step, "commit_size" );
       String addToResultFiles = rep.getStepAttributeString( id_step, "add_to_result_filenames" );
-      if ( Const.isEmpty( addToResultFiles ) ) {
+      if ( Utils.isEmpty( addToResultFiles ) ) {
         addToResultFilenames = true;
       } else {
         addToResultFilenames = rep.getStepAttributeBoolean( id_step, "add_to_result_filenames" );
@@ -632,7 +633,7 @@ public class AccessOutputMeta extends BaseStepMeta implements StepMetaInterface 
       // The object that we're modifying here is a copy of the original!
       // So let's change the filename from relative to absolute by grabbing the file object...
       //
-      if ( !Const.isEmpty( filename ) ) {
+      if ( !Utils.isEmpty( filename ) ) {
         FileObject fileObject = KettleVFS.getFileObject( space.environmentSubstitute( filename ), space );
         filename = resourceNamingInterface.nameResource( fileObject, space, true );
       }

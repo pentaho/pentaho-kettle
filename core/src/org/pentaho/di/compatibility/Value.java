@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -41,6 +41,7 @@ import java.util.Date;
 import java.util.Locale;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleEOFException;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.exception.KettleValueException;
@@ -995,8 +996,8 @@ public class Value implements Cloneable, XMLInterface, Serializable {
     // performance between the 2 does not differ that much. A few milliseconds
     // on 100000 iterations in the advantage of StringBuffers. The
     // lessened creation of objects may be worth it in the long run.
-    // Marc - StringBuffer was replaced with StringBuilder for performance reasons. 
-    // No need for a StringBuffer (which is synchronized ) 
+    // Marc - StringBuffer was replaced with StringBuilder for performance reasons.
+    // No need for a StringBuffer (which is synchronized )
     StringBuilder retval = new StringBuilder( getTypeDesc() );
 
     switch ( getType() ) {
@@ -3213,16 +3214,16 @@ public class Value implements Cloneable, XMLInterface, Serializable {
           DecimalFormat df = (DecimalFormat) nf;
           DecimalFormatSymbols dfs = new DecimalFormatSymbols();
 
-          if ( !Const.isEmpty( pattern ) ) {
+          if ( !Utils.isEmpty( pattern ) ) {
             df.applyPattern( pattern );
           }
-          if ( !Const.isEmpty( decimal ) ) {
+          if ( !Utils.isEmpty( decimal ) ) {
             dfs.setDecimalSeparator( decimal.charAt( 0 ) );
           }
-          if ( !Const.isEmpty( grouping ) ) {
+          if ( !Utils.isEmpty( grouping ) ) {
             dfs.setGroupingSeparator( grouping.charAt( 0 ) );
           }
-          if ( !Const.isEmpty( currency ) ) {
+          if ( !Utils.isEmpty( currency ) ) {
             dfs.setCurrencySymbol( currency );
           }
           try {
@@ -3230,16 +3231,16 @@ public class Value implements Cloneable, XMLInterface, Serializable {
             setValue( df.parse( getString() ).doubleValue() );
           } catch ( Exception e ) {
             String message = "Couldn't convert string to number " + e.toString();
-            if ( !Const.isEmpty( pattern ) ) {
+            if ( !Utils.isEmpty( pattern ) ) {
               message += " pattern=" + pattern;
             }
-            if ( !Const.isEmpty( decimal ) ) {
+            if ( !Utils.isEmpty( decimal ) ) {
               message += " decimal=" + decimal;
             }
-            if ( !Const.isEmpty( grouping ) ) {
+            if ( !Utils.isEmpty( grouping ) ) {
               message += " grouping=" + grouping.charAt( 0 );
             }
-            if ( !Const.isEmpty( currency ) ) {
+            if ( !Utils.isEmpty( currency ) ) {
               message += " currency=" + currency;
             }
             throw new KettleValueException( message );
@@ -3948,7 +3949,7 @@ public class Value implements Cloneable, XMLInterface, Serializable {
         break;
 
       case VALUE_TYPE_STRING:
-        if ( Const.isEmpty( getString() ) && !Const.isEmpty( other.getString() ) ) {
+        if ( Utils.isEmpty( getString() ) && !Utils.isEmpty( other.getString() ) ) {
           setValue( other.getString() );
         }
         break;

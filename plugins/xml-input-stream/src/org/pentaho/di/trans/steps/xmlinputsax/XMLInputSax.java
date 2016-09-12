@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,7 +22,7 @@
 
 package org.pentaho.di.trans.steps.xmlinputsax;
 
-import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowMeta;
@@ -110,12 +110,12 @@ public class XMLInputSax extends BaseStep implements StepInterface {
 
     // See if we need to add the filename to the row...
     //
-    if ( meta.includeFilename() && !Const.isEmpty( meta.getFilenameField() ) ) {
+    if ( meta.includeFilename() && !Utils.isEmpty( meta.getFilenameField() ) ) {
       outputRowData[outputIndex++] = data.filename;
     }
 
     // See if we need to add the row number to the row...
-    if ( meta.includeRowNumber() && !Const.isEmpty( meta.getRowNumberField() ) ) {
+    if ( meta.includeRowNumber() && !Utils.isEmpty( meta.getRowNumberField() ) ) {
       outputRowData[outputIndex] = new Long( data.rownr );
     }
 

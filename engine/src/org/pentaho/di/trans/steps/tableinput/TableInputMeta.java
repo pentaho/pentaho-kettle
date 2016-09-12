@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,6 +25,7 @@ package org.pentaho.di.trans.steps.tableinput;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
@@ -224,7 +225,7 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface {
         Object[] paramData = null;
 
         StreamInterface infoStream = getStepIOMeta().getInfoStreams().get( 0 );
-        if ( !Const.isEmpty( infoStream.getStepname() ) ) {
+        if ( !Utils.isEmpty( infoStream.getStepname() ) ) {
           param = true;
           if ( info.length >= 0 && info[0] != null ) {
             paramRowMeta = info[0];
@@ -365,7 +366,7 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface {
 
     // See if we have an informative step...
     StreamInterface infoStream = getStepIOMeta().getInfoStreams().get( 0 );
-    if ( !Const.isEmpty( infoStream.getStepname() ) ) {
+    if ( !Utils.isEmpty( infoStream.getStepname() ) ) {
       boolean found = false;
       for ( int i = 0; i < input.length; i++ ) {
         if ( infoStream.getStepname().equalsIgnoreCase( input[i] ) ) {

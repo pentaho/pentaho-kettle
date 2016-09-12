@@ -31,6 +31,7 @@ import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -741,7 +742,7 @@ public class TextFileOutputMeta extends BaseStepMeta implements StepMetaInterfac
       dateTimeFormat = XMLHandler.getTagValue( stepnode, "file", "date_time_format" );
 
       String AddToResultFiles = XMLHandler.getTagValue( stepnode, "file", "add_to_result_filenames" );
-      if ( Const.isEmpty( AddToResultFiles ) ) {
+      if ( Utils.isEmpty( AddToResultFiles ) ) {
         addToResultFilenames = true;
       } else {
         addToResultFilenames = "Y".equalsIgnoreCase( AddToResultFiles );
@@ -910,7 +911,7 @@ public class TextFileOutputMeta extends BaseStepMeta implements StepMetaInterfac
 
     Date now = new Date();
 
-    if ( meta.isSpecifyingFormat() && !Const.isEmpty( meta.getDateTimeFormat() ) ) {
+    if ( meta.isSpecifyingFormat() && !Utils.isEmpty( meta.getDateTimeFormat() ) ) {
       daf.applyPattern( meta.getDateTimeFormat() );
       String dt = daf.format( now );
       retval += dt;
@@ -974,7 +975,7 @@ public class TextFileOutputMeta extends BaseStepMeta implements StepMetaInterfac
         v.setCurrencySymbol( field.getCurrencySymbol() );
         v.setOutputPaddingEnabled( isPadded() );
         v.setTrimType( field.getTrimType() );
-        if ( !Const.isEmpty( getEncoding() ) ) {
+        if ( !Utils.isEmpty( getEncoding() ) ) {
           v.setStringEncoding( getEncoding() );
         }
 
@@ -1092,7 +1093,7 @@ public class TextFileOutputMeta extends BaseStepMeta implements StepMetaInterfac
       dateTimeFormat = rep.getStepAttributeString( id_step, "date_time_format" );
 
       String AddToResultFiles = rep.getStepAttributeString( id_step, "add_to_result_filenames" );
-      if ( Const.isEmpty( AddToResultFiles ) ) {
+      if ( Utils.isEmpty( AddToResultFiles ) ) {
         addToResultFilenames = true;
       } else {
         addToResultFilenames = rep.getStepAttributeBoolean( id_step, "add_to_result_filenames" );
@@ -1275,7 +1276,7 @@ public class TextFileOutputMeta extends BaseStepMeta implements StepMetaInterfac
       //
       if ( !fileNameInField ) {
 
-        if ( !Const.isEmpty( fileName ) ) {
+        if ( !Utils.isEmpty( fileName ) ) {
           FileObject fileObject = KettleVFS.getFileObject( space.environmentSubstitute( fileName ), space );
           fileName = resourceNamingInterface.nameResource( fileObject, space, true );
         }

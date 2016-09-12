@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -33,6 +33,7 @@ import org.dom4j.Element;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -97,7 +98,7 @@ public class RssOutput extends BaseStep implements StepInterface {
           // Write to document
           OutputFormat format = org.dom4j.io.OutputFormat.createPrettyPrint();
           // Set encoding ...
-          if ( Const.isEmpty( meta.getEncoding() ) ) {
+          if ( Utils.isEmpty( meta.getEncoding() ) ) {
             format.setEncoding( "iso-8859-1" );
           } else {
             format.setEncoding( meta.getEncoding() );
@@ -127,7 +128,7 @@ public class RssOutput extends BaseStep implements StepInterface {
       // Let's check for filename...
 
       if ( meta.isFilenameInField() ) {
-        if ( Const.isEmpty( meta.getFileNameField() ) ) {
+        if ( Utils.isEmpty( meta.getFileNameField() ) ) {
           logError( BaseMessages.getString( PKG, "RssOutput.Log.FilenameFieldMissing" ) );
           setErrors( 1 );
           stopAll();
@@ -148,7 +149,7 @@ public class RssOutput extends BaseStep implements StepInterface {
       }
 
       // Check if filename is empty..
-      if ( Const.isEmpty( data.filename ) ) {
+      if ( Utils.isEmpty( data.filename ) ) {
         logError( BaseMessages.getString( PKG, "RssOutput.Log.FilenameEmpty" ) );
         throw new KettleException( BaseMessages.getString( PKG, "RssOutput.Log.FilenameEmpty" ) );
       }
@@ -190,19 +191,19 @@ public class RssOutput extends BaseStep implements StepInterface {
 
       if ( !meta.isCustomRss() ) {
         // Let's check for mandatory fields ...
-        if ( Const.isEmpty( meta.getChannelTitle() ) ) {
+        if ( Utils.isEmpty( meta.getChannelTitle() ) ) {
           logError( BaseMessages.getString( PKG, "RssOutput.Log.ChannelTitleMissing" ) );
           setErrors( 1 );
           stopAll();
           return false;
         }
-        if ( Const.isEmpty( meta.getChannelDescription() ) ) {
+        if ( Utils.isEmpty( meta.getChannelDescription() ) ) {
           logError( BaseMessages.getString( PKG, "RssOutput.Log.ChannelDescription" ) );
           setErrors( 1 );
           stopAll();
           return false;
         }
-        if ( Const.isEmpty( meta.getChannelLink() ) ) {
+        if ( Utils.isEmpty( meta.getChannelLink() ) ) {
           logError( BaseMessages.getString( PKG, "RssOutput.Log.ChannelLink" ) );
           setErrors( 1 );
           stopAll();
@@ -241,7 +242,7 @@ public class RssOutput extends BaseStep implements StepInterface {
 
         data.channellinkvalue = data.inputRowMeta.getString( r, data.indexOfFieldchannellink );
 
-        if ( !Const.isEmpty( meta.getItemTitle() ) ) {
+        if ( !Utils.isEmpty( meta.getItemTitle() ) ) {
           // Let's take the index of item title field ...
           data.indexOfFielditemtitle = data.inputRowMeta.indexOfValue( meta.getItemTitle() );
           if ( data.indexOfFielditemtitle < 0 ) {
@@ -252,7 +253,7 @@ public class RssOutput extends BaseStep implements StepInterface {
           }
         }
 
-        if ( !Const.isEmpty( meta.getItemDescription() ) ) {
+        if ( !Utils.isEmpty( meta.getItemDescription() ) ) {
           // Let's take the index of item description field ...
           data.indexOfFielditemdescription = data.inputRowMeta.indexOfValue( meta.getItemDescription() );
           if ( data.indexOfFielditemdescription < 0 ) {
@@ -263,10 +264,10 @@ public class RssOutput extends BaseStep implements StepInterface {
           }
         }
         if ( meta.AddGeoRSS() ) {
-          if ( Const.isEmpty( meta.getGeoPointLong() ) ) {
+          if ( Utils.isEmpty( meta.getGeoPointLong() ) ) {
             throw new KettleException( BaseMessages.getString( PKG, "RssOutput.Log.GeoPointLatEmpty" ) );
           }
-          if ( Const.isEmpty( meta.getGeoPointLong() ) ) {
+          if ( Utils.isEmpty( meta.getGeoPointLong() ) ) {
             throw new KettleException( BaseMessages.getString( PKG, "RssOutput.Log.GeoPointLongEmpty" ) );
           }
 
@@ -290,7 +291,7 @@ public class RssOutput extends BaseStep implements StepInterface {
 
         // It's time to check non empty fields !
         // Channel PubDate field ...
-        if ( !Const.isEmpty( meta.getChannelPubDate() ) ) {
+        if ( !Utils.isEmpty( meta.getChannelPubDate() ) ) {
           data.indexOfFieldchannelpubdate = data.inputRowMeta.indexOfValue( meta.getChannelPubDate() );
           if ( data.indexOfFieldchannelpubdate < 0 ) {
             // The field is unreachable !
@@ -302,7 +303,7 @@ public class RssOutput extends BaseStep implements StepInterface {
           data.channelpubdatevalue = data.inputRowMeta.getDate( r, data.indexOfFieldchannelpubdate );
         }
         // Channel Language field ...
-        if ( !Const.isEmpty( meta.getChannelLanguage() ) ) {
+        if ( !Utils.isEmpty( meta.getChannelLanguage() ) ) {
           data.indexOfFieldchannellanguage = data.inputRowMeta.indexOfValue( meta.getChannelLanguage() );
           if ( data.indexOfFieldchannellanguage < 0 ) {
             // The field is unreachable !
@@ -315,7 +316,7 @@ public class RssOutput extends BaseStep implements StepInterface {
         }
 
         // Channel Copyright field ...
-        if ( !Const.isEmpty( meta.getChannelCopyright() ) ) {
+        if ( !Utils.isEmpty( meta.getChannelCopyright() ) ) {
           data.indexOfFieldchannelcopyright = data.inputRowMeta.indexOfValue( meta.getChannelCopyright() );
           if ( data.indexOfFieldchannelcopyright < 0 ) {
             // The field is unreachable !
@@ -328,7 +329,7 @@ public class RssOutput extends BaseStep implements StepInterface {
         }
 
         // Channel Author field ...
-        if ( !Const.isEmpty( meta.getChannelAuthor() ) ) {
+        if ( !Utils.isEmpty( meta.getChannelAuthor() ) ) {
           data.indexOfFieldchannelauthor = data.inputRowMeta.indexOfValue( meta.getChannelAuthor() );
           if ( data.indexOfFieldchannelauthor < 0 ) {
             // The field is unreachable !
@@ -343,7 +344,7 @@ public class RssOutput extends BaseStep implements StepInterface {
         // Channel Image field ...
         if ( meta.AddImage() ) {
           // Channel image title
-          if ( !Const.isEmpty( meta.getChannelImageTitle() ) ) {
+          if ( !Utils.isEmpty( meta.getChannelImageTitle() ) ) {
             data.indexOfFieldchannelimagetitle = data.inputRowMeta.indexOfValue( meta.getChannelImageTitle() );
             if ( data.indexOfFieldchannelimagetitle < 0 ) {
               // The field is unreachable !
@@ -357,7 +358,7 @@ public class RssOutput extends BaseStep implements StepInterface {
           }
 
           // Channel link title
-          if ( !Const.isEmpty( meta.getChannelImageLink() ) ) {
+          if ( !Utils.isEmpty( meta.getChannelImageLink() ) ) {
             data.indexOfFieldchannelimagelink = data.inputRowMeta.indexOfValue( meta.getChannelImageLink() );
             if ( data.indexOfFieldchannelimagelink < 0 ) {
               // The field is unreachable !
@@ -371,7 +372,7 @@ public class RssOutput extends BaseStep implements StepInterface {
           }
 
           // Channel url title
-          if ( !Const.isEmpty( meta.getChannelImageUrl() ) ) {
+          if ( !Utils.isEmpty( meta.getChannelImageUrl() ) ) {
             data.indexOfFieldchannelimageurl = data.inputRowMeta.indexOfValue( meta.getChannelImageUrl() );
             if ( data.indexOfFieldchannelimageurl < 0 ) {
               // The field is unreachable !
@@ -384,7 +385,7 @@ public class RssOutput extends BaseStep implements StepInterface {
           }
 
           // Channel description title
-          if ( !Const.isEmpty( meta.getChannelImageDescription() ) ) {
+          if ( !Utils.isEmpty( meta.getChannelImageDescription() ) ) {
             data.indexOfFieldchannelimagedescription =
               data.inputRowMeta.indexOfValue( meta.getChannelImageDescription() );
             if ( data.indexOfFieldchannelimagedescription < 0 ) {
@@ -402,7 +403,7 @@ public class RssOutput extends BaseStep implements StepInterface {
         }
 
         // Item link field ...
-        if ( !Const.isEmpty( meta.getItemLink() ) ) {
+        if ( !Utils.isEmpty( meta.getItemLink() ) ) {
           data.indexOfFielditemlink = data.inputRowMeta.indexOfValue( meta.getItemLink() );
           if ( data.indexOfFielditemlink < 0 ) {
             // The field is unreachable !
@@ -414,7 +415,7 @@ public class RssOutput extends BaseStep implements StepInterface {
         }
 
         // Item pubdate field ...
-        if ( !Const.isEmpty( meta.getItemPubDate() ) ) {
+        if ( !Utils.isEmpty( meta.getItemPubDate() ) ) {
           data.indexOfFielditempubdate = data.inputRowMeta.indexOfValue( meta.getItemPubDate() );
           if ( data.indexOfFielditempubdate < 0 ) {
             // The field is unreachable !
@@ -425,7 +426,7 @@ public class RssOutput extends BaseStep implements StepInterface {
         }
 
         // Item author field ...
-        if ( !Const.isEmpty( meta.getItemAuthor() ) ) {
+        if ( !Utils.isEmpty( meta.getItemAuthor() ) ) {
           data.indexOfFielditemauthor = data.inputRowMeta.indexOfValue( meta.getItemAuthor() );
           if ( data.indexOfFielditemauthor < 0 ) {
             // The field is unreachable !
@@ -649,14 +650,14 @@ public class RssOutput extends BaseStep implements StepInterface {
 
       // Set channel ...
       data.feed = new SyndFeedImpl();
-      if ( Const.isEmpty( meta.getVersion() ) ) {
+      if ( Utils.isEmpty( meta.getVersion() ) ) {
         data.feed.setFeedType( "rss_2.0" );
       } else {
         data.feed.setFeedType( meta.getVersion() );
       }
 
       // Set encoding ...
-      if ( Const.isEmpty( meta.getEncoding() ) ) {
+      if ( Utils.isEmpty( meta.getEncoding() ) ) {
         data.feed.setEncoding( "iso-8859-1" );
       } else {
         data.feed.setEncoding( meta.getEncoding() );

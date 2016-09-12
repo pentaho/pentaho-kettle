@@ -2,7 +2,7 @@
 *
 * Pentaho Data Integration
 *
-* Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+* Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
 *
 *******************************************************************************
 *
@@ -25,7 +25,7 @@ package org.pentaho.di.starmodeler.generator;
 import java.util.List;
 import java.util.Set;
 
-import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.starmodeler.ConceptUtil;
@@ -58,7 +58,7 @@ public class MetadataGenerator {
     // First do some checking and lookups...
     //
     String targetDatabaseName = ConceptUtil.getString(logicalDomain, DefaultIDs.DOMAIN_TARGET_DATABASE);
-    if (Const.isEmpty(targetDatabaseName)) {
+    if (Utils.isEmpty(targetDatabaseName)) {
       throw new KettleException("Please specify a target database!");
     }
     DatabaseMeta targetDatabaseMeta = DatabaseMeta.findDatabase(databases, targetDatabaseName);

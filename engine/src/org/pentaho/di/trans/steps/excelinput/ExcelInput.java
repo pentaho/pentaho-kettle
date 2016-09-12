@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -29,6 +29,7 @@ import java.util.TimeZone;
 
 import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleException;
@@ -238,65 +239,65 @@ public class ExcelInput extends BaseStep implements StepInterface {
     int rowIndex = meta.getField().length;
 
     // Do we need to include the filename?
-    if ( !Const.isEmpty( meta.getFileField() ) ) {
+    if ( !Utils.isEmpty( meta.getFileField() ) ) {
       r[rowIndex] = data.filename;
       rowIndex++;
     }
 
     // Do we need to include the sheetname?
-    if ( !Const.isEmpty( meta.getSheetField() ) ) {
+    if ( !Utils.isEmpty( meta.getSheetField() ) ) {
       r[rowIndex] = excelInputRow.sheetName;
       rowIndex++;
     }
 
     // Do we need to include the sheet rownumber?
-    if ( !Const.isEmpty( meta.getSheetRowNumberField() ) ) {
+    if ( !Utils.isEmpty( meta.getSheetRowNumberField() ) ) {
       r[rowIndex] = new Long( data.rownr );
       rowIndex++;
     }
 
     // Do we need to include the rownumber?
-    if ( !Const.isEmpty( meta.getRowNumberField() ) ) {
+    if ( !Utils.isEmpty( meta.getRowNumberField() ) ) {
       r[rowIndex] = new Long( getLinesWritten() + 1 );
       rowIndex++;
     }
     // Possibly add short filename...
-    if ( !Const.isEmpty( meta.getShortFileNameField() ) ) {
+    if ( !Utils.isEmpty( meta.getShortFileNameField() ) ) {
       r[rowIndex] = data.shortFilename;
       rowIndex++;
     }
     // Add Extension
-    if ( !Const.isEmpty( meta.getExtensionField() ) ) {
+    if ( !Utils.isEmpty( meta.getExtensionField() ) ) {
       r[rowIndex] = data.extension;
       rowIndex++;
     }
     // add path
-    if ( !Const.isEmpty( meta.getPathField() ) ) {
+    if ( !Utils.isEmpty( meta.getPathField() ) ) {
       r[rowIndex] = data.path;
       rowIndex++;
     }
     // Add Size
-    if ( !Const.isEmpty( meta.getSizeField() ) ) {
+    if ( !Utils.isEmpty( meta.getSizeField() ) ) {
       r[rowIndex] = new Long( data.size );
       rowIndex++;
     }
     // add Hidden
-    if ( !Const.isEmpty( meta.isHiddenField() ) ) {
+    if ( !Utils.isEmpty( meta.isHiddenField() ) ) {
       r[rowIndex] = new Boolean( data.hidden );
       rowIndex++;
     }
     // Add modification date
-    if ( !Const.isEmpty( meta.getLastModificationDateField() ) ) {
+    if ( !Utils.isEmpty( meta.getLastModificationDateField() ) ) {
       r[rowIndex] = data.lastModificationDateTime;
       rowIndex++;
     }
     // Add Uri
-    if ( !Const.isEmpty( meta.getUriField() ) ) {
+    if ( !Utils.isEmpty( meta.getUriField() ) ) {
       r[rowIndex] = data.uriName;
       rowIndex++;
     }
     // Add RootUri
-    if ( !Const.isEmpty( meta.getRootUriField() ) ) {
+    if ( !Utils.isEmpty( meta.getRootUriField() ) ) {
       r[rowIndex] = data.rootUriName;
       rowIndex++;
     }
@@ -678,7 +679,7 @@ public class ExcelInput extends BaseStep implements StepInterface {
 
     boolean isEmpty = true;
     for ( int i = 0; i < line.length && isEmpty; i++ ) {
-      if ( line[i] != null && !Const.isEmpty( line[i].getContents() ) ) {
+      if ( line[i] != null && !Utils.isEmpty( line[i].getContents() ) ) {
         isEmpty = false;
       }
     }

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,6 +27,7 @@ import java.util.List;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
@@ -288,7 +289,7 @@ public class ZipFileMeta extends BaseStepMeta implements StepMetaInterface {
     String error_message = "";
 
     // source filename
-    if ( Const.isEmpty( sourcefilenamefield ) ) {
+    if ( Utils.isEmpty( sourcefilenamefield ) ) {
       error_message = BaseMessages.getString( PKG, "ZipFileMeta.CheckResult.SourceFileFieldMissing" );
       cr = new CheckResult( CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta );
       remarks.add( cr );

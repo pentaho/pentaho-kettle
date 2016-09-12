@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -36,6 +36,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.SourceToTargetMapping;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.plugins.PluginRegistry;
@@ -283,7 +284,7 @@ public abstract class BaseStepXulDialog extends BaseStepGenericXulDialog {
     for ( int i = 0; i < table.getItemCount(); i++ ) {
       TableItem tableItem = table.getItem( i );
       String key = tableItem.getText( keyColumn );
-      if ( !Const.isEmpty( key ) && keys.indexOf( key ) < 0 ) {
+      if ( !Utils.isEmpty( key ) && keys.indexOf( key ) < 0 ) {
         keys.add( key );
       }
     }

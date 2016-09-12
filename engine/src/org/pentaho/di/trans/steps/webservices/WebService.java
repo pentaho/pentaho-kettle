@@ -65,6 +65,7 @@ import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.RequestEntity;
 import org.pentaho.di.cluster.SlaveConnectionManager;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowDataUtil;
@@ -146,13 +147,13 @@ public class WebService extends BaseStep implements StepInterface {
     meta = (WebServiceMeta) metaInterface;
 
     // if a URL is not specified, throw an exception
-    if ( Const.isEmpty( meta.getUrl() ) ) {
+    if ( Utils.isEmpty( meta.getUrl() ) ) {
       throw new KettleStepException( BaseMessages.getString(
         PKG, "WebServices.ERROR0014.urlNotSpecified", getStepname() ) );
     }
 
     // if an operation is not specified, throw an exception
-    if ( Const.isEmpty( meta.getOperationName() ) ) {
+    if ( Utils.isEmpty( meta.getOperationName() ) ) {
       throw new KettleStepException( BaseMessages.getString(
         PKG, "WebServices.ERROR0015.OperationNotSelected", getStepname() ) );
     }
@@ -575,7 +576,7 @@ public class WebService extends BaseStep implements StepInterface {
       //
       Node responseNode = null;
       NodeList nodeList = null;
-      if ( !Const.isEmpty( meta.getRepeatingElementName() ) ) {
+      if ( !Utils.isEmpty( meta.getRepeatingElementName() ) ) {
 
         // We have specified the repeating element name : use it
         //
@@ -796,7 +797,7 @@ public class WebService extends BaseStep implements StepInterface {
             if ( log.isRowLevel() ) {
               logRowlevel( "vReader.getLocalName = " + vReader.getLocalName() );
             }
-            if ( Const.isEmpty( meta.getOutFieldArgumentName() ) ) {
+            if ( Utils.isEmpty( meta.getOutFieldArgumentName() ) ) {
               // getOutFieldArgumentName() == null
               if ( oneValueRowProcessing ) {
                 WebServiceField field = meta.getFieldOutFromWsName( vReader.getLocalName(), ignoreNamespacePrefix );
@@ -860,7 +861,7 @@ public class WebService extends BaseStep implements StepInterface {
                     }
                   } else {
                     for ( WebServiceField curField : meta.getFieldsOut() ) {
-                      if ( !Const.isEmpty( curField.getName() ) ) {
+                      if ( !Utils.isEmpty( curField.getName() ) ) {
                         outputRowData[outputIndex++] = getValue( vReader.getElementText(), curField );
                       }
                     }

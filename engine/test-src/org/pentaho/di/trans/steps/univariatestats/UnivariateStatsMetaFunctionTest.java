@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2014 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -33,7 +33,7 @@ import java.util.UUID;
 import org.apache.commons.io.IOUtils;
 import org.json.simple.parser.ParseException;
 import org.junit.Test;
-import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -93,7 +93,7 @@ public class UnivariateStatsMetaFunctionTest {
         IOUtils.toString( UnivariateStatsMetaTest.class.getClassLoader().getResourceAsStream(
             "org/pentaho/di/trans/steps/univariatestats/falseValuesUnivariateStatsMetaFunctionNode.xml" ) );
     function = new UnivariateStatsMetaFunction( XMLHandler.loadXMLString( functionXml ).getFirstChild() );
-    assertTrue( Const.isEmpty( function.getSourceFieldName() ) );
+    assertTrue( Utils.isEmpty( function.getSourceFieldName() ) );
     assertFalse( function.getCalcN() );
     assertFalse( function.getCalcMean() );
     assertFalse( function.getCalcStdDev() );
@@ -126,7 +126,7 @@ public class UnivariateStatsMetaFunctionTest {
             "org/pentaho/di/trans/steps/univariatestats/falseValuesUnivariateStatsMetaFunctionNode.json" ) );
     repo = new MemoryRepository( jsString );
     function = new UnivariateStatsMetaFunction( repo, new StringObjectId( "test" ), 0 );
-    assertTrue( Const.isEmpty( function.getSourceFieldName() ) );
+    assertTrue( Utils.isEmpty( function.getSourceFieldName() ) );
     assertFalse( function.getCalcN() );
     assertFalse( function.getCalcMean() );
     assertFalse( function.getCalcStdDev() );

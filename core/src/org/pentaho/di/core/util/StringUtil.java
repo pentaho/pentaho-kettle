@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -356,7 +356,7 @@ public class StringUtil {
   public static final String generateRandomString( int length, String prefix, String postfix, boolean uppercase ) {
     StringBuilder buffer = new StringBuilder();
 
-    if ( !Const.isEmpty( prefix ) ) {
+    if ( !Utils.isEmpty( prefix ) ) {
       buffer.append( prefix );
     }
 
@@ -364,7 +364,7 @@ public class StringUtil {
       int c = 'a' + (int) ( Math.random() * 26 );
       buffer.append( (char) c );
     }
-    if ( !Const.isEmpty( postfix ) ) {
+    if ( !Utils.isEmpty( postfix ) ) {
       buffer.append( postfix );
     }
 
@@ -399,16 +399,16 @@ public class StringUtil {
     DecimalFormat df = (DecimalFormat) nf;
     DecimalFormatSymbols dfs = new DecimalFormatSymbols();
 
-    if ( !Const.isEmpty( pattern ) ) {
+    if ( !Utils.isEmpty( pattern ) ) {
       df.applyPattern( pattern );
     }
-    if ( !Const.isEmpty( decimal ) ) {
+    if ( !Utils.isEmpty( decimal ) ) {
       dfs.setDecimalSeparator( decimal.charAt( 0 ) );
     }
-    if ( !Const.isEmpty( grouping ) ) {
+    if ( !Utils.isEmpty( grouping ) ) {
       dfs.setGroupingSeparator( grouping.charAt( 0 ) );
     }
-    if ( !Const.isEmpty( currency ) ) {
+    if ( !Utils.isEmpty( currency ) ) {
       dfs.setCurrencySymbol( currency );
     }
     try {

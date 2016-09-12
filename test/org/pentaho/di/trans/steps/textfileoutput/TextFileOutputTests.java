@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -40,7 +40,7 @@ import junit.framework.TestCase;
 import org.junit.Test;
 import org.pentaho.di.TestFailedException;
 import org.pentaho.di.TestUtilities;
-import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.plugins.PluginRegistry;
@@ -81,7 +81,7 @@ public class TextFileOutputTests extends TestCase {
   private StepMeta createRowGeneratorStep( String name, PluginRegistry registry ) {
 
     // Default the name if it is empty
-    String testFileOutputName = ( Const.isEmpty( name ) ? "generate rows" : name );
+    String testFileOutputName = ( Utils.isEmpty( name ) ? "generate rows" : name );
 
     // create the RowGenerator and Step Meta
     RowGeneratorMeta rowGeneratorMeta = new RowGeneratorMeta();

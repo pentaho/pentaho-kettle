@@ -26,6 +26,7 @@ import java.text.SimpleDateFormat;
 import java.util.GregorianCalendar;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
@@ -218,7 +219,7 @@ public class SalesforceInput extends SalesforceStep {
 
         // Do we need to repeat this field if it is null?
         if ( meta.getInputFields()[i].isRepeated() ) {
-          if ( data.previousRow != null && Const.isEmpty( value ) ) {
+          if ( data.previousRow != null && Utils.isEmpty( value ) ) {
             outputRowData[i] = data.previousRow[i];
           }
         }
@@ -228,31 +229,31 @@ public class SalesforceInput extends SalesforceStep {
       int rowIndex = data.nrfields;
 
       // See if we need to add the url to the row...
-      if ( meta.includeTargetURL() && !Const.isEmpty( meta.getTargetURLField() ) ) {
+      if ( meta.includeTargetURL() && !Utils.isEmpty( meta.getTargetURLField() ) ) {
         outputRowData[rowIndex++] = data.connection.getURL();
       }
 
       // See if we need to add the module to the row...
-      if ( meta.includeModule() && !Const.isEmpty( meta.getModuleField() ) ) {
+      if ( meta.includeModule() && !Utils.isEmpty( meta.getModuleField() ) ) {
         outputRowData[rowIndex++] = data.connection.getModule();
       }
 
       // See if we need to add the generated SQL to the row...
-      if ( meta.includeSQL() && !Const.isEmpty( meta.getSQLField() ) ) {
+      if ( meta.includeSQL() && !Utils.isEmpty( meta.getSQLField() ) ) {
         outputRowData[rowIndex++] = data.connection.getSQL();
       }
 
       // See if we need to add the server timestamp to the row...
-      if ( meta.includeTimestamp() && !Const.isEmpty( meta.getTimestampField() ) ) {
+      if ( meta.includeTimestamp() && !Utils.isEmpty( meta.getTimestampField() ) ) {
         outputRowData[rowIndex++] = data.connection.getServerTimestamp();
       }
 
       // See if we need to add the row number to the row...
-      if ( meta.includeRowNumber() && !Const.isEmpty( meta.getRowNumberField() ) ) {
+      if ( meta.includeRowNumber() && !Utils.isEmpty( meta.getRowNumberField() ) ) {
         outputRowData[rowIndex++] = new Long( data.rownr );
       }
 
-      if ( meta.includeDeletionDate() && !Const.isEmpty( meta.getDeletionDateField() ) ) {
+      if ( meta.includeDeletionDate() && !Utils.isEmpty( meta.getDeletionDateField() ) ) {
         outputRowData[rowIndex++] = srvalue.getDeletionDate();
       }
 
@@ -305,7 +306,7 @@ public class SalesforceInput extends SalesforceStep {
           }
         }
         sql = sql + " FROM " + environmentSubstitute( meta.getModule() );
-        if ( !Const.isEmpty( environmentSubstitute( meta.getCondition() ) ) ) {
+        if ( !Utils.isEmpty( environmentSubstitute( meta.getCondition() ) ) ) {
           sql += " WHERE " + environmentSubstitute( meta.getCondition().replace( "\n\r", "" ).replace( "\n", "" ) );
         }
         break;
@@ -344,7 +345,7 @@ public class SalesforceInput extends SalesforceStep {
 
         if ( meta.isSpecifyQuery() ) {
           // Check if user specified a query
-          if ( Const.isEmpty( soSQL ) ) {
+          if ( Utils.isEmpty( soSQL ) ) {
             log.logError( BaseMessages.getString( PKG, "SalesforceInputDialog.QueryMissing.DialogMessage" ) );
             return false;
           }
@@ -352,12 +353,12 @@ public class SalesforceInput extends SalesforceStep {
           // check records filter
           if ( meta.getRecordsFilter() != SalesforceConnectionUtils.RECORDS_FILTER_ALL ) {
             String realFromDateString = environmentSubstitute( meta.getReadFrom() );
-            if ( Const.isEmpty( realFromDateString ) ) {
+            if ( Utils.isEmpty( realFromDateString ) ) {
               log.logError( BaseMessages.getString( PKG, "SalesforceInputDialog.FromDateMissing.DialogMessage" ) );
               return false;
             }
             String realToDateString = environmentSubstitute( meta.getReadTo() );
-            if ( Const.isEmpty( realToDateString ) ) {
+            if ( Utils.isEmpty( realToDateString ) ) {
               log.logError( BaseMessages.getString( PKG, "SalesforceInputDialog.ToDateMissing.DialogMessage" ) );
               return false;
             }

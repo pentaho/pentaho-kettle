@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -28,13 +28,13 @@ import java.util.List;
 import java.util.zip.GZIPInputStream;
 
 import org.apache.commons.vfs2.FileObject;
-import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
@@ -94,12 +94,12 @@ public class ParGzipCsvInput extends BaseStep implements StepInterface {
       // Calculate the indexes for the filename and row number fields
       //
       data.filenameFieldIndex = -1;
-      if ( !Const.isEmpty( meta.getFilenameField() ) && meta.isIncludingFilename() ) {
+      if ( !Utils.isEmpty( meta.getFilenameField() ) && meta.isIncludingFilename() ) {
         data.filenameFieldIndex = meta.getInputFields().length;
       }
 
       data.rownumFieldIndex = -1;
-      if ( !Const.isEmpty( meta.getRowNumField() ) ) {
+      if ( !Utils.isEmpty( meta.getRowNumField() ) ) {
         data.rownumFieldIndex = meta.getInputFields().length;
         if ( data.filenameFieldIndex >= 0 ) {
           data.rownumFieldIndex++;
@@ -664,7 +664,7 @@ public class ParGzipCsvInput extends BaseStep implements StepInterface {
 
       // Optionally add the current filename to the mix as well...
       //
-      if ( meta.isIncludingFilename() && !Const.isEmpty( meta.getFilenameField() ) ) {
+      if ( meta.isIncludingFilename() && !Utils.isEmpty( meta.getFilenameField() ) ) {
         if ( meta.isLazyConversionActive() ) {
           outputRowData[data.filenameFieldIndex] = data.binaryFilename;
         } else {
@@ -699,7 +699,7 @@ public class ParGzipCsvInput extends BaseStep implements StepInterface {
       if ( getTransMeta().findNrPrevSteps( getStepMeta() ) == 0 ) {
         String filename = environmentSubstitute( meta.getFilename() );
 
-        if ( Const.isEmpty( filename ) ) {
+        if ( Utils.isEmpty( filename ) ) {
           logError( BaseMessages.getString( PKG, "ParGzipCsvInput.MissingFilename.Message" ) );
           return false;
         }
@@ -712,13 +712,13 @@ public class ParGzipCsvInput extends BaseStep implements StepInterface {
 
       data.delimiter = environmentSubstitute( meta.getDelimiter() ).getBytes();
 
-      if ( Const.isEmpty( meta.getEnclosure() ) ) {
+      if ( Utils.isEmpty( meta.getEnclosure() ) ) {
         data.enclosure = null;
       } else {
         data.enclosure = environmentSubstitute( meta.getEnclosure() ).getBytes();
       }
 
-      data.isAddingRowNumber = !Const.isEmpty( meta.getRowNumField() );
+      data.isAddingRowNumber = !Utils.isEmpty( meta.getRowNumField() );
 
       // Handle parallel reading capabilities...
       //

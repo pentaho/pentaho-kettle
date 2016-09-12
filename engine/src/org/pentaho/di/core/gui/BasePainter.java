@@ -25,6 +25,7 @@ package org.pentaho.di.core.gui;
 import java.util.List;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.NotePadMeta;
 import org.pentaho.di.core.gui.AreaOwner.AreaType;
 import org.pentaho.di.core.gui.PrimitiveGCInterface.EColor;
@@ -138,7 +139,7 @@ public class BasePainter {
     }
 
     Point ext;
-    if ( Const.isEmpty( notePadMeta.getNote() ) ) {
+    if ( Utils.isEmpty( notePadMeta.getNote() ) ) {
       ext = new Point( 10, 10 ); // Empty note
     } else {
 
@@ -194,7 +195,7 @@ public class BasePainter {
     gc.fillPolygon( noteshape );
     gc.drawPolygon( noteshape );
 
-    if ( !Const.isEmpty( notePadMeta.getNote() ) ) {
+    if ( !Utils.isEmpty( notePadMeta.getNote() ) ) {
       gc.setForeground( notePadMeta.getFontColorRed(), notePadMeta.getFontColorGreen(), notePadMeta
         .getFontColorBlue() );
       gc.drawText( notePadMeta.getNote(), note.x + margin, note.y + margin, true );

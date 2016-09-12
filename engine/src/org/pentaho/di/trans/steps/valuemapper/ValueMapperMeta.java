@@ -28,6 +28,7 @@ import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
@@ -169,7 +170,7 @@ public class ValueMapperMeta extends BaseStepMeta implements StepMetaInterface {
   public void getFields( RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep,
     VariableSpace space, Repository repository, IMetaStore metaStore ) {
     ValueMetaInterface extra = null;
-    if ( !Const.isEmpty( getTargetField() ) ) {
+    if ( !Utils.isEmpty( getTargetField() ) ) {
       extra = new ValueMetaString( getTargetField() );
 
       // Lengths etc?
@@ -191,7 +192,7 @@ public class ValueMapperMeta extends BaseStepMeta implements StepMetaInterface {
       extra.setOrigin( name );
       r.addValueMeta( extra );
     } else {
-      if ( !Const.isEmpty( getFieldToUse() ) ) {
+      if ( !Utils.isEmpty( getFieldToUse() ) ) {
         extra = r.searchValueMeta( getFieldToUse() );
       }
     }

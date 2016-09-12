@@ -23,6 +23,7 @@
 package org.pentaho.di.trans.steps.ssh;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMeta;
@@ -77,7 +78,7 @@ public class SSH extends BaseStep implements StepInterface {
 
         // Check if commands field is provided
         if ( meta.isDynamicCommand() ) {
-          if ( Const.isEmpty( meta.getcommandfieldname() ) ) {
+          if ( Utils.isEmpty( meta.getcommandfieldname() ) ) {
             throw new KettleException( BaseMessages.getString( PKG, "SSH.Error.CommandFieldMissing" ) );
           }
           // cache the position of the source filename field
@@ -125,7 +126,7 @@ public class SSH extends BaseStep implements StepInterface {
       if ( meta.isDynamicCommand() ) {
         // get commands
         data.commands = data.outputRowMeta.getString( row, data.indexOfCommand );
-        if ( Const.isEmpty( data.commands ) ) {
+        if ( Utils.isEmpty( data.commands ) ) {
           throw new KettleException( BaseMessages.getString( PKG, "SSH.Error.MessageEmpty" ) );
         }
       }
@@ -152,7 +153,7 @@ public class SSH extends BaseStep implements StepInterface {
       // Add stdout to output
       rowData[index++] = sessionresult.getStd();
 
-      if ( !Const.isEmpty( data.stdTypeField ) ) {
+      if ( !Utils.isEmpty( data.stdTypeField ) ) {
         // Add stdtype to output
         rowData[index++] = sessionresult.isStdTypeErr();
       }
@@ -218,19 +219,19 @@ public class SSH extends BaseStep implements StepInterface {
       String proxypassword = environmentSubstitute( meta.getProxyPassword() );
 
       // Check target server
-      if ( Const.isEmpty( servername ) ) {
+      if ( Utils.isEmpty( servername ) ) {
         logError( BaseMessages.getString( PKG, "SSH.MissingServerName" ) );
       }
 
       // Check if username field is provided
-      if ( Const.isEmpty( meta.getuserName() ) ) {
+      if ( Utils.isEmpty( meta.getuserName() ) ) {
         logError( BaseMessages.getString( PKG, "SSH.Error.UserNamedMissing" ) );
         return false;
       }
 
       // Get output fields
       data.stdOutField = environmentSubstitute( meta.getStdOutFieldName() );
-      if ( Const.isEmpty( data.stdOutField ) ) {
+      if ( Utils.isEmpty( data.stdOutField ) ) {
         logError( BaseMessages.getString( PKG, "SSH.Error.StdOutFieldNameMissing" ) );
         return false;
       }

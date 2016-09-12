@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -50,6 +50,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
@@ -553,7 +554,7 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
   }
 
   private void ok() {
-    if ( Const.isEmpty( wStepname.getText() ) ) {
+    if ( Utils.isEmpty( wStepname.getText() ) ) {
       return;
     }
 
@@ -593,7 +594,7 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
     infoStream.setStepMeta( transMeta.findStep( wStep.getText() ) );
     if ( infoStream.getStepMeta() == null ) {
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
-      if ( Const.isEmpty( wStep.getText() ) ) {
+      if ( Utils.isEmpty( wStep.getText() ) ) {
         mb.setMessage( BaseMessages.getString( PKG, "StreamLookupDialog.NotStepSpecified.DialogMessage", wStep
           .getText() ) );
       } else {
@@ -627,7 +628,7 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
         BaseStepDialog.getFieldsFromPrevious( r, wKey, 1, new int[] { 1, 2 }, new int[] {}, -1, -1, null );
       } else {
         String stepFrom = wStep.getText();
-        if ( !Const.isEmpty( stepFrom ) ) {
+        if ( !Utils.isEmpty( stepFrom ) ) {
           r = transMeta.getStepFields( stepFrom );
           if ( r != null ) {
             BaseStepDialog.getFieldsFromPrevious( r, wKey, 2, new int[] { 1, 2 }, new int[] {}, -1, -1, null );
@@ -654,7 +655,7 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
   private void getlookup() {
     try {
       String stepFrom = wStep.getText();
-      if ( !Const.isEmpty( stepFrom ) ) {
+      if ( !Utils.isEmpty( stepFrom ) ) {
         RowMetaInterface r = transMeta.getStepFields( stepFrom );
         if ( r != null && !r.isEmpty() ) {
           BaseStepDialog.getFieldsFromPrevious( r, wReturn, 1, new int[] { 1 }, new int[] { 4 }, -1, -1, null );

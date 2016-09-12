@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -34,7 +34,7 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileType;
-import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowDataUtil;
@@ -84,14 +84,14 @@ public class Xslt extends BaseStep implements StepInterface {
       meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
 
       // Check if The result field is given
-      if ( Const.isEmpty( meta.getResultfieldname() ) ) {
+      if ( Utils.isEmpty( meta.getResultfieldname() ) ) {
         // Result Field is missing !
         logError( BaseMessages.getString( PKG, "Xslt.Log.ErrorResultFieldMissing" ) );
         throw new KettleStepException( BaseMessages.getString( PKG, "Xslt.Exception.ErrorResultFieldMissing" ) );
       }
 
       // Check if The XML field is given
-      if ( Const.isEmpty( meta.getFieldname() ) ) {
+      if ( Utils.isEmpty( meta.getFieldname() ) ) {
         // Result Field is missing !
         logError( BaseMessages.getString( PKG, "Xslt.Exception.ErrorXMLFieldMissing" ) );
         throw new KettleStepException( BaseMessages.getString( PKG, "Xslt.Exception.ErrorXMLFieldMissing" ) );
@@ -109,7 +109,7 @@ public class Xslt extends BaseStep implements StepInterface {
 
       // Check if the XSL Filename is contained in a column
       if ( meta.useXSLField() ) {
-        if ( Const.isEmpty( meta.getXSLFileField() ) ) {
+        if ( Utils.isEmpty( meta.getXSLFileField() ) ) {
           // The field is missing
           // Result field is missing !
           logError( BaseMessages.getString( PKG, "Xslt.Log.ErrorXSLFileFieldMissing" ) );
@@ -129,7 +129,7 @@ public class Xslt extends BaseStep implements StepInterface {
         }
 
       } else {
-        if ( Const.isEmpty( meta.getXslFilename() ) ) {
+        if ( Utils.isEmpty( meta.getXslFilename() ) ) {
           logError( BaseMessages.getString( PKG, "Xslt.Log.ErrorXSLFile" ) );
           throw new KettleStepException( BaseMessages.getString( PKG, "Xslt.Exception.ErrorXSLFile" ) );
         }
@@ -180,7 +180,7 @@ public class Xslt extends BaseStep implements StepInterface {
         for ( int i = 0; i < data.nrParams; i++ ) {
           String name = environmentSubstitute( meta.getParameterName()[i] );
           String field = environmentSubstitute( meta.getParameterField()[i] );
-          if ( Const.isEmpty( field ) ) {
+          if ( Utils.isEmpty( field ) ) {
             throw new KettleStepException( BaseMessages
                 .getString( PKG, "Xslt.Exception.ParameterFieldMissing", name, i ) );
           }

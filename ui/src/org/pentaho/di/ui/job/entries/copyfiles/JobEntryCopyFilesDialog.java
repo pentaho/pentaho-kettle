@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -54,6 +54,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
@@ -544,7 +545,7 @@ public class JobEntryCopyFilesDialog extends JobEntryDialog implements JobEntryD
         if ( jobEntry.wildcard[i] != null ) {
           ti.setText( 3, jobEntry.wildcard[i] );
         }
-        if ( jobEntry.destination_filefolder[i] != null && !Const.isEmpty( jobEntry.destination_filefolder[i] ) ) {
+        if ( jobEntry.destination_filefolder[i] != null && !Utils.isEmpty( jobEntry.destination_filefolder[i] ) ) {
           String destinationURL = jobEntry.destination_filefolder[i];
           String clusterName = jobEntry.getConfigurationBy( destinationURL );
           ti.setText( 4, STATIC_ENVIRONMENT );
@@ -584,7 +585,7 @@ public class JobEntryCopyFilesDialog extends JobEntryDialog implements JobEntryD
   }
 
   protected void ok() {
-    if ( Const.isEmpty( wName.getText() ) ) {
+    if ( Utils.isEmpty( wName.getText() ) ) {
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
       mb.setText( BaseMessages.getString( PKG, "System.StepJobEntryNameMissing.Title" ) );
       mb.setMessage( BaseMessages.getString( PKG, "System.JobEntryNameMissing.Msg" ) );
@@ -626,7 +627,7 @@ public class JobEntryCopyFilesDialog extends JobEntryDialog implements JobEntryD
       destNc = destNc.equals( STATIC_ENVIRONMENT ) ? JobEntryCopyFiles.STATIC_DEST_FILE + i : destNc;
       String dest = wFields.getNonEmpty( i ).getText( 5 );
 
-      if ( !Const.isEmpty( source ) && jobEntry.source_filefolder.length > 0 ) {
+      if ( !Utils.isEmpty( source ) && jobEntry.source_filefolder.length > 0 ) {
         jobEntry.source_filefolder[nr] = jobEntry.loadURL( source, sourceNc, getMetaStore(), sourceDestinationMappings );
         jobEntry.destination_filefolder[nr] =
             jobEntry.loadURL( dest, destNc, getMetaStore(), sourceDestinationMappings );

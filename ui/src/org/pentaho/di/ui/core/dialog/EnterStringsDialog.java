@@ -38,6 +38,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.ValueMetaInterface;
@@ -216,7 +217,7 @@ public class EnterStringsDialog extends Dialog {
         }
         TableItem item = wFields.table.getItem( i );
         item.setText( 1, valueMeta.getName() );
-        if ( !Const.isEmpty( string ) ) {
+        if ( !Utils.isEmpty( string ) ) {
           item.setText( 2, string );
         }
       }

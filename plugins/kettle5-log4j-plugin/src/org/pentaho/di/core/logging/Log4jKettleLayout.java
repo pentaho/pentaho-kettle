@@ -2,7 +2,7 @@
 *
 * Pentaho Data Integration
 *
-* Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+* Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
 *
 *******************************************************************************
 *
@@ -28,6 +28,7 @@ import java.util.Date;
 import org.apache.log4j.Layout;
 import org.apache.log4j.spi.LoggingEvent;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.version.BuildVersion;
 
 public class Log4jKettleLayout extends Layout implements Log4JLayoutInterface {
@@ -84,15 +85,15 @@ public class Log4jKettleLayout extends Layout implements Log4JLayoutInterface {
           line.append( ERROR_STRING );
           line.append( " (version " );
           line.append( buildVersion.getVersion() );
-          if ( !Const.isEmpty( buildVersion.getRevision() ) ) {
+          if ( !Utils.isEmpty( buildVersion.getRevision() ) ) {
             line.append( ", build " );
             line.append( buildVersion.getRevision() );
           }
-          if ( !Const.isEmpty( buildVersion.getBuildDate() ) ) {
+          if ( !Utils.isEmpty( buildVersion.getBuildDate() ) ) {
             line.append( " from " );
             line.append( buildVersion.getBuildDate() );
           }
-          if ( !Const.isEmpty( buildVersion.getBuildUser() ) ) {
+          if ( !Utils.isEmpty( buildVersion.getBuildUser() ) ) {
             line.append( " by " );
             line.append( buildVersion.getBuildUser() );
           }

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,6 +24,7 @@ package org.pentaho.di.core.database;
 
 import org.apache.commons.dbcp.BasicDataSource;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.util.DatabaseUtil;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleDatabaseException;
@@ -157,102 +158,102 @@ public class ConnectionPoolUtil {
     ds.setMaxActive( maxSize );
 
     String value = properties.getProperty( DEFAULT_AUTO_COMMIT );
-    if ( !Const.isEmpty( value ) ) {
+    if ( !Utils.isEmpty( value ) ) {
       ds.setDefaultAutoCommit( Boolean.valueOf( value ) );
     }
 
     value = properties.getProperty( DEFAULT_READ_ONLY );
-    if ( !Const.isEmpty( value ) ) {
+    if ( !Utils.isEmpty( value ) ) {
       ds.setDefaultReadOnly( Boolean.valueOf( value ) );
     }
 
     value = properties.getProperty( DEFAULT_TRANSACTION_ISOLATION );
-    if ( !Const.isEmpty( value ) ) {
+    if ( !Utils.isEmpty( value ) ) {
       ds.setDefaultTransactionIsolation( Integer.valueOf( value ) );
     }
 
     value = properties.getProperty( DEFAULT_CATALOG );
-    if ( !Const.isEmpty( value ) ) {
+    if ( !Utils.isEmpty( value ) ) {
       ds.setDefaultCatalog( value );
     }
 
     value = properties.getProperty( INITIAL_SIZE );
-    if ( !Const.isEmpty( value ) ) {
+    if ( !Utils.isEmpty( value ) ) {
       ds.setInitialSize( Integer.valueOf( value ) );
     }
 
     value = properties.getProperty( MAX_ACTIVE );
-    if ( !Const.isEmpty( value ) ) {
+    if ( !Utils.isEmpty( value ) ) {
       ds.setMaxActive( Integer.valueOf( value ) );
     }
 
     value = properties.getProperty( MAX_IDLE );
-    if ( !Const.isEmpty( value ) ) {
+    if ( !Utils.isEmpty( value ) ) {
       ds.setMaxIdle( Integer.valueOf( value ) );
     }
 
     value = properties.getProperty( MIN_IDLE );
-    if ( !Const.isEmpty( value ) ) {
+    if ( !Utils.isEmpty( value ) ) {
       ds.setMinIdle( Integer.valueOf( value ) );
     }
 
     value = properties.getProperty( MAX_WAIT );
-    if ( !Const.isEmpty( value ) ) {
+    if ( !Utils.isEmpty( value ) ) {
       ds.setMaxWait( Long.valueOf( value ) );
     }
 
     value = properties.getProperty( VALIDATION_QUERY );
-    if ( !Const.isEmpty( value ) ) {
+    if ( !Utils.isEmpty( value ) ) {
       ds.setValidationQuery( value );
     }
 
     value = properties.getProperty( TEST_ON_BORROW );
-    if ( !Const.isEmpty( value ) ) {
+    if ( !Utils.isEmpty( value ) ) {
       ds.setTestOnBorrow( Boolean.valueOf( value ) );
     }
 
     value = properties.getProperty( TEST_ON_RETURN );
-    if ( !Const.isEmpty( value ) ) {
+    if ( !Utils.isEmpty( value ) ) {
       ds.setTestOnReturn( Boolean.valueOf( value ) );
     }
 
     value = properties.getProperty( TEST_WHILE_IDLE );
-    if ( !Const.isEmpty( value ) ) {
+    if ( !Utils.isEmpty( value ) ) {
       ds.setTestWhileIdle( Boolean.valueOf( value ) );
     }
 
     value = properties.getProperty( TIME_BETWEEN_EVICTION_RUNS_MILLIS );
-    if ( !Const.isEmpty( value ) ) {
+    if ( !Utils.isEmpty( value ) ) {
       ds.setTimeBetweenEvictionRunsMillis( Long.valueOf( value ) );
     }
 
     value = properties.getProperty( POOL_PREPARED_STATEMENTS );
-    if ( !Const.isEmpty( value ) ) {
+    if ( !Utils.isEmpty( value ) ) {
       ds.setPoolPreparedStatements( Boolean.valueOf( value ) );
     }
 
     value = properties.getProperty( MAX_OPEN_PREPARED_STATEMENTS );
-    if ( !Const.isEmpty( value ) ) {
+    if ( !Utils.isEmpty( value ) ) {
       ds.setMaxOpenPreparedStatements( Integer.valueOf( value ) );
     }
 
     value = properties.getProperty( ACCESS_TO_UNDERLYING_CONNECTION_ALLOWED );
-    if ( !Const.isEmpty( value ) ) {
+    if ( !Utils.isEmpty( value ) ) {
       ds.setAccessToUnderlyingConnectionAllowed( Boolean.valueOf( value ) );
     }
 
     value = properties.getProperty( REMOVE_ABANDONED );
-    if ( !Const.isEmpty( value ) ) {
+    if ( !Utils.isEmpty( value ) ) {
       ds.setRemoveAbandoned( Boolean.valueOf( value ) );
     }
 
     value = properties.getProperty( REMOVE_ABANDONED_TIMEOUT );
-    if ( !Const.isEmpty( value ) ) {
+    if ( !Utils.isEmpty( value ) ) {
       ds.setRemoveAbandonedTimeout( Integer.valueOf( value ) );
     }
 
     value = properties.getProperty( LOG_ABANDONED );
-    if ( !Const.isEmpty( value ) ) {
+    if ( !Utils.isEmpty( value ) ) {
       ds.setLogAbandoned( Boolean.valueOf( value ) );
     }
 

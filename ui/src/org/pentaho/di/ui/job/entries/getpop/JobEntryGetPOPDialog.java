@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -58,6 +58,7 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.i18n.BaseMessages;
@@ -1830,7 +1831,7 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
   }
 
   private void checkFolder( String foldername ) {
-    if ( !Const.isEmpty( foldername ) ) {
+    if ( !Utils.isEmpty( foldername ) ) {
       if ( connect() ) {
         // check folder
         if ( mailConn.folderExists( foldername ) ) {
@@ -1899,23 +1900,23 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
     if ( refreshport ) {
       if ( wProtocol.getText().equals( MailConnectionMeta.PROTOCOL_STRING_POP3 ) ) {
         if ( wUseSSL.getSelection() ) {
-          if ( Const.isEmpty( wPort.getText() )
+          if ( Utils.isEmpty( wPort.getText() )
             || wPort.getText().equals( "" + MailConnectionMeta.DEFAULT_SSL_IMAP_PORT ) ) {
             wPort.setText( "" + MailConnectionMeta.DEFAULT_SSL_POP3_PORT );
           }
         } else {
-          if ( Const.isEmpty( wPort.getText() ) || wPort.getText().equals( MailConnectionMeta.DEFAULT_IMAP_PORT ) ) {
+          if ( Utils.isEmpty( wPort.getText() ) || wPort.getText().equals( MailConnectionMeta.DEFAULT_IMAP_PORT ) ) {
             wPort.setText( "" + MailConnectionMeta.DEFAULT_POP3_PORT );
           }
         }
       } else {
         if ( wUseSSL.getSelection() ) {
-          if ( Const.isEmpty( wPort.getText() )
+          if ( Utils.isEmpty( wPort.getText() )
             || wPort.getText().equals( "" + MailConnectionMeta.DEFAULT_SSL_POP3_PORT ) ) {
             wPort.setText( "" + MailConnectionMeta.DEFAULT_SSL_IMAP_PORT );
           }
         } else {
-          if ( Const.isEmpty( wPort.getText() ) || wPort.getText().equals( MailConnectionMeta.DEFAULT_POP3_PORT ) ) {
+          if ( Utils.isEmpty( wPort.getText() ) || wPort.getText().equals( MailConnectionMeta.DEFAULT_POP3_PORT ) ) {
             wPort.setText( "" + MailConnectionMeta.DEFAULT_IMAP_PORT );
           }
         }
@@ -2151,7 +2152,7 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
   }
 
   private void ok() {
-    if ( Const.isEmpty( wName.getText() ) ) {
+    if ( Utils.isEmpty( wName.getText() ) ) {
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
       mb.setMessage( BaseMessages.getString( PKG, "JobGetPOP.NoNameMessageBox.Message" ) );
       mb.setText( BaseMessages.getString( PKG, "JobGetPOP.NoNameMessageBox.Text" ) );

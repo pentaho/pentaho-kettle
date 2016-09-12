@@ -38,6 +38,7 @@ import java.util.TreeSet;
 import org.apache.commons.math.stat.descriptive.rank.Percentile;
 import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.exception.KettleValueException;
@@ -233,7 +234,7 @@ public class GroupBy extends BaseStep implements StepInterface {
 
           lineNr++;
 
-          if ( meta.isAddingLineNrInGroup() && !Const.isEmpty( meta.getLineNrInGroupField() ) ) {
+          if ( meta.isAddingLineNrInGroup() && !Utils.isEmpty( meta.getLineNrInGroupField() ) ) {
             Object lineNrValue = new Long( lineNr );
             // ValueMetaInterface lineNrValueMeta = new ValueMeta(meta.getLineNrInGroupField(),
             // ValueMetaInterface.TYPE_INTEGER);
@@ -288,7 +289,7 @@ public class GroupBy extends BaseStep implements StepInterface {
         size += data.groupResult.length;
         lineNr++;
 
-        if ( meta.isAddingLineNrInGroup() && !Const.isEmpty( meta.getLineNrInGroupField() ) ) {
+        if ( meta.isAddingLineNrInGroup() && !Utils.isEmpty( meta.getLineNrInGroupField() ) ) {
           Object lineNrValue = new Long( lineNr );
           // ValueMetaInterface lineNrValueMeta = new ValueMeta(meta.getLineNrInGroupField(),
           // ValueMetaInterface.TYPE_INTEGER);
@@ -540,7 +541,7 @@ public class GroupBy extends BaseStep implements StepInterface {
         case GroupByMeta.TYPE_GROUP_CONCAT_STRING:
           if ( !( subj == null ) ) {
             String separator = "";
-            if ( !Const.isEmpty( meta.getValueField()[ i ] ) ) {
+            if ( !Utils.isEmpty( meta.getValueField()[ i ] ) ) {
               separator = environmentSubstitute( meta.getValueField()[ i ] );
             }
 

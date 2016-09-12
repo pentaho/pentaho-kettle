@@ -30,6 +30,7 @@ import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSelectInfo;
 import org.apache.commons.vfs2.FileSelector;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.core.vfs.KettleVFS;
@@ -103,7 +104,7 @@ public class PluginFolder implements PluginFolderInterface {
       for ( String folder : folders ) {
         folder = folder.trim();
         pluginFolders.add( new PluginFolder( folder, false, true ) );
-        if ( !Const.isEmpty( xmlSubfolder ) ) {
+        if ( !Utils.isEmpty( xmlSubfolder ) ) {
           pluginFolders.add( new PluginFolder( folder + File.separator + xmlSubfolder, true, false ) );
         }
       }

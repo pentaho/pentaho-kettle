@@ -23,6 +23,7 @@
 package org.pentaho.di.core.database;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.row.ValueMetaInterface;
 
 /**
@@ -60,7 +61,7 @@ public class HypersonicDatabaseMeta extends BaseDatabaseMeta implements Database
     if ( getAccessType() == DatabaseMeta.TYPE_ACCESS_ODBC ) {
       return "jdbc:odbc:" + databaseName;
     } else {
-      if ( ( Const.isEmpty( port ) || "-1".equals( port ) ) && Const.isEmpty( hostname ) ) {
+      if ( ( Utils.isEmpty( port ) || "-1".equals( port ) ) && Utils.isEmpty( hostname ) ) {
         // When no port is specified, or port is 0 support local/memory
         // HSQLDB databases.
         return "jdbc:hsqldb:" + databaseName;

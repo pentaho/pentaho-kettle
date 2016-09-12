@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -32,6 +32,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.KettleLogStore;
@@ -76,14 +77,14 @@ public class ExecuteTransServlet extends BaseHttpServlet implements CartePluginI
     <h2>GET</h2>
     <p>Executes transformation from the specified repository.
   Connects to the repository provided as a parameter, loads the transformation from it and executes it.
-  Empty response is returned or response contains output of an error happened during the transformation execution. 
+  Empty response is returned or response contains output of an error happened during the transformation execution.
   Response contains <code>ERROR</code> result if error happened during transformation execution.</p>
-    
+
     <p><b>Example Request:</b><br />
     <pre function="syntax.xml">
     GET /kettle/executeTrans/?rep=my_repository&user=my_user&pass=my_password&trans=my_trans&level=INFO
     </pre>
-    
+
     </p>
     <h3>Parameters</h3>
     <table class="pentaho-table">
@@ -120,14 +121,14 @@ public class ExecuteTransServlet extends BaseHttpServlet implements CartePluginI
     </tr>
     <tr>
     <td>*any name*</td>
-    <td>All the other parameters will be sent to the transformation for using as variables. 
-  When necessary you can add custom parameters to the request. 
+    <td>All the other parameters will be sent to the transformation for using as variables.
+  When necessary you can add custom parameters to the request.
   They will be used to set the transformation variables values..</td>
     <td>query</td>
     </tr>
     </tbody>
     </table>
-  
+
   <h3>Response Body</h3>
 
   <table class="pentaho-table">
@@ -142,41 +143,41 @@ public class ExecuteTransServlet extends BaseHttpServlet implements CartePluginI
       </tr>
     </tbody>
   </table>
-    <p>Response contains error output of the transformation executed or nothing 
+    <p>Response contains error output of the transformation executed or nothing
   if the execution was successful.</p>
-    
+
     <p><b>Example Error Response:</b></p>
     <pre function="syntax.xml">
   <webresult>
     <result>ERROR</result>
-    <message>Unexpected error executing the transformation&#x3a; 
-    &#xd;&#xa;org.pentaho.di.core.exception.KettleException&#x3a; 
-    &#xd;&#xa;Unable to find transformation &#x27;dummy-trans.ktr&#x27; in directory 
-    &#x3a;&#x2f;home&#x2f;admin&#xd;&#xa;&#xd;&#xa; at 
-    org.pentaho.di.www.ExecuteTransServlet.loadTransformation&#x28;ExecuteTransServlet.java&#x3a;214&#x29;&#xd;&#xa; 
-    at org.pentaho.di.www.ExecuteTransServlet.doGet&#x28;ExecuteTransServlet.java&#x3a;104&#x29;&#xd;&#xa;  
-    at javax.servlet.http.HttpServlet.service&#x28;HttpServlet.java&#x3a;707&#x29;&#xd;&#xa;  
-    at javax.servlet.http.HttpServlet.service&#x28;HttpServlet.java&#x3a;820&#x29;&#xd;&#xa;  
-    at org.mortbay.jetty.servlet.ServletHolder.handle&#x28;ServletHolder.java&#x3a;511&#x29;&#xd;&#xa;  
-    at org.mortbay.jetty.servlet.ServletHandler.handle&#x28;ServletHandler.java&#x3a;390&#x29;&#xd;&#xa;  
-    at org.mortbay.jetty.servlet.SessionHandler.handle&#x28;SessionHandler.java&#x3a;182&#x29;&#xd;&#xa;  
-    at org.mortbay.jetty.handler.ContextHandler.handle&#x28;ContextHandler.java&#x3a;765&#x29;&#xd;&#xa;  
-    at org.mortbay.jetty.handler.ContextHandlerCollection.handle&#x28;ContextHandlerCollection.java&#x3a;230&#x29;&#xd;&#xa;  
-    at org.mortbay.jetty.handler.HandlerCollection.handle&#x28;HandlerCollection.java&#x3a;114&#x29;&#xd;&#xa;  
-    at org.mortbay.jetty.handler.HandlerWrapper.handle&#x28;HandlerWrapper.java&#x3a;152&#x29;&#xd;&#xa;  
-    at org.mortbay.jetty.Server.handle&#x28;Server.java&#x3a;326&#x29;&#xd;&#xa;  
-    at org.mortbay.jetty.HttpConnection.handleRequest&#x28;HttpConnection.java&#x3a;536&#x29;&#xd;&#xa; 
-    at org.mortbay.jetty.HttpConnection&#x24;RequestHandler.headerComplete&#x28;HttpConnection.java&#x3a;915&#x29;&#xd;&#xa;  
-    at org.mortbay.jetty.HttpParser.parseNext&#x28;HttpParser.java&#x3a;539&#x29;&#xd;&#xa; 
-    at org.mortbay.jetty.HttpParser.parseAvailable&#x28;HttpParser.java&#x3a;212&#x29;&#xd;&#xa;  
-    at org.mortbay.jetty.HttpConnection.handle&#x28;HttpConnection.java&#x3a;405&#x29;&#xd;&#xa; 
-    at org.mortbay.jetty.bio.SocketConnector&#x24;Connection.run&#x28;SocketConnector.java&#x3a;228&#x29;&#xd;&#xa; 
+    <message>Unexpected error executing the transformation&#x3a;
+    &#xd;&#xa;org.pentaho.di.core.exception.KettleException&#x3a;
+    &#xd;&#xa;Unable to find transformation &#x27;dummy-trans.ktr&#x27; in directory
+    &#x3a;&#x2f;home&#x2f;admin&#xd;&#xa;&#xd;&#xa; at
+    org.pentaho.di.www.ExecuteTransServlet.loadTransformation&#x28;ExecuteTransServlet.java&#x3a;214&#x29;&#xd;&#xa;
+    at org.pentaho.di.www.ExecuteTransServlet.doGet&#x28;ExecuteTransServlet.java&#x3a;104&#x29;&#xd;&#xa;
+    at javax.servlet.http.HttpServlet.service&#x28;HttpServlet.java&#x3a;707&#x29;&#xd;&#xa;
+    at javax.servlet.http.HttpServlet.service&#x28;HttpServlet.java&#x3a;820&#x29;&#xd;&#xa;
+    at org.mortbay.jetty.servlet.ServletHolder.handle&#x28;ServletHolder.java&#x3a;511&#x29;&#xd;&#xa;
+    at org.mortbay.jetty.servlet.ServletHandler.handle&#x28;ServletHandler.java&#x3a;390&#x29;&#xd;&#xa;
+    at org.mortbay.jetty.servlet.SessionHandler.handle&#x28;SessionHandler.java&#x3a;182&#x29;&#xd;&#xa;
+    at org.mortbay.jetty.handler.ContextHandler.handle&#x28;ContextHandler.java&#x3a;765&#x29;&#xd;&#xa;
+    at org.mortbay.jetty.handler.ContextHandlerCollection.handle&#x28;ContextHandlerCollection.java&#x3a;230&#x29;&#xd;&#xa;
+    at org.mortbay.jetty.handler.HandlerCollection.handle&#x28;HandlerCollection.java&#x3a;114&#x29;&#xd;&#xa;
+    at org.mortbay.jetty.handler.HandlerWrapper.handle&#x28;HandlerWrapper.java&#x3a;152&#x29;&#xd;&#xa;
+    at org.mortbay.jetty.Server.handle&#x28;Server.java&#x3a;326&#x29;&#xd;&#xa;
+    at org.mortbay.jetty.HttpConnection.handleRequest&#x28;HttpConnection.java&#x3a;536&#x29;&#xd;&#xa;
+    at org.mortbay.jetty.HttpConnection&#x24;RequestHandler.headerComplete&#x28;HttpConnection.java&#x3a;915&#x29;&#xd;&#xa;
+    at org.mortbay.jetty.HttpParser.parseNext&#x28;HttpParser.java&#x3a;539&#x29;&#xd;&#xa;
+    at org.mortbay.jetty.HttpParser.parseAvailable&#x28;HttpParser.java&#x3a;212&#x29;&#xd;&#xa;
+    at org.mortbay.jetty.HttpConnection.handle&#x28;HttpConnection.java&#x3a;405&#x29;&#xd;&#xa;
+    at org.mortbay.jetty.bio.SocketConnector&#x24;Connection.run&#x28;SocketConnector.java&#x3a;228&#x29;&#xd;&#xa;
     at org.mortbay.thread.QueuedThreadPool&#x24;PoolThread.run&#x28;QueuedThreadPool.java&#x3a;582&#x29;&#xd;&#xa;
     </message>
     <id/>
   </webresult>
     </pre>
-    
+
     <h3>Status Codes</h3>
     <table class="pentaho-table">
   <tbody>
@@ -219,7 +220,7 @@ public class ExecuteTransServlet extends BaseHttpServlet implements CartePluginI
     response.setStatus( HttpServletResponse.SC_OK );
 
     String encoding = System.getProperty( "KETTLE_DEFAULT_SERVLET_ENCODING", null );
-    if ( encoding != null && !Const.isEmpty( encoding.trim() ) ) {
+    if ( encoding != null && !Utils.isEmpty( encoding.trim() ) ) {
       response.setCharacterEncoding( encoding );
       response.setContentType( "text/html; charset=" + encoding );
     }
@@ -348,7 +349,7 @@ public class ExecuteTransServlet extends BaseHttpServlet implements CartePluginI
 
   private Repository openRepository( String repositoryName, String user, String pass ) throws KettleException {
 
-    if ( Const.isEmpty( repositoryName ) ) {
+    if ( Utils.isEmpty( repositoryName ) ) {
       return null;
     }
 

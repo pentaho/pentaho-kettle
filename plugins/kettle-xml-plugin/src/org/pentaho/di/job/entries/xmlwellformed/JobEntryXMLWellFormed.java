@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -40,6 +40,7 @@ import org.apache.commons.vfs2.FileType;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.RowMetaAndData;
@@ -388,7 +389,7 @@ public class JobEntryXMLWellFormed extends JobEntryBase implements Cloneable, Jo
 
     // Get real source file and wilcard
     String realSourceFilefoldername = environmentSubstitute( sourcefilefoldername );
-    if ( Const.isEmpty( realSourceFilefoldername ) ) {
+    if ( Utils.isEmpty( realSourceFilefoldername ) ) {
       logError( BaseMessages.getString( PKG, "JobXMLWellFormed.log.FileFolderEmpty", sourcefilefoldername ) );
       // Update Errors
       updateErrors();
@@ -572,7 +573,7 @@ public class JobEntryXMLWellFormed extends JobEntryBase implements Cloneable, Jo
     Pattern pattern = null;
     boolean getIt = true;
 
-    if ( !Const.isEmpty( wildcard ) ) {
+    if ( !Utils.isEmpty( wildcard ) ) {
       pattern = Pattern.compile( wildcard );
       // First see if the file matches the regular expression!
       if ( pattern != null ) {

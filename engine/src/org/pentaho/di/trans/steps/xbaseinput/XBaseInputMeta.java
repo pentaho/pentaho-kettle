@@ -29,6 +29,7 @@ import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -286,7 +287,7 @@ public class XBaseInputMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public String getLookupStepname() {
-    if ( acceptingFilenames && acceptingStep != null && !Const.isEmpty( acceptingStep.getName() ) ) {
+    if ( acceptingFilenames && acceptingStep != null && !Utils.isEmpty( acceptingStep.getName() ) ) {
       return acceptingStep.getName();
     }
     return null;
@@ -438,14 +439,14 @@ public class XBaseInputMeta extends BaseStepMeta implements StepMetaInterface {
 
     if ( dbfFileName == null ) {
       if ( isAcceptingFilenames() ) {
-        if ( Const.isEmpty( getAcceptingStepName() ) ) {
+        if ( Utils.isEmpty( getAcceptingStepName() ) ) {
           cr =
             new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
               PKG, "XBaseInput.Log.Error.InvalidAcceptingStepName" ), stepMeta );
           remarks.add( cr );
         }
 
-        if ( Const.isEmpty( getAcceptingField() ) ) {
+        if ( Utils.isEmpty( getAcceptingField() ) ) {
           cr =
             new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
               PKG, "XBaseInput.Log.Error.InvalidAcceptingFieldName" ), stepMeta );

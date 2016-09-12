@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
@@ -223,7 +224,7 @@ public class GetXMLDataMetaInjection extends BaseStepMetaInjection implements St
                     }
                   }
 
-                  if ( !Const.isEmpty( fileName ) ) {
+                  if ( !Utils.isEmpty( fileName ) ) {
                     filenameLines.add( new FilenameLine( fileName, fileMask, fileRequired, excludeFileMask,
                         includeSubFolders ) );
                   }

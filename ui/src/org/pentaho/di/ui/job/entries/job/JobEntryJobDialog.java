@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -56,6 +56,7 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleException;
@@ -1131,7 +1132,7 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
       boolean saved = false;
       try {
         if ( rep != null ) {
-          if ( !Const.isEmpty( newJobMeta.getName() ) ) {
+          if ( !Utils.isEmpty( newJobMeta.getName() ) ) {
             wName.setText( newJobMeta.getName() );
           }
           saved = spoon.saveToRepository( newJobMeta, false );
@@ -1255,7 +1256,7 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
     } catch ( Exception e ) {
       // not that important
     }
-    if ( !Const.isEmpty( prevName ) ) {
+    if ( !Utils.isEmpty( prevName ) ) {
       try {
         if ( KettleVFS.fileExists( prevName ) ) {
           dialog.setFilterPath( KettleVFS.getFilename( KettleVFS.getFileObject( prevName ).getParent() ) );
@@ -1297,7 +1298,7 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
       } catch ( Exception e ) {
         dialog.setFilterPath( parentFolder );
       }
-    } else if ( !Const.isEmpty( parentFolder ) ) {
+    } else if ( !Utils.isEmpty( parentFolder ) ) {
       dialog.setFilterPath( parentFolder );
     }
 
@@ -1307,7 +1308,7 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
       String name = file.getName();
       String parentFolderSelection = file.getParentFile().toString();
 
-      if ( !Const.isEmpty( parentFolder ) && parentFolder.equals( parentFolderSelection ) ) {
+      if ( !Utils.isEmpty( parentFolder ) && parentFolder.equals( parentFolderSelection ) ) {
         wFilename.setText( "${" + Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY + "}/" + name );
       } else {
         wFilename.setText( fname );
@@ -1358,16 +1359,16 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
     wlAppendLogfile.setEnabled( wSetLogfile.getSelection() );
     wAppendLogfile.setEnabled( wSetLogfile.getSelection() );
 
-    wlWaitingToFinish.setEnabled( !Const.isEmpty( wSlaveServer.getText() ) );
-    wWaitingToFinish.setEnabled( !Const.isEmpty( wSlaveServer.getText() ) );
+    wlWaitingToFinish.setEnabled( !Utils.isEmpty( wSlaveServer.getText() ) );
+    wWaitingToFinish.setEnabled( !Utils.isEmpty( wSlaveServer.getText() ) );
 
     wlFollowingAbortRemotely.setEnabled( wWaitingToFinish.getSelection()
-      && !Const.isEmpty( wSlaveServer.getText() ) );
+      && !Utils.isEmpty( wSlaveServer.getText() ) );
     wFollowingAbortRemotely
-      .setEnabled( wWaitingToFinish.getSelection() && !Const.isEmpty( wSlaveServer.getText() ) );
+      .setEnabled( wWaitingToFinish.getSelection() && !Utils.isEmpty( wSlaveServer.getText() ) );
 
-    wlExpandRemote.setEnabled( !Const.isEmpty( wSlaveServer.getText() ) );
-    wExpandRemote.setEnabled( !Const.isEmpty( wSlaveServer.getText() ) );
+    wlExpandRemote.setEnabled( !Utils.isEmpty( wSlaveServer.getText() ) );
+    wExpandRemote.setEnabled( !Utils.isEmpty( wSlaveServer.getText() ) );
   }
 
   public void getData() {
@@ -1410,7 +1411,7 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
     if ( jobEntry.parameters != null ) {
       for ( int i = 0; i < jobEntry.parameters.length; i++ ) {
         TableItem ti = wParameters.table.getItem( i );
-        if ( !Const.isEmpty( jobEntry.parameters[i] ) ) {
+        if ( !Utils.isEmpty( jobEntry.parameters[i] ) ) {
           ti.setText( 1, Const.NVL( jobEntry.parameters[i], "" ) );
           ti.setText( 2, Const.NVL( jobEntry.parameterFieldNames[i], "" ) );
           ti.setText( 3, Const.NVL( jobEntry.parameterValues[i], "" ) );
@@ -1538,13 +1539,13 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
 
       jej.parameters[nr] = param;
 
-      if ( !Const.isEmpty( Const.trim( fieldName ) ) ) {
+      if ( !Utils.isEmpty( Const.trim( fieldName ) ) ) {
         jej.parameterFieldNames[nr] = fieldName;
       } else {
         jej.parameterFieldNames[nr] = "";
       }
 
-      if ( !Const.isEmpty( Const.trim( value ) ) ) {
+      if ( !Utils.isEmpty( Const.trim( value ) ) ) {
         jej.parameterValues[nr] = value;
       } else {
         jej.parameterValues[nr] = "";
@@ -1578,7 +1579,7 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
   }
 
   private void ok() {
-    if ( Const.isEmpty( wName.getText() ) ) {
+    if ( Utils.isEmpty( wName.getText() ) ) {
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
       mb.setText( BaseMessages.getString( PKG, "System.StepJobEntryNameMissing.Title" ) );
       mb.setMessage( BaseMessages.getString( PKG, "System.JobEntryNameMissing.Msg" ) );

@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -56,6 +56,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleException;
@@ -1219,7 +1220,7 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
     wbbFilename.addSelectionListener( new SelectionAdapter() {
       public void widgetSelected( SelectionEvent e ) {
         // A mask: a directory!
-        if ( !Const.isEmpty( wFilemask.getText() ) || !Const.isEmpty( wExcludeFilemask.getText() ) ) {
+        if ( !Utils.isEmpty( wFilemask.getText() ) || !Utils.isEmpty( wExcludeFilemask.getText() ) ) {
           DirectoryDialog dialog = new DirectoryDialog( shell, SWT.OPEN );
           if ( wFilename.getText() != null ) {
             String fpath = transMeta.environmentSubstitute( wFilename.getText() );
@@ -2049,7 +2050,7 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
   }
 
   private void populateLoopPaths( GetXMLDataMeta meta, String XMLSource, boolean dynamicXMLSource, boolean useURL ) {
-    if ( Const.isEmpty( XMLSource ) ) {
+    if ( Utils.isEmpty( XMLSource ) ) {
       return;
     }
     String[] list_xpath = null;
@@ -2079,7 +2080,7 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 
   private void populateFields( GetXMLDataMeta meta, String XMLSource, boolean dynamicXMLSource, boolean useURL,
       int clearFields ) throws KettleException {
-    if ( Const.isEmpty( XMLSource ) ) {
+    if ( Utils.isEmpty( XMLSource ) ) {
       return;
     }
 

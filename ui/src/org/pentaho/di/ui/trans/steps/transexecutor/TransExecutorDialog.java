@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -51,6 +51,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleException;
@@ -665,7 +666,7 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
         String realDirectory = transMeta.environmentSubstitute( wDirectory.getText() );
         String realTransname = transMeta.environmentSubstitute( wTransname.getText() );
 
-        if ( Const.isEmpty( realDirectory ) || Const.isEmpty( realTransname ) ) {
+        if ( Utils.isEmpty( realDirectory ) || Utils.isEmpty( realTransname ) ) {
           throw new KettleException( BaseMessages.getString( PKG,
             "TransExecutorDialog.Exception.NoValidTransExecutorDetailsFound" ) );
         }
@@ -1510,7 +1511,7 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
       return;
     }
     boolean enableSize = Const.toInt( transMeta.environmentSubstitute( wGroupSize.getText() ), -1 ) >= 0;
-    boolean enableField = !Const.isEmpty( wGroupField.getText() );
+    boolean enableField = !Utils.isEmpty( wGroupField.getText() );
     // boolean enableTime = Const.toInt(transMeta.environmentSubstitute(wGroupTime.getText()), -1)>0;
 
     wlGroupSize.setEnabled( true );
@@ -1528,7 +1529,7 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
   }
 
   private void ok() {
-    if ( Const.isEmpty( wStepname.getText() ) ) {
+    if ( Utils.isEmpty( wStepname.getText() ) ) {
       return;
     }
 
@@ -1625,7 +1626,7 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
     transExecutorMeta.setResultFilesTargetStepMeta( transMeta.findStep( wResultFilesTarget.getText() ) );
     transExecutorMeta.setResultFilesFileNameField( wResultFileNameField.getText() );
 
-    if ( !Const.isEmpty( executorOutputStep ) ) {
+    if ( !Utils.isEmpty( executorOutputStep ) ) {
       transExecutorMeta.setExecutorsOutputStep( executorOutputStep );
       transExecutorMeta.setExecutorsOutputStepMeta( transMeta.findStep( executorOutputStep ) );
     }
@@ -1672,7 +1673,7 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
       boolean saved = false;
       try {
         if ( repository != null ) {
-          if ( !Const.isEmpty( newTransMeta.getName() ) ) {
+          if ( !Utils.isEmpty( newTransMeta.getName() ) ) {
             wStepname.setText( newTransMeta.getName() );
           }
           saved = spoon.saveToRepository( newTransMeta, false );

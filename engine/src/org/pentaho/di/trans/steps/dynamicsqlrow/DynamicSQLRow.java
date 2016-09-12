@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,6 +25,7 @@ package org.pentaho.di.trans.steps.dynamicsqlrow;
 import java.sql.ResultSet;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
@@ -226,11 +227,11 @@ public class DynamicSQLRow extends BaseStep implements StepInterface {
       return false;
     }
     if ( first ) {
-      if ( Const.isEmpty( meta.getSQLFieldName() ) ) {
+      if ( Utils.isEmpty( meta.getSQLFieldName() ) ) {
         throw new KettleException( BaseMessages.getString( PKG, "DynamicSQLRow.Exception.SQLFieldNameEmpty" ) );
       }
 
-      if ( Const.isEmpty( meta.getSql() ) ) {
+      if ( Utils.isEmpty( meta.getSql() ) ) {
         throw new KettleException( BaseMessages.getString( PKG, "DynamicSQLRow.Exception.SQLEmpty" ) );
       }
 

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -29,6 +29,7 @@ import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -252,7 +253,7 @@ public class XsltMeta extends BaseStepMeta implements StepMetaInterface {
       xslFileField = XMLHandler.getTagValue( stepnode, "xslfilefield" );
       xslFileFieldUse = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "xslfilefielduse" ) );
       String isAFile = XMLHandler.getTagValue( stepnode, "xslfieldisafile" );
-      if ( xslFileFieldUse && Const.isEmpty( isAFile ) ) {
+      if ( xslFileFieldUse && Utils.isEmpty( isAFile ) ) {
         xslFieldIsAFile = true;
       } else {
         xslFieldIsAFile = "Y".equalsIgnoreCase( isAFile );
@@ -357,7 +358,7 @@ public class XsltMeta extends BaseStepMeta implements StepMetaInterface {
       xslFileField = rep.getStepAttributeString( id_step, "xslfilefield" );
       xslFileFieldUse = rep.getStepAttributeBoolean( id_step, "xslfilefielduse" );
       String isAfile = rep.getStepAttributeString( id_step, "xslfieldisafile" );
-      if ( xslFileFieldUse && Const.isEmpty( isAfile ) ) {
+      if ( xslFileFieldUse && Utils.isEmpty( isAfile ) ) {
         xslFieldIsAFile = true;
       } else {
         xslFieldIsAFile = "true".equalsIgnoreCase( isAfile );

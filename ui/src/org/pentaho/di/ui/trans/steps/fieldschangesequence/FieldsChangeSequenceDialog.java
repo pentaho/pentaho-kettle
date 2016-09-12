@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -50,6 +50,7 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
@@ -299,7 +300,7 @@ public class FieldsChangeSequenceDialog extends BaseStepDialog implements StepDi
                 if ( !wFields.isDisposed() ) {
                   for ( int i = 0; i < wFields.table.getItemCount(); i++ ) {
                     TableItem it = wFields.table.getItem( i );
-                    if ( !Const.isEmpty( it.getText( 1 ) ) ) {
+                    if ( !Utils.isEmpty( it.getText( 1 ) ) ) {
                       if ( !inputFields.containsKey( it.getText( 1 ) ) ) {
                         it.setBackground( GUIResource.getInstance().getColorRed() );
                       }
@@ -398,7 +399,7 @@ public class FieldsChangeSequenceDialog extends BaseStepDialog implements StepDi
   }
 
   private void ok() {
-    if ( Const.isEmpty( wStepname.getText() ) ) {
+    if ( Utils.isEmpty( wStepname.getText() ) ) {
       return;
     }
     stepname = wStepname.getText(); // return value

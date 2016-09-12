@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.pentaho.di.core.CheckResultInterface;
-import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.KettleAttribute;
 import org.pentaho.di.core.KettleAttributeInterface;
@@ -938,7 +938,7 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
    */
   @Override
   public KettleAttributeInterface findParent( List<KettleAttributeInterface> attributes, String parentId ) {
-    if ( Const.isEmpty( parentId ) ) {
+    if ( Utils.isEmpty( parentId ) ) {
       return null;
     }
     for ( KettleAttributeInterface attribute : attributes ) {
@@ -982,7 +982,7 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
   @Override
   public String getRepCode( String attributeKey ) {
     KettleAttributeInterface attr = findAttribute( attributeKey );
-    return Const.isEmpty( attr.getRepCode() ) ? attr.getXmlCode() : attr.getRepCode();
+    return Utils.isEmpty( attr.getRepCode() ) ? attr.getXmlCode() : attr.getRepCode();
   }
 
   /*

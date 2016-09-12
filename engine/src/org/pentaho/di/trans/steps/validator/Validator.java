@@ -28,6 +28,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettlePluginException;
@@ -100,7 +101,7 @@ public class Validator extends BaseStep implements StepInterface {
       for ( int i = 0; i < meta.getValidations().size(); i++ ) {
         Validation field = meta.getValidations().get( i );
 
-        if ( !Const.isEmpty( field.getFieldName() ) ) {
+        if ( !Utils.isEmpty( field.getFieldName() ) ) {
           data.fieldIndexes[i] = getInputRowMeta().indexOfValue( field.getFieldName() );
           if ( data.fieldIndexes[i] < 0 ) {
             // Nope: throw an exception
@@ -193,7 +194,7 @@ public class Validator extends BaseStep implements StepInterface {
             "There is no valid source step specified for the allowed values of validation ["
               + field.getName() + "]" );
         }
-        if ( Const.isEmpty( field.getSourcingField() ) ) {
+        if ( Utils.isEmpty( field.getSourcingField() ) ) {
           throw new KettleStepException(
             "There is no valid source field specified for the allowed values of validation ["
               + field.getName() + "]" );
@@ -308,8 +309,8 @@ public class Validator extends BaseStep implements StepInterface {
         if ( data.fieldsMinimumLengthAsInt[i] >= 0
           || data.fieldsMaximumLengthAsInt[i] >= 0 || data.minimumValue[i] != null
           || data.maximumValue[i] != null || data.listValues[i].length > 0 || field.isSourcingValues()
-          || !Const.isEmpty( data.startString[i] ) || !Const.isEmpty( data.endString[i] )
-          || !Const.isEmpty( data.startStringNotAllowed[i] ) || !Const.isEmpty( data.endStringNotAllowed[i] )
+          || !Utils.isEmpty( data.startString[i] ) || !Utils.isEmpty( data.endString[i] )
+          || !Utils.isEmpty( data.startStringNotAllowed[i] ) || !Utils.isEmpty( data.endStringNotAllowed[i] )
           || field.isOnlyNumericAllowed() || data.patternExpected[i] != null
           || data.patternDisallowed[i] != null ) {
 
@@ -419,7 +420,7 @@ public class Validator extends BaseStep implements StepInterface {
 
           // Does not start with string value
           //
-          if ( !Const.isEmpty( data.startString[i] ) && !stringValue.startsWith( data.startString[i] ) ) {
+          if ( !Utils.isEmpty( data.startString[i] ) && !stringValue.startsWith( data.startString[i] ) ) {
             KettleValidatorException exception =
               new KettleValidatorException(
                 this, field, KettleValidatorException.ERROR_DOES_NOT_START_WITH_STRING, BaseMessages
@@ -434,7 +435,7 @@ public class Validator extends BaseStep implements StepInterface {
 
           // Ends with string value
           //
-          if ( !Const.isEmpty( data.endString[i] ) && !stringValue.endsWith( data.endString[i] ) ) {
+          if ( !Utils.isEmpty( data.endString[i] ) && !stringValue.endsWith( data.endString[i] ) ) {
             KettleValidatorException exception =
               new KettleValidatorException(
                 this, field, KettleValidatorException.ERROR_DOES_NOT_END_WITH_STRING, BaseMessages.getString(
@@ -448,7 +449,7 @@ public class Validator extends BaseStep implements StepInterface {
 
           // Starts with string value
           //
-          if ( !Const.isEmpty( data.startStringNotAllowed[i] )
+          if ( !Utils.isEmpty( data.startStringNotAllowed[i] )
             && stringValue.startsWith( data.startStringNotAllowed[i] ) ) {
             KettleValidatorException exception =
               new KettleValidatorException(
@@ -463,7 +464,7 @@ public class Validator extends BaseStep implements StepInterface {
 
           // Ends with string value
           //
-          if ( !Const.isEmpty( data.endStringNotAllowed[i] ) && stringValue.endsWith( data.endStringNotAllowed[i] ) ) {
+          if ( !Utils.isEmpty( data.endStringNotAllowed[i] ) && stringValue.endsWith( data.endStringNotAllowed[i] ) ) {
             KettleValidatorException exception =
               new KettleValidatorException(
                 this, field, KettleValidatorException.ERROR_ENDS_WITH_STRING, BaseMessages.getString(
@@ -605,10 +606,10 @@ public class Validator extends BaseStep implements StepInterface {
 
           ValueMetaInterface stringMeta = cloneValueMeta( data.constantsMeta[i], ValueMetaInterface.TYPE_STRING );
           data.minimumValue[i] =
-            Const.isEmpty( data.minimumValueAsString[i] ) ? null : data.constantsMeta[i].convertData(
+            Utils.isEmpty( data.minimumValueAsString[i] ) ? null : data.constantsMeta[i].convertData(
               stringMeta, data.minimumValueAsString[i] );
           data.maximumValue[i] =
-            Const.isEmpty( data.maximumValueAsString[i] ) ? null : data.constantsMeta[i].convertData(
+            Utils.isEmpty( data.maximumValueAsString[i] ) ? null : data.constantsMeta[i].convertData(
               stringMeta, data.maximumValueAsString[i] );
 
           try {
@@ -631,7 +632,7 @@ public class Validator extends BaseStep implements StepInterface {
           data.listValues[i] = new Object[listSize];
           for ( int s = 0; s < listSize; s++ ) {
             data.listValues[i][s] =
-              Const.isEmpty( field.getAllowedValues()[s] ) ? null : data.constantsMeta[i].convertData(
+              Utils.isEmpty( field.getAllowedValues()[s] ) ? null : data.constantsMeta[i].convertData(
                 stringMeta, environmentSubstitute( field.getAllowedValues()[s] ) );
           }
         } catch ( KettleException e ) {
@@ -643,10 +644,10 @@ public class Validator extends BaseStep implements StepInterface {
           return false;
         }
 
-        if ( !Const.isEmpty( data.regularExpression[i] ) ) {
+        if ( !Utils.isEmpty( data.regularExpression[i] ) ) {
           data.patternExpected[i] = Pattern.compile( data.regularExpression[i] );
         }
-        if ( !Const.isEmpty( data.regularExpressionNotAllowed[i] ) ) {
+        if ( !Utils.isEmpty( data.regularExpressionNotAllowed[i] ) ) {
           data.patternDisallowed[i] = Pattern.compile( data.regularExpressionNotAllowed[i] );
         }
 

@@ -28,6 +28,7 @@ import java.util.List;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.ProvidesModelerMeta;
 import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.database.Database;
@@ -603,7 +604,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
       try {
         db.connect();
 
-        if ( !Const.isEmpty( tablename ) ) {
+        if ( !Utils.isEmpty( tablename ) ) {
           boolean first = true;
           boolean error_found = false;
           error_message = "";
@@ -693,7 +694,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 
         // Check sequence
         if ( databaseMeta.supportsSequences() && CREATION_METHOD_SEQUENCE.equals( getTechKeyCreation() ) ) {
-          if ( Const.isEmpty( sequenceFrom ) ) {
+          if ( Utils.isEmpty( sequenceFrom ) ) {
             error_message +=
               BaseMessages.getString( PKG, "CombinationLookupMeta.CheckResult.ErrorNoSequenceName" ) + "!";
             cr = new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta );
@@ -767,7 +768,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 
     if ( databaseMeta != null ) {
       if ( prev != null && prev.size() > 0 ) {
-        if ( !Const.isEmpty( tablename ) ) {
+        if ( !Utils.isEmpty( tablename ) ) {
           String schemaTable = databaseMeta.getQuotedSchemaTableCombination( schemaName, tablename );
           Database db = new Database( loggingObject, databaseMeta );
           try {
@@ -786,7 +787,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 
             // Then the hashcode (optional)
             ValueMetaInterface vhashfield = null;
-            if ( useHash && !Const.isEmpty( hashField ) ) {
+            if ( useHash && !Utils.isEmpty( hashField ) ) {
               vhashfield = new ValueMetaInteger( hashField );
               vhashfield.setLength( 15 );
               vhashfield.setPrecision( 0 );
@@ -795,7 +796,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 
             // Then the last update field (optional)
             ValueMetaInterface vLastUpdateField = null;
-            if ( !Const.isEmpty( lastUpdateField ) ) {
+            if ( !Utils.isEmpty( lastUpdateField ) ) {
               vLastUpdateField = new ValueMetaDate( lastUpdateField );
             }
 
@@ -913,7 +914,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
               }
             } else {
               // index on all key fields...
-              if ( !Const.isEmpty( keyLookup ) ) {
+              if ( !Utils.isEmpty( keyLookup ) ) {
                 int nrfields = keyLookup.length;
                 int maxFields = databaseMeta.getMaxColumnsInIndex();
                 if ( maxFields > 0 && nrfields > maxFields ) {
@@ -931,7 +932,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 
             // OK, now get the create index statement...
 
-            if ( !Const.isEmpty( technicalKeyField ) ) {
+            if ( !Utils.isEmpty( technicalKeyField ) ) {
               String[] techKeyArr = new String[] { technicalKeyField };
               if ( !db.checkIndexExists( schemaTable, techKeyArr ) ) {
                 String indexname = "idx_" + tablename + "_pk";
@@ -943,7 +944,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
             }
 
             // OK, now get the create lookup index statement...
-            if ( !Const.isEmpty( idx_fields ) && !db.checkIndexExists( schemaTable, idx_fields ) ) {
+            if ( !Utils.isEmpty( idx_fields ) && !db.checkIndexExists( schemaTable, idx_fields ) ) {
               String indexname = "idx_" + tablename + "_lookup";
               cr_index =
                   db.getCreateIndexStatement(
@@ -955,7 +956,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
             // Don't forget the sequence (optional)
             //
             String cr_seq = "";
-            if ( databaseMeta.supportsSequences() && !Const.isEmpty( sequenceFrom ) ) {
+            if ( databaseMeta.supportsSequences() && !Utils.isEmpty( sequenceFrom ) ) {
               if ( !db.checkSequenceExists( schemaName, sequenceFrom ) ) {
                 cr_seq += db.getCreateSequenceStatement( schemaName, sequenceFrom, 1L, 1L, -1L, true );
                 cr_seq += Const.CR;

@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.RowMetaAndData;
@@ -171,7 +172,7 @@ public class TransLogTable extends BaseLogTable implements Cloneable, LogTableIn
           // BaseLogTable.loadFromRepository sets subject as a String
           //
           String stepname = (String) field.getSubject();
-          if ( !Const.isEmpty( stepname ) ) {
+          if ( !Utils.isEmpty( stepname ) ) {
             field.setSubject( StepMeta.findStep( steps, stepname ) );
           } else {
             field.setSubject( null );

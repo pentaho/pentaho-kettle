@@ -42,7 +42,7 @@ import org.w3c.dom.Node;
 
 /**
  * @author Tatsiana_Kasiankova
- * 
+ *
  */
 public class SlaveServerConfigTest {
 

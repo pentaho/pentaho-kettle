@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -39,8 +39,8 @@ import javax.naming.directory.DirContext;
 import javax.naming.directory.InitialDirContext;
 
 import org.apache.commons.validator.GenericValidator;
-import org.pentaho.di.core.Const;
 import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 
 public class MailValidation {
@@ -175,7 +175,7 @@ public class MailValidation {
     // extracted from email address
 
     ArrayList<String> mxList = new ArrayList<String>();
-    if ( Const.isEmpty( defaultSMTPServer ) ) {
+    if ( Utils.isEmpty( defaultSMTPServer ) ) {
       try {
         mxList = getMX( domain );
 

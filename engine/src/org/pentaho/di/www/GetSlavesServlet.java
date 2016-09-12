@@ -62,13 +62,13 @@ public class GetSlavesServlet extends BaseHttpServlet implements CartePluginInte
     <h2>GET</h2>
     <p>Gets list of slave servers.
   Retrieves list of slave servers which are known to specific server.</p>
-    
+
     <p><b>Example Request:</b><br />
     <pre function="syntax.xml">
     GET /kettle/getSlaves
     </pre>
     </p>
-    
+
   <h3>Response Body</h3>
 
   <table class="pentaho-table">
@@ -84,7 +84,7 @@ public class GetSlavesServlet extends BaseHttpServlet implements CartePluginInte
     </tbody>
   </table>
     <p>Response contains list of slave servers.</p>
-    
+
     <p><b>Example Response:</b></p>
     <pre function="syntax.xml">
     <?xml version="1.0" encoding="UTF-8"?>
@@ -99,10 +99,10 @@ public class GetSlavesServlet extends BaseHttpServlet implements CartePluginInte
       <last_active_date>2014&#x2f;11&#x2f;17 06&#x3a;42&#x3a;28.043</last_active_date>
       <last_inactive_date>2014&#x2f;11&#x2f;17 06&#x3a;42&#x3a;27.372</last_inactive_date>
     </SlaveServerDetection>
-  
+
   </SlaveServerDetections>
     </pre>
-    
+
     <h3>Status Codes</h3>
     <table class="pentaho-table">
   <tbody>

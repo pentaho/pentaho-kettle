@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,6 +25,7 @@ package org.pentaho.di.core;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
+import org.pentaho.di.core.util.Utils;
 
 /**
  * This class provides a simple wrapper to disguise a Writer as an OutputStream.
@@ -58,7 +59,7 @@ public class WriterOutputStream extends OutputStream {
 
   @Override
   public void write( byte[] b ) throws IOException {
-    if ( Const.isEmpty( encoding ) ) {
+    if ( Utils.isEmpty( encoding ) ) {
       writer.append( new String( b ) );
     } else {
       writer.append( new String( b, encoding ) );

@@ -26,7 +26,6 @@ import java.util.List;
 
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
-import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -37,6 +36,7 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaBoolean;
 import org.pentaho.di.core.row.value.ValueMetaString;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -323,7 +323,7 @@ public class GetTableNamesMeta extends BaseStepMeta implements StepMetaInterface
   public void getFields( RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep,
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     String realtablename = space.environmentSubstitute( tablenamefieldname );
-    if ( !Const.isEmpty( realtablename ) ) {
+    if ( !Utils.isEmpty( realtablename ) ) {
       ValueMetaInterface v = new ValueMetaString( realtablename );
       v.setLength( 500 );
       v.setPrecision( -1 );
@@ -332,7 +332,7 @@ public class GetTableNamesMeta extends BaseStepMeta implements StepMetaInterface
     }
 
     String realObjectType = space.environmentSubstitute( objecttypefieldname );
-    if ( !Const.isEmpty( realObjectType ) ) {
+    if ( !Utils.isEmpty( realObjectType ) ) {
       ValueMetaInterface v = new ValueMetaString( realObjectType );
       v.setLength( 500 );
       v.setPrecision( -1 );
@@ -340,14 +340,14 @@ public class GetTableNamesMeta extends BaseStepMeta implements StepMetaInterface
       r.addValueMeta( v );
     }
     String sysobject = space.environmentSubstitute( issystemobjectfieldname );
-    if ( !Const.isEmpty( sysobject ) ) {
+    if ( !Utils.isEmpty( sysobject ) ) {
       ValueMetaInterface v = new ValueMetaBoolean( sysobject );
       v.setOrigin( name );
       r.addValueMeta( v );
     }
 
     String realSQLCreation = space.environmentSubstitute( sqlcreationfieldname );
-    if ( !Const.isEmpty( realSQLCreation ) ) {
+    if ( !Utils.isEmpty( realSQLCreation ) ) {
       ValueMetaInterface v = new ValueMetaString( realSQLCreation );
       v.setLength( 500 );
       v.setPrecision( -1 );
@@ -469,7 +469,7 @@ public class GetTableNamesMeta extends BaseStepMeta implements StepMetaInterface
       cr = new CheckResult( CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta );
       remarks.add( cr );
     }
-    if ( Const.isEmpty( tablenamefieldname ) ) {
+    if ( Utils.isEmpty( tablenamefieldname ) ) {
       error_message = BaseMessages.getString( PKG, "GetTableNamesMeta.CheckResult.TablenameFieldNameMissing" );
       cr = new CheckResult( CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta );
       remarks.add( cr );

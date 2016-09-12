@@ -38,6 +38,7 @@ import java.util.TreeSet;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.swt.widgets.Display;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.BaseDatabaseMeta;
 import org.pentaho.di.core.database.DatabaseConnectionPoolParameter;
 import org.pentaho.di.core.database.DatabaseInterface;
@@ -1366,7 +1367,7 @@ public class DataHandler extends AbstractXulEventHandler {
     }
 
     if ( webAppName != null ) {
-      if ( Const.isEmpty( meta.getDatabaseName() ) ) {
+      if ( Utils.isEmpty( meta.getDatabaseName() ) ) {
         webAppName.setValue( "pentaho-di" );
       } else {
         webAppName.setValue( meta.getDatabaseName() );

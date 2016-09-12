@@ -30,6 +30,7 @@ import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.KettleAttributeInterface;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
@@ -151,7 +152,7 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, Inp
       isaddresult = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, getXmlCode( "ADD_FILENAME_RESULT" ) ) );
       runningInParallel = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, getXmlCode( "PARALLEL" ) ) );
       String nlp = XMLHandler.getTagValue( stepnode, getXmlCode( "NEWLINE_POSSIBLE" ) );
-      if ( Const.isEmpty( nlp ) ) {
+      if ( Utils.isEmpty( nlp ) ) {
         if ( runningInParallel ) {
           newlinePossibleInFields = false;
         } else {
@@ -370,7 +371,7 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, Inp
         rowMeta.addValueMeta( valueMeta );
       }
 
-      if ( !Const.isEmpty( filenameField ) && includingFilename ) {
+      if ( !Utils.isEmpty( filenameField ) && includingFilename ) {
         ValueMetaInterface filenameMeta = new ValueMetaString( filenameField );
         filenameMeta.setOrigin( origin );
         if ( lazyConversionActive ) {
@@ -380,7 +381,7 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, Inp
         rowMeta.addValueMeta( filenameMeta );
       }
 
-      if ( !Const.isEmpty( rowNumField ) ) {
+      if ( !Utils.isEmpty( rowNumField ) ) {
         ValueMetaInterface rowNumMeta = new ValueMetaInteger( rowNumField );
         rowNumMeta.setLength( 10 );
         rowNumMeta.setOrigin( origin );
@@ -533,7 +534,7 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, Inp
 
     ResourceReference reference = new ResourceReference( stepInfo );
     references.add( reference );
-    if ( !Const.isEmpty( filename ) ) {
+    if ( !Utils.isEmpty( filename ) ) {
       // Add the filename to the references, including a reference to this
       // step meta data.
       //
@@ -739,7 +740,7 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, Inp
       // So let's change the filename from relative to absolute by grabbing the file object...
       // In case the name of the file comes from previous steps, forget about this!
       //
-      if ( Const.isEmpty( filenameField ) && !Const.isEmpty( filename ) ) {
+      if ( Utils.isEmpty( filenameField ) && !Utils.isEmpty( filename ) ) {
         // From : ${Internal.Transformation.Filename.Directory}/../foo/bar.csv
         // To : /home/matt/test/files/foo/bar.csv
         //

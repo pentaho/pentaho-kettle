@@ -128,10 +128,10 @@ public class PrioritizeStreamsExecutionIT {
   /**
    * Test that priority streams step does respect input streams priority and input streams delay with their put row
    * method.
-   * 
+   *
    * Please pay attention, this test is based on concurrent execution environment,
    * so put input rowset delay should correlate with KETTLE_ROWSET_GET_TIMEOUT value.
-   * 
+   *
    * @throws KettleException
    */
   @Test
@@ -207,9 +207,9 @@ public class PrioritizeStreamsExecutionIT {
   }
 
   /**
-   * This class simulates working delay before actual data will be available for 
+   * This class simulates working delay before actual data will be available for
    * input stream. Pay attention to KETTLE_ROWSET_GET_TIMEOUT value. Default
-   * value can be too small - and empty (even not started to fill) rowset will 
+   * value can be too small - and empty (even not started to fill) rowset will
    * be treated as empty (returns 'null' for offer method call on blocking queue).
    *
    */

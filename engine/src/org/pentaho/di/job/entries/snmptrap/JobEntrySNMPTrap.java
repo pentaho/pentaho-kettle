@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,6 +27,7 @@ import java.util.List;
 
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.encryption.Encr;
@@ -131,7 +132,7 @@ public class JobEntrySNMPTrap extends JobEntryBase implements Cloneable, JobEntr
   }
 
   public String getTargetTypeDesc( String tt ) {
-    if ( Const.isEmpty( tt ) ) {
+    if ( Utils.isEmpty( tt ) ) {
       return target_type_Desc[0];
     }
     if ( tt.equalsIgnoreCase( target_type_Code[1] ) ) {
@@ -486,7 +487,7 @@ public class JobEntrySNMPTrap extends JobEntryBase implements Cloneable, JobEntr
         ScopedPDU pdu = new ScopedPDU();
         pdu.add( new VariableBinding( new OID( Oid ), new OctetString( messageString ) ) );
         pdu.setType( PDU.TRAP );
-        if ( !Const.isEmpty( engineID ) ) {
+        if ( !Utils.isEmpty( engineID ) ) {
           pdu.setContextEngineID( new OctetString( engineID ) );
         }
 

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,7 +24,7 @@ package org.pentaho.di.trans.steps.textfileinput;
 
 import java.io.UnsupportedEncodingException;
 
-import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 
 /**
  * @deprecated replaced by implementation in the ...steps.fileinput.text package
@@ -81,7 +81,7 @@ public enum EncodingType {
 
     EncodingType encodingType;
 
-    if ( Const.isEmpty( encoding ) ) {
+    if ( Utils.isEmpty( encoding ) ) {
       encodingType = EncodingType.SINGLE;
     } else if ( encoding.startsWith( "UnicodeBig" ) || encoding.equals( "UTF-16BE" ) ) {
       encodingType = EncodingType.DOUBLE_BIG_ENDIAN;
@@ -98,7 +98,7 @@ public enum EncodingType {
 
   public byte[] getBytes( String string, String encoding ) throws UnsupportedEncodingException {
     byte[] withBom;
-    if ( Const.isEmpty( encoding ) ) {
+    if ( Utils.isEmpty( encoding ) ) {
       withBom = string.getBytes();
     } else {
       withBom = string.getBytes( encoding );

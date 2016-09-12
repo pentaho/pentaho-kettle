@@ -30,6 +30,7 @@ import java.util.List;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -230,7 +231,7 @@ public class JobEntryColumnsExist extends JobEntryBase implements Cloneable, Job
     int nrexistcolums = 0;
     int nrnotexistcolums = 0;
 
-    if ( Const.isEmpty( tablename ) ) {
+    if ( Utils.isEmpty( tablename ) ) {
       logError( BaseMessages.getString( PKG, "JobEntryColumnsExist.Error.TablenameEmpty" ) );
       return result;
     }
@@ -245,7 +246,7 @@ public class JobEntryColumnsExist extends JobEntryBase implements Cloneable, Job
         String realSchemaname = environmentSubstitute( schemaname );
         String realTablename = environmentSubstitute( tablename );
 
-        if ( !Const.isEmpty( realSchemaname ) ) {
+        if ( !Utils.isEmpty( realSchemaname ) ) {
           realTablename = db.getDatabaseMeta().getQuotedSchemaTableCombination( realSchemaname, realTablename );
         } else {
           realTablename = db.getDatabaseMeta().quoteField( realTablename );

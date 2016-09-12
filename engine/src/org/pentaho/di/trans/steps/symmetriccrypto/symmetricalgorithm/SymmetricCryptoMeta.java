@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,7 +22,7 @@
 
 package org.pentaho.di.trans.steps.symmetriccrypto.symmetricalgorithm;
 
-import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 
 /**
@@ -130,7 +130,7 @@ public class SymmetricCryptoMeta {
   }
 
   public static int getAlgorithmTypeFromCode( String code ) {
-    if ( !Const.isEmpty( code ) ) {
+    if ( !Utils.isEmpty( code ) ) {
       int nr = TYPE_ALGORYTHM_CODE.length;
       for ( int i = 0; i < nr; i++ ) {
         if ( TYPE_ALGORYTHM_CODE[i].equals( code ) ) {

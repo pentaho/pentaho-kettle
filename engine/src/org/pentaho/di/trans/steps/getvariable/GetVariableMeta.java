@@ -27,6 +27,7 @@ import java.util.List;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettlePluginException;
@@ -300,7 +301,7 @@ public class GetVariableMeta extends BaseStepMeta implements StepMetaInterface {
     // See if we have input streams leading to this step!
     int nrRemarks = remarks.size();
     for ( int i = 0; i < fieldDefinitions.length; i++ ) {
-      if ( Const.isEmpty( fieldDefinitions[i].getVariableString() ) ) {
+      if ( Utils.isEmpty( fieldDefinitions[i].getVariableString() ) ) {
         CheckResult cr =
             new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
                 "GetVariableMeta.CheckResult.VariableNotSpecified", fieldDefinitions[i].getFieldName() ), stepMeta );

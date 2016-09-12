@@ -27,6 +27,7 @@ import java.util.List;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettlePluginException;
@@ -282,7 +283,7 @@ public class MemoryGroupByMeta extends BaseStepMeta implements StepMetaInterface
       }
 
       String giveBackRow = XMLHandler.getTagValue( stepnode, "give_back_row" );
-      if ( Const.isEmpty( giveBackRow ) ) {
+      if ( Utils.isEmpty( giveBackRow ) ) {
         alwaysGivingBackOneRow = hasNumberOfValues;
       } else {
         alwaysGivingBackOneRow = "Y".equalsIgnoreCase( giveBackRow );

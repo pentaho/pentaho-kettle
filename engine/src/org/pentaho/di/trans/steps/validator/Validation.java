@@ -25,7 +25,6 @@ package org.pentaho.di.trans.steps.validator;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.exception.KettleXMLException;
@@ -33,6 +32,7 @@ import org.pentaho.di.core.injection.Injection;
 import org.pentaho.di.core.injection.InjectionTypeConverter;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
@@ -188,7 +188,7 @@ public class Validation implements Cloneable {
 
     fieldName = XMLHandler.getTagValue( calcnode, "name" );
     name = XMLHandler.getTagValue( calcnode, "validation_name" );
-    if ( Const.isEmpty( name ) ) {
+    if ( Utils.isEmpty( name ) ) {
       name = fieldName; // remain backward compatible
     }
 
@@ -235,7 +235,7 @@ public class Validation implements Cloneable {
   public Validation( Repository rep, ObjectId id_step, int i ) throws KettleException {
     fieldName = rep.getStepAttributeString( id_step, i, "validator_field_name" );
     name = rep.getStepAttributeString( id_step, i, "validator_field_validation_name" );
-    if ( Const.isEmpty( name ) ) {
+    if ( Utils.isEmpty( name ) ) {
       name = fieldName; // remain backward compatible
     }
 

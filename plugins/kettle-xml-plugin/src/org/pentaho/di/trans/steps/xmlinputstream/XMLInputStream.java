@@ -37,6 +37,7 @@ import javax.xml.stream.events.XMLEvent;
 
 import org.apache.commons.vfs2.FileSystemException;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -299,7 +300,7 @@ public class XMLInputStream extends BaseStep implements StepInterface {
         String xml_data_name;
         if ( meta.isEnableNamespaces() ) {
           String prefix = e.asStartElement().getName().getPrefix();
-          if ( Const.isEmpty( prefix ) ) {
+          if ( Utils.isEmpty( prefix ) ) {
             xml_data_name = e.asStartElement().getName().getLocalPart();
           } else { // add namespace prefix:
             xml_data_name = prefix + ":" + e.asStartElement().getName().getLocalPart();
@@ -351,7 +352,7 @@ public class XMLInputStream extends BaseStep implements StepInterface {
           outputRowData[data.pos_xml_data_value] = xml_data_value;
         }
 
-        if ( data.pos_xml_data_value < 0 || Const.isEmpty( (String) outputRowData[data.pos_xml_data_value] ) ) {
+        if ( data.pos_xml_data_value < 0 || Utils.isEmpty( (String) outputRowData[data.pos_xml_data_value] ) ) {
           outputRowData = null; // ignore & continue
         }
         break;
@@ -512,7 +513,7 @@ public class XMLInputStream extends BaseStep implements StepInterface {
    * @return the qualified name
    */
   private String getName( String prefix, String localPart ) {
-    return ( !Const.isEmpty( prefix ) ) ? prefix + ":" + localPart : localPart;
+    return ( !Utils.isEmpty( prefix ) ) ? prefix + ":" + localPart : localPart;
   }
 
   private void resetElementCounters() {
@@ -537,7 +538,7 @@ public class XMLInputStream extends BaseStep implements StepInterface {
       data.filenr = 0;
       if ( getTransMeta().findNrPrevSteps( getStepMeta() ) == 0 ) {
         String filename = environmentSubstitute( meta.getFilename() );
-        if ( Const.isEmpty( filename ) ) {
+        if ( Utils.isEmpty( filename ) ) {
           logError( BaseMessages.getString( PKG, "XMLInputStream.MissingFilename.Message" ) );
           return false;
         }

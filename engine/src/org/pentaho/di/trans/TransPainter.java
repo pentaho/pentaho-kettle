@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.NotePadMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.extension.ExtensionPointHandler;
@@ -570,7 +571,7 @@ public class TransPainter extends BasePainter {
     boolean stepError = false;
     if ( stepLogMap != null && !stepLogMap.isEmpty() ) {
       String log = stepLogMap.get( stepMeta );
-      if ( !Const.isEmpty( log ) ) {
+      if ( !Utils.isEmpty( log ) ) {
         stepError = true;
       }
     }
@@ -1199,7 +1200,7 @@ public class TransPainter extends BasePainter {
 
       // Check to see if the source step is an info step for the target step.
       //
-      if ( !Const.isEmpty( infoStepnames ) ) {
+      if ( !Utils.isEmpty( infoStepnames ) ) {
         // Check this situation, the source step can't run in multiple copies!
         //
         for ( String infoStep : infoStepnames ) {

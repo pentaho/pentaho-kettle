@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.ProgressMonitorListener;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.Database;
@@ -132,7 +133,7 @@ public class KettleDatabaseRepositoryCreationHelper {
         schemaTable, table, null, false, KettleDatabaseRepository.FIELD_REPOSITORY_LOG_ID_REPOSITORY_LOG,
         false );
 
-    if ( !Const.isEmpty( sql ) ) {
+    if ( !Utils.isEmpty( sql ) ) {
       statements.add( sql );
       if ( !dryrun ) {
         try {
@@ -182,7 +183,7 @@ public class KettleDatabaseRepositoryCreationHelper {
       database
         .getDDL( schemaTable, table, null, false, KettleDatabaseRepository.FIELD_VERSION_ID_VERSION, false );
     boolean create = false;
-    if ( !Const.isEmpty( sql ) ) {
+    if ( !Utils.isEmpty( sql ) ) {
       create = sql.toUpperCase().indexOf( "CREATE TABLE" ) >= 0;
       statements.add( sql );
       if ( !dryrun ) {
@@ -258,7 +259,7 @@ public class KettleDatabaseRepositoryCreationHelper {
       database.getDDL(
         schemaTable, table, null, false, KettleDatabaseRepository.FIELD_DATABASE_TYPE_ID_DATABASE_TYPE, false );
     create = false;
-    if ( !Const.isEmpty( sql ) ) {
+    if ( !Utils.isEmpty( sql ) ) {
       create = sql.toUpperCase().indexOf( "CREATE TABLE" ) >= 0;
       statements.add( sql );
       if ( !dryrun ) {
@@ -317,7 +318,7 @@ public class KettleDatabaseRepositoryCreationHelper {
         schemaTable, table, null, false, KettleDatabaseRepository.FIELD_DATABASE_CONTYPE_ID_DATABASE_CONTYPE,
         false );
 
-    if ( !Const.isEmpty( sql ) ) {
+    if ( !Utils.isEmpty( sql ) ) {
       statements.add( sql );
       if ( !dryrun ) {
         if ( log.isDetailed() ) {
@@ -446,7 +447,7 @@ public class KettleDatabaseRepositoryCreationHelper {
 
     sql = database.getDDL( schemaTable, table, null, false, KettleDatabaseRepository.FIELD_NOTE_ID_NOTE, false );
 
-    if ( !Const.isEmpty( sql ) ) {
+    if ( !Utils.isEmpty( sql ) ) {
       statements.add( sql );
       if ( !dryrun ) {
         if ( log.isDetailed() ) {
@@ -513,7 +514,7 @@ public class KettleDatabaseRepositoryCreationHelper {
       database.getDDL(
         schemaTable, table, null, false, KettleDatabaseRepository.FIELD_DATABASE_ID_DATABASE, false );
 
-    if ( !Const.isEmpty( sql ) ) {
+    if ( !Utils.isEmpty( sql ) ) {
       statements.add( sql );
       if ( !dryrun ) {
         if ( log.isDetailed() ) {
@@ -560,7 +561,7 @@ public class KettleDatabaseRepositoryCreationHelper {
         schemaTable, table, null, false,
         KettleDatabaseRepository.FIELD_DATABASE_ATTRIBUTE_ID_DATABASE_ATTRIBUTE, false );
 
-    if ( !Const.isEmpty( sql ) ) {
+    if ( !Utils.isEmpty( sql ) ) {
       statements.add( sql );
       if ( !dryrun ) {
         if ( log.isDetailed() ) {
@@ -625,7 +626,7 @@ public class KettleDatabaseRepositoryCreationHelper {
       database.getDDL(
         schemaTable, table, null, false, KettleDatabaseRepository.FIELD_DIRECTORY_ID_DIRECTORY, false );
 
-    if ( !Const.isEmpty( sql ) ) {
+    if ( !Utils.isEmpty( sql ) ) {
       statements.add( sql );
       if ( !dryrun ) {
         if ( log.isDetailed() ) {
@@ -748,7 +749,7 @@ public class KettleDatabaseRepositoryCreationHelper {
         schemaTable, table, null, false, KettleDatabaseRepository.FIELD_TRANSFORMATION_ID_TRANSFORMATION,
         false );
 
-    if ( !Const.isEmpty( sql ) ) {
+    if ( !Utils.isEmpty( sql ) ) {
       statements.add( sql );
       if ( !dryrun ) {
         if ( log.isDetailed() ) {
@@ -824,7 +825,7 @@ public class KettleDatabaseRepositoryCreationHelper {
         schemaTable, table, null, false, KettleDatabaseRepository.FIELD_TRANS_ATTRIBUTE_ID_TRANS_ATTRIBUTE,
         false );
 
-    if ( !Const.isEmpty( sql ) ) {
+    if ( !Utils.isEmpty( sql ) ) {
       statements.add( sql );
       if ( !dryrun ) {
         if ( log.isDetailed() ) {
@@ -897,7 +898,7 @@ public class KettleDatabaseRepositoryCreationHelper {
       database.getDDL(
         schemaTable, table, null, false, KettleDatabaseRepository.FIELD_JOB_ATTRIBUTE_ID_JOB_ATTRIBUTE, false );
 
-    if ( !Const.isEmpty( sql ) ) {
+    if ( !Utils.isEmpty( sql ) ) {
       statements.add( sql );
       if ( !dryrun ) {
         if ( log.isDetailed() ) {
@@ -968,7 +969,7 @@ public class KettleDatabaseRepositoryCreationHelper {
       database.getDDL(
         schemaTable, table, null, false, KettleDatabaseRepository.FIELD_DEPENDENCY_ID_DEPENDENCY, false );
 
-    if ( !Const.isEmpty( sql ) ) {
+    if ( !Utils.isEmpty( sql ) ) {
       statements.add( sql );
       if ( !dryrun ) {
         if ( log.isDetailed() ) {
@@ -1017,7 +1018,7 @@ public class KettleDatabaseRepositoryCreationHelper {
         schemaTable, table, null, false, KettleDatabaseRepository.FIELD_PARTITION_SCHEMA_ID_PARTITION_SCHEMA,
         false );
 
-    if ( !Const.isEmpty( sql ) ) {
+    if ( !Utils.isEmpty( sql ) ) {
       statements.add( sql );
       if ( !dryrun ) {
         if ( log.isDetailed() ) {
@@ -1059,7 +1060,7 @@ public class KettleDatabaseRepositoryCreationHelper {
       database.getDDL(
         schemaTable, table, null, false, KettleDatabaseRepository.FIELD_PARTITION_ID_PARTITION, false );
 
-    if ( !Const.isEmpty( sql ) ) {
+    if ( !Utils.isEmpty( sql ) ) {
       statements.add( sql );
       if ( !dryrun ) {
         if ( log.isDetailed() ) {
@@ -1104,7 +1105,7 @@ public class KettleDatabaseRepositoryCreationHelper {
         schemaTable, table, null, false,
         KettleDatabaseRepository.FIELD_TRANS_PARTITION_SCHEMA_ID_TRANS_PARTITION_SCHEMA, false );
 
-    if ( !Const.isEmpty( sql ) ) {
+    if ( !Utils.isEmpty( sql ) ) {
       statements.add( sql );
       if ( !dryrun ) {
         if ( log.isDetailed() ) {
@@ -1157,7 +1158,7 @@ public class KettleDatabaseRepositoryCreationHelper {
       database
         .getDDL( schemaTable, table, null, false, KettleDatabaseRepository.FIELD_CLUSTER_ID_CLUSTER, false );
 
-    if ( !Const.isEmpty( sql ) ) {
+    if ( !Utils.isEmpty( sql ) ) {
       statements.add( sql );
       if ( !dryrun ) {
         if ( log.isDetailed() ) {
@@ -1221,7 +1222,7 @@ public class KettleDatabaseRepositoryCreationHelper {
       KettleDatabaseRepository.FIELD_SLAVE_MASTER ) );
     sql = database.getDDL( schemaTable, table, null, false, KettleDatabaseRepository.FIELD_SLAVE_ID_SLAVE, false );
 
-    if ( !Const.isEmpty( sql ) ) {
+    if ( !Utils.isEmpty( sql ) ) {
       statements.add( sql );
       if ( !dryrun ) {
         if ( log.isDetailed() ) {
@@ -1262,7 +1263,7 @@ public class KettleDatabaseRepositoryCreationHelper {
       database.getDDL(
         schemaTable, table, null, false, KettleDatabaseRepository.FIELD_CLUSTER_SLAVE_ID_CLUSTER_SLAVE, false );
 
-    if ( !Const.isEmpty( sql ) ) {
+    if ( !Utils.isEmpty( sql ) ) {
       statements.add( sql );
       if ( !dryrun ) {
         if ( log.isDetailed() ) {
@@ -1303,7 +1304,7 @@ public class KettleDatabaseRepositoryCreationHelper {
       database.getDDL(
         schemaTable, table, null, false, KettleDatabaseRepository.FIELD_TRANS_SLAVE_ID_TRANS_SLAVE, false );
 
-    if ( !Const.isEmpty( sql ) ) {
+    if ( !Utils.isEmpty( sql ) ) {
       statements.add( sql );
       if ( !dryrun ) {
         if ( log.isDetailed() ) {
@@ -1344,7 +1345,7 @@ public class KettleDatabaseRepositoryCreationHelper {
       database.getDDL(
         schemaTable, table, null, false, KettleDatabaseRepository.FIELD_TRANS_CLUSTER_ID_TRANS_CLUSTER, false );
 
-    if ( !Const.isEmpty( sql ) ) {
+    if ( !Utils.isEmpty( sql ) ) {
       statements.add( sql );
       if ( !dryrun ) {
         if ( log.isDetailed() ) {
@@ -1388,7 +1389,7 @@ public class KettleDatabaseRepositoryCreationHelper {
       database.getDDL(
         schemaTable, table, null, false, KettleDatabaseRepository.FIELD_TRANS_HOP_ID_TRANS_HOP, false );
 
-    if ( !Const.isEmpty( sql ) ) {
+    if ( !Utils.isEmpty( sql ) ) {
       statements.add( sql );
       if ( !dryrun ) {
         if ( log.isDetailed() ) {
@@ -1428,7 +1429,7 @@ public class KettleDatabaseRepositoryCreationHelper {
         KEY, 0 ) );
     sql = database.getDDL( schemaTable, table, null, false, null, false );
 
-    if ( !Const.isEmpty( sql ) ) {
+    if ( !Utils.isEmpty( sql ) ) {
       // Doesn't exists: create the table...
 
       statements.add( sql );
@@ -1483,7 +1484,7 @@ public class KettleDatabaseRepositoryCreationHelper {
       database.getDDL(
         schemaTable, table, null, false, KettleDatabaseRepository.FIELD_CONDITION_ID_CONDITION, false );
 
-    if ( !Const.isEmpty( sql ) ) {
+    if ( !Utils.isEmpty( sql ) ) {
       // Doesn't exist: create the table...
 
       statements.add( sql );
@@ -1529,7 +1530,7 @@ public class KettleDatabaseRepositoryCreationHelper {
       KettleDatabaseRepository.FIELD_VALUE_IS_NULL, 1, 0 ) );
     sql = database.getDDL( schemaTable, table, null, false, KettleDatabaseRepository.FIELD_VALUE_ID_VALUE, false );
 
-    if ( !Const.isEmpty( sql ) ) {
+    if ( !Utils.isEmpty( sql ) ) {
       // Doesn't exists: create the table...
       statements.add( sql );
       if ( !dryrun ) {
@@ -1575,7 +1576,7 @@ public class KettleDatabaseRepositoryCreationHelper {
       KettleDatabaseRepository.REP_STRING_CODE_LENGTH, 0 ) );
     sql = database.getDDL( schemaTable, table, null, false, "ID_STEP_TYPE", false );
     create = false;
-    if ( !Const.isEmpty( sql ) ) {
+    if ( !Utils.isEmpty( sql ) ) {
       // Doesn't exists: create the table...
 
       create = sql.toUpperCase().indexOf( "CREATE TABLE" ) >= 0;
@@ -1643,7 +1644,7 @@ public class KettleDatabaseRepositoryCreationHelper {
       KettleDatabaseRepository.REP_STRING_CODE_LENGTH, 0 ) );
     sql = database.getDDL( schemaTable, table, null, false, KettleDatabaseRepository.FIELD_STEP_ID_STEP, false );
 
-    if ( !Const.isEmpty( sql ) ) {
+    if ( !Utils.isEmpty( sql ) ) {
       // Doesn't exists: create the table...
 
       statements.add( sql );
@@ -1701,7 +1702,7 @@ public class KettleDatabaseRepositoryCreationHelper {
         schemaTable, table, null, false, KettleDatabaseRepository.FIELD_STEP_ATTRIBUTE_ID_STEP_ATTRIBUTE,
         false );
 
-    if ( !Const.isEmpty( sql ) ) {
+    if ( !Utils.isEmpty( sql ) ) {
       // Doesn't exist: create the table...
 
       statements.add( sql );
@@ -1769,7 +1770,7 @@ public class KettleDatabaseRepositoryCreationHelper {
       KettleDatabaseRepository.FIELD_STEP_DATABASE_ID_DATABASE, KEY, 0 ) );
     sql = database.getDDL( schemaTable, table, null, false, null, false );
 
-    if ( !Const.isEmpty( sql ) ) {
+    if ( !Utils.isEmpty( sql ) ) {
       // Doesn't exist: create the table...
 
       statements.add( sql );
@@ -1848,7 +1849,7 @@ public class KettleDatabaseRepositoryCreationHelper {
       KettleDatabaseRepository.FIELD_TRANS_NOTE_ID_NOTE, KEY, 0 ) );
     sql = database.getDDL( schemaTable, table, null, false, null, false );
 
-    if ( !Const.isEmpty( sql ) ) {
+    if ( !Utils.isEmpty( sql ) ) {
       // Doesn't exist: create the table...
 
       statements.add( sql );
@@ -1895,7 +1896,7 @@ public class KettleDatabaseRepositoryCreationHelper {
         schemaTable, table, null, false, KettleDatabaseRepository.FIELD_LOGLEVEL_ID_LOGLEVEL, false );
 
     create = false;
-    if ( !Const.isEmpty( sql ) ) {
+    if ( !Utils.isEmpty( sql ) ) {
       // Doesn't exist: create the table...
 
       create = sql.toUpperCase().indexOf( "CREATE TABLE" ) >= 0;
@@ -2012,7 +2013,7 @@ public class KettleDatabaseRepositoryCreationHelper {
       KettleDatabaseRepository.REP_STRING_CODE_LENGTH, 0 ) );
     sql = database.getDDL( schemaTable, table, null, false, KettleDatabaseRepository.FIELD_LOG_ID_LOG, false );
 
-    if ( !Const.isEmpty( sql ) ) {
+    if ( !Utils.isEmpty( sql ) ) {
       // Doesn't exist: create the table...
 
       statements.add( sql );
@@ -2089,7 +2090,7 @@ public class KettleDatabaseRepositoryCreationHelper {
       KettleDatabaseRepository.REP_STRING_CODE_LENGTH, 0 ) ); // 255 max length for now.
 
     sql = database.getDDL( schemaTable, table, null, false, KettleDatabaseRepository.FIELD_JOB_ID_JOB, false );
-    if ( !Const.isEmpty( sql ) ) {
+    if ( !Utils.isEmpty( sql ) ) {
       // Doesn't exist: create the table...
 
       statements.add( sql );
@@ -2134,7 +2135,7 @@ public class KettleDatabaseRepositoryCreationHelper {
     sql = database.getDDL( schemaTable, table, null, false, KettleDatabaseRepository.FIELD_JOB_ID_JOB, false );
     sql = database.getDDL( schemaTable, table, null, false, null, false );
 
-    if ( !Const.isEmpty( sql ) ) {
+    if ( !Utils.isEmpty( sql ) ) {
       // Doesn't exist: create the table...
 
       statements.add( sql );
@@ -2221,7 +2222,7 @@ public class KettleDatabaseRepositoryCreationHelper {
         schemaTable, table, null, false, KettleDatabaseRepository.FIELD_JOBENTRY_TYPE_ID_JOBENTRY_TYPE, false );
 
     create = false;
-    if ( !Const.isEmpty( sql ) ) {
+    if ( !Utils.isEmpty( sql ) ) {
       // Doesn't exist: create the table...
 
       create = sql.toUpperCase().indexOf( "CREATE TABLE" ) >= 0;
@@ -2281,7 +2282,7 @@ public class KettleDatabaseRepositoryCreationHelper {
       database.getDDL(
         schemaTable, table, null, false, KettleDatabaseRepository.FIELD_JOBENTRY_ID_JOBENTRY, false );
 
-    if ( !Const.isEmpty( sql ) ) {
+    if ( !Utils.isEmpty( sql ) ) {
       // Doesn't exist: create the table...
 
       statements.add( sql );
@@ -2336,7 +2337,7 @@ public class KettleDatabaseRepositoryCreationHelper {
       database.getDDL(
         schemaTable, table, null, false, KettleDatabaseRepository.FIELD_JOBENTRY_COPY_ID_JOBENTRY_COPY, false );
 
-    if ( !Const.isEmpty( sql ) ) {
+    if ( !Utils.isEmpty( sql ) ) {
       // Doesn't exist: create the table...
 
       statements.add( sql );
@@ -2391,7 +2392,7 @@ public class KettleDatabaseRepositoryCreationHelper {
         schemaTable, table, null, false,
         KettleDatabaseRepository.FIELD_JOBENTRY_ATTRIBUTE_ID_JOBENTRY_ATTRIBUTE, false );
 
-    if ( !Const.isEmpty( sql ) ) {
+    if ( !Utils.isEmpty( sql ) ) {
       // Doesn't exist: create the table...
 
       statements.add( sql );
@@ -2467,7 +2468,7 @@ public class KettleDatabaseRepositoryCreationHelper {
       database
         .getDDL( schemaTable, table, null, false, KettleDatabaseRepository.FIELD_JOB_HOP_ID_JOB_HOP, false );
 
-    if ( !Const.isEmpty( sql ) ) {
+    if ( !Utils.isEmpty( sql ) ) {
       // Doesn't exist: create the table...
 
       statements.add( sql );
@@ -2506,7 +2507,7 @@ public class KettleDatabaseRepositoryCreationHelper {
       KettleDatabaseRepository.FIELD_JOB_NOTE_ID_NOTE, KEY, 0 ) );
     sql = database.getDDL( schemaTable, table, null, false, null, false );
 
-    if ( !Const.isEmpty( sql ) ) {
+    if ( !Utils.isEmpty( sql ) ) {
       // Doesn't exist: create the table...
 
       statements.add( sql );
@@ -2553,7 +2554,7 @@ public class KettleDatabaseRepositoryCreationHelper {
       database.getDDL(
         schemaTable, table, null, false, KettleDatabaseRepository.FIELD_TRANS_LOCK_ID_TRANS_LOCK, false );
 
-    if ( !Const.isEmpty( sql ) ) {
+    if ( !Utils.isEmpty( sql ) ) {
       statements.add( sql );
       if ( !dryrun ) {
         if ( log.isDetailed() ) {
@@ -2598,7 +2599,7 @@ public class KettleDatabaseRepositoryCreationHelper {
       database.getDDL(
         schemaTable, table, null, false, KettleDatabaseRepository.FIELD_JOB_LOCK_ID_JOB_LOCK, false );
 
-    if ( !Const.isEmpty( sql ) ) {
+    if ( !Utils.isEmpty( sql ) ) {
       statements.add( sql );
       if ( !dryrun ) {
         if ( log.isDetailed() ) {
@@ -2646,7 +2647,7 @@ public class KettleDatabaseRepositoryCreationHelper {
       database.getDDL(
         schemaTable, table, null, false, KettleDatabaseRepository.FIELD_NAMESPACE_ID_NAMESPACE, false );
 
-    if ( !Const.isEmpty( sql ) ) {
+    if ( !Utils.isEmpty( sql ) ) {
       statements.add( sql );
       if ( !dryrun ) {
         if ( log.isDetailed() ) {
@@ -2689,7 +2690,7 @@ public class KettleDatabaseRepositoryCreationHelper {
       database.getDDL(
         schemaTable, table, null, false, KettleDatabaseRepository.FIELD_ELEMENT_TYPE_ID_ELEMENT_TYPE, false );
 
-    if ( !Const.isEmpty( sql ) ) {
+    if ( !Utils.isEmpty( sql ) ) {
       statements.add( sql );
       if ( !dryrun ) {
         if ( log.isDetailed() ) {
@@ -2729,7 +2730,7 @@ public class KettleDatabaseRepositoryCreationHelper {
       database
         .getDDL( schemaTable, table, null, false, KettleDatabaseRepository.FIELD_ELEMENT_ID_ELEMENT, false );
 
-    if ( !Const.isEmpty( sql ) ) {
+    if ( !Utils.isEmpty( sql ) ) {
       statements.add( sql );
       if ( !dryrun ) {
         if ( log.isDetailed() ) {
@@ -2779,7 +2780,7 @@ public class KettleDatabaseRepositoryCreationHelper {
         schemaTable, table, null, false,
         KettleDatabaseRepository.FIELD_ELEMENT_ATTRIBUTE_ID_ELEMENT_ATTRIBUTE, false );
 
-    if ( !Const.isEmpty( sql ) ) {
+    if ( !Utils.isEmpty( sql ) ) {
       statements.add( sql );
       if ( !dryrun ) {
         if ( log.isDetailed() ) {
@@ -2842,7 +2843,7 @@ public class KettleDatabaseRepositoryCreationHelper {
     sql = database.getDDL( schemaTable, table, null, false, KettleDatabaseRepository.FIELD_USER_ID_USER, false );
 
     create = false;
-    if ( !Const.isEmpty( sql ) ) {
+    if ( !Utils.isEmpty( sql ) ) {
       // Doesn't exist: create the table...
 
       create = sql.toUpperCase().indexOf( "CREATE TABLE" ) >= 0;

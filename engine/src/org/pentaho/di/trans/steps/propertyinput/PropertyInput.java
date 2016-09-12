@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -31,6 +31,7 @@ import java.util.Properties;
 import org.apache.commons.vfs2.FileObject;
 import org.ini4j.Wini;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.fileinput.FileInputList;
@@ -248,7 +249,7 @@ public class PropertyInput extends BaseStep implements StepInterface {
 
         // Do we need to repeat this field if it is null?
         if ( meta.getInputFields()[i].isRepeated() ) {
-          if ( data.previousRow != null && Const.isEmpty( value ) ) {
+          if ( data.previousRow != null && Utils.isEmpty( value ) ) {
             r[data.totalpreviousfields + i] = data.previousRow[data.totalpreviousfields + i];
           }
         }
@@ -258,17 +259,17 @@ public class PropertyInput extends BaseStep implements StepInterface {
       int rowIndex = meta.getInputFields().length;
 
       // See if we need to add the filename to the row...
-      if ( meta.includeFilename() && !Const.isEmpty( meta.getFilenameField() ) ) {
+      if ( meta.includeFilename() && !Utils.isEmpty( meta.getFilenameField() ) ) {
         r[data.totalpreviousfields + rowIndex++] = data.filename;
       }
 
       // See if we need to add the row number to the row...
-      if ( meta.includeRowNumber() && !Const.isEmpty( meta.getRowNumberField() ) ) {
+      if ( meta.includeRowNumber() && !Utils.isEmpty( meta.getRowNumberField() ) ) {
         r[data.totalpreviousfields + rowIndex++] = new Long( data.rownr );
       }
 
       // See if we need to add the section for INI files ...
-      if ( meta.includeIniSection() && !Const.isEmpty( meta.getINISectionField() ) ) {
+      if ( meta.includeIniSection() && !Utils.isEmpty( meta.getINISectionField() ) ) {
         r[data.totalpreviousfields + rowIndex++] = environmentSubstitute( data.iniSection.getName() );
       }
       // Possibly add short filename...
@@ -359,7 +360,7 @@ public class PropertyInput extends BaseStep implements StepInterface {
           data.convertRowMeta = data.outputRowMeta.cloneToType( ValueMetaInterface.TYPE_STRING );
 
           // Check is filename field is provided
-          if ( Const.isEmpty( meta.getDynamicFilenameField() ) ) {
+          if ( Utils.isEmpty( meta.getDynamicFilenameField() ) ) {
             logError( BaseMessages.getString( PKG, "PropertyInput.Log.NoField" ) );
             throw new KettleException( BaseMessages.getString( PKG, "PropertyInput.Log.NoField" ) );
           }
@@ -442,7 +443,7 @@ public class PropertyInput extends BaseStep implements StepInterface {
 
         // load INI file
         data.wini = new Wini( fis );
-        if ( !Const.isEmpty( data.realEncoding ) ) {
+        if ( !Utils.isEmpty( data.realEncoding ) ) {
           data.wini.getConfig().setFileEncoding( Charset.forName( data.realEncoding ) );
         }
         if ( data.realSection != null ) {
@@ -495,11 +496,11 @@ public class PropertyInput extends BaseStep implements StepInterface {
 
     if ( super.init( smi, sdi ) ) {
       String realEncoding = environmentSubstitute( meta.getEncoding() );
-      if ( !Const.isEmpty( realEncoding ) ) {
+      if ( !Utils.isEmpty( realEncoding ) ) {
         data.realEncoding = realEncoding;
       }
       String realSection = environmentSubstitute( meta.getSection() );
-      if ( !Const.isEmpty( realSection ) ) {
+      if ( !Utils.isEmpty( realSection ) ) {
         data.realSection = realSection;
       }
       data.propfiles =

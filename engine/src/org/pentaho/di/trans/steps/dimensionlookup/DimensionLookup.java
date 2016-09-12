@@ -30,6 +30,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -198,7 +199,7 @@ public class DimensionLookup extends BaseStep implements StepInterface {
         }
       }
 
-      if ( !Const.isEmpty( meta.getDateField() ) ) {
+      if ( !Utils.isEmpty( meta.getDateField() ) ) {
         data.datefieldnr = data.inputRowMeta.indexOfValue( meta.getDateField() );
       } else {
         data.datefieldnr = -1;
@@ -852,14 +853,14 @@ public class DimensionLookup extends BaseStep implements StepInterface {
         + databaseMeta.quoteField( meta.getKeyField() ) + ", "
         + databaseMeta.quoteField( meta.getVersionField() );
 
-    if ( !Const.isEmpty( meta.getFieldLookup() ) ) {
+    if ( !Utils.isEmpty( meta.getFieldLookup() ) ) {
       for ( int i = 0; i < meta.getFieldLookup().length; i++ ) {
         // Don't retrieve the fields without input
-        if ( !Const.isEmpty( meta.getFieldLookup()[i] )
+        if ( !Utils.isEmpty( meta.getFieldLookup()[i] )
           && !DimensionLookupMeta.isUpdateTypeWithoutArgument( meta.isUpdate(), meta.getFieldUpdate()[i] ) ) {
           sql += ", " + databaseMeta.quoteField( meta.getFieldLookup()[i] );
 
-          if ( !Const.isEmpty( meta.getFieldStream()[i] )
+          if ( !Utils.isEmpty( meta.getFieldStream()[i] )
             && !meta.getFieldLookup()[i].equals( meta.getFieldStream()[i] ) ) {
             sql += " AS " + databaseMeta.quoteField( meta.getFieldStream()[i] );
           }

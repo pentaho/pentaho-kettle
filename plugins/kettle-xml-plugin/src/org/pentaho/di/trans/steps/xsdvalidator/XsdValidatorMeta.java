@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -29,7 +29,7 @@ import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
-import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -232,7 +232,7 @@ public class XsdValidatorMeta extends BaseStepMeta implements StepMetaInterface 
 
   public void getFields( RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info, StepMeta nextStep,
       VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
-    if ( !Const.isEmpty( resultFieldname ) ) {
+    if ( !Utils.isEmpty( resultFieldname ) ) {
       if ( outputStringField ) {
         // Output field (String)
         ValueMetaInterface v =
@@ -248,7 +248,7 @@ public class XsdValidatorMeta extends BaseStepMeta implements StepMetaInterface 
 
     }
     // Add String Field that contain validation message (most the time, errors)
-    if ( addValidationMessage && !Const.isEmpty( validationMessageField ) ) {
+    if ( addValidationMessage && !Utils.isEmpty( validationMessageField ) ) {
       ValueMetaInterface v =
           new ValueMeta( space.environmentSubstitute( validationMessageField ), ValueMeta.TYPE_STRING );
       inputRowMeta.addValueMeta( v );
@@ -325,7 +325,7 @@ public class XsdValidatorMeta extends BaseStepMeta implements StepMetaInterface 
     CheckResult cr;
 
     // Check XML stream field
-    if ( Const.isEmpty( xmlStream ) ) {
+    if ( Utils.isEmpty( xmlStream ) ) {
       cr =
           new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
               "XsdValidatorMeta.CheckResult.XMLStreamFieldEmpty" ), stepinfo );
@@ -338,7 +338,7 @@ public class XsdValidatorMeta extends BaseStepMeta implements StepMetaInterface 
     }
 
     // Check result fieldname
-    if ( Const.isEmpty( resultFieldname ) ) {
+    if ( Utils.isEmpty( resultFieldname ) ) {
       cr =
           new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
               "XsdValidatorMeta.CheckResult.ResultFieldEmpty" ), stepinfo );
@@ -351,7 +351,7 @@ public class XsdValidatorMeta extends BaseStepMeta implements StepMetaInterface 
     }
 
     if ( xsdSource.equals( SPECIFY_FILENAME ) ) {
-      if ( Const.isEmpty( xsdFilename ) ) {
+      if ( Utils.isEmpty( xsdFilename ) ) {
         cr =
             new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
                 "XsdValidatorMeta.CheckResult.XSDFieldEmpty" ), stepinfo );
@@ -428,7 +428,7 @@ public class XsdValidatorMeta extends BaseStepMeta implements StepMetaInterface 
       // From : ${Internal.Transformation.Filename.Directory}/../foo/bar.xsd
       // To : /home/matt/test/files/foo/bar.xsd
       //
-      if ( !Const.isEmpty( xsdFilename ) ) {
+      if ( !Utils.isEmpty( xsdFilename ) ) {
         FileObject fileObject = KettleVFS.getFileObject( space.environmentSubstitute( xsdFilename ), space );
         xsdFilename = resourceNamingInterface.nameResource( fileObject, space, true );
         return xsdFilename;

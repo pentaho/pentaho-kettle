@@ -58,6 +58,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.fileinput.FileInputList;
@@ -1120,7 +1121,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
     wbbFilename.addSelectionListener( new SelectionAdapter() {
       @Override
       public void widgetSelected( SelectionEvent e ) {
-        if ( !Const.isEmpty( wFilemask.getText() ) || !Const.isEmpty( wExcludeFilemask.getText() ) ) { // A mask: a directory!
+        if ( !Utils.isEmpty( wFilemask.getText() ) || !Utils.isEmpty( wExcludeFilemask.getText() ) ) { // A mask: a directory!
           DirectoryDialog dialog = new DirectoryDialog( shell, SWT.OPEN );
           if ( wFilename.getText() != null ) {
             String fpath = transMeta.environmentSubstitute( wFilename.getText() );
@@ -1453,7 +1454,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
   }
 
   private void ok() {
-    if ( Const.isEmpty( wStepname.getText() ) ) {
+    if ( Utils.isEmpty( wStepname.getText() ) ) {
       return;
     }
 
@@ -2036,7 +2037,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
                     fieldtype = ValueMetaInterface.TYPE_STRING;
                   }
 
-                  if ( Const.isEmpty( fieldname ) ) {
+                  if ( Utils.isEmpty( fieldname ) ) {
                     stop = true;
                   } else {
                     if ( fieldtype != ValueMetaInterface.TYPE_NONE ) {
@@ -2144,7 +2145,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
     final boolean sheetsOk = wSheetnameList.nrNonEmpty() != 0;
     final boolean filesOk =
       wFilenameList.nrNonEmpty() != 0
-        || ( wAccFilenames.getSelection() && !Const.isEmpty( wAccField.getText() ) );
+        || ( wAccFilenames.getSelection() && !Utils.isEmpty( wAccField.getText() ) );
     String msgText = ""; // Will clear status if no actions.
 
     // Assign the highest-priority action message.

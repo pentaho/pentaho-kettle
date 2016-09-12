@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -30,6 +30,7 @@ import java.util.Map;
 
 import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.plugins.BasePluginType;
@@ -75,7 +76,7 @@ public class LoggingPluginType extends BasePluginType implements PluginTypeInter
     //
     String kettleLoggingPluginsXmlFile = Const.XML_FILE_KETTLE_LOGGING_PLUGINS;
     String alternative = System.getProperty( Const.KETTLE_LOGGING_PLUGINS_FILE, null );
-    if ( !Const.isEmpty( alternative ) ) {
+    if ( !Utils.isEmpty( alternative ) ) {
       kettleLoggingPluginsXmlFile = alternative;
     }
 
@@ -87,7 +88,7 @@ public class LoggingPluginType extends BasePluginType implements PluginTypeInter
         inputStream = getClass().getResourceAsStream( "/" + kettleLoggingPluginsXmlFile );
       }
       // Retry to load a regular file...
-      if ( inputStream == null && !Const.isEmpty( alternative ) ) {
+      if ( inputStream == null && !Utils.isEmpty( alternative ) ) {
         try {
           inputStream = new FileInputStream( kettleLoggingPluginsXmlFile );
         } catch ( Exception e ) {
@@ -157,7 +158,7 @@ public class LoggingPluginType extends BasePluginType implements PluginTypeInter
   @Override
   protected String extractName( Annotation annotation ) {
     String name = ( (LoggingPlugin) annotation ).name();
-    return Const.isEmpty( name ) ? extractID( annotation ) : name;
+    return Utils.isEmpty( name ) ? extractID( annotation ) : name;
   }
 
   @Override

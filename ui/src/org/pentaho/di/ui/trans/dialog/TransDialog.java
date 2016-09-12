@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -52,6 +52,7 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -2455,7 +2456,7 @@ public class TransDialog extends Dialog {
 
       for ( LogTableInterface logTable : new LogTableInterface[] {
         transLogTable, performanceLogTable, channelLogTable, stepLogTable, metricsLogTable, } ) {
-        if ( logTable.getDatabaseMeta() != null && !Const.isEmpty( logTable.getTableName() ) ) {
+        if ( logTable.getDatabaseMeta() != null && !Utils.isEmpty( logTable.getTableName() ) ) {
           // OK, we have something to work with!
           //
           Database db = null;
@@ -2473,7 +2474,7 @@ public class TransDialog extends Dialog {
                 db.environmentSubstitute( logTable.getSchemaName() ), tableName );
             String createTable = db.getDDL( schemaTable, fields );
 
-            if ( !Const.isEmpty( createTable ) ) {
+            if ( !Utils.isEmpty( createTable ) ) {
               ddl.append( "-- " ).append( logTable.getLogTableType() ).append( Const.CR );
               ddl.append( "--" ).append( Const.CR ).append( Const.CR );
               ddl.append( createTable ).append( Const.CR );
@@ -2486,7 +2487,7 @@ public class TransDialog extends Dialog {
                 String createIndex =
                   db.getCreateIndexStatement( schemaTable, "IDX_" + tableName + "_" + ( i + 1 ), index
                     .getFieldNames(), false, false, false, true );
-                if ( !Const.isEmpty( createIndex ) ) {
+                if ( !Utils.isEmpty( createIndex ) ) {
                   ddl.append( createIndex );
                 }
               }

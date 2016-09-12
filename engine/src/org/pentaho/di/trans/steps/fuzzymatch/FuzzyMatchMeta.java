@@ -27,6 +27,7 @@ import java.util.List;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -456,7 +457,7 @@ public class FuzzyMatchMeta extends BaseStepMeta implements StepMetaInterface {
     inputRowMeta.addValueMeta( v );
 
     String mainField = space.environmentSubstitute( getOutputValueField() );
-    if ( !Const.isEmpty( mainField ) && isGetCloserValue() ) {
+    if ( !Utils.isEmpty( mainField ) && isGetCloserValue() ) {
       switch ( getAlgorithmType() ) {
         case FuzzyMatchMeta.OPERATION_TYPE_DAMERAU_LEVENSHTEIN:
         case FuzzyMatchMeta.OPERATION_TYPE_LEVENSHTEIN:

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -48,6 +48,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
@@ -590,7 +591,7 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
         if ( !wTable.isDisposed() && !wConnection.isDisposed() && !wSchema.isDisposed() ) {
           final String tableName = wTable.getText(), connectionName = wConnection.getText(), schemaName =
             wSchema.getText();
-          if ( !Const.isEmpty( tableName ) ) {
+          if ( !Utils.isEmpty( tableName ) ) {
             DatabaseMeta ci = transMeta.findDatabase( connectionName );
             if ( ci != null ) {
               Database db = new Database( loggingObject, ci );
@@ -725,7 +726,7 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
   }
 
   private void ok() {
-    if ( Const.isEmpty( wStepname.getText() ) ) {
+    if ( Utils.isEmpty( wStepname.getText() ) ) {
       return;
     }
 
@@ -841,7 +842,7 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
       try {
         db.connect();
 
-        if ( !Const.isEmpty( wTable.getText() ) ) {
+        if ( !Utils.isEmpty( wTable.getText() ) ) {
           String schemaTable =
             ci.getQuotedSchemaTableCombination( db.environmentSubstitute( wSchema.getText() ), db
               .environmentSubstitute( wTable.getText() ) );
