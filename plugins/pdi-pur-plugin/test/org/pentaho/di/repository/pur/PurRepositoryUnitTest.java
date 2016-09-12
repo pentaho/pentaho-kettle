@@ -16,34 +16,47 @@
  */
 package org.pentaho.di.repository.pur;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.List;
 import org.hamcrest.core.IsInstanceOf;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatcher;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.extension.ExtensionPointInterface;
+import org.pentaho.di.core.extension.ExtensionPointPluginType;
+import org.pentaho.di.core.extension.KettleExtensionPoint;
 import org.pentaho.di.core.logging.JobEntryLogTable;
+import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LogTableInterface;
 import org.pentaho.di.core.logging.StepLogTable;
+import org.pentaho.di.core.plugins.ClassLoadingPluginInterface;
+import org.pentaho.di.core.plugins.PluginInterface;
+import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.repository.ObjectId;
+import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
+import org.pentaho.di.repository.RepositoryElementInterface;
 import org.pentaho.di.repository.RepositoryElementMetaInterface;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.repository.RepositoryTestLazySupport;
+import org.pentaho.di.repository.StringObjectId;
 import org.pentaho.di.repository.pur.model.EERepositoryObject;
 import org.pentaho.di.trans.HasDatabasesInterface;
+import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.ui.repository.pur.services.ILockService;
+import org.pentaho.platform.api.repository2.unified.IRepositoryFileData;
 import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
 import org.pentaho.platform.api.repository2.unified.RepositoryFile;
 import org.pentaho.platform.api.repository2.unified.RepositoryFileTree;
 import org.pentaho.platform.api.repository2.unified.RepositoryRequest;
 import org.pentaho.platform.repository2.ClientRepositoryPaths;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -56,10 +69,14 @@ import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.argThat;
+import static org.mockito.Matchers.isNull;
+import static org.mockito.Matchers.same;
 import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class PurRepositoryUnitTest extends RepositoryTestLazySupport {
   private VariableSpace mockedVariableSpace;
@@ -376,5 +393,53 @@ public class PurRepositoryUnitTest extends RepositoryTestLazySupport {
     EERepositoryObject eeElement2 = (EERepositoryObject) element;
     assertThat( eeElement2.getVersioningEnabled(), is( true ) );
     assertThat( eeElement2.getVersionCommentEnabled(), is( true ) );
+  }
+
+  interface PluginMockInterface extends ClassLoadingPluginInterface, PluginInterface {
+  }
+
+  @Test
+  public void testTransRepoAfterSaveExtensionPoint() throws KettleException {
+    PluginMockInterface pluginInterface = mock( PluginMockInterface.class );
+    when( pluginInterface.getName() ).thenReturn( KettleExtensionPoint.TransImportAfterSaveToRepo.id );
+    when( pluginInterface.getMainType() ).thenReturn( (Class) ExtensionPointInterface.class );
+    when( pluginInterface.getIds() ).thenReturn( new String[] {"extensionpointId"} );
+
+    ExtensionPointInterface extensionPoint = mock( ExtensionPointInterface.class );
+    when( pluginInterface.loadClass( ExtensionPointInterface.class ) ).thenReturn( extensionPoint );
+
+    PluginRegistry.addPluginType( ExtensionPointPluginType.getInstance() );
+    PluginRegistry.getInstance().registerPlugin( ExtensionPointPluginType.class, pluginInterface );
+
+    PurRepository rep = mock( PurRepository.class );
+    doCallRealMethod().when( rep ).saveTransOrJob( any( ISharedObjectsTransformer.class ), any( RepositoryElementInterface.class ), anyString(),
+        any( Calendar.class ), anyBoolean(), anyBoolean(), anyBoolean(), anyBoolean(), anyBoolean() );
+    IUnifiedRepository pur = mock( IUnifiedRepository.class );
+    doCallRealMethod().when( rep ).setTest( same( pur ) );
+
+    PurRepositoryMeta mockMeta = mock( PurRepositoryMeta.class );
+    doCallRealMethod().when( rep ).init( same( mockMeta ) );
+    rep.init( mockMeta );
+    rep.setTest( pur );
+
+    RepositoryFile file = mock( RepositoryFile.class );
+    when( file.getId() ).thenReturn( "id" );
+    when( pur.createFile( any( Serializable.class ), any( RepositoryFile.class ), any( IRepositoryFileData.class ),
+     anyString() ) ).thenReturn( file );
+
+    TransMeta trans = mock( TransMeta.class );
+    when( trans.getRepositoryElementType() ).thenReturn( RepositoryObjectType.TRANSFORMATION );
+    when( trans.getName() ).thenReturn( "trans" );
+    RepositoryDirectory dir = mock( RepositoryDirectory.class );
+    when( dir.getObjectId() ).thenReturn( new StringObjectId( "id" ) );
+    when( trans.getRepositoryDirectory() ).thenReturn( dir );
+
+    TransMeta transFromRepo = mock( TransMeta.class );
+    when( rep.loadTransformation( any( ObjectId.class ), isNull( String.class ) ) ).thenReturn( transFromRepo );
+
+    ISharedObjectsTransformer transformer = mock( ISharedObjectsTransformer.class );
+    rep.saveTransOrJob( transformer, trans, "", Calendar.getInstance(), false, false, false, false, false );
+
+    verify( extensionPoint, times( 1 ) ).callExtensionPoint( any( LogChannelInterface.class ), same( transFromRepo ) );
   }
 }
