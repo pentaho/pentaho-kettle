@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,6 +23,7 @@
 package org.pentaho.di.trans.steps.clonerow;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.i18n.BaseMessages;
@@ -72,14 +73,14 @@ public class CloneRow extends BaseStep implements StepInterface {
 
       if ( meta.isAddCloneFlag() ) {
         String realflagfield = environmentSubstitute( meta.getCloneFlagField() );
-        if ( Const.isEmpty( realflagfield ) ) {
+        if ( Utils.isEmpty( realflagfield ) ) {
           logError( BaseMessages.getString( PKG, "CloneRow.Error.CloneFlagFieldMissing" ) );
           throw new KettleException( BaseMessages.getString( PKG, "CloneRow.Error.CloneFlagFieldMissing" ) );
         }
       }
       if ( meta.isAddCloneNum() ) {
         String realnumfield = environmentSubstitute( meta.getCloneNumField() );
-        if ( Const.isEmpty( realnumfield ) ) {
+        if ( Utils.isEmpty( realnumfield ) ) {
           logError( BaseMessages.getString( PKG, "CloneRow.Error.CloneNumFieldMissing" ) );
           throw new KettleException( BaseMessages.getString( PKG, "CloneRow.Error.CloneNumFieldMissing" ) );
         }
@@ -87,7 +88,7 @@ public class CloneRow extends BaseStep implements StepInterface {
 
       if ( meta.isNrCloneInField() ) {
         String cloneinfieldname = meta.getNrCloneField();
-        if ( Const.isEmpty( cloneinfieldname ) ) {
+        if ( Utils.isEmpty( cloneinfieldname ) ) {
           logError( BaseMessages.getString( PKG, "CloneRow.Error.NrCloneInFieldMissing" ) );
           throw new KettleException( BaseMessages.getString( PKG, "CloneRow.Error.NrCloneInFieldMissing" ) );
         }

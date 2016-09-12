@@ -27,6 +27,7 @@ import java.util.List;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.ProvidesDatabaseConnectionInformation;
 import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.database.Database;
@@ -370,22 +371,22 @@ public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
       databaseMeta = DatabaseMeta.findDatabase( databases, con );
 
       commitSize = XMLHandler.getTagValue( stepnode, "commit" );
-      if ( Const.isEmpty( commitSize ) ) {
+      if ( Utils.isEmpty( commitSize ) ) {
         commitSize = Integer.toString( DEFAULT_COMMIT_SIZE );
       }
 
       bindSize = XMLHandler.getTagValue( stepnode, "bind_size" );
-      if ( Const.isEmpty( bindSize ) ) {
+      if ( Utils.isEmpty( bindSize ) ) {
         bindSize = Integer.toString( DEFAULT_BIND_SIZE );
       }
 
       readSize = XMLHandler.getTagValue( stepnode, "read_size" );
-      if ( Const.isEmpty( readSize ) ) {
+      if ( Utils.isEmpty( readSize ) ) {
         readSize = Integer.toString( DEFAULT_READ_SIZE );
       }
 
       maxErrors = XMLHandler.getTagValue( stepnode, "errors" );
-      if ( Const.isEmpty( maxErrors ) ) {
+      if ( Utils.isEmpty( maxErrors ) ) {
         maxErrors = Integer.toString( DEFAULT_MAX_ERRORS );
       }
 
@@ -625,7 +626,7 @@ public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
       try {
         db.connect();
 
-        if ( !Const.isEmpty( tableName ) ) {
+        if ( !Utils.isEmpty( tableName ) ) {
           cr =
             new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
               PKG, "OraBulkLoaderMeta.CheckResult.TableNameOK" ), stepMeta );
@@ -768,7 +769,7 @@ public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
           }
         }
 
-        if ( !Const.isEmpty( tableName ) ) {
+        if ( !Utils.isEmpty( tableName ) ) {
           Database db = new Database( loggingObject, databaseMeta );
           db.shareVariablesWith( transMeta );
           try {
@@ -861,7 +862,7 @@ public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
       try {
         db.connect();
 
-        if ( !Const.isEmpty( realTableName ) ) {
+        if ( !Utils.isEmpty( realTableName ) ) {
           String schemaTable = databaseMeta.getQuotedSchemaTableCombination( realSchemaName, realTableName );
 
           // Check if this table exists...

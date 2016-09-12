@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,7 +25,7 @@ package org.pentaho.di.imp.rules;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -93,7 +93,7 @@ public class DatabaseConfigurationImportRule extends BaseImportRule implements I
 
     // Verify the database name if it's non-empty
     //
-    if ( !Const.isEmpty( databaseMeta.getDatabaseName() ) ) {
+    if ( !Utils.isEmpty( databaseMeta.getDatabaseName() ) ) {
       if ( !databaseMeta.getDatabaseName().equals( verify.getDatabaseName() ) ) {
         feedback.add( new ImportValidationFeedback(
           this, ImportValidationResultType.ERROR, "The name of the database is not set to the expected value '"
@@ -103,7 +103,7 @@ public class DatabaseConfigurationImportRule extends BaseImportRule implements I
 
     // Verify the host name if it's non-empty
     //
-    if ( !Const.isEmpty( databaseMeta.getHostname() ) ) {
+    if ( !Utils.isEmpty( databaseMeta.getHostname() ) ) {
       if ( !databaseMeta.getHostname().equals( verify.getHostname() ) ) {
         feedback
           .add( new ImportValidationFeedback(
@@ -115,7 +115,7 @@ public class DatabaseConfigurationImportRule extends BaseImportRule implements I
 
     // Verify the database port number if it's non-empty
     //
-    if ( !Const.isEmpty( databaseMeta.getDatabasePortNumberString() ) ) {
+    if ( !Utils.isEmpty( databaseMeta.getDatabasePortNumberString() ) ) {
       if ( !databaseMeta.getDatabasePortNumberString().equals( verify.getDatabasePortNumberString() ) ) {
         feedback.add( new ImportValidationFeedback(
           this, ImportValidationResultType.ERROR,
@@ -126,7 +126,7 @@ public class DatabaseConfigurationImportRule extends BaseImportRule implements I
 
     // Verify the user name if it's non-empty
     //
-    if ( !Const.isEmpty( databaseMeta.getUsername() ) ) {
+    if ( !Utils.isEmpty( databaseMeta.getUsername() ) ) {
       if ( !databaseMeta.getUsername().equals( verify.getUsername() ) ) {
         feedback
           .add( new ImportValidationFeedback(
@@ -138,7 +138,7 @@ public class DatabaseConfigurationImportRule extends BaseImportRule implements I
 
     // Verify the password if it's non-empty
     //
-    if ( !Const.isEmpty( databaseMeta.getPassword() ) ) {
+    if ( !Utils.isEmpty( databaseMeta.getPassword() ) ) {
       if ( !databaseMeta.getPassword().equals( verify.getPassword() ) ) {
         feedback.add( new ImportValidationFeedback(
           this, ImportValidationResultType.ERROR,

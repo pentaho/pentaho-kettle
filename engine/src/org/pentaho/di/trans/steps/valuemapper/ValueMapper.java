@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,6 +25,7 @@ package org.pentaho.di.trans.steps.valuemapper;
 import java.util.Hashtable;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.i18n.BaseMessages;
@@ -89,7 +90,7 @@ public class ValueMapper extends BaseStep implements StepInterface {
       // 0 or 1 empty mapping is allowed, not 2 or more.
       //
       for ( int i = 0; i < meta.getSourceValue().length; i++ ) {
-        if ( Const.isEmpty( meta.getSourceValue()[i] ) ) {
+        if ( Utils.isEmpty( meta.getSourceValue()[i] ) ) {
           if ( data.emptyFieldIndex < 0 ) {
             data.emptyFieldIndex = i;
           } else {
@@ -101,7 +102,7 @@ public class ValueMapper extends BaseStep implements StepInterface {
 
       data.sourceValueMeta = getInputRowMeta().getValueMeta( data.keynr );
 
-      if ( Const.isEmpty( meta.getTargetField() ) ) {
+      if ( Utils.isEmpty( meta.getTargetField() ) ) {
         data.outputValueMeta = data.outputMeta.getValueMeta( data.keynr ); // Same field
 
       } else {
@@ -115,10 +116,10 @@ public class ValueMapper extends BaseStep implements StepInterface {
 
     // Null/Empty mapping to value...
     //
-    if ( data.emptyFieldIndex >= 0 && ( r[data.keynr] == null || Const.isEmpty( source ) ) ) {
+    if ( data.emptyFieldIndex >= 0 && ( r[data.keynr] == null || Utils.isEmpty( source ) ) ) {
       target = meta.getTargetValue()[data.emptyFieldIndex]; // that's all there is to it.
     } else {
-      if ( !Const.isEmpty( source ) ) {
+      if ( !Utils.isEmpty( source ) ) {
         target = data.hashtable.get( source );
         if ( nonMatchActivated && target == null ) {
           // If we do non matching and we don't have a match
@@ -127,11 +128,11 @@ public class ValueMapper extends BaseStep implements StepInterface {
       }
     }
 
-    if ( !Const.isEmpty( meta.getTargetField() ) ) {
+    if ( !Utils.isEmpty( meta.getTargetField() ) ) {
       // room for the target
       r = RowDataUtil.resizeArray( r, data.outputMeta.size() );
       // Did we find anything to map to?
-      if ( !Const.isEmpty( target ) ) {
+      if ( !Utils.isEmpty( target ) ) {
         r[data.outputMeta.size() - 1] = target;
       } else {
         r[data.outputMeta.size() - 1] = null;
@@ -183,7 +184,7 @@ public class ValueMapper extends BaseStep implements StepInterface {
       data.hashtable = new Hashtable<String, String>();
       data.emptyFieldIndex = -1;
 
-      if ( !Const.isEmpty( meta.getNonMatchDefault() ) ) {
+      if ( !Utils.isEmpty( meta.getNonMatchDefault() ) ) {
         nonMatchActivated = true;
       }
 
@@ -192,10 +193,10 @@ public class ValueMapper extends BaseStep implements StepInterface {
         String src = meta.getSourceValue()[i];
         String tgt = meta.getTargetValue()[i];
 
-        if ( !Const.isEmpty( src ) && !Const.isEmpty( tgt ) ) {
+        if ( !Utils.isEmpty( src ) && !Utils.isEmpty( tgt ) ) {
           data.hashtable.put( src, tgt );
         } else {
-          if ( Const.isEmpty( tgt ) ) {
+          if ( Utils.isEmpty( tgt ) ) {
             // allow target to be set to null since 3.0
             data.hashtable.put( src, "" );
           }

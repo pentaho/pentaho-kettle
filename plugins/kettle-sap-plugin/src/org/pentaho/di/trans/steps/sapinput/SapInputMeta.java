@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -28,6 +28,7 @@ import java.util.List;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
@@ -158,7 +159,7 @@ public class SapInputMeta extends BaseStepMeta implements StepMetaInterface {
       + XMLHandler.addTagValue( "connection", databaseMeta == null ? "" : databaseMeta.getName() ) );
 
     retval.append( "    " ).append( XMLHandler.openTag( XML_TAG_FUNCTION ) ).append( Const.CR );
-    if ( function != null && !Const.isEmpty( function.getName() ) ) {
+    if ( function != null && !Utils.isEmpty( function.getName() ) ) {
       retval.append( "    " + XMLHandler.addTagValue( "name", function.getName() ) );
       retval.append( "    " + XMLHandler.addTagValue( "description", function.getDescription() ) );
       retval.append( "    " + XMLHandler.addTagValue( "group", function.getGroup() ) );
@@ -206,7 +207,7 @@ public class SapInputMeta extends BaseStepMeta implements StepMetaInterface {
       String functionApplication = XMLHandler.getTagValue( stepnode, XML_TAG_FUNCTION, "application" );
       String functionHost = XMLHandler.getTagValue( stepnode, XML_TAG_FUNCTION, "host" );
 
-      if ( !Const.isEmpty( functionName ) ) {
+      if ( !Utils.isEmpty( functionName ) ) {
         function =
           new SAPFunction( functionName, functionDescription, functionGroup, functionApplication, functionHost );
       } else {
@@ -245,7 +246,7 @@ public class SapInputMeta extends BaseStepMeta implements StepMetaInterface {
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       rep.saveDatabaseMetaStepAttribute( id_transformation, id_step, "id_connection", databaseMeta );
-      if ( function != null && !Const.isEmpty( function.getName() ) ) {
+      if ( function != null && !Utils.isEmpty( function.getName() ) ) {
         rep.saveStepAttribute( id_transformation, id_step, "function_name", function.getName() );
         rep.saveStepAttribute( id_transformation, id_step, "function_description", function.getDescription() );
         rep.saveStepAttribute( id_transformation, id_step, "function_group", function.getGroup() );
@@ -289,7 +290,7 @@ public class SapInputMeta extends BaseStepMeta implements StepMetaInterface {
       String functionApplication = rep.getStepAttributeString( id_step, "function_application" );
       String functionHost = rep.getStepAttributeString( id_step, "function_host" );
 
-      if ( !Const.isEmpty( functionName ) ) {
+      if ( !Utils.isEmpty( functionName ) ) {
         function =
           new SAPFunction( functionName, functionDescription, functionGroup, functionApplication, functionHost );
       } else {

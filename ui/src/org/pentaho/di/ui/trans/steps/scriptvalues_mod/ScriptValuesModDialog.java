@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -93,6 +93,7 @@ import org.mozilla.javascript.tools.ToolErrorReporter;
 import org.pentaho.di.compatibility.Row;
 import org.pentaho.di.compatibility.Value;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.plugins.PluginRegistry;
@@ -941,7 +942,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
    */
   public void getData() {
     wCompatible.setSelection( input.isCompatible() );
-    if ( !Const.isEmpty( Const.trim( input.getOptimizationLevel() ) ) ) {
+    if ( !Utils.isEmpty( Const.trim( input.getOptimizationLevel() ) ) ) {
       wOptimizationLevel.setText( input.getOptimizationLevel().trim() );
     } else {
       wOptimizationLevel.setText( ScriptValuesMetaMod.OPTIMIZATION_LEVEL_DEFAULT );
@@ -1082,7 +1083,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
   }
 
   private void ok() {
-    if ( Const.isEmpty( wStepname.getText() ) ) {
+    if ( Utils.isEmpty( wStepname.getText() ) ) {
       return;
     }
 

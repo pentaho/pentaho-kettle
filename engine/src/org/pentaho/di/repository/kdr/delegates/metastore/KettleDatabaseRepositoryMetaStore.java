@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,7 +27,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.repository.LongObjectId;
 import org.pentaho.di.repository.ObjectId;
@@ -68,7 +68,7 @@ public class KettleDatabaseRepositoryMetaStore extends MemoryMetaStore implement
       Collection<RowMetaAndData> namespaceRows = delegate.getNamespaces();
       for ( RowMetaAndData namespaceRow : namespaceRows ) {
         String namespace = namespaceRow.getString( KettleDatabaseRepository.FIELD_NAMESPACE_NAME, null );
-        if ( !Const.isEmpty( namespace ) ) {
+        if ( !Utils.isEmpty( namespace ) ) {
           namespaces.add( namespace );
         }
       }

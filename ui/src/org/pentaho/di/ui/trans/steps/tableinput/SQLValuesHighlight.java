@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -47,8 +47,8 @@ import org.eclipse.swt.custom.LineStyleListener;
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.graphics.Color;
-import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.SqlScriptStatement;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.ui.core.gui.GUIResource;
 
 public class SQLValuesHighlight implements LineStyleListener {
@@ -540,7 +540,7 @@ public class SQLValuesHighlight implements LineStyleListener {
   }
 
   public void addKeyWords( String[] reservedWords ) {
-    if ( Const.isEmpty( reservedWords ) ) {
+    if ( Utils.isEmpty( reservedWords ) ) {
       return;
     }
 

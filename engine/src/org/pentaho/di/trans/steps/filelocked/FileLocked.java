@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,10 +22,10 @@
 
 package org.pentaho.di.trans.steps.filelocked;
 
-import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.entries.checkfilelocked.LockFile;
@@ -78,7 +78,7 @@ public class FileLocked extends BaseStep implements StepInterface {
       meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
 
       // Check is filename field is provided
-      if ( Const.isEmpty( meta.getDynamicFilenameField() ) ) {
+      if ( Utils.isEmpty( meta.getDynamicFilenameField() ) ) {
         logError( BaseMessages.getString( PKG, "FileLocked.Error.FilenameFieldMissing" ) );
         throw new KettleException( BaseMessages.getString( PKG, "FileLocked.Error.FilenameFieldMissing" ) );
       }
@@ -99,7 +99,7 @@ public class FileLocked extends BaseStep implements StepInterface {
     try {
       // get filename
       String filename = data.previousRowMeta.getString( r, data.indexOfFileename );
-      if ( !Const.isEmpty( filename ) ) {
+      if ( !Utils.isEmpty( filename ) ) {
         // Check if file
         LockFile locked = new LockFile( filename );
         FileLocked = locked.isLocked();
@@ -155,7 +155,7 @@ public class FileLocked extends BaseStep implements StepInterface {
     data = (FileLockedData) sdi;
 
     if ( super.init( smi, sdi ) ) {
-      if ( Const.isEmpty( meta.getResultFieldName() ) ) {
+      if ( Utils.isEmpty( meta.getResultFieldName() ) ) {
         logError( BaseMessages.getString( PKG, "FileLocked.Error.ResultFieldMissing" ) );
         return false;
       }

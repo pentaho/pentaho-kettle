@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -54,6 +54,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleException;
@@ -673,7 +674,7 @@ public class JobExecutorDialog extends BaseStepDialog implements StepDialogInter
         String realDirectory = transMeta.environmentSubstitute( wDirectory.getText() );
         String realJobname = transMeta.environmentSubstitute( wJobname.getText() );
 
-        if ( Const.isEmpty( realDirectory ) || Const.isEmpty( realJobname ) ) {
+        if ( Utils.isEmpty( realDirectory ) || Utils.isEmpty( realJobname ) ) {
           throw new KettleException( BaseMessages.getString(
             PKG, "JobExecutorDialog.Exception.NoValidJobExecutorDetailsFound" ) );
         }
@@ -1539,7 +1540,7 @@ public class JobExecutorDialog extends BaseStepDialog implements StepDialogInter
       return;
     }
     boolean enableSize = Const.toInt( transMeta.environmentSubstitute( wGroupSize.getText() ), -1 ) >= 0;
-    boolean enableField = !Const.isEmpty( wGroupField.getText() );
+    boolean enableField = !Utils.isEmpty( wGroupField.getText() );
     // boolean enableTime = Const.toInt(transMeta.environmentSubstitute(wGroupTime.getText()), -1)>0;
 
     wlGroupSize.setEnabled( true );
@@ -1557,7 +1558,7 @@ public class JobExecutorDialog extends BaseStepDialog implements StepDialogInter
   }
 
   private void ok() {
-    if ( Const.isEmpty( wStepname.getText() ) ) {
+    if ( Utils.isEmpty( wStepname.getText() ) ) {
       return;
     }
 
@@ -1688,7 +1689,7 @@ public class JobExecutorDialog extends BaseStepDialog implements StepDialogInter
       boolean saved = false;
       try {
         if ( repository != null ) {
-          if ( !Const.isEmpty( newJobMeta.getName() ) ) {
+          if ( !Utils.isEmpty( newJobMeta.getName() ) ) {
             wStepname.setText( newJobMeta.getName() );
           }
           saved = spoon.saveToRepository( newJobMeta, false );

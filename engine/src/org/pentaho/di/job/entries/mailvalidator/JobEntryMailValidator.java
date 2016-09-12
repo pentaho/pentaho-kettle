@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -30,6 +30,7 @@ import java.util.List;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
@@ -214,14 +215,14 @@ public class JobEntryMailValidator extends JobEntryBase implements Cloneable, Jo
     result.setResult( false );
 
     String realEmailAddress = environmentSubstitute( emailAddress );
-    if ( Const.isEmpty( realEmailAddress ) ) {
+    if ( Utils.isEmpty( realEmailAddress ) ) {
       logError( BaseMessages.getString( PKG, "JobEntryMailValidator.Error.EmailEmpty" ) );
       return result;
     }
     String realSender = environmentSubstitute( emailSender );
     if ( smtpCheck ) {
       // check sender
-      if ( Const.isEmpty( realSender ) ) {
+      if ( Utils.isEmpty( realSender ) ) {
         logError( BaseMessages.getString( PKG, "JobEntryMailValidator.Error.EmailSenderEmpty" ) );
         return result;
       }

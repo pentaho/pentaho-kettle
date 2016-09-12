@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,15 +24,15 @@ package org.pentaho.di.trans.steps.excelinput.jxl;
 
 import java.io.InputStream;
 
-import jxl.Sheet;
-import jxl.Workbook;
-import jxl.WorkbookSettings;
-
-import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.spreadsheet.KSheet;
 import org.pentaho.di.core.spreadsheet.KWorkbook;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.vfs.KettleVFS;
+
+import jxl.Sheet;
+import jxl.Workbook;
+import jxl.WorkbookSettings;
 
 public class XLSWorkbook implements KWorkbook {
 
@@ -45,7 +45,7 @@ public class XLSWorkbook implements KWorkbook {
     this.encoding = encoding;
 
     WorkbookSettings ws = new WorkbookSettings();
-    if ( !Const.isEmpty( encoding ) ) {
+    if ( !Utils.isEmpty( encoding ) ) {
       ws.setEncoding( encoding );
     }
     try {
@@ -59,7 +59,7 @@ public class XLSWorkbook implements KWorkbook {
     this.encoding = encoding;
 
     WorkbookSettings ws = new WorkbookSettings();
-    if ( !Const.isEmpty( encoding ) ) {
+    if ( !Utils.isEmpty( encoding ) ) {
       ws.setEncoding( encoding );
     }
     try {

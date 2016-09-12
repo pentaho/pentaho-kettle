@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -37,6 +37,7 @@ import org.apache.commons.vfs2.FileType;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.RowMetaAndData;
@@ -639,7 +640,7 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
 
           // Get file names
           String file_previous = resultRow.getString( 0, null );
-          if ( !Const.isEmpty( file_previous ) ) {
+          if ( !Utils.isEmpty( file_previous ) ) {
             FileObject file = KettleVFS.getFileObject( file_previous, this );
             if ( !file.exists() ) {
               logError( BaseMessages.getString( PKG, "JobSFTPPUT.Log.FilefromPreviousNotFound", file_previous ) );
@@ -713,7 +714,7 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
       // Let's perform some checks before starting
 
       if ( getAfterFTPS() == AFTER_FTPSPUT_MOVE ) {
-        if ( Const.isEmpty( realDestinationFolder ) ) {
+        if ( Utils.isEmpty( realDestinationFolder ) ) {
           logError( BaseMessages.getString( PKG, "JobSSH2PUT.Log.DestinatFolderMissing" ) );
           result.setNrErrors( 1 );
           return result;
@@ -750,7 +751,7 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
       if ( isUseKeyFile() ) {
         // We must have here a private keyfilename
         realKeyFilename = environmentSubstitute( getKeyFilename() );
-        if ( Const.isEmpty( realKeyFilename ) ) {
+        if ( Utils.isEmpty( realKeyFilename ) ) {
           // Error..Missing keyfile
           logError( BaseMessages.getString( PKG, "JobSFTP.Error.KeyFileMissing" ) );
           result.setNrErrors( 1 );
@@ -780,7 +781,7 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
 
       // Set proxy?
       String realProxyHost = environmentSubstitute( getProxyHost() );
-      if ( !Const.isEmpty( realProxyHost ) ) {
+      if ( !Utils.isEmpty( realProxyHost ) ) {
         // Set proxy
         sftpclient.setProxy(
           realProxyHost, environmentSubstitute( getProxyPort() ), environmentSubstitute( getProxyUsername() ),
@@ -793,7 +794,7 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
       // logDetailed("logged in using password "+realPassword); // Logging this seems a bad idea! Oh well.
 
       // move to spool dir ...
-      if ( !Const.isEmpty( realSftpDirString ) ) {
+      if ( !Utils.isEmpty( realSftpDirString ) ) {
         boolean existfolder = sftpclient.folderExists( realSftpDirString );
         if ( !existfolder ) {
           if ( !isCreateRemoteFolder() ) {
@@ -854,7 +855,7 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
 
       Pattern pattern = null;
       if ( !copyprevious && !copypreviousfiles ) {
-        if ( !Const.isEmpty( realWildcard ) ) {
+        if ( !Utils.isEmpty( realWildcard ) ) {
           pattern = Pattern.compile( realWildcard );
         }
       }
@@ -961,7 +962,7 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
 
   public List<ResourceReference> getResourceDependencies( JobMeta jobMeta ) {
     List<ResourceReference> references = super.getResourceDependencies( jobMeta );
-    if ( !Const.isEmpty( serverName ) ) {
+    if ( !Utils.isEmpty( serverName ) ) {
       String realServerName = jobMeta.environmentSubstitute( serverName );
       ResourceReference reference = new ResourceReference( this );
       reference.getEntries().add( new ResourceEntry( realServerName, ResourceType.SERVER ) );

@@ -32,6 +32,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -521,7 +522,7 @@ public class CombinationLookup extends BaseStep implements StepInterface {
           comma = true;
         }
 
-        if ( !Const.isEmpty( meta.getLastUpdateField() ) ) {
+        if ( !Utils.isEmpty( meta.getLastUpdateField() ) ) {
           if ( comma ) {
             sql += ", ";
           }
@@ -555,7 +556,7 @@ public class CombinationLookup extends BaseStep implements StepInterface {
           sql += '?';
           comma = true;
         }
-        if ( !Const.isEmpty( meta.getLastUpdateField() ) ) {
+        if ( !Utils.isEmpty( meta.getLastUpdateField() ) ) {
           if ( comma ) {
             sql += ',';
           }
@@ -608,7 +609,7 @@ public class CombinationLookup extends BaseStep implements StepInterface {
         insertRow[insertIndex] = val_crc;
         insertIndex++;
       }
-      if ( !Const.isEmpty( meta.getLastUpdateField() ) ) {
+      if ( !Utils.isEmpty( meta.getLastUpdateField() ) ) {
         insertRow[insertIndex] = new Date();
         insertIndex++;
       }

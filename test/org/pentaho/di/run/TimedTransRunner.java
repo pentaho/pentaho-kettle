@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,6 +25,7 @@ package org.pentaho.di.run;
 import java.text.DecimalFormat;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -114,7 +115,7 @@ public class TimedTransRunner {
       return false;
     }
 
-    if ( !Const.isEmpty( rowListenerStep ) ) {
+    if ( !Utils.isEmpty( rowListenerStep ) ) {
       StepInterface step = trans.findRunThread( rowListenerStep );
       if ( step != null ) {
         step.addRowListener( rowListener );

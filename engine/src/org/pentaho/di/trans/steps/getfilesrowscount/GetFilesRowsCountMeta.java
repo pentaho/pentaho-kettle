@@ -29,6 +29,7 @@ import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -427,7 +428,7 @@ public class GetFilesRowsCountMeta extends BaseStepMeta implements StepMetaInter
       smartCount = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "smartCount" ) );
 
       String addresult = XMLHandler.getTagValue( stepnode, "isaddresult" );
-      if ( Const.isEmpty( addresult ) ) {
+      if ( Utils.isEmpty( addresult ) ) {
         isaddresult = true;
       } else {
         isaddresult = "Y".equalsIgnoreCase( addresult );
@@ -518,7 +519,7 @@ public class GetFilesRowsCountMeta extends BaseStepMeta implements StepMetaInter
       RowSeparator = rep.getStepAttributeString( id_step, "row_separator" );
       smartCount = rep.getStepAttributeBoolean( id_step, "smartCount" );
       String addresult = rep.getStepAttributeString( id_step, "isaddresult" );
-      if ( Const.isEmpty( addresult ) ) {
+      if ( Utils.isEmpty( addresult ) ) {
         isaddresult = true;
       } else {
         isaddresult = rep.getStepAttributeBoolean( id_step, "isaddresult" );
@@ -676,7 +677,7 @@ public class GetFilesRowsCountMeta extends BaseStepMeta implements StepMetaInter
       if ( !filefield ) {
         for ( int i = 0; i < fileName.length; i++ ) {
           FileObject fileObject = KettleVFS.getFileObject( space.environmentSubstitute( fileName[i] ), space );
-          fileName[i] = resourceNamingInterface.nameResource( fileObject, space, Const.isEmpty( fileMask[i] ) );
+          fileName[i] = resourceNamingInterface.nameResource( fileObject, space, Utils.isEmpty( fileMask[i] ) );
         }
       }
       return null;

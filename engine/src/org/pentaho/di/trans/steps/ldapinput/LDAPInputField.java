@@ -24,9 +24,9 @@ package org.pentaho.di.trans.steps.ldapinput;
 
 import java.util.HashSet;
 
-import org.pentaho.di.core.Const;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 
 /**
@@ -337,7 +337,7 @@ public class LDAPInputField implements Cloneable {
 
   public void setRealAttribute( String realfieldattribute ) {
     this.realAttribute = realfieldattribute;
-    if ( !Const.isEmpty( realfieldattribute ) ) {
+    if ( !Utils.isEmpty( realfieldattribute ) ) {
       if ( realfieldattribute.equals( ATTRIBUTE_OBJECT_SID ) ) {
         this.objectSid = true;
       }

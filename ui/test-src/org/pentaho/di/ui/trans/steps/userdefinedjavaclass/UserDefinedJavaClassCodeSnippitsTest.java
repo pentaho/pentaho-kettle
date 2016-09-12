@@ -25,7 +25,7 @@ import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.ui.trans.steps.userdefinedjavaclass.UserDefinedJavaClassCodeSnippits.Snippit;
 
@@ -42,9 +42,9 @@ public class UserDefinedJavaClassCodeSnippitsTest {
     List<String> snippitNames = new ArrayList<String>();
     for ( Snippit snippit : UserDefinedJavaClassCodeSnippits.getSnippitsHelper().getSnippits() ) {
       Assert.assertNotNull( snippit.category );
-      Assert.assertFalse( Const.isEmpty( snippit.name ) );
-      Assert.assertFalse( Const.isEmpty( snippit.code ) );
-      Assert.assertFalse( Const.isEmpty( snippit.sample ) );
+      Assert.assertFalse( Utils.isEmpty( snippit.name ) );
+      Assert.assertFalse( Utils.isEmpty( snippit.code ) );
+      Assert.assertFalse( Utils.isEmpty( snippit.sample ) );
       Assert.assertFalse( snippitNames.contains( snippit.name ) );
       snippitNames.add( snippit.name );
     }

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -45,6 +45,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.gui.SpoonFactory;
@@ -753,7 +754,7 @@ public class SingleThreaderDialog extends BaseStepDialog implements StepDialogIn
         String realDirectory = transMeta.environmentSubstitute( wDirectory.getText() );
         String realTransname = transMeta.environmentSubstitute( wTransname.getText() );
 
-        if ( Const.isEmpty( realDirectory ) || Const.isEmpty( realTransname ) ) {
+        if ( Utils.isEmpty( realDirectory ) || Utils.isEmpty( realTransname ) ) {
           throw new KettleException(
             BaseMessages.getString( PKG, "SingleThreaderDialog.Exception.NoValidMappingDetailsFound" ) );
         }
@@ -840,7 +841,7 @@ public class SingleThreaderDialog extends BaseStepDialog implements StepDialogIn
     if ( singleThreaderMeta.getParameters() != null ) {
       for ( int i = 0; i < singleThreaderMeta.getParameters().length; i++ ) {
         TableItem ti = wParameters.table.getItem( i );
-        if ( !Const.isEmpty( singleThreaderMeta.getParameters()[i] ) ) {
+        if ( !Utils.isEmpty( singleThreaderMeta.getParameters()[i] ) ) {
           ti.setText( 1, Const.NVL( singleThreaderMeta.getParameters()[i], "" ) );
           ti.setText( 2, Const.NVL( singleThreaderMeta.getParameterValues()[i], "" ) );
         }
@@ -935,7 +936,7 @@ public class SingleThreaderDialog extends BaseStepDialog implements StepDialogIn
     int nr = 0;
     for ( int i = 0; i < nritems; i++ ) {
       String param = wParameters.getNonEmpty( i ).getText( 1 );
-      if ( !Const.isEmpty( param ) ) {
+      if ( !Utils.isEmpty( param ) ) {
         nr++;
       }
     }
@@ -957,7 +958,7 @@ public class SingleThreaderDialog extends BaseStepDialog implements StepDialogIn
   }
 
   private void ok() {
-    if ( Const.isEmpty( wStepname.getText() ) ) {
+    if ( Utils.isEmpty( wStepname.getText() ) ) {
       return;
     }
 
@@ -1062,7 +1063,7 @@ public class SingleThreaderDialog extends BaseStepDialog implements StepDialogIn
       boolean saved = false;
       try {
         if ( repository != null ) {
-          if ( !Const.isEmpty( newTransMeta.getName() ) ) {
+          if ( !Utils.isEmpty( newTransMeta.getName() ) ) {
             wStepname.setText( newTransMeta.getName() );
           }
           saved = spoon.saveToRepository( newTransMeta, false );

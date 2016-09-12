@@ -35,6 +35,7 @@ import org.apache.commons.vfs2.FileType;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.annotations.JobEntry;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -665,18 +666,18 @@ public class JobEntrySSH2PUT extends JobEntryBase implements Cloneable, JobEntry
 
       // Check for mandatory fields
       boolean mandatoryok = true;
-      if ( Const.isEmpty( realServerName ) ) {
+      if ( Utils.isEmpty( realServerName ) ) {
         mandatoryok = false;
         logError( BaseMessages.getString( PKG, "JobSSH2PUT.Log.ServernameMissing" ) );
       }
       if ( usehttpproxy ) {
-        if ( Const.isEmpty( realProxyHost ) ) {
+        if ( Utils.isEmpty( realProxyHost ) ) {
           mandatoryok = false;
           logError( BaseMessages.getString( PKG, "JobSSH2PUT.Log.HttpProxyhostMissing" ) );
         }
       }
       if ( publicpublickey ) {
-        if ( Const.isEmpty( realKeyFilename ) ) {
+        if ( Utils.isEmpty( realKeyFilename ) ) {
           mandatoryok = false;
           logError( BaseMessages.getString( PKG, "JobSSH2PUT.Log.KeyFileMissing" ) );
         } else {
@@ -688,12 +689,12 @@ public class JobEntrySSH2PUT extends JobEntryBase implements Cloneable, JobEntry
         }
       }
 
-      if ( Const.isEmpty( realLocalDirectory ) ) {
+      if ( Utils.isEmpty( realLocalDirectory ) ) {
         mandatoryok = false;
         logError( BaseMessages.getString( PKG, "JobSSH2PUT.Log.LocalFolderMissing" ) );
       }
       if ( afterFtpPut.equals( "move_file" ) ) {
-        if ( Const.isEmpty( realDestinationFolder ) ) {
+        if ( Utils.isEmpty( realDestinationFolder ) ) {
           mandatoryok = false;
           logError( BaseMessages.getString( PKG, "JobSSH2PUT.Log.DestinatFolderMissing" ) );
         } else {
@@ -785,7 +786,7 @@ public class JobEntrySSH2PUT extends JobEntryBase implements Cloneable, JobEntry
             }
 
             // Check if remote directory exists
-            if ( !Const.isEmpty( realftpDirectory ) ) {
+            if ( !Utils.isEmpty( realftpDirectory ) ) {
               if ( !sshDirectoryExists( client, realftpDirectory ) ) {
                 good = false;
                 if ( createRemoteFolder ) {
@@ -809,7 +810,7 @@ public class JobEntrySSH2PUT extends JobEntryBase implements Cloneable, JobEntry
 
               // Prepare Pattern for wildcard
               Pattern pattern = null;
-              if ( !Const.isEmpty( realwildcard ) ) {
+              if ( !Utils.isEmpty( realwildcard ) ) {
                 pattern = Pattern.compile( realwildcard );
               }
 
@@ -829,7 +830,7 @@ public class JobEntrySSH2PUT extends JobEntryBase implements Cloneable, JobEntry
                 }
 
                 // do we have a target directory?
-                if ( !Const.isEmpty( realftpDirectory ) ) {
+                if ( !Utils.isEmpty( realftpDirectory ) ) {
                   remoteFilename = realftpDirectory + FTPUtils.FILE_SEPARATOR + remoteFilename;
                 }
 
@@ -1150,7 +1151,7 @@ public class JobEntrySSH2PUT extends JobEntryBase implements Cloneable, JobEntry
   @Override
   public List<ResourceReference> getResourceDependencies( JobMeta jobMeta ) {
     List<ResourceReference> references = super.getResourceDependencies( jobMeta );
-    if ( !Const.isEmpty( serverName ) ) {
+    if ( !Utils.isEmpty( serverName ) ) {
       String realServerName = jobMeta.environmentSubstitute( serverName );
       ResourceReference reference = new ResourceReference( this );
       reference.getEntries().add( new ResourceEntry( realServerName, ResourceType.SERVER ) );

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -30,6 +30,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 
 /**
  * This class contains a Value of type String and the length by which it is described.
@@ -165,7 +166,7 @@ public class ValueString implements ValueInterface, Cloneable {
 
   @Override
   public BigDecimal getBigNumber() {
-    if ( Const.isEmpty( string ) ) {
+    if ( Utils.isEmpty( string ) ) {
       return null;
     }
 

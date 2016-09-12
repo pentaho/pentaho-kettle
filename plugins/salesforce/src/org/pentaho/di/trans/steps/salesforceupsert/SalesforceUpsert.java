@@ -24,7 +24,7 @@ package org.pentaho.di.trans.steps.salesforceupsert;
 
 import java.util.ArrayList;
 
-import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowDataUtil;
@@ -296,7 +296,7 @@ public class SalesforceUpsert extends SalesforceStep {
 
       try {
         String salesfoceIdFieldname = environmentSubstitute( meta.getSalesforceIDFieldName() );
-        if ( !Const.isEmpty( salesfoceIdFieldname ) ) {
+        if ( !Utils.isEmpty( salesfoceIdFieldname ) ) {
           data.realSalesforceFieldName = salesfoceIdFieldname;
         }
 

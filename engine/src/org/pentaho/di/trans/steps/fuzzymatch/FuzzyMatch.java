@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -30,6 +30,7 @@ import org.apache.commons.codec.language.RefinedSoundex;
 import org.apache.commons.codec.language.Soundex;
 import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -38,7 +39,6 @@ import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -528,18 +528,18 @@ public class FuzzyMatch extends BaseStep implements StepInterface {
     if ( super.init( smi, sdi ) ) {
 
       // Check lookup and main stream field
-      if ( Const.isEmpty( meta.getMainStreamField() ) ) {
+      if ( Utils.isEmpty( meta.getMainStreamField() ) ) {
         logError( BaseMessages.getString( PKG, "FuzzyMatch.Error.MainStreamFieldMissing" ) );
         return false;
       }
-      if ( Const.isEmpty( meta.getLookupField() ) ) {
+      if ( Utils.isEmpty( meta.getLookupField() ) ) {
         logError( BaseMessages.getString( PKG, "FuzzyMatch.Error.LookupStreamFieldMissing" ) );
         return false;
       }
 
       // Checks output fields
       String matchField = environmentSubstitute( meta.getOutputMatchField() );
-      if ( Const.isEmpty( matchField ) ) {
+      if ( Utils.isEmpty( matchField ) ) {
         logError( BaseMessages.getString( PKG, "FuzzyMatch.Error.OutputMatchFieldMissing" ) );
         return false;
       }
@@ -548,7 +548,7 @@ public class FuzzyMatch extends BaseStep implements StepInterface {
       // only when the fieldname is provided
       // and user want to return the closer value
       data.addValueFieldName =
-        ( !Const.isEmpty( environmentSubstitute( meta.getOutputValueField() ) ) && meta.isGetCloserValue() );
+        ( !Utils.isEmpty( environmentSubstitute( meta.getOutputValueField() ) ) && meta.isGetCloserValue() );
 
       // Set the number of fields to cache
       // default value is one

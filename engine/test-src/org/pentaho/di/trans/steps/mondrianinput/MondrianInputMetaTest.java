@@ -32,9 +32,9 @@ import java.util.List;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.pentaho.di.core.Const;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
 
 public class MondrianInputMetaTest {
@@ -59,7 +59,7 @@ public class MondrianInputMetaTest {
     meta.setDefault();
     assertNull( meta.getDatabaseMeta() );
     assertNotNull( meta.getSQL() );
-    assertFalse( Const.isEmpty( meta.getSQL() ) );
+    assertFalse( Utils.isEmpty( meta.getSQL() ) );
     assertFalse( meta.isVariableReplacementActive() );
   }
 

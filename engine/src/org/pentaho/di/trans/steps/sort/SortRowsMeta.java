@@ -29,6 +29,7 @@ import java.util.List;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -233,7 +234,7 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface {
         ascending[i] = "Y".equalsIgnoreCase( asc );
         String sens = XMLHandler.getTagValue( fnode, "case_sensitive" );
         String coll = Const.NVL( XMLHandler.getTagValue( fnode, "collator_enabled" ), "N" );
-        caseSensitive[i] = Const.isEmpty( sens ) || "Y".equalsIgnoreCase( sens );
+        caseSensitive[i] = Utils.isEmpty( sens ) || "Y".equalsIgnoreCase( sens );
         collatorEnabled[i] = "Y".equalsIgnoreCase( coll );
         collatorStrength[i] = Integer.parseInt(
           Const.NVL( XMLHandler.getTagValue( fnode, "collator_strength" ), "0" ) );

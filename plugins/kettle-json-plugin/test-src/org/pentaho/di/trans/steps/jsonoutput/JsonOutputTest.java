@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -33,7 +33,7 @@ import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Assert;
 import org.pentaho.di.TestUtilities;
-import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
@@ -96,7 +96,7 @@ public class JsonOutputTest extends TestCase {
   private StepMeta createRowGeneratorStep( String name, PluginRegistry registry ) {
 
     // Default the name if it is empty
-    String testFileOutputName = ( Const.isEmpty( name ) ? "generate rows" : name );
+    String testFileOutputName = ( Utils.isEmpty( name ) ? "generate rows" : name );
 
     // create the RowGenerator and Step Meta
     RowGeneratorMeta rowGeneratorMeta = new RowGeneratorMeta();

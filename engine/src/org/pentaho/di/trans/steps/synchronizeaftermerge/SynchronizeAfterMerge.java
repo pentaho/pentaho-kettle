@@ -28,6 +28,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.database.OracleDatabaseMeta;
@@ -93,7 +94,7 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface {
       if ( meta.istablenameInField() ) {
         // get dynamic table name
         data.realTableName = data.inputRowMeta.getString( row, data.indexOfTableNameField );
-        if ( Const.isEmpty( data.realTableName ) ) {
+        if ( Utils.isEmpty( data.realTableName ) ) {
           throw new KettleStepException( "The name of the table is not specified!" );
         }
         data.realSchemaTable =
@@ -683,7 +684,7 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface {
         }
       } else {
         data.realTableName = environmentSubstitute( meta.getTableName() );
-        if ( Const.isEmpty( data.realTableName ) ) {
+        if ( Utils.isEmpty( data.realTableName ) ) {
           throw new KettleStepException( "The table name is not specified (or the input field is empty)" );
         }
         data.realSchemaTable =
@@ -853,7 +854,7 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface {
         meta.normalizeAllocationFields();
         data.realSchemaName = environmentSubstitute( meta.getSchemaName() );
         if ( meta.istablenameInField() ) {
-          if ( Const.isEmpty( meta.gettablenameField() ) ) {
+          if ( Utils.isEmpty( meta.gettablenameField() ) ) {
             logError( BaseMessages.getString( PKG, "SynchronizeAfterMerge.Log.Error.TableFieldnameEmpty" ) );
             return false;
           }

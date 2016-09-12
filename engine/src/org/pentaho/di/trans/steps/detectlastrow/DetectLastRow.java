@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,9 +22,9 @@
 
 package org.pentaho.di.trans.steps.detectlastrow;
 
-import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -80,7 +80,7 @@ public class DetectLastRow extends BaseStep implements StepInterface {
         //
         // Output the last row with last row indicator set to true.
         //
-        if ( !Const.isEmpty( meta.getResultFieldName() ) ) {
+        if ( !Utils.isEmpty( meta.getResultFieldName() ) ) {
           outputRow = RowDataUtil.addRowData( previousRow, getInputRowMeta().size(), data.getTrueArray() );
         } else {
           outputRow = previousRow;
@@ -129,7 +129,7 @@ public class DetectLastRow extends BaseStep implements StepInterface {
     data = (DetectLastRowData) sdi;
 
     if ( super.init( smi, sdi ) ) {
-      if ( Const.isEmpty( meta.getResultFieldName() ) ) {
+      if ( Utils.isEmpty( meta.getResultFieldName() ) ) {
         logError( BaseMessages.getString( PKG, "DetectLastRow.Error.ResultFieldMissing" ) );
         return false;
       }

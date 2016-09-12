@@ -30,6 +30,7 @@ import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -444,7 +445,7 @@ public class YamlInputMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public String getRequiredFilesDesc( String tt ) {
-    if ( Const.isEmpty( tt ) ) {
+    if ( Utils.isEmpty( tt ) ) {
       return RequiredFilesDesc[0];
     }
     if ( tt.equalsIgnoreCase( RequiredFilesCode[1] ) ) {
@@ -737,7 +738,7 @@ public class YamlInputMeta extends BaseStepMeta implements StepMetaInterface {
     }
 
     if ( isInFields() ) {
-      if ( Const.isEmpty( getYamlField() ) ) {
+      if ( Utils.isEmpty( getYamlField() ) ) {
         cr =
           new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
             PKG, "YamlInputMeta.CheckResult.NoField" ), stepMeta );

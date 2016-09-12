@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -29,6 +29,7 @@ import java.util.List;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -276,7 +277,7 @@ public class WebServiceMeta extends BaseStepMeta implements StepMetaInterface {
     setCallStep( Const.toInt( XMLHandler.getTagValue( stepnode, "callStep" ), DEFAULT_STEP ) );
     setPassingInputData( "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "passingInputData" ) ) );
     String compat = XMLHandler.getTagValue( stepnode, "compatible" );
-    setCompatible( Const.isEmpty( compat ) || "Y".equalsIgnoreCase( compat ) );
+    setCompatible( Utils.isEmpty( compat ) || "Y".equalsIgnoreCase( compat ) );
     setRepeatingElementName( XMLHandler.getTagValue( stepnode, "repeating_element" ) );
     setReturningReplyAsString( "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "reply_as_string" ) ) );
 
@@ -450,7 +451,7 @@ public class WebServiceMeta extends BaseStepMeta implements StepMetaInterface {
   public WebServiceField getFieldOutFromWsName( String wsName, boolean ignoreWsNsPrefix ) {
     WebServiceField param = null;
 
-    if ( Const.isEmpty( wsName ) ) {
+    if ( Utils.isEmpty( wsName ) ) {
       return param;
     }
 

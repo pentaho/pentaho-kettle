@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -30,6 +30,7 @@ import java.net.UnknownHostException;
 import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
@@ -95,7 +96,7 @@ public class SFTPPut extends BaseStep implements StepInterface {
         if ( meta.isUseKeyFile() ) {
           // We must have here a private keyfilename
           realKeyFilename = environmentSubstitute( meta.getKeyFilename() );
-          if ( Const.isEmpty( realKeyFilename ) ) {
+          if ( Utils.isEmpty( realKeyFilename ) ) {
             // Error..Missing keyfile
             logError( BaseMessages.getString( PKG, "SFTPPut.Error.KeyFileMissing" ) );
             return false;
@@ -124,7 +125,7 @@ public class SFTPPut extends BaseStep implements StepInterface {
 
         // Set proxy?
         String realProxyHost = environmentSubstitute( meta.getProxyHost() );
-        if ( !Const.isEmpty( realProxyHost ) ) {
+        if ( !Utils.isEmpty( realProxyHost ) ) {
           // Set proxy
           data.sftpclient.setProxy(
             realProxyHost, environmentSubstitute( meta.getProxyPort() ), environmentSubstitute( meta
@@ -161,7 +162,7 @@ public class SFTPPut extends BaseStep implements StepInterface {
     FileObject file = null;
 
     try {
-      if ( Const.isEmpty( sourceData ) ) {
+      if ( Utils.isEmpty( sourceData ) ) {
         // Source data is empty
         throw new KettleStepException( BaseMessages.getString( PKG, "SFTPPut.Error.SourceDataEmpty" ) );
       }
@@ -196,7 +197,7 @@ public class SFTPPut extends BaseStep implements StepInterface {
         if ( meta.getAfterFTPS() == JobEntrySFTPPUT.AFTER_FTPSPUT_MOVE ) {
           String realDestationFolder = getInputRowMeta().getString( r, data.indexOfMoveToFolderFieldName );
 
-          if ( Const.isEmpty( realDestationFolder ) ) {
+          if ( Utils.isEmpty( realDestationFolder ) ) {
             // Move to destination folder is empty
             throw new KettleStepException( BaseMessages.getString(
               PKG, "SFTPPut.Error.MoveToDestinationFolderIsEmpty" ) );
@@ -271,7 +272,7 @@ public class SFTPPut extends BaseStep implements StepInterface {
   void checkSourceFileField( String sourceFilenameFieldName, SFTPPutData data ) throws KettleStepException {
     // Sourcefilename field
     sourceFilenameFieldName = environmentSubstitute( sourceFilenameFieldName );
-    if ( Const.isEmpty( sourceFilenameFieldName ) ) {
+    if ( Utils.isEmpty( sourceFilenameFieldName ) ) {
       // source filename field is missing
       throw new KettleStepException( BaseMessages.getString( PKG, "SFTPPut.Error.SourceFileNameFieldMissing" ) );
     }
@@ -288,7 +289,7 @@ public class SFTPPut extends BaseStep implements StepInterface {
   void checkRemoteFoldernameField( String remoteFoldernameFieldName, SFTPPutData data ) throws KettleStepException {
     // Remote folder fieldname
     remoteFoldernameFieldName = environmentSubstitute( remoteFoldernameFieldName );
-    if ( Const.isEmpty( remoteFoldernameFieldName ) ) {
+    if ( Utils.isEmpty( remoteFoldernameFieldName ) ) {
       // remote folder field is missing
       throw new KettleStepException( BaseMessages.getString( PKG, "SFTPPut.Error.RemoteFolderNameFieldMissing" ) );
     }
@@ -305,7 +306,7 @@ public class SFTPPut extends BaseStep implements StepInterface {
   void checkRemoteFilenameField( String remoteFilenameFieldName, SFTPPutData data )
     throws KettleStepException {
     remoteFilenameFieldName = environmentSubstitute( remoteFilenameFieldName );
-    if ( !Const.isEmpty( remoteFilenameFieldName ) ) {
+    if ( !Utils.isEmpty( remoteFilenameFieldName ) ) {
       data.indexOfRemoteFilename = getInputRowMeta().indexOfValue( remoteFilenameFieldName );
       if ( data.indexOfRemoteFilename == -1 ) {
         // remote file name field is set, but was not found
@@ -318,7 +319,7 @@ public class SFTPPut extends BaseStep implements StepInterface {
   @VisibleForTesting
   void checkDestinationFolderField( String realDestinationFoldernameFieldName, SFTPPutData data ) throws KettleStepException {
     realDestinationFoldernameFieldName = environmentSubstitute( realDestinationFoldernameFieldName );
-    if ( Const.isEmpty( realDestinationFoldernameFieldName ) ) {
+    if ( Utils.isEmpty( realDestinationFoldernameFieldName ) ) {
       throw new KettleStepException( BaseMessages.getString(
         PKG, "SFTPPut.Log.DestinatFolderNameFieldNameMissing" ) );
     }

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -30,6 +30,7 @@ import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -307,7 +308,7 @@ public class FixedInputMeta extends BaseStepMeta implements StepMetaInterface {
     }
 
     // See if we have input streams leading to this step!
-    if ( Const.isEmpty( filename ) ) {
+    if ( Utils.isEmpty( filename ) ) {
       cr =
         new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
           PKG, "FixedInputMeta.CheckResult.NoFilenameSpecified" ), stepMeta );
@@ -457,7 +458,7 @@ public class FixedInputMeta extends BaseStepMeta implements StepMetaInterface {
 
     ResourceReference reference = new ResourceReference( stepInfo );
     references.add( reference );
-    if ( !Const.isEmpty( filename ) ) {
+    if ( !Utils.isEmpty( filename ) ) {
       // Add the filename to the references, including a reference to this step meta data.
       //
       reference.getEntries().add(

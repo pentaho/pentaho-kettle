@@ -32,6 +32,7 @@ import org.jets3t.service.security.AWSCredentials;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.encryption.Encr;
@@ -351,7 +352,7 @@ public class S3CsvInputMeta extends BaseStepMeta implements StepMetaInterface, I
       rowMeta.addValueMeta( valueMeta );
     }
 
-    if ( !Const.isEmpty( filenameField ) && includingFilename ) {
+    if ( !Utils.isEmpty( filenameField ) && includingFilename ) {
       ValueMetaInterface filenameMeta = new ValueMetaString( filenameField );
       filenameMeta.setOrigin( origin );
       if ( lazyConversionActive ) {
@@ -361,7 +362,7 @@ public class S3CsvInputMeta extends BaseStepMeta implements StepMetaInterface, I
       rowMeta.addValueMeta( filenameMeta );
     }
 
-    if ( !Const.isEmpty( rowNumField ) ) {
+    if ( !Utils.isEmpty( rowNumField ) ) {
       ValueMetaInterface rowNumMeta = new ValueMetaInteger( rowNumField );
       rowNumMeta.setLength( 10 );
       rowNumMeta.setOrigin( origin );
@@ -520,7 +521,7 @@ public class S3CsvInputMeta extends BaseStepMeta implements StepMetaInterface, I
 
     ResourceReference reference = new ResourceReference( stepInfo );
     references.add( reference );
-    if ( !Const.isEmpty( filename ) ) {
+    if ( !Utils.isEmpty( filename ) ) {
       // Add the filename to the references, including a reference to this
       // step meta data.
       //

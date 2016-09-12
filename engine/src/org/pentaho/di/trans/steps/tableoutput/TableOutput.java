@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -29,6 +29,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseInterface;
@@ -228,7 +229,7 @@ public class TableOutput extends BaseStep implements StepInterface {
       }
     }
 
-    if ( Const.isEmpty( tableName ) ) {
+    if ( Utils.isEmpty( tableName ) ) {
       throw new KettleStepException( "The tablename is not defined (empty)" );
     }
 
@@ -539,7 +540,7 @@ public class TableOutput extends BaseStep implements StepInterface {
           // Only the first one truncates in a non-partitioned step copy
           //
           if ( meta.truncateTable()
-            && ( ( getCopy() == 0 && getUniqueStepNrAcrossSlaves() == 0 ) || !Const.isEmpty( getPartitionID() ) ) ) {
+            && ( ( getCopy() == 0 && getUniqueStepNrAcrossSlaves() == 0 ) || !Utils.isEmpty( getPartitionID() ) ) ) {
             data.db.truncateTable( environmentSubstitute( meta.getSchemaName() ), environmentSubstitute( meta
               .getTableName() ) );
           }

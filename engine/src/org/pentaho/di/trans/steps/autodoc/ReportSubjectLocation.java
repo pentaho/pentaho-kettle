@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,7 +22,7 @@
 
 package org.pentaho.di.trans.steps.autodoc;
 
-import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryObjectType;
 
@@ -58,7 +58,7 @@ public class ReportSubjectLocation {
 
   @Override
   public String toString() {
-    if ( Const.isEmpty( filename ) ) {
+    if ( Utils.isEmpty( filename ) ) {
       String dir = directory.toString();
       if ( dir.endsWith( "/" ) ) {
         return dir + name + " (" + objectType.getTypeDescription() + ")";

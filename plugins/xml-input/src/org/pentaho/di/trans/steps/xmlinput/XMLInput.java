@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,6 +23,7 @@
 package org.pentaho.di.trans.steps.xmlinput;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleValueException;
@@ -210,7 +211,7 @@ public class XMLInput extends BaseStep implements StepInterface {
 
       // Do we need to repeat this field if it is null?
       if ( meta.getInputFields()[i].isRepeated() ) {
-        if ( data.previousRow != null && Const.isEmpty( value ) ) {
+        if ( data.previousRow != null && Utils.isEmpty( value ) ) {
           outputRowData[i] = data.previousRow[i];
         }
       }
@@ -219,12 +220,12 @@ public class XMLInput extends BaseStep implements StepInterface {
     int outputIndex = meta.getInputFields().length;
 
     // See if we need to add the filename to the row...
-    if ( meta.includeFilename() && !Const.isEmpty( meta.getFilenameField() ) ) {
+    if ( meta.includeFilename() && !Utils.isEmpty( meta.getFilenameField() ) ) {
       outputRowData[outputIndex++] = KettleVFS.getFilename( data.file );
     }
 
     // See if we need to add the row number to the row...
-    if ( meta.includeRowNumber() && !Const.isEmpty( meta.getRowNumberField() ) ) {
+    if ( meta.includeRowNumber() && !Utils.isEmpty( meta.getRowNumberField() ) ) {
       outputRowData[outputIndex++] = new Long( data.rownr );
     }
 
@@ -271,7 +272,7 @@ public class XMLInput extends BaseStep implements StepInterface {
       data.filenr++;
 
       String baseURI = this.environmentSubstitute( meta.getFileBaseURI() );
-      if ( Const.isEmpty( baseURI ) ) {
+      if ( Utils.isEmpty( baseURI ) ) {
         baseURI = data.file.getParent().getName().getURI();
       }
 

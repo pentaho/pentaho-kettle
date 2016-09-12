@@ -51,6 +51,7 @@ import org.eclipse.swt.widgets.TableItem;
 import org.pentaho.di.ExecutionConfiguration;
 import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.parameters.UnknownParamException;
 import org.pentaho.di.i18n.BaseMessages;
@@ -128,7 +129,7 @@ public abstract class ConfigurationDialog extends Dialog {
       String varName = tableItem.getText( 1 );
       String varValue = tableItem.getText( 2 );
 
-      if ( !Const.isEmpty( varName ) ) {
+      if ( !Utils.isEmpty( varName ) ) {
         map.put( varName, varValue );
       }
     }
@@ -147,7 +148,7 @@ public abstract class ConfigurationDialog extends Dialog {
       String defaultValue = tableItem.getText( 2 );
       String paramValue = tableItem.getText( 3 );
 
-      if ( Const.isEmpty( paramValue ) ) {
+      if ( Utils.isEmpty( paramValue ) ) {
         paramValue = Const.NVL( defaultValue, "" );
       }
 

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -33,6 +33,7 @@ import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.auth.AuthenticationException;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.pentaho.di.cluster.SlaveConnectionManager;
+import org.pentaho.di.core.util.Utils;
 
 /**
  * HTTP
@@ -79,7 +80,7 @@ public class HTTPProtocol {
 
     HttpClient httpClient = SlaveConnectionManager.getInstance().createHttpClient();
     GetMethod getMethod = new GetMethod( urlAsString );
-    if ( !Const.isEmpty( username ) ) {
+    if ( !Utils.isEmpty( username ) ) {
       httpClient.getParams().setAuthenticationPreemptive( true );
       Credentials defaultcreds = new UsernamePasswordCredentials( username, password );
       httpClient.getState().setCredentials( AuthScope.ANY, defaultcreds );

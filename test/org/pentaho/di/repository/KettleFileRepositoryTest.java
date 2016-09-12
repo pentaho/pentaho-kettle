@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -36,6 +36,7 @@ import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSelectInfo;
 import org.apache.commons.vfs2.FileSelector;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.vfs.KettleVFS;
@@ -220,7 +221,7 @@ public class KettleFileRepositoryTest extends TestCase {
       jobMeta.setName( Const.createName( file.getName().getBaseName() ) );
       jobMeta.setName( jobMeta.getName().replace( '/', '-' ) );
 
-      if ( Const.isEmpty( jobMeta.getName() ) ) {
+      if ( Utils.isEmpty( jobMeta.getName() ) ) {
         jobMeta.setName( Const.createName( file.getName().getBaseName() ) );
       }
       if ( jobMeta.getName().contains( "/" ) ) {

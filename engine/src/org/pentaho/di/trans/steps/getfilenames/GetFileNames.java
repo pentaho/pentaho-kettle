@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -29,6 +29,7 @@ import java.util.List;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileType;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -103,7 +104,7 @@ public class GetFileNames extends BaseStep implements StepInterface {
         data.totalpreviousfields = data.inputRowMeta.size();
 
         // Check is filename field is provided
-        if ( Const.isEmpty( meta.getDynamicFilenameField() ) ) {
+        if ( Utils.isEmpty( meta.getDynamicFilenameField() ) ) {
           logError( BaseMessages.getString( PKG, "GetFileNames.Log.NoField" ) );
           throw new KettleException( BaseMessages.getString( PKG, "GetFileNames.Log.NoField" ) );
         }
@@ -121,7 +122,7 @@ public class GetFileNames extends BaseStep implements StepInterface {
         }
 
         // If wildcard field is specified, Check if field exists
-        if ( !Const.isEmpty( meta.getDynamicWildcardField() ) ) {
+        if ( !Utils.isEmpty( meta.getDynamicWildcardField() ) ) {
           if ( data.indexOfWildcardField < 0 ) {
             data.indexOfWildcardField = data.inputRowMeta.indexOfValue( meta.getDynamicWildcardField() );
             if ( data.indexOfWildcardField < 0 ) {
@@ -134,7 +135,7 @@ public class GetFileNames extends BaseStep implements StepInterface {
           }
         }
         // If ExcludeWildcard field is specified, Check if field exists
-        if ( !Const.isEmpty( meta.getDynamicExcludeWildcardField() ) ) {
+        if ( !Utils.isEmpty( meta.getDynamicExcludeWildcardField() ) ) {
           if ( data.indexOfExcludeWildcardField < 0 ) {
             data.indexOfExcludeWildcardField =
               data.inputRowMeta.indexOfValue( meta.getDynamicExcludeWildcardField() );
@@ -244,7 +245,7 @@ public class GetFileNames extends BaseStep implements StepInterface {
         extraData[outputIndex++] = data.file.getName().getRootURI();
 
         // See if we need to add the row number to the row...
-        if ( meta.includeRowNumber() && !Const.isEmpty( meta.getRowNumberField() ) ) {
+        if ( meta.includeRowNumber() && !Utils.isEmpty( meta.getRowNumberField() ) ) {
           extraData[outputIndex++] = new Long( data.rownr );
         }
 

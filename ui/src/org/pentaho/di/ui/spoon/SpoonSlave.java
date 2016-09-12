@@ -54,6 +54,7 @@ import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.EngineMetaInterface;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.logging.LogChannelInterface;
@@ -569,7 +570,7 @@ public class SpoonSlave extends Composite implements TabItemInterface {
     TreeEntry treeEntry = getTreeEntry();
     boolean isTrans = treeEntry != null && treeEntry.isTransformation();
     boolean isJob = treeEntry != null && treeEntry.isJob();
-    boolean hasId = treeEntry != null && !Const.isEmpty( treeEntry.id );
+    boolean hasId = treeEntry != null && !Utils.isEmpty( treeEntry.id );
     boolean isRunning = treeEntry != null && treeEntry.isRunning();
     boolean isStopped = treeEntry != null && treeEntry.isStopped();
     boolean isFinished = treeEntry != null && treeEntry.isFinished();
@@ -641,12 +642,12 @@ public class SpoonSlave extends Composite implements TabItemInterface {
       SlaveServerTransStatus transStatus = slaveServerStatus.findTransStatus( treeEntry.name, treeEntry.id );
       StringBuilder message = new StringBuilder();
       String errorDescription = transStatus.getErrorDescription();
-      if ( !Const.isEmpty( errorDescription ) ) {
+      if ( !Utils.isEmpty( errorDescription ) ) {
         message.append( errorDescription ).append( Const.CR ).append( Const.CR );
       }
 
       String logging = loggingMap.get( transStatus.getId() );
-      if ( !Const.isEmpty( logging ) ) {
+      if ( !Utils.isEmpty( logging ) ) {
         message.append( logging ).append( Const.CR );
       }
 
@@ -658,12 +659,12 @@ public class SpoonSlave extends Composite implements TabItemInterface {
       SlaveServerJobStatus jobStatus = slaveServerStatus.findJobStatus( treeEntry.name, treeEntry.id );
       StringBuilder message = new StringBuilder();
       String errorDescription = jobStatus.getErrorDescription();
-      if ( !Const.isEmpty( errorDescription ) ) {
+      if ( !Utils.isEmpty( errorDescription ) ) {
         message.append( errorDescription ).append( Const.CR ).append( Const.CR );
       }
 
       String logging = loggingMap.get( jobStatus.getId() );
-      if ( !Const.isEmpty( logging ) ) {
+      if ( !Utils.isEmpty( logging ) ) {
         message.append( logging ).append( Const.CR );
       }
 

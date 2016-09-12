@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,6 +27,7 @@ import java.util.ArrayList;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
@@ -66,7 +67,7 @@ public class Update extends BaseStep implements StepInterface {
     Object[] add;
 
     // Create the output row and copy the input values
-    if ( !Const.isEmpty( meta.getIgnoreFlagField() ) ) { // add flag field!
+    if ( !Utils.isEmpty( meta.getIgnoreFlagField() ) ) { // add flag field!
 
       outputRow = new Object[data.outputRowMeta.size()];
       for ( int i = 0; i < rowMeta.size(); i++ ) {
@@ -134,7 +135,7 @@ public class Update extends BaseStep implements StepInterface {
           logDetailed( BaseMessages.getString( PKG, "Update.Log.KeyCouldNotFound" )
             + data.lookupParameterRowMeta.getString( lookupRow ) );
         }
-        if ( !Const.isEmpty( meta.getIgnoreFlagField() ) ) { // set flag field!
+        if ( !Utils.isEmpty( meta.getIgnoreFlagField() ) ) { // set flag field!
 
           outputRow[rowMeta.size()] = Boolean.FALSE;
         }
@@ -192,7 +193,7 @@ public class Update extends BaseStep implements StepInterface {
         incrementLinesSkipped();
       }
 
-      if ( !Const.isEmpty( meta.getIgnoreFlagField() ) ) { // add flag field!
+      if ( !Utils.isEmpty( meta.getIgnoreFlagField() ) ) { // add flag field!
 
         outputRow[rowMeta.size()] = Boolean.TRUE;
       }

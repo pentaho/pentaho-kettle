@@ -55,6 +55,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.SourceToTargetMapping;
 import org.pentaho.di.core.exception.KettleException;
@@ -642,7 +643,7 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
     /*
      * Change the meta-data of certain fields
      */
-    if ( !Const.isEmpty( input.getMeta() ) ) {
+    if ( !Utils.isEmpty( input.getMeta() ) ) {
       for ( int i = 0; i < input.getMeta().length; i++ ) {
         SelectMetadataChange change = input.getMeta()[i];
 
@@ -705,7 +706,7 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
   }
 
   private void ok() {
-    if ( Const.isEmpty( wStepname.getText() ) ) {
+    if ( Utils.isEmpty( wStepname.getText() ) ) {
       return;
     }
 
@@ -753,7 +754,7 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
       int index = 1;
       change.setName( item.getText( index++ ) );
       change.setRename( item.getText( index++ ) );
-      if ( Const.isEmpty( change.getRename() ) ) {
+      if ( Utils.isEmpty( change.getRename() ) ) {
         change.setRename( change.getName() );
       }
       change.setType( ValueMeta.getType( item.getText( index++ ) ) );

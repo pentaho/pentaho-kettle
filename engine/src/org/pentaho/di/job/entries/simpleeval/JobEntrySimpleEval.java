@@ -29,6 +29,7 @@ import java.util.regex.Pattern;
 
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -468,7 +469,7 @@ public class JobEntrySimpleEval extends JobEntryBase implements Cloneable, JobEn
         break;
       case VALUE_TYPE_VARIABLE:
 
-        if ( Const.isEmpty( variablename ) ) {
+        if ( Utils.isEmpty( variablename ) ) {
           logError( BaseMessages.getString( PKG, "JobEntrySimpleEval.Error.VariableMissing" ) );
           return result;
         }
@@ -524,7 +525,7 @@ public class JobEntrySimpleEval extends JobEntryBase implements Cloneable, JobEn
             success = ( sourcevalue.equals( realCompareValue ) );
             if ( valuetype == VALUE_TYPE_VARIABLE && !success ) {
               // make the empty value evaluate to true when compared to a not set variable
-              if ( Const.isEmpty( realCompareValue ) ) {
+              if ( Utils.isEmpty( realCompareValue ) ) {
                 String variableName = StringUtil.getVariableName( variablename );
                 if ( System.getProperty( variableName ) == null ) {
                   success = true;
@@ -781,7 +782,7 @@ public class JobEntrySimpleEval extends JobEntryBase implements Cloneable, JobEn
       case FIELD_TYPE_DATE_TIME:
         String realMask = environmentSubstitute( mask );
         SimpleDateFormat df = new SimpleDateFormat();
-        if ( !Const.isEmpty( realMask ) ) {
+        if ( !Utils.isEmpty( realMask ) ) {
           df.applyPattern( realMask );
         }
 

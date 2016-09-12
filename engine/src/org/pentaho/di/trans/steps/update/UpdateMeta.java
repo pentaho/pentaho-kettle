@@ -27,6 +27,7 @@ import java.util.List;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -590,7 +591,7 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface {
       try {
         db.connect();
 
-        if ( !Const.isEmpty( tableName ) ) {
+        if ( !Utils.isEmpty( tableName ) ) {
           cr =
             new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
               PKG, "UpdateMeta.CheckResult.TableNameOK" ), stepMeta );
@@ -784,7 +785,7 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface {
         // Copy the row
         RowMetaInterface tableFields = RowMetaUtils.getRowMetaForUpdate( prev, keyLookup, keyStream,
             updateLookup, updateStream );
-        if ( !Const.isEmpty( tableName ) ) {
+        if ( !Utils.isEmpty( tableName ) ) {
           String schemaTable = databaseMeta.getQuotedSchemaTableCombination( schemaName, tableName );
 
           Database db = new Database( loggingObject, databaseMeta );

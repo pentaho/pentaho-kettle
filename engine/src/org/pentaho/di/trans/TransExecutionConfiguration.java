@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -36,6 +36,7 @@ import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.ExecutionConfiguration;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.encryption.Encr;
@@ -348,7 +349,7 @@ public class TransExecutionConfiguration implements ExecutionConfiguration {
     //
     for ( String variableName : Const.INTERNAL_JOB_VARIABLES ) {
       String value = transMeta.getVariable( variableName );
-      if ( !Const.isEmpty( value ) ) {
+      if ( !Utils.isEmpty( value ) ) {
         variables.put( variableName, value );
       }
     }
@@ -381,7 +382,7 @@ public class TransExecutionConfiguration implements ExecutionConfiguration {
     //
     for ( String variableName : Const.INTERNAL_JOB_VARIABLES ) {
       String value = transMeta.getVariable( variableName );
-      if ( !Const.isEmpty( value ) ) {
+      if ( !Utils.isEmpty( value ) ) {
         variables.put( variableName, value );
       }
     }
@@ -573,7 +574,7 @@ public class TransExecutionConfiguration implements ExecutionConfiguration {
       Node argNode = XMLHandler.getSubNodeByNr( varsNode, "variable", i );
       String name = XMLHandler.getTagValue( argNode, "name" );
       String value = XMLHandler.getTagValue( argNode, "value" );
-      if ( !Const.isEmpty( name ) ) {
+      if ( !Utils.isEmpty( name ) ) {
         variables.put( name, Const.NVL( value, "" ) );
       }
     }
@@ -586,7 +587,7 @@ public class TransExecutionConfiguration implements ExecutionConfiguration {
       Node argNode = XMLHandler.getSubNodeByNr( argsNode, "argument", i );
       String name = XMLHandler.getTagValue( argNode, "name" );
       String value = XMLHandler.getTagValue( argNode, "value" );
-      if ( !Const.isEmpty( name ) && !Const.isEmpty( value ) ) {
+      if ( !Utils.isEmpty( name ) && !Utils.isEmpty( value ) ) {
         arguments.put( name, value );
       }
     }
@@ -599,7 +600,7 @@ public class TransExecutionConfiguration implements ExecutionConfiguration {
       Node parmNode = XMLHandler.getSubNodeByNr( parmsNode, "parameter", i );
       String name = XMLHandler.getTagValue( parmNode, "name" );
       String value = XMLHandler.getTagValue( parmNode, "value" );
-      if ( !Const.isEmpty( name ) ) {
+      if ( !Utils.isEmpty( name ) ) {
         params.put( name, value );
       }
     }

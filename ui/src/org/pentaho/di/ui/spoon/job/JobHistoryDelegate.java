@@ -45,6 +45,7 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.Database;
@@ -464,7 +465,7 @@ public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler
     LogTableInterface logTable = model.logTable;
     // See if there is a job loaded that has a connection table specified.
     //
-    if ( jobMeta != null && !Const.isEmpty( jobMeta.getName() ) && logTable.isDefined() ) {
+    if ( jobMeta != null && !Utils.isEmpty( jobMeta.getName() ) && logTable.isDefined() ) {
       Database database = null;
       try {
         DatabaseMeta logConnection = logTable.getDatabaseMeta();

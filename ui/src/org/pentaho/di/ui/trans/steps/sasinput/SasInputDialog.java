@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -45,6 +45,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -328,7 +329,7 @@ public class SasInputDialog extends BaseStepDialog implements StepDialogInterfac
       SasInputField field = new SasInputField();
       field.setName( item.getText( colnr++ ) );
       field.setRename( item.getText( colnr++ ) );
-      if ( Const.isEmpty( field.getRename() ) ) {
+      if ( Utils.isEmpty( field.getRename() ) ) {
         field.setRename( field.getName() );
       }
       field.setType( ValueMeta.getType( item.getText( colnr++ ) ) );
@@ -348,7 +349,7 @@ public class SasInputDialog extends BaseStepDialog implements StepDialogInterfac
   }
 
   private void ok() {
-    if ( Const.isEmpty( wStepname.getText() ) ) {
+    if ( Utils.isEmpty( wStepname.getText() ) ) {
       return;
     }
 

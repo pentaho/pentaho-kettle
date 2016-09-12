@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -54,6 +54,7 @@ import org.apache.commons.vfs2.FileType;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -757,7 +758,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
     // Send an e-mail...
     // create some properties and get the default Session
     Properties props = new Properties();
-    if ( Const.isEmpty( server ) ) {
+    if ( Utils.isEmpty( server ) ) {
       logError( BaseMessages.getString( PKG, "JobMail.Error.HostNotSpecified" ) );
 
       result.setNrErrors( 1L );
@@ -782,7 +783,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
     }
 
     props.put( "mail." + protocol + ".host", environmentSubstitute( server ) );
-    if ( !Const.isEmpty( port ) ) {
+    if ( !Utils.isEmpty( port ) ) {
       props.put( "mail." + protocol + ".port", environmentSubstitute( port ) );
     }
 
@@ -828,9 +829,9 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
 
       // Set Mail sender (From)
       String sender_address = environmentSubstitute( replyAddress );
-      if ( !Const.isEmpty( sender_address ) ) {
+      if ( !Utils.isEmpty( sender_address ) ) {
         String sender_name = environmentSubstitute( replyName );
-        if ( !Const.isEmpty( sender_name ) ) {
+        if ( !Utils.isEmpty( sender_name ) ) {
           sender_address = sender_name + '<' + sender_address + '>';
         }
         msg.setFrom( new InternetAddress( sender_address ) );
@@ -840,7 +841,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
 
       // set Reply to addresses
       String reply_to_address = environmentSubstitute( replyToAddresses );
-      if ( !Const.isEmpty( reply_to_address ) ) {
+      if ( !Utils.isEmpty( reply_to_address ) ) {
         // Split the mail-address: space separated
         String[] reply_Address_List = environmentSubstitute( reply_to_address ).split( " " );
         InternetAddress[] address = new InternetAddress[reply_Address_List.length];
@@ -859,7 +860,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
       msg.setRecipients( Message.RecipientType.TO, address );
 
       String realCC = environmentSubstitute( getDestinationCc() );
-      if ( !Const.isEmpty( realCC ) ) {
+      if ( !Utils.isEmpty( realCC ) ) {
         // Split the mail-address Cc: space separated
         String[] destinationsCc = realCC.split( " " );
         InternetAddress[] addressCc = new InternetAddress[destinationsCc.length];
@@ -871,7 +872,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
       }
 
       String realBCc = environmentSubstitute( getDestinationBCc() );
-      if ( !Const.isEmpty( realBCc ) ) {
+      if ( !Utils.isEmpty( realBCc ) ) {
         // Split the mail-address BCc: space separated
         String[] destinationsBCc = realBCc.split( " " );
         InternetAddress[] addressBCc = new InternetAddress[destinationsBCc.length];
@@ -882,7 +883,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
         msg.setRecipients( Message.RecipientType.BCC, addressBCc );
       }
       String realSubject = environmentSubstitute( subject );
-      if ( !Const.isEmpty( realSubject ) ) {
+      if ( !Utils.isEmpty( realSubject ) ) {
         msg.setSubject( realSubject );
       }
 
@@ -890,7 +891,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
       StringBuilder messageText = new StringBuilder();
       String endRow = isUseHTML() ? "<br>" : Const.CR;
       String realComment = environmentSubstitute( comment );
-      if ( !Const.isEmpty( realComment ) ) {
+      if ( !Utils.isEmpty( realComment ) ) {
         messageText.append( realComment ).append( Const.CR ).append( Const.CR );
       }
       if ( !onlySendComment ) {
@@ -948,7 +949,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
       }
 
       if ( !onlySendComment
-        && ( !Const.isEmpty( environmentSubstitute( contactPerson ) ) || !Const
+        && ( !Utils.isEmpty( environmentSubstitute( contactPerson ) ) || !Utils
           .isEmpty( environmentSubstitute( contactPhone ) ) ) ) {
         messageText.append( BaseMessages.getString( PKG, "JobMail.Log.Comment.ContactInfo" ) + " :" ).append(
           endRow );
@@ -983,7 +984,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
       // 1st part
 
       if ( useHTML ) {
-        if ( !Const.isEmpty( getEncoding() ) ) {
+        if ( !Utils.isEmpty( getEncoding() ) ) {
           part1.setContent( messageText.toString(), "text/html; " + "charset=" + getEncoding() );
         } else {
           part1.setContent( messageText.toString(), "text/html; " + "charset=ISO-8859-1" );
@@ -1162,7 +1163,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
         String authPass = getPassword( authenticationPassword );
 
         if ( usingAuthentication ) {
-          if ( !Const.isEmpty( port ) ) {
+          if ( !Utils.isEmpty( port ) ) {
             transport.connect(
               environmentSubstitute( Const.NVL( server, "" ) ),
               Integer.parseInt( environmentSubstitute( Const.NVL( port, "" ) ) ),

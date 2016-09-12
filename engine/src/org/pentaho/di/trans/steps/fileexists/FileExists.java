@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,10 +23,10 @@
 package org.pentaho.di.trans.steps.fileexists;
 
 import org.apache.commons.vfs2.FileType;
-import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
@@ -83,7 +83,7 @@ public class FileExists extends BaseStep implements StepInterface {
         meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
 
         // Check is tablename field is provided
-        if ( Const.isEmpty( meta.getDynamicFilenameField() ) ) {
+        if ( Utils.isEmpty( meta.getDynamicFilenameField() ) ) {
           logError( BaseMessages.getString( PKG, "FileExists.Error.FilenameFieldMissing" ) );
           throw new KettleException( BaseMessages.getString( PKG, "FileExists.Error.FilenameFieldMissing" ) );
         }
@@ -107,14 +107,14 @@ public class FileExists extends BaseStep implements StepInterface {
       }
       // get filename
       String filename = data.previousRowMeta.getString( r, data.indexOfFileename );
-      if ( !Const.isEmpty( filename ) ) {
+      if ( !Utils.isEmpty( filename ) ) {
         data.file = KettleVFS.getFileObject( filename, getTransMeta() );
 
         // Check if file
         fileexists = data.file.exists();
 
         // include file type?
-        if ( meta.includeFileType() && fileexists && !Const.isEmpty( meta.getFileTypeFieldName() ) ) {
+        if ( meta.includeFileType() && fileexists && !Utils.isEmpty( meta.getFileTypeFieldName() ) ) {
           filetype = data.file.getType().toString();
         }
 
@@ -137,7 +137,7 @@ public class FileExists extends BaseStep implements StepInterface {
       int rowIndex = data.NrPrevFields;
       rowIndex++;
 
-      if ( meta.includeFileType() && !Const.isEmpty( meta.getFileTypeFieldName() ) ) {
+      if ( meta.includeFileType() && !Utils.isEmpty( meta.getFileTypeFieldName() ) ) {
         outputRow[rowIndex] = filetype;
       }
 
@@ -173,7 +173,7 @@ public class FileExists extends BaseStep implements StepInterface {
     data = (FileExistsData) sdi;
 
     if ( super.init( smi, sdi ) ) {
-      if ( Const.isEmpty( meta.getResultFieldName() ) ) {
+      if ( Utils.isEmpty( meta.getResultFieldName() ) ) {
         logError( BaseMessages.getString( PKG, "FileExists.Error.ResultFieldMissing" ) );
         return false;
       }

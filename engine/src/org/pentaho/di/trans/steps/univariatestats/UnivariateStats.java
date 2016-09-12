@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,12 +24,12 @@ package org.pentaho.di.trans.steps.univariatestats;
 
 import java.util.ArrayList;
 
-import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -140,7 +140,7 @@ public class UnivariateStats extends BaseStep implements StepInterface {
 
         // check that this univariate stats computation has been
         // defined on an input field
-        if ( !Const.isEmpty( usmf.getSourceFieldName() ) ) {
+        if ( !Utils.isEmpty( usmf.getSourceFieldName() ) ) {
           int fieldIndex = m_data.getInputRowMeta().indexOfValue( usmf.getSourceFieldName() );
 
           if ( fieldIndex < 0 ) {
@@ -178,7 +178,7 @@ public class UnivariateStats extends BaseStep implements StepInterface {
     for ( int i = 0; i < m_meta.getNumFieldsToProcess(); i++ ) {
 
       UnivariateStatsMetaFunction usmf = m_meta.getInputFieldMetaFunctions()[i];
-      if ( !Const.isEmpty( usmf.getSourceFieldName() ) ) {
+      if ( !Utils.isEmpty( usmf.getSourceFieldName() ) ) {
         FieldIndex tempData = m_data.getFieldIndexes()[i];
 
         ValueMetaInterface metaI = getInputRowMeta().getValueMeta( tempData.m_columnIndex );
@@ -235,7 +235,7 @@ public class UnivariateStats extends BaseStep implements StepInterface {
     for ( int i = 0; i < m_meta.getNumFieldsToProcess(); i++ ) {
       UnivariateStatsMetaFunction usmf = m_meta.getInputFieldMetaFunctions()[i];
 
-      if ( !Const.isEmpty( usmf.getSourceFieldName() ) ) {
+      if ( !Utils.isEmpty( usmf.getSourceFieldName() ) ) {
         totalNumOutputFields += usmf.numberOfMetricsRequested();
       }
     }
@@ -245,7 +245,7 @@ public class UnivariateStats extends BaseStep implements StepInterface {
     for ( int i = 0; i < m_meta.getNumFieldsToProcess(); i++ ) {
       UnivariateStatsMetaFunction usmf = m_meta.getInputFieldMetaFunctions()[i];
 
-      if ( !Const.isEmpty( usmf.getSourceFieldName() ) ) {
+      if ( !Utils.isEmpty( usmf.getSourceFieldName() ) ) {
         Object[] tempOut = m_data.getFieldIndexes()[i].generateOutputValues( usmf, m_dataCache[i] );
 
         for ( int j = 0; j < tempOut.length; j++ ) {

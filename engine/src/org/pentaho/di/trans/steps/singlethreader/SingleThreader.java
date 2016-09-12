@@ -25,6 +25,7 @@ package org.pentaho.di.trans.steps.singlethreader;
 import java.util.ArrayList;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.logging.KettleLogStore;
@@ -300,7 +301,7 @@ public class SingleThreader extends BaseStep implements StepInterface {
           }
 
           String retrieveStepName = environmentSubstitute( meta.getRetrieveStep() );
-          if ( !Const.isEmpty( retrieveStepName ) ) {
+          if ( !Utils.isEmpty( retrieveStepName ) ) {
             singleThreaderData.retrieveStepMeta = singleThreaderData.mappingTransMeta.findStep( retrieveStepName );
             if ( singleThreaderData.retrieveStepMeta == null ) {
               logError( "The retrieve step with name '"

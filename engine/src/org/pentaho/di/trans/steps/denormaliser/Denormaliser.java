@@ -32,6 +32,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleValueException;
@@ -340,7 +341,7 @@ public class Denormaliser extends BaseStep implements StepInterface {
     Object valueData = rowData[data.keyFieldNr];
 
     String key = valueMeta.getCompatibleString( valueData );
-    if ( Const.isEmpty( key ) ) {
+    if ( Utils.isEmpty( key ) ) {
       return;
     }
     // Get all the indexes for the given key value...
@@ -469,7 +470,7 @@ public class Denormaliser extends BaseStep implements StepInterface {
    */
   private ValueMetaInterface getConversionMeta( String mask ) {
     ValueMetaInterface meta = null;
-    if ( !Const.isEmpty( mask ) ) {
+    if ( !Utils.isEmpty( mask ) ) {
       meta = conversionMetaCache.get( mask );
       if ( meta == null ) {
         meta = new ValueMetaDate();

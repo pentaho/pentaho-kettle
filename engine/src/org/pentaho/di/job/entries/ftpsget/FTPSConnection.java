@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -38,8 +38,8 @@ import org.ftp4che.FTPConnectionFactory;
 import org.ftp4che.event.FTPEvent;
 import org.ftp4che.event.FTPListener;
 import org.ftp4che.util.ftpfile.FTPFile;
-import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 
@@ -188,7 +188,7 @@ public class FTPSConnection implements FTPListener {
   }
 
   public static String getConnectionTypeDesc( String tt ) {
-    if ( Const.isEmpty( tt ) ) {
+    if ( Utils.isEmpty( tt ) ) {
       return connection_type_Desc[0];
     }
     if ( tt.equalsIgnoreCase( connection_type_Code[ 1 ] ) ) {

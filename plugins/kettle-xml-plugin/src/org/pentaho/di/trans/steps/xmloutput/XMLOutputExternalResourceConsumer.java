@@ -1,7 +1,7 @@
 /*
  * ******************************************************************************
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  * ******************************************************************************
  *
@@ -20,7 +20,7 @@
 
 package org.pentaho.di.trans.steps.xmloutput;
 
-import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.trans.TransMeta;
@@ -59,7 +59,7 @@ public class XMLOutputExternalResourceConsumer
             resources = new ArrayList<IExternalResourceInfo>( paths.length );
 
             for ( String path : paths ) {
-              if ( !Const.isEmpty( path ) ) {
+              if ( !Utils.isEmpty( path ) ) {
                 try {
 
                   IExternalResourceInfo resource = ExternalResourceInfoFactory

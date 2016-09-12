@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -31,13 +31,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.gui.AreaOwner;
 import org.pentaho.di.core.gui.GCInterface;
 import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.gui.ScrollBarInterface;
 import org.pentaho.di.core.gui.SwingGC;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.JobPainter;
 import org.pentaho.di.job.entry.JobEntryCopy;
@@ -96,7 +96,7 @@ public class JobInformation {
 
   private JobMeta loadJob( ReportSubjectLocation location ) throws KettleException {
     JobMeta jobMeta;
-    if ( !Const.isEmpty( location.getFilename() ) ) {
+    if ( !Utils.isEmpty( location.getFilename() ) ) {
       jobMeta = new JobMeta( location.getFilename(), repository );
     } else {
       jobMeta = repository.loadJob( location.getName(), location.getDirectory(), null, null );

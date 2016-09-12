@@ -12,7 +12,7 @@
 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 * See the GNU Lesser General Public License for more details.
 *
-* Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
+* Copyright (c) 2002-2016 Pentaho Corporation..  All rights reserved.
 */
 
 package org.pentaho.di.starmodeler;
@@ -45,6 +45,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
@@ -84,7 +85,7 @@ public class DimensionTableDialog extends Dialog
 	private CTabItem     wTableTab, wTablesTab;
 
 	private PropsUI      props;
-		
+
 	private Label        wlTableName;
 	private Text         wTableName;
 
@@ -101,9 +102,9 @@ public class DimensionTableDialog extends Dialog
 
 	private LogicalTable logicalTable;
 	private Shell  shell;
-	
+
 	private SelectionAdapter lsDef;
-	
+
   // fields tab
 	private TableView    wAttributes;
 
@@ -119,7 +120,7 @@ public class DimensionTableDialog extends Dialog
 		this.props=PropsUI.getInstance();
 		this.locale = locale;
 	}
-	
+
 	public LogicalTable open()
 	{
 		Shell parent = getParent();
@@ -128,7 +129,7 @@ public class DimensionTableDialog extends Dialog
 		shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN);
 		props.setLook(shell);
 		shell.setImage(GUIResource.getInstance().getImageLogoSmall());
-		
+
 		FormLayout formLayout = new FormLayout ();
 		formLayout.marginWidth  = Const.FORM_MARGIN;
 		formLayout.marginHeight = Const.FORM_MARGIN;
@@ -138,10 +139,10 @@ public class DimensionTableDialog extends Dialog
 
 		middle = props.getMiddlePct();
 		margin = Const.MARGIN;
-		
+
 		wTabFolder = new CTabFolder(shell, SWT.BORDER);
 		props.setLook(wTabFolder, Props.WIDGET_STYLE_TAB);
-		
+
 		addTableTab();
 		addAttributesTab();
 
@@ -164,22 +165,22 @@ public class DimensionTableDialog extends Dialog
 		// Add listeners
 		lsOK       = new Listener() { public void handleEvent(Event e) { ok();     } };
 		lsCancel   = new Listener() { public void handleEvent(Event e) { cancel(); } };
-		
+
 		wOK.addListener    (SWT.Selection, lsOK    );
 		wCancel.addListener(SWT.Selection, lsCancel);
-		
+
 		lsDef=new SelectionAdapter() { public void widgetDefaultSelected(SelectionEvent e) { ok(); } };
-		
+
 		wTableName.addSelectionListener( lsDef );
     wTableDescription.addSelectionListener( lsDef );
     wPhysicalName.addSelectionListener( lsDef );
-		
+
 		// Detect X or ALT-F4 or something that kills this window...
 		shell.addShellListener(	new ShellAdapter() { public void shellClosed(ShellEvent e) { cancel(); } } );
 
 		wTabFolder.setSelection(0);
 		getData();
-		BaseStepDialog.setSize(shell);		
+		BaseStepDialog.setSize(shell);
 
 		shell.open();
 		while (!shell.isDisposed())
@@ -379,7 +380,7 @@ public class DimensionTableDialog extends Dialog
 
         wTablesComp.layout();
         wTablesTab.setControl(wTablesComp);
-    }	
+    }
 
 
 
@@ -465,7 +466,7 @@ public class DimensionTableDialog extends Dialog
 		props.setScreen(winprop);
 		shell.dispose();
 	}
-	
+
 	/**
 	 * Copy information from the meta-data input to the dialog fields.
 	 */
@@ -475,10 +476,10 @@ public class DimensionTableDialog extends Dialog
 		wTableDescription.setText( Const.NVL(ConceptUtil.getDescription(logicalTable, locale), "") );
 		wPhysicalName.setText(Const.NVL(ConceptUtil.getString(logicalTable, DefaultIDs.LOGICAL_TABLE_PHYSICAL_TABLE_NAME), ""));
     wDimensionType.setText(Const.NVL(ConceptUtil.getString(logicalTable, DefaultIDs.LOGICAL_TABLE_DIMENSION_TYPE), ""));
-		
+
 		refreshAttributesList();
 	}
-	
+
   protected void refreshAttributesList() {
     wAttributes.clearAll();
 
@@ -516,24 +517,24 @@ public class DimensionTableDialog extends Dialog
 		logicalTable=null;
 		dispose();
 	}
-		
+
 	private void ok()
 	{
-	
-    if (Const.isEmpty(wTableName.getText())) {
+
+    if (Utils.isEmpty(wTableName.getText())) {
       MessageBox box = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
       box.setText(BaseMessages.getString(PKG, "DimensionTableDialog.ErrorDimensionHasNoName.Title"));
       box.setMessage(BaseMessages.getString(PKG, "DimensionTableDialog.ErrorDimensionHasNoName.Message"));
       box.open();
       return;
     }
-	
-		logicalTable.setName( new LocalizedString(locale, wTableName.getText()) );		
+
+		logicalTable.setName( new LocalizedString(locale, wTableName.getText()) );
 		logicalTable.setDescription( new LocalizedString(locale, wTableDescription.getText()) );
 		logicalTable.setProperty(DefaultPropertyID.TABLE_TYPE.getId(), TableType.DIMENSION);
 		logicalTable.setProperty(DefaultIDs.LOGICAL_TABLE_PHYSICAL_TABLE_NAME, wPhysicalName.getText());
     logicalTable.setProperty(DefaultIDs.LOGICAL_TABLE_DIMENSION_TYPE, wDimensionType.getText());
-		
+
     // name, description, field type, physical column name, data type, length, precision,
 		// source db, source table, source column, conversion remarks
     //
@@ -543,7 +544,7 @@ public class DimensionTableDialog extends Dialog
 		  TableItem item = wAttributes.getNonEmpty(i);
 		  LogicalColumn logicalColumn = new LogicalColumn();
 		  logicalColumn.setId(UUID.randomUUID().toString());
-		
+
 		  int col=1;
 		  logicalColumn.setName(new LocalizedString(locale, item.getText(col++)));
 		  logicalColumn.setDescription(new LocalizedString(locale, item.getText(col++)));
@@ -551,7 +552,7 @@ public class DimensionTableDialog extends Dialog
       logicalColumn.setProperty(DefaultIDs.LOGICAL_COLUMN_ATTRIBUTE_TYPE, AttributeType.getAttributeType(fieldTypeString).name());
       logicalColumn.setProperty(DefaultIDs.LOGICAL_COLUMN_PHYSICAL_COLUMN_NAME, item.getText(col++));
       String dataTypeString = item.getText(col++);
-      logicalColumn.setDataType(Const.isEmpty(dataTypeString) ? null  : DataType.valueOf(dataTypeString));
+      logicalColumn.setDataType(Utils.isEmpty(dataTypeString) ? null  : DataType.valueOf(dataTypeString));
       logicalColumn.setProperty(DefaultIDs.LOGICAL_COLUMN_LENGTH, item.getText(col++));
       logicalColumn.setProperty(DefaultIDs.LOGICAL_COLUMN_PRECISION, item.getText(col++));
       logicalColumn.setProperty(DefaultIDs.LOGICAL_COLUMN_SOURCE_DB, item.getText(col++));

@@ -27,6 +27,7 @@ import java.util.List;
 
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
@@ -257,7 +258,7 @@ public class JobEntryWriteToLog extends JobEntryBase implements Cloneable, JobEn
     LogChannelInterface logChannel = logWriterObject.getLogChannel();
     String message = getRealLogMessage();
 
-    if ( Const.isEmpty( message ) ) {
+    if ( Utils.isEmpty( message ) ) {
       return true;
     }
 

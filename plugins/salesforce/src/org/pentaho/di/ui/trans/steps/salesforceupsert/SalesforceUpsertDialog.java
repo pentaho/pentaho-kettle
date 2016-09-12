@@ -57,6 +57,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.SourceToTargetMapping;
 import org.pentaho.di.core.exception.KettleException;
@@ -179,7 +180,7 @@ public class SalesforceUpsertDialog extends SalesforceStepDialog {
   private boolean excludeNonUpdatableFields = true;
 
   public SalesforceUpsertDialog( Shell parent, Object in, TransMeta transMeta, String sname ) {
-    super( parent, (BaseStepMeta) in, transMeta, sname );
+    super( parent, in, transMeta, sname );
     input = (SalesforceUpsertMeta) in;
     inputFields = new HashMap<String, Integer>();
   }
@@ -626,7 +627,7 @@ public class SalesforceUpsertDialog extends SalesforceStepDialog {
                 if ( !wReturn.isDisposed() ) {
                   for ( int i = 0; i < wReturn.table.getItemCount(); i++ ) {
                     TableItem it = wReturn.table.getItem( i );
-                    if ( !Const.isEmpty( it.getText( 2 ) ) ) {
+                    if ( !Utils.isEmpty( it.getText( 2 ) ) ) {
                       if ( !inputFields.containsKey( it.getText( 2 ) ) ) {
                         it.setBackground( GUIResource.getInstance().getColorRed() );
                       }
@@ -752,7 +753,7 @@ public class SalesforceUpsertDialog extends SalesforceStepDialog {
       wUpsertField.removeAll();
       wUpsertField.setItems( getModuleFields() );
 
-      if ( !Const.isEmpty( selectedField ) ) {
+      if ( !Utils.isEmpty( selectedField ) ) {
         wUpsertField.setText( selectedField );
       }
     } catch ( Exception e ) {
@@ -859,7 +860,7 @@ public class SalesforceUpsertDialog extends SalesforceStepDialog {
 
   // check if module, username is given
   private boolean checkInput() {
-    if ( Const.isEmpty( wModule.getText() ) ) {
+    if ( Utils.isEmpty( wModule.getText() ) ) {
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
       mb.setMessage( BaseMessages.getString( PKG, "SalesforceUpsertDialog.ModuleMissing.DialogMessage" ) );
       mb.setText( BaseMessages.getString( PKG, "System.Dialog.Error.Title" ) );
@@ -872,7 +873,7 @@ public class SalesforceUpsertDialog extends SalesforceStepDialog {
   // check if module, username is given
   private boolean checkUser() {
 
-    if ( Const.isEmpty( wUserName.getText() ) ) {
+    if ( Utils.isEmpty( wUserName.getText() ) ) {
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
       mb.setMessage( BaseMessages.getString( PKG, "SalesforceUpsertDialog.UsernameMissing.DialogMessage" ) );
       mb.setText( BaseMessages.getString( PKG, "System.Dialog.Error.Title" ) );
@@ -886,7 +887,7 @@ public class SalesforceUpsertDialog extends SalesforceStepDialog {
   private String[] getModuleFields() throws KettleException {
     if ( moduleFields != null ) {
       return moduleFields;
-    } else if ( skipFetchModules() || Const.isEmpty( wModule.getText() ) ) {
+    } else if ( skipFetchModules() || Utils.isEmpty( wModule.getText() ) ) {
       getModulesListError = false;
       return new String[0];
     }
@@ -924,9 +925,9 @@ public class SalesforceUpsertDialog extends SalesforceStepDialog {
   }
 
   private boolean skipFetchModules() {
-    return Const.isEmpty( wURL.getText() )
-      || Const.isEmpty( wUserName.getText() )
-      || Const.isEmpty( wPassword.getText() )
+    return Utils.isEmpty( wURL.getText() )
+      || Utils.isEmpty( wUserName.getText() )
+      || Utils.isEmpty( wPassword.getText() )
       || getModulesListError;
   }
 
@@ -1088,7 +1089,7 @@ public class SalesforceUpsertDialog extends SalesforceStepDialog {
         // return
         wModule.setItems( connection.getAllAvailableObjects( false ) );
 
-        if ( !Const.isEmpty( selectedField ) ) {
+        if ( !Utils.isEmpty( selectedField ) ) {
           wModule.setText( selectedField );
         }
 
@@ -1118,7 +1119,7 @@ public class SalesforceUpsertDialog extends SalesforceStepDialog {
       colInfo.setComboValues( new String[] {} );
     }
     String selectedModule = transMeta.environmentSubstitute( wModule.getText() );
-    if ( !Const.isEmpty( selectedModule ) ) {
+    if ( !Utils.isEmpty( selectedModule ) ) {
       try {
         // loop through the objects and find build the list of fields
         String[] fieldsName = getModuleFields();

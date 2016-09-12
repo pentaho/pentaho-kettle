@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.w3c.dom.Node;
 
@@ -253,25 +254,25 @@ public class FunctionDescription {
 
     // Syntax
     //
-    if ( !Const.isEmpty( syntax ) ) {
+    if ( !Utils.isEmpty( syntax ) ) {
       report.append( "<b><u>Syntax:</u></b> <pre>" ).append( syntax ).append( "</pre><br>" ).append( Const.CR );
     }
 
     // Returns
     //
-    if ( !Const.isEmpty( returns ) ) {
+    if ( !Utils.isEmpty( returns ) ) {
       report.append( "<b><u>Returns:</u></b>  " ).append( returns ).append( "<br>" ).append( Const.CR );
     }
 
     // Constraints
     //
-    if ( !Const.isEmpty( constraints ) ) {
+    if ( !Utils.isEmpty( constraints ) ) {
       report.append( "<b><u>Constraints:</u></b>  " ).append( constraints ).append( "<br>" ).append( Const.CR );
     }
 
     // Semantics
     //
-    if ( !Const.isEmpty( semantics ) ) {
+    if ( !Utils.isEmpty( semantics ) ) {
       report.append( "<b><u>Semantics:</u></b>  " ).append( semantics ).append( "<br>" ).append( Const.CR );
     }
 
@@ -296,7 +297,7 @@ public class FunctionDescription {
         report.append( "<tr>" );
         report.append( "<td>" ).append( example.getExpression() ).append( "</td>" );
         report.append( "<td>" ).append( example.getResult() ).append( "</td>" );
-        if ( !Const.isEmpty( example.getComment() ) ) {
+        if ( !Utils.isEmpty( example.getComment() ) ) {
           report.append( "<td>" ).append( example.getComment() ).append( "</td>" );
         }
         report.append( "</tr>" );

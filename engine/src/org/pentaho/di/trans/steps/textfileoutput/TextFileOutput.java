@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -32,6 +32,7 @@ import java.util.List;
 
 import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.WriterOutputStream;
 import org.pentaho.di.core.compress.CompressionProvider;
@@ -168,7 +169,7 @@ public class TextFileOutput extends BaseStep implements StepInterface {
 
     if ( r == null ) {
       // no more input to be expected...
-      if ( !bEndedLineWrote && !Const.isEmpty( meta.getEndedLine() ) ) {
+      if ( !bEndedLineWrote && !Utils.isEmpty( meta.getEndedLine() ) ) {
         if ( data.writer == null ) {
           openNewFile( meta.getFileName() );
           data.oneFileOpened = true;
@@ -275,7 +276,7 @@ public class TextFileOutput extends BaseStep implements StepInterface {
   private byte[] formatField( ValueMetaInterface v, Object valueData ) throws KettleValueException {
     if ( v.isString() ) {
       if ( v.isStorageBinaryString() && v.getTrimType() == ValueMetaInterface.TRIM_TYPE_NONE && v.getLength() < 0
-          && Const.isEmpty( v.getStringEncoding() ) ) {
+          && Utils.isEmpty( v.getStringEncoding() ) ) {
         return (byte[]) valueData;
       } else {
         String svalue = ( valueData instanceof String ) ? (String) valueData : v.getString( valueData );
@@ -299,7 +300,7 @@ public class TextFileOutput extends BaseStep implements StepInterface {
     if ( length > -1 && length < string.length() ) {
       // we need to truncate
       String tmp = string.substring( 0, length );
-      if ( Const.isEmpty( v.getStringEncoding() ) ) {
+      if ( Utils.isEmpty( v.getStringEncoding() ) ) {
         return tmp.getBytes();
       } else {
         try {
@@ -311,7 +312,7 @@ public class TextFileOutput extends BaseStep implements StepInterface {
       }
     } else {
       byte[] text;
-      if ( Const.isEmpty( v.getStringEncoding() ) ) {
+      if ( Utils.isEmpty( v.getStringEncoding() ) ) {
         text = string.getBytes();
       } else {
         try {
@@ -329,7 +330,7 @@ public class TextFileOutput extends BaseStep implements StepInterface {
         int size = 0;
         byte[] filler = null;
         try {
-          if ( !Const.isEmpty( meta.getEncoding() ) ) {
+          if ( !Utils.isEmpty( meta.getEncoding() ) ) {
             filler = " ".getBytes( meta.getEncoding() );
           } else {
             filler = " ".getBytes();
@@ -557,7 +558,7 @@ public class TextFileOutput extends BaseStep implements StepInterface {
     try {
       if ( meta.isServletOutput() ) {
         Writer writer = getTrans().getServletPrintWriter();
-        if ( Const.isEmpty( meta.getEncoding() ) ) {
+        if ( Utils.isEmpty( meta.getEncoding() ) ) {
           data.writer = new WriterOutputStream( writer );
         } else {
           data.writer = new WriterOutputStream( writer, meta.getEncoding() );
@@ -600,7 +601,7 @@ public class TextFileOutput extends BaseStep implements StepInterface {
         String compressionType = meta.getFileCompression();
 
         // If no file compression is specified, use the "None" provider
-        if ( Const.isEmpty( compressionType ) ) {
+        if ( Utils.isEmpty( compressionType ) ) {
           compressionType = FILE_COMPRESSION_TYPE_NONE;
         }
 
@@ -632,7 +633,7 @@ public class TextFileOutput extends BaseStep implements StepInterface {
         // that do not archive entries, they should use the default no-op implementation.
         data.out.addEntry( filename, environmentSubstitute( meta.getExtension() ) );
 
-        if ( !Const.isEmpty( meta.getEncoding() ) ) {
+        if ( !Utils.isEmpty( meta.getEncoding() ) ) {
           if ( log.isDetailed() ) {
             logDetailed( "Opening output stream in encoding: " + meta.getEncoding() );
           }
@@ -779,29 +780,29 @@ public class TextFileOutput extends BaseStep implements StepInterface {
 
   private void initBinaryDataFields() throws KettleException {
     try {
-      data.hasEncoding = !Const.isEmpty( meta.getEncoding() );
+      data.hasEncoding = !Utils.isEmpty( meta.getEncoding() );
       data.binarySeparator = new byte[] {};
       data.binaryEnclosure = new byte[] {};
       data.binaryNewline = new byte[] {};
 
       if ( data.hasEncoding ) {
-        if ( !Const.isEmpty( meta.getSeparator() ) ) {
+        if ( !Utils.isEmpty( meta.getSeparator() ) ) {
           data.binarySeparator = environmentSubstitute( meta.getSeparator() ).getBytes( meta.getEncoding() );
         }
-        if ( !Const.isEmpty( meta.getEnclosure() ) ) {
+        if ( !Utils.isEmpty( meta.getEnclosure() ) ) {
           data.binaryEnclosure = environmentSubstitute( meta.getEnclosure() ).getBytes( meta.getEncoding() );
         }
-        if ( !Const.isEmpty( meta.getNewline() ) ) {
+        if ( !Utils.isEmpty( meta.getNewline() ) ) {
           data.binaryNewline = meta.getNewline().getBytes( meta.getEncoding() );
         }
       } else {
-        if ( !Const.isEmpty( meta.getSeparator() ) ) {
+        if ( !Utils.isEmpty( meta.getSeparator() ) ) {
           data.binarySeparator = environmentSubstitute( meta.getSeparator() ).getBytes();
         }
-        if ( !Const.isEmpty( meta.getEnclosure() ) ) {
+        if ( !Utils.isEmpty( meta.getEnclosure() ) ) {
           data.binaryEnclosure = environmentSubstitute( meta.getEnclosure() ).getBytes();
         }
-        if ( !Const.isEmpty( meta.getNewline() ) ) {
+        if ( !Utils.isEmpty( meta.getNewline() ) ) {
           data.binaryNewline = environmentSubstitute( meta.getNewline() ).getBytes();
         }
       }
@@ -810,7 +811,7 @@ public class TextFileOutput extends BaseStep implements StepInterface {
       for ( int i = 0; i < meta.getOutputFields().length; i++ ) {
         data.binaryNullValue[i] = null;
         String nullString = meta.getOutputFields()[i].getNullString();
-        if ( !Const.isEmpty( nullString ) ) {
+        if ( !Utils.isEmpty( nullString ) ) {
           if ( data.hasEncoding ) {
             data.binaryNullValue[i] = nullString.getBytes( meta.getEncoding() );
           } else {

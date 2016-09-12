@@ -29,6 +29,7 @@ import java.util.List;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
@@ -588,14 +589,14 @@ public class JsonOutputMeta extends BaseStepMeta implements StepMetaInterface {
     CheckResult cr;
     if ( getOperationType() != JsonOutputMeta.OPERATION_TYPE_WRITE_TO_FILE ) {
       // We need to have output field name
-      if ( Const.isEmpty( transMeta.environmentSubstitute( getOutputValue() ) ) ) {
+      if ( Utils.isEmpty( transMeta.environmentSubstitute( getOutputValue() ) ) ) {
         cr =
             new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
                 "JsonOutput.Error.MissingOutputFieldName" ), stepMeta );
         remarks.add( cr );
       }
     }
-    if ( Const.isEmpty( transMeta.environmentSubstitute( getFileName() ) ) ) {
+    if ( Utils.isEmpty( transMeta.environmentSubstitute( getFileName() ) ) ) {
       cr =
           new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
               "JsonOutput.Error.MissingTargetFilename" ), stepMeta );

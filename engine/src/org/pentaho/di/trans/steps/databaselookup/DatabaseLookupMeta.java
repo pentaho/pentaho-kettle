@@ -28,6 +28,7 @@ import java.util.List;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.ProvidesModelerMeta;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -481,7 +482,7 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
   @Override
   public void getFields( RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep,
       VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
-    if ( Const.isEmpty( info ) || info[0] == null ) { // null or length 0 : no info from database
+    if ( Utils.isEmpty( info ) || info[0] == null ) { // null or length 0 : no info from database
       for ( int i = 0; i < getReturnValueNewName().length; i++ ) {
         try {
           ValueMetaInterface v =
@@ -640,7 +641,7 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
       try {
         db.connect();
 
-        if ( !Const.isEmpty( tablename ) ) {
+        if ( !Utils.isEmpty( tablename ) ) {
           boolean first = true;
           boolean error_found = false;
           error_message = "";

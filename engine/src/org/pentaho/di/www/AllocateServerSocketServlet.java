@@ -74,17 +74,17 @@ public class AllocateServerSocketServlet extends BaseHttpServlet implements Cart
     <h1>/kettle/allocateSocket</h1>
     <a name="GET"></a>
     <h2>GET</h2>
-    <p>Allocates port to use by client. 
+    <p>Allocates port to use by client.
   Allows any client to ask for a port number to use. This is necessary several slaves can be run on the same host.
-  The method ensures the port number is unique for host name provided and makes sure the slaves are using 
+  The method ensures the port number is unique for host name provided and makes sure the slaves are using
   valid port numbers. Data communication across a cluster of Carte servers happens through TCP/IP sockets.
-  Slave transformations sometimes open (or listen to) tens to hundreds of sockets.  When you want to allocate 
-  the port numbers for data communication between slave transformation in a kettle clustering run, you need 
+  Slave transformations sometimes open (or listen to) tens to hundreds of sockets.  When you want to allocate
+  the port numbers for data communication between slave transformation in a kettle clustering run, you need
   unique combinations of all the parameters below.
-  
+
   <code>port number</code> will be returned in the Response object. If an error occurred you'll receive html output
   describing the problem. HTTP status code of such response is 500.</p>
-    
+
     <p><b>Example Request:</b><br />
     <pre function="syntax.xml">
     GET /kettle/allocateSocket/?xml=Y&rangeStart=100&host=locahost&id=clust&trans=my_trans&sourceSlave=slave_1
@@ -102,7 +102,7 @@ public class AllocateServerSocketServlet extends BaseHttpServlet implements Cart
     </tr>
     <tr>
     <td>xml</td>
-    <td>Boolean flag set to either <code>Y</code> or <code>N</code> describing if xml or html reply 
+    <td>Boolean flag set to either <code>Y</code> or <code>N</code> describing if xml or html reply
   should be produced.</td>
     <td>boolean, optional</td>
     </tr>
@@ -158,7 +158,7 @@ public class AllocateServerSocketServlet extends BaseHttpServlet implements Cart
     </tr>
     </tbody>
     </table>
-  
+
   <h3>Response Body</h3>
 
   <table class="pentaho-table">
@@ -175,13 +175,13 @@ public class AllocateServerSocketServlet extends BaseHttpServlet implements Cart
   </table>
     <p>Response wraps port number that was allocated or error stack trace
   if an error occurred. Response HTTP code is 200 if there were no errors. Otherwise it is 500.</p>
-    
+
     <p><b>Example Response:</b></p>
     <pre function="syntax.xml">
     <?xml version="1.0" encoding="UTF-8"?>
     <port>100</port>
     </pre>
-    
+
     <h3>Status Codes</h3>
     <table class="pentaho-table">
   <tbody>
@@ -195,7 +195,7 @@ public class AllocateServerSocketServlet extends BaseHttpServlet implements Cart
     </tr>
     <tr>
       <td>500</td>
-      <td>Internal server error occurs during request processing. 
+      <td>Internal server error occurs during request processing.
       This might also be caused by missing request parameter.</td>
     </tr>
   </tbody>

@@ -29,6 +29,7 @@ import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -98,7 +99,7 @@ public class GetSubFoldersMeta extends BaseStepMeta implements StepMetaInterface
   }
 
   public String getRequiredFilesDesc( String tt ) {
-    if ( Const.isEmpty( tt ) ) {
+    if ( Utils.isEmpty( tt ) ) {
       return RequiredFoldersDesc[0];
     }
     if ( tt.equalsIgnoreCase( RequiredFoldersCode[1] ) ) {
@@ -447,7 +448,7 @@ public class GetSubFoldersMeta extends BaseStepMeta implements StepMetaInterface
       }
       remarks.add( cr );
 
-      if ( Const.isEmpty( dynamicFoldernameField ) ) {
+      if ( Utils.isEmpty( dynamicFoldernameField ) ) {
         cr =
           new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
             PKG, "GetSubFoldersMeta.CheckResult.FolderFieldnameMissing" ), stepMeta );

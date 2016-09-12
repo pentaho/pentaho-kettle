@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -38,6 +38,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.ui.core.PropsUI;
@@ -191,8 +192,8 @@ public class RipDatabaseWizardPage3 extends WizardPage {
   }
 
   public boolean canFinish() {
-    return !Const.isEmpty( getJobname() )
-      && ( getRepositoryDirectory() != null || !Const.isEmpty( getDirectory() ) );
+    return !Utils.isEmpty( getJobname() )
+      && ( getRepositoryDirectory() != null || !Utils.isEmpty( getDirectory() ) );
   }
 
   /**

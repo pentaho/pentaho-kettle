@@ -32,11 +32,11 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LoggingObjectType;
 import org.pentaho.di.core.logging.SimpleLoggingObject;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobAdapter;
 import org.pentaho.di.job.JobConfiguration;
@@ -203,7 +203,7 @@ public class JobResource {
         // Grab the parameter value set in the job entry
         //
         String thisValue = jobExecutionConfiguration.getParams().get( parameterNames[idx] );
-        if ( !Const.isEmpty( thisValue ) ) {
+        if ( !Utils.isEmpty( thisValue ) ) {
           // Set the value as specified by the user in the job entry
           //
           jobMeta.setParameterValue( parameterNames[idx], thisValue );

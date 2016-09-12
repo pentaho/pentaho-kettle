@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -44,6 +44,7 @@ import java.io.InputStreamReader;
 
 import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -387,7 +388,7 @@ public class GPBulkLoader extends BaseStep implements StepInterface {
       String dns = Const.NVL( dm.getDatabaseName(), "" );
       sb.append( " -d " );
       String overrideName = meta.getDbNameOverride();
-      if ( Const.isEmpty( Const.rtrim( overrideName ) ) ) {
+      if ( Utils.isEmpty( Const.rtrim( overrideName ) ) ) {
         sb.append( environmentSubstitute( dns ) );
       } else {
         // if the database name override is filled in, do that one.

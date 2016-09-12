@@ -29,6 +29,7 @@ import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Condition;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -428,7 +429,7 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface {
     }
     String[] key = condition.getUsedFields();
     for ( int i = 0; i < key.length; i++ ) {
-      if ( Const.isEmpty( key[i] ) ) {
+      if ( Utils.isEmpty( key[i] ) ) {
         continue;
       }
       ValueMetaInterface v = prev.searchValueMeta( key[i] );

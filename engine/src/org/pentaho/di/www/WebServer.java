@@ -43,6 +43,7 @@ import org.eclipse.jetty.util.security.Credential;
 import org.eclipse.jetty.util.security.Password;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.extension.ExtensionPointHandler;
@@ -165,13 +166,13 @@ public class WebServer {
       roles.add( "default" );
       HashLoginService hashLoginService;
       SlaveServer slaveServer = transformationMap.getSlaveServerConfig().getSlaveServer();
-      if ( !Const.isEmpty( slaveServer.getPassword() ) ) {
+      if ( !Utils.isEmpty( slaveServer.getPassword() ) ) {
         hashLoginService = new HashLoginService( "Kettle" );
         hashLoginService.putUser( slaveServer.getUsername(), new Password( slaveServer.getPassword() ),
             new String[] { "default" } );
       } else {
         // See if there is a kettle.pwd file in the KETTLE_HOME directory:
-        if ( Const.isEmpty( passwordFile ) ) {
+        if ( Utils.isEmpty( passwordFile ) ) {
           File homePwdFile = new File( Const.getKettleCartePasswordFile() );
           if ( homePwdFile.exists() ) {
             passwordFile = Const.getKettleCartePasswordFile();

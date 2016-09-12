@@ -43,8 +43,8 @@ import org.pentaho.di.ui.core.widget.TableDraw;
 /**
  * @deprecated replaced by implementation in the ...steps.fileinput.text package
  */
-public class TextFileImportWizardPage1 extends WizardPage // implements Listener
-{
+public class TextFileImportWizardPage1 extends WizardPage { // implements Listener
+
   private static Class<?> PKG = TextFileInputMeta.class; // for i18n purposes, needed by Translator2!!
 
   private TableDraw wTable;

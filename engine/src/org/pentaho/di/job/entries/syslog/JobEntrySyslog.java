@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,6 +27,7 @@ import java.util.List;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
@@ -272,13 +273,13 @@ public class JobEntrySyslog extends JobEntryBase implements Cloneable, JobEntryI
 
     String servername = environmentSubstitute( getServerName() );
 
-    if ( Const.isEmpty( servername ) ) {
+    if ( Utils.isEmpty( servername ) ) {
       logError( BaseMessages.getString( PKG, "JobEntrySyslog.MissingServerName" ) );
     }
 
     String messageString = environmentSubstitute( getMessage() );
 
-    if ( Const.isEmpty( messageString ) ) {
+    if ( Utils.isEmpty( messageString ) ) {
       logError( BaseMessages.getString( PKG, "JobEntrySyslog.MissingMessage" ) );
     }
 
@@ -291,7 +292,7 @@ public class JobEntrySyslog extends JobEntryBase implements Cloneable, JobEntryI
       if ( isAddTimestamp() ) {
         // add timestamp to message
         pattern = environmentSubstitute( getDatePattern() );
-        if ( Const.isEmpty( pattern ) ) {
+        if ( Utils.isEmpty( pattern ) ) {
           logError( BaseMessages.getString( PKG, "JobEntrySyslog.DatePatternEmpty" ) );
           throw new KettleException( BaseMessages.getString( PKG, "JobEntrySyslog.DatePatternEmpty" ) );
         }

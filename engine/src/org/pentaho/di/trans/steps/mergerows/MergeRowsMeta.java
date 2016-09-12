@@ -27,6 +27,7 @@ import java.util.List;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -298,7 +299,7 @@ public class MergeRowsMeta extends BaseStepMeta implements StepMetaInterface {
       }
     }
 
-    if ( Const.isEmpty( flagField ) ) {
+    if ( Utils.isEmpty( flagField ) ) {
       throw new KettleStepException( BaseMessages.getString( PKG, "MergeRowsMeta.Exception.FlagFieldNotSpecified" ) );
     }
     ValueMetaInterface flagFieldValue = new ValueMetaString( flagField );

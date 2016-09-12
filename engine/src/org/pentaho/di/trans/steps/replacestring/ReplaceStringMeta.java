@@ -27,6 +27,7 @@ import java.util.List;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -262,7 +263,7 @@ public class ReplaceStringMeta extends BaseStepMeta implements StepMetaInterface
         replaceByString[i] = Const.NVL( XMLHandler.getTagValue( fnode, "replace_by_string" ), "" );
         String emptyString = XMLHandler.getTagValue( fnode, "set_empty_string" );
 
-        setEmptyString[i] = !Const.isEmpty( emptyString ) && "Y".equalsIgnoreCase( emptyString );
+        setEmptyString[i] = !Utils.isEmpty( emptyString ) && "Y".equalsIgnoreCase( emptyString );
         replaceFieldByString[i] = Const.NVL( XMLHandler.getTagValue( fnode, "replace_field_by_string" ), "" );
         wholeWord[i] = getWholeWordByCode( Const.NVL( XMLHandler.getTagValue( fnode, "whole_word" ), "" ) );
         caseSensitive[i] =
@@ -364,7 +365,7 @@ public class ReplaceStringMeta extends BaseStepMeta implements StepMetaInterface
     for ( int i = 0; i < nrFields; i++ ) {
       String fieldName = space.environmentSubstitute( fieldOutStream[i] );
       ValueMetaInterface valueMeta;
-      if ( !Const.isEmpty( fieldOutStream[i] ) ) {
+      if ( !Utils.isEmpty( fieldOutStream[i] ) ) {
         // We have a new field
         valueMeta = new ValueMetaString( fieldName );
         valueMeta.setOrigin( name );
@@ -453,7 +454,7 @@ public class ReplaceStringMeta extends BaseStepMeta implements StepMetaInterface
 
       if ( fieldInStream.length > 0 ) {
         for ( int idx = 0; idx < fieldInStream.length; idx++ ) {
-          if ( Const.isEmpty( fieldInStream[idx] ) ) {
+          if ( Utils.isEmpty( fieldInStream[idx] ) ) {
             cr =
               new CheckResult(
                 CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(

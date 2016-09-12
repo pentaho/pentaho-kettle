@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -208,7 +208,7 @@ public class LogSettingsDialog extends Dialog {
     DefaultLogLevel.setLogLevel( LogLevel.values()[idx] );
 
     /*
-     * String filter = wFilter.getText(); if (Const.isEmpty(filter)) { LogWriter.getInstance().setFilter(null); // clear
+     * String filter = wFilter.getText(); if (Utils.isEmpty(filter)) { LogWriter.getInstance().setFilter(null); // clear
      * filter } else { LogWriter.getInstance().setFilter(wFilter.getText()); } //
      * layout.setTimeAdded(wTime.getSelection());
      */

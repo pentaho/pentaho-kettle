@@ -43,6 +43,7 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.ValueMetaAndData;
 import org.pentaho.di.core.row.ValueMetaInterface;
@@ -338,9 +339,9 @@ public class EnterValueDialog extends Dialog {
     switch ( type ) {
       case ValueMetaInterface.TYPE_INTEGER:
         wFormat.setItems( Const.getNumberFormats() );
-        int index = ( !Const.isEmpty( formatString ) ) ? wFormat.indexOf( formatString ) : wFormat.indexOf( "#" );
+        int index = ( !Utils.isEmpty( formatString ) ) ? wFormat.indexOf( formatString ) : wFormat.indexOf( "#" );
         // ... then we have a custom format mask
-        if ( ( !Const.isEmpty( formatString ) ) && ( index < 0 ) ) {
+        if ( ( !Utils.isEmpty( formatString ) ) && ( index < 0 ) ) {
           wFormat.add( formatString );
           index = wFormat.indexOf( formatString );
         }
@@ -348,9 +349,9 @@ public class EnterValueDialog extends Dialog {
         break;
       case ValueMetaInterface.TYPE_NUMBER:
         wFormat.setItems( Const.getNumberFormats() );
-        index = ( !Const.isEmpty( formatString ) ) ? wFormat.indexOf( formatString ) : wFormat.indexOf( "#.#" );
+        index = ( !Utils.isEmpty( formatString ) ) ? wFormat.indexOf( formatString ) : wFormat.indexOf( "#.#" );
         // ... then we have a custom format mask
-        if ( ( !Const.isEmpty( formatString ) ) && ( index < 0 ) ) {
+        if ( ( !Utils.isEmpty( formatString ) ) && ( index < 0 ) ) {
           wFormat.add( formatString );
           index = wFormat.indexOf( formatString );
         }
@@ -359,10 +360,10 @@ public class EnterValueDialog extends Dialog {
       case ValueMetaInterface.TYPE_DATE:
         wFormat.setItems( Const.getDateFormats() );
         index =
-          ( !Const.isEmpty( formatString ) ) ? wFormat.indexOf( formatString ) : wFormat
+          ( !Utils.isEmpty( formatString ) ) ? wFormat.indexOf( formatString ) : wFormat
             .indexOf( "yyyy/MM/dd HH:mm:ss" ); // default;
         // ... then we have a custom format mask
-        if ( ( !Const.isEmpty( formatString ) ) && ( index < 0 ) ) {
+        if ( ( !Utils.isEmpty( formatString ) ) && ( index < 0 ) ) {
           wFormat.add( formatString );
           index = wFormat.indexOf( formatString );
         }
@@ -398,7 +399,7 @@ public class EnterValueDialog extends Dialog {
     int index = -1;
     // If there is a custom conversion mask set,
     // we need to add that mask to the combo box
-    if ( !Const.isEmpty( valueMeta.getConversionMask() ) ) {
+    if ( !Utils.isEmpty( valueMeta.getConversionMask() ) ) {
       index = wFormat.indexOf( valueMeta.getConversionMask() );
       if ( index < 0 ) {
         wFormat.add( valueMeta.getConversionMask() );

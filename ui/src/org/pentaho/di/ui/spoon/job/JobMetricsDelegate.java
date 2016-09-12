@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -52,7 +52,7 @@ import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
-import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.logging.LoggingRegistry;
@@ -306,7 +306,7 @@ public class JobMetricsDelegate extends SpoonDelegate {
 
   private void refreshImage( GC canvasGc ) {
     List<MetricsDuration> durations = MetricsUtil.getAllDurations( jobGraph.job.getLogChannelId() );
-    if ( Const.isEmpty( durations ) ) {
+    if ( Utils.isEmpty( durations ) ) {
       // In case of an empty durations or null there is nothing to draw
       return;
     }

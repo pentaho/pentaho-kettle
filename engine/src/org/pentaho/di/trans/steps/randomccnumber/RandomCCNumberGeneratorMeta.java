@@ -27,6 +27,7 @@ import java.util.List;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -231,13 +232,13 @@ public class RandomCCNumberGeneratorMeta extends BaseStepMeta implements StepMet
     v.setOrigin( name );
     row.addValueMeta( v );
 
-    if ( !Const.isEmpty( getCardTypeFieldName() ) ) {
+    if ( !Utils.isEmpty( getCardTypeFieldName() ) ) {
       v = new ValueMetaString( cardTypeFieldName );
       v.setOrigin( name );
       row.addValueMeta( v );
     }
 
-    if ( !Const.isEmpty( getCardLengthFieldName() ) ) {
+    if ( !Utils.isEmpty( getCardLengthFieldName() ) ) {
       v = new ValueMetaInteger( cardLengthFieldName );
       v.setLength( ValueMetaInterface.DEFAULT_INTEGER_LENGTH, 0 );
       v.setOrigin( name );
@@ -330,7 +331,7 @@ public class RandomCCNumberGeneratorMeta extends BaseStepMeta implements StepMet
       remarks.add( cr );
     }
 
-    if ( Const.isEmpty( getCardNumberFieldName() ) ) {
+    if ( Utils.isEmpty( getCardNumberFieldName() ) ) {
       CheckResult cr =
         new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
           PKG, "RandomCCNumberGeneratorMeta.CheckResult.CardNumberFieldMissing" ), stepMeta );

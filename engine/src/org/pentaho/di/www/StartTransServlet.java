@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -35,6 +35,7 @@ import org.apache.commons.lang.StringUtils;
 import org.owasp.esapi.ESAPI;
 import org.owasp.esapi.Encoder;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LoggingObjectType;
@@ -64,12 +65,12 @@ public class StartTransServlet extends BaseHttpServlet implements CartePluginInt
       <a name="GET"></a>
       <h2>GET</h2>
       <p>Executes transformation previously uploaded to Carte server.</p>
-      
+
       <p><b>Example Request:</b><br />
       <pre function="syntax.xml">
       GET /kettle/startTrans/?name=dummy-trans&xml=Y
       </pre>
-      
+
       </p>
       <h3>Parameters</h3>
       <table class="pentaho-table">
@@ -96,7 +97,7 @@ public class StartTransServlet extends BaseHttpServlet implements CartePluginInt
       </tr>
       </tbody>
       </table>
-    
+
     <h3>Response Body</h3>
 
     <table class="pentaho-table">
@@ -113,7 +114,7 @@ public class StartTransServlet extends BaseHttpServlet implements CartePluginInt
     </table>
     <p>Response XML or HTML containing operation result. When using xml=Y <code>result</code> field indicates whether
     operation was successful (<code>OK</code>) or not (<code>ERROR</code>).</p>
-          
+
       <p><b>Example Response:</b></p>
     <pre function="syntax.xml">
     <?xml version="1.0" encoding="UTF-8"?>
@@ -187,7 +188,7 @@ public class StartTransServlet extends BaseHttpServlet implements CartePluginInt
       //
       Trans trans;
       CarteObjectEntry entry;
-      if ( Const.isEmpty( id ) ) {
+      if ( Utils.isEmpty( id ) ) {
         // get the first transformation that matches...
         //
         entry = getTransformationMap().getFirstCarteObjectEntry( transName );

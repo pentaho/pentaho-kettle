@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -50,6 +50,7 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
@@ -966,9 +967,9 @@ public class JobEntrySFTPDialog extends JobEntryDialog implements JobEntryDialog
           jobMeta.environmentSubstitute( wKeyFilename.getText() ),
           jobMeta.environmentSubstitute( wkeyfilePass.getText() ) );
 
-        // Set proxy? 
+        // Set proxy?
         String realProxyHost = jobMeta.environmentSubstitute( wProxyHost.getText() );
-        if ( !Const.isEmpty( realProxyHost ) ) {
+        if ( !Utils.isEmpty( realProxyHost ) ) {
           // Set proxy
           sftpclient.setProxy(
             realProxyHost,
@@ -1007,7 +1008,7 @@ public class JobEntrySFTPDialog extends JobEntryDialog implements JobEntryDialog
 
   private void checkRemoteFolder() {
     String changeFTPFolder = jobMeta.environmentSubstitute( wScpDirectory.getText() );
-    if ( !Const.isEmpty( changeFTPFolder ) ) {
+    if ( !Utils.isEmpty( changeFTPFolder ) ) {
       if ( connectToSFTP( true, changeFTPFolder ) ) {
         MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_INFORMATION );
         mb.setMessage( BaseMessages.getString( PKG, "JobSFTP.FolderExists.OK", changeFTPFolder ) + Const.CR );
@@ -1063,7 +1064,7 @@ public class JobEntrySFTPDialog extends JobEntryDialog implements JobEntryDialog
   }
 
   private void ok() {
-    if ( Const.isEmpty( wName.getText() ) ) {
+    if ( Utils.isEmpty( wName.getText() ) ) {
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
       mb.setText( BaseMessages.getString( PKG, "System.StepJobEntryNameMissing.Title" ) );
       mb.setMessage( BaseMessages.getString( PKG, "System.JobEntryNameMissing.Msg" ) );
@@ -1112,14 +1113,14 @@ public class JobEntrySFTPDialog extends JobEntryDialog implements JobEntryDialog
 
   private void setDefaulProxyPort() {
     if ( wProxyType.getText().equals( SFTPClient.PROXY_TYPE_HTTP ) ) {
-      if ( Const.isEmpty( wProxyPort.getText() )
-        || ( !Const.isEmpty( wProxyPort.getText() ) && wProxyPort.getText().equals(
+      if ( Utils.isEmpty( wProxyPort.getText() )
+        || ( !Utils.isEmpty( wProxyPort.getText() ) && wProxyPort.getText().equals(
           SFTPClient.SOCKS5_DEFAULT_PORT ) ) ) {
         wProxyPort.setText( SFTPClient.HTTP_DEFAULT_PORT );
       }
     } else {
-      if ( Const.isEmpty( wProxyPort.getText() )
-        || ( !Const.isEmpty( wProxyPort.getText() ) && wProxyPort
+      if ( Utils.isEmpty( wProxyPort.getText() )
+        || ( !Utils.isEmpty( wProxyPort.getText() ) && wProxyPort
           .getText().equals( SFTPClient.HTTP_DEFAULT_PORT ) ) ) {
         wProxyPort.setText( SFTPClient.SOCKS5_DEFAULT_PORT );
       }

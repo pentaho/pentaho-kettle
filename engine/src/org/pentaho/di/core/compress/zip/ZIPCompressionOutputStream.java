@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -28,6 +28,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.compress.CompressionOutputStream;
 import org.pentaho.di.core.compress.CompressionProvider;
 
@@ -74,7 +75,7 @@ public class ZIPCompressionOutputStream extends CompressionOutputStream {
     }
 
     // add real extension if needed
-    if ( !Const.isEmpty( extension ) ) {
+    if ( !Utils.isEmpty( extension ) ) {
       entryPath += "." + extension;
     }
 

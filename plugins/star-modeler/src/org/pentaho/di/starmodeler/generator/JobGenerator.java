@@ -2,7 +2,7 @@
 *
 * Pentaho Data Integration
 *
-* Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+* Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
 *
 *******************************************************************************
 *
@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
@@ -186,7 +187,7 @@ public class JobGenerator {
           for (LogicalColumn fk : fks) {
             ValueMetaInterface keyValueMeta = getValueForLogicalColumn(databaseMeta, fk);
             String phColumn = ConceptUtil.getString(fk, DefaultIDs.LOGICAL_COLUMN_PHYSICAL_COLUMN_NAME);
-            if (!Const.isEmpty(phColumn)) {
+            if (!Utils.isEmpty(phColumn)) {
               String indexName = databaseMeta.quoteField( "IDX_" + phTable.replace(" ", "_").toUpperCase() + "_" + phColumn.toUpperCase() );
               String indexSql = db.getCreateIndexStatement(schemaTable, indexName, new String[] { keyValueMeta.getName(), }, true, false, true, true);
               sql+=Const.CR+indexSql;
@@ -263,7 +264,7 @@ public class JobGenerator {
   protected DatabaseMeta findTargetDatabaseMeta() throws KettleException {
 
     String targetDbName = ConceptUtil.getString(starDomain.getDomain(), DefaultIDs.DOMAIN_TARGET_DATABASE);
-    if (Const.isEmpty(targetDbName)) {
+    if (Utils.isEmpty(targetDbName)) {
       throw new KettleException(BaseMessages.getString(PKG, "LogicalModelerPerspective.MessageBox.NoTargetDBSpecified.Message"));
     }
     DatabaseMeta databaseMeta = DatabaseMeta.findDatabase(databases, targetDbName);
@@ -338,7 +339,7 @@ public class JobGenerator {
     for (LogicalModel model : domain.getLogicalModels()) {
       for (LogicalTable table : model.getLogicalTables()) {
         String phTable = ConceptUtil.getString(table, DefaultIDs.LOGICAL_TABLE_PHYSICAL_TABLE_NAME);
-        if (!Const.isEmpty(phTable)) {
+        if (!Utils.isEmpty(phTable)) {
           if (!phTabs.contains(phTable)) {
             phTabs.add(phTable);
             tables.add(table);
@@ -516,13 +517,13 @@ public class JobGenerator {
       String phDb = ConceptUtil.getString(column, DefaultIDs.LOGICAL_COLUMN_SOURCE_DB);
       String phTable = ConceptUtil.getString(column, DefaultIDs.LOGICAL_COLUMN_SOURCE_TABLE);
       String phCol = ConceptUtil.getString(column, DefaultIDs.LOGICAL_COLUMN_SOURCE_COLUMN);
-      if (!Const.isEmpty(phDb) && sourceDatabaseMeta==null) {
+      if (!Utils.isEmpty(phDb) && sourceDatabaseMeta==null) {
         sourceDatabaseMeta = DatabaseMeta.findDatabase(databases, phDb);
       }
-      if (!Const.isEmpty(phTable)) {
+      if (!Utils.isEmpty(phTable)) {
         sourceTable = phDb;
       }
-      if (!Const.isEmpty(phCol)) {
+      if (!Utils.isEmpty(phCol)) {
         sourceColumns.add(phCol);
       }
     }
@@ -530,7 +531,7 @@ public class JobGenerator {
 
     meta.setDatabaseMeta(sourceDatabaseMeta);
 
-    if (sourceDatabaseMeta!=null && !Const.isEmpty(sourceTable)) {
+    if (sourceDatabaseMeta!=null && !Utils.isEmpty(sourceTable)) {
       sql = "SELECT ";
       if (sourceColumns.isEmpty()) {
         sql+=" * ";

@@ -27,6 +27,7 @@ import java.util.List;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
@@ -226,7 +227,7 @@ public class GetPreviousRowFieldMeta extends BaseStepMeta implements StepMetaInt
 
     // Add new field?
     for ( int i = 0; i < fieldOutStream.length; i++ ) {
-      if ( !Const.isEmpty( fieldOutStream[i] ) ) {
+      if ( !Utils.isEmpty( fieldOutStream[i] ) ) {
         int index = inputRowMeta.indexOfValue( fieldInStream[i] );
         if ( index >= 0 ) {
           ValueMetaInterface in = inputRowMeta.getValueMeta( index );
@@ -294,7 +295,7 @@ public class GetPreviousRowFieldMeta extends BaseStepMeta implements StepMetaInt
       error_found = false;
       for ( int i = 0; i < fieldInStream.length; i++ ) {
         String field = fieldOutStream[i];
-        if ( Const.isEmpty( field ) ) {
+        if ( Utils.isEmpty( field ) ) {
           if ( first ) {
             first = false;
             error_message =
@@ -316,7 +317,7 @@ public class GetPreviousRowFieldMeta extends BaseStepMeta implements StepMetaInt
 
       if ( fieldInStream.length > 0 ) {
         for ( int idx = 0; idx < fieldInStream.length; idx++ ) {
-          if ( Const.isEmpty( fieldInStream[idx] ) ) {
+          if ( Utils.isEmpty( fieldInStream[idx] ) ) {
             cr =
               new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
                 PKG, "GetPreviousRowFieldMeta.CheckResult.InStreamFieldMissing", new Integer( idx + 1 )

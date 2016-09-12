@@ -27,6 +27,7 @@ import java.util.List;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
@@ -379,7 +380,7 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface {
       }
 
       String giveBackRow = XMLHandler.getTagValue( stepnode, "give_back_row" );
-      if ( Const.isEmpty( giveBackRow ) ) {
+      if ( Utils.isEmpty( giveBackRow ) ) {
         alwaysGivingBackOneRow = hasNumberOfValues;
       } else {
         alwaysGivingBackOneRow = "Y".equalsIgnoreCase( giveBackRow );
@@ -529,7 +530,7 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface {
 
     if ( passAllRows ) {
       // If we pass all rows, we can add a line nr in the group...
-      if ( addingLineNrInGroup && !Const.isEmpty( lineNrInGroupField ) ) {
+      if ( addingLineNrInGroup && !Utils.isEmpty( lineNrInGroupField ) ) {
         ValueMetaInterface lineNr = new ValueMetaInteger( lineNrInGroupField );
         lineNr.setLength( ValueMetaInterface.DEFAULT_INTEGER_LENGTH, 0 );
         lineNr.setOrigin( origin );

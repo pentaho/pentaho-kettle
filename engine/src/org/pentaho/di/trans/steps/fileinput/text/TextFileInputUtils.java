@@ -28,6 +28,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.logging.LogChannelInterface;
@@ -385,7 +386,7 @@ public class TextFileInputUtils {
         if ( fieldnr < strings.length ) {
           String pol = strings[ fieldnr ];
           try {
-            if ( valueMeta.isNull( pol ) || !Const.isEmpty( nullif ) && nullif.equals( pol ) ) {
+            if ( valueMeta.isNull( pol ) || !Utils.isEmpty( nullif ) && nullif.equals( pol ) ) {
               pol = null;
             }
             value = valueMeta.convertDataFromString( pol, convertMeta, nullif, ifnull, trim_type );
@@ -679,7 +680,7 @@ public class TextFileInputUtils {
             }
           }
 
-          if ( dencl && Const.isEmpty( inf.content.escapeCharacter ) ) {
+          if ( dencl && Utils.isEmpty( inf.content.escapeCharacter ) ) {
             StringBuilder sbpol = new StringBuilder( pol );
             int idx = sbpol.indexOf( enclosure + enclosure );
             while ( idx >= 0 ) {

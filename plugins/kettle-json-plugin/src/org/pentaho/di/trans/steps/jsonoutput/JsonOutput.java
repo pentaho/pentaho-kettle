@@ -30,6 +30,7 @@ import org.apache.commons.vfs2.FileObject;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -260,7 +261,7 @@ public class JsonOutput extends BaseStep implements StepInterface {
 
       if ( data.outputValue ) {
         // We need to have output field name
-        if ( Const.isEmpty( environmentSubstitute( meta.getOutputValue() ) ) ) {
+        if ( Utils.isEmpty( environmentSubstitute( meta.getOutputValue() ) ) ) {
           logError( BaseMessages.getString( PKG, "JsonOutput.Error.MissingOutputFieldName" ) );
           stopAll();
           setErrors( 1 );
@@ -269,7 +270,7 @@ public class JsonOutput extends BaseStep implements StepInterface {
       }
       if ( data.writeToFile ) {
         // We need to have output field name
-        if ( !meta.isServletOutput() && Const.isEmpty( meta.getFileName() ) ) {
+        if ( !meta.isServletOutput() && Utils.isEmpty( meta.getFileName() ) ) {
           logError( BaseMessages.getString( PKG, "JsonOutput.Error.MissingTargetFilename" ) );
           stopAll();
           setErrors( 1 );
@@ -365,7 +366,7 @@ public class JsonOutput extends BaseStep implements StepInterface {
         OutputStream fos = KettleVFS.getOutputStream( filename, getTransMeta(), meta.isFileAppended() );
         outputStream = fos;
 
-        if ( !Const.isEmpty( meta.getEncoding() ) ) {
+        if ( !Utils.isEmpty( meta.getEncoding() ) ) {
           data.writer =
             new OutputStreamWriter( new BufferedOutputStream( outputStream, 5000 ), environmentSubstitute( meta
               .getEncoding() ) );

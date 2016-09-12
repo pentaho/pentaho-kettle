@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -34,6 +34,7 @@ import java.util.List;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
@@ -130,7 +131,7 @@ public class JobEntryPing extends JobEntryBase implements Cloneable, JobEntryInt
       }
       timeout = XMLHandler.getTagValue( entrynode, "timeout" );
       pingtype = XMLHandler.getTagValue( entrynode, "pingtype" );
-      if ( Const.isEmpty( pingtype ) ) {
+      if ( Utils.isEmpty( pingtype ) ) {
         pingtype = classicPing;
         ipingtype = iclassicPing;
       } else {
@@ -164,7 +165,7 @@ public class JobEntryPing extends JobEntryBase implements Cloneable, JobEntryInt
       timeout = rep.getJobEntryAttributeString( id_jobentry, "timeout" );
 
       pingtype = rep.getJobEntryAttributeString( id_jobentry, "pingtype" );
-      if ( Const.isEmpty( pingtype ) ) {
+      if ( Utils.isEmpty( pingtype ) ) {
         pingtype = classicPing;
         ipingtype = iclassicPing;
       } else {
@@ -244,7 +245,7 @@ public class JobEntryPing extends JobEntryBase implements Cloneable, JobEntryInt
     int packets = Const.toInt( getRealNbrPackets(), 2 );
     boolean status = false;
 
-    if ( Const.isEmpty( hostname ) ) {
+    if ( Utils.isEmpty( hostname ) ) {
       // No Host was specified
       logError( BaseMessages.getString( PKG, "JobPing.SpecifyHost.Label" ) );
       return result;
@@ -364,7 +365,7 @@ public class JobEntryPing extends JobEntryBase implements Cloneable, JobEntryInt
 
   public List<ResourceReference> getResourceDependencies( JobMeta jobMeta ) {
     List<ResourceReference> references = super.getResourceDependencies( jobMeta );
-    if ( !Const.isEmpty( hostname ) ) {
+    if ( !Utils.isEmpty( hostname ) ) {
       String realServername = jobMeta.environmentSubstitute( hostname );
       ResourceReference reference = new ResourceReference( this );
       reference.getEntries().add( new ResourceEntry( realServername, ResourceType.SERVER ) );

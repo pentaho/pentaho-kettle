@@ -27,9 +27,9 @@ import java.util.zip.Adler32;
 import java.util.zip.CRC32;
 
 import org.apache.commons.codec.binary.Hex;
-import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -247,7 +247,7 @@ public class CheckSum extends BaseStep implements StepInterface {
     data = (CheckSumData) sdi;
 
     if ( super.init( smi, sdi ) ) {
-      if ( Const.isEmpty( meta.getResultFieldName() ) ) {
+      if ( Utils.isEmpty( meta.getResultFieldName() ) ) {
         logError( BaseMessages.getString( PKG, "CheckSum.Error.ResultFieldMissing" ) );
         return false;
       }

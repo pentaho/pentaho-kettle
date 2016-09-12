@@ -23,6 +23,7 @@
 package org.pentaho.di.core.database;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.row.ValueMetaInterface;
 
 /**
@@ -61,7 +62,7 @@ public class IngresDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
     if ( getAccessType() == DatabaseMeta.TYPE_ACCESS_ODBC ) {
       return "jdbc:odbc:" + databaseName;
     } else {
-      if ( Const.isEmpty( port ) ) {
+      if ( Utils.isEmpty( port ) ) {
         return "jdbc:ingres://" + hostname + ":II7/" + databaseName;
       } else {
         return "jdbc:ingres://" + hostname + ":" + port + "/" + databaseName;

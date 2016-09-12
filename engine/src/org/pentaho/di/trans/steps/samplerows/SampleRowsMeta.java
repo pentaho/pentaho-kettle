@@ -26,7 +26,6 @@ import java.util.List;
 
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
-import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -34,6 +33,7 @@ import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaInteger;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -77,7 +77,7 @@ public class SampleRowsMeta extends BaseStepMeta implements StepMetaInterface {
 
   public void getFields( RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info, StepMeta nextStep,
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
-    if ( !Const.isEmpty( linenumfield ) ) {
+    if ( !Utils.isEmpty( linenumfield ) ) {
 
       ValueMetaInterface v = new ValueMetaInteger( space.environmentSubstitute( linenumfield ) );
       v.setLength( ValueMetaInterface.DEFAULT_INTEGER_LENGTH, 0 );
@@ -152,7 +152,7 @@ public class SampleRowsMeta extends BaseStepMeta implements StepMetaInterface {
     Repository repository, IMetaStore metaStore ) {
     CheckResult cr;
 
-    if ( Const.isEmpty( linesrange ) ) {
+    if ( Utils.isEmpty( linesrange ) ) {
       cr =
         new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
           PKG, "SampleRowsMeta.CheckResult.LinesRangeMissing" ), stepMeta );

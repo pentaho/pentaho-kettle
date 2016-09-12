@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -47,6 +47,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
@@ -1113,7 +1114,7 @@ public class JobEntrySSH2GETDialog extends JobEntryDialog implements JobEntryDia
     String errmsg = "";
     try {
       String realfoldername = jobMeta.environmentSubstitute( wFtpDirectory.getText() );
-      if ( !Const.isEmpty( realfoldername ) ) {
+      if ( !Utils.isEmpty( realfoldername ) ) {
         if ( connect() ) {
           SFTPv3Client client = new SFTPv3Client( conn );
           boolean folderexist = sshDirectoryExists( client, realfoldername );
@@ -1323,7 +1324,7 @@ public class JobEntrySSH2GETDialog extends JobEntryDialog implements JobEntryDia
   }
 
   private void ok() {
-    if ( Const.isEmpty( wName.getText() ) ) {
+    if ( Utils.isEmpty( wName.getText() ) ) {
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
       mb.setText( BaseMessages.getString( PKG, "System.StepJobEntryNameMissing.Title" ) );
       mb.setMessage( BaseMessages.getString( PKG, "System.JobEntryNameMissing.Msg" ) );

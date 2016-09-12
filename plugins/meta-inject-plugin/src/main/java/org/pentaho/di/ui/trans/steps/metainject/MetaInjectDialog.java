@@ -66,6 +66,7 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleException;
@@ -891,7 +892,7 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
               EnterSelectionDialog selectSourceField =
                 new EnterSelectionDialog(
                   shell, sourceFields, "Select source field", "Select the source field (cancel=clear)" );
-              if ( source != null && !Const.isEmpty( source.getStepname() ) ) {
+              if ( source != null && !Utils.isEmpty( source.getStepname() ) ) {
                 String key = buildStepFieldKey( source.getStepname(), source.getField() );
                 int index = Const.indexOfString( key, sourceFields );
                 if ( index >= 0 ) {
@@ -912,13 +913,13 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
 
               /*
                * EnterSelectionDialog selectStep = new EnterSelectionDialog(shell, prevStepNames, "Select source step",
-               * "Select the source step"); if (source!=null && !Const.isEmpty(source.getStepname())) { int index =
+               * "Select the source step"); if (source!=null && !Utils.isEmpty(source.getStepname())) { int index =
                * Const.indexOfString(source.getStepname(), prevStepNames); if (index>=0) { selectStep.setSelectedNrs(new
                * int[] {index,}); } } String prevStep = selectStep.open(); if (prevStep!=null) { // OK, now we list the
                * fields from that step... // RowMetaInterface fields = transMeta.getStepFields(prevStep); String[]
                * fieldNames = fields.getFieldNames(); Arrays.sort(fieldNames); EnterSelectionDialog selectField = new
                * EnterSelectionDialog(shell, fieldNames, "Select field", "Select the source field"); if (source!=null &&
-               * !Const.isEmpty(source.getField())) { int index = Const.indexOfString(source.getField(), fieldNames); if
+               * !Utils.isEmpty(source.getField())) { int index = Const.indexOfString(source.getField(), fieldNames); if
                * (index>=0) { selectField.setSelectedNrs(new int[] {index,}); } } String fieldName = selectField.open();
                * if (fieldName!=null) { // Store the selection, update the UI... // item.setText(2, prevStep);
                * item.setText(3, fieldName); source = new SourceStepField(prevStep, fieldName);
@@ -1088,20 +1089,20 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
   private boolean loadTransformation() throws KettleException {
     switch ( specificationMethod ) {
       case FILENAME:
-        if ( Const.isEmpty( wFilename.getText() ) ) {
+        if ( Utils.isEmpty( wFilename.getText() ) ) {
           return false;
         }
         loadFileTrans( wFilename.getText() );
         break;
       case REPOSITORY_BY_NAME:
-        if ( Const.isEmpty( wDirectory.getText() ) && Const.isEmpty( wTransname.getText() ) ) {
+        if ( Utils.isEmpty( wDirectory.getText() ) && Utils.isEmpty( wTransname.getText() ) ) {
           return false;
         }
 
         String realDirectory = transMeta.environmentSubstitute( wDirectory.getText() );
         String realTransname = transMeta.environmentSubstitute( wTransname.getText() );
 
-        if ( Const.isEmpty( realDirectory ) || Const.isEmpty( realTransname ) ) {
+        if ( Utils.isEmpty( realDirectory ) || Utils.isEmpty( realTransname ) ) {
           throw new KettleException( BaseMessages.getString(
             PKG, "MetaInjectDialog.Exception.NoValidMappingDetailsFound" ) );
         }
@@ -1141,11 +1142,11 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
     wByReference.setEnabled( repository != null && radioByReference.getSelection() && supportsReferences );
     wbByReference.setEnabled( repository != null && radioByReference.getSelection() && supportsReferences );
 
-    boolean outputCapture = !Const.isEmpty( wSourceStep.getText() );
+    boolean outputCapture = !Utils.isEmpty( wSourceStep.getText() );
     wlSourceFields.setEnabled( outputCapture );
     wSourceFields.setEnabled( outputCapture );
 
-    boolean streaming = !Const.isEmpty( wStreamingSourceStep.getText() );
+    boolean streaming = !Utils.isEmpty( wStreamingSourceStep.getText() );
     wStreamingTargetStep.setEnabled( streaming );
     wlStreamingTargetStep.setEnabled( streaming );
   }
@@ -1386,7 +1387,7 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
   }
 
   private void ok() {
-    if ( Const.isEmpty( wStepname.getText() ) ) {
+    if ( Utils.isEmpty( wStepname.getText() ) ) {
       return;
     }
 
@@ -1470,7 +1471,7 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
       boolean saved = false;
       try {
         if ( repository != null ) {
-          if ( !Const.isEmpty( newTransMeta.getName() ) ) {
+          if ( !Utils.isEmpty( newTransMeta.getName() ) ) {
             wStepname.setText( newTransMeta.getName() );
           }
           saved = spoon.saveToRepository( newTransMeta, false );

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,7 +25,7 @@ package org.pentaho.di.imp.rules;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.TransLogTable;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -70,7 +70,7 @@ public class TransformationHasTransLogConfiguredImportRule extends BaseImportRul
       feedback.add( new ImportValidationFeedback(
         this, ImportValidationResultType.ERROR, "The logging table is not defined" ) );
     } else {
-      if ( !Const.isEmpty( schemaName ) ) {
+      if ( !Utils.isEmpty( schemaName ) ) {
         if ( schemaName.equals( transLogTable.getSchemaName() ) ) {
           feedback.add( new ImportValidationFeedback(
             this, ImportValidationResultType.APPROVAL, "The schema name is set to: " + schemaName ) );
@@ -80,7 +80,7 @@ public class TransformationHasTransLogConfiguredImportRule extends BaseImportRul
         }
       }
 
-      if ( !Const.isEmpty( tableName ) ) {
+      if ( !Utils.isEmpty( tableName ) ) {
         if ( tableName.equals( transLogTable.getTableName() ) ) {
           feedback.add( new ImportValidationFeedback(
             this, ImportValidationResultType.APPROVAL, "The table name is set to: " + tableName ) );
@@ -90,7 +90,7 @@ public class TransformationHasTransLogConfiguredImportRule extends BaseImportRul
         }
       }
 
-      if ( !Const.isEmpty( connectionName ) ) {
+      if ( !Utils.isEmpty( connectionName ) ) {
         if ( connectionName.equals( transLogTable.getDatabaseMeta().getName() ) ) {
           feedback.add( new ImportValidationFeedback(
             this, ImportValidationResultType.APPROVAL, "The database connection used for logging is: "

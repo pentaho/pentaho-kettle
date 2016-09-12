@@ -90,6 +90,7 @@ import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.swt.widgets.Widget;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.EngineMetaInterface;
 import org.pentaho.di.core.NotePadMeta;
 import org.pentaho.di.core.Props;
@@ -1646,7 +1647,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
   /*
    * private void showStepTargetOptions(final StepMeta stepMeta, StepIOMetaInterface ioMeta, int x, int y) {
    *
-   * if (!Const.isEmpty(ioMeta.getTargetStepnames())) { final Menu menu = new Menu(canvas); for (final StreamInterface
+   * if (!Utils.isEmpty(ioMeta.getTargetStepnames())) { final Menu menu = new Menu(canvas); for (final StreamInterface
    * stream : ioMeta.getTargetStreams()) { MenuItem menuItem = new MenuItem(menu, SWT.NONE);
    * menuItem.setText(stream.getDescription()); menuItem.addSelectionListener(new SelectionAdapter() {
    *
@@ -2212,7 +2213,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 
   public RowDistributionInterface askUserForCustomDistributionMethod() {
     List<PluginInterface> plugins = PluginRegistry.getInstance().getPlugins( RowDistributionPluginType.class );
-    if ( Const.isEmpty( plugins ) ) {
+    if ( Utils.isEmpty( plugins ) ) {
       return null;
     }
     List<String> choices = new ArrayList<String>();
@@ -2252,7 +2253,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     String mt = BaseMessages.getString( PKG, "TransGraph.Dialog.NrOfCopiesOfStep.Message" );
     EnterStringDialog nd = new EnterStringDialog( shell, stepMeta.getCopiesString(), tt, mt, true, transMeta );
     String cop = nd.open();
-    if ( !Const.isEmpty( cop ) ) {
+    if ( !Utils.isEmpty( cop ) ) {
 
       int copies = Const.toInt( transMeta.environmentSubstitute( cop ), -1 );
       if ( copies > 1 && !multipleOK ) {
@@ -2613,7 +2614,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
           JfaceMenupopup launchMenu = (JfaceMenupopup) doc.getElementById( "trans-graph-entry-launch-popup" );
           String[] referencedObjects = stepMeta.getStepMetaInterface().getReferencedObjectDescriptions();
           boolean[] enabledObjects = stepMeta.getStepMetaInterface().isReferencedObjectEnabled();
-          launchMenu.setDisabled( Const.isEmpty( referencedObjects ) );
+          launchMenu.setDisabled( Utils.isEmpty( referencedObjects ) );
 
           launchMenu.removeChildren();
           int childIndex = 0;
@@ -2636,7 +2637,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
             child.setDisabled( false );
           }
 
-          if ( !Const.isEmpty( referencedObjects ) ) {
+          if ( !Utils.isEmpty( referencedObjects ) ) {
             for ( int i = 0; i < referencedObjects.length; i++ ) {
               final int index = i;
               String referencedObject = referencedObjects[i];
@@ -2763,7 +2764,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
       String[] targetSteps = prevStep.getStepMetaInterface().getStepIOMeta().getTargetStepnames();
       if ( targetSteps != null ) {
         for ( int t = 0; t < targetSteps.length && enabled; t++ ) {
-          if ( !Const.isEmpty( targetSteps[t] ) && targetSteps[t].equalsIgnoreCase( stepMeta.getName() ) ) {
+          if ( !Utils.isEmpty( targetSteps[t] ) && targetSteps[t].equalsIgnoreCase( stepMeta.getName() ) ) {
             enabled = false;
           }
         }
@@ -4379,7 +4380,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
         ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.OpenMapping.id, objectArray );
       } else {
         StepMetaInterface meta = stepMeta.getStepMetaInterface();
-        if ( !Const.isEmpty( meta.getReferencedObjectDescriptions() ) ) {
+        if ( !Utils.isEmpty( meta.getReferencedObjectDescriptions() ) ) {
           referencedMeta = meta.loadReferencedObject( index, spoon.rep, spoon.metaStore, transMeta );
         }
       }

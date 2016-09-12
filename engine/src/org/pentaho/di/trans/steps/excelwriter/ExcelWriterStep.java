@@ -49,6 +49,7 @@ import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMeta;
@@ -137,7 +138,7 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
         data.commentfieldnrs = new int[meta.getOutputFields().length];
         for ( int i = 0; i < meta.getOutputFields().length; i++ ) {
           data.commentfieldnrs[i] = data.inputRowMeta.indexOfValue( meta.getOutputFields()[i].getCommentField() );
-          if ( data.commentfieldnrs[i] < 0 && !Const.isEmpty( meta.getOutputFields()[i].getCommentField() ) ) {
+          if ( data.commentfieldnrs[i] < 0 && !Utils.isEmpty( meta.getOutputFields()[i].getCommentField() ) ) {
             logError( "Comment Field ["
               + meta.getOutputFields()[i].getCommentField() + "] couldn't be found in the input stream!" );
             setErrors( 1 );
@@ -152,7 +153,7 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
           data.commentauthorfieldnrs[i] =
             data.inputRowMeta.indexOfValue( meta.getOutputFields()[i].getCommentAuthorField() );
           if ( data.commentauthorfieldnrs[i] < 0
-            && !Const.isEmpty( meta.getOutputFields()[i].getCommentAuthorField() ) ) {
+            && !Utils.isEmpty( meta.getOutputFields()[i].getCommentAuthorField() ) ) {
             logError( "Comment Author Field ["
               + meta.getOutputFields()[i].getCommentAuthorField() + "] couldn't be found in the input stream!" );
             setErrors( 1 );
@@ -165,7 +166,7 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
         data.linkfieldnrs = new int[meta.getOutputFields().length];
         for ( int i = 0; i < meta.getOutputFields().length; i++ ) {
           data.linkfieldnrs[i] = data.inputRowMeta.indexOfValue( meta.getOutputFields()[i].getHyperlinkField() );
-          if ( data.linkfieldnrs[i] < 0 && !Const.isEmpty( meta.getOutputFields()[i].getHyperlinkField() ) ) {
+          if ( data.linkfieldnrs[i] < 0 && !Utils.isEmpty( meta.getOutputFields()[i].getHyperlinkField() ) ) {
             logError( "Link Field ["
               + meta.getOutputFields()[i].getHyperlinkField() + "] couldn't be found in the input stream!" );
             setErrors( 1 );
@@ -371,7 +372,7 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
     String sheetName = cellRef.getSheetName();
 
     Sheet sheet = data.sheet;
-    if ( !Const.isEmpty( sheetName ) ) {
+    if ( !Utils.isEmpty( sheetName ) ) {
       sheet = data.wb.getSheet( sheetName );
     }
 
@@ -416,10 +417,10 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
 
             // determine correct cell for title or data rows
             String styleRef = null;
-            if ( !isTitle && !Const.isEmpty( excelField.getStyleCell() ) ) {
+            if ( !isTitle && !Utils.isEmpty( excelField.getStyleCell() ) ) {
 
               styleRef = excelField.getStyleCell();
-            } else if ( isTitle && !Const.isEmpty( excelField.getTitleStyleCell() ) ) {
+            } else if ( isTitle && !Utils.isEmpty( excelField.getTitleStyleCell() ) ) {
               styleRef = excelField.getTitleStyleCell();
             }
 
@@ -433,7 +434,7 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
 
           // set cell format as specified, specific format overrides cell specification
           if ( !isTitle
-            && excelField != null && !Const.isEmpty( excelField.getFormat() )
+            && excelField != null && !Utils.isEmpty( excelField.getFormat() )
             && !excelField.getFormat().startsWith( "Image" ) ) {
             setDataFormat( excelField.getFormat(), cell );
           }
@@ -451,7 +452,7 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
         String link =
           data.inputRowMeta.getValueMeta( data.linkfieldnrs[ fieldNr ] ).getString(
             row[ data.linkfieldnrs[ fieldNr ] ] );
-        if ( !Const.isEmpty( link ) ) {
+        if ( !Utils.isEmpty( link ) ) {
 
           CreationHelper ch = data.wb.getCreationHelper();
           // set the link on the cell depending on link type
@@ -509,7 +510,7 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
         String comment =
           data.inputRowMeta.getValueMeta( data.commentfieldnrs[ fieldNr ] ).getString(
             row[ data.commentfieldnrs[ fieldNr ] ] );
-        if ( !Const.isEmpty( comment ) ) {
+        if ( !Utils.isEmpty( comment ) ) {
           String author =
             data.commentauthorfieldnrs[ fieldNr ] >= 0
               ? data.inputRowMeta.getValueMeta( data.commentauthorfieldnrs[ fieldNr ] ).getString(
@@ -812,7 +813,7 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
       data.startingRow = 0;
       data.startingCol = 0;
 
-      if ( !Const.isEmpty( data.realStartingCell ) ) {
+      if ( !Utils.isEmpty( data.realStartingCell ) ) {
         CellReference cellRef = new CellReference( data.realStartingCell );
         data.startingRow = cellRef.getRow();
         data.startingCol = cellRef.getCol();
@@ -888,7 +889,7 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
       if ( meta.getOutputFields() != null && meta.getOutputFields().length > 0 ) {
         for ( int i = 0; i < meta.getOutputFields().length; i++ ) {
           String fieldName =
-            !Const.isEmpty( meta.getOutputFields()[ i ].getTitle() ) ? meta.getOutputFields()[ i ].getTitle() : meta
+            !Utils.isEmpty( meta.getOutputFields()[ i ].getTitle() ) ? meta.getOutputFields()[ i ].getTitle() : meta
               .getOutputFields()[ i ].getName();
 
           ValueMetaInterface vMeta = new ValueMetaString( fieldName );

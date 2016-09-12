@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -38,6 +38,7 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.gui.JobTracker;
 import org.pentaho.di.i18n.BaseMessages;
@@ -193,8 +194,8 @@ public class JobGridDelegate extends SpoonDelegate {
         TreeItem treeItem = new TreeItem( wTree, SWT.NONE );
         String jobName = jobTracker.getJobName();
 
-        if ( Const.isEmpty( jobName ) ) {
-          if ( !Const.isEmpty( jobTracker.getJobFilename() ) ) {
+        if ( Utils.isEmpty( jobName ) ) {
+          if ( !Utils.isEmpty( jobTracker.getJobFilename() ) ) {
             jobName = jobTracker.getJobFilename();
           } else {
             jobName = BaseMessages.getString( PKG, "JobLog.Tree.StringToDisplayWhenJobHasNoName" );
@@ -233,7 +234,7 @@ public class JobGridDelegate extends SpoonDelegate {
           JobEntryResult result = jobTracker.getJobEntryResult();
           if ( result != null ) {
             String jobEntryName = result.getJobEntryName();
-            if ( !Const.isEmpty( jobEntryName ) ) {
+            if ( !Utils.isEmpty( jobEntryName ) ) {
               treeItem.setText( 0, jobEntryName );
               treeItem.setText( 4, Const.NVL( result.getJobEntryFilename(), "" ) );
             } else {

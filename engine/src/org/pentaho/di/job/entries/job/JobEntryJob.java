@@ -33,6 +33,7 @@ import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.ResultFile;
@@ -323,11 +324,11 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
       //
       specificationMethod = ObjectLocationSpecificationMethod.FILENAME;
 
-      if ( !Const.isEmpty( filename ) ) {
+      if ( !Utils.isEmpty( filename ) ) {
         specificationMethod = ObjectLocationSpecificationMethod.FILENAME;
       } else if ( jobObjectId != null ) {
         specificationMethod = ObjectLocationSpecificationMethod.REPOSITORY_BY_REFERENCE;
-      } else if ( !Const.isEmpty( jobname ) ) {
+      } else if ( !Utils.isEmpty( jobname ) ) {
         specificationMethod = ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME;
       }
     }
@@ -343,11 +344,11 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
       specificationMethod = ObjectLocationSpecificationMethod.getSpecificationMethodByCode( method );
 
       String jobId = XMLHandler.getTagValue( entrynode, "job_object_id" );
-      jobObjectId = Const.isEmpty( jobId ) ? null : new StringObjectId( jobId );
+      jobObjectId = Utils.isEmpty( jobId ) ? null : new StringObjectId( jobId );
       filename = XMLHandler.getTagValue( entrynode, "filename" );
       jobname = XMLHandler.getTagValue( entrynode, "jobname" );
 
-      if ( rep != null && rep.isConnected() && !Const.isEmpty( jobname ) ) {
+      if ( rep != null && rep.isConnected() && !Utils.isEmpty( jobname ) ) {
         specificationMethod = ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME;
       }
 
@@ -371,7 +372,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
       createParentFolder = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "create_parent_folder" ) );
 
       String wait = XMLHandler.getTagValue( entrynode, "wait_until_finished" );
-      if ( Const.isEmpty( wait ) ) {
+      if ( Utils.isEmpty( wait ) ) {
         waitingToFinish = true;
       } else {
         waitingToFinish = "Y".equalsIgnoreCase( wait );
@@ -396,7 +397,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
       Node parametersNode = XMLHandler.getSubNode( entrynode, "parameters" );
 
       String passAll = XMLHandler.getTagValue( parametersNode, "pass_all_parameters" );
-      passingAllParameters = Const.isEmpty( passAll ) || "Y".equalsIgnoreCase( passAll );
+      passingAllParameters = Utils.isEmpty( passAll ) || "Y".equalsIgnoreCase( passAll );
 
       int nrParameters = XMLHandler.countNodes( parametersNode, "parameter" );
       allocateParams( nrParameters );
@@ -423,7 +424,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
       String method = rep.getJobEntryAttributeString( id_jobentry, "specification_method" );
       specificationMethod = ObjectLocationSpecificationMethod.getSpecificationMethodByCode( method );
       String jobId = rep.getJobEntryAttributeString( id_jobentry, "job_object_id" );
-      jobObjectId = Const.isEmpty( jobId ) ? null : new StringObjectId( jobId );
+      jobObjectId = Utils.isEmpty( jobId ) ? null : new StringObjectId( jobId );
       jobname = rep.getJobEntryAttributeString( id_jobentry, "name" );
       directory = rep.getJobEntryAttributeString( id_jobentry, "dir_path" );
       filename = rep.getJobEntryAttributeString( id_jobentry, "file_name" );
@@ -543,7 +544,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
       String realLogFilename = environmentSubstitute( getLogFilename() );
       // We need to check here the log filename
       // if we do not have one, we must fail
-      if ( Const.isEmpty( realLogFilename ) ) {
+      if ( Utils.isEmpty( realLogFilename ) ) {
         logError( BaseMessages.getString( PKG, "JobJob.Exception.LogFilenameMissing" ) );
         result.setNrErrors( 1 );
         result.setResult( false );
@@ -574,7 +575,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
     // Figure out the remote slave server...
     //
     SlaveServer remoteSlaveServer = null;
-    if ( !Const.isEmpty( remoteSlaveServerName ) ) {
+    if ( !Utils.isEmpty( remoteSlaveServerName ) ) {
       String realRemoteSlaveServerName = environmentSubstitute( remoteSlaveServerName );
       remoteSlaveServer = parentJob.getJobMeta().findSlaveServer( realRemoteSlaveServerName );
       if ( remoteSlaveServer == null ) {
@@ -690,7 +691,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
         //
         if ( parameters != null ) {
           for ( int idx = 0; idx < parameters.length; idx++ ) {
-            if ( !Const.isEmpty( parameters[idx] ) ) {
+            if ( !Utils.isEmpty( parameters[idx] ) ) {
 
               // If it's not yet present in the parent job, add it...
               //
@@ -705,7 +706,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
                 }
               }
 
-              if ( Const.isEmpty( Const.trim( parameterFieldNames[idx] ) ) ) {
+              if ( Utils.isEmpty( Const.trim( parameterFieldNames[idx] ) ) ) {
                 namedParam.setParameterValue( parameters[idx], Const.NVL(
                   environmentSubstitute( parameterValues[idx] ), "" ) );
               } else {
@@ -749,9 +750,9 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 
             if ( parameters != null ) {
               for ( int idx = 0; idx < parameters.length; idx++ ) {
-                if ( !Const.isEmpty( parameters[idx] ) ) {
+                if ( !Utils.isEmpty( parameters[idx] ) ) {
                   // We have a parameter
-                  if ( Const.isEmpty( Const.trim( parameterFieldNames[idx] ) ) ) {
+                  if ( Utils.isEmpty( Const.trim( parameterFieldNames[idx] ) ) ) {
                     namedParam.setParameterValue( parameters[idx], Const.NVL(
                       environmentSubstitute( parameterValues[idx] ), "" ) );
                   } else {
@@ -786,9 +787,9 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 
             if ( parameters != null ) {
               for ( int idx = 0; idx < parameters.length; idx++ ) {
-                if ( !Const.isEmpty( parameters[idx] ) ) {
+                if ( !Utils.isEmpty( parameters[idx] ) ) {
                   // We have a parameter
-                  if ( Const.isEmpty( Const.trim( parameterFieldNames[idx] ) ) ) {
+                  if ( Utils.isEmpty( Const.trim( parameterFieldNames[idx] ) ) ) {
                     namedParam.setParameterValue( parameters[idx], Const.NVL(
                       environmentSubstitute( parameterValues[idx] ), "" ) );
                   } else {
@@ -835,7 +836,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
             // Grab the parameter value set in the job entry
             //
             String thisValue = namedParam.getParameterValue( parameterNames[idx] );
-            if ( !Const.isEmpty( thisValue ) ) {
+            if ( !Utils.isEmpty( thisValue ) ) {
               // Set the value as specified by the user in the job entry
               //
               job.setParameterValue( parameterNames[idx], thisValue );
@@ -846,7 +847,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
               //
               if ( isPassingAllParameters() ) {
                 String parentValue = parentJob.getParameterValue( parameterNames[idx] );
-                if ( !Const.isEmpty( parentValue ) ) {
+                if ( !Utils.isEmpty( parentValue ) ) {
                   job.setParameterValue( parameterNames[idx], parentValue );
                 }
               }
@@ -1017,7 +1018,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
         result.add( oneResult );
 
         // Set the result rows too, if any ...
-        if ( !Const.isEmpty( oneResult.getRows() ) ) {
+        if ( !Utils.isEmpty( oneResult.getRows() ) ) {
           result.setRows( new ArrayList<RowMetaAndData>( oneResult.getRows() ) );
         }
 
@@ -1330,7 +1331,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
   @Override
   public List<ResourceReference> getResourceDependencies( JobMeta jobMeta ) {
     List<ResourceReference> references = super.getResourceDependencies( jobMeta );
-    if ( !Const.isEmpty( filename ) ) {
+    if ( !Utils.isEmpty( filename ) ) {
       String realFileName = jobMeta.environmentSubstitute( filename );
       ResourceReference reference = new ResourceReference( this );
       reference.getEntries().add( new ResourceEntry( realFileName, ResourceType.ACTIONFILE ) );
@@ -1550,8 +1551,8 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
   }
 
   private boolean isJobDefined() {
-    return !Const.isEmpty( filename )
-      || jobObjectId != null || ( !Const.isEmpty( this.directory ) && !Const.isEmpty( jobname ) );
+    return !Utils.isEmpty( filename )
+      || jobObjectId != null || ( !Utils.isEmpty( this.directory ) && !Utils.isEmpty( jobname ) );
   }
 
   @Override

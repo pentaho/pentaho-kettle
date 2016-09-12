@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -26,6 +26,7 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -60,7 +61,7 @@ public class SplitFieldToRows extends BaseStep implements StepInterface {
       data.fieldnr = rowMeta.indexOfValue( realSplitFieldName );
 
       int numErrors = 0;
-      if ( Const.isEmpty( meta.getNewFieldname() ) ) {
+      if ( Utils.isEmpty( meta.getNewFieldname() ) ) {
         logError( BaseMessages.getString( PKG, "SplitFieldToRows.Log.NewFieldNameIsNull" ) );
         numErrors++;
       }
@@ -78,7 +79,7 @@ public class SplitFieldToRows extends BaseStep implements StepInterface {
 
       if ( meta.includeRowNumber() ) {
         String realRowNumberField = environmentSubstitute( meta.getRowNumberField() );
-        if ( Const.isEmpty( realRowNumberField ) ) {
+        if ( Utils.isEmpty( realRowNumberField ) ) {
           logError( BaseMessages.getString( PKG, "SplitFieldToRows.Exception.RownrFieldMissing" ) );
           numErrors++;
         }

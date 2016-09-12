@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -51,6 +51,7 @@ import org.apache.commons.vfs2.FileSelectInfo;
 import org.apache.commons.vfs2.FileSelector;
 import org.apache.commons.vfs2.FileType;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.vfs.KettleVFS;
@@ -99,43 +100,43 @@ public class Mail extends BaseStep implements StepInterface {
       data.previousRowMeta = getInputRowMeta().clone();
 
       // Check is filename field is provided
-      if ( Const.isEmpty( meta.getDestination() ) ) {
+      if ( Utils.isEmpty( meta.getDestination() ) ) {
         throw new KettleException( BaseMessages.getString( PKG, "Mail.Log.DestinationFieldEmpty" ) );
       }
 
       // Check is replyname field is provided
-      if ( Const.isEmpty( meta.getReplyAddress() ) ) {
+      if ( Utils.isEmpty( meta.getReplyAddress() ) ) {
         throw new KettleException( BaseMessages.getString( PKG, "Mail.Log.ReplyFieldEmpty" ) );
       }
 
       // Check is SMTP server is provided
-      if ( Const.isEmpty( meta.getServer() ) ) {
+      if ( Utils.isEmpty( meta.getServer() ) ) {
         throw new KettleException( BaseMessages.getString( PKG, "Mail.Log.ServerFieldEmpty" ) );
       }
 
       // Check Attached filenames when dynamic
-      if ( meta.isDynamicFilename() && Const.isEmpty( meta.getDynamicFieldname() ) ) {
+      if ( meta.isDynamicFilename() && Utils.isEmpty( meta.getDynamicFieldname() ) ) {
         throw new KettleException( BaseMessages.getString( PKG, "Mail.Log.DynamicFilenameFielddEmpty" ) );
       }
 
       // Check Attached zipfilename when dynamic
-      if ( meta.isZipFilenameDynamic() && Const.isEmpty( meta.getDynamicZipFilenameField() ) ) {
+      if ( meta.isZipFilenameDynamic() && Utils.isEmpty( meta.getDynamicZipFilenameField() ) ) {
         throw new KettleException( BaseMessages.getString( PKG, "Mail.Log.DynamicZipFilenameFieldEmpty" ) );
       }
 
-      if ( meta.isZipFiles() && Const.isEmpty( meta.getZipFilename() ) ) {
+      if ( meta.isZipFiles() && Utils.isEmpty( meta.getZipFilename() ) ) {
         throw new KettleException( BaseMessages.getString( PKG, "Mail.Log.ZipFilenameEmpty" ) );
       }
 
       // check authentication
       if ( meta.isUsingAuthentication() ) {
         // check authentication user
-        if ( Const.isEmpty( meta.getAuthenticationUser() ) ) {
+        if ( Utils.isEmpty( meta.getAuthenticationUser() ) ) {
           throw new KettleException( BaseMessages.getString( PKG, "Mail.Log.AuthenticationUserFieldEmpty" ) );
         }
 
         // check authentication pass
-        if ( Const.isEmpty( meta.getAuthenticationPassword() ) ) {
+        if ( Utils.isEmpty( meta.getAuthenticationPassword() ) ) {
           throw new KettleException( BaseMessages.getString( PKG, "Mail.Log.AuthenticationPasswordFieldEmpty" ) );
         }
       }
@@ -151,7 +152,7 @@ public class Mail extends BaseStep implements StepInterface {
       }
 
       // Cc
-      if ( !Const.isEmpty( meta.getDestinationCc() ) ) {
+      if ( !Utils.isEmpty( meta.getDestinationCc() ) ) {
         // cache the position of the Cc field
         if ( data.indexOfDestinationCc < 0 ) {
           String realDestinationCcFieldname = meta.getDestinationCc();
@@ -163,7 +164,7 @@ public class Mail extends BaseStep implements StepInterface {
         }
       }
       // BCc
-      if ( !Const.isEmpty( meta.getDestinationBCc() ) ) {
+      if ( !Utils.isEmpty( meta.getDestinationBCc() ) ) {
         // cache the position of the BCc field
         if ( data.indexOfDestinationBCc < 0 ) {
           String realDestinationBCcFieldname = meta.getDestinationBCc();
@@ -175,7 +176,7 @@ public class Mail extends BaseStep implements StepInterface {
         }
       }
       // Sender Name
-      if ( !Const.isEmpty( meta.getReplyName() ) ) {
+      if ( !Utils.isEmpty( meta.getReplyName() ) ) {
         // cache the position of the sender field
         if ( data.indexOfSenderName < 0 ) {
           String realSenderName = meta.getReplyName();
@@ -198,7 +199,7 @@ public class Mail extends BaseStep implements StepInterface {
       }
 
       // Reply to
-      if ( !Const.isEmpty( meta.getReplyToAddresses() ) ) {
+      if ( !Utils.isEmpty( meta.getReplyToAddresses() ) ) {
         // cache the position of the reply to field
         if ( data.indexOfReplyToAddresses < 0 ) {
           String realReplyToAddresses = meta.getReplyToAddresses();
@@ -211,7 +212,7 @@ public class Mail extends BaseStep implements StepInterface {
       }
 
       // Contact Person
-      if ( !Const.isEmpty( meta.getContactPerson() ) ) {
+      if ( !Utils.isEmpty( meta.getContactPerson() ) ) {
         // cache the position of the destination field
         if ( data.indexOfContactPerson < 0 ) {
           String realContactPerson = meta.getContactPerson();
@@ -223,7 +224,7 @@ public class Mail extends BaseStep implements StepInterface {
         }
       }
       // Contact Phone
-      if ( !Const.isEmpty( meta.getContactPhone() ) ) {
+      if ( !Utils.isEmpty( meta.getContactPhone() ) ) {
         // cache the position of the destination field
         if ( data.indexOfContactPhone < 0 ) {
           String realContactPhone = meta.getContactPhone();
@@ -244,7 +245,7 @@ public class Mail extends BaseStep implements StepInterface {
         }
       }
       // Port
-      if ( !Const.isEmpty( meta.getPort() ) ) {
+      if ( !Utils.isEmpty( meta.getPort() ) ) {
         // cache the position of the port field
         if ( data.indexOfPort < 0 ) {
           String realPort = meta.getPort();
@@ -278,7 +279,7 @@ public class Mail extends BaseStep implements StepInterface {
         }
       }
       // Mail Subject
-      if ( !Const.isEmpty( meta.getSubject() ) ) {
+      if ( !Utils.isEmpty( meta.getSubject() ) ) {
         // cache the position of the subject field
         if ( data.indexOfSubject < 0 ) {
           String realSubject = meta.getSubject();
@@ -290,7 +291,7 @@ public class Mail extends BaseStep implements StepInterface {
         }
       }
       // Mail Comment
-      if ( !Const.isEmpty( meta.getComment() ) ) {
+      if ( !Utils.isEmpty( meta.getComment() ) ) {
         // cache the position of the comment field
         if ( data.indexOfComment < 0 ) {
           String realComment = meta.getComment();
@@ -306,7 +307,7 @@ public class Mail extends BaseStep implements StepInterface {
         // We are dealing with file content directly loaded from file
         // and not physical file
         String attachedContentField = meta.getAttachContentField();
-        if ( Const.isEmpty( attachedContentField ) ) {
+        if ( Utils.isEmpty( attachedContentField ) ) {
           // Empty Field
           throw new KettleException( BaseMessages.getString( PKG, "Mail.Exception.AttachedContentFieldEmpty" ) );
         }
@@ -317,7 +318,7 @@ public class Mail extends BaseStep implements StepInterface {
         }
         // Attached content filename
         String attachedContentFileNameField = meta.getAttachContentFileNameField();
-        if ( Const.isEmpty( attachedContentFileNameField ) ) {
+        if ( Utils.isEmpty( attachedContentFileNameField ) ) {
           // Empty Field
           throw new KettleException( BaseMessages.getString(
             PKG, "Mail.Exception.AttachedContentFileNameFieldEmpty" ) );
@@ -364,7 +365,7 @@ public class Mail extends BaseStep implements StepInterface {
           }
 
           // cache the position of the attached wildcard field
-          if ( !Const.isEmpty( meta.getSourceWildcard() ) ) {
+          if ( !Utils.isEmpty( meta.getSourceWildcard() ) ) {
             if ( data.indexOfSourceWildcard < 0 ) {
               String realSourceattachedWildcard = meta.getDynamicWildcard();
               data.indexOfSourceWildcard = data.previousRowMeta.indexOfValue( realSourceattachedWildcard );
@@ -427,7 +428,7 @@ public class Mail extends BaseStep implements StepInterface {
     try {
       // get values
       String maildestination = data.previousRowMeta.getString( r, data.indexOfDestination );
-      if ( Const.isEmpty( maildestination ) ) {
+      if ( Utils.isEmpty( maildestination ) ) {
         throw new KettleException( "Mail.Error.MailDestinationEmpty" );
       }
       String maildestinationCc = null;
@@ -461,7 +462,7 @@ public class Mail extends BaseStep implements StepInterface {
       }
 
       String servername = data.previousRowMeta.getString( r, data.indexOfServer );
-      if ( Const.isEmpty( servername ) ) {
+      if ( Utils.isEmpty( servername ) ) {
         throw new KettleException( "Mail.Error.MailServerEmpty" );
       }
       int port = -1;
@@ -578,9 +579,9 @@ public class Mail extends BaseStep implements StepInterface {
 
     // set Email sender
     String email_address = senderAddress;
-    if ( !Const.isEmpty( email_address ) ) {
+    if ( !Utils.isEmpty( email_address ) ) {
       // get sender name
-      if ( !Const.isEmpty( senderName ) ) {
+      if ( !Utils.isEmpty( senderName ) ) {
         email_address = senderName + '<' + email_address + '>';
       }
       msg.setFrom( new InternetAddress( email_address ) );
@@ -589,7 +590,7 @@ public class Mail extends BaseStep implements StepInterface {
     }
 
     // Set reply to
-    if ( !Const.isEmpty( replyToAddresses ) ) {
+    if ( !Utils.isEmpty( replyToAddresses ) ) {
       // get replay to
       // Split the mail-address: space separated
       String[] reply_Address_List = replyToAddresses.split( " " );
@@ -613,7 +614,7 @@ public class Mail extends BaseStep implements StepInterface {
     msg.setRecipients( Message.RecipientType.TO, address );
 
     String realdestinationCc = destinationCc;
-    if ( !Const.isEmpty( realdestinationCc ) ) {
+    if ( !Utils.isEmpty( realdestinationCc ) ) {
       // Split the mail-address Cc: space separated
       String[] destinationsCc = realdestinationCc.split( " " );
       InternetAddress[] addressCc = new InternetAddress[destinationsCc.length];
@@ -625,7 +626,7 @@ public class Mail extends BaseStep implements StepInterface {
     }
 
     String realdestinationBCc = destinationBCc;
-    if ( !Const.isEmpty( realdestinationBCc ) ) {
+    if ( !Utils.isEmpty( realdestinationBCc ) ) {
       // Split the mail-address BCc: space separated
       String[] destinationsBCc = realdestinationBCc.split( " " );
       InternetAddress[] addressBCc = new InternetAddress[destinationsBCc.length];
@@ -652,7 +653,7 @@ public class Mail extends BaseStep implements StepInterface {
         XMLHandler.date2string( new Date() ) ).append( Const.CR ).append( Const.CR );
     }
 
-    if ( !meta.isOnlySendComment() && ( !Const.isEmpty( contactPerson ) || !Const.isEmpty( contactPhone ) ) ) {
+    if ( !meta.isOnlySendComment() && ( !Utils.isEmpty( contactPerson ) || !Utils.isEmpty( contactPhone ) ) ) {
       messageText.append( BaseMessages.getString( PKG, "Mail.Log.Comment.ContactInfo" ) + " :" ).append( Const.CR );
       messageText.append( "---------------------" ).append( Const.CR );
       messageText.append( BaseMessages.getString( PKG, "Mail.Log.Comment.PersonToContact" ) + " : " ).append(
@@ -668,7 +669,7 @@ public class Mail extends BaseStep implements StepInterface {
     // 1st part
 
     if ( meta.isUseHTML() ) {
-      if ( !Const.isEmpty( meta.getEncoding() ) ) {
+      if ( !Utils.isEmpty( meta.getEncoding() ) ) {
         part1.setContent( messageText.toString(), "text/html; " + "charset=" + meta.getEncoding() );
       } else {
         part1.setContent( messageText.toString(), "text/html; " + "charset=ISO-8859-1" );
@@ -758,7 +759,7 @@ public class Mail extends BaseStep implements StepInterface {
         realSourceWildcard = data.realSourceWildcard;
       }
 
-      if ( !Const.isEmpty( realSourceFileFoldername ) ) {
+      if ( !Utils.isEmpty( realSourceFileFoldername ) ) {
         sourcefile = KettleVFS.getFileObject( realSourceFileFoldername, getTransMeta() );
         if ( sourcefile.exists() ) {
           long FileSize = 0;
@@ -927,11 +928,11 @@ public class Mail extends BaseStep implements StepInterface {
     String sourceFolder = null;
 
     public TextFileSelector( String sourcefolderin, String filewildcard ) {
-      if ( !Const.isEmpty( sourcefolderin ) ) {
+      if ( !Utils.isEmpty( sourcefolderin ) ) {
         sourceFolder = sourcefolderin;
       }
 
-      if ( !Const.isEmpty( filewildcard ) ) {
+      if ( !Utils.isEmpty( filewildcard ) ) {
         fileWildcard = filewildcard;
       }
     }
@@ -975,7 +976,7 @@ public class Mail extends BaseStep implements StepInterface {
     Pattern pattern = null;
     boolean getIt = true;
 
-    if ( !Const.isEmpty( wildcard ) ) {
+    if ( !Utils.isEmpty( wildcard ) ) {
       pattern = Pattern.compile( wildcard );
       // First see if the file matches the regular expression!
       if ( pattern != null ) {

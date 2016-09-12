@@ -12,7 +12,7 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
+ * Copyright (c) 2002-2016 Pentaho Corporation..  All rights reserved.
  */
 
 package org.pentaho.di.trans.steps.gpload;
@@ -28,7 +28,7 @@ package org.pentaho.di.trans.steps.gpload;
 //   it.
 // - Filters (besides data and datetime) are not supported as it slows down.
 //
-// 
+//
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -40,6 +40,7 @@ import java.io.InputStreamReader;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemException;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -55,9 +56,9 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Performs a bulk load to an Greenplum table.
- * 
+ *
  * Based on (copied from) Sven Boden's Oracle Bulk Loader step
- * 
+ *
  * @author Luke Lonergan, Matt Casters, Sean Flatley
  * @since 28-mar-2008, 17-dec-2010
  */
@@ -123,10 +124,10 @@ public class GPLoad extends BaseStep implements StepInterface {
 
   /**
    * Get the contents of the control file as specified in the meta object
-   * 
+   *
    * @param meta
    *          the meta object to model the control file after
-   * 
+   *
    * @return a string containing the control file contents
    */
   public String getControlFileContents( GPLoadMeta meta, RowMetaInterface rm ) throws KettleException {
@@ -154,16 +155,16 @@ public class GPLoad extends BaseStep implements StepInterface {
       throw new KettleException( BaseMessages.getString( PKG, "GPLoad.Exception.TargetTableNameMissing" ) );
     }
     targetTableName = environmentSubstitute( targetTableName ).trim();
-    if ( Const.isEmpty( targetTableName ) ) {
+    if ( Utils.isEmpty( targetTableName ) ) {
       throw new KettleException( BaseMessages.getString( PKG, "GPLoad.Exception.TargetTableNameMissing" ) );
     }
 
     // Schema name should be unquoted (gpload yaml parse error)
     schemaName = environmentSubstitute( schemaName );
-    if ( Const.isEmpty( schemaName ) ) {
+    if ( Utils.isEmpty( schemaName ) ) {
       schemaName = databaseMeta.getPreferredSchemaName();
     }
-    if ( Const.isEmpty( schemaName ) ) {
+    if ( Utils.isEmpty( schemaName ) ) {
       schemaName = "";
     } else {
       schemaName = schemaName + ".";
@@ -197,19 +198,19 @@ public class GPLoad extends BaseStep implements StepInterface {
 
     // data file validation
     String dataFilename = meta.getDataFile();
-    if ( !Const.isEmpty( dataFilename ) ) {
+    if ( !Utils.isEmpty( dataFilename ) ) {
       dataFilename = environmentSubstitute( dataFilename ).trim();
     }
-    if ( Const.isEmpty( dataFilename ) ) {
+    if ( Utils.isEmpty( dataFilename ) ) {
       throw new KettleException( BaseMessages.getString( PKG, "GPload.Exception.DataFileMissing" ) );
     }
 
     // delimiter validation
     String delimiter = meta.getDelimiter();
-    if ( !Const.isEmpty( delimiter ) ) {
+    if ( !Utils.isEmpty( delimiter ) ) {
       delimiter = environmentSubstitute( delimiter ).trim();
     }
-    if ( Const.isEmpty( delimiter ) ) {
+    if ( Utils.isEmpty( delimiter ) ) {
       throw new KettleException( BaseMessages.getString( PKG, "GPload.Exception.DelimiterMissing" ) );
     }
 
@@ -234,18 +235,18 @@ public class GPLoad extends BaseStep implements StepInterface {
     // if so we proceed with the string building - if not we do not add LOCAL_HOSTNAME section.
     String[] localHosts = meta.getLocalHosts();
     String stringLocalHosts = null;
-    if ( !Const.isEmpty( localHosts ) ) {
+    if ( !Utils.isEmpty( localHosts ) ) {
       StringBuilder sbLocalHosts = new StringBuilder();
       String trimmedAndSubstitutedLocalHost;
       for ( String localHost : localHosts ) {
         trimmedAndSubstitutedLocalHost = environmentSubstitute( localHost.trim() );
-        if ( !Const.isEmpty( trimmedAndSubstitutedLocalHost ) ) {
+        if ( !Utils.isEmpty( trimmedAndSubstitutedLocalHost ) ) {
           sbLocalHosts.append( GPLoad.INDENT ).append( GPLoad.INDENT ).append( GPLoad.SPACE_PADDED_DASH ).append(
               trimmedAndSubstitutedLocalHost ).append( Const.CR );
         }
       }
       stringLocalHosts = sbLocalHosts.toString();
-      if ( !Const.isEmpty( stringLocalHosts ) ) {
+      if ( !Utils.isEmpty( stringLocalHosts ) ) {
         contents.append( GPLoad.INDENT ).append( GPLoad.INDENT ).append( "LOCAL_HOSTNAME: " ).append( Const.CR )
             .append( stringLocalHosts );
       }
@@ -253,9 +254,9 @@ public class GPLoad extends BaseStep implements StepInterface {
 
     // Add a PORT section if we have a port
     String localhostPort = meta.getLocalhostPort();
-    if ( !Const.isEmpty( localhostPort ) ) {
+    if ( !Utils.isEmpty( localhostPort ) ) {
       localhostPort = environmentSubstitute( localhostPort ).trim();
-      if ( !Const.isEmpty( localhostPort ) ) {
+      if ( !Utils.isEmpty( localhostPort ) ) {
         contents.append( GPLoad.INDENT ).append( GPLoad.INDENT ).append( "PORT: " ).append( localhostPort ).append(
             Const.CR );
       }
@@ -281,8 +282,8 @@ public class GPLoad extends BaseStep implements StepInterface {
     contents.append( GPLoad.INDENT ).append( "- FORMAT: TEXT" ).append( Const.CR );
     contents.append( GPLoad.INDENT ).append( "- DELIMITER: " ).append( GPLoad.SINGLE_QUOTE ).append( delimiter )
         .append( GPLoad.SINGLE_QUOTE ).append( Const.CR );
-//  if ( !Const.isEmpty( meta.getNullAs() ) ) {
-    if ( !Const.isEmpty( meta.getNullAs() ) ) {
+//  if ( !Utils.isEmpty( meta.getNullAs() ) ) {
+    if ( !Utils.isEmpty( meta.getNullAs() ) ) {
       contents.append( GPLoad.INDENT ).append( "- NULL_AS: " ).append( GPLoad.SINGLE_QUOTE ).append( meta.getNullAs() ).append( GPLoad.SINGLE_QUOTE ).append( Const.CR );
     }
 
@@ -291,7 +292,7 @@ public class GPLoad extends BaseStep implements StepInterface {
     // then?
     String enclosure = meta.getEnclosure();
 
-    // For enclosure we do a null check. !Const.isEmpty will be true if the string is empty.
+    // For enclosure we do a null check. !Utils.isEmpty will be true if the string is empty.
     // it is ok to have an empty string
     if ( enclosure != null ) {
       enclosure = environmentSubstitute( meta.getEnclosure() );
@@ -304,7 +305,7 @@ public class GPLoad extends BaseStep implements StepInterface {
 
     // ENCODING
     String encoding = meta.getEncoding();
-    if ( !Const.isEmpty( encoding ) ) {
+    if ( !Utils.isEmpty( encoding ) ) {
       contents.append( GPLoad.INDENT ).append( "- ENCODING: " ).append( encoding ).append( Const.CR );
     }
 
@@ -326,9 +327,9 @@ public class GPLoad extends BaseStep implements StepInterface {
     contents.append( GPLoad.INDENT ).append( "- ERROR_LIMIT: " ).append( maxErrors ).append( Const.CR );
 
     String errorTableName = meta.getErrorTableName();
-    if ( !Const.isEmpty( errorTableName ) ) {
+    if ( !Utils.isEmpty( errorTableName ) ) {
       errorTableName = environmentSubstitute( errorTableName ).trim();
-      if ( !Const.isEmpty( errorTableName ) ) {
+      if ( !Utils.isEmpty( errorTableName ) ) {
         contents.append( GPLoad.INDENT ).append( "- ERROR_TABLE: " ).append( errorTableName ).append( Const.CR );
       }
     }
@@ -372,14 +373,14 @@ public class GPLoad extends BaseStep implements StepInterface {
 
       // if we have an update condition
       String updateCondition = meta.getUpdateCondition();
-      if ( !Const.isEmpty( updateCondition ) ) {
+      if ( !Utils.isEmpty( updateCondition ) ) {
 
         // replace carriage returns with spaces and trim the whole thing
         updateCondition = updateCondition.replaceAll( "[\r\n]", " " ).trim();
 
         // test the contents once again
         // the original contents may have just been linefeed/carriage returns
-        if ( !Const.isEmpty( updateCondition ) ) {
+        if ( !Utils.isEmpty( updateCondition ) ) {
 
           // we'll write out what we have
           contents.append( GPLoad.INDENT ).append( "- UPDATE_CONDITION: " ).append( GPLoad.DOUBLE_QUOTE ).append(
@@ -400,11 +401,11 @@ public class GPLoad extends BaseStep implements StepInterface {
    */
   public void createControlFile( GPLoadMeta meta ) throws KettleException {
     String filename = meta.getControlFile();
-    if ( Const.isEmpty( filename ) ) {
+    if ( Utils.isEmpty( filename ) ) {
       throw new KettleException( BaseMessages.getString( PKG, "GPLoad.Exception.NoControlFileSpecified" ) );
     } else {
       filename = environmentSubstitute( filename ).trim();
-      if ( Const.isEmpty( filename ) ) {
+      if ( Utils.isEmpty( filename ) ) {
         throw new KettleException( BaseMessages.getString( PKG, "GPLoad.Exception.NoControlFileSpecified" ) );
       }
     }
@@ -432,7 +433,7 @@ public class GPLoad extends BaseStep implements StepInterface {
   /**
    * Returns the path to the pathToFile. It should be the same as what was passed but this method will check the file
    * system to see if the path is valid.
-   * 
+   *
    * @param pathToFile
    *          Path to the file to verify.
    * @param exceptionMessage
@@ -446,13 +447,13 @@ public class GPLoad extends BaseStep implements StepInterface {
     throws KettleException {
 
     // Make sure the path is not empty
-    if ( Const.isEmpty( pathToFile ) ) {
+    if ( Utils.isEmpty( pathToFile ) ) {
       throw new KettleException( exceptionMessage );
     }
 
     // make sure the variable substitution is not empty
     pathToFile = environmentSubstitute( pathToFile ).trim();
-    if ( Const.isEmpty( pathToFile ) ) {
+    if ( Utils.isEmpty( pathToFile ) ) {
       throw new KettleException( exceptionMessage );
     }
 
@@ -487,14 +488,14 @@ public class GPLoad extends BaseStep implements StepInterface {
 
   /**
    * Create the command line for GPLoad depending on the meta information supplied.
-   * 
+   *
    * @param meta
    *          The meta data to create the command line from
    * @param password
    *          Use the real password or not
-   * 
+   *
    * @return The string to execute.
-   * 
+   *
    * @throws KettleException
    *           Upon any exception
    */
@@ -517,7 +518,7 @@ public class GPLoad extends BaseStep implements StepInterface {
 
     // get the path to the log file, if specified
     String logfile = meta.getLogFile();
-    if ( !Const.isEmpty( logfile ) ) {
+    if ( !Utils.isEmpty( logfile ) ) {
       sbCommandLine.append( " -l " );
       sbCommandLine.append( getPath( meta.getLogFile(), BaseMessages.getString( PKG,
           "GPLoad.Exception.LogFilePathMissing" ), false ) );
@@ -701,7 +702,7 @@ public class GPLoad extends BaseStep implements StepInterface {
 
   /**
    * Adds quotes to the passed string if the OS is Windows and there is at least one space .
-   * 
+   *
    * @param string
    * @return
    */

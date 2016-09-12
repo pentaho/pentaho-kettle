@@ -40,6 +40,7 @@ import org.apache.commons.vfs2.FileType;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.RowMetaAndData;
@@ -372,7 +373,7 @@ public class JobEntryEvalFilesMetrics extends JobEntryBase implements Cloneable,
         String realResultFieldIncluseSubfolders = environmentSubstitute( getResultFieldIncludeSubfolders() );
 
         int indexOfResultFieldFile = -1;
-        if ( Const.isEmpty( realResultFieldFile ) ) {
+        if ( Utils.isEmpty( realResultFieldFile ) ) {
           logError( BaseMessages.getString( PKG, "JobEvalFilesMetrics.Error.ResultFieldsFileMissing" ) );
           return result;
         }
@@ -395,7 +396,7 @@ public class JobEntryEvalFilesMetrics extends JobEntryBase implements Cloneable,
               PKG, "JobEvalFilesMetrics.Error.CanNotFindField", realResultFieldFile ) );
             return result;
           }
-          if ( !Const.isEmpty( realResultFieldWildcard ) ) {
+          if ( !Utils.isEmpty( realResultFieldWildcard ) ) {
             indexOfResultFieldWildcard = firstRow.getRowMeta().indexOfValue( realResultFieldWildcard );
             if ( indexOfResultFieldWildcard == -1 ) {
               logError( BaseMessages.getString(
@@ -403,7 +404,7 @@ public class JobEntryEvalFilesMetrics extends JobEntryBase implements Cloneable,
               return result;
             }
           }
-          if ( !Const.isEmpty( realResultFieldIncluseSubfolders ) ) {
+          if ( !Utils.isEmpty( realResultFieldIncluseSubfolders ) ) {
             indexOfResultFieldIncludeSubfolders =
               firstRow.getRowMeta().indexOfValue( realResultFieldIncluseSubfolders );
             if ( indexOfResultFieldIncludeSubfolders == -1 ) {
@@ -451,7 +452,7 @@ public class JobEntryEvalFilesMetrics extends JobEntryBase implements Cloneable,
           // Let's check wildcard
           Pattern pattern = null;
           String realPattern = environmentSubstitute( getResultFilenamesWildcard() );
-          if ( !Const.isEmpty( realPattern ) ) {
+          if ( !Utils.isEmpty( realPattern ) ) {
             pattern = Pattern.compile( realPattern );
           }
 
@@ -717,7 +718,7 @@ public class JobEntryEvalFilesMetrics extends JobEntryBase implements Cloneable,
 
     // Get real source file and wildcard
     String realSourceFilefoldername = environmentSubstitute( sourcefilefoldername );
-    if ( Const.isEmpty( realSourceFilefoldername ) ) {
+    if ( Utils.isEmpty( realSourceFilefoldername ) ) {
       // Filename is empty!
       logError( BaseMessages.getString( PKG, "JobEvalFilesMetrics.log.FileFolderEmpty" ) );
       incrementErrors();
@@ -864,7 +865,7 @@ public class JobEntryEvalFilesMetrics extends JobEntryBase implements Cloneable,
     Pattern pattern = null;
     boolean getIt = true;
 
-    if ( !Const.isEmpty( wildcard ) ) {
+    if ( !Utils.isEmpty( wildcard ) ) {
       pattern = Pattern.compile( wildcard );
       // First see if the file matches the regular expression!
       if ( pattern != null ) {

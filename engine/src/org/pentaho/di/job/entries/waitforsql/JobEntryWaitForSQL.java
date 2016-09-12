@@ -28,6 +28,7 @@ import java.util.List;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.Database;
@@ -386,13 +387,13 @@ public class JobEntryWaitForSQL extends JobEntryBase implements Cloneable, JobEn
         logDebug( BaseMessages.getString( PKG, "JobEntryWaitForSQL.Log.EnteredCustomSQL", realCustomSQL ) );
       }
 
-      if ( Const.isEmpty( realCustomSQL ) ) {
+      if ( Utils.isEmpty( realCustomSQL ) ) {
         logError( BaseMessages.getString( PKG, "JobEntryWaitForSQL.Error.NoCustomSQL" ) );
         return result;
       }
 
     } else {
-      if ( Const.isEmpty( realTablename ) ) {
+      if ( Utils.isEmpty( realTablename ) ) {
         logError( BaseMessages.getString( PKG, "JobEntryWaitForSQL.Error.NoTableName" ) );
         return result;
       }
@@ -512,7 +513,7 @@ public class JobEntryWaitForSQL extends JobEntryBase implements Cloneable, JobEn
       if ( iscustomSQL ) {
         countStatement = customSQL;
       } else {
-        if ( !Const.isEmpty( realSchemaName ) ) {
+        if ( !Utils.isEmpty( realSchemaName ) ) {
           countStatement =
             selectCount + db.getDatabaseMeta().getQuotedSchemaTableCombination( realSchemaName, realTableName );
         } else {

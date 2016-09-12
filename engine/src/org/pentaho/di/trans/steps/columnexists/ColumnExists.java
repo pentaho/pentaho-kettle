@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,11 +22,11 @@
 
 package org.pentaho.di.trans.steps.columnexists;
 
-import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowDataUtil;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -78,13 +78,13 @@ public class ColumnExists extends BaseStep implements StepInterface {
       meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
 
       // Check is columnname field is provided
-      if ( Const.isEmpty( meta.getDynamicColumnnameField() ) ) {
+      if ( Utils.isEmpty( meta.getDynamicColumnnameField() ) ) {
         logError( BaseMessages.getString( PKG, "ColumnExists.Error.ColumnnameFieldMissing" ) );
         throw new KettleException( BaseMessages.getString( PKG, "ColumnExists.Error.ColumnnameFieldMissing" ) );
       }
       if ( meta.isTablenameInField() ) {
         // Check is tablename field is provided
-        if ( Const.isEmpty( meta.getDynamicTablenameField() ) ) {
+        if ( Utils.isEmpty( meta.getDynamicTablenameField() ) ) {
           logError( BaseMessages.getString( PKG, "ColumnExists.Error.TablenameFieldMissing" ) );
           throw new KettleException( BaseMessages.getString( PKG, "ColumnExists.Error.TablenameFieldMissing" ) );
         }
@@ -101,7 +101,7 @@ public class ColumnExists extends BaseStep implements StepInterface {
           }
         }
       } else {
-        if ( !Const.isEmpty( data.schemaname ) ) {
+        if ( !Utils.isEmpty( data.schemaname ) ) {
           data.tablename =
             data.db.getDatabaseMeta().getQuotedSchemaTableCombination( data.schemaname, data.tablename );
         } else {
@@ -128,7 +128,7 @@ public class ColumnExists extends BaseStep implements StepInterface {
       // get tablename
       if ( meta.isTablenameInField() ) {
         data.tablename = getInputRowMeta().getString( r, data.indexOfTablename );
-        if ( !Const.isEmpty( data.schemaname ) ) {
+        if ( !Utils.isEmpty( data.schemaname ) ) {
           data.tablename =
             data.db.getDatabaseMeta().getQuotedSchemaTableCombination( data.schemaname, data.tablename );
         } else {
@@ -174,18 +174,18 @@ public class ColumnExists extends BaseStep implements StepInterface {
 
     if ( super.init( smi, sdi ) ) {
       if ( !meta.isTablenameInField() ) {
-        if ( Const.isEmpty( meta.getTablename() ) ) {
+        if ( Utils.isEmpty( meta.getTablename() ) ) {
           logError( BaseMessages.getString( PKG, "ColumnExists.Error.TablenameMissing" ) );
           return false;
         }
         data.tablename = environmentSubstitute( meta.getTablename() );
       }
       data.schemaname = meta.getSchemaname();
-      if ( !Const.isEmpty( data.schemaname ) ) {
+      if ( !Utils.isEmpty( data.schemaname ) ) {
         data.schemaname = environmentSubstitute( data.schemaname );
       }
 
-      if ( Const.isEmpty( meta.getResultFieldName() ) ) {
+      if ( Utils.isEmpty( meta.getResultFieldName() ) ) {
         logError( BaseMessages.getString( PKG, "ColumnExists.Error.ResultFieldMissing" ) );
         return false;
       }

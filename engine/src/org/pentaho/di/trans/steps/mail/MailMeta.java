@@ -27,6 +27,7 @@ import java.util.List;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleDatabaseException;
@@ -927,7 +928,7 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface {
     remarks.add( cr );
 
     // Servername
-    if ( Const.isEmpty( server ) ) {
+    if ( Utils.isEmpty( server ) ) {
       cr =
         new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
           PKG, "MailMeta.CheckResult.ServerEmpty" ), stepMeta );
@@ -947,7 +948,7 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface {
     }
 
     // port number
-    if ( Const.isEmpty( port ) ) {
+    if ( Utils.isEmpty( port ) ) {
       cr =
         new CheckResult( CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString(
           PKG, "MailMeta.CheckResult.PortEmpty" ), stepMeta );
@@ -959,7 +960,7 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface {
     remarks.add( cr );
 
     // reply address
-    if ( Const.isEmpty( replyAddress ) ) {
+    if ( Utils.isEmpty( replyAddress ) ) {
       cr =
         new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
           PKG, "MailMeta.CheckResult.ReplayAddressEmpty" ), stepMeta );
@@ -971,7 +972,7 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface {
     remarks.add( cr );
 
     // Destination
-    if ( Const.isEmpty( destination ) ) {
+    if ( Utils.isEmpty( destination ) ) {
       cr =
         new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
           PKG, "MailMeta.CheckResult.DestinationEmpty" ), stepMeta );
@@ -983,7 +984,7 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface {
     remarks.add( cr );
 
     // Subject
-    if ( Const.isEmpty( subject ) ) {
+    if ( Utils.isEmpty( subject ) ) {
       cr =
         new CheckResult( CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString(
           PKG, "MailMeta.CheckResult.SubjectEmpty" ), stepMeta );
@@ -995,7 +996,7 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface {
     remarks.add( cr );
 
     // Comment
-    if ( Const.isEmpty( comment ) ) {
+    if ( Utils.isEmpty( comment ) ) {
       cr =
         new CheckResult( CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString(
           PKG, "MailMeta.CheckResult.CommentEmpty" ), stepMeta );
@@ -1008,7 +1009,7 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface {
 
     if ( isFilenameDynamic ) {
       // Dynamic Filename field
-      if ( Const.isEmpty( dynamicFieldname ) ) {
+      if ( Utils.isEmpty( dynamicFieldname ) ) {
         cr =
           new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
             PKG, "MailMeta.CheckResult.DynamicFilenameFieldEmpty" ), stepMeta );
@@ -1021,7 +1022,7 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface {
 
     } else {
       // static filename
-      if ( Const.isEmpty( sourcefilefoldername ) ) {
+      if ( Utils.isEmpty( sourcefilefoldername ) ) {
         cr =
           new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
             PKG, "MailMeta.CheckResult.SourceFilenameEmpty" ), stepMeta );
@@ -1036,7 +1037,7 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface {
     if ( isZipFiles() ) {
       if ( isFilenameDynamic ) {
         // dynamic zipfilename
-        if ( Const.isEmpty( getDynamicZipFilenameField() ) ) {
+        if ( Utils.isEmpty( getDynamicZipFilenameField() ) ) {
           cr =
             new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
               PKG, "MailMeta.CheckResult.DynamicZipfilenameEmpty" ), stepMeta );
@@ -1049,7 +1050,7 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface {
 
       } else {
         // static zipfilename
-        if ( Const.isEmpty( zipFilename ) ) {
+        if ( Utils.isEmpty( zipFilename ) ) {
           cr =
             new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
               PKG, "MailMeta.CheckResult.ZipfilenameEmpty" ), stepMeta );

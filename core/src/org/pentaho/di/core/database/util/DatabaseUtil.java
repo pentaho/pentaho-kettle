@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -32,7 +32,7 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
 
-import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DataSourceNamingException;
 import org.pentaho.di.core.database.DataSourceProviderInterface;
 import org.pentaho.di.core.database.Database;
@@ -66,7 +66,7 @@ public class DatabaseUtil implements DataSourceProviderInterface {
    * @throws NamingException
    */
   protected static DataSource getDataSourceFromJndi( String dsName, Context ctx ) throws NamingException {
-    if ( Const.isEmpty( dsName ) ) {
+    if ( Utils.isEmpty( dsName ) ) {
       throw new NamingException( BaseMessages.getString( PKG, "DatabaseUtil.DSNotFound", String.valueOf( dsName ) ) );
     }
     Object foundDs = FoundDS.get( dsName );

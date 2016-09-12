@@ -27,6 +27,7 @@ import java.util.List;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleDatabaseException;
@@ -244,7 +245,7 @@ public class MailInputMeta extends BaseStepMeta implements StepMetaInterface {
       usessl = rep.getStepAttributeBoolean( id_step, "usessl" );
       int intSSLPort = (int) rep.getStepAttributeInteger( id_step, "sslport" );
       sslport = rep.getStepAttributeString( id_step, "sslport" ); // backward compatible.
-      if ( intSSLPort > 0 && Const.isEmpty( sslport ) ) {
+      if ( intSSLPort > 0 && Utils.isEmpty( sslport ) ) {
         sslport = Integer.toString( intSSLPort );
       }
 

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -29,10 +29,10 @@ import java.util.ResourceBundle;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.widgets.Shell;
-import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.i18n.GlobalMessages;
 import org.pentaho.di.i18n.LanguageChoice;
@@ -122,7 +122,7 @@ public class XulDatabaseDialog {
       // keep the original id
       if ( databaseMeta != null ) {
         databaseMeta.setObjectId( databaseMetaObjectId );
-        databaseName = Const.isEmpty( databaseMeta.getName() ) ? null : databaseMeta.getName();
+        databaseName = Utils.isEmpty( databaseMeta.getName() ) ? null : databaseMeta.getName();
       } else {
         databaseName = null;
       }

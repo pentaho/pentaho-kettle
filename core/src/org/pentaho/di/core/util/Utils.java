@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -21,6 +21,8 @@
  ******************************************************************************/
 
 package org.pentaho.di.core.util;
+
+import java.util.List;
 
 /* Levenshtein in Java, originally from Josh Drew's code at
  * http://joshdrew.com/
@@ -101,5 +103,51 @@ public class Utils {
       return damerauLevenshteinDistance( s, t, ZERO_LENGTH_INT_ARRAY );
     }
   }
+
+  /**
+   * Check if the CharSequence supplied is empty. A CharSequence is empty when it is null or when the length is 0
+   *
+   * @param string
+   *          The stringBuffer to check
+   * @return true if the stringBuffer supplied is empty
+   */
+  public static boolean isEmpty( CharSequence val ) {
+    return val == null || val.length() == 0;
+  }
+
+  /**
+   * Check if the CharSequence array supplied is empty. A CharSequence array is empty when it is null or when the number of elements
+   * is 0
+   *
+   * @param strings
+   *          The string array to check
+   * @return true if the string array supplied is empty
+   */
+  public static boolean isEmpty( CharSequence[] strings ) {
+    return strings == null || strings.length == 0;
+  }
+
+  /**
+   * Check if the array supplied is empty. An array is empty when it is null or when the length is 0
+   *
+   * @param array
+   *          The array to check
+   * @return true if the array supplied is empty
+   */
+  public static boolean isEmpty( Object[] array ) {
+    return array == null || array.length == 0;
+  }
+
+  /**
+   * Check if the list supplied is empty. An array is empty when it is null or when the length is 0
+   *
+   * @param list
+   *          the list to check
+   * @return true if the supplied list is empty
+   */
+  public static boolean isEmpty( List<?> list ) {
+    return list == null || list.size() == 0;
+  }
+
 
 }

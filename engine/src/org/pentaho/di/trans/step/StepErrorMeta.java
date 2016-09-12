@@ -25,6 +25,7 @@ package org.pentaho.di.trans.step;
 import java.util.List;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.changed.ChangedFlag;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -298,23 +299,23 @@ public class StepErrorMeta extends ChangedFlag implements XMLInterface, Cloneabl
     RowMetaInterface row = new RowMeta();
 
     String nrErr = variables.environmentSubstitute( getNrErrorsValuename() );
-    if ( !Const.isEmpty( nrErr ) ) {
+    if ( !Utils.isEmpty( nrErr ) ) {
       ValueMetaInterface v = new ValueMetaInteger( nrErr );
       v.setLength( 3 );
       row.addValueMeta( v );
     }
     String errDesc = variables.environmentSubstitute( getErrorDescriptionsValuename() );
-    if ( !Const.isEmpty( errDesc ) ) {
+    if ( !Utils.isEmpty( errDesc ) ) {
       ValueMetaInterface v = new ValueMetaString( errDesc );
       row.addValueMeta( v );
     }
     String errFields = variables.environmentSubstitute( getErrorFieldsValuename() );
-    if ( !Const.isEmpty( errFields ) ) {
+    if ( !Utils.isEmpty( errFields ) ) {
       ValueMetaInterface v = new ValueMetaString( errFields );
       row.addValueMeta( v );
     }
     String errCodes = variables.environmentSubstitute( getErrorCodesValuename() );
-    if ( !Const.isEmpty( errCodes ) ) {
+    if ( !Utils.isEmpty( errCodes ) ) {
       ValueMetaInterface v = new ValueMetaString( errCodes );
       row.addValueMeta( v );
     }
@@ -327,22 +328,22 @@ public class StepErrorMeta extends ChangedFlag implements XMLInterface, Cloneabl
     int index = startIndex;
 
     String nrErr = variables.environmentSubstitute( getNrErrorsValuename() );
-    if ( !Const.isEmpty( nrErr ) ) {
+    if ( !Utils.isEmpty( nrErr ) ) {
       row[index] = new Long( nrErrors );
       index++;
     }
     String errDesc = variables.environmentSubstitute( getErrorDescriptionsValuename() );
-    if ( !Const.isEmpty( errDesc ) ) {
+    if ( !Utils.isEmpty( errDesc ) ) {
       row[index] = errorDescriptions;
       index++;
     }
     String errFields = variables.environmentSubstitute( getErrorFieldsValuename() );
-    if ( !Const.isEmpty( errFields ) ) {
+    if ( !Utils.isEmpty( errFields ) ) {
       row[index] = fieldNames;
       index++;
     }
     String errCodes = variables.environmentSubstitute( getErrorCodesValuename() );
-    if ( !Const.isEmpty( errCodes ) ) {
+    if ( !Utils.isEmpty( errCodes ) ) {
       row[index] = errorCodes;
       index++;
     }

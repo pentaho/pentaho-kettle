@@ -27,6 +27,7 @@ import java.util.List;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
@@ -879,7 +880,7 @@ public class LDAPOutputMeta extends BaseStepMeta implements LdapMeta {
     remarks.add( cr );
 
     // Check hostname
-    if ( Const.isEmpty( Host ) ) {
+    if ( Utils.isEmpty( Host ) ) {
       cr =
         new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
           PKG, "LDAPOutputMeta.CheckResult.HostnameMissing" ), stepMeta );

@@ -98,7 +98,7 @@ public class ValueDataUtil {
   private static int readRound2Mode() {
     int round2Mode = ROUND_2_MODE_DEFAULT_VALUE;
     final String rpaValue = System.getProperty( SYS_PROPERTY_ROUND_2_MODE );
-    if ( Const.isEmpty( rpaValue ) ) {
+    if ( Utils.isEmpty( rpaValue ) ) {
       round2Mode = ROUND_2_MODE_DEFAULT_VALUE;
       log.debug( "System property is omitted: ROUND_2_MODE. Default value used: " + SYS_PROPERTY_ROUND_2_MODE_DEFAULT_VALUE + "." );
     } else if ( SYS_PROPERTY_ROUND_2_MODE_DEFAULT_VALUE.equals( rpaValue ) ) {
@@ -1297,7 +1297,7 @@ public class ValueDataUtil {
       long startL = stDateCal.getTimeInMillis() + stDateCal.getTimeZone().getOffset( stDateCal.getTimeInMillis() );
       long diff = endL - startL;
 
-      if ( Const.isEmpty( resultType ) ) {
+      if ( Utils.isEmpty( resultType ) ) {
         return new Long( diff / 86400000 );
       } else if ( resultType.equals( "ms" ) ) {
         return new Long( diff );

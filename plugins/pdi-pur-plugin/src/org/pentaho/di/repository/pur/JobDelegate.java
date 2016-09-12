@@ -1,5 +1,5 @@
 /*!
- * Copyright 2010 - 2015 Pentaho Corporation.  All rights reserved.
+ * Copyright 2010 - 2016 Pentaho Corporation.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.cluster.SlaveServer;
-import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.NotePadMeta;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
@@ -650,7 +650,7 @@ public class JobDelegate extends AbstractDelegate implements ISharedObjectsTrans
   protected void readSlaves( JobMeta jobMeta, boolean overWriteShared, List<SlaveServer> slaveServers ) {
     for ( SlaveServer slaveServer : slaveServers ) {
       if ( overWriteShared || jobMeta.findSlaveServer( slaveServer.getName() ) == null ) {
-        if ( !Const.isEmpty( slaveServer.getName() ) ) {
+        if ( !Utils.isEmpty( slaveServer.getName() ) ) {
           slaveServer.shareVariablesWith( jobMeta );
           jobMeta.addOrReplaceSlaveServer( slaveServer );
           if ( !overWriteShared ) {

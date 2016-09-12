@@ -26,6 +26,7 @@ import java.util.ArrayList;
 
 import com.google.common.annotations.VisibleForTesting;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.RowMetaAndData;
@@ -169,7 +170,7 @@ public class TransExecutor extends BaseStep implements StepInterface {
 
     // Remember which column to group on, if any...
     transExecutorData.groupFieldIndex = -1;
-    if ( !Const.isEmpty( transExecutorData.groupField ) ) {
+    if ( !Utils.isEmpty( transExecutorData.groupField ) ) {
       transExecutorData.groupFieldIndex = getInputRowMeta().indexOfValue( transExecutorData.groupField );
       if ( transExecutorData.groupFieldIndex < 0 ) {
         throw new KettleException( BaseMessages.getString(
@@ -281,7 +282,7 @@ public class TransExecutor extends BaseStep implements StepInterface {
 
       String value;
       // Take the value from an input row or from a static value?
-      if ( !Const.isEmpty( fieldName ) ) {
+      if ( !Utils.isEmpty( fieldName ) ) {
         int idx = getInputRowMeta().indexOfValue( fieldName );
         if ( idx < 0 ) {
           throw new KettleException( BaseMessages.getString(
@@ -318,48 +319,48 @@ public class TransExecutor extends BaseStep implements StepInterface {
       Object[] outputRow = RowDataUtil.allocateRowData( getData().getExecutionResultsOutputRowMeta().size() );
       int idx = 0;
 
-      if ( !Const.isEmpty( meta.getExecutionTimeField() ) ) {
+      if ( !Utils.isEmpty( meta.getExecutionTimeField() ) ) {
         outputRow[ idx++ ] = Long.valueOf( System.currentTimeMillis() - getData().groupTimeStart );
       }
-      if ( !Const.isEmpty( meta.getExecutionResultField() ) ) {
+      if ( !Utils.isEmpty( meta.getExecutionResultField() ) ) {
         outputRow[ idx++ ] = Boolean.valueOf( result.getResult() );
       }
-      if ( !Const.isEmpty( meta.getExecutionNrErrorsField() ) ) {
+      if ( !Utils.isEmpty( meta.getExecutionNrErrorsField() ) ) {
         outputRow[ idx++ ] = Long.valueOf( result.getNrErrors() );
       }
-      if ( !Const.isEmpty( meta.getExecutionLinesReadField() ) ) {
+      if ( !Utils.isEmpty( meta.getExecutionLinesReadField() ) ) {
         outputRow[ idx++ ] = Long.valueOf( result.getNrLinesRead() );
       }
-      if ( !Const.isEmpty( meta.getExecutionLinesWrittenField() ) ) {
+      if ( !Utils.isEmpty( meta.getExecutionLinesWrittenField() ) ) {
         outputRow[ idx++ ] = Long.valueOf( result.getNrLinesWritten() );
       }
-      if ( !Const.isEmpty( meta.getExecutionLinesInputField() ) ) {
+      if ( !Utils.isEmpty( meta.getExecutionLinesInputField() ) ) {
         outputRow[ idx++ ] = Long.valueOf( result.getNrLinesInput() );
       }
-      if ( !Const.isEmpty( meta.getExecutionLinesOutputField() ) ) {
+      if ( !Utils.isEmpty( meta.getExecutionLinesOutputField() ) ) {
         outputRow[ idx++ ] = Long.valueOf( result.getNrLinesOutput() );
       }
-      if ( !Const.isEmpty( meta.getExecutionLinesRejectedField() ) ) {
+      if ( !Utils.isEmpty( meta.getExecutionLinesRejectedField() ) ) {
         outputRow[ idx++ ] = Long.valueOf( result.getNrLinesRejected() );
       }
-      if ( !Const.isEmpty( meta.getExecutionLinesUpdatedField() ) ) {
+      if ( !Utils.isEmpty( meta.getExecutionLinesUpdatedField() ) ) {
         outputRow[ idx++ ] = Long.valueOf( result.getNrLinesUpdated() );
       }
-      if ( !Const.isEmpty( meta.getExecutionLinesDeletedField() ) ) {
+      if ( !Utils.isEmpty( meta.getExecutionLinesDeletedField() ) ) {
         outputRow[ idx++ ] = Long.valueOf( result.getNrLinesDeleted() );
       }
-      if ( !Const.isEmpty( meta.getExecutionFilesRetrievedField() ) ) {
+      if ( !Utils.isEmpty( meta.getExecutionFilesRetrievedField() ) ) {
         outputRow[ idx++ ] = Long.valueOf( result.getNrFilesRetrieved() );
       }
-      if ( !Const.isEmpty( meta.getExecutionExitStatusField() ) ) {
+      if ( !Utils.isEmpty( meta.getExecutionExitStatusField() ) ) {
         outputRow[ idx++ ] = Long.valueOf( result.getExitStatus() );
       }
-      if ( !Const.isEmpty( meta.getExecutionLogTextField() ) ) {
+      if ( !Utils.isEmpty( meta.getExecutionLogTextField() ) ) {
         String channelId = getData().getExecutorTrans().getLogChannelId();
         String logText = KettleLogStore.getAppender().getBuffer( channelId, false ).toString();
         outputRow[ idx++ ] = logText;
       }
-      if ( !Const.isEmpty( meta.getExecutionLogChannelIdField() ) ) {
+      if ( !Utils.isEmpty( meta.getExecutionLogChannelIdField() ) ) {
         outputRow[ idx++ ] = getData().getExecutorTrans().getLogChannelId();
       }
 
@@ -399,13 +400,13 @@ public class TransExecutor extends BaseStep implements StepInterface {
           transExecutorData.groupBuffer = new ArrayList<RowMetaAndData>();
 
           // How many rows do we group together for the transformation?
-          if ( !Const.isEmpty( meta.getGroupSize() ) ) {
+          if ( !Utils.isEmpty( meta.getGroupSize() ) ) {
             transExecutorData.groupSize = Const.toInt( environmentSubstitute( meta.getGroupSize() ), -1 );
           } else {
             transExecutorData.groupSize = -1;
           }
           // Is there a grouping time set?
-          if ( !Const.isEmpty( meta.getGroupTime() ) ) {
+          if ( !Utils.isEmpty( meta.getGroupTime() ) ) {
             transExecutorData.groupTime = Const.toInt( environmentSubstitute( meta.getGroupTime() ), -1 );
           } else {
             transExecutorData.groupTime = -1;
@@ -413,7 +414,7 @@ public class TransExecutor extends BaseStep implements StepInterface {
           transExecutorData.groupTimeStart = System.currentTimeMillis();
 
           // Is there a grouping field set?
-          if ( !Const.isEmpty( meta.getGroupField() ) ) {
+          if ( !Utils.isEmpty( meta.getGroupField() ) ) {
             transExecutorData.groupField = environmentSubstitute( meta.getGroupField() );
           }
           // That's all for now...

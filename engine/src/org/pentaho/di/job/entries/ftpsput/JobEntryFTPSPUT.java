@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -34,6 +34,7 @@ import java.util.regex.Pattern;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.encryption.Encr;
@@ -500,7 +501,7 @@ public class JobEntryFTPSPUT extends JobEntryBase implements Cloneable, JobEntry
       this.buildFTPSConnection( connection );
 
       // move to spool dir ...
-      if ( !Const.isEmpty( realRemoteDirectory ) ) {
+      if ( !Utils.isEmpty( realRemoteDirectory ) ) {
         connection.changeDirectory( realRemoteDirectory );
         if ( isDetailed() ) {
           logDetailed( BaseMessages.getString( PKG, "JobFTPSPUT.Log.ChangedDirectory", realRemoteDirectory ) );
@@ -536,7 +537,7 @@ public class JobEntryFTPSPUT extends JobEntryBase implements Cloneable, JobEntry
       }
 
       Pattern pattern = null;
-      if ( !Const.isEmpty( realWildcard ) ) {
+      if ( !Utils.isEmpty( realWildcard ) ) {
         pattern = Pattern.compile( realWildcard );
 
       } // end if
@@ -614,7 +615,7 @@ public class JobEntryFTPSPUT extends JobEntryBase implements Cloneable, JobEntry
 
   public List<ResourceReference> getResourceDependencies( JobMeta jobMeta ) {
     List<ResourceReference> references = super.getResourceDependencies( jobMeta );
-    if ( !Const.isEmpty( serverName ) ) {
+    if ( !Utils.isEmpty( serverName ) ) {
       String realServerName = jobMeta.environmentSubstitute( serverName );
       ResourceReference reference = new ResourceReference( this );
       reference.getEntries().add( new ResourceEntry( realServerName, ResourceType.SERVER ) );
@@ -640,17 +641,17 @@ public class JobEntryFTPSPUT extends JobEntryBase implements Cloneable, JobEntry
   }
 
   void buildFTPSConnection( FTPSConnection connection ) throws Exception {
-    if ( !Const.isEmpty( proxyHost ) ) {
+    if ( !Utils.isEmpty( proxyHost ) ) {
       String realProxy_host = environmentSubstitute( proxyHost );
       String realProxy_username = environmentSubstitute( proxyUsername );
       String realProxy_password = environmentSubstitute( proxyPassword );
       realProxy_password = Encr.decryptPasswordOptionallyEncrypted( realProxy_password );
 
       connection.setProxyHost( realProxy_host );
-      if ( !Const.isEmpty( realProxy_username ) ) {
+      if ( !Utils.isEmpty( realProxy_username ) ) {
         connection.setProxyUser( realProxy_username );
       }
-      if ( !Const.isEmpty( realProxy_password ) ) {
+      if ( !Utils.isEmpty( realProxy_password ) ) {
         connection.setProxyPassword( realProxy_password );
       }
       if ( isDetailed() ) {

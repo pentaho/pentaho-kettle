@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -37,6 +37,7 @@ import java.util.regex.Pattern;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -688,8 +689,8 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
       String[] filelist = null;
       if ( protocol.equals( PROTOCOL_FTP ) ) {
         // If socks proxy server was provided
-        if ( !Const.isEmpty( socksProxyHost ) ) {
-          if ( !Const.isEmpty( socksProxyPort ) ) {
+        if ( !Utils.isEmpty( socksProxyHost ) ) {
+          if ( !Utils.isEmpty( socksProxyPort ) ) {
             FTPClient.initSOCKS( environmentSubstitute( socksProxyPort ), environmentSubstitute( socksProxyHost ) );
           } else {
             throw new FTPException( BaseMessages.getString(
@@ -697,12 +698,12 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
               getName() ) );
           }
           // then if we have authentication information
-          if ( !Const.isEmpty( socksProxyUsername ) && !Const.isEmpty( socksProxyPassword ) ) {
+          if ( !Utils.isEmpty( socksProxyUsername ) && !Utils.isEmpty( socksProxyPassword ) ) {
             FTPClient.initSOCKSAuthentication(
               environmentSubstitute( socksProxyUsername ), environmentSubstitute( socksProxyPassword ) );
-          } else if ( !Const.isEmpty( socksProxyUsername )
-            && Const.isEmpty( socksProxyPassword ) || Const.isEmpty( socksProxyUsername )
-            && !Const.isEmpty( socksProxyPassword ) ) {
+          } else if ( !Utils.isEmpty( socksProxyUsername )
+            && Utils.isEmpty( socksProxyPassword ) || Utils.isEmpty( socksProxyUsername )
+            && !Utils.isEmpty( socksProxyPassword ) ) {
             // we have a username without a password or vica versa
             throw new FTPException( BaseMessages.getString(
               PKG, "JobEntryFTPDelete.SocksProxy.IncompleteCredentials",
@@ -722,7 +723,7 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
         // CHECK THIS !!!
         if ( filelist.length == 1 ) {
           String translatedWildcard = environmentSubstitute( wildcard );
-          if ( !Const.isEmpty( translatedWildcard ) ) {
+          if ( !Utils.isEmpty( translatedWildcard ) ) {
             if ( filelist[0].startsWith( translatedWildcard ) ) {
               throw new FTPException( filelist[0] );
             }
@@ -804,12 +805,12 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
 
           // Get file names
           String file_previous = resultRow.getString( 0, null );
-          if ( !Const.isEmpty( file_previous ) ) {
+          if ( !Utils.isEmpty( file_previous ) ) {
             list_previous_files.add( file_previous );
           }
         }
       } else {
-        if ( !Const.isEmpty( wildcard ) ) {
+        if ( !Utils.isEmpty( wildcard ) ) {
           String realWildcard = environmentSubstitute( wildcard );
           pattern = Pattern.compile( realWildcard );
 
@@ -950,7 +951,7 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
 
       /* Now connect */
       // if the proxy requires basic authentication:
-      if ( !Const.isEmpty( realproxyusername ) || !Const.isEmpty( realproxypassword ) ) {
+      if ( !Utils.isEmpty( realproxyusername ) || !Utils.isEmpty( realproxypassword ) ) {
         conn
           .setProxyData( new HTTPProxyData( realproxyhost, realproxyport, realproxyusername, realproxypassword ) );
       }
@@ -991,7 +992,7 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
     sftpclient.login( realpassword );
 
     // move to spool dir ...
-    if ( !Const.isEmpty( realFTPDirectory ) ) {
+    if ( !Utils.isEmpty( realFTPDirectory ) ) {
       sftpclient.chdir( realFTPDirectory );
       if ( isDetailed() ) {
         logDetailed( "Changed to directory [" + realFTPDirectory + "]" );
@@ -1006,16 +1007,16 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
     ftpsclient =
       new FTPSConnection( getFTPSConnectionType(), realservername, realport, realusername, realpassword );
 
-    if ( !Const.isEmpty( proxyHost ) ) {
+    if ( !Utils.isEmpty( proxyHost ) ) {
       String realProxy_host = environmentSubstitute( proxyHost );
       String realProxy_username = environmentSubstitute( proxyUsername );
       String realProxy_password = environmentSubstitute( proxyPassword );
 
       ftpsclient.setProxyHost( realProxy_host );
-      if ( !Const.isEmpty( realProxy_username ) ) {
+      if ( !Utils.isEmpty( realProxy_username ) ) {
         ftpsclient.setProxyUser( realProxy_username );
       }
-      if ( !Const.isEmpty( realProxy_password ) ) {
+      if ( !Utils.isEmpty( realProxy_password ) ) {
         ftpsclient.setProxyPassword( realProxy_password );
       }
       if ( isDetailed() ) {
@@ -1055,7 +1056,7 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
     ftpsclient.connect();
 
     // move to spool dir ...
-    if ( !Const.isEmpty( realFTPDirectory ) ) {
+    if ( !Utils.isEmpty( realFTPDirectory ) ) {
       ftpsclient.changeDirectory( realFTPDirectory );
       if ( isDetailed() ) {
         logDetailed( "Changed to directory [" + realFTPDirectory + "]" );
@@ -1074,7 +1075,7 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
       ftpclient.setRemotePort( realport );
     }
 
-    if ( !Const.isEmpty( realProxyhost ) ) {
+    if ( !Utils.isEmpty( realProxyhost ) ) {
       ftpclient.setRemoteAddr( InetAddress.getByName( realProxyhost ) );
       if ( isDetailed() ) {
         logDetailed( BaseMessages.getString( PKG, "JobEntryFTPDelete.OpenedProxyConnectionOn", realProxyhost ) );
@@ -1116,10 +1117,10 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
 
     String realUsername =
       realusername
-        + ( !Const.isEmpty( realProxyhost ) ? "@" + realServername : "" )
-        + ( !Const.isEmpty( realproxyusername ) ? " " + realproxyusername : "" );
+        + ( !Utils.isEmpty( realProxyhost ) ? "@" + realServername : "" )
+        + ( !Utils.isEmpty( realproxyusername ) ? " " + realproxyusername : "" );
 
-    String realPassword = realpassword + ( !Const.isEmpty( realproxypassword ) ? " " + realproxypassword : "" );
+    String realPassword = realpassword + ( !Utils.isEmpty( realproxypassword ) ? " " + realproxypassword : "" );
 
     ftpclient.login( realUsername, realPassword );
     // Remove password from logging, you don't know where it ends up.
@@ -1128,7 +1129,7 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
     }
 
     // move to spool dir ...
-    if ( !Const.isEmpty( realFtpDirectory ) ) {
+    if ( !Utils.isEmpty( realFtpDirectory ) ) {
       ftpclient.chdir( realFtpDirectory );
       if ( isDetailed() ) {
         logDetailed( BaseMessages.getString( PKG, "JobEntryFTPDelete.ChangedDir", realFtpDirectory ) );
@@ -1180,7 +1181,7 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
 
   public List<ResourceReference> getResourceDependencies( JobMeta jobMeta ) {
     List<ResourceReference> references = super.getResourceDependencies( jobMeta );
-    if ( !Const.isEmpty( serverName ) ) {
+    if ( !Utils.isEmpty( serverName ) ) {
       String realServername = jobMeta.environmentSubstitute( serverName );
       ResourceReference reference = new ResourceReference( this );
       reference.getEntries().add( new ResourceEntry( realServername, ResourceType.SERVER ) );

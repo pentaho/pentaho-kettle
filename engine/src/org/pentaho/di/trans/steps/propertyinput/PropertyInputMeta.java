@@ -29,6 +29,7 @@ import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -736,7 +737,7 @@ public class PropertyInputMeta extends BaseStepMeta implements StepMetaInterface
       includeRowNumber = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "rownum" ) );
 
       String addresult = XMLHandler.getTagValue( stepnode, "isaddresult" );
-      if ( Const.isEmpty( addresult ) ) {
+      if ( Utils.isEmpty( addresult ) ) {
         isaddresult = true;
       } else {
         isaddresult = "Y".equalsIgnoreCase( addresult );
@@ -890,7 +891,7 @@ public class PropertyInputMeta extends BaseStepMeta implements StepMetaInterface
       }
     }
     String realFilenameField = space.environmentSubstitute( filenameField );
-    if ( includeFilename && !Const.isEmpty( realFilenameField ) ) {
+    if ( includeFilename && !Utils.isEmpty( realFilenameField ) ) {
       ValueMetaInterface v = new ValueMetaString( realFilenameField );
       v.setLength( 500 );
       v.setPrecision( -1 );
@@ -899,14 +900,14 @@ public class PropertyInputMeta extends BaseStepMeta implements StepMetaInterface
     }
 
     String realRowNumberField = space.environmentSubstitute( rowNumberField );
-    if ( includeRowNumber && !Const.isEmpty( realRowNumberField ) ) {
+    if ( includeRowNumber && !Utils.isEmpty( realRowNumberField ) ) {
       ValueMetaInterface v = new ValueMetaInteger( realRowNumberField );
       v.setLength( ValueMetaInterface.DEFAULT_INTEGER_LENGTH, 0 );
       v.setOrigin( name );
       r.addValueMeta( v );
     }
     String realSectionField = space.environmentSubstitute( iniSectionField );
-    if ( includeIniSection && !Const.isEmpty( realSectionField ) ) {
+    if ( includeIniSection && !Utils.isEmpty( realSectionField ) ) {
       ValueMetaInterface v = new ValueMetaString( realSectionField );
       v.setLength( 500 );
       v.setPrecision( -1 );
@@ -1005,7 +1006,7 @@ public class PropertyInputMeta extends BaseStepMeta implements StepMetaInterface
       includeRowNumber = rep.getStepAttributeBoolean( id_step, "rownum" );
 
       String addresult = rep.getStepAttributeString( id_step, "isaddresult" );
-      if ( Const.isEmpty( addresult ) ) {
+      if ( Utils.isEmpty( addresult ) ) {
         isaddresult = true;
       } else {
         isaddresult = rep.getStepAttributeBoolean( id_step, "isaddresult" );
@@ -1211,7 +1212,7 @@ public class PropertyInputMeta extends BaseStepMeta implements StepMetaInterface
       if ( !filefield ) {
         for ( int i = 0; i < fileName.length; i++ ) {
           FileObject fileObject = KettleVFS.getFileObject( space.environmentSubstitute( fileName[i] ), space );
-          fileName[i] = resourceNamingInterface.nameResource( fileObject, space, Const.isEmpty( fileMask[i] ) );
+          fileName[i] = resourceNamingInterface.nameResource( fileObject, space, Utils.isEmpty( fileMask[i] ) );
         }
       }
       return null;

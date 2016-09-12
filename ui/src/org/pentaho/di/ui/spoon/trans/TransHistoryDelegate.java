@@ -46,6 +46,7 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.Database;
@@ -352,7 +353,7 @@ public class TransHistoryDelegate extends SpoonDelegate implements XulEventHandl
     LogTableInterface logTable = model.logTable;
     // See if there is a transformation loaded that has a connection table specified.
     //
-    if ( transMeta != null && !Const.isEmpty( transMeta.getName() ) && logTable.isDefined() ) {
+    if ( transMeta != null && !Utils.isEmpty( transMeta.getName() ) && logTable.isDefined() ) {
       Database database = null;
       try {
         DatabaseMeta logConnection = logTable.getDatabaseMeta();

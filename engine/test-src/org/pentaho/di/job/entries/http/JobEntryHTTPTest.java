@@ -40,7 +40,7 @@ import org.pentaho.di.repository.kdr.KettleDatabaseRepository;
 
 /**
  * @author Tatsiana_Kasiankova
- * 
+ *
  */
 public class JobEntryHTTPTest {
 

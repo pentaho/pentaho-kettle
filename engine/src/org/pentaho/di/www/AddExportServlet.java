@@ -24,6 +24,7 @@ package org.pentaho.di.www;
 
 import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.logging.LoggingObjectType;
 import org.pentaho.di.core.logging.SimpleLoggingObject;
 import org.pentaho.di.core.vfs.KettleVFS;
@@ -221,7 +222,7 @@ public class AddExportServlet extends BaseHttpServlet implements CartePluginInte
 
       // Now open the top level resource...
       //
-      if ( !Const.isEmpty( load ) ) {
+      if ( !Utils.isEmpty( load ) ) {
 
         fileUrl = "zip:" + archiveUrl + "!" + load;
 

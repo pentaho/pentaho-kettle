@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,6 +25,7 @@ package org.pentaho.di.trans.steps.symmetriccrypto.secretkeygenerator;
 import java.util.List;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
@@ -154,12 +155,12 @@ public class SecretKeyGenerator extends BaseStep implements StepInterface {
     if ( super.init( smi, sdi ) ) {
       // Add init code here.
 
-      if ( Const.isEmpty( meta.getAlgorithm() ) ) {
+      if ( Utils.isEmpty( meta.getAlgorithm() ) ) {
         logError( BaseMessages.getString( PKG, "SecretKeyGenerator.Log.NoFieldSpecified" ) );
         return false;
       }
 
-      if ( Const.isEmpty( meta.getSecretKeyFieldName() ) ) {
+      if ( Utils.isEmpty( meta.getSecretKeyFieldName() ) ) {
         logError( BaseMessages.getString( PKG, "SecretKeyGenerator.Log.secretKeyFieldMissing" ) );
         return false;
       }
@@ -193,8 +194,8 @@ public class SecretKeyGenerator extends BaseStep implements StepInterface {
         data.readsRows = true;
       }
 
-      data.addAlgorithmOutput = !Const.isEmpty( meta.getAlgorithmFieldName() );
-      data.addSecretKeyLengthOutput = !Const.isEmpty( meta.getSecretKeyLengthFieldName() );
+      data.addAlgorithmOutput = !Utils.isEmpty( meta.getAlgorithmFieldName() );
+      data.addSecretKeyLengthOutput = !Utils.isEmpty( meta.getSecretKeyLengthFieldName() );
 
       data.cryptoTrans = new SymmetricCrypto[data.nr];
       for ( int i = 0; i < data.nr; i++ ) {

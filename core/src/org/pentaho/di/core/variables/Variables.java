@@ -23,6 +23,7 @@
 package org.pentaho.di.core.variables;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaBase;
@@ -110,9 +111,9 @@ public class Variables implements VariableSpace {
 
   @Override
   public boolean getBooleanValueOfVariable( String variableName, boolean defaultValue ) {
-    if ( !Const.isEmpty( variableName ) ) {
+    if ( !Utils.isEmpty( variableName ) ) {
       String value = environmentSubstitute( variableName );
-      if ( !Const.isEmpty( value ) ) {
+      if ( !Utils.isEmpty( value ) ) {
         return ValueMetaBase.convertStringToBoolean( value );
       }
     }
@@ -212,7 +213,7 @@ public class Variables implements VariableSpace {
       if ( prop != null ) {
         for ( String key : prop.keySet() ) {
           String value = prop.get( key );
-          if ( !Const.isEmpty( key ) ) {
+          if ( !Utils.isEmpty( key ) ) {
             properties.put( key, Const.NVL( value, "" ) );
           }
         }
@@ -224,7 +225,7 @@ public class Variables implements VariableSpace {
       injection = new Hashtable<String, String>();
       for ( String key : prop.keySet() ) {
         String value = prop.get( key );
-        if ( !Const.isEmpty( key ) ) {
+        if ( !Utils.isEmpty( key ) ) {
           injection.put( key, Const.NVL( value, "" ) );
         }
       }

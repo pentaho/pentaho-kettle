@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,6 +25,7 @@ package org.pentaho.di.metastore;
 import java.io.File;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.metastore.api.exceptions.MetaStoreException;
 import org.pentaho.metastore.stores.xml.XmlMetaStore;
@@ -56,7 +57,7 @@ public class MetaStoreConst {
 
   public static IMetaStore openLocalPentahoMetaStore() throws MetaStoreException {
     String rootFolder = System.getProperty( Const.PENTAHO_METASTORE_FOLDER );
-    if ( Const.isEmpty( rootFolder ) ) {
+    if ( Utils.isEmpty( rootFolder ) ) {
       rootFolder = getDefaultPentahoMetaStoreLocation();
     }
     File rootFolderFile = new File( rootFolder );

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,6 +23,7 @@
 package org.pentaho.di.trans.steps.creditcardvalidator;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.i18n.BaseMessages;
@@ -81,7 +82,7 @@ public class CreditCardValidator extends BaseStep implements StepInterface {
       meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
 
       // Check if field is provided
-      if ( Const.isEmpty( meta.getDynamicField() ) ) {
+      if ( Utils.isEmpty( meta.getDynamicField() ) ) {
         logError( BaseMessages.getString( PKG, "CreditCardValidator.Error.CardFieldMissing" ) );
         throw new KettleException( BaseMessages.getString( PKG, "CreditCardValidator.Error.CardFieldMissing" ) );
       }
@@ -96,7 +97,7 @@ public class CreditCardValidator extends BaseStep implements StepInterface {
         }
       }
       data.realResultFieldname = environmentSubstitute( meta.getResultFieldName() );
-      if ( Const.isEmpty( data.realResultFieldname ) ) {
+      if ( Utils.isEmpty( data.realResultFieldname ) ) {
         throw new KettleException( BaseMessages
           .getString( PKG, "CreditCardValidator.Exception.ResultFieldMissing" ) );
       }
@@ -121,11 +122,11 @@ public class CreditCardValidator extends BaseStep implements StepInterface {
       // Check if Card is Valid?
       isValid = rt.CardValid;
       // include Card Type?
-      if ( !Const.isEmpty( data.realCardTypeFieldname ) ) {
+      if ( !Utils.isEmpty( data.realCardTypeFieldname ) ) {
         cardType = rt.CardType;
       }
       // include Not valid message?
-      if ( !Const.isEmpty( data.realNotValidMsgFieldname ) ) {
+      if ( !Utils.isEmpty( data.realNotValidMsgFieldname ) ) {
         unValid = rt.UnValidMsg;
       }
 
@@ -135,11 +136,11 @@ public class CreditCardValidator extends BaseStep implements StepInterface {
       rowIndex++;
 
       // add card type?
-      if ( !Const.isEmpty( data.realCardTypeFieldname ) ) {
+      if ( !Utils.isEmpty( data.realCardTypeFieldname ) ) {
         outputRow[rowIndex++] = cardType;
       }
       // add not valid message?
-      if ( !Const.isEmpty( data.realNotValidMsgFieldname ) ) {
+      if ( !Utils.isEmpty( data.realNotValidMsgFieldname ) ) {
         outputRow[rowIndex++] = unValid;
       }
 
@@ -176,7 +177,7 @@ public class CreditCardValidator extends BaseStep implements StepInterface {
     data = (CreditCardValidatorData) sdi;
 
     if ( super.init( smi, sdi ) ) {
-      if ( Const.isEmpty( meta.getResultFieldName() ) ) {
+      if ( Utils.isEmpty( meta.getResultFieldName() ) ) {
         logError( BaseMessages.getString( PKG, "CreditCardValidator.Error.ResultFieldMissing" ) );
         return false;
       }

@@ -48,6 +48,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -334,7 +335,7 @@ public class PentahoReportingOutputDialog extends BaseStepDialog implements Step
       TableItem item = wFields.getNonEmpty( i );
       String name = item.getText( 1 );
       String field = item.getText( 2 );
-      if ( !Const.isEmpty( name ) && !Const.isEmpty( field ) ) {
+      if ( !Utils.isEmpty( name ) && !Utils.isEmpty( field ) ) {
         input.getParameterFieldMap().put( name, field );
       }
     }

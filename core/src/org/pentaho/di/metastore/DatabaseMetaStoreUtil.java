@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Properties;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseInterface;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettlePluginException;
@@ -196,10 +197,10 @@ public class DatabaseMetaStoreUtil extends MetaStoreUtil {
     //
     String pluginId = getChildString( element, MetaStoreConst.DB_ATTR_ID_PLUGIN_ID );
     String driverClassName = getChildString( element, MetaStoreConst.DB_ATTR_DRIVER_CLASS );
-    if ( Const.isEmpty( pluginId ) && Const.isEmpty( driverClassName ) ) {
+    if ( Utils.isEmpty( pluginId ) && Utils.isEmpty( driverClassName ) ) {
       throw new KettlePluginException( "The attributes 'plugin_id' and 'driver_class' can't be both empty" );
     }
-    if ( Const.isEmpty( pluginId ) ) {
+    if ( Utils.isEmpty( pluginId ) ) {
       // Determine pluginId using the plugin registry.
       //
       List<PluginInterface> plugins = pluginRegistry.getPlugins( DatabasePluginType.class );
@@ -210,7 +211,7 @@ public class DatabaseMetaStoreUtil extends MetaStoreUtil {
         }
       }
     }
-    if ( Const.isEmpty( pluginId ) ) {
+    if ( Utils.isEmpty( pluginId ) ) {
       throw new KettlePluginException(
         "The 'plugin_id' attribute could not be determined using 'driver_class' value '" + driverClassName + "'" );
     }
@@ -227,7 +228,7 @@ public class DatabaseMetaStoreUtil extends MetaStoreUtil {
     databaseMeta.setDescription( getChildString( element, MetaStoreConst.DB_ATTR_ID_DESCRIPTION ) );
 
     String accessTypeString = getChildString( element, MetaStoreConst.DB_ATTR_ID_ACCESS_TYPE );
-    if ( Const.isEmpty( accessTypeString ) ) {
+    if ( Utils.isEmpty( accessTypeString ) ) {
       accessTypeString = DatabaseMeta.getAccessTypeDesc( DatabaseMeta.TYPE_ACCESS_NATIVE );
     }
     databaseMeta.setAccessType( DatabaseMeta.getAccessType( accessTypeString ) );

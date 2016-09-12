@@ -71,7 +71,7 @@ public class DenormaliserAggregationsTest {
 
   /**
    * PDI-11597 100+null=100 , null+100=100
-   * 
+   *
    * @throws KettleValueException
    */
   @Test
@@ -98,7 +98,7 @@ public class DenormaliserAggregationsTest {
 
   /**
    * PDI-9662 respect of new variable for null comparsion
-   * 
+   *
    * @throws KettleValueException
    */
   @Test
@@ -115,7 +115,7 @@ public class DenormaliserAggregationsTest {
 
   /**
    * PDI-9662 respect of new variable for null comparsion
-   * 
+   *
    * @throws KettleValueException
    */
   @Test
@@ -132,7 +132,7 @@ public class DenormaliserAggregationsTest {
 
   /**
    * This is extracted common part for sum tests
-   * 
+   *
    * @return
    */
   RowMetaInterface testSumPreconditions( String agg ) {
@@ -169,7 +169,7 @@ public class DenormaliserAggregationsTest {
 
   /**
    * PDI-9662 respect to KETTLE_AGGREGATION_ALL_NULLS_ARE_ZERO variable
-   * 
+   *
    * @throws KettleValueException
    */
   @Test

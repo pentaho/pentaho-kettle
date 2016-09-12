@@ -40,6 +40,7 @@ import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Condition;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.ProgressMonitorListener;
 import org.pentaho.di.core.changed.ChangedFlagInterface;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -313,7 +314,7 @@ public class KettleFileRepository extends AbstractRepository {
           + "] needs to implement the XML Interface in order to save it to disk" );
       }
 
-      if ( !Const.isEmpty( versionComment ) ) {
+      if ( !Utils.isEmpty( versionComment ) ) {
         insertLogEntry( "Save repository element : " + repositoryElement.toString() + " : " + versionComment );
       }
 
@@ -1248,7 +1249,7 @@ public class KettleFileRepository extends AbstractRepository {
       FileObject fileObject = KettleVFS.getFileObject( calcDirectoryName( null ) + id.getId() );
 
       // Same name, different folder?
-      if ( Const.isEmpty( newName ) ) {
+      if ( Utils.isEmpty( newName ) ) {
         newName = calcObjectName( id );
       }
       // The new filename can be anywhere so we re-calculate a new ID...
@@ -1282,7 +1283,7 @@ public class KettleFileRepository extends AbstractRepository {
   public ObjectId renameJob( ObjectId id_job, String versionComment, RepositoryDirectoryInterface newDir,
     String newName ) throws KettleException {
     ObjectId objectId = renameObject( id_job, newDir, newName, EXT_JOB );
-    if ( !Const.isEmpty( versionComment ) ) {
+    if ( !Utils.isEmpty( versionComment ) ) {
       insertLogEntry( "Rename job : " + versionComment );
     }
     return objectId;
@@ -1336,7 +1337,7 @@ public class KettleFileRepository extends AbstractRepository {
   public ObjectId renameTransformation( ObjectId id_transformation, String versionComment,
       RepositoryDirectoryInterface newDir, String newName ) throws KettleException {
     ObjectId objectId = renameObject( id_transformation, newDir, newName, EXT_TRANSFORMATION );
-    if ( !Const.isEmpty( versionComment ) ) {
+    if ( !Utils.isEmpty( versionComment ) ) {
       insertLogEntry( "Rename transformation : " + versionComment );
     }
     return objectId;
@@ -1510,7 +1511,7 @@ public class KettleFileRepository extends AbstractRepository {
       }
       FileName fname = fileObject.getName();
       String name = fname.getBaseName();
-      if ( !Const.isEmpty( fname.getExtension() ) && name.length() > fname.getExtension().length() ) {
+      if ( !Utils.isEmpty( fname.getExtension() ) && name.length() > fname.getExtension().length() ) {
         name = name.substring( 0, name.length() - fname.getExtension().length() - 1 );
       }
 

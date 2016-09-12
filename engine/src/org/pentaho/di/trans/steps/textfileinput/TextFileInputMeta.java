@@ -33,6 +33,7 @@ import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -799,7 +800,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
       nrLinesPerPage = Const.toInt( XMLHandler.getTagValue( stepnode, "nr_lines_per_page" ), 1 );
       nrLinesDocHeader = Const.toInt( XMLHandler.getTagValue( stepnode, "nr_lines_doc_header" ), 1 );
       String addToResult = XMLHandler.getTagValue( stepnode, "add_to_result_filenames" );
-      if ( Const.isEmpty( addToResult ) ) {
+      if ( Utils.isEmpty( addToResult ) ) {
         isaddresult = true;
       } else {
         isaddresult = "Y".equalsIgnoreCase( addToResult );
@@ -1322,7 +1323,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
   }
 
   public String getLookupStepname() {
-    if ( acceptingFilenames && acceptingStep != null && !Const.isEmpty( acceptingStep.getName() ) ) {
+    if ( acceptingFilenames && acceptingStep != null && !Utils.isEmpty( acceptingStep.getName() ) ) {
       return acceptingStep.getName();
     }
     return null;
@@ -1376,7 +1377,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
       fileFormat = rep.getStepAttributeString( id_step, "format" );
       encoding = rep.getStepAttributeString( id_step, "encoding" );
       String addToResult = rep.getStepAttributeString( id_step, "add_to_result_filenames" );
-      if ( Const.isEmpty( addToResult ) ) {
+      if ( Utils.isEmpty( addToResult ) ) {
         isaddresult = true;
       } else {
         isaddresult = rep.getStepAttributeBoolean( id_step, "add_to_result_filenames" );
@@ -2053,7 +2054,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
         //
         for ( int i = 0; i < fileName.length; i++ ) {
           FileObject fileObject = KettleVFS.getFileObject( space.environmentSubstitute( fileName[i] ), space );
-          fileName[i] = resourceNamingInterface.nameResource( fileObject, space, Const.isEmpty( fileMask[i] ) );
+          fileName[i] = resourceNamingInterface.nameResource( fileObject, space, Utils.isEmpty( fileMask[i] ) );
         }
       }
       return null;

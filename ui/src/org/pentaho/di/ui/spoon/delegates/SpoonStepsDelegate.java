@@ -26,14 +26,15 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
-import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.extension.ExtensionPointHandler;
 import org.pentaho.di.core.extension.KettleExtensionPoint;
 import org.pentaho.di.core.gui.Point;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Partitioner;
 import org.pentaho.di.trans.TransHopMeta;
@@ -126,7 +127,7 @@ public class SpoonStepsDelegate extends SpoonDelegate {
         stepname = dialog.open();
       }
 
-      if ( !Const.isEmpty( stepname ) ) {
+      if ( !Utils.isEmpty( stepname ) ) {
         // Force the recreation of the step IO metadata object. (cached by default)
         //
         stepMeta.getStepMetaInterface().resetStepIoMeta();

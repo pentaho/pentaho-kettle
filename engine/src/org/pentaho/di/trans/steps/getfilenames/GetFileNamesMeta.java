@@ -30,6 +30,7 @@ import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -724,7 +725,7 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface 
       }
       remarks.add( cr );
 
-      if ( Const.isEmpty( dynamicFilenameField ) ) {
+      if ( Utils.isEmpty( dynamicFilenameField ) ) {
         cr =
           new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
             PKG, "GetFileNamesMeta.CheckResult.FolderFieldnameMissing" ), stepMeta );
@@ -816,7 +817,7 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface 
         //
         for ( int i = 0; i < fileName.length; i++ ) {
           FileObject fileObject = KettleVFS.getFileObject( space.environmentSubstitute( fileName[i] ), space );
-          fileName[i] = resourceNamingInterface.nameResource( fileObject, space, Const.isEmpty( fileMask[i] ) );
+          fileName[i] = resourceNamingInterface.nameResource( fileObject, space, Utils.isEmpty( fileMask[i] ) );
         }
       }
       return null;

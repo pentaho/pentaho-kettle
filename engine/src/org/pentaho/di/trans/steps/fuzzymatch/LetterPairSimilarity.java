@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,7 +24,7 @@ package org.pentaho.di.trans.steps.fuzzymatch;
 
 import java.util.ArrayList;
 
-import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 
 public class LetterPairSimilarity {
 
@@ -78,7 +78,7 @@ public class LetterPairSimilarity {
   /** @return lexical similarity value in the range [0,1] */
 
   public static double getSimiliarity( String str1, String str2 ) {
-    if ( Const.isEmpty( str1 ) && Const.isEmpty( str2 ) ) {
+    if ( Utils.isEmpty( str1 ) && Utils.isEmpty( str2 ) ) {
       return new Double( 1 );
     }
     ArrayList<String> pairs1 = wordLetterPairs( str1.toUpperCase() );

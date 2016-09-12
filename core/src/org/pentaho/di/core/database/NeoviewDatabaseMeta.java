@@ -27,6 +27,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.row.ValueMetaInterface;
 
@@ -115,7 +116,7 @@ public class NeoviewDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
       return "jdbc:odbc:" + databaseName;
     } else {
       String appendix = "";
-      if ( !Const.isEmpty( databaseName ) ) {
+      if ( !Utils.isEmpty( databaseName ) ) {
         if ( databaseName.contains( "=" ) ) {
           // some properties here like serverDataSource, catalog, schema etc. already given
           appendix = ":" + databaseName;

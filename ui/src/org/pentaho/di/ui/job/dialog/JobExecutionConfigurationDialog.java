@@ -36,6 +36,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.logging.DefaultLogLevel;
 import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.i18n.BaseMessages;
@@ -244,7 +245,7 @@ public class JobExecutionConfigurationDialog extends ConfigurationDialog {
     wGatherMetrics.setSelection( configuration.isGatheringMetrics() );
 
     String startCopy = "";
-    if ( !Const.isEmpty( getConfiguration().getStartCopyName() ) ) {
+    if ( !Utils.isEmpty( getConfiguration().getStartCopyName() ) ) {
       JobEntryCopy copy =
           ( (JobMeta) abstractMeta ).findJobEntry( getConfiguration().getStartCopyName(), getConfiguration()
               .getStartCopyNr(), false );
@@ -281,7 +282,7 @@ public class JobExecutionConfigurationDialog extends ConfigurationDialog {
 
       String startCopyName = null;
       int startCopyNr = 0;
-      if ( !Const.isEmpty( wStartCopy.getText() ) ) {
+      if ( !Utils.isEmpty( wStartCopy.getText() ) ) {
         if ( wStartCopy.getSelectionIndex() >= 0 ) {
           JobEntryCopy copy = ( (JobMeta) abstractMeta ).getJobCopies().get( wStartCopy.getSelectionIndex() );
           startCopyName = copy.getName();

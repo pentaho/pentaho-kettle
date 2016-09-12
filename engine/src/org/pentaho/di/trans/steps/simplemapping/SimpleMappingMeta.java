@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -30,6 +30,7 @@ import java.util.Map;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
@@ -118,11 +119,11 @@ public class SimpleMappingMeta extends BaseStepMeta implements StepMetaInterface
       //
       specificationMethod = ObjectLocationSpecificationMethod.FILENAME;
 
-      if ( !Const.isEmpty( fileName ) ) {
+      if ( !Utils.isEmpty( fileName ) ) {
         specificationMethod = ObjectLocationSpecificationMethod.FILENAME;
       } else if ( transObjectId != null ) {
         specificationMethod = ObjectLocationSpecificationMethod.REPOSITORY_BY_REFERENCE;
-      } else if ( !Const.isEmpty( transName ) ) {
+      } else if ( !Utils.isEmpty( transName ) ) {
         specificationMethod = ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME;
       }
     }
@@ -133,7 +134,7 @@ public class SimpleMappingMeta extends BaseStepMeta implements StepMetaInterface
       String method = XMLHandler.getTagValue( stepnode, "specification_method" );
       specificationMethod = ObjectLocationSpecificationMethod.getSpecificationMethodByCode( method );
       String transId = XMLHandler.getTagValue( stepnode, "trans_object_id" );
-      transObjectId = Const.isEmpty( transId ) ? null : new StringObjectId( transId );
+      transObjectId = Utils.isEmpty( transId ) ? null : new StringObjectId( transId );
 
       transName = XMLHandler.getTagValue( stepnode, "trans_name" );
       fileName = XMLHandler.getTagValue( stepnode, "filename" );
@@ -232,7 +233,7 @@ public class SimpleMappingMeta extends BaseStepMeta implements StepMetaInterface
     String method = rep.getStepAttributeString( id_step, "specification_method" );
     specificationMethod = ObjectLocationSpecificationMethod.getSpecificationMethodByCode( method );
     String transId = rep.getStepAttributeString( id_step, "trans_object_id" );
-    transObjectId = Const.isEmpty( transId ) ? null : new StringObjectId( transId );
+    transObjectId = Utils.isEmpty( transId ) ? null : new StringObjectId( transId );
     transName = rep.getStepAttributeString( id_step, "trans_name" );
     fileName = rep.getStepAttributeString( id_step, "filename" );
     directoryPath = rep.getStepAttributeString( id_step, "directory_path" );
@@ -310,7 +311,7 @@ public class SimpleMappingMeta extends BaseStepMeta implements StepMetaInterface
       for ( int i = 0; i < mappingParameters.getVariable().length; i++ ) {
         String name = mappingParameters.getVariable()[i];
         String value = space.environmentSubstitute( mappingParameters.getInputField()[i] );
-        if ( !Const.isEmpty( name ) && !Const.isEmpty( value ) ) {
+        if ( !Utils.isEmpty( name ) && !Utils.isEmpty( value ) ) {
           if ( subParams.contains( name ) ) {
             try {
               mappingTransMeta.setParameterValue( name, value );
@@ -435,7 +436,7 @@ public class SimpleMappingMeta extends BaseStepMeta implements StepMetaInterface
             PKG, "SimpleMappingMeta.Exception.InternalErrorRepository.Message" ) );
         }
 
-        if ( !Const.isEmpty( realTransname ) && !Const.isEmpty( realDirectory ) && rep != null ) {
+        if ( !Utils.isEmpty( realTransname ) && !Utils.isEmpty( realDirectory ) && rep != null ) {
           RepositoryDirectoryInterface repdir = rep.findDirectory( realDirectory );
           if ( repdir != null ) {
             try {
@@ -599,12 +600,12 @@ public class SimpleMappingMeta extends BaseStepMeta implements StepMetaInterface
     ResourceReference reference = new ResourceReference( stepInfo );
     references.add( reference );
 
-    if ( !Const.isEmpty( realFilename ) ) {
+    if ( !Utils.isEmpty( realFilename ) ) {
       // Add the filename to the references, including a reference to this step
       // meta data.
       //
       reference.getEntries().add( new ResourceEntry( realFilename, ResourceType.ACTIONFILE ) );
-    } else if ( !Const.isEmpty( realTransname ) ) {
+    } else if ( !Utils.isEmpty( realTransname ) ) {
       // Add the filename to the references, including a reference to this step
       // meta data.
       //
@@ -755,8 +756,8 @@ public class SimpleMappingMeta extends BaseStepMeta implements StepMetaInterface
   }
 
   private boolean isMapppingDefined() {
-    return !Const.isEmpty( fileName )
-      || transObjectId != null || ( !Const.isEmpty( this.directoryPath ) && !Const.isEmpty( transName ) );
+    return !Utils.isEmpty( fileName )
+      || transObjectId != null || ( !Utils.isEmpty( this.directoryPath ) && !Utils.isEmpty( transName ) );
   }
 
   public boolean[] isReferencedObjectEnabled() {

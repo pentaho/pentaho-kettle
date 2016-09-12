@@ -25,6 +25,7 @@ package org.pentaho.di.trans.steps.ivwloader;
 import java.util.List;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.ProvidesDatabaseConnectionInformation;
 import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.database.Database;
@@ -251,7 +252,7 @@ public class IngresVectorwiseLoaderMeta extends BaseStepMeta implements StepMeta
       useDynamicVNode = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "use_dynamic_vnode" ) );
       useSSV = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "use_SSV_delimiter" ) );
       String escape = XMLHandler.getTagValue( stepnode, "escape_special_characters" );
-      escapingSpecialCharacters = Const.isEmpty( escape ) ? true : "Y".equalsIgnoreCase( escape );
+      escapingSpecialCharacters = Utils.isEmpty( escape ) ? true : "Y".equalsIgnoreCase( escape );
       usingVwload = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "use_vwload" ) );
       maxNrErrors = XMLHandler.getTagValue( stepnode, "max_errors" );
       truncatingTable = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "truncate_table" ) );
@@ -434,7 +435,7 @@ public class IngresVectorwiseLoaderMeta extends BaseStepMeta implements StepMeta
 
     if ( databaseMeta != null ) {
       if ( prev != null && prev.size() > 0 ) {
-        if ( !Const.isEmpty( tablename ) ) {
+        if ( !Utils.isEmpty( tablename ) ) {
           Database db = new Database( loggingObject, databaseMeta );
           db.shareVariablesWith( transMeta );
           try {

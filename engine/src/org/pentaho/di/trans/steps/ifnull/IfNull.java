@@ -26,10 +26,10 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
-import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.util.StringUtil;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -229,7 +229,7 @@ public class IfNull extends BaseStep implements StepInterface {
       // DO CONVERSION OF THE DEFAULT VALUE ...
       // Entered by user
       ValueMetaInterface targetValueMeta = data.outputRowMeta.getValueMeta( i );
-      if ( !Const.isEmpty( realconversionMask ) ) {
+      if ( !Utils.isEmpty( realconversionMask ) ) {
         sourceValueMeta.setConversionMask( realconversionMask );
       }
       row[i] = targetValueMeta.convertData( sourceValueMeta, realReplaceByValue );

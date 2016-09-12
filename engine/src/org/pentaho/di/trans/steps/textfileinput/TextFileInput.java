@@ -33,6 +33,7 @@ import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.compress.CompressionProvider;
@@ -529,7 +530,7 @@ public class TextFileInput extends BaseStep implements StepInterface {
             }
           }
 
-          if ( dencl && Const.isEmpty( inf.getEscapeCharacter() ) ) {
+          if ( dencl && Utils.isEmpty( inf.getEscapeCharacter() ) ) {
             StringBuilder sbpol = new StringBuilder( pol );
             int idx = sbpol.indexOf( enclosure + enclosure );
             while ( idx >= 0 ) {
@@ -1526,7 +1527,7 @@ public class TextFileInput extends BaseStep implements StepInterface {
       }
 
       String clusterSize = getVariable( Const.INTERNAL_VARIABLE_CLUSTER_SIZE );
-      if ( !Const.isEmpty( clusterSize ) && Integer.valueOf( clusterSize ) > 1 ) {
+      if ( !Utils.isEmpty( clusterSize ) && Integer.valueOf( clusterSize ) > 1 ) {
         // TODO: add metadata to configure this.
         String nr = getVariable( Const.INTERNAL_VARIABLE_SLAVE_SERVER_NUMBER );
         if ( log.isDetailed() ) {
@@ -1555,28 +1556,28 @@ public class TextFileInput extends BaseStep implements StepInterface {
       data.escapeCharacter = environmentSubstitute( meta.getEscapeCharacter() );
 
       // Add additional fields
-      if ( !Const.isEmpty( meta.getShortFileNameField() ) ) {
+      if ( !Utils.isEmpty( meta.getShortFileNameField() ) ) {
         data.addShortFilename = true;
       }
-      if ( !Const.isEmpty( meta.getPathField() ) ) {
+      if ( !Utils.isEmpty( meta.getPathField() ) ) {
         data.addPath = true;
       }
-      if ( !Const.isEmpty( meta.getExtensionField() ) ) {
+      if ( !Utils.isEmpty( meta.getExtensionField() ) ) {
         data.addExtension = true;
       }
-      if ( !Const.isEmpty( meta.getSizeField() ) ) {
+      if ( !Utils.isEmpty( meta.getSizeField() ) ) {
         data.addSize = true;
       }
-      if ( !Const.isEmpty( meta.isHiddenField() ) ) {
+      if ( !Utils.isEmpty( meta.isHiddenField() ) ) {
         data.addIsHidden = true;
       }
-      if ( !Const.isEmpty( meta.getLastModificationDateField() ) ) {
+      if ( !Utils.isEmpty( meta.getLastModificationDateField() ) ) {
         data.addLastModificationDate = true;
       }
-      if ( !Const.isEmpty( meta.getUriField() ) ) {
+      if ( !Utils.isEmpty( meta.getUriField() ) ) {
         data.addUri = true;
       }
-      if ( !Const.isEmpty( meta.getRootUriField() ) ) {
+      if ( !Utils.isEmpty( meta.getRootUriField() ) ) {
         data.addRootUri = true;
       }
       return true;

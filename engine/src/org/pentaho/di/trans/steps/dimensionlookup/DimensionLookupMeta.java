@@ -31,6 +31,7 @@ import java.util.List;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.ProvidesModelerMeta;
 import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.database.Database;
@@ -699,7 +700,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
     }
 
     // technical key can't be null
-    if ( Const.isEmpty( keyField ) ) {
+    if ( Utils.isEmpty( keyField ) ) {
       String message =
           BaseMessages.getString( PKG, "DimensionLookupMeta.Error.NoTechnicalKeySpecified" );
       logError( message );
@@ -1098,7 +1099,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
       // TODO SB: Share VariableSpace
       try {
         db.connect();
-        if ( !Const.isEmpty( tableName ) ) {
+        if ( !Utils.isEmpty( tableName ) ) {
           boolean first = true;
           boolean error_found = false;
           error_message = "";
@@ -1300,7 +1301,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
       try {
         db.connect();
 
-        if ( !Const.isEmpty( tableName ) ) {
+        if ( !Utils.isEmpty( tableName ) ) {
           String schemaTable = databaseMeta.getQuotedSchemaTableCombination( schemaName, tableName );
           RowMetaInterface tableFields = db.getTableFields( schemaTable );
           if ( tableFields != null ) {
@@ -1519,7 +1520,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
       if ( databaseMeta != null ) {
         if ( prev != null && prev.size() > 0 ) {
           String schemaTable = databaseMeta.getQuotedSchemaTableCombination( schemaName, tableName );
-          if ( !Const.isEmpty( schemaTable ) ) {
+          if ( !Utils.isEmpty( schemaTable ) ) {
             Database db = createDatabaseObject();
             db.shareVariablesWith( transMeta );
             try {
@@ -1627,7 +1628,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
               String[] idx_fields = null;
 
               // Key lookup dimensions...
-              if ( !Const.isEmpty( keyLookup ) ) {
+              if ( !Utils.isEmpty( keyLookup ) ) {
                 idx_fields = new String[keyLookup.length];
                 for ( int i = 0; i < keyLookup.length; i++ ) {
                   idx_fields[i] = keyLookup[i];
@@ -1637,7 +1638,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
                     PKG, "DimensionLookupMeta.ReturnValue.NoKeyFieldsSpecified" ) );
               }
 
-              if ( !Const.isEmpty( idx_fields ) && !db.checkIndexExists( schemaTable, idx_fields ) ) {
+              if ( !Utils.isEmpty( idx_fields ) && !db.checkIndexExists( schemaTable, idx_fields ) ) {
                 String indexname = "idx_" + tableName + "_lookup";
                 sql +=
                   db.getCreateIndexStatement(
@@ -1646,7 +1647,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 
               // (Bitmap) index on technical key
               idx_fields = new String[] { keyField };
-              if ( !Const.isEmpty( keyField ) ) {
+              if ( !Utils.isEmpty( keyField ) ) {
                 if ( !db.checkIndexExists( schemaTable, idx_fields ) ) {
                   String indexname = "idx_" + tableName + "_tk";
                   sql +=
@@ -1659,7 +1660,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
               }
 
               // The optional Oracle sequence
-              if ( CREATION_METHOD_SEQUENCE.equals( getTechKeyCreation() ) && !Const.isEmpty( sequenceName ) ) {
+              if ( CREATION_METHOD_SEQUENCE.equals( getTechKeyCreation() ) && !Utils.isEmpty( sequenceName ) ) {
                 if ( !db.checkSequenceExists( schemaName, sequenceName ) ) {
                   sql += db.getCreateSequenceStatement( schemaName, sequenceName, 1L, 1L, -1L, true );
                 }

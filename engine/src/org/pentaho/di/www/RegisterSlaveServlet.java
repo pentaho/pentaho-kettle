@@ -59,7 +59,7 @@ public class RegisterSlaveServlet extends BaseHttpServlet implements CartePlugin
   <h2>POST</h2>
   <p>Registers slave server in the master.
   The method is used to add or update information of slave server.</p>
-  
+
   <p><b>Example Request:</b><br />
   <pre function="syntax.xml">
   POST /kettle/registerSlave/
@@ -83,7 +83,7 @@ public class RegisterSlaveServlet extends BaseHttpServlet implements CartePlugin
 </table>
   <p>Response contains slave server name or error stack trace
 if an error occurred. Response has <code>result</code> OK if there were no errors. Otherwise it returns ERROR.</p>
-  
+
   <p><b>Example Response:</b></p>
   <pre function="syntax.xml">
   <?xml version="1.0" encoding="UTF-8"?>
@@ -93,7 +93,7 @@ if an error occurred. Response has <code>result</code> OK if there were no error
     <id/>
   </webresult>
   </pre>
-  
+
   <h3>Status Codes</h3>
   <table class="pentaho-table">
 <tbody>

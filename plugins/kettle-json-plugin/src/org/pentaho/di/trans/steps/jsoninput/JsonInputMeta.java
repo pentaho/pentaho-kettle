@@ -31,6 +31,7 @@ import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
@@ -647,7 +648,7 @@ public class JsonInputMeta extends
   }
 
   public String getRequiredFilesDesc( String tt ) {
-    if ( Const.isEmpty( tt ) ) {
+    if ( Utils.isEmpty( tt ) ) {
       return RequiredFilesDesc[0];
     }
     if ( tt.equalsIgnoreCase( RequiredFilesCode[1] ) ) {
@@ -765,7 +766,7 @@ public class JsonInputMeta extends
   public void getFields( RowMetaInterface rowMeta, String name, RowMetaInterface[] info, StepMeta nextStep,
       VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
 
-    if ( inFields && removeSourceField && !Const.isEmpty( valueField ) ) {
+    if ( inFields && removeSourceField && !Utils.isEmpty( valueField ) ) {
       int index = rowMeta.indexOfValue( valueField );
       if ( index != -1 ) {
         rowMeta.removeValueMeta( index );
@@ -968,7 +969,7 @@ public class JsonInputMeta extends
     }
 
     if ( isInFields() ) {
-      if ( Const.isEmpty( getFieldValue() ) ) {
+      if ( Utils.isEmpty( getFieldValue() ) ) {
         cr =
             new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
                 "JsonInputMeta.CheckResult.NoField" ), stepMeta );

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -37,6 +37,7 @@ import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSelectInfo;
 import org.apache.commons.vfs2.FileSelector;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
@@ -143,7 +144,7 @@ public class KettleDatabaseRepositoryTest extends TestCase {
       // Load the TransMeta object...
       //
       TransMeta transMeta = new TransMeta( transFilename );
-      if ( Const.isEmpty( transMeta.getName() ) ) {
+      if ( Utils.isEmpty( transMeta.getName() ) ) {
         transMeta.setName( Const.createName( file ) );
       }
 
@@ -244,7 +245,7 @@ public class KettleDatabaseRepositoryTest extends TestCase {
       // Load the JobMeta object...
       //
       JobMeta jobMeta = new JobMeta( jobFilename, repository );
-      if ( Const.isEmpty( jobMeta.getName() ) ) {
+      if ( Utils.isEmpty( jobMeta.getName() ) ) {
         jobMeta.setName( Const.createName( file.getName().getBaseName() ) );
       }
 

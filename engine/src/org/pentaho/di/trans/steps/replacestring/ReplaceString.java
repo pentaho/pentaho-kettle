@@ -27,13 +27,13 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.util.StringUtil;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -129,7 +129,7 @@ public class ReplaceString extends BaseStep implements StepInterface {
           replaceString( currentRowMeta.getString( rowData, data.inStreamNrs[i] ), data.patterns[i],
           getResolvedReplaceByString( i, row ) );
 
-      if ( Const.isEmpty( data.outStreamNrs[i] ) ) {
+      if ( Utils.isEmpty( data.outStreamNrs[i] ) ) {
         // update field value
         rowData[data.inStreamNrs[i]] = value;
         numFieldsAlreadyBeenTransformed.add( data.inStreamNrs[i] );
@@ -191,7 +191,7 @@ public class ReplaceString extends BaseStep implements StepInterface {
               .getReplaceString()[i] ) );
 
         String field = meta.getFieldReplaceByString()[i];
-        if ( !Const.isEmpty( field ) ) {
+        if ( !Utils.isEmpty( field ) ) {
           data.replaceFieldIndex[i] = getInputRowMeta().indexOfValue( field );
           if ( data.replaceFieldIndex[i] < 0 ) {
             throw new KettleStepException( BaseMessages.getString(

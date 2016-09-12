@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -40,6 +40,7 @@ import org.apache.commons.vfs2.FileType;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.RowMetaAndData;
@@ -384,7 +385,7 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
     String[] vwildcard = wildcard;
 
     if ( iffileexists.equals( "move_file" ) ) {
-      if ( Const.isEmpty( MoveToFolder ) ) {
+      if ( Utils.isEmpty( MoveToFolder ) ) {
         logError( BaseMessages.getString( PKG, "JobMoveFiles.Log.Error.MoveToFolderMissing" ) );
         return result;
       }
@@ -447,7 +448,7 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
         String vdestinationfilefolder_previous = resultRow.getString( 1, null );
         String vwildcard_previous = resultRow.getString( 2, null );
 
-        if ( !Const.isEmpty( vsourcefilefolder_previous ) && !Const.isEmpty( vdestinationfilefolder_previous ) ) {
+        if ( !Utils.isEmpty( vsourcefilefolder_previous ) && !Utils.isEmpty( vdestinationfilefolder_previous ) ) {
           if ( log.isDetailed() ) {
             logDetailed( BaseMessages.getString(
               PKG, "JobMoveFiles.Log.ProcessingRow", vsourcefilefolder_previous,
@@ -482,7 +483,7 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
           return result;
         }
 
-        if ( !Const.isEmpty( vsourcefilefolder[i] ) && !Const.isEmpty( vdestinationfilefolder[i] ) ) {
+        if ( !Utils.isEmpty( vsourcefilefolder[i] ) && !Utils.isEmpty( vdestinationfilefolder[i] ) ) {
           // ok we can process this file/folder
           if ( log.isDetailed() ) {
             logDetailed( BaseMessages.getString(
@@ -555,7 +556,7 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
     try {
       sourcefilefolder = KettleVFS.getFileObject( realSourceFilefoldername, this );
       destinationfilefolder = KettleVFS.getFileObject( realDestinationFilefoldername, this );
-      if ( !Const.isEmpty( MoveToFolder ) ) {
+      if ( !Utils.isEmpty( MoveToFolder ) ) {
         movetofolderfolder = KettleVFS.getFileObject( MoveToFolder, this );
       }
 
@@ -956,7 +957,7 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
           if ( include_subfolders ) {
             // Folders..only if include subfolders
             if ( Currentfile.getType() == FileType.FOLDER ) {
-              if ( include_subfolders && move_empty_folders && Const.isEmpty( wildcard ) ) {
+              if ( include_subfolders && move_empty_folders && Utils.isEmpty( wildcard ) ) {
                 entrystatus =
                   MoveFile( shortfilename, Currentfile, file_name, movetofolderfolder, parentJob, result );
               }
@@ -972,7 +973,7 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
           // In the Base Folder...
           // Folders..only if include subfolders
           if ( Currentfile.getType() == FileType.FOLDER ) {
-            if ( include_subfolders && move_empty_folders && Const.isEmpty( wildcard ) ) {
+            if ( include_subfolders && move_empty_folders && Utils.isEmpty( wildcard ) ) {
               entrystatus =
                 MoveFile( shortfilename, Currentfile, file_name, movetofolderfolder, parentJob, result );
             }
@@ -1097,7 +1098,7 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
     Pattern pattern = null;
     boolean getIt = true;
 
-    if ( !Const.isEmpty( wildcard ) ) {
+    if ( !Utils.isEmpty( wildcard ) ) {
       pattern = Pattern.compile( wildcard );
       // First see if the file matches the regular expression!
       if ( pattern != null ) {
@@ -1124,7 +1125,7 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
     SimpleDateFormat daf = new SimpleDateFormat();
     Date now = new Date();
 
-    if ( isSpecifyFormat() && !Const.isEmpty( getDateTimeFormat() ) ) {
+    if ( isSpecifyFormat() && !Utils.isEmpty( getDateTimeFormat() ) ) {
       daf.applyPattern( getDateTimeFormat() );
       String dt = daf.format( now );
       shortfilename += dt;
@@ -1168,7 +1169,7 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
       shortfilename += dt;
     } else {
 
-      if ( isSpecifyMoveFormat() && !Const.isEmpty( getMovedDateTimeFormat() ) ) {
+      if ( isSpecifyMoveFormat() && !Utils.isEmpty( getMovedDateTimeFormat() ) ) {
         daf.applyPattern( getMovedDateTimeFormat() );
         String dt = daf.format( now );
         shortfilename += dt;

@@ -25,7 +25,7 @@ package org.pentaho.di.trans.steps.creditcardvalidator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 
 /**
@@ -84,7 +84,7 @@ public class CreditCardVerifier {
   public static ReturnIndicator CheckCC( String CardNumber ) {
     ReturnIndicator ri = new ReturnIndicator();
 
-    if ( Const.isEmpty( CardNumber ) ) {
+    if ( Utils.isEmpty( CardNumber ) ) {
       ri.UnValidMsg = BaseMessages.getString( PKG, "CreditCardValidator.Log.EmptyNumber" );
       return ri;
     }

@@ -38,6 +38,7 @@ import org.apache.commons.vfs2.FileUtil;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -403,10 +404,10 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
         return result;
       }
     }
-    if ( !Const.isEmpty( wildcard ) ) {
+    if ( !Utils.isEmpty( wildcard ) ) {
       wildcardPattern = Pattern.compile( environmentSubstitute( wildcard ) );
     }
-    if ( !Const.isEmpty( wildcardexclude ) ) {
+    if ( !Utils.isEmpty( wildcardexclude ) ) {
       wildcardExcludePattern = Pattern.compile( environmentSubstitute( wildcardexclude ) );
     }
 
@@ -640,7 +641,7 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
     SimpleDateFormat daf = new SimpleDateFormat();
     Date now = new Date();
 
-    if ( isSpecifyFormat() && !Const.isEmpty( getDateTimeFormat() ) ) {
+    if ( isSpecifyFormat() && !Utils.isEmpty( getDateTimeFormat() ) ) {
       daf.applyPattern( getDateTimeFormat() );
       String dt = daf.format( now );
       shortfilename += dt;

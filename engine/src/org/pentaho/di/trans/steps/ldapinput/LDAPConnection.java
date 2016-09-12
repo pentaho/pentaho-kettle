@@ -45,6 +45,7 @@ import javax.naming.ldap.PagedResultsResponseControl;
 import javax.naming.ldap.SortControl;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.row.RowMeta;
@@ -191,7 +192,7 @@ public class LDAPConnection {
     setFilter( Const.NVL( correctFilter( filter ), DEFAUL_FILTER_STRING ) );
     try {
 
-      if ( Const.isEmpty( getSearchBase() ) ) {
+      if ( Utils.isEmpty( getSearchBase() ) ) {
         // get Search Base
         Attributes attrs = getInitialContext().getAttributes( "", new String[] { "namingContexts" } );
         Attribute attr = attrs.get( "namingContexts" );
@@ -428,7 +429,7 @@ public class LDAPConnection {
     Attributes attrs = new javax.naming.directory.BasicAttributes( true );
     int nrAttributes = attributes.length;
     for ( int i = 0; i < nrAttributes; i++ ) {
-      if ( !Const.isEmpty( values[i] ) ) {
+      if ( !Utils.isEmpty( values[i] ) ) {
         // We have a value
         String value = values[i].trim();
         if ( multValuedSeparator != null && value.indexOf( multValuedSeparator ) > 0 ) {
@@ -622,7 +623,7 @@ public class LDAPConnection {
    * @return corrected filter
    */
   private static String correctFilter( String filter ) {
-    return Const.isEmpty( filter ) ? "" : filter.replaceAll( "(\\r|\\n)", "" );
+    return Utils.isEmpty( filter ) ? "" : filter.replaceAll( "(\\r|\\n)", "" );
   }
 
   public static String extractBytesAndConvertToString( Attribute attr, boolean isSID ) throws Exception {

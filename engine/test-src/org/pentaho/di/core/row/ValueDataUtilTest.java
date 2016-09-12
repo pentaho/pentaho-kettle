@@ -39,7 +39,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettlePluginException;
@@ -789,52 +789,52 @@ public class ValueDataUtilTest {
       Object dataC = null;
 
       if ( valueMetaInterfaceType == ValueMetaInterface.TYPE_NUMBER ) {
-        dataA = ( !Const.isEmpty( string_dataA ) ? Double.valueOf( string_dataA ) : null );
-        dataB = ( !Const.isEmpty( string_dataB ) ? Double.valueOf( string_dataB ) : null );
-        dataC = ( !Const.isEmpty( string_dataC ) ? Double.valueOf( string_dataC ) : null );
+        dataA = ( !Utils.isEmpty( string_dataA ) ? Double.valueOf( string_dataA ) : null );
+        dataB = ( !Utils.isEmpty( string_dataB ) ? Double.valueOf( string_dataB ) : null );
+        dataC = ( !Utils.isEmpty( string_dataC ) ? Double.valueOf( string_dataC ) : null );
       } else if ( valueMetaInterfaceType == ValueMetaInterface.TYPE_INTEGER ) {
-        dataA = ( !Const.isEmpty( string_dataA ) ? Long.valueOf( string_dataA ) : null );
-        dataB = ( !Const.isEmpty( string_dataB ) ? Long.valueOf( string_dataB ) : null );
-        dataC = ( !Const.isEmpty( string_dataC ) ? Long.valueOf( string_dataC ) : null );
+        dataA = ( !Utils.isEmpty( string_dataA ) ? Long.valueOf( string_dataA ) : null );
+        dataB = ( !Utils.isEmpty( string_dataB ) ? Long.valueOf( string_dataB ) : null );
+        dataC = ( !Utils.isEmpty( string_dataC ) ? Long.valueOf( string_dataC ) : null );
       } else if ( valueMetaInterfaceType == ValueMetaInterface.TYPE_DATE ) {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat( yyyy_MM_dd );
         try {
-          dataA = ( !Const.isEmpty( string_dataA ) ? simpleDateFormat.parse( string_dataA ) : null );
-          dataB = ( !Const.isEmpty( string_dataB ) ? simpleDateFormat.parse( string_dataB ) : null );
-          dataC = ( !Const.isEmpty( string_dataC ) ? simpleDateFormat.parse( string_dataC ) : null );
+          dataA = ( !Utils.isEmpty( string_dataA ) ? simpleDateFormat.parse( string_dataA ) : null );
+          dataB = ( !Utils.isEmpty( string_dataB ) ? simpleDateFormat.parse( string_dataB ) : null );
+          dataC = ( !Utils.isEmpty( string_dataC ) ? simpleDateFormat.parse( string_dataC ) : null );
         } catch ( ParseException pe ) {
           fail( pe.getMessage() );
           return null;
         }
       } else if ( valueMetaInterfaceType == ValueMetaInterface.TYPE_BIGNUMBER ) {
-        dataA = ( !Const.isEmpty( string_dataA ) ? BigDecimal.valueOf( Double.valueOf( string_dataA ) ) : null );
-        dataB = ( !Const.isEmpty( string_dataB ) ? BigDecimal.valueOf( Double.valueOf( string_dataB ) ) : null );
-        dataC = ( !Const.isEmpty( string_dataC ) ? BigDecimal.valueOf( Double.valueOf( string_dataC ) ) : null );
+        dataA = ( !Utils.isEmpty( string_dataA ) ? BigDecimal.valueOf( Double.valueOf( string_dataA ) ) : null );
+        dataB = ( !Utils.isEmpty( string_dataB ) ? BigDecimal.valueOf( Double.valueOf( string_dataB ) ) : null );
+        dataC = ( !Utils.isEmpty( string_dataC ) ? BigDecimal.valueOf( Double.valueOf( string_dataC ) ) : null );
       } else if ( valueMetaInterfaceType == ValueMetaInterface.TYPE_STRING ) {
-        dataA = ( !Const.isEmpty( string_dataA ) ? string_dataA : null );
-        dataB = ( !Const.isEmpty( string_dataB ) ? string_dataB : null );
-        dataC = ( !Const.isEmpty( string_dataC ) ? string_dataC : null );
+        dataA = ( !Utils.isEmpty( string_dataA ) ? string_dataA : null );
+        dataB = ( !Utils.isEmpty( string_dataB ) ? string_dataB : null );
+        dataC = ( !Utils.isEmpty( string_dataC ) ? string_dataC : null );
       } else if ( valueMetaInterfaceType == ValueMetaInterface.TYPE_BINARY ) {
         ValueMetaInterface binaryValueMeta = new ValueMetaBinary( "binary_data" );
 
         dataA =
-            ( !Const.isEmpty( string_dataA ) ? binaryValueMeta.convertData( parameterValueMeta, string_dataA ) : null );
+            ( !Utils.isEmpty( string_dataA ) ? binaryValueMeta.convertData( parameterValueMeta, string_dataA ) : null );
         dataB =
-            ( !Const.isEmpty( string_dataB ) ? binaryValueMeta.convertData( parameterValueMeta, string_dataB ) : null );
+            ( !Utils.isEmpty( string_dataB ) ? binaryValueMeta.convertData( parameterValueMeta, string_dataB ) : null );
         dataC =
-            ( !Const.isEmpty( string_dataC ) ? binaryValueMeta.convertData( parameterValueMeta, string_dataC ) : null );
+            ( !Utils.isEmpty( string_dataC ) ? binaryValueMeta.convertData( parameterValueMeta, string_dataC ) : null );
       } else if ( valueMetaInterfaceType == ValueMetaInterface.TYPE_BOOLEAN ) {
-        if ( !Const.isEmpty( string_dataA ) ) {
+        if ( !Utils.isEmpty( string_dataA ) ) {
           dataA = ( string_dataA.equalsIgnoreCase( "true" ) ? true : false );
         } else {
           dataA = null;
         }
-        if ( !Const.isEmpty( string_dataB ) ) {
+        if ( !Utils.isEmpty( string_dataB ) ) {
           dataB = ( string_dataB.equalsIgnoreCase( "true" ) ? true : false );
         } else {
           dataB = null;
         }
-        if ( !Const.isEmpty( string_dataC ) ) {
+        if ( !Utils.isEmpty( string_dataC ) ) {
           dataC = ( string_dataC.equalsIgnoreCase( "true" ) ? true : false );
         } else {
           dataC = null;

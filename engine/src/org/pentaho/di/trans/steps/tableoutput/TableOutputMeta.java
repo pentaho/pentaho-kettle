@@ -27,6 +27,7 @@ import com.google.common.base.Preconditions;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.ProvidesModelerMeta;
 import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.database.Database;
@@ -604,7 +605,7 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface, 
             PKG, "TableOutputMeta.CheckResult.ConnectionOk" ), stepMeta );
         remarks.add( cr );
 
-        if ( !Const.isEmpty( tableName ) ) {
+        if ( !Utils.isEmpty( tableName ) ) {
           String schemaTable =
               databaseMeta.getQuotedSchemaTableCombination( db.environmentSubstitute( schemaName ), db
               .environmentSubstitute( tableName ) );
@@ -823,7 +824,7 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface, 
 
     if ( databaseMeta != null ) {
       if ( prev != null && prev.size() > 0 ) {
-        if ( !Const.isEmpty( tableName ) ) {
+        if ( !Utils.isEmpty( tableName ) ) {
           Database db = new Database( loggingObject, databaseMeta );
           db.shareVariablesWith( transMeta );
           try {
@@ -866,7 +867,7 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface, 
       try {
         db.connect();
 
-        if ( !Const.isEmpty( realTableName ) ) {
+        if ( !Utils.isEmpty( realTableName ) ) {
           String schemaTable = databaseMeta.getQuotedSchemaTableCombination( realSchemaName, realTableName );
 
           // Check if this table exists...

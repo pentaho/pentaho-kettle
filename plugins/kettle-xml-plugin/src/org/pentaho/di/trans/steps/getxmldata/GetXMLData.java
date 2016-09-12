@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -44,6 +44,7 @@ import org.dom4j.XPath;
 import org.dom4j.io.SAXReader;
 import org.dom4j.tree.AbstractNode;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.fileinput.FileInputList;
@@ -177,7 +178,7 @@ public class GetXMLData extends BaseStep implements StepInterface {
       } else {
         // get encoding. By default UTF-8
         String encoding = "UTF-8";
-        if ( !Const.isEmpty( meta.getEncoding() ) ) {
+        if ( !Utils.isEmpty( meta.getEncoding() ) ) {
           encoding = meta.getEncoding();
         }
         InputStream is = KettleVFS.getInputStream( file );
@@ -358,7 +359,7 @@ public class GetXMLData extends BaseStep implements StepInterface {
         data.convertRowMeta = data.outputRowMeta.cloneToType( ValueMetaInterface.TYPE_STRING );
 
         // Check is XML field is provided
-        if ( Const.isEmpty( meta.getXMLField() ) ) {
+        if ( Utils.isEmpty( meta.getXMLField() ) ) {
           logError( BaseMessages.getString( PKG, "GetXMLData.Log.NoField" ) );
           throw new KettleException( BaseMessages.getString( PKG, "GetXMLData.Log.NoField" ) );
         }
@@ -812,7 +813,7 @@ public class GetXMLData extends BaseStep implements StepInterface {
 
         // Do we need to repeat this field if it is null?
         if ( meta.getInputFields()[i].isRepeated() ) {
-          if ( data.previousRow != null && Const.isEmpty( nodevalue ) ) {
+          if ( data.previousRow != null && Utils.isEmpty( nodevalue ) ) {
             outputRowData[data.totalpreviousfields + i] = data.previousRow[data.totalpreviousfields + i];
           }
         }
@@ -821,11 +822,11 @@ public class GetXMLData extends BaseStep implements StepInterface {
       int rowIndex = data.totalpreviousfields + data.nrInputFields;
 
       // See if we need to add the filename to the row...
-      if ( meta.includeFilename() && !Const.isEmpty( meta.getFilenameField() ) ) {
+      if ( meta.includeFilename() && !Utils.isEmpty( meta.getFilenameField() ) ) {
         outputRowData[rowIndex++] = data.filename;
       }
       // See if we need to add the row number to the row...
-      if ( meta.includeRowNumber() && !Const.isEmpty( meta.getRowNumberField() ) ) {
+      if ( meta.includeRowNumber() && !Utils.isEmpty( meta.getRowNumberField() ) ) {
         outputRowData[rowIndex++] = data.rownr;
       }
       // Possibly add short filename...
@@ -933,7 +934,7 @@ public class GetXMLData extends BaseStep implements StepInterface {
       data.rownr = 1L;
       data.nrInputFields = meta.getInputFields().length;
       data.PathValue = environmentSubstitute( meta.getLoopXPath() );
-      if ( Const.isEmpty( data.PathValue ) ) {
+      if ( Utils.isEmpty( data.PathValue ) ) {
         logError( BaseMessages.getString( PKG, "GetXMLData.Error.EmptyPath" ) );
         return false;
       }
@@ -946,7 +947,7 @@ public class GetXMLData extends BaseStep implements StepInterface {
 
       data.prunePath = environmentSubstitute( meta.getPrunePath() );
       if ( data.prunePath != null ) {
-        if ( Const.isEmpty( data.prunePath.trim() ) ) {
+        if ( Utils.isEmpty( data.prunePath.trim() ) ) {
           data.prunePath = null;
         } else {
           // ensure a leading slash

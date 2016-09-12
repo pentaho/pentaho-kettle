@@ -24,9 +24,9 @@ package org.pentaho.di.trans.steps.ssh;
 
 import java.io.File;
 
-import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.step.BaseStepData;
@@ -73,7 +73,7 @@ public class SSHData extends BaseStepData implements StepDataInterface {
     try {
       // perform some checks
       if ( useKey ) {
-        if ( Const.isEmpty( keyFilename ) ) {
+        if ( Utils.isEmpty( keyFilename ) ) {
           throw new KettleException( BaseMessages.getString( SSHMeta.PKG, "SSH.Error.PrivateKeyFileMissing" ) );
         }
         keyFile = new File( keyFilename );
@@ -85,10 +85,10 @@ public class SSHData extends BaseStepData implements StepDataInterface {
       conn = new Connection( serveur, port );
 
       /* We want to connect through a HTTP proxy */
-      if ( !Const.isEmpty( proxyhost ) ) {
+      if ( !Utils.isEmpty( proxyhost ) ) {
         /* Now connect */
         // if the proxy requires basic authentication:
-        if ( !Const.isEmpty( proxyusername ) ) {
+        if ( !Utils.isEmpty( proxyusername ) ) {
           conn.setProxyData( new HTTPProxyData( proxyhost, proxyport, proxyusername, proxypassword ) );
         } else {
           conn.setProxyData( new HTTPProxyData( proxyhost, proxyport ) );

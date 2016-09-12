@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.w3c.dom.Document;
@@ -130,7 +131,7 @@ public class SlaveServerStatus {
     String cpuCoresStr = XMLHandler.getTagValue( statusNode, "cpu_cores" );
     cpuCores = Const.toInt( cpuCoresStr, -1 );
     String cpuProcessTimeStr = XMLHandler.getTagValue( statusNode, "cpu_process_time" );
-    cpuProcessTime = Const.isEmpty( cpuProcessTimeStr ) ? 0L : Long.valueOf( cpuProcessTimeStr );
+    cpuProcessTime = Utils.isEmpty( cpuProcessTimeStr ) ? 0L : Long.valueOf( cpuProcessTimeStr );
 
     uptime = Const.toLong( XMLHandler.getTagValue( statusNode, "uptime" ), -1 );
     threadCount = Const.toInt( XMLHandler.getTagValue( statusNode, "thread_count" ), -1 );
@@ -211,7 +212,7 @@ public class SlaveServerStatus {
     for ( int i = 0; i < transStatusList.size(); i++ ) {
       SlaveServerTransStatus transStatus = transStatusList.get( i );
       if ( transStatus.getTransName().equalsIgnoreCase( transName )
-        && ( Const.isEmpty( id ) || transStatus.getId().equals( id ) ) ) {
+        && ( Utils.isEmpty( id ) || transStatus.getId().equals( id ) ) ) {
         return transStatus;
       }
     }
@@ -222,7 +223,7 @@ public class SlaveServerStatus {
     for ( int i = 0; i < jobStatusList.size(); i++ ) {
       SlaveServerJobStatus jobStatus = jobStatusList.get( i );
       if ( jobStatus.getJobName().equalsIgnoreCase( jobName )
-        && ( Const.isEmpty( id ) || jobStatus.getId().equals( id ) ) ) {
+        && ( Utils.isEmpty( id ) || jobStatus.getId().equals( id ) ) ) {
         return jobStatus;
       }
     }

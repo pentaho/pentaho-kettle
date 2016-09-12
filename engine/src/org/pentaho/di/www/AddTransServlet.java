@@ -67,20 +67,20 @@ public class AddTransServlet extends BaseHttpServlet implements CartePluginInter
     <a name="POST"></a>
     <h2>POST</h2>
     <p>Uploads and executes transformation configuration XML file.
-  Uploads xml file containing transformation and transformation_execution_configuration 
-  (wrapped in transformation_configuration tag) to be executed and executes it. Method relies 
+  Uploads xml file containing transformation and transformation_execution_configuration
+  (wrapped in transformation_configuration tag) to be executed and executes it. Method relies
   on the input parameter to determine if xml or html reply should be produced. The transformation_configuration xml is
   transferred within request body.
-  
-  <code>transformation name of the executed transformation </code> will be returned in the Response object 
-  or <code>message</code> describing error occurred. To determine if the call successful or not you should 
+
+  <code>transformation name of the executed transformation </code> will be returned in the Response object
+  or <code>message</code> describing error occurred. To determine if the call successful or not you should
   rely on <code>result</code> parameter in response.</p>
-    
+
     <p><b>Example Request:</b><br />
     <pre function="syntax.xml">
     POST /kettle/addTrans/?xml=Y
     </pre>
-    <p>Request body should contain xml containing transformation_configuration (transformation and 
+    <p>Request body should contain xml containing transformation_configuration (transformation and
   transformation_execution_configuration wrapped in transformation_configuration tag).</p>
     </p>
     <h3>Parameters</h3>
@@ -93,13 +93,13 @@ public class AddTransServlet extends BaseHttpServlet implements CartePluginInter
     </tr>
     <tr>
     <td>xml</td>
-    <td>Boolean flag set to either <code>Y</code> or <code>N</code> describing if xml or html reply 
+    <td>Boolean flag set to either <code>Y</code> or <code>N</code> describing if xml or html reply
   should be produced.</td>
     <td>boolean, optional</td>
     </tr>
     </tbody>
     </table>
-  
+
   <h3>Response Body</h3>
 
   <table class="pentaho-table">
@@ -116,7 +116,7 @@ public class AddTransServlet extends BaseHttpServlet implements CartePluginInter
   </table>
     <p>Response wraps transformation name that was executed or error stack trace
   if an error occurred. Response has <code>result</code> OK if there were no errors. Otherwise it returns ERROR.</p>
-    
+
     <p><b>Example Response:</b></p>
     <pre function="syntax.xml">
     <?xml version="1.0" encoding="UTF-8"?>
@@ -126,7 +126,7 @@ public class AddTransServlet extends BaseHttpServlet implements CartePluginInter
       <id>eb4a92ff-6852-4307-9f74-3c74bd61f829</id>
     </webresult>
     </pre>
-    
+
     <h3>Status Codes</h3>
     <table class="pentaho-table">
   <tbody>

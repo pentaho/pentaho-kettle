@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -26,6 +26,7 @@ import java.util.List;
 
 import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.fileinput.FileInputList;
@@ -105,7 +106,7 @@ public class YamlInput extends BaseStep implements StepInterface {
         meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
 
         // Check is Yaml field is provided
-        if ( Const.isEmpty( meta.getYamlField() ) ) {
+        if ( Utils.isEmpty( meta.getYamlField() ) ) {
           logError( BaseMessages.getString( PKG, "YamlInput.Log.NoField" ) );
           throw new KettleException( BaseMessages.getString( PKG, "YamlInput.Log.NoField" ) );
         }
@@ -345,11 +346,11 @@ public class YamlInput extends BaseStep implements StepInterface {
       int rowIndex = data.totalOutFields;
 
       // See if we need to add the filename to the row...
-      if ( meta.includeFilename() && !Const.isEmpty( meta.getFilenameField() ) ) {
+      if ( meta.includeFilename() && !Utils.isEmpty( meta.getFilenameField() ) ) {
         outputRowData[rowIndex++] = KettleVFS.getFilename( data.file );
       }
       // See if we need to add the row number to the row...
-      if ( meta.includeRowNumber() && !Const.isEmpty( meta.getRowNumberField() ) ) {
+      if ( meta.includeRowNumber() && !Utils.isEmpty( meta.getRowNumberField() ) ) {
         outputRowData[rowIndex++] = new Long( data.rownr );
       }
 

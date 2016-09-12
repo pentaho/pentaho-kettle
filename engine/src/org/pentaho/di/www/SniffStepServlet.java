@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -35,6 +35,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.owasp.esapi.ESAPI;
 import org.owasp.esapi.Encoder;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
@@ -73,12 +74,12 @@ public class SniffStepServlet extends BaseHttpServlet implements CartePluginInte
     <a name="GET"></a>
     <h2>GET</h2>
     <p>Sniff metadata and data from the specified step of the specified transformation.</p>
-    
+
     <p><b>Example Request:</b><br />
     <pre function="syntax.xml">
     GET /kettle/sniffStep?trans=dummy-trans&step=tf&xml=Y&lines=10
     </pre>
-    
+
     </p>
     <h3>Parameters</h3>
     <table class="pentaho-table">
@@ -105,13 +106,13 @@ public class SniffStepServlet extends BaseHttpServlet implements CartePluginInte
     </tr>
     <tr>
     <td>type</td>
-    <td>Type of the data to be collected (<code>input</code> or <code>output</code>). 
+    <td>Type of the data to be collected (<code>input</code> or <code>output</code>).
     If not provided output data is collected.</td>
     <td>query, optional</td>
     </tr>
     <tr>
     <td>xml</td>
-    <td>Boolean flag which defines output format <code>Y</code> forces XML output to be generated. 
+    <td>Boolean flag which defines output format <code>Y</code> forces XML output to be generated.
   HTML is returned otherwise.</td>
     <td>boolean, optional</td>
     </tr>
@@ -127,7 +128,7 @@ public class SniffStepServlet extends BaseHttpServlet implements CartePluginInte
     </tr>
     </tbody>
     </table>
-  
+
   <h3>Response Body</h3>
 
   <table class="pentaho-table">
@@ -143,9 +144,9 @@ public class SniffStepServlet extends BaseHttpServlet implements CartePluginInte
     </tbody>
   </table>
     <p>Response XML or HTML response containing data and metadata of the step.
-  If an error occurs during method invocation <code>result</code> field of the response 
+  If an error occurs during method invocation <code>result</code> field of the response
   will contain <code>ERROR</code> status.</p>
-    
+
     <p><b>Example Response:</b></p>
     <pre function="syntax.xml">
     <?xml version="1.0" encoding="UTF-8"?>
@@ -173,7 +174,7 @@ public class SniffStepServlet extends BaseHttpServlet implements CartePluginInte
         </value-meta>
       </row-meta>
       <nr_rows>10</nr_rows>
-      
+
       <row-data><value-data>my-data</value-data>
       </row-data>
       <row-data><value-data>my-data </value-data>
@@ -196,7 +197,7 @@ public class SniffStepServlet extends BaseHttpServlet implements CartePluginInte
       </row-data>
     </step-sniff>
     </pre>
-    
+
     <h3>Status Codes</h3>
     <table class="pentaho-table">
   <tbody>
@@ -249,7 +250,7 @@ public class SniffStepServlet extends BaseHttpServlet implements CartePluginInte
     //
     Trans trans;
     CarteObjectEntry entry;
-    if ( Const.isEmpty( id ) ) {
+    if ( Utils.isEmpty( id ) ) {
       // get the first transformation that matches...
       //
       entry = getTransformationMap().getFirstCarteObjectEntry( transName );

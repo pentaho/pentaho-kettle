@@ -36,7 +36,7 @@ import java.util.UUID;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.pentaho.di.cluster.HttpUtil;
-import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -70,7 +70,7 @@ public class SlaveServerJobStatusTest {
     assertEquals( "There should be one \"log_date\" node in the XML", 1,
       XMLHandler.countNodes( newJobStatus, "log_date" ) );
     assertTrue( "The \"log_date\" node should have a null value",
-      Const.isEmpty( XMLHandler.getTagValue( newJobStatus, "log_date" ) ) );
+      Utils.isEmpty( XMLHandler.getTagValue( newJobStatus, "log_date" ) ) );
   }
 
   @Test

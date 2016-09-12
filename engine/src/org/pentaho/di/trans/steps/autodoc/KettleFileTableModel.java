@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -32,6 +32,7 @@ import javax.swing.table.TableModel;
 
 import org.jfree.ui.Drawable;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -168,7 +169,7 @@ public class KettleFileTableModel implements TableModel {
     String logging = "";
     for ( Iterator<LogTableInterface> iterator = logTables.iterator(); iterator.hasNext(); ) {
       LogTableInterface logTableInterface = iterator.next();
-      if ( logTableInterface.getDatabaseMeta() != null && !Const.isEmpty( logTableInterface.getTableName() ) ) {
+      if ( logTableInterface.getDatabaseMeta() != null && !Utils.isEmpty( logTableInterface.getTableName() ) ) {
         if ( logging.length() > 0 ) {
           logging += ", ";
         }

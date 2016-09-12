@@ -23,6 +23,7 @@
 package org.pentaho.di.trans.steps.execsqlrow;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.Database;
@@ -110,7 +111,7 @@ public class ExecSQLRow extends BaseStep implements StepInterface {
       meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
 
       // Check is SQL field is provided
-      if ( Const.isEmpty( meta.getSqlFieldName() ) ) {
+      if ( Utils.isEmpty( meta.getSqlFieldName() ) ) {
         throw new KettleException( BaseMessages.getString( PKG, "ExecSQLRow.Error.SQLFieldFieldMissing" ) );
       }
 
@@ -131,7 +132,7 @@ public class ExecSQLRow extends BaseStep implements StepInterface {
 
     try {
       if ( meta.isSqlFromfile() ) {
-        if ( Const.isEmpty( sql ) ) {
+        if ( Utils.isEmpty( sql ) ) {
           // empty filename
           throw new KettleException( BaseMessages.getString( PKG, "ExecSQLRow.Log.EmptySQLFromFile" ) );
         }

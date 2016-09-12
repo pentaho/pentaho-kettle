@@ -26,7 +26,6 @@ import java.util.List;
 
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
-import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -34,6 +33,7 @@ import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -145,7 +145,7 @@ public class CalculatorMeta extends BaseStepMeta implements StepMetaInterface {
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     for ( CalculatorMetaFunction fn : calculation ) {
       if ( !fn.isRemovedFromResult() ) {
-        if ( !Const.isEmpty( fn.getFieldName() ) ) { // It's a new field!
+        if ( !Utils.isEmpty( fn.getFieldName() ) ) { // It's a new field!
           ValueMetaInterface v = getValueMeta( fn, origin );
           row.addValueMeta( v );
         }
@@ -183,7 +183,7 @@ public class CalculatorMeta extends BaseStepMeta implements StepMetaInterface {
     RowMetaInterface rowMeta = inputRowMeta.clone();
 
     for ( CalculatorMetaFunction fn : getCalculation() ) {
-      if ( !Const.isEmpty( fn.getFieldName() ) ) { // It's a new field!
+      if ( !Utils.isEmpty( fn.getFieldName() ) ) { // It's a new field!
         ValueMetaInterface v = getValueMeta( fn, null );
         rowMeta.addValueMeta( v );
       }

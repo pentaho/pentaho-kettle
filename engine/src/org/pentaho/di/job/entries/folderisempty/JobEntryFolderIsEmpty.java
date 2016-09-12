@@ -37,6 +37,7 @@ import org.apache.commons.vfs2.FileType;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
@@ -194,7 +195,7 @@ public class JobEntryFolderIsEmpty extends JobEntryBase implements Cloneable, Jo
     folderscount = 0;
     pattern = null;
 
-    if ( !Const.isEmpty( getWildcard() ) ) {
+    if ( !Utils.isEmpty( getWildcard() ) ) {
       pattern = Pattern.compile( getRealWildcard() );
     }
 

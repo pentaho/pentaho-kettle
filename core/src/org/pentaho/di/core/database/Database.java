@@ -56,6 +56,7 @@ import java.util.Set;
 
 import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.DBCache;
 import org.pentaho.di.core.DBCacheEntry;
@@ -351,7 +352,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
       // So the deal is that if there is another thread using that, we go for
       // it.
       //
-      if ( !Const.isEmpty( group ) ) {
+      if ( !Utils.isEmpty( group ) ) {
         this.connectionGroup = group;
         this.partitionId = partitionId;
 
@@ -459,7 +460,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
 
       // only execute if the SQL is not empty, null and is not just a bunch of
       // spaces, tabs, CR etc.
-      if ( !Const.isEmpty( sql ) && !Const.onlySpaces( sql ) ) {
+      if ( !Utils.isEmpty( sql ) && !Const.onlySpaces( sql ) ) {
         execStatements( sql );
         if ( log.isDetailed() ) {
           log.logDetailed( "Executed connect time SQL statements:" + Const.CR + sql );
@@ -518,7 +519,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
     try {
       String url;
 
-      if ( databaseMeta.isPartitioned() && !Const.isEmpty( partitionId ) ) {
+      if ( databaseMeta.isPartitioned() && !Utils.isEmpty( partitionId ) ) {
         url = environmentSubstitute( databaseMeta.getURL( partitionId ) );
       } else {
         url = environmentSubstitute( databaseMeta.getURL() );
@@ -526,7 +527,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
 
       String clusterUsername = null;
       String clusterPassword = null;
-      if ( databaseMeta.isPartitioned() && !Const.isEmpty( partitionId ) ) {
+      if ( databaseMeta.isPartitioned() && !Utils.isEmpty( partitionId ) ) {
         // Get the cluster information...
         PartitionDatabaseMeta partition = databaseMeta.getPartitionMeta( partitionId );
         if ( partition != null ) {
@@ -537,7 +538,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
 
       String username;
       String password;
-      if ( !Const.isEmpty( clusterUsername ) ) {
+      if ( !Utils.isEmpty( clusterUsername ) ) {
         username = clusterUsername;
         password = clusterPassword;
       } else {
@@ -546,12 +547,12 @@ public class Database implements VariableSpace, LoggingObjectInterface {
       }
 
       if ( databaseMeta.supportsOptionsInURL() ) {
-        if ( !Const.isEmpty( username ) || !Const.isEmpty( password ) ) {
+        if ( !Utils.isEmpty( username ) || !Utils.isEmpty( password ) ) {
           if ( databaseMeta.getDatabaseInterface() instanceof MSSQLServerNativeDatabaseMeta ) {
             // Needs user & password in the URL
             //
             String instance = environmentSubstitute( databaseMeta.getSQLServerInstance() );
-            if ( Const.isEmpty( instance ) ) {
+            if ( Utils.isEmpty( instance ) ) {
               connection = DriverManager.getConnection( url + ";user=" + username + ";password=" + password );
             } else {
               connection =
@@ -569,10 +570,10 @@ public class Database implements VariableSpace, LoggingObjectInterface {
         }
       } else {
         Properties properties = databaseMeta.getConnectionProperties();
-        if ( !Const.isEmpty( username ) ) {
+        if ( !Utils.isEmpty( username ) ) {
           properties.put( "user", username );
         }
-        if ( !Const.isEmpty( password ) ) {
+        if ( !Utils.isEmpty( password ) ) {
           properties.put( "password", password );
         }
 
@@ -658,7 +659,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
       // group.
       // If so, we will hold commit & connection close until then.
       //
-      if ( !Const.isEmpty( connectionGroup ) ) {
+      if ( !Utils.isEmpty( connectionGroup ) ) {
         return;
       } else {
         if ( !isAutoCommit() ) {
@@ -804,7 +805,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
       // The transformation will stop everything and then we'll do the rollback.
       // The flag is in "performRollback", private only
       //
-      if ( !Const.isEmpty( connectionGroup ) && !force ) {
+      if ( !Utils.isEmpty( connectionGroup ) && !force ) {
         return;
       }
       if ( getDatabaseMetaData().supportsTransactions() ) {
@@ -862,7 +863,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
    */
   @Deprecated
   private void commitInternal( boolean force ) throws KettleDatabaseException, SQLException {
-    if ( !Const.isEmpty( connectionGroup ) && !force ) {
+    if ( !Utils.isEmpty( connectionGroup ) && !force ) {
       return;
     }
     if ( getDatabaseMetaData().supportsTransactions() ) {
@@ -884,7 +885,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
 
   public void rollback( boolean force ) throws KettleDatabaseException {
     try {
-      if ( !Const.isEmpty( connectionGroup ) && !force ) {
+      if ( !Utils.isEmpty( connectionGroup ) && !force ) {
         return; // Will be handled by Trans --> endProcessing()
       }
       if ( getDatabaseMetaData().supportsTransactions() ) {
@@ -1250,7 +1251,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   public boolean getUseBatchInsert( boolean batch ) throws KettleDatabaseException {
     try {
       return batch && getDatabaseMetaData().supportsBatchUpdates() && databaseMeta.supportsBatchUpdates()
-        && Const.isEmpty( connectionGroup );
+        && Utils.isEmpty( connectionGroup );
     } catch ( SQLException e ) {
       throw createKettleDatabaseBatchException( "Error determining whether to use batch", e );
     }
@@ -2066,7 +2067,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
                                             String increment_by, String max_value, boolean semi_colon ) {
     String cr_seq = "";
 
-    if ( Const.isEmpty( sequenceName ) ) {
+    if ( Utils.isEmpty( sequenceName ) ) {
       return cr_seq;
     }
 
@@ -2377,7 +2378,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
 
     // Check the name, sometimes it's empty.
     //
-    if ( Const.isEmpty( name ) || Const.onlySpaces( name ) ) {
+    if ( Utils.isEmpty( name ) || Const.onlySpaces( name ) ) {
       name = "Field" + ( i + 1 );
     }
 
@@ -2742,7 +2743,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
         }
         cstmt = connection.prepareCall( sql );
         pos = 1;
-        if ( !Const.isEmpty( returnvalue ) ) {
+        if ( !Utils.isEmpty( returnvalue ) ) {
           switch ( returntype ) {
             case ValueMetaInterface.TYPE_NUMBER:
               cstmt.registerOutParameter( pos, java.sql.Types.DOUBLE );
@@ -3034,7 +3035,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   }
 
   public void truncateTable( String tablename ) throws KettleDatabaseException {
-    if ( Const.isEmpty( connectionGroup ) ) {
+    if ( Utils.isEmpty( connectionGroup ) ) {
       String truncateStatement = databaseMeta.getTruncateTableStatement( null, tablename );
       if ( truncateStatement == null ) {
         throw new KettleDatabaseException( "Truncate table not supported by "
@@ -3047,7 +3048,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   }
 
   public void truncateTable( String schema, String tablename ) throws KettleDatabaseException {
-    if ( Const.isEmpty( connectionGroup ) ) {
+    if ( Utils.isEmpty( connectionGroup ) ) {
       String truncateStatement = databaseMeta.getTruncateTableStatement( schema, tablename );
       if ( truncateStatement == null ) {
         throw new KettleDatabaseException( "Truncate table not supported by "
@@ -3681,7 +3682,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
           }
         }
 
-        if ( Const.isEmpty( schema ) ) {
+        if ( Utils.isEmpty( schema ) ) {
           schema = cat;
         }
 
@@ -3780,7 +3781,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
           }
         }
 
-        if ( Const.isEmpty( schema ) ) {
+        if ( Utils.isEmpty( schema ) ) {
           schema = cat;
         }
 
@@ -3879,7 +3880,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
           }
         }
 
-        if ( Const.isEmpty( schema ) ) {
+        if ( Utils.isEmpty( schema ) ) {
           schema = cat;
         }
 
@@ -4054,7 +4055,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
    * @throws KettleDatabaseException
    */
   public void lockTables( String[] tableNames ) throws KettleDatabaseException {
-    if ( Const.isEmpty( tableNames ) ) {
+    if ( Utils.isEmpty( tableNames ) ) {
       return;
     }
 
@@ -4073,7 +4074,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
    * @throws KettleDatabaseException
    */
   public void unlockTables( String[] tableNames ) throws KettleDatabaseException {
-    if ( Const.isEmpty( tableNames ) ) {
+    if ( Utils.isEmpty( tableNames ) ) {
       return;
     }
 
@@ -4191,9 +4192,9 @@ public class Database implements VariableSpace, LoggingObjectInterface {
 
   @Override
   public boolean getBooleanValueOfVariable( String variableName, boolean defaultValue ) {
-    if ( !Const.isEmpty( variableName ) ) {
+    if ( !Utils.isEmpty( variableName ) ) {
       String value = environmentSubstitute( variableName );
-      if ( !Const.isEmpty( value ) ) {
+      if ( !Utils.isEmpty( value ) ) {
         return ValueMetaBase.convertStringToBoolean( value );
       }
     }
@@ -4409,7 +4410,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
    * @throws KettleDatabaseException
    */
   public String getDDLTruncateTable( String schema, String tablename ) throws KettleDatabaseException {
-    if ( Const.isEmpty( connectionGroup ) ) {
+    if ( Utils.isEmpty( connectionGroup ) ) {
       String truncateStatement = databaseMeta.getTruncateTableStatement( schema, tablename );
       if ( truncateStatement == null ) {
         throw new KettleDatabaseException( "Truncate table not supported by "
@@ -4482,7 +4483,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
             case ValueMetaInterface.TYPE_DATE:
               Date date = fields.getDate( r, i );
 
-              if ( Const.isEmpty( dateFormat ) ) {
+              if ( Utils.isEmpty( dateFormat ) ) {
                 if ( databaseMeta.getDatabaseInterface() instanceof OracleDatabaseMeta ) {
                   if ( fieldDateFormatters[ i ] == null ) {
                     fieldDateFormatters[ i ] = new java.text.SimpleDateFormat( "yyyy/MM/dd HH:mm:ss" );
@@ -4719,7 +4720,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
     InputStream is = null;
     InputStreamReader bis = null;
     try {
-      if ( Const.isEmpty( filename ) ) {
+      if ( Utils.isEmpty( filename ) ) {
         throw new KettleException( "Filename is missing!" );
       }
       sqlFile = KettleVFS.getFileObject( filename );
@@ -4737,7 +4738,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
       String sql = Const.CR;
 
       while ( ( sLine = buff.readLine() ) != null ) {
-        if ( Const.isEmpty( sLine ) ) {
+        if ( Utils.isEmpty( sLine ) ) {
           sql = sql + Const.CR;
         } else {
           sql = sql + Const.CR + sLine;

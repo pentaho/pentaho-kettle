@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -26,6 +26,7 @@ import java.math.BigInteger;
 
 import org.eclipse.jetty.util.security.Password;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.plugins.PluginInterface;
@@ -52,7 +53,7 @@ public class Encr {
   }
 
   public static void init( String encoderPluginId ) throws KettleException {
-    if ( Const.isEmpty( encoderPluginId ) ) {
+    if ( Utils.isEmpty( encoderPluginId ) ) {
       throw new KettleException( "Unable to initialize the two way password encoder: No encoder plugin type specified." );
     }
     PluginRegistry registry = PluginRegistry.getInstance();
@@ -72,7 +73,7 @@ public class Encr {
 
   /**
    * Old Kettle 1.x code which built a signature to validate a license key against.
-   * 
+   *
    * @param mac
    * @param username
    * @param company

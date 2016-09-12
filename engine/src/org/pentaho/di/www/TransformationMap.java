@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -29,8 +29,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransConfiguration;
 
@@ -177,7 +177,7 @@ public class TransformationMap {
 
     // Do some validations first...
     //
-    if ( Const.isEmpty( clusteredRunId ) ) {
+    if ( Utils.isEmpty( clusteredRunId ) ) {
       throw new RuntimeException(
         "A server socket allocation always has to accompanied by a cluster run ID but it was empty" );
     }
@@ -186,35 +186,35 @@ public class TransformationMap {
         "A server socket allocation always has to accompanied by port range start > 0 but it was "
           + portRangeStart );
     }
-    if ( Const.isEmpty( hostname ) ) {
+    if ( Utils.isEmpty( hostname ) ) {
       throw new RuntimeException(
         "A server socket allocation always has to accompanied by a hostname but it was empty" );
     }
-    if ( Const.isEmpty( transformationName ) ) {
+    if ( Utils.isEmpty( transformationName ) ) {
       throw new RuntimeException(
         "A server socket allocation always has to accompanied by a transformation name but it was empty" );
     }
-    if ( Const.isEmpty( sourceSlaveName ) ) {
+    if ( Utils.isEmpty( sourceSlaveName ) ) {
       throw new RuntimeException(
         "A server socket allocation always has to accompanied by a source slave server name but it was empty" );
     }
-    if ( Const.isEmpty( targetSlaveName ) ) {
+    if ( Utils.isEmpty( targetSlaveName ) ) {
       throw new RuntimeException(
         "A server socket allocation always has to accompanied by a target slave server name but it was empty" );
     }
-    if ( Const.isEmpty( sourceStepName ) ) {
+    if ( Utils.isEmpty( sourceStepName ) ) {
       throw new RuntimeException(
         "A server socket allocation always has to accompanied by a source step name but it was empty" );
     }
-    if ( Const.isEmpty( targetStepName ) ) {
+    if ( Utils.isEmpty( targetStepName ) ) {
       throw new RuntimeException(
         "A server socket allocation always has to accompanied by a target step name but it was empty" );
     }
-    if ( Const.isEmpty( sourceStepCopy ) ) {
+    if ( Utils.isEmpty( sourceStepCopy ) ) {
       throw new RuntimeException(
         "A server socket allocation always has to accompanied by a source step copy but it was empty" );
     }
-    if ( Const.isEmpty( targetStepCopy ) ) {
+    if ( Utils.isEmpty( targetStepCopy ) ) {
       throw new RuntimeException(
         "A server socket allocation always has to accompanied by a target step copy but it was empty" );
     }
@@ -320,7 +320,7 @@ public class TransformationMap {
         synchronized ( spas ) {
           for ( SocketPortAllocation spa : spas ) {
             if ( spa.getTransformationName().equalsIgnoreCase( transName )
-              && ( Const.isEmpty( carteObjectId ) || spa.getClusterRunId().equals( carteObjectId ) ) ) {
+              && ( Utils.isEmpty( carteObjectId ) || spa.getClusterRunId().equals( carteObjectId ) ) ) {
               spa.setAllocated( false );
             }
           }

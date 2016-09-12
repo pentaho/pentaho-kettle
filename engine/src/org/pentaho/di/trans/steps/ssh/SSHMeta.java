@@ -26,7 +26,6 @@ import java.util.List;
 
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
-import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
@@ -36,6 +35,7 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaBoolean;
 import org.pentaho.di.core.row.value.ValueMetaString;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -500,7 +500,7 @@ public class SSHMeta extends BaseStepMeta implements StepMetaInterface {
     String error_message = "";
 
     // Target hostname
-    if ( Const.isEmpty( getServerName() ) ) {
+    if ( Utils.isEmpty( getServerName() ) ) {
       error_message = BaseMessages.getString( PKG, "SSHMeta.CheckResult.TargetHostMissing" );
       cr = new CheckResult( CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta );
       remarks.add( cr );
@@ -511,7 +511,7 @@ public class SSHMeta extends BaseStepMeta implements StepMetaInterface {
     }
     if ( isusePrivateKey() ) {
       String keyfilename = transMeta.environmentSubstitute( getKeyFileName() );
-      if ( Const.isEmpty( keyfilename ) ) {
+      if ( Utils.isEmpty( keyfilename ) ) {
         error_message = BaseMessages.getString( PKG, "SSHMeta.CheckResult.PrivateKeyFileNameMissing" );
         cr = new CheckResult( CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta );
         remarks.add( cr );
@@ -564,7 +564,7 @@ public class SSHMeta extends BaseStepMeta implements StepMetaInterface {
     row.addValueMeta( v );
 
     String stderrfield = space.environmentSubstitute( getStdErrFieldName() );
-    if ( !Const.isEmpty( stderrfield ) ) {
+    if ( !Utils.isEmpty( stderrfield ) ) {
       v = new ValueMetaBoolean( stderrfield );
       v.setOrigin( name );
       row.addValueMeta( v );

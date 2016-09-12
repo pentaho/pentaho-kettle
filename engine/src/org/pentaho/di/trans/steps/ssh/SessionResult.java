@@ -26,8 +26,8 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.util.Utils;
 
 import com.trilead.ssh2.Session;
 
@@ -43,7 +43,7 @@ public class SessionResult {
 
   private void setStdErr( String value ) {
     this.stderr = value;
-    if ( !Const.isEmpty( getStdErr() ) ) {
+    if ( !Utils.isEmpty( getStdErr() ) ) {
       setStdTypeErr( true );
     }
   }

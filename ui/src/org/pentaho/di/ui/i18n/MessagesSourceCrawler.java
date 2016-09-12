@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -44,6 +44,7 @@ import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSelectInfo;
 import org.apache.commons.vfs2.FileSelector;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.fileinput.FileInputList;
 import org.pentaho.di.core.logging.LogChannelInterface;
@@ -158,7 +159,7 @@ public class MessagesSourceCrawler {
    */
   public void addKeyOccurrence( KeyOccurrence occ ) {
 
-    // System.out.println("Adding key occurrence : folder="+occ.getSourceFolder()+", 
+    // System.out.println("Adding key occurrence : folder="+occ.getSourceFolder()+",
     // pkg="+occ.getMessagesPackage()+", key="+occ.getKey());
 
     String sourceFolder = occ.getSourceFolder();
@@ -278,9 +279,9 @@ public class MessagesSourceCrawler {
       Node node = nodeList.item( i );
       String labelString = null;
 
-      if ( !Const.isEmpty( attribute ) ) {
+      if ( !Utils.isEmpty( attribute ) ) {
         labelString = XMLHandler.getTagAttribute( node, attribute );
-      } else if ( !Const.isEmpty( tag ) ) {
+      } else if ( !Utils.isEmpty( tag ) ) {
         labelString = XMLHandler.getTagValue( node, tag );
       }
 

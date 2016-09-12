@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,6 +25,7 @@ package org.pentaho.di.trans.steps.tableinput;
 import java.sql.ResultSet;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.database.Database;
@@ -297,7 +298,7 @@ public class TableInput extends BaseStep implements StepInterface {
       // Verify some basic things first...
       //
       boolean passed = true;
-      if ( Const.isEmpty( meta.getSQL() ) ) {
+      if ( Utils.isEmpty( meta.getSQL() ) ) {
         logError( BaseMessages.getString( PKG, "TableInput.Exception.SQLIsNeeded" ) );
         passed = false;
       }

@@ -27,6 +27,7 @@ import java.util.List;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettlePluginException;
@@ -406,7 +407,7 @@ public class RegexEvalMeta extends BaseStepMeta implements StepMetaInterface {
   public void getFields( RowMetaInterface inputRowMeta, String name, RowMetaInterface[] infos, StepMeta nextSteps,
     VariableSpace space, Repository repositorys, IMetaStore metaStores ) throws KettleStepException {
     try {
-      if ( !Const.isEmpty( resultfieldname ) ) {
+      if ( !Utils.isEmpty( resultfieldname ) ) {
         if ( replacefields ) {
           int replaceIndex = inputRowMeta.indexOfValue( resultfieldname );
           if ( replaceIndex < 0 ) {
@@ -431,7 +432,7 @@ public class RegexEvalMeta extends BaseStepMeta implements StepMetaInterface {
 
       if ( allowcapturegroups == true ) {
         for ( int i = 0; i < fieldName.length; i++ ) {
-          if ( Const.isEmpty( fieldName[i] ) ) {
+          if ( Utils.isEmpty( fieldName[i] ) ) {
             continue;
           }
 
@@ -626,7 +627,7 @@ public class RegexEvalMeta extends BaseStepMeta implements StepMetaInterface {
     }
 
     // Check Field to evaluate
-    if ( !Const.isEmpty( matcher ) ) {
+    if ( !Utils.isEmpty( matcher ) ) {
       cr =
         new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
           PKG, "RegexEvalMeta.CheckResult.MatcherOK" ), stepMeta );
@@ -640,7 +641,7 @@ public class RegexEvalMeta extends BaseStepMeta implements StepMetaInterface {
     }
 
     // Check Result Field name
-    if ( !Const.isEmpty( resultfieldname ) ) {
+    if ( !Utils.isEmpty( resultfieldname ) ) {
       cr =
         new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
           PKG, "RegexEvalMeta.CheckResult.ResultFieldnameOK" ), stepMeta );

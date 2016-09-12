@@ -68,14 +68,14 @@ public class RunJobServlet extends BaseHttpServlet implements CartePluginInterfa
     <h1>/kettle/runJob</h1>
     <a name="GET"></a>
     <h2>GET</h2>
-    <p>Execute job from enterprise repository. Repository should be configured in Carte xml file. 
+    <p>Execute job from enterprise repository. Repository should be configured in Carte xml file.
   Response contains <code>ERROR</code> result if error happened during job execution.</p>
-    
+
     <p><b>Example Request:</b><br />
     <pre function="syntax.xml">
     GET /kettle/runJob?job=home%2Fadmin%2Fdummy_job&level=Debug
     </pre>
-    
+
     </p>
     <h3>Parameters</h3>
     <table class="pentaho-table">
@@ -97,7 +97,7 @@ public class RunJobServlet extends BaseHttpServlet implements CartePluginInterfa
     </tr>
     </tbody>
     </table>
-  
+
   <h3>Response Body</h3>
 
   <table class="pentaho-table">
@@ -114,16 +114,16 @@ public class RunJobServlet extends BaseHttpServlet implements CartePluginInterfa
   </table>
     <p>Response contains result of the operation. It is either <code>OK</code> or <code>ERROR</code>.
      If an error occurred during job execution, response also contains information about the error.</p>
-    
+
     <p><b>Example Response:</b></p>
     <pre function="syntax.xml">
     <webresult>
       <result>OK</result>
       <message>Job started</message>
       <id>05d919b0-74a3-48d6-84d8-afce359d0449</id>
-    </webresult> 
+    </webresult>
     </pre>
-    
+
     <h3>Status Codes</h3>
     <table class="pentaho-table">
   <tbody>
@@ -229,7 +229,7 @@ public class RunJobServlet extends BaseHttpServlet implements CartePluginInterfa
       /*
        * String[] parameterNames = job.listParameters(); for (int idx = 0; idx < parameterNames.length; idx++) { // Grab
        * the parameter value set in the job entry // String thisValue =
-       * jobExecutionConfiguration.getParams().get(parameterNames[idx]); if (!Const.isEmpty(thisValue)) { // Set the
+       * jobExecutionConfiguration.getParams().get(parameterNames[idx]); if (!Utils.isEmpty(thisValue)) { // Set the
        * value as specified by the user in the job entry // jobMeta.setParameterValue(parameterNames[idx], thisValue); }
        * }
        */

@@ -54,6 +54,7 @@ import java.util.TimeZone;
 
 import org.pentaho.di.compatibility.Value;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseInterface;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.database.GreenplumDatabaseMeta;
@@ -239,7 +240,7 @@ public class ValueMetaBase implements ValueMetaInterface {
     switch ( type ) {
       case TYPE_INTEGER:
         String alternativeIntegerMask = EnvUtil.getSystemProperty( Const.KETTLE_DEFAULT_INTEGER_FORMAT );
-        if ( Const.isEmpty( alternativeIntegerMask ) ) {
+        if ( Utils.isEmpty( alternativeIntegerMask ) ) {
           setConversionMask( "#;-#" );
         } else {
           setConversionMask( alternativeIntegerMask );
@@ -247,7 +248,7 @@ public class ValueMetaBase implements ValueMetaInterface {
         break;
       case TYPE_NUMBER:
         String alternativeNumberMask = EnvUtil.getSystemProperty( Const.KETTLE_DEFAULT_NUMBER_FORMAT );
-        if ( Const.isEmpty( alternativeNumberMask ) ) {
+        if ( Utils.isEmpty( alternativeNumberMask ) ) {
           setConversionMask( "#.#;-#.#" );
         } else {
           setConversionMask( alternativeNumberMask );
@@ -255,7 +256,7 @@ public class ValueMetaBase implements ValueMetaInterface {
         break;
       case TYPE_BIGNUMBER:
         String alternativeBigNumberMask = EnvUtil.getSystemProperty( Const.KETTLE_DEFAULT_BIGNUMBER_FORMAT );
-        if ( Const.isEmpty( alternativeBigNumberMask ) ) {
+        if ( Utils.isEmpty( alternativeBigNumberMask ) ) {
           setConversionMask( "#.###############################################;"
               + "-#.###############################################" );
         } else {
@@ -273,7 +274,7 @@ public class ValueMetaBase implements ValueMetaInterface {
     singleByteEncoding = false;
 
     Charset cs;
-    if ( Const.isEmpty( stringEncoding ) ) {
+    if ( Utils.isEmpty( stringEncoding ) ) {
       cs = Charset.defaultCharset();
     } else {
       cs = Charset.forName( stringEncoding );
@@ -769,7 +770,7 @@ public class ValueMetaBase implements ValueMetaInterface {
     // to be performed before
     // conversion
 
-    if ( Const.isEmpty( string ) ) {
+    if ( Utils.isEmpty( string ) ) {
       return null;
     }
 
@@ -858,7 +859,7 @@ public class ValueMetaBase implements ValueMetaInterface {
     // to be performed before
     // conversion
 
-    if ( Const.isEmpty( string ) ) {
+    if ( Utils.isEmpty( string ) ) {
       return null;
     }
 
@@ -903,7 +904,7 @@ public class ValueMetaBase implements ValueMetaInterface {
       dateFormat = new SimpleDateFormat();
 
       String mask;
-      if ( Const.isEmpty( conversionMask ) ) {
+      if ( Utils.isEmpty( conversionMask ) ) {
         mask = DEFAULT_DATE_FORMAT_MASK;
       } else {
         mask = conversionMask;
@@ -959,19 +960,19 @@ public class ValueMetaBase implements ValueMetaInterface {
       decimalFormat.setParseBigDecimal( useBigDecimal );
       DecimalFormatSymbols decimalFormatSymbols = decimalFormat.getDecimalFormatSymbols();
 
-      if ( !Const.isEmpty( currencySymbol ) ) {
+      if ( !Utils.isEmpty( currencySymbol ) ) {
         decimalFormatSymbols.setCurrencySymbol( currencySymbol );
       }
-      if ( !Const.isEmpty( groupingSymbol ) ) {
+      if ( !Utils.isEmpty( groupingSymbol ) ) {
         decimalFormatSymbols.setGroupingSeparator( groupingSymbol.charAt( 0 ) );
       }
-      if ( !Const.isEmpty( decimalSymbol ) ) {
+      if ( !Utils.isEmpty( decimalSymbol ) ) {
         decimalFormatSymbols.setDecimalSeparator( decimalSymbol.charAt( 0 ) );
       }
       decimalFormat.setDecimalFormatSymbols( decimalFormatSymbols );
 
       // Apply the conversion mask if we have one...
-      if ( !Const.isEmpty( conversionMask ) ) {
+      if ( !Utils.isEmpty( conversionMask ) ) {
         decimalFormat.applyPattern( conversionMask );
       } else {
         switch ( type ) {
@@ -1091,7 +1092,7 @@ public class ValueMetaBase implements ValueMetaInterface {
     // to be performed before
     // conversion
 
-    if ( Const.isEmpty( string ) ) {
+    if ( Utils.isEmpty( string ) ) {
       return null;
     }
 
@@ -1133,7 +1134,7 @@ public class ValueMetaBase implements ValueMetaInterface {
     // to be performed before
     // conversion
 
-    if ( Const.isEmpty( string ) ) {
+    if ( Utils.isEmpty( string ) ) {
       return null;
     }
 
@@ -1178,7 +1179,7 @@ public class ValueMetaBase implements ValueMetaInterface {
   }
 
   public static Boolean convertStringToBoolean( String string ) {
-    if ( Const.isEmpty( string ) ) {
+    if ( Utils.isEmpty( string ) ) {
       return null;
     }
     return Boolean.valueOf( "Y".equalsIgnoreCase( string ) || "TRUE".equalsIgnoreCase( string )
@@ -1271,7 +1272,7 @@ public class ValueMetaBase implements ValueMetaInterface {
       encoding = storageMetadata.getStringEncoding();
     }
 
-    if ( Const.isEmpty( encoding ) ) {
+    if ( Utils.isEmpty( encoding ) ) {
       return new String( binary );
     } else {
       try {
@@ -1386,7 +1387,7 @@ public class ValueMetaBase implements ValueMetaInterface {
       return null;
     }
 
-    if ( Const.isEmpty( stringEncoding ) ) {
+    if ( Utils.isEmpty( stringEncoding ) ) {
       return string.getBytes();
     } else {
       try {
@@ -2952,7 +2953,7 @@ public class ValueMetaBase implements ValueMetaInterface {
       // What is the date format locale?
       //
       String strDateFormatLocale = readString( inputStream );
-      if ( Const.isEmpty( strDateFormatLocale ) ) {
+      if ( Utils.isEmpty( strDateFormatLocale ) ) {
         dateFormatLocale = null;
       } else {
         dateFormatLocale = EnvUtil.createLocale( strDateFormatLocale );
@@ -2961,7 +2962,7 @@ public class ValueMetaBase implements ValueMetaInterface {
       // What is the time zone to use for date parsing?
       //
       String strTimeZone = readString( inputStream );
-      if ( Const.isEmpty( strTimeZone ) ) {
+      if ( Utils.isEmpty( strTimeZone ) ) {
         dateFormatTimeZone = TimeZone.getDefault();
       } else {
         dateFormatTimeZone = EnvUtil.createTimeZone( strTimeZone );
@@ -3087,7 +3088,7 @@ public class ValueMetaBase implements ValueMetaInterface {
         for ( int i = 0; i < index.length; i++ ) {
           Node valueNode = XMLHandler.getSubNodeByNr( indexNode, "value", i );
           String valueString = XMLHandler.getNodeValue( valueNode );
-          if ( Const.isEmpty( valueString ) ) {
+          if ( Utils.isEmpty( valueString ) ) {
             index[i] = null;
           } else {
             switch ( type ) {
@@ -3151,11 +3152,11 @@ public class ValueMetaBase implements ValueMetaInterface {
     outputPaddingEnabled = "Y".equalsIgnoreCase( XMLHandler.getTagValue( node, "output_padding" ) );
     dateFormatLenient = "Y".equalsIgnoreCase( XMLHandler.getTagValue( node, "date_format_lenient" ) );
     String dateFormatLocaleString = XMLHandler.getTagValue( node, "date_format_locale" );
-    if ( !Const.isEmpty( dateFormatLocaleString ) ) {
+    if ( !Utils.isEmpty( dateFormatLocaleString ) ) {
       dateFormatLocale = EnvUtil.createLocale( dateFormatLocaleString );
     }
     String dateTimeZoneString = XMLHandler.getTagValue( node, "date_format_timezone" );
-    if ( !Const.isEmpty( dateTimeZoneString ) ) {
+    if ( !Utils.isEmpty( dateTimeZoneString ) ) {
       dateFormatTimeZone = EnvUtil.createTimeZone( dateTimeZoneString );
     } else {
       dateFormatTimeZone = TimeZone.getDefault();
@@ -3260,7 +3261,7 @@ public class ValueMetaBase implements ValueMetaInterface {
     switch ( storageType ) {
       case STORAGE_TYPE_NORMAL:
         String valueString = XMLHandler.getNodeValue( node );
-        if ( Const.isEmpty( valueString ) ) {
+        if ( Utils.isEmpty( valueString ) ) {
           return null;
         }
 
@@ -3294,7 +3295,7 @@ public class ValueMetaBase implements ValueMetaInterface {
         // all.
         //
         String binaryString = XMLHandler.getTagValue( node, "binary-string" );
-        if ( Const.isEmpty( binaryString ) ) {
+        if ( Utils.isEmpty( binaryString ) ) {
           return null;
         }
 
@@ -3302,7 +3303,7 @@ public class ValueMetaBase implements ValueMetaInterface {
 
       case STORAGE_TYPE_INDEXED:
         String indexString = XMLHandler.getTagValue( node, "index-value" );
-        if ( Const.isEmpty( indexString ) ) {
+        if ( Utils.isEmpty( indexString ) ) {
           return null;
         }
 
@@ -3819,11 +3820,11 @@ public class ValueMetaBase implements ValueMetaInterface {
     // See if we need to convert a null value into a String
     // For example, we might want to convert null into "Empty".
     //
-    if ( !Const.isEmpty( ifNull ) ) {
+    if ( !Utils.isEmpty( ifNull ) ) {
       // Note that you can't pull the pad method up here as a nullComp variable
       // because you could get an NPE since you haven't checked isEmpty(pol)
       // yet!
-      if ( Const.isEmpty( pol )
+      if ( Utils.isEmpty( pol )
           || pol.equalsIgnoreCase( Const.rightPad( new StringBuilder( null_value ), pol.length() ) ) ) {
         pol = ifNull;
       }
@@ -3843,12 +3844,12 @@ public class ValueMetaBase implements ValueMetaInterface {
 
     if ( pol == null ) {
       return null;
-    } else if ( Const.isEmpty( pol ) && !isStringValue ) {
+    } else if ( Utils.isEmpty( pol ) && !isStringValue ) {
       return null;
     } else {
       // if the null_value is specified, we try to match with that.
       //
-      if ( !Const.isEmpty( null_value ) ) {
+      if ( !Utils.isEmpty( null_value ) ) {
         if ( null_value.length() <= pol.length() ) {
           // If the polled value is equal to the spaces right-padded null_value,
           // we have a match

@@ -16,7 +16,7 @@
  *
  *   Portions Copyright 2008 Stratebi Business Solutions, S.L.
  *   Portions Copyright 2011 De Bortoli Wines Pty Limited (Australia)
- *   Portions Copyright 2011 - 2013 Pentaho Corporation
+ *   Portions Copyright 2011 - 2016 Pentaho Corporation
  */
 
 package org.pentaho.di.ui.trans.steps.palo.cellinput;
@@ -46,6 +46,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.i18n.BaseMessages;
@@ -508,7 +509,7 @@ public class PaloCellInputDialog extends BaseStepDialog implements StepDialogInt
         throw new KettleException( "Fields must be defined to do a preview" );
       } else {
         for ( DimensionField field : oneMeta.getFields() ) {
-          if ( Const.isEmpty( field.getFieldType() ) ) {
+          if ( Utils.isEmpty( field.getFieldType() ) ) {
             throw new KettleException( "All fields must have an output type to do the preview" );
           }
         }

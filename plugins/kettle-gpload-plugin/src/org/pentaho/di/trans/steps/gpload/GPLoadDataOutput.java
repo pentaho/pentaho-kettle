@@ -27,6 +27,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
@@ -39,9 +40,9 @@ import org.pentaho.di.i18n.BaseMessages;
 /**
  * Does the opening of the output "stream". It's either a file or inter process communication which is transparent to
  * users of this class.
- * 
+ *
  * Copied from Sven Boden's Oracle version
- * 
+ *
  * @author Luke Lonergan
  * @since 28-mar-2008
  */
@@ -84,12 +85,12 @@ public class GPLoadDataOutput {
       // Else open the data file filled in.
 
       String dataFile = meta.getDataFile();
-      if ( Const.isEmpty( dataFile ) ) {
+      if ( Utils.isEmpty( dataFile ) ) {
         throw new KettleException( BaseMessages.getString( PKG, "GPload.Exception.DataFileMissing" ) );
       }
 
       dataFile = space.environmentSubstitute( dataFile );
-      if ( Const.isEmpty( dataFile ) ) {
+      if ( Utils.isEmpty( dataFile ) ) {
         throw new KettleException( BaseMessages.getString( PKG, "GPload.Exception.DataFileMissing" ) );
       }
 
@@ -98,7 +99,7 @@ public class GPLoadDataOutput {
       //
 
       String encoding = meta.getEncoding();
-      if ( Const.isEmpty( encoding ) ) {
+      if ( Utils.isEmpty( encoding ) ) {
         // Use the default encoding.
         output = new PrintWriter( new BufferedWriter( new OutputStreamWriter( os ) ) );
       } else {
@@ -147,7 +148,7 @@ public class GPLoadDataOutput {
         throw new KettleException( BaseMessages.getString( PKG, "GPload.Exception.DelimiterMissing" ) );
       } else {
         delimiter = gpLoad.environmentSubstitute( delimiter );
-        if ( Const.isEmpty( delimiter ) ) {
+        if ( Utils.isEmpty( delimiter ) ) {
           throw new KettleException( BaseMessages.getString( PKG, "GPload.Exception.DelimiterMissing" ) );
         }
       }

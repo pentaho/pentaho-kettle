@@ -49,9 +49,9 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.steps.salesforce.SalesforceConnection;
 import org.pentaho.di.trans.steps.salesforce.SalesforceConnectionUtils;
 import org.pentaho.di.trans.steps.salesforce.SalesforceStepMeta;
@@ -130,7 +130,7 @@ public class SalesforceDeleteDialog extends SalesforceStepDialog {
   private FormData fdRollbackAllChangesOnError;
 
   public SalesforceDeleteDialog( Shell parent, Object in, TransMeta transMeta, String sname ) {
-    super( parent, (BaseStepMeta) in, transMeta, sname );
+    super( parent, in, transMeta, sname );
     input = (SalesforceDeleteMeta) in;
   }
 
@@ -381,8 +381,8 @@ public class SalesforceDeleteDialog extends SalesforceStepDialog {
 
       public void focusGained( org.eclipse.swt.events.FocusEvent e ) {
         // check if the URL and login credentials passed and not just had error
-        if ( Const.isEmpty( wURL.getText() )
-          || Const.isEmpty( wUserName.getText() ) || Const.isEmpty( wPassword.getText() )
+        if ( Utils.isEmpty( wURL.getText() )
+          || Utils.isEmpty( wUserName.getText() ) || Utils.isEmpty( wPassword.getText() )
           || ( getModulesListError ) ) {
           return;
         }
@@ -612,7 +612,7 @@ public class SalesforceDeleteDialog extends SalesforceStepDialog {
         // return
         wModule.setItems( connection.getAllAvailableObjects( false ) );
 
-        if ( !Const.isEmpty( selectedField ) ) {
+        if ( !Utils.isEmpty( selectedField ) ) {
           wModule.setText( selectedField );
         }
 

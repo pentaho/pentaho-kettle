@@ -1,5 +1,5 @@
 /*!
- * Copyright 2010 - 2015 Pentaho Corporation.  All rights reserved.
+ * Copyright 2010 - 2016 Pentaho Corporation.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ package org.pentaho.di.repository.pur;
 
 import java.util.List;
 
-import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.RepositoryAttributeInterface;
@@ -80,7 +80,7 @@ public class PurRepositoryAttribute implements RepositoryAttributeInterface, jav
 
   public DatabaseMeta getAttributeDatabaseMeta( String code ) {
     DataProperty property = dataNode.getProperty( code );
-    if ( property == null || Const.isEmpty( property.getString() ) ) {
+    if ( property == null || Utils.isEmpty( property.getString() ) ) {
       return null;
     }
     ObjectId id = new StringObjectId( property.getString() );

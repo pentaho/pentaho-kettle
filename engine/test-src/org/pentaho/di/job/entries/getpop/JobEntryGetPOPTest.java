@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2014 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -41,6 +41,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.i18n.BaseMessages;
@@ -89,15 +90,15 @@ public class JobEntryGetPOPTest {
     contentFile.setFileName( testFile.getName() );
     content.addBodyPart( contentFile );
 
-    return (Object) content;
+    return content;
   }
 
   /**
    * PDI-10942 - Job get emails JobEntry does not mark emails as 'read' when load emails content.
-   * 
+   *
    * Test that we always open remote folder in rw mode, and after email attachment is loaded email is marked as read.
    * Set for openFolder rw mode if this is pop3.
-   * 
+   *
    * @throws KettleException
    * @throws MessagingException
    */
@@ -111,10 +112,10 @@ public class JobEntryGetPOPTest {
 
   /**
    * PDI-10942 - Job get emails JobEntry does not mark emails as 'read' when load emails content.
-   * 
+   *
    * Test that we always open remote folder in rw mode, and after email attachment is loaded email is marked as read.
    * protocol IMAP and default remote folder is overridden
-   * 
+   *
    * @throws KettleException
    * @throws MessagingException
    */
@@ -128,10 +129,10 @@ public class JobEntryGetPOPTest {
 
   /**
    * PDI-10942 - Job get emails JobEntry does not mark emails as 'read' when load emails content.
-   * 
+   *
    * Test that we always open remote folder in rw mode, and after email attachment is loaded email is marked as read.
    * protocol IMAP and default remote folder is NOT overridden
-   * 
+   *
    * @throws KettleException
    * @throws MessagingException
    */
@@ -145,10 +146,10 @@ public class JobEntryGetPOPTest {
 
   /**
    * PDI-11943 - Get Mail Job Entry: Attachments folder not created
-   * 
+   *
    * Test that the Attachments folder is created when the entry is
    * configured to save attachments and messages in the same folder
-   * 
+   *
    * @throws IOException
    */
   @Test
@@ -170,17 +171,17 @@ public class JobEntryGetPOPTest {
       fail( "Could not create folder " + e.getLocalizedMessage() );
     }
 
-    assertTrue( "Output Folder should be a local path", !Const.isEmpty( outputFolderName ) );
-    assertTrue( "Attachment Folder should be a local path", !Const.isEmpty( attachmentsFolderName ) );
+    assertTrue( "Output Folder should be a local path", !Utils.isEmpty( outputFolderName ) );
+    assertTrue( "Attachment Folder should be a local path", !Utils.isEmpty( attachmentsFolderName ) );
     assertTrue( "Output and Attachment Folder should match", outputFolderName.equals( attachmentsFolderName ) );
   }
 
   /**
    * PDI-11943 - Get Mail Job Entry: Attachments folder not created
-   * 
+   *
    * Test that the Attachments folder is created when the entry is
    * configured to save attachments and messages in different folders
-   * 
+   *
    * @throws IOException
    */
   @Test
@@ -203,17 +204,17 @@ public class JobEntryGetPOPTest {
       fail( "Could not create folder: " + e.getLocalizedMessage() );
     }
 
-    assertTrue( "Output Folder should be a local path", !Const.isEmpty( outputFolderName ) );
-    assertTrue( "Attachment Folder should be a local path", !Const.isEmpty( attachmentsFolderName ) );
+    assertTrue( "Output Folder should be a local path", !Utils.isEmpty( outputFolderName ) );
+    assertTrue( "Attachment Folder should be a local path", !Utils.isEmpty( attachmentsFolderName ) );
     assertFalse( "Output and Attachment Folder should not match", outputFolderName.equals( attachmentsFolderName ) );
   }
 
   /**
    * PDI-11943 - Get Mail Job Entry: Attachments folder not created
-   * 
+   *
    * Test that the Attachments folder is not created when the entry is
    * configured to not create folders
-   * 
+   *
    * @throws IOException
    */
   @Test

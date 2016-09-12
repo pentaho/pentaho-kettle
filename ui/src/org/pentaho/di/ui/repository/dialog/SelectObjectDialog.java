@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -47,6 +47,7 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.ObjectId;
@@ -380,7 +381,7 @@ public class SelectObjectDialog extends Dialog {
   protected void updateFilter() {
     pattern = null;
     filterString = null;
-    if ( searchText != null && !searchText.isDisposed() && !Const.isEmpty( searchText.getText() ) ) {
+    if ( searchText != null && !searchText.isDisposed() && !Utils.isEmpty( searchText.getText() ) ) {
       if ( wbRegex.getSelection() ) {
         pattern = Pattern.compile( searchText.getText() );
       } else {

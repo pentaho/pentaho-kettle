@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -31,6 +31,7 @@ import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -598,7 +599,7 @@ public class SQLFileOutputMeta extends BaseStepMeta implements StepMetaInterface
             PKG, "SQLFileOutputMeta.CheckResult.ConnectionOk" ), stepMeta );
         remarks.add( cr );
 
-        if ( !Const.isEmpty( tablename ) ) {
+        if ( !Utils.isEmpty( tablename ) ) {
           String schemaTable = databaseMeta.getQuotedSchemaTableCombination( schemaName, tablename );
           // Check if this table exists...
           if ( db.checkTableExists( schemaTable ) ) {
@@ -761,7 +762,7 @@ public class SQLFileOutputMeta extends BaseStepMeta implements StepMetaInterface
 
     if ( databaseMeta != null ) {
       if ( prev != null && prev.size() > 0 ) {
-        if ( !Const.isEmpty( tablename ) ) {
+        if ( !Utils.isEmpty( tablename ) ) {
           Database db = new Database( loggingObject, databaseMeta );
           db.shareVariablesWith( transMeta );
           try {
@@ -804,7 +805,7 @@ public class SQLFileOutputMeta extends BaseStepMeta implements StepMetaInterface
       try {
         db.connect();
 
-        if ( !Const.isEmpty( realTableName ) ) {
+        if ( !Utils.isEmpty( realTableName ) ) {
           String schemaTable = databaseMeta.getQuotedSchemaTableCombination( realSchemaName, realTableName );
 
           // Check if this table exists...

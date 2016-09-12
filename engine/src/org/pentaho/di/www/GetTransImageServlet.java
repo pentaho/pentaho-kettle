@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -33,10 +33,10 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.pentaho.di.core.Const;
 import org.pentaho.di.core.gui.AreaOwner;
 import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.gui.SwingGC;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -59,12 +59,12 @@ public class GetTransImageServlet extends BaseHttpServlet implements CartePlugin
     <p>Generates PNG image of the specified transformation currently present on Carte server.
   Transformation name and Carte transformation ID (optional) are used for specifying which
   transformation to get information for. Response is a binary of the PNG image.</p>
-    
+
     <p><b>Example Request:</b><br />
     <pre function="syntax.xml">
     GET /kettle/transImage?name=dummy-trans
     </pre>
-    
+
     </p>
     <h3>Parameters</h3>
     <table class="pentaho-table">
@@ -86,7 +86,7 @@ public class GetTransImageServlet extends BaseHttpServlet implements CartePlugin
     </tr>
     </tbody>
     </table>
-  
+
   <h3>Response Body</h3>
 
   <table class="pentaho-table">
@@ -102,7 +102,7 @@ public class GetTransImageServlet extends BaseHttpServlet implements CartePlugin
     </tbody>
   </table>
   <p>A binary PNG image or empty response is presented if no transformation is found.</p>
-    
+
     <h3>Status Codes</h3>
     <table class="pentaho-table">
   <tbody>
@@ -139,7 +139,7 @@ public class GetTransImageServlet extends BaseHttpServlet implements CartePlugin
     //
     Trans trans;
     CarteObjectEntry entry;
-    if ( Const.isEmpty( id ) ) {
+    if ( Utils.isEmpty( id ) ) {
       // get the first transformation that matches...
       //
       entry = getTransformationMap().getFirstCarteObjectEntry( transName );

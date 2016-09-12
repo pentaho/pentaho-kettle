@@ -26,14 +26,14 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
-import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 
 public class JobEntryDelayTest {
 
   @Test
   public void testGetRealMaximumTimeout() {
     JobEntryDelay entry = new JobEntryDelay();
-    assertTrue( Const.isEmpty( entry.getRealMaximumTimeout() ) );
+    assertTrue( Utils.isEmpty( entry.getRealMaximumTimeout() ) );
 
     entry.setMaximumTimeout( " 1" );
     assertEquals( "1", entry.getRealMaximumTimeout() );

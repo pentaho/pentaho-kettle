@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,6 +24,7 @@ package org.pentaho.di.trans.steps.symmetriccrypto.symmetriccryptotrans;
 
 import org.apache.commons.codec.binary.Hex;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -76,14 +77,14 @@ public class SymmetricCryptoTrans extends BaseStep implements StepInterface {
       meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
 
       // Let's check that Result Field is given
-      if ( Const.isEmpty( meta.getResultfieldname() ) ) {
+      if ( Utils.isEmpty( meta.getResultfieldname() ) ) {
         // Result field is missing !
         throw new KettleStepException( BaseMessages.getString(
           PKG, "SymmetricCryptoTrans.Exception.ErrorResultFieldMissing" ) );
       }
 
       // Check if The message field is given
-      if ( Const.isEmpty( meta.getMessageFied() ) ) {
+      if ( Utils.isEmpty( meta.getMessageFied() ) ) {
         // Message Field is missing !
         throw new KettleStepException( BaseMessages.getString(
           PKG, "SymmetricCryptoTrans.Exception.MissingMessageField" ) );
@@ -101,7 +102,7 @@ public class SymmetricCryptoTrans extends BaseStep implements StepInterface {
       if ( !meta.isSecretKeyInField() ) {
         String realSecretKey =
           Encr.decryptPasswordOptionallyEncrypted( environmentSubstitute( meta.getSecretKey() ) );
-        if ( Const.isEmpty( realSecretKey ) ) {
+        if ( Utils.isEmpty( realSecretKey ) ) {
           throw new KettleStepException( BaseMessages.getString(
             PKG, "SymmetricCryptoTrans.Exception.SecretKeyMissing" ) );
         }
@@ -111,7 +112,7 @@ public class SymmetricCryptoTrans extends BaseStep implements StepInterface {
 
       } else {
         // dynamic secret key
-        if ( Const.isEmpty( meta.getSecretKeyField() ) ) {
+        if ( Utils.isEmpty( meta.getSecretKeyField() ) ) {
           throw new KettleStepException( BaseMessages.getString(
             PKG, "SymmetricCryptoTrans.Exception.SecretKeyFieldMissing" ) );
         }
@@ -143,7 +144,7 @@ public class SymmetricCryptoTrans extends BaseStep implements StepInterface {
           realSecretKey =
             Encr.decryptPasswordOptionallyEncrypted( environmentSubstitute( getInputRowMeta().getString(
               r, data.indexOfSecretkeyField ) ) );
-          if ( Const.isEmpty( (String) realSecretKey ) ) {
+          if ( Utils.isEmpty( (String) realSecretKey ) ) {
             throw new KettleStepException( BaseMessages.getString(
               PKG, "SymmetricCryptoTrans.Exception.SecretKeyMissing" ) );
           }

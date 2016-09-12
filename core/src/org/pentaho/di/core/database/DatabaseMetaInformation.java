@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -30,7 +30,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
-import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.ProgressMonitorListener;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
@@ -301,7 +301,7 @@ public class DatabaseMetaInformation {
             // Support schemas for MS SQL server due to PDI-1531
             //
             String sql = databaseMeta.getSQLListOfSchemas();
-            if ( !Const.isEmpty( sql ) ) {
+            if ( !Utils.isEmpty( sql ) ) {
               Statement schemaStatement = db.getConnection().createStatement();
               ResultSet schemaResultSet = schemaStatement.executeQuery( sql );
               while ( schemaResultSet != null && schemaResultSet.next() ) {

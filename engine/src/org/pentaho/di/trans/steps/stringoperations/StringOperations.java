@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,6 +23,7 @@
 package org.pentaho.di.trans.steps.stringoperations;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -59,7 +60,7 @@ public class StringOperations extends BaseStep implements StepInterface {
     String rcode = string;
 
     // Trim ?
-    if ( !Const.isEmpty( rcode ) ) {
+    if ( !Utils.isEmpty( rcode ) ) {
       switch ( trimType ) {
         case StringOperationsMeta.TRIM_RIGHT:
           rcode = Const.rtrim( rcode );
@@ -75,7 +76,7 @@ public class StringOperations extends BaseStep implements StepInterface {
       }
     }
     // Lower/Upper ?
-    if ( !Const.isEmpty( rcode ) ) {
+    if ( !Utils.isEmpty( rcode ) ) {
       switch ( lowerUpper ) {
         case StringOperationsMeta.LOWER_UPPER_LOWER:
           rcode = rcode.toLowerCase();
@@ -89,7 +90,7 @@ public class StringOperations extends BaseStep implements StepInterface {
     }
 
     // pad String?
-    if ( !Const.isEmpty( rcode ) ) {
+    if ( !Utils.isEmpty( rcode ) ) {
       switch ( padType ) {
         case StringOperationsMeta.PADDING_LEFT:
           rcode = Const.Lpad( rcode, padChar, padLen );
@@ -103,7 +104,7 @@ public class StringOperations extends BaseStep implements StepInterface {
     }
 
     // InitCap ?
-    if ( !Const.isEmpty( rcode ) ) {
+    if ( !Utils.isEmpty( rcode ) ) {
       switch ( iniCap ) {
         case StringOperationsMeta.INIT_CAP_NO:
           break;
@@ -116,7 +117,7 @@ public class StringOperations extends BaseStep implements StepInterface {
     }
 
     // escape ?
-    if ( !Const.isEmpty( rcode ) ) {
+    if ( !Utils.isEmpty( rcode ) ) {
       switch ( maskHTML ) {
         case StringOperationsMeta.MASK_ESCAPE_XML:
           rcode = Const.escapeXml( rcode );
@@ -141,7 +142,7 @@ public class StringOperations extends BaseStep implements StepInterface {
       }
     }
     // digits only or remove digits ?
-    if ( !Const.isEmpty( rcode ) ) {
+    if ( !Utils.isEmpty( rcode ) ) {
       switch ( digits ) {
         case StringOperationsMeta.DIGITS_NONE:
           break;
@@ -157,7 +158,7 @@ public class StringOperations extends BaseStep implements StepInterface {
     }
 
     // remove special characters ?
-    if ( !Const.isEmpty( rcode ) ) {
+    if ( !Utils.isEmpty( rcode ) ) {
       switch ( removeSpecialCharacters ) {
         case StringOperationsMeta.REMOVE_SPECIAL_CHARACTERS_NONE:
           break;
@@ -198,7 +199,7 @@ public class StringOperations extends BaseStep implements StepInterface {
         value =
             processString( value, data.trimOperators[i], data.lowerUpperOperators[i], data.padType[i], data.padChar[i],
                 data.padLen[i], data.initCap[i], data.maskHTML[i], data.digits[i], data.removeSpecialCharacters[i] );
-        if ( Const.isEmpty( data.outStreamNrs[i] ) ) {
+        if ( Utils.isEmpty( data.outStreamNrs[i] ) ) {
           // Update field
           RowData[data.inStreamNrs[i]] = value;
           data.outputRowMeta.getValueMeta( data.inStreamNrs[i] )

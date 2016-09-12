@@ -32,6 +32,7 @@ import javax.xml.stream.XMLStreamException;
 
 import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -195,7 +196,7 @@ public class XMLOutput extends BaseStep implements StepInterface {
             Object valueData = r[data.fieldnrs[i]];
 
             String elementName = outputField.getElementName();
-            if ( Const.isEmpty( elementName ) ) {
+            if ( Utils.isEmpty( elementName ) ) {
               elementName = outputField.getFieldName();
             }
 
@@ -224,7 +225,7 @@ public class XMLOutput extends BaseStep implements StepInterface {
         Object valueData = r[data.fieldnrs[i]];
 
         String elementName = xmlField.getElementName();
-        if ( Const.isEmpty( elementName ) ) {
+        if ( Utils.isEmpty( elementName ) ) {
           elementName = xmlField.getFieldName();
         }
 

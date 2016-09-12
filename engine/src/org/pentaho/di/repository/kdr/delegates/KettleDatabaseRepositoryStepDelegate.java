@@ -26,7 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
@@ -150,7 +150,7 @@ public class KettleDatabaseRepositoryStepDelegate extends KettleDatabaseReposito
         stepMeta.setDistributes( r.getBoolean( KettleDatabaseRepository.FIELD_STEP_DISTRIBUTE, true ) );
         int copies = (int) r.getInteger( KettleDatabaseRepository.FIELD_STEP_COPIES, 1 );
         String copiesString = r.getString( KettleDatabaseRepository.FIELD_STEP_COPIES_STRING, null );
-        if ( !Const.isEmpty( copiesString ) ) {
+        if ( !Utils.isEmpty( copiesString ) ) {
           stepMeta.setCopiesString( copiesString );
         } else {
           stepMeta.setCopies( copies );

@@ -23,6 +23,7 @@
 package org.pentaho.di.core.database;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.row.ValueMetaInterface;
 
 /**
@@ -55,7 +56,7 @@ public class LucidDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
   @Override
   public String getURL( String hostname, String port, String databaseName ) {
 
-    if ( !Const.isEmpty( port ) && Const.toInt( port, -1 ) > 0 ) {
+    if ( !Utils.isEmpty( port ) && Const.toInt( port, -1 ) > 0 ) {
       return "jdbc:luciddb:http://" + hostname + ":" + port;
     } else {
       return "jdbc:luciddb:http://" + hostname;

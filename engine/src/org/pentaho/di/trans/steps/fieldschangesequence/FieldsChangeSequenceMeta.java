@@ -27,6 +27,7 @@ import java.util.List;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
@@ -223,7 +224,7 @@ public class FieldsChangeSequenceMeta extends BaseStepMeta implements StepMetaIn
   @Override
   public void getFields( RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep,
     VariableSpace space, Repository repository, IMetaStore metaStore ) {
-    if ( !Const.isEmpty( resultfieldName ) ) {
+    if ( !Utils.isEmpty( resultfieldName ) ) {
       ValueMetaInterface v = new ValueMetaInteger( resultfieldName );
       v.setLength( ValueMetaInterface.DEFAULT_INTEGER_LENGTH, 0 );
       v.setOrigin( name );
@@ -238,7 +239,7 @@ public class FieldsChangeSequenceMeta extends BaseStepMeta implements StepMetaIn
     CheckResult cr;
     String error_message = "";
 
-    if ( Const.isEmpty( resultfieldName ) ) {
+    if ( Utils.isEmpty( resultfieldName ) ) {
       error_message = BaseMessages.getString( PKG, "FieldsChangeSequenceMeta.CheckResult.ResultFieldMissing" );
       cr = new CheckResult( CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta );
     } else {

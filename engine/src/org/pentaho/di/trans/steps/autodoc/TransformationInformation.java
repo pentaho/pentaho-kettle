@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -31,13 +31,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.gui.AreaOwner;
 import org.pentaho.di.core.gui.GCInterface;
 import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.gui.ScrollBarInterface;
 import org.pentaho.di.core.gui.SwingGC;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.TransPainter;
@@ -100,7 +100,7 @@ public class TransformationInformation {
 
   private TransMeta loadTransformation( ReportSubjectLocation location ) throws KettleException {
     TransMeta transMeta;
-    if ( !Const.isEmpty( location.getFilename() ) ) {
+    if ( !Utils.isEmpty( location.getFilename() ) ) {
       transMeta = new TransMeta( location.getFilename() );
     } else {
       transMeta = repository.loadTransformation( location.getName(), location.getDirectory(), null, true, null );

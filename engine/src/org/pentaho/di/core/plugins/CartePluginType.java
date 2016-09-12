@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -30,6 +30,7 @@ import java.util.Map;
 
 import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.annotations.CarteServlet;
 import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.exception.KettleXMLException;
@@ -71,7 +72,7 @@ public class CartePluginType extends BasePluginType implements PluginTypeInterfa
     //
     String kettleServletsXmlFile = Const.XML_FILE_KETTLE_SERVLETS;
     String alternative = System.getProperty( Const.KETTLE_CORE_SERVLETS_FILE, null );
-    if ( !Const.isEmpty( alternative ) ) {
+    if ( !Utils.isEmpty( alternative ) ) {
       kettleServletsXmlFile = alternative;
     }
 
@@ -83,7 +84,7 @@ public class CartePluginType extends BasePluginType implements PluginTypeInterfa
         inputStream = getClass().getResourceAsStream( "/" + kettleServletsXmlFile );
       }
       // Retry to load a regular file...
-      if ( inputStream == null && !Const.isEmpty( alternative ) ) {
+      if ( inputStream == null && !Utils.isEmpty( alternative ) ) {
         try {
           inputStream = new FileInputStream( kettleServletsXmlFile );
         } catch ( Exception e ) {

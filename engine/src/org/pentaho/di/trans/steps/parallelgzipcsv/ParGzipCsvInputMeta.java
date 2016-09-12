@@ -30,6 +30,7 @@ import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -327,7 +328,7 @@ public class ParGzipCsvInputMeta extends BaseStepMeta implements StepMetaInterfa
         rowMeta.addValueMeta( valueMeta );
       }
 
-      if ( !Const.isEmpty( filenameField ) && includingFilename ) {
+      if ( !Utils.isEmpty( filenameField ) && includingFilename ) {
         ValueMetaInterface filenameMeta = new ValueMetaString( filenameField );
         filenameMeta.setOrigin( origin );
         if ( lazyConversionActive ) {
@@ -337,7 +338,7 @@ public class ParGzipCsvInputMeta extends BaseStepMeta implements StepMetaInterfa
         rowMeta.addValueMeta( filenameMeta );
       }
 
-      if ( !Const.isEmpty( rowNumField ) ) {
+      if ( !Utils.isEmpty( rowNumField ) ) {
         ValueMetaInterface rowNumMeta = new ValueMetaInteger( rowNumField );
         rowNumMeta.setLength( 10 );
         rowNumMeta.setOrigin( origin );
@@ -490,7 +491,7 @@ public class ParGzipCsvInputMeta extends BaseStepMeta implements StepMetaInterfa
 
     ResourceReference reference = new ResourceReference( stepInfo );
     references.add( reference );
-    if ( !Const.isEmpty( filename ) ) {
+    if ( !Utils.isEmpty( filename ) ) {
       // Add the filename to the references, including a reference to this
       // step meta data.
       //
@@ -701,7 +702,7 @@ public class ParGzipCsvInputMeta extends BaseStepMeta implements StepMetaInterfa
       // So let's change the filename from relative to absolute by grabbing the file object...
       // In case the name of the file comes from previous steps, forget about this!
       //
-      if ( Const.isEmpty( filenameField ) ) {
+      if ( Utils.isEmpty( filenameField ) ) {
         // From : ${Internal.Transformation.Filename.Directory}/../foo/bar.csv
         // To : /home/matt/test/files/foo/bar.csv
         //

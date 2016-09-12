@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2014 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -30,6 +30,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
@@ -187,26 +188,26 @@ public class Pan {
       optionPassword = new StringBuilder( kettlePassword );
     }
 
-    if ( Const.isEmpty( optionLogfile ) && !Const.isEmpty( optionLogfileOld ) ) {
+    if ( Utils.isEmpty( optionLogfile ) && !Utils.isEmpty( optionLogfileOld ) ) {
       // if the old style of logging name is filled in, and the new one is not
       // overwrite the new by the old
       optionLogfile = optionLogfileOld;
     }
 
-    if ( !Const.isEmpty( optionLogfile ) ) {
+    if ( !Utils.isEmpty( optionLogfile ) ) {
       fileLoggingEventListener = new FileLoggingEventListener( optionLogfile.toString(), true );
       KettleLogStore.getAppender().addLoggingEventListener( fileLoggingEventListener );
     } else {
       fileLoggingEventListener = null;
     }
 
-    if ( !Const.isEmpty( optionLoglevel ) ) {
+    if ( !Utils.isEmpty( optionLoglevel ) ) {
       log.setLogLevel( LogLevel.getLogLevelForCode( optionLoglevel.toString() ) );
       log.logMinimal( BaseMessages.getString( PKG, "Pan.Log.Loglevel", log.getLogLevel().getDescription() ) );
 
     }
 
-    if ( !Const.isEmpty( optionVersion ) ) {
+    if ( !Utils.isEmpty( optionVersion ) ) {
       BuildVersion buildVersion = BuildVersion.getInstance();
       if ( log.isBasic() ) {
         log.logBasic( BaseMessages.getString(
@@ -256,13 +257,13 @@ public class Pan {
       }
 
       // Read kettle transformation specified on command-line?
-      if ( !Const.isEmpty( optionRepname )
-        || !Const.isEmpty( optionFilename ) || !Const.isEmpty( optionJarFilename ) ) {
+      if ( !Utils.isEmpty( optionRepname )
+        || !Utils.isEmpty( optionFilename ) || !Utils.isEmpty( optionJarFilename ) ) {
         if ( log.isDebug() ) {
           log.logDebug( BaseMessages.getString( PKG, "Pan.Log.ParsingCommandline" ) );
         }
 
-        if ( !Const.isEmpty( optionRepname ) && !"Y".equalsIgnoreCase( optionNorep.toString() ) ) {
+        if ( !Utils.isEmpty( optionRepname ) && !"Y".equalsIgnoreCase( optionNorep.toString() ) ) {
           if ( log.isDebug() ) {
             log.logDebug( BaseMessages.getString( PKG, "Pan.Log.LoadingAvailableRep" ) );
           }
@@ -308,7 +309,7 @@ public class Pan {
             }
 
             // Find the directory name if one is specified...
-            if ( !Const.isEmpty( optionDirname ) ) {
+            if ( !Utils.isEmpty( optionDirname ) ) {
               directory = directory.findDirectory( optionDirname.toString() );
             }
 
@@ -319,7 +320,7 @@ public class Pan {
               }
 
               // Load a transformation
-              if ( !Const.isEmpty( optionTransname ) ) {
+              if ( !Utils.isEmpty( optionTransname ) ) {
                 if ( log.isDebug() ) {
                   log.logDebug( BaseMessages.getString( PKG, "Pan.Log.LoadTransInfo" ) );
                 }
@@ -350,7 +351,7 @@ public class Pan {
                 for ( int i = 0; i < dirnames.length; i++ ) {
                   System.out.println( dirnames[i] );
                 }
-              } else if ( !Const.isEmpty( optionExprep ) ) {
+              } else if ( !Utils.isEmpty( optionExprep ) ) {
                 // Export the repository
                 System.out.println( BaseMessages.getString( PKG, "Pan.Log.ExportingObjectsRepToFile", ""
                   + optionExprep ) );
@@ -375,7 +376,7 @@ public class Pan {
         // from the repository
         // You could implement some fail-over mechanism this way.
         //
-        if ( trans == null && !Const.isEmpty( optionFilename ) ) {
+        if ( trans == null && !Utils.isEmpty( optionFilename ) ) {
           if ( log.isDetailed() ) {
             log.logDetailed( BaseMessages.getString( PKG, "Pan.Log.LoadingTransXML", "" + optionFilename ) );
           }
@@ -385,7 +386,7 @@ public class Pan {
 
         // Try to load the transformation from a jar file
         //
-        if ( trans == null && !Const.isEmpty( optionJarFilename ) ) {
+        if ( trans == null && !Utils.isEmpty( optionJarFilename ) ) {
           try {
             if ( log.isDetailed() ) {
               log.logDetailed( BaseMessages.getString( PKG, "Pan.Log.LoadingTransJar", "" + optionJarFilename ) );
@@ -449,7 +450,7 @@ public class Pan {
 
       if ( !"Y".equalsIgnoreCase( optionListtrans.toString() )
         && !"Y".equalsIgnoreCase( optionListdir.toString() ) && !"Y".equalsIgnoreCase( optionListrep.toString() )
-        && Const.isEmpty( optionExprep ) ) {
+        && Utils.isEmpty( optionExprep ) ) {
         System.out.println( BaseMessages.getString( PKG, "Pan.Error.CanNotLoadTrans" ) );
 
         exitJVM( 7 );
@@ -573,7 +574,7 @@ public class Pan {
         String transJVMExitCode = trans.getVariable( Const.KETTLE_TRANS_PAN_JVM_EXIT_CODE );
 
         // If the trans has a return code to return to the OS, then we exit with that
-        if ( !Const.isEmpty( transJVMExitCode ) ) {
+        if ( !Utils.isEmpty( transJVMExitCode ) ) {
           try {
             exitJVM( Integer.valueOf( transJVMExitCode ) );
           } catch ( NumberFormatException nfe ) {

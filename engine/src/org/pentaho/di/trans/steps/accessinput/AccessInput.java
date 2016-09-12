@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -28,6 +28,7 @@ import java.util.List;
 
 import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.fileinput.FileInputList;
@@ -157,17 +158,17 @@ public class AccessInput extends BaseStep implements StepInterface {
       int rowIndex = data.totalpreviousfields + meta.getInputFields().length;
 
       // See if we need to add the filename to the row...
-      if ( meta.includeFilename() && !Const.isEmpty( meta.getFilenameField() ) ) {
+      if ( meta.includeFilename() && !Utils.isEmpty( meta.getFilenameField() ) ) {
         r[rowIndex++] = AccessInputMeta.getFilename( data.file );
       }
 
       // See if we need to add the table name to the row...
-      if ( meta.includeTablename() && !Const.isEmpty( data.t.getName() ) ) {
+      if ( meta.includeTablename() && !Utils.isEmpty( data.t.getName() ) ) {
         r[rowIndex++] = data.t.getName();
       }
 
       // See if we need to add the row number to the row...
-      if ( meta.includeRowNumber() && !Const.isEmpty( meta.getRowNumberField() ) ) {
+      if ( meta.includeRowNumber() && !Utils.isEmpty( meta.getRowNumberField() ) ) {
         r[rowIndex++] = new Long( data.rownr );
       }
       // Possibly add short filename...
@@ -267,7 +268,7 @@ public class AccessInput extends BaseStep implements StepInterface {
           }
 
           // Check is filename field is provided
-          if ( Const.isEmpty( meta.getDynamicFilenameField() ) ) {
+          if ( Utils.isEmpty( meta.getDynamicFilenameField() ) ) {
             logError( BaseMessages.getString( PKG, "AccessInput.Log.NoField" ) );
             throw new KettleException( BaseMessages.getString( PKG, "AccessInput.Log.NoField" ) );
           }
@@ -403,7 +404,7 @@ public class AccessInput extends BaseStep implements StepInterface {
       // Get table
       data.tableName = environmentSubstitute( meta.getTableName() );
       // Check tablename
-      if ( Const.isEmpty( data.tableName ) ) {
+      if ( Utils.isEmpty( data.tableName ) ) {
         logError( BaseMessages.getString( PKG, "AccessInput.Error.TableNameMissing" ) );
         return false;
       }

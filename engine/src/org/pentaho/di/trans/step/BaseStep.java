@@ -43,6 +43,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.pentaho.di.core.BlockingRowSet;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.ExtensionDataInterface;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.RowMetaAndData;
@@ -531,7 +532,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
     String clusterSize = transMeta.getVariable( Const.INTERNAL_VARIABLE_CLUSTER_SIZE );
     boolean master = "Y".equalsIgnoreCase( transMeta.getVariable( Const.INTERNAL_VARIABLE_CLUSTER_MASTER ) );
 
-    if ( !Const.isEmpty( slaveNr ) && !Const.isEmpty( clusterSize ) && !master ) {
+    if ( !Utils.isEmpty( slaveNr ) && !Utils.isEmpty( clusterSize ) && !master ) {
       this.slaveNr = Integer.parseInt( slaveNr );
       this.clusterSize = Integer.parseInt( clusterSize );
 
@@ -607,7 +608,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
           return false;
         }
       }
-    } else if ( !Const.isEmpty( partitionID ) ) {
+    } else if ( !Utils.isEmpty( partitionID ) ) {
       setVariable( Const.INTERNAL_VARIABLE_STEP_PARTITION_ID, partitionID );
     }
 
@@ -717,7 +718,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
       boolean envSubFailed = false;
       try {
         maxErrors =
-          ( !Const.isEmpty( stepErrorMeta.getMaxErrors() ) ? Long.valueOf( trans
+          ( !Utils.isEmpty( stepErrorMeta.getMaxErrors() ) ? Long.valueOf( trans
             .environmentSubstitute( stepErrorMeta.getMaxErrors() ) ) : -1L );
       } catch ( NumberFormatException nfe ) {
         log.logError( BaseMessages.getString( PKG, "BaseStep.Log.NumberFormatException", BaseMessages.getString(
@@ -728,7 +729,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
 
       try {
         minRowsForMaxErrorPercent =
-          ( !Const.isEmpty( stepErrorMeta.getMinPercentRows() ) ? Long.valueOf( trans
+          ( !Utils.isEmpty( stepErrorMeta.getMinPercentRows() ) ? Long.valueOf( trans
             .environmentSubstitute( stepErrorMeta.getMinPercentRows() ) ) : -1L );
       } catch ( NumberFormatException nfe ) {
         log.logError( BaseMessages.getString( PKG, "BaseStep.Log.NumberFormatException", BaseMessages.getString(
@@ -739,7 +740,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
 
       try {
         maxPercentErrors =
-          ( !Const.isEmpty( stepErrorMeta.getMaxPercentErrors() ) ? Integer.valueOf( trans
+          ( !Utils.isEmpty( stepErrorMeta.getMaxPercentErrors() ) ? Integer.valueOf( trans
             .environmentSubstitute( stepErrorMeta.getMaxPercentErrors() ) ) : -1 );
       } catch ( NumberFormatException nfe ) {
         log.logError( BaseMessages.getString(
@@ -3189,11 +3190,11 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
     // transformation during logging
     //
     //
-    if ( !Const.isEmpty( getTrans().getMappingStepName() ) ) {
+    if ( !Utils.isEmpty( getTrans().getMappingStepName() ) ) {
       string.append( '[' ).append( trans.toString() ).append( ']' ).append( '.' ); // Name of the mapping transformation
     }
 
-    if ( !Const.isEmpty( partitionID ) ) {
+    if ( !Utils.isEmpty( partitionID ) ) {
       string.append( stepname ).append( '.' ).append( partitionID );
     } else if ( clusterSize > 1 ) {
       string
@@ -3667,9 +3668,9 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
    */
   @Override
   public boolean getBooleanValueOfVariable( String variableName, boolean defaultValue ) {
-    if ( !Const.isEmpty( variableName ) ) {
+    if ( !Utils.isEmpty( variableName ) ) {
       String value = environmentSubstitute( variableName );
-      if ( !Const.isEmpty( value ) ) {
+      if ( !Utils.isEmpty( value ) ) {
         return ValueMetaString.convertStringToBoolean( value );
       }
     }

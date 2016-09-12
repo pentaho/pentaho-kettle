@@ -47,6 +47,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
@@ -294,7 +295,7 @@ public class StringOperationsDialog extends BaseStepDialog implements StepDialog
                 if ( !wFields.isDisposed() ) {
                   for ( int i = 0; i < wFields.table.getItemCount(); i++ ) {
                     TableItem it = wFields.table.getItem( i );
-                    if ( !Const.isEmpty( it.getText( 1 ) ) ) {
+                    if ( !Utils.isEmpty( it.getText( 1 ) ) ) {
                       if ( !inputFields.containsKey( it.getText( 1 ) ) ) {
                         it.setBackground( GUIResource.getInstance().getColorRed() );
                       }
@@ -402,7 +403,7 @@ public class StringOperationsDialog extends BaseStepDialog implements StepDialog
   }
 
   private void ok() {
-    if ( Const.isEmpty( wStepname.getText() ) ) {
+    if ( Utils.isEmpty( wStepname.getText() ) ) {
       return;
     }
 

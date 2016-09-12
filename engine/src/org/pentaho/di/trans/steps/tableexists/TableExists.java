@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,7 +22,7 @@
 
 package org.pentaho.di.trans.steps.tableexists;
 
-import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -77,7 +77,7 @@ public class TableExists extends BaseStep implements StepInterface {
         meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
 
         // Check is tablename field is provided
-        if ( Const.isEmpty( meta.getDynamicTablenameField() ) ) {
+        if ( Utils.isEmpty( meta.getDynamicTablenameField() ) ) {
           logError( BaseMessages.getString( PKG, "TableExists.Error.TablenameFieldMissing" ) );
           throw new KettleException( BaseMessages.getString( PKG, "TableExists.Error.TablenameFieldMissing" ) );
         }
@@ -138,14 +138,14 @@ public class TableExists extends BaseStep implements StepInterface {
     data = (TableExistsData) sdi;
 
     if ( super.init( smi, sdi ) ) {
-      if ( Const.isEmpty( meta.getResultFieldName() ) ) {
+      if ( Utils.isEmpty( meta.getResultFieldName() ) ) {
         logError( BaseMessages.getString( PKG, "TableExists.Error.ResultFieldMissing" ) );
         return false;
       }
 
       data.db = new Database( this, meta.getDatabase() );
       data.db.shareVariablesWith( this );
-      if ( !Const.isEmpty( meta.getSchemaname() ) ) {
+      if ( !Utils.isEmpty( meta.getSchemaname() ) ) {
         data.realSchemaname = environmentSubstitute( meta.getSchemaname() );
       }
 

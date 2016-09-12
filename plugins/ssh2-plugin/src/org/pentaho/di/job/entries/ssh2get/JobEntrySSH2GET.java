@@ -35,6 +35,7 @@ import org.apache.commons.vfs2.FileType;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.annotations.JobEntry;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -696,18 +697,18 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
     }
 
     boolean mandatoryok = true;
-    if ( Const.isEmpty( realServerName ) ) {
+    if ( Utils.isEmpty( realServerName ) ) {
       mandatoryok = false;
       logError( BaseMessages.getString( PKG, "JobSSH2GET.Log.ServernameMissing" ) );
     }
     if ( usehttpproxy ) {
-      if ( Const.isEmpty( realProxyHost ) ) {
+      if ( Utils.isEmpty( realProxyHost ) ) {
         mandatoryok = false;
         logError( BaseMessages.getString( PKG, "JobSSH2GET.Log.HttpProxyhostMissing" ) );
       }
     }
     if ( publicpublickey ) {
-      if ( Const.isEmpty( realKeyFilename ) ) {
+      if ( Utils.isEmpty( realKeyFilename ) ) {
         mandatoryok = false;
         logError( BaseMessages.getString( PKG, "JobSSH2GET.Log.KeyFileMissing" ) );
       } else {
@@ -719,7 +720,7 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
       }
     }
 
-    if ( Const.isEmpty( realLocalDirectory ) ) {
+    if ( Utils.isEmpty( realLocalDirectory ) ) {
       mandatoryok = false;
       logError( BaseMessages.getString( PKG, "JobSSH2GET.Log.LocalFolderMissing" ) );
     } else {
@@ -744,7 +745,7 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
       }
     }
     if ( afterFtpPut.equals( "move_file" ) ) {
-      if ( Const.isEmpty( realDestinationFolder ) ) {
+      if ( Utils.isEmpty( realDestinationFolder ) ) {
         mandatoryok = false;
         logError( BaseMessages.getString( PKG, "JobSSH2GET.Log.DestinatFolderMissing" ) );
       }
@@ -808,7 +809,7 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
           }
 
           // Check if ftp (source) directory exists
-          if ( !Const.isEmpty( realftpDirectory ) ) {
+          if ( !Utils.isEmpty( realftpDirectory ) ) {
             if ( !sshDirectoryExists( client, realftpDirectory ) ) {
               good = false;
               logError( BaseMessages.getString( PKG, "JobSSH2GET.Log.RemoteDirectoryNotExist", realftpDirectory ) );
@@ -817,7 +818,7 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
             }
           }
 
-          if ( !Const.isEmpty( realDestinationFolder ) ) {
+          if ( !Utils.isEmpty( realDestinationFolder ) ) {
             // Check now destination folder
             if ( !sshDirectoryExists( client, realDestinationFolder ) ) {
               if ( createdestinationfolder ) {
@@ -834,7 +835,7 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
 
           if ( good ) {
             Pattern pattern = null;
-            if ( !Const.isEmpty( realwildcard ) ) {
+            if ( !Utils.isEmpty( realwildcard ) ) {
               pattern = Pattern.compile( realwildcard );
             }
 
@@ -1067,7 +1068,7 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
     Job parentJob ) throws Exception {
 
     String sourceFolder = ".";
-    if ( !Const.isEmpty( sourceLocation ) ) {
+    if ( !Utils.isEmpty( sourceLocation ) ) {
       sourceFolder = sourceLocation + FTPUtils.FILE_SEPARATOR;
     } else {
       sourceFolder += FTPUtils.FILE_SEPARATOR;
@@ -1318,7 +1319,7 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
   @Override
   public List<ResourceReference> getResourceDependencies( JobMeta jobMeta ) {
     List<ResourceReference> references = super.getResourceDependencies( jobMeta );
-    if ( !Const.isEmpty( serverName ) ) {
+    if ( !Utils.isEmpty( serverName ) ) {
       String realServerName = jobMeta.environmentSubstitute( serverName );
       ResourceReference reference = new ResourceReference( this );
       reference.getEntries().add( new ResourceEntry( realServerName, ResourceType.SERVER ) );

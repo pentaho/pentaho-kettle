@@ -1,5 +1,5 @@
 /*!
- * Copyright 2010 - 2015 Pentaho Corporation.  All rights reserved.
+ * Copyright 2010 - 2016 Pentaho Corporation.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.NotePadMeta;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
@@ -301,7 +302,7 @@ public class TransDelegate extends AbstractDelegate implements ITransformer, ISh
       String copiesString =
           stepNode.getProperty( PROP_STEP_COPIES_STRING ) != null ? stepNode.getProperty( PROP_STEP_COPIES_STRING )
               .getString() : StringUtils.EMPTY;
-      if ( !Const.isEmpty( copiesString ) ) {
+      if ( !Utils.isEmpty( copiesString ) ) {
         stepMeta.setCopiesString( copiesString );
       } else {
         stepMeta.setCopies( copies ); // for backward compatibility
@@ -862,7 +863,7 @@ public class TransDelegate extends AbstractDelegate implements ITransformer, ISh
   protected void readClusters( TransMeta transMeta, boolean overWriteShared, List<ClusterSchema> clusterSchemas ) {
     for ( ClusterSchema clusterSchema : clusterSchemas ) {
       if ( overWriteShared || transMeta.findClusterSchema( clusterSchema.getName() ) == null ) {
-        if ( !Const.isEmpty( clusterSchema.getName() ) ) {
+        if ( !Utils.isEmpty( clusterSchema.getName() ) ) {
           clusterSchema.shareVariablesWith( transMeta );
           transMeta.addOrReplaceClusterSchema( clusterSchema );
           if ( !overWriteShared ) {
@@ -885,7 +886,7 @@ public class TransDelegate extends AbstractDelegate implements ITransformer, ISh
       List<PartitionSchema> partitionSchemas ) {
     for ( PartitionSchema partitionSchema : partitionSchemas ) {
       if ( overWriteShared || transMeta.findPartitionSchema( partitionSchema.getName() ) == null ) {
-        if ( !Const.isEmpty( partitionSchema.getName() ) ) {
+        if ( !Utils.isEmpty( partitionSchema.getName() ) ) {
           transMeta.addOrReplacePartitionSchema( partitionSchema );
           if ( !overWriteShared ) {
             partitionSchema.setChanged( false );
@@ -906,7 +907,7 @@ public class TransDelegate extends AbstractDelegate implements ITransformer, ISh
   protected void readSlaves( TransMeta transMeta, boolean overWriteShared, List<SlaveServer> slaveServers ) {
     for ( SlaveServer slaveServer : slaveServers ) {
       if ( overWriteShared || transMeta.findSlaveServer( slaveServer.getName() ) == null ) {
-        if ( !Const.isEmpty( slaveServer.getName() ) ) {
+        if ( !Utils.isEmpty( slaveServer.getName() ) ) {
           slaveServer.shareVariablesWith( transMeta );
           transMeta.addOrReplaceSlaveServer( slaveServer );
           if ( !overWriteShared ) {

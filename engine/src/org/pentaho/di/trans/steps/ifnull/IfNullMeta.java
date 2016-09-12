@@ -27,6 +27,7 @@ import java.util.List;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
@@ -299,7 +300,7 @@ public class IfNullMeta extends BaseStepMeta implements StepMetaInterface {
       replaceAllByValue = XMLHandler.getTagValue( stepnode, "replaceAllByValue" );
       replaceAllMask = XMLHandler.getTagValue( stepnode, "replaceAllMask" );
       String setEmptyStringAllString = XMLHandler.getTagValue( stepnode, "setEmptyStringAll" );
-      setEmptyStringAll = !Const.isEmpty( setEmptyStringAllString ) && "Y".equalsIgnoreCase( setEmptyStringAllString );
+      setEmptyStringAll = !Utils.isEmpty( setEmptyStringAllString ) && "Y".equalsIgnoreCase( setEmptyStringAllString );
 
       Node types = XMLHandler.getSubNode( stepnode, "valuetypes" );
       int nrtypes = XMLHandler.countNodes( types, "valuetype" );
@@ -314,7 +315,7 @@ public class IfNullMeta extends BaseStepMeta implements StepMetaInterface {
         valueTypes[i].setTypereplaceValue( XMLHandler.getTagValue( tnode, "value" ) );
         valueTypes[i].setTypereplaceMask( XMLHandler.getTagValue( tnode, "mask" ) );
         String typeemptyString = XMLHandler.getTagValue( tnode, "set_type_empty_string" );
-        valueTypes[i].setTypeEmptyString( !Const.isEmpty( typeemptyString ) && "Y".equalsIgnoreCase(
+        valueTypes[i].setTypeEmptyString( !Utils.isEmpty( typeemptyString ) && "Y".equalsIgnoreCase(
             typeemptyString ) );
       }
       for ( int i = 0; i < nrfields; i++ ) {
@@ -323,7 +324,7 @@ public class IfNullMeta extends BaseStepMeta implements StepMetaInterface {
         fields[i].setReplaceValue( XMLHandler.getTagValue( fnode, "value" ) );
         fields[i].setReplaceMask( XMLHandler.getTagValue( fnode, "mask" ) );
         String emptyString = XMLHandler.getTagValue( fnode, "set_empty_string" );
-        fields[i].setEmptyString( !Const.isEmpty( emptyString ) && "Y".equalsIgnoreCase( emptyString ) );
+        fields[i].setEmptyString( !Utils.isEmpty( emptyString ) && "Y".equalsIgnoreCase( emptyString ) );
       }
     } catch ( Exception e ) {
       throw new KettleXMLException( "It was not possibke to load the IfNull metadata from XML", e );

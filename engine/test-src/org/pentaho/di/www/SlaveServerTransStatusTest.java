@@ -33,7 +33,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.junit.Test;
-import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.trans.Trans;
@@ -62,7 +62,7 @@ public class SlaveServerTransStatusTest {
     assertEquals( "There should be one \"log_date\" node in the XML", 1,
       XMLHandler.countNodes( newTransStatus, "log_date" ) );
     assertTrue( "The \"log_date\" node should have a null value",
-      Const.isEmpty( XMLHandler.getTagValue( newTransStatus, "log_date" ) ) );
+      Utils.isEmpty( XMLHandler.getTagValue( newTransStatus, "log_date" ) ) );
   }
 
   @Test

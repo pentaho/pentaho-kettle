@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -39,6 +39,7 @@ import java.text.SimpleDateFormat;
 
 import org.dom4j.DocumentException;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
@@ -121,7 +122,7 @@ public class RssInput extends BaseStep implements StepInterface {
         data.convertRowMeta = data.outputRowMeta.cloneToType( ValueMetaInterface.TYPE_STRING );
 
         // Check is URL field is provided
-        if ( Const.isEmpty( meta.getUrlFieldname() ) ) {
+        if ( Utils.isEmpty( meta.getUrlFieldname() ) ) {
           logError( BaseMessages.getString( PKG, "RssInput.Log.UrlFieldNameMissing" ) );
           throw new KettleException( BaseMessages.getString( PKG, "RssInput.Log.UrlFieldNameMissing" ) );
         }
@@ -211,7 +212,7 @@ public class RssInput extends BaseStep implements StepInterface {
     // Get item
     FeedItem item = data.feed.getItem( data.itemsnr );
 
-    if ( ( Const.isEmpty( meta.getRealReadFrom() ) || ( !Const.isEmpty( meta.getRealReadFrom() ) && item
+    if ( ( Utils.isEmpty( meta.getRealReadFrom() ) || ( !Utils.isEmpty( meta.getRealReadFrom() ) && item
       .getPubDate().compareTo( data.readfromdatevalide ) > 0 ) ) ) {
 
       // Execute for each Input field...
@@ -268,7 +269,7 @@ public class RssInput extends BaseStep implements StepInterface {
 
         // Do we need to repeat this field if it is null?
         if ( meta.getInputFields()[j].isRepeated() ) {
-          if ( data.previousRow != null && Const.isEmpty( valueString ) ) {
+          if ( data.previousRow != null && Utils.isEmpty( valueString ) ) {
             outputRowData[data.totalpreviousfields + j] = data.previousRow[data.totalpreviousfields + j];
           }
         }
@@ -381,16 +382,16 @@ public class RssInput extends BaseStep implements StepInterface {
     data = (RssInputData) sdi;
 
     if ( super.init( smi, sdi ) ) {
-      if ( meta.includeRowNumber() && Const.isEmpty( meta.getRowNumberField() ) ) {
+      if ( meta.includeRowNumber() && Utils.isEmpty( meta.getRowNumberField() ) ) {
         logError( BaseMessages.getString( PKG, "RssInput.Error.RowNumberFieldMissing" ) );
         return false;
       }
-      if ( meta.includeUrl() && Const.isEmpty( meta.geturlField() ) ) {
+      if ( meta.includeUrl() && Utils.isEmpty( meta.geturlField() ) ) {
         logError( BaseMessages.getString( PKG, "RssInput.Error.UrlFieldMissing" ) );
         return false;
       }
 
-      if ( !Const.isEmpty( meta.getReadFrom() ) ) {
+      if ( !Utils.isEmpty( meta.getReadFrom() ) ) {
         // Let's check validity of the read from date
         try {
           SimpleDateFormat fdrss = new SimpleDateFormat( "yyyy-MM-dd" );

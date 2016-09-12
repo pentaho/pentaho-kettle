@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -34,8 +34,8 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 
-import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.steps.ldapinput.LDAPInputMeta;
 
@@ -92,7 +92,7 @@ public class CustomSocketFactory extends SSLSocketFactory {
     KeyStore keyStore;
 
     try {
-      if ( !Const.isEmpty( path ) && path.endsWith( ".p12" ) ) {
+      if ( !Utils.isEmpty( path ) && path.endsWith( ".p12" ) ) {
         keyStore = KeyStore.getInstance( "PKCS12" );
       } else {
         keyStore = KeyStore.getInstance( "JKS" );

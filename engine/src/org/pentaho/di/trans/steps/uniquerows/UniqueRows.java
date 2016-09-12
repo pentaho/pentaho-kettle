@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,10 +22,10 @@
 
 package org.pentaho.di.trans.steps.uniquerows;
 
-import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -103,7 +103,7 @@ public class UniqueRows extends BaseStep implements StepInterface {
               + "," + meta.getCompareFields()[i];
         }
       }
-      if ( data.sendDuplicateRows && !Const.isEmpty( meta.getErrorDescription() ) ) {
+      if ( data.sendDuplicateRows && !Utils.isEmpty( meta.getErrorDescription() ) ) {
         data.realErrorDescription = environmentSubstitute( meta.getErrorDescription() );
       }
     }
@@ -131,7 +131,7 @@ public class UniqueRows extends BaseStep implements StepInterface {
     } else {
       data.counter++;
       if ( data.sendDuplicateRows && !first ) {
-        putError( getInputRowMeta(), r, 1, data.realErrorDescription, Const.isEmpty( data.compareFields )
+        putError( getInputRowMeta(), r, 1, data.realErrorDescription, Utils.isEmpty( data.compareFields )
           ? null : data.compareFields, "UNR001" );
       }
     }

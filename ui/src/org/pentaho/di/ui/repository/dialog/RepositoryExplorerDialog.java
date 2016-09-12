@@ -77,6 +77,7 @@ import org.eclipse.swt.widgets.TreeItem;
 import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannelInterface;
@@ -1831,7 +1832,7 @@ public class RepositoryExplorerDialog extends Dialog {
     boolean retval = false;
 
     try {
-      if ( Const.isEmpty( newname ) ) {
+      if ( Utils.isEmpty( newname ) ) {
         throw new KettleException( BaseMessages.getString(
           PKG, "RepositoryExplorerDialog.Exception.NameCanNotBeEmpty" ) );
       }
@@ -2023,7 +2024,7 @@ public class RepositoryExplorerDialog extends Dialog {
     boolean retval = false;
 
     try {
-      if ( Const.isEmpty( newname ) ) {
+      if ( Utils.isEmpty( newname ) ) {
         throw new KettleException( BaseMessages.getString(
           PKG, "RepositoryExplorerDialog.Exception.NameCanNotBeEmpty" ) );
       }
@@ -2110,7 +2111,7 @@ public class RepositoryExplorerDialog extends Dialog {
     boolean retval = false;
 
     try {
-      if ( Const.isEmpty( newname ) ) {
+      if ( Utils.isEmpty( newname ) ) {
         throw new KettleException( BaseMessages.getString(
           PKG, "RepositoryExplorerDialog.Exception.NameCanNotBeEmpty" ) );
       }
@@ -2259,7 +2260,7 @@ public class RepositoryExplorerDialog extends Dialog {
     boolean retval = false;
 
     try {
-      if ( Const.isEmpty( newname ) ) {
+      if ( Utils.isEmpty( newname ) ) {
         throw new KettleException( BaseMessages.getString(
           PKG, "RepositoryExplorerDialog.Exception.NameCanNotBeEmpty" ) );
       }
@@ -2427,7 +2428,7 @@ public class RepositoryExplorerDialog extends Dialog {
     boolean retval = false;
 
     try {
-      if ( Const.isEmpty( newname ) ) {
+      if ( Utils.isEmpty( newname ) ) {
         throw new KettleException( BaseMessages.getString(
           PKG, "RepositoryExplorerDialog.Exception.NameCanNotBeEmpty" ) );
       }
@@ -2517,7 +2518,7 @@ public class RepositoryExplorerDialog extends Dialog {
     boolean retval = false;
 
     try {
-      if ( Const.isEmpty( newname ) ) {
+      if ( Utils.isEmpty( newname ) ) {
         throw new KettleException( BaseMessages.getString(
           PKG, "RepositoryExplorerDialog.Exception.NameCanNotBeEmpty" ) );
       }
@@ -2746,7 +2747,7 @@ public class RepositoryExplorerDialog extends Dialog {
             && rep.getSecurityProvider() != null && versionComment == null ) {
             return;
           }
-          if ( Const.isEmpty( versionComment ) && rep.getSecurityProvider().isVersionCommentMandatory() ) {
+          if ( Utils.isEmpty( versionComment ) && rep.getSecurityProvider().isVersionCommentMandatory() ) {
             if ( !RepositorySecurityUI.showVersionCommentMandatoryDialog( shell ) ) {
               versionOk = true;
             }

@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.TimeZone;
 
-import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowDataUtil;
@@ -296,7 +296,7 @@ public class SalesforceInsert extends SalesforceStep {
     if ( super.init( smi, sdi ) ) {
       try {
         String salesfoceIdFieldname = environmentSubstitute( meta.getSalesforceIDFieldName() );
-        if ( !Const.isEmpty( salesfoceIdFieldname ) ) {
+        if ( !Utils.isEmpty( salesfoceIdFieldname ) ) {
           data.realSalesforceFieldName = salesfoceIdFieldname;
         }
 

@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -282,7 +283,7 @@ public class DataGridMeta extends BaseStepMeta implements StepMetaInterface {
         fieldLength[i] = Const.toInt( slength, -1 );
         fieldPrecision[i] = Const.toInt( sprecision, -1 );
         String emptyString = XMLHandler.getTagValue( fnode, "set_empty_string" );
-        setEmptyString[i] = !Const.isEmpty( emptyString ) && "Y".equalsIgnoreCase( emptyString );
+        setEmptyString[i] = !Utils.isEmpty( emptyString ) && "Y".equalsIgnoreCase( emptyString );
       }
 
       Node datanode = XMLHandler.getSubNode( stepnode, "data" );
@@ -344,7 +345,7 @@ public class DataGridMeta extends BaseStepMeta implements StepMetaInterface {
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     for ( int i = 0; i < fieldName.length; i++ ) {
       try {
-        if ( !Const.isEmpty( fieldName[i] ) ) {
+        if ( !Utils.isEmpty( fieldName[i] ) ) {
           int type = ValueMetaFactory.getIdForValueMeta( fieldType[i] );
           if ( type == ValueMetaInterface.TYPE_NONE ) {
             type = ValueMetaInterface.TYPE_STRING;

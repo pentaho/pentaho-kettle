@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -32,6 +32,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogLevel;
@@ -67,14 +68,14 @@ public class RunTransServlet extends BaseHttpServlet implements CartePluginInter
     <h1>/kettle/runTrans</h1>
     <a name="GET"></a>
     <h2>GET</h2>
-    <p>Execute transformation from enterprise repository. Repository should be configured in Carte xml file. 
+    <p>Execute transformation from enterprise repository. Repository should be configured in Carte xml file.
   Response contains <code>ERROR</code> result if error happened during transformation execution.</p>
-    
+
     <p><b>Example Request:</b><br />
     <pre function="syntax.xml">
     GET /kettle/runTrans?trans=home%2Fadmin%2Fdummy-trans&level=Debug
     </pre>
-    
+
     </p>
     <h3>Parameters</h3>
     <table class="pentaho-table">
@@ -96,7 +97,7 @@ public class RunTransServlet extends BaseHttpServlet implements CartePluginInter
     </tr>
     </tbody>
     </table>
-  
+
   <h3>Response Body</h3>
 
   <table class="pentaho-table">
@@ -113,7 +114,7 @@ public class RunTransServlet extends BaseHttpServlet implements CartePluginInter
   </table>
     <p>Response contains result of the operation. It is either <code>OK</code> or <code>ERROR</code>.
      If an error occurred during transformation execution, response also contains information about the error.</p>
-    
+
     <p><b>Example Response:</b></p>
     <pre function="syntax.xml">
     <webresult>
@@ -122,7 +123,7 @@ public class RunTransServlet extends BaseHttpServlet implements CartePluginInter
       <id>7c082e8f-b4fe-40bc-b424-e0f881a61874</id>
     </webresult>
     </pre>
-    
+
     <h3>Status Codes</h3>
     <table class="pentaho-table">
   <tbody>
@@ -162,7 +163,7 @@ public class RunTransServlet extends BaseHttpServlet implements CartePluginInter
     response.setStatus( HttpServletResponse.SC_OK );
 
     String encoding = System.getProperty( "KETTLE_DEFAULT_SERVLET_ENCODING", null );
-    if ( encoding != null && !Const.isEmpty( encoding.trim() ) ) {
+    if ( encoding != null && !Utils.isEmpty( encoding.trim() ) ) {
       response.setCharacterEncoding( encoding );
       response.setContentType( "text/html; charset=" + encoding );
     }
@@ -231,7 +232,7 @@ public class RunTransServlet extends BaseHttpServlet implements CartePluginInter
       /*
        * String[] parameterNames = job.listParameters(); for (int idx = 0; idx < parameterNames.length; idx++) { // Grab
        * the parameter value set in the job entry // String thisValue =
-       * jobExecutionConfiguration.getParams().get(parameterNames[idx]); if (!Const.isEmpty(thisValue)) { // Set the
+       * jobExecutionConfiguration.getParams().get(parameterNames[idx]); if (!Utils.isEmpty(thisValue)) { // Set the
        * value as specified by the user in the job entry // jobMeta.setParameterValue(parameterNames[idx], thisValue); }
        * }
        */

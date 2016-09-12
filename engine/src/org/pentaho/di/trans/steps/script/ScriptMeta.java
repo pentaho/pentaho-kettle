@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -40,6 +40,7 @@ import org.pentaho.di.compatibility.Value;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettlePluginException;
@@ -281,7 +282,7 @@ public class ScriptMeta extends BaseStepMeta implements StepMetaInterface {
   public void getFields( RowMetaInterface row, String originStepname, RowMetaInterface[] info, StepMeta nextStep,
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     for ( int i = 0; i < fieldname.length; i++ ) {
-      if ( !Const.isEmpty( fieldname[i] ) ) {
+      if ( !Utils.isEmpty( fieldname[i] ) ) {
         String fieldName;
         int replaceIndex;
         int fieldType;
@@ -289,7 +290,7 @@ public class ScriptMeta extends BaseStepMeta implements StepMetaInterface {
         if ( replace[i] ) {
           // Look up the field to replace...
           //
-          if ( row.searchValueMeta( fieldname[i] ) == null && Const.isEmpty( rename[i] ) ) {
+          if ( row.searchValueMeta( fieldname[i] ) == null && Utils.isEmpty( rename[i] ) ) {
             throw new KettleStepException( BaseMessages.getString(
               PKG, "ScriptMeta.Exception.FieldToReplaceNotFound", fieldname[i] ) );
           }
@@ -362,7 +363,7 @@ public class ScriptMeta extends BaseStepMeta implements StepMetaInterface {
 
       // When in compatibility mode, we load the script, not the other tabs...
       //
-      if ( !Const.isEmpty( script ) ) {
+      if ( !Utils.isEmpty( script ) ) {
         jsScripts = new ScriptValuesScript[1];
         jsScripts[0] = new ScriptValuesScript( ScriptValuesScript.TRANSFORM_SCRIPT, "ScriptValue", script );
       } else {

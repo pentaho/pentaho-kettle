@@ -33,6 +33,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleException;
@@ -202,7 +203,7 @@ public class Import {
     // To that we add the normal filename option
     //
     List<String> filenames = new ArrayList<String>( args );
-    if ( !Const.isEmpty( optionFilename ) ) {
+    if ( !Utils.isEmpty( optionFilename ) ) {
       filenames.add( optionFilename.toString() );
     }
 
@@ -211,18 +212,18 @@ public class Import {
     String kettleUsername = Const.getEnvironmentVariable( "KETTLE_USER", null );
     String kettlePassword = Const.getEnvironmentVariable( "KETTLE_PASSWORD", null );
 
-    if ( !Const.isEmpty( kettleRepname ) ) {
+    if ( !Utils.isEmpty( kettleRepname ) ) {
       optionRepname = new StringBuilder( kettleRepname );
     }
-    if ( !Const.isEmpty( kettleUsername ) ) {
+    if ( !Utils.isEmpty( kettleUsername ) ) {
       optionUsername = new StringBuilder( kettleUsername );
     }
-    if ( !Const.isEmpty( kettlePassword ) ) {
+    if ( !Utils.isEmpty( kettlePassword ) ) {
       optionPassword = new StringBuilder( kettlePassword );
     }
 
 
-    if ( !Const.isEmpty( optionVersion ) ) {
+    if ( !Utils.isEmpty( optionVersion ) ) {
       BuildVersion buildVersion = BuildVersion.getInstance();
       log.logBasic( BaseMessages.getString(
         PKG, "Import.Log.KettleVersion", buildVersion.getVersion(), buildVersion.getRevision(), buildVersion
@@ -235,23 +236,23 @@ public class Import {
 
     // Verify repository options...
     //
-    if ( Const.isEmpty( optionRepname ) ) {
+    if ( Utils.isEmpty( optionRepname ) ) {
       log.logError( BaseMessages.getString( PKG, "Import.Error.NoRepProvided" ) );
       exitJVM( 1 );
     }
 
-    if ( Const.isEmpty( filenames ) ) {
+    if ( Utils.isEmpty( filenames ) ) {
       log.logError( BaseMessages.getString( PKG, "Import.Error.NoExportFileProvided" ) );
       exitJVM( 1 );
     }
 
-    if ( Const.isEmpty( optionDirname ) ) {
+    if ( Utils.isEmpty( optionDirname ) ) {
       log.logError( BaseMessages.getString( PKG, "Import.Error.NoRepositoryDirectoryProvided" ) );
       exitJVM( 1 );
     }
 
-    if ( Const.isEmpty( optionRules )
-      && Const.isEmpty( optionNoRules ) && !"Y".equalsIgnoreCase( optionNoRules.toString() ) ) {
+    if ( Utils.isEmpty( optionRules )
+      && Utils.isEmpty( optionNoRules ) && !"Y".equalsIgnoreCase( optionNoRules.toString() ) ) {
       log.logError( BaseMessages.getString( PKG, "Import.Error.NoRulesFileProvided" ) );
       exitJVM( 1 );
     }
@@ -262,7 +263,7 @@ public class Import {
     ImportRules importRules = new ImportRules();
     String rulesFile = optionRules.toString();
 
-    if ( !Const.isEmpty( rulesFile ) ) {
+    if ( !Utils.isEmpty( rulesFile ) ) {
       try {
         Document document = XMLHandler.loadXMLFile( rulesFile );
         Node rulesNode = XMLHandler.getSubNode( document, ImportRules.XML_TAG );
@@ -281,7 +282,7 @@ public class Import {
     // Get the list of limiting source directories
     //
     List<String> limitDirs;
-    if ( !Const.isEmpty( optionLimitDir ) ) {
+    if ( !Utils.isEmpty( optionLimitDir ) ) {
       String[] directories = optionLimitDir.toString().split( "," );
       limitDirs = Arrays.asList( directories );
     } else {
@@ -306,7 +307,7 @@ public class Import {
       exitJVM( 1 );
     }
 
-    if ( Const.isEmpty( optionRepname ) ) {
+    if ( Utils.isEmpty( optionRepname ) ) {
       log.logError( BaseMessages.getString( PKG, "Import.Error.NoRepProvided" ) );
       exitJVM( 1 );
     }
@@ -335,9 +336,9 @@ public class Import {
     }
 
     final boolean replace =
-      Const.isEmpty( optionReplace ) ? false : ValueMetaString.convertStringToBoolean( optionReplace.toString() );
+      Utils.isEmpty( optionReplace ) ? false : ValueMetaString.convertStringToBoolean( optionReplace.toString() );
     final boolean continueOnError =
-      Const.isEmpty( optionContinueOnError ) ? false : ValueMetaString.convertStringToBoolean( optionContinueOnError
+      Utils.isEmpty( optionContinueOnError ) ? false : ValueMetaString.convertStringToBoolean( optionContinueOnError
         .toString() );
 
     // Start the import!
@@ -459,7 +460,7 @@ public class Import {
    *           Error parsing provided argument as an integer
    */
   protected static int parseIntArgument( final CommandLineOption option, final int def ) throws KettleException {
-    if ( !Const.isEmpty( option.getArgument() ) ) {
+    if ( !Utils.isEmpty( option.getArgument() ) ) {
       try {
         return Integer.parseInt( option.getArgument().toString() );
       } catch ( NumberFormatException ex ) {

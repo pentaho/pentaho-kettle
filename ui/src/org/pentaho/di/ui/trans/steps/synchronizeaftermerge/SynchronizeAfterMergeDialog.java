@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -57,6 +57,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.SourceToTargetMapping;
@@ -957,7 +958,7 @@ public class SynchronizeAfterMergeDialog extends BaseStepDialog implements StepD
           for ( ColumnInfo colInfo : tableFieldColumns ) {
             colInfo.setComboValues( new String[] {} );
           }
-          if ( !Const.isEmpty( tableName ) ) {
+          if ( !Utils.isEmpty( tableName ) ) {
             DatabaseMeta ci = transMeta.findDatabase( connectionName );
             if ( ci != null ) {
               Database db = new Database( loggingObject, ci );
@@ -1195,7 +1196,7 @@ public class SynchronizeAfterMergeDialog extends BaseStepDialog implements StepD
   }
 
   private void ok() {
-    if ( Const.isEmpty( wStepname.getText() ) ) {
+    if ( Utils.isEmpty( wStepname.getText() ) ) {
       return;
     }
 

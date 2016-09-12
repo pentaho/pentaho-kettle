@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,26 +22,25 @@
 
 package org.pentaho.di.job.entries.tableexists;
 
-import org.pentaho.di.job.entry.validator.AndValidator;
-import org.pentaho.di.job.entry.validator.JobEntryValidatorUtils;
-
 import java.util.List;
 
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
-import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
+import org.pentaho.di.job.entry.validator.AndValidator;
+import org.pentaho.di.job.entry.validator.JobEntryValidatorUtils;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.resource.ResourceEntry;
@@ -174,7 +173,7 @@ public class JobEntryTableExists extends JobEntryBase implements Cloneable, JobE
         db.connect( parentJob.getTransactionId(), null );
         String realTablename = environmentSubstitute( tablename );
         String realSchemaname = environmentSubstitute( schemaname );
-        if ( !Const.isEmpty( realSchemaname ) ) {
+        if ( !Utils.isEmpty( realSchemaname ) ) {
           realTablename = db.getDatabaseMeta().getQuotedSchemaTableCombination( realSchemaname, realTablename );
           if ( log.isDetailed() ) {
             logDetailed( BaseMessages.getString( PKG, "TableExists.Log.SchemaTable", realTablename ) );

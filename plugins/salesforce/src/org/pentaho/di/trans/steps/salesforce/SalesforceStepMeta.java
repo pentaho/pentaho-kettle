@@ -26,7 +26,7 @@ import java.util.List;
 
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
-import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
@@ -126,7 +126,7 @@ public abstract class SalesforceStepMeta extends BaseStepMeta implements StepMet
     CheckResult cr;
 
     // check URL
-    if ( Const.isEmpty( getTargetURL() ) ) {
+    if ( Utils.isEmpty( getTargetURL() ) ) {
       cr =
         new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
           PKG, "SalesforceMeta.CheckResult.NoURL" ), stepMeta );
@@ -138,7 +138,7 @@ public abstract class SalesforceStepMeta extends BaseStepMeta implements StepMet
     remarks.add( cr );
 
     // check user name
-    if ( Const.isEmpty( getUsername() ) ) {
+    if ( Utils.isEmpty( getUsername() ) ) {
       cr =
         new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
           PKG, "SalesforceMeta.CheckResult.NoUsername" ), stepMeta );
@@ -150,7 +150,7 @@ public abstract class SalesforceStepMeta extends BaseStepMeta implements StepMet
     remarks.add( cr );
 
     // check module
-    if ( Const.isEmpty( getModule() ) ) {
+    if ( Utils.isEmpty( getModule() ) ) {
       cr =
         new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
           PKG, "SalesforceMeta.CheckResult.NoModule" ), stepMeta );

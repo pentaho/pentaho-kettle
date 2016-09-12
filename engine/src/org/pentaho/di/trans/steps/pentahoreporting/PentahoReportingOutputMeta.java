@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -31,6 +31,7 @@ import java.util.Map;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
@@ -140,7 +141,7 @@ public class PentahoReportingOutputMeta extends BaseStepMeta implements StepMeta
       for ( Node node : nodes ) {
         String parameter = XMLHandler.getTagValue( node, "name" );
         String fieldname = XMLHandler.getTagValue( node, "field" );
-        if ( !Const.isEmpty( parameter ) && !Const.isEmpty( fieldname ) ) {
+        if ( !Utils.isEmpty( parameter ) && !Utils.isEmpty( fieldname ) ) {
           parameterFieldMap.put( parameter, fieldname );
         }
       }
@@ -191,7 +192,7 @@ public class PentahoReportingOutputMeta extends BaseStepMeta implements StepMeta
       for ( int i = 0; i < nrParameters; i++ ) {
         String parameter = rep.getStepAttributeString( idStep, i, "parameter_name" );
         String fieldname = rep.getStepAttributeString( idStep, i, "parameter_field" );
-        if ( !Const.isEmpty( parameter ) && !Const.isEmpty( fieldname ) ) {
+        if ( !Utils.isEmpty( parameter ) && !Utils.isEmpty( fieldname ) ) {
           parameterFieldMap.put( parameter, fieldname );
         }
       }

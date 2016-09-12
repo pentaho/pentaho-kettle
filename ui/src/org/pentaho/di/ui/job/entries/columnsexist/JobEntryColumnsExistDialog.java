@@ -43,6 +43,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -439,7 +440,7 @@ public class JobEntryColumnsExistDialog extends JobEntryDialog implements JobEnt
   }
 
   private void ok() {
-    if ( Const.isEmpty( wName.getText() ) ) {
+    if ( Utils.isEmpty( wName.getText() ) ) {
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
       mb.setText( BaseMessages.getString( PKG, "System.StepJobEntryNameMissing.Title" ) );
       mb.setMessage( BaseMessages.getString( PKG, "System.JobEntryNameMissing.Msg" ) );
@@ -477,7 +478,7 @@ public class JobEntryColumnsExistDialog extends JobEntryDialog implements JobEnt
    * Get a list of columns
    */
   private void getListColumns() {
-    if ( !Const.isEmpty( wTablename.getText() ) ) {
+    if ( !Utils.isEmpty( wTablename.getText() ) ) {
       DatabaseMeta databaseMeta = jobMeta.findDatabase( wConnection.getText() );
       if ( databaseMeta != null ) {
         Database database = new Database( loggingObject, databaseMeta );

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -44,6 +44,7 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
@@ -634,7 +635,7 @@ public class GetTableNamesDialog extends BaseStepDialog implements StepDialogInt
   }
 
   private void refreshIncludeCatalog() {
-    if ( !Const.isEmpty( wschemaname.getText() ) ) {
+    if ( !Utils.isEmpty( wschemaname.getText() ) ) {
       wincludeCatalog.setSelection( false );
       wlincludeCatalog.setEnabled( false );
       wincludeCatalog.setEnabled( false );
@@ -731,7 +732,7 @@ public class GetTableNamesDialog extends BaseStepDialog implements StepDialogInt
   }
 
   private void ok() {
-    if ( Const.isEmpty( wStepname.getText() ) ) {
+    if ( Utils.isEmpty( wStepname.getText() ) ) {
       return;
     }
     stepname = wStepname.getText(); // return value
@@ -768,7 +769,7 @@ public class GetTableNamesDialog extends BaseStepDialog implements StepDialogInt
 
   private boolean checkUserInput( GetTableNamesMeta meta ) {
 
-    if ( Const.isEmpty( meta.getTablenameFieldName() ) ) {
+    if ( Utils.isEmpty( meta.getTablenameFieldName() ) ) {
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
       mb.setMessage( BaseMessages.getString( PKG, "GetTableNamesDialog.Error.TablenameFieldNameMissingMessage" ) );
       mb.setText( BaseMessages.getString( PKG, "GetTableNamesDialog.Error.TablenameFieldNameMissingTitle" ) );

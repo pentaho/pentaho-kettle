@@ -144,8 +144,8 @@ public class EnvUtil {
       //
       if ( variable.equals( Const.KETTLE_PLUGIN_CLASSES ) || variable.equals( Const.KETTLE_PLUGIN_PACKAGES ) ) {
         String jvmValue = System.getProperty( variable );
-        if ( !Const.isEmpty( jvmValue ) ) {
-          if ( !Const.isEmpty( value ) ) {
+        if ( !Utils.isEmpty( jvmValue ) ) {
+          if ( !Utils.isEmpty( value ) ) {
             value += "," + jvmValue;
           } else {
             value = jvmValue;
@@ -290,7 +290,7 @@ public class EnvUtil {
    */
   public static Locale createLocale( String localeCode ) {
     Locale resultLocale = null;
-    if ( !Const.isEmpty( localeCode ) ) {
+    if ( !Utils.isEmpty( localeCode ) ) {
       StringTokenizer parser = new StringTokenizer( localeCode, "_" );
       if ( parser.countTokens() == 2 ) {
         resultLocale = new Locale( parser.nextToken(), parser.nextToken() );
@@ -304,7 +304,7 @@ public class EnvUtil {
   public static TimeZone createTimeZone( String timeZoneId ) {
 
     TimeZone resultTimeZone = null;
-    if ( !Const.isEmpty( timeZoneId ) ) {
+    if ( !Utils.isEmpty( timeZoneId ) ) {
       return TimeZone.getTimeZone( timeZoneId );
     } else {
       resultTimeZone = TimeZone.getDefault();

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,7 +27,7 @@ import static org.junit.Assert.*;
 import org.apache.commons.vfs2.FileObject;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.vfs.KettleVFS;
@@ -162,7 +162,7 @@ public class NameResourceTest {
 
     String path = null;
     String prefix = null;
-    if ( Const.isEmpty( fileMask ) ) {
+    if ( Utils.isEmpty( fileMask ) ) {
       prefix = fileObject.getName().getBaseName();
       path = fileObject.getParent().getURL().toString();
     } else {
@@ -180,7 +180,7 @@ public class NameResourceTest {
     String resolvedFileName_LEGACY =
       resourceNamingInterface_LEGACY.nameResource( prefix, path, extension, FileNamingType.DATA_FILE );
     String resolvedFileName_NEW =
-      resourceNamingInterface_NEW.nameResource( fileObject, transMeta, Const.isEmpty( fileMask ) );
+      resourceNamingInterface_NEW.nameResource( fileObject, transMeta, Utils.isEmpty( fileMask ) );
 
     // get the variable name from both naming interfaces directory maps
     String pathFromMap_LEGACY = resourceNamingInterface_LEGACY.getDirectoryMap().get( path );

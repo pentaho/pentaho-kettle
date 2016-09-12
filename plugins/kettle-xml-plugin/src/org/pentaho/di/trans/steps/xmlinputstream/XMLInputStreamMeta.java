@@ -27,6 +27,7 @@ import java.util.List;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
@@ -555,7 +556,7 @@ public class XMLInputStreamMeta extends BaseStepMeta implements StepMetaInterfac
       IMetaStore metaStore ) {
     // TODO externalize messages
     CheckResult cr;
-    if ( Const.isEmpty( filename ) ) {
+    if ( Utils.isEmpty( filename ) ) {
       cr = new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, "Filename is not given", stepMeta );
     } else {
       cr = new CheckResult( CheckResultInterface.TYPE_RESULT_OK, "Filename is given", stepMeta );

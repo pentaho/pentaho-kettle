@@ -29,6 +29,7 @@ import java.util.Locale;
 
 import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.ValueMetaInterface;
@@ -549,7 +550,7 @@ public class ExcelOutput extends BaseStep implements StepInterface {
       }
 
       // Rename Sheet
-      if ( !Const.isEmpty( data.realSheetname ) ) {
+      if ( !Utils.isEmpty( data.realSheetname ) ) {
         data.sheet.setName( data.realSheetname );
       }
 
@@ -668,7 +669,7 @@ public class ExcelOutput extends BaseStep implements StepInterface {
       if ( meta.isUseTempFiles() ) {
         data.ws.setUseTemporaryFileDuringWrite( true );
         String realdir = environmentSubstitute( meta.getTempDirectory() );
-        if ( !Const.isEmpty( realdir ) ) {
+        if ( !Utils.isEmpty( realdir ) ) {
           File file = new File( realdir );
           if ( !file.exists() ) {
             logError( BaseMessages.getString( PKG, "ExcelInputLog.TempDirectoryNotExist", realdir ) );
@@ -681,7 +682,7 @@ public class ExcelOutput extends BaseStep implements StepInterface {
       data.ws.setLocale( Locale.getDefault() );
       data.Headerrowheight = Const.toInt( environmentSubstitute( meta.getHeaderRowHeight() ), -1 );
       data.realHeaderImage = environmentSubstitute( meta.getHeaderImage() );
-      if ( !Const.isEmpty( meta.getEncoding() ) ) {
+      if ( !Utils.isEmpty( meta.getEncoding() ) ) {
         data.ws.setEncoding( meta.getEncoding() );
       }
 
@@ -777,7 +778,7 @@ public class ExcelOutput extends BaseStep implements StepInterface {
     data.headerCellFormat = ExcelFontMap.getOrientation( meta.getHeaderFontOrientation(), data.headerCellFormat );
 
     // Do we need to put a image on the header
-    if ( !Const.isEmpty( data.realHeaderImage ) ) {
+    if ( !Utils.isEmpty( data.realHeaderImage ) ) {
       FileObject imageFile = null;
       try {
         imageFile = KettleVFS.getFileObject( data.realHeaderImage );

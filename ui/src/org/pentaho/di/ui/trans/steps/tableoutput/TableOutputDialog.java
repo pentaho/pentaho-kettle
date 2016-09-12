@@ -56,6 +56,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.SourceToTargetMapping;
@@ -1073,7 +1074,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
           for ( ColumnInfo colInfo : tableFieldColumns ) {
             colInfo.setComboValues( new String[] {} );
           }
-          if ( !Const.isEmpty( tableName ) ) {
+          if ( !Utils.isEmpty( tableName ) ) {
             DatabaseMeta ci = transMeta.findDatabase( connectionName );
             if ( ci != null ) {
               Database db = new Database( loggingObject, ci );
@@ -1315,7 +1316,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
   }
 
   private void ok() {
-    if ( Const.isEmpty( wStepname.getText() ) ) {
+    if ( Utils.isEmpty( wStepname.getText() ) ) {
       return;
     }
 
@@ -1432,7 +1433,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
 
       // Add the auto-increment field too if any is present.
       //
-      if ( info.isReturningGeneratedKeys() && !Const.isEmpty( info.getGeneratedKeyField() ) ) {
+      if ( info.isReturningGeneratedKeys() && !Utils.isEmpty( info.getGeneratedKeyField() ) ) {
         ValueMetaInterface valueMeta = new ValueMetaInteger( info.getGeneratedKeyField() );
         valueMeta.setLength( 15 );
         prev.addValueMeta( 0, valueMeta );

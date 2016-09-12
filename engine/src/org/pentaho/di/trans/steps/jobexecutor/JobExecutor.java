@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import com.google.common.annotations.VisibleForTesting;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.RowMetaAndData;
@@ -129,7 +130,7 @@ public class JobExecutor extends BaseStep implements StepInterface {
         // Remember which column to group on, if any...
         //
         data.groupFieldIndex = -1;
-        if ( !Const.isEmpty( data.groupField ) ) {
+        if ( !Utils.isEmpty( data.groupField ) ) {
           data.groupFieldIndex = getInputRowMeta().indexOfValue( data.groupField );
           if ( data.groupFieldIndex < 0 ) {
             throw new KettleException( BaseMessages.getString(
@@ -260,48 +261,48 @@ public class JobExecutor extends BaseStep implements StepInterface {
       Object[] outputRow = RowDataUtil.allocateRowData( data.executionResultsOutputRowMeta.size() );
       int idx = 0;
 
-      if ( !Const.isEmpty( meta.getExecutionTimeField() ) ) {
+      if ( !Utils.isEmpty( meta.getExecutionTimeField() ) ) {
         outputRow[idx++] = Long.valueOf( System.currentTimeMillis() - data.groupTimeStart );
       }
-      if ( !Const.isEmpty( meta.getExecutionResultField() ) ) {
+      if ( !Utils.isEmpty( meta.getExecutionResultField() ) ) {
         outputRow[idx++] = Boolean.valueOf( result.getResult() );
       }
-      if ( !Const.isEmpty( meta.getExecutionNrErrorsField() ) ) {
+      if ( !Utils.isEmpty( meta.getExecutionNrErrorsField() ) ) {
         outputRow[idx++] = Long.valueOf( result.getNrErrors() );
       }
-      if ( !Const.isEmpty( meta.getExecutionLinesReadField() ) ) {
+      if ( !Utils.isEmpty( meta.getExecutionLinesReadField() ) ) {
         outputRow[idx++] = Long.valueOf( result.getNrLinesRead() );
       }
-      if ( !Const.isEmpty( meta.getExecutionLinesWrittenField() ) ) {
+      if ( !Utils.isEmpty( meta.getExecutionLinesWrittenField() ) ) {
         outputRow[idx++] = Long.valueOf( result.getNrLinesWritten() );
       }
-      if ( !Const.isEmpty( meta.getExecutionLinesInputField() ) ) {
+      if ( !Utils.isEmpty( meta.getExecutionLinesInputField() ) ) {
         outputRow[idx++] = Long.valueOf( result.getNrLinesInput() );
       }
-      if ( !Const.isEmpty( meta.getExecutionLinesOutputField() ) ) {
+      if ( !Utils.isEmpty( meta.getExecutionLinesOutputField() ) ) {
         outputRow[idx++] = Long.valueOf( result.getNrLinesOutput() );
       }
-      if ( !Const.isEmpty( meta.getExecutionLinesRejectedField() ) ) {
+      if ( !Utils.isEmpty( meta.getExecutionLinesRejectedField() ) ) {
         outputRow[idx++] = Long.valueOf( result.getNrLinesRejected() );
       }
-      if ( !Const.isEmpty( meta.getExecutionLinesUpdatedField() ) ) {
+      if ( !Utils.isEmpty( meta.getExecutionLinesUpdatedField() ) ) {
         outputRow[idx++] = Long.valueOf( result.getNrLinesUpdated() );
       }
-      if ( !Const.isEmpty( meta.getExecutionLinesDeletedField() ) ) {
+      if ( !Utils.isEmpty( meta.getExecutionLinesDeletedField() ) ) {
         outputRow[idx++] = Long.valueOf( result.getNrLinesDeleted() );
       }
-      if ( !Const.isEmpty( meta.getExecutionFilesRetrievedField() ) ) {
+      if ( !Utils.isEmpty( meta.getExecutionFilesRetrievedField() ) ) {
         outputRow[idx++] = Long.valueOf( result.getNrFilesRetrieved() );
       }
-      if ( !Const.isEmpty( meta.getExecutionExitStatusField() ) ) {
+      if ( !Utils.isEmpty( meta.getExecutionExitStatusField() ) ) {
         outputRow[idx++] = Long.valueOf( result.getExitStatus() );
       }
-      if ( !Const.isEmpty( meta.getExecutionLogTextField() ) ) {
+      if ( !Utils.isEmpty( meta.getExecutionLogTextField() ) ) {
         String channelId = data.executorJob.getLogChannelId();
         String logText = KettleLogStore.getAppender().getBuffer( channelId, false ).toString();
         outputRow[idx++] = logText;
       }
-      if ( !Const.isEmpty( meta.getExecutionLogChannelIdField() ) ) {
+      if ( !Utils.isEmpty( meta.getExecutionLogChannelIdField() ) ) {
         outputRow[idx++] = data.executorJob.getLogChannelId();
       }
 
@@ -373,7 +374,7 @@ public class JobExecutor extends BaseStep implements StepInterface {
       String value;
       // Take the value from an input row or from a static value?
       //
-      if ( !Const.isEmpty( fieldName ) ) {
+      if ( !Utils.isEmpty( fieldName ) ) {
         int idx = getInputRowMeta().indexOfValue( fieldName );
         if ( idx < 0 ) {
           throw new KettleException( BaseMessages.getString(
@@ -417,14 +418,14 @@ public class JobExecutor extends BaseStep implements StepInterface {
           // How many rows do we group together for the job?
           //
           data.groupSize = -1;
-          if ( !Const.isEmpty( meta.getGroupSize() ) ) {
+          if ( !Utils.isEmpty( meta.getGroupSize() ) ) {
             data.groupSize = Const.toInt( environmentSubstitute( meta.getGroupSize() ), -1 );
           }
 
           // Is there a grouping time set?
           //
           data.groupTime = -1;
-          if ( !Const.isEmpty( meta.getGroupTime() ) ) {
+          if ( !Utils.isEmpty( meta.getGroupTime() ) ) {
             data.groupTime = Const.toInt( environmentSubstitute( meta.getGroupTime() ), -1 );
           }
           data.groupTimeStart = System.currentTimeMillis();
@@ -432,7 +433,7 @@ public class JobExecutor extends BaseStep implements StepInterface {
           // Is there a grouping field set?
           //
           data.groupField = null;
-          if ( !Const.isEmpty( meta.getGroupField() ) ) {
+          if ( !Utils.isEmpty( meta.getGroupField() ) ) {
             data.groupField = environmentSubstitute( meta.getGroupField() );
           }
 

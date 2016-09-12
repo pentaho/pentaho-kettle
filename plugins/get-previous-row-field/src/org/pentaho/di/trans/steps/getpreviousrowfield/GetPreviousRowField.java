@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,7 +22,7 @@
 
 package org.pentaho.di.trans.steps.getpreviousrowfield;
 
-import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowDataUtil;
@@ -101,7 +101,7 @@ public class GetPreviousRowField extends BaseStep implements StepInterface {
       data.outStreamNrs = new String[meta.getFieldInStream().length];
       for ( int i = 0; i < meta.getFieldInStream().length; i++ ) {
         data.outStreamNrs[i] = meta.getFieldOutStream()[i];
-        if ( Const.isEmpty( data.outStreamNrs[i] ) ) {
+        if ( Utils.isEmpty( data.outStreamNrs[i] ) ) {
           throw new KettleStepException( BaseMessages.getString(
             PKG, "GetPreviousRowField.Exception.OutputFieldEmpty", "" + i ) );
         }

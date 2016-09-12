@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,8 +24,8 @@ package org.pentaho.di.ui.core.database.dialog;
 
 import java.util.ListIterator;
 
-import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.ui.xul.XulEventSourceAdapter;
 import org.pentaho.ui.xul.util.AbstractModelNode;
 
@@ -82,7 +82,7 @@ public class XulDatabaseExplorerModel extends XulEventSourceAdapter {
   }
 
   private DatabaseExplorerNode drillDown( ListIterator<DatabaseExplorerNode> aNodes, String aSchema, String aTable ) {
-    boolean lookingForSchema = aTable == null || Const.isEmpty( aTable );
+    boolean lookingForSchema = aTable == null || Utils.isEmpty( aTable );
     DatabaseExplorerNode theNode = null;
     while ( aNodes.hasNext() ) {
       theNode = aNodes.next();

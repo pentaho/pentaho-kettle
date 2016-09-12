@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -50,6 +50,7 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -514,7 +515,7 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
   }
 
   private void getInfo( TableInputMeta meta, boolean preview ) {
-    meta.setSQL( preview && !Const.isEmpty( wSQL.getSelectionText() ) ? wSQL.getSelectionText() : wSQL.getText() );
+    meta.setSQL( preview && !Utils.isEmpty( wSQL.getSelectionText() ) ? wSQL.getSelectionText() : wSQL.getText() );
     meta.setDatabaseMeta( transMeta.findDatabase( wConnection.getText() ) );
     meta.setRowLimit( wLimit.getText() );
     StreamInterface infoStream = input.getStepIOMeta().getInfoStreams().get( 0 );
@@ -525,7 +526,7 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
   }
 
   private void ok() {
-    if ( Const.isEmpty( wStepname.getText() ) ) {
+    if ( Utils.isEmpty( wStepname.getText() ) ) {
       return;
     }
 
@@ -619,7 +620,7 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
   }
 
   private void setFlags() {
-    if ( !Const.isEmpty( wDatefrom.getText() ) ) {
+    if ( !Utils.isEmpty( wDatefrom.getText() ) ) {
       // The foreach check box...
       wEachRow.setEnabled( true );
       wlEachRow.setEnabled( true );

@@ -28,7 +28,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseInterface;
 
 public class SAPR3DatabaseMetaTest {
@@ -50,10 +50,10 @@ public class SAPR3DatabaseMetaTest {
 
     // TODO: Get a Kettle-Core Test artifact, and use the SequenceMetaTests.assertSupports() method instead
     assertFalse( db.getClass().getSimpleName(), db.supportsSequences() );
-    assertTrue( dbType + ": List of Sequences", Const.isEmpty( db.getSQLListOfSequences() ) );
-    assertTrue( dbType + ": Sequence Exists", Const.isEmpty( db.getSQLSequenceExists( "testSeq" ) ) );
-    assertTrue( dbType + ": Current Value", Const.isEmpty( db.getSQLCurrentSequenceValue( "testSeq" ) ) );
-    assertTrue( dbType + ": Next Value", Const.isEmpty( db.getSQLNextSequenceValue( "testSeq" ) ) );
+    assertTrue( dbType + ": List of Sequences", Utils.isEmpty( db.getSQLListOfSequences() ) );
+    assertTrue( dbType + ": Sequence Exists", Utils.isEmpty( db.getSQLSequenceExists( "testSeq" ) ) );
+    assertTrue( dbType + ": Current Value", Utils.isEmpty( db.getSQLCurrentSequenceValue( "testSeq" ) ) );
+    assertTrue( dbType + ": Next Value", Utils.isEmpty( db.getSQLNextSequenceValue( "testSeq" ) ) );
   }
 
   @Test

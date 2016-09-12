@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -29,6 +29,7 @@ import java.util.List;
 
 import com.google.common.annotations.VisibleForTesting;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleConversionException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleValueException;
@@ -284,7 +285,7 @@ public class SelectValues extends BaseStep implements StepInterface {
       for ( int i = 0; i < data.metanrs.length; i++ ) {
         SelectMetadataChange change = meta.getMeta()[ i ];
         ValueMetaInterface valueMeta = rowMeta.getValueMeta( data.metanrs[ i ] );
-        if ( !Const.isEmpty( change.getConversionMask() ) ) {
+        if ( !Utils.isEmpty( change.getConversionMask() ) ) {
           valueMeta.setConversionMask( change.getConversionMask() );
         }
 
@@ -293,16 +294,16 @@ public class SelectValues extends BaseStep implements StepInterface {
         valueMeta.setDateFormatTimeZone( EnvUtil.createTimeZone( change.getDateFormatTimeZone() ) );
         valueMeta.setLenientStringToNumber( change.isLenientStringToNumber() );
 
-        if ( !Const.isEmpty( change.getEncoding() ) ) {
+        if ( !Utils.isEmpty( change.getEncoding() ) ) {
           valueMeta.setStringEncoding( change.getEncoding() );
         }
-        if ( !Const.isEmpty( change.getDecimalSymbol() ) ) {
+        if ( !Utils.isEmpty( change.getDecimalSymbol() ) ) {
           valueMeta.setDecimalSymbol( change.getDecimalSymbol() );
         }
-        if ( !Const.isEmpty( change.getGroupingSymbol() ) ) {
+        if ( !Utils.isEmpty( change.getGroupingSymbol() ) ) {
           valueMeta.setGroupingSymbol( change.getGroupingSymbol() );
         }
-        if ( !Const.isEmpty( change.getCurrencySymbol() ) ) {
+        if ( !Utils.isEmpty( change.getCurrencySymbol() ) ) {
           valueMeta.setCurrencySymbol( change.getCurrencySymbol() );
         }
       }
@@ -428,13 +429,13 @@ public class SelectValues extends BaseStep implements StepInterface {
       data.deselect = false;
       data.metadata = false;
 
-      if ( !Const.isEmpty( meta.getSelectFields() ) ) {
+      if ( !Utils.isEmpty( meta.getSelectFields() ) ) {
         data.select = true;
       }
-      if ( !Const.isEmpty( meta.getDeleteName() ) ) {
+      if ( !Utils.isEmpty( meta.getDeleteName() ) ) {
         data.deselect = true;
       }
-      if ( !Const.isEmpty( meta.getMeta() ) ) {
+      if ( !Utils.isEmpty( meta.getMeta() ) ) {
         data.metadata = true;
       }
 

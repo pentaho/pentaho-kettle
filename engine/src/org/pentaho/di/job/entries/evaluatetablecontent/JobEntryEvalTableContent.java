@@ -31,6 +31,7 @@ import java.util.List;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.Database;
@@ -325,7 +326,7 @@ public class JobEntryEvalTableContent extends JobEntryBase implements Cloneable,
             logDebug( BaseMessages.getString( PKG, "JobEntryEvalTableContent.Log.EnteredCustomSQL", realCustomSQL ) );
           }
 
-          if ( !Const.isEmpty( realCustomSQL ) ) {
+          if ( !Utils.isEmpty( realCustomSQL ) ) {
             countSQLStatement = realCustomSQL;
           } else {
             errCount++;
@@ -336,8 +337,8 @@ public class JobEntryEvalTableContent extends JobEntryBase implements Cloneable,
           String realTablename = environmentSubstitute( tablename );
           String realSchemaname = environmentSubstitute( schemaname );
 
-          if ( !Const.isEmpty( realTablename ) ) {
-            if ( !Const.isEmpty( realSchemaname ) ) {
+          if ( !Utils.isEmpty( realTablename ) ) {
+            if ( !Utils.isEmpty( realSchemaname ) ) {
               countSQLStatement =
                 selectCount
                   + db.getDatabaseMeta().getQuotedSchemaTableCombination( realSchemaname, realTablename );

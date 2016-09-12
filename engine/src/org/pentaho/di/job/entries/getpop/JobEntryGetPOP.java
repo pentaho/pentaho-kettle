@@ -41,6 +41,7 @@ import org.apache.commons.vfs2.FileType;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.encryption.Encr;
@@ -251,7 +252,7 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
       sslport = XMLHandler.getTagValue( entrynode, "sslport" );
       outputdirectory = XMLHandler.getTagValue( entrynode, "outputdirectory" );
       filenamepattern = XMLHandler.getTagValue( entrynode, "filenamepattern" );
-      if ( Const.isEmpty( filenamepattern ) ) {
+      if ( Utils.isEmpty( filenamepattern ) ) {
         filenamepattern = DEFAULT_FILE_NAME_PATTERN;
       }
       retrievemails = Const.toInt( XMLHandler.getTagValue( entrynode, "retrievemails" ), -1 );
@@ -262,14 +263,14 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
         Const.NVL( XMLHandler.getTagValue( entrynode, "protocol" ), MailConnectionMeta.PROTOCOL_STRING_POP3 );
 
       String sm = XMLHandler.getTagValue( entrynode, "savemessage" );
-      if ( Const.isEmpty( sm ) ) {
+      if ( Utils.isEmpty( sm ) ) {
         savemessage = true;
       } else {
         savemessage = "Y".equalsIgnoreCase( sm );
       }
 
       String sa = XMLHandler.getTagValue( entrynode, "saveattachment" );
-      if ( Const.isEmpty( sa ) ) {
+      if ( Utils.isEmpty( sa ) ) {
         saveattachment = true;
       } else {
         saveattachment = "Y".equalsIgnoreCase( sa );
@@ -337,7 +338,7 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
       sslport = rep.getJobEntryAttributeString( id_jobentry, "sslport" ); // backward compatible.
       outputdirectory = rep.getJobEntryAttributeString( id_jobentry, "outputdirectory" );
       filenamepattern = rep.getJobEntryAttributeString( id_jobentry, "filenamepattern" );
-      if ( Const.isEmpty( filenamepattern ) ) {
+      if ( Utils.isEmpty( filenamepattern ) ) {
         filenamepattern = DEFAULT_FILE_NAME_PATTERN;
       }
       retrievemails = (int) rep.getJobEntryAttributeInteger( id_jobentry, "retrievemails" );
@@ -349,14 +350,14 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
           rep.getJobEntryAttributeString( id_jobentry, "protocol" ), MailConnectionMeta.PROTOCOL_STRING_POP3 );
 
       String sv = rep.getJobEntryAttributeString( id_jobentry, "savemessage" );
-      if ( Const.isEmpty( sv ) ) {
+      if ( Utils.isEmpty( sv ) ) {
         savemessage = true;
       } else {
         savemessage = rep.getJobEntryAttributeBoolean( id_jobentry, "savemessage" );
       }
 
       String sa = rep.getJobEntryAttributeString( id_jobentry, "saveattachment" );
-      if ( Const.isEmpty( sa ) ) {
+      if ( Utils.isEmpty( sa ) ) {
         saveattachment = true;
       } else {
         saveattachment = rep.getJobEntryAttributeBoolean( id_jobentry, "saveattachment" );
@@ -864,7 +865,7 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
         && ( getActionType() == MailConnectionMeta.ACTION_TYPE_MOVE )
         || ( getActionType() == MailConnectionMeta.ACTION_TYPE_GET
         && getAfterGetIMAP() == MailConnectionMeta.AFTER_GET_IMAP_MOVE ) ) {
-        if ( Const.isEmpty( realMoveToIMAPFolder ) ) {
+        if ( Utils.isEmpty( realMoveToIMAPFolder ) ) {
           throw new KettleException( BaseMessages
             .getString( PKG, "JobGetMailsFromPOP.Error.MoveToIMAPFolderEmpty" ) );
         }
@@ -878,7 +879,7 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
         case MailConnectionMeta.CONDITION_DATE_GREATER:
         case MailConnectionMeta.CONDITION_DATE_SMALLER:
           String realBeginDate = environmentSubstitute( getReceivedDate1() );
-          if ( Const.isEmpty( realBeginDate ) ) {
+          if ( Utils.isEmpty( realBeginDate ) ) {
             throw new KettleException( BaseMessages.getString(
               PKG, "JobGetMailsFromPOP.Error.ReceivedDateSearchTermEmpty" ) );
           }
@@ -886,13 +887,13 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
           break;
         case MailConnectionMeta.CONDITION_DATE_BETWEEN:
           realBeginDate = environmentSubstitute( getReceivedDate1() );
-          if ( Const.isEmpty( realBeginDate ) ) {
+          if ( Utils.isEmpty( realBeginDate ) ) {
             throw new KettleException( BaseMessages.getString(
               PKG, "JobGetMailsFromPOP.Error.ReceivedDatesSearchTermEmpty" ) );
           }
           beginDate = df.parse( realBeginDate );
           String realEndDate = environmentSubstitute( getReceivedDate2() );
-          if ( Const.isEmpty( realEndDate ) ) {
+          if ( Utils.isEmpty( realEndDate ) ) {
             throw new KettleException( BaseMessages.getString(
               PKG, "JobGetMailsFromPOP.Error.ReceivedDatesSearchTermEmpty" ) );
           }
@@ -927,22 +928,22 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 
       // apply search term?
       String realSearchSender = environmentSubstitute( getSenderSearchTerm() );
-      if ( !Const.isEmpty( realSearchSender ) ) {
+      if ( !Utils.isEmpty( realSearchSender ) ) {
         // apply FROM
         mailConn.setSenderTerm( realSearchSender, isNotTermSenderSearch() );
       }
       String realSearchReceipient = environmentSubstitute( getReceipientSearch() );
-      if ( !Const.isEmpty( realSearchReceipient ) ) {
+      if ( !Utils.isEmpty( realSearchReceipient ) ) {
         // apply TO
         mailConn.setReceipientTerm( realSearchReceipient );
       }
       String realSearchSubject = environmentSubstitute( getSubjectSearch() );
-      if ( !Const.isEmpty( realSearchSubject ) ) {
+      if ( !Utils.isEmpty( realSearchSubject ) ) {
         // apply Subject
         mailConn.setSubjectTerm( realSearchSubject, isNotTermSubjectSearch() );
       }
       String realSearchBody = environmentSubstitute( getBodySearch() );
-      if ( !Const.isEmpty( realSearchBody ) ) {
+      if ( !Utils.isEmpty( realSearchBody ) ) {
         // apply body
         mailConn.setBodyTerm( realSearchBody, isNotTermBodySearch() );
       }
@@ -1067,7 +1068,7 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
     String realFilenamePattern, int nbrmailtoretrieve, SimpleDateFormat df ) throws KettleException {
     try {
       // if it is not pop3 and we have non-default imap folder...
-      if ( !usePOP3 && !Const.isEmpty( realIMAPFolder ) ) {
+      if ( !usePOP3 && !Utils.isEmpty( realIMAPFolder ) ) {
         mailConn.openFolder( realIMAPFolder, true );
       } else {
         mailConn.openFolder( true );
@@ -1276,7 +1277,7 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
     // Attachment wildcard
     attachementPattern = null;
     String realAttachmentWildcard = environmentSubstitute( getAttachmentWildcard() );
-    if ( !Const.isEmpty( realAttachmentWildcard ) ) {
+    if ( !Utils.isEmpty( realAttachmentWildcard ) ) {
       attachementPattern = Pattern.compile( realAttachmentWildcard );
     }
   }
@@ -1302,7 +1303,7 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 
   public List<ResourceReference> getResourceDependencies( JobMeta jobMeta ) {
     List<ResourceReference> references = super.getResourceDependencies( jobMeta );
-    if ( !Const.isEmpty( servername ) ) {
+    if ( !Utils.isEmpty( servername ) ) {
       String realServername = jobMeta.environmentSubstitute( servername );
       ResourceReference reference = new ResourceReference( this );
       reference.getEntries().add( new ResourceEntry( realServername, ResourceType.SERVER ) );
@@ -1328,7 +1329,7 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
         }
         break;
     }
-    if ( Const.isEmpty( folderName ) ) {
+    if ( Utils.isEmpty( folderName ) ) {
       switch ( folderType ) {
         case JobEntryGetPOP.FOLDER_OUTPUT:
           throw new KettleException( BaseMessages

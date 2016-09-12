@@ -20,7 +20,7 @@ package org.pentaho.di.job.entries.hl7mllpin;
 import java.util.List;
 
 import org.pentaho.di.cluster.SlaveServer;
-import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
@@ -203,10 +203,10 @@ public class HL7MLLPInput extends JobEntryBase implements Cloneable, JobEntryInt
               + structure.getClass().getName() );
         }
 
-        if ( !Const.isEmpty( messageTypeVariable ) ) {
+        if ( !Utils.isEmpty( messageTypeVariable ) ) {
           parentJob.setVariable( messageTypeVariable, messageType );
         }
-        if ( !Const.isEmpty( versionVariable ) ) {
+        if ( !Utils.isEmpty( versionVariable ) ) {
           parentJob.setVariable( versionVariable, version );
         }
       }

@@ -49,6 +49,7 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.SourceToTargetMapping;
 import org.pentaho.di.core.database.DatabaseInterface;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -1026,7 +1027,7 @@ public class BaseStepDialog extends Dialog {
     for ( int i = 0; i < table.getItemCount(); i++ ) {
       TableItem tableItem = table.getItem( i );
       String key = tableItem.getText( keyColumn );
-      if ( !Const.isEmpty( key ) && keys.indexOf( key ) < 0 ) {
+      if ( !Utils.isEmpty( key ) && keys.indexOf( key ) < 0 ) {
         keys.add( key );
       }
     }

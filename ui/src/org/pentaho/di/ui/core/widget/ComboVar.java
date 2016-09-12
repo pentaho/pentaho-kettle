@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -37,6 +37,7 @@ import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.gui.GUIResource;
@@ -165,11 +166,11 @@ public class ComboVar extends Composite {
     return new ModifyListener() {
       public void modifyText( ModifyEvent e ) {
         String tip = comboField.getText();
-        if ( !Const.isEmpty( tip ) && !Const.isEmpty( toolTipText ) ) {
+        if ( !Utils.isEmpty( tip ) && !Utils.isEmpty( toolTipText ) ) {
           tip += Const.CR + Const.CR + toolTipText;
         }
 
-        if ( Const.isEmpty( tip ) ) {
+        if ( Utils.isEmpty( tip ) ) {
           tip = toolTipText;
         }
         comboField.setToolTipText( variables.environmentSubstitute( tip ) );

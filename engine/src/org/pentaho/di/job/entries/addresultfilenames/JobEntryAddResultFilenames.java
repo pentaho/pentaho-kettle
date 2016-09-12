@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -38,6 +38,7 @@ import org.apache.commons.vfs2.FileType;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.RowMetaAndData;
@@ -330,11 +331,11 @@ public class JobEntryAddResultFilenames extends JobEntryBase implements Cloneabl
     String sourceFolder = null;
 
     public TextFileSelector( String sourcefolderin, String filewildcard ) {
-      if ( !Const.isEmpty( sourcefolderin ) ) {
+      if ( !Utils.isEmpty( sourcefolderin ) ) {
         sourceFolder = sourcefolderin;
       }
 
-      if ( !Const.isEmpty( filewildcard ) ) {
+      if ( !Utils.isEmpty( filewildcard ) ) {
         fileWildcard = filewildcard;
       }
     }
@@ -378,7 +379,7 @@ public class JobEntryAddResultFilenames extends JobEntryBase implements Cloneabl
     Pattern pattern = null;
     boolean getIt = true;
 
-    if ( !Const.isEmpty( wildcard ) ) {
+    if ( !Utils.isEmpty( wildcard ) ) {
       pattern = Pattern.compile( wildcard );
       // First see if the file matches the regular expression!
       if ( pattern != null ) {

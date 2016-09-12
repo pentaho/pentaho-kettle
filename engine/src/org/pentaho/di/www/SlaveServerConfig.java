@@ -24,6 +24,7 @@ package org.pentaho.di.www;
 
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.encryption.Encr;
@@ -343,7 +344,7 @@ public class SlaveServerConfig {
         // Automatically create a new sequence for each sequence found...
         //
         String sequenceName = rowMeta.getString( row, seqField, null );
-        if ( !Const.isEmpty( sequenceName ) ) {
+        if ( !Utils.isEmpty( sequenceName ) ) {
           Long value = rowMeta.getInteger( row, valueField, null );
           if ( value != null ) {
             SlaveSequence slaveSequence =
@@ -370,7 +371,7 @@ public class SlaveServerConfig {
     // See if we need to grab the network interface to use and then override the host name
     //
     String networkInterfaceName = XMLHandler.getTagValue( slaveNode, "network_interface" );
-    if ( !Const.isEmpty( networkInterfaceName ) ) {
+    if ( !Utils.isEmpty( networkInterfaceName ) ) {
       // OK, so let's try to get the IP address for this network interface...
       //
       try {
@@ -586,7 +587,7 @@ public class SlaveServerConfig {
    */
   public Repository getRepository() throws KettleException {
 
-    if ( !Const.isEmpty( repositoryId ) && repository == null ) {
+    if ( !Utils.isEmpty( repositoryId ) && repository == null ) {
       openRepository( repositoryId );
     }
 

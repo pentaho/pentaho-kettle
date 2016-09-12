@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -45,6 +45,7 @@ import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.RowMetaAndData;
@@ -347,7 +348,7 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
       for ( int i = 0; i < nrParams; i++ ) {
         String name = environmentSubstitute( getParameterName()[i] );
         String value = environmentSubstitute( getParameterField()[i] );
-        if ( Const.isEmpty( value ) ) {
+        if ( Utils.isEmpty( value ) ) {
           throw new KettleStepException( BaseMessages.getString( PKG, "Xslt.Exception.ParameterFieldMissing", name, i ) );
         }
         nameOfParams[i] = name;
@@ -376,8 +377,8 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
         String xslfilename_previous = resultRow.getString( 1, null );
         String ouputfilename_previous = resultRow.getString( 2, null );
 
-        if ( !Const.isEmpty( xmlfilename_previous ) && !Const.isEmpty( xslfilename_previous )
-            && !Const.isEmpty( ouputfilename_previous ) ) {
+        if ( !Utils.isEmpty( xmlfilename_previous ) && !Utils.isEmpty( xslfilename_previous )
+            && !Utils.isEmpty( ouputfilename_previous ) ) {
           if ( processOneXMLFile( xmlfilename_previous, xslfilename_previous, ouputfilename_previous, result, parentJob ) ) {
             NrSuccess++;
           } else {
@@ -394,8 +395,8 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
       String realxmlfilename = getRealxmlfilename();
       String realxslfilename = getRealxslfilename();
       String realoutputfilename = getoutputfilename();
-      if ( !Const.isEmpty( realxmlfilename ) && !Const.isEmpty( realxslfilename )
-          && !Const.isEmpty( realoutputfilename ) ) {
+      if ( !Utils.isEmpty( realxmlfilename ) && !Utils.isEmpty( realxslfilename )
+          && !Utils.isEmpty( realoutputfilename ) ) {
         if ( processOneXMLFile( realxmlfilename, realxslfilename, realoutputfilename, result, parentJob ) ) {
           NrSuccess++;
         } else {
@@ -621,7 +622,7 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
 
   public List<ResourceReference> getResourceDependencies( JobMeta jobMeta ) {
     List<ResourceReference> references = super.getResourceDependencies( jobMeta );
-    if ( ( !Const.isEmpty( xslfilename ) ) && ( !Const.isEmpty( xmlfilename ) ) ) {
+    if ( ( !Utils.isEmpty( xslfilename ) ) && ( !Utils.isEmpty( xmlfilename ) ) ) {
       String realXmlFileName = jobMeta.environmentSubstitute( xmlfilename );
       String realXslFileName = jobMeta.environmentSubstitute( xslfilename );
       ResourceReference reference = new ResourceReference( this );

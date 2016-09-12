@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -47,6 +47,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.SourceToTargetMapping;
@@ -663,7 +664,7 @@ public class SimpleMappingDialog extends BaseStepDialog implements StepDialogInt
         String realDirectory = transMeta.environmentSubstitute( wDirectory.getText() );
         String realTransname = transMeta.environmentSubstitute( wTransname.getText() );
 
-        if ( Const.isEmpty( realDirectory ) || Const.isEmpty( realTransname ) ) {
+        if ( Utils.isEmpty( realDirectory ) || Utils.isEmpty( realTransname ) ) {
           throw new KettleException( BaseMessages.getString( PKG,
             "SimpleMappingDialog.Exception.NoValidMappingDetailsFound" ) );
         }
@@ -773,7 +774,7 @@ public class SimpleMappingDialog extends BaseStepDialog implements StepDialogInt
       boolean saved = false;
       try {
         if ( repository != null ) {
-          if ( !Const.isEmpty( newTransMeta.getName() ) ) {
+          if ( !Utils.isEmpty( newTransMeta.getName() ) ) {
             wStepname.setText( newTransMeta.getName() );
           }
           saved = spoon.saveToRepository( newTransMeta, false );
@@ -1189,16 +1190,16 @@ public class SimpleMappingDialog extends BaseStepDialog implements StepDialogInt
     }
     String description = definition.getDescription();
 
-    if ( Const.isEmpty( stepname ) ) {
+    if ( Utils.isEmpty( stepname ) ) {
       wTab.setText( tabTitle );
     } else {
       wTab.setText( tabTitle + " : " + stepname );
     }
     String tooltip = tabTooltip;
-    if ( !Const.isEmpty( stepname ) ) {
+    if ( !Utils.isEmpty( stepname ) ) {
       tooltip += Const.CR + Const.CR + stepname;
     }
-    if ( !Const.isEmpty( description ) ) {
+    if ( !Utils.isEmpty( description ) ) {
       tooltip += Const.CR + Const.CR + description;
     }
     wTab.setToolTipText( tooltip );
@@ -1211,7 +1212,7 @@ public class SimpleMappingDialog extends BaseStepDialog implements StepDialogInt
   }
 
   private void ok() {
-    if ( Const.isEmpty( wStepname.getText() ) ) {
+    if ( Utils.isEmpty( wStepname.getText() ) ) {
       return;
     }
 

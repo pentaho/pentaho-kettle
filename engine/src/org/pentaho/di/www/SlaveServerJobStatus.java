@@ -27,6 +27,7 @@ import java.util.Date;
 
 import org.pentaho.di.cluster.HttpUtil;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -97,7 +98,7 @@ public class SlaveServerJobStatus {
 
     String loggingString64 = XMLHandler.getTagValue( jobStatusNode, "logging_string" );
 
-    if ( !Const.isEmpty( loggingString64 ) ) {
+    if ( !Utils.isEmpty( loggingString64 ) ) {
       // This is a CDATA block with a Base64 encoded GZIP compressed stream of data.
       //
       String dataString64 =

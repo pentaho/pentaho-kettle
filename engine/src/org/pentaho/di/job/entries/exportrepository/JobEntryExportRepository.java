@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -36,6 +36,7 @@ import org.apache.commons.vfs2.FileType;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -391,7 +392,7 @@ public class JobEntryExportRepository extends JobEntryBase implements Cloneable,
 
   public String buildFilename( String filename ) {
     String retval = "";
-    if ( Const.isEmpty( filename ) ) {
+    if ( Utils.isEmpty( filename ) ) {
       return null;
     }
 
@@ -406,7 +407,7 @@ public class JobEntryExportRepository extends JobEntryBase implements Cloneable,
     SimpleDateFormat daf = new SimpleDateFormat();
     Date now = new Date();
 
-    if ( isSpecifyFormat() && !Const.isEmpty( getDateTimeFormat() ) ) {
+    if ( isSpecifyFormat() && !Utils.isEmpty( getDateTimeFormat() ) ) {
       daf.applyPattern( getDateTimeFormat() );
       String dt = daf.format( now );
       retval += dt;
@@ -428,7 +429,7 @@ public class JobEntryExportRepository extends JobEntryBase implements Cloneable,
 
   public String buildUniqueFilename( String filename ) {
     String retval = "";
-    if ( Const.isEmpty( filename ) ) {
+    if ( Utils.isEmpty( filename ) ) {
       return null;
     }
 

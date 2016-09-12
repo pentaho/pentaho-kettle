@@ -27,6 +27,7 @@ import java.util.List;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
@@ -429,26 +430,26 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
   @Override
   public void getFields( RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info, StepMeta nextStep,
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
-    if ( !Const.isEmpty( fieldName ) ) {
+    if ( !Utils.isEmpty( fieldName ) ) {
       ValueMetaInterface v = new ValueMetaString( space.environmentSubstitute( fieldName ) );
       v.setOrigin( name );
       inputRowMeta.addValueMeta( v );
     }
 
-    if ( !Const.isEmpty( resultCodeFieldName ) ) {
+    if ( !Utils.isEmpty( resultCodeFieldName ) ) {
       ValueMetaInterface v =
         new ValueMetaInteger( space.environmentSubstitute( resultCodeFieldName ) );
       v.setOrigin( name );
       inputRowMeta.addValueMeta( v );
     }
-    if ( !Const.isEmpty( responseTimeFieldName ) ) {
+    if ( !Utils.isEmpty( responseTimeFieldName ) ) {
       ValueMetaInterface v =
         new ValueMetaInteger( space.environmentSubstitute( responseTimeFieldName ) );
       v.setOrigin( name );
       inputRowMeta.addValueMeta( v );
     }
     String headerFieldName = space.environmentSubstitute( responseHeaderFieldName );
-    if ( !Const.isEmpty( headerFieldName ) ) {
+    if ( !Utils.isEmpty( headerFieldName ) ) {
       ValueMetaInterface v =
         new ValueMetaString( headerFieldName );
       v.setOrigin( name );
@@ -690,7 +691,7 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
 
     // check Url
     if ( urlInField ) {
-      if ( Const.isEmpty( urlField ) ) {
+      if ( Utils.isEmpty( urlField ) ) {
         cr =
           new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
             PKG, "RestMeta.CheckResult.UrlfieldMissing" ), stepMeta );
@@ -701,7 +702,7 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
       }
 
     } else {
-      if ( Const.isEmpty( url ) ) {
+      if ( Utils.isEmpty( url ) ) {
         cr =
           new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
             PKG, "RestMeta.CheckResult.UrlMissing" ), stepMeta );
@@ -715,7 +716,7 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
 
     // Check method
     if ( dynamicMethod ) {
-      if ( Const.isEmpty( methodFieldName ) ) {
+      if ( Utils.isEmpty( methodFieldName ) ) {
         cr =
           new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
             PKG, "RestMeta.CheckResult.MethodFieldMissing" ), stepMeta );
@@ -726,7 +727,7 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
       }
 
     } else {
-      if ( Const.isEmpty( method ) ) {
+      if ( Utils.isEmpty( method ) ) {
         cr =
           new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
             PKG, "RestMeta.CheckResult.MethodMissing" ), stepMeta );
@@ -910,7 +911,7 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public static boolean isActiveBody( String method ) {
-    if ( Const.isEmpty( method ) ) {
+    if ( Utils.isEmpty( method ) ) {
       return false;
     }
     return ( method.equals( HTTP_METHOD_POST ) || method.equals( HTTP_METHOD_PUT ) )
@@ -918,7 +919,7 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public static boolean isActiveParameters( String method ) {
-    if ( Const.isEmpty( method ) ) {
+    if ( Utils.isEmpty( method ) ) {
       return false;
     }
     return ( method.equals( HTTP_METHOD_POST ) || method.equals( HTTP_METHOD_PUT ) || method

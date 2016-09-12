@@ -59,7 +59,7 @@ import org.pentaho.di.www.GetPropertiesServlet;
 
 /**
  * Tests for SlaveServer class
- * 
+ *
  * @author Pavel Sakun
  * @see SlaveServer
  */

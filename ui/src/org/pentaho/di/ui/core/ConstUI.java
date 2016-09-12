@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,6 +27,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.TreeItem;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.ui.xul.containers.XulMenupopup;
 
 /**
@@ -225,7 +226,7 @@ public class ConstUI {
   }
 
   private static final TreeItem findTreeItem( TreeItem grandParent, TreeItem parent, String parentName, String name ) {
-    if ( Const.isEmpty( parentName ) ) {
+    if ( Utils.isEmpty( parentName ) ) {
       if ( parent.getText().equalsIgnoreCase( name ) ) {
         return parent;
       }

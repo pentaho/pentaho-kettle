@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -38,7 +38,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
-import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.gui.GUIResource;
 
@@ -259,7 +259,7 @@ public class StyledTextCompReplace extends org.eclipse.swt.widgets.Dialog {
   }
 
   private void setSearchText() {
-    if ( this.text != null && !Const.isEmpty( this.text.getSelectionText() ) ) {
+    if ( this.text != null && !Utils.isEmpty( this.text.getSelectionText() ) ) {
       searchText.setText( this.text.getSelectionText() );
     }
     searchText.setFocus();

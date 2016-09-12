@@ -427,7 +427,7 @@ public class DatabaseLookupUTest {
   }
 
   public class MockDatabaseLookup extends DatabaseLookup {
-    public MockDatabaseLookup(StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans ) {
+    public MockDatabaseLookup( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans ) {
       super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
     }
 

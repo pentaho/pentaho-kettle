@@ -35,6 +35,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowDataUtil;
@@ -181,30 +182,30 @@ public class AddXML extends BaseStep implements StepInterface {
 
     if ( valueMeta == null || valueMeta.isNull( valueData ) ) {
       String defaultNullValue = field.getNullString();
-      return Const.isEmpty( defaultNullValue ) ? "" : defaultNullValue;
+      return Utils.isEmpty( defaultNullValue ) ? "" : defaultNullValue;
     }
 
     if ( valueMeta.isNumeric() ) {
       // Formatting
-      if ( !Const.isEmpty( field.getFormat() ) ) {
+      if ( !Utils.isEmpty( field.getFormat() ) ) {
         data.df.applyPattern( field.getFormat() );
       } else {
         data.df.applyPattern( data.defaultDecimalFormat.toPattern() );
       }
       // Decimal
-      if ( !Const.isEmpty( field.getDecimalSymbol() ) ) {
+      if ( !Utils.isEmpty( field.getDecimalSymbol() ) ) {
         data.dfs.setDecimalSeparator( field.getDecimalSymbol().charAt( 0 ) );
       } else {
         data.dfs.setDecimalSeparator( data.defaultDecimalFormatSymbols.getDecimalSeparator() );
       }
       // Grouping
-      if ( !Const.isEmpty( field.getGroupingSymbol() ) ) {
+      if ( !Utils.isEmpty( field.getGroupingSymbol() ) ) {
         data.dfs.setGroupingSeparator( field.getGroupingSymbol().charAt( 0 ) );
       } else {
         data.dfs.setGroupingSeparator( data.defaultDecimalFormatSymbols.getGroupingSeparator() );
       }
       // Currency symbol
-      if ( !Const.isEmpty( field.getCurrencySymbol() ) ) {
+      if ( !Utils.isEmpty( field.getCurrencySymbol() ) ) {
         data.dfs.setCurrencySymbol( field.getCurrencySymbol() );
       } else {
         data.dfs.setCurrencySymbol( data.defaultDecimalFormatSymbols.getCurrencySymbol() );
@@ -221,8 +222,8 @@ public class AddXML extends BaseStep implements StepInterface {
         retval = data.df.format( valueMeta.getInteger( valueData ) );
       }
     } else if ( valueMeta.isDate() ) {
-      if ( field != null && !Const.isEmpty( field.getFormat() ) && valueMeta.getDate( valueData ) != null ) {
-        if ( !Const.isEmpty( field.getFormat() ) ) {
+      if ( field != null && !Utils.isEmpty( field.getFormat() ) && valueMeta.getDate( valueData ) != null ) {
+        if ( !Utils.isEmpty( field.getFormat() ) ) {
           data.daf.applyPattern( field.getFormat() );
         } else {
           data.daf.applyPattern( data.defaultDateFormat.toLocalizedPattern() );
@@ -231,7 +232,7 @@ public class AddXML extends BaseStep implements StepInterface {
         retval = data.daf.format( valueMeta.getDate( valueData ) );
       } else {
         if ( valueMeta.isNull( valueData ) ) {
-          if ( field != null && !Const.isEmpty( field.getNullString() ) ) {
+          if ( field != null && !Utils.isEmpty( field.getNullString() ) ) {
             retval = field.getNullString();
           }
         } else {
@@ -242,7 +243,7 @@ public class AddXML extends BaseStep implements StepInterface {
       retval = valueMeta.getString( valueData );
     } else if ( valueMeta.isBinary() ) {
       if ( valueMeta.isNull( valueData ) ) {
-        if ( !Const.isEmpty( field.getNullString() ) ) {
+        if ( !Utils.isEmpty( field.getNullString() ) ) {
           retval = field.getNullString();
         } else {
           retval = Const.NULL_BINARY;

@@ -29,6 +29,7 @@ import java.util.List;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettlePluginException;
@@ -77,12 +78,12 @@ public class RowGenerator extends BaseStep implements StepInterface {
     int index = 0;
 
     if ( meta.isNeverEnding() ) {
-      if ( !Const.isEmpty( meta.getRowTimeField() ) ) {
+      if ( !Utils.isEmpty( meta.getRowTimeField() ) ) {
         rowMeta.addValueMeta( new ValueMetaDate( meta.getRowTimeField() ) );
         rowData[index++] = null;
       }
 
-      if ( !Const.isEmpty( meta.getLastTimeField() ) ) {
+      if ( !Utils.isEmpty( meta.getLastTimeField() ) ) {
         rowMeta.addValueMeta( new ValueMetaDate( meta.getLastTimeField() ) );
         rowData[index++] = null;
       }
@@ -111,7 +112,7 @@ public class RowGenerator extends BaseStep implements StepInterface {
           String stringValue = meta.getValue()[i];
 
           // If the value is empty: consider it to be NULL.
-          if ( Const.isEmpty( stringValue ) ) {
+          if ( Utils.isEmpty( stringValue ) ) {
             rowData[index] = null;
 
             if ( valueMeta.getType() == ValueMetaInterface.TYPE_NONE ) {
@@ -219,10 +220,10 @@ public class RowGenerator extends BaseStep implements StepInterface {
       data.rowDate = new Date();
 
       int index = 0;
-      if ( !Const.isEmpty( meta.getRowTimeField() ) ) {
+      if ( !Utils.isEmpty( meta.getRowTimeField() ) ) {
         r[index++] = data.rowDate;
       }
-      if ( !Const.isEmpty( meta.getLastTimeField() ) ) {
+      if ( !Utils.isEmpty( meta.getLastTimeField() ) ) {
         r[index++] = data.prevDate;
       }
     }

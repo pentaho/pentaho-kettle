@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -39,6 +39,7 @@ import org.apache.commons.vfs2.FileSystemException;
 import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
@@ -189,13 +190,13 @@ public class SharedObjects {
 
   public static final String createFilename( String sharedObjectsFile ) {
     String filename;
-    if ( Const.isEmpty( sharedObjectsFile ) ) {
+    if ( Utils.isEmpty( sharedObjectsFile ) ) {
       // First fallback is the environment/kettle variable ${KETTLE_SHARED_OBJECTS}
       // This points to the file
       filename = Variables.getADefaultVariableSpace().getVariable( Const.KETTLE_SHARED_OBJECTS );
 
       // Last line of defence...
-      if ( Const.isEmpty( filename ) ) {
+      if ( Utils.isEmpty( filename ) ) {
         filename = Const.getSharedObjectsFile();
       }
     } else {
@@ -417,6 +418,6 @@ public class SharedObjects {
 
   @Override
   public String toString() {
-    return getClass().getSimpleName() + ( !Const.isEmpty( getFilename() ) ? " (" + getFilename() + ")" : "" );
+    return getClass().getSimpleName() + ( !Utils.isEmpty( getFilename() ) ? " (" + getFilename() + ")" : "" );
   }
 }

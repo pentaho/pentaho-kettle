@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -21,11 +21,18 @@
  ******************************************************************************/
 package org.pentaho.di.www;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.text.MessageFormat;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.vfs2.FileObject;
-import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.Job;
@@ -38,13 +45,6 @@ import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.trans.TransMeta;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
-
-import java.io.IOException;
-import java.io.OutputStream;
-import java.text.MessageFormat;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 public class RegisterPackageServlet extends BaseJobServlet {
 
@@ -76,7 +76,7 @@ public class RegisterPackageServlet extends BaseJobServlet {
     String archiveUrl = tempFile.getName().toString();
     String load = request.getParameter( PARAMETER_LOAD ); // the resource to load
 
-    if ( !Const.isEmpty( load ) ) {
+    if ( !Utils.isEmpty( load ) ) {
       String fileUrl = MessageFormat.format( ZIP_CONT, archiveUrl, load );
       boolean isJob = TYPE_JOB.equalsIgnoreCase( request.getParameter( PARAMETER_TYPE ) );
       String resultId;

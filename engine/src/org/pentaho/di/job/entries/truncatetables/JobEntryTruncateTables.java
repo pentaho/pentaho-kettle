@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -31,6 +31,7 @@ import java.util.List;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.Database;
@@ -211,13 +212,13 @@ public class JobEntryTruncateTables extends JobEntryBase implements Cloneable, J
     String realTablename = tablename;
     try {
 
-      if ( !Const.isEmpty( realSchemaname ) ) {
+      if ( !Utils.isEmpty( realSchemaname ) ) {
         realTablename = db.getDatabaseMeta().getQuotedSchemaTableCombination( realSchemaname, realTablename );
       }
 
       // check if table exists!
       if ( db.checkTableExists( realTablename ) ) {
-        if ( !Const.isEmpty( realSchemaname ) ) {
+        if ( !Utils.isEmpty( realSchemaname ) ) {
           db.truncateTable( realSchemaname, tablename );
         } else {
           db.truncateTable( tablename );
@@ -271,7 +272,7 @@ public class JobEntryTruncateTables extends JobEntryBase implements Cloneable, J
             String tablename_previous = resultRow.getString( 0, null );
             String schemaname_previous = resultRow.getString( 1, null );
 
-            if ( !Const.isEmpty( tablename_previous ) ) {
+            if ( !Utils.isEmpty( tablename_previous ) ) {
               if ( log.isDetailed() ) {
                 logDetailed( BaseMessages.getString(
                   PKG, "JobEntryTruncateTables.ProcessingRow", tablename_previous, schemaname_previous ) );
@@ -292,7 +293,7 @@ public class JobEntryTruncateTables extends JobEntryBase implements Cloneable, J
           for ( int i = 0; i < arguments.length && !parentJob.isStopped() && continueProcess; i++ ) {
             String realTablename = environmentSubstitute( arguments[i] );
             String realSchemaname = environmentSubstitute( schemaname[i] );
-            if ( !Const.isEmpty( realTablename ) ) {
+            if ( !Utils.isEmpty( realTablename ) ) {
               if ( log.isDetailed() ) {
                 logDetailed( BaseMessages.getString(
                   PKG, "JobEntryTruncateTables.ProcessingArg", arguments[i], schemaname[i] ) );

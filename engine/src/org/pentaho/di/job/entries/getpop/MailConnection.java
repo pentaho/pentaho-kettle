@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -57,6 +57,7 @@ import javax.mail.search.SearchTerm;
 import javax.mail.search.SubjectTerm;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.vfs.KettleVFS;
@@ -513,7 +514,7 @@ public class MailConnection {
    *          negate condition
    */
   public void setSubjectTerm( String subject, boolean notTerm ) {
-    if ( !Const.isEmpty( subject ) ) {
+    if ( !Utils.isEmpty( subject ) ) {
       if ( notTerm ) {
         addSearchTerm( new NotTerm( new SubjectTerm( subject ) ) );
       } else {
@@ -530,7 +531,7 @@ public class MailConnection {
    *          negate condition
    */
   public void setBodyTerm( String bodyfilter, boolean notTerm ) {
-    if ( !Const.isEmpty( bodyfilter ) ) {
+    if ( !Utils.isEmpty( bodyfilter ) ) {
       if ( notTerm ) {
         addSearchTerm( new NotTerm( new BodyTerm( bodyfilter ) ) );
       } else {
@@ -548,7 +549,7 @@ public class MailConnection {
    *          negate condition
    */
   public void setSenderTerm( String sender, boolean notTerm ) {
-    if ( !Const.isEmpty( sender ) ) {
+    if ( !Utils.isEmpty( sender ) ) {
       if ( notTerm ) {
         addSearchTerm( new NotTerm( new FromStringTerm( sender ) ) );
       } else {
@@ -566,7 +567,7 @@ public class MailConnection {
    *          negate condition
    */
   public void setReceipientTerm( String receipient ) {
-    if ( !Const.isEmpty( receipient ) ) {
+    if ( !Utils.isEmpty( receipient ) ) {
       addSearchTerm( new RecipientStringTerm( Message.RecipientType.TO, receipient ) );
     }
   }
@@ -1198,7 +1199,7 @@ public class MailConnection {
     Folder dfolder = null;
     String[] retval = null;
     try {
-      if ( Const.isEmpty( folder ) ) {
+      if ( Utils.isEmpty( folder ) ) {
         // Default folder
         dfolder = getStore().getDefaultFolder();
       } else {

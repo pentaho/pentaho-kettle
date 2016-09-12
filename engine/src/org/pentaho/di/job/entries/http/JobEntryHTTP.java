@@ -41,6 +41,7 @@ import java.util.List;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.RowMetaAndData;
@@ -421,19 +422,19 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
     List<RowMetaAndData> resultRows;
     String urlFieldnameToUse, uploadFieldnameToUse, destinationFieldnameToUse;
 
-    if ( Const.isEmpty( urlFieldname ) ) {
+    if ( Utils.isEmpty( urlFieldname ) ) {
       urlFieldnameToUse = URL_FIELDNAME;
     } else {
       urlFieldnameToUse = urlFieldname;
     }
 
-    if ( Const.isEmpty( uploadFieldname ) )  {
+    if ( Utils.isEmpty( uploadFieldname ) )  {
       uploadFieldnameToUse = UPLOADFILE_FIELDNAME;
     } else {
       uploadFieldnameToUse = uploadFieldname;
     }
 
-    if ( Const.isEmpty( destinationFieldname ) )  {
+    if ( Utils.isEmpty( destinationFieldname ) )  {
       destinationFieldnameToUse = TARGETFILE_FIELDNAME;
     } else {
       destinationFieldnameToUse = destinationFieldname;
@@ -479,7 +480,7 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
 
         logBasic( BaseMessages.getString( PKG, "JobHTTP.Log.ConnectingURL", urlToUse ) );
 
-        if ( !Const.isEmpty( proxyHostname ) ) {
+        if ( !Utils.isEmpty( proxyHostname ) ) {
           System.setProperty( "http.proxyHost", environmentSubstitute( proxyHostname ) );
           System.setProperty( "http.proxyPort", environmentSubstitute( proxyPort ) );
           if ( nonProxyHosts != null ) {
@@ -487,7 +488,7 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
           }
         }
 
-        if ( !Const.isEmpty( username ) ) {
+        if ( !Utils.isEmpty( username ) ) {
           Authenticator.setDefault( new Authenticator() {
             @Override
             protected PasswordAuthentication getPasswordAuthentication() {
@@ -507,7 +508,7 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
           daf.applyPattern( "HHmmss" );
           realTargetFile += "_" + daf.format( now );
 
-          if ( !Const.isEmpty( targetFilenameExtension ) ) {
+          if ( !Utils.isEmpty( targetFilenameExtension ) ) {
             realTargetFile += "." + environmentSubstitute( targetFilenameExtension );
           }
         }
@@ -520,12 +521,12 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
         URLConnection connection = server.openConnection();
 
         // if we have HTTP headers, add them
-        if ( !Const.isEmpty( headerName ) ) {
+        if ( !Utils.isEmpty( headerName ) ) {
           if ( log.isDebug() ) {
             log.logDebug( BaseMessages.getString( PKG, "JobHTTP.Log.HeadersProvided" ) );
           }
           for ( int j = 0; j < headerName.length; j++ ) {
-            if ( !Const.isEmpty( headerValue[j] ) ) {
+            if ( !Utils.isEmpty( headerValue[j] ) ) {
               connection.setRequestProperty(
                 environmentSubstitute( headerName[j] ), environmentSubstitute( headerValue[j] ) );
               if ( log.isDebug() ) {
@@ -540,7 +541,7 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
         connection.setDoOutput( true );
 
         // See if we need to send a file over?
-        if ( !Const.isEmpty( realUploadFile ) ) {
+        if ( !Utils.isEmpty( realUploadFile ) ) {
           if ( log.isDetailed() ) {
             logDetailed( BaseMessages.getString( PKG, "JobHTTP.Log.SendingFile", realUploadFile ) );
           }

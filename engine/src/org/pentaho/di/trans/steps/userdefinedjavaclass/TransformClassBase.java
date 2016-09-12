@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.pentaho.di.core.BlockingRowSet;
-import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleException;
@@ -37,6 +36,7 @@ import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
@@ -579,7 +579,7 @@ public abstract class TransformClassBase {
       return null;
     }
     String stepname = data.infoMap.get( tag );
-    if ( Const.isEmpty( stepname ) ) {
+    if ( Utils.isEmpty( stepname ) ) {
       throw new KettleException( BaseMessages.getString(
         PKG, "TransformClassBase.Exception.UnableToFindInfoStepNameForTag", tag ) );
     }
@@ -596,7 +596,7 @@ public abstract class TransformClassBase {
       return null;
     }
     String stepname = data.targetMap.get( tag );
-    if ( Const.isEmpty( stepname ) ) {
+    if ( Utils.isEmpty( stepname ) ) {
       throw new KettleException( BaseMessages.getString(
         PKG, "TransformClassBase.Exception.UnableToFindTargetStepNameForTag", tag ) );
     }

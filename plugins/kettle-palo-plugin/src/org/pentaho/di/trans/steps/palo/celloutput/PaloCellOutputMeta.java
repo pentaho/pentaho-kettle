@@ -27,6 +27,7 @@ import java.util.List;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
@@ -298,7 +299,7 @@ public class PaloCellOutputMeta extends BaseStepMeta implements StepMetaInterfac
         cr = new CheckResult( CheckResultInterface.TYPE_RESULT_OK, "Connection to database OK", stepMeta );
         remarks.add( cr );
 
-        if ( !Const.isEmpty( this.cube ) ) {
+        if ( !Utils.isEmpty( this.cube ) ) {
           cr = new CheckResult( CheckResultInterface.TYPE_RESULT_OK, "The name of the cube is entered", stepMeta );
           remarks.add( cr );
         } else {
@@ -306,11 +307,11 @@ public class PaloCellOutputMeta extends BaseStepMeta implements StepMetaInterfac
           remarks.add( cr );
         }
 
-        if ( this.measureField == null || Const.isEmpty( this.measureField.getFieldName() ) ) {
+        if ( this.measureField == null || Utils.isEmpty( this.measureField.getFieldName() ) ) {
           cr = new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, "Measure field is empty.", stepMeta );
           remarks.add( cr );
         } else {
-          if ( Const.isEmpty( this.measureField.getFieldType() ) ) {
+          if ( Utils.isEmpty( this.measureField.getFieldType() ) ) {
             cr = new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, "Measure field type is empty.", stepMeta );
             remarks.add( cr );
           }
@@ -320,13 +321,13 @@ public class PaloCellOutputMeta extends BaseStepMeta implements StepMetaInterfac
           remarks.add( cr );
         } else {
           for ( DimensionField field : this.fields ) {
-            if ( Const.isEmpty( field.getFieldName() ) ) {
+            if ( Utils.isEmpty( field.getFieldName() ) ) {
               cr =
                 new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, "Input field for dimension "
                   + field.getDimensionName() + " is empty.", stepMeta );
               remarks.add( cr );
             }
-            if ( Const.isEmpty( field.getFieldType() ) ) {
+            if ( Utils.isEmpty( field.getFieldType() ) ) {
               cr =
                 new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, "Input field type for dimension "
                   + field.getDimensionName() + " is empty.", stepMeta );

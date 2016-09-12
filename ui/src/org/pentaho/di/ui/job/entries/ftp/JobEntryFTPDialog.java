@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -49,6 +49,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
@@ -1360,7 +1361,7 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
   }
 
   private void checkRemoteFolder( boolean FTPFolfer, boolean checkMoveFolder, String foldername ) {
-    if ( !Const.isEmpty( foldername ) ) {
+    if ( !Utils.isEmpty( foldername ) ) {
       if ( connectToFTP( FTPFolfer, checkMoveFolder ) ) {
         MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_INFORMATION );
         mb.setMessage( BaseMessages.getString( PKG, "JobFTP.FolderExists.OK", foldername ) + Const.CR );
@@ -1382,7 +1383,7 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
         ftpclient.setRemoteAddr( InetAddress.getByName( realServername ) );
         ftpclient.setRemotePort( realPort );
 
-        if ( !Const.isEmpty( wProxyHost.getText() ) ) {
+        if ( !Utils.isEmpty( wProxyHost.getText() ) ) {
           String realProxy_host = jobMeta.environmentSubstitute( wProxyHost.getText() );
           ftpclient.setRemoteAddr( InetAddress.getByName( realProxy_host ) );
 
@@ -1396,13 +1397,13 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
         ftpclient.connect();
         String realUsername =
           jobMeta.environmentSubstitute( wUserName.getText() )
-            + ( !Const.isEmpty( wProxyHost.getText() ) ? "@" + realServername : "" )
-            + ( !Const.isEmpty( wProxyUsername.getText() ) ? " "
+            + ( !Utils.isEmpty( wProxyHost.getText() ) ? "@" + realServername : "" )
+            + ( !Utils.isEmpty( wProxyUsername.getText() ) ? " "
               + jobMeta.environmentSubstitute( wProxyUsername.getText() ) : "" );
 
         String realPassword =
           jobMeta.environmentSubstitute( wPassword.getText() )
-            + ( !Const.isEmpty( wProxyPassword.getText() ) ? " "
+            + ( !Utils.isEmpty( wProxyPassword.getText() ) ? " "
               + jobMeta.environmentSubstitute( wProxyPassword.getText() ) : "" );
         // login now ...
         ftpclient.login( realUsername, realPassword );
@@ -1410,7 +1411,7 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
       }
 
       String realFtpDirectory = "";
-      if ( !Const.isEmpty( wFtpDirectory.getText() ) ) {
+      if ( !Utils.isEmpty( wFtpDirectory.getText() ) ) {
         realFtpDirectory = jobMeta.environmentSubstitute( wFtpDirectory.getText() );
       }
 
@@ -1419,7 +1420,7 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
           ftpclient.chdir( pwdFolder );
         }
         // move to spool dir ...
-        if ( !Const.isEmpty( realFtpDirectory ) ) {
+        if ( !Utils.isEmpty( realFtpDirectory ) ) {
           ftpclient.chdir( realFtpDirectory );
         }
       }
@@ -1430,7 +1431,7 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
 
         // move to folder ...
 
-        if ( !Const.isEmpty( wMoveToDirectory.getText() ) ) {
+        if ( !Utils.isEmpty( wMoveToDirectory.getText() ) ) {
           String realMoveDirectory = jobMeta.environmentSubstitute( wMoveToDirectory.getText() );
           realMoveDirectory = realFtpDirectory + "/" + realMoveDirectory;
           ftpclient.chdir( realMoveDirectory );
@@ -1563,7 +1564,7 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
   }
 
   private void ok() {
-    if ( Const.isEmpty( wName.getText() ) ) {
+    if ( Utils.isEmpty( wName.getText() ) ) {
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
       mb.setText( BaseMessages.getString( PKG, "System.StepJobEntryNameMissing.Title" ) );
       mb.setMessage( BaseMessages.getString( PKG, "System.JobEntryNameMissing.Msg" ) );

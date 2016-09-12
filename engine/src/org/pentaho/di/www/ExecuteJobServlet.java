@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -32,6 +32,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.KettleLogStore;
@@ -76,14 +77,14 @@ public class ExecuteJobServlet extends BaseHttpServlet implements CartePluginInt
     <h2>GET</h2>
     <p>Executes job from the specified repository.
   Connects to the repository provided as a parameter, loads the job from it and executes it.
-  Empty response is returned or response contains output of an error happened during the job execution. 
+  Empty response is returned or response contains output of an error happened during the job execution.
   Response contains <code>ERROR</code> result if error happened during job execution.</p>
-    
+
     <p><b>Example Request:</b><br />
     <pre function="syntax.xml">
     GET /kettle/executeJob/?rep=my_repository&user=my_user&pass=my_password&job=my_job&level=INFO
     </pre>
-    
+
     </p>
     <h3>Parameters</h3>
     <table class="pentaho-table">
@@ -120,14 +121,14 @@ public class ExecuteJobServlet extends BaseHttpServlet implements CartePluginInt
     </tr>
     <tr>
     <td>*any name*</td>
-    <td>All the other parameters will be sent to the job for using as variables. 
-  When necessary you can add custom parameters to the request. 
+    <td>All the other parameters will be sent to the job for using as variables.
+  When necessary you can add custom parameters to the request.
   They will be used to set the job variables values.</td>
     <td>query</td>
     </tr>
     </tbody>
     </table>
-  
+
   <h3>Response Body</h3>
 
   <table class="pentaho-table">
@@ -142,9 +143,9 @@ public class ExecuteJobServlet extends BaseHttpServlet implements CartePluginInt
       </tr>
     </tbody>
   </table>
-    <p>Response contains error output of the job executed or Carte object Id 
+    <p>Response contains error output of the job executed or Carte object Id
   if the execution was successful.</p>
-    
+
     <p><b>Example Error Response:</b></p>
     <pre function="syntax.xml">
   <webresult>
@@ -153,7 +154,7 @@ public class ExecuteJobServlet extends BaseHttpServlet implements CartePluginInt
     <id>74d96aa6-f29a-4bac-a26a-06a8c8f107e5</id>
   </webresult>
     </pre>
-    
+
     <h3>Status Codes</h3>
     <table class="pentaho-table">
   <tbody>
@@ -196,7 +197,7 @@ public class ExecuteJobServlet extends BaseHttpServlet implements CartePluginInt
     response.setStatus( HttpServletResponse.SC_OK );
 
     String encoding = System.getProperty( "KETTLE_DEFAULT_SERVLET_ENCODING", null );
-    if ( encoding != null && !Const.isEmpty( encoding.trim() ) ) {
+    if ( encoding != null && !Utils.isEmpty( encoding.trim() ) ) {
       response.setCharacterEncoding( encoding );
       response.setContentType( "text/html; charset=" + encoding );
     }
@@ -319,7 +320,7 @@ public class ExecuteJobServlet extends BaseHttpServlet implements CartePluginInt
 
   private Repository openRepository( String repositoryName, String user, String pass ) throws KettleException {
 
-    if ( Const.isEmpty( repositoryName ) ) {
+    if ( Utils.isEmpty( repositoryName ) ) {
       return null;
     }
 

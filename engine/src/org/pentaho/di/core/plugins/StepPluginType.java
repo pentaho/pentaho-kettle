@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -30,6 +30,7 @@ import java.util.Map;
 
 import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.exception.KettleXMLException;
@@ -104,7 +105,7 @@ public class StepPluginType extends BasePluginType implements PluginTypeInterfac
     //
     String kettleStepsXmlFile = Const.XML_FILE_KETTLE_STEPS;
     String alternative = System.getProperty( Const.KETTLE_CORE_STEPS_FILE, null );
-    if ( !Const.isEmpty( alternative ) ) {
+    if ( !Utils.isEmpty( alternative ) ) {
       kettleStepsXmlFile = alternative;
     }
 
@@ -116,7 +117,7 @@ public class StepPluginType extends BasePluginType implements PluginTypeInterfac
         inputStream = getClass().getResourceAsStream( "/" + kettleStepsXmlFile );
       }
       // Retry to load a regular file...
-      if ( inputStream == null && !Const.isEmpty( alternative ) ) {
+      if ( inputStream == null && !Utils.isEmpty( alternative ) ) {
         try {
           inputStream = new FileInputStream( kettleStepsXmlFile );
         } catch ( Exception e ) {

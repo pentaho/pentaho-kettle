@@ -26,6 +26,7 @@ import com.google.common.annotations.VisibleForTesting;
 import org.pentaho.di.compatibility.Row;
 import org.pentaho.di.compatibility.Value;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleEOFException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
@@ -286,7 +287,7 @@ public class RowMeta implements RowMetaInterface {
         ValueMetaInterface old = valueMetaList.get( index );
         ValueMetaInterface newMeta = valueMeta;
 
-        // try to check if a ValueMeta with the same name already exists 
+        // try to check if a ValueMeta with the same name already exists
         int existsIndex = indexOfValue( valueMeta.getName() );
         // if it exists and it's not in the requested position
         // we need to take care of renaming
@@ -1251,7 +1252,7 @@ public class RowMeta implements RowMetaInterface {
     }
 
     void storeMapping( String name, int index ) {
-      if ( Const.isEmpty( name ) ) {
+      if ( Utils.isEmpty( name ) ) {
         return;
       }
 
@@ -1262,14 +1263,14 @@ public class RowMeta implements RowMetaInterface {
     }
 
     synchronized void replaceMapping( String old, String current, int index ) {
-      if ( !Const.isEmpty( old ) ) {
+      if ( !Utils.isEmpty( old ) ) {
         mapping.remove( old.toLowerCase() );
       }
       storeMapping( current, index );
     }
 
     Integer findAndCompare( String name, List<? extends ValueMetaInterface> metas ) {
-      if ( Const.isEmpty( name ) ) {
+      if ( Utils.isEmpty( name ) ) {
         return null;
       }
 

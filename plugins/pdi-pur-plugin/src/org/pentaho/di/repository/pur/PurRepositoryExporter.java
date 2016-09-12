@@ -1,5 +1,5 @@
 /*!
- * Copyright 2010 - 2015 Pentaho Corporation.  All rights reserved.
+ * Copyright 2010 - 2016 Pentaho Corporation.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import java.util.List;
 
 import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.ProgressMonitorListener;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.BaseLogTable;
@@ -144,7 +145,7 @@ public class PurRepositoryExporter implements IRepositoryExporter, java.io.Seria
     batchSize = DEFAULT_BATCH_SIZE;
     String batchProp = Const.getEnvironmentVariable( REPOSITORY_BATCH_SIZE_PROPERTY, null );
     boolean err = false;
-    if ( !Const.isEmpty( batchProp ) ) {
+    if ( !Utils.isEmpty( batchProp ) ) {
       try {
         batchSize = Integer.parseInt( batchProp );
         if ( batchSize < 1 ) {

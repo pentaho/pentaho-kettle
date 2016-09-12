@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,8 +22,8 @@
 
 package org.pentaho.di.trans.steps.uniquerowsbyhashset;
 
-import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -90,7 +90,7 @@ public class UniqueRowsByHashSet extends BaseStep implements StepInterface {
               + "," + meta.getCompareFields()[i];
         }
       }
-      if ( data.sendDuplicateRows && !Const.isEmpty( meta.getErrorDescription() ) ) {
+      if ( data.sendDuplicateRows && !Utils.isEmpty( meta.getErrorDescription() ) ) {
         data.realErrorDescription = environmentSubstitute( meta.getErrorDescription() );
       }
     }
@@ -101,7 +101,7 @@ public class UniqueRowsByHashSet extends BaseStep implements StepInterface {
       incrementLinesRejected();
       if ( data.sendDuplicateRows ) {
         // Simply add this row to the error row
-        putError( getInputRowMeta(), r, 1, data.realErrorDescription, Const.isEmpty( data.compareFields )
+        putError( getInputRowMeta(), r, 1, data.realErrorDescription, Utils.isEmpty( data.compareFields )
           ? null : data.compareFields, "UNRH001" );
       }
     }

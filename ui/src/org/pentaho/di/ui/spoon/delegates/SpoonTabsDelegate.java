@@ -35,6 +35,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.EngineMetaInterface;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
@@ -405,7 +406,7 @@ public class SpoonTabsDelegate extends SpoonDelegate {
           String tabText = makeTabName( transMeta, entry.isShowingLocation() );
           entry.getTabItem().setText( tabText );
           String toolTipText = BaseMessages.getString( PKG, "Spoon.TabTrans.Tooltip", tabText );
-          if ( Const.isWindows() && !Const.isEmpty( transMeta.getFilename() ) ) {
+          if ( Const.isWindows() && !Utils.isEmpty( transMeta.getFilename() ) ) {
             toolTipText += Const.CR + Const.CR + transMeta.getFilename();
           }
           entry.getTabItem().setToolTipText( toolTipText );
@@ -415,7 +416,7 @@ public class SpoonTabsDelegate extends SpoonDelegate {
           String toolTipText =
             BaseMessages.getString(
               PKG, "Spoon.TabJob.Tooltip", makeTabName( jobMeta, entry.isShowingLocation() ) );
-          if ( Const.isWindows() && !Const.isEmpty( jobMeta.getFilename() ) ) {
+          if ( Const.isWindows() && !Utils.isEmpty( jobMeta.getFilename() ) ) {
             toolTipText += Const.CR + Const.CR + jobMeta.getFilename();
           }
           entry.getTabItem().setToolTipText( toolTipText );
@@ -443,11 +444,11 @@ public class SpoonTabsDelegate extends SpoonDelegate {
   }
 
   public String makeTabName( EngineMetaInterface transMeta, boolean showLocation ) {
-    if ( Const.isEmpty( transMeta.getName() ) && Const.isEmpty( transMeta.getFilename() ) ) {
+    if ( Utils.isEmpty( transMeta.getName() ) && Utils.isEmpty( transMeta.getFilename() ) ) {
       return Spoon.STRING_TRANS_NO_NAME;
     }
 
-    if ( Const.isEmpty( transMeta.getName() )
+    if ( Utils.isEmpty( transMeta.getName() )
       || spoon.delegates.trans.isDefaultTransformationName( transMeta.getName() ) ) {
       transMeta.nameFromFilename();
     }
@@ -455,7 +456,7 @@ public class SpoonTabsDelegate extends SpoonDelegate {
     String name = "";
 
     if ( showLocation ) {
-      if ( !Const.isEmpty( transMeta.getFilename() ) ) {
+      if ( !Utils.isEmpty( transMeta.getFilename() ) ) {
         // Regular file...
         //
         name += transMeta.getFilename() + " : ";

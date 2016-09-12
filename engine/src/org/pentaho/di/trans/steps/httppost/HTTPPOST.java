@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -43,6 +43,7 @@ import org.apache.commons.httpclient.methods.PostMethod;
 import org.json.simple.JSONObject;
 import org.pentaho.di.cluster.SlaveConnectionManager;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowDataUtil;
@@ -104,21 +105,21 @@ public class HTTPPOST extends BaseStep implements StepInterface {
         httpPostClient.getHttpConnectionManager().getParams().setSoTimeout( data.realSocketTimeout );
       }
 
-      if ( !Const.isEmpty( data.realHttpLogin ) ) {
+      if ( !Utils.isEmpty( data.realHttpLogin ) ) {
         httpPostClient.getParams().setAuthenticationPreemptive( true );
         Credentials defaultcreds = new UsernamePasswordCredentials( data.realHttpLogin, data.realHttpPassword );
         httpPostClient.getState().setCredentials( AuthScope.ANY, defaultcreds );
       }
 
       HostConfiguration hostConfiguration = new HostConfiguration();
-      if ( !Const.isEmpty( data.realProxyHost ) ) {
+      if ( !Utils.isEmpty( data.realProxyHost ) ) {
         hostConfiguration.setProxy( data.realProxyHost, data.realProxyPort );
       }
       // Specify content type and encoding
       // If content encoding is not explicitly specified
       // ISO-8859-1 is assumed by the POSTMethod
       if ( !data.contentTypeHeaderOverwrite ) { // can be overwritten now
-        if ( Const.isEmpty( data.realEncoding ) ) {
+        if ( Utils.isEmpty( data.realEncoding ) ) {
           post.setRequestHeader( CONTENT_TYPE, CONTENT_TYPE_TEXT_XML );
           if ( isDebug() ) {
             logDebug( BaseMessages.getString( PKG, "HTTPPOST.Log.HeaderValue", CONTENT_TYPE, CONTENT_TYPE_TEXT_XML ) );
@@ -236,7 +237,7 @@ public class HTTPPOST extends BaseStep implements StepInterface {
 
               // Try to determine the encoding from the Content-Type value
               //
-              if ( Const.isEmpty( encoding ) ) {
+              if ( Utils.isEmpty( encoding ) ) {
                 String contentType = post.getResponseHeader( "Content-Type" ).getValue();
                 if ( contentType != null && contentType.contains( "charset" ) ) {
                   encoding = contentType.replaceFirst( "^.*;\\s*charset\\s*=\\s*", "" ).replace( "\"", "" ).trim();
@@ -274,19 +275,19 @@ public class HTTPPOST extends BaseStep implements StepInterface {
           }
         }
         int returnFieldsOffset = data.inputRowMeta.size();
-        if ( !Const.isEmpty( meta.getFieldName() ) ) {
+        if ( !Utils.isEmpty( meta.getFieldName() ) ) {
           newRow = RowDataUtil.addValueData( newRow, returnFieldsOffset, body );
           returnFieldsOffset++;
         }
 
-        if ( !Const.isEmpty( meta.getResultCodeFieldName() ) ) {
+        if ( !Utils.isEmpty( meta.getResultCodeFieldName() ) ) {
           newRow = RowDataUtil.addValueData( newRow, returnFieldsOffset, new Long( statusCode ) );
           returnFieldsOffset++;
         }
-        if ( !Const.isEmpty( meta.getResponseTimeFieldName() ) ) {
+        if ( !Utils.isEmpty( meta.getResponseTimeFieldName() ) ) {
           newRow = RowDataUtil.addValueData( newRow, returnFieldsOffset, new Long( responseTime ) );
         }
-        if ( !Const.isEmpty( meta.getResponseHeaderFieldName() ) ) {
+        if ( !Utils.isEmpty( meta.getResponseHeaderFieldName() ) ) {
           newRow = RowDataUtil.addValueData( newRow, returnFieldsOffset, headerString.toString() );
         }
       } finally {
@@ -318,7 +319,7 @@ public class HTTPPOST extends BaseStep implements StepInterface {
   }
 
   protected InputStreamReader openStream( String encoding, PostMethod post ) throws Exception {
-    if ( Const.isEmpty( encoding ) ) {
+    if ( Utils.isEmpty( encoding ) ) {
       if ( isDebug() ) {
         logDebug( BaseMessages.getString( PKG, "HTTPPOST.Log.Encoding", "ISO-8859-1" ) );
       }
@@ -352,7 +353,7 @@ public class HTTPPOST extends BaseStep implements StepInterface {
       meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
 
       if ( meta.isUrlInField() ) {
-        if ( Const.isEmpty( meta.getUrlField() ) ) {
+        if ( Utils.isEmpty( meta.getUrlField() ) ) {
           logError( BaseMessages.getString( PKG, "HTTPPOST.Log.NoField" ) );
           throw new KettleException( BaseMessages.getString( PKG, "HTTPPOST.Log.NoField" ) );
         }
@@ -439,7 +440,7 @@ public class HTTPPOST extends BaseStep implements StepInterface {
         }
       }
       // set request entity?
-      if ( !Const.isEmpty( meta.getRequestEntity() ) ) {
+      if ( !Utils.isEmpty( meta.getRequestEntity() ) ) {
         data.indexOfRequestEntity = data.inputRowMeta.indexOfValue( environmentSubstitute( meta.getRequestEntity() ) );
         if ( data.indexOfRequestEntity < 0 ) {
           throw new KettleStepException( BaseMessages.getString( PKG,

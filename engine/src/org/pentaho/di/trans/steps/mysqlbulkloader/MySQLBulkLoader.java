@@ -32,6 +32,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.DBCache;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.exception.KettleException;
@@ -150,7 +151,7 @@ public class MySQLBulkLoader extends BaseStep implements StepInterface {
       loadCommand += "IGNORE ";
     }
     loadCommand += "INTO TABLE " + data.schemaTable + " ";
-    if ( !Const.isEmpty( meta.getEncoding() ) ) {
+    if ( !Utils.isEmpty( meta.getEncoding() ) ) {
       loadCommand += "CHARACTER SET " + meta.getEncoding() + " ";
     }
     String delStr = meta.getDelimiter();
@@ -159,7 +160,7 @@ public class MySQLBulkLoader extends BaseStep implements StepInterface {
     }
 
     loadCommand += "FIELDS TERMINATED BY '" + delStr + "' ";
-    if ( !Const.isEmpty( meta.getEnclosure() ) ) {
+    if ( !Utils.isEmpty( meta.getEnclosure() ) ) {
       loadCommand += "OPTIONALLY ENCLOSED BY '" + meta.getEnclosure() + "' ";
     }
     loadCommand +=
@@ -455,12 +456,12 @@ public class MySQLBulkLoader extends BaseStep implements StepInterface {
     data = (MySQLBulkLoaderData) sdi;
 
     if ( super.init( smi, sdi ) ) {
-      if ( Const.isEmpty( meta.getEnclosure() ) ) {
+      if ( Utils.isEmpty( meta.getEnclosure() ) ) {
         data.quote = new byte[] {};
       } else {
         data.quote = environmentSubstitute( meta.getEnclosure() ).getBytes();
       }
-      if ( Const.isEmpty( meta.getDelimiter() ) ) {
+      if ( Utils.isEmpty( meta.getDelimiter() ) ) {
         data.separator = "\t".getBytes();
       } else {
         data.separator = environmentSubstitute( meta.getDelimiter() ).getBytes();

@@ -26,6 +26,7 @@ import java.util.List;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
@@ -217,7 +218,7 @@ public class PaloDimInputMeta extends BaseStepMeta implements StepMetaInterface 
         cr = new CheckResult( CheckResultInterface.TYPE_RESULT_OK, "Connection to database OK", stepMeta );
         remarks.add( cr );
 
-        if ( !Const.isEmpty( dimension ) ) {
+        if ( !Utils.isEmpty( dimension ) ) {
           cr = new CheckResult( CheckResultInterface.TYPE_RESULT_OK, "The name of the dimension is entered", stepMeta );
           remarks.add( cr );
         } else {
@@ -232,19 +233,19 @@ public class PaloDimInputMeta extends BaseStepMeta implements StepMetaInterface 
           remarks.add( cr );
         } else {
           for ( PaloDimensionLevel level : this.levels ) {
-            if ( Const.isEmpty( level.getLevelName() ) ) {
+            if ( Utils.isEmpty( level.getLevelName() ) ) {
               cr =
                   new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, "Level Name for Level "
                       + level.getLevelNumber() + " is empty.", stepMeta );
               remarks.add( cr );
             }
-            if ( Const.isEmpty( level.getFieldName() ) ) {
+            if ( Utils.isEmpty( level.getFieldName() ) ) {
               cr =
                   new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, "Output Field Name for Level "
                       + level.getLevelNumber() + " is empty.", stepMeta );
               remarks.add( cr );
             }
-            if ( Const.isEmpty( level.getFieldType() ) ) {
+            if ( Utils.isEmpty( level.getFieldType() ) ) {
               cr =
                   new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, "Level Type for Level "
                       + level.getLevelNumber() + " is empty.", stepMeta );

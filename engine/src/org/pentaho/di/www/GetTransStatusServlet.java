@@ -34,6 +34,7 @@ import org.owasp.esapi.ESAPI;
 import org.owasp.esapi.Encoder;
 import org.pentaho.di.cluster.HttpUtil;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.logging.KettleLogStore;
@@ -216,7 +217,7 @@ public class GetTransStatusServlet extends BaseHttpServlet implements CartePlugi
     //
     Trans trans;
     CarteObjectEntry entry;
-    if ( Const.isEmpty( id ) ) {
+    if ( Utils.isEmpty( id ) ) {
       // get the first transformation that matches...
       //
       entry = getTransformationMap().getFirstCarteObjectEntry( transName );

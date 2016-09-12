@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -29,6 +29,7 @@ import java.util.List;
 
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
@@ -150,7 +151,7 @@ public class JobEntryWebServiceAvailable extends JobEntryBase implements Cloneab
 
     String realURL = environmentSubstitute( getURL() );
 
-    if ( !Const.isEmpty( realURL ) ) {
+    if ( !Utils.isEmpty( realURL ) ) {
       int connectTimeOut = Const.toInt( environmentSubstitute( getConnectTimeOut() ), 0 );
       int readTimeOut = Const.toInt( environmentSubstitute( getReadTimeOut() ), 0 );
       InputStream in = null;

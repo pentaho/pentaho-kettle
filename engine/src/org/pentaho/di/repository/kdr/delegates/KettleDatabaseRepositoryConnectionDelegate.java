@@ -35,6 +35,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.Counters;
 import org.pentaho.di.core.RowMetaAndData;
@@ -702,7 +703,7 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
       return def;
     }
     String v = r.getString( KettleDatabaseRepository.FIELD_STEP_ATTRIBUTE_VALUE_STR, null );
-    if ( v == null || Const.isEmpty( v ) ) {
+    if ( v == null || Utils.isEmpty( v ) ) {
       return def;
     }
     return ValueMetaString.convertStringToBoolean( v ).booleanValue();
@@ -1112,7 +1113,7 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
       return def;
     }
     String v = r.getString( KettleDatabaseRepository.FIELD_JOBENTRY_ATTRIBUTE_VALUE_STR, null );
-    if ( v == null || Const.isEmpty( v ) ) {
+    if ( v == null || Utils.isEmpty( v ) ) {
       return def;
     }
     return ValueMetaString.convertStringToBoolean( v ).booleanValue();
@@ -1571,7 +1572,7 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
 
     ResultSet resultSet = database.openQuery( ps, parameterMeta, parameterData );
     List<Object[]> rows = database.getRows( resultSet, 0, null );
-    if ( Const.isEmpty( rows ) ) {
+    if ( Utils.isEmpty( rows ) ) {
       return new ObjectId[0];
     }
 
@@ -1605,7 +1606,7 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
     //
     ResultSet resultSet = database.openQuery( ps, parameterMeta, parameterData );
     List<Object[]> rows = database.getRows( resultSet, 0, null );
-    if ( Const.isEmpty( rows ) ) {
+    if ( Utils.isEmpty( rows ) ) {
       return new String[0];
     }
 

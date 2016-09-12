@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,6 +23,7 @@
 package org.pentaho.di.core.database;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 
 public class MSSQLServerNativeDatabaseMeta extends MSSQLServerDatabaseMeta {
   public static final String ATTRIBUTE_USE_INTEGRATED_SECURITY = "MSSQLUseIntegratedSecurity";
@@ -55,7 +56,7 @@ public class MSSQLServerNativeDatabaseMeta extends MSSQLServerDatabaseMeta {
 
       String url = "jdbc:sqlserver://" + hostname;
 
-      if ( !Const.isEmpty( port ) && Const.toInt( port, -1 ) > 0 ) {
+      if ( !Utils.isEmpty( port ) && Const.toInt( port, -1 ) > 0 ) {
         url += ":" + port;
       }
       url += ";databaseName=" + databaseName + ";integratedSecurity=" + useIntegratedSecurity;

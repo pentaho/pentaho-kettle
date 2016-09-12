@@ -26,7 +26,6 @@ import java.util.List;
 
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
-import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleValueException;
@@ -34,6 +33,7 @@ import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaString;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -127,12 +127,12 @@ public class Edi2XmlMeta extends BaseStepMeta implements StepMetaInterface {
 
     ValueMetaInterface extra = null;
 
-    if ( !Const.isEmpty( getOutputField() ) ) {
+    if ( !Utils.isEmpty( getOutputField() ) ) {
       extra = new ValueMetaString( space.environmentSubstitute( getOutputField() ) );
       extra.setOrigin( origin );
       r.addValueMeta( extra );
     } else {
-      if ( !Const.isEmpty( getInputField() ) ) {
+      if ( !Utils.isEmpty( getInputField() ) ) {
         extra = r.searchValueMeta( space.environmentSubstitute( getInputField() ) );
       }
     }
