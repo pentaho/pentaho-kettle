@@ -47,7 +47,7 @@ import java.util.Map;
  * <p/>
  * The plugin.xml format is Spring-based e.g. <beans xmlns="http://www.springframework.org/schema/beans"
  * xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation=
- * "http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+ * "http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.1.xsd">
  * <p/>
  * <bean id="PLUGIN_ID" class="org.foo.SpoonPluginClassName"></bean> </beans>
  *
