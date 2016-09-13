@@ -2878,7 +2878,7 @@ public class PurRepository extends AbstractRepository implements Repository, Rep
         loadRevision, checkDeleted );
   }
 
-  private void saveTransOrJob( ISharedObjectsTransformer objectTransformer, RepositoryElementInterface element,
+  protected void saveTransOrJob( ISharedObjectsTransformer objectTransformer, RepositoryElementInterface element,
                                String versionComment, Calendar versionDate,
                                boolean saveSharedObjects,
                                boolean checkLock, boolean checkRename,
@@ -2929,6 +2929,11 @@ public class PurRepository extends AbstractRepository implements Repository, Rep
     }
     if ( element instanceof ChangedFlagInterface ) {
       ( (ChangedFlagInterface) element ).clearChanged();
+    }
+
+    if ( element.getRepositoryElementType() == RepositoryObjectType.TRANSFORMATION ) {
+      TransMeta transMeta = loadTransformation( objectId, null );
+      ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.TransImportAfterSaveToRepo.id, transMeta );
     }
   }
 
