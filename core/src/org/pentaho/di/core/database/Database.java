@@ -590,64 +590,28 @@ public class Database implements VariableSpace, LoggingObjectInterface {
       if ( connection == null ) {
         return; // Nothing to do...
       }
-      try {
-        if ( connection.isClosed() ) {
-          return; // Nothing to do...
-        }
-      } catch ( SQLException ex ) {
-        // cannot do anything about this but log it
-        log.logError( "Error checking closing connection:" + Const.CR + ex.getMessage() );
-        log.logError( Const.getStackTracker( ex ) );
+      if ( connection.isClosed() ) {
+        return; // Nothing to do...
       }
 
       if ( pstmt != null ) {
-        try {
-          pstmt.close();
-        } catch ( SQLException ex ) {
-          // cannot do anything about this but log it
-          log.logError( "Error closing statement:" + Const.CR + ex.getMessage() );
-          log.logError( Const.getStackTracker( ex ) );
-        }
+        pstmt.close();
         pstmt = null;
       }
       if ( prepStatementLookup != null ) {
-        try {
-          prepStatementLookup.close();
-        } catch ( SQLException ex ) {
-          // cannot do anything about this but log it
-          log.logError( "Error closing lookup statement:" + Const.CR + ex.getMessage() );
-          log.logError( Const.getStackTracker( ex ) );
-        }
+        prepStatementLookup.close();
         prepStatementLookup = null;
       }
       if ( prepStatementInsert != null ) {
-        try {
-          prepStatementInsert.close();
-        } catch ( SQLException ex ) {
-          // cannot do anything about this but log it
-          log.logError( "Error closing insert statement:" + Const.CR + ex.getMessage() );
-          log.logError( Const.getStackTracker( ex ) );
-        }
+        prepStatementInsert.close();
         prepStatementInsert = null;
       }
       if ( prepStatementUpdate != null ) {
-        try {
-          prepStatementUpdate.close();
-        } catch ( SQLException ex ) {
-          // cannot do anything about this but log it
-          log.logError( "Error closing update statement:" + Const.CR + ex.getMessage() );
-          log.logError( Const.getStackTracker( ex ) );
-        }
+        prepStatementUpdate.close();
         prepStatementUpdate = null;
       }
       if ( pstmt_seq != null ) {
-        try {
-          pstmt_seq.close();
-        } catch ( SQLException ex ) {
-          // cannot do anything about this but log it
-          log.logError( "Error closing seq statement:" + Const.CR + ex.getMessage() );
-          log.logError( Const.getStackTracker( ex ) );
-        }
+        pstmt_seq.close();
         pstmt_seq = null;
       }
 
@@ -660,34 +624,23 @@ public class Database implements VariableSpace, LoggingObjectInterface {
       } else {
         if ( !isAutoCommit() ) {
           // Do we really still need this commit??
-          try {
-            commit();
-          } catch ( KettleDatabaseException ex ) {
-            // cannot do anything about this but log it
-            log.logError( "Error committing:" + Const.CR + ex.getMessage() );
-            log.logError( Const.getStackTracker( ex ) );
-          }
+          commit();
         }
       }
+
+      closeConnectionOnly();
 
       try {
         ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.DatabaseDisconnected.id, this );
       } catch ( KettleException e ) {
         throw new KettleDatabaseException( e );
       }
+    } catch ( SQLException ex ) {
+      log.logError( "Error disconnecting from database:" + Const.CR + ex.getMessage() );
+      log.logError( Const.getStackTracker( ex ) );
     } catch ( KettleDatabaseException dbe ) {
       log.logError( "Error disconnecting from database:" + Const.CR + dbe.getMessage() );
       log.logError( Const.getStackTracker( dbe ) );
-    } finally {
-      // Always close the connection, irrespective of what happens above...
-      try {
-        closeConnectionOnly();
-      } catch ( KettleDatabaseException ignoredKde ) { // The only exception thrown from closeConnectionOnly()
-        // cannot do anything about this but log it
-        log.logError(
-          "Error disconnecting from database - closeConnectionOnly failed:" + Const.CR + ignoredKde.getMessage() );
-        log.logError( Const.getStackTracker( ignoredKde ) );
-      }
     }
   }
 
@@ -2668,7 +2621,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
         cstmt = connection.prepareCall( sql );
         pos = 1;
         if ( !Const.isEmpty( returnvalue ) ) {
-          switch ( returntype ) {
+          switch( returntype ) {
             case ValueMetaInterface.TYPE_NUMBER:
               cstmt.registerOutParameter( pos, java.sql.Types.DOUBLE );
               break;
@@ -2694,7 +2647,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
         }
         for ( int i = 0; i < arg.length; i++ ) {
           if ( argdir[ i ].equalsIgnoreCase( "OUT" ) || argdir[ i ].equalsIgnoreCase( "INOUT" ) ) {
-            switch ( argtype[ i ] ) {
+            switch( argtype[ i ] ) {
               case ValueMetaInterface.TYPE_NUMBER:
                 cstmt.registerOutParameter( i + pos, java.sql.Types.DOUBLE );
                 break;
@@ -3091,7 +3044,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
         int precision = pmd.getScale( i );
         ValueMetaInterface val;
 
-        switch ( sqltype ) {
+        switch( sqltype ) {
           case java.sql.Types.CHAR:
           case java.sql.Types.VARCHAR:
             val = new ValueMetaString( name );
@@ -3149,7 +3102,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
     for ( int x = 0; x < sql.length(); x++ ) {
       char c = sql.charAt( x );
 
-      switch ( c ) {
+      switch( c ) {
         case '\'':
           quote_opened = !quote_opened;
           break;
@@ -3215,7 +3168,8 @@ public class Database implements VariableSpace, LoggingObjectInterface {
         StringBuffer sqlBuff = new StringBuffer( 250 );
         sqlBuff.append( "UPDATE " ).append( schemaTable ).append( " SET " );
 
-        for ( int i = 1; i < rowMeta.size(); i++ ) { // Without ID_JOB or ID_BATCH
+        for ( int i = 1; i < rowMeta.size(); i++ ) // Without ID_JOB or ID_BATCH
+        {
           ValueMetaInterface valueMeta = rowMeta.getValueMeta( i );
           if ( i > 1 ) {
             sqlBuff.append( ", " );
@@ -4168,7 +4122,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
       if ( resultname != null && resultname.length() != 0 ) {
         ValueMeta vMeta = new ValueMeta( resultname, resulttype );
         Object v = null;
-        switch ( resulttype ) {
+        switch( resulttype ) {
           case ValueMetaInterface.TYPE_BOOLEAN:
             v = Boolean.valueOf( cstmt.getBoolean( pos ) );
             break;
@@ -4213,7 +4167,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
         if ( argdir[ i ].equalsIgnoreCase( "OUT" ) || argdir[ i ].equalsIgnoreCase( "INOUT" ) ) {
           ValueMetaInterface vMeta = ValueMetaFactory.createValueMeta( arg[ i ], argtype[ i ] );
           Object v = null;
-          switch ( argtype[ i ] ) {
+          switch( argtype[ i ] ) {
             case ValueMetaInterface.TYPE_BOOLEAN:
               v = Boolean.valueOf( cstmt.getBoolean( pos + i ) );
               break;
@@ -4393,7 +4347,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
         } else {
           // Normal cases...
           //
-          switch ( valueMeta.getType() ) {
+          switch( valueMeta.getType() ) {
             case ValueMetaInterface.TYPE_BOOLEAN:
             case ValueMetaInterface.TYPE_STRING:
               String string = valueMeta.getString( valueData );
