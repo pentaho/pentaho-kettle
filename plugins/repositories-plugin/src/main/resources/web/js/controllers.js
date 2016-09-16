@@ -443,10 +443,15 @@ define(
         if( response.success == false){
           $rootScope.triggerError(response.errorMessage);
         } else {
+          setResult(true);
           close();
         }
       }
       $scope.addToolTips = addToolTips;
+      var errorMessage = getErrorMessage();
+      if (errorMessage != "") {
+    	  $rootScope.triggerError(errorMessage);
+      }
     });
     
     function addToolTips() {
