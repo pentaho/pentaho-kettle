@@ -663,7 +663,6 @@ public class Database implements VariableSpace, LoggingObjectInterface {
    * Disconnect from the database and close all open prepared statements.
    */
   public synchronized void disconnect() {
-    try {
       if ( connection == null ) {
         return; // Nothing to do...
       }
@@ -746,15 +745,11 @@ public class Database implements VariableSpace, LoggingObjectInterface {
           }
         }
       }
-
-      try {
+    try{
         ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.DatabaseDisconnected.id, this );
-      } catch ( KettleException e ) {
-        throw new KettleDatabaseException( e );
-      }
-    } catch ( KettleDatabaseException dbe ) {
-      log.logError( "Error disconnecting from database:" + Const.CR + dbe.getMessage() );
-      log.logError( Const.getStackTracker( dbe ) );
+    } catch ( KettleException e ) {
+      log.logError( "Error disconnecting from database:" + Const.CR + e.getMessage() );
+      log.logError( Const.getStackTracker( e ) );
     } finally {
       // Always close the connection, irrespective of what happens above...
       try {
