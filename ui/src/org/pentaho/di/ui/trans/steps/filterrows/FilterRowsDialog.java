@@ -312,6 +312,9 @@ public class FilterRowsDialog extends BaseStepDialog implements StepDialogInterf
       targetStreams.get( 0 ).setStepMeta( transMeta.findStep( trueStepname ) );
       targetStreams.get( 1 ).setStepMeta( transMeta.findStep( falseStepname ) );
 
+      input.setTrueStepname( trueStepname );
+      input.setFalseStepname( falseStepname );
+
       stepname = wStepname.getText(); // return value
       input.setCondition( condition );
 
