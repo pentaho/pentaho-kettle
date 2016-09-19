@@ -566,4 +566,22 @@ public class DatabaseUnitTest {
     verify( connection, times( 1 ) ).close();
 
   }
+
+
+  @Test
+  public void testDisconnectConnectionGroup() throws SQLException {
+
+    DatabaseMeta dbMeta = mock( DatabaseMeta.class );
+    DatabaseMetaData dbMetaData = mock( DatabaseMetaData.class );
+
+    Database db = new Database( mockLogger(), dbMeta );
+    Connection connection = mockConnection( dbMetaData );
+    db.setConnection( connection );
+
+    db.setConnectionGroup( "1" );
+    db.disconnect();
+
+    verify( connection, never() ).close();
+  }
+
 }
