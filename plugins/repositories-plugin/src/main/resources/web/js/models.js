@@ -55,7 +55,7 @@ define( [
         location: "",
         doNotModify: false,
         showHiddenFolders: false,
-        description: "Kettle file repository",
+        description: "File repository",
         isDefault: false
       }
       this.model = {};
@@ -69,7 +69,7 @@ define( [
       this.default = {
         displayName: "",
         databaseConnection: "None",
-        description: "Kettle database repository",
+        description: "Database repository",
         isDefault: false
       };
       this.model = {};
