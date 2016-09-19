@@ -590,90 +590,90 @@ public class Database implements VariableSpace, LoggingObjectInterface {
    * Disconnect from the database and close all open prepared statements.
    */
   public synchronized void disconnect() {
-      if ( connection == null ) {
+    if ( connection == null ) {
+      return; // Nothing to do...
+    }
+    try {
+      if ( connection.isClosed() ) {
         return; // Nothing to do...
       }
+    } catch ( SQLException ex ) {
+      // cannot do anything about this but log it
+      log.logError( "Error checking closing connection:" + Const.CR + ex.getMessage() );
+      log.logError( Const.getStackTracker( ex ) );
+    }
+
+    if ( pstmt != null ) {
       try {
-        if ( connection.isClosed() ) {
-          return; // Nothing to do...
-        }
+        pstmt.close();
       } catch ( SQLException ex ) {
         // cannot do anything about this but log it
-        log.logError( "Error checking closing connection:" + Const.CR + ex.getMessage() );
+        log.logError( "Error closing statement:" + Const.CR + ex.getMessage() );
         log.logError( Const.getStackTracker( ex ) );
       }
+      pstmt = null;
+    }
+    if ( prepStatementLookup != null ) {
+      try {
+        prepStatementLookup.close();
+      } catch ( SQLException ex ) {
+        // cannot do anything about this but log it
+        log.logError( "Error closing lookup statement:" + Const.CR + ex.getMessage() );
+        log.logError( Const.getStackTracker( ex ) );
+      }
+      prepStatementLookup = null;
+    }
+    if ( prepStatementInsert != null ) {
+      try {
+        prepStatementInsert.close();
+      } catch ( SQLException ex ) {
+        // cannot do anything about this but log it
+        log.logError( "Error closing insert statement:" + Const.CR + ex.getMessage() );
+        log.logError( Const.getStackTracker( ex ) );
+      }
+      prepStatementInsert = null;
+    }
+    if ( prepStatementUpdate != null ) {
+      try {
+        prepStatementUpdate.close();
+      } catch ( SQLException ex ) {
+        // cannot do anything about this but log it
+        log.logError( "Error closing update statement:" + Const.CR + ex.getMessage() );
+        log.logError( Const.getStackTracker( ex ) );
+      }
+      prepStatementUpdate = null;
+    }
+    if ( pstmt_seq != null ) {
+      try {
+        pstmt_seq.close();
+      } catch ( SQLException ex ) {
+        // cannot do anything about this but log it
+        log.logError( "Error closing seq statement:" + Const.CR + ex.getMessage() );
+        log.logError( Const.getStackTracker( ex ) );
+      }
+      pstmt_seq = null;
+    }
 
-      if ( pstmt != null ) {
+    // See if there are other steps using this connection in a connection
+    // group.
+    // If so, we will hold commit & connection close until then.
+    //
+    if ( !Utils.isEmpty( connectionGroup ) ) {
+      return;
+    } else {
+      if ( !isAutoCommit() ) {
+        // Do we really still need this commit??
         try {
-          pstmt.close();
-        } catch ( SQLException ex ) {
+          commit();
+        } catch ( KettleDatabaseException ex ) {
           // cannot do anything about this but log it
-          log.logError( "Error closing statement:" + Const.CR + ex.getMessage() );
+          log.logError( "Error committing:" + Const.CR + ex.getMessage() );
           log.logError( Const.getStackTracker( ex ) );
         }
-        pstmt = null;
       }
-      if ( prepStatementLookup != null ) {
-        try {
-          prepStatementLookup.close();
-        } catch ( SQLException ex ) {
-          // cannot do anything about this but log it
-          log.logError( "Error closing lookup statement:" + Const.CR + ex.getMessage() );
-          log.logError( Const.getStackTracker( ex ) );
-        }
-        prepStatementLookup = null;
-      }
-      if ( prepStatementInsert != null ) {
-        try {
-          prepStatementInsert.close();
-        } catch ( SQLException ex ) {
-          // cannot do anything about this but log it
-          log.logError( "Error closing insert statement:" + Const.CR + ex.getMessage() );
-          log.logError( Const.getStackTracker( ex ) );
-        }
-        prepStatementInsert = null;
-      }
-      if ( prepStatementUpdate != null ) {
-        try {
-          prepStatementUpdate.close();
-        } catch ( SQLException ex ) {
-          // cannot do anything about this but log it
-          log.logError( "Error closing update statement:" + Const.CR + ex.getMessage() );
-          log.logError( Const.getStackTracker( ex ) );
-        }
-        prepStatementUpdate = null;
-      }
-      if ( pstmt_seq != null ) {
-        try {
-          pstmt_seq.close();
-        } catch ( SQLException ex ) {
-          // cannot do anything about this but log it
-          log.logError( "Error closing seq statement:" + Const.CR + ex.getMessage() );
-          log.logError( Const.getStackTracker( ex ) );
-        }
-        pstmt_seq = null;
-      }
-
-      // See if there are other steps using this connection in a connection
-      // group.
-      // If so, we will hold commit & connection close until then.
-      //
-      if ( !Utils.isEmpty( connectionGroup ) ) {
-        return;
-      } else {
-        if ( !isAutoCommit() ) {
-          // Do we really still need this commit??
-          try {
-            commit();
-          } catch ( KettleDatabaseException ex ) {
-            // cannot do anything about this but log it
-            log.logError( "Error committing:" + Const.CR + ex.getMessage() );
-            log.logError( Const.getStackTracker( ex ) );
-          }
-        }
-      }
-    try{
-        ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.DatabaseDisconnected.id, this );
+    }
+    try {
+      ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.DatabaseDisconnected.id, this );
     } catch ( KettleException e ) {
       log.logError( "Error disconnecting from database:" + Const.CR + e.getMessage() );
       log.logError( Const.getStackTracker( e ) );
