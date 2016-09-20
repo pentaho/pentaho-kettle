@@ -164,9 +164,6 @@ public class FilterRows extends BaseStep implements StepInterface {
       data.trueStepname = targetStreams.get( 0 ).getStepname();
       data.falseStepname = targetStreams.get( 1 ).getStepname();
 
-      meta.setTrueStepname( data.trueStepname );
-      meta.setFalseStepname( data.falseStepname );
-
       data.chosesTargetSteps =
         targetStreams.get( 0 ).getStepMeta() != null || targetStreams.get( 1 ).getStepMeta() != null;
       return true;

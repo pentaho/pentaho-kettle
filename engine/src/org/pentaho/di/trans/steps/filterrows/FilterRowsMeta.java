@@ -138,11 +138,13 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface {
     try {
       List<StreamInterface> targetStreams = getStepIOMeta().getTargetStreams();
 
-      targetStreams.get( 0 ).setSubject( XMLHandler.getTagValue( stepnode, "send_true_to" ) );
-      targetStreams.get( 1 ).setSubject( XMLHandler.getTagValue( stepnode, "send_false_to" ) );
+      String trueStepName = XMLHandler.getTagValue( stepnode, "send_true_to" );
+      String falseStepName = XMLHandler.getTagValue( stepnode, "send_false_to" );
+      targetStreams.get( 0 ).setSubject( trueStepName );
+      targetStreams.get( 1 ).setSubject( falseStepName );
 
-      this.trueStepname = targetStreams.get( 0 ).getStepname();
-      this.falseStepname = targetStreams.get( 1 ).getStepname();
+      this.trueStepname = trueStepName;
+      this.falseStepname = falseStepName;
 
       Node compare = XMLHandler.getSubNode( stepnode, "compare" );
       Node condnode = XMLHandler.getSubNode( compare, "condition" );
@@ -208,11 +210,13 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface {
 
       List<StreamInterface> targetStreams = getStepIOMeta().getTargetStreams();
 
-      targetStreams.get( 0 ).setSubject( rep.getStepAttributeString( id_step, "send_true_to" ) );
-      targetStreams.get( 1 ).setSubject( rep.getStepAttributeString( id_step, "send_false_to" ) );
+      String trueStepName = rep.getStepAttributeString( id_step, "send_true_to" );
+      String falseStepName = rep.getStepAttributeString( id_step, "send_false_to" );
+      targetStreams.get( 0 ).setSubject( trueStepName );
+      targetStreams.get( 1 ).setSubject( falseStepName );
 
-      this.trueStepname = targetStreams.get( 0 ).getStepname();
-      this.falseStepname = targetStreams.get( 1 ).getStepname();
+      this.trueStepname = trueStepName;
+      this.falseStepname = falseStepName;
 
       condition = rep.loadConditionFromStepAttribute( id_step, "id_condition" );
 
@@ -236,11 +240,10 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface {
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       if ( condition != null ) {
-        List<StreamInterface> targetStreams = getStepIOMeta().getTargetStreams();
 
         rep.saveConditionStepAttribute( id_transformation, id_step, "id_condition", condition );
-        rep.saveStepAttribute( id_transformation, id_step, "send_true_to", targetStreams.get( 0 ).getStepname() );
-        rep.saveStepAttribute( id_transformation, id_step, "send_false_to", targetStreams.get( 1 ).getStepname() );
+        rep.saveStepAttribute( id_transformation, id_step, "send_true_to", trueStepname );
+        rep.saveStepAttribute( id_transformation, id_step, "send_false_to", falseStepname );
       }
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString(
