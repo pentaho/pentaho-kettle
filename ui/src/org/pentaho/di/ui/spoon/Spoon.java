@@ -9306,6 +9306,10 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     ExpandedContentManager.hideExpandedContent();
   }
 
+  public void closeExpandedContent() {
+    ExpandedContentManager.closeExpandedContent();
+  }
+
   public void showExpandedContent() {
     ExpandedContentManager.showExpandedContent();
   }
