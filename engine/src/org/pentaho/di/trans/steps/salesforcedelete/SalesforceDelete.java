@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -247,8 +247,8 @@ public class SalesforceDelete extends BaseStep implements StepInterface {
       } catch ( KettleException ke ) {
         logError( BaseMessages.getString( PKG, "SalesforceDelete.Log.ErrorOccurredDuringStepInitialize" )
           + ke.getMessage() );
+        return false;
       }
-      return true;
     }
     return false;
   }
