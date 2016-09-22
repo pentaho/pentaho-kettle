@@ -21,16 +21,28 @@
  ******************************************************************************/
 package org.pentaho.di.core.util;
 
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.pentaho.di.core.KettleClientEnvironment;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.variables.Variables;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.Test;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 
 
 public class UtilsTest {
+
+  @BeforeClass
+  public static void setUpBeforeClass() throws KettleException {
+    KettleClientEnvironment.init();
+  }
 
   @Test
   public void testIsEmpty() {
@@ -72,6 +84,42 @@ public class UtilsTest {
     assertTrue( Utils.isEmpty( (StringBuilder) null ) );
     assertTrue( Utils.isEmpty( new StringBuilder( "" ) ) );
     assertFalse( Utils.isEmpty( new StringBuilder( "test" ) ) );
+  }
+
+  @Test
+  public void testResolvePassword() {
+    String password = "password";
+    // is supposed the password stays the same
+    assertSame( password, Utils.resolvePassword(
+        Variables.getADefaultVariableSpace(), password ).intern() );
+  }
+
+  @Test
+  public void testResolvePasswordEncrypted() {
+    String decPassword = "password";
+    // is supposed encrypted with Encr.bat util
+    String encPassword = "Encrypted 2be98afc86aa7f2e4bb18bd63c99dbdde";
+    assertSame( decPassword, Utils.resolvePassword(
+        Variables.getADefaultVariableSpace(), encPassword ).intern() );
+  }
+
+  @Test
+  public void testResolvePasswordNull() {
+    String password = null;
+    // null is valid input parameter
+    assertSame( password, Utils.resolvePassword(
+        Variables.getADefaultVariableSpace(), password ) );
+  }
+
+  @Test
+  public void testResolvePasswordVariable() {
+    String passwordKey = "PASS_VAR";
+    String passwordVar = "${" + passwordKey + "}";
+    String passwordValue = "password";
+    Variables vars = new Variables();
+    vars.setVariable( passwordKey, passwordValue );
+    //resolvePassword gets variable
+    assertSame( passwordValue, Utils.resolvePassword( vars, passwordVar ).intern() );
   }
 
 }
