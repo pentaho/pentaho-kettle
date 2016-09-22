@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -21,14 +21,6 @@
  ******************************************************************************/
 
 package org.pentaho.di.job.entries.getpop;
-
-import static org.pentaho.di.job.entry.validator.AbstractFileValidator.putVariableSpace;
-import static org.pentaho.di.job.entry.validator.AndValidator.putValidators;
-import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.andValidator;
-import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.fileExistsValidator;
-import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.integerValidator;
-import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notBlankValidator;
-import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notNullValidator;
 
 import java.io.IOException;
 import java.text.DateFormat;
@@ -51,6 +43,7 @@ import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -58,6 +51,9 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
+import org.pentaho.di.job.entry.validator.AbstractFileValidator;
+import org.pentaho.di.job.entry.validator.AndValidator;
+import org.pentaho.di.job.entry.validator.JobEntryValidatorUtils;
 import org.pentaho.di.job.entry.validator.ValidatorContext;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
@@ -719,8 +715,12 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
     return password;
   }
 
+  /**
+   * @return Returns resolved decrypted password or null
+   * in case of {@link #getPassword()} returns null.
+   */
   public String getRealPassword() {
-    return environmentSubstitute( getPassword() );
+    return Utils.resolvePassword( variables, getPassword() );
   }
 
   public String getAttachmentFolder() {
@@ -1283,16 +1283,21 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 
   public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
-    andValidator().validate( this, "serverName", remarks, putValidators( notBlankValidator() ) );
-    andValidator().validate( this, "userName", remarks, putValidators( notBlankValidator() ) );
-    andValidator().validate( this, "password", remarks, putValidators( notNullValidator() ) );
+    JobEntryValidatorUtils.andValidator().validate(
+        this, "serverName", remarks, AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
+    JobEntryValidatorUtils.andValidator().validate(
+        this, "userName", remarks, AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
+    JobEntryValidatorUtils.andValidator().validate(
+        this, "password", remarks, AndValidator.putValidators( JobEntryValidatorUtils.notNullValidator() ) );
 
     ValidatorContext ctx = new ValidatorContext();
-    putVariableSpace( ctx, getVariables() );
-    putValidators( ctx, notBlankValidator(), fileExistsValidator() );
-    andValidator().validate( this, "outputDirectory", remarks, ctx );
+    AbstractFileValidator.putVariableSpace( ctx, getVariables() );
+    AndValidator.putValidators( ctx, JobEntryValidatorUtils.notBlankValidator(),
+        JobEntryValidatorUtils.fileExistsValidator() );
+    JobEntryValidatorUtils.andValidator().validate( this, "outputDirectory", remarks, ctx );
 
-    andValidator().validate( this, "SSLPort", remarks, putValidators( integerValidator() ) );
+    JobEntryValidatorUtils.andValidator().validate(
+        this, "SSLPort", remarks, AndValidator.putValidators( JobEntryValidatorUtils.integerValidator() ) );
   }
 
   public List<ResourceReference> getResourceDependencies( JobMeta jobMeta ) {
@@ -1324,7 +1329,7 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
         break;
     }
     if ( Const.isEmpty( folderName ) ) {
-      switch( folderType ) {
+      switch ( folderType ) {
         case JobEntryGetPOP.FOLDER_OUTPUT:
           throw new KettleException( BaseMessages
             .getString( PKG, "JobGetMailsFromPOP.Error.OutputFolderEmpty" ) );
@@ -1336,7 +1341,7 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
     FileObject folder = KettleVFS.getFileObject( folderName, this );
     if ( folder.exists() ) {
       if ( folder.getType() != FileType.FOLDER ) {
-        switch( folderType ) {
+        switch ( folderType ) {
           case JobEntryGetPOP.FOLDER_OUTPUT:
             throw new KettleException( BaseMessages.getString(
               PKG, "JobGetMailsFromPOP.Error.NotAFolderNot", folderName ) );
@@ -1346,7 +1351,7 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
         }
       }
       if ( isDebug() ) {
-        switch( folderType ) {
+        switch ( folderType ) {
           case JobEntryGetPOP.FOLDER_OUTPUT:
             throw new KettleException( BaseMessages.getString(
               PKG, "JobGetMailsFromPOP.Log.OutputFolderExists", folderName ) );
@@ -1359,7 +1364,7 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
       if ( isCreateLocalFolder() ) {
         folder.createFolder();
       } else {
-        switch( folderType ) {
+        switch ( folderType ) {
           case JobEntryGetPOP.FOLDER_OUTPUT:
             throw new KettleException( BaseMessages.getString(
               PKG, "JobGetMailsFromPOP.Error.OutputFolderNotExist", folderName ) );

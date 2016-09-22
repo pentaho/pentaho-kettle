@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -21,6 +21,9 @@
  ******************************************************************************/
 
 package org.pentaho.di.core.util;
+
+import org.pentaho.di.core.encryption.Encr;
+import org.pentaho.di.core.variables.VariableSpace;
 
 /* Levenshtein in Java, originally from Josh Drew's code at
  * http://joshdrew.com/
@@ -102,4 +105,24 @@ public class Utils {
     }
   }
 
+  /**
+   * Resolves password from variable if it's necessary and decrypts if the password was encrypted
+   *
+   *
+   * @param variables
+   *          VariableSpace is used for resolving
+   * @param password
+   *          the password for resolving and decrypting
+   * @return resolved decrypted password
+   */
+  public static String resolvePassword( VariableSpace variables, String password ) {
+    String resolvedPassword = variables.environmentSubstitute( password );
+    if ( resolvedPassword != null ) {
+      // returns resolved decrypted password
+      return Encr.decryptPasswordOptionallyEncrypted( resolvedPassword );
+    } else {
+      // actually null
+      return resolvedPassword;
+    }
+  }
 }

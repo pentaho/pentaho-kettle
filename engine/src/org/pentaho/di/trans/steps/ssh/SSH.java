@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,7 +23,7 @@
 package org.pentaho.di.trans.steps.ssh;
 
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.encryption.Encr;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -206,7 +206,7 @@ public class SSH extends BaseStep implements StepInterface {
       String servername = environmentSubstitute( meta.getServerName() );
       int nrPort = Const.toInt( environmentSubstitute( meta.getPort() ), 22 );
       String username = environmentSubstitute( meta.getuserName() );
-      String password = Encr.decryptPasswordOptionallyEncrypted( environmentSubstitute( meta.getpassword() ) );
+      String password = Utils.resolvePassword( variables, meta.getpassword() );
       String keyFilename = environmentSubstitute( meta.getKeyFileName() );
       String passphrase = environmentSubstitute( meta.getPassphrase() );
       int timeOut = Const.toInt( environmentSubstitute( meta.getTimeOut() ), 0 );
@@ -255,6 +255,7 @@ public class SSH extends BaseStep implements StepInterface {
     return false;
   }
 
+  @Override
   public void dispose( StepMetaInterface smi, StepDataInterface sdi ) {
     meta = (SSHMeta) smi;
     data = (SSHData) sdi;

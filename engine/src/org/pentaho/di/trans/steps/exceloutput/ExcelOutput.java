@@ -49,6 +49,7 @@ import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
@@ -557,7 +558,8 @@ public class ExcelOutput extends BaseStep implements StepInterface {
       if ( meta.isSheetProtected() ) {
         // Protect Sheet by setting password
         data.sheet.getSettings().setProtected( true );
-        data.sheet.getSettings().setPassword( environmentSubstitute( meta.getPassword() ) );
+        String realPassword = Utils.resolvePassword( variables, meta.getPassword() );
+        data.sheet.getSettings().setPassword( realPassword );
       }
 
       // Set the initial position...
