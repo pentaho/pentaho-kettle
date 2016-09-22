@@ -35,7 +35,12 @@ import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.widgets.Control;
 import org.pentaho.di.ui.spoon.trans.TransGraph;
 
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+
 public final class ExpandedContentManager {
+
+  static Supplier<Spoon> spoonSupplier = Spoon::getInstance;
 
   /**
    * isBrowserVisible
@@ -44,7 +49,7 @@ public final class ExpandedContentManager {
    *         hasn't been created it will return false.
    */
   public static boolean isVisible() {
-    return isVisible( Spoon.getInstance().getActiveTransGraph() );
+    return isVisible( spoonInstance().getActiveTransGraph() );
   }
 
   /**
@@ -69,7 +74,7 @@ public final class ExpandedContentManager {
    * creates a web browser for the current TransGraph
    */
   public static void createExpandedContent( String url ) {
-    createExpandedContent( Spoon.getInstance().getActiveTransGraph(), url );
+    createExpandedContent( spoonInstance().getActiveTransGraph(), url );
   }
 
   /**
@@ -112,7 +117,7 @@ public final class ExpandedContentManager {
    * Creates and shows the web browser for the active TransGraph
    */
   public static void showExpandedContent() {
-    showExpandedContent( Spoon.getInstance().getActiveTransGraph() );
+    showExpandedContent( spoonInstance().getActiveTransGraph() );
   }
 
   /**
@@ -160,7 +165,16 @@ public final class ExpandedContentManager {
    * hides the web browser associated with the active TransGraph
    */
   public static void hideExpandedContent() {
-    hideExpandedContent( Spoon.getInstance().getActiveTransGraph() );
+    hideExpandedContent( spoonInstance().getActiveTransGraph() );
+  }
+
+  /**
+   * closeExpandedContent
+   *
+   * closes the web browser associated with the active TransGraph
+   */
+  public static void closeExpandedContent() {
+    closeExpandedContent( spoonInstance().getActiveTransGraph() );
   }
 
   /**
@@ -170,16 +184,43 @@ public final class ExpandedContentManager {
    *          the TransGraph whose web browser will be hidden
    */
   public static void hideExpandedContent( TransGraph graph ) {
+    doToExpandedContent( graph, browser -> {
+      browser.moveBelow( null );
+      browser.getParent().layout( true );
+      browser.getParent().redraw();
+    } );
+  }
+
+  /**
+   * closeExpandedContent( TransGraph graph )
+   *
+   * @param graph
+   *          the TransGraph whose web browser will be closed
+   */
+  public static void closeExpandedContent( TransGraph graph ) {
+    doToExpandedContent( graph, Browser::close );
+  }
+
+  /**
+   * doToExpandedContent( TransGraph graph )
+   *
+   * @param graph
+   *          the TransGraph whose web browser will be hidden
+   * @param browserAction Consumer for acting on the browser
+   */
+  private static void doToExpandedContent( TransGraph graph, Consumer<Browser> browserAction ) {
     Browser browser = getExpandedContentForTransGraph( graph );
     if ( browser == null ) {
       return;
     }
-    SashForm sash = (SashForm) Spoon.getInstance().getDesignParent();
-    sash.setWeights( Spoon.getInstance().getTabSet().getSelected().getSashWeights() );
+    SashForm sash = (SashForm) spoonInstance().getDesignParent();
+    sash.setWeights( spoonInstance().getTabSet().getSelected().getSashWeights() );
 
-    browser.moveBelow( null );
-    browser.getParent().layout( true );
-    browser.getParent().redraw();
+    browserAction.accept( browser );
+  }
+
+  private static Spoon spoonInstance() {
+    return spoonSupplier.get();
   }
 
   /**
@@ -189,11 +230,11 @@ public final class ExpandedContentManager {
    *          the browser object to maximize. We try to take up as much of the Spoon window as possible.
    */
   private static void maximizeExpandedContent( Browser browser ) {
-    SashForm sash = (SashForm) Spoon.getInstance().getDesignParent();
+    SashForm sash = (SashForm) spoonInstance().getDesignParent();
     int[] weights = sash.getWeights();
     int[] savedSashWeights = new int[weights.length];
     System.arraycopy( weights, 0, savedSashWeights, 0, weights.length );
-    Spoon.getInstance().getTabSet().getSelected().setSashWeights( savedSashWeights );
+    spoonInstance().getTabSet().getSelected().setSashWeights( savedSashWeights );
     weights[0] = 0;
     weights[1] = 1000;
     sash.setWeights( weights );
