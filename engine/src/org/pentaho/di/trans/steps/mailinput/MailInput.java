@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -37,6 +37,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.entries.getpop.MailConnection;
 import org.pentaho.di.job.entries.getpop.MailConnectionMeta;
@@ -403,7 +404,7 @@ public class MailInput extends BaseStep implements StepInterface {
     }
 
     String realusername = environmentSubstitute( meta.getUserName() );
-    String realpassword = environmentSubstitute( meta.getPassword() );
+    String realpassword = Utils.resolvePassword( variables, meta.getPassword() );
     int realport = Const.toInt( environmentSubstitute( meta.getPort() ), -1 );
     String realProxyUsername = environmentSubstitute( meta.getProxyUsername() );
     if ( !meta.isDynamicFolder() ) {
