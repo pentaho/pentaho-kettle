@@ -183,7 +183,7 @@ public class AnalyticQueryDialog extends BaseStepDialog implements StepDialogInt
     wlAgg.setLayoutData( fdlAgg );
 
     int UpInsCols = 4;
-    int UpInsRows = ( input.getAggregateField() != null ? input.getAggregateField().length : 1 );
+    int UpInsRows = ( input.getOutputFields() != null ? input.getOutputFields().length : 1 );
 
     ciReturn = new ColumnInfo[UpInsCols];
     ciReturn[0] =
@@ -346,17 +346,18 @@ public class AnalyticQueryDialog extends BaseStepDialog implements StepDialogInt
       }
     }
 
-    if ( input.getAggregateField() != null ) {
-      for ( int i = 0; i < input.getAggregateField().length; i++ ) {
+    if ( input.getOutputFields() != null ) {
+      for ( int i = 0; i < input.getOutputFields().length; i++ ) {
+        AnalyticQueryMeta.OutputField of = input.getOutputFields()[i];
         TableItem item = wAgg.table.getItem( i );
-        if ( input.getAggregateField()[i] != null ) {
-          item.setText( 1, input.getAggregateField()[i] );
+        if ( of.getAggregateField() != null ) {
+          item.setText( 1, of.getAggregateField() );
         }
-        if ( input.getSubjectField()[i] != null ) {
-          item.setText( 2, input.getSubjectField()[i] );
+        if ( of.getSubjectField() != null ) {
+          item.setText( 2, of.getSubjectField() );
         }
-        item.setText( 3, AnalyticQueryMeta.getTypeDescLong( input.getAggregateType()[i] ) );
-        int value = input.getValueField()[i];
+        item.setText( 3, AnalyticQueryMeta.getTypeDescLong( of.getAggregateType() ) );
+        int value = of.getAggregateType();
         String valuetext = Integer.toString( value );
         if ( valuetext != null ) {
           item.setText( 4, valuetext );
@@ -398,10 +399,11 @@ public class AnalyticQueryDialog extends BaseStepDialog implements StepDialogInt
     //CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < nrfields; i++ ) {
       TableItem item = wAgg.getNonEmpty( i );
-      input.getAggregateField()[i] = item.getText( 1 );
-      input.getSubjectField()[i] = item.getText( 2 );
-      input.getAggregateType()[i] = AnalyticQueryMeta.getType( item.getText( 3 ) );
-      input.getValueField()[i] = Const.toInt( item.getText( 4 ), 1 );
+      AnalyticQueryMeta.OutputField of = input.getOutputFields()[i];
+      of.setAggregateField( item.getText( 1 ) );
+      of.setSubjectField( item.getText( 2 ) );
+      of.setAggregateType( AnalyticQueryMeta.getType( item.getText( 3 ) ) );
+      of.setValueField( Const.toInt( item.getText( 4 ), 1 ) );
     }
 
     stepname = wStepname.getText();
