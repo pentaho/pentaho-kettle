@@ -172,11 +172,16 @@ public class DatabaseUtil implements DataSourceProviderInterface {
    */
   @Override
   public DataSource getNamedDataSource( String datasourceName ) throws DataSourceNamingException {
+    ClassLoader original = Thread.currentThread().getContextClassLoader();
     try {
+      Thread.currentThread().setContextClassLoader( getClass().getClassLoader() );
       return DatabaseUtil.getDataSourceFromJndi( datasourceName, new InitialContext() );
     } catch ( NamingException ex ) {
       throw new DataSourceNamingException( ex );
+    } finally {
+      Thread.currentThread().setContextClassLoader( original );
     }
+
   }
 
   @Override
