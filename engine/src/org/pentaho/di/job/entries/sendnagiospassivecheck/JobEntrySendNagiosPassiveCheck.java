@@ -359,7 +359,7 @@ public class JobEntrySendNagiosPassiveCheck extends JobEntryBase implements Clon
   }
 
   /**
-   * @param user
+   * @param password
    *          The password to set.
    */
   public void setPassword( String password ) {
@@ -458,7 +458,7 @@ public class JobEntrySendNagiosPassiveCheck extends JobEntryBase implements Clon
 
     // Target
     String realServername = environmentSubstitute( serverName );
-    String realPassword = environmentSubstitute( password );
+    String realPassword = Utils.resolvePassword( variables, password );
     int realPort = Const.toInt( environmentSubstitute( port ), DEFAULT_PORT );
     int realResponseTimeOut = Const.toInt( environmentSubstitute( responseTimeOut ), DEFAULT_RESPONSE_TIME_OUT );
     int realConnectionTimeOut =

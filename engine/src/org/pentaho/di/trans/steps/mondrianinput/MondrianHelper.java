@@ -121,8 +121,10 @@ public class MondrianHelper {
       if ( !Utils.isEmpty( databaseMeta.getUsername() ) ) {
         connectString += "JdbcUser=" + space.environmentSubstitute( databaseMeta.getUsername() ) + ";";
       }
-      if ( !Utils.isEmpty( databaseMeta.getPassword() ) ) {
-        connectString += "JdbcPassword=" + space.environmentSubstitute( databaseMeta.getPassword() ) + ";";
+      String password = databaseMeta.getPassword();
+      if ( !Utils.isEmpty( password ) ) {
+        String realPassword = Utils.resolvePassword( space, password );
+        connectString += "JdbcPassword=" + space.environmentSubstitute( realPassword ) + ";";
       }
 
       if ( !Utils.isEmpty( realRole ) ) {

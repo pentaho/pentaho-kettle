@@ -404,7 +404,7 @@ public class MailInput extends BaseStep implements StepInterface {
     }
 
     String realusername = environmentSubstitute( meta.getUserName() );
-    String realpassword = environmentSubstitute( meta.getPassword() );
+    String realpassword = Utils.resolvePassword( variables, meta.getPassword() );
     int realport = Const.toInt( environmentSubstitute( meta.getPort() ), -1 );
     String realProxyUsername = environmentSubstitute( meta.getProxyUsername() );
     if ( !meta.isDynamicFolder() ) {

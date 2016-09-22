@@ -270,7 +270,7 @@ public class Mail extends BaseStep implements StepInterface {
 
         // cache the position of the Authentication password field
         if ( data.indexOfAuthenticationPass < 0 ) {
-          String realAuthenticationPassword = meta.getAuthenticationPassword();
+          String realAuthenticationPassword = Utils.resolvePassword( variables, meta.getAuthenticationPassword() );
           data.indexOfAuthenticationPass = data.previousRowMeta.indexOfValue( realAuthenticationPassword );
           if ( data.indexOfAuthenticationPass < 0 ) {
             throw new KettleException( BaseMessages.getString(

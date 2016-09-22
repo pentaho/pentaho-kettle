@@ -628,9 +628,10 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
       String realProxyHost = environmentSubstitute( getProxyHost() );
       if ( !Utils.isEmpty( realProxyHost ) ) {
         // Set proxy
+        String password = Utils.resolvePassword( variables, getProxyPassword() );
         sftpclient.setProxy(
           realProxyHost, environmentSubstitute( getProxyPort() ), environmentSubstitute( getProxyUsername() ),
-          environmentSubstitute( getProxyPassword() ), getProxyType() );
+            password, getProxyType() );
       }
 
       // login to ftp host ...

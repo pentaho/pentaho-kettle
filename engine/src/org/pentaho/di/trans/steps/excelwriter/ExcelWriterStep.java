@@ -932,7 +932,7 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
       data.realTemplateSheetName = environmentSubstitute( meta.getTemplateSheetName() );
       data.realTemplateFileName = environmentSubstitute( meta.getTemplateFileName() );
       data.realStartingCell = environmentSubstitute( meta.getStartingCell() );
-      data.realPassword = environmentSubstitute( meta.getPassword() );
+      data.realPassword = Utils.resolvePassword( variables, meta.getPassword() );
       data.realProtectedBy = environmentSubstitute( meta.getProtectedBy() );
 
       data.shiftExistingCells = ExcelWriterStepMeta.ROW_WRITE_PUSH_DOWN.equals( meta.getRowWritingMethod() );

@@ -120,7 +120,7 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface {
       DatabaseMeta dm = meta.getDatabaseMeta();
 
       String user = environmentSubstitute( Const.NVL( dm.getUsername(), "" ) );
-      String password = environmentSubstitute( Const.NVL( dm.getPassword(), "" ) );
+      String password = Utils.resolvePassword( variables, Const.NVL( dm.getPassword(), "" ) );
 
       MapiSocket mserver = getMonetDBConnection();
       data.mserver = mserver;
@@ -616,7 +616,7 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface {
     String hostname = environmentSubstitute( Const.NVL( dm.getHostname(), "" ) );
     String portnum = environmentSubstitute( Const.NVL( dm.getDatabasePortNumberString(), "" ) );
     String user = environmentSubstitute( Const.NVL( dm.getUsername(), "" ) );
-    String password = environmentSubstitute( Const.NVL( dm.getPassword(), "" ) );
+    String password = Utils.resolvePassword( variables, Const.NVL( dm.getPassword(), "" ) );
     String db = environmentSubstitute( Const.NVL( dm.getDatabaseName(), "" ) );
 
     MapiSocket mserver = getMonetDBConnection( hostname, Integer.valueOf( portnum ), user, password, db, log );
