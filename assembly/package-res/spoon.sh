@@ -114,6 +114,16 @@ case `uname -s` in
 
 
 	Linux)
+
+            HASWEBKITGTK=`ldconfig -p | grep webkitgtk`
+            if [ -z "$HASWEBKITGTK" ]; then
+              echo "#######################################################################"
+              echo "WARNING:  no libwebkitgtk detected, some features will be unavailable"
+              echo "    Consider installing the package with apt-get or yum."
+              echo "    e.g. 'sudo apt-get install libwebkitgtk-1.0-0'"
+              echo "#######################################################################"
+            fi
+
 	    ARCH=`uname -m`
 		case $ARCH in
 			x86_64)
