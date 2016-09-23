@@ -276,20 +276,25 @@ public class TransPainter extends BasePainter {
       }
     }
 
+    TransPainterFlyoutExtension extension = null;
     for ( int i = transMeta.nrSteps() - 1; i >= 0; i-- ) {
       StepMeta stepMeta = transMeta.getStep( i );
       if ( stepMeta.isSelected() && stepMeta.isDrawn() && selectedStepsCount == 1 ) {
-        TransPainterFlyoutExtension extension =
-          new TransPainterFlyoutExtension(
-            gc, areaOwners, transMeta, stepMeta, translationX, translationY, magnification, area, offset );
-        try {
-          ExtensionPointHandler.callExtensionPoint(
-            LogChannel.GENERAL, KettleExtensionPoint.TransPainterFlyout.id, extension );
-        } catch ( Exception e ) {
-          LogChannel.GENERAL.logError( "Error calling extension point(s) for the transformation painter step", e );
-        }
+        extension = new TransPainterFlyoutExtension(
+          gc, areaOwners, transMeta, stepMeta, translationX, translationY, magnification, area, offset );
         break;
       }
+    }
+    if ( extension == null ) {
+      // pass null to notify extension that nothing is selected
+      extension = new TransPainterFlyoutExtension(
+        gc, areaOwners, transMeta, null, translationX, translationY, magnification, area, offset );
+    }
+    try {
+      ExtensionPointHandler.callExtensionPoint(
+        LogChannel.GENERAL, KettleExtensionPoint.TransPainterFlyout.id, extension );
+    } catch ( Exception e ) {
+      LogChannel.GENERAL.logError( "Error calling extension point(s) for the transformation painter step", e );
     }
 
     // Display an icon on the indicated location signaling to the user that the step in question does not accept input
