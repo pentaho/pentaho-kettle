@@ -436,6 +436,30 @@
   </info>
   <notepads>
   </notepads>
+  <connection>
+    <name>SampleData.H2</name>
+    <server/>
+    <type>H2</type>
+    <access>JNDI</access>
+    <database>SampleData</database>
+    <port>1521</port>
+    <username/>
+    <password>Encrypted </password>
+    <servername/>
+    <data_tablespace/>
+    <index_tablespace/>
+    <attributes>
+      <attribute><code>FORCE_IDENTIFIERS_TO_LOWERCASE</code><attribute>N</attribute></attribute>
+      <attribute><code>FORCE_IDENTIFIERS_TO_UPPERCASE</code><attribute>N</attribute></attribute>
+      <attribute><code>IS_CLUSTERED</code><attribute>N</attribute></attribute>
+      <attribute><code>PORT_NUMBER</code><attribute>1521</attribute></attribute>
+      <attribute><code>PRESERVE_RESERVED_WORD_CASE</code><attribute>Y</attribute></attribute>
+      <attribute><code>QUOTE_ALL_FIELDS</code><attribute>N</attribute></attribute>
+      <attribute><code>SUPPORTS_BOOLEAN_DATA_TYPE</code><attribute>Y</attribute></attribute>
+      <attribute><code>SUPPORTS_TIMESTAMP_DATA_TYPE</code><attribute>Y</attribute></attribute>
+      <attribute><code>USE_POOLING</code><attribute>N</attribute></attribute>
+    </attributes>
+  </connection>
   <order>
     <hop>
       <from>Generate Rows</from>
@@ -490,7 +514,7 @@
     <optimizationLevel>9</optimizationLevel>
     <jsScripts>      <jsScript>        <jsScript_type>0</jsScript_type>
         <jsScript_name>ScriptValue</jsScript_name>
-        <jsScript_script>&#xa;var db &#x3d; _step_.getTransMeta&#x28;&#x29;.findDatabase&#x28;&#x22;SampleData.H2&#x22;&#x29;&#x3b;&#xa;&#xa;var url &#x3d; db.getURL&#x28;&#x29;&#x3b;&#xa;var hostname &#x3d; db.getHostname&#x28;&#x29;&#x3b;&#xa;</jsScript_script>
+        <jsScript_script>&#xa;var db &#x3d; _step_.getTransMeta&#x28;&#x29;.findDatabase&#x28;&#x22;SampleData.H2&#x22;&#x29;&#x3b;&#xa;var url &#x3d; db.getURL&#x28;&#x29;&#x3b;&#xa;var hostname &#x3d; db.getHostname&#x28;&#x29;&#x3b;&#xa;</jsScript_script>
       </jsScript>    </jsScripts>    <fields>      <field>        <name>url</name>
         <rename>url</rename>
         <type>String</type>
@@ -511,8 +535,8 @@
       </output>
     </remotesteps>
     <GUI>
-      <xloc>243</xloc>
-      <yloc>66</yloc>
+      <xloc>256</xloc>
+      <yloc>64</yloc>
       <draw>Y</draw>
     </GUI>
     </step>
