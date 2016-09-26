@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -40,6 +40,7 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.util.StreamLogger;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -118,7 +119,7 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface {
       DatabaseMeta dm = meta.getDatabaseMeta();
 
       String user = environmentSubstitute( Const.NVL( dm.getUsername(), "" ) );
-      String password = environmentSubstitute( Const.NVL( dm.getPassword(), "" ) );
+      String password = Utils.resolvePassword( variables, Const.NVL( dm.getPassword(), "" ) );
 
       MapiSocket mserver = getMonetDBConnection();
       data.mserver = mserver;
@@ -609,7 +610,7 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface {
     String hostname = environmentSubstitute( Const.NVL( dm.getHostname(), "" ) );
     String portnum = environmentSubstitute( Const.NVL( dm.getDatabasePortNumberString(), "" ) );
     String user = environmentSubstitute( Const.NVL( dm.getUsername(), "" ) );
-    String password = environmentSubstitute( Const.NVL( dm.getPassword(), "" ) );
+    String password = Utils.resolvePassword( variables, Const.NVL( dm.getPassword(), "" ) );
     String db = environmentSubstitute( Const.NVL( dm.getDatabaseName(), "" ) );
 
     MapiSocket mserver = getMonetDBConnection( hostname, Integer.valueOf( portnum ), user, password, db, log );
