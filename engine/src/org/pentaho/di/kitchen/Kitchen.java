@@ -22,6 +22,7 @@
 
 package org.pentaho.di.kitchen;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.AbstractMap;
 import java.util.ArrayList;
@@ -124,7 +125,7 @@ public class Kitchen {
     RepositoryMeta repositoryMeta = null;
     Job job = null;
 
-    StringBuilder optionRepname, optionUsername, optionPassword, optionJobname, optionDirname;
+    StringBuilder optionRepname, optionUsername, optionPassword, optionJobname, optionDirname, initialDir;
     StringBuilder optionFilename, optionLoglevel, optionLogfile, optionLogfileOld, optionListdir;
     StringBuilder optionListjobs, optionListrep, optionNorep, optionVersion, optionListParam, optionExport;
     NamedParams optionParams = new NamedParamsDefault();
@@ -187,10 +188,13 @@ public class Kitchen {
           "export", BaseMessages.getString( PKG, "Kitchen.ComdLine.Export" ), optionExport =
           new StringBuilder(), true, false ),
         new CommandLineOption(
+          "initialDir", null, initialDir =
+          new StringBuilder(), false, true ),
+        new CommandLineOption(
           "custom", BaseMessages.getString( PKG, "Kitchen.ComdLine.Custom" ), customOptions, false ),
         maxLogLinesOption, maxLogTimeoutOption, };
 
-    if ( args.size() == 0 ) {
+    if ( args.size() == 2 ) { // 2 internal hidden argument (flag and value)
       CommandLineOption.printUsage( options );
       exitJVM( 9 );
     }
@@ -378,7 +382,12 @@ public class Kitchen {
         // Try to load if from file anyway.
         if ( !Utils.isEmpty( optionFilename ) && job == null ) {
           blockAndThrow( kettleInitFuture );
-          jobMeta = new JobMeta( optionFilename.toString(), null, null );
+          String fileName = optionFilename.toString();
+          if ( !new File( fileName ).isAbsolute() ) {
+            fileName = initialDir.toString() + fileName;
+          }
+
+          jobMeta = new JobMeta( fileName, null, null );
           job = new Job( null, jobMeta );
         }
       } else if ( "Y".equalsIgnoreCase( optionListrep.toString() ) ) {

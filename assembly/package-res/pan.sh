@@ -1,5 +1,6 @@
 #!/bin/sh
 
+INITIALDIR="`pwd`"
 BASEDIR="`dirname $0`"
 cd "$BASEDIR"
 DIR="`pwd`"
@@ -12,4 +13,4 @@ if [ "$1" = "-x" ]; then
   shift
 fi
 
-"$DIR/spoon.sh" -main org.pentaho.di.pan.Pan "$@"
+"$DIR/spoon.sh" -main org.pentaho.di.pan.Pan -initialDir "$INITIALDIR/" "$@"

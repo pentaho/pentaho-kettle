@@ -22,6 +22,7 @@
 
 package org.pentaho.di.pan;
 
+import java.io.File;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -88,7 +89,7 @@ public class Pan {
     StringBuilder optionRepname, optionUsername, optionPassword, optionTransname, optionDirname;
     StringBuilder optionFilename, optionLoglevel, optionLogfile, optionLogfileOld, optionListdir;
     StringBuilder optionListtrans, optionListrep, optionExprep, optionNorep, optionSafemode;
-    StringBuilder optionVersion, optionJarFilename, optionListParam, optionMetrics;
+    StringBuilder optionVersion, optionJarFilename, optionListParam, optionMetrics, initialDir;
 
     NamedParams optionParams = new NamedParamsDefault();
 
@@ -155,10 +156,13 @@ public class Pan {
           "listparam", BaseMessages.getString( PKG, "Pan.ComdLine.ListParam" ), optionListParam =
           new StringBuilder(), true, false ),
         new CommandLineOption(
+          "initialDir", null, initialDir =
+          new StringBuilder(), false, true ),
+        new CommandLineOption(
           "metrics", BaseMessages.getString( PKG, "Pan.ComdLine.Metrics" ), optionMetrics =
           new StringBuilder(), true, false ), maxLogLinesOption, maxLogTimeoutOption };
 
-    if ( args.size() == 0 ) {
+    if ( args.size() == 2 ) { // 2 internal hidden argument (flag and value)
       CommandLineOption.printUsage( options );
       exitJVM( 9 );
     }
@@ -377,10 +381,16 @@ public class Pan {
         // You could implement some fail-over mechanism this way.
         //
         if ( trans == null && !Utils.isEmpty( optionFilename ) ) {
-          if ( log.isDetailed() ) {
-            log.logDetailed( BaseMessages.getString( PKG, "Pan.Log.LoadingTransXML", "" + optionFilename ) );
+
+          String fileName = optionFilename.toString();
+          if ( !new File( fileName ).isAbsolute() ) {
+            fileName = initialDir.toString() + fileName;
           }
-          transMeta = new TransMeta( optionFilename.toString() );
+
+          if ( log.isDetailed() ) {
+            log.logDetailed( BaseMessages.getString( PKG, "Pan.Log.LoadingTransXML", "" + fileName ) );
+          }
+          transMeta = new TransMeta( fileName );
           trans = new Trans( transMeta );
         }
 
