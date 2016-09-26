@@ -494,7 +494,7 @@ public class HTTPPOST extends BaseStep implements StepInterface {
       data.realProxyHost = environmentSubstitute( meta.getProxyHost() );
       data.realProxyPort = Const.toInt( environmentSubstitute( meta.getProxyPort() ), 8080 );
       data.realHttpLogin = environmentSubstitute( meta.getHttpLogin() );
-      data.realHttpPassword = environmentSubstitute( meta.getHttpPassword() );
+      data.realHttpPassword = Utils.resolvePassword( variables, meta.getHttpPassword() );
 
       data.realSocketTimeout = Const.toInt( environmentSubstitute( meta.getSocketTimeout() ), -1 );
       data.realConnectionTimeout = Const.toInt( environmentSubstitute( meta.getSocketTimeout() ), -1 );

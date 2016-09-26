@@ -146,7 +146,7 @@ import org.pentaho.metastore.api.IMetaStore;
 public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInterface, ExtensionDataInterface {
   private static Class<?> PKG = BaseStep.class; // for i18n purposes, needed by Translator2!!
 
-  private VariableSpace variables = new Variables();
+  protected VariableSpace variables = new Variables();
 
   private TransMeta transMeta;
 

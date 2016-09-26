@@ -557,7 +557,8 @@ public class ExcelOutput extends BaseStep implements StepInterface {
       if ( meta.isSheetProtected() ) {
         // Protect Sheet by setting password
         data.sheet.getSettings().setProtected( true );
-        data.sheet.getSettings().setPassword( environmentSubstitute( meta.getPassword() ) );
+        String realPassword = Utils.resolvePassword( variables, meta.getPassword() );
+        data.sheet.getSettings().setPassword( realPassword );
       }
 
       // Set the initial position...

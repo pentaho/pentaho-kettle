@@ -716,8 +716,12 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
     return password;
   }
 
+  /**
+   * @return Returns resolved decrypted password or null
+   * in case of {@link #getPassword()} returns null.
+   */
   public String getRealPassword() {
-    return environmentSubstitute( getPassword() );
+    return Utils.resolvePassword( variables, getPassword() );
   }
 
   public String getAttachmentFolder() {
