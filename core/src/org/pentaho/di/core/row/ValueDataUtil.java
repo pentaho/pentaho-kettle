@@ -1310,7 +1310,7 @@ public class ValueDataUtil {
           iNoOfWorkingDays += 1;
         }
         calFrom.add( Calendar.DATE, 1 );
-      } while ( calFrom.getTimeInMillis() < calTo.getTimeInMillis() );
+      } while ( calFrom.getTimeInMillis() <= calTo.getTimeInMillis() );
       return new Long( singminus ? -iNoOfWorkingDays : iNoOfWorkingDays );
     } else {
       return null;
