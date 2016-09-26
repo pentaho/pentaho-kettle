@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -53,6 +53,7 @@ import org.apache.commons.vfs.FileType;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -269,7 +270,7 @@ public class Mail extends BaseStep implements StepInterface {
 
         // cache the position of the Authentication password field
         if ( data.indexOfAuthenticationPass < 0 ) {
-          String realAuthenticationPassword = meta.getAuthenticationPassword();
+          String realAuthenticationPassword = Utils.resolvePassword( variables, meta.getAuthenticationPassword() );
           data.indexOfAuthenticationPass = data.previousRowMeta.indexOfValue( realAuthenticationPassword );
           if ( data.indexOfAuthenticationPass < 0 ) {
             throw new KettleException( BaseMessages.getString(

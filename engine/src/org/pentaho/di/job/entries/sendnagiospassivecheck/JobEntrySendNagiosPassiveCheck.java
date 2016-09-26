@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,10 +22,6 @@
 
 package org.pentaho.di.job.entries.sendnagiospassivecheck;
 
-import static org.pentaho.di.job.entry.validator.AndValidator.putValidators;
-import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.andValidator;
-import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notBlankValidator;
-
 import java.util.List;
 
 import org.pentaho.di.cluster.SlaveServer;
@@ -36,12 +32,15 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
+import org.pentaho.di.job.entry.validator.AndValidator;
+import org.pentaho.di.job.entry.validator.JobEntryValidatorUtils;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.resource.ResourceEntry;
@@ -359,7 +358,7 @@ public class JobEntrySendNagiosPassiveCheck extends JobEntryBase implements Clon
   }
 
   /**
-   * @param user
+   * @param password
    *          The password to set.
    */
   public void setPassword( String password ) {
@@ -458,7 +457,7 @@ public class JobEntrySendNagiosPassiveCheck extends JobEntryBase implements Clon
 
     // Target
     String realServername = environmentSubstitute( serverName );
-    String realPassword = environmentSubstitute( password );
+    String realPassword = Utils.resolvePassword( variables, password );
     int realPort = Const.toInt( environmentSubstitute( port ), DEFAULT_PORT );
     int realResponseTimeOut = Const.toInt( environmentSubstitute( responseTimeOut ), DEFAULT_RESPONSE_TIME_OUT );
     int realConnectionTimeOut =
@@ -566,7 +565,8 @@ public class JobEntrySendNagiosPassiveCheck extends JobEntryBase implements Clon
   @Override
   public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
-    andValidator().validate( this, "serverName", remarks, putValidators( notBlankValidator() ) );
+    JobEntryValidatorUtils.andValidator().validate(
+        this, "serverName", remarks, AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
   }
 
 }
