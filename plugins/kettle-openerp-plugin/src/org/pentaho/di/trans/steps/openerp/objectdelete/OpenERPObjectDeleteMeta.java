@@ -39,7 +39,7 @@ import org.w3c.dom.Node;
 
 @Step( id = "OpenERPObjectDelete", image = "OpenERPObjectDelete.svg",
   i18nPackageName = "org.pentaho.di.trans.steps.openerp.objectdelete", name = "OpenERPObjectDelete.TransName",
-  description = "OpenERPObjectDelete.TransDescription",
+  description = "OpenERPObjectDelete.TransDescription", documentationUrl = "http://wiki.pentaho.com/display/EAI/OpenERP+Object+Delete",
   categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.OpenERP" )
 public class OpenERPObjectDeleteMeta extends BaseStepMeta implements StepMetaInterface {
 

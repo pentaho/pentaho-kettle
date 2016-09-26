@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -63,6 +63,7 @@ import org.w3c.dom.Node;
       i18nPackageName="org.pentaho.di.shapefilereader",
       name="ShapeFileReader.Step.Name",
       description = "ShapeFileReader.Step.Description",
+      documentationUrl = "http://wiki.pentaho.com/display/EAI/ESRI+Shapefile+Reader",
       categoryDescription="Input" )
 public class ShapeFileReaderMeta extends BaseStepMeta implements StepMetaInterface
 {
