@@ -3147,7 +3147,9 @@ public class ValueMetaBase implements ValueMetaInterface {
     trimType = getTrimTypeByCode( XMLHandler.getTagValue( node, "trim_type" ) );
     caseInsensitive = "Y".equalsIgnoreCase( XMLHandler.getTagValue( node, "case_insensitive" ) );
     collatorDisabled = "Y".equalsIgnoreCase( XMLHandler.getTagValue( node, "collator_disabled" ) );
-    collatorStrength = Integer.parseInt( XMLHandler.getTagValue( node, "collator_strength" ) );
+    if ( XMLHandler.getTagValue( node, "collator_strength" ) != null ) {
+      collatorStrength = Integer.parseInt( XMLHandler.getTagValue( node, "collator_strength" ) );
+    }
     sortedDescending = "Y".equalsIgnoreCase( XMLHandler.getTagValue( node, "sort_descending" ) );
     outputPaddingEnabled = "Y".equalsIgnoreCase( XMLHandler.getTagValue( node, "output_padding" ) );
     dateFormatLenient = "Y".equalsIgnoreCase( XMLHandler.getTagValue( node, "date_format_lenient" ) );
