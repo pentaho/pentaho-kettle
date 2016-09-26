@@ -70,7 +70,7 @@
   	<replace file = "${approot.stage.dir}/Data Integration.app/Contents/Info.plist" token="@KETTLE_VERSION_STRING@" value="${dependency.kettle.revision}" />
   	<!-- Remove the SWT JAR used for compilation -->
   	<delete quiet="true">
-  		<fileset dir="${approot.stage.dir}/lib" includes="swt*.jar" />
+		<fileset dir="${approot.stage.dir}/lib" includes="org.eclipse.swt.*.jar" />
   	</delete>
   	
     <antcall target="unzip-swtlibs"/>

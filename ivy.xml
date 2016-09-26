@@ -16,7 +16,7 @@
     </dependency>
     <dependency org="${ivy.artifact.group}" name="kettle-dbdialog" rev="${project.revision}" changing="true"/>
     <dependency org="${ivy.artifact.group}" name="kettle-ui-swt"   rev="${project.revision}" changing="true">
-      <exclude name="swt-linux-x86_64"/>
+      <exclude name="org.eclipse.swt.gtk.linux.x86_64"/>
     </dependency>
 	
     <!-- Common (Unit, Integration) test dependencies -->

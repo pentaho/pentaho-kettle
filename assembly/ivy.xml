@@ -22,7 +22,7 @@
     <dependency org="${ivy.artifact.group}" name="kettle-engine"        rev="${project.revision}" changing="true" force="true"/>
     <dependency org="${ivy.artifact.group}" name="kettle-dbdialog"      rev="${project.revision}" changing="true" force="true"/>
     <dependency org="${ivy.artifact.group}" name="kettle-ui-swt"        rev="${project.revision}" changing="true" force="true">
-      <exclude name="swt-linux-x86_64"/>
+      <exclude name="org.eclipse.swt.gtk.linux.x86_64"/>
     </dependency>
     
     <dependency org="pentaho" name="pdi-osgi-bridge-core" rev="${dependency.pdi-osgi-bridge.revision}" changing="true" />
@@ -155,7 +155,7 @@
     </dependency>
      
     <!-- The OS-specific libraries are bundled together, unzip them all for assembly -->
-    <dependency org="org.eclipse"          name="swtlibs"               rev="4.3.2" conf="swtlibs->default" transitive="false">
+    <dependency org="org.eclipse.swt"          name="swtlibs"               rev="4.6" conf="swtlibs->default" transitive="false">
       <artifact name="swtlibs" type="zip"/>
     </dependency>
       
