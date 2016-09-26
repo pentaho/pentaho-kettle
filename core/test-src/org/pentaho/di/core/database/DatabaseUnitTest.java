@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,6 +27,7 @@ import static org.mockito.Mockito.*;
 import static org.pentaho.di.core.database.DataSourceProviderInterface.DatasourceType.JNDI;
 import static org.pentaho.di.core.database.DataSourceProviderInterface.DatasourceType.POOLED;
 
+import java.lang.reflect.Field;
 import java.sql.BatchUpdateException;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -509,4 +510,78 @@ public class DatabaseUnitTest {
     verify( provider ).getNamedDataSource( anyString(), eq( JNDI ) );
     verify( provider, never() ).getNamedDataSource( anyString(), eq( POOLED ) );
   }
+
+  @Test
+  public void testDisconnectPstmCloseFail()
+    throws SQLException, KettleDatabaseException, NoSuchFieldException, IllegalAccessException {
+
+    DatabaseMeta dbMeta = mock( DatabaseMeta.class );
+    DatabaseMetaData dbMetaData = mock( DatabaseMetaData.class );
+
+    Database db = new Database( mockLogger(), dbMeta );
+    Connection connection = mockConnection( dbMetaData );
+    db.setConnection( connection );
+    db.setCommit( 1 );
+
+    PreparedStatement ps = mock( PreparedStatement.class );
+
+    Class<Database> databaseClass = Database.class;
+    Field fieldPstmt = databaseClass.getDeclaredField( "pstmt" );
+    fieldPstmt.setAccessible( true );
+    fieldPstmt.set( db, ps );
+
+    Mockito.doThrow( new SQLException( "Test SQL exception" ) ).when( ps ).close();
+
+    db.disconnect();
+    verify( connection, times( 1 ) ).close();
+
+  }
+
+
+  @Test
+  public void testDisconnectCommitFail() throws SQLException, NoSuchFieldException, IllegalAccessException {
+
+    DatabaseMeta dbMeta = mock( DatabaseMeta.class );
+    when( dbMeta.supportsEmptyTransactions() ).thenReturn( true );
+
+    DatabaseMetaData dbMetaData = mock( DatabaseMetaData.class );
+    when( dbMetaData.supportsTransactions() ).thenReturn( true );
+
+    Database db = new Database( mockLogger(), dbMeta );
+    Connection connection = mockConnection( dbMetaData );
+    db.setConnection( connection );
+    db.setCommit( 1 );
+
+    PreparedStatement ps = mock( PreparedStatement.class );
+
+    Class<Database> databaseClass = Database.class;
+    Field fieldPstmt = databaseClass.getDeclaredField( "pstmt" );
+    fieldPstmt.setAccessible( true );
+    fieldPstmt.set( db, ps );
+
+    Mockito.doThrow( new SQLException( "Test SQL exception" ) ).when( connection ).commit();
+
+    db.disconnect();
+
+    verify( connection, times( 1 ) ).close();
+
+  }
+
+
+  @Test
+  public void testDisconnectConnectionGroup() throws SQLException {
+
+    DatabaseMeta dbMeta = mock( DatabaseMeta.class );
+    DatabaseMetaData dbMetaData = mock( DatabaseMetaData.class );
+
+    Database db = new Database( mockLogger(), dbMeta );
+    Connection connection = mockConnection( dbMetaData );
+    db.setConnection( connection );
+
+    db.setConnectionGroup( "1" );
+    db.disconnect();
+
+    verify( connection, never() ).close();
+  }
+
 }
