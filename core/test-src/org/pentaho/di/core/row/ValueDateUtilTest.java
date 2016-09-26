@@ -24,6 +24,7 @@ package org.pentaho.di.core.row;
 
 import org.junit.After;
 import org.junit.Before;
+
 import org.junit.Test;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleValueException;
@@ -33,7 +34,6 @@ import java.util.Calendar;
 import java.util.TimeZone;
 
 import org.junit.Assert;
-import org.junit.Before;
 
 public class ValueDateUtilTest {
   private TimeZone defTimeZone;
@@ -47,8 +47,35 @@ public class ValueDateUtilTest {
   }
   @After
   public void tearDown() {
+    System.clearProperty( Const.KETTLE_COMPATIBILITY_CALCULATION_TIMEZONE_DECOMPOSITION );
     System.setProperty( "user.timezone", defUserTimezone.getID() );
     TimeZone.setDefault( defTimeZone );
+  }
+  @Test
+  public void shouldCalculateHourOfDayUsingValueMetasTimeZoneByDefault() throws KettleValueException {
+    Calendar date = Calendar.getInstance();
+    date.setTimeInMillis( 1454313600000L ); // 2016-07-01 08:00:00 UTC
+    ValueMetaInterface valueMetaDate = new ValueMetaDate();
+    valueMetaDate.setDateFormatTimeZone( TimeZone.getTimeZone( "CET" ) ); // UTC +1
+    long offsetCET = (long) TimeZone.getTimeZone( "CET" ).getRawOffset() / 3600000;
+
+    Object hourOfDayCET = ValueDataUtil.hourOfDay( valueMetaDate, date.getTime() );
+
+    Assert.assertEquals( 8L + offsetCET, hourOfDayCET );
+  }
+
+  @Test
+  public void shouldCalculateHourOfDayUsingLocalTimeZoneIfPropertyIsSet() throws KettleValueException {
+    Calendar date = Calendar.getInstance();
+    date.setTimeInMillis( 1454313600000L ); // 2016-07-01 08:00:00 UTC
+    ValueMetaInterface valueMetaDate = new ValueMetaDate();
+    valueMetaDate.setDateFormatTimeZone( TimeZone.getTimeZone( "CET" ) ); // UTC +1
+    long offsetLocal = (long) TimeZone.getDefault().getRawOffset() / 3600000;
+    System.setProperty( Const.KETTLE_COMPATIBILITY_CALCULATION_TIMEZONE_DECOMPOSITION, "true" );
+
+    Object hourOfDayLocal = ValueDataUtil.hourOfDay( valueMetaDate, date.getTime() );
+
+    Assert.assertEquals( 8L + offsetLocal, hourOfDayLocal );
   }
   @Test
   public void shouldCalculateDateWorkingDiff_JAN() throws KettleValueException {
@@ -193,5 +220,4 @@ public class ValueDateUtilTest {
     Object workingDayOfDEC = ValueDataUtil.DateWorkingDiff( metaA, endDate.getTime(), metaB, startDate.getTime() );
     Assert.assertEquals( "Working days count in DEC ", 23L, workingDayOfDEC );
   }
-
 }
