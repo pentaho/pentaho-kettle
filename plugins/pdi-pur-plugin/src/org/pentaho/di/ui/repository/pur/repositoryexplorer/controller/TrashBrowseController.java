@@ -1,5 +1,5 @@
 /*!
- * Copyright 2010 - 2015 Pentaho Corporation.  All rights reserved.
+ * Copyright 2010 - 2016 Pentaho Corporation.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,9 +23,12 @@ import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
+import org.pentaho.di.repository.RepositoryElementMetaInterface;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.repository.pur.RepositoryObjectAccessException;
+import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.ui.repository.RepositoryExtension;
 import org.pentaho.di.ui.repository.pur.repositoryexplorer.IUIEEUser;
 import org.pentaho.di.ui.repository.pur.repositoryexplorer.model.UIEERepositoryDirectory;
@@ -172,29 +175,28 @@ public class TrashBrowseController extends BrowseController implements java.io.S
   }
 
   protected void doCreateBindings() {
-    deck = (XulDeck) document.getElementById( "browse-tab-right-panel-deck" );//$NON-NLS-1$
+    deck = (XulDeck) document.getElementById( "browse-tab-right-panel-deck" ); //$NON-NLS-1$
     trashFileTable = (XulTree) document.getElementById( "deleted-file-table" ); //$NON-NLS-1$
 
     deleteButton = (XulButton) document.getElementById( "delete-button" ); //$NON-NLS-1$
     undeleteButton = (XulButton) document.getElementById( "undelete-button" ); //$NON-NLS-1$
 
     bf.setBindingType( Binding.Type.ONE_WAY );
-    BindingConvertor<List<UIDeletedObject>, Boolean> buttonConverter =
-        new BindingConvertor<List<UIDeletedObject>, Boolean>() {
+    BindingConvertor<List<UIDeletedObject>, Boolean>
+      buttonConverter =
+      new BindingConvertor<List<UIDeletedObject>, Boolean>() {
 
-          @Override
-          public Boolean sourceToTarget( List<UIDeletedObject> value ) {
-            if ( value != null && value.size() > 0 ) {
-              return true;
-            }
-            return false;
+        @Override public Boolean sourceToTarget( List<UIDeletedObject> value ) {
+          if ( value != null && value.size() > 0 ) {
+            return true;
           }
+          return false;
+        }
 
-          @Override
-          public List<UIDeletedObject> targetToSource( Boolean value ) {
-            return null;
-          }
-        };
+        @Override public List<UIDeletedObject> targetToSource( Boolean value ) {
+          return null;
+        }
+      };
     bf.createBinding( trashFileTable, "selectedItems", this, "selectedTrashFileItems" ); //$NON-NLS-1$ //$NON-NLS-2$
     bf.createBinding( trashFileTable, "selectedItems", deleteButton, "!disabled", buttonConverter ); //$NON-NLS-1$ //$NON-NLS-2$
     bf.createBinding( trashFileTable, "selectedItems", undeleteButton, "!disabled", buttonConverter ); //$NON-NLS-1$ //$NON-NLS-2$
@@ -286,10 +288,12 @@ public class TrashBrowseController extends BrowseController implements java.io.S
       }
       String t1 = o1.getName();
       String t2 = o2.getName();
-      if ( t1 == null )
+      if ( t1 == null ) {
         t1 = ""; //$NON-NLS-1$
-      if ( t2 == null )
+      }
+      if ( t2 == null ) {
         t2 = ""; //$NON-NLS-1$
+      }
       return t1.compareToIgnoreCase( t2 );
     }
 
@@ -384,6 +388,33 @@ public class TrashBrowseController extends BrowseController implements java.io.S
           if ( dir != null ) {
             dirMap.get( dir.getObjectId() ).refresh();
           }
+          // if transformation or directory with transformations call extension to restore data services references.
+          if ( RepositoryObjectType.TRANSFORMATION.name().equals( uiObj.getType() ) ) {
+            TransMeta transMeta = repository.loadTransformation( uiObj.getId(), null );
+            ExtensionPointHandler
+                .callExtensionPoint( LogChannel.GENERAL, KettleExtensionPoint.TransAfterOpen.id, transMeta );
+            transMeta.clearChanged();
+          } else if ( !RepositoryObjectType.JOB.name().equals( uiObj.getType() ) ) {
+            // if not a transformation and not a job then is a Directory
+            RepositoryDirectoryInterface
+                actualDir =
+                repository.findDirectory(
+                    uiObj.getOriginalParentPath() + RepositoryDirectory.DIRECTORY_SEPARATOR + uiObj.getName() );
+            if ( actualDir != null ) {
+              List<RepositoryElementMetaInterface> transformations = new ArrayList<>();
+              getAllTransformations( actualDir, transformations );
+              for ( RepositoryElementMetaInterface repositoryElementMetaInterface : transformations ) {
+                TransMeta transMeta = repository.loadTransformation( repositoryElementMetaInterface.getObjectId(), null );
+                ExtensionPointHandler
+                    .callExtensionPoint( LogChannel.GENERAL, KettleExtensionPoint.TransAfterOpen.id, transMeta );
+                transMeta.clearChanged();
+              }
+            } else {
+              displayExceptionMessage( BaseMessages.getString( PKG, "TrashBrowseController.UnableToRestoreDirectory",
+                  uiObj.getOriginalParentPath() + RepositoryDirectory.DIRECTORY_SEPARATOR + uiObj
+                      .getName() ) ); //$NON-NLS-1$
+            }
+          }
         }
         deck.setSelectedIndex( 1 );
       } catch ( Throwable th ) {
@@ -396,6 +427,20 @@ public class TrashBrowseController extends BrowseController implements java.io.S
       // ui probably allowed the button to be enabled when it shouldn't have been enabled
       throw new RuntimeException();
     }
+  }
+
+  private static void getAllTransformations( RepositoryDirectoryInterface repositoryObject,
+      List<RepositoryElementMetaInterface> objectsTransformations ) throws KettleException {
+    //test if has sub-directories
+    if ( repositoryObject.getChildren() != null && repositoryObject.getChildren().size() > 0 ) {
+      for ( RepositoryDirectoryInterface subDirectory : repositoryObject.getChildren() ) {
+        getAllTransformations( subDirectory, objectsTransformations );
+      }
+    }
+    //getting all the transformations
+    repositoryObject.getRepositoryObjects().stream()
+        .filter( e -> RepositoryObjectType.TRANSFORMATION.equals( e.getObjectType() ) )
+        .forEach( objectsTransformations::add );
   }
 
   public void setSelectedTrashFileItems( List<UIDeletedObject> selectedTrashFileItems ) {
@@ -525,7 +570,7 @@ public class TrashBrowseController extends BrowseController implements java.io.S
         && repoObject instanceof UIEERepositoryDirectory ) {
 
       try {
-        confirmBox = (XulConfirmBox) document.createElement( "confirmbox" );//$NON-NLS-1$
+        confirmBox = (XulConfirmBox) document.createElement( "confirmbox" ); //$NON-NLS-1$
         confirmBox.setTitle( BaseMessages.getString( PKG, "TrashBrowseController.DeleteHomeFolderWarningTitle" ) ); //$NON-NLS-1$
         confirmBox.setMessage( BaseMessages.getString( PKG, "TrashBrowseController.DeleteHomeFolderWarningMessage" ) ); //$NON-NLS-1$
         confirmBox.setAcceptLabel( BaseMessages.getString( PKG, "Dialog.Ok" ) ); //$NON-NLS-1$
