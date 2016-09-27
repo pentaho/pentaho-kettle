@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -62,6 +62,7 @@ import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
@@ -652,6 +653,7 @@ public class SalesforceUpdateDialog extends BaseStepDialog implements StepDialog
   private void test() {
     boolean successConnection = true;
     String msgError = null;
+    String realUsername = null;
     SalesforceConnection connection = null;
     try {
       SalesforceUpdateMeta meta = new SalesforceUpdateMeta();
@@ -662,9 +664,11 @@ public class SalesforceUpdateDialog extends BaseStepDialog implements StepDialog
         return;
       }
 
+      String realURL = transMeta.environmentSubstitute( meta.getTargetURL() );
+      realUsername = transMeta.environmentSubstitute( meta.getUserName() );
+      String realPassword = Utils.resolvePassword( variables, meta.getPassword() );
       connection =
-        new SalesforceConnection( log, transMeta.environmentSubstitute( meta.getTargetURL() ), transMeta
-          .environmentSubstitute( meta.getUserName() ), transMeta.environmentSubstitute( meta.getPassword() ) );
+        new SalesforceConnection( log, realURL, realUsername, realPassword );
       connection.connect();
 
       successConnection = true;
@@ -683,7 +687,7 @@ public class SalesforceUpdateDialog extends BaseStepDialog implements StepDialog
 
     if ( successConnection ) {
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_INFORMATION );
-      mb.setMessage( BaseMessages.getString( PKG, "SalesforceUpdateDialog.Connected.OK", wUserName.getText() )
+      mb.setMessage( BaseMessages.getString( PKG, "SalesforceUpdateDialog.Connected.OK", realUsername )
         + Const.CR );
       mb.setText( BaseMessages.getString( PKG, "SalesforceUpdateDialog.Connected.Title.Ok" ) );
       mb.open();
@@ -691,7 +695,7 @@ public class SalesforceUpdateDialog extends BaseStepDialog implements StepDialog
       new ErrorDialog(
         shell,
         BaseMessages.getString( PKG, "SalesforceUpdateDialog.Connected.Title.Error" ),
-        BaseMessages.getString( PKG, "SalesforceUpdateDialog.Connected.NOK", wUserName.getText() ),
+        BaseMessages.getString( PKG, "SalesforceUpdateDialog.Connected.NOK", realUsername ),
         new Exception( msgError ) );
     }
 
