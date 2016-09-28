@@ -298,7 +298,7 @@
       <classpath>
         <fileset dir="${lib.dir}">
           <include name="*.jar"/>
-          <exclude name="swt-linux*.jar"/>
+          <exclude name="org.eclipse.swt.gtk.linux*.jar"/>
           <exclude name="kettle-*.jar"/>
         </fileset>
         <fileset dir="${testlib.dir}">

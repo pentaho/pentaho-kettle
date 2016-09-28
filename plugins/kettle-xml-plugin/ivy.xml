@@ -31,7 +31,7 @@
     <dependency org="commons-validator"   name="commons-validator"   rev="1.3.1"                                    conf="dev->default" transitive="false"/>
 
     <!-- SWT it required to compile any version of any architecture will work -->
-    <dependency org="org.eclipse.swt" name="swt-linux-x86_64" rev="4.3.2" conf="dev->default" transitive="false"/>
+    <dependency org="org.eclipse.swt" name="org.eclipse.swt.gtk.linux.x86_64" rev="4.6" conf="dev->default" transitive="false"/>
 
     <dependency org="junit"          name="junit"              rev="4.7"   conf="test->default"/>
     <dependency org="org.mockito"    name="mockito-all"        rev="1.9.5" conf="test->default" transitive="false" />
