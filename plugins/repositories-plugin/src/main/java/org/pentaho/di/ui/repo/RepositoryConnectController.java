@@ -56,6 +56,7 @@ public class RepositoryConnectController {
 
   public static final String DEFAULT_URL = "defaultUrl";
   public static final String ERROR_MESSAGE = "errorMessage";
+  public static final String SUCCESS = "success";
   public static final String ERROR_401 = "401";
 
   private static Class<?> PKG = RepositoryConnectController.class;
@@ -67,7 +68,6 @@ public class RepositoryConnectController {
   private RepositoriesMeta repositoriesMeta;
   private PluginRegistry pluginRegistry;
   private Spoon spoon;
-  private PropsUI propsUI;
   private List<RepositoryContollerListener> listeners = new ArrayList<>();
 
   public RepositoryConnectController( PluginRegistry pluginRegistry, Spoon spoon, RepositoriesMeta repositoriesMeta ) {
@@ -110,7 +110,11 @@ public class RepositoryConnectController {
         Repository repository =
           pluginRegistry.loadClass( RepositoryPluginType.class, repositoryMeta.getId(), Repository.class );
         repository.init( repositoryMeta );
+
         if ( currentRepository != null ) {
+          if ( isCompatibleRepositoryEdit( repositoryMeta ) ) {
+            setConnectedRepository( repositoryMeta );
+          }
           repositoriesMeta.removeRepository( repositoriesMeta.indexOfRepository( currentRepository ) );
         }
         repositoriesMeta.addRepository( repositoryMeta );
@@ -120,13 +124,30 @@ public class RepositoryConnectController {
           return false;
         }
         ( (AbstractRepository) repository ).create();
-        setConnectedRepository( repositoryMeta );
       }
     } catch ( KettleException ke ) {
       log.logError( "Unable to load repository type", ke );
       return false;
     }
     return true;
+  }
+
+  private boolean isCompatibleRepositoryEdit( RepositoryMeta repositoryMeta ) {
+    if ( repositoriesMeta.indexOfRepository( currentRepository ) >= 0
+        && connectedRepository != null
+        && repositoryEquals( connectedRepository, currentRepository ) ) {
+      // only name / description / default changed ?
+      RepositoryMeta clone = repositoryMeta.clone();
+      clone.setName( connectedRepository.getName() );
+      clone.setDescription( connectedRepository.getDescription() );
+      clone.setDefault( connectedRepository.isDefault() );
+      return repositoryEquals( connectedRepository, clone );
+    }
+    return false;
+  }
+
+  private boolean repositoryEquals( RepositoryMeta repo1, RepositoryMeta repo2 ) {
+    return repo1.toJSONObject().equals( repo2.toJSONObject() );
   }
 
   @SuppressWarnings( "unchecked" )
@@ -206,14 +227,14 @@ public class RepositoryConnectController {
       spoon.setRepository( repository );
       setConnectedRepository( repositoryMeta );
       fireListeners();
-      jsonObject.put( "success", true );
+      jsonObject.put( SUCCESS, true );
     } catch ( KettleException ke ) {
       if ( ke.getMessage().contains( ERROR_401 ) ) {
         jsonObject.put( ERROR_MESSAGE, BaseMessages.getString( PKG, "RepositoryConnection.Error.InvalidCredentials" ) );
       } else {
         jsonObject.put( ERROR_MESSAGE, BaseMessages.getString( PKG, "RepositoryConnection.Error.InvalidServer" ) );
       }
-      jsonObject.put( "success", false );
+      jsonObject.put( SUCCESS, false );
       log.logError( "Unable to connect to repository", ke );
     }
     return jsonObject.toString();
@@ -232,7 +253,7 @@ public class RepositoryConnectController {
       if ( username != null ) {
         getPropsUI().setLastRepositoryLogin( username );
       }
-      if (repository.isConnected()) {
+      if ( repository.isConnected() ) {
         repository.disconnect();
       }
       repository.init( repositoryMeta );
@@ -367,7 +388,7 @@ public class RepositoryConnectController {
     }
     return spoon;
   }
-  
+
   @SuppressWarnings( "unchecked" )
   private Repository wrapWithRepositoryTimeoutHandler( ReconnectableRepository repository ) {
     List<Class<?>> repositoryIntrerfaces = ClassUtils.getAllInterfaces( repository.getClass() );
@@ -393,4 +414,5 @@ public class RepositoryConnectController {
   public interface RepositoryContollerListener {
     void update();
   }
+
 }

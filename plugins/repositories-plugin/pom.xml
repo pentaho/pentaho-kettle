@@ -25,6 +25,7 @@
     <dependency.pentaho.pentaho-xul-core.version>${project.version}</dependency.pentaho.pentaho-xul-core.version>
     <mockito.version>1.9.5</mockito.version>
     <junit.version>4.11</junit.version>
+    <org.eclipse.core.commands.version>3.6.0</org.eclipse.core.commands.version>
   </properties>
   <dependencies>
     <dependency>
@@ -158,6 +159,12 @@
       <groupId>org.hamcrest</groupId>
       <artifactId>java-hamcrest</artifactId>
       <version>2.0.0.0</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.core</groupId>
+      <artifactId>org.eclipse.core.commands</artifactId>
+      <version>${org.eclipse.core.commands.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
