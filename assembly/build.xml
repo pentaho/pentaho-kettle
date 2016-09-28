@@ -73,7 +73,7 @@
 		<fileset dir="${approot.stage.dir}/lib" includes="org.eclipse.swt.*.jar" />
   	</delete>
   	
-    <antcall target="unzip-swtlibs"/>
+    <antcall target="copy-swtlibs"/>
     
     <!-- Insert launcher revision number into batch files -->
     <replace dir="${approot.stage.dir}">
@@ -211,15 +211,13 @@
     <ivy:resolve file="${ivyfile}" conf="dataservice-jdbc" />
     <ivy:retrieve conf="dataservice-jdbc" pattern="${dataservice-jdbc.dir}/[module]-[revision](-[classifier]).[ext]" sync="true" />
   </target>
-
   
-  <target name="unzip-swtlibs">
-	<!-- Unzip the libswt package into the libswt folder of the distribution -->
-    <unzip dest="${approot.stage.dir}" overwrite="true">
-      <fileset dir="${swtlib.dir}">
-        <include name="**/*.zip"/>
-      </fileset>
-    </unzip>
+  <target name="copy-swtlibs">
+    <copy file="${swtlib.dir}/org.eclipse.swt.gtk.linux.x86-${dependency.swt-linux.revision}.jar" tofile="${approot.stage.dir}/libswt/linux/x86/swt.jar"/>
+    <copy file="${swtlib.dir}/org.eclipse.swt.gtk.linux.x86_64-${dependency.swt-linux.revision}.jar" tofile="${approot.stage.dir}/libswt/linux/x86_64/swt.jar"/>
+    <copy file="${swtlib.dir}/org.eclipse.swt.win32.win32.x86-${dependency.swt-win.revision}.jar" tofile="${approot.stage.dir}/libswt/win32/swt.jar"/>
+    <copy file="${swtlib.dir}/org.eclipse.swt.win32.win32.x86_64-${dependency.swt-win.revision}.jar" tofile="${approot.stage.dir}/libswt/win64/swt.jar"/>
+    <copy file="${swtlib.dir}/org.eclipse.swt.cocoa.macosx.x86_64-${dependency.swt-osx.revision}.jar" tofile="${approot.stage.dir}/libswt/osx64/swt.jar"/>
   </target>
 
   <target name="create-sampledb-from-sql">
