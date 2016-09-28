@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -33,6 +33,7 @@ import javax.sql.DataSource;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -79,6 +80,28 @@ public class DatabaseUtilTest {
       verify( context.lookup( "java:comp/env/jdbc/" + testName ) );
       verify( context.lookup( "jdbc/" + testName ) );
       throw ne;
+    }
+  }
+
+  @Test
+  public void testCl() throws NamingException {
+    DataSource dataSource = mock( DataSource.class );
+    when( context.lookup( testName ) ).thenReturn( dataSource );
+    DatabaseUtil util = new DatabaseUtil();
+    ClassLoader orig = Thread.currentThread().getContextClassLoader();
+    ClassLoader cl = mock( ClassLoader.class );
+    try {
+      Thread.currentThread().setContextClassLoader( cl );
+      util.getNamedDataSource( testName );
+    } catch ( Exception ex ) {
+    } finally {
+      try {
+        verify( cl, never() ).loadClass( anyString() );
+        verify( cl, never() ).getResource( anyString() );
+        verify( cl, never() ).getResourceAsStream( anyString() );
+      } catch ( Exception ex ) {
+      }
+      Thread.currentThread().setContextClassLoader( orig );
     }
   }
 
