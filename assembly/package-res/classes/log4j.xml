@@ -107,6 +107,18 @@
     <priority value="INFO"/>
   </category>
 
+   <category name="com.pentaho.yarn">
+      <priority value="INFO"/>
+   </category>
+
+   <category name="com.pentaho.big.data.bundles">
+      <priority value="INFO"/>
+   </category>
+
+   <category name="com.pentaho.big.data.ee">
+      <priority value="INFO"/>
+   </category>
+   
    <!-- ======================= -->
    <!-- Setup the Root category -->
    <!-- ======================= -->
