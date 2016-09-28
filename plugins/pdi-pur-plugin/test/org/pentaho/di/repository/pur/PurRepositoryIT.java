@@ -332,7 +332,7 @@ public class PurRepositoryIT extends RepositoryTestBase implements ApplicationCo
 
   /**
    * Logs in with given username.
-   * 
+   *
    * @param username
    *          username of user
    * @param tenant
@@ -1054,7 +1054,19 @@ public class PurRepositoryIT extends RepositoryTestBase implements ApplicationCo
         repository.createRepositoryDirectory( tree, "/home/admin2/new1" );
     repository.getJobAndTransformationObjects( repositoryDirectory.getObjectId(), false );
   }
-
+  @Test
+  public void testLoadJob() throws Exception {
+    RepositoryDirectoryInterface rootDir = initRepo();
+    JobMeta jobMeta = createJobMeta( EXP_JOB_NAME );
+    RepositoryDirectoryInterface jobsDir = rootDir.findDirectory( DIR_JOBS );
+    repository.save( jobMeta, VERSION_COMMENT_V1, null );
+    deleteStack.push( jobMeta );
+    JobMeta fetchedJob = repository.loadJob( EXP_JOB_NAME, jobsDir, null, null );
+    JobMeta jobMetaById = repository.loadJob( jobMeta.getObjectId(), null );
+    assertEquals( fetchedJob, jobMetaById );
+    assertNotNull( fetchedJob.getMetaStore() );
+    assertTrue( fetchedJob.getMetaStore() == jobMetaById.getMetaStore() );
+  }
   protected static class LogListener implements KettleLoggingEventListener {
     private List<KettleLoggingEvent> events = new ArrayList<>();
     private LogLevel logThreshold;
