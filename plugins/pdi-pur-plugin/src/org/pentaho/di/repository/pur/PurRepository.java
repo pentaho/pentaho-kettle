@@ -2693,6 +2693,8 @@ public class PurRepository extends AbstractRepository implements Repository, Rep
       jobMeta.setRepository( this );
       jobMeta.setRepositoryDirectory( findDirectory( getParentPath( file.getPath() ) ) );
 
+      jobMeta.setMetaStore( getMetaStore() ); // inject metastore
+
       readJobMetaSharedObjects( jobMeta );
       // Additional obfuscation through obscurity
       jobMeta.setRepositoryLock( unifiedRepositoryLockService.getLock( file ) );

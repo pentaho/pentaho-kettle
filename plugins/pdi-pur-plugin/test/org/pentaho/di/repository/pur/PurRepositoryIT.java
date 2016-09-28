@@ -16,12 +16,10 @@
  */
 package org.pentaho.di.repository.pur;
 
-import static java.util.Arrays.asList;
-import static org.junit.Assert.*;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static org.pentaho.di.repository.pur.PurRepositoryTestingUtils.*;
+import java.util.Arrays;
+import org.junit.Assert;
+import org.mockito.Matchers;
+import org.mockito.Mockito;
 
 import java.io.File;
 import java.io.Serializable;
@@ -191,9 +189,9 @@ public class PurRepositoryIT extends RepositoryTestBase implements ApplicationCo
 
   @Before
   public void setUp() throws Exception {
-    IRepositoryVersionManager mockRepositoryVersionManager = mock( IRepositoryVersionManager.class );
-    when( mockRepositoryVersionManager.isVersioningEnabled( anyString() ) ).thenReturn( true );
-    when( mockRepositoryVersionManager.isVersionCommentEnabled( anyString() ) ).thenReturn( false );
+    IRepositoryVersionManager mockRepositoryVersionManager = Mockito.mock( IRepositoryVersionManager.class );
+    Mockito.when( mockRepositoryVersionManager.isVersioningEnabled( Matchers.anyString() ) ).thenReturn( true );
+    Mockito.when( mockRepositoryVersionManager.isVersionCommentEnabled( Matchers.anyString() ) ).thenReturn( false );
     JcrRepositoryFileUtils.setRepositoryVersionManager( mockRepositoryVersionManager );
 
     loginAsRepositoryAdmin();
@@ -263,7 +261,7 @@ public class PurRepositoryIT extends RepositoryTestBase implements ApplicationCo
     for ( RepositoryFile file : files ) {
       buf.append( "\n" ).append( file );
     }
-    assertTrue( "files not deleted: " + buf, files.isEmpty() );
+    Assert.assertTrue( "files not deleted: " + buf, files.isEmpty() );
   }
 
   private void setAclManagement() {
@@ -284,15 +282,15 @@ public class PurRepositoryIT extends RepositoryTestBase implements ApplicationCo
     // next line is copy of SecurityHelper.setPrincipal
     pentahoSession.setAttribute( "SECURITY_PRINCIPAL", authentication );
     SecurityContextHolder.setStrategyName( SecurityContextHolder.MODE_GLOBAL );
-    setSession( pentahoSession, authentication );
+    PurRepositoryTestingUtils.setSession( pentahoSession, authentication );
     repositoryLifecyleManager.newTenant();
     repositoryLifecyleManager.newUser();
   }
 
   protected void loginAsRepositoryAdmin() {
-    StandaloneSession repositoryAdminSession = createSession( repositoryAdminUsername );
-    Authentication repositoryAdminAuthentication = createAuthentication( repositoryAdminUsername, superAdminRoleName );
-    setSession( repositoryAdminSession, repositoryAdminAuthentication );
+    StandaloneSession repositoryAdminSession = PurRepositoryTestingUtils.createSession( repositoryAdminUsername );
+    Authentication repositoryAdminAuthentication = PurRepositoryTestingUtils.createAuthentication( repositoryAdminUsername, superAdminRoleName );
+    PurRepositoryTestingUtils.setSession( repositoryAdminSession, repositoryAdminAuthentication );
   }
 
   protected void logout() {
@@ -321,7 +319,7 @@ public class PurRepositoryIT extends RepositoryTestBase implements ApplicationCo
 
   /**
    * Logs in with given username.
-   * 
+   *
    * @param username
    *          username of user
    * @param tenant
@@ -334,8 +332,8 @@ public class PurRepositoryIT extends RepositoryTestBase implements ApplicationCo
     PentahoSessionHolder.setSession( pentahoSession );
     pentahoSession.setAttribute( IPentahoSession.TENANT_ID_KEY, tenant.getId() );
 
-    Authentication auth = createAuthentication( username, roles );
-    setSession( pentahoSession, auth );
+    Authentication auth = PurRepositoryTestingUtils.createAuthentication( username, roles );
+    PurRepositoryTestingUtils.setSession( pentahoSession, auth );
 
     createUserHomeFolder( tenant, username );
   }
@@ -380,12 +378,12 @@ public class PurRepositoryIT extends RepositoryTestBase implements ApplicationCo
     String principleId = userNameUtils.getPrincipleId( theTenant, theUsername );
     String authenticatedRoleId = roleNameUtils.getPrincipleId( theTenant, tenantAuthenticatedRoleName );
     TransactionCallbackWithoutResult callback =
-        createUserHomeDirCallback( theTenant, theUsername, principleId, authenticatedRoleId, repositoryFileDao );
+            PurRepositoryTestingUtils.createUserHomeDirCallback( theTenant, theUsername, principleId, authenticatedRoleId, repositoryFileDao );
     try {
       txnTemplate.execute( callback );
     } finally {
       // Switch our identity back to the original user.
-      setSession( origPentahoSession, origAuthentication );
+      PurRepositoryTestingUtils.setSession( origPentahoSession, origAuthentication );
     }
   }
 
@@ -524,7 +522,7 @@ public class PurRepositoryIT extends RepositoryTestBase implements ApplicationCo
   protected RepositoryDirectoryInterface loadStartDirectory() throws Exception {
     RepositoryDirectoryInterface rootDir = repository.loadRepositoryDirectoryTree();
     RepositoryDirectoryInterface startDir = rootDir.findDirectory( "public" );
-    assertNotNull( startDir );
+    Assert.assertNotNull( startDir );
     return startDir;
   }
 
@@ -560,7 +558,7 @@ public class PurRepositoryIT extends RepositoryTestBase implements ApplicationCo
 
     List<PartitionSchema> partitionSchemas =
         (List<PartitionSchema>) sharedObjectsByType.get( RepositoryObjectType.PARTITION_SCHEMA );
-    assertEquals( 2, partitionSchemas.size() );
+    Assert.assertEquals( 2, partitionSchemas.size() );
 
     System.setProperty( "KETTLE_COMPATIBILITY_PUR_OLD_NAMING_MODE", "Y" );
 
@@ -573,7 +571,7 @@ public class PurRepositoryIT extends RepositoryTestBase implements ApplicationCo
     repo.readSharedObjects( sharedObjectsByType, RepositoryObjectType.PARTITION_SCHEMA );
 
     partitionSchemas = (List<PartitionSchema>) sharedObjectsByType.get( RepositoryObjectType.PARTITION_SCHEMA );
-    assertEquals( 3, partitionSchemas.size() );
+    Assert.assertEquals( 3, partitionSchemas.size() );
   }
 
   private class MockProgressMonitorListener implements ProgressMonitorListener {
@@ -601,7 +599,7 @@ public class PurRepositoryIT extends RepositoryTestBase implements ApplicationCo
   private class MockRepositoryExportParser extends DefaultHandler2 {
     private List<String> nodeNames = new ArrayList<String>();
     private SAXParseException fatalError;
-    private List<String> nodesToCapture = asList( "repository", "transformations", "transformation", "jobs", "job" );
+    private List<String> nodesToCapture = Arrays.asList( "repository", "transformations", "transformation", "jobs", "job" );
 
     //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
 
@@ -657,21 +655,21 @@ public class PurRepositoryIT extends RepositoryTestBase implements ApplicationCo
     RepositoryDirectoryInterface transDir = rootDir.findDirectory( DIR_TRANSFORMATIONS );
     repository.save( transMeta, VERSION_COMMENT_V1, null );
     deleteStack.push( transMeta ); // So this transformation is cleaned up afterward
-    assertNotNull( transMeta.getObjectId() );
+    Assert.assertNotNull( transMeta.getObjectId() );
     ObjectRevision version = transMeta.getObjectRevision();
-    assertNotNull( version );
-    assertTrue( hasVersionWithComment( transMeta, VERSION_COMMENT_V1 ) );
-    assertTrue( repository.exists( uniqueTransName, transDir, RepositoryObjectType.TRANSFORMATION ) );
+    Assert.assertNotNull( version );
+    Assert.assertTrue( hasVersionWithComment( transMeta, VERSION_COMMENT_V1 ) );
+    Assert.assertTrue( repository.exists( uniqueTransName, transDir, RepositoryObjectType.TRANSFORMATION ) );
 
     JobMeta jobMeta = createJobMeta( EXP_JOB_NAME );
     RepositoryDirectoryInterface jobsDir = rootDir.findDirectory( DIR_JOBS );
     repository.save( jobMeta, VERSION_COMMENT_V1, null );
     deleteStack.push( jobMeta );
-    assertNotNull( jobMeta.getObjectId() );
+    Assert.assertNotNull( jobMeta.getObjectId() );
     version = jobMeta.getObjectRevision();
-    assertNotNull( version );
-    assertTrue( hasVersionWithComment( jobMeta, VERSION_COMMENT_V1 ) );
-    assertTrue( repository.exists( EXP_JOB_NAME, jobsDir, RepositoryObjectType.JOB ) );
+    Assert.assertNotNull( version );
+    Assert.assertTrue( hasVersionWithComment( jobMeta, VERSION_COMMENT_V1 ) );
+    Assert.assertTrue( repository.exists( EXP_JOB_NAME, jobsDir, RepositoryObjectType.JOB ) );
 
     LogListener errorLogListener = new LogListener( LogLevel.ERROR );
     KettleLogStore.getAppender().addLoggingEventListener( errorLogListener );
@@ -679,19 +677,19 @@ public class PurRepositoryIT extends RepositoryTestBase implements ApplicationCo
     try {
       repository.getExporter().exportAllObjects( new MockProgressMonitorListener(), exportFileName, null, "all" ); //$NON-NLS-1$
       FileObject exportFile = KettleVFS.getFileObject( exportFileName );
-      assertFalse( "file left open", exportFile.getContent().isOpen() );
-      assertNotNull( exportFile );
+      Assert.assertFalse( "file left open", exportFile.getContent().isOpen() );
+      Assert.assertNotNull( exportFile );
       MockRepositoryExportParser parser = new MockRepositoryExportParser();
       SAXParserFactory.newInstance().newSAXParser().parse( KettleVFS.getInputStream( exportFile ), parser );
       if ( parser.getFatalError() != null ) {
         throw parser.getFatalError();
       }
-      assertNotNull( "No nodes found in export", parser.getNodeNames() ); //$NON-NLS-1$
-      assertTrue( "No nodes found in export", !parser.getNodeNames().isEmpty() ); //$NON-NLS-1$
-      assertEquals( "Incorrect number of nodes", 5, parser.getNodeNames().size() ); //$NON-NLS-1$
-      assertEquals( "Incorrect number of transformations", 1, parser.getNodesWithName( "transformation" ).size() ); //$NON-NLS-1$ //$NON-NLS-2$
-      assertEquals( "Incorrect number of jobs", 1, parser.getNodesWithName( "job" ).size() ); //$NON-NLS-1$ //$NON-NLS-2$
-      assertTrue( "log error", errorLogListener.getEvents().isEmpty() );
+      Assert.assertNotNull( "No nodes found in export", parser.getNodeNames() ); //$NON-NLS-1$
+      Assert.assertTrue( "No nodes found in export", !parser.getNodeNames().isEmpty() ); //$NON-NLS-1$
+      Assert.assertEquals( "Incorrect number of nodes", 5, parser.getNodeNames().size() ); //$NON-NLS-1$
+      Assert.assertEquals( "Incorrect number of transformations", 1, parser.getNodesWithName( "transformation" ).size() ); //$NON-NLS-1$ //$NON-NLS-2$
+      Assert.assertEquals( "Incorrect number of jobs", 1, parser.getNodesWithName( "job" ).size() ); //$NON-NLS-1$ //$NON-NLS-2$
+      Assert.assertTrue( "log error", errorLogListener.getEvents().isEmpty() );
 
     } finally {
       KettleVFS.getFileObject( exportFileName ).delete();
@@ -702,7 +700,7 @@ public class PurRepositoryIT extends RepositoryTestBase implements ApplicationCo
   @Test
   public void testMetaStoreBasics() throws MetaStoreException {
     IMetaStore metaStore = repository.getMetaStore();
-    assertNotNull( metaStore );
+    Assert.assertNotNull( metaStore );
 
     MetaStoreTestBase base = new MetaStoreTestBase();
     base.testFunctionality( metaStore );
@@ -711,48 +709,48 @@ public class PurRepositoryIT extends RepositoryTestBase implements ApplicationCo
   @Test
   public void testMetaStoreNamespaces() throws MetaStoreException {
     IMetaStore metaStore = repository.getMetaStore();
-    assertNotNull( metaStore );
+    Assert.assertNotNull( metaStore );
 
     // We start with a clean slate, only the pentaho namespace
     //
-    assertEquals( 1, metaStore.getNamespaces().size() );
+    Assert.assertEquals( 1, metaStore.getNamespaces().size() );
 
     String ns = PentahoDefaults.NAMESPACE;
-    assertEquals( true, metaStore.namespaceExists( ns ) );
+    Assert.assertEquals( true, metaStore.namespaceExists( ns ) );
 
     metaStore.deleteNamespace( ns );
-    assertEquals( false, metaStore.namespaceExists( ns ) );
-    assertEquals( 0, metaStore.getNamespaces().size() );
+    Assert.assertEquals( false, metaStore.namespaceExists( ns ) );
+    Assert.assertEquals( 0, metaStore.getNamespaces().size() );
 
     metaStore.createNamespace( ns );
-    assertEquals( true, metaStore.namespaceExists( ns ) );
+    Assert.assertEquals( true, metaStore.namespaceExists( ns ) );
 
     List<String> namespaces = metaStore.getNamespaces();
-    assertEquals( 1, namespaces.size() );
-    assertEquals( ns, namespaces.get( 0 ) );
+    Assert.assertEquals( 1, namespaces.size() );
+    Assert.assertEquals( ns, namespaces.get( 0 ) );
 
     try {
       metaStore.createNamespace( ns );
-      fail( "Exception expected when a namespace already exists and where we try to create it again" );
+      Assert.fail( "Exception expected when a namespace already exists and where we try to create it again" );
     } catch ( MetaStoreNamespaceExistsException e ) {
       // OK, we expected this.
     }
 
     metaStore.deleteNamespace( ns );
-    assertEquals( false, metaStore.namespaceExists( ns ) );
-    assertEquals( 0, metaStore.getNamespaces().size() );
+    Assert.assertEquals( false, metaStore.namespaceExists( ns ) );
+    Assert.assertEquals( 0, metaStore.getNamespaces().size() );
   }
 
   @Test
   public void testMetaStoreElementTypes() throws MetaStoreException {
     IMetaStore metaStore = repository.getMetaStore();
-    assertNotNull( metaStore );
+    Assert.assertNotNull( metaStore );
     String ns = PentahoDefaults.NAMESPACE;
 
     // We start with a clean slate...
     //
-    assertEquals( 1, metaStore.getNamespaces().size() );
-    assertEquals( true, metaStore.namespaceExists( ns ) );
+    Assert.assertEquals( 1, metaStore.getNamespaces().size() );
+    Assert.assertEquals( true, metaStore.namespaceExists( ns ) );
 
     // Now create an element type
     //
@@ -763,33 +761,33 @@ public class PurRepositoryIT extends RepositoryTestBase implements ApplicationCo
     metaStore.createElementType( ns, elementType );
 
     IMetaStoreElementType verifyElementType = metaStore.getElementType( ns, elementType.getId() );
-    assertEquals( PentahoDefaults.KETTLE_DATA_SERVICE_ELEMENT_TYPE_NAME, verifyElementType.getName() );
-    assertEquals( PentahoDefaults.KETTLE_DATA_SERVICE_ELEMENT_TYPE_DESCRIPTION, verifyElementType.getDescription() );
+    Assert.assertEquals( PentahoDefaults.KETTLE_DATA_SERVICE_ELEMENT_TYPE_NAME, verifyElementType.getName() );
+    Assert.assertEquals( PentahoDefaults.KETTLE_DATA_SERVICE_ELEMENT_TYPE_DESCRIPTION, verifyElementType.getDescription() );
 
     verifyElementType = metaStore.getElementTypeByName( ns, PentahoDefaults.KETTLE_DATA_SERVICE_ELEMENT_TYPE_NAME );
-    assertEquals( PentahoDefaults.KETTLE_DATA_SERVICE_ELEMENT_TYPE_NAME, verifyElementType.getName() );
-    assertEquals( PentahoDefaults.KETTLE_DATA_SERVICE_ELEMENT_TYPE_DESCRIPTION, verifyElementType.getDescription() );
+    Assert.assertEquals( PentahoDefaults.KETTLE_DATA_SERVICE_ELEMENT_TYPE_NAME, verifyElementType.getName() );
+    Assert.assertEquals( PentahoDefaults.KETTLE_DATA_SERVICE_ELEMENT_TYPE_DESCRIPTION, verifyElementType.getDescription() );
 
     // Get the list of element type ids.
     //
     List<String> ids = metaStore.getElementTypeIds( ns );
-    assertNotNull( ids );
-    assertEquals( 1, ids.size() );
-    assertEquals( elementType.getId(), ids.get( 0 ) );
+    Assert.assertNotNull( ids );
+    Assert.assertEquals( 1, ids.size() );
+    Assert.assertEquals( elementType.getId(), ids.get( 0 ) );
 
     // Verify that we can't delete the namespace since it has content in it!
     //
     try {
       metaStore.deleteNamespace( ns );
-      fail( "The namespace deletion didn't cause an exception because there are still an element type in it" );
+      Assert.fail( "The namespace deletion didn't cause an exception because there are still an element type in it" );
     } catch ( MetaStoreDependenciesExistsException e ) {
-      assertNotNull( e.getDependencies() );
-      assertEquals( 1, e.getDependencies().size() );
-      assertEquals( elementType.getId(), e.getDependencies().get( 0 ) );
+      Assert.assertNotNull( e.getDependencies() );
+      Assert.assertEquals( 1, e.getDependencies().size() );
+      Assert.assertEquals( elementType.getId(), e.getDependencies().get( 0 ) );
     }
 
     metaStore.deleteElementType( ns, elementType );
-    assertEquals( 0, metaStore.getElementTypes( ns ).size() );
+    Assert.assertEquals( 0, metaStore.getElementTypes( ns ).size() );
 
     metaStore.deleteNamespace( ns );
   }
@@ -817,36 +815,36 @@ public class PurRepositoryIT extends RepositoryTestBase implements ApplicationCo
     metaStore.createElement( ns, elementType, oneElement );
 
     IMetaStoreElement verifyOneElement = metaStore.getElement( ns, elementType, oneElement.getId() );
-    assertNotNull( verifyOneElement );
+    Assert.assertNotNull( verifyOneElement );
     validateElement( verifyOneElement, "Element One" );
 
-    assertEquals( 1, metaStore.getElements( ns, elementType ).size() );
+    Assert.assertEquals( 1, metaStore.getElements( ns, elementType ).size() );
 
     IMetaStoreElement twoElement = populateElement( metaStore, elementType, "Element Two" );
     metaStore.createElement( ns, elementType, twoElement );
 
     IMetaStoreElement verifyTwoElement = metaStore.getElement( ns, elementType, twoElement.getId() );
-    assertNotNull( verifyTwoElement );
+    Assert.assertNotNull( verifyTwoElement );
 
-    assertEquals( 2, metaStore.getElements( ns, elementType ).size() );
+    Assert.assertEquals( 2, metaStore.getElements( ns, elementType ).size() );
 
     try {
       metaStore.deleteElementType( ns, elementType );
-      fail( "Delete element type failed to properly detect element dependencies" );
+      Assert.fail( "Delete element type failed to properly detect element dependencies" );
     } catch ( MetaStoreDependenciesExistsException e ) {
       List<String> ids = e.getDependencies();
-      assertEquals( 2, ids.size() );
-      assertTrue( ids.contains( oneElement.getId() ) );
-      assertTrue( ids.contains( twoElement.getId() ) );
+      Assert.assertEquals( 2, ids.size() );
+      Assert.assertTrue( ids.contains( oneElement.getId() ) );
+      Assert.assertTrue( ids.contains( twoElement.getId() ) );
     }
 
     metaStore.deleteElement( ns, elementType, oneElement.getId() );
 
-    assertEquals( 1, metaStore.getElements( ns, elementType ).size() );
+    Assert.assertEquals( 1, metaStore.getElements( ns, elementType ).size() );
 
     metaStore.deleteElement( ns, elementType, twoElement.getId() );
 
-    assertEquals( 0, metaStore.getElements( ns, elementType ).size() );
+    Assert.assertEquals( 0, metaStore.getElements( ns, elementType ).size() );
   }
 
   protected IMetaStoreElement populateElement( IMetaStore metaStore, IMetaStoreElementType elementType, String name )
@@ -867,19 +865,19 @@ public class PurRepositoryIT extends RepositoryTestBase implements ApplicationCo
   }
 
   protected void validateElement( IMetaStoreElement element, String name ) throws MetaStoreException {
-    assertEquals( name, element.getName() );
-    assertEquals( 6, element.getChildren().size() );
+    Assert.assertEquals( name, element.getName() );
+    Assert.assertEquals( 6, element.getChildren().size() );
     for ( int i = 1; i <= 5; i++ ) {
       IMetaStoreAttribute child = element.getChild( "id " + i );
-      assertEquals( "value " + i, child.getValue() );
+      Assert.assertEquals( "value " + i, child.getValue() );
     }
     IMetaStoreAttribute subAttr = element.getChild( "sub-attr" );
-    assertNotNull( subAttr );
-    assertEquals( 10, subAttr.getChildren().size() );
+    Assert.assertNotNull( subAttr );
+    Assert.assertEquals( 10, subAttr.getChildren().size() );
     for ( int i = 101; i <= 110; i++ ) {
       IMetaStoreAttribute child = subAttr.getChild( "sub-id " + i );
-      assertNotNull( child );
-      assertEquals( "sub-value " + i, child.getValue() );
+      Assert.assertNotNull( child );
+      Assert.assertEquals( "sub-value " + i, child.getValue() );
     }
   }
 
@@ -948,13 +946,13 @@ public class PurRepositoryIT extends RepositoryTestBase implements ApplicationCo
     element2.setName( name1 );
     try {
       repository.save( element2, "", null, true );
-      fail( "A naming conflict should occur" );
+      Assert.fail( "A naming conflict should occur" );
     } catch ( KettleException e ) {
       // expected to be thrown
       element2.setName( name2 );
     }
     RepositoryElementInterface loaded = loader.call();
-    assertEquals( element2, loaded );
+    Assert.assertEquals( element2, loaded );
   }
 
   @Test
@@ -971,10 +969,10 @@ public class PurRepositoryIT extends RepositoryTestBase implements ApplicationCo
     RepositoryDirectoryInterface transDir = rootDir.findDirectory( DIR_TRANSFORMATIONS );
     repository.save( transWithoutNote, VERSION_COMMENT_V1, null );
     deleteStack.push( transWithoutNote ); // So this transformation is cleaned up afterward
-    assertNotNull( transWithoutNote.getObjectId() );
+    Assert.assertNotNull( transWithoutNote.getObjectId() );
 
-    assertTrue( hasVersionWithComment( transWithoutNote, VERSION_COMMENT_V1 ) );
-    assertTrue( repository.exists( transUniqueName, transDir, RepositoryObjectType.TRANSFORMATION ) );
+    Assert.assertTrue( hasVersionWithComment( transWithoutNote, VERSION_COMMENT_V1 ) );
+    Assert.assertTrue( repository.exists( transUniqueName, transDir, RepositoryObjectType.TRANSFORMATION ) );
 
     // Second transformation (contained note)
     String transWithNoteName = "1" + EXP_DBMETA_NAME;
@@ -987,10 +985,10 @@ public class PurRepositoryIT extends RepositoryTestBase implements ApplicationCo
 
     repository.save( transWithRules, VERSION_COMMENT_V1, null );
     deleteStack.push( transWithRules ); // So this transformation is cleaned up afterward
-    assertNotNull( transWithRules.getObjectId() );
+    Assert.assertNotNull( transWithRules.getObjectId() );
 
-    assertTrue( hasVersionWithComment( transWithRules, VERSION_COMMENT_V1 ) );
-    assertTrue( repository.exists( transUniqueName, transDir, RepositoryObjectType.TRANSFORMATION ) );
+    Assert.assertTrue( hasVersionWithComment( transWithRules, VERSION_COMMENT_V1 ) );
+    Assert.assertTrue( repository.exists( transUniqueName, transDir, RepositoryObjectType.TRANSFORMATION ) );
 
     // create rules for export to .xml file
     List<ImportRuleInterface> rules = new AbstractList<ImportRuleInterface>() {
@@ -1017,14 +1015,14 @@ public class PurRepositoryIT extends RepositoryTestBase implements ApplicationCo
     try {
       exporter.exportAllObjects( new MockProgressMonitorListener(), exportFileName, null, "all" ); //$NON-NLS-1$
       FileObject exportFile = KettleVFS.getFileObject( exportFileName );
-      assertNotNull( exportFile );
+      Assert.assertNotNull( exportFile );
       MockRepositoryExportParser parser = new MockRepositoryExportParser();
       SAXParserFactory.newInstance().newSAXParser().parse( KettleVFS.getInputStream( exportFile ), parser );
       if ( parser.getFatalError() != null ) {
         throw parser.getFatalError();
       }
       // assumed transformation with note will be here and only it
-      assertEquals( "Incorrect number of transformations", 1, parser.getNodesWithName(
+      Assert.assertEquals( "Incorrect number of transformations", 1, parser.getNodesWithName(
           RepositoryObjectType.TRANSFORMATION.getTypeDescription() ).size() ); //$NON-NLS-1$ //$NON-NLS-2$
     } finally {
       KettleVFS.getFileObject( exportFileName ).delete();
@@ -1035,7 +1033,7 @@ public class PurRepositoryIT extends RepositoryTestBase implements ApplicationCo
   public void testCreateRepositoryDirectory() throws KettleException {
     System.setProperty( PurRepository.LAZY_REPOSITORY, "false" );
     RepositoryDirectoryInterface tree = repository.loadRepositoryDirectoryTree();
-    assertNotEquals( LazyUnifiedRepositoryDirectory.class, tree.getClass() );
+    Assert.assertNotEquals( LazyUnifiedRepositoryDirectory.class, tree.getClass() );
     repository.createRepositoryDirectory( tree.findDirectory( "home" ), "/admin1" );
     repository.createRepositoryDirectory( tree, "/home/admin2" );
     repository.createRepositoryDirectory( tree, "/home/admin2/new1" );
@@ -1045,7 +1043,7 @@ public class PurRepositoryIT extends RepositoryTestBase implements ApplicationCo
 
     System.setProperty( PurRepository.LAZY_REPOSITORY, "true" );
     RepositoryDirectoryInterface treeLazy = repository.loadRepositoryDirectoryTree();
-    assertEquals( LazyUnifiedRepositoryDirectory.class, treeLazy.getClass() );
+    Assert.assertEquals( LazyUnifiedRepositoryDirectory.class, treeLazy.getClass() );
     repository.createRepositoryDirectory( treeLazy.findDirectory( "home" ), "/admin1L" );
     repository.createRepositoryDirectory( treeLazy, "/home/admin2L" );
     repository.createRepositoryDirectory( treeLazy, "/home/admin2L/new1" );
@@ -1060,17 +1058,29 @@ public class PurRepositoryIT extends RepositoryTestBase implements ApplicationCo
     RepositoryDirectoryInterface tree = repository.loadRepositoryDirectoryTree();
     RepositoryDirectoryInterface dir = repository.createRepositoryDirectory( tree, "/home/admin3/n" );
     RepositoryDirectoryInterface sameDir = repository.findDirectory( "/home/admin3/n/" );
-    assertEquals( dir.getPath(), sameDir.getPath() );
-    assertEquals( dir.getParent().getPath(), sameDir.getParent().getPath() );
+    Assert.assertEquals( dir.getPath(), sameDir.getPath() );
+    Assert.assertEquals( dir.getParent().getPath(), sameDir.getParent().getPath() );
 
     System.setProperty( PurRepository.LAZY_REPOSITORY, "true" );
     tree = repository.loadRepositoryDirectoryTree();
     dir = repository.createRepositoryDirectory( tree, "/home/admin3L/n" );
     sameDir = repository.findDirectory( "/home/admin3L/n/" );
-    assertEquals( dir.getPath(), sameDir.getPath() );
-    assertEquals( dir.getParent().getPath(), sameDir.getParent().getPath() );
+    Assert.assertEquals( dir.getPath(), sameDir.getPath() );
+    Assert.assertEquals( dir.getParent().getPath(), sameDir.getParent().getPath() );
   }
-
+  @Test
+  public void testLoadJob() throws Exception {
+    RepositoryDirectoryInterface rootDir = initRepo();
+    JobMeta jobMeta = createJobMeta( EXP_JOB_NAME );
+    RepositoryDirectoryInterface jobsDir = rootDir.findDirectory( DIR_JOBS );
+    repository.save( jobMeta, VERSION_COMMENT_V1, null );
+    deleteStack.push( jobMeta );
+    JobMeta fetchedJob = repository.loadJob( EXP_JOB_NAME, jobsDir, null, null );
+    JobMeta jobMetaById = repository.loadJob( jobMeta.getObjectId(), null );
+    Assert.assertEquals( fetchedJob, jobMetaById );
+    Assert.assertNotNull( fetchedJob.getMetaStore() );
+    Assert.assertTrue( fetchedJob.getMetaStore() == jobMetaById.getMetaStore() );
+  }
   protected static class LogListener implements KettleLoggingEventListener {
     private List<KettleLoggingEvent> events = new ArrayList<>();
     private LogLevel logThreshold;
