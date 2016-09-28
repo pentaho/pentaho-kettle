@@ -59,7 +59,8 @@ import org.w3c.dom.Node;
  */
 @Step( id = "GPLoad", image = "BLKGP.svg", i18nPackageName = "org.pentaho.di.trans.steps.gpload",
     name = "GPLoad.TypeLongDesc", description = "GPLoad.TypeLongDesc",
-    categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Bulk" )
+    categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Bulk",
+    documentationUrl = "http://wiki.pentaho.com/display/EAI/Greenplum+Load" )
 @InjectionSupported( localizationPrefix = "GPLoad.Injection.", groups = { "FIELDS", "LOCALHOSTS", "GP_CONFIG" } )
 public class GPLoadMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = GPLoadMeta.class; // for i18n purposes, needed by Translator2!!
