@@ -36,8 +36,10 @@ import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.RepositoryPluginType;
 import org.pentaho.di.repository.AbstractRepository;
+import org.pentaho.di.repository.BaseRepositoryMeta;
 import org.pentaho.di.repository.RepositoriesMeta;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.RepositoryCapabilities;
 import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.repository.filerep.KettleFileRepositoryMeta;
 import org.pentaho.di.ui.core.PropsUI;
@@ -49,7 +51,9 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.*;
 
 /**
@@ -268,4 +272,97 @@ public class RepositoryConnectControllerTest {
 
     verify( spoon ).closeRepository();
   }
+
+
+  @Test
+  public void testOnlySetConnectedOnConnect() throws Exception {
+    when( pluginRegistry.loadClass( RepositoryPluginType.class, ID, Repository.class ) )
+      .thenReturn( repository );
+    when( pluginRegistry.loadClass( RepositoryPluginType.class, ID, RepositoryMeta.class ) )
+      .thenReturn( repositoryMeta );
+
+    when( repository.test() ).thenReturn( true );
+
+    Map<String, Object> items = new HashMap<>();
+    boolean result = controller.createRepository( ID, items );
+
+    assertEquals( true, result );
+    assertNull( controller.getConnectedRepository() );
+
+    controller.connectToRepository();
+    assertNotNull( controller.getConnectedRepository() );
+  }
+
+  @Test
+  public void testEditConnectedRepository() throws Exception {
+    RepositoryMeta before = new TestRepositoryMeta( ID, "name1", PLUGIN_DESCRIPTION, "same" );
+    RepositoryMeta edited = new TestRepositoryMeta( ID, "name2", PLUGIN_DESCRIPTION, "same" );
+
+    when( pluginRegistry.loadClass( RepositoryPluginType.class, ID, Repository.class ) )
+    .thenReturn( repository );
+    when( pluginRegistry.loadClass( RepositoryPluginType.class, ID, RepositoryMeta.class ) )
+      .thenReturn( edited );
+
+    when( repositoriesMeta.nrRepositories() ).thenReturn( 1 );
+    when( repositoriesMeta.getRepository( 0 ) ).thenReturn( before );
+
+    controller.setConnectedRepository( before.clone() );
+    controller.setCurrentRepository( before );
+
+    controller.createRepository( ID, new HashMap<String,Object>() );
+    assertEquals( edited , controller.getConnectedRepository() );
+  }
+
+  @Test
+  public void testEditConnectedRepositoryIncomaptible() throws Exception {
+    RepositoryMeta before = new TestRepositoryMeta( ID, "name1", PLUGIN_DESCRIPTION, "inner1" );
+    RepositoryMeta edited = new TestRepositoryMeta( ID, "name2", PLUGIN_DESCRIPTION, "something completely different" );
+
+    when( pluginRegistry.loadClass( RepositoryPluginType.class, ID, Repository.class ) )
+    .thenReturn( repository );
+    when( pluginRegistry.loadClass( RepositoryPluginType.class, ID, RepositoryMeta.class ) )
+      .thenReturn( edited );
+
+    when( repositoriesMeta.nrRepositories() ).thenReturn( 1 );
+    when( repositoriesMeta.getRepository( 0 ) ).thenReturn( before );
+
+    controller.setConnectedRepository( before.clone() );
+    controller.setCurrentRepository( before );
+
+    controller.createRepository( ID, new HashMap<String,Object>() );
+    assertNotEquals( edited , controller.getConnectedRepository() );
+  }
+
+  private static class TestRepositoryMeta extends BaseRepositoryMeta implements RepositoryMeta {
+
+    private String innerStuff;
+
+    public TestRepositoryMeta( String id, String name, String description, String innerStuff ) {
+      super( id, name, description, false );
+      this.innerStuff = innerStuff;
+    }
+
+    @Override
+    public RepositoryCapabilities getRepositoryCapabilities() {
+      return null;
+    }
+
+    @Override
+    public RepositoryMeta clone() {
+      return new TestRepositoryMeta( getId(), getName(), getDescription(), innerStuff );
+    }
+
+    @SuppressWarnings( "unchecked" )
+    @Override
+    public JSONObject toJSONObject() {
+      JSONObject obj = super.toJSONObject();
+      obj.put( "extra", innerStuff );
+      return obj;
+    }
+
+    @Override
+    public void populate( Map<String, Object> properties, RepositoriesMeta repositoriesMeta ) {
+    }
+  }
+
 }
