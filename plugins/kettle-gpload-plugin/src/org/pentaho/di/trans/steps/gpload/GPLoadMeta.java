@@ -12,7 +12,7 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
+ * Copyright (c) 2002-2016 Pentaho Corporation..  All rights reserved.
  */
 
 package org.pentaho.di.trans.steps.gpload;
@@ -56,7 +56,8 @@ import org.w3c.dom.Node;
  */
 @Step( id = "GPLoad", image = "BLKGP.svg", i18nPackageName = "org.pentaho.di.trans.steps.gpload",
     name = "GPLoad.TypeLongDesc", description = "GPLoad.TypeLongDesc",
-    categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Bulk" )
+    categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Bulk",
+    documentationUrl = "http://wiki.pentaho.com/display/EAI/Greenplum+Load" )
 public class GPLoadMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = GPLoadMeta.class; // for i18n purposes, needed by Translator2!!
 
