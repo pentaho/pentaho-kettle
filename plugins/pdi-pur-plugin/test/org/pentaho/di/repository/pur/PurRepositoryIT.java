@@ -16,28 +16,6 @@
  */
 package org.pentaho.di.repository.pur;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
-import java.io.File;
-import java.io.Serializable;
-import java.util.AbstractList;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.Callable;
-
-import javax.jcr.Repository;
-import javax.xml.parsers.SAXParserFactory;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.vfs2.FileObject;
 import org.junit.After;
@@ -132,6 +110,28 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.ext.DefaultHandler2;
+
+import javax.jcr.Repository;
+import javax.xml.parsers.SAXParserFactory;
+import java.io.File;
+import java.io.Serializable;
+import java.util.AbstractList;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Callable;
+
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @ContextConfiguration( locations = { "classpath:/repository.spring.xml",
   "classpath:/repository-test-override.spring.xml" } )
@@ -1053,6 +1053,20 @@ public class PurRepositoryIT extends RepositoryTestBase implements ApplicationCo
     RepositoryDirectoryInterface repositoryDirectory =
         repository.createRepositoryDirectory( tree, "/home/admin2/new1" );
     repository.getJobAndTransformationObjects( repositoryDirectory.getObjectId(), false );
+  }
+
+  @Test
+  public void testLoadJob() throws Exception {
+    RepositoryDirectoryInterface rootDir = initRepo();
+    JobMeta jobMeta = createJobMeta( EXP_JOB_NAME );
+    RepositoryDirectoryInterface jobsDir = rootDir.findDirectory( DIR_JOBS );
+    repository.save( jobMeta, VERSION_COMMENT_V1, null );
+    deleteStack.push( jobMeta );
+    JobMeta fetchedJob = repository.loadJob( EXP_JOB_NAME, jobsDir, null, null );
+    JobMeta jobMetaById = repository.loadJob( jobMeta.getObjectId(), null );
+    assertEquals( fetchedJob, jobMetaById );
+    assertNotNull( fetchedJob.getMetaStore() );
+    assertTrue( fetchedJob.getMetaStore() == jobMetaById.getMetaStore()  );
   }
 
   protected static class LogListener implements KettleLoggingEventListener {
