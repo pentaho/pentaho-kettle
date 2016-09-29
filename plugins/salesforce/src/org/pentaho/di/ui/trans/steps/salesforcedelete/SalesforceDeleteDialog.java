@@ -552,7 +552,7 @@ public class SalesforceDeleteDialog extends BaseStepDialog implements StepDialog
 
       String realURL = transMeta.environmentSubstitute( meta.getTargetURL() );
       realUsername = transMeta.environmentSubstitute( meta.getUserName() );
-      String realPassword = Utils.resolvePassword( variables, meta.getPassword() );
+      String realPassword = Utils.resolvePassword( transMeta, meta.getPassword() );
       connection =
         new SalesforceConnection( log, realURL, realUsername, realPassword );
       connection.connect();
