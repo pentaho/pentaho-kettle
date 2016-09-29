@@ -33,6 +33,8 @@ import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
 import org.pentaho.di.ui.spoon.trans.TransGraph;
 
 import java.util.function.Consumer;
@@ -96,15 +98,34 @@ public final class ExpandedContentManager {
       browser = new Browser( parent, SWT.NONE );
       browser.addKeyListener( new KeyListener() {
         @Override public void keyPressed( KeyEvent keyEvent ) {
-          if ( keyEvent.stateMask == SWT.CTRL && keyEvent.keyCode == SWT.F6 ) {
+          int state = keyEvent.stateMask, key = keyEvent.keyCode;
+
+          boolean copyContent = state == SWT.CTRL && key == SWT.F6,
+              arrowNavigation = ( state == SWT.COMMAND || state == SWT.ALT )
+                  && ( key == SWT.ARROW_LEFT || key == SWT.ARROW_RIGHT ),
+              backslashNavigation = ( state == SWT.SHIFT && key == SWT.BS ) || key == SWT.BS,
+              reloadContent = state == SWT.CTRL && ( key == SWT.F5 || key == 82 ) || key == SWT.F5,
+              printContent = state == SWT.CTRL && key == 80;
+
+          if ( copyContent ) {
             Browser thisBrowser = (Browser) keyEvent.getSource();
             Clipboard clipboard = new Clipboard( thisBrowser.getDisplay() );
             clipboard.setContents( new String[]{thisBrowser.getUrl()}, new Transfer[]{ TextTransfer.getInstance()} );
             clipboard.dispose();
+          } else if ( arrowNavigation || backslashNavigation || reloadContent || printContent ) {
+            keyEvent.doit = false;
           }
         }
 
         @Override public void keyReleased( KeyEvent keyEvent ) {
+        }
+      } );
+
+      browser.addListener( SWT.MouseWheel, new Listener() {
+        @Override public void handleEvent( Event event ) {
+          if ( event.stateMask == SWT.CTRL ) {
+            event.doit = false;
+          }
         }
       } );
     }
