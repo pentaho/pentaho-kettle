@@ -931,8 +931,8 @@ public class SalesforceUpsertDialog extends BaseStepDialog implements StepDialog
       String selectedModule = transMeta.environmentSubstitute( meta.getModule() );
       // Define a new Salesforce connection
       connection =
-        new SalesforceConnection( log, url, transMeta.environmentSubstitute( meta.getUserName() ), transMeta
-          .environmentSubstitute( meta.getPassword() ) );
+        new SalesforceConnection( log, url, transMeta.environmentSubstitute( meta.getUserName() ),
+          Utils.resolvePassword( transMeta, meta.getPassword() ) );
       int realTimeOut = Const.toInt( transMeta.environmentSubstitute( meta.getTimeOut() ), 0 );
       connection.setTimeOut( realTimeOut );
       // connect to Salesforce
@@ -1103,8 +1103,8 @@ public class SalesforceUpsertDialog extends BaseStepDialog implements StepDialog
 
         // Define a new Salesforce connection
         connection =
-          new SalesforceConnection( log, url, transMeta.environmentSubstitute( meta.getUserName() ), transMeta
-            .environmentSubstitute( meta.getPassword() ) );
+          new SalesforceConnection( log, url, transMeta.environmentSubstitute( meta.getUserName() ),
+            Utils.resolvePassword( transMeta, meta.getPassword() ) );
         // connect to Salesforce
         connection.connect();
         // return

@@ -1380,7 +1380,7 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
       String realModule = transMeta.environmentSubstitute( meta.getModule() );
       String realURL = transMeta.environmentSubstitute( meta.getTargetURL() );
       String realUsername = transMeta.environmentSubstitute( meta.getUserName() );
-      String realPassword = transMeta.environmentSubstitute( meta.getPassword() );
+      String realPassword = Utils.resolvePassword( transMeta, meta.getPassword() );
       int realTimeOut = Const.toInt( transMeta.environmentSubstitute( meta.getTimeOut() ), 0 );
 
       connection = new SalesforceConnection( log, realURL, realUsername, realPassword );
@@ -1807,8 +1807,8 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 
         // Define a new Salesforce connection
         connection =
-          new SalesforceConnection( log, url, transMeta.environmentSubstitute( meta.getUserName() ), transMeta
-            .environmentSubstitute( meta.getPassword() ) );
+          new SalesforceConnection( log, url, transMeta.environmentSubstitute( meta.getUserName() ),
+            Utils.resolvePassword( transMeta, meta.getPassword() ) );
         // connect to Salesforce
         connection.connect();
 
