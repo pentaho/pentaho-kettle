@@ -842,8 +842,8 @@ public class SalesforceInsertDialog extends SalesforceStepDialog {
     String url = transMeta.environmentSubstitute( wURL.getText() );
     // Define a new Salesforce connection
     SalesforceConnection connection =
-      new SalesforceConnection( log, url, transMeta.environmentSubstitute( wUserName.getText() ), transMeta
-        .environmentSubstitute( wPassword.getText() ) );
+      new SalesforceConnection( log, url, transMeta.environmentSubstitute( wUserName.getText() ),
+        Utils.resolvePassword( transMeta, wPassword.getText() ) );
     int realTimeOut = Const.toInt( transMeta.environmentSubstitute( wTimeOut.getText() ), 0 );
     connection.setTimeOut( realTimeOut );
     // connect to Salesforce

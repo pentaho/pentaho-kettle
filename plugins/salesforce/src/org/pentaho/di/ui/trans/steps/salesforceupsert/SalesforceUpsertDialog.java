@@ -67,7 +67,6 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaNone;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.salesforce.SalesforceConnection;
 import org.pentaho.di.trans.steps.salesforce.SalesforceConnectionUtils;
@@ -900,7 +899,7 @@ public class SalesforceUpsertDialog extends SalesforceStepDialog {
     // Define a new Salesforce connection
     SalesforceConnection connection =
       new SalesforceConnection( log, url, transMeta.environmentSubstitute( meta.getUsername() ),
-          transMeta.environmentSubstitute( meta.getPassword() ) );
+              Utils.resolvePassword( transMeta, meta.getPassword() ) );
     int realTimeOut = Const.toInt( transMeta.environmentSubstitute( meta.getTimeout() ), 0 );
     connection.setTimeOut( realTimeOut );
     Cursor busy = new Cursor( shell.getDisplay(), SWT.CURSOR_WAIT );
@@ -1082,8 +1081,8 @@ public class SalesforceUpsertDialog extends SalesforceStepDialog {
 
         // Define a new Salesforce connection
         connection =
-          new SalesforceConnection( log, url, transMeta.environmentSubstitute( meta.getUsername() ), transMeta
-            .environmentSubstitute( meta.getPassword() ) );
+          new SalesforceConnection( log, url, transMeta.environmentSubstitute( meta.getUsername() ),
+            Utils.resolvePassword( transMeta, meta.getPassword() ) );
         // connect to Salesforce
         connection.connect();
         // return

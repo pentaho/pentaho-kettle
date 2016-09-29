@@ -27,6 +27,7 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
@@ -64,7 +65,7 @@ public abstract class SalesforceStepDialog extends BaseStepDialog implements Ste
       // get real values
       String realURL = transMeta.environmentSubstitute( meta.getTargetURL() );
       realUsername = transMeta.environmentSubstitute( meta.getUsername() );
-      String realPassword = transMeta.environmentSubstitute( meta.getPassword() );
+      String realPassword = Utils.resolvePassword( transMeta, meta.getPassword() );
       int realTimeOut = Const.toInt( transMeta.environmentSubstitute( meta.getTimeout() ), 0 );
 
       connection = new SalesforceConnection( log, realURL, realUsername, realPassword );
