@@ -151,6 +151,8 @@ public class Database implements VariableSpace, LoggingObjectInterface {
 
   private LogChannelInterface log;
   private LoggingObjectInterface parentLoggingObject;
+  private static final String[] TABLE_TYPES_TO_GET = { "TABLE", "VIEW" };
+  private static final String TABLES_META_DATA_TABLE_NAME = "TABLE_NAME";
 
   /**
    * Number of times a connection was opened using this object. Only used in the context of a database connection map
@@ -1849,8 +1851,10 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   /**
    * See if the table specified exists by reading
    *
-   * @param tablename The name of the table to check.<br> This is supposed to be the properly quoted name of the table
-   *                  or the complete schema-table name combination.
+   * @param tablename
+   *          The name of the table to check.<br>
+   *          This is supposed to be the properly quoted name of the table or the complete schema-table name
+   *          combination.
    * @return true if the table exists, false if it doesn't.
    */
   public boolean checkTableExists( String tablename ) throws KettleDatabaseException {
@@ -1858,7 +1862,6 @@ public class Database implements VariableSpace, LoggingObjectInterface {
       if ( log.isDebug() ) {
         log.logDebug( "Checking if table [" + tablename + "] exists!" );
       }
-
       // Just try to read from the table.
       String sql = databaseMeta.getSQLTableExists( tablename );
       try {
@@ -1867,23 +1870,68 @@ public class Database implements VariableSpace, LoggingObjectInterface {
       } catch ( KettleDatabaseException e ) {
         return false;
       }
-
-      /*
-       * if (getDatabaseMetaData()!=null) { ResultSet alltables = getDatabaseMetaData().getTables(null, null, "%" , new
-       * String[] { "TABLE", "VIEW", "SYNONYM" } ); boolean found = false; if (alltables!=null) { while
-       * (alltables.next() && !found) { String schemaName = alltables.getString("TABLE_SCHEM"); String name =
-       * alltables.getString("TABLE_NAME"); if ( tablename.equalsIgnoreCase(name) || ( schemaName!=null &&
-       * tablename.equalsIgnoreCase( databaseMeta.getSchemaTableCombination(schemaName, name)) ) ) {
-       * log.logDebug("table ["+tablename+"] was found!"); found=true; } } alltables.close();
-       *
-       * return found; } else { throw new KettleDatabaseException(
-       * "Unable to read table-names from the database meta-data."); } } else { throw new KettleDatabaseException(
-       * "Unable to get database meta-data from the database."); }
-       */
     } catch ( Exception e ) {
-      throw new KettleDatabaseException( "Unable to check if table ["
-        + tablename + "] exists on connection [" + databaseMeta.getName() + "]", e );
+      throw new KettleDatabaseException( "Unable to check if table [" + tablename + "] exists on connection [" + databaseMeta.getName() + "]", e );
     }
+  }
+
+  /**
+   * See if the table specified exists by getting db metadata.
+   *
+   * @param tablename
+   *          The name of the table to check.<br>
+   *          This is supposed to be the properly quoted name of the table or the complete schema-table name
+   *          combination.
+   * @return true if the table exists, false if it doesn't.
+   * @throws KettleDatabaseException
+   */
+  public boolean checkTableExistsByDbMeta( String shema, String tablename ) throws KettleDatabaseException {
+    boolean isTableExist = false;
+    if ( log.isDebug() ) {
+      log.logDebug( BaseMessages.getString( PKG, "Database.Info.CheckingIfTableExistsInDbMetaData", tablename ) );
+    }
+    try ( ResultSet resTables = getTableMetaData( shema, tablename ) ) {
+      while ( resTables.next() ) {
+        String resTableName = resTables.getString( TABLES_META_DATA_TABLE_NAME );
+        if ( tablename.equalsIgnoreCase( resTableName ) ) {
+          if ( log.isDebug() ) {
+            log.logDebug( BaseMessages.getString( PKG, "Database.Info.TableFound", tablename ) );
+          }
+          isTableExist = true;
+          break;
+        }
+      }
+    } catch ( SQLException e ) {
+      throw new KettleDatabaseException( BaseMessages.getString( PKG, "Database.Error.UnableToCheckExistingTable", tablename, databaseMeta.getName() ), e );
+    }
+    return isTableExist;
+  }
+
+  /**
+   * Retrieves the table description matching the schema and table name.
+   *
+   * @param shema
+   *          the schema name pattern
+   * @param table
+   *          the table name pattern
+   * @return table description row set
+   * @throws KettleDatabaseException
+   *           if DatabaseMetaData is null or some database error occurs
+   */
+  private ResultSet getTableMetaData( String schema, String table ) throws KettleDatabaseException {
+    ResultSet tables = null;
+    if ( getDatabaseMetaData() == null ) {
+      throw new KettleDatabaseException( BaseMessages.getString( PKG, "Database.Error.UnableToGetDbMeta" ) );
+    }
+    try {
+      tables = getDatabaseMetaData().getTables( null, schema, table, TABLE_TYPES_TO_GET );
+    } catch ( SQLException e ) {
+      throw new KettleDatabaseException( BaseMessages.getString( PKG, "Database.Error.UnableToGetTableNames" ), e );
+    }
+    if ( tables == null ) {
+      throw new KettleDatabaseException( BaseMessages.getString( PKG, "Database.Error.UnableToGetTableNames" ) );
+    }
+    return tables;
   }
 
   /**
@@ -3681,7 +3729,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
           schema = cat;
         }
 
-        String table = alltables.getString( "TABLE_NAME" );
+        String table = alltables.getString( TABLES_META_DATA_TABLE_NAME );
 
         if ( log.isRowLevel() ) {
           log.logRowlevel( toString(), "got table from meta-data: "
@@ -3780,7 +3828,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
           schema = cat;
         }
 
-        String table = allviews.getString( "TABLE_NAME" );
+        String table = allviews.getString( TABLES_META_DATA_TABLE_NAME );
 
         if ( log.isRowLevel() ) {
           log.logRowlevel( toString(), "got view from meta-data: "
@@ -3879,7 +3927,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
           schema = cat;
         }
 
-        String table = alltables.getString( "TABLE_NAME" );
+        String table = alltables.getString( TABLES_META_DATA_TABLE_NAME );
 
         if ( log.isRowLevel() ) {
           log.logRowlevel( toString(), "got synonym from meta-data: "
