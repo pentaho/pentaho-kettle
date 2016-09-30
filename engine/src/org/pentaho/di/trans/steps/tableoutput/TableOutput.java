@@ -543,6 +543,12 @@ public class TableOutput extends BaseStep implements StepInterface {
             && ( ( getCopy() == 0 && getUniqueStepNrAcrossSlaves() == 0 ) || !Utils.isEmpty( getPartitionID() ) ) ) {
             data.db.truncateTable( environmentSubstitute( meta.getSchemaName() ), environmentSubstitute( meta
               .getTableName() ) );
+
+            // There exists a scenario where table output is executed via DataService such that the truncate does not
+            // commit and subsequently can block other queries from completing - BACKLOG-11204
+            if ( !data.db.isAutoCommit() ) {
+              data.db.commit();
+            }
           }
         }
 
