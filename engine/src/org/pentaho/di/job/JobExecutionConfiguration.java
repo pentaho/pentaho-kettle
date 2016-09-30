@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -47,9 +47,13 @@ import org.pentaho.di.core.plugins.RepositoryPluginType;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.job.entries.trans.JobEntryTrans;
+import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.repository.RepositoriesMeta;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryMeta;
+import org.pentaho.di.trans.TransMeta;
+import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
 public class JobExecutionConfiguration implements ExecutionConfiguration {
@@ -673,5 +677,23 @@ public class JobExecutionConfiguration implements ExecutionConfiguration {
 
   public void setPassedBatchId( Long passedBatchId ) {
     this.passedBatchId = passedBatchId;
+  }
+
+  public void getUsedArguments( JobMeta jobMeta, String[] commandLineArguments, IMetaStore metaStore )
+    throws KettleException {
+
+    for ( JobEntryCopy jobEntryCopy : jobMeta.jobcopies ) {
+      if ( jobEntryCopy.isTransformation() ) {
+        JobEntryTrans jobEntryTrans = (JobEntryTrans) jobEntryCopy.getEntry();
+        TransMeta transMeta = jobEntryTrans.getTransMeta( repository, metaStore, jobMeta );
+        Map<String, String> map = transMeta.getUsedArguments( commandLineArguments );
+        for ( String key : map.keySet() ) {
+          String value = map.get( key );
+          if ( !arguments.containsKey( key ) ) {
+            arguments.put( key, value );
+          }
+        }
+      }
+    }
   }
 }
