@@ -33,32 +33,40 @@ import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.ui.spoon.Spoon;
 
 public class RepositorySessionTimeoutHandler implements InvocationHandler {
-  
+
   private static Class<?> PKG = RepositorySessionTimeoutHandler.class;
-  
+
   private static int STACK_ELEMENTS_TO_SKIP = 3;
-  
+
   private static final String EXCEPTION_CLASS_NAME = "ClientTransportException";
 
   private final ReconnectableRepository repository;
-  
+
   private final RepositoryConnectController repositoryConnectController;
-  
+
   private final AtomicBoolean needToLogin = new AtomicBoolean( false );
-  
+
   private final AtomicBoolean reinvoke = new AtomicBoolean( false );
-  
-  public RepositorySessionTimeoutHandler(ReconnectableRepository repository, RepositoryConnectController repositoryConnectController) {
+
+  public RepositorySessionTimeoutHandler( ReconnectableRepository repository,
+      RepositoryConnectController repositoryConnectController ) {
     this.repository = repository;
     this.repositoryConnectController = repositoryConnectController;
   }
-  
+
   @Override
   public Object invoke( Object proxy, Method method, Object[] args ) throws Throwable {
     try {
       return method.invoke( repository, args );
     } catch ( InvocationTargetException ex ) {
       if ( lookupForConnectTimeoutError( ex ) && !calledFromThisHandler() ) {
+        try {
+          return method.invoke( repository, args );
+        } catch ( InvocationTargetException ex2 ) {
+          if ( !lookupForConnectTimeoutError( ex2 ) ) {
+            throw ex2.getCause();
+          }
+        }
         needToLogin.set( true );
         synchronized ( this ) {
           if ( needToLogin.get() ) {
@@ -111,7 +119,7 @@ public class RepositorySessionTimeoutHandler implements InvocationHandler {
     }
     return false;
   }
-  
+
   private Spoon getSpoon() {
     return Spoon.getInstance();
   }
