@@ -22,14 +22,7 @@
 
 package org.pentaho.di.trans.steps.tableoutput;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseInterface;
@@ -41,6 +34,7 @@ import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -49,6 +43,12 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Writes rows to a database table.
@@ -73,12 +73,18 @@ public class TableOutput extends BaseStep implements StepInterface {
 
     Object[] r = getRow(); // this also waits for a previous step to be finished.
     if ( r == null ) { // no more input to be expected...
-
+      // truncate the table if there are no rows at all coming into this step
+      if ( first && meta.truncateTable() ) {
+        truncateTable();
+      }
       return false;
     }
 
     if ( first ) {
       first = false;
+      if ( meta.truncateTable() ) {
+        truncateTable();
+      }
       data.outputRowMeta = getInputRowMeta().clone();
       meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
 
@@ -534,18 +540,6 @@ public class TableOutput extends BaseStep implements StepInterface {
         }
         data.db.setCommit( data.commitSize );
 
-        if ( !meta.isPartitioningEnabled() && !meta.isTableNameInField() ) {
-          data.tableName = environmentSubstitute( meta.getTableName() );
-
-          // Only the first one truncates in a non-partitioned step copy
-          //
-          if ( meta.truncateTable()
-            && ( ( getCopy() == 0 && getUniqueStepNrAcrossSlaves() == 0 ) || !Utils.isEmpty( getPartitionID() ) ) ) {
-            data.db.truncateTable( environmentSubstitute( meta.getSchemaName() ), environmentSubstitute( meta
-              .getTableName() ) );
-          }
-        }
-
         return true;
       } catch ( KettleException e ) {
         logError( "An error occurred intialising this step: " + e.getMessage() );
@@ -554,6 +548,21 @@ public class TableOutput extends BaseStep implements StepInterface {
       }
     }
     return false;
+  }
+
+  void truncateTable() throws KettleDatabaseException {
+    if ( !meta.isPartitioningEnabled() && !meta.isTableNameInField() ) {
+      data.tableName = environmentSubstitute( meta.getTableName() );
+
+      // Only the first one truncates in a non-partitioned step copy
+      //
+      if ( meta.truncateTable()
+        && ( ( getCopy() == 0 && getUniqueStepNrAcrossSlaves() == 0 ) || !Utils.isEmpty( getPartitionID() ) ) ) {
+        data.db.truncateTable( environmentSubstitute( meta.getSchemaName() ), environmentSubstitute( meta
+          .getTableName() ) );
+
+      }
+    }
   }
 
   public void dispose( StepMetaInterface smi, StepDataInterface sdi ) {
