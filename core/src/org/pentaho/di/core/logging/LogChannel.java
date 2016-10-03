@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,7 +23,7 @@
 package org.pentaho.di.core.logging;
 
 import java.util.Date;
-import java.util.Deque;
+import java.util.Queue;
 import java.util.Map;
 
 import org.pentaho.di.core.Const;
@@ -294,7 +294,7 @@ public class LogChannel implements LogChannelInterface {
     String key = MetricsSnapshot.getKey( metric, subject );
     Map<String, MetricsSnapshotInterface> metricsMap = null;
     MetricsSnapshotInterface snapshot = null;
-    Deque<MetricsSnapshotInterface> metricsList = null;
+    Queue<MetricsSnapshotInterface> metricsList = null;
     switch ( metric.getType() ) {
       case MAX:
         // Calculate and store the maximum value for this metric

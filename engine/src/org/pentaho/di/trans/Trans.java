@@ -32,7 +32,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.Deque;
+import java.util.Queue;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -2493,7 +2493,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 
       List<String> logChannelIds = LoggingRegistry.getInstance().getLogChannelChildren( getLogChannelId() );
       for ( String logChannelId : logChannelIds ) {
-        Deque<MetricsSnapshotInterface> snapshotList =
+        Queue<MetricsSnapshotInterface> snapshotList =
             MetricsRegistry.getInstance().getSnapshotLists().get( logChannelId );
         if ( snapshotList != null ) {
           Iterator<MetricsSnapshotInterface> iterator = snapshotList.iterator();
@@ -3523,7 +3523,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
    * @throws KettleException
    *           the kettle exception
    */
-  public static final TransSplitter executeClustered( final TransMeta transMeta,
+  public static TransSplitter executeClustered( final TransMeta transMeta,
       final TransExecutionConfiguration executionConfiguration ) throws KettleException {
     if ( Const.isEmpty( transMeta.getName() ) ) {
       throw new KettleException( "The transformation needs a name to uniquely identify it by on the remote server." );
@@ -3552,7 +3552,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
    *           the kettle exception
    * @see org.pentaho.di.ui.spoon.delegates.SpoonTransformationDelegate
    */
-  public static final void executeClustered( final TransSplitter transSplitter,
+  public static void executeClustered( final TransSplitter transSplitter,
       final TransExecutionConfiguration executionConfiguration ) throws KettleException {
     try {
       // Send the transformations to the servers...

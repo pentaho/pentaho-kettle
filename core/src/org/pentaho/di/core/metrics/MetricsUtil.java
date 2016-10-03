@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,7 +23,7 @@
 package org.pentaho.di.core.metrics;
 
 import java.util.ArrayList;
-import java.util.Deque;
+import java.util.Queue;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -49,7 +49,7 @@ public class MetricsUtil {
   public static List<MetricsDuration> getDuration( String logChannelId, Metrics metric ) {
     List<MetricsDuration> durations = new ArrayList<MetricsDuration>();
 
-    Deque<MetricsSnapshotInterface> metrics = MetricsRegistry.getInstance().getSnapshotList( logChannelId );
+    Queue<MetricsSnapshotInterface> metrics = MetricsRegistry.getInstance().getSnapshotList( logChannelId );
     MetricsSnapshotInterface start = null;
 
     Iterator<MetricsSnapshotInterface> iterator = metrics.iterator();
@@ -117,7 +117,7 @@ public class MetricsUtil {
     Map<String, MetricsSnapshotInterface> last = new HashMap<String, MetricsSnapshotInterface>();
     Map<String, MetricsDuration> map = new HashMap<String, MetricsDuration>();
 
-    Deque<MetricsSnapshotInterface> metrics = MetricsRegistry.getInstance().getSnapshotList( logChannelId );
+    Queue<MetricsSnapshotInterface> metrics = MetricsRegistry.getInstance().getSnapshotList( logChannelId );
 
     Iterator<MetricsSnapshotInterface> iterator = metrics.iterator();
     while ( iterator.hasNext() ) {
