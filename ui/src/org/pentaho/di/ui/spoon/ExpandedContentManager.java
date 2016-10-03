@@ -33,8 +33,6 @@ import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
 import org.pentaho.di.ui.spoon.trans.TransGraph;
 
 import java.util.function.Consumer;
@@ -104,28 +102,21 @@ public final class ExpandedContentManager {
               arrowNavigation = ( state == SWT.COMMAND || state == SWT.ALT )
                   && ( key == SWT.ARROW_LEFT || key == SWT.ARROW_RIGHT ),
               backslashNavigation = ( state == SWT.SHIFT && key == SWT.BS ) || key == SWT.BS,
-              reloadContent = state == SWT.CTRL && ( key == SWT.F5 || key == 82 ) || key == SWT.F5,
-              printContent = state == SWT.CTRL && key == 80;
+              reloadContent = state == SWT.CTRL && ( key == SWT.F5 || key == 114 /* r key */ ) || key == SWT.F5,
+              zoomContent = state == SWT.CTRL && ( key == SWT.KEYPAD_ADD || key == SWT.KEYPAD_SUBTRACT
+                  || key == 61 /* + key */ || key == 45 /* - key */ );
 
           if ( copyContent ) {
             Browser thisBrowser = (Browser) keyEvent.getSource();
             Clipboard clipboard = new Clipboard( thisBrowser.getDisplay() );
             clipboard.setContents( new String[]{thisBrowser.getUrl()}, new Transfer[]{ TextTransfer.getInstance()} );
             clipboard.dispose();
-          } else if ( arrowNavigation || backslashNavigation || reloadContent || printContent ) {
+          } else if ( arrowNavigation || backslashNavigation || reloadContent || zoomContent ) {
             keyEvent.doit = false;
           }
         }
 
         @Override public void keyReleased( KeyEvent keyEvent ) {
-        }
-      } );
-
-      browser.addListener( SWT.MouseWheel, new Listener() {
-        @Override public void handleEvent( Event event ) {
-          if ( event.stateMask == SWT.CTRL ) {
-            event.doit = false;
-          }
         }
       } );
     }
