@@ -20,7 +20,7 @@
   "map": {
     "repositories_7.0": {
       "angular": "angular_1.5.6",
-      "jquery": "common-ui/jquery",
+      "jquery": "jquery_2.2.1",
       "angular-sanitize": "angular-sanitize_1.5.6",
       "angular-route": "angular-route_1.5.6",
       "angular-animate": "repositories/web/js/angular-animate",
@@ -29,7 +29,7 @@
     },
     "repositoriesMain_7.0": {
       "angular": "angular_1.5.6",
-      "jquery": "common-ui/jquery",
+      "jquery": "jquery_2.2.1",
       "angular-sanitize": "angular-sanitize_1.5.6",
       "angular-route": "angular-route_1.5.6",
       "angular-animate": "repositories/web/js/angular-animate",
@@ -41,7 +41,7 @@
 
   "shim": {
     "angular_1.5.6": {
-      "deps": [ "common-ui/jquery" ]
+      "deps": [ "jquery_2.2.1" ]
     },
     "repositories/web/js/angular-animate": {
       "deps": [ "angular_1.5.6" ]
