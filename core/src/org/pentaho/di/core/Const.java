@@ -818,6 +818,39 @@ public class Const {
   public static final String KETTLE_MAX_LOGGING_REGISTRY_SIZE = "KETTLE_MAX_LOGGING_REGISTRY_SIZE";
 
   /**
+   * A variable to configure the kettle log tab refresh delay.
+   */
+  public static final String KETTLE_LOG_TAB_REFRESH_DELAY = "KETTLE_LOG_TAB_REFRESH_DELAY";
+
+  /**
+   * A variable to configure the kettle log tab refresh period.
+   */
+  public static final String KETTLE_LOG_TAB_REFRESH_PERIOD = "KETTLE_LOG_TAB_REFRESH_PERIOD";
+
+  /**
+   * The kettle log tab refresh thread name to make LoggingBuffer able to determine it and save logs that have not been
+   * read by this thread.
+   */
+  public static final String KETTLE_LOG_TAB_REFRESH_THREAD = "KETTLE_LOG_TAB_REFRESH_THREAD";
+
+  /**
+   * The kettle trans executor discard lines thread name to make LoggingBuffer able to determine it and wait until log
+   * tab refresh thread reads a new logs
+   */
+  public static final String TRANS_EXECUTOR_DISCARD_LINES_THREAD = "TRANS_EXECUTOR_DISCARD_LINES_THREAD";
+
+  /**
+   * The kettle job executor discard lines thread name to make LoggingBuffer able to determine it and wait until log tab
+   * refresh thread reads a new logs
+   */
+  public static final String JOB_EXECUTOR_DISCARD_LINES_THREAD = "JOB_EXECUTOR_DISCARD_LINES_THREAD";
+
+  /**
+   * The kettle discard lines wait timeout.
+   */
+  public static final int KETTLE_DISCARD_LOG_LINES_WAIT_TIMEOUT = 10000;
+
+  /**
    * The name of the system wide variable that can contain the name of the SAP Connection factory for the test button in
    * the DB dialog. This defaults to
    */

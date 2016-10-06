@@ -42,6 +42,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.logging.HasLogChannelInterface;
@@ -96,9 +97,13 @@ public class LogBrowser {
 
         text.getDisplay().asyncExec( new Runnable() {
           public void run() {
+            // to make LoggingBuffer able to determine refresh tab thread
+            // and save logs that have not been read by this thread
+            Thread.currentThread().setName( Const.KETTLE_LOG_TAB_REFRESH_THREAD );
+
             HasLogChannelInterface provider = logProvider.getLogChannelProvider();
 
-            if ( provider != null && !text.isDisposed() && !busy.get() && !paused.get() && text.isVisible() ) {
+            if ( provider != null && !text.isDisposed() && !busy.get() && !paused.get() ) {
               busy.set( true );
 
               LogChannelInterface logChannel = provider.getLogChannel();
@@ -180,7 +185,9 @@ public class LogBrowser {
 
     // Refresh every often enough
     //
-    logRefreshTimer.schedule( timerTask, 1000, 1000 );
+    logRefreshTimer
+      .schedule( timerTask, Const.toInt( EnvUtil.getSystemProperty( Const.KETTLE_LOG_TAB_REFRESH_DELAY ), 1000 ),
+        Const.toInt( EnvUtil.getSystemProperty( Const.KETTLE_LOG_TAB_REFRESH_PERIOD ), 1000 ) );
 
     // Make sure the timer goes down when the widget is disposed
     //

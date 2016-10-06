@@ -239,8 +239,13 @@ public class TransExecutor extends BaseStep implements StepInterface {
     // TODO: make this optional/user-defined later
     Trans executorTrans = transExecutorData.getExecutorTrans();
     if ( executorTrans != null ) {
-      KettleLogStore.discardLines( executorTrans.getLogChannelId(), false );
-      LoggingRegistry.getInstance().removeIncludingChildren( executorTrans.getLogChannelId() );
+      final String logChannelId = executorTrans.getLogChannelId();
+      new Thread( Const.TRANS_EXECUTOR_DISCARD_LINES_THREAD ) {
+        @Override public void run() {
+          KettleLogStore.discardLines( logChannelId, false );
+          LoggingRegistry.getInstance().removeIncludingChildren( logChannelId );
+        }
+      }.start();
     }
   }
 

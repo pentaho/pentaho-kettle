@@ -1,7 +1,7 @@
 /*
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  * **************************************************************************
  *
@@ -21,16 +21,27 @@
 package org.pentaho.di.core.logging;
 
 
+import org.junit.After;
 import org.junit.Assert;
-
 import org.junit.Test;
-import org.pentaho.di.core.Const;
 
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.KettleClientEnvironment;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class LoggingBufferTest {
+
+  @After
+  public void runAfterTestMethod() {
+    KettleClientEnvironment.getInstance().setClient( null );
+  }
 
   @Test
   public void testRaceCondition() throws Exception {
@@ -142,5 +153,102 @@ public class LoggingBufferTest {
     while ( it.hasNext() ) {
       Assert.fail( "This should never be reached, as the LogBuffer is empty" );
     }
+  }
+
+  @Test
+  public void testBufferTreadManagementForSpoon() {
+    // set kettle client env to SPOON, means that code runs from Spoon
+    KettleClientEnvironment.getInstance().setClient( KettleClientEnvironment.ClientType.SPOON );
+
+    final LoggingBuffer loggingBuffer = new LoggingBuffer( 200 );
+    Assert.assertNotNull( loggingBuffer );
+
+    // wrote log messages for verification
+    Map<String, LogMessage> wroteLogMessagesForVerification = new HashMap<>();
+    // log channel ids for reading and removing
+    List<String> logChannelIds = new ArrayList<>();
+    // add logs to buffer
+    final int logsCount = 100;
+    for ( int i = 0; i < logsCount; i++ ) {
+      // create log
+      String logChannelId = "logId" + "_" + i;
+      logChannelIds.add( logChannelId );
+      String message = "test message" + "_" + i;
+      LogMessage logMessage = new LogMessage( message, logChannelId, LogLevel.DETAILED );
+      wroteLogMessagesForVerification.put( logMessage.getLogChannelId(), logMessage );
+      KettleLoggingEvent loggingEvent =
+        new KettleLoggingEvent( logMessage, System.currentTimeMillis(), LogLevel.DETAILED );
+      // add log to buffer
+      loggingBuffer.addLogggingEvent( loggingEvent );
+    }
+
+    // job/trans discard lines emulation
+    List<Thread> discardLinesTreads = new ArrayList<>();
+    for ( String logChannelId : logChannelIds ) {
+      final String logChannelIdToRemove = logChannelId;
+      // names the thread to prioritize
+      Thread tread = new Thread( Const.JOB_EXECUTOR_DISCARD_LINES_THREAD ) {
+        @Override public void run() {
+          // remove log from buffer (in fact, will have to wait until the log is read by sniffer )
+          loggingBuffer.removeChannelFromBuffer( logChannelIdToRemove );
+        }
+      };
+      tread.start();
+      discardLinesTreads.add( tread );
+    }
+
+    // read log messages for verification
+    Map<String, LogMessage> readLogMessagesForVerification = new HashMap<>();
+    // spoon log tab refresh thread emulation
+    // names the thread to prioritize
+    Thread snifferTread = new Thread( Const.KETTLE_LOG_TAB_REFRESH_THREAD ) {
+      public void run() {
+        // read buffer
+        int lastNr = loggingBuffer.getLastBufferLineNr();
+        List<KettleLoggingEvent> logLines = loggingBuffer.getLogBufferFromTo( logChannelIds, true, -1, lastNr );
+        for ( KettleLoggingEvent logLine : logLines ) {
+          LogMessage logMessage = (LogMessage) logLine.getMessage();
+          readLogMessagesForVerification.put( logMessage.getLogChannelId(), logMessage );
+        }
+      }
+    };
+    snifferTread.start();
+
+    try {
+      // wait until sniffer tread finishes working
+      snifferTread.join();
+      // wait until discard lines treads finish working
+      for ( Thread tread : discardLinesTreads ) {
+        tread.join();
+      }
+    } catch ( InterruptedException e ) {
+      e.printStackTrace();
+    }
+
+    // verification
+    // buffer is empty (discard lines logic is working)
+    Assert.assertEquals( 0, loggingBuffer.getNrLines() );
+    // compare wrote and read logs (have to be equal)
+    Assert.assertEquals( true, isLogMessagesEqual( wroteLogMessagesForVerification, readLogMessagesForVerification ) );
+  }
+
+  private boolean isLogMessagesEqual( Map<String, LogMessage> wroteLogMessagesForVerification,
+                                      Map<String, LogMessage> readLogMessagesForVerification ) {
+    if ( wroteLogMessagesForVerification.size() != readLogMessagesForVerification.size() ) {
+      return false;
+    }
+    for ( Map.Entry<String, LogMessage> entry : wroteLogMessagesForVerification.entrySet() ) {
+      String logChannelId = entry.getKey();
+      if ( !readLogMessagesForVerification.containsKey( logChannelId ) ) {
+        return false;
+      }
+      LogMessage wroteLogMessage = wroteLogMessagesForVerification.get( logChannelId );
+      LogMessage readLogMessage = readLogMessagesForVerification.get( logChannelId );
+
+      if ( !wroteLogMessage.getMessage().equals( readLogMessage.getMessage() ) ) {
+        return false;
+      }
+    }
+    return true;
   }
 }

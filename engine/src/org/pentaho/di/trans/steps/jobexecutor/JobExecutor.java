@@ -355,8 +355,13 @@ public class JobExecutor extends BaseStep implements StepInterface {
     // Keep the strain on the logging back-end conservative.
     // TODO: make this optional/user-defined later
     if ( data.executorJob != null ) {
-      KettleLogStore.discardLines( data.executorJob.getLogChannelId(), false );
-      LoggingRegistry.getInstance().removeIncludingChildren( data.executorJob.getLogChannelId() );
+      final String logChannelId = data.executorJob.getLogChannelId();
+      new Thread( Const.JOB_EXECUTOR_DISCARD_LINES_THREAD ) {
+        @Override public void run() {
+          KettleLogStore.discardLines( logChannelId, false );
+          LoggingRegistry.getInstance().removeIncludingChildren( logChannelId );
+        }
+      }.start();
     }
   }
 
