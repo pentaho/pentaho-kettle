@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -35,11 +35,18 @@ import org.pentaho.di.trans.step.StepPartitioningMeta;
 import java.sql.Connection;
 import java.util.Map;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class TableOutputTest {
   private DatabaseMeta databaseMeta;
@@ -49,6 +56,7 @@ public class TableOutputTest {
   private TableOutput tableOutput, tableOutputSpy;
   private TableOutputMeta tableOutputMeta, tableOutputMetaSpy;
   private TableOutputData tableOutputData, tableOutputDataSpy;
+  private Database db;
 
   @Before
   public void setUp() throws Exception {
@@ -63,7 +71,7 @@ public class TableOutputTest {
     doReturn( mock( StepPartitioningMeta.class ) ).when( stepMeta ).getTargetStepPartitioningMeta();
     doReturn( tableOutputMeta ).when( stepMeta ).getStepMetaInterface();
 
-    Database db = mock( Database.class );
+    db = mock( Database.class );
     doReturn( mock( Connection.class ) ).when( db ).getConnection();
 
     tableOutputData = mock( TableOutputData.class );
@@ -88,5 +96,84 @@ public class TableOutputTest {
   @Test
   public void testWriteToTable() throws Exception {
     tableOutputSpy.writeToTable( mock( RowMetaInterface.class ), new Object[]{} );
+  }
+
+  @Test
+  public void testTruncateTable_off() throws Exception {
+    tableOutputSpy.truncateTable();
+    verify( db, never() ).truncateTable( anyString(), anyString() );
+  }
+
+  @Test
+  public void testTruncateTable_on() throws Exception {
+    when( tableOutputMeta.truncateTable() ).thenReturn( true );
+    when( tableOutputSpy.getCopy() ).thenReturn( 0 );
+    when( tableOutputSpy.getUniqueStepNrAcrossSlaves() ).thenReturn( 0 );
+
+    tableOutputSpy.truncateTable();
+    verify( db ).truncateTable( anyString(), anyString() );
+  }
+
+  @Test
+  public void testTruncateTable_on_PartitionId() throws Exception {
+    when( tableOutputMeta.truncateTable() ).thenReturn( true );
+    when( tableOutputSpy.getCopy() ).thenReturn( 1 );
+    when( tableOutputSpy.getUniqueStepNrAcrossSlaves() ).thenReturn( 0 );
+    when( tableOutputSpy.getPartitionID() ).thenReturn( "partition id" );
+
+    tableOutputSpy.truncateTable();
+    verify( db ).truncateTable( anyString(), anyString() );
+  }
+
+  @Test
+  public void testProcessRow_truncatesIfNoRowsAvailable() throws Exception {
+    when( tableOutputMeta.truncateTable() ).thenReturn( true );
+
+    doReturn( null ).when( tableOutputSpy ).getRow();
+
+    boolean result = tableOutputSpy.processRow( tableOutputMeta, tableOutputData );
+
+    assertFalse( result );
+    verify( tableOutputSpy ).truncateTable();
+  }
+
+  @Test
+  public void testProcessRow_doesNotTruncateIfNoRowsAvailableAndTruncateIsOff() throws Exception {
+    when( tableOutputMeta.truncateTable() ).thenReturn( false );
+
+    doReturn( null ).when( tableOutputSpy ).getRow();
+
+    boolean result = tableOutputSpy.processRow( tableOutputMeta, tableOutputData );
+
+    assertFalse( result );
+    verify( tableOutputSpy, never() ).truncateTable();
+  }
+
+  @Test
+  public void testProcessRow_truncatesOnFirstRow() throws Exception {
+    when( tableOutputMeta.truncateTable() ).thenReturn( true );
+    Object[] row = new Object[]{};
+    doReturn( row ).when( tableOutputSpy ).getRow();
+
+    try {
+      boolean result = tableOutputSpy.processRow( tableOutputMeta, tableOutputData );
+    } catch ( NullPointerException npe ) {
+      // not everything is set up to process an entire row, but we don't need that for this test
+    }
+    verify( tableOutputSpy, times( 1 ) ).truncateTable();
+  }
+
+  @Test
+  public void testProcessRow_doesNotTruncateOnOtherRows() throws Exception {
+    when( tableOutputMeta.truncateTable() ).thenReturn( true );
+    Object[] row = new Object[]{};
+    doReturn( row ).when( tableOutputSpy ).getRow();
+    tableOutputSpy.first = false;
+    doReturn( null ).when( tableOutputSpy ).writeToTable( any( RowMetaInterface.class ), any( row.getClass() ) );
+
+    boolean result = tableOutputSpy.processRow( tableOutputMeta, tableOutputData );
+
+    assertTrue( result );
+    verify( tableOutputSpy, never() ).truncateTable();
   }
 }
