@@ -996,6 +996,16 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 
   @Override
   public void mouseUp( MouseEvent e ) {
+    try {
+      TransGraphExtension ext = new TransGraphExtension( null, e, getArea() );
+      ExtensionPointHandler.callExtensionPoint( LogChannel.GENERAL, KettleExtensionPoint.TransGraphMouseUp.id, ext );
+      if ( ext.isPreventDefault() ) {
+        return;
+      }
+    } catch ( Exception ex ) {
+      LogChannel.GENERAL.logError( "Error calling TransGraphMouseUp extension point", ex );
+    }
+
     boolean control = ( e.stateMask & SWT.MOD1 ) != 0;
 
     if ( iconoffset == null ) {
