@@ -3220,7 +3220,8 @@ public class ValueMetaBase implements ValueMetaInterface {
             // at all.
             //
             string = XMLHandler.addTagValue( "binary-string", (byte[]) object );
-            break;
+            xml.append( XMLHandler.openTag( XML_DATA_TAG ) ).append( string ).append( XMLHandler.closeTag( XML_DATA_TAG ) );
+            return xml.toString();
 
           case STORAGE_TYPE_INDEXED:
             // Just an index
