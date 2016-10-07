@@ -31,7 +31,7 @@ define(
 
     var repoConnectionAppControllers = angular.module('repoConnectionAppControllers', []);
 
-    repoConnectionAppControllers.controller("PentahoRepositoryController", function($scope, $location, $rootScope, $filter, pentahoRepositoryModel, repositoryTypesModel) {
+    repoConnectionAppControllers.controller("PentahoRepositoryController", function($scope, $translate, $location, $rootScope, $filter, pentahoRepositoryModel, repositoryTypesModel) {
       $scope.model = pentahoRepositoryModel.model;
       $scope.getStarted = function() {
         $rootScope.fromEdit = false;
@@ -53,7 +53,9 @@ define(
         repositories = JSON.parse(getRepositories());
         for(var i = 0; i < repositories.length; i++){
           if( $filter('lowercase')(repositories[i].displayName) == $filter('lowercase')($scope.model.displayName) ){
-            $rootScope.triggerError("A repository connection with that name already exists. Please enter a different name.");
+            $translate('repositories.error.exists.label').then(function (translation) {
+              $rootScope.triggerError(translation);
+            });
             return true;
           }
         }
@@ -113,10 +115,10 @@ define(
       $scope.help = function() {
         help();
       }
-      $scope.successText = $rootScope.fromEdit ? "Your connection has been edited and is ready to use." : "Your connection was created and is ready to use.";
     });
 
-    repoConnectionAppControllers.controller("KettleFileRepositoryController", function($scope, $rootScope, $location, $filter, kettleFileRepositoryModel) {
+    repoConnectionAppControllers.controller("KettleFileRepositoryController", function($scope, $translate, $rootScope, $location, $filter, kettleFileRepositoryModel) {
+
       $scope.model = kettleFileRepositoryModel.model;
       $scope.selectLocation = function() {
         this.model.location = selectLocation();
@@ -131,7 +133,9 @@ define(
         repositories = JSON.parse(getRepositories());
         for(var i = 0; i < repositories.length; i++){
           if( $filter('lowercase')(repositories[i].displayName) == $filter('lowercase')($scope.model.displayName) ){
-            $rootScope.triggerError("A repository connection with that name already exists. Please enter a different name.");
+            $translate('repositories.error.exists.label').then(function (translation) {
+              $rootScope.triggerError(translation);
+            });
             return true;
           }
         }
@@ -196,7 +200,6 @@ define(
       $scope.help = function() {
         help();
       }
-      $scope.successText = $rootScope.fromEdit ? "Your connection has been edited and is ready to use." : "Your file repository was created and is ready to use.";
     });
 
     repoConnectionAppControllers.controller("KettleDatabaseRepositoryController", function($scope, $rootScope, $location, $filter, kettleDatabaseRepositoryModel) {
@@ -216,7 +219,9 @@ define(
         repositories = JSON.parse(getRepositories());
         for(var i = 0; i < repositories.length; i++){
           if( $filter('lowercase')(repositories[i].displayName) == $filter('lowercase')($scope.model.displayName) ){
-            $rootScope.triggerError("A repository connection with that name already exists. Please enter a different name.");
+            $translate('repositories.error.exists.label').then(function (translation) {
+              $rootScope.triggerError(translation);
+            });
             return true;
           }
         }
@@ -276,7 +281,6 @@ define(
       $scope.help = function() {
         help();
       }
-      $scope.successText = $rootScope.fromEdit ? "Your connection has been edited and is ready to use." : "Your database repository was created and is ready to use.";
     });
 
     repoConnectionAppControllers.controller("CreateNewConnectionController", function($scope, $location, $rootScope, repositoryTypesModel, kettleDatabaseRepositoryModel, kettleFileRepositoryModel) {

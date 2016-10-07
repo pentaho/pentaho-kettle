@@ -3,16 +3,17 @@
     <img alt="" src="images/u397.png" />
   </div>
   <div class="title_text margin_bottom_30">
-    Congratulations!
+    {{ 'repositories.success.congratulations.label' | translate }}
   </div>
   <div class="primary_text">
-    <div class="margin_bottom_80">{{successText}}</div>
-    <div class="margin_bottom_30">What would you like to do?</div>
+    <div class="margin_bottom_80" ng-if="fromEdit">{{ 'repositories.readyedit.label' | translate }}</div>
+    <div class="margin_bottom_80" ng-if="!fromEdit">{{ 'repositories.readycreate.label' | translate }}</div>
+    <div class="margin_bottom_30">{{ 'repositories.question.label' | translate }}</div>
     <div class="margin_bottom_30">
-      <button class="same_width standard" type="button" ng-click="connect()">Connect Now</button>
+      <button class="same_width standard" type="button" ng-click="connect()">{{ 'repositories.success.connectNow.label' | translate }}</button>
     </div>
     <div>
-      <button class="same_width secondary" type="button" ng-click="createNewConnection()">Manage Connections</button>
+      <button class="same_width secondary" type="button" ng-click="createNewConnection()">{{ 'repositories.manageconnections.label' | translate }}</button>
     </div>
   </div>
   <div class="bottom">
@@ -20,8 +21,8 @@
       <hr />
     </div>
     <div>
-      <img class="left helpImg" alt="" src="images/u42.png" /><a id="btnHelp" class="left" ng-click="help()">Help</a>
-      <button class="right secondary" type="button" ng-click="close()">Close</button>
+      <img class="left helpImg" alt="" src="images/u42.png" /><a id="btnHelp" class="left" ng-click="help()">{{ 'repositories.help.label' | translate }}</a>
+      <button class="right secondary" type="button" ng-click="close()">{{ 'repositories.finish.label' | translate }}</button>
     </div>
   </div>
 </div>
