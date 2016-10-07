@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -30,6 +30,7 @@ public class TransGraphExtension {
   private TransGraph transGraph;
   private MouseEvent event;
   private Point point;
+  private boolean preventDefault;
 
   public TransGraphExtension( TransGraph transGraph, MouseEvent event, Point point ) {
     this.transGraph = transGraph;
@@ -61,4 +62,11 @@ public class TransGraphExtension {
     this.point = point;
   }
 
+  public boolean isPreventDefault() {
+    return preventDefault;
+  }
+
+  public void setPreventDefault( boolean preventDefault ) {
+    this.preventDefault = preventDefault;
+  }
 }
