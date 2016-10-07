@@ -540,6 +540,10 @@ public class TableOutput extends BaseStep implements StepInterface {
         }
         data.db.setCommit( data.commitSize );
 
+        if ( !meta.isPartitioningEnabled() && !meta.isTableNameInField() ) {
+          data.tableName = environmentSubstitute( meta.getTableName() );
+        }
+
         return true;
       } catch ( KettleException e ) {
         logError( "An error occurred intialising this step: " + e.getMessage() );
@@ -552,8 +556,6 @@ public class TableOutput extends BaseStep implements StepInterface {
 
   void truncateTable() throws KettleDatabaseException {
     if ( !meta.isPartitioningEnabled() && !meta.isTableNameInField() ) {
-      data.tableName = environmentSubstitute( meta.getTableName() );
-
       // Only the first one truncates in a non-partitioned step copy
       //
       if ( meta.truncateTable()
