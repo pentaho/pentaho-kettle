@@ -56,11 +56,11 @@ public class RepositoryDialog extends ThinDialog {
   private static final int WIDTH = 630;
   private static final int HEIGHT = 630;
   private static final int OPTIONS = SWT.APPLICATION_MODAL | SWT.DIALOG_TRIM;
-  private static final String CREATION_TITLE = "New Repository Connection";
+  private static final String CREATION_TITLE = BaseMessages.getString( PKG, "RepositoryDialog.Dialog.NewRepo.Title" );
   private static final String CREATION_WEB_CLIENT_PATH = "/repositories/web/index.html";
-  private static final String MANAGER_TITLE = "Repository Manager";
+  private static final String MANAGER_TITLE = BaseMessages.getString( PKG, "RepositoryDialog.Dialog.Manager.Title" );
   private static final String MANAGER_WEB_CLIENT_PATH = "/repositories/web/index.html#repository-manager";
-  private static final String LOGIN_TITLE = "Login to Repository";
+  private static final String LOGIN_TITLE = BaseMessages.getString( PKG, "RepositoryDialog.Dialog.Login.Title" );
   private static final String LOGIN_WEB_CLIENT_PATH = "/repositories/web/index.html#repository-connect";
   private static final String OSGI_SERVICE_PORT = "OSGI_SERVICE_PORT";
   private static final Image LOGO = GUIResource.getInstance().getImageLogoSmall();
@@ -94,14 +94,14 @@ public class RepositoryDialog extends ThinDialog {
         return true;
       }
     };
-    
+
     new BrowserFunction( browser, "setResult" ) {
-      @Override public Object function( Object[] arguments ) {   
+      @Override public Object function( Object[] arguments ) {
         setResult( (boolean) arguments[0] );
         return true;
       }
     };
-    
+
     new BrowserFunction( browser, "getErrorMessage" ) {
       @Override public Object function( Object[] objects ) {
         return errorMessage == null ? "" : errorMessage;
@@ -266,7 +266,7 @@ public class RepositoryDialog extends ThinDialog {
     super.createDialog( CREATION_TITLE, getRepoURL( CREATION_WEB_CLIENT_PATH ), OPTIONS, LOGO );
     open();
   }
-  
+
   public boolean openRelogin( RepositoryMeta repositoryMeta, String errorMessage ) {
     super.createDialog( LOGIN_TITLE, getRepoURL( LOGIN_WEB_CLIENT_PATH ), OPTIONS, LOGO );
     return open( repositoryMeta, true, errorMessage );
@@ -276,7 +276,7 @@ public class RepositoryDialog extends ThinDialog {
     super.createDialog( LOGIN_TITLE, getRepoURL( LOGIN_WEB_CLIENT_PATH ), OPTIONS, LOGO );
     open( repositoryMeta );
   }
-  
+
   private void setResult( boolean result ) {
     this.result = result;
   }

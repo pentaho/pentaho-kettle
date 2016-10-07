@@ -26,7 +26,9 @@ define(
         'angular-route',
         'angular-animate',
         'angular-sanitize',
-        'angular-bootstrap'
+        'angular-bootstrap',
+        'angular-translate',
+        'angular-translate-static-loader'
     ],
 
 function(angular) {
@@ -36,7 +38,8 @@ function(angular) {
     'ngAnimate',
     'ngSanitize',
     'repoConnectionAppControllers',
-    'ui.bootstrap'
+    'ui.bootstrap',
+    'pascalprecht.translate'
   ]);
 
   repoConnectionApp.config(['$routeProvider',
@@ -120,6 +123,21 @@ function(angular) {
         }
       })
     });
+
+  repoConnectionApp.config(['$translateProvider', function ($translateProvider) {
+
+    $translateProvider.useStaticFilesLoader({
+      prefix: 'lang/messages_',
+      suffix: '.properties',
+      fileFormat: 'properties'
+
+    });
+    // TODO: SESSION_LOCALE AS INJECTED VARIABLE INSTEAD OF GLOBAL
+    var SESSION_LOCALE = 'en';
+    $translateProvider.preferredLanguage(SESSION_LOCALE)
+        .fallbackLanguage('en');
+
+  }]);
 
   repoConnectionApp.animation('.to-left', [function() {
     return {
