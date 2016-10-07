@@ -47,6 +47,7 @@ import org.pentaho.di.core.logging.LoggingRegistry;
 import org.pentaho.di.core.plugins.DatabasePluginType;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 
 import java.io.IOException;
@@ -220,6 +221,14 @@ public class ValueMetaBaseTest {
     assertEquals(
       "<value-data>" + encoder.encodeForXML( formater.format( timestamp ) ) + "</value-data>" + SystemUtils.LINE_SEPARATOR,
       valueMetaBaseTimeStamp.getDataXML( timestamp ) );
+
+    byte[] byteTestValues = { 0, 1, 2, 3 };
+    ValueMetaBase valueMetaBaseByteArray = new ValueMetaBase( byteTestValues.toString(), ValueMetaInterface.TYPE_STRING );
+    valueMetaBaseByteArray.setStorageType( ValueMetaInterface.STORAGE_TYPE_BINARY_STRING );
+    assertEquals(
+      "<value-data><binary-string>" + encoder.encodeForXML( XMLHandler.encodeBinaryData( byteTestValues ) )
+        + "</binary-string>" + Const.CR + "</value-data>",
+      valueMetaBaseByteArray.getDataXML( byteTestValues ) );
   }
 
   @Test
