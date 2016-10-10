@@ -23,9 +23,6 @@
 define(
     [
       'angular',
-      'angular-sanitize',
-      'angular-route',
-      'angular-animate',
       'repositories',
       'repositories/models',
       'repositories/controllers'
@@ -35,7 +32,7 @@ define(
         'use strict';
 
         return {
-            name: 'repositoriesMain',
+            name: 'repositories-main',
             init: function(doc) {
               angular.element(doc).ready(function () {
                   angular.bootstrap(doc, ['repo-connection-app']);

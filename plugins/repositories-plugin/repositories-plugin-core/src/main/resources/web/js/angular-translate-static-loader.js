@@ -1,5 +1,5 @@
-define(['angular_1.5.6',
-      'angular-translate_2.12.1'
+define(['angular',
+      'angular-translate'
     ],
 
     function(angular) {

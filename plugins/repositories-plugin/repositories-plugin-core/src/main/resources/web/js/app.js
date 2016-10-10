@@ -26,9 +26,8 @@ define(
         'angular-route',
         'angular-animate',
         'angular-sanitize',
-        'angular-bootstrap',
         'angular-translate',
-        'angular-translate-static-loader'
+        'repositories/angular-translate-static-loader'
     ],
 
 function(angular) {
@@ -38,7 +37,6 @@ function(angular) {
     'ngAnimate',
     'ngSanitize',
     'repoConnectionAppControllers',
-    'ui.bootstrap',
     'pascalprecht.translate'
   ]);
 

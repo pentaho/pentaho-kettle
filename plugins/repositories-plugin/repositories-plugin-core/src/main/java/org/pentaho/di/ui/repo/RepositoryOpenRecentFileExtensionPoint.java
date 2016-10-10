@@ -37,7 +37,7 @@ import org.pentaho.di.ui.spoon.Spoon;
   id = "RepositoryOpenRecentExtensionPoint",
   extensionPointId = "OpenRecent",
   description = "Do or display login for default repository"
-)
+  )
 public class RepositoryOpenRecentFileExtensionPoint implements ExtensionPointInterface {
 
   private RepositoryConnectController repositoryConnectController;
