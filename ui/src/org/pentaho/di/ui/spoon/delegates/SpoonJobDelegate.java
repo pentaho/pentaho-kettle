@@ -1347,6 +1347,7 @@ public class SpoonJobDelegate extends SpoonDelegate {
     executionConfiguration.setStartCopyName( startCopyName );
     executionConfiguration.setStartCopyNr( startCopyNr );
 
+    executionConfiguration.getUsedArguments( jobMeta, spoon.getArguments(), spoon.getMetaStore() );
     executionConfiguration.setLogLevel( DefaultLogLevel.getLogLevel() );
 
     JobExecutionConfigurationDialog dialog =
