@@ -1368,7 +1368,7 @@ public class DataHandler extends AbstractXulEventHandler {
 
     if ( webAppName != null ) {
       if ( Utils.isEmpty( meta.getDatabaseName() ) ) {
-        webAppName.setValue( "pentaho-di" );
+        webAppName.setValue( "pentaho" );
       } else {
         webAppName.setValue( meta.getDatabaseName() );
       }
