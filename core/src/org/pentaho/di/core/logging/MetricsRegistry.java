@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,11 +22,11 @@
 
 package org.pentaho.di.core.logging;
 
-import java.util.Collections;
-import java.util.Deque;
-import java.util.HashMap;
+
 import java.util.Map;
-import java.util.concurrent.LinkedBlockingDeque;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.pentaho.di.core.metrics.MetricsSnapshotInterface;
 
@@ -37,21 +37,18 @@ import org.pentaho.di.core.metrics.MetricsSnapshotInterface;
  *
  */
 public class MetricsRegistry {
-  private static MetricsRegistry registry;
+  private static MetricsRegistry registry = new MetricsRegistry();
 
   private Map<String, Map<String, MetricsSnapshotInterface>> snapshotMaps;
-  private Map<String, Deque<MetricsSnapshotInterface>> snapshotLists;
+  private Map<String, Queue<MetricsSnapshotInterface>> snapshotLists;
 
   public static MetricsRegistry getInstance() {
-    if ( registry == null ) {
-      registry = new MetricsRegistry();
-    }
     return registry;
   }
 
   private MetricsRegistry() {
-    snapshotMaps = new HashMap<String, Map<String, MetricsSnapshotInterface>>();
-    snapshotLists = new HashMap<String, Deque<MetricsSnapshotInterface>>();
+    snapshotMaps = new ConcurrentHashMap<String, Map<String, MetricsSnapshotInterface>>();
+    snapshotLists = new ConcurrentHashMap<String, Queue<MetricsSnapshotInterface>>();
   }
 
   public void addSnapshot( LogChannelInterface logChannel, MetricsSnapshotInterface snapshot ) {
@@ -60,7 +57,7 @@ public class MetricsRegistry {
     switch ( metric.getType() ) {
       case START:
       case STOP:
-        Deque<MetricsSnapshotInterface> list = getSnapshotList( channelId );
+        Queue<MetricsSnapshotInterface> list = getSnapshotList( channelId );
         list.add( snapshot );
 
         break;
@@ -77,7 +74,7 @@ public class MetricsRegistry {
     }
   }
 
-  public Map<String, Deque<MetricsSnapshotInterface>> getSnapshotLists() {
+  public Map<String, Queue<MetricsSnapshotInterface>> getSnapshotLists() {
     return snapshotLists;
   }
 
@@ -92,10 +89,10 @@ public class MetricsRegistry {
    *          The log channel to use.
    * @return an existing or a new metrics snapshot list.
    */
-  public Deque<MetricsSnapshotInterface> getSnapshotList( String logChannelId ) {
-    Deque<MetricsSnapshotInterface> list = snapshotLists.get( logChannelId );
+  public Queue<MetricsSnapshotInterface> getSnapshotList( String logChannelId ) {
+    Queue<MetricsSnapshotInterface> list = snapshotLists.get( logChannelId );
     if ( list == null ) {
-      list = new LinkedBlockingDeque<MetricsSnapshotInterface>();
+      list = new ConcurrentLinkedQueue<MetricsSnapshotInterface>();
       snapshotLists.put( logChannelId, list );
     }
     return list;
@@ -112,7 +109,7 @@ public class MetricsRegistry {
   public Map<String, MetricsSnapshotInterface> getSnapshotMap( String logChannelId ) {
     Map<String, MetricsSnapshotInterface> map = snapshotMaps.get( logChannelId );
     if ( map == null ) {
-      map = Collections.synchronizedMap( new HashMap<String, MetricsSnapshotInterface>() );
+      map = new ConcurrentHashMap<String, MetricsSnapshotInterface>();
       snapshotMaps.put( logChannelId, map );
     }
     return map;
