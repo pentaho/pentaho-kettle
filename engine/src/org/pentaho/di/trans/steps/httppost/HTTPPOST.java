@@ -186,13 +186,10 @@ public class HTTPPOST extends BaseStep implements StepInterface {
           fis = new FileInputStream( input );
           post.setRequestEntity( new InputStreamRequestEntity( fis, input.length() ) );
         } else {
-          if ( ( data.realEncoding != null ) && ( data.realEncoding.length() > 0 ) ) {
-            post.setRequestEntity( new InputStreamRequestEntity( new ByteArrayInputStream( tmp
-                .getBytes( data.realEncoding ) ), tmp.length() ) );
-          } else {
-            post.setRequestEntity( new InputStreamRequestEntity( new ByteArrayInputStream( tmp.getBytes() ), tmp
-                .length() ) );
-          }
+          byte[] bytes = ( data.realEncoding != null ) && ( data.realEncoding.length() > 0 ) ?
+                  tmp.getBytes( data.realEncoding ) :
+                  tmp.getBytes();
+          post.setRequestEntity( new InputStreamRequestEntity( new ByteArrayInputStream( bytes ), bytes.length ) );
         }
       }
 
