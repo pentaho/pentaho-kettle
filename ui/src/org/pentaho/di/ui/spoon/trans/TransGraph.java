@@ -1000,6 +1000,8 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
       TransGraphExtension ext = new TransGraphExtension( null, e, getArea() );
       ExtensionPointHandler.callExtensionPoint( LogChannel.GENERAL, KettleExtensionPoint.TransGraphMouseUp.id, ext );
       if ( ext.isPreventDefault() ) {
+        redraw();
+        clearSettings();
         return;
       }
     } catch ( Exception ex ) {
