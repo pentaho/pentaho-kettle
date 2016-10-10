@@ -3630,7 +3630,7 @@ public class ValueMetaBase implements ValueMetaInterface {
         return getBinary( data );
       default:
         throw new KettleValueException( toString() + " : I can't convert the specified value to data type : "
-            + storageMetadata.getType() );
+            + conversionMetadata.getType() );
     }
   }
 
