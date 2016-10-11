@@ -3448,16 +3448,16 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
       if ( isStopped() ) {
         message = STRING_HALTING;
       } else {
-        if ( isFinished() ) {
-          message = STRING_FINISHED;
-          if ( getResult().getNrErrors() > 0 ) {
-            message += " (with errors)";
-          }
-        } else if ( isPaused() ) {
+         if ( isPaused() ) {
           message = STRING_PAUSED;
         } else {
           message = STRING_RUNNING;
         }
+      }
+    } else if ( isFinished() ) {
+      message = STRING_FINISHED;
+      if ( getResult().getNrErrors() > 0 ) {
+        message += " (with errors)";
       }
     } else if ( isStopped() ) {
       message = STRING_STOPPED;
