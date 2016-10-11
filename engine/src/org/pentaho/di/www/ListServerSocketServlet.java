@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -26,7 +26,6 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -184,8 +183,8 @@ public class ListServerSocketServlet extends BaseHttpServlet implements CartePlu
     out.println( "<BODY>" );
     out.println( "<H1>Ports for host '" + encoder.encodeForHTML( hostname ) + "'</H1>" );
 
-    Map<String, List<SocketPortAllocation>> portsMap = getTransformationMap().getHostServerSocketPortsMap();
-    List<SocketPortAllocation> allocations = portsMap.get( hostname );
+    List<SocketPortAllocation> allocations = getTransformationMap().getHostServerSocketPorts( hostname );
+
     if ( allocations == null ) {
       out.println( "No port allocations found for host '" + encoder.encodeForHTML( hostname ) + "'" );
       return;
