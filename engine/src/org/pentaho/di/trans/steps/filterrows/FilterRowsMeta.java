@@ -33,7 +33,10 @@ import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
+import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.injection.Injection;
+import org.pentaho.di.core.injection.InjectionSupported;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaAndData;
 import org.pentaho.di.core.row.ValueMetaInterface;
@@ -62,7 +65,7 @@ import org.w3c.dom.Node;
  * Created on 02-jun-2003
  *
  */
-
+@InjectionSupported( localizationPrefix = "FilterRowsMeta.Injection." )
 public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = FilterRowsMeta.class; // for i18n purposes, needed by Translator2!!
 
@@ -73,9 +76,13 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface {
    */
   private Condition condition;
 
+  @Injection( name = "SEND_TRUE_STEP" )
   private String trueStepname;
 
+  @Injection( name = "SEND_FALSE_STEP" )
   private String falseStepname;
+
+  private String conditionXML;
 
   public FilterRowsMeta() {
     super(); // allocate BaseStepMeta
@@ -457,5 +464,24 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface {
 
   public void setFalseStepname( String falseStepname ) {
     this.falseStepname = falseStepname;
+  }
+
+  public String getConditionXML() {
+    try {
+      conditionXML = condition.getXML();
+    } catch ( KettleValueException e ) {
+      log.logError( e.getMessage() );
+    }
+    return conditionXML;
+  }
+
+  @Injection( name = "CONDITION" )
+  public void setConditionXML( String conditionXML ) {
+    try  {
+      this.condition = new Condition( conditionXML );
+      this.conditionXML = conditionXML;
+    } catch ( KettleXMLException e ) {
+      log.logError( e.getMessage() );
+    }
   }
 }
