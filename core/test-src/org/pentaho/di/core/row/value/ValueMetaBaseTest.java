@@ -37,6 +37,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.sql.Types;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -623,6 +624,59 @@ public class ValueMetaBaseTest {
       Assert.assertNull( clazz );
     }
   }
+
+  @Test
+  public void testConvertDataUsingConversionMetaDataForCustomMeta() {
+    ValueMetaBase baseMeta = new ValueMetaBase( "CUSTOM_VALUEMETA_STRING", ValueMetaInterface.TYPE_STRING );
+    baseMeta.setConversionMetadata( new ValueMetaBase( "CUSTOM", 999 ) );
+    Object customData = new Object();
+    try {
+      baseMeta.convertDataUsingConversionMetaData( customData );
+      Assert.fail( "Should have thrown a Kettle Value Exception with a proper message. Not a NPE stack trace" );
+    } catch ( KettleValueException e ) {
+      String expectedMessage = "CUSTOM_VALUEMETA_STRING String : I can't convert the specified value to data type : 999";
+      assertEquals( expectedMessage, e.getMessage().trim() );
+    }
+  }
+
+  @Test
+  public void testConvertDataUsingConversionMetaData() throws KettleValueException, ParseException {
+    ValueMetaString base = new ValueMetaString();
+    double DELTA = 1e-15;
+
+    base.setConversionMetadata( new ValueMetaString( "STRING" ) );
+    Object defaultStringData = "STRING DATA";
+    String convertedStringData = (String) base.convertDataUsingConversionMetaData( defaultStringData );
+    assertEquals( "STRING DATA", convertedStringData );
+
+    base.setConversionMetadata( new ValueMetaInteger( "INTEGER" ) );
+    Object defaultIntegerData = "1";
+    long convertedIntegerData = (long) base.convertDataUsingConversionMetaData( defaultIntegerData );
+    assertEquals( 1, convertedIntegerData );
+
+
+    base.setConversionMetadata( new ValueMetaNumber( "NUMBER" ) );
+    Object defaultNumberData = "1.999";
+    double convertedNumberData = (double) base.convertDataUsingConversionMetaData( defaultNumberData );
+    assertEquals( 1.999, convertedNumberData, DELTA );
+
+    base.setConversionMetadata( new ValueMetaDate( "DATE" ) );
+    Object defaultDateData = "1990/02/18 00:00:00.000";
+    Date date1 = new Date( 635320800000L );
+    Date convertedDateData = (Date) base.convertDataUsingConversionMetaData( defaultDateData );
+    assertEquals( date1, convertedDateData );
+
+    base.setConversionMetadata( new ValueMetaBigNumber( "BIG_NUMBER" ) );
+    Object defaultBigNumber = String.valueOf( BigDecimal.ONE );
+    BigDecimal convertedBigNumber = (BigDecimal) base.convertDataUsingConversionMetaData( defaultBigNumber );
+    assertEquals( BigDecimal.ONE, convertedBigNumber );
+
+    base.setConversionMetadata( new ValueMetaBoolean( "BOOLEAN" ) );
+    Object defaultBoolean = "true";
+    boolean convertedBoolean = (boolean) base.convertDataUsingConversionMetaData( defaultBoolean );
+    assertEquals( true, convertedBoolean );
+  }
+
 
   private class StoreLoggingEventListener implements KettleLoggingEventListener {
 
