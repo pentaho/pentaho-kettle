@@ -36,7 +36,7 @@ public class RepositorySessionTimeoutHandler implements InvocationHandler {
 
   private static Class<?> PKG = RepositorySessionTimeoutHandler.class;
 
-  private static int STACK_ELEMENTS_TO_SKIP = 3;
+  private static final int STACK_ELEMENTS_TO_SKIP = 3;
 
   private static final String EXCEPTION_CLASS_NAME = "ClientTransportException";
 
@@ -59,7 +59,7 @@ public class RepositorySessionTimeoutHandler implements InvocationHandler {
     try {
       return method.invoke( repository, args );
     } catch ( InvocationTargetException ex ) {
-      if ( lookupForConnectTimeoutError( ex ) && !calledFromThisHandler() ) {
+      if ( connectedToRepository() && lookupForConnectTimeoutError( ex ) && !calledFromThisHandler() ) {
         try {
           return method.invoke( repository, args );
         } catch ( InvocationTargetException ex2 ) {
@@ -118,6 +118,10 @@ public class RepositorySessionTimeoutHandler implements InvocationHandler {
       }
     }
     return false;
+  }
+
+  boolean connectedToRepository() {
+    return repository.isConnected();
   }
 
   private Spoon getSpoon() {
