@@ -255,7 +255,7 @@ public class DataHandlerTest {
     dataHandler.getData();
     dataHandler.pushCache();
     dataHandler.popCache();
-    verify( webappName ).setValue( "pentaho-di" );
+    verify( webappName ).setValue( "pentaho" );
   }
 
   @Test
