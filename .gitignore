@@ -22,4 +22,6 @@ build-res/module-scripts/
 *.war
 *.ear
 *.iml
+*.ipr
+/.idea/
 /*.launch
