@@ -24,11 +24,16 @@ package org.pentaho.di.ui.repo;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.pentaho.di.repository.KettleRepositoryLostException;
 import org.pentaho.di.repository.ReconnectableRepository;
+import org.pentaho.metastore.api.IMetaStore;
 
 public class RepositorySessionTimeoutHandlerTest {
 
@@ -55,6 +60,19 @@ public class RepositorySessionTimeoutHandlerTest {
   public void connectedToRepositoryReturnsFalse() {
     when( repository.isConnected() ).thenReturn( false );
     assertFalse( timeoutHandler.connectedToRepository() );
+  }
+
+  @Test
+  public void wrapMetastoreWithTimeoutHandler() throws Throwable {
+    IMetaStore metaStore = mock( IMetaStore.class );
+    doThrow( KettleRepositoryLostException.class ).when( metaStore ).createNamespace( any() );
+    SessionTimeoutHandler sessionTimeoutHandler = mock( SessionTimeoutHandler.class );
+    IMetaStore wrappedMetaStore =
+        RepositorySessionTimeoutHandler.wrapMetastoreWithTimeoutHandler( metaStore, sessionTimeoutHandler );
+
+    wrappedMetaStore.createNamespace( "TEST_NAMESPACE" );
+
+    verify( sessionTimeoutHandler ).handle( any(), any(), any(), any() );
   }
 
 }

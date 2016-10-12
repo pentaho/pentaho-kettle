@@ -25,107 +25,62 @@ package org.pentaho.di.ui.repo;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.lang.reflect.Proxy;
+import java.util.List;
 
-import org.pentaho.di.i18n.BaseMessages;
+import org.apache.commons.lang.ClassUtils;
 import org.pentaho.di.repository.ReconnectableRepository;
-import org.pentaho.di.repository.RepositoryMeta;
-import org.pentaho.di.ui.spoon.Spoon;
+import org.pentaho.metastore.api.IMetaStore;
 
 public class RepositorySessionTimeoutHandler implements InvocationHandler {
 
-  private static Class<?> PKG = RepositorySessionTimeoutHandler.class;
+  private static final String CONNECT_METHOD_NAME = "connect";
 
-  private static final int STACK_ELEMENTS_TO_SKIP = 3;
-
-  private static final String EXCEPTION_CLASS_NAME = "ClientTransportException";
+  private static final String GET_META_STORE_METHOD_NAME = "getMetaStore";
 
   private final ReconnectableRepository repository;
 
-  private final RepositoryConnectController repositoryConnectController;
+  private final SessionTimeoutHandler sessionTimeoutHandler;
 
-  private final AtomicBoolean needToLogin = new AtomicBoolean( false );
-
-  private final AtomicBoolean reinvoke = new AtomicBoolean( false );
+  private IMetaStore metaStoreInstance;
 
   public RepositorySessionTimeoutHandler( ReconnectableRepository repository,
       RepositoryConnectController repositoryConnectController ) {
     this.repository = repository;
-    this.repositoryConnectController = repositoryConnectController;
+    sessionTimeoutHandler = new SessionTimeoutHandler( repositoryConnectController );
   }
 
   @Override
   public Object invoke( Object proxy, Method method, Object[] args ) throws Throwable {
     try {
-      return method.invoke( repository, args );
+      if ( GET_META_STORE_METHOD_NAME.equals( method.getName() ) ) {
+        return metaStoreInstance;
+      }
+      Object result = method.invoke( repository, args );
+      if ( CONNECT_METHOD_NAME.equals( method.getName() ) ) {
+        IMetaStore metaStore = repository.getMetaStore();
+        metaStoreInstance = wrapMetastoreWithTimeoutHandler( metaStore, sessionTimeoutHandler );
+      }
+      return result;
     } catch ( InvocationTargetException ex ) {
-      if ( connectedToRepository() && lookupForConnectTimeoutError( ex ) && !calledFromThisHandler() ) {
-        try {
-          return method.invoke( repository, args );
-        } catch ( InvocationTargetException ex2 ) {
-          if ( !lookupForConnectTimeoutError( ex2 ) ) {
-            throw ex2.getCause();
-          }
-        }
-        needToLogin.set( true );
-        synchronized ( this ) {
-          if ( needToLogin.get() ) {
-            boolean result = showLoginScreen( repositoryConnectController );
-            needToLogin.set( false );
-            if ( result ) {
-              reinvoke.set( true );
-              return method.invoke( repository, args );
-            }
-            reinvoke.set( false );
-          }
-        }
-        if ( reinvoke.get() ) {
-          return method.invoke( repository, args );
-        }
+      if ( connectedToRepository() ) {
+        return sessionTimeoutHandler.handle( repository, ex.getCause(), method, args );
       }
       throw ex.getCause();
     }
-  }
-
-  private boolean showLoginScreen( RepositoryConnectController repositoryConnectController ) {
-    String message = BaseMessages.getString( PKG, "Repository.Reconnection.Message" );
-    RepositoryDialog loginDialog = new RepositoryDialog( getSpoon().getShell(), repositoryConnectController );
-    RepositoryMeta repositoryMeta = repositoryConnectController.getConnectedRepository();
-    return loginDialog.openRelogin( repositoryMeta, message );
-  }
-
-  private boolean lookupForConnectTimeoutError( Throwable root ) {
-    while ( root != null ) {
-      if ( EXCEPTION_CLASS_NAME.equals( root.getClass().getSimpleName() ) ) {
-        String errorMessage = root.getMessage();
-        if ( errorMessage.contains( RepositoryConnectController.ERROR_401 ) ) {
-          return true;
-        } else {
-          return false;
-        }
-      } else {
-        root = root.getCause();
-      }
-    }
-    return false;
-  }
-
-  private boolean calledFromThisHandler() {
-    StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
-    for ( int i = STACK_ELEMENTS_TO_SKIP; i < stackTrace.length; i++ ) {
-      if ( stackTrace[i].getClassName().equals( RepositorySessionTimeoutHandler.class.getCanonicalName() ) ) {
-        return true;
-      }
-    }
-    return false;
   }
 
   boolean connectedToRepository() {
     return repository.isConnected();
   }
 
-  private Spoon getSpoon() {
-    return Spoon.getInstance();
+  @SuppressWarnings( "unchecked" )
+  static IMetaStore wrapMetastoreWithTimeoutHandler( IMetaStore metaStore,
+      SessionTimeoutHandler sessionTimeoutHandler ) {
+    List<Class<?>> metaStoreIntrerfaces = ClassUtils.getAllInterfaces( metaStore.getClass() );
+    Class<?>[] metaStoreIntrerfacesArray = metaStoreIntrerfaces.toArray( new Class<?>[metaStoreIntrerfaces.size()] );
+    return (IMetaStore) Proxy.newProxyInstance( metaStore.getClass().getClassLoader(), metaStoreIntrerfacesArray,
+        new MetaStoreSessionTimeoutHandler( metaStore, sessionTimeoutHandler ) );
   }
 
 }
