@@ -101,7 +101,7 @@ public final class ExpandedContentManager {
           boolean copyContent = state == SWT.CTRL && key == SWT.F6,
               arrowNavigation = ( state == SWT.COMMAND || state == SWT.ALT )
                   && ( key == SWT.ARROW_LEFT || key == SWT.ARROW_RIGHT ),
-              backslashNavigation = ( state == SWT.SHIFT && key == SWT.BS ) || key == SWT.BS,
+              backslashNavigation = ( state == SWT.SHIFT && key == SWT.BS ),
               reloadContent = state == SWT.CTRL && ( key == SWT.F5 || key == 114 /* r key */ ) || key == SWT.F5,
               zoomContent = state == SWT.CTRL && ( key == SWT.KEYPAD_ADD || key == SWT.KEYPAD_SUBTRACT
                   || key == 61 /* + key */ || key == 45 /* - key */ );
