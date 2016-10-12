@@ -21,31 +21,6 @@
  ******************************************************************************/
 package org.pentaho.di.core.row.value;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
-import java.io.IOException;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.math.BigDecimal;
-import java.net.InetAddress;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.Time;
-import java.sql.Timestamp;
-import java.sql.Types;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.List;
-import java.util.TimeZone;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.SystemUtils;
 import org.junit.After;
@@ -74,6 +49,28 @@ import org.pentaho.di.core.plugins.DatabasePluginType;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
+
+import java.io.IOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.math.BigDecimal;
+import java.net.InetAddress;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.Time;
+import java.sql.Timestamp;
+import java.sql.Types;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.List;
+import java.util.TimeZone;
+
+import static org.junit.Assert.*;
 
 public class ValueMetaBaseTest {
 
@@ -660,7 +657,9 @@ public class ValueMetaBaseTest {
     double convertedNumberData = (double) base.convertDataUsingConversionMetaData( defaultNumberData );
     assertEquals( 1.999, convertedNumberData, DELTA );
 
-    base.setConversionMetadata( new ValueMetaDate( "DATE" ) );
+    ValueMetaInterface dateConversionMeta = new ValueMetaDate( "DATE" );
+    dateConversionMeta.setDateFormatTimeZone( TimeZone.getTimeZone( "CST" ) );
+    base.setConversionMetadata( dateConversionMeta );
     Object defaultDateData = "1990/02/18 00:00:00.000";
     Date date1 = new Date( 635320800000L );
     Date convertedDateData = (Date) base.convertDataUsingConversionMetaData( defaultDateData );
