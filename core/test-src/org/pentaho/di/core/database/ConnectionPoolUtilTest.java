@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,13 +22,17 @@
 
 package org.pentaho.di.core.database;
 
+import org.apache.commons.dbcp.BasicDataSource;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
+import org.junit.runner.RunWith;
+import org.mockito.Answers;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 import org.pentaho.di.core.KettleClientEnvironment;
+import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannelInterface;
 
@@ -41,19 +45,24 @@ import java.sql.SQLFeatureNotSupportedException;
 import java.util.Properties;
 import java.util.logging.Logger;
 
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 
 
 /**
  * User: Dzmitry Stsiapanau Date: 12/11/13 Time: 1:59 PM
  */
+@RunWith( MockitoJUnitRunner.class )
 public class ConnectionPoolUtilTest implements Driver {
   private static final String PASSWORD = "manager";
   private static final String ENCR_PASSWORD = "Encrypted 2be98afc86aa7f2e4cb14af7edf95aac8";
-  LogChannelInterface logChannelInterface;
-  DatabaseMeta dbMeta;
+  @Mock( answer = Answers.RETURNS_MOCKS ) LogChannelInterface logChannelInterface;
+  @Mock( answer = Answers.RETURNS_MOCKS ) DatabaseMeta dbMeta;
+  @Mock BasicDataSource dataSource;
+  final int INITIAL_SIZE = 1;
+  final int MAX_SIZE = 10;
+
 
   public ConnectionPoolUtilTest() {
     try {
@@ -70,16 +79,10 @@ public class ConnectionPoolUtilTest implements Driver {
 
   @Before
   public void setUp() throws Exception {
-    logChannelInterface = mock( LogChannelInterface.class, RETURNS_MOCKS );
-    dbMeta = mock( DatabaseMeta.class, RETURNS_MOCKS );
     when( dbMeta.getDriverClass() ).thenReturn( this.getClass().getCanonicalName() );
     when( dbMeta.getConnectionPoolingProperties() ).thenReturn( new Properties() );
-    when( dbMeta.environmentSubstitute( anyString() ) ).thenAnswer( new Answer<Object>() {
-      @Override
-      public Object answer( InvocationOnMock invocation ) throws Throwable {
-        return invocation.getArguments()[0];
-      }
-    } );
+    when( dbMeta.environmentSubstitute( anyString() ) ).thenAnswer(
+      invocation -> invocation.getArguments()[0] );
   }
 
   @After
@@ -124,6 +127,32 @@ public class ConnectionPoolUtilTest implements Driver {
     when( dbMeta.getDatabasePortNumberString() ).thenReturn( "3306" );
     connectionName = ConnectionPoolUtil.buildPoolName( dbMeta, "" );
     assertTrue( connectionName.equals( "CP2pentaholocal3306" ) );
+  }
+
+  @Test
+  public void testConfigureDataSource() throws KettleDatabaseException {
+    when( dbMeta.getURL( "partId" ) ).thenReturn( "jdbc:foo://server:111" );
+    when( dbMeta.getUsername() ).thenReturn( "suzy" );
+    when( dbMeta.getPassword() ).thenReturn( "password" );
+
+    ConnectionPoolUtil.configureDataSource(
+      dataSource, dbMeta, "partId", INITIAL_SIZE, MAX_SIZE );
+
+    verify( dataSource ).setDriverClassName( "org.pentaho.di.core.database.ConnectionPoolUtilTest" );
+    verify( dataSource ).setDriverClassLoader( any( ClassLoader.class ) );
+    verify( dataSource ).setUrl( "jdbc:foo://server:111" );
+    verify( dataSource ).addConnectionProperty( "user", "suzy" );
+    verify( dataSource ).addConnectionProperty( "password", "password" );
+    verify( dataSource ).setInitialSize( INITIAL_SIZE );
+    verify( dataSource ).setMaxActive( MAX_SIZE );
+  }
+
+  @Test
+  public void testConfigureDataSourceWhenNoDatabaseInterface() throws KettleDatabaseException {
+    when( dbMeta.getDatabaseInterface() ).thenReturn( null );
+    ConnectionPoolUtil.configureDataSource(
+      dataSource, dbMeta, "partId", INITIAL_SIZE, MAX_SIZE );
+    verify( dataSource, never() ).setDriverClassLoader( any( ClassLoader.class ) );
   }
 
   @Override
