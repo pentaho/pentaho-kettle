@@ -33,6 +33,8 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.injection.Injection;
+import org.pentaho.di.core.injection.InjectionSupported;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -53,18 +55,22 @@ import org.w3c.dom.Node;
  * Created on 02-jun-2003
  *
  */
-
+@InjectionSupported( localizationPrefix = "JoinRows.Injection." )
 public class JoinRowsMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = JoinRowsMeta.class; // for i18n purposes, needed by Translator2!!
 
+  @Injection( name = "TEMP_DIR" )
   private String directory;
+  @Injection( name = "TEMP_FILE_PREFIX" )
   private String prefix;
+  @Injection( name = "MAX_CACHE_SIZE" )
   private int cacheSize;
 
   /** Which step is providing the lookup data? */
   private StepMeta mainStep;
 
   /** Which step is providing the lookup data? */
+  @Injection( name = "MAIN_STEP" )
   private String mainStepname;
 
   /** Optional condition to limit the join (where clause) */
@@ -158,6 +164,11 @@ public class JoinRowsMeta extends BaseStepMeta implements StepMetaInterface {
    */
   public void setCondition( Condition condition ) {
     this.condition = condition;
+  }
+
+  @Injection( name = "CONDITION" )
+  public void setCondition( String conditionXML ) throws Exception {
+    condition = new Condition( conditionXML );
   }
 
   public JoinRowsMeta() {
