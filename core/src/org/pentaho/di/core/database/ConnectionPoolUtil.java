@@ -22,6 +22,7 @@
 
 package org.pentaho.di.core.database;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
@@ -125,7 +126,8 @@ public class ConnectionPoolUtil {
     return properties;
   }
 
-  private static void configureDataSource( BasicDataSource ds, DatabaseMeta databaseMeta, String partitionId,
+  @VisibleForTesting
+  static void configureDataSource( BasicDataSource ds, DatabaseMeta databaseMeta, String partitionId,
       int initialSize, int maximumSize ) throws KettleDatabaseException {
     // substitute variables and populate pool properties; add credentials
     Properties connectionPoolProperties = new Properties( databaseMeta.getConnectionPoolingProperties() );
@@ -137,8 +139,10 @@ public class ConnectionPoolUtil {
     String url = databaseMeta.environmentSubstitute( databaseMeta.getURL( partitionId ) );
     ds.setUrl( url );
     String clazz = databaseMeta.getDriverClass();
+    if ( databaseMeta.getDatabaseInterface() != null ) {
+      ds.setDriverClassLoader( databaseMeta.getDatabaseInterface().getClass().getClassLoader() );
+    }
     ds.setDriverClassName( clazz );
-
   }
 
   private static void setCredentials( BasicDataSource ds, DatabaseMeta databaseMeta, String partitionId )
