@@ -1079,7 +1079,7 @@ public class JobEntryFTPPUTDialog extends JobEntryDialog implements JobEntryDial
     }
 
     wServerName.setText( Const.NVL( jobEntry.getServerName(), "" ) );
-    wServerPort.setText( jobEntry.getServerPort() );
+    wServerPort.setText( Const.NVL( jobEntry.getServerPort(), "" ) );
     wUserName.setText( Const.NVL( jobEntry.getUserName(), "" ) );
     wPassword.setText( Const.NVL( jobEntry.getPassword(), "" ) );
     wRemoteDirectory.setText( Const.NVL( jobEntry.getRemoteDirectory(), "" ) );
