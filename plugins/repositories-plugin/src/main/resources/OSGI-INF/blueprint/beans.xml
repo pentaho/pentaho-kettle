@@ -25,6 +25,12 @@
     <pen:di-plugin type="org.pentaho.di.core.extension.ExtensionPointPluginType"/>
   </bean>
 
+  <bean id="requestLoginToRepositoryExtensionPoint" scope="singleton"
+        class="org.pentaho.di.ui.repo.RequestLoginToRepositoryExtensionPoint">
+    <argument ref="repositoryConnectController"/>
+    <pen:di-plugin type="org.pentaho.di.core.extension.ExtensionPointPluginType"/>
+  </bean>
+
   <!-- Actual Plugin Class PluginInterface, references the Spoon Plugin above -->
   <bean id="repositoriesPlugin" class="org.pentaho.di.osgi.OSGIPlugin">
     <property name="mainType" value="org.pentaho.di.ui.spoon.SpoonPluginInterface"/>

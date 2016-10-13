@@ -272,9 +272,9 @@ public class RepositoryDialog extends ThinDialog {
     return open( repositoryMeta, true, errorMessage );
   }
 
-  public void openLogin( RepositoryMeta repositoryMeta ) {
+  public boolean openLogin( RepositoryMeta repositoryMeta ) {
     super.createDialog( LOGIN_TITLE, getRepoURL( LOGIN_WEB_CLIENT_PATH ), OPTIONS, LOGO );
-    open( repositoryMeta );
+    return open( repositoryMeta );
   }
 
   private void setResult( boolean result ) {
