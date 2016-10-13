@@ -114,6 +114,7 @@ public enum KettleExtensionPoint {
 
     RepositoryImporterPatchTransStep( "RepositoryImporterPatchTransStep", "Patch the step in a transformation during repository import" ),
     RepositoryExporterPatchTransStep( "RepositoryExporterPatchTransStep", "Patch the step in a transformation during repository export" ),
+    RequestLoginToRepository( "RequestLoginToRepository", "Request to login into repository" ),
 
     OpenMapping( "OpenMapping", "Trigger when opening a mapping from TransGraph" ),
 
