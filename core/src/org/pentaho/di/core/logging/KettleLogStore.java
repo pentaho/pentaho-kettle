@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -34,8 +34,8 @@ import org.pentaho.di.core.util.EnvUtil;
 
 public class KettleLogStore {
 
-  public static final PrintStream OriginalSystemOut = System.out;
-  public static final PrintStream OriginalSystemErr = System.err;
+  public static PrintStream OriginalSystemOut = System.out;
+  public static PrintStream OriginalSystemErr = System.err;
 
   private static KettleLogStore store;
 
