@@ -2307,6 +2307,9 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
    * @return the executingServer
    */
   public String getExecutingServer() {
+    if ( executingServer == null ) {
+      setExecutingServer( Const.getHostname() );
+    }
     return executingServer;
   }
 
