@@ -76,10 +76,8 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface {
    */
   private Condition condition;
 
-  @Injection( name = "SEND_TRUE_STEP" )
   private String trueStepname;
 
-  @Injection( name = "SEND_FALSE_STEP" )
   private String falseStepname;
 
   private String conditionXML;
@@ -454,16 +452,22 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface {
     return trueStepname;
   }
 
+  @Injection( name = "SEND_TRUE_STEP" )
   public void setTrueStepname( String trueStepname ) {
     this.trueStepname = trueStepname;
+    List<StreamInterface> targetStreams = getStepIOMeta().getTargetStreams();
+    targetStreams.get( 0 ).setSubject( trueStepname );
   }
 
   public String getFalseStepname() {
     return falseStepname;
   }
 
+  @Injection( name = "SEND_FALSE_STEP" )
   public void setFalseStepname( String falseStepname ) {
     this.falseStepname = falseStepname;
+    List<StreamInterface> targetStreams = getStepIOMeta().getTargetStreams();
+    targetStreams.get( 1 ).setSubject( falseStepname );
   }
 
   public String getConditionXML() {
