@@ -25,6 +25,9 @@ package org.pentaho.di.ui.spoon.delegates;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -85,10 +88,25 @@ public class SpoonTabsDelegate extends SpoonDelegate {
   private HashMap<String, FileOutputStream> itemOutputMap = new HashMap<String, FileOutputStream>();
   private HashMap<String, PrintStream> itemPrintStreamOutMap = new HashMap<String, PrintStream>();
   private HashMap<String, PrintStream> itemPrintStreamErrMap = new HashMap<String, PrintStream>();
+  private HashMap<String, File> itemLogFilesMap = new HashMap<String, File>();
 
   public SpoonTabsDelegate( Spoon spoon ) {
     super( spoon );
     tabMap = new ArrayList<TabMapEntry>();
+
+    Runtime.getRuntime().addShutdownHook( new Thread() {
+      public void run() {
+        for ( String key : itemOutputMap.keySet() ) {
+          IOUtils.closeQuietly( itemOutputMap.get( key ) );
+          IOUtils.closeQuietly( itemPrintStreamOutMap.get( key ) );
+          IOUtils.closeQuietly( itemPrintStreamErrMap.get( key ) );
+          try {
+            itemLogFilesMap.get( key ).delete();
+          } catch ( Throwable ignored ) {
+          }
+        }
+      }
+    } );
   }
 
   public boolean tabClose( TabItem item ) throws KettleException {
@@ -190,10 +208,18 @@ public class SpoonTabsDelegate extends SpoonDelegate {
     }
 
     if ( close ) {
-      IOUtils.closeQuietly( itemOutputMap.get( item.getText() ) );
-      itemOutputMap.remove( item.getText() );
-      itemPrintStreamOutMap.remove( item.getText() );
-      itemPrintStreamErrMap.remove( item.getText() );
+      try {
+        System.setOut( originalSystemOut );
+        System.setErr( originalSystemErr );
+        KettleLogStore.OriginalSystemOut = System.out;
+        KettleLogStore.OriginalSystemErr = System.err;
+        IOUtils.closeQuietly( itemOutputMap.get( item.getText() ) );
+        itemLogFilesMap.get( item.getText() ).delete();
+        itemOutputMap.remove( item.getText() );
+        itemPrintStreamOutMap.remove( item.getText() );
+        itemPrintStreamErrMap.remove( item.getText() );
+      } catch ( Throwable ignored ) {
+      }
     }
 
     return close;
@@ -478,25 +504,35 @@ public class SpoonTabsDelegate extends SpoonDelegate {
   }
 
   private String configureFileLogging( TabItem item ) {
-    String logDir = System.getProperty( "user.dir" ) + File.separator + "logs";
-    String logPath = logDir + File.separator + item.getText().replaceAll( "[^a-zA-Z0-9\\._]+", "_" ) + ".log";
-    try {
-      new File( logDir ).mkdirs();
-      if ( itemOutputMap.get( item.getText() ) == null ) {
-        File log = new File( logPath );
-        log.deleteOnExit();
-        FileOutputStream fos = new FileOutputStream( log, true );
-        TeeOutputStream tOut = new TeeOutputStream( originalSystemOut, fos );
-        TeeOutputStream tErr = new TeeOutputStream( originalSystemErr, fos );
-        itemOutputMap.put( item.getText(), fos );
-        itemPrintStreamOutMap.put( item.getText(), new PrintStream( tOut ) );
-        itemPrintStreamErrMap.put( item.getText(), new PrintStream( tErr ) );
+    String logPath = null;
+    boolean doLog = !Boolean.getBoolean( Const.INTERNAL_VARIABLE_PREFIX + ".Kettle.UI.Log.Disabled" );
+    if ( doLog ) {
+      try {
+        if ( itemOutputMap.get( item.getText() ) == null ) {
+          // sanitize filename
+          String safeName = item.getText().replaceAll( "[^a-zA-Z0-9\\._]+", "_" ) + ".log";
+          // create parent folder
+          Path parent = Paths.get( System.getProperty( "user.dir" ) + File.separator + "logs" );
+          Files.createDirectories( parent );
+          // create file
+          Path path = Files.createFile( Paths.get( parent.toString(), safeName ) );
+          final File log = path.toFile();
+          itemLogFilesMap.put( item.getText(), log );
+          log.deleteOnExit();
+          logPath = log.getAbsolutePath();
+          final FileOutputStream fos = new FileOutputStream( log, true );
+          TeeOutputStream tOut = new TeeOutputStream( originalSystemOut, fos );
+          TeeOutputStream tErr = new TeeOutputStream( originalSystemErr, fos );
+          itemOutputMap.put( item.getText(), fos );
+          itemPrintStreamOutMap.put( item.getText(), new PrintStream( tOut ) );
+          itemPrintStreamErrMap.put( item.getText(), new PrintStream( tErr ) );
+        }
+        System.setOut( itemPrintStreamOutMap.get( item.getText() ) );
+        System.setErr( itemPrintStreamErrMap.get( item.getText() ) );
+        KettleLogStore.OriginalSystemOut = System.out;
+        KettleLogStore.OriginalSystemErr = System.err;
+      } catch ( Throwable ignored ) {
       }
-      System.setOut( itemPrintStreamOutMap.get( item.getText() ) );
-      System.setErr( itemPrintStreamErrMap.get( item.getText() ) );
-      KettleLogStore.OriginalSystemOut = System.out;
-      KettleLogStore.OriginalSystemErr = System.err;
-    } catch ( Throwable ignored ) {
     }
     return logPath;
   }
