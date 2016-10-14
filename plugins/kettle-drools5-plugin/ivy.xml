@@ -22,9 +22,9 @@
     <dependency org="pentaho-kettle" name="kettle-engine" rev="${dependency.kettle.revision}" changing="true"/>
     <dependency org="pentaho-kettle" name="kettle-ui-swt" rev="${dependency.kettle.revision}" changing="true"/>
 
-    <dependency org="org.drools" name="drools-api" rev="5.0.1" conf="default->default" transitive="false"/>
-    <dependency org="org.drools" name="drools-core" rev="5.0.1" conf="default->default" transitive="false"/>
-    <dependency org="org.drools" name="drools-compiler" rev="5.0.1" conf="default->default" transitive="false"/>
+    <dependency org="org.drools" name="knowledge-api" rev="6.4.0.Final" conf="default->default" transitive="false"/>
+    <dependency org="org.drools" name="drools-core" rev="6.4.0.Final" conf="default->default" transitive="false"/>
+    <dependency org="org.drools" name="drools-compiler" rev="6.4.0.Final" conf="default->default" transitive="false"/>
     <dependency org="org.mvel" name="mvel2" rev="2.0.10" conf="default->default" transitive="false"/>
     <dependency org="org.eclipse.jdt" name="core" rev="3.4.2.v_883_R34x" conf="default->default" transitive="false"/>
     <!--
