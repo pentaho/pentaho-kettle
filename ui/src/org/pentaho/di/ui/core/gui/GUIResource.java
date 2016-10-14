@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -1018,13 +1018,13 @@ public class GUIResource {
       loadAsResource( display, BasePropertyHandler.getProperty( "VersionBrowser_image" ), ConstUI.SMALL_ICON_SIZE );
 
     // "ui/images/generic-new.png;
-    imageNew = loadAsResource( display, BasePropertyHandler.getProperty( "New_image" ), ConstUI.SMALL_ICON_SIZE );
+    imageNew = loadAsResource( display, BasePropertyHandler.getProperty( "Add_image" ), ConstUI.SMALL_ICON_SIZE );
 
     // "ui/images/generic-edit.png;
-    imageEdit = SwtSvgImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Edit_image" ) );
+    imageEdit = SwtSvgImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "EditSmall_image" ) );
 
     // "ui/images/generic-delete.png;
-    imageDelete = loadAsResource( display, BasePropertyHandler.getProperty( "Delete_image" ), ConstUI.SMALL_ICON_SIZE );
+    imageDelete = loadAsResource( display, BasePropertyHandler.getProperty( "DeleteOriginal_image" ), ConstUI.SMALL_ICON_SIZE );
 
     // "ui/images/show-deleted.png;
     imageShowDeleted =
