@@ -5226,6 +5226,9 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
    */
   @Override
   public String getExecutingServer() {
+    if ( executingServer == null ) {
+      setExecutingServer( Const.getHostname() );
+    }
     return executingServer;
   }
 
