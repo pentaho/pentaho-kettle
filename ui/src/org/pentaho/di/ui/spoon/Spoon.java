@@ -7298,6 +7298,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       delegates.trans.undoTransformationAction( (TransMeta) undoInterface, ta );
       if ( ta.getType() == TransAction.TYPE_ACTION_DELETE_STEP ) {
         setUndoMenu( undoInterface ); // something changed: change the menu
+        handleSelectedStepOnUndo( (TransMeta) undoInterface );
         ta = undoInterface.viewPreviousUndo();
         if ( ta != null && ta.getType() == TransAction.TYPE_ACTION_DELETE_HOP ) {
           ta = undoInterface.previousUndo();
@@ -7440,6 +7441,12 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   public void addUndoChange( UndoInterface undoInterface, Object[] from, Object[] to, int[] pos, boolean nextAlso ) {
     undoInterface.addUndo( from, to, pos, null, null, JobMeta.TYPE_UNDO_CHANGE, nextAlso );
     setUndoMenu( undoInterface );
+  }
+
+  private void handleSelectedStepOnUndo( TransMeta transMeta ) {
+    if ( transMeta.getSelectedSteps().size() == 1 ) {
+      getActiveTransGraph().setCurrentStep( transMeta.getSelectedSteps().get( 0 ) );
+    }
   }
 
   /**
