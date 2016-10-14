@@ -230,6 +230,6 @@ fi
 EXIT_CODE=$?
 
 # return to the catalog from which spoon.sh has been started
-cd $INITIALDIR
+cd "$INITIALDIR"
 
 exit $EXIT_CODE
