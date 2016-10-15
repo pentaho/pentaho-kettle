@@ -519,7 +519,6 @@ public class SpoonTabsDelegate extends SpoonDelegate {
           final File log = path.toFile();
           itemLogFilesMap.put( item.getText(), log );
           log.deleteOnExit();
-          logPath = log.getAbsolutePath();
           final FileOutputStream fos = new FileOutputStream( log, true );
           TeeOutputStream tOut = new TeeOutputStream( originalSystemOut, fos );
           TeeOutputStream tErr = new TeeOutputStream( originalSystemErr, fos );
@@ -527,6 +526,7 @@ public class SpoonTabsDelegate extends SpoonDelegate {
           itemPrintStreamOutMap.put( item.getText(), new PrintStream( tOut ) );
           itemPrintStreamErrMap.put( item.getText(), new PrintStream( tErr ) );
         }
+        logPath = itemLogFilesMap.get( item.getText() ).getAbsolutePath();
         System.setOut( itemPrintStreamOutMap.get( item.getText() ) );
         System.setErr( itemPrintStreamErrMap.get( item.getText() ) );
         KettleLogStore.OriginalSystemOut = System.out;
