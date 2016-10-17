@@ -5212,10 +5212,10 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
             boolean versioningEnabled = true;
             boolean versionCommentsEnabled = true;
-            String fullPath = meta.getRepositoryDirectory() + "/" + meta.getName() + meta.getRepositoryElementType().getExtension();
+            String fullPath = getJobTransfFullPath( meta );
             RepositorySecurityProvider repositorySecurityProvider =
                 rep != null && rep.getSecurityProvider() != null ? rep.getSecurityProvider() : null;
-            if ( repositorySecurityProvider != null ) {
+            if ( repositorySecurityProvider != null && fullPath != null ) {
               versioningEnabled = repositorySecurityProvider.isVersioningEnabled( fullPath );
               versionCommentsEnabled = repositorySecurityProvider.allowsVersionComments( fullPath );
             }
@@ -6751,6 +6751,30 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     return inf;
   }
 
+  private static String getJobTransfFullPath( EngineMetaInterface jobTransMeta ) {
+    String fullPath = null;
+    if ( jobTransMeta != null ) {
+      fullPath =
+          jobTransMeta.getRepositoryDirectory() + "/" + jobTransMeta.getName() + jobTransMeta.getRepositoryElementType()
+              .getExtension();
+    }
+    return fullPath;
+  }
+
+  private static boolean isVersionEnabled( Repository rep, EngineMetaInterface jobTransMeta ) {
+    boolean versioningEnabled = true;
+
+    String fullPath = getJobTransfFullPath( jobTransMeta );
+    RepositorySecurityProvider
+        repositorySecurityProvider =
+        rep != null && rep.getSecurityProvider() != null ? rep.getSecurityProvider() : null;
+    if ( repositorySecurityProvider != null && fullPath != null ) {
+      versioningEnabled = repositorySecurityProvider.isVersioningEnabled( fullPath );
+    }
+
+    return versioningEnabled;
+  }
+
   public void setShellText() {
     if ( shell.isDisposed() ) {
       return;
@@ -6760,20 +6784,15 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     String name = null;
     String version = null;
     ChangedFlagInterface changed = null;
+    boolean versioningEnabled = true;
 
-    TransMeta transMeta = getActiveTransformation();
-    if ( transMeta != null ) {
-      changed = transMeta;
-      filename = transMeta.getFilename();
-      name = transMeta.getName();
-      version = transMeta.getObjectRevision() == null ? null : transMeta.getObjectRevision().getName();
-    }
-    JobMeta jobMeta = getActiveJob();
-    if ( jobMeta != null ) {
-      changed = jobMeta;
-      filename = jobMeta.getFilename();
-      name = jobMeta.getName();
-      version = jobMeta.getObjectRevision() == null ? null : jobMeta.getObjectRevision().getName();
+    AbstractMeta meta = getActiveJob() != null ? getActiveJob() : getActiveTransformation();
+    if ( meta != null ) {
+      changed = meta;
+      filename = meta.getFilename();
+      name = meta.getName();
+      version = meta.getObjectRevision() == null ? null : meta.getObjectRevision().getName();
+      versioningEnabled = isVersionEnabled( rep, meta );
     }
 
     String text = "";
@@ -6799,7 +6818,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       text += name;
     }
 
-    if ( !Utils.isEmpty( version ) ) {
+    if ( versioningEnabled && !Utils.isEmpty( version ) ) {
       text += " v" + version;
     }
 
