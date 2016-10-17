@@ -61,12 +61,10 @@ public class CarteDelegationHandler implements DelegationListener {
   @Override
   public synchronized void transformationDelegationStarted( Trans delegatedTrans,
     TransExecutionConfiguration transExecutionConfiguration ) {
-    synchronized ( transformationMap ) {
-      TransConfiguration tc = new TransConfiguration( delegatedTrans.getTransMeta(), transExecutionConfiguration );
-      transformationMap.registerTransformation( delegatedTrans, tc );
+    TransConfiguration tc = new TransConfiguration( delegatedTrans.getTransMeta(), transExecutionConfiguration );
+    transformationMap.registerTransformation( delegatedTrans, tc );
+    delegatedTrans.addDelegationListener( this );
 
-      delegatedTrans.addDelegationListener( this );
-    }
   }
 
 }

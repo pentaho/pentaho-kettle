@@ -22,12 +22,17 @@
 
 package org.pentaho.di.www;
 
-import java.util.ArrayList;
+
+
+
 import java.util.Date;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.ArrayList;
+import java.util.Collections;
 
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.util.Utils;
@@ -41,18 +46,15 @@ import org.pentaho.di.trans.TransConfiguration;
  *
  */
 public class TransformationMap {
-  private Map<CarteObjectEntry, Trans> transformationMap;
-  private Map<CarteObjectEntry, TransConfiguration> configurationMap;
+  private final Map<CarteObjectEntry, TransData> transMap;
 
-  private Map<String, List<SocketPortAllocation>> hostServerSocketPortsMap;
+  private final Map<String, List<SocketPortAllocation>> hostServerSocketPortsMap;
 
   private SlaveServerConfig slaveServerConfig;
 
   public TransformationMap() {
-    transformationMap = new Hashtable<CarteObjectEntry, Trans>();
-    configurationMap = new Hashtable<CarteObjectEntry, TransConfiguration>();
-
-    hostServerSocketPortsMap = new Hashtable<String, List<SocketPortAllocation>>();
+    transMap = new ConcurrentHashMap<>();
+    hostServerSocketPortsMap = new ConcurrentHashMap<>();
   }
 
   /**
@@ -67,18 +69,16 @@ public class TransformationMap {
    * @param transConfiguration
    *          the transformation configuration to add
    */
-  public synchronized void addTransformation( String transformationName, String containerObjectId, Trans trans,
+  public void addTransformation( String transformationName, String containerObjectId, Trans trans,
     TransConfiguration transConfiguration ) {
     CarteObjectEntry entry = new CarteObjectEntry( transformationName, containerObjectId );
-    transformationMap.put( entry, trans );
-    configurationMap.put( entry, transConfiguration );
+    transMap.put( entry, new TransData( trans, transConfiguration ) );
   }
 
-  public synchronized void registerTransformation( Trans trans, TransConfiguration transConfiguration ) {
+  public void registerTransformation( Trans trans, TransConfiguration transConfiguration ) {
     trans.setContainerObjectId( UUID.randomUUID().toString() );
     CarteObjectEntry entry = new CarteObjectEntry( trans.getTransMeta().getName(), trans.getContainerObjectId() );
-    transformationMap.put( entry, trans );
-    configurationMap.put( entry, transConfiguration );
+    transMap.put( entry, new TransData( trans, transConfiguration ) );
   }
 
   /**
@@ -87,10 +87,10 @@ public class TransformationMap {
    * @param transformationName
    * @return the first transformation with the specified name
    */
-  public synchronized Trans getTransformation( String transformationName ) {
-    for ( CarteObjectEntry entry : transformationMap.keySet() ) {
+  public Trans getTransformation( String transformationName ) {
+    for ( CarteObjectEntry entry : transMap.keySet() ) {
       if ( entry.getName().equals( transformationName ) ) {
-        return transformationMap.get( entry );
+        return transMap.get( entry ).getTrans();
       }
     }
     return null;
@@ -101,18 +101,18 @@ public class TransformationMap {
    *          The Carte transformation object
    * @return the transformation with the specified entry
    */
-  public synchronized Trans getTransformation( CarteObjectEntry entry ) {
-    return transformationMap.get( entry );
+  public Trans getTransformation( CarteObjectEntry entry ) {
+    return transMap.get( entry ).getTrans();
   }
 
   /**
    * @param transformationName
    * @return The first transformation configuration with the specified name
    */
-  public synchronized TransConfiguration getConfiguration( String transformationName ) {
-    for ( CarteObjectEntry entry : configurationMap.keySet() ) {
+  public TransConfiguration getConfiguration( String transformationName ) {
+    for ( CarteObjectEntry entry : transMap.keySet() ) {
       if ( entry.getName().equals( transformationName ) ) {
-        return configurationMap.get( entry );
+        return transMap.get( entry ).getConfiguration();
       }
     }
     return null;
@@ -123,8 +123,8 @@ public class TransformationMap {
    *          The Carte transformation object
    * @return the transformation configuration with the specified entry
    */
-  public synchronized TransConfiguration getConfiguration( CarteObjectEntry entry ) {
-    return configurationMap.get( entry );
+  public TransConfiguration getConfiguration( CarteObjectEntry entry ) {
+    return transMap.get( entry ).getConfiguration();
   }
 
   /**
@@ -132,29 +132,14 @@ public class TransformationMap {
    * @param entry
    *          the Carte object entry
    */
-  public synchronized void removeTransformation( CarteObjectEntry entry ) {
-    transformationMap.remove( entry );
-    configurationMap.remove( entry );
+  public void removeTransformation( CarteObjectEntry entry ) {
+    transMap.remove( entry );
   }
 
   public List<CarteObjectEntry> getTransformationObjects() {
-    return new ArrayList<CarteObjectEntry>( transformationMap.keySet() );
+    return new ArrayList<>( transMap.keySet() );
   }
 
-  /**
-   * @return the configurationMap
-   */
-  public Map<CarteObjectEntry, TransConfiguration> getConfigurationMap() {
-    return configurationMap;
-  }
-
-  /**
-   * @param configurationMap
-   *          the configurationMap to set
-   */
-  public void setConfigurationMap( Map<CarteObjectEntry, TransConfiguration> configurationMap ) {
-    this.configurationMap = configurationMap;
-  }
 
   /**
    * This is the meat of the whole problem. We'll allocate a port for a given slave, transformation and step copy,
@@ -171,7 +156,7 @@ public class TransformationMap {
    * @param sourceStepCopy
    * @return
    */
-  public synchronized SocketPortAllocation allocateServerSocketPort( int portRangeStart, String hostname,
+  public SocketPortAllocation allocateServerSocketPort( int portRangeStart, String hostname,
     String clusteredRunId, String transformationName, String sourceSlaveName, String sourceStepName,
     String sourceStepCopy, String targetSlaveName, String targetStepName, String targetStepCopy ) {
 
@@ -219,27 +204,24 @@ public class TransformationMap {
         "A server socket allocation always has to accompanied by a target step copy but it was empty" );
     }
 
-    synchronized ( hostServerSocketPortsMap ) {
       // Look up the sockets list for the given host
       //
-      List<SocketPortAllocation> serverSocketPortsMap = hostServerSocketPortsMap.get( hostname );
-      if ( serverSocketPortsMap == null ) {
-        serverSocketPortsMap = new ArrayList<SocketPortAllocation>();
-        hostServerSocketPortsMap.put( hostname, serverSocketPortsMap );
-      }
+    List<SocketPortAllocation> serverSocketPorts;
+    serverSocketPorts = hostServerSocketPortsMap.computeIfAbsent( hostname, k -> new CopyOnWriteArrayList<>() );
+    serverSocketPorts = serverSocketPorts != null ? serverSocketPorts : hostServerSocketPortsMap.get( hostname );
 
-      synchronized ( serverSocketPortsMap ) {
         // Find the socket port allocation in the list...
         //
-        SocketPortAllocation socketPortAllocation = null;
-        int maxPort = portRangeStart - 1;
-        for ( int index = 0; index < serverSocketPortsMap.size(); index++ ) {
-          SocketPortAllocation spa = serverSocketPortsMap.get( index );
-          if ( spa.getPort() > maxPort ) {
-            maxPort = spa.getPort();
-          }
+    SocketPortAllocation socketPortAllocation = null;
+    int maxPort = portRangeStart - 1;
+    for ( int index = 0; index < serverSocketPorts.size(); index++ ) {
+      SocketPortAllocation spa = serverSocketPorts.get( index );
+      if ( spa.getPort() > maxPort ) {
+        maxPort = spa.getPort();
+      }
+      synchronized ( spa ) {
 
-          if ( spa.getClusterRunId().equalsIgnoreCase( clusteredRunId )
+        if ( spa.getClusterRunId().equalsIgnoreCase( clusteredRunId )
             && spa.getSourceSlaveName().equalsIgnoreCase( sourceSlaveName )
             && spa.getTargetSlaveName().equalsIgnoreCase( targetSlaveName )
             && spa.getTransformationName().equalsIgnoreCase( transformationName )
@@ -249,13 +231,13 @@ public class TransformationMap {
             && spa.getTargetStepCopy().equalsIgnoreCase( targetStepCopy ) ) {
             // This is the port we want, return it. Make sure it's allocated.
             //
-            spa.setAllocated( true );
-            socketPortAllocation = spa;
-            break;
-          } else {
+          spa.setAllocated( true );
+          socketPortAllocation = spa;
+          break;
+        } else {
             // If we find an available spot, take it.
             //
-            if ( !spa.isAllocated() ) {
+          if ( !spa.isAllocated() ) {
               // This is not an allocated port.
               // So we can basically use this port slot to put our own allocation
               // in it.
@@ -264,29 +246,29 @@ public class TransformationMap {
               // slave server couple.
               // Otherwise, we keep on searching.
               //
-              if ( spa.getSourceSlaveName().equalsIgnoreCase( sourceSlaveName )
+            if ( spa.getSourceSlaveName().equalsIgnoreCase( sourceSlaveName )
                 && spa.getTargetSlaveName().equalsIgnoreCase( targetSlaveName ) ) {
-                socketPortAllocation =
+              socketPortAllocation =
                   new SocketPortAllocation(
                     spa.getPort(), new Date(), clusteredRunId, transformationName, sourceSlaveName,
                     sourceStepName, sourceStepCopy, targetSlaveName, targetStepName, targetStepCopy );
-                serverSocketPortsMap.set( index, socketPortAllocation );
-                break;
-              }
+              serverSocketPorts.set( index, socketPortAllocation );
+              break;
             }
           }
         }
-
-        if ( socketPortAllocation == null ) {
+      }
+    }
+    if ( socketPortAllocation == null ) {
           // Allocate a new port and add it to the back of the list
           // Normally this list should stay sorted on port number this way
           //
-          socketPortAllocation =
+      socketPortAllocation =
             new SocketPortAllocation(
               maxPort + 1, new Date(), clusteredRunId, transformationName, sourceSlaveName, sourceStepName,
               sourceStepCopy, targetSlaveName, targetStepName, targetStepCopy );
-          serverSocketPortsMap.add( socketPortAllocation );
-        }
+      serverSocketPorts.add( socketPortAllocation );
+    }
 
         // DEBUG : Do a verification on the content of the list.
         // If we find a port twice in the list, complain!
@@ -300,9 +282,7 @@ public class TransformationMap {
 
         // give back the good news too...
         //
-        return socketPortAllocation;
-      }
-    }
+    return socketPortAllocation;
   }
 
   /**
@@ -314,15 +294,13 @@ public class TransformationMap {
    *          the carte object ID to reference
    */
   public void deallocateServerSocketPorts( String transName, String carteObjectId ) {
-    synchronized ( hostServerSocketPortsMap ) {
-      for ( String hostname : hostServerSocketPortsMap.keySet() ) {
-        List<SocketPortAllocation> spas = hostServerSocketPortsMap.get( hostname );
-        synchronized ( spas ) {
-          for ( SocketPortAllocation spa : spas ) {
-            if ( spa.getTransformationName().equalsIgnoreCase( transName )
+    for ( String hostname : hostServerSocketPortsMap.keySet() ) {
+      List<SocketPortAllocation> spas = hostServerSocketPortsMap.get( hostname );
+      for ( SocketPortAllocation spa : spas ) {
+        synchronized ( spa ) {
+          if ( spa.getTransformationName().equalsIgnoreCase( transName )
               && ( Utils.isEmpty( carteObjectId ) || spa.getClusterRunId().equals( carteObjectId ) ) ) {
-              spa.setAllocated( false );
-            }
+            spa.setAllocated( false );
           }
         }
       }
@@ -337,9 +315,12 @@ public class TransformationMap {
    */
   public void deallocateServerSocketPorts( CarteObjectEntry entry ) {
     for ( String hostname : hostServerSocketPortsMap.keySet() ) {
+      List<SocketPortAllocation> serverSocketPorts = hostServerSocketPortsMap.get( hostname );
       for ( SocketPortAllocation spa : hostServerSocketPortsMap.get( hostname ) ) {
-        if ( spa.getTransformationName().equalsIgnoreCase( entry.getName() ) ) {
-          spa.setAllocated( false );
+        synchronized ( spa ) {
+          if ( spa.getTransformationName().equalsIgnoreCase( entry.getName() ) ) {
+            spa.setAllocated( false );
+          }
         }
       }
     }
@@ -348,24 +329,25 @@ public class TransformationMap {
   public void deallocateServerSocketPort( int port, String hostname ) {
     // Look up the sockets list for the given host
     //
-    List<SocketPortAllocation> serverSocketPortsMap = hostServerSocketPortsMap.get( hostname );
-    if ( serverSocketPortsMap == null ) {
+    List<SocketPortAllocation> serverSocketPorts = hostServerSocketPortsMap.get( hostname );
+
+    if ( serverSocketPorts == null ) {
       return; // nothing to deallocate
     }
-
-    // Find the socket port allocation in the list...
-    //
-    for ( SocketPortAllocation spa : new ArrayList<SocketPortAllocation>( serverSocketPortsMap ) ) {
-
-      if ( spa.getPort() == port ) {
-        spa.setAllocated( false );
-        return;
+      // Find the socket port allocation in the list...
+      //
+    for ( SocketPortAllocation spa : serverSocketPorts ) {
+      synchronized ( spa ) {
+        if ( spa.getPort() == port ) {
+          spa.setAllocated( false );
+          return;
+        }
       }
     }
   }
 
   public CarteObjectEntry getFirstCarteObjectEntry( String transName ) {
-    for ( CarteObjectEntry key : transformationMap.keySet() ) {
+    for ( CarteObjectEntry key : transMap.keySet() ) {
       if ( key.getName().equals( transName ) ) {
         return key;
       }
@@ -391,16 +373,8 @@ public class TransformationMap {
   /**
    * @return the hostServerSocketPortsMap
    */
-  public Map<String, List<SocketPortAllocation>> getHostServerSocketPortsMap() {
-    return hostServerSocketPortsMap;
-  }
-
-  /**
-   * @param hostServerSocketPortsMap
-   *          the hostServerSocketPortsMap to set
-   */
-  public void setHostServerSocketPortsMap( Map<String, List<SocketPortAllocation>> hostServerSocketPortsMap ) {
-    this.hostServerSocketPortsMap = hostServerSocketPortsMap;
+  public List<SocketPortAllocation> getHostServerSocketPorts( String hostname ) {
+    return Collections.unmodifiableList( hostServerSocketPortsMap.get( hostname ) );
   }
 
   public SlaveSequence getSlaveSequence( String name ) {
@@ -425,5 +399,33 @@ public class TransformationMap {
     slaveServerConfig.getSlaveSequences().add( slaveSequence );
 
     return slaveSequence;
+  }
+
+  private static class TransData {
+
+    private Trans trans;
+
+    private TransConfiguration configuration;
+
+    TransData( Trans trans, TransConfiguration configuration ) {
+      this.trans = trans;
+      this.configuration = configuration;
+    }
+
+    public Trans getTrans() {
+      return trans;
+    }
+
+    public void setTrans( Trans trans ) {
+      this.trans = trans;
+    }
+
+    public TransConfiguration getConfiguration() {
+      return configuration;
+    }
+
+    public void setConfiguration( TransConfiguration configuration ) {
+      this.configuration = configuration;
+    }
   }
 }
