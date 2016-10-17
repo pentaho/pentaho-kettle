@@ -207,7 +207,7 @@ public class SwingDirectGC implements GCInterface {
 
     imageLocked = getImageIcon( BasePropertyHandler.getProperty( "Locked_image" ) );
     imageStepError = getImageIcon( BasePropertyHandler.getProperty( "StepErrorLines_image" ) );
-    imageEdit = getImageIcon( BasePropertyHandler.getProperty( "Edit_image" ) );
+    imageEdit = getImageIcon( BasePropertyHandler.getProperty( "EditSmall_image" ) );
     imageContextMenu = getImageIcon( BasePropertyHandler.getProperty( "ContextMenu_image" ) );
     imageTrue = getImageIcon( BasePropertyHandler.getProperty( "True_image" ) );
     imageFalse = getImageIcon( BasePropertyHandler.getProperty( "False_image" ) );
