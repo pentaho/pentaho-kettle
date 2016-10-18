@@ -69,6 +69,7 @@ public class DetailsDialog extends MessageDialog {
       gridData.widthHint = 1024;
       gridData.heightHint = 300;
       this.detailsText.setLayoutData( gridData );
+      this.detailsText.setSelection( this.details.length() );
     }
 
     return composite;
