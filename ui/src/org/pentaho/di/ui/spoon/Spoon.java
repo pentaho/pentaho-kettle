@@ -29,10 +29,15 @@ import java.beans.PropertyChangeSupport;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -55,6 +60,7 @@ import java.util.regex.Pattern;
 import javax.swing.UIManager;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 
+import org.apache.commons.io.output.TeeOutputStream;
 import org.apache.commons.vfs2.FileObject;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.MenuManager;
@@ -127,7 +133,6 @@ import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.AddUndoPositionInterface;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.DBCache;
 import org.pentaho.di.core.EngineMetaInterface;
 import org.pentaho.di.core.JndiUtil;
@@ -198,6 +203,7 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.undo.TransAction;
 import org.pentaho.di.core.util.StringUtil;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.vfs.KettleVFS;
@@ -576,6 +582,9 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
   public DelegatingMetaStore metaStore;
 
+  private static PrintStream originalSystemOut = System.out;
+  private static PrintStream originalSystemErr = System.err;
+
   /**
    * This is the main procedure for Spoon.
    *
@@ -583,6 +592,23 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
    *     Arguments are available in the "Get System Info" step.
    */
   public static void main( String[] a ) throws KettleException {
+    boolean doConsoleRedirect = !Boolean.getBoolean( "Spoon.Console.Redirect.Disabled" );
+    if ( doConsoleRedirect ) {
+      try {
+        Path parent = Paths.get( System.getProperty( "user.dir" ) + File.separator + "logs" );
+        Files.createDirectories( parent );
+        Files.deleteIfExists( Paths.get( parent.toString(), "spoon.log" ) );
+        Path path = Files.createFile( Paths.get( parent.toString(), "spoon.log" ) );
+        System.setProperty( "LOG_PATH", path.toString() );
+        final FileOutputStream fos = new FileOutputStream( path.toFile() );
+        System.setOut( new PrintStream( new TeeOutputStream( originalSystemOut, fos ) ) );
+        System.setErr( new PrintStream( new TeeOutputStream( originalSystemErr, fos ) ) );
+        KettleLogStore.OriginalSystemOut = System.out;
+        KettleLogStore.OriginalSystemErr = System.err;
+      } catch ( Throwable ignored ) {
+      }
+    }
+
     ExecutorService executor = Executors.newCachedThreadPool();
     Future<KettleException> pluginRegistryFuture = executor.submit( new Callable<KettleException>() {
 
