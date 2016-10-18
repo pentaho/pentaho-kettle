@@ -614,3 +614,35 @@ hr {
   white-space: nowrap;
   text-overflow: ellipsis;
 }
+
+.loading {
+  position: absolute;
+  top: 0px;
+  left: 600px;
+  width: 100%;
+  height: 100%;
+  z-index: 1000;
+  background-color: white;
+}
+
+.loading-main {
+  position: relative;
+  width: 400px;
+  margin-top: 208px;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+}
+
+.loading-clock {
+  background-image: url('../images/loading-clock.svg');
+  background-repeat: no-repeat;
+  height: 66px;
+  width: 66px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.break-word {
+  word-wrap: break-word;
+}
