@@ -554,7 +554,7 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface, S
    * package-local visibility for testing purposes
    */
   TransMeta loadTransformationMeta( Repository rep, VariableSpace space ) throws KettleException {
-    return MetaInjectMeta.loadTransformationMeta( this, repository, null, space );
+    return MetaInjectMeta.loadTransformationMeta( this, rep, null, space );
   }
 
   @Override
