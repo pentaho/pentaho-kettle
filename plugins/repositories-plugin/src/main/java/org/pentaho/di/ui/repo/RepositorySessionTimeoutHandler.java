@@ -29,6 +29,8 @@ import java.lang.reflect.Proxy;
 import java.util.List;
 
 import org.apache.commons.lang.ClassUtils;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.repository.IRepositoryService;
 import org.pentaho.di.repository.ReconnectableRepository;
 import org.pentaho.metastore.api.IMetaStore;
 
@@ -37,6 +39,10 @@ public class RepositorySessionTimeoutHandler implements InvocationHandler {
   private static final String CONNECT_METHOD_NAME = "connect";
 
   private static final String GET_META_STORE_METHOD_NAME = "getMetaStore";
+
+  private static final String GET_SERVICE_METHOD_NAME = "getService";
+
+  private static final int SERVICE_CLASS_ARGUMENT = 0;
 
   private final ReconnectableRepository repository;
 
@@ -50,14 +56,20 @@ public class RepositorySessionTimeoutHandler implements InvocationHandler {
     sessionTimeoutHandler = new SessionTimeoutHandler( repositoryConnectController );
   }
 
+  @SuppressWarnings( "unchecked" )
   @Override
   public Object invoke( Object proxy, Method method, Object[] args ) throws Throwable {
     try {
-      if ( GET_META_STORE_METHOD_NAME.equals( method.getName() ) ) {
+      String methodName = method.getName();
+      if ( GET_SERVICE_METHOD_NAME.equals( methodName ) ) {
+        return wrapRepositoryServiceWithTimeoutHandler(
+            (Class<? extends IRepositoryService>) args[SERVICE_CLASS_ARGUMENT] );
+      }
+      if ( GET_META_STORE_METHOD_NAME.equals( methodName ) ) {
         return metaStoreInstance;
       }
       Object result = method.invoke( repository, args );
-      if ( CONNECT_METHOD_NAME.equals( method.getName() ) ) {
+      if ( CONNECT_METHOD_NAME.equals( methodName ) ) {
         IMetaStore metaStore = repository.getMetaStore();
         metaStoreInstance = wrapMetastoreWithTimeoutHandler( metaStore, sessionTimeoutHandler );
       }
@@ -74,13 +86,26 @@ public class RepositorySessionTimeoutHandler implements InvocationHandler {
     return repository.isConnected();
   }
 
-  @SuppressWarnings( "unchecked" )
-  static IMetaStore wrapMetastoreWithTimeoutHandler( IMetaStore metaStore,
-      SessionTimeoutHandler sessionTimeoutHandler ) {
-    List<Class<?>> metaStoreIntrerfaces = ClassUtils.getAllInterfaces( metaStore.getClass() );
-    Class<?>[] metaStoreIntrerfacesArray = metaStoreIntrerfaces.toArray( new Class<?>[metaStoreIntrerfaces.size()] );
-    return (IMetaStore) Proxy.newProxyInstance( metaStore.getClass().getClassLoader(), metaStoreIntrerfacesArray,
-        new MetaStoreSessionTimeoutHandler( metaStore, sessionTimeoutHandler ) );
+  IRepositoryService wrapRepositoryServiceWithTimeoutHandler( Class<? extends IRepositoryService> clazz )
+    throws KettleException {
+    IRepositoryService service = repository.getService( clazz );
+    RepositoryServiceSessionTimeoutHandler timeoutHandler =
+        new RepositoryServiceSessionTimeoutHandler( service, sessionTimeoutHandler );
+    return wrapObjectWithTimeoutHandler( service, timeoutHandler );
   }
 
+  static IMetaStore wrapMetastoreWithTimeoutHandler( IMetaStore metaStore,
+      SessionTimeoutHandler sessionTimeoutHandler ) {
+    MetaStoreSessionTimeoutHandler metaStoreSessionTimeoutHandler =
+        new MetaStoreSessionTimeoutHandler( metaStore, sessionTimeoutHandler );
+    return wrapObjectWithTimeoutHandler( metaStore, metaStoreSessionTimeoutHandler );
+  }
+
+  @SuppressWarnings( "unchecked" )
+  static <T> T wrapObjectWithTimeoutHandler( T objectToWrap, InvocationHandler timeoutHandler ) {
+    List<Class<?>> objectIntrerfaces = ClassUtils.getAllInterfaces( objectToWrap.getClass() );
+    Class<?>[] objectIntrerfacesArray = objectIntrerfaces.toArray( new Class<?>[objectIntrerfaces.size()] );
+    return (T) Proxy.newProxyInstance( objectToWrap.getClass().getClassLoader(), objectIntrerfacesArray,
+        timeoutHandler );
+  }
 }
