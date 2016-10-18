@@ -2263,7 +2263,7 @@ public class TableView extends Composite {
       opt = colinfo.getComboValuesSelectionListener().getComboValues( row, rownr, colnr );
     }
     combo.setItems( opt );
-    combo.setVisibleItemCount( opt.length - 1 );
+    combo.setVisibleItemCount( opt.length );
     combo.setText( row.getText( colnr ) );
     if ( lsMod != null ) {
       combo.addModifyListener( lsMod );
