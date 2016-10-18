@@ -22,9 +22,9 @@
     <dependency org="pentaho-kettle" name="kettle-engine" rev="${dependency.kettle.revision}" changing="true"/>
     <dependency org="pentaho-kettle" name="kettle-ui-swt" rev="${dependency.kettle.revision}" changing="true"/>
 
-    <dependency org="org.drools" name="knowledge-api" rev="6.4.0.Final" conf="default->default" transitive="false"/>
-    <dependency org="org.drools" name="drools-core" rev="6.4.0.Final" conf="default->default" transitive="false"/>
-    <dependency org="org.drools" name="drools-compiler" rev="6.4.0.Final" conf="default->default" transitive="false"/>
+    <dependency org="org.drools" name="knowledge-api" rev="6.4.0.Final" conf="default->default" transitive="true"/>
+    <dependency org="org.drools" name="drools-core" rev="6.4.0.Final" conf="default->default" transitive="true"/>
+    <dependency org="org.drools" name="drools-compiler" rev="6.4.0.Final" conf="default->default" transitive="true"/>
     <dependency org="org.mvel" name="mvel2" rev="2.0.10" conf="default->default" transitive="false"/>
     <dependency org="org.eclipse.jdt" name="core" rev="3.4.2.v_883_R34x" conf="default->default" transitive="false"/>
     <!--
@@ -37,6 +37,9 @@
     
 
     <dependency org="junit"                    name="junit"                rev="4.7"    transitive="false" conf="test->default"/>
-    <dependency org="org.mockito"              name="mockito-all"          rev="1.9.5"  transitive="false" conf="test->default"/>    
+    <dependency org="org.mockito"              name="mockito-all"          rev="1.9.5"  transitive="false" conf="test->default"/>
+
+    <!-- Exclude dependencies already included in parent classloader -->
+    <exclude org="org.slf4j" artifact="slf4j-api" />
   </dependencies>
 </ivy-module>
