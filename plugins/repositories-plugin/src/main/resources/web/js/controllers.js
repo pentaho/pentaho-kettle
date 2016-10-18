@@ -31,7 +31,7 @@ define(
 
     var repoConnectionAppControllers = angular.module('repoConnectionAppControllers', []);
 
-    repoConnectionAppControllers.controller("PentahoRepositoryController", function($scope, $translate, $location, $rootScope, $filter, pentahoRepositoryModel, repositoryTypesModel) {
+    repoConnectionAppControllers.controller("PentahoRepositoryController", function($scope, $translate, $location, $rootScope, $timeout, $filter, pentahoRepositoryModel, repositoryTypesModel, loadingAnimationModel) {
       $scope.model = pentahoRepositoryModel.model;
       $scope.getStarted = function() {
         $rootScope.fromEdit = false;
@@ -74,14 +74,19 @@ define(
             return;
           }
         }
-        if (createRepository("PentahoEnterpriseRepository", JSON.stringify(this.model))) {
-          $location.path("/pentaho-repository-creation-success");
-        } else {
-          $location.path("/pentaho-repository-creation-failure");
-        }
-        if(this.model.isDefault) {
-          setDefaultRepository(this.model.displayName);
-        }
+        loadingAnimationModel.displayName = this.model.displayName;
+        $timeout(function(){
+          if (createRepository("PentahoEnterpriseRepository", JSON.stringify($scope.model))) {
+            $location.path("/pentaho-repository-creation-success");
+          } else {
+            $location.path("/pentaho-repository-creation-failure");
+          }
+          if(this.model.isDefault) {
+            setDefaultRepository(this.model.displayName);
+          }
+          $rootScope.next();
+        },1000);
+        $location.path("/loading-animation");
         $rootScope.next();
       };
       $scope.connect = function() {
@@ -202,7 +207,7 @@ define(
       }
     });
 
-    repoConnectionAppControllers.controller("KettleDatabaseRepositoryController", function($scope, $rootScope, $location, $filter, kettleDatabaseRepositoryModel) {
+    repoConnectionAppControllers.controller("KettleDatabaseRepositoryController", function($scope, $rootScope, $location, $timeout, $filter, kettleDatabaseRepositoryModel) {
       $scope.model = kettleDatabaseRepositoryModel.model;
       $scope.selectDatabase = function() {
         $rootScope.clearError();
@@ -240,14 +245,19 @@ define(
             return;
           }
         }
-        if (createRepository("KettleDatabaseRepository", JSON.stringify(this.model))) {
-          $location.path("/kettle-database-repository-creation-success");
-        } else {
-          $location.path("/kettle-database-repository-creation-failure");
-        }
-        if(this.model.isDefault) {
-          setDefaultRepository(this.model.displayName);
-        }
+        loadingAnimationModel.displayName = this.model.displayName;
+        $timeout(function(){
+          if (createRepository("KettleDatabaseRepository", JSON.stringify($scope.model))) {
+            $location.path("/kettle-database-repository-creation-success");
+          } else {
+            $location.path("/kettle-database-repository-creation-failure");
+          }
+          if(this.model.isDefault) {
+            setDefaultRepository(this.model.displayName);
+          }
+          $rootScope.next();
+        },1000);
+        $location.path("/loading-animation");
         $rootScope.next();
       }
       $scope.createNewConnection = function() {
@@ -425,7 +435,7 @@ define(
       $scope.addToolTips = addToolTips;
     });
 
-    repoConnectionAppControllers.controller("RepositoryConnectController", function($scope, $rootScope, repositoryConnectModel) {
+    repoConnectionAppControllers.controller("RepositoryConnectController", function($scope, $rootScope, $location, $timeout, repositoryConnectModel, loadingAnimationModel) {
       $scope.model = repositoryConnectModel;
       $scope.model.username = getCurrentUser();
       $scope.model.currentRepositoryName = getCurrentRepository();
@@ -443,13 +453,21 @@ define(
           $rootScope.refreshError();
           return;
         }
-        var response = JSON.parse(loginToRepository(this.model.username, this.model.password));
-        if( response.success == false){
-          $rootScope.triggerError(response.errorMessage);
-        } else {
-          setResult(true);
-          close();
-        }
+        loadingAnimationModel.displayName = this.model.currentRepositoryName;
+        $timeout(function(){
+          var response = JSON.parse(loginToRepository($scope.model.username, $scope.model.password));
+          if( response.success == false){
+            $timeout(function(){
+              $rootScope.triggerError(response.errorMessage);
+            },600);
+            $location.path("/repository-connect");
+            $rootScope.backFade();
+          } else {
+            close();
+          }
+        },1000);
+        $location.path("/loading-animation");
+        $rootScope.nextFade();
       }
       $scope.addToolTips = addToolTips;
       var errorMessage = getErrorMessage();
@@ -469,5 +487,9 @@ define(
         }
       });
     }
+
+    repoConnectionAppControllers.controller("LoadingAnimationController", function($scope, loadingAnimationModel) {
+      $scope.model = loadingAnimationModel;
+    });
   }
 );

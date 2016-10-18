@@ -97,6 +97,10 @@ function(angular) {
         templateUrl: 'pentaho-repository-connect.html',
         controller: 'RepositoryConnectController'
       }).
+      when('/loading-animation', {
+        templateUrl: 'loading-animation.html',
+        controller: 'LoadingAnimationController'
+      }).
       when('/repository-manager', {
         templateUrl: 'repository-manager.html',
         controller: 'RepositoryManagerController'

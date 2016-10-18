@@ -85,4 +85,8 @@ define( [
       this.currentRepositoryName = "";
     });
 
+    repoConnectionApp.service("loadingAnimationModel", function() {
+      this.displayName = "";
+    });
+
 });
