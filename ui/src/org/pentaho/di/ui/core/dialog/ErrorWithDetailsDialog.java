@@ -24,6 +24,7 @@ package org.pentaho.di.ui.core.dialog;
 
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.i18n.BaseMessages;
 
@@ -45,6 +46,10 @@ public class ErrorWithDetailsDialog extends MessageDialog {
 
     this.details = details;
     this.detailsIndex = detailsIndex;
+  }
+
+  @Override protected Point getInitialSize() {
+    return new Point( 386, 158 );
   }
 
   @Override protected void buttonPressed( int buttonId ) {
