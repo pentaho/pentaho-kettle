@@ -56,6 +56,8 @@ import org.pentaho.di.trans.steps.xmloutput.XMLField.ContentType;
  * @since 14-jan-2006
  */
 public class XMLOutput extends BaseStep implements StepInterface {
+  private static final String EOL = "\n"; // force EOL char because woodstox library encodes CRLF incorrectly
+
   private static final XMLOutputFactory XML_OUT_FACTORY = XMLOutputFactory.newInstance();
 
   private XMLOutputMeta meta;
@@ -208,7 +210,7 @@ public class XMLOutput extends BaseStep implements StepInterface {
       }
 
       data.writer.writeEndElement();
-      data.writer.writeCharacters( Const.CR );
+      data.writer.writeCharacters( EOL );
     } catch ( Exception e ) {
       throw new KettleException( "Error writing XML row :" + e.toString() + Const.CR + "Row: "
           + getInputRowMeta().getString( r ), e );
@@ -265,7 +267,7 @@ public class XMLOutput extends BaseStep implements StepInterface {
         } else {
           data.writer.writeStartDocument( Const.XML_ENCODING, "1.0" );
         }
-        data.writer.writeCharacters( Const.CR );
+        data.writer.writeCharacters( EOL );
       } else {
 
         FileObject file = KettleVFS.getFileObject( buildFilename( true ), getTransMeta() );
@@ -300,7 +302,7 @@ public class XMLOutput extends BaseStep implements StepInterface {
           data.writer = XML_OUT_FACTORY.createXMLStreamWriter( outputStream );
           data.writer.writeStartDocument( Const.XML_ENCODING, "1.0" );
         }
-        data.writer.writeCharacters( Const.CR );
+        data.writer.writeCharacters( EOL );
       }
 
       // OK, write the header & the parent element:
@@ -309,7 +311,7 @@ public class XMLOutput extends BaseStep implements StepInterface {
       if ( ( meta.getNameSpace() != null ) && ( !"".equals( meta.getNameSpace() ) ) ) {
         data.writer.writeDefaultNamespace( meta.getNameSpace() );
       }
-      data.writer.writeCharacters( Const.CR );
+      data.writer.writeCharacters( EOL );
 
       retval = true;
     } catch ( Exception e ) {
@@ -328,7 +330,7 @@ public class XMLOutput extends BaseStep implements StepInterface {
       try {
         // Close the parent element
         data.writer.writeEndElement();
-        data.writer.writeCharacters( Const.CR );
+        data.writer.writeCharacters( EOL );
 
         // System.out.println("Closed xml file...");
 
