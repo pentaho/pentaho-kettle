@@ -140,6 +140,7 @@ public class Splash {
           fullVersionText =  fullVersionText + " "  + buildVersion;
         }
         e.gc.setFont( verFont );
+        e.gc.setForeground( display.getSystemColor( SWT.COLOR_WHITE ) );
         e.gc.drawText( fullVersionText, 290, 205, true );
 
         String inputStringDate = BuildVersion.getInstance().getBuildDate();
@@ -172,6 +173,7 @@ public class Splash {
 
         // try using the desired font size for the license text
         e.gc.setFont( licFont );
+        e.gc.setForeground( display.getSystemColor( SWT.COLOR_WHITE ) );
 
         // if the text will not fit the allowed space
         while ( !willLicenseTextFit( licenseText, e.gc ) ) {
@@ -199,6 +201,7 @@ public class Splash {
         }
         String buildDate = BaseMessages.getString( PKG, "SplashDialog.BuildDate" ) + " " + outputStringDate;
         // use the same font/size as the license text
+        e.gc.setForeground( display.getSystemColor( SWT.COLOR_WHITE ) );
         e.gc.drawText( version, 290, 235, true );
         e.gc.drawText( buildDate, 290, 250, true );
       }
@@ -277,10 +280,9 @@ public class Splash {
 
   private void drawVersionWarning( GC gc, Display display ) {
     gc.setBackground( versionWarningBackgroundColor );
-    gc.setForeground( versionWarningForegroundColor );
+    gc.setForeground( display.getSystemColor( SWT.COLOR_WHITE ) );
     // gc.fillRectangle(290, 231, 367, 49);
     // gc.drawRectangle(290, 231, 367, 49);
-    gc.setForeground( display.getSystemColor( SWT.COLOR_BLACK ) );
     gc.drawImage( exclamation_image, 304, 243 );
 
     gc.setFont( devWarningFont );
