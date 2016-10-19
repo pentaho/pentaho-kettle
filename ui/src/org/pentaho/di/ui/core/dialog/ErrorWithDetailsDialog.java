@@ -49,7 +49,7 @@ public class ErrorWithDetailsDialog extends MessageDialog {
   }
 
   @Override protected Point getInitialSize() {
-    return new Point( 386, 158 );
+    return getParentShell().computeSize( 368, 107 );
   }
 
   @Override protected void buttonPressed( int buttonId ) {
