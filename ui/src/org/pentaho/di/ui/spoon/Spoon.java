@@ -23,14 +23,12 @@
 
 package org.pentaho.di.ui.spoon;
 
-import java.awt.Desktop;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.PrintStream;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
@@ -491,10 +489,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       .safeAppendDirectory( BasePropertyHandler.getProperty( "documentationDirBase", "docs/" ),
           BaseMessages.getString( PKG, "Spoon.Title.STRING_DOCUMENT_WELCOME" ) );
 
-  // "docs/English/InformationMap.html";
-  private static final String FILE_DOCUMENT_MAP = Const
-      .safeAppendDirectory( BasePropertyHandler.getProperty( "documentationDirBase", "docs/" ),
-          BaseMessages.getString( PKG, "Spoon.Title.STRING_DOCUMENT_MAP" ) );
+  private static final String DOCUMENTATION_URL = Const
+      .getDocUrl( BasePropertyHandler.getProperty( "documentationUrl" ) );
 
   private static final String UNDO_MENU_ITEM = "edit-undo";
 
@@ -1752,27 +1748,9 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         }
       };
 
-      // see if we are in webstart mode
-      String webstartRoot = System.getProperty( "spoon.webstartroot" );
-      if ( webstartRoot != null ) {
-        URL url = new URL( webstartRoot + '/' + FILE_DOCUMENT_MAP );
-        addSpoonBrowser( STRING_DOCUMENT_TAB_NAME, url.toString(), listener ); // ./docs/English/tips/index.htm
-      } else {
-        // see if we can find the welcome file on the file system
-        File file = new File( FILE_DOCUMENT_MAP );
-        if ( file.exists() ) {
-          if ( Desktop.isDesktopSupported() ) {
-            // ./docs/English/tips/index.htm
-            try {
-              Desktop.getDesktop().open( file );
-            } catch ( IOException e ) {
-              log.logError( Const.getStackTracker( e ) );
-            }
-          } else {
-            addSpoonBrowser( STRING_DOCUMENT_TAB_NAME, file.toURI().toURL().toString(), listener );
-          }
-        }
-      }
+      URL url = new URL( DOCUMENTATION_URL );
+      addSpoonBrowser( STRING_DOCUMENT_TAB_NAME, url.toString(), listener );
+
     } catch ( MalformedURLException e1 ) {
       log.logError( Const.getStackTracker( e1 ) );
     }
