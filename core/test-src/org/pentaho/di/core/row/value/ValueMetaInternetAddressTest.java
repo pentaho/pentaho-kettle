@@ -22,19 +22,14 @@
 
 package org.pentaho.di.core.row.value;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 import org.junit.Test;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.ValueMetaInterface;
+
+import static org.junit.Assert.*;
 
 public class ValueMetaInternetAddressTest {
 
@@ -68,21 +63,27 @@ public class ValueMetaInternetAddressTest {
     // Test normal storage type
     ValueMetaInternetAddress vmInet = new ValueMetaInternetAddress();
     final ValueMetaString vmString = new ValueMetaString();
+    vmInet.setStorageMetadata( vmString );
     InetAddress inetAddress = InetAddress.getByName( "127.0.0.1" );
+
     byte[] output = vmInet.getBinaryString( inetAddress );
     assertNotNull( output );
     assertArrayEquals( vmString.getBinaryString( "127.0.0.1" ), output );
+    assertEquals( inetAddress, vmInet.convertBinaryStringToNativeType( output ) );
 
     // Test binary string storage type
     vmInet.setStorageType( ValueMetaInterface.STORAGE_TYPE_BINARY_STRING );
     output = vmInet.getBinaryString( vmString.getBinaryString( "127.0.0.1" ) );
     assertNotNull( output );
     assertArrayEquals( vmString.getBinaryString( "127.0.0.1" ), output );
+    assertEquals( inetAddress, vmInet.convertBinaryStringToNativeType( output ) );
 
     // Test indexed storage
     vmInet.setStorageType( ValueMetaInterface.STORAGE_TYPE_INDEXED );
     vmInet.setIndex( new InetAddress[] { inetAddress } );
     assertArrayEquals( vmString.getBinaryString( "127.0.0.1" ), vmInet.getBinaryString( 0 ) );
+    assertEquals( inetAddress, vmInet.convertBinaryStringToNativeType( output ) );
+
     try {
       vmInet.getBinaryString( 1 );
       fail();
