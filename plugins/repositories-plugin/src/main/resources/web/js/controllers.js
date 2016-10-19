@@ -81,8 +81,8 @@ define(
           } else {
             $location.path("/pentaho-repository-creation-failure");
           }
-          if(this.model.isDefault) {
-            setDefaultRepository(this.model.displayName);
+          if($scope.model.isDefault) {
+            setDefaultRepository($scope.model.displayName);
           }
           $rootScope.next();
         },1000);
@@ -207,7 +207,7 @@ define(
       }
     });
 
-    repoConnectionAppControllers.controller("KettleDatabaseRepositoryController", function($scope, $rootScope, $location, $timeout, $filter, kettleDatabaseRepositoryModel) {
+    repoConnectionAppControllers.controller("KettleDatabaseRepositoryController", function($scope, $rootScope, $location, $timeout, $filter, kettleDatabaseRepositoryModel, loadingAnimationModel) {
       $scope.model = kettleDatabaseRepositoryModel.model;
       $scope.selectDatabase = function() {
         $rootScope.clearError();
@@ -252,8 +252,8 @@ define(
           } else {
             $location.path("/kettle-database-repository-creation-failure");
           }
-          if(this.model.isDefault) {
-            setDefaultRepository(this.model.displayName);
+          if($scope.model.isDefault) {
+            setDefaultRepository($scope.model.displayName);
           }
           $rootScope.next();
         },1000);
