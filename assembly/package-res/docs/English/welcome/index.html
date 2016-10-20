@@ -107,13 +107,15 @@
                     <h2 id='getting_started'>Getting Started</h2>
                     <p>New user? Want to know how to get started? Check out our documentation. These documents are also available in the <em>Pentaho Data Integration</em> installation directory, under <em>docs/</em>.</p>
                     <ul>
+                        <!-- href inserted by javascript later -->
                         <li><a id="getting_started_pdi">Get Started With PDI</a></li>
-                        <!-- TODO: find a way to automate this? -->
-                        <li><a href='https://help.pentaho.com/Documentation/7.0/0D0/Pentaho_Data_Integration'>DI Documentation</a></li>
+                        <!-- href inserted by javascript later -->
+                        <li><a id="di_documentation">DI Documentation</a></li>
                     </ul>
                     <h2 id='documentation'>Documentation</h2>
                     <p>Both the <a href='http://help.pentaho.com'>Pentaho Help</a> and the <a href='http://wiki.pentaho.com/display/EAI/Latest+Pentaho+Data+Integration+%28aka+Kettle%29+Documentation'>Kettle Wiki</a> are extensive repositories of information. To learn more spend time navigating content through these important links.</p>
                     <ul>
+                        <!-- href inserted by javascript later -->
                         <li><a id="di_solutions">Pentaho Help, Create DI Solutions</a></li>
                         <li><a href='http://wiki.pentaho.com/display/EAI/Pentaho+Data+Integration+Steps'>Transformation Steps Documentation</a></li>
                         <li><a href='http://wiki.pentaho.com/display/EAI/Pentaho+Data+Integration+Job+Entries'>Job Steps Documentation</a></li>
@@ -153,6 +155,7 @@
                     <h3 id='embed_pdi' style="height: 25px;">Embed PDI</h3>
                     <p>To embed the PDI engine into your own Java applications, check out our PDI SDK.</p>
                     <ul>
+                        <!-- href inserted by javascript later -->
                         <li><a id="di_embed">Embed and Extend DI</a></li>
                     </ul>
                     <h2 id='blogs'>Blogs</h2>
@@ -415,8 +418,9 @@
         <script src="js/vendor/bootstrap.min.js"></script>
         <script src="js/main.js"></script>
         <script type="text/javascript">
-            var docBase = "https://help.pentaho.com/Documentation/6.0/";
+            var docBase = "https://help.pentaho.com/Documentation/7.0/";
             $('#getting_started_pdi').attr("href", docBase + '0J0/0C0');
+            $('#di_documentation').attr("href", docBase + '0D0/Pentaho_Data_Integration');
             $('#di_solutions').attr("href", docBase + '0L0/0Y0');
             $('#di_embed').attr("href", docBase + '0R0/0V0');
         </script>
