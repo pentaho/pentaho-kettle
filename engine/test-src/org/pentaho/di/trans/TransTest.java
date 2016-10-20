@@ -249,6 +249,14 @@ public class TransTest {
     trans.fireTransFinishedListeners();
   }
 
+  @Test
+  public void testFinishStatus() throws Exception {
+    while ( trans.isRunning() ) {
+      Thread.sleep( 1 );
+    }
+    assertEquals( Trans.STRING_FINISHED, trans.getStatus() );
+  }
+
   private void startThreads( Runnable one, Runnable two, CountDownLatch start ) throws InterruptedException {
     Thread th = new Thread( one );
     Thread tt = new Thread( two );

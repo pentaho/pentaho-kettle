@@ -47,7 +47,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.servlet.http.HttpServletRequest;
@@ -147,6 +146,15 @@ import org.pentaho.di.www.SocketRepository;
 import org.pentaho.di.www.StartExecutionTransServlet;
 import org.pentaho.di.www.WebResult;
 import org.pentaho.metastore.api.IMetaStore;
+
+import static org.pentaho.di.trans.Trans.BitMaskStatus.FINISHED;
+import static org.pentaho.di.trans.Trans.BitMaskStatus.RUNNING;
+import static org.pentaho.di.trans.Trans.BitMaskStatus.STOPPED;
+import static org.pentaho.di.trans.Trans.BitMaskStatus.PREPARING;
+import static org.pentaho.di.trans.Trans.BitMaskStatus.INITIALIZING;
+import static org.pentaho.di.trans.Trans.BitMaskStatus.PAUSED;
+import static org.pentaho.di.trans.Trans.BitMaskStatus.BIT_STATUS_SUM;
+
 
 /**
  * This class represents the information and operations associated with the concept of a Transformation. It loads,
@@ -304,23 +312,30 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
   /** The transaction ID */
   private String transactionId;
 
-  /** Whether the transformation is preparing for execution. */
-  private volatile boolean preparing;
+  /** Int value for storage trans statuses*/
+  private AtomicInteger status;
 
-  /** Whether the transformation is initializing. */
-  private boolean initializing;
+  /**
+   * <p>This enum stores bit masks which are used to manipulate with
+   * statuses over field {@link Trans#status}
+   */
+  enum BitMaskStatus {
+    RUNNING( 1 ),
+    INITIALIZING( 2 ),
+    PREPARING( 4 ),
+    STOPPED( 8 ),
+    FINISHED( 16 ),
+    PAUSED( 32 );
 
-  /** Whether the transformation is running. */
-  private boolean running;
+    private final int mask;
+    //the sum of status masks
+    public static final int BIT_STATUS_SUM = 63;
 
-  /** Whether the transformation is finished. */
-  private final AtomicBoolean finished;
+    BitMaskStatus( int mask ) {
+      this.mask = mask;
+    }
 
-  /** Whether the transformation is paused. */
-  private AtomicBoolean paused;
-
-  /** Whether the transformation is stopped. */
-  private AtomicBoolean stopped;
+  }
 
   /** The number of errors that have occurred during execution of the transformation. */
   private AtomicInteger errors;
@@ -414,9 +429,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
    * Instantiates a new transformation.
    */
   public Trans() {
-    finished = new AtomicBoolean( false );
-    paused = new AtomicBoolean( false );
-    stopped = new AtomicBoolean( false );
+    status = new AtomicInteger();
 
     transListeners = Collections.synchronizedList( new ArrayList<TransListener>() );
     transStoppedListeners = Collections.synchronizedList( new ArrayList<TransStoppedListener>() );
@@ -625,9 +638,9 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
    *           in case the transformation could not be prepared (initialized)
    */
   public void prepareExecution( String[] arguments ) throws KettleException {
-    preparing = true;
+    setPreparing( true );
     startDate = null;
-    running = false;
+    setRunning( false );
 
     log.snap( Metrics.METRIC_TRANSFORMATION_EXECUTION_START );
     log.snap( Metrics.METRIC_TRANSFORMATION_INIT_START );
@@ -1033,8 +1046,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
       }
     }
 
-    preparing = false;
-    initializing = true;
+    setPreparing( false );
+    setInitializing( true );
 
     // Do a topology sort... Over 150 step (copies) things might be slowing down too much.
     //
@@ -1080,7 +1093,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
       }
     }
 
-    initializing = false;
+    setInitializing( false );
     boolean ok = true;
 
     // All step are initialized now: see if there was one that didn't do it
@@ -1280,8 +1293,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
     // Now start a thread to monitor the running transformation...
     //
     setFinished( false );
-    paused.set( false );
-    stopped.set( false );
+    setPaused( false );
+    setStopped( false );
 
     transFinishedBlockingQueue = new ArrayBlockingQueue<Object>( 10 );
 
@@ -1305,7 +1318,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
         }
 
         setFinished( true );
-        running = false; // no longer running
+        setRunning( false ); // no longer running
 
         log.snap( Metrics.METRIC_TRANSFORMATION_EXECUTION_STOP );
 
@@ -1335,7 +1348,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
     //
     transListeners.add( 0, transListener );
 
-    running = true;
+    setRunning( true );
 
     switch ( transMeta.getTransformationType() ) {
       case Normal:
@@ -1656,11 +1669,12 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
    * @return true if the transformation is finished, false otherwise
    */
   public boolean isFinished() {
-    return finished.get();
+    int exist = status.get() & FINISHED.mask;
+    return exist != 0;
   }
 
-  private void setFinished( boolean newValue ) {
-    finished.set( newValue );
+  private void setFinished( boolean finished ) {
+    status.updateAndGet( v -> finished ? v | FINISHED.mask : ( BIT_STATUS_SUM ^ FINISHED.mask ) & v );
   }
 
   public boolean isFinishedOrStopped() {
@@ -1882,8 +1896,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
     }
 
     // if it is stopped it is not paused
-    paused.set( false );
-    stopped.set( true );
+    setPaused( false );
+    setStopped( true );
 
     // Fire the stopped listener...
     //
@@ -3444,26 +3458,26 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
   public String getStatus() {
     String message;
 
-    if ( running ) {
+    if ( isRunning() ) {
       if ( isStopped() ) {
         message = STRING_HALTING;
       } else {
-        if ( isFinished() ) {
-          message = STRING_FINISHED;
-          if ( getResult().getNrErrors() > 0 ) {
-            message += " (with errors)";
-          }
-        } else if ( isPaused() ) {
+        if ( isPaused() ) {
           message = STRING_PAUSED;
         } else {
           message = STRING_RUNNING;
         }
       }
+    } else if ( isFinished() ) {
+      message = STRING_FINISHED;
+      if ( getResult().getNrErrors() > 0 ) {
+        message += " (with errors)";
+      }
     } else if ( isStopped() ) {
       message = STRING_STOPPED;
-    } else if ( preparing ) {
+    } else if ( isPreparing() ) {
       message = STRING_PREPARING;
-    } else if ( initializing ) {
+    } else if ( isInitializing() ) {
       message = STRING_INITIALIZING;
     } else {
       message = STRING_WAITING;
@@ -3478,7 +3492,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
    * @return true if the transformation is initializing, false otherwise
    */
   public boolean isInitializing() {
-    return initializing;
+    int exist = status.get() & INITIALIZING.mask;
+    return exist != 0;
   }
 
   /**
@@ -3488,7 +3503,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
    *          true if the transformation is initializing, false otherwise
    */
   public void setInitializing( boolean initializing ) {
-    this.initializing = initializing;
+    status.updateAndGet( v -> initializing ? v | INITIALIZING.mask : ( BIT_STATUS_SUM ^ INITIALIZING.mask ) & v );
   }
 
   /**
@@ -3497,7 +3512,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
    * @return true if the transformation is preparing for execution, false otherwise
    */
   public boolean isPreparing() {
-    return preparing;
+    int exist = status.get() & PREPARING.mask;
+    return exist != 0;
   }
 
   /**
@@ -3507,7 +3523,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
    *          true if the transformation is preparing for execution, false otherwise
    */
   public void setPreparing( boolean preparing ) {
-    this.preparing = preparing;
+    status.updateAndGet( v -> preparing ? v | PREPARING.mask : ( BIT_STATUS_SUM ^ PREPARING.mask ) & v );
   }
 
   /**
@@ -3516,7 +3532,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
    * @return true if the transformation is running, false otherwise
    */
   public boolean isRunning() {
-    return running;
+    int exist = status.get() & RUNNING.mask;
+    return exist != 0;
   }
 
   /**
@@ -3526,7 +3543,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
    *          true if the transformation is running, false otherwise
    */
   public void setRunning( boolean running ) {
-    this.running = running;
+    status.updateAndGet( v -> running ? v | RUNNING.mask : ( BIT_STATUS_SUM ^ RUNNING.mask ) & v );
   }
 
   /**
@@ -4504,7 +4521,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
    * Pauses the transformation (pause all steps).
    */
   public void pauseRunning() {
-    paused.set( true );
+    setPaused( true );
     for ( StepMetaDataCombi combi : steps ) {
       combi.step.pauseRunning();
     }
@@ -4517,7 +4534,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
     for ( StepMetaDataCombi combi : steps ) {
       combi.step.resumeRunning();
     }
-    paused.set( false );
+    setPaused( false );
   }
 
   /**
@@ -4658,7 +4675,12 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
    * @return true if the transformation is paused, false otherwise
    */
   public boolean isPaused() {
-    return paused.get();
+    int exist = status.get() & PAUSED.mask;
+    return exist != 0;
+  }
+
+  public void setPaused( boolean paused ) {
+    status.updateAndGet( v -> paused ? v | PAUSED.mask : ( BIT_STATUS_SUM ^ PAUSED.mask ) & v );
   }
 
   /**
@@ -4667,7 +4689,12 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
    * @return true if the transformation is stopped, false otherwise
    */
   public boolean isStopped() {
-    return stopped.get();
+    int exist = status.get() & STOPPED.mask;
+    return exist != 0;
+  }
+
+  public void setStopped( boolean stopped ) {
+    status.updateAndGet( v -> stopped ? v | STOPPED.mask : ( BIT_STATUS_SUM ^ STOPPED.mask ) & v );
   }
 
   /**
@@ -5333,7 +5360,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
    * can continue with other data. This is intended for use when running single threaded.
    */
   public void clearError() {
-    stopped.set( false );
+    setStopped( false );
     errors.set( 0 );
     setFinished( false );
     for ( StepMetaDataCombi combi : steps ) {
