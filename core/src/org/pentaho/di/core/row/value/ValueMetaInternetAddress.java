@@ -22,24 +22,23 @@
 
 package org.pentaho.di.core.row.value;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.Types;
-import java.util.Date;
-
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseInterface;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.database.PostgreSQLDatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.util.Utils;
+
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.net.InetAddress;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.Types;
+import java.util.Date;
 
 public class ValueMetaInternetAddress extends ValueMetaDate {
 
@@ -228,18 +227,6 @@ public class ValueMetaInternetAddress extends ValueMetaDate {
           convertInternetAddressToString( (InetAddress) index[( (Integer) object )] ) );
       default:
         throw new KettleValueException( toString() + " : Unknown storage type " + storageType + " specified." );
-    }
-  }
-
-  @Override
-  public Object convertBinaryStringToNativeType( byte[] binary ) throws KettleValueException {
-    if ( binary == null || binary.length <= 0 ) {
-      return null;
-    }
-    try {
-      return InetAddress.getByAddress( binary );
-    } catch ( UnknownHostException e ) {
-      throw new KettleValueException( e );
     }
   }
 
