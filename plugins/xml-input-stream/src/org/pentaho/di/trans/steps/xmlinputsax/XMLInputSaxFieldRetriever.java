@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -33,8 +33,11 @@ import javax.xml.parsers.SAXParserFactory;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.core.xml.XMLParserFactoryProducer;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
+import org.xml.sax.SAXNotRecognizedException;
+import org.xml.sax.SAXNotSupportedException;
 import org.xml.sax.helpers.DefaultHandler;
 
 /**
@@ -90,7 +93,12 @@ public class XMLInputSaxFieldRetriever extends DefaultHandler {
 
   private void parseDocument() {
     // get a factory
-    SAXParserFactory spf = SAXParserFactory.newInstance();
+    SAXParserFactory spf = null;
+    try {
+      spf = XMLParserFactoryProducer.createSecureSAXParserFactory();
+    } catch ( SAXNotSupportedException | SAXNotRecognizedException | ParserConfigurationException ex ) {
+      log.logError( ex.getMessage() );
+    }
     try {
       // get a new instance of parser
       SAXParser sp = spf.newSAXParser();

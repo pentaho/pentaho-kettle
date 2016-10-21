@@ -54,6 +54,7 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.vfs.KettleVFS;
+import org.pentaho.di.core.xml.XMLParserFactoryProducer;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -87,9 +88,8 @@ public class GetXMLData extends BaseStep implements StepInterface {
     this.prevRow = buildEmptyRow(); // pre-allocate previous row
 
     try {
-      SAXReader reader = new SAXReader();
+      SAXReader reader = XMLParserFactoryProducer.getSAXReader( null );
       data.stopPruning = false;
-
       // Validate XML against specified schema?
       if ( meta.isValidating() ) {
         reader.setValidation( true );

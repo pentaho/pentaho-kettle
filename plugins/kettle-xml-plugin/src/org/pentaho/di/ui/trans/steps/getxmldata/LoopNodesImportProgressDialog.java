@@ -39,6 +39,7 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.vfs.KettleVFS;
+import org.pentaho.di.core.xml.XMLParserFactoryProducer;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.steps.getxmldata.GetXMLDataMeta;
 import org.pentaho.di.trans.steps.getxmldata.IgnoreDTDEntityResolver;
@@ -134,7 +135,7 @@ public class LoopNodesImportProgressDialog {
     monitor.beginTask( BaseMessages.getString( PKG, "GetXMLDateLoopNodesImportProgressDialog.Task.ScanningFile",
         filename ), 1 );
 
-    SAXReader reader = new SAXReader();
+    SAXReader reader = XMLParserFactoryProducer.getSAXReader( null );
     monitor.worked( 1 );
     if ( monitor.isCanceled() ) {
       return null;
