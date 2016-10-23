@@ -1,5 +1,5 @@
 /*!
- * Copyright 2010 - 2015 Pentaho Corporation.  All rights reserved.
+ * Copyright 2010 - 2016 Pentaho Corporation.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import java.util.Map;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
+import org.pentaho.di.repository.RepositoryExtended;
 import org.pentaho.di.repository.pur.PurRepository;
 import org.pentaho.di.ui.repository.pur.repositoryexplorer.IAclObject;
 import org.pentaho.di.ui.repository.pur.services.IAclService;
@@ -105,6 +106,9 @@ public class UIEERepositoryDirectory extends UIRepositoryDirectory implements IA
     if ( rep instanceof PurRepository ) {
       ( (PurRepository) rep ).renameRepositoryDirectory( getDirectory().getObjectId(), null, name,
           renameHomeDirectories );
+    } else if ( rep instanceof RepositoryExtended ) {
+      ( (RepositoryExtended) rep ).renameRepositoryDirectory( getDirectory().getObjectId(), null, name,
+              renameHomeDirectories );
     } else {
       rep.renameRepositoryDirectory( getDirectory().getObjectId(), null, name );
     }
