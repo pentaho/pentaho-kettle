@@ -22,6 +22,7 @@
 
 package org.pentaho.di.trans.steps.transexecutor;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -345,4 +346,22 @@ public class TransExecutorMetaTest {
     when( stream.getStepMeta() ).thenReturn( stepMeta );
     return stream;
   }
+
+
+  @Test
+  public void testRemoveHopFrom() throws Exception {
+    TransExecutorMeta transExecutorMeta = new TransExecutorMeta();
+    transExecutorMeta.setExecutionResultTargetStepMeta( new StepMeta() );
+    transExecutorMeta.setOutputRowsSourceStepMeta( new StepMeta() );
+    transExecutorMeta.setResultFilesTargetStepMeta( new StepMeta() );
+    transExecutorMeta.setExecutorsOutputStepMeta( new StepMeta() );
+
+    transExecutorMeta.cleanAfterHopFromRemove();
+
+    Assert.assertNull( transExecutorMeta.getExecutionResultTargetStepMeta() );
+    Assert.assertNull( transExecutorMeta.getOutputRowsSourceStepMeta() );
+    Assert.assertNull( transExecutorMeta.getResultFilesTargetStepMeta() );
+    Assert.assertNull( transExecutorMeta.getExecutorsOutputStepMeta() );
+  }
+
 }

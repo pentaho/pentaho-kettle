@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -1464,6 +1464,14 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
 
   public IMetaStore getMetaStore() {
     return metaStore;
+  }
+
+  @Override
+  public boolean cleanAfterHopFromRemove() {
+    setExecutionResultTargetStepMeta( null );
+    setResultRowsTargetStepMeta( null );
+    setResultFilesTargetStepMeta( null );
+    return true;
   }
 
 }
