@@ -374,7 +374,8 @@ public class TransformationMap {
    * @return the hostServerSocketPortsMap
    */
   public List<SocketPortAllocation> getHostServerSocketPorts( String hostname ) {
-    return Collections.unmodifiableList( hostServerSocketPortsMap.get( hostname ) );
+    List<SocketPortAllocation> ports = hostServerSocketPortsMap.get( hostname );
+    return ports == null ? Collections.emptyList() : Collections.unmodifiableList( ports );
   }
 
   public SlaveSequence getSlaveSequence( String name ) {
