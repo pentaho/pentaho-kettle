@@ -48,7 +48,7 @@ import org.pentaho.di.core.Const;
  */
 public class RepositoryDialog extends ThinDialog {
 
-  public static final String HELP_URL = Const.getBaseDocUrl( "0L0/0Y0/040" );
+  public static final String HELP_URL = Const.getDocUrl( "0L0/0Y0/040" );
   private LogChannelInterface log =
     KettleLogStore.getLogChannelInterfaceFactory().create( RepositoryDialog.class );
 
