@@ -24,13 +24,16 @@
 
     <dependency org="org.drools" name="knowledge-api" rev="6.4.0.Final" conf="default->default" transitive="true"/>
     <dependency org="org.drools" name="drools-core" rev="6.4.0.Final" conf="default->default" transitive="true"/>
-    <dependency org="org.drools" name="drools-compiler" rev="6.4.0.Final" conf="default->default" transitive="true"/>
+    <dependency org="org.drools" name="drools-compiler" rev="6.4.0.Final" conf="default->default" transitive="true">
+	  <!-- it requires 1.4.7 xstream version that  is vulnerable. See BACKLOG-11939 -->
+	  <exclude org="com.thoughtworks.xstream" name="xstream" />
+	</dependency>
+	<!-- add xstream manually -->
+	<dependency org="com.thoughtworks.xstream" name="xstream" rev="1.4.9" transitive="false" conf="default->default"/>
+
     <dependency org="org.mvel" name="mvel2" rev="2.0.10" conf="default->default" transitive="false"/>
     <dependency org="org.eclipse.jdt" name="core" rev="3.4.2.v_883_R34x" conf="default->default" transitive="false"/>
-    <!--
-    <dependency org="org.drools" name="knowledge-api" rev="5.0.1" transitive="true"/> 
-    <dependency org="org.drools" name="knowledge-internal-api" rev="5.0.1" transitive="true"/>
--->
+
     <!-- SWT it required to compile any version of any architecture will work -->
     <dependency org="org.eclipse.swt" name="org.eclipse.swt.gtk.linux.x86_64" rev="4.6" transitive="false"/>
     <dependency org="org.eclipse" name="jface" rev="3.3.0-I20070606-0010" transitive="false"/>
