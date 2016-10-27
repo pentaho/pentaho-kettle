@@ -1552,6 +1552,16 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     }
   }
 
+  public void disableMenuItem( String itemId ) {
+    XulMenuitem item = (XulMenuitem) mainSpoonContainer.getDocumentRoot().getElementById( itemId );
+    item.setDisabled( true );
+  }
+
+  public void enableMenuItem( String itemId ) {
+    XulMenuitem item = (XulMenuitem) mainSpoonContainer.getDocumentRoot().getElementById( itemId );
+    item.setDisabled( false );
+  }
+
   public void createPopupMenus() {
 
     try {
@@ -9328,23 +9338,39 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   }
 
   public void createExpandedContent( String url ) {
+    disableCutCopyPaste();
     ExpandedContentManager.createExpandedContent( url );
     ExpandedContentManager.showExpandedContent();
   }
 
   public void hideExpandedContent() {
+    enableCutCopyPaste();
     ExpandedContentManager.hideExpandedContent();
   }
 
   public void closeExpandedContent() {
+    enableCutCopyPaste();
     ExpandedContentManager.closeExpandedContent();
   }
 
   public void showExpandedContent() {
+    disableCutCopyPaste();
     ExpandedContentManager.showExpandedContent();
   }
 
   public Composite getDesignParent() {
     return sashform;
+  }
+
+  public void disableCutCopyPaste() {
+    disableMenuItem( "edit-cut-steps" );
+    disableMenuItem( "edit-copy-steps" );
+    disableMenuItem( "edit-paste-steps" );
+  }
+
+  public void enableCutCopyPaste() {
+    enableMenuItem( "edit-cut-steps" );
+    enableMenuItem( "edit-copy-steps" );
+    enableMenuItem( "edit-paste-steps" );
   }
 }
