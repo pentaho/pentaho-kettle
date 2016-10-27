@@ -482,6 +482,7 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
     deleteRepositoryDirectory( dir, false );
   }
 
+  @Override
   public void deleteRepositoryDirectory( final RepositoryDirectoryInterface dir, final boolean deleteHomeDirectories )
     throws KettleException {
     try {
@@ -515,6 +516,7 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
     return renameRepositoryDirectory( dirId, newParent, newName, false );
   }
 
+  @Override
   public ObjectId renameRepositoryDirectory( final ObjectId dirId, final RepositoryDirectoryInterface newParent,
                                              final String newName, final boolean renameHomeDirectories )
     throws KettleException {
