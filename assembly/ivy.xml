@@ -177,7 +177,6 @@
     <dependency org="infobright"           name="infobright-core"       rev="3.4"           transitive="false"/>
     <dependency org="org.firebirdsql.jdbc" name="jaybird"               rev="2.1.6"         transitive="false"/>
     <dependency org="net.sf.jt400"         name="jt400"                 rev="6.1"           transitive="false"/>  
-    <dependency org="jtds"                 name="jtds"                  rev="1.2.5"         transitive="false"/>
     <dependency org="luciddb"              name="LucidDbClient-minimal" rev="0.9.4"         transitive="false"/>
     <dependency org="monetdb"              name="monetdb-jdbc"          rev="2.1"           transitive="false"/>
     <dependency org="org.postgresql"       name="postgresql"            rev="9.3-1102-jdbc4" transitive="false"/>
