@@ -41,13 +41,14 @@ import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.util.HelpUtils;
 import org.pentaho.platform.settings.ServerPort;
 import org.pentaho.platform.settings.ServerPortRegistry;
+import org.pentaho.di.core.Const;
 
 /**
  * Created by bmorrise on 2/21/16.
  */
 public class RepositoryDialog extends ThinDialog {
 
-  public static final String HELP_URL = "https://help.pentaho.com/Documentation/7.0/0L0/0Y0/040";
+  public static final String HELP_URL = Const.getDocUrl( "0L0/0Y0/040" );
   private LogChannelInterface log =
     KettleLogStore.getLogChannelInterfaceFactory().create( RepositoryDialog.class );
 
