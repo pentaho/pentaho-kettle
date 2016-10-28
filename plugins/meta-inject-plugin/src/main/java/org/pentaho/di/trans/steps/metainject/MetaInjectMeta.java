@@ -73,8 +73,11 @@ import org.w3c.dom.Node;
  * @version 3.0
  * @since 2007-07-05
  */
-@Step( id = "MetaInject", image = "org/pentaho/di/ui/trans/steps/metainject/img/GenericTransform.svg", name = "ETL "
-      + "Metadata Injection", categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Flow" )
+@Step( id = "MetaInject",
+    image = "org/pentaho/di/ui/trans/steps/metainject/img/GenericTransform.svg",
+    name = "i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.MetaInject",
+    categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Flow",
+    documentationUrl = "0L0/0Y0/0K0/ETL_Metadata_Injection" )
 @InjectionSupported( localizationPrefix = "MetaInject.Injection.", groups = { "SOURCE_OUTPUT_FIELDS",
   "MAPPING_FIELDS" } )
 public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface, StepMetaChangeListenerInterface {
