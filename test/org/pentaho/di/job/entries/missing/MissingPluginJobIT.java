@@ -22,34 +22,26 @@
 
 package org.pentaho.di.job.entries.missing;
 
+import junit.framework.TestCase;
+
+import org.junit.Test;
+import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.Result;
-import org.pentaho.di.core.exception.KettleJobException;
-import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.job.entries.special.JobEntrySpecial;
+import org.pentaho.di.job.Job;
+import org.pentaho.di.job.JobMeta;
 
-public class MissingEntry extends JobEntrySpecial {
+public class MissingPluginJobIT extends TestCase {
+  @Test( expected = Exception.class )
+  public void testForPluginMissingStep() throws Exception {
+    KettleEnvironment.init();
+    Job job;
+    JobMeta meta = new JobMeta(
+          "test/org/pentaho/di/job/entries/missing/missing_plugin_job.kjb",
+          null );
+    job = new Job( null, meta );
 
-  private String missingPluginId;
-
-  public MissingEntry() {
-    this( null, null );
-  }
-
-  public MissingEntry( String name, String missingPluginId ) {
-    super( name, false, false );
-    setPluginId( "SPECIAL" );
-    this.missingPluginId = missingPluginId;
-  }
-
-  @Override
-  public Result execute( Result previousResult, int nr ) throws KettleJobException {
-    previousResult.setResult( false );
-    previousResult.setNrErrors( previousResult.getNrErrors() + 1 );
-    getLogChannel().logError( BaseMessages.getString( MissingEntry.class, "MissingEntry.Log.CannotRunJob" ) );
-    return previousResult;
-  };
-
-  public String getMissingPluginId() {
-    return this.missingPluginId;
+    Result result = new Result();
+    job.execute( 0, result );
+    assertFalse( result.getResult() );
   }
 }
