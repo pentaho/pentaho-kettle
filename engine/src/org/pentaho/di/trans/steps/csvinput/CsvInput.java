@@ -502,6 +502,7 @@ public class CsvInput extends BaseStep implements StepInterface {
         boolean enclosureFound = false;
         boolean doubleLineEnd = false;
         int escapedEnclosureFound = 0;
+        boolean ignoreEnclosuresInField = ignoreEnclosures;
         while ( !delimiterFound && !newLineFound && !endOfBuffer ) {
           // If we find the first char, we might find others as well ;-)
           // Single byte delimiters only for now.
@@ -528,42 +529,49 @@ public class CsvInput extends BaseStep implements StepInterface {
               // Found another one, need to skip it later
               doubleLineEnd = true;
             }
-          } else if ( data.enclosureFound() && !ignoreEnclosures ) {
-            // Perhaps we need to skip over an enclosed part?
-            // We always expect exactly one enclosure character
-            // If we find the enclosure doubled, we consider it escaped.
-            // --> "" is converted to " later on.
-            //
-            enclosureFound = true;
-            boolean keepGoing;
-            do {
-              if ( data.moveEndBufferPointer() ) {
-                enclosureFound = false;
-                break;
-              }
-              keepGoing = !data.enclosureFound();
-              if ( !keepGoing ) {
-                // We found an enclosure character.
-                // Read another byte...
+          } else if ( data.enclosureFound() && !ignoreEnclosuresInField ) {
+            int enclosurePosition = data.getEndBuffer();
+            int fieldFirstBytePosition = data.getStartBuffer();
+            if ( fieldFirstBytePosition == enclosurePosition ) {
+              // Perhaps we need to skip over an enclosed part?
+              // We always expect exactly one enclosure character
+              // If we find the enclosure doubled, we consider it escaped.
+              // --> "" is converted to " later on.
+              //
+              enclosureFound = true;
+              boolean keepGoing;
+              do {
                 if ( data.moveEndBufferPointer() ) {
+                  enclosureFound = false;
                   break;
                 }
+                keepGoing = !data.enclosureFound();
+                if ( !keepGoing ) {
+                  // We found an enclosure character.
+                  // Read another byte...
+                  if ( data.moveEndBufferPointer() ) {
+                    break;
+                  }
 
-                // If this character is also an enclosure, we can consider the enclosure "escaped".
-                // As such, if this is an enclosure, we keep going...
-                //
-                keepGoing = data.enclosureFound();
-                if ( keepGoing ) {
-                  escapedEnclosureFound++;
+                  // If this character is also an enclosure, we can consider the enclosure "escaped".
+                  // As such, if this is an enclosure, we keep going...
+                  //
+                  keepGoing = data.enclosureFound();
+                  if ( keepGoing ) {
+                    escapedEnclosureFound++;
+                  }
                 }
-              }
-            } while ( keepGoing );
+              } while ( keepGoing );
 
-            // Did we reach the end of the buffer?
-            //
-            if ( data.endOfBuffer() ) {
-              endOfBuffer = true;
-              break;
+              // Did we reach the end of the buffer?
+              //
+              if ( data.endOfBuffer() ) {
+                endOfBuffer = true;
+                break;
+              }
+            } else {
+              // Ignoring enclosure if it's not at the field start
+              ignoreEnclosuresInField = true;
             }
           } else {
             if ( data.moveEndBufferPointer() ) {
