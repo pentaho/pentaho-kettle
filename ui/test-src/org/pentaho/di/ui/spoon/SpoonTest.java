@@ -32,6 +32,7 @@ import java.util.Collections;
 import org.eclipse.swt.widgets.Shell;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.pentaho.di.base.AbstractMeta;
@@ -47,9 +48,11 @@ import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.repository.RepositorySecurityProvider;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepErrorMeta;
 import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.csvinput.CsvInputMeta;
 import org.pentaho.di.trans.steps.dummytrans.DummyTransMeta;
 import org.pentaho.di.ui.spoon.delegates.SpoonDelegates;
@@ -70,7 +73,7 @@ public class SpoonTest {
     doCallRealMethod().when( spoon ).copySelected( any( TransMeta.class ), anyListOf( StepMeta.class ),
         anyListOf( NotePadMeta.class ) );
     doCallRealMethod().when( spoon ).pasteXML( any( TransMeta.class ), anyString(), any( Point.class ) );
-
+    doCallRealMethod().when( spoon ).delHop( any( TransMeta.class ), any( TransHopMeta.class ) );
     LogChannelInterface log = mock( LogChannelInterface.class );
     when( spoon.getLog() ).thenReturn( log );
 
@@ -370,4 +373,22 @@ public class SpoonTest {
     doReturn( isTransformation ? RepositoryObjectType.TRANSFORMATION : RepositoryObjectType.JOB ).when( mockObjMeta )
         .getRepositoryElementType();
   }
+
+  @Test
+  public void testDelHop() throws Exception {
+
+    StepMetaInterface stepMetaInterface = Mockito.mock( StepMetaInterface.class );
+    StepMeta step = new StepMeta();
+    step.setStepMetaInterface( stepMetaInterface );
+
+    TransHopMeta transHopMeta = new TransHopMeta();
+    transHopMeta.setFromStep( step );
+
+    TransMeta transMeta = Mockito.mock( TransMeta.class );
+
+    spoon.delHop( transMeta, transHopMeta );
+    Mockito.verify( stepMetaInterface, times( 1 ) ).cleanAfterHopFromRemove( );
+
+  }
+
 }
