@@ -222,6 +222,7 @@ public class TableInput extends BaseStep implements StepInterface {
     boolean success = true;
 
     // Open the query with the optional parameters received from the source steps.
+    this.setVariable("x-rowsetsize",this.meta.getRowSetSize());
     String sql = null;
     if ( meta.isVariableReplacementActive() ) {
       sql = environmentSubstitute( meta.getSQL() );

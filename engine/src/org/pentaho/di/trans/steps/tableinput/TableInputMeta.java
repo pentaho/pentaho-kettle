@@ -81,6 +81,8 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface {
   private boolean variableReplacementActive;
 
   private boolean lazyConversionActive;
+  
+  private String rowSetSize;
 
   public TableInputMeta() {
     super();
@@ -124,6 +126,19 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   /**
+   * @return int rowSetSize
+   */
+  public String getRowSetSize() {
+	  return rowSetSize;
+  }
+  
+  /**
+   * @param rowSetSize
+   */
+  public void setRowSetSize(String rowSetSize) {
+	  this.rowSetSize = rowSetSize;
+  }
+  /**
    * @param rowLimit
    *          The rowLimit to set.
    */
@@ -160,6 +175,7 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface {
       databaseMeta = DatabaseMeta.findDatabase( databases, XMLHandler.getTagValue( stepnode, "connection" ) );
       sql = XMLHandler.getTagValue( stepnode, "sql" );
       rowLimit = XMLHandler.getTagValue( stepnode, "limit" );
+      rowSetSize = XMLHandler.getTagValue(stepnode, "rowsetsize");
 
       String lookupFromStepname = XMLHandler.getTagValue( stepnode, "lookup" );
       StreamInterface infoStream = getStepIOMeta().getInfoStreams().get( 0 );
@@ -273,6 +289,7 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface {
       + XMLHandler.addTagValue( "connection", databaseMeta == null ? "" : databaseMeta.getName() ) );
     retval.append( "    " + XMLHandler.addTagValue( "sql", sql ) );
     retval.append( "    " + XMLHandler.addTagValue( "limit", rowLimit ) );
+    retval.append( "    " + XMLHandler.addTagValue( "rowsetsize", rowSetSize ) );
     StreamInterface infoStream = getStepIOMeta().getInfoStreams().get( 0 );
     retval.append( "    " + XMLHandler.addTagValue( "lookup", infoStream.getStepname() ) );
     retval.append( "    " + XMLHandler.addTagValue( "execute_each_row", executeEachInputRow ) );

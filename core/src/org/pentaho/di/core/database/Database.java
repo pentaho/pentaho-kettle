@@ -1700,6 +1700,8 @@ public class Database implements VariableSpace, LoggingObjectInterface {
 
     // Create a Statement
     try {
+      int tmpRowSetSize = Integer.parseInt(this.getVariable("x-rowsetsize",((Integer)Const.FETCH_SIZE).toString()));
+
       log.snap( Metrics.METRIC_DATABASE_OPEN_QUERY_START, databaseMeta.getName() );
       if ( params != null ) {
         log.snap( Metrics.METRIC_DATABASE_PREPARE_SQL_START, databaseMeta.getName() );
@@ -1714,10 +1716,11 @@ public class Database implements VariableSpace, LoggingObjectInterface {
 
         if ( canWeSetFetchSize( pstmt ) ) {
           int maxRows = pstmt.getMaxRows();
-          int fs = Const.FETCH_SIZE <= maxRows ? maxRows : Const.FETCH_SIZE;
+          int fs = tmpRowSetSize <= maxRows ? maxRows : tmpRowSetSize;
           if ( databaseMeta.isMySQLVariant() ) {
             setMysqlFetchSize( pstmt, fs, maxRows );
           } else {
+        	Map<String,String> dbOptions = getDatabaseMeta().getExtraOptions();
             pstmt.setFetchSize( fs );
           }
 
@@ -1733,14 +1736,16 @@ public class Database implements VariableSpace, LoggingObjectInterface {
         log.snap( Metrics.METRIC_DATABASE_EXECUTE_SQL_STOP, databaseMeta.getName() );
       } else {
         log.snap( Metrics.METRIC_DATABASE_CREATE_SQL_START, databaseMeta.getName() );
+        String[] temp = this.variables.listVariables();
         sel_stmt = connection.createStatement();
         log.snap( Metrics.METRIC_DATABASE_CREATE_SQL_STOP, databaseMeta.getName() );
         if ( canWeSetFetchSize( sel_stmt ) ) {
-          int fs = Const.FETCH_SIZE <= sel_stmt.getMaxRows() ? sel_stmt.getMaxRows() : Const.FETCH_SIZE;
+          int fs = tmpRowSetSize <= sel_stmt.getMaxRows() ? sel_stmt.getMaxRows() : tmpRowSetSize;
           if ( databaseMeta.getDatabaseInterface() instanceof MySQLDatabaseMeta
             && databaseMeta.isStreamingResults() ) {
             sel_stmt.setFetchSize( Integer.MIN_VALUE );
           } else {
+          	Map<String,String> dbOptions = getDatabaseMeta().getExtraOptions();
             sel_stmt.setFetchSize( fs );
           }
           sel_stmt.setFetchDirection( fetch_mode );
@@ -1784,6 +1789,8 @@ public class Database implements VariableSpace, LoggingObjectInterface {
 
     // Create a Statement
     try {
+      int tmpRowSetSize = Integer.parseInt(this.getVariable("x-rowsetsize",((Integer)Const.FETCH_SIZE).toString()));
+
       log.snap( Metrics.METRIC_DATABASE_OPEN_QUERY_START, databaseMeta.getName() );
 
       log.snap( Metrics.METRIC_DATABASE_SQL_VALUES_START, databaseMeta.getName() );
@@ -1792,12 +1799,13 @@ public class Database implements VariableSpace, LoggingObjectInterface {
 
       if ( canWeSetFetchSize( ps ) ) {
         int maxRows = ps.getMaxRows();
-        int fs = Const.FETCH_SIZE <= maxRows ? maxRows : Const.FETCH_SIZE;
+        int fs = tmpRowSetSize <= maxRows ? maxRows : tmpRowSetSize;
         // mysql have some restriction on fetch size assignment
         if ( databaseMeta.isMySQLVariant() ) {
           setMysqlFetchSize( ps, fs, maxRows );
         } else {
           // other databases seems not.
+        	fs = 500;
           ps.setFetchSize( fs );
         }
 
