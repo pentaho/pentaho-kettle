@@ -853,7 +853,7 @@ public class JsonInputMeta extends BaseFileInputStepMeta implements StepMetaInte
 
         getInputFields()[i] = field;
       }
-      inFields = rep.getStepAttributeBoolean( id_step, "IsInFields" );
+      setInFields( rep.getStepAttributeBoolean( id_step, "IsInFields" ) );
       isAFile = rep.getStepAttributeBoolean( id_step, "IsAFile" );
 
       valueField = rep.getStepAttributeString( id_step, "valueField" );
