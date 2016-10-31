@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.google.common.collect.ImmutableList;
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -33,6 +34,8 @@ import org.pentaho.di.core.Condition;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.plugins.PluginRegistry;
+import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.steps.dummytrans.DummyTransMeta;
 import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
 import org.pentaho.di.trans.steps.loadsave.validator.ConditionLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
@@ -82,11 +85,25 @@ public class FilterRowsMetaTest {
 
     FilterRowsMeta clone = (FilterRowsMeta) filterRowsMeta.clone();
     assertNotNull( clone.getCondition() );
-    assertNotNull( clone.getTrueStepname() );
-    assertTrue( "true" == clone.getTrueStepname() );
-    assertNotNull( clone.getFalseStepname() );
-    assertTrue( "false" == clone.getFalseStepname() );
-
+    assertEquals( "true", clone.getTrueStepname() );
+    assertEquals( "false", clone.getFalseStepname() );
   }
 
+  @Test
+  public void modifiedTarget() throws Exception {
+    FilterRowsMeta filterRowsMeta = new FilterRowsMeta();
+    StepMeta trueOutput = new StepMeta( "true", new DummyTransMeta() );
+    StepMeta falseOutput = new StepMeta( "false", new DummyTransMeta() );
+
+    filterRowsMeta.setCondition( new Condition() );
+    filterRowsMeta.setTrueStepname( trueOutput.getName() );
+    filterRowsMeta.setFalseStepname( falseOutput.getName() );
+    filterRowsMeta.searchInfoAndTargetSteps( ImmutableList.of( trueOutput, falseOutput ) );
+
+    trueOutput.setName( "true renamed" );
+    falseOutput.setName( "false renamed" );
+
+    assertEquals( "true renamed", filterRowsMeta.getTrueStepname() );
+    assertEquals( "false renamed", filterRowsMeta.getFalseStepname() );
+  }
 }
