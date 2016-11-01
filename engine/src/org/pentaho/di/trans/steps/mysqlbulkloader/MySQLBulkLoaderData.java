@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -52,6 +52,7 @@ public class MySQLBulkLoaderData extends BaseStepData implements StepDataInterfa
   public ValueMetaInterface bulkTimestampMeta;
   public ValueMetaInterface bulkDateMeta;
   public ValueMetaInterface bulkNumberMeta;
+  protected String dbDescription;
 
   public String schemaTable;
 

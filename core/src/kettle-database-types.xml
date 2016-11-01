@@ -105,6 +105,11 @@
     <classname>org.pentaho.di.core.database.LucidDBDatabaseMeta</classname>
   </database-type>                                                         
 
+  <database-type id="MARIADB">
+    <description>MariaDB</description>
+    <classname>org.pentaho.di.core.database.MariaDBDatabaseMeta</classname>
+  </database-type>
+
   <database-type id="MONETDB">
     <description>MonetDB</description>
     <classname>org.pentaho.di.core.database.MonetDBDatabaseMeta</classname>

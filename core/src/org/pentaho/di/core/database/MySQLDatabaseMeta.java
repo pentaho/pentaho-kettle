@@ -38,7 +38,7 @@ import java.util.Set;
 
 public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInterface {
 
-  private static final Set
+  private static final Set<String>
     SHORT_MESSAGE_EXCEPTIONS =
     Sets.newHashSet( "com.mysql.jdbc.PacketTooBigException", "com.mysql.jdbc.MysqlDataTruncation" );
 

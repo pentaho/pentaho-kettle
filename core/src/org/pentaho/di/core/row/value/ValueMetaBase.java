@@ -58,7 +58,6 @@ import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseInterface;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.database.GreenplumDatabaseMeta;
-import org.pentaho.di.core.database.MySQLDatabaseMeta;
 import org.pentaho.di.core.database.NetezzaDatabaseMeta;
 import org.pentaho.di.core.database.OracleDatabaseMeta;
 import org.pentaho.di.core.database.PostgreSQLDatabaseMeta;
@@ -4574,7 +4573,7 @@ public class ValueMetaBase implements ValueMetaInterface {
 
             // MySQL: max resolution is double precision floating point (double)
             // The (12,31) that is given back is not correct
-            if ( databaseMeta.getDatabaseInterface() instanceof MySQLDatabaseMeta ) {
+            if ( databaseMeta.getDatabaseInterface().isMySQLVariant() ) {
               if ( precision >= length ) {
                 precision = -1;
                 length = -1;
@@ -4641,7 +4640,7 @@ public class ValueMetaBase implements ValueMetaInterface {
         case java.sql.Types.TIME:
           valtype = ValueMetaInterface.TYPE_DATE;
           //
-          if ( databaseMeta.getDatabaseInterface() instanceof MySQLDatabaseMeta ) {
+          if ( databaseMeta.getDatabaseInterface().isMySQLVariant() ) {
             String property = databaseMeta.getConnectionProperties().getProperty( "yearIsDateType" );
             if ( property != null && property.equalsIgnoreCase( "false" )
                 && rm.getColumnTypeName( index ).equalsIgnoreCase( "YEAR" ) ) {

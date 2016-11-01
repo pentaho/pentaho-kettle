@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -48,8 +48,6 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.di.core.database.InfobrightDatabaseMeta;
-import org.pentaho.di.core.database.MySQLDatabaseMeta;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
@@ -177,8 +175,7 @@ public class InfobrightLoaderDialog extends BaseStepDialog implements StepDialog
   protected Control addDbConnectionInputs() {
     List<String> ibConnections = new ArrayList<String>();
     for ( DatabaseMeta dbMeta : transMeta.getDatabases() ) {
-      if ( dbMeta.getDatabaseInterface() instanceof MySQLDatabaseMeta
-        || dbMeta.getDatabaseInterface() instanceof InfobrightDatabaseMeta ) {
+      if ( dbMeta.getDatabaseInterface().isMySQLVariant() ) {
         ibConnections.add( dbMeta.getName() );
       }
     }
