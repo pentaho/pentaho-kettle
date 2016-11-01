@@ -33,6 +33,7 @@ public class ReleaseSavePointTest {
     new InfiniDbDatabaseMeta(),
     new InfobrightDatabaseMeta(),
     new MySQLDatabaseMeta(),
+    new MariaDBDatabaseMeta(),
     new OracleDatabaseMeta()
   };
 

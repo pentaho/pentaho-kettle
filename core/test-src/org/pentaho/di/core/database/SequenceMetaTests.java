@@ -72,6 +72,7 @@ public class SequenceMetaTests {
       new MondrianNativeDatabaseMeta(),
       new MSAccessDatabaseMeta(),
       new MySQLDatabaseMeta(),
+      new MariaDBDatabaseMeta(),
       new NeoviewDatabaseMeta(),
       new RemedyActionRequestSystemDatabaseMeta(),
       new SAPDBDatabaseMeta(),
