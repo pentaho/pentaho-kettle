@@ -35,6 +35,7 @@ import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -269,7 +270,7 @@ public class JobEntrySQL extends JobEntryBase implements Cloneable, JobEntryInte
               theSQL = Const.CR;
 
               while ( ( sLine = buff.readLine() ) != null ) {
-                if ( Const.isEmpty( sLine ) ) {
+                if ( Utils.isEmpty( sLine ) ) {
                   theSQL = theSQL + Const.CR;
                 } else {
                   theSQL = theSQL + Const.CR + sLine;
@@ -285,7 +286,7 @@ public class JobEntrySQL extends JobEntryBase implements Cloneable, JobEntryInte
         } else {
           theSQL = sql;
         }
-        if ( !Const.isEmpty( theSQL ) ) {
+        if ( !Utils.isEmpty( theSQL ) ) {
           // let it run
           if ( useVariableSubstitution ) {
             theSQL = environmentSubstitute( theSQL );
