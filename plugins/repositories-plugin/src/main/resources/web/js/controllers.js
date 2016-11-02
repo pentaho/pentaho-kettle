@@ -470,6 +470,12 @@ define(
         $rootScope.nextFade();
       }
       $scope.addToolTips = addToolTips;
+      if ($scope.model.username) {
+        angular.element('#password').focus();
+      } else {
+        angular.element('#userName').focus();
+      }
+
       var errorMessage = getErrorMessage();
       if (errorMessage != "") {
     	  $rootScope.triggerError(errorMessage);

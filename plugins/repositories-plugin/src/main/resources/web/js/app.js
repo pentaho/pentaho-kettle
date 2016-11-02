@@ -207,21 +207,6 @@ function(angular) {
     }
   }]);
 
-  repoConnectionApp.directive('setFocus', ['$timeout', function($timeout) {
-    return {
-      restrict: 'A',
-      link : function($scope, $element, $attrs) {
-        $scope.$watch($attrs.setFocus, function(value) {
-            if ( value != false ) {
-              $timeout(function() {
-                $element[0].focus();
-              }, 600);
-            }
-        });
-      }
-    }
-  }]);
-
   repoConnectionApp.directive('errorMessage', [ '$timeout', function($timeout) {
     function link(scope, element, attrs) {
       var elem = element.find('.error-message');
