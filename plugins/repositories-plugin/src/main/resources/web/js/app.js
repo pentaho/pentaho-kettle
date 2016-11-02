@@ -213,9 +213,7 @@ function(angular) {
       link : function($scope, $element, $attrs) {
         $scope.$watch($attrs.setFocus, function(value) {
             if ( value != false ) {
-              $timeout(function() {
-                $element[0].focus();
-              }, 600);
+              $element[0].focus();
             }
         });
       }
