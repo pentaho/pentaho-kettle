@@ -183,6 +183,18 @@
   </kettle-variable>
 
   <kettle-variable>
+    <description>The kettle log tab refresh delay.</description>
+    <variable>KETTLE_LOG_TAB_REFRESH_DELAY</variable>
+    <default-value>1000</default-value>
+  </kettle-variable>
+
+  <kettle-variable>
+    <description>The kettle log tab refresh period.</description>
+    <variable>KETTLE_LOG_TAB_REFRESH_PERIOD</variable>
+    <default-value>1000</default-value>
+  </kettle-variable>
+
+  <kettle-variable>
     <description>A comma delimited list of classes to scan for plugin annotations</description>
     <variable>KETTLE_PLUGIN_CLASSES</variable>
     <default-value/>
