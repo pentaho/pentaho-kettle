@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -46,10 +46,9 @@ import org.pentaho.di.core.gui.ScrollBarInterface;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.job.entry.JobEntryCopy;
 
-public class JobPainter extends BasePainter {
+public class JobPainter extends BasePainter<JobHopMeta, JobEntryCopy> {
 
   private JobMeta jobMeta;
-  private JobHopMeta candidate;
 
   private List<JobEntryCopy> mouseOverEntries;
   private Map<JobEntryCopy, String> entryLogMap;
@@ -497,36 +496,12 @@ public class JobPainter extends BasePainter {
     gc.setLineStyle( ELineStyle.SOLID );
   }
 
-  protected int[] getLine( JobEntryCopy fs, JobEntryCopy ts ) {
-    if ( fs == null || ts == null ) {
-      return null;
-    }
-
-    Point from = fs.getLocation();
-    Point to = ts.getLocation();
-
-    int x1 = from.x + iconsize / 2;
-    int y1 = from.y + iconsize / 2;
-
-    int x2 = to.x + iconsize / 2;
-    int y2 = to.y + iconsize / 2;
-
-    return new int[] { x1, y1, x2, y2 };
-  }
-
   private void drawArrow( EImage arrow, int[] line, JobHopMeta jobHop ) {
     drawArrow( arrow, line, jobHop, jobHop.getFromEntry(), jobHop.getToEntry() );
   }
 
-  private void drawArrow( EImage arrow, int[] line, JobHopMeta jobHop, Object startObject, Object endObject ) {
-    Point screen_from = real2screen( line[0], line[1] );
-    Point screen_to = real2screen( line[2], line[3] );
-
-    drawArrow( arrow, screen_from.x, screen_from.y, screen_to.x, screen_to.y, theta, calcArrowLength(), -1, jobHop,
-        startObject, endObject );
-  }
-
-  private void drawArrow( EImage arrow, int x1, int y1, int x2, int y2, double theta, int size, double factor,
+  @Override
+  protected void drawArrow( EImage arrow, int x1, int y1, int x2, int y2, double theta, int size, double factor,
       JobHopMeta jobHop, Object startObject, Object endObject ) {
     int mx, my;
     int a, b, dist;
@@ -689,50 +664,12 @@ public class JobPainter extends BasePainter {
     Collections.sort( this.jobEntryResults );
   }
 
-  /**
-   * @return the translationX
-   */
-  public float getTranslationX() {
-    return translationX;
-  }
-
-  /**
-   * @param translationX
-   *          the translationX to set
-   */
-  public void setTranslationX( float translationX ) {
-    this.translationX = translationX;
-  }
-
-  /**
-   * @return the translationY
-   */
-  public float getTranslationY() {
-    return translationY;
-  }
-
-  /**
-   * @param translationY
-   *          the translationY to set
-   */
-  public void setTranslationY( float translationY ) {
-    this.translationY = translationY;
-  }
-
   public JobMeta getJobMeta() {
     return jobMeta;
   }
 
   public void setJobMeta( JobMeta jobMeta ) {
     this.jobMeta = jobMeta;
-  }
-
-  public JobHopMeta getCandidate() {
-    return candidate;
-  }
-
-  public void setCandidate( JobHopMeta candidate ) {
-    this.candidate = candidate;
   }
 
   public JobEntryCopy getStartHopEntry() {
