@@ -42,6 +42,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.logging.HasLogChannelInterface;
 import org.pentaho.di.core.logging.KettleLogLayout;
@@ -179,7 +180,9 @@ public class LogBrowser {
 
     // Refresh every often enough
     //
-    logRefreshTimer.schedule( timerTask, 1000, 1000 );
+    logRefreshTimer
+      .schedule( timerTask, Const.toInt( EnvUtil.getSystemProperty( Const.KETTLE_LOG_TAB_REFRESH_DELAY ), 1000 ),
+        Const.toInt( EnvUtil.getSystemProperty( Const.KETTLE_LOG_TAB_REFRESH_PERIOD ), 1000 ) );
 
     // Make sure the timer goes down when the widget is disposed
     //

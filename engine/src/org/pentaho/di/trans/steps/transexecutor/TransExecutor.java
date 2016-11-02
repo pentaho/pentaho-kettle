@@ -187,7 +187,9 @@ public class TransExecutor extends BaseStep implements StepInterface {
     }
     transExecutorData.groupTimeStart = System.currentTimeMillis();
 
-    discardLogLines( transExecutorData );
+    if ( first ) {
+      discardLogLines( transExecutorData );
+    }
 
     Trans executorTrans = createInternalTrans();
     transExecutorData.setExecutorTrans( executorTrans );

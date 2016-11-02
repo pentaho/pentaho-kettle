@@ -185,7 +185,9 @@ public class JobExecutor extends BaseStep implements StepInterface {
 
     data.groupTimeStart = System.currentTimeMillis();
 
-    discardLogLines( data );
+    if ( first ) {
+      discardLogLines( data );
+    }
 
     data.executorJob = createJob( meta.getRepository(), data.executorJobMeta, this );
 
