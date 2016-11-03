@@ -128,4 +128,19 @@ public class FieldSplitterMetaTest {
     loadSaveTester.testSerialization();
   }
 
+  @Test
+  public void postAllocateChange() throws KettleException {
+    FieldSplitterMeta meta = new FieldSplitterMeta();
+    meta.allocate( 0 );
+
+    meta.setDelimiter( ":" );
+    meta.setEnclosure( "" );
+    meta.setSplitField( "split" );
+
+    // set properties after allocate (simulate metadata injection PDI-15679)
+    meta.setFieldName( new String[] { "c1", "c2" } );
+
+    meta.getXML();
+  }
+
 }

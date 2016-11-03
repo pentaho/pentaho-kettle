@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,6 +24,7 @@ package org.pentaho.di.trans.steps.fieldsplitter;
 
 import java.util.List;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -449,30 +450,45 @@ public class FieldSplitterMeta extends BaseStepMeta implements StepMetaInterface
   public String getXML() {
     final StringBuilder retval = new StringBuilder( 500 );
 
-    retval.append( "   " ).append( XMLHandler.addTagValue( "splitfield", splitField ) );
-    retval.append( "   " ).append( XMLHandler.addTagValue( "delimiter", delimiter ) );
-    retval.append( "   " ).append( XMLHandler.addTagValue( "enclosure", enclosure ) );
+    retval
+      .append( "   " ).append( XMLHandler.addTagValue( "splitfield", splitField ) )
+      .append( "   " ).append( XMLHandler.addTagValue( "delimiter", delimiter ) )
+      .append( "   " ).append( XMLHandler.addTagValue( "enclosure", enclosure ) );
 
-    retval.append( "    <fields>" );
+    retval.append( "   " ).append( "<fields>" );
     for ( int i = 0; i < fieldName.length; i++ ) {
-      retval.append( "      <field>" );
-      retval.append( "        " ).append( XMLHandler.addTagValue( "name", fieldName[i] ) );
-      retval.append( "        " ).append( XMLHandler.addTagValue( "id", fieldID[i] ) );
-      retval.append( "        " ).append( XMLHandler.addTagValue( "idrem", fieldRemoveID[i] ) );
-      retval.append( "        " ).append( XMLHandler.addTagValue( "type", ValueMeta.getTypeDesc( fieldType[i] ) ) );
-      retval.append( "        " ).append( XMLHandler.addTagValue( "format", fieldFormat[i] ) );
-      retval.append( "        " ).append( XMLHandler.addTagValue( "group", fieldGroup[i] ) );
-      retval.append( "        " ).append( XMLHandler.addTagValue( "decimal", fieldDecimal[i] ) );
-      retval.append( "        " ).append( XMLHandler.addTagValue( "currency", fieldCurrency[i] ) );
-      retval.append( "        " ).append( XMLHandler.addTagValue( "length", fieldLength[i] ) );
-      retval.append( "        " ).append( XMLHandler.addTagValue( "precision", fieldPrecision[i] ) );
-      retval.append( "        " ).append( XMLHandler.addTagValue( "nullif", fieldNullIf[i] ) );
-      retval.append( "        " ).append( XMLHandler.addTagValue( "ifnull", fieldIfNull[i] ) );
-      retval.append( "        " ).append(
-        XMLHandler.addTagValue( "trimtype", ValueMeta.getTrimTypeCode( fieldTrimType[i] ) ) );
-      retval.append( "      </field>" );
+      retval
+        .append( "      " ).append( "<field>" )
+        .append( "        " ).append( XMLHandler.addTagValue( "name", fieldName[i] ) )
+        .append( "        " )
+        .append( XMLHandler.addTagValue( "id", ArrayUtils.isEmpty( fieldID ) ? null : fieldID[i] ) )
+        .append( "        " )
+        .append( XMLHandler.addTagValue( "idrem", ArrayUtils.isEmpty( fieldRemoveID ) ? false : fieldRemoveID[i] ) )
+        .append( "        " )
+        .append( XMLHandler.addTagValue( "type",
+          ValueMeta.getTypeDesc( ArrayUtils.isEmpty( fieldType ) ? 0 : fieldType[i] ) ) )
+        .append( "        " )
+        .append( XMLHandler.addTagValue( "format", ArrayUtils.isEmpty( fieldFormat ) ? null : fieldFormat[i] ) )
+        .append( "        " )
+        .append( XMLHandler.addTagValue( "group", ArrayUtils.isEmpty( fieldGroup ) ? null : fieldGroup[i] ) )
+        .append( "        " )
+        .append( XMLHandler.addTagValue( "decimal", ArrayUtils.isEmpty( fieldDecimal ) ? null : fieldDecimal[i] ) )
+        .append( "        " )
+        .append( XMLHandler.addTagValue( "currency", ArrayUtils.isEmpty( fieldCurrency ) ? null : fieldCurrency[i] ) )
+        .append( "        " )
+        .append( XMLHandler.addTagValue( "length",  ArrayUtils.isEmpty( fieldLength ) ? -1 : fieldLength[i] ) )
+        .append( "        " )
+        .append( XMLHandler.addTagValue( "precision", ArrayUtils.isEmpty( fieldPrecision ) ? -1 : fieldPrecision[i] ) )
+        .append( "        " )
+        .append( XMLHandler.addTagValue( "nullif", ArrayUtils.isEmpty( fieldNullIf ) ? null : fieldNullIf[i] ) )
+        .append( "        " )
+        .append( XMLHandler.addTagValue( "ifnull", ArrayUtils.isEmpty( fieldIfNull ) ? null : fieldIfNull[i] ) )
+        .append( "        " )
+        .append( XMLHandler.addTagValue( "trimtype",
+          ValueMeta.getTrimTypeCode( ArrayUtils.isEmpty( fieldTrimType ) ? 0 : fieldTrimType[i] ) ) )
+        .append( "      " ).append( "</field>" );
     }
-    retval.append( "    </fields>" );
+    retval.append( "    " ).append( "</fields>" );
 
     return retval.toString();
   }
