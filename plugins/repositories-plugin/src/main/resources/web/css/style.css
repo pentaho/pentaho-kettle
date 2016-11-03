@@ -515,6 +515,11 @@ tr.active #repoDesc {
   text-overflow: ellipsis !important;
 }
 
+.table-scroll-mng {
+  height: 347px;
+  overflow: auto;
+}
+
 /*
 * MISC
 */
