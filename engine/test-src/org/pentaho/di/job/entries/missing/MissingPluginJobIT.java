@@ -20,28 +20,43 @@
  *
  ******************************************************************************/
 
-package org.pentaho.di.trans.steps.missing;
+package org.pentaho.di.job.entries.missing;
 
-import junit.framework.TestCase;
-
+import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.Result;
-import org.pentaho.di.core.logging.LogLevel;
-import org.pentaho.di.run.TimedTransRunner;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.job.Job;
+import org.pentaho.di.job.JobMeta;
 
-public class MissingPluginTransIT extends TestCase {
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 
-	  @Test( expected = Exception.class )
-	  public void testForPluginMissingStep() throws Exception {
-	    KettleEnvironment.init();
-	    TimedTransRunner timedTransRunner =
-	      new TimedTransRunner(
-	        "test/org/pentaho/di/trans/steps/missing/missing_plugin_trans.ktr", LogLevel.ERROR,
-	        null, 1000 );
-	    assertFalse( timedTransRunner.runEngine( true ) );
+import static org.junit.Assert.assertFalse;
 
-	    Result newResult = timedTransRunner.getNewResult();
-	    assertNull( newResult );
-	  }
+public class MissingPluginJobIT {
+
+  @Before
+  public void setUp() throws KettleException {
+    KettleEnvironment.init();
+  }
+
+  /**
+   * Given a job having an entry which's plugin is missing in current Kettle installation.
+   * When this job is executed, then execution should fail.
+   */
+  @Test
+  public void testForPluginMissingStep() throws Exception {
+    InputStream is = new FileInputStream(
+      new File( this.getClass().getResource( "missing_plugin_job.kjb" ).getFile() ) );
+
+    JobMeta meta = new JobMeta( is, null, null );
+    Job job = new Job( null, meta );
+
+    Result result = new Result();
+    job.execute( 0, result );
+    assertFalse( result.getResult() );
+  }
 }
