@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,13 +23,14 @@
 package org.pentaho.di.ui.spoon;
 
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.*;
-import static junit.framework.Assert.*;
+
 
 import java.util.Collections;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.pentaho.di.core.KettleEnvironment;
@@ -37,9 +38,11 @@ import org.pentaho.di.core.NotePadMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepErrorMeta;
 import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.csvinput.CsvInputMeta;
 import org.pentaho.di.trans.steps.dummytrans.DummyTransMeta;
 
@@ -51,16 +54,16 @@ import org.pentaho.di.trans.steps.dummytrans.DummyTransMeta;
  */
 public class SpoonTest {
 
-  private final Spoon spoon = mock( Spoon.class );
+  private final Spoon spoon = Mockito.mock( Spoon.class );
 
   @Before
   public void setUp() throws KettleException {
-    doCallRealMethod().when( spoon ).copySelected( any( TransMeta.class ), anyListOf( StepMeta.class ),
-        anyListOf( NotePadMeta.class ) );
-    doCallRealMethod().when( spoon ).pasteXML( any( TransMeta.class ), anyString(), any( Point.class ) );
-
-    LogChannelInterface log = mock( LogChannelInterface.class );
-    when( spoon.getLog() ).thenReturn( log );
+    Mockito.doCallRealMethod().when( spoon ).copySelected( Mockito.any( TransMeta.class ), Mockito.anyListOf( StepMeta.class ),
+            Mockito.anyListOf( NotePadMeta.class ) );
+    Mockito.doCallRealMethod().when( spoon ).pasteXML( Mockito.any( TransMeta.class ), anyString(), Mockito.any( Point.class ) );
+    Mockito.doCallRealMethod().when( spoon ).delHop( Mockito.any( TransMeta.class ), Mockito.any( TransHopMeta.class ) );
+    LogChannelInterface log = Mockito.mock( LogChannelInterface.class );
+    Mockito.when( spoon.getLog() ).thenReturn( log );
 
     KettleEnvironment.init();
   }
@@ -92,16 +95,16 @@ public class SpoonTest {
     errorMeta.setTargetStep( targetStep );
 
     final int stepsSizeBefore = transMeta.getSteps().size();
-    doAnswer( new Answer() {
+    Mockito.doAnswer( new Answer() {
       @Override
       public Object answer( InvocationOnMock invocation ) throws Throwable {
-        spoon.pasteXML( transMeta, (String) invocation.getArguments()[0], mock( Point.class ) );
-        assertTrue( "Steps was not copied", stepsSizeBefore < transMeta.getSteps().size() );
+        spoon.pasteXML( transMeta, (String) invocation.getArguments()[0], Mockito.mock( Point.class ) );
+        Assert.assertTrue( "Steps was not copied", stepsSizeBefore < transMeta.getSteps().size() );
         //selected copied step
         for ( StepMeta s:transMeta.getSelectedSteps() ) {
           if ( s.getStepMetaInterface() instanceof CsvInputMeta ) {
             //check that stepError was copied
-            assertNotNull(" Error hop was not copied" , s.getStepErrorMeta() );
+            Assert.assertNotNull( " Error hop was not copied", s.getStepErrorMeta() );
           }
         }
         return null;
@@ -133,16 +136,16 @@ public class SpoonTest {
     errorMeta.setTargetStep( targetStep );
 
     final int stepsSizeBefore = transMeta.getSteps().size();
-    doAnswer( new Answer() {
+    Mockito.doAnswer( new Answer() {
       @Override
       public Object answer( InvocationOnMock invocation ) throws Throwable {
-        spoon.pasteXML( transMeta, (String) invocation.getArguments()[0], mock( Point.class ) );
-        assertTrue( "Steps was not copied", stepsSizeBefore < transMeta.getSteps().size() );
+        spoon.pasteXML( transMeta, (String) invocation.getArguments()[0], Mockito.mock( Point.class ) );
+        Assert.assertTrue( "Steps was not copied", stepsSizeBefore < transMeta.getSteps().size() );
         //selected copied step
         for ( StepMeta s:transMeta.getSelectedSteps() ) {
           if ( s.getStepMetaInterface() instanceof CsvInputMeta ) {
             //check that stepError was empty, because we copy only one step from pair
-            assertNull(" Error hop was not copied" , s.getStepErrorMeta() );
+            Assert.assertNull( " Error hop was not copied", s.getStepErrorMeta() );
           }
         }
         return null;
@@ -151,4 +154,22 @@ public class SpoonTest {
 
     spoon.copySelected( transMeta, transMeta.getSelectedSteps(), Collections.<NotePadMeta>emptyList() );
   }
+
+  @Test
+  public void testDelHop() throws Exception {
+
+    StepMetaInterface stepMetaInterface = Mockito.mock( StepMetaInterface.class );
+    StepMeta step = new StepMeta();
+    step.setStepMetaInterface( stepMetaInterface );
+
+    TransHopMeta transHopMeta = new TransHopMeta();
+    transHopMeta.setFromStep( step );
+
+    TransMeta transMeta = Mockito.mock( TransMeta.class );
+
+    spoon.delHop( transMeta, transHopMeta );
+    Mockito.verify( stepMetaInterface, Mockito.times( 1 ) ).cleanAfterHopFromRemove( );
+
+  }
+
 }

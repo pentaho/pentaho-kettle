@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -710,4 +710,9 @@ public interface StepMetaInterface {
    */
   public Object loadReferencedObject( int index, Repository rep, IMetaStore metaStore, VariableSpace space ) throws KettleException;
 
+  /**
+   * Action remove hop from this step
+   * @return step was changed
+   */
+  public boolean cleanAfterHopFromRemove();
 }

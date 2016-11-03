@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -30,8 +30,11 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
 import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
+
+import static org.junit.Assert.assertNull;
 
 /**
  * <p>
@@ -77,5 +80,19 @@ public class JobExecutorMetaTest {
   @Test
   public void testLoadSaveRepo() throws KettleException {
     loadSaveTester.testRepoRoundTrip();
+  }
+
+  @Test
+  public void testRemoveHopFrom() throws Exception {
+    JobExecutorMeta jobExecutorMeta = new JobExecutorMeta();
+    jobExecutorMeta.setExecutionResultTargetStepMeta( new StepMeta() );
+    jobExecutorMeta.setResultRowsTargetStepMeta( new StepMeta() );
+    jobExecutorMeta.setResultFilesTargetStepMeta( new StepMeta() );
+
+    jobExecutorMeta.cleanAfterHopFromRemove();
+
+    assertNull( jobExecutorMeta.getExecutionResultTargetStepMeta() );
+    assertNull( jobExecutorMeta.getResultRowsTargetStepMeta() );
+    assertNull( jobExecutorMeta.getResultFilesTargetStepMeta() );
   }
 }
