@@ -47,7 +47,7 @@ public class MissingEntry extends JobEntrySpecial {
     previousResult.setNrErrors( previousResult.getNrErrors() + 1 );
     getLogChannel().logError( BaseMessages.getString( MissingEntry.class, "MissingEntry.Log.CannotRunJob" ) );
     return previousResult;
-  };
+  }
 
   public String getMissingPluginId() {
     return this.missingPluginId;
