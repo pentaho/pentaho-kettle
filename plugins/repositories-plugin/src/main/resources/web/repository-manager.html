@@ -1,7 +1,7 @@
 <div class="main_div">
   <div class="title_text margin_bottom_30">{{ 'repositories.manager.title.label' | translate }}</div>
   <div id="table-wrapper" class="margin_bottom_20 table_border">
-    <div id="table-scroll">
+    <div class="table-scroll-mng">
       <table id="repoMngTable">
         <tr ng-repeat="repository in model.repositories" ng-class="{active : repository === model.selectedRepository}"  ng-click="selectRepository(repository)" ng-init="$last && addToolTips()">
           <td class="bullet" />
