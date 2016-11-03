@@ -550,13 +550,11 @@ hr {
 }
 
 .bottom {
-  float: left;
   position: absolute;
   top: 510px;
   left: 30px;
-  width: 570px;
+  right: 30px;
   height: 100px;
-  border: none;
 }
 
 .hidden {
