@@ -383,10 +383,15 @@ define(
       repositoriesModel.repositories = JSON.parse(getRepositories());
       repositoriesModel.selectedRepository = null;
       $scope.model = repositoriesModel;
+      var clickedDefault = false;
       $scope.selectRepository = function(repository) {
-        repositoriesModel.selectedRepository = repository;
+        if(!clickedDefault) {
+          repositoriesModel.selectedRepository = repositoriesModel.selectedRepository == repository ? null : repository;
+        }
+        clickedDefault = false;
       }
       $scope.setDefault = function(repository) {
+        clickedDefault = true;
         var name = repository != null ? repository.displayName : null;
         setDefaultRepository(name);
         for ( i = 0; i < repositoriesModel.repositories.length; i++) {
@@ -396,7 +401,6 @@ define(
             repositoriesModel.repositories[i].isDefault = false;
           }
         }
-        repositoriesModel.selectedRepository = repository;
       }
       $scope.edit = function(repository) {
         $rootScope.fromEdit = true;
@@ -421,6 +425,7 @@ define(
             this.model.repositories.splice(i, 1);
           }
         }
+        repositoriesModel.selectedRepository = null;
       }
       $scope.add = function() {
         $location.path("/pentaho-repository");
