@@ -1,0 +1,16 @@
+<features name="${project.artifactId}-repo" xmlns="http://karaf.apache.org/xmlns/features/v1.2.1">
+
+  <feature name="${project.artifactId}" version="${project.version}">
+    <feature>kar</feature>
+    <feature>pentaho-requirejs-osgi-manager</feature>
+
+    <!-- START client side dependencies -->
+    <bundle>pentaho-webjars:mvn:org.webjars.bower/angular/${dependency.angular.version}</bundle>
+    <bundle>pentaho-webjars:mvn:org.webjars.bower/angular-route/${dependency.angular-route.version}</bundle>
+    <bundle>pentaho-webjars:mvn:org.webjars.bower/angular-sanitize/${dependency.angular-sanitize.version}</bundle>
+    <bundle>pentaho-webjars:mvn:org.webjars.bower/angular-translate/${dependency.angular-translate.version}</bundle>
+    <bundle>pentaho-webjars:mvn:org.webjars.bower/angular-animate/${dependency.angular-animate.version}</bundle>
+    <!-- END -->
+  </feature>
+
+</features>

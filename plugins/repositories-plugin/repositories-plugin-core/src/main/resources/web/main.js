@@ -23,24 +23,21 @@
 define(
     [
       'angular',
-      'angular-sanitize',
-      'angular-route',
-      'angular-animate',
       'repositories',
       'repositories/models',
       'repositories/controllers'
     ],
 
     function (angular) {
-        'use strict';
+      'use strict';
 
-        return {
-            name: 'repositoriesMain',
-            init: function(doc) {
-              angular.element(doc).ready(function () {
-                  angular.bootstrap(doc, ['repo-connection-app']);
-              });
-            }
-        };
+      return {
+        name: 'repositories-main',
+        init: function(doc) {
+          angular.element(doc).ready(function () {
+            angular.bootstrap(doc, ['repo-connection-app']);
+          });
+        }
+      };
     }
 );

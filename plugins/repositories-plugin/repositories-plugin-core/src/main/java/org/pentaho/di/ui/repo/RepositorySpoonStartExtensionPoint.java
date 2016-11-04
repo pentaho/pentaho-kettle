@@ -38,7 +38,7 @@ import org.pentaho.di.ui.spoon.Spoon;
   id = "RepositorySpoonStartExtensionPoint",
   extensionPointId = "SpoonStart",
   description = "Do or display login for default repository"
-)
+  )
 public class RepositorySpoonStartExtensionPoint implements ExtensionPointInterface {
 
   private static Class<?> PKG = RepositorySpoonStartExtensionPoint.class;

@@ -456,7 +456,7 @@ table#repoMngTable td {
 
 #table-scroll {
   height: 304px;
-  overflow:auto; 
+  overflow:auto;
 }
 
 td.bullet {
@@ -606,7 +606,7 @@ hr {
 
 .popover {
   height: 20px !important;
-  font-size: 10px; 
+  font-size: 10px;
   width: auto;
   text-align: center;
   background-color: #FFFFFF ;

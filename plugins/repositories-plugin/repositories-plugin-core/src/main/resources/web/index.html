@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="/requirejs-manager/js/require-init.js"></script>
+  <link href="css/style.css" rel="stylesheet">
+  <script>
+    require(['repositories-plugin-main_${project.version}'], function(app) {
+      app.init(document);
+    });
+  </script>
+</head>
+<body>
+<script>
+  (function() {
+    var stopEvents = function(event) {
+      event.preventDefault();
+      event.stopPropagation();
+      return false;
+    };
+
+    /*
+     * Block context menu event
+     */
+    document.body.addEventListener('contextmenu', function(event) {
+      if(event.srcElement.tagName != "INPUT" && event.srcElement.tagName != "TEXTAREA") {
+        return stopEvents(event);
+      }
+    });
+
+    /*
+     * Block zoom and mouse navigation events
+     */
+    document.body.addEventListener('wheel', function(event) {
+      if (event.ctrlKey || event.shiftKey) {
+        return stopEvents(event);
+      }
+    });
+
+    /**
+     * Block some key down events to navigation, reload and zoom content
+     */
+    document.body.addEventListener('keydown', function(event) {
+      var arrowNavigation = (event.altKey || event.metaKey) && (event.keyCode == 37 || event.keyCode == 39); // ALT+left arrow; ALT+right arrow; cmd+left arrow; cmd+right arrow
+      var backNavigation = event.shiftKey && event.keyCode == 8 ||
+          event.keyCode == 8 && event.srcElement.tagName != "INPUT" && event.srcElement.tagName != "TEXTAREA"; // backspace (except input/textarea tags); SHIFT+backspace
+      var reloadContent = event.ctrlKey && event.keyCode == 116 || (event.ctrlKey || event.metaKey) && event.keyCode == 82 || event.keyCode == 116; // CTRL+F5; CTRL+r; cmd+r; F5
+      var zoomContent = event.ctrlKey && (event.keyCode == 107 || event.keyCode == 109 || event.keyCode == 187 || event.keyCode == 189); // CTRL++; CTRL+-
+
+      if (arrowNavigation || backNavigation || reloadContent || zoomContent) {
+        return stopEvents(event);
+      }
+    });
+  })();
+</script>
+<error-message></error-message>
+<div ng-view class="view-frame" ng-class="slide"></div>
+</body>
+</html>

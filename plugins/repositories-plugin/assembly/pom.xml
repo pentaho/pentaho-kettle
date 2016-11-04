@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.pentaho</groupId>
+    <artifactId>repositories-plugin-modules</artifactId>
+    <version>7.1-SNAPSHOT</version>
+  </parent>
+  <artifactId>repositories-plugin</artifactId>
+  <version>7.1-SNAPSHOT</version>
+  <packaging>kar</packaging>
+  <name>Repositories Plugin for Spoon</name>
+  <description>Repositories Plugin for Spoon</description>
+  <url>http://www.pentaho.com/</url>
+  <dependencies>
+    <dependency>
+      <groupId>org.pentaho</groupId>
+      <artifactId>repositories-plugin-core</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+  </dependencies>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.karaf.tooling</groupId>
+        <artifactId>karaf-maven-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </build>
+</project>
