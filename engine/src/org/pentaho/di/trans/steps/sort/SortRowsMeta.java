@@ -227,17 +227,8 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface {
       int nrfields = XMLHandler.countNodes( fields, "field" );
 
       allocate( nrfields );
-      // Going to this trouble to ensure that transformations that
-      // worked with the sorting before this change still work/sort
-      // the same way.
-      String defaultStrength = Integer.toString( Collator.IDENTICAL );
-      Locale curDefLocale = Locale.getDefault();
-      if ( curDefLocale != null ) {
-        Collator curDefCollator = Collator.getInstance( curDefLocale );
-        if ( curDefCollator != null ) {
-          defaultStrength = Integer.toString( curDefCollator.getStrength() );
-        }
-      }
+      String defaultStrength = Integer.toString( this.getDefaultCollationStrength() );
+
       for ( int i = 0; i < nrfields; i++ ) {
         Node fnode = XMLHandler.getSubNodeByNr( fields, "field", i );
 
@@ -325,17 +316,8 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface {
       int nrfields = rep.countNrStepAttributes( id_step, "field_name" );
 
       allocate( nrfields );
-      // Going to this trouble to ensure that transformations that
-      // worked with the sorting before this change still work/sort
-      // the same way.
-      String defaultStrength = Integer.toString( Collator.IDENTICAL );
-      Locale curDefLocale = Locale.getDefault();
-      if ( curDefLocale != null ) {
-        Collator curDefCollator = Collator.getInstance( curDefLocale );
-        if ( curDefCollator != null ) {
-          defaultStrength = Integer.toString( curDefCollator.getStrength() );
-        }
-      }
+
+      String defaultStrength = Integer.toString( this.getDefaultCollationStrength() );
 
       for ( int i = 0; i < nrfields; i++ ) {
         fieldName[i] = rep.getStepAttributeString( id_step, i, "field_name" );
@@ -349,6 +331,25 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface {
     } catch ( Exception e ) {
       throw new KettleException( "Unexpected error reading step information from the repository", e );
     }
+  }
+
+  // Returns the default collation strength based on the users' default locale.
+  // Package protected for testing purposes
+  int getDefaultCollationStrength() {
+    return getDefaultCollationStrength( Locale.getDefault() );
+  }
+
+  // Returns the collation strength based on the passed in locale.
+  // Package protected for testing purposes
+  int getDefaultCollationStrength( Locale aLocale ) {
+    int defaultStrength = Collator.IDENTICAL;
+    if ( aLocale != null ) {
+      Collator curDefCollator = Collator.getInstance( aLocale );
+      if ( curDefCollator != null ) {
+        defaultStrength = curDefCollator.getStrength();
+      }
+    }
+    return defaultStrength;
   }
 
   @Override
