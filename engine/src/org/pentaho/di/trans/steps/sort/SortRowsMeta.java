@@ -23,8 +23,10 @@
 package org.pentaho.di.trans.steps.sort;
 
 import java.io.File;
+import java.text.Collator;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
@@ -225,6 +227,7 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface {
       int nrfields = XMLHandler.countNodes( fields, "field" );
 
       allocate( nrfields );
+      String defaultStrength = Integer.toString( this.getDefaultCollationStrength() );
 
       for ( int i = 0; i < nrfields; i++ ) {
         Node fnode = XMLHandler.getSubNodeByNr( fields, "field", i );
@@ -237,7 +240,7 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface {
         caseSensitive[i] = Utils.isEmpty( sens ) || "Y".equalsIgnoreCase( sens );
         collatorEnabled[i] = "Y".equalsIgnoreCase( coll );
         collatorStrength[i] = Integer.parseInt(
-          Const.NVL( XMLHandler.getTagValue( fnode, "collator_strength" ), "0" ) );
+          Const.NVL( XMLHandler.getTagValue( fnode, "collator_strength" ), defaultStrength ) );
         String presorted = XMLHandler.getTagValue( fnode, "presorted" );
         preSortedField[i] = "Y".equalsIgnoreCase( presorted );
       }
@@ -314,17 +317,39 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface {
 
       allocate( nrfields );
 
+      String defaultStrength = Integer.toString( this.getDefaultCollationStrength() );
+
       for ( int i = 0; i < nrfields; i++ ) {
         fieldName[i] = rep.getStepAttributeString( id_step, i, "field_name" );
         ascending[i] = rep.getStepAttributeBoolean( id_step, i, "field_ascending" );
         caseSensitive[i] = rep.getStepAttributeBoolean( id_step, i, "field_case_sensitive", true );
         collatorEnabled[i] = rep.getStepAttributeBoolean( id_step, i, "field_collator_enabled", false );
-        collatorStrength[i] = Integer.parseInt( rep.getStepAttributeString( id_step, i, "field_collator_strength" ) );
+        collatorStrength[i] = Integer.parseInt(
+            Const.NVL( rep.getStepAttributeString( id_step, i, "field_collator_strength" ), defaultStrength ) );
         preSortedField[i] = rep.getStepAttributeBoolean( id_step, i, "field_presorted", false );
       }
     } catch ( Exception e ) {
       throw new KettleException( "Unexpected error reading step information from the repository", e );
     }
+  }
+
+  // Returns the default collation strength based on the users' default locale.
+  // Package protected for testing purposes
+  int getDefaultCollationStrength() {
+    return getDefaultCollationStrength( Locale.getDefault() );
+  }
+
+  // Returns the collation strength based on the passed in locale.
+  // Package protected for testing purposes
+  int getDefaultCollationStrength( Locale aLocale ) {
+    int defaultStrength = Collator.IDENTICAL;
+    if ( aLocale != null ) {
+      Collator curDefCollator = Collator.getInstance( aLocale );
+      if ( curDefCollator != null ) {
+        defaultStrength = curDefCollator.getStrength();
+      }
+    }
+    return defaultStrength;
   }
 
   @Override
