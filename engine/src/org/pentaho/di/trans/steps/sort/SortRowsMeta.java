@@ -23,8 +23,10 @@
 package org.pentaho.di.trans.steps.sort;
 
 import java.io.File;
+import java.text.Collator;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
@@ -225,7 +227,17 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface {
       int nrfields = XMLHandler.countNodes( fields, "field" );
 
       allocate( nrfields );
-
+      // Going to this trouble to ensure that transformations that
+      // worked with the sorting before this change still work/sort
+      // the same way.
+      String defaultStrength = Integer.toString( Collator.IDENTICAL );
+      Locale curDefLocale = Locale.getDefault();
+      if ( curDefLocale != null ) {
+        Collator curDefCollator = Collator.getInstance( curDefLocale );
+        if ( curDefCollator != null ) {
+          defaultStrength = Integer.toString( curDefCollator.getStrength() );
+        }
+      }
       for ( int i = 0; i < nrfields; i++ ) {
         Node fnode = XMLHandler.getSubNodeByNr( fields, "field", i );
 
@@ -237,7 +249,7 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface {
         caseSensitive[i] = Utils.isEmpty( sens ) || "Y".equalsIgnoreCase( sens );
         collatorEnabled[i] = "Y".equalsIgnoreCase( coll );
         collatorStrength[i] = Integer.parseInt(
-          Const.NVL( XMLHandler.getTagValue( fnode, "collator_strength" ), "0" ) );
+          Const.NVL( XMLHandler.getTagValue( fnode, "collator_strength" ), defaultStrength ) );
         String presorted = XMLHandler.getTagValue( fnode, "presorted" );
         preSortedField[i] = "Y".equalsIgnoreCase( presorted );
       }
@@ -313,13 +325,25 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface {
       int nrfields = rep.countNrStepAttributes( id_step, "field_name" );
 
       allocate( nrfields );
+      // Going to this trouble to ensure that transformations that
+      // worked with the sorting before this change still work/sort
+      // the same way.
+      String defaultStrength = Integer.toString( Collator.IDENTICAL );
+      Locale curDefLocale = Locale.getDefault();
+      if ( curDefLocale != null ) {
+        Collator curDefCollator = Collator.getInstance( curDefLocale );
+        if ( curDefCollator != null ) {
+          defaultStrength = Integer.toString( curDefCollator.getStrength() );
+        }
+      }
 
       for ( int i = 0; i < nrfields; i++ ) {
         fieldName[i] = rep.getStepAttributeString( id_step, i, "field_name" );
         ascending[i] = rep.getStepAttributeBoolean( id_step, i, "field_ascending" );
         caseSensitive[i] = rep.getStepAttributeBoolean( id_step, i, "field_case_sensitive", true );
         collatorEnabled[i] = rep.getStepAttributeBoolean( id_step, i, "field_collator_enabled", false );
-        collatorStrength[i] = Integer.parseInt( rep.getStepAttributeString( id_step, i, "field_collator_strength" ) );
+        collatorStrength[i] = Integer.parseInt(
+            Const.NVL( rep.getStepAttributeString( id_step, i, "field_collator_strength" ), defaultStrength ) );
         preSortedField[i] = rep.getStepAttributeBoolean( id_step, i, "field_presorted", false );
       }
     } catch ( Exception e ) {
