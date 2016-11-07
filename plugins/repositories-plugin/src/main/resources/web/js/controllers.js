@@ -33,6 +33,8 @@ define(
 
     repoConnectionAppControllers.controller("PentahoRepositoryController", function($scope, $translate, $location, $rootScope, $timeout, $filter, pentahoRepositoryModel, repositoryTypesModel, loadingAnimationModel) {
       $scope.model = pentahoRepositoryModel.model;
+      var connectedRepositoryName = getConnectedRepositoryName();
+      $rootScope.connectNowVisible = !($rootScope.fromEdit && connectedRepositoryName === pentahoRepositoryModel.model.displayName);
       $scope.getStarted = function() {
         $rootScope.fromEdit = false;
         pentahoRepositoryModel.reset();
@@ -125,6 +127,8 @@ define(
     repoConnectionAppControllers.controller("KettleFileRepositoryController", function($scope, $translate, $rootScope, $location, $filter, kettleFileRepositoryModel) {
 
       $scope.model = kettleFileRepositoryModel.model;
+      var connectedRepositoryName = getConnectedRepositoryName();
+      $rootScope.connectNowVisible = !($rootScope.fromEdit && connectedRepositoryName === kettleFileRepositoryModel.model.displayName);
       $scope.selectLocation = function() {
         this.model.location = selectLocation();
       }
@@ -209,6 +213,8 @@ define(
 
     repoConnectionAppControllers.controller("KettleDatabaseRepositoryController", function($scope, $rootScope, $location, $timeout, $filter, kettleDatabaseRepositoryModel, loadingAnimationModel) {
       $scope.model = kettleDatabaseRepositoryModel.model;
+      var connectedRepositoryName = getConnectedRepositoryName();
+      $rootScope.connectNowVisible = !($rootScope.fromEdit && connectedRepositoryName === kettleDatabaseRepositoryModel.model.displayName);
       $scope.selectDatabase = function() {
         $rootScope.clearError();
         $location.path("/kettle-database-repository-select");

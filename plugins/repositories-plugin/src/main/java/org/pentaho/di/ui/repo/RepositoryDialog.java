@@ -248,6 +248,12 @@ public class RepositoryDialog extends ThinDialog {
       }
     };
 
+    new BrowserFunction( browser, "getConnectedRepositoryName" ) {
+      @Override public Object function( Object[] objects ) {
+        return controller.getConnectedRepository() != null ? controller.getConnectedRepository().getName() : "";
+      }
+    };
+
     controller.setCurrentRepository( repositoryMeta );
 
     while ( !dialog.isDisposed() ) {
