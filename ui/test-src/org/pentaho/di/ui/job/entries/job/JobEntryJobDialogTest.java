@@ -39,10 +39,9 @@ public class JobEntryJobDialogTest {
   JobEntryJobDialog dialog;
 
   @Test
-  public void testEntryName() throws Exception {
-    dialog = mock ( JobEntryJobDialog.class );
+  public void testEntryName() {
+    dialog = mock( JobEntryJobDialog.class );
     doCallRealMethod().when( dialog ).getEntryName( any() );
-
     assertEquals( dialog.getEntryName( FILE_NAME ), "${Internal.Entry.Current.Directory}/" + FILE_NAME );
   }
 }
