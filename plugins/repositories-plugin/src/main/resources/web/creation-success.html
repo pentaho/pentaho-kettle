@@ -9,7 +9,7 @@
     <div class="margin_bottom_80" ng-if="fromEdit">{{ 'repositories.readyedit.label' | translate }}</div>
     <div class="margin_bottom_80" ng-if="!fromEdit">{{ 'repositories.readycreate.label' | translate }}</div>
     <div class="margin_bottom_30">{{ 'repositories.question.label' | translate }}</div>
-    <div class="margin_bottom_30">
+    <div class="margin_bottom_30" ng-show="connectNowVisible">
       <button class="same_width standard" type="button" ng-click="connect()">{{ 'repositories.success.connectNow.label' | translate }}</button>
     </div>
     <div>
