@@ -17,7 +17,7 @@ public class JobEntryJobDialogTest {
   JobEntryJobDialog dialog;
 
   @Test
-  public void testVariable() throws Exception {
+  public void testEntryName() throws Exception {
     dialog = mock ( JobEntryJobDialog.class );
     doCallRealMethod().when( dialog ).getEntryName( any() );
 
