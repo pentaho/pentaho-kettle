@@ -426,6 +426,35 @@ public class JsonInputTest {
     Assert.assertEquals( 4, step.getLinesWritten() );
   }
 
+  @Test
+  public void testPathMissingIgnore() throws Exception {
+    final String input = "{ \"value1\": \"1\",\n"
+      + "  \"value2\": \"2\",\n"
+      + "}";
+    final String inCol = "input";
+
+    JsonInputField aField = new JsonInputField();
+    aField.setName( "a" );
+    aField.setPath( "$.value1" );
+    aField.setType( ValueMetaInterface.TYPE_STRING );
+    JsonInputField bField = new JsonInputField();
+    bField.setName( "b" );
+    bField.setPath( "$.value2" );
+    bField.setType( ValueMetaInterface.TYPE_STRING );
+    JsonInputField cField = new JsonInputField();
+    cField.setName( "c" );
+    cField.setPath( "$.notexistpath.value3" );
+    cField.setType( ValueMetaInterface.TYPE_STRING );
+
+    JsonInputMeta meta = createSimpleMeta( inCol, aField, bField, cField );
+    meta.setIgnoreMissingPath( true );
+    JsonInput step = createJsonInput( inCol, meta, new Object[] { input } );
+    step.addRowListener(
+      new RowComparatorListener(
+        new Object[] { input, "1", "2", null } ) );
+    processRows( step, 1 );
+    Assert.assertEquals( 1, step.getLinesWritten() );
+  }
   /**
    * PDI-10384 Huge numbers causing exception in JSON input step<br>
    */
