@@ -3129,7 +3129,7 @@ public class TransGraph extends AbstractGraph<TransMeta> implements XulEventHand
         .getNoteFont().getHeight(), trans, PropsUI.getInstance().isIndicateSlowTransStepsEnabled() );
 
     transPainter.setMagnification( magnificationFactor );
-    transPainter.setStepLogMap( stepLogMap );
+    transPainter.setLogMap( stepLogMap );
     transPainter.setStartHopStep( startHopStep );
     transPainter.setEndHopLocation( endHopLocation );
     transPainter.setNoInputStep( noInputStep );

@@ -2825,7 +2825,7 @@ public class JobGraph extends AbstractGraph<JobMeta> implements XulEventHandler,
           .getInstance().getNoteFont().getName(), PropsUI.getInstance().getNoteFont().getHeight() );
 
     jobPainter.setMagnification( magnificationFactor );
-    jobPainter.setEntryLogMap( entryLogMap );
+    jobPainter.setLogMap( entryLogMap );
     jobPainter.setStartHopEntry( startHopEntry );
     jobPainter.setEndHopLocation( endHopLocation );
     jobPainter.setEndHopEntry( endHopEntry );

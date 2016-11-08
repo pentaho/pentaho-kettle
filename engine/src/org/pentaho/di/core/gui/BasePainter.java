@@ -31,9 +31,11 @@ import org.pentaho.di.core.gui.PrimitiveGCInterface.EColor;
 import org.pentaho.di.core.gui.PrimitiveGCInterface.EImage;
 import org.pentaho.di.core.gui.PrimitiveGCInterface.ELineStyle;
 import org.pentaho.di.core.util.Utils;
+import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.errorhandling.StreamIcon;
 
 import java.util.List;
+import java.util.Map;
 
 public abstract class BasePainter<Hop extends BaseHopMeta, Part extends BaseMeta> {
 
@@ -85,6 +87,8 @@ public abstract class BasePainter<Hop extends BaseHopMeta, Part extends BaseMeta
   private int noteFontHeight;
 
   protected Hop candidate;
+
+  protected Map<Part, String> logMap;
 
   public BasePainter( GCInterface gc, Object subject, Point area, ScrollBarInterface hori,
     ScrollBarInterface vert, Point drop_candidate, Rectangle selrect, List<AreaOwner> areaOwners, int iconsize,
@@ -511,4 +515,19 @@ public abstract class BasePainter<Hop extends BaseHopMeta, Part extends BaseMeta
 
   protected abstract void drawArrow( EImage arrow, int x1, int y1, int x2, int y2, double theta, int size, double factor,
                             Hop jobHop, Object startObject, Object endObject );
+
+  /**
+   * @return the logMap
+   */
+  public Map<Part, String> getLogMap() {
+    return logMap;
+  }
+
+  /**
+   * @param logMap
+   *          the logMap to set
+   */
+  public void setLogMap( Map<Part, String> logMap ) {
+    this.logMap = logMap;
+  }
 }

@@ -23,7 +23,6 @@
 package org.pentaho.di.trans;
 
 import java.util.List;
-import java.util.Map;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
@@ -69,7 +68,6 @@ public class TransPainter extends BasePainter<TransHopMeta, StepMeta> {
 
   private TransMeta transMeta;
 
-  private Map<StepMeta, String> stepLogMap;
   private List<StepMeta> mouseOverSteps;
   private StepMeta startHopStep;
   private Point endHopLocation;
@@ -97,8 +95,6 @@ public class TransPainter extends BasePainter<TransHopMeta, StepMeta> {
 
     this.trans = trans;
     this.slowStepIndicatorEnabled = slowStepIndicatorEnabled;
-
-    stepLogMap = null;
   }
 
   public TransPainter( GCInterface gc, TransMeta transMeta, Point area, ScrollBarInterface hori,
@@ -569,8 +565,8 @@ public class TransPainter extends BasePainter<TransHopMeta, StepMeta> {
     int y = screen.y;
 
     boolean stepError = false;
-    if ( stepLogMap != null && !stepLogMap.isEmpty() ) {
-      String log = stepLogMap.get( stepMeta );
+    if ( logMap != null && !logMap.isEmpty() ) {
+      String log = logMap.get( stepMeta );
       if ( !Utils.isEmpty( log ) ) {
         stepError = true;
       }
@@ -773,10 +769,10 @@ public class TransPainter extends BasePainter<TransHopMeta, StepMeta> {
         transMeta, stepMeta ) );
     }
 
-    // If there was an error during the run, the map "stepLogMap" is not empty and not null.
+    // If there was an error during the run, the map "logMap" is not empty and not null.
     //
     if ( stepError ) {
-      String log = stepLogMap.get( stepMeta );
+      String log = logMap.get( stepMeta );
 
       // Show an error lines icon in the lower right corner of the step...
       //
@@ -1215,21 +1211,6 @@ public class TransPainter extends BasePainter<TransHopMeta, StepMeta> {
     } catch ( Exception e ) {
       LogChannel.GENERAL.logError( "Error calling extension point(s) for the transformation painter arrow", e );
     }
-  }
-
-  /**
-   * @return the stepLogMap
-   */
-  public Map<StepMeta, String> getStepLogMap() {
-    return stepLogMap;
-  }
-
-  /**
-   * @param stepLogMap
-   *          the stepLogMap to set
-   */
-  public void setStepLogMap( Map<StepMeta, String> stepLogMap ) {
-    this.stepLogMap = stepLogMap;
   }
 
   /**

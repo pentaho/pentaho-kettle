@@ -25,7 +25,6 @@ package org.pentaho.di.job;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import org.pentaho.di.core.NotePadMeta;
 import org.pentaho.di.core.Result;
@@ -51,7 +50,6 @@ public class JobPainter extends BasePainter<JobHopMeta, JobEntryCopy> {
   private JobMeta jobMeta;
 
   private List<JobEntryCopy> mouseOverEntries;
-  private Map<JobEntryCopy, String> entryLogMap;
   private JobEntryCopy startHopEntry;
   private Point endHopLocation;
   private JobEntryCopy endHopEntry;
@@ -71,8 +69,6 @@ public class JobPainter extends BasePainter<JobHopMeta, JobEntryCopy> {
     this.candidate = candidate;
 
     this.mouseOverEntries = mouseOverEntries;
-
-    entryLogMap = null;
   }
 
   public void drawJob() {
@@ -611,21 +607,6 @@ public class JobPainter extends BasePainter<JobHopMeta, JobEntryCopy> {
    */
   public void setMouseOverEntries( List<JobEntryCopy> mouseOverEntries ) {
     this.mouseOverEntries = mouseOverEntries;
-  }
-
-  /**
-   * @return the entryLogMap
-   */
-  public Map<JobEntryCopy, String> getEntryLogMap() {
-    return entryLogMap;
-  }
-
-  /**
-   * @param entryLogMap
-   *          the entryLogMap to set
-   */
-  public void setEntryLogMap( Map<JobEntryCopy, String> entryLogMap ) {
-    this.entryLogMap = entryLogMap;
   }
 
   public void setStartHopEntry( JobEntryCopy startHopEntry ) {
