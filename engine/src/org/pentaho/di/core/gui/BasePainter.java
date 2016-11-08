@@ -54,6 +54,9 @@ public abstract class BasePainter<Hop extends BaseHopMeta, Part extends BaseMeta
 
   public static final float FACTOR_1_TO_1 = 1.0f;
 
+  public static final String[] magnificationDescriptions = new String[] {
+    "  200% ", "  150% ", "  100% ", "  75% ", "  50% ", "  25% " };
+
   protected Point area;
 
   protected ScrollBarInterface hori, vert;

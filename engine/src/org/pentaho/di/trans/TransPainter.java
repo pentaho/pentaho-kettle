@@ -81,9 +81,6 @@ public class TransPainter extends BasePainter<TransHopMeta, StepMeta> {
   private Trans trans;
   private boolean slowStepIndicatorEnabled;
 
-  public static final String[] magnificationDescriptions =
-      new String[] { "  200% ", "  150% ", "  100% ", "  75% ", "  50% ", "  25% " };
-
   public TransPainter( GCInterface gc, TransMeta transMeta, Point area, ScrollBarInterface hori,
     ScrollBarInterface vert, TransHopMeta candidate, Point drop_candidate, Rectangle selrect,
     List<AreaOwner> areaOwners, List<StepMeta> mouseOverSteps, int iconsize, int linewidth, int gridsize,
