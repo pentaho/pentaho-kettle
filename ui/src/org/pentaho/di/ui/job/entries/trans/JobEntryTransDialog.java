@@ -1294,10 +1294,7 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
         } else {
 
           if ( !prevName.endsWith( ".ktr" ) ) {
-            prevName =
-              "${"
-                + Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY + "}/" + Const.trim( wFilename.getText() )
-                + ".ktr";
+            prevName = getEntryName( Const.trim( wFilename.getText() ) + ".ktr" );
           }
           if ( KettleVFS.fileExists( prevName ) ) {
             specificationMethod = ObjectLocationSpecificationMethod.FILENAME;
@@ -1340,12 +1337,17 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
       String parentFolderSelection = file.getParentFile().toString();
 
       if ( !Utils.isEmpty( parentFolder ) && parentFolder.equals( parentFolderSelection ) ) {
-        wFilename.setText( "${" + Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY + "}/" + name );
+        wFilename.setText( getEntryName( name ) );
       } else {
         wFilename.setText( fname );
       }
 
     }
+  }
+
+  String getEntryName( String name ) {
+    return "${"
+      + Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY + "}/" + name;
   }
 
   public void dispose() {
