@@ -68,7 +68,6 @@ public class TransPainter extends BasePainter<TransHopMeta, StepMeta> {
 
   private TransMeta transMeta;
 
-  private List<StepMeta> mouseOverSteps;
   private StepMeta startHopStep;
   private Point endHopLocation;
   private StepMeta endHopStep;
@@ -91,7 +90,7 @@ public class TransPainter extends BasePainter<TransHopMeta, StepMeta> {
 
     this.candidate = candidate;
 
-    this.mouseOverSteps = mouseOverSteps;
+    this.mouseOver = mouseOverSteps;
 
     this.trans = trans;
     this.slowStepIndicatorEnabled = slowStepIndicatorEnabled;
@@ -789,7 +788,7 @@ public class TransPainter extends BasePainter<TransHopMeta, StepMeta> {
 
     // Optionally drawn the mouse-over information
     //
-    if ( mouseOverSteps.contains( stepMeta ) ) {
+    if ( mouseOver.contains( stepMeta ) ) {
       gc.setTransform( translationX, translationY, 0, BasePainter.FACTOR_1_TO_1 );
 
       StepMetaInterface stepMetaInterface = stepMeta.getStepMetaInterface();
@@ -1274,14 +1273,6 @@ public class TransPainter extends BasePainter<TransHopMeta, StepMeta> {
 
   public void setTransMeta( TransMeta transMeta ) {
     this.transMeta = transMeta;
-  }
-
-  public List<StepMeta> getMouseOverSteps() {
-    return mouseOverSteps;
-  }
-
-  public void setMouseOverSteps( List<StepMeta> mouseOverSteps ) {
-    this.mouseOverSteps = mouseOverSteps;
   }
 
   public Trans getTrans() {

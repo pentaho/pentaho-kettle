@@ -89,6 +89,7 @@ public abstract class BasePainter<Hop extends BaseHopMeta, Part extends BaseMeta
   protected Hop candidate;
 
   protected Map<Part, String> logMap;
+  protected List<Part> mouseOver;
 
   public BasePainter( GCInterface gc, Object subject, Point area, ScrollBarInterface hori,
     ScrollBarInterface vert, Point drop_candidate, Rectangle selrect, List<AreaOwner> areaOwners, int iconsize,

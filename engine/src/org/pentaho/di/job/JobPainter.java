@@ -49,7 +49,6 @@ public class JobPainter extends BasePainter<JobHopMeta, JobEntryCopy> {
 
   private JobMeta jobMeta;
 
-  private List<JobEntryCopy> mouseOverEntries;
   private JobEntryCopy startHopEntry;
   private Point endHopLocation;
   private JobEntryCopy endHopEntry;
@@ -68,7 +67,7 @@ public class JobPainter extends BasePainter<JobHopMeta, JobEntryCopy> {
 
     this.candidate = candidate;
 
-    this.mouseOverEntries = mouseOverEntries;
+    this.mouseOver = mouseOverEntries;
   }
 
   public void drawJob() {
@@ -288,7 +287,7 @@ public class JobPainter extends BasePainter<JobHopMeta, JobEntryCopy> {
 
     // Optionally drawn the mouse-over information
     //
-    if ( mouseOverEntries.contains( jobEntryCopy ) ) {
+    if ( mouseOver.contains( jobEntryCopy ) ) {
       gc.setTransform( translationX, translationY, 0, BasePainter.FACTOR_1_TO_1 );
 
       EImage[] miniIcons = new EImage[] { EImage.INPUT, EImage.EDIT, EImage.CONTEXT_MENU, EImage.OUTPUT, };
@@ -592,21 +591,6 @@ public class JobPainter extends BasePainter<JobHopMeta, JobEntryCopy> {
         LogChannel.GENERAL.logError( "Error calling extension point(s) for the job painter arrow", e );
       }
     }
-  }
-
-  /**
-   * @return the mouseOverEntries
-   */
-  public List<JobEntryCopy> getMouseOverEntries() {
-    return mouseOverEntries;
-  }
-
-  /**
-   * @param mouseOverEntries
-   *          the mouseOverEntries to set
-   */
-  public void setMouseOverEntries( List<JobEntryCopy> mouseOverEntries ) {
-    this.mouseOverEntries = mouseOverEntries;
   }
 
   public void setStartHopEntry( JobEntryCopy startHopEntry ) {
