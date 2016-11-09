@@ -3130,10 +3130,10 @@ public class TransGraph extends AbstractGraph<TransMeta> implements XulEventHand
 
     transPainter.setMagnification( magnificationFactor );
     transPainter.setLogMap( stepLogMap );
-    transPainter.setStartHopStep( startHopStep );
+    transPainter.setStartHopPart( startHopStep );
     transPainter.setEndHopLocation( endHopLocation );
-    transPainter.setNoInputStep( noInputStep );
-    transPainter.setEndHopStep( endHopStep );
+    transPainter.setNoInputPart( noInputStep );
+    transPainter.setEndHopPart( endHopStep );
     transPainter.setCandidateHopType( candidateHopType );
     transPainter.setStartErrorHopStep( startErrorHopStep );
     transPainter.setShowTargetStreamsStep( showTargetStreamsStep );

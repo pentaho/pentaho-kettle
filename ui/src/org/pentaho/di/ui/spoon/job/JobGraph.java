@@ -2826,10 +2826,10 @@ public class JobGraph extends AbstractGraph<JobMeta> implements XulEventHandler,
 
     jobPainter.setMagnification( magnificationFactor );
     jobPainter.setLogMap( entryLogMap );
-    jobPainter.setStartHopEntry( startHopEntry );
+    jobPainter.setStartHopPart( startHopEntry );
     jobPainter.setEndHopLocation( endHopLocation );
-    jobPainter.setEndHopEntry( endHopEntry );
-    jobPainter.setNoInputEntry( noInputEntry );
+    jobPainter.setEndHopPart( endHopEntry );
+    jobPainter.setNoInputPart( noInputEntry );
     if ( job != null ) {
       jobPainter.setJobEntryResults( job.getJobEntryResults() );
     } else {

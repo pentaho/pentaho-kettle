@@ -68,10 +68,6 @@ public class TransPainter extends BasePainter<TransHopMeta, StepMeta> {
 
   private TransMeta transMeta;
 
-  private StepMeta startHopStep;
-  private Point endHopLocation;
-  private StepMeta endHopStep;
-  private StepMeta noInputStep;
   private StreamType candidateHopType;
   private boolean startErrorHopStep;
   private StepMeta showTargetStreamsStep;
@@ -190,10 +186,10 @@ public class TransPainter extends BasePainter<TransHopMeta, StepMeta> {
     if ( candidate != null ) {
       drawHop( candidate, true );
     } else {
-      if ( startHopStep != null && endHopLocation != null ) {
-        Point fr = startHopStep.getLocation();
+      if ( startHopPart != null && endHopLocation != null ) {
+        Point fr = startHopPart.getLocation();
         Point to = endHopLocation;
-        if ( endHopStep == null ) {
+        if ( endHopPart == null ) {
           gc.setForeground( EColor.GRAY );
           arrow = EImage.ARROW_DISABLED;
         } else {
@@ -202,12 +198,12 @@ public class TransPainter extends BasePainter<TransHopMeta, StepMeta> {
         }
         Point start = real2screen( fr.x + iconsize / 2, fr.y + iconsize / 2 );
         Point end = real2screen( to.x, to.y );
-        drawArrow( arrow, start.x, start.y, end.x, end.y, theta, calcArrowLength(), 1.2, null, startHopStep,
-            endHopStep == null ? endHopLocation : endHopStep );
-      } else if ( endHopStep != null && endHopLocation != null ) {
+        drawArrow( arrow, start.x, start.y, end.x, end.y, theta, calcArrowLength(), 1.2, null, startHopPart,
+            endHopPart == null ? endHopLocation : endHopPart );
+      } else if ( endHopPart != null && endHopLocation != null ) {
         Point fr = endHopLocation;
-        Point to = endHopStep.getLocation();
-        if ( startHopStep == null ) {
+        Point to = endHopPart.getLocation();
+        if ( startHopPart == null ) {
           gc.setForeground( EColor.GRAY );
           arrow = EImage.ARROW_DISABLED;
         } else {
@@ -216,8 +212,8 @@ public class TransPainter extends BasePainter<TransHopMeta, StepMeta> {
         }
         Point start = real2screen( fr.x, fr.y );
         Point end = real2screen( to.x + iconsize / 2, to.y + iconsize / 2 );
-        drawArrow( arrow, start.x, start.y, end.x, end.y, theta, calcArrowLength(), 1.2, null, startHopStep == null
-            ? endHopLocation : startHopStep, endHopStep );
+        drawArrow( arrow, start.x, start.y, end.x, end.y, theta, calcArrowLength(), 1.2, null, startHopPart == null
+            ? endHopLocation : startHopPart, endHopPart );
       }
 
     }
@@ -289,10 +285,10 @@ public class TransPainter extends BasePainter<TransHopMeta, StepMeta> {
 
     // Display an icon on the indicated location signaling to the user that the step in question does not accept input
     //
-    if ( noInputStep != null ) {
+    if ( noInputPart != null ) {
       gc.setLineWidth( 2 );
       gc.setForeground( EColor.RED );
-      Point n = noInputStep.getLocation();
+      Point n = noInputPart.getLocation();
       gc.drawLine( n.x - 5, n.y - 5, n.x + iconsize + 10, n.y + iconsize + 10 );
       gc.drawLine( n.x - 5, n.y + iconsize + 5, n.x + iconsize + 5, n.y - 5 );
     }
@@ -1104,7 +1100,7 @@ public class TransPainter extends BasePainter<TransHopMeta, StepMeta> {
       mx = (int) ( x1 + factor * ( x2 - x1 ) / 2 ) - 8;
       my = (int) ( y1 + factor * ( y2 - y1 ) / 2 ) - 8;
 
-      boolean errorHop = fs.isSendingErrorRowsToStep( ts ) || ( startErrorHopStep && fs.equals( startHopStep ) );
+      boolean errorHop = fs.isSendingErrorRowsToStep( ts ) || ( startErrorHopStep && fs.equals( startHopPart ) );
       boolean targetHop =
         Const.indexOfString( ts.getName(), fs.getStepMetaInterface().getStepIOMeta().getTargetStepnames() ) >= 0;
 
@@ -1163,7 +1159,7 @@ public class TransPainter extends BasePainter<TransHopMeta, StepMeta> {
       StepIOMetaInterface ioMeta = ts.getStepMetaInterface().getStepIOMeta();
       String[] infoStepnames = ioMeta.getInfoStepnames();
 
-      if ( ( candidateHopType == StreamType.INFO && ts.equals( endHopStep ) && fs.equals( startHopStep ) )
+      if ( ( candidateHopType == StreamType.INFO && ts.equals( endHopPart ) && fs.equals( startHopPart ) )
         || Const.indexOfString( fs.getName(), infoStepnames ) >= 0 ) {
         Point bounds = gc.getImageBounds( EImage.INFO );
         gc.drawImage( EImage.INFO, mx, my, magnification );
@@ -1212,38 +1208,6 @@ public class TransPainter extends BasePainter<TransHopMeta, StepMeta> {
     }
   }
 
-  /**
-   * @param startHopStep
-   *          the startHopStep to set
-   */
-  public void setStartHopStep( StepMeta startHopStep ) {
-    this.startHopStep = startHopStep;
-  }
-
-  /**
-   * @param endHopLocation
-   *          the endHopLocation to set
-   */
-  public void setEndHopLocation( Point endHopLocation ) {
-    this.endHopLocation = endHopLocation;
-  }
-
-  /**
-   * @param noInputStep
-   *          the noInputStep to set
-   */
-  public void setNoInputStep( StepMeta noInputStep ) {
-    this.noInputStep = noInputStep;
-  }
-
-  /**
-   * @param endHopStep
-   *          the endHopStep to set
-   */
-  public void setEndHopStep( StepMeta endHopStep ) {
-    this.endHopStep = endHopStep;
-  }
-
   public void setCandidateHopType( StreamType candidateHopType ) {
     this.candidateHopType = candidateHopType;
   }
@@ -1289,22 +1253,6 @@ public class TransPainter extends BasePainter<TransHopMeta, StepMeta> {
 
   public void setSlowStepIndicatorEnabled( boolean slowStepIndicatorEnabled ) {
     this.slowStepIndicatorEnabled = slowStepIndicatorEnabled;
-  }
-
-  public StepMeta getStartHopStep() {
-    return startHopStep;
-  }
-
-  public Point getEndHopLocation() {
-    return endHopLocation;
-  }
-
-  public StepMeta getEndHopStep() {
-    return endHopStep;
-  }
-
-  public StepMeta getNoInputStep() {
-    return noInputStep;
   }
 
   public StreamType getCandidateHopType() {

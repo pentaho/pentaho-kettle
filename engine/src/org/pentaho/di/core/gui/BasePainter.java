@@ -31,7 +31,6 @@ import org.pentaho.di.core.gui.PrimitiveGCInterface.EColor;
 import org.pentaho.di.core.gui.PrimitiveGCInterface.EImage;
 import org.pentaho.di.core.gui.PrimitiveGCInterface.ELineStyle;
 import org.pentaho.di.core.util.Utils;
-import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.errorhandling.StreamIcon;
 
 import java.util.List;
@@ -90,6 +89,11 @@ public abstract class BasePainter<Hop extends BaseHopMeta, Part extends BaseMeta
 
   protected Map<Part, String> logMap;
   protected List<Part> mouseOver;
+
+  protected Part startHopPart;
+  protected Point endHopLocation;
+  protected Part endHopPart;
+  protected Part noInputPart;
 
   public BasePainter( GCInterface gc, Object subject, Point area, ScrollBarInterface hori,
     ScrollBarInterface vert, Point drop_candidate, Rectangle selrect, List<AreaOwner> areaOwners, int iconsize,
@@ -525,10 +529,53 @@ public abstract class BasePainter<Hop extends BaseHopMeta, Part extends BaseMeta
   }
 
   /**
-   * @param logMap
-   *          the logMap to set
+   * @param logMap the logMap to set
    */
   public void setLogMap( Map<Part, String> logMap ) {
     this.logMap = logMap;
+  }
+
+  public Part getStartHopStep() {
+    return startHopPart;
+  }
+
+  /**
+   * @param startHopPart the startHopPart to set
+   */
+  public void setStartHopPart( Part startHopPart ) {
+    this.startHopPart = startHopPart;
+  }
+
+  public Point getEndHopLocation() {
+    return endHopLocation;
+  }
+
+  /**
+   * @param endHopLocation the endHopLocation to set
+   */
+  public void setEndHopLocation( Point endHopLocation ) {
+    this.endHopLocation = endHopLocation;
+  }
+
+  public Part getNoInputStep() {
+    return noInputPart;
+  }
+
+  /**
+   * @param noInputPart the noInputStep to set
+   */
+  public void setNoInputPart( Part noInputPart ) {
+    this.noInputPart = noInputPart;
+  }
+
+  public Part getEndHopStep() {
+    return endHopPart;
+  }
+
+  /**
+   * @param endHopPart the endHopStep to set
+   */
+  public void setEndHopPart( Part endHopPart ) {
+    this.endHopPart = endHopPart;
   }
 }

@@ -49,10 +49,6 @@ public class JobPainter extends BasePainter<JobHopMeta, JobEntryCopy> {
 
   private JobMeta jobMeta;
 
-  private JobEntryCopy startHopEntry;
-  private Point endHopLocation;
-  private JobEntryCopy endHopEntry;
-  private JobEntryCopy noInputEntry;
   private List<JobEntryCopy> activeJobEntries;
   private List<JobEntryResult> jobEntryResults;
 
@@ -138,10 +134,10 @@ public class JobPainter extends BasePainter<JobHopMeta, JobEntryCopy> {
     if ( candidate != null ) {
       drawJobHop( candidate, true );
     } else {
-      if ( startHopEntry != null && endHopLocation != null ) {
-        Point fr = startHopEntry.getLocation();
+      if ( startHopPart != null && endHopLocation != null ) {
+        Point fr = startHopPart.getLocation();
         Point to = endHopLocation;
-        if ( endHopEntry == null ) {
+        if ( endHopPart == null ) {
           gc.setForeground( EColor.GRAY );
           arrow = EImage.ARROW_DISABLED;
         } else {
@@ -150,12 +146,12 @@ public class JobPainter extends BasePainter<JobHopMeta, JobEntryCopy> {
         }
         Point start = real2screen( fr.x + iconsize / 2, fr.y + iconsize / 2 );
         Point end = real2screen( to.x, to.y );
-        drawArrow( arrow, start.x, start.y, end.x, end.y, theta, calcArrowLength(), 1.2, null, startHopEntry,
-            endHopEntry == null ? endHopLocation : endHopEntry );
-      } else if ( endHopEntry != null && endHopLocation != null ) {
+        drawArrow( arrow, start.x, start.y, end.x, end.y, theta, calcArrowLength(), 1.2, null, startHopPart,
+            endHopPart == null ? endHopLocation : endHopPart );
+      } else if ( endHopPart != null && endHopLocation != null ) {
         Point fr = endHopLocation;
-        Point to = endHopEntry.getLocation();
-        if ( startHopEntry == null ) {
+        Point to = endHopPart.getLocation();
+        if ( startHopPart == null ) {
           gc.setForeground( EColor.GRAY );
           arrow = EImage.ARROW_DISABLED;
         } else {
@@ -165,7 +161,7 @@ public class JobPainter extends BasePainter<JobHopMeta, JobEntryCopy> {
         Point start = real2screen( fr.x, fr.y );
         Point end = real2screen( to.x + iconsize / 2, to.y + iconsize / 2 );
         drawArrow( arrow, start.x, start.y, end.x, end.y + iconsize / 2, theta, calcArrowLength(), 1.2, null,
-            startHopEntry == null ? endHopLocation : startHopEntry, endHopEntry );
+            startHopPart == null ? endHopLocation : startHopPart, endHopPart );
       }
     }
 
@@ -176,10 +172,10 @@ public class JobPainter extends BasePainter<JobHopMeta, JobEntryCopy> {
 
     // Display an icon on the indicated location signaling to the user that the step in question does not accept input
     //
-    if ( noInputEntry != null ) {
+    if ( noInputPart != null ) {
       gc.setLineWidth( 2 );
       gc.setForeground( EColor.RED );
-      Point n = noInputEntry.getLocation();
+      Point n = noInputPart.getLocation();
       gc.drawLine( offset.x + n.x - 5, offset.y + n.y - 5, offset.x + n.x + iconsize + 5, offset.y
         + n.y + iconsize + 5 );
       gc.drawLine( offset.x + n.x - 5, offset.y + n.y + iconsize + 5, offset.x + n.x + iconsize + 5, offset.y
@@ -593,22 +589,6 @@ public class JobPainter extends BasePainter<JobHopMeta, JobEntryCopy> {
     }
   }
 
-  public void setStartHopEntry( JobEntryCopy startHopEntry ) {
-    this.startHopEntry = startHopEntry;
-  }
-
-  public void setEndHopLocation( Point endHopLocation ) {
-    this.endHopLocation = endHopLocation;
-  }
-
-  public void setEndHopEntry( JobEntryCopy endHopEntry ) {
-    this.endHopEntry = endHopEntry;
-  }
-
-  public void setNoInputEntry( JobEntryCopy noInputEntry ) {
-    this.noInputEntry = noInputEntry;
-  }
-
   public void setActiveJobEntries( List<JobEntryCopy> activeJobEntries ) {
     this.activeJobEntries = activeJobEntries;
   }
@@ -635,22 +615,6 @@ public class JobPainter extends BasePainter<JobHopMeta, JobEntryCopy> {
 
   public void setJobMeta( JobMeta jobMeta ) {
     this.jobMeta = jobMeta;
-  }
-
-  public JobEntryCopy getStartHopEntry() {
-    return startHopEntry;
-  }
-
-  public Point getEndHopLocation() {
-    return endHopLocation;
-  }
-
-  public JobEntryCopy getEndHopEntry() {
-    return endHopEntry;
-  }
-
-  public JobEntryCopy getNoInputEntry() {
-    return noInputEntry;
   }
 
   public List<JobEntryCopy> getActiveJobEntries() {
