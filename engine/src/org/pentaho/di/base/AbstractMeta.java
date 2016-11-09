@@ -83,7 +83,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterface, HasDatabasesInterface, VariableSpace,
+public abstract class AbstractMeta<Hop> implements ChangedFlagInterface, UndoInterface, HasDatabasesInterface, VariableSpace,
   EngineMetaInterface, NamedParams, HasSlaveServersInterface, AttributesInterface, HasRepositoryInterface,
   LoggingObjectInterface {
 
@@ -180,6 +180,9 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   private boolean showDialog = true;
   private boolean alwaysShowRunOptions = true;
+
+  /** The list of hops. */
+  protected List<Hop> hops;
 
   public boolean isShowDialog() {
     return showDialog;

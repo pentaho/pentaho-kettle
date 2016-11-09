@@ -131,7 +131,7 @@ import org.w3c.dom.Node;
  * @since 20-jun-2003
  * @author Matt Casters
  */
-public class TransMeta extends AbstractMeta
+public class TransMeta extends AbstractMeta<TransHopMeta>
     implements XMLInterface, Comparator<TransMeta>, Comparable<TransMeta>, Cloneable, ResourceExportInterface,
     RepositoryElementInterface, LoggingObjectInterface {
 
@@ -152,9 +152,6 @@ public class TransMeta extends AbstractMeta
   public static final int BORDER_INDENT = 20;
   /** The list of steps associated with the transformation. */
   protected List<StepMeta> steps;
-
-  /** The list of hops associated with the transformation. */
-  protected List<TransHopMeta> hops;
 
   /** The list of dependencies associated with the transformation. */
   protected List<TransDependency> dependencies;
