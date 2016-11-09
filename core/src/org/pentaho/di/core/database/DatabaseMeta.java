@@ -1564,18 +1564,18 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
     ArrayList<String> remarks = new ArrayList<String>();
 
     if ( getDatabaseInterface() == null ) {
-      remarks.add( BaseMessages.getString( PKG, "DatabaseMeta.BadInterface" ) );
+      remarks.add( "No database type was choosen" );
     }
 
     if ( getName() == null || getName().length() == 0 ) {
-      remarks.add( BaseMessages.getString( PKG, "DatabaseMeta.BadConnectionName" ) );
+      remarks.add( "Please give this database connection a name" );
     }
 
     if ( !isPartitioned()
       && !( getDatabaseInterface() instanceof SAPR3DatabaseMeta
       || getDatabaseInterface() instanceof GenericDatabaseMeta ) ) {
       if ( getDatabaseName() == null || getDatabaseName().length() == 0 ) {
-        remarks.add( BaseMessages.getString( PKG, "DatabaseMeta.BadDatabaseName" ) );
+        remarks.add( "Please specify the name of the database" );
       }
     }
 
