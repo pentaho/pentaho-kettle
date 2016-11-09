@@ -475,7 +475,7 @@ public class RepositoryImporter implements IRepositoryImporter, CanLimitDirs {
     return true;
   }
 
-  private void replaceSharedObjects( AbstractMeta abstractMeta ) {
+  private void replaceSharedObjects( AbstractMeta<?> abstractMeta ) {
     for ( DatabaseMeta databaseMeta : getSharedObjects( DatabaseMeta.class ) ) {
       // Database...
       int index = abstractMeta.indexOfDatabase( databaseMeta );
