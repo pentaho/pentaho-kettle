@@ -33,6 +33,7 @@ define(
 
     repoConnectionAppControllers.controller("PentahoRepositoryController", function($scope, $translate, $location, $rootScope, $timeout, $filter, pentahoRepositoryModel, repositoryTypesModel, loadingAnimationModel) {
       $scope.model = pentahoRepositoryModel.model;
+      $rootScope.fromConnect = false;
       var connectedRepositoryName = getConnectedRepositoryName();
       $rootScope.connectNowVisible = !($rootScope.fromEdit && connectedRepositoryName === pentahoRepositoryModel.model.displayName);
       $scope.getStarted = function() {
@@ -125,8 +126,8 @@ define(
     });
 
     repoConnectionAppControllers.controller("KettleFileRepositoryController", function($scope, $translate, $rootScope, $location, $filter, kettleFileRepositoryModel) {
-
       $scope.model = kettleFileRepositoryModel.model;
+      $rootScope.fromConnect = false;
       var connectedRepositoryName = getConnectedRepositoryName();
       $rootScope.connectNowVisible = !($rootScope.fromEdit && connectedRepositoryName === kettleFileRepositoryModel.model.displayName);
       $scope.selectLocation = function() {
@@ -213,6 +214,7 @@ define(
 
     repoConnectionAppControllers.controller("KettleDatabaseRepositoryController", function($scope, $rootScope, $location, $timeout, $filter, kettleDatabaseRepositoryModel, loadingAnimationModel) {
       $scope.model = kettleDatabaseRepositoryModel.model;
+      $rootScope.fromConnect = false;
       var connectedRepositoryName = getConnectedRepositoryName();
       $rootScope.connectNowVisible = !($rootScope.fromEdit && connectedRepositoryName === kettleDatabaseRepositoryModel.model.displayName);
       $scope.selectDatabase = function() {
@@ -450,6 +452,7 @@ define(
       $scope.model = repositoryConnectModel;
       $scope.model.username = getCurrentUser();
       $scope.model.currentRepositoryName = getCurrentRepository();
+      $rootScope.fromConnect = true;
       $scope.canConnect = function() {
         if (this.model.username == "" || this.model.password == "") {
           return false;
