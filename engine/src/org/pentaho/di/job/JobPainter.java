@@ -45,9 +45,7 @@ import org.pentaho.di.core.gui.ScrollBarInterface;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.job.entry.JobEntryCopy;
 
-public class JobPainter extends BasePainter<JobHopMeta, JobEntryCopy> {
-
-  private JobMeta jobMeta;
+public class JobPainter extends BasePainter<JobHopMeta, JobEntryCopy, JobMeta> {
 
   private List<JobEntryCopy> activeJobEntries;
   private List<JobEntryResult> jobEntryResults;
@@ -59,55 +57,15 @@ public class JobPainter extends BasePainter<JobHopMeta, JobEntryCopy> {
     super(
       gc, jobMeta, area, hori, vert, drop_candidate, selrect, areaOwners, iconsize, linewidth, gridsize,
       shadowSize, antiAliasing, noteFontName, noteFontHeight );
-    this.jobMeta = jobMeta;
+    this.thisMeta = jobMeta;
 
     this.candidate = candidate;
 
     this.mouseOver = mouseOverEntries;
   }
 
-  public void drawJob() {
-
-    Point max = jobMeta.getMaximum();
-    Point thumb = getThumb( area, max );
-    offset = getOffset( thumb, area );
-
-    gc.setBackground( EColor.BACKGROUND );
-
-    if ( hori != null ) {
-      hori.setThumb( thumb.x );
-    }
-    if ( vert != null ) {
-      vert.setThumb( thumb.y );
-    }
-
-    // If there is a shadow, we draw the transformation first with an alpha
-    // setting
-    //
-    if ( shadowSize > 0 ) {
-      gc.setAlpha( 20 );
-      gc.setTransform( translationX, translationY, shadowSize, magnification );
-      shadow = true;
-      drawJobElements();
-    }
-
-    // Draw the transformation onto the image
-    //
-    gc.setAlpha( 255 );
-    gc.setTransform( translationX, translationY, 0, magnification );
-
-    shadow = false;
-    drawJobElements();
-
-    gc.dispose();
-
-  }
-
-  private void drawJobElements() {
-    if ( !shadow && gridSize > 1 ) {
-      drawGrid();
-    }
-
+  @Override
+  protected void drawThisPart( Point thumb ) {
     try {
       ExtensionPointHandler.callExtensionPoint( LogChannel.GENERAL, KettleExtensionPoint.JobPainterStart.id, this );
     } catch ( KettleException e ) {
@@ -117,16 +75,16 @@ public class JobPainter extends BasePainter<JobHopMeta, JobEntryCopy> {
     // First draw the notes...
     gc.setFont( EFont.NOTE );
 
-    for ( int i = 0; i < jobMeta.nrNotes(); i++ ) {
-      NotePadMeta ni = jobMeta.getNote( i );
+    for ( int i = 0; i < thisMeta.nrNotes(); i++ ) {
+      NotePadMeta ni = thisMeta.getNote( i );
       drawNote( ni );
     }
 
     gc.setFont( EFont.GRAPH );
 
     // ... and then the rest on top of it...
-    for ( int i = 0; i < jobMeta.nrJobHops(); i++ ) {
-      JobHopMeta hi = jobMeta.getJobHop( i );
+    for ( int i = 0; i < thisMeta.nrJobHops(); i++ ) {
+      JobHopMeta hi = thisMeta.getJobHop( i );
       drawJobHop( hi, false );
     }
 
@@ -165,8 +123,8 @@ public class JobPainter extends BasePainter<JobHopMeta, JobEntryCopy> {
       }
     }
 
-    for ( int j = 0; j < jobMeta.nrJobEntries(); j++ ) {
-      JobEntryCopy je = jobMeta.getJobEntry( j );
+    for ( int j = 0; j < thisMeta.nrJobEntries(); j++ ) {
+      JobEntryCopy je = thisMeta.getJobEntry( j );
       drawJobEntryCopy( je );
     }
 
@@ -193,10 +151,6 @@ public class JobPainter extends BasePainter<JobHopMeta, JobEntryCopy> {
       ExtensionPointHandler.callExtensionPoint( LogChannel.GENERAL, KettleExtensionPoint.JobPainterEnd.id, this );
     } catch ( KettleException e ) {
       LogChannel.GENERAL.logError( "Error in JobPainterEnd extension point", e );
-    }
-
-    if ( !shadow ) {
-      drawRect( selrect );
     }
   }
 
@@ -343,7 +297,7 @@ public class JobPainter extends BasePainter<JobHopMeta, JobEntryCopy> {
 
       gc.setFont( EFont.GRAPH );
       areaOwners.add( new AreaOwner(
-        AreaType.MINI_ICONS_BALLOON, translateTo1To1( areaX ), translateTo1To1( areaY ), translateTo1To1( totalWidth ), translateTo1To1( totalHeight ), offset, jobMeta, jobEntryCopy ) );
+        AreaType.MINI_ICONS_BALLOON, translateTo1To1( areaX ), translateTo1To1( areaY ), translateTo1To1( totalWidth ), translateTo1To1( totalHeight ), offset, thisMeta, jobEntryCopy ) );
 
       gc.fillPolygon( new int[] {
         areaX + totalWidth / 2 - MINI_ICON_TRIANGLE_BASE / 2 + 1, areaY + 2,
@@ -360,35 +314,31 @@ public class JobPainter extends BasePainter<JobHopMeta, JobEntryCopy> {
         EImage miniIcon = miniIcons[i];
         Point bounds = gc.getImageBounds( miniIcon );
         boolean enabled = false;
+        AreaType type = null;
         switch ( i ) {
           case 0: // INPUT
             enabled = !jobEntryCopy.isStart();
-            areaOwners.add( new AreaOwner( AreaType.JOB_ENTRY_MINI_ICON_INPUT, translateTo1To1( xIcon ),
-                translateTo1To1( yIcon ), translateTo1To1( bounds.x ), translateTo1To1( bounds.y ), offset, jobMeta,
-                jobEntryCopy ) );
+            type = AreaType.JOB_ENTRY_MINI_ICON_INPUT;
             break;
           case 1: // EDIT
             enabled = true;
-            areaOwners.add( new AreaOwner( AreaType.JOB_ENTRY_MINI_ICON_EDIT, translateTo1To1( xIcon ),
-                translateTo1To1( yIcon ), translateTo1To1( bounds.x ), translateTo1To1( bounds.y ), offset, jobMeta,
-                jobEntryCopy ) );
+            type = AreaType.JOB_ENTRY_MINI_ICON_EDIT;
             break;
           case 2: // Job entry context menu
             enabled = true;
-            areaOwners.add( new AreaOwner( AreaType.JOB_ENTRY_MINI_ICON_CONTEXT, translateTo1To1( xIcon ),
-                translateTo1To1( yIcon ), translateTo1To1( bounds.x ), translateTo1To1( bounds.y ), offset, jobMeta,
-                jobEntryCopy ) );
+            type = AreaType.JOB_ENTRY_MINI_ICON_CONTEXT;
             break;
           case 3: // OUTPUT
             enabled = true;
-            areaOwners.add( new AreaOwner( AreaType.JOB_ENTRY_MINI_ICON_OUTPUT, translateTo1To1( xIcon ),
-                translateTo1To1( yIcon ), translateTo1To1( bounds.x ), translateTo1To1( bounds.y ), offset, jobMeta,
-                jobEntryCopy ) );
+            type = AreaType.JOB_ENTRY_MINI_ICON_OUTPUT;
             break;
           default:
             break;
         }
-
+        if ( type != null ) {
+          areaOwners.add( new AreaOwner( type, translateTo1To1( xIcon ), translateTo1To1( yIcon ),
+            translateTo1To1( bounds.x ), translateTo1To1( bounds.y ), offset, thisMeta, jobEntryCopy ) );
+        }
         if ( enabled ) {
           gc.setAlpha( 255 );
         } else {
@@ -431,64 +381,52 @@ public class JobPainter extends BasePainter<JobHopMeta, JobEntryCopy> {
       return;
     }
 
-    drawLine( hop, candidate );
+    drawLine( hop.getFromEntry(), hop.getToEntry(), hop, candidate );
   }
 
-  /**
-   * Calculates line coordinates from center to center.
-   */
-  protected void drawLine( JobHopMeta jobHop, boolean is_candidate ) {
-    int[] line = getLine( jobHop.getFromEntry(), jobHop.getToEntry() );
-
-    gc.setLineWidth( linewidth );
+  @Override
+  protected EImage prepareDrawLineContext( JobEntryCopy fs, JobEntryCopy ts, JobHopMeta hi, boolean is_candidate ) {
     EColor col;
+    ELineStyle linestyle;
+    int activeLinewidth = linewidth;
 
-    if ( jobHop.getFromEntry().isLaunchingInParallel() ) {
-      gc.setLineStyle( ELineStyle.PARALLEL );
+    if ( hi.getFromEntry().isLaunchingInParallel() ) {
+      linestyle = ELineStyle.PARALLEL;
     } else {
-      gc.setLineStyle( ELineStyle.SOLID );
+      linestyle = ELineStyle.SOLID;
     }
 
     EImage arrow;
     if ( is_candidate ) {
       col = EColor.BLUE;
       arrow = EImage.ARROW_CANDIDATE;
-    } else if ( jobHop.isEnabled() ) {
-      if ( jobHop.isUnconditional() ) {
+    } else if ( hi.isEnabled() ) {
+      if ( hi.isUnconditional() ) {
         col = EColor.HOP_DEFAULT;
         arrow = EImage.ARROW_DEFAULT;
       } else {
-        if ( jobHop.getEvaluation() ) {
+        if ( hi.getEvaluation() ) {
           col = EColor.HOP_OK;
           arrow = EImage.ARROW_OK;
         } else {
           col = EColor.RED;
           arrow = EImage.ARROW_ERROR;
-          gc.setLineStyle( ELineStyle.DASH );
+          linestyle = ELineStyle.DASH;
         }
       }
     } else {
       col = EColor.GRAY;
       arrow = EImage.ARROW_DISABLED;
     }
+    if ( hi.split ) {
+      activeLinewidth = linewidth + 2;
+    }
 
     gc.setForeground( col );
+    gc.setLineStyle( linestyle );
+    gc.setLineWidth( activeLinewidth );
 
-    if ( jobHop.isSplit() ) {
-      gc.setLineWidth( linewidth + 2 );
-    }
-    drawArrow( arrow, line, jobHop );
-    if ( jobHop.isSplit() ) {
-      gc.setLineWidth( linewidth );
-    }
-
-    gc.setForeground( EColor.BLACK );
-    gc.setBackground( EColor.BACKGROUND );
-    gc.setLineStyle( ELineStyle.SOLID );
-  }
-
-  private void drawArrow( EImage arrow, int[] line, JobHopMeta jobHop ) {
-    drawArrow( arrow, line, jobHop, jobHop.getFromEntry(), jobHop.getToEntry() );
+    return arrow;
   }
 
   @Override
@@ -539,7 +477,7 @@ public class JobPainter extends BasePainter<JobHopMeta, JobEntryCopy> {
       }
 
       JobPainterExtension extension =
-        new JobPainterExtension( gc, shadow, areaOwners, jobMeta, jobHop, x1, y1, x2, y2, mx, my, offset );
+        new JobPainterExtension( gc, shadow, areaOwners, thisMeta, jobHop, x1, y1, x2, y2, mx, my, offset );
       try {
         ExtensionPointHandler.callExtensionPoint(
           LogChannel.GENERAL, KettleExtensionPoint.JobPainterArrow.id, extension );
@@ -570,11 +508,11 @@ public class JobPainter extends BasePainter<JobHopMeta, JobEntryCopy> {
   }
 
   public JobMeta getJobMeta() {
-    return jobMeta;
+    return thisMeta;
   }
 
   public void setJobMeta( JobMeta jobMeta ) {
-    this.jobMeta = jobMeta;
+    this.thisMeta = jobMeta;
   }
 
   public List<JobEntryCopy> getActiveJobEntries() {

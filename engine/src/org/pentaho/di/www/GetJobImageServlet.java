@@ -196,7 +196,7 @@ public class GetJobImageServlet extends BaseHttpServlet implements CartePluginIn
         gc, jobMeta, maximum, null, null, null, null, null, new ArrayList<AreaOwner>(),
         new ArrayList<JobEntryCopy>(), 32, 1, 0, 0, true, "Arial", 10 );
     jobPainter.setMagnification( magnification );
-    jobPainter.drawJob();
+    jobPainter.drawThisPart();
 
     BufferedImage image = (BufferedImage) gc.getImage();
 

@@ -195,7 +195,7 @@ public class GetTransImageServlet extends BaseHttpServlet implements CartePlugin
         gc, transMeta, maximum, null, null, null, null, null, new ArrayList<AreaOwner>(),
         new ArrayList<StepMeta>(), 32, 1, 0, 0, true, "Arial", 10 );
     transPainter.setMagnification( magnification );
-    transPainter.buildTransformationImage();
+    transPainter.drawThisPart();
 
     BufferedImage image = (BufferedImage) gc.getImage();
 

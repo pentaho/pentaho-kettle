@@ -55,7 +55,7 @@ import org.pentaho.di.trans.step.StepStatus;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface.StreamType;
 
-public class TransPainter extends BasePainter<TransHopMeta, StepMeta> {
+public class TransPainter extends BasePainter<TransHopMeta, StepMeta, TransMeta> {
 
   private static Class<?> PKG = TransPainter.class; // for i18n purposes, needed by Translator2!!
 
@@ -65,8 +65,6 @@ public class TransPainter extends BasePainter<TransHopMeta, StepMeta> {
   public static final String STRING_STEP_ERROR_LOG = "StepErrorLog";
   public static final String STRING_HOP_TYPE_COPY = "HopTypeCopy";
   public static final String STRING_ROW_DISTRIBUTION = "RowDistribution";
-
-  private TransMeta transMeta;
 
   private StreamType candidateHopType;
   private boolean startErrorHopStep;
@@ -82,7 +80,7 @@ public class TransPainter extends BasePainter<TransHopMeta, StepMeta> {
     super(
       gc, transMeta, area, hori, vert, drop_candidate, selrect, areaOwners, iconsize, linewidth, gridsize,
       shadowSize, antiAliasing, noteFontName, noteFontHeight );
-    this.transMeta = transMeta;
+    this.thisMeta = transMeta;
 
     this.candidate = candidate;
 
@@ -121,40 +119,8 @@ public class TransPainter extends BasePainter<TransHopMeta, StepMeta> {
     return titles;
   }
 
-  public void buildTransformationImage() {
-    Point max = transMeta.getMaximum();
-    Point thumb = getThumb( area, max );
-    offset = getOffset( thumb, area );
-
-    // First clear the image in the background color
-    gc.setBackground( EColor.BACKGROUND );
-    gc.fillRectangle( 0, 0, area.x, area.y );
-
-    // If there is a shadow, we draw the transformation first with an alpha setting
-    //
-    if ( shadowSize > 0 ) {
-      shadow = true;
-      gc.setTransform( translationX, translationY, shadowSize, magnification );
-      gc.setAlpha( 20 );
-
-      drawTrans( thumb );
-    }
-
-    // Draw the transformation onto the image
-    //
-    shadow = false;
-    gc.setTransform( translationX, translationY, 0, magnification );
-    gc.setAlpha( 255 );
-    drawTrans( thumb );
-
-    gc.dispose();
-  }
-
-  private void drawTrans( Point thumb ) {
-    if ( !shadow && gridSize > 1 ) {
-      drawGrid();
-    }
-
+  @Override
+  protected void drawThisPart( Point thumb ) {
     if ( hori != null && vert != null ) {
       hori.setThumb( thumb.x );
       vert.setThumb( thumb.y );
@@ -169,17 +135,17 @@ public class TransPainter extends BasePainter<TransHopMeta, StepMeta> {
     gc.setFont( EFont.NOTE );
 
     // First the notes
-    for ( int i = 0; i < transMeta.nrNotes(); i++ ) {
-      NotePadMeta ni = transMeta.getNote( i );
+    for ( int i = 0; i < thisMeta.nrNotes(); i++ ) {
+      NotePadMeta ni = thisMeta.getNote( i );
       drawNote( ni );
     }
 
     gc.setFont( EFont.GRAPH );
     gc.setBackground( EColor.BACKGROUND );
 
-    for ( int i = 0; i < transMeta.nrTransHops(); i++ ) {
-      TransHopMeta hi = transMeta.getTransHop( i );
-      drawHop( hi );
+    for ( int i = 0; i < thisMeta.nrTransHops(); i++ ) {
+      TransHopMeta hi = thisMeta.getTransHop( i );
+      drawHop( hi, false );
     }
 
     EImage arrow;
@@ -219,8 +185,8 @@ public class TransPainter extends BasePainter<TransHopMeta, StepMeta> {
     }
 
     // Draw regular step appearance
-    for ( int i = 0; i < transMeta.nrSteps(); i++ ) {
-      StepMeta stepMeta = transMeta.getStep( i );
+    for ( int i = 0; i < thisMeta.nrSteps(); i++ ) {
+      StepMeta stepMeta = thisMeta.getStep( i );
       if ( stepMeta.isDrawn() ) {
         drawStep( stepMeta );
       }
@@ -229,8 +195,8 @@ public class TransPainter extends BasePainter<TransHopMeta, StepMeta> {
     if ( slowStepIndicatorEnabled ) {
 
       // Highlight possible bottlenecks
-      for ( int i = 0; i < transMeta.nrSteps(); i++ ) {
-        StepMeta stepMeta = transMeta.getStep( i );
+      for ( int i = 0; i < thisMeta.nrSteps(); i++ ) {
+        StepMeta stepMeta = thisMeta.getStep( i );
         if ( stepMeta.isDrawn() ) {
           checkDrawSlowStepIndicator( stepMeta );
         }
@@ -239,42 +205,42 @@ public class TransPainter extends BasePainter<TransHopMeta, StepMeta> {
     }
 
     // Draw step status indicators (running vs. done)
-    for ( int i = 0; i < transMeta.nrSteps(); i++ ) {
-      StepMeta stepMeta = transMeta.getStep( i );
+    for ( int i = 0; i < thisMeta.nrSteps(); i++ ) {
+      StepMeta stepMeta = thisMeta.getStep( i );
       if ( stepMeta.isDrawn() ) {
         drawStepStatusIndicator( stepMeta );
       }
     }
 
     // Draw performance table for selected step(s)
-    for ( int i = 0; i < transMeta.nrSteps(); i++ ) {
-      StepMeta stepMeta = transMeta.getStep( i );
+    for ( int i = 0; i < thisMeta.nrSteps(); i++ ) {
+      StepMeta stepMeta = thisMeta.getStep( i );
       if ( stepMeta.isDrawn() ) {
         drawStepPerformanceTable( stepMeta );
       }
     }
 
     int selectedStepsCount = 0;
-    for ( int i = transMeta.nrSteps() - 1; i >= 0; i-- ) {
-      StepMeta stepMeta = transMeta.getStep( i );
+    for ( int i = thisMeta.nrSteps() - 1; i >= 0; i-- ) {
+      StepMeta stepMeta = thisMeta.getStep( i );
       if ( stepMeta.isSelected() ) {
         selectedStepsCount++;
       }
     }
 
     TransPainterFlyoutExtension extension = null;
-    for ( int i = transMeta.nrSteps() - 1; i >= 0; i-- ) {
-      StepMeta stepMeta = transMeta.getStep( i );
+    for ( int i = thisMeta.nrSteps() - 1; i >= 0; i-- ) {
+      StepMeta stepMeta = thisMeta.getStep( i );
       if ( stepMeta.isSelected() && stepMeta.isDrawn() && selectedStepsCount == 1 ) {
         extension = new TransPainterFlyoutExtension(
-          gc, areaOwners, transMeta, stepMeta, translationX, translationY, magnification, area, offset );
+          gc, areaOwners, thisMeta, stepMeta, translationX, translationY, magnification, area, offset );
         break;
       }
     }
     if ( extension == null ) {
       // pass null to notify extension that nothing is selected
       extension = new TransPainterFlyoutExtension(
-        gc, areaOwners, transMeta, null, translationX, translationY, magnification, area, offset );
+        gc, areaOwners, thisMeta, null, translationX, translationY, magnification, area, offset );
     }
     try {
       ExtensionPointHandler.callExtensionPoint(
@@ -305,11 +271,6 @@ public class TransPainter extends BasePainter<TransHopMeta, StepMeta> {
     } catch ( KettleException e ) {
       LogChannel.GENERAL.logError( "Error in TransPainterEnd extension point", e );
     }
-
-    if ( !shadow ) {
-      drawRect( selrect );
-    }
-
   }
 
   private void checkDrawSlowStepIndicator( StepMeta stepMeta ) {
@@ -529,10 +490,6 @@ public class TransPainter extends BasePainter<TransHopMeta, StepMeta> {
     gc.drawText( txt, x, y );
   }
 
-  private void drawHop( TransHopMeta hi ) {
-    drawHop( hi, false );
-  }
-
   private void drawHop( TransHopMeta hi, boolean isCandidate ) {
     StepMeta fs = hi.getFromStep();
     StepMeta ts = hi.getToStep();
@@ -702,7 +659,7 @@ public class TransPainter extends BasePainter<TransHopMeta, StepMeta> {
 
     // Add to the list of areas...
     if ( !shadow ) {
-      areaOwners.add( new AreaOwner( AreaType.STEP_ICON, x, y, iconsize, iconsize, offset, transMeta, stepMeta ) );
+      areaOwners.add( new AreaOwner( AreaType.STEP_ICON, x, y, iconsize, iconsize, offset, thisMeta, stepMeta ) );
     }
 
     gc.setBackground( EColor.BACKGROUND );
@@ -761,7 +718,7 @@ public class TransPainter extends BasePainter<TransHopMeta, StepMeta> {
       gc.drawText( copies, x - textExtent.x / 2, y - textExtent.y, false );
       areaOwners.add( new AreaOwner(
         AreaType.STEP_COPIES_TEXT, x - textExtent.x / 2, y - textExtent.y, textExtent.x, textExtent.y, offset,
-        transMeta, stepMeta ) );
+        thisMeta, stepMeta ) );
     }
 
     // If there was an error during the run, the map "logMap" is not empty and not null.
@@ -866,38 +823,36 @@ public class TransPainter extends BasePainter<TransHopMeta, StepMeta> {
         EImage miniIcon = miniIcons[i];
         Point bounds = gc.getImageBounds( miniIcon );
         boolean enabled = false;
+        AreaType type = null;
+        Object owner = ioMeta;
         switch ( i ) {
           case 0: // INPUT
             enabled = ioMeta.isInputAcceptor() || ioMeta.isInputDynamic();
-            areaOwners.add( new AreaOwner( AreaType.STEP_INPUT_HOP_ICON, translateTo1To1( xIcon ),
-                translateTo1To1( yIcon ), translateTo1To1( bounds.x ), translateTo1To1( bounds.y ), offset, stepMeta,
-                ioMeta ) );
+            type = AreaType.STEP_INPUT_HOP_ICON;
             break;
           case 1: // EDIT
             enabled = true;
-            areaOwners.add( new AreaOwner( AreaType.STEP_EDIT_ICON, translateTo1To1( xIcon ), translateTo1To1( yIcon ),
-                translateTo1To1( bounds.x ), translateTo1To1( bounds.y ), offset, stepMeta, ioMeta ) );
+            type = AreaType.STEP_EDIT_ICON;
             break;
           case 2: // STEP_MENU
             enabled = true;
-            areaOwners.add( new AreaOwner( AreaType.STEP_MENU_ICON, translateTo1To1( xIcon ), translateTo1To1( yIcon ),
-                translateTo1To1( bounds.x ), translateTo1To1( bounds.y ), offset, stepMeta, ioMeta ) );
+            type = AreaType.STEP_MENU_ICON;
             break;
           case 3: // OUTPUT
             enabled = ioMeta.isOutputProducer() || ioMeta.isOutputDynamic();
-            areaOwners.add( new AreaOwner( AreaType.STEP_OUTPUT_HOP_ICON, translateTo1To1( xIcon ),
-                translateTo1To1( yIcon ), translateTo1To1( bounds.x ), translateTo1To1( bounds.y ), offset, stepMeta,
-                ioMeta ) );
+            type = AreaType.STEP_OUTPUT_HOP_ICON;
             break;
           case 4: // INJECT
             enabled = mdiSupport;
-            StepMetaInterface mdiObject = mdiSupport ? stepMetaInterface : null;
-            areaOwners.add( new AreaOwner( AreaType.STEP_INJECT_ICON, translateTo1To1( xIcon ),
-                translateTo1To1( yIcon ), translateTo1To1( bounds.x ), translateTo1To1( bounds.y ), offset, stepMeta,
-                mdiObject ) );
+            type = AreaType.STEP_INJECT_ICON;
+            owner = mdiSupport ? stepMetaInterface : null;
             break;
           default:
             break;
+        }
+        if ( type != null ) {
+          areaOwners.add( new AreaOwner( type, translateTo1To1( xIcon ), translateTo1To1( yIcon ),
+            translateTo1To1( bounds.x ), translateTo1To1( bounds.y ), offset, stepMeta, owner ) );
         }
         if ( enabled ) {
           gc.setAlpha( 255 );
@@ -953,7 +908,7 @@ public class TransPainter extends BasePainter<TransHopMeta, StepMeta> {
 
     TransPainterExtension extension =
       new TransPainterExtension(
-        gc, shadow, areaOwners, transMeta, stepMeta, null, x, y, 0, 0, 0, 0, offset, iconsize );
+        gc, shadow, areaOwners, thisMeta, stepMeta, null, x, y, 0, 0, 0, 0, offset, iconsize );
     try {
       ExtensionPointHandler.callExtensionPoint(
         LogChannel.GENERAL, KettleExtensionPoint.TransPainterStep.id, extension );
@@ -975,9 +930,8 @@ public class TransPainter extends BasePainter<TransHopMeta, StepMeta> {
     return new Point( xpos, ypos );
   }
 
-  private void drawLine( StepMeta fs, StepMeta ts, TransHopMeta hi, boolean is_candidate ) {
-    int[] line = getLine( fs, ts );
-
+  @Override
+  protected EImage prepareDrawLineContext( StepMeta fs, StepMeta ts, TransHopMeta hi, boolean is_candidate ) {
     EColor col;
     ELineStyle linestyle = ELineStyle.SOLID;
     int activeLinewidth = linewidth;
@@ -1033,15 +987,7 @@ public class TransPainter extends BasePainter<TransHopMeta, StepMeta> {
     gc.setLineStyle( linestyle );
     gc.setLineWidth( activeLinewidth );
 
-    drawArrow( arrow, line, hi, fs, ts );
-
-    if ( hi.split ) {
-      gc.setLineWidth( linewidth );
-    }
-
-    gc.setForeground( EColor.BLACK );
-    gc.setBackground( EColor.BACKGROUND );
-    gc.setLineStyle( ELineStyle.SOLID );
+    return arrow;
   }
 
   @Override
@@ -1157,7 +1103,7 @@ public class TransPainter extends BasePainter<TransHopMeta, StepMeta> {
 
     TransPainterExtension extension =
       new TransPainterExtension(
-        gc, shadow, areaOwners, transMeta, null, transHop, x1, y1, x2, y2, mx, my, offset, iconsize );
+        gc, shadow, areaOwners, thisMeta, null, transHop, x1, y1, x2, y2, mx, my, offset, iconsize );
     try {
       ExtensionPointHandler.callExtensionPoint(
         LogChannel.GENERAL, KettleExtensionPoint.TransPainterArrow.id, extension );
@@ -1190,11 +1136,11 @@ public class TransPainter extends BasePainter<TransHopMeta, StepMeta> {
   }
 
   public TransMeta getTransMeta() {
-    return transMeta;
+    return thisMeta;
   }
 
   public void setTransMeta( TransMeta transMeta ) {
-    this.transMeta = transMeta;
+    this.thisMeta = transMeta;
   }
 
   public Trans getTrans() {

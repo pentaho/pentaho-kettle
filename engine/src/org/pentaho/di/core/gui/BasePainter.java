@@ -22,6 +22,7 @@
 
 package org.pentaho.di.core.gui;
 
+import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.base.BaseHopMeta;
 import org.pentaho.di.base.BaseMeta;
 import org.pentaho.di.core.Const;
@@ -36,7 +37,7 @@ import org.pentaho.di.trans.step.errorhandling.StreamIcon;
 import java.util.List;
 import java.util.Map;
 
-public abstract class BasePainter<Hop extends BaseHopMeta, Part extends BaseMeta> {
+public abstract class BasePainter<Hop extends BaseHopMeta, Part extends BaseMeta, PartMeta extends AbstractMeta<Hop>> {
 
   public final double theta = Math.toRadians( 11 ); // arrowhead sharpness
 
@@ -95,6 +96,8 @@ public abstract class BasePainter<Hop extends BaseHopMeta, Part extends BaseMeta
   protected Part endHopPart;
   protected Part noInputPart;
 
+  protected PartMeta thisMeta;
+
   public BasePainter( GCInterface gc, Object subject, Point area, ScrollBarInterface hori,
     ScrollBarInterface vert, Point drop_candidate, Rectangle selrect, List<AreaOwner> areaOwners, int iconsize,
     int linewidth, int gridsize, int shadowSize, boolean antiAliasing, String noteFontName, int noteFontHeight ) {
@@ -145,6 +148,49 @@ public abstract class BasePainter<Hop extends BaseHopMeta, Part extends BaseMeta
       default:
         return EImage.ARROW;
     }
+  }
+
+  protected abstract void drawThisPart( Point thumb );
+
+  public void drawThisPart() {
+    Point max = thisMeta.getMaximum();
+    Point thumb = getThumb( area, max );
+    offset = getOffset( thumb, area );
+
+    // First clear the image in the background color
+    gc.setBackground( EColor.BACKGROUND );
+    gc.fillRectangle( 0, 0, area.x, area.y );
+
+    if ( hori != null ) {
+      hori.setThumb( thumb.x );
+    }
+    if ( vert != null ) {
+      vert.setThumb( thumb.y );
+    }
+
+    // If there is a shadow, we draw the transformation first with an alpha setting
+    //
+    if ( shadowSize > 0 ) {
+      shadow = true;
+      gc.setTransform( translationX, translationY, shadowSize, magnification );
+      gc.setAlpha( 20 );
+
+      drawThisPart( thumb );
+    }
+
+    // Draw the transformation onto the image
+    //
+    shadow = false;
+    gc.setTransform( translationX, translationY, 0, magnification );
+    gc.setAlpha( 255 );
+
+    if ( gridSize > 1 ) {
+      drawGrid();
+    }
+    drawThisPart( thumb );
+    drawRect( selrect );
+
+    gc.dispose();
   }
 
   protected void drawNote( NotePadMeta notePadMeta ) {
@@ -508,6 +554,19 @@ public abstract class BasePainter<Hop extends BaseHopMeta, Part extends BaseMeta
     int y2 = to.y + iconsize / 2;
 
     return new int[] { x1, y1, x2, y2 };
+  }
+
+  protected abstract EImage prepareDrawLineContext( Part fs, Part ts, Hop hi, boolean is_candidate );
+
+  protected void drawLine( Part fs, Part ts, Hop hi, boolean is_candidate ) {
+    EImage arrow = prepareDrawLineContext( fs, ts, hi, is_candidate );
+
+    drawArrow( arrow, getLine( fs, ts ), hi, fs, ts );
+
+    gc.setLineWidth( linewidth );
+    gc.setForeground( EColor.BLACK );
+    gc.setBackground( EColor.BACKGROUND );
+    gc.setLineStyle( ELineStyle.SOLID );
   }
 
   protected void drawArrow( EImage arrow, int[] line, Hop hop, Object startObject, Object endObject ) {

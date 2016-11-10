@@ -2847,7 +2847,7 @@ public class JobGraph extends AbstractGraph<JobMeta> implements XulEventHandler,
     }
     jobPainter.setActiveJobEntries( activeJobEntries );
 
-    jobPainter.drawJob();
+    jobPainter.drawThisPart();
 
     return (Image) gc.getImage();
   }
