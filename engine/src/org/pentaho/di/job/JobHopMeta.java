@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,12 +22,13 @@
 
 package org.pentaho.di.job;
 
-import org.pentaho.di.base.BaseHopMeta;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.core.xml.XMLInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.entry.JobEntryCopy;
+import org.pentaho.di.repository.ObjectId;
 import org.w3c.dom.Node;
 
 /**
@@ -37,19 +38,28 @@ import org.w3c.dom.Node;
  * @since 19-06-2003
  *
  */
-public class JobHopMeta extends BaseHopMeta<JobEntryCopy> {
+public class JobHopMeta implements Cloneable, XMLInterface {
+  private static final String XML_TAG = "hop";
+
   private static Class<?> PKG = JobHopMeta.class; // for i18n purposes, needed by Translator2!!
 
+  private JobEntryCopy from_entry, to_entry;
+  private boolean enabled;
+  public boolean split = false;
   private boolean evaluation;
   private boolean unconditional;
+
+  private boolean changed;
+
+  private ObjectId id;
 
   public JobHopMeta() {
     this( (JobEntryCopy) null, (JobEntryCopy) null );
   }
 
   public JobHopMeta( JobEntryCopy from, JobEntryCopy to ) {
-    this.from = from;
-    this.to = to;
+    from_entry = from;
+    to_entry = to;
     enabled = true;
     split = false;
     evaluation = true;
@@ -75,8 +85,8 @@ public class JobHopMeta extends BaseHopMeta<JobEntryCopy> {
       from_nr = Const.toInt( sfrom_nr, 0 );
       to_nr = Const.toInt( sto_nr, 0 );
 
-      this.from = job.findJobEntry( from_name, from_nr, true );
-      this.to = job.findJobEntry( to_name, to_nr, true );
+      from_entry = job.findJobEntry( from_name, from_nr, true );
+      to_entry = job.findJobEntry( to_name, to_nr, true );
 
       if ( senabled == null ) {
         enabled = true;
@@ -97,12 +107,12 @@ public class JobHopMeta extends BaseHopMeta<JobEntryCopy> {
 
   public String getXML() {
     StringBuilder retval = new StringBuilder( 200 );
-    if ( ( null != this.from ) && ( null != this.to ) ) {
+    if ( ( null != from_entry ) && ( null != to_entry ) ) {
       retval.append( "    " ).append( XMLHandler.openTag( XML_TAG ) ).append( Const.CR );
-      retval.append( "      " ).append( XMLHandler.addTagValue( "from", this.from.getName() ) );
-      retval.append( "      " ).append( XMLHandler.addTagValue( "to", this.to.getName() ) );
-      retval.append( "      " ).append( XMLHandler.addTagValue( "from_nr", this.from.getNr() ) );
-      retval.append( "      " ).append( XMLHandler.addTagValue( "to_nr", this.to.getNr() ) );
+      retval.append( "      " ).append( XMLHandler.addTagValue( "from", from_entry.getName() ) );
+      retval.append( "      " ).append( XMLHandler.addTagValue( "to", to_entry.getName() ) );
+      retval.append( "      " ).append( XMLHandler.addTagValue( "from_nr", from_entry.getNr() ) );
+      retval.append( "      " ).append( XMLHandler.addTagValue( "to_nr", to_entry.getNr() ) );
       retval.append( "      " ).append( XMLHandler.addTagValue( "enabled", enabled ) );
       retval.append( "      " ).append( XMLHandler.addTagValue( "evaluation", evaluation ) );
       retval.append( "      " ).append( XMLHandler.addTagValue( "unconditional", unconditional ) );
@@ -110,6 +120,50 @@ public class JobHopMeta extends BaseHopMeta<JobEntryCopy> {
     }
 
     return retval.toString();
+  }
+
+  public void setObjectId( ObjectId id ) {
+    this.id = id;
+  }
+
+  public ObjectId getObjectId() {
+    return id;
+  }
+
+  public Object clone() {
+    try {
+      Object retval = super.clone();
+      return retval;
+    } catch ( CloneNotSupportedException e ) {
+      return null;
+    }
+  }
+
+  public void setChanged() {
+    setChanged( true );
+  }
+
+  public void setChanged( boolean ch ) {
+    changed = ch;
+  }
+
+  public boolean hasChanged() {
+    return changed;
+  }
+
+  public void setEnabled() {
+    setEnabled( true );
+  }
+
+  public void setEnabled( boolean en ) {
+    if ( enabled != en ) {
+      setChanged();
+    }
+    enabled = en;
+  }
+
+  public boolean isEnabled() {
+    return enabled;
   }
 
   public boolean getEvaluation() {
@@ -177,20 +231,20 @@ public class JobHopMeta extends BaseHopMeta<JobEntryCopy> {
   }
 
   public JobEntryCopy getFromEntry() {
-    return this.from;
+    return from_entry;
   }
 
   public void setFromEntry( JobEntryCopy fromEntry ) {
-    this.from = fromEntry;
+    this.from_entry = fromEntry;
     changed = true;
   }
 
   public JobEntryCopy getToEntry() {
-    return this.to;
+    return to_entry;
   }
 
   public void setToEntry( JobEntryCopy toEntry ) {
-    this.to = toEntry;
+    this.to_entry = toEntry;
     changed = true;
   }
 

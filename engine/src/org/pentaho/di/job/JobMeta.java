@@ -112,7 +112,7 @@ import java.util.Set;
  * @author Matt
  * @since 11-08-2003
  */
-public class JobMeta extends AbstractMeta<JobHopMeta>
+public class JobMeta extends AbstractMeta
     implements Cloneable, Comparable<JobMeta>, XMLInterface, ResourceExportInterface, RepositoryElementInterface,
     LoggingObjectInterface {
 
@@ -134,6 +134,8 @@ public class JobMeta extends AbstractMeta<JobHopMeta>
   protected int jobStatus;
 
   protected List<JobEntryCopy> jobcopies;
+
+  protected List<JobHopMeta> jobhops;
 
   protected String[] arguments;
 
@@ -200,7 +202,7 @@ public class JobMeta extends AbstractMeta<JobHopMeta>
   @Override
   public void clear() {
     jobcopies = new ArrayList<JobEntryCopy>();
-    hops = new ArrayList<JobHopMeta>();
+    jobhops = new ArrayList<JobHopMeta>();
 
     jobLogTable = JobLogTable.getDefault( this, this );
     jobEntryLogTable = JobEntryLogTable.getDefault( this, this );
@@ -407,7 +409,7 @@ public class JobMeta extends AbstractMeta<JobHopMeta>
         jobMeta.clear();
       } else {
         jobMeta.jobcopies = new ArrayList<JobEntryCopy>();
-        jobMeta.hops = new ArrayList<JobHopMeta>();
+        jobMeta.jobhops = new ArrayList<JobHopMeta>();
         jobMeta.notes = new ArrayList<NotePadMeta>();
         jobMeta.databases = new ArrayList<DatabaseMeta>();
         jobMeta.slaveServers = new ArrayList<SlaveServer>();
@@ -417,8 +419,8 @@ public class JobMeta extends AbstractMeta<JobHopMeta>
       for ( JobEntryCopy entry : jobcopies ) {
         jobMeta.jobcopies.add( (JobEntryCopy) entry.clone_deep() );
       }
-      for ( JobHopMeta entry : hops ) {
-        jobMeta.hops.add( (JobHopMeta) entry.clone() );
+      for ( JobHopMeta entry : jobhops ) {
+        jobMeta.jobhops.add( (JobHopMeta) entry.clone() );
       }
       for ( NotePadMeta entry : notes ) {
         jobMeta.notes.add( (NotePadMeta) entry.clone() );
@@ -468,7 +470,7 @@ public class JobMeta extends AbstractMeta<JobHopMeta>
       JobEntryCopy entry = getJobEntry( i );
       entry.setChanged( false );
     }
-    for ( JobHopMeta hi : hops ) {
+    for ( JobHopMeta hi : jobhops ) {
       // Look at all the hops
       hi.setChanged( false );
     }
@@ -655,7 +657,7 @@ public class JobMeta extends AbstractMeta<JobHopMeta>
     retval.append( "  " ).append( XMLHandler.closeTag( "entries" ) ).append( Const.CR );
 
     retval.append( "  " ).append( XMLHandler.openTag( "hops" ) ).append( Const.CR );
-    for ( JobHopMeta hi : hops ) {
+    for ( JobHopMeta hi : jobhops ) {
       // Look at all the hops
       retval.append( hi.getXML() );
     }
@@ -1125,7 +1127,7 @@ public class JobMeta extends AbstractMeta<JobHopMeta>
       for ( int i = 0; i < ho; i++ ) {
         Node hopnode = XMLHandler.getSubNodeByNr( hopsnode, "hop", i );
         JobHopMeta hi = new JobHopMeta( hopnode, this );
-        hops.add( hi );
+        jobhops.add( hi );
       }
 
       // Read the notes...
@@ -1255,7 +1257,7 @@ public class JobMeta extends AbstractMeta<JobHopMeta>
    * @return the int
    */
   public int nrJobHops() {
-    return hops.size();
+    return jobhops.size();
   }
 
   /**
@@ -1265,7 +1267,7 @@ public class JobMeta extends AbstractMeta<JobHopMeta>
    * @return the job hop
    */
   public JobHopMeta getJobHop( int i ) {
-    return hops.get( i );
+    return jobhops.get( i );
   }
 
   /**
@@ -1295,7 +1297,7 @@ public class JobMeta extends AbstractMeta<JobHopMeta>
    * @param hi the hi
    */
   public void addJobHop( JobHopMeta hi ) {
-    hops.add( hi );
+    jobhops.add( hi );
     setChanged();
   }
 
@@ -1318,9 +1320,9 @@ public class JobMeta extends AbstractMeta<JobHopMeta>
    */
   public void addJobHop( int p, JobHopMeta hi ) {
     try {
-      hops.add( p, hi );
+      jobhops.add( p, hi );
     } catch ( IndexOutOfBoundsException e ) {
-      hops.add( hi );
+      jobhops.add( hi );
     }
     changedHops = true;
   }
@@ -1346,7 +1348,7 @@ public class JobMeta extends AbstractMeta<JobHopMeta>
    * @param i the i
    */
   public void removeJobHop( int i ) {
-    hops.remove( i );
+    jobhops.remove( i );
     setChanged();
   }
 
@@ -1357,7 +1359,7 @@ public class JobMeta extends AbstractMeta<JobHopMeta>
    * @param hop The hop to remove from the list of hops
    */
   public void removeJobHop( JobHopMeta hop ) {
-    hops.remove( hop );
+    jobhops.remove( hop );
     setChanged();
   }
 
@@ -1368,7 +1370,7 @@ public class JobMeta extends AbstractMeta<JobHopMeta>
    * @return the int
    */
   public int indexOfJobHop( JobHopMeta he ) {
-    return hops.indexOf( he );
+    return jobhops.indexOf( he );
   }
 
   /**
@@ -1435,7 +1437,7 @@ public class JobMeta extends AbstractMeta<JobHopMeta>
    * @return the job hop meta
    */
   public JobHopMeta findJobHop( String name ) {
-    for ( JobHopMeta hi : hops ) {
+    for ( JobHopMeta hi : jobhops ) {
       // Look at all the hops
 
       if ( hi.toString().equalsIgnoreCase( name ) ) {
@@ -1453,7 +1455,7 @@ public class JobMeta extends AbstractMeta<JobHopMeta>
    */
   public JobHopMeta findJobHopFrom( JobEntryCopy jge ) {
     if ( jge != null ) {
-      for ( JobHopMeta hi : hops ) {
+      for ( JobHopMeta hi : jobhops ) {
 
         // Return the first we find!
         //
@@ -1485,7 +1487,7 @@ public class JobMeta extends AbstractMeta<JobHopMeta>
    * @return the job hop meta
    */
   public JobHopMeta findJobHop( JobEntryCopy from, JobEntryCopy to, boolean includeDisabled ) {
-    for ( JobHopMeta hi : hops ) {
+    for ( JobHopMeta hi : jobhops ) {
       if ( hi.isEnabled() || includeDisabled ) {
         if ( hi != null && hi.getFromEntry() != null && hi.getToEntry() != null && hi.getFromEntry().equals( from )
             && hi.getToEntry().equals( to ) ) {
@@ -1503,7 +1505,7 @@ public class JobMeta extends AbstractMeta<JobHopMeta>
    * @return the job hop meta
    */
   public JobHopMeta findJobHopTo( JobEntryCopy jge ) {
-    for ( JobHopMeta hi : hops ) {
+    for ( JobHopMeta hi : jobhops ) {
       if ( hi != null && hi.getToEntry() != null && hi.getToEntry().equals( jge ) ) {
         // Return the first!
         return hi;
@@ -1543,7 +1545,7 @@ public class JobMeta extends AbstractMeta<JobHopMeta>
   public int findNrPrevJobEntries( JobEntryCopy to, boolean info ) {
     int count = 0;
 
-    for ( JobHopMeta hi : hops ) {
+    for ( JobHopMeta hi : jobhops ) {
       // Look at all the hops
 
       if ( hi.isEnabled() && hi.getToEntry().equals( to ) ) {
@@ -1564,7 +1566,7 @@ public class JobMeta extends AbstractMeta<JobHopMeta>
   public JobEntryCopy findPrevJobEntry( JobEntryCopy to, int nr, boolean info ) {
     int count = 0;
 
-    for ( JobHopMeta hi : hops ) {
+    for ( JobHopMeta hi : jobhops ) {
       // Look at all the hops
 
       if ( hi.isEnabled() && hi.getToEntry().equals( to ) ) {
@@ -1585,7 +1587,7 @@ public class JobMeta extends AbstractMeta<JobHopMeta>
    */
   public int findNrNextJobEntries( JobEntryCopy from ) {
     int count = 0;
-    for ( JobHopMeta hi : hops ) {
+    for ( JobHopMeta hi : jobhops ) {
       // Look at all the hops
 
       if ( hi.isEnabled() && ( hi.getFromEntry() != null ) && hi.getFromEntry().equals( from ) ) {
@@ -1605,7 +1607,7 @@ public class JobMeta extends AbstractMeta<JobHopMeta>
   public JobEntryCopy findNextJobEntry( JobEntryCopy from, int cnt ) {
     int count = 0;
 
-    for ( JobHopMeta hi : hops ) {
+    for ( JobHopMeta hi : jobhops ) {
       // Look at all the hops
 
       if ( hi.isEnabled() && ( hi.getFromEntry() != null ) && hi.getFromEntry().equals( from ) ) {
@@ -1802,7 +1804,7 @@ public class JobMeta extends AbstractMeta<JobHopMeta>
   public JobHopMeta[] getAllJobHopsUsing( String name ) {
     List<JobHopMeta> hops = new ArrayList<JobHopMeta>();
 
-    for ( JobHopMeta hi : hops ) {
+    for ( JobHopMeta hi : jobhops ) {
       // Look at all the hops
 
       if ( hi.getFromEntry() != null && hi.getToEntry() != null ) {
@@ -1816,7 +1818,7 @@ public class JobMeta extends AbstractMeta<JobHopMeta>
   }
 
   public boolean isPathExist( JobEntryInterface from, JobEntryInterface to ) {
-    for ( JobHopMeta hi : hops ) {
+    for ( JobHopMeta hi : jobhops ) {
       if ( hi.getFromEntry() != null && hi.getToEntry() != null ) {
         if ( hi.getFromEntry().getName().equalsIgnoreCase( from.getName() ) ) {
           if ( hi.getToEntry().getName().equalsIgnoreCase( to.getName() ) ) {
@@ -2292,7 +2294,7 @@ public class JobMeta extends AbstractMeta<JobHopMeta>
       return true;
     }
 
-    for ( JobHopMeta hi : hops ) {
+    for ( JobHopMeta hi : jobhops ) {
       // Look at all the hops
 
       if ( hi.hasChanged() ) {
@@ -2659,12 +2661,12 @@ public class JobMeta extends AbstractMeta<JobHopMeta>
   }
 
   /**
-   * Gets the hops.
+   * Gets the jobhops.
    *
-   * @return the hops
+   * @return the jobhops
    */
   public List<JobHopMeta> getJobhops() {
-    return hops;
+    return jobhops;
   }
 
   /*

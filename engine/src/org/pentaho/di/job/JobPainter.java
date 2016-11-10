@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,6 +25,7 @@ package org.pentaho.di.job;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.pentaho.di.core.NotePadMeta;
 import org.pentaho.di.core.Result;
@@ -45,10 +46,17 @@ import org.pentaho.di.core.gui.ScrollBarInterface;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.job.entry.JobEntryCopy;
 
-public class JobPainter extends BasePainter<JobHopMeta, JobEntryCopy> {
+public class JobPainter extends BasePainter {
 
   private JobMeta jobMeta;
+  private JobHopMeta candidate;
 
+  private List<JobEntryCopy> mouseOverEntries;
+  private Map<JobEntryCopy, String> entryLogMap;
+  private JobEntryCopy startHopEntry;
+  private Point endHopLocation;
+  private JobEntryCopy endHopEntry;
+  private JobEntryCopy noInputEntry;
   private List<JobEntryCopy> activeJobEntries;
   private List<JobEntryResult> jobEntryResults;
 
@@ -63,7 +71,9 @@ public class JobPainter extends BasePainter<JobHopMeta, JobEntryCopy> {
 
     this.candidate = candidate;
 
-    this.mouseOver = mouseOverEntries;
+    this.mouseOverEntries = mouseOverEntries;
+
+    entryLogMap = null;
   }
 
   public void drawJob() {
@@ -134,10 +144,10 @@ public class JobPainter extends BasePainter<JobHopMeta, JobEntryCopy> {
     if ( candidate != null ) {
       drawJobHop( candidate, true );
     } else {
-      if ( startHopPart != null && endHopLocation != null ) {
-        Point fr = startHopPart.getLocation();
+      if ( startHopEntry != null && endHopLocation != null ) {
+        Point fr = startHopEntry.getLocation();
         Point to = endHopLocation;
-        if ( endHopPart == null ) {
+        if ( endHopEntry == null ) {
           gc.setForeground( EColor.GRAY );
           arrow = EImage.ARROW_DISABLED;
         } else {
@@ -146,12 +156,12 @@ public class JobPainter extends BasePainter<JobHopMeta, JobEntryCopy> {
         }
         Point start = real2screen( fr.x + iconsize / 2, fr.y + iconsize / 2 );
         Point end = real2screen( to.x, to.y );
-        drawArrow( arrow, start.x, start.y, end.x, end.y, theta, calcArrowLength(), 1.2, null, startHopPart,
-            endHopPart == null ? endHopLocation : endHopPart );
-      } else if ( endHopPart != null && endHopLocation != null ) {
+        drawArrow( arrow, start.x, start.y, end.x, end.y, theta, calcArrowLength(), 1.2, null, startHopEntry,
+            endHopEntry == null ? endHopLocation : endHopEntry );
+      } else if ( endHopEntry != null && endHopLocation != null ) {
         Point fr = endHopLocation;
-        Point to = endHopPart.getLocation();
-        if ( startHopPart == null ) {
+        Point to = endHopEntry.getLocation();
+        if ( startHopEntry == null ) {
           gc.setForeground( EColor.GRAY );
           arrow = EImage.ARROW_DISABLED;
         } else {
@@ -161,7 +171,7 @@ public class JobPainter extends BasePainter<JobHopMeta, JobEntryCopy> {
         Point start = real2screen( fr.x, fr.y );
         Point end = real2screen( to.x + iconsize / 2, to.y + iconsize / 2 );
         drawArrow( arrow, start.x, start.y, end.x, end.y + iconsize / 2, theta, calcArrowLength(), 1.2, null,
-            startHopPart == null ? endHopLocation : startHopPart, endHopPart );
+            startHopEntry == null ? endHopLocation : startHopEntry, endHopEntry );
       }
     }
 
@@ -172,10 +182,10 @@ public class JobPainter extends BasePainter<JobHopMeta, JobEntryCopy> {
 
     // Display an icon on the indicated location signaling to the user that the step in question does not accept input
     //
-    if ( noInputPart != null ) {
+    if ( noInputEntry != null ) {
       gc.setLineWidth( 2 );
       gc.setForeground( EColor.RED );
-      Point n = noInputPart.getLocation();
+      Point n = noInputEntry.getLocation();
       gc.drawLine( offset.x + n.x - 5, offset.y + n.y - 5, offset.x + n.x + iconsize + 5, offset.y
         + n.y + iconsize + 5 );
       gc.drawLine( offset.x + n.x - 5, offset.y + n.y + iconsize + 5, offset.x + n.x + iconsize + 5, offset.y
@@ -283,7 +293,7 @@ public class JobPainter extends BasePainter<JobHopMeta, JobEntryCopy> {
 
     // Optionally drawn the mouse-over information
     //
-    if ( mouseOver.contains( jobEntryCopy ) ) {
+    if ( mouseOverEntries.contains( jobEntryCopy ) ) {
       gc.setTransform( translationX, translationY, 0, BasePainter.FACTOR_1_TO_1 );
 
       EImage[] miniIcons = new EImage[] { EImage.INPUT, EImage.EDIT, EImage.CONTEXT_MENU, EImage.OUTPUT, };
@@ -487,14 +497,78 @@ public class JobPainter extends BasePainter<JobHopMeta, JobEntryCopy> {
     gc.setLineStyle( ELineStyle.SOLID );
   }
 
+  protected int[] getLine( JobEntryCopy fs, JobEntryCopy ts ) {
+    if ( fs == null || ts == null ) {
+      return null;
+    }
+
+    Point from = fs.getLocation();
+    Point to = ts.getLocation();
+
+    int x1 = from.x + iconsize / 2;
+    int y1 = from.y + iconsize / 2;
+
+    int x2 = to.x + iconsize / 2;
+    int y2 = to.y + iconsize / 2;
+
+    return new int[] { x1, y1, x2, y2 };
+  }
+
   private void drawArrow( EImage arrow, int[] line, JobHopMeta jobHop ) {
     drawArrow( arrow, line, jobHop, jobHop.getFromEntry(), jobHop.getToEntry() );
   }
 
-  @Override
-  protected void drawArrow2( EImage arrow, int x1, int y1, int x2, int y2, double theta, int size, double factor,
-      JobHopMeta jobHop, Object startObject, Object endObject, int mx, int my ) {
+  private void drawArrow( EImage arrow, int[] line, JobHopMeta jobHop, Object startObject, Object endObject ) {
+    Point screen_from = real2screen( line[0], line[1] );
+    Point screen_to = real2screen( line[2], line[3] );
 
+    drawArrow( arrow, screen_from.x, screen_from.y, screen_to.x, screen_to.y, theta, calcArrowLength(), -1, jobHop,
+        startObject, endObject );
+  }
+
+  private void drawArrow( EImage arrow, int x1, int y1, int x2, int y2, double theta, int size, double factor,
+      JobHopMeta jobHop, Object startObject, Object endObject ) {
+    int mx, my;
+    int a, b, dist;
+    double angle;
+
+    // gc.setLineWidth(1);
+    // WuLine(gc, black, x1, y1, x2, y2);
+
+    gc.drawLine( x1, y1, x2, y2 );
+
+    // What's the distance between the 2 points?
+    a = Math.abs( x2 - x1 );
+    b = Math.abs( y2 - y1 );
+    dist = (int) Math.sqrt( a * a + b * b );
+
+    // determine factor (position of arrow to left side or right side
+    // 0-->100%)
+    if ( factor < 0 ) {
+      if ( dist >= 2 * iconsize ) {
+        factor = 1.3;
+      } else {
+        factor = 1.2;
+      }
+    }
+
+    // in between 2 points
+    mx = (int) ( x1 + factor * ( x2 - x1 ) / 2 );
+    my = (int) ( y1 + factor * ( y2 - y1 ) / 2 );
+
+    // calculate points for arrowhead
+    angle = Math.atan2( y2 - y1, x2 - x1 ) + ( Math.PI / 2 );
+
+    boolean q1 = Math.toDegrees( angle ) >= 0 && Math.toDegrees( angle ) <= 90;
+    boolean q2 = Math.toDegrees( angle ) > 90 && Math.toDegrees( angle ) <= 180;
+    boolean q3 = Math.toDegrees( angle ) > 180 && Math.toDegrees( angle ) <= 270;
+    boolean q4 = Math.toDegrees( angle ) > 270 || Math.toDegrees( angle ) < 0;
+
+    if ( q1 || q3 ) {
+      gc.drawImage( arrow, mx + 1, my, magnification, angle );
+    } else if ( q2 || q4 ) {
+      gc.drawImage( arrow, mx, my, magnification, angle );
+    }
     // Display an icon above the hop...
     //
     factor = 0.8;
@@ -549,6 +623,52 @@ public class JobPainter extends BasePainter<JobHopMeta, JobEntryCopy> {
     }
   }
 
+  /**
+   * @return the mouseOverEntries
+   */
+  public List<JobEntryCopy> getMouseOverEntries() {
+    return mouseOverEntries;
+  }
+
+  /**
+   * @param mouseOverEntries
+   *          the mouseOverEntries to set
+   */
+  public void setMouseOverEntries( List<JobEntryCopy> mouseOverEntries ) {
+    this.mouseOverEntries = mouseOverEntries;
+  }
+
+  /**
+   * @return the entryLogMap
+   */
+  public Map<JobEntryCopy, String> getEntryLogMap() {
+    return entryLogMap;
+  }
+
+  /**
+   * @param entryLogMap
+   *          the entryLogMap to set
+   */
+  public void setEntryLogMap( Map<JobEntryCopy, String> entryLogMap ) {
+    this.entryLogMap = entryLogMap;
+  }
+
+  public void setStartHopEntry( JobEntryCopy startHopEntry ) {
+    this.startHopEntry = startHopEntry;
+  }
+
+  public void setEndHopLocation( Point endHopLocation ) {
+    this.endHopLocation = endHopLocation;
+  }
+
+  public void setEndHopEntry( JobEntryCopy endHopEntry ) {
+    this.endHopEntry = endHopEntry;
+  }
+
+  public void setNoInputEntry( JobEntryCopy noInputEntry ) {
+    this.noInputEntry = noInputEntry;
+  }
+
   public void setActiveJobEntries( List<JobEntryCopy> activeJobEntries ) {
     this.activeJobEntries = activeJobEntries;
   }
@@ -569,12 +689,66 @@ public class JobPainter extends BasePainter<JobHopMeta, JobEntryCopy> {
     Collections.sort( this.jobEntryResults );
   }
 
+  /**
+   * @return the translationX
+   */
+  public float getTranslationX() {
+    return translationX;
+  }
+
+  /**
+   * @param translationX
+   *          the translationX to set
+   */
+  public void setTranslationX( float translationX ) {
+    this.translationX = translationX;
+  }
+
+  /**
+   * @return the translationY
+   */
+  public float getTranslationY() {
+    return translationY;
+  }
+
+  /**
+   * @param translationY
+   *          the translationY to set
+   */
+  public void setTranslationY( float translationY ) {
+    this.translationY = translationY;
+  }
+
   public JobMeta getJobMeta() {
     return jobMeta;
   }
 
   public void setJobMeta( JobMeta jobMeta ) {
     this.jobMeta = jobMeta;
+  }
+
+  public JobHopMeta getCandidate() {
+    return candidate;
+  }
+
+  public void setCandidate( JobHopMeta candidate ) {
+    this.candidate = candidate;
+  }
+
+  public JobEntryCopy getStartHopEntry() {
+    return startHopEntry;
+  }
+
+  public Point getEndHopLocation() {
+    return endHopLocation;
+  }
+
+  public JobEntryCopy getEndHopEntry() {
+    return endHopEntry;
+  }
+
+  public JobEntryCopy getNoInputEntry() {
+    return noInputEntry;
   }
 
   public List<JobEntryCopy> getActiveJobEntries() {

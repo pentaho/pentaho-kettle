@@ -22,21 +22,18 @@
 
 package org.pentaho.di.core.gui;
 
-import org.pentaho.di.base.BaseHopMeta;
-import org.pentaho.di.base.BaseMeta;
+import java.util.List;
+
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.NotePadMeta;
 import org.pentaho.di.core.gui.AreaOwner.AreaType;
 import org.pentaho.di.core.gui.PrimitiveGCInterface.EColor;
 import org.pentaho.di.core.gui.PrimitiveGCInterface.EImage;
 import org.pentaho.di.core.gui.PrimitiveGCInterface.ELineStyle;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.trans.step.errorhandling.StreamIcon;
 
-import java.util.List;
-import java.util.Map;
-
-public abstract class BasePainter<Hop extends BaseHopMeta, Part extends BaseMeta> {
+public class BasePainter {
 
   public final double theta = Math.toRadians( 11 ); // arrowhead sharpness
 
@@ -54,9 +51,6 @@ public abstract class BasePainter<Hop extends BaseHopMeta, Part extends BaseMeta
   public static final int CORNER_RADIUS_2 = 4;
 
   public static final float FACTOR_1_TO_1 = 1.0f;
-
-  public static final String[] magnificationDescriptions = new String[] {
-    "  200% ", "  150% ", "  100% ", "  75% ", "  50% ", "  25% " };
 
   protected Point area;
 
@@ -84,16 +78,6 @@ public abstract class BasePainter<Hop extends BaseHopMeta, Part extends BaseMeta
   private String noteFontName;
 
   private int noteFontHeight;
-
-  protected Hop candidate;
-
-  protected Map<Part, String> logMap;
-  protected List<Part> mouseOver;
-
-  protected Part startHopPart;
-  protected Point endHopLocation;
-  protected Part endHopPart;
-  protected Part noInputPart;
 
   public BasePainter( GCInterface gc, Object subject, Point area, ScrollBarInterface hori,
     ScrollBarInterface vert, Point drop_candidate, Rectangle selrect, List<AreaOwner> areaOwners, int iconsize,
@@ -482,144 +466,5 @@ public abstract class BasePainter<Hop extends BaseHopMeta, Part extends BaseMeta
 
   public double getTheta() {
     return theta;
-  }
-
-
-  public Hop getCandidate() {
-    return candidate;
-  }
-
-  public void setCandidate( Hop candidate ) {
-    this.candidate = candidate;
-  }
-
-  protected int[] getLine( Part fs, Part ts ) {
-    if ( fs == null || ts == null ) {
-      return null;
-    }
-
-    Point from = fs.getLocation();
-    Point to = ts.getLocation();
-
-    int x1 = from.x + iconsize / 2;
-    int y1 = from.y + iconsize / 2;
-
-    int x2 = to.x + iconsize / 2;
-    int y2 = to.y + iconsize / 2;
-
-    return new int[] { x1, y1, x2, y2 };
-  }
-
-  protected void drawArrow( EImage arrow, int[] line, Hop hop, Object startObject, Object endObject ) {
-    Point screen_from = real2screen( line[0], line[1] );
-    Point screen_to = real2screen( line[2], line[3] );
-
-    drawArrow( arrow, screen_from.x, screen_from.y, screen_to.x, screen_to.y, theta, calcArrowLength(), -1, hop,
-      startObject, endObject );
-  }
-
-  protected void drawArrow( EImage arrow, int x1, int y1, int x2, int y2, double theta, int size, double factor,
-                            Hop hop, Object startObject, Object endObject ) {
-    int mx, my;
-    int a, b, dist;
-    double angle;
-
-    gc.drawLine( x1, y1, x2, y2 );
-
-    // What's the distance between the 2 points?
-    a = Math.abs( x2 - x1 );
-    b = Math.abs( y2 - y1 );
-    dist = (int) Math.sqrt( a * a + b * b );
-
-    // determine factor (position of arrow to left side or right side
-    // 0-->100%)
-    if ( factor < 0 ) {
-      if ( dist >= 2 * iconsize ) {
-        factor = 1.3;
-      } else {
-        factor = 1.2;
-      }
-    }
-
-    // in between 2 points
-    mx = (int) ( x1 + factor * ( x2 - x1 ) / 2 );
-    my = (int) ( y1 + factor * ( y2 - y1 ) / 2 );
-
-    // calculate points for arrowhead
-    angle = Math.atan2( y2 - y1, x2 - x1 ) + ( Math.PI / 2 );
-
-    boolean q1 = Math.toDegrees( angle ) >= 0 && Math.toDegrees( angle ) <= 90;
-    boolean q2 = Math.toDegrees( angle ) > 90 && Math.toDegrees( angle ) <= 180;
-    boolean q3 = Math.toDegrees( angle ) > 180 && Math.toDegrees( angle ) <= 270;
-    boolean q4 = Math.toDegrees( angle ) > 270 || Math.toDegrees( angle ) < 0;
-
-    if ( q1 || q3 ) {
-      gc.drawImage( arrow, mx + 1, my, magnification, angle );
-    } else if ( q2 || q4 ) {
-      gc.drawImage( arrow, mx, my, magnification, angle );
-    }
-
-    drawArrow2( arrow, x1, y1, x2, y2, theta, size, factor, hop, startObject, endObject, mx, my );
-  }
-
-  protected abstract void drawArrow2( EImage arrow, int x1, int y1, int x2, int y2, double theta, int size,
-                                      double factor, Hop hop, Object startObject, Object endObject, int mx, int my );
-
-  /**
-   * @return the logMap
-   */
-  public Map<Part, String> getLogMap() {
-    return logMap;
-  }
-
-  /**
-   * @param logMap the logMap to set
-   */
-  public void setLogMap( Map<Part, String> logMap ) {
-    this.logMap = logMap;
-  }
-
-  public Part getStartHopStep() {
-    return startHopPart;
-  }
-
-  /**
-   * @param startHopPart the startHopPart to set
-   */
-  public void setStartHopPart( Part startHopPart ) {
-    this.startHopPart = startHopPart;
-  }
-
-  public Point getEndHopLocation() {
-    return endHopLocation;
-  }
-
-  /**
-   * @param endHopLocation the endHopLocation to set
-   */
-  public void setEndHopLocation( Point endHopLocation ) {
-    this.endHopLocation = endHopLocation;
-  }
-
-  public Part getNoInputStep() {
-    return noInputPart;
-  }
-
-  /**
-   * @param noInputPart the noInputStep to set
-   */
-  public void setNoInputPart( Part noInputPart ) {
-    this.noInputPart = noInputPart;
-  }
-
-  public Part getEndHopStep() {
-    return endHopPart;
-  }
-
-  /**
-   * @param endHopPart the endHopStep to set
-   */
-  public void setEndHopPart( Part endHopPart ) {
-    this.endHopPart = endHopPart;
   }
 }

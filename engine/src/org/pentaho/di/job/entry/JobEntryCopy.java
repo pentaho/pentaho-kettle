@@ -26,7 +26,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.pentaho.di.base.BaseMeta;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.AttributesInterface;
 import org.pentaho.di.core.Const;
@@ -58,7 +57,7 @@ import org.w3c.dom.Node;
  */
 
 public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterface, ChangedFlagInterface,
-  AttributesInterface, BaseMeta {
+  AttributesInterface {
   private static final String XML_TAG = "entry";
 
   private JobEntryInterface entry;
