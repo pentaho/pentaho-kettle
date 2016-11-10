@@ -24,11 +24,12 @@ package org.pentaho.di.trans;
 
 import java.util.List;
 
-import org.pentaho.di.base.BaseHopMeta;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.core.xml.XMLInterface;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.trans.step.StepMeta;
 import org.w3c.dom.Node;
 
@@ -40,18 +41,32 @@ import org.w3c.dom.Node;
 /**
  * Defines a link between 2 steps in a transformation
  */
-public class TransHopMeta extends BaseHopMeta<StepMeta> implements Comparable<TransHopMeta> {
+public class TransHopMeta implements Cloneable, XMLInterface, Comparable<TransHopMeta> {
   private static Class<?> PKG = Trans.class; // for i18n purposes, needed by Translator2!!
 
+  public static final String XML_TAG = "hop";
+
+  private StepMeta from_step;
+
+  private StepMeta to_step;
+
+  private boolean enabled;
+
+  public boolean split = false;
+
+  private boolean changed;
+
+  private ObjectId id;
+
   public TransHopMeta( StepMeta from, StepMeta to, boolean en ) {
-    this.from = from;
-    this.to = to;
+    from_step = from;
+    to_step = to;
     enabled = en;
   }
 
   public TransHopMeta( StepMeta from, StepMeta to ) {
-    this.from = from;
-    this.to = to;
+    from_step = from;
+    to_step = to;
     enabled = true;
   }
 
@@ -61,8 +76,8 @@ public class TransHopMeta extends BaseHopMeta<StepMeta> implements Comparable<Tr
 
   public TransHopMeta( Node hopnode, List<StepMeta> steps ) throws KettleXMLException {
     try {
-      this.from = searchStep( steps, XMLHandler.getTagValue( hopnode, "from" ) );
-      this.to = searchStep( steps, XMLHandler.getTagValue( hopnode, "to" ) );
+      from_step = searchStep( steps, XMLHandler.getTagValue( hopnode, "from" ) );
+      to_step = searchStep( steps, XMLHandler.getTagValue( hopnode, "to" ) );
       String en = XMLHandler.getTagValue( hopnode, "enabled" );
 
       if ( en == null ) {
@@ -76,19 +91,19 @@ public class TransHopMeta extends BaseHopMeta<StepMeta> implements Comparable<Tr
   }
 
   public void setFromStep( StepMeta from ) {
-    this.from = from;
+    from_step = from;
   }
 
   public void setToStep( StepMeta to ) {
-    this.to = to;
+    to_step = to;
   }
 
   public StepMeta getFromStep() {
-    return this.from;
+    return from_step;
   }
 
   public StepMeta getToStep() {
-    return this.to;
+    return to_step;
   }
 
   private StepMeta searchStep( List<StepMeta> steps, String name ) {
@@ -101,12 +116,21 @@ public class TransHopMeta extends BaseHopMeta<StepMeta> implements Comparable<Tr
     return null;
   }
 
+  public Object clone() {
+    try {
+      Object retval = super.clone();
+      return retval;
+    } catch ( CloneNotSupportedException e ) {
+      return null;
+    }
+  }
+
   public boolean equals( Object obj ) {
     TransHopMeta other = (TransHopMeta) obj;
-    if ( this.from == null || this.to == null ) {
+    if ( from_step == null || to_step == null ) {
       return false;
     }
-    return this.from.equals( other.getFromStep() ) && this.to.equals( other.getToStep() );
+    return from_step.equals( other.getFromStep() ) && to_step.equals( other.getToStep() );
   }
 
   /**
@@ -116,25 +140,58 @@ public class TransHopMeta extends BaseHopMeta<StepMeta> implements Comparable<Tr
     return toString().compareTo( obj.toString() );
   }
 
+  public ObjectId getObjectId() {
+    return id;
+  }
+
+  public void setObjectId( ObjectId id ) {
+    this.id = id;
+  }
+
+  public void setChanged() {
+    setChanged( true );
+  }
+
+  public void setChanged( boolean ch ) {
+    changed = ch;
+  }
+
+  public boolean hasChanged() {
+    return changed;
+  }
+
+  public void setEnabled() {
+    setEnabled( true );
+  }
+
+  public void setEnabled( boolean en ) {
+    enabled = en;
+    setChanged();
+  }
+
+  public boolean isEnabled() {
+    return enabled;
+  }
+
   public void flip() {
-    StepMeta dummy = this.from;
-    this.from = this.to;
-    this.to = dummy;
+    StepMeta dummy = from_step;
+    from_step = to_step;
+    to_step = dummy;
   }
 
   public String toString() {
-    String str_fr = ( this.from == null ) ? "(empty)" : this.from.getName();
-    String str_to = ( this.to == null ) ? "(empty)" : this.to.getName();
+    String str_fr = ( from_step == null ) ? "(empty)" : from_step.getName();
+    String str_to = ( to_step == null ) ? "(empty)" : to_step.getName();
     return str_fr + " --> " + str_to + " (" + ( enabled ? "enabled" : "disabled" ) + ")";
   }
 
   public String getXML() {
     StringBuilder retval = new StringBuilder( 200 );
 
-    if ( this.from != null && this.to != null ) {
+    if ( from_step != null && to_step != null ) {
       retval.append( "    " ).append( XMLHandler.openTag( XML_TAG ) ).append( Const.CR );
-      retval.append( "      " ).append( XMLHandler.addTagValue( "from", this.from.getName() ) );
-      retval.append( "      " ).append( XMLHandler.addTagValue( "to", this.to.getName() ) );
+      retval.append( "      " ).append( XMLHandler.addTagValue( "from", from_step.getName() ) );
+      retval.append( "      " ).append( XMLHandler.addTagValue( "to", to_step.getName() ) );
       retval.append( "      " ).append( XMLHandler.addTagValue( "enabled", enabled ) );
       retval.append( "    " ).append( XMLHandler.closeTag( XML_TAG ) ).append( Const.CR );
     }

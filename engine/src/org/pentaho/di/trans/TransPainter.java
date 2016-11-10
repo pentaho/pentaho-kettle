@@ -56,7 +56,7 @@ import org.pentaho.di.trans.step.StepStatus;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface.StreamType;
 
-public class TransPainter extends BasePainter<TransHopMeta, StepMeta> {
+public class TransPainter extends BasePainter {
 
   private static Class<?> PKG = TransPainter.class; // for i18n purposes, needed by Translator2!!
 
@@ -67,7 +67,12 @@ public class TransPainter extends BasePainter<TransHopMeta, StepMeta> {
   public static final String STRING_HOP_TYPE_COPY = "HopTypeCopy";
   public static final String STRING_ROW_DISTRIBUTION = "RowDistribution";
 
+  public static final String[] magnificationDescriptions = new String[] {
+    "  200% ", "  150% ", "  100% ", "  75% ", "  50% ", "  25% " };
+
   private TransMeta transMeta;
+
+  private TransHopMeta candidate;
 
   private Map<StepMeta, String> stepLogMap;
   private List<StepMeta> mouseOverSteps;
@@ -1053,8 +1058,28 @@ public class TransPainter extends BasePainter<TransHopMeta, StepMeta> {
     gc.setLineStyle( ELineStyle.SOLID );
   }
 
-  @Override
-  protected void drawArrow( EImage arrow, int x1, int y1, int x2, int y2, double theta, int size, double factor,
+  private int[] getLine( StepMeta fs, StepMeta ts ) {
+    Point from = fs.getLocation();
+    Point to = ts.getLocation();
+
+    int x1 = from.x + iconsize / 2;
+    int y1 = from.y + iconsize / 2;
+
+    int x2 = to.x + iconsize / 2;
+    int y2 = to.y + iconsize / 2;
+
+    return new int[] { x1, y1, x2, y2 };
+  }
+
+  private void drawArrow( EImage arrow, int[] line, TransHopMeta transHop, Object startObject, Object endObject ) {
+    Point screen_from = real2screen( line[0], line[1] );
+    Point screen_to = real2screen( line[2], line[3] );
+
+    drawArrow( arrow, screen_from.x, screen_from.y, screen_to.x, screen_to.y, theta, calcArrowLength(), -1, transHop,
+        startObject, endObject );
+  }
+
+  private void drawArrow( EImage arrow, int x1, int y1, int x2, int y2, double theta, int size, double factor,
       TransHopMeta transHop, Object startObject, Object endObject ) {
     int mx, my;
     int a, b, dist;
@@ -1218,6 +1243,36 @@ public class TransPainter extends BasePainter<TransHopMeta, StepMeta> {
   }
 
   /**
+   * @return the translationX
+   */
+  public float getTranslationX() {
+    return translationX;
+  }
+
+  /**
+   * @param translationX
+   *          the translationX to set
+   */
+  public void setTranslationX( float translationX ) {
+    this.translationX = translationX;
+  }
+
+  /**
+   * @return the translationY
+   */
+  public float getTranslationY() {
+    return translationY;
+  }
+
+  /**
+   * @param translationY
+   *          the translationY to set
+   */
+  public void setTranslationY( float translationY ) {
+    this.translationY = translationY;
+  }
+
+  /**
    * @return the stepLogMap
    */
   public Map<StepMeta, String> getStepLogMap() {
@@ -1293,6 +1348,14 @@ public class TransPainter extends BasePainter<TransHopMeta, StepMeta> {
 
   public void setTransMeta( TransMeta transMeta ) {
     this.transMeta = transMeta;
+  }
+
+  public TransHopMeta getCandidate() {
+    return candidate;
+  }
+
+  public void setCandidate( TransHopMeta candidate ) {
+    this.candidate = candidate;
   }
 
   public List<StepMeta> getMouseOverSteps() {
