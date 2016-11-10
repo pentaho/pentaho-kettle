@@ -3138,7 +3138,7 @@ public class TransGraph extends AbstractGraph<TransMeta> implements XulEventHand
     transPainter.setStartErrorHopStep( startErrorHopStep );
     transPainter.setShowTargetStreamsStep( showTargetStreamsStep );
 
-    transPainter.buildTransformationImage();
+    transPainter.drawThisPart();
 
     Image img = (Image) gc.getImage();
 

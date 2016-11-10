@@ -134,7 +134,7 @@ public class JobInformation {
         gc, jobMeta, area, bar, bar, null, null, null, areaOwners, new ArrayList<JobEntryCopy>(), iconsize, 1,
         0, 0, true, "FreeSans", 10 );
     painter.setMagnification( 0.25f );
-    painter.drawJob();
+    painter.drawThisPart();
     BufferedImage bufferedImage = (BufferedImage) gc.getImage();
     int newWidth = bufferedImage.getWidth() - min.x;
     int newHeigth = bufferedImage.getHeight() - min.y;
@@ -193,7 +193,7 @@ public class JobInformation {
     painter.setTranslationX( ( -min.x ) * magnification );
     painter.setTranslationY( ( -min.y ) * magnification );
 
-    painter.drawJob();
+    painter.drawThisPart();
   }
 
 }

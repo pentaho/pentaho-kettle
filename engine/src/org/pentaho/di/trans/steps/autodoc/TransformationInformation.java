@@ -140,7 +140,7 @@ public class TransformationInformation {
     painter.setMagnification( 0.5f );
     painter.setTranslationX( min.x );
     painter.setTranslationY( min.y );
-    painter.buildTransformationImage();
+    painter.drawThisPart();
     BufferedImage bufferedImage = (BufferedImage) gc.getImage();
     int newWidth = bufferedImage.getWidth() - min.x;
     int newHeigth = bufferedImage.getHeight() - min.y;
@@ -199,7 +199,7 @@ public class TransformationInformation {
     painter.setTranslationX( ( -min.x ) * magnification );
     painter.setTranslationY( ( -min.y ) * magnification );
 
-    painter.buildTransformationImage();
+    painter.drawThisPart();
   }
 
 }
