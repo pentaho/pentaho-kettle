@@ -34,6 +34,8 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
 
 public class TabSet implements SelectionListener, CTabFolder2Listener {
 
@@ -55,7 +57,32 @@ public class TabSet implements SelectionListener, CTabFolder2Listener {
     tabfolder.setUnselectedCloseVisible( true );
     tabfolder.addSelectionListener( this );
     tabfolder.addCTabFolder2Listener( this );
+
+    workaroundTabChevronOverflow( tabfolder );
   }
+
+  private void workaroundTabChevronOverflow( CTabFolder tabfolder ) {
+    // hack to prevent two tab rows on swt 4.6+
+    // eclipse bug #499215
+    tabfolder.addListener( SWT.Resize, new Listener() {
+      @Override
+      public void handleEvent( Event event ) {
+        int idx = tabfolder.getSelectionIndex();
+        if ( idx > 0 && isTabOverflowing( tabfolder ) ) {
+          // trigger CTabFolder.updateTabHeight
+          tabfolder.setSelection( idx - 1 );
+          tabfolder.setSelection( idx );
+        }
+      }
+
+      private boolean isTabOverflowing( CTabFolder tabfolder ) {
+        // overflow happens when size of inner toolbar exceeds assigned tabHeight
+        return ( tabfolder.getChildren().length > 0
+            && tabfolder.getChildren()[0].getSize().y > tabfolder.getTabHeight() );
+      }
+    } );
+  }
+
 
   public void widgetSelected( SelectionEvent event ) {
     TabItem deSelectedTabItem = tabList.get( selectedIndex );
