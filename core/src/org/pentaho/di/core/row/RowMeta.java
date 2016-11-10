@@ -48,9 +48,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class RowMeta implements RowMetaInterface {
@@ -1228,7 +1228,7 @@ public class RowMeta implements RowMetaInterface {
     List<Integer> needRealClone;
 
     RowMetaCache() {
-      this( new HashMap<String, Integer>(), null );
+      this( new ConcurrentHashMap<String, Integer>(), null );
     }
 
     /**
@@ -1237,7 +1237,7 @@ public class RowMeta implements RowMetaInterface {
      * @param rowMetaCache
      */
     RowMetaCache( RowMetaCache rowMetaCache ) {
-      this( new HashMap<>( rowMetaCache.mapping ), rowMetaCache.needRealClone == null ? null
+      this( new ConcurrentHashMap<>( rowMetaCache.mapping ), rowMetaCache.needRealClone == null ? null
         : new ArrayList<>( rowMetaCache.needRealClone ) );
     }
 
