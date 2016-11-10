@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,19 +25,13 @@ package org.pentaho.di.ui.spoon;
 import java.util.List;
 
 import org.eclipse.jface.action.MenuManager;
-import org.eclipse.jface.window.DefaultToolTip;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.ScrollBar;
-import org.pentaho.di.base.AbstractMeta;
-import org.pentaho.di.core.NotePadMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.gui.GUIPositionInterface;
 import org.pentaho.di.core.gui.Point;
-import org.pentaho.di.core.gui.SnapAllignDistribute;
-import org.pentaho.di.ui.core.ConstUI;
-import org.pentaho.di.ui.core.widget.CheckBoxToolTip;
 import org.pentaho.ui.xul.XulComponent;
 import org.pentaho.ui.xul.XulDomContainer;
 
@@ -46,7 +40,7 @@ import org.pentaho.ui.xul.XulDomContainer;
  *
  * @author Will Gorman (wgorman@pentaho.com)
  */
-public abstract class AbstractGraph<Meta extends AbstractMeta> extends Composite {
+public abstract class AbstractGraph extends Composite {
 
   protected Point offset, iconoffset, noteoffset;
 
@@ -60,23 +54,11 @@ public abstract class AbstractGraph<Meta extends AbstractMeta> extends Composite
 
   protected XulDomContainer xulDomContainer;
 
-  protected Meta meta;
-
-  protected DefaultToolTip toolTip;
-  protected CheckBoxToolTip helpTip;
-
-  protected NotePadMeta ni = null;
-
   public AbstractGraph( Composite parent, int style ) {
     super( parent, style );
   }
 
-  protected Point getOffset() {
-    Point area = getArea();
-    Point max = meta.getMaximum();
-    Point thumb = getThumb( area, max );
-    return getOffset( thumb, area );
-  }
+  protected abstract Point getOffset();
 
   protected Point getOffset( Point thumb, Point area ) {
     Point p = new Point( 0, 0 );
@@ -232,53 +214,5 @@ public abstract class AbstractGraph<Meta extends AbstractMeta> extends Composite
     for ( XulComponent pop : pops ) {
       ( (MenuManager) pop.getManagedObject() ).dispose();
     }
-  }
-
-
-  public void allignleft() {
-    createSnapAllignDistribute().allignleft();
-  }
-
-  public void allignright() {
-    createSnapAllignDistribute().allignright();
-  }
-
-  public void alligntop() {
-    createSnapAllignDistribute().alligntop();
-  }
-
-  public void allignbottom() {
-    createSnapAllignDistribute().allignbottom();
-  }
-
-  public void distributehorizontal() {
-    createSnapAllignDistribute().distributehorizontal();
-  }
-
-  public void distributevertical() {
-    createSnapAllignDistribute().distributevertical();
-  }
-  public void snaptogrid() {
-    snaptogrid( ConstUI.GRID_SIZE );
-  }
-
-  protected void snaptogrid( int size ) {
-    createSnapAllignDistribute().snaptogrid( size );
-  }
-
-  // TODO move to there
-  protected abstract SnapAllignDistribute createSnapAllignDistribute();
-
-  protected void hideToolTips() {
-    toolTip.hide();
-    helpTip.hide();
-  }
-
-  public void setCurrentNote( NotePadMeta ni ) {
-    this.ni = ni;
-  }
-
-  public NotePadMeta getCurrentNote() {
-    return ni;
   }
 }
