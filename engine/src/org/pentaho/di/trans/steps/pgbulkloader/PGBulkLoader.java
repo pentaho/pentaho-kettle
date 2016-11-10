@@ -22,6 +22,8 @@
 
 package org.pentaho.di.trans.steps.pgbulkloader;
 
+import java.io.IOException;
+
 //
 // The "designer" notes of the PostgreSQL bulkloader:
 // ----------------------------------------------
@@ -31,6 +33,7 @@ package org.pentaho.di.trans.steps.pgbulkloader;
 //
 
 import java.math.BigDecimal;
+import java.sql.SQLException;
 
 import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.Const;
@@ -179,10 +182,9 @@ public class PGBulkLoader extends BaseStep implements StepInterface {
 
         // Close the output stream...
         // will be null if no records (empty stream)
-        if ( data != null ) {
+        if ( data != null && pgCopyOut != null ) {
           pgCopyOut.flush();
           pgCopyOut.endCopy();
-
         } 
 
         return false;
@@ -214,6 +216,13 @@ public class PGBulkLoader extends BaseStep implements StepInterface {
 
       return true;
     } catch ( Exception e ) {
+      if (pgCopyOut != null) {
+        try {
+          pgCopyOut.cancelCopy();
+        } catch (SQLException ie) {
+          // safe to ignore, send info about previous exception
+        }
+      }
       logError( BaseMessages.getString( PKG, "GPBulkLoader.Log.ErrorInStep" ), e );
       setErrors( 1 );
       stopAll();
@@ -244,6 +253,9 @@ public class PGBulkLoader extends BaseStep implements StepInterface {
         if ( valueData != null ) {
           switch ( valueMeta.getType() ) {
             case ValueMetaInterface.TYPE_STRING:
+              // Don't load empty strings into DB, load null instead
+              if ("".equals(valueData))
+                break;
               pgCopyOut.write( data.quote );
 
               // No longer dump the bytes for a Lazy Conversion;
@@ -343,7 +355,7 @@ public class PGBulkLoader extends BaseStep implements StepInterface {
               if ( valueMeta.isStorageBinaryString() ) {
                 pgCopyOut.write( (byte[]) valueData );
               } else {
-                pgCopyOut.write( Double.toString( valueMeta.getNumber( valueData ) ).getBytes() );
+                pgCopyOut.write( Long.toString( valueMeta.getInteger( valueData ) ).getBytes() );
               }
               break;
             case ValueMetaInterface.TYPE_NUMBER:
