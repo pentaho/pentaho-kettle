@@ -144,7 +144,16 @@ public class Variables implements VariableSpace {
   @Override
   public String[] listVariables() {
     Set<String> keySet = properties.keySet();
-    return keySet.toArray( new String[0] );
+    String[] listVariables = keySet.toArray( new String[0] );
+    for ( int i = 0; i < listVariables.length; i++ ) {
+      for ( int j = 0; j < Const.DEPRECATED_VARIABLES.length; j++ ) {
+        if ( listVariables[i].equals( Const.DEPRECATED_VARIABLES[j] ) ) {
+          listVariables[i] = listVariables[i] + Const.getDeprecatedPrefix();
+          break;
+        }
+      }
+    }
+    return listVariables;
   }
 
   @Override
