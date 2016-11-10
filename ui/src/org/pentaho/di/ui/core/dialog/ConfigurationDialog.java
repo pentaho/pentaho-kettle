@@ -64,7 +64,7 @@ import org.pentaho.di.ui.util.HelpUtils;
 
 public abstract class ConfigurationDialog extends Dialog {
 
-  protected AbstractMeta<?> abstractMeta;
+  protected AbstractMeta abstractMeta;
   protected ExecutionConfiguration configuration;
   protected TableView wVariables;
   protected boolean retval;
