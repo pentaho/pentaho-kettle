@@ -801,10 +801,5 @@ public class AbstractMetaTest {
     public RepositoryObjectType getRepositoryElementType() {
       return null;
     }
-
-    @Override
-    public Point getMaximum() {
-      return null;
-    }
   }
 }

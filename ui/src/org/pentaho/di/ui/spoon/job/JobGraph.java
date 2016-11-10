@@ -136,6 +136,7 @@ import org.pentaho.di.repository.RepositoryOperation;
 import org.pentaho.di.shared.SharedObjects;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.TransPainter;
 import org.pentaho.di.ui.core.ConstUI;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.dialog.EnterTextDialog;
@@ -180,7 +181,7 @@ import org.pentaho.ui.xul.jface.tags.JfaceMenupopup;
  * @author Matt Created on 17-may-2003
  *
  */
-public class JobGraph extends AbstractGraph<JobMeta> implements XulEventHandler, Redrawable, TabItemInterface,
+public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawable, TabItemInterface,
   LogParentProvidedInterface, MouseListener, MouseMoveListener, MouseTrackListener, MouseWheelListener,
   KeyListener {
 
@@ -198,6 +199,8 @@ public class JobGraph extends AbstractGraph<JobMeta> implements XulEventHandler,
   protected Shell shell;
 
   protected LogChannelInterface log;
+
+  protected JobMeta jobMeta;
 
   public Job job;
 
@@ -251,6 +254,8 @@ public class JobGraph extends AbstractGraph<JobMeta> implements XulEventHandler,
 
   protected JobEntryCopy jobEntry;
 
+  protected NotePadMeta ni = null;
+
   protected JobHopMeta currentHop;
 
   // private Text filenameLabel;
@@ -278,6 +283,8 @@ public class JobGraph extends AbstractGraph<JobMeta> implements XulEventHandler,
 
   private Label minMaxButton;
 
+  private CheckBoxToolTip helpTip;
+
   private List<AreaOwner> areaOwners;
 
   private List<JobEntryCopy> mouseOverEntries;
@@ -292,6 +299,7 @@ public class JobGraph extends AbstractGraph<JobMeta> implements XulEventHandler,
 
   private JobEntryCopy endHopEntry;
   private JobEntryCopy noInputEntry;
+  private DefaultToolTip toolTip;
   private Point[] previous_step_locations;
   private Point[] previous_note_locations;
   private JobEntryCopy currentEntry;
@@ -301,7 +309,7 @@ public class JobGraph extends AbstractGraph<JobMeta> implements XulEventHandler,
     shell = par.getShell();
     this.log = spoon.getLog();
     this.spoon = spoon;
-    this.meta = jobMeta;
+    this.jobMeta = jobMeta;
     spoon.selectionFilter.setText( "" );
 
     this.props = PropsUI.getInstance();
@@ -604,6 +612,11 @@ public class JobGraph extends AbstractGraph<JobMeta> implements XulEventHandler,
 
   }
 
+  protected void hideToolTips() {
+    toolTip.hide();
+    helpTip.hide();
+  }
+
   public void mouseDoubleClick( MouseEvent e ) {
     clearSettings();
 
@@ -619,7 +632,7 @@ public class JobGraph extends AbstractGraph<JobMeta> implements XulEventHandler,
       LogChannel.GENERAL.logError( "Error calling JobGraphMouseDoubleClick extension point", ex );
     }
 
-    JobEntryCopy jobentry = meta.getJobEntryCopy( real.x, real.y, iconsize );
+    JobEntryCopy jobentry = jobMeta.getJobEntryCopy( real.x, real.y, iconsize );
     if ( jobentry != null ) {
       if ( e.button == 1 ) {
         editEntry( jobentry );
@@ -631,7 +644,7 @@ public class JobGraph extends AbstractGraph<JobMeta> implements XulEventHandler,
       // Check if point lies on one of the many hop-lines...
       JobHopMeta online = findJobHop( real.x, real.y );
       if ( online == null ) {
-        NotePadMeta ni = meta.getNote( real.x, real.y );
+        NotePadMeta ni = jobMeta.getNote( real.x, real.y );
         if ( ni != null ) {
           editNote( ni );
         } else {
@@ -720,14 +733,14 @@ public class JobGraph extends AbstractGraph<JobMeta> implements XulEventHandler,
               startHopEntry = jobEntryCopy;
 
             } else {
-              selectedEntries = meta.getSelectedEntries();
+              selectedEntries = jobMeta.getSelectedEntries();
               selectedEntry = jobEntryCopy;
               //
               // When an icon is moved that is not selected, it gets
               // selected too late.
               // It is not captured here, but in the mouseMoveListener...
               //
-              previous_step_locations = meta.getSelectedLocations();
+              previous_step_locations = jobMeta.getSelectedLocations();
 
               Point p = jobEntryCopy.getLocation();
               iconoffset = new Point( real.x - p.x, real.y - p.y );
@@ -737,11 +750,11 @@ public class JobGraph extends AbstractGraph<JobMeta> implements XulEventHandler,
 
           case NOTE:
             ni = (NotePadMeta) areaOwner.getOwner();
-            selectedNotes = meta.getSelectedNotes();
+            selectedNotes = jobMeta.getSelectedNotes();
             selectedNote = ni;
             Point loc = ni.getLocation();
 
-            previous_note_locations = meta.getSelectedNoteLocations();
+            previous_note_locations = jobMeta.getSelectedNoteLocations();
 
             noteoffset = new Point( real.x - loc.x, real.y - loc.y );
 
@@ -779,7 +792,7 @@ public class JobGraph extends AbstractGraph<JobMeta> implements XulEventHandler,
           hop.setEnabled( !hop.isEnabled() );
           JobHopMeta after = (JobHopMeta) hop.clone();
           spoon.addUndoChange(
-            meta, new JobHopMeta[] { before }, new JobHopMeta[] { after }, new int[] { meta
+            jobMeta, new JobHopMeta[] { before }, new JobHopMeta[] { after }, new int[] { jobMeta
               .indexOfJobHop( hop ) } );
           spoon.setShellText();
           redraw();
@@ -818,8 +831,8 @@ public class JobGraph extends AbstractGraph<JobMeta> implements XulEventHandler,
         selectionRegion.width = real.x - selectionRegion.x;
         selectionRegion.height = real.y - selectionRegion.y;
 
-        meta.unselectAll();
-        selectInRect( meta, selectionRegion );
+        jobMeta.unselectAll();
+        selectInRect( jobMeta, selectionRegion );
         selectionRegion = null;
         stopEntryMouseOverDelayTimers();
         redraw();
@@ -835,30 +848,30 @@ public class JobGraph extends AbstractGraph<JobMeta> implements XulEventHandler,
                 selectedEntry.flipSelected();
               } else {
                 // Otherwise, select only the icon clicked on!
-                meta.unselectAll();
+                jobMeta.unselectAll();
                 selectedEntry.setSelected( true );
               }
             } else {
               // Find out which Steps & Notes are selected
-              selectedEntries = meta.getSelectedEntries();
-              selectedNotes = meta.getSelectedNotes();
+              selectedEntries = jobMeta.getSelectedEntries();
+              selectedNotes = jobMeta.getSelectedNotes();
 
               // We moved around some items: store undo info...
               //
               boolean also = false;
               if ( selectedNotes != null && selectedNotes.size() > 0 && previous_note_locations != null ) {
-                int[] indexes = meta.getNoteIndexes( selectedNotes );
+                int[] indexes = jobMeta.getNoteIndexes( selectedNotes );
 
                 addUndoPosition(
                   selectedNotes.toArray( new NotePadMeta[selectedNotes.size()] ), indexes,
-                  previous_note_locations, meta.getSelectedNoteLocations(), also );
+                  previous_note_locations, jobMeta.getSelectedNoteLocations(), also );
                 also = selectedEntries != null && selectedEntries.size() > 0;
               }
               if ( selectedEntries != null && selectedEntries.size() > 0 && previous_step_locations != null ) {
-                int[] indexes = meta.getEntryIndexes( selectedEntries );
+                int[] indexes = jobMeta.getEntryIndexes( selectedEntries );
                 addUndoPosition(
                   selectedEntries.toArray( new JobEntryCopy[selectedEntries.size()] ), indexes,
-                  previous_step_locations, meta.getSelectedLocations(), also );
+                  previous_step_locations, jobMeta.getSelectedLocations(), also );
               }
             }
           }
@@ -898,31 +911,31 @@ public class JobGraph extends AbstractGraph<JobMeta> implements XulEventHandler,
                 // B ==> hi.getToEntry();
                 // C ==> selected_step
                 //
-                if ( meta.findJobHop( selectedEntry, hi.getFromEntry() ) == null
-                  && meta.findJobHop( hi.getToEntry(), selectedEntry ) == null ) {
+                if ( jobMeta.findJobHop( selectedEntry, hi.getFromEntry() ) == null
+                  && jobMeta.findJobHop( hi.getToEntry(), selectedEntry ) == null ) {
 
-                  if ( meta.findJobHop( hi.getFromEntry(), selectedEntry, true ) == null ) {
+                  if ( jobMeta.findJobHop( hi.getFromEntry(), selectedEntry, true ) == null ) {
                     JobHopMeta newhop1 = new JobHopMeta( hi.getFromEntry(), selectedEntry );
                     if ( hi.getFromEntry().getEntry().isUnconditional() ) {
                       newhop1.setUnconditional();
                     }
-                    meta.addJobHop( newhop1 );
-                    spoon.addUndoNew( meta, new JobHopMeta[] { newhop1, }, new int[] { meta
+                    jobMeta.addJobHop( newhop1 );
+                    spoon.addUndoNew( jobMeta, new JobHopMeta[] { newhop1, }, new int[] { jobMeta
                       .indexOfJobHop( newhop1 ), }, true );
                   }
-                  if ( meta.findJobHop( selectedEntry, hi.getToEntry(), true ) == null ) {
+                  if ( jobMeta.findJobHop( selectedEntry, hi.getToEntry(), true ) == null ) {
                     JobHopMeta newhop2 = new JobHopMeta( selectedEntry, hi.getToEntry() );
                     if ( selectedEntry.getEntry().isUnconditional() ) {
                       newhop2.setUnconditional();
                     }
-                    meta.addJobHop( newhop2 );
-                    spoon.addUndoNew( meta, new JobHopMeta[] { newhop2, }, new int[] { meta
+                    jobMeta.addJobHop( newhop2 );
+                    spoon.addUndoNew( jobMeta, new JobHopMeta[] { newhop2, }, new int[] { jobMeta
                       .indexOfJobHop( newhop2 ), }, true );
                   }
 
-                  int idx = meta.indexOfJobHop( hi );
-                  spoon.addUndoDelete( meta, new JobHopMeta[] { hi }, new int[] { idx }, true );
-                  meta.removeJobHop( idx );
+                  int idx = jobMeta.indexOfJobHop( hi );
+                  spoon.addUndoDelete( jobMeta, new JobHopMeta[] { hi }, new int[] { idx }, true );
+                  jobMeta.removeJobHop( idx );
                   spoon.refreshTree();
 
                 }
@@ -950,28 +963,28 @@ public class JobGraph extends AbstractGraph<JobMeta> implements XulEventHandler,
                   selectedNote.flipSelected();
                 } else {
                   // Otherwise, select only the note clicked on!
-                  meta.unselectAll();
+                  jobMeta.unselectAll();
                   selectedNote.setSelected( true );
                 }
               } else {
                 // Find out which Steps & Notes are selected
-                selectedEntries = meta.getSelectedEntries();
-                selectedNotes = meta.getSelectedNotes();
+                selectedEntries = jobMeta.getSelectedEntries();
+                selectedNotes = jobMeta.getSelectedNotes();
 
                 // We moved around some items: store undo info...
                 boolean also = false;
                 if ( selectedNotes != null && selectedNotes.size() > 0 && previous_note_locations != null ) {
-                  int[] indexes = meta.getNoteIndexes( selectedNotes );
+                  int[] indexes = jobMeta.getNoteIndexes( selectedNotes );
                   addUndoPosition(
                     selectedNotes.toArray( new NotePadMeta[selectedNotes.size()] ), indexes,
-                    previous_note_locations, meta.getSelectedNoteLocations(), also );
+                    previous_note_locations, jobMeta.getSelectedNoteLocations(), also );
                   also = selectedEntries != null && selectedEntries.size() > 0;
                 }
                 if ( selectedEntries != null && selectedEntries.size() > 0 && previous_step_locations != null ) {
-                  int[] indexes = meta.getEntryIndexes( selectedEntries );
+                  int[] indexes = jobMeta.getEntryIndexes( selectedEntries );
                   addUndoPosition(
                     selectedEntries.toArray( new JobEntryCopy[selectedEntries.size()] ), indexes,
-                    previous_step_locations, meta.getSelectedLocations(), also );
+                    previous_step_locations, jobMeta.getSelectedLocations(), also );
                 }
               }
             }
@@ -1045,14 +1058,14 @@ public class JobGraph extends AbstractGraph<JobMeta> implements XulEventHandler,
     // icons, selected and move only the one icon
     //
     if ( selectedEntry != null && !selectedEntry.isSelected() ) {
-      meta.unselectAll();
+      jobMeta.unselectAll();
       selectedEntry.setSelected( true );
       selectedEntries = new ArrayList<JobEntryCopy>();
       selectedEntries.add( selectedEntry );
       previous_step_locations = new Point[] { selectedEntry.getLocation() };
       redraw();
     } else if ( selectedNote != null && !selectedNote.isSelected() ) {
-      meta.unselectAll();
+      jobMeta.unselectAll();
       selectedNote.setSelected( true );
       selectedNotes = new ArrayList<NotePadMeta>();
       selectedNotes.add( selectedNote );
@@ -1094,8 +1107,8 @@ public class JobGraph extends AbstractGraph<JobMeta> implements XulEventHandler,
         }
       }
 
-      selectedNotes = meta.getSelectedNotes();
-      selectedEntries = meta.getSelectedEntries();
+      selectedNotes = jobMeta.getSelectedNotes();
+      selectedEntries = jobMeta.getSelectedEntries();
 
       // Adjust location of selected steps...
       if ( selectedEntries != null ) {
@@ -1119,7 +1132,7 @@ public class JobGraph extends AbstractGraph<JobMeta> implements XulEventHandler,
       // Are we creating a new hop with the middle button or pressing SHIFT?
       //
 
-      JobEntryCopy jobEntryCopy = meta.getJobEntryCopy( real.x, real.y, iconsize );
+      JobEntryCopy jobEntryCopy = jobMeta.getJobEntryCopy( real.x, real.y, iconsize );
       endHopLocation = new Point( real.x, real.y );
       if ( jobEntryCopy != null
         && ( ( startHopEntry != null && !startHopEntry.equals( jobEntryCopy ) ) || ( endHopEntry != null && !endHopEntry
@@ -1164,8 +1177,8 @@ public class JobGraph extends AbstractGraph<JobMeta> implements XulEventHandler,
         int dx = note.x - selectedNote.getLocation().x;
         int dy = note.y - selectedNote.getLocation().y;
 
-        selectedNotes = meta.getSelectedNotes();
-        selectedEntries = meta.getSelectedEntries();
+        selectedNotes = jobMeta.getSelectedNotes();
+        selectedEntries = jobMeta.getSelectedEntries();
 
         // Adjust location of selected steps...
         if ( selectedEntries != null ) {
@@ -1239,34 +1252,34 @@ public class JobGraph extends AbstractGraph<JobMeta> implements XulEventHandler,
         hop_candidate.setUnconditional();
       } else {
         hop_candidate.setConditional();
-        int nr = meta.findNrNextJobEntries( hop_candidate.getFromEntry() );
+        int nr = jobMeta.findNrNextJobEntries( hop_candidate.getFromEntry() );
 
         // If there is one green link: make this one red! (or
         // vice-versa)
         if ( nr == 1 ) {
-          JobEntryCopy jge = meta.findNextJobEntry( hop_candidate.getFromEntry(), 0 );
-          JobHopMeta other = meta.findJobHop( hop_candidate.getFromEntry(), jge );
+          JobEntryCopy jge = jobMeta.findNextJobEntry( hop_candidate.getFromEntry(), 0 );
+          JobHopMeta other = jobMeta.findJobHop( hop_candidate.getFromEntry(), jge );
           if ( other != null ) {
             hop_candidate.setEvaluation( !other.getEvaluation() );
           }
         }
       }
 
-      if ( checkIfHopAlreadyExists( meta, hop_candidate ) ) {
+      if ( checkIfHopAlreadyExists( jobMeta, hop_candidate ) ) {
         boolean cancel = false;
-        meta.addJobHop( hop_candidate );
-        if ( meta.hasLoop( hop_candidate.getFromEntry() ) || meta.hasLoop( hop_candidate.getToEntry() ) ) {
+        jobMeta.addJobHop( hop_candidate );
+        if ( jobMeta.hasLoop( hop_candidate.getFromEntry() ) || jobMeta.hasLoop( hop_candidate.getToEntry() ) ) {
           MessageBox mb = new MessageBox( spoon.getShell(), SWT.OK | SWT.CANCEL | SWT.ICON_WARNING );
           mb.setMessage( BaseMessages.getString( PKG, "JobGraph.Dialog.HopCausesLoop.Message" ) );
           mb.setText( BaseMessages.getString( PKG, "JobGraph.Dialog.HopCausesLoop.Title" ) );
           int choice = mb.open();
           if ( choice == SWT.CANCEL ) {
-            meta.removeJobHop( hop_candidate );
+            jobMeta.removeJobHop( hop_candidate );
             cancel = true;
           }
         }
         if ( !cancel ) {
-          spoon.addUndoNew( meta, new JobHopMeta[] { hop_candidate }, new int[] { meta
+          spoon.addUndoNew( jobMeta, new JobHopMeta[] { hop_candidate }, new int[] { jobMeta
             .indexOfJobHop( hop_candidate ) } );
         }
         spoon.refreshTree();
@@ -1422,7 +1435,7 @@ public class JobGraph extends AbstractGraph<JobMeta> implements XulEventHandler,
       ToolItem sep = new ToolItem( swtToolbar, SWT.SEPARATOR );
 
       zoomLabel = new Combo( swtToolbar, SWT.DROP_DOWN );
-      zoomLabel.setItems( JobPainter.magnificationDescriptions );
+      zoomLabel.setItems( TransPainter.magnificationDescriptions );
       zoomLabel.addSelectionListener( new SelectionAdapter() {
         public void widgetSelected( SelectionEvent arg0 ) {
           readMagnification();
@@ -1480,7 +1493,7 @@ public class JobGraph extends AbstractGraph<JobMeta> implements XulEventHandler,
 
     // Delete
     if ( e.keyCode == SWT.DEL ) {
-      List<JobEntryCopy> copies = meta.getSelectedEntries();
+      List<JobEntryCopy> copies = jobMeta.getSelectedEntries();
       if ( copies != null && copies.size() > 0 ) {
         delSelected();
       }
@@ -1561,7 +1574,7 @@ public class JobGraph extends AbstractGraph<JobMeta> implements XulEventHandler,
    * @param newName
    */
   public void renameJobEntry( JobEntryCopy jobEntry, String newName ) {
-    JobEntryCopy[] jobs = meta.getAllJobGraphEntries( newName );
+    JobEntryCopy[] jobs = jobMeta.getAllJobGraphEntries( newName );
     if ( jobs != null && jobs.length > 0 ) {
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_INFORMATION );
       mb.setMessage( BaseMessages.getString( PKG, "Spoon.Dialog.JobEntryNameExists.Message", newName ) );
@@ -1587,17 +1600,17 @@ public class JobGraph extends AbstractGraph<JobMeta> implements XulEventHandler,
   }
 
   public void delSelected( JobEntryCopy clickedEntry ) {
-    List<JobEntryCopy> copies = meta.getSelectedEntries();
+    List<JobEntryCopy> copies = jobMeta.getSelectedEntries();
     int nrsels = copies.size();
     if ( nrsels == 0 ) {
       if ( clickedEntry != null ) {
-        spoon.deleteJobEntryCopies( meta, clickedEntry );
+        spoon.deleteJobEntryCopies( jobMeta, clickedEntry );
       }
       return;
     }
 
     JobEntryCopy[] jobEntries = copies.toArray( new JobEntryCopy[copies.size()] );
-    spoon.deleteJobEntryCopies( meta, jobEntries );
+    spoon.deleteJobEntryCopies( jobMeta, jobEntries );
   }
 
   public void clearSettings() {
@@ -1612,8 +1625,8 @@ public class JobGraph extends AbstractGraph<JobMeta> implements XulEventHandler,
     startHopEntry = null;
     endHopEntry = null;
     iconoffset = null;
-    for ( int i = 0; i < meta.nrJobHops(); i++ ) {
-      meta.getJobHop( i ).setSplit( false );
+    for ( int i = 0; i < jobMeta.nrJobHops(); i++ ) {
+      jobMeta.getJobHop( i ).setSplit( false );
     }
 
     stopEntryMouseOverDelayTimers();
@@ -1658,8 +1671,8 @@ public class JobGraph extends AbstractGraph<JobMeta> implements XulEventHandler,
   private JobHopMeta findHop( int x, int y, JobEntryCopy exclude ) {
     int i;
     JobHopMeta online = null;
-    for ( i = 0; i < meta.nrJobHops(); i++ ) {
-      JobHopMeta hi = meta.getJobHop( i );
+    for ( i = 0; i < jobMeta.nrJobHops(); i++ ) {
+      JobHopMeta hi = jobMeta.getJobHop( i );
       JobEntryCopy fs = hi.getFromEntry();
       JobEntryCopy ts = hi.getToEntry();
 
@@ -1766,9 +1779,9 @@ public class JobGraph extends AbstractGraph<JobMeta> implements XulEventHandler,
     je.setLaunchingInParallel( !je.isLaunchingInParallel() );
     JobEntryCopy jeNew = (JobEntryCopy) je.clone_deep();
 
-    spoon.addUndoChange( meta, new JobEntryCopy[] { jeOld }, new JobEntryCopy[] { jeNew }, new int[] { meta
+    spoon.addUndoChange( jobMeta, new JobEntryCopy[] { jeOld }, new JobEntryCopy[] { jeNew }, new int[] { jobMeta
       .indexOfJobEntry( jeNew ) } );
-    meta.setChanged();
+    jobMeta.setChanged();
 
     if ( getJobEntry().isLaunchingInParallel() ) {
       // Show a warning (optional)
@@ -1799,7 +1812,7 @@ public class JobGraph extends AbstractGraph<JobMeta> implements XulEventHandler,
       JobGraph.showOnlyStartOnceMessage( spoon.getShell() );
     }
 
-    spoon.delegates.jobs.dupeJobEntry( meta, jobEntry );
+    spoon.delegates.jobs.dupeJobEntry( jobMeta, jobEntry );
   }
 
   public void copyEntry() {
@@ -1807,7 +1820,7 @@ public class JobGraph extends AbstractGraph<JobMeta> implements XulEventHandler,
         shell, spoon.rep, RepositoryOperation.MODIFY_JOB, RepositoryOperation.EXECUTE_JOB ) ) {
       return;
     }
-    List<JobEntryCopy> entries = meta.getSelectedEntries();
+    List<JobEntryCopy> entries = jobMeta.getSelectedEntries();
     Iterator<JobEntryCopy> iterator = entries.iterator();
     while ( iterator.hasNext() ) {
       JobEntryCopy entry = iterator.next();
@@ -1816,7 +1829,7 @@ public class JobGraph extends AbstractGraph<JobMeta> implements XulEventHandler,
       }
     }
 
-    spoon.delegates.jobs.copyJobEntries( meta, entries );
+    spoon.delegates.jobs.copyJobEntries( jobMeta, entries );
   }
 
   private boolean canDup( JobEntryCopy entry ) {
@@ -1825,16 +1838,16 @@ public class JobGraph extends AbstractGraph<JobMeta> implements XulEventHandler,
 
   public void detachEntry() {
     detach( getJobEntry() );
-    meta.unselectAll();
+    jobMeta.unselectAll();
   }
 
   public void hideEntry() {
     getJobEntry().setDrawn( false );
     // nr > 1: delete
     if ( jobEntry.getNr() > 0 ) {
-      int ind = meta.indexOfJobEntry( jobEntry );
-      meta.removeJobEntry( ind );
-      spoon.addUndoDelete( meta, new JobEntryCopy[] { getJobEntry() }, new int[] { ind } );
+      int ind = jobMeta.indexOfJobEntry( jobEntry );
+      jobMeta.removeJobEntry( ind );
+      spoon.addUndoDelete( jobMeta, new JobEntryCopy[] { getJobEntry() }, new int[] { ind } );
     }
     redraw();
   }
@@ -1849,7 +1862,7 @@ public class JobGraph extends AbstractGraph<JobMeta> implements XulEventHandler,
     currentMouseX = x;
     currentMouseY = y;
 
-    final JobEntryCopy jobEntry = meta.getJobEntryCopy( x, y, iconsize );
+    final JobEntryCopy jobEntry = jobMeta.getJobEntryCopy( x, y, iconsize );
     setJobEntry( jobEntry );
     Document doc = xulDomContainer.getDocumentRoot();
     if ( jobEntry != null ) {
@@ -1857,7 +1870,7 @@ public class JobGraph extends AbstractGraph<JobMeta> implements XulEventHandler,
 
       XulMenupopup menu = (XulMenupopup) doc.getElementById( "job-graph-entry" );
       if ( menu != null ) {
-        List<JobEntryCopy> selection = meta.getSelectedEntries();
+        List<JobEntryCopy> selection = jobMeta.getSelectedEntries();
         doRightClickSelection( jobEntry, selection );
         int sels = selection.size();
 
@@ -1900,12 +1913,12 @@ public class JobGraph extends AbstractGraph<JobMeta> implements XulEventHandler,
 
         item = (XulMenuitem) doc.getElementById( "job-graph-entry-detach" );
         if ( item != null ) {
-          item.setDisabled( !meta.isEntryUsedInHops( jobEntry ) );
+          item.setDisabled( !jobMeta.isEntryUsedInHops( jobEntry ) );
         }
 
         item = (XulMenuitem) doc.getElementById( "job-graph-entry-hide" );
         if ( item != null ) {
-          item.setDisabled( !( jobEntry.isDrawn() && !meta.isEntryUsedInHops( jobEntry ) ) );
+          item.setDisabled( !( jobEntry.isDrawn() && !jobMeta.isEntryUsedInHops( jobEntry ) ) );
         }
 
         item = (XulMenuitem) doc.getElementById( "job-graph-entry-delete" );
@@ -1920,7 +1933,7 @@ public class JobGraph extends AbstractGraph<JobMeta> implements XulEventHandler,
 
         try {
           JobGraphJobEntryMenuExtension extension =
-            new JobGraphJobEntryMenuExtension( xulDomContainer, doc, meta, jobEntry, this );
+            new JobGraphJobEntryMenuExtension( xulDomContainer, doc, jobMeta, jobEntry, this );
           ExtensionPointHandler.callExtensionPoint(
             log, KettleExtensionPoint.JobGraphJobEntrySetMenu.id, extension );
         } catch ( Exception e ) {
@@ -1996,7 +2009,7 @@ public class JobGraph extends AbstractGraph<JobMeta> implements XulEventHandler,
 
       } else {
         // Clicked on the background: maybe we hit a note?
-        final NotePadMeta ni = meta.getNote( x, y );
+        final NotePadMeta ni = jobMeta.getNote( x, y );
         setCurrentNote( ni );
         if ( ni != null ) {
           XulMenupopup menu = (XulMenupopup) doc.getElementById( "job-graph-note" );
@@ -2028,13 +2041,13 @@ public class JobGraph extends AbstractGraph<JobMeta> implements XulEventHandler,
   }
 
   public void editJobProperties() {
-    editProperties( meta, spoon, spoon.getRepository(), true );
+    editProperties( jobMeta, spoon, spoon.getRepository(), true );
   }
 
   public void pasteNote() {
     final String clipcontent = spoon.fromClipboard();
     Point loc = new Point( currentMouseX, currentMouseY );
-    spoon.pasteXML( meta, clipcontent, loc );
+    spoon.pasteXML( jobMeta, clipcontent, loc );
   }
 
   public void newNote() {
@@ -2045,10 +2058,18 @@ public class JobGraph extends AbstractGraph<JobMeta> implements XulEventHandler,
     if ( n != null ) {
       NotePadMeta npi =
         new NotePadMeta( n, lastclick.x, lastclick.y, ConstUI.NOTE_MIN_SIZE, ConstUI.NOTE_MIN_SIZE );
-      meta.addNote( npi );
-      spoon.addUndoNew( meta, new NotePadMeta[] { npi }, new int[] { meta.indexOfNote( npi ) } );
+      jobMeta.addNote( npi );
+      spoon.addUndoNew( jobMeta, new NotePadMeta[] { npi }, new int[] { jobMeta.indexOfNote( npi ) } );
       redraw();
     }
+  }
+
+  public void setCurrentNote( NotePadMeta ni ) {
+    this.ni = ni;
+  }
+
+  public NotePadMeta getCurrentNote() {
+    return ni;
   }
 
   public void editNote() {
@@ -2058,30 +2079,30 @@ public class JobGraph extends AbstractGraph<JobMeta> implements XulEventHandler,
 
   public void deleteNote() {
     selectionRegion = null;
-    int idx = meta.indexOfNote( getCurrentNote() );
+    int idx = jobMeta.indexOfNote( getCurrentNote() );
     if ( idx >= 0 ) {
-      meta.removeNote( idx );
-      spoon.addUndoDelete( meta, new NotePadMeta[] { getCurrentNote() }, new int[] { idx } );
+      jobMeta.removeNote( idx );
+      spoon.addUndoDelete( jobMeta, new NotePadMeta[] { getCurrentNote() }, new int[] { idx } );
     }
     redraw();
   }
 
   public void raiseNote() {
     selectionRegion = null;
-    int idx = meta.indexOfNote( getCurrentNote() );
+    int idx = jobMeta.indexOfNote( getCurrentNote() );
     if ( idx >= 0 ) {
-      meta.raiseNote( idx );
-      // spoon.addUndoRaise(meta, new NotePadMeta[] {getCurrentNote()}, new int[] {idx} );
+      jobMeta.raiseNote( idx );
+      // spoon.addUndoRaise(jobMeta, new NotePadMeta[] {getCurrentNote()}, new int[] {idx} );
     }
     redraw();
   }
 
   public void lowerNote() {
     selectionRegion = null;
-    int idx = meta.indexOfNote( getCurrentNote() );
+    int idx = jobMeta.indexOfNote( getCurrentNote() );
     if ( idx >= 0 ) {
-      meta.lowerNote( idx );
-      // spoon.addUndoLower(meta, new NotePadMeta[] {getCurrentNote()}, new int[] {idx} );
+      jobMeta.lowerNote( idx );
+      // spoon.addUndoLower(jobMeta, new NotePadMeta[] {getCurrentNote()}, new int[] {idx} );
     }
     redraw();
   }
@@ -2094,7 +2115,7 @@ public class JobGraph extends AbstractGraph<JobMeta> implements XulEventHandler,
     currentHop.setToEntry( origFrom );
 
     boolean cancel = false;
-    if ( meta.hasLoop( currentHop.getFromEntry() ) || meta.hasLoop( currentHop.getToEntry() ) ) {
+    if ( jobMeta.hasLoop( currentHop.getFromEntry() ) || jobMeta.hasLoop( currentHop.getToEntry() ) ) {
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.CANCEL | SWT.ICON_WARNING );
       mb.setMessage( BaseMessages.getString( PKG, "JobGraph.Dialog.HopFlipCausesLoop.Message" ) );
       mb.setText( BaseMessages.getString( PKG, "JobGraph.Dialog.HopCausesLoop.Title" ) );
@@ -2118,7 +2139,7 @@ public class JobGraph extends AbstractGraph<JobMeta> implements XulEventHandler,
     boolean orig = currentHop.isEnabled();
     currentHop.setEnabled( !currentHop.isEnabled() );
 
-    if ( !orig && ( meta.hasLoop( currentHop.getFromEntry() ) || meta.hasLoop( currentHop.getToEntry() ) ) ) {
+    if ( !orig && ( jobMeta.hasLoop( currentHop.getFromEntry() ) || jobMeta.hasLoop( currentHop.getToEntry() ) ) ) {
       MessageBox mb = new MessageBox( shell, SWT.CANCEL | SWT.OK | SWT.ICON_WARNING );
       mb.setMessage( BaseMessages.getString( PKG, "JobGraph.Dialog.LoopAfterHopEnabled.Message" ) );
       mb.setText( BaseMessages.getString( PKG, "JobGraph.Dialog.LoopAfterHopEnabled.Title" ) );
@@ -2133,8 +2154,8 @@ public class JobGraph extends AbstractGraph<JobMeta> implements XulEventHandler,
 
   public void deleteHop() {
     selectionRegion = null;
-    int idx = meta.indexOfJobHop( currentHop );
-    meta.removeJobHop( idx );
+    int idx = jobMeta.indexOfJobHop( currentHop );
+    jobMeta.removeJobHop( idx );
     spoon.refreshTree();
     spoon.refreshGraph();
   }
@@ -2177,20 +2198,20 @@ public class JobGraph extends AbstractGraph<JobMeta> implements XulEventHandler,
    *
    **/
   public void enableHopsBetweenSelectedEntries( boolean enabled ) {
-    List<JobEntryCopy> list = meta.getSelectedEntries();
+    List<JobEntryCopy> list = jobMeta.getSelectedEntries();
 
     boolean hasLoop = false;
 
-    for ( int i = 0; i < meta.nrJobHops(); i++ ) {
-      JobHopMeta hop = meta.getJobHop( i );
+    for ( int i = 0; i < jobMeta.nrJobHops(); i++ ) {
+      JobHopMeta hop = jobMeta.getJobHop( i );
       if ( list.contains( hop.getFromEntry() ) && list.contains( hop.getToEntry() ) ) {
 
         JobHopMeta before = (JobHopMeta) hop.clone();
         hop.setEnabled( enabled );
         JobHopMeta after = (JobHopMeta) hop.clone();
-        spoon.addUndoChange( meta, new JobHopMeta[] { before }, new JobHopMeta[] { after }, new int[] { meta
+        spoon.addUndoChange( jobMeta, new JobHopMeta[] { before }, new JobHopMeta[] { after }, new int[] { jobMeta
           .indexOfJobHop( hop ) } );
-        if ( meta.hasLoop( hop.getFromEntry() ) || meta.hasLoop( hop.getToEntry() ) ) {
+        if ( jobMeta.hasLoop( hop.getFromEntry() ) || jobMeta.hasLoop( hop.getToEntry() ) ) {
           hasLoop = true;
         }
       }
@@ -2222,7 +2243,7 @@ public class JobGraph extends AbstractGraph<JobMeta> implements XulEventHandler,
     JobHopMeta before = (JobHopMeta) currentHop.clone();
     currentHop.setEnabled( enabled );
     JobHopMeta after = (JobHopMeta) currentHop.clone();
-    spoon.addUndoChange( meta, new JobHopMeta[] { before }, new JobHopMeta[] { after }, new int[] { meta
+    spoon.addUndoChange( jobMeta, new JobHopMeta[] { before }, new JobHopMeta[] { after }, new int[] { jobMeta
       .indexOfJobHop( currentHop ) } );
 
     enableDisableNextHops( currentHop.getToEntry(), enabled, 1 );
@@ -2236,13 +2257,13 @@ public class JobGraph extends AbstractGraph<JobMeta> implements XulEventHandler,
       return; // prevent endless running with loops in jobs
     }
 
-    for ( JobEntryCopy to : meta.getJobCopies() ) {
-      JobHopMeta hop = meta.findJobHop( from, to, true );
+    for ( JobEntryCopy to : jobMeta.getJobCopies() ) {
+      JobHopMeta hop = jobMeta.findJobHop( from, to, true );
       if ( hop != null ) {
         JobHopMeta before = (JobHopMeta) hop.clone();
         hop.setEnabled( enabled );
         JobHopMeta after = (JobHopMeta) hop.clone();
-        spoon.addUndoChange( meta, new JobHopMeta[] { before }, new JobHopMeta[] { after }, new int[] { meta
+        spoon.addUndoChange( jobMeta, new JobHopMeta[] { before }, new JobHopMeta[] { after }, new int[] { jobMeta
           .indexOfJobHop( hop ) } );
 
         enableDisableNextHops( to, enabled, level++ );
@@ -2464,11 +2485,11 @@ public class JobGraph extends AbstractGraph<JobMeta> implements XulEventHandler,
   protected void loadReferencedObject( JobEntryCopy jobEntryCopy, int index ) {
     try {
       Object referencedMeta =
-        jobEntryCopy.getEntry().loadReferencedObject( index, spoon.rep, spoon.metaStore, meta );
+        jobEntryCopy.getEntry().loadReferencedObject( index, spoon.rep, spoon.metaStore, jobMeta );
       if ( referencedMeta == null ) {
         // Compatible re-try for older plugins.
         referencedMeta =
-          compatibleJobEntryLoadReferencedObject( jobEntryCopy.getEntry(), index, spoon.rep, meta );
+          compatibleJobEntryLoadReferencedObject( jobEntryCopy.getEntry(), index, spoon.rep, jobMeta );
       }
       if ( referencedMeta != null && ( referencedMeta instanceof TransMeta ) ) {
         TransMeta launchTransMeta = (TransMeta) referencedMeta;
@@ -2483,7 +2504,7 @@ public class JobGraph extends AbstractGraph<JobMeta> implements XulEventHandler,
           return;
         }
 
-        copyInternalJobVariables( meta, launchTransMeta );
+        copyInternalJobVariables( jobMeta, launchTransMeta );
         spoon.setParametersAsVariablesInUI( launchTransMeta, launchTransMeta );
 
         launchTransMeta.clearChanged();
@@ -2531,7 +2552,7 @@ public class JobGraph extends AbstractGraph<JobMeta> implements XulEventHandler,
   @SuppressWarnings( "deprecation" )
   private Object compatibleJobEntryLoadReferencedObject( JobEntryInterface entry, int index, Repository rep,
     JobMeta jobMeta2 ) throws KettleException {
-    return entry.loadReferencedObject( index, spoon.rep, meta );
+    return entry.loadReferencedObject( index, spoon.rep, jobMeta );
   }
 
   protected void openTransformation( JobEntryTrans entry, JobEntryCopy jobEntryCopy ) {
@@ -2544,7 +2565,7 @@ public class JobGraph extends AbstractGraph<JobMeta> implements XulEventHandler,
         case FILENAME:
           // See if this file is already loaded...
           //
-          String exactFilename = meta.environmentSubstitute( entry.getFilename() );
+          String exactFilename = jobMeta.environmentSubstitute( entry.getFilename() );
           if ( Utils.isEmpty( exactFilename ) ) {
             throw new Exception( BaseMessages.getString( PKG, "JobGraph.Exception.NoFilenameSpecified" ) );
           }
@@ -2560,8 +2581,8 @@ public class JobGraph extends AbstractGraph<JobMeta> implements XulEventHandler,
           break;
 
         case REPOSITORY_BY_NAME:
-          String exactTransname = meta.environmentSubstitute( entry.getTransname() );
-          String exactDirectory = meta.environmentSubstitute( entry.getDirectory() );
+          String exactTransname = jobMeta.environmentSubstitute( entry.getTransname() );
+          String exactDirectory = jobMeta.environmentSubstitute( entry.getDirectory() );
           if ( Utils.isEmpty( exactTransname ) ) {
             throw new Exception( BaseMessages.getString( PKG, "JobGraph.Exception.NoTransNameSpecified" ) );
           }
@@ -2573,9 +2594,9 @@ public class JobGraph extends AbstractGraph<JobMeta> implements XulEventHandler,
 
           // But first we look to see if the directory does exist
           RepositoryDirectoryInterface repositoryDirectoryInterface =
-            spoon.rep.findDirectory( meta.environmentSubstitute( entry.getDirectory() ) );
+            spoon.rep.findDirectory( jobMeta.environmentSubstitute( entry.getDirectory() ) );
           if ( repositoryDirectoryInterface == null ) {
-            throw new Exception( BaseMessages.getString( PKG, "JobGraph.Exception.DirectoryDoesNotExist", meta
+            throw new Exception( BaseMessages.getString( PKG, "JobGraph.Exception.DirectoryDoesNotExist", jobMeta
               .environmentSubstitute( entry.getDirectory() ) ) );
           }
 
@@ -2584,7 +2605,7 @@ public class JobGraph extends AbstractGraph<JobMeta> implements XulEventHandler,
             launchTransMeta = new TransMeta( null, exactTransname );
           } else {
             launchTransMeta =
-              spoon.rep.loadTransformation( exactTransname, spoon.rep.findDirectory( meta
+              spoon.rep.loadTransformation( exactTransname, spoon.rep.findDirectory( jobMeta
                 .environmentSubstitute( entry.getDirectory() ) ), null, true, null ); // reads last version
           }
           break;
@@ -2617,7 +2638,7 @@ public class JobGraph extends AbstractGraph<JobMeta> implements XulEventHandler,
         return;
       }
 
-      copyInternalJobVariables( meta, launchTransMeta );
+      copyInternalJobVariables( jobMeta, launchTransMeta );
       spoon.setParametersAsVariablesInUI( launchTransMeta, launchTransMeta );
 
       spoon.addTransGraph( launchTransMeta );
@@ -2647,7 +2668,7 @@ public class JobGraph extends AbstractGraph<JobMeta> implements XulEventHandler,
         case FILENAME:
           // See if this file is already loaded...
           //
-          String exactFilename = meta.environmentSubstitute( entry.getFilename() );
+          String exactFilename = jobMeta.environmentSubstitute( entry.getFilename() );
           if ( Utils.isEmpty( exactFilename ) ) {
             throw new Exception( BaseMessages.getString( PKG, "JobGraph.Exception.NoFilenameSpecified" ) );
           }
@@ -2655,7 +2676,7 @@ public class JobGraph extends AbstractGraph<JobMeta> implements XulEventHandler,
           // Open the file or create a new one!
           //
           if ( KettleVFS.fileExists( exactFilename ) ) {
-            launchJobMeta = new JobMeta( meta, exactFilename, spoon.rep, spoon.metaStore, null );
+            launchJobMeta = new JobMeta( jobMeta, exactFilename, spoon.rep, spoon.metaStore, null );
           } else {
             launchJobMeta = new JobMeta();
           }
@@ -2663,8 +2684,8 @@ public class JobGraph extends AbstractGraph<JobMeta> implements XulEventHandler,
           break;
 
         case REPOSITORY_BY_NAME:
-          String exactJobname = meta.environmentSubstitute( entry.getJobName() );
-          String exactDirectory = meta.environmentSubstitute( entry.getDirectory() );
+          String exactJobname = jobMeta.environmentSubstitute( entry.getJobName() );
+          String exactDirectory = jobMeta.environmentSubstitute( entry.getDirectory() );
           if ( Utils.isEmpty( exactJobname ) ) {
             throw new Exception( BaseMessages.getString( PKG, "JobGraph.Exception.NoJobNameSpecified" ) );
           }
@@ -2752,7 +2773,7 @@ public class JobGraph extends AbstractGraph<JobMeta> implements XulEventHandler,
   }
 
   /**
-   * Finds the last active job in the running job to the openened meta
+   * Finds the last active job in the running job to the openened jobMeta
    *
    * @param jobGraph
    * @param newJob
@@ -2795,7 +2816,7 @@ public class JobGraph extends AbstractGraph<JobMeta> implements XulEventHandler,
 
     Image img = getJobImage( disp, area.x, area.y, magnification );
     e.gc.drawImage( img, 0, 0 );
-    if ( meta.nrJobEntries() == 0 ) {
+    if ( jobMeta.nrJobEntries() == 0 ) {
       e.gc.setForeground( GUIResource.getInstance().getColorCrystalTextPentaho() );
       e.gc.setBackground( GUIResource.getInstance().getColorBackground() );
       e.gc.setFont( GUIResource.getInstance().getFontMedium() );
@@ -2818,18 +2839,18 @@ public class JobGraph extends AbstractGraph<JobMeta> implements XulEventHandler,
 
     JobPainter jobPainter =
       new JobPainter(
-        gc, meta, new Point( x, y ), new SwtScrollBar( hori ), new SwtScrollBar( vert ), hop_candidate,
+        gc, jobMeta, new Point( x, y ), new SwtScrollBar( hori ), new SwtScrollBar( vert ), hop_candidate,
         drop_candidate, selectionRegion, areaOwners, mouseOverEntries, PropsUI.getInstance().getIconSize(),
         PropsUI.getInstance().getLineWidth(), gridSize, PropsUI
           .getInstance().getShadowSize(), PropsUI.getInstance().isAntiAliasingEnabled(), PropsUI
           .getInstance().getNoteFont().getName(), PropsUI.getInstance().getNoteFont().getHeight() );
 
     jobPainter.setMagnification( magnificationFactor );
-    jobPainter.setLogMap( entryLogMap );
-    jobPainter.setStartHopPart( startHopEntry );
+    jobPainter.setEntryLogMap( entryLogMap );
+    jobPainter.setStartHopEntry( startHopEntry );
     jobPainter.setEndHopLocation( endHopLocation );
-    jobPainter.setEndHopPart( endHopEntry );
-    jobPainter.setNoInputPart( noInputEntry );
+    jobPainter.setEndHopEntry( endHopEntry );
+    jobPainter.setNoInputEntry( noInputEntry );
     if ( job != null ) {
       jobPainter.setJobEntryResults( job.getJobEntryResults() );
     } else {
@@ -2852,25 +2873,32 @@ public class JobGraph extends AbstractGraph<JobMeta> implements XulEventHandler,
     return (Image) gc.getImage();
   }
 
+  protected Point getOffset() {
+    Point area = getArea();
+    Point max = jobMeta.getMaximum();
+    Point thumb = getThumb( area, max );
+    return getOffset( thumb, area );
+  }
+
   protected void newHop() {
-    List<JobEntryCopy> selection = meta.getSelectedEntries();
+    List<JobEntryCopy> selection = jobMeta.getSelectedEntries();
     if ( selection == null || selection.size() < 2 ) {
       return;
     }
     JobEntryCopy fr = selection.get( 0 );
     JobEntryCopy to = selection.get( 1 );
-    spoon.newJobHop( meta, fr, to );
+    spoon.newJobHop( jobMeta, fr, to );
   }
 
   protected void editEntry( JobEntryCopy je ) {
-    spoon.editJobEntry( meta, je );
+    spoon.editJobEntry( jobMeta, je );
   }
 
   protected void editNote( NotePadMeta ni ) {
     NotePadMeta before = (NotePadMeta) ni.clone();
     String title = BaseMessages.getString( PKG, "JobGraph.Dialog.EditNote.Title" );
 
-    NotePadDialog dd = new NotePadDialog( meta, shell, title, ni );
+    NotePadDialog dd = new NotePadDialog( jobMeta, shell, title, ni );
     NotePadMeta n = dd.open();
     if ( n != null ) {
       ni.setChanged();
@@ -2893,7 +2921,7 @@ public class JobGraph extends AbstractGraph<JobMeta> implements XulEventHandler,
       ni.setBorderColorBlue( n.getBorderColorBlue() );
       ni.setDrawShadow( n.isDrawShadow() );
 
-      spoon.addUndoChange( meta, new NotePadMeta[] { before }, new NotePadMeta[] { ni }, new int[] { meta
+      spoon.addUndoChange( jobMeta, new NotePadMeta[] { before }, new NotePadMeta[] { ni }, new int[] { jobMeta
         .indexOfNote( ni ) } );
       ni.width = ConstUI.NOTE_MIN_SIZE;
       ni.height = ConstUI.NOTE_MIN_SIZE;
@@ -2995,9 +3023,41 @@ public class JobGraph extends AbstractGraph<JobMeta> implements XulEventHandler,
 
   protected SnapAllignDistribute createSnapAllignDistribute() {
 
-    List<JobEntryCopy> elements = meta.getSelectedEntries();
-    int[] indices = meta.getEntryIndexes( elements );
-    return new SnapAllignDistribute( meta, elements, indices, spoon, this );
+    List<JobEntryCopy> elements = jobMeta.getSelectedEntries();
+    int[] indices = jobMeta.getEntryIndexes( elements );
+    return new SnapAllignDistribute( jobMeta, elements, indices, spoon, this );
+  }
+
+  public void snaptogrid() {
+    snaptogrid( ConstUI.GRID_SIZE );
+  }
+
+  protected void snaptogrid( int size ) {
+    createSnapAllignDistribute().snaptogrid( size );
+  }
+
+  public void allignleft() {
+    createSnapAllignDistribute().allignleft();
+  }
+
+  public void allignright() {
+    createSnapAllignDistribute().allignright();
+  }
+
+  public void alligntop() {
+    createSnapAllignDistribute().alligntop();
+  }
+
+  public void allignbottom() {
+    createSnapAllignDistribute().allignbottom();
+  }
+
+  public void distributehorizontal() {
+    createSnapAllignDistribute().distributehorizontal();
+  }
+
+  public void distributevertical() {
+    createSnapAllignDistribute().distributevertical();
   }
 
   protected void drawRect( GC gc, Rectangle rect ) {
@@ -3021,29 +3081,29 @@ public class JobGraph extends AbstractGraph<JobMeta> implements XulEventHandler,
   }
 
   protected void detach( JobEntryCopy je ) {
-    JobHopMeta hfrom = meta.findJobHopTo( je );
-    JobHopMeta hto = meta.findJobHopFrom( je );
+    JobHopMeta hfrom = jobMeta.findJobHopTo( je );
+    JobHopMeta hto = jobMeta.findJobHopFrom( je );
 
     if ( hfrom != null && hto != null ) {
-      if ( meta.findJobHop( hfrom.getFromEntry(), hto.getToEntry() ) == null ) {
+      if ( jobMeta.findJobHop( hfrom.getFromEntry(), hto.getToEntry() ) == null ) {
         JobHopMeta hnew = new JobHopMeta( hfrom.getFromEntry(), hto.getToEntry() );
-        meta.addJobHop( hnew );
-        spoon.addUndoNew( meta, new JobHopMeta[] { (JobHopMeta) hnew.clone() }, new int[] { meta
+        jobMeta.addJobHop( hnew );
+        spoon.addUndoNew( jobMeta, new JobHopMeta[] { (JobHopMeta) hnew.clone() }, new int[] { jobMeta
           .indexOfJobHop( hnew ) } );
       }
     }
     if ( hfrom != null ) {
-      int fromidx = meta.indexOfJobHop( hfrom );
+      int fromidx = jobMeta.indexOfJobHop( hfrom );
       if ( fromidx >= 0 ) {
-        meta.removeJobHop( fromidx );
-        spoon.addUndoDelete( meta, new JobHopMeta[] { hfrom }, new int[] { fromidx } );
+        jobMeta.removeJobHop( fromidx );
+        spoon.addUndoDelete( jobMeta, new JobHopMeta[] { hfrom }, new int[] { fromidx } );
       }
     }
     if ( hto != null ) {
-      int toidx = meta.indexOfJobHop( hto );
+      int toidx = jobMeta.indexOfJobHop( hto );
       if ( toidx >= 0 ) {
-        meta.removeJobHop( toidx );
-        spoon.addUndoDelete( meta, new JobHopMeta[] { hto }, new int[] { toidx } );
+        jobMeta.removeJobHop( toidx );
+        spoon.addUndoDelete( jobMeta, new JobHopMeta[] { hto }, new int[] { toidx } );
       }
     }
     spoon.refreshTree();
@@ -3056,42 +3116,42 @@ public class JobGraph extends AbstractGraph<JobMeta> implements XulEventHandler,
   }
 
   public String toString() {
-    if ( meta == null ) {
+    if ( jobMeta == null ) {
       return Spoon.APP_NAME;
     } else {
-      return meta.getName();
+      return jobMeta.getName();
     }
   }
 
   public EngineMetaInterface getMeta() {
-    return meta;
+    return jobMeta;
   }
 
   /**
-   * @return the meta / public JobMeta getJobMeta() { return meta; }
+   * @return the jobMeta / public JobMeta getJobMeta() { return jobMeta; }
    *
    *         /**
    * @param jobMeta
-   *          the meta to set
+   *          the jobMeta to set
    */
   public void setJobMeta( JobMeta jobMeta ) {
-    this.meta = jobMeta;
+    this.jobMeta = jobMeta;
   }
 
   public boolean applyChanges() throws KettleException {
-    return spoon.saveToFile( meta );
+    return spoon.saveToFile( jobMeta );
   }
 
   public boolean canBeClosed() {
-    return !meta.hasChanged();
+    return !jobMeta.hasChanged();
   }
 
   public JobMeta getManagedObject() {
-    return meta;
+    return jobMeta;
   }
 
   public boolean hasContentChanged() {
-    return meta.hasChanged();
+    return jobMeta.hasChanged();
   }
 
   public static int showChangedWarning( Shell shell, String name ) {
@@ -3352,10 +3412,10 @@ public class JobGraph extends AbstractGraph<JobMeta> implements XulEventHandler,
   public void browseVersionHistory() {
     try {
       RepositoryRevisionBrowserDialogInterface dialog =
-        RepositoryExplorerDialog.getVersionBrowserDialog( shell, spoon.rep, meta );
+        RepositoryExplorerDialog.getVersionBrowserDialog( shell, spoon.rep, jobMeta );
       String versionLabel = dialog.open();
       if ( versionLabel != null ) {
-        spoon.loadObjectFromRepository( meta.getName(), meta.getRepositoryElementType(), meta
+        spoon.loadObjectFromRepository( jobMeta.getName(), jobMeta.getRepositoryElementType(), jobMeta
           .getRepositoryDirectory(), versionLabel );
       }
     } catch ( Exception e ) {
@@ -3372,14 +3432,14 @@ public class JobGraph extends AbstractGraph<JobMeta> implements XulEventHandler,
     if ( job == null || job.isFinished() && !job.isActive() ) {
       // Auto save feature...
       //
-      handleJobMetaChanges( meta );
+      handleJobMetaChanges( jobMeta );
 
       // Is the repository available & name / id set?
       // Is there a filename set and no repository available?
       //
-      if ( ( ( meta.getName() != null && meta.getObjectId() != null && spoon.rep != null ) || ( meta
+      if ( ( ( jobMeta.getName() != null && jobMeta.getObjectId() != null && spoon.rep != null ) || ( jobMeta
         .getFilename() != null && spoon.rep == null ) )
-        && !meta.hasChanged() // Didn't change
+        && !jobMeta.hasChanged() // Didn't change
       ) {
         if ( job == null || ( job != null && !job.isActive() ) ) {
           try {
@@ -3400,9 +3460,9 @@ public class JobGraph extends AbstractGraph<JobMeta> implements XulEventHandler,
             JobMeta runJobMeta;
 
             if ( spoon.rep != null ) {
-              runJobMeta = spoon.rep.loadJob( meta.getName(), meta.getRepositoryDirectory(), null, null );
+              runJobMeta = spoon.rep.loadJob( jobMeta.getName(), jobMeta.getRepositoryDirectory(), null, null );
             } else {
-              runJobMeta = new JobMeta( null, meta.getFilename(), null, meta.getMetaStore(), null );
+              runJobMeta = new JobMeta( null, jobMeta.getFilename(), null, jobMeta.getMetaStore(), null );
             }
 
             String spoonObjectId = UUID.randomUUID().toString();
@@ -3413,7 +3473,7 @@ public class JobGraph extends AbstractGraph<JobMeta> implements XulEventHandler,
             job = new Job( spoon.rep, runJobMeta, spoonLoggingObject );
 
             job.setLogLevel( executionConfiguration.getLogLevel() );
-            job.shareVariablesWith( meta );
+            job.shareVariablesWith( jobMeta );
             job.setInteractive( true );
             job.setGatheringMetrics( executionConfiguration.isGatheringMetrics() );
             job.setArguments( executionConfiguration.getArgumentStrings() );
@@ -3473,12 +3533,12 @@ public class JobGraph extends AbstractGraph<JobMeta> implements XulEventHandler,
           m.open();
         }
       } else {
-        if ( meta.hasChanged() ) {
+        if ( jobMeta.hasChanged() ) {
           MessageBox m = new MessageBox( shell, SWT.OK | SWT.ICON_WARNING );
           m.setText( BaseMessages.getString( PKG, "JobLog.Dialog.JobHasChangedSave.Title" ) );
           m.setMessage( BaseMessages.getString( PKG, "JobLog.Dialog.JobHasChangedSave.Message" ) );
           m.open();
-        } else if ( spoon.rep != null && meta.getName() == null ) {
+        } else if ( spoon.rep != null && jobMeta.getName() == null ) {
           MessageBox m = new MessageBox( shell, SWT.OK | SWT.ICON_WARNING );
           m.setText( BaseMessages.getString( PKG, "JobLog.Dialog.PleaseGiveThisJobAName.Title" ) );
           m.setMessage( BaseMessages.getString( PKG, "JobLog.Dialog.PleaseGiveThisJobAName.Message" ) );
@@ -3670,17 +3730,17 @@ public class JobGraph extends AbstractGraph<JobMeta> implements XulEventHandler,
   // Change of step, connection, hop or note...
   public void addUndoPosition( Object[] obj, int[] pos, Point[] prev, Point[] curr, boolean nextAlso ) {
     // It's better to store the indexes of the objects, not the objects itself!
-    meta.addUndo( obj, null, pos, prev, curr, TransMeta.TYPE_UNDO_POSITION, nextAlso );
-    spoon.setUndoMenu( meta );
+    jobMeta.addUndo( obj, null, pos, prev, curr, TransMeta.TYPE_UNDO_POSITION, nextAlso );
+    spoon.setUndoMenu( jobMeta );
   }
 
   @Override
   public int showChangedWarning() throws KettleException {
-    return showChangedWarning( meta.getName() );
+    return showChangedWarning( jobMeta.getName() );
   }
 
   public void replayJob() {
-    List<JobEntryCopy> selectedEntries = meta.getSelectedEntries();
+    List<JobEntryCopy> selectedEntries = jobMeta.getSelectedEntries();
     if ( selectedEntries.size() != 1 ) {
       MessageBox box = new MessageBox( shell, SWT.ICON_INFORMATION | SWT.CLOSE );
       box.setText( BaseMessages.getString( PKG, "JobGraph.ReplayJob.SelectOneEntryToStartFrom.Title" ) );
@@ -3691,7 +3751,7 @@ public class JobGraph extends AbstractGraph<JobMeta> implements XulEventHandler,
 
     JobEntryCopy copy = selectedEntries.get( 0 );
 
-    spoon.executeJob( meta, true, false, null, false, copy.getName(), copy.getNr() );
+    spoon.executeJob( jobMeta, true, false, null, false, copy.getName(), copy.getNr() );
   }
 
   public void handleJobMetaChanges( JobMeta jobMeta ) throws KettleException {
@@ -3790,7 +3850,7 @@ public class JobGraph extends AbstractGraph<JobMeta> implements XulEventHandler,
   }
 
   public JobMeta getJobMeta() {
-    return meta;
+    return jobMeta;
   }
 
   public Job getJob() {
