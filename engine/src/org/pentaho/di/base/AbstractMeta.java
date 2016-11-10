@@ -197,8 +197,6 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
     this.alwaysShowRunOptions = alwaysShowRunOptions;
   }
 
-  public abstract Point getMaximum();
-
   /**
    * The set of names of databases available only for this meta. The list is needed to distinguish connections when we
    * load/save the meta in JCR repository.

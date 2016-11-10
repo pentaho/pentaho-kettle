@@ -34,7 +34,6 @@ import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.trans.step.errorhandling.StreamIcon;
 
 import java.util.List;
-import java.util.Map;
 
 public abstract class BasePainter<Hop extends BaseHopMeta, Part extends BaseMeta> {
 
@@ -54,9 +53,6 @@ public abstract class BasePainter<Hop extends BaseHopMeta, Part extends BaseMeta
   public static final int CORNER_RADIUS_2 = 4;
 
   public static final float FACTOR_1_TO_1 = 1.0f;
-
-  public static final String[] magnificationDescriptions = new String[] {
-    "  200% ", "  150% ", "  100% ", "  75% ", "  50% ", "  25% " };
 
   protected Point area;
 
@@ -86,14 +82,6 @@ public abstract class BasePainter<Hop extends BaseHopMeta, Part extends BaseMeta
   private int noteFontHeight;
 
   protected Hop candidate;
-
-  protected Map<Part, String> logMap;
-  protected List<Part> mouseOver;
-
-  protected Part startHopPart;
-  protected Point endHopLocation;
-  protected Part endHopPart;
-  protected Part noInputPart;
 
   public BasePainter( GCInterface gc, Object subject, Point area, ScrollBarInterface hori,
     ScrollBarInterface vert, Point drop_candidate, Rectangle selrect, List<AreaOwner> areaOwners, int iconsize,
@@ -520,62 +508,4 @@ public abstract class BasePainter<Hop extends BaseHopMeta, Part extends BaseMeta
 
   protected abstract void drawArrow( EImage arrow, int x1, int y1, int x2, int y2, double theta, int size, double factor,
                             Hop jobHop, Object startObject, Object endObject );
-
-  /**
-   * @return the logMap
-   */
-  public Map<Part, String> getLogMap() {
-    return logMap;
-  }
-
-  /**
-   * @param logMap the logMap to set
-   */
-  public void setLogMap( Map<Part, String> logMap ) {
-    this.logMap = logMap;
-  }
-
-  public Part getStartHopStep() {
-    return startHopPart;
-  }
-
-  /**
-   * @param startHopPart the startHopPart to set
-   */
-  public void setStartHopPart( Part startHopPart ) {
-    this.startHopPart = startHopPart;
-  }
-
-  public Point getEndHopLocation() {
-    return endHopLocation;
-  }
-
-  /**
-   * @param endHopLocation the endHopLocation to set
-   */
-  public void setEndHopLocation( Point endHopLocation ) {
-    this.endHopLocation = endHopLocation;
-  }
-
-  public Part getNoInputStep() {
-    return noInputPart;
-  }
-
-  /**
-   * @param noInputPart the noInputStep to set
-   */
-  public void setNoInputPart( Part noInputPart ) {
-    this.noInputPart = noInputPart;
-  }
-
-  public Part getEndHopStep() {
-    return endHopPart;
-  }
-
-  /**
-   * @param endHopPart the endHopStep to set
-   */
-  public void setEndHopPart( Part endHopPart ) {
-    this.endHopPart = endHopPart;
-  }
 }
