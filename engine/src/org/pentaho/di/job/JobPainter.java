@@ -492,9 +492,49 @@ public class JobPainter extends BasePainter<JobHopMeta, JobEntryCopy> {
   }
 
   @Override
-  protected void drawArrow2( EImage arrow, int x1, int y1, int x2, int y2, double theta, int size, double factor,
-      JobHopMeta jobHop, Object startObject, Object endObject, int mx, int my ) {
+  protected void drawArrow( EImage arrow, int x1, int y1, int x2, int y2, double theta, int size, double factor,
+      JobHopMeta jobHop, Object startObject, Object endObject ) {
+    int mx, my;
+    int a, b, dist;
+    double angle;
 
+    // gc.setLineWidth(1);
+    // WuLine(gc, black, x1, y1, x2, y2);
+
+    gc.drawLine( x1, y1, x2, y2 );
+
+    // What's the distance between the 2 points?
+    a = Math.abs( x2 - x1 );
+    b = Math.abs( y2 - y1 );
+    dist = (int) Math.sqrt( a * a + b * b );
+
+    // determine factor (position of arrow to left side or right side
+    // 0-->100%)
+    if ( factor < 0 ) {
+      if ( dist >= 2 * iconsize ) {
+        factor = 1.3;
+      } else {
+        factor = 1.2;
+      }
+    }
+
+    // in between 2 points
+    mx = (int) ( x1 + factor * ( x2 - x1 ) / 2 );
+    my = (int) ( y1 + factor * ( y2 - y1 ) / 2 );
+
+    // calculate points for arrowhead
+    angle = Math.atan2( y2 - y1, x2 - x1 ) + ( Math.PI / 2 );
+
+    boolean q1 = Math.toDegrees( angle ) >= 0 && Math.toDegrees( angle ) <= 90;
+    boolean q2 = Math.toDegrees( angle ) > 90 && Math.toDegrees( angle ) <= 180;
+    boolean q3 = Math.toDegrees( angle ) > 180 && Math.toDegrees( angle ) <= 270;
+    boolean q4 = Math.toDegrees( angle ) > 270 || Math.toDegrees( angle ) < 0;
+
+    if ( q1 || q3 ) {
+      gc.drawImage( arrow, mx + 1, my, magnification, angle );
+    } else if ( q2 || q4 ) {
+      gc.drawImage( arrow, mx, my, magnification, angle );
+    }
     // Display an icon above the hop...
     //
     factor = 0.8;

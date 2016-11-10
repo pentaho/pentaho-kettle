@@ -112,7 +112,7 @@ public class PurRepository_SharedObjects_Links_IT extends PurRepositoryIT {
     pur.save( slave1, VERSION_COMMENT_V1, null );
     pur.save( slave2, VERSION_COMMENT_V1, null );
 
-    AbstractMeta<?> meta = gMeta.createFilled();
+    AbstractMeta meta = gMeta.createFilled();
 
     meta.getSlaveServers().add( slave1 );
     meta.getSlaveServers().add( slave2 );
