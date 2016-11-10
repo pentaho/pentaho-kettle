@@ -7,15 +7,15 @@
           <td class="bullet" />
           <td class="repo_type text_left">
             <div class="repoType mightOverflow">
-                {{repository.displayName}}
+              {{repository.displayName}}
             </div>
             <div id="repoDesc">{{repository.description}}</div>
           </td>
           <td class="default">
             <button class="defaultBtn" ng-click="setDefault(repository)"
-            ng-show="repository.isDefault == false" title="{{ 'repositories.launch.label' | translate }}"></button>
+                ng-show="repository.isDefault == false" title="{{ 'repositories.launch.label' | translate }}"></button>
             <button class="defaultBtn activate" ng-click="setDefault(null)"
-            ng-show="repository.isDefault == true" title="{{ 'repositories.launch.label' | translate }}">
+                ng-show="repository.isDefault == true" title="{{ 'repositories.launch.label' | translate }}">
               <div id="defaultBtnCheckmark"></div>
             </button>
           </td>
