@@ -22,6 +22,26 @@
 
 package org.pentaho.di.core.database;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicBoolean;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.pentaho.di.core.RowMetaAndData;
+import org.pentaho.di.core.exception.KettlePluginException;
+import org.pentaho.di.core.plugins.DatabasePluginType;
+import org.pentaho.di.core.row.RowMeta;
+import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaNone;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -34,27 +54,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.pentaho.di.core.RowMetaAndData;
-import org.pentaho.di.core.exception.KettlePluginException;
-import org.pentaho.di.core.plugins.DatabasePluginType;
-import org.pentaho.di.core.row.RowMeta;
-import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.core.row.value.ValueMetaNone;
 
 public class DatabaseMetaTest {
   private static final String TABLE_NAME = "tableName";
@@ -320,4 +319,15 @@ public class DatabaseMetaTest {
       databaseMeta.databaseForBothDbInterfacesIsTheSame( mssqlServerDatabaseMeta, mssqlServerNativeDatabaseMetaChild ) );
   }
 
+  @Test
+  public void testCheckParameters() {
+    DatabaseMeta meta = mock( DatabaseMeta.class );
+    BaseDatabaseMeta databaseInterface = mock( BaseDatabaseMeta.class );
+    when( databaseInterface.requiresName() ).thenReturn( true );
+    when( meta.getDatabaseInterface() ).thenReturn( databaseInterface );
+    when( meta.getName() ).thenReturn( null );
+    when( meta.isPartitioned() ).thenReturn( false );
+    when( meta.checkParameters() ).thenCallRealMethod();
+    assertEquals( 2, meta.checkParameters().length );
+  }
 }
