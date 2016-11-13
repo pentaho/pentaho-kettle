@@ -30,8 +30,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.owasp.esapi.ESAPI;
-import org.owasp.esapi.Encoder;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.logging.KettleLogStore;
@@ -40,6 +38,8 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransConfiguration;
 import org.pentaho.di.trans.TransExecutionConfiguration;
+
+import static org.owasp.encoder.Encode.forHtml;
 
 public class PrepareExecutionTransServlet extends BaseHttpServlet implements CartePluginInterface {
   private static Class<?> PKG = PrepareExecutionTransServlet.class; // for i18n purposes, needed by Translator2!!
@@ -177,8 +177,6 @@ public class PrepareExecutionTransServlet extends BaseHttpServlet implements Car
       out.println( "<BODY>" );
     }
 
-    Encoder encoder = ESAPI.encoder();
-
     try {
       // ID is optional...
       //
@@ -222,7 +220,7 @@ public class PrepareExecutionTransServlet extends BaseHttpServlet implements Car
           } else {
 
             out.println( "<H1>"
-              + encoder.encodeForHTML( BaseMessages.getString(
+              + forHtml( BaseMessages.getString(
                 PKG, "PrepareExecutionTransServlet.TransPrepared", transName ) ) + "</H1>" );
             out.println( "<a href=\""
               + convertContextPath( GetTransStatusServlet.CONTEXT_PATH ) + "?name="
@@ -239,12 +237,12 @@ public class PrepareExecutionTransServlet extends BaseHttpServlet implements Car
                 + logText + Const.CR + Const.getStackTracker( e ) ) ) );
           } else {
             out.println( "<H1>"
-              + encoder.encodeForHTML( BaseMessages.getString(
+              + forHtml( BaseMessages.getString(
                 PKG, "PrepareExecutionTransServlet.Log.TransNotInit", transName ) ) + "</H1>" );
 
             out.println( "<pre>" );
-            out.println( encoder.encodeForHTML( logText ) );
-            out.println( encoder.encodeForHTML( Const.getStackTracker( e ) ) );
+            out.println( forHtml( logText ) );
+            out.println( forHtml( Const.getStackTracker( e ) ) );
             out.println( "</pre>" );
             out.println( "<a href=\""
               + convertContextPath( GetTransStatusServlet.CONTEXT_PATH ) + "?name="
@@ -258,7 +256,7 @@ public class PrepareExecutionTransServlet extends BaseHttpServlet implements Car
             PKG, "TransStatusServlet.Log.CoundNotFindSpecTrans", transName ) ) );
         } else {
           out.println( "<H1>"
-            + encoder.encodeForHTML( BaseMessages.getString(
+            + forHtml( BaseMessages.getString(
               PKG, "TransStatusServlet.Log.CoundNotFindTrans", transName ) ) + "</H1>" );
           out.println( "<a href=\""
             + convertContextPath( GetStatusServlet.CONTEXT_PATH ) + "\">"
@@ -273,7 +271,7 @@ public class PrepareExecutionTransServlet extends BaseHttpServlet implements Car
       } else {
         out.println( "<p>" );
         out.println( "<pre>" );
-        out.println( encoder.encodeForHTML( Const.getStackTracker( ex ) ) );
+        out.println( forHtml( Const.getStackTracker( ex ) ) );
         out.println( "</pre>" );
       }
     }

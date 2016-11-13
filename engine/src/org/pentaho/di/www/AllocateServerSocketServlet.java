@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -29,10 +29,10 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.owasp.esapi.ESAPI;
-import org.owasp.esapi.Encoder;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.xml.XMLHandler;
+
+import static org.owasp.encoder.Encode.forHtml;
 
 /**
  * This servlet allows a client (TransSplitter in our case) to ask for a port number.<br>
@@ -243,23 +243,22 @@ public class AllocateServerSocketServlet extends BaseHttpServlet implements Cart
       out.print( XMLHandler.getXMLHeader( Const.XML_ENCODING ) );
       out.print( XMLHandler.addTagValue( XML_TAG_PORT, port.getPort() ) );
     } else {
-      Encoder encoder = ESAPI.encoder();
       out.println( "<HTML>" );
       out.println( "<HEAD><TITLE>Allocation of a server socket port number</TITLE></HEAD>" );
       out.println( "<BODY>" );
       out.println( "<H1>Status</H1>" );
 
       out.println( "<p>" );
-      out.println( "Run ID : " + encoder.encodeForHTML( clusteredRunId ) + "<br>" );
-      out.println( "Host name : " + encoder.encodeForHTML( hostname ) + "<br>" );
-      out.println( "Transformation name : " + encoder.encodeForHTML( transName ) + "<br>" );
+      out.println( "Run ID : " + forHtml( clusteredRunId ) + "<br>" );
+      out.println( "Host name : " + forHtml( hostname ) + "<br>" );
+      out.println( "Transformation name : " + forHtml( transName ) + "<br>" );
       out.println( "Source step : "
-        + encoder.encodeForHTML( sourceStepName ) + "." + encoder.encodeForHTML( sourceStepCopy ) + "<br>" );
+        + forHtml( sourceStepName ) + "." + forHtml( sourceStepCopy ) + "<br>" );
       out.println( "Target step : "
-        + encoder.encodeForHTML( targetStepName ) + "." + encoder.encodeForHTML( targetStepCopy ) + "<br>" );
-      out.println( "Step copy: " + encoder.encodeForHTML( sourceStepCopy ) + "<br>" );
+        + forHtml( targetStepName ) + "." + forHtml( targetStepCopy ) + "<br>" );
+      out.println( "Step copy: " + forHtml( sourceStepCopy ) + "<br>" );
       out.println( "<p>" );
-      out.println( "--> port : " + encoder.encodeForHTML( port.toString() ) + "<br>" );
+      out.println( "--> port : " + forHtml( port.toString() ) + "<br>" );
 
       out.println( "<p>" );
       out.println( "</BODY>" );

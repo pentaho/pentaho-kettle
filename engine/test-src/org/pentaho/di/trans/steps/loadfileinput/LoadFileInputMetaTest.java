@@ -57,16 +57,14 @@ import org.xml.sax.InputSource;
 public class LoadFileInputMetaTest implements InitializerInterface<StepMetaInterface> {
   LoadSaveTester loadSaveTester;
 
-  String xmlOrig = "    " + "<include>N</include>\n" + "    <include_field/>\n" + "    <rownum>N</rownum>\n"
-      + "    <addresultfile>Y</addresultfile>\n" + "    <IsIgnoreEmptyFile>N</IsIgnoreEmptyFile>\n"
-      + "    <rownum_field/>\n" + "    <encoding/>\n" + "    <file>\n" + "      <name>D&#x3a;&#x5c;DZMITRY</name>\n"
-      + "      <filemask>&#x2a;&#x2f;</filemask>\n"
-      + "      <exclude_filemask>&#x2f;&#x2a;&#x2a;&#x2a;</exclude_filemask>\n"
-      + "      <file_required>N</file_required>\n" + "      <include_subfolders>N</include_subfolders>\n"
-      + "      </file>\n" + "    <fields>\n" + "      </fields>\n" + "    <limit>0</limit>\n"
-      + "    <IsInFields>N</IsInFields>\n" + "    <DynamicFilenameField/>\n" + "    <shortFileFieldName/>\n"
-      + "    <pathFieldName/>\n" + "    <hiddenFieldName/>\n" + "    <lastModificationTimeFieldName/>\n"
-      + "    <uriNameFieldName/>\n" + "    <rootUriNameFieldName/>\n" + "    <extensionFieldName/>\n";
+  String xmlOrig = "    " + "<include>N</include>    <include_field/>    <rownum>N</rownum>   " +
+          " <addresultfile>Y</addresultfile>    <IsIgnoreEmptyFile>N</IsIgnoreEmptyFile>    <rownum_field/>   " +
+          " <encoding/>    <file>      <name>D:\\DZMITRY</name>      <filemask>*/</filemask>     " +
+          " <exclude_filemask>/***</exclude_filemask>      <file_required>N</file_required>     " +
+          " <include_subfolders>N</include_subfolders>      </file>    <fields>      </fields>   " +
+          " <limit>0</limit>    <IsInFields>N</IsInFields>    <DynamicFilenameField/>   " +
+          " <shortFileFieldName/>    <pathFieldName/>    <hiddenFieldName/>    <lastModificationTimeFieldName/>   " +
+          " <uriNameFieldName/>    <rootUriNameFieldName/>    <extensionFieldName/>";
 
   public LoadFileInputMeta createMeta() throws Exception {
     LoadFileInputMeta meta = new LoadFileInputMeta();

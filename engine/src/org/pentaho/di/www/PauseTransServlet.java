@@ -30,13 +30,13 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.owasp.esapi.ESAPI;
-import org.owasp.esapi.Encoder;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
+
+import static org.owasp.encoder.Encode.forHtml;
 
 public class PauseTransServlet extends BaseHttpServlet implements CartePluginInterface {
   private static Class<?> PKG = PauseTransServlet.class; // for i18n purposes, needed by Translator2!!
@@ -194,8 +194,6 @@ public class PauseTransServlet extends BaseHttpServlet implements CartePluginInt
         trans = getTransformationMap().getTransformation( entry );
       }
 
-      Encoder encoder = ESAPI.encoder();
-
       if ( trans != null ) {
         String message;
         if ( trans.isPaused() ) {
@@ -209,7 +207,7 @@ public class PauseTransServlet extends BaseHttpServlet implements CartePluginInt
         if ( useXML ) {
           out.println( new WebResult( WebResult.STRING_OK, message ).getXML() );
         } else {
-          out.println( "<H1>" + encoder.encodeForHTML( message ) + "</H1>" );
+          out.println( "<H1>" + forHtml( message ) + "</H1>" );
           out.println( "<a href=\""
             + convertContextPath( GetTransStatusServlet.CONTEXT_PATH ) + "?name="
             + URLEncoder.encode( transName, "UTF-8" ) + "&id=" + URLEncoder.encode( id, "UTF-8" ) + "\">"
@@ -221,7 +219,7 @@ public class PauseTransServlet extends BaseHttpServlet implements CartePluginInt
         if ( useXML ) {
           out.println( new WebResult( WebResult.STRING_ERROR, message ).getXML() );
         } else {
-          out.println( "<H1>" + encoder.encodeForHTML( message ) + "</H1>" );
+          out.println( "<H1>" + forHtml( message ) + "</H1>" );
           out.println( "<a href=\""
             + convertContextPath( GetStatusServlet.CONTEXT_PATH ) + "\">"
             + BaseMessages.getString( PKG, "TransStatusServlet.BackToStatusPage" ) + "</a><p>" );

@@ -55,8 +55,6 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.vfs2.FileObject;
-import org.owasp.esapi.ESAPI;
-import org.owasp.esapi.Encoder;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.KettleAttributeInterface;
@@ -70,6 +68,8 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
+
+import static org.owasp.encoder.Encode.forXml;
 
 /**
  * This class contains a number of (static) methods to facilitate the retrieval of information from XML Node(s).
@@ -768,20 +768,19 @@ public class XMLHandler {
    */
   public static String addTagValue( String tag, String val, boolean cr, String... attributes ) {
     StringBuilder value = new StringBuilder( "<" );
-    Encoder encoder = ESAPI.encoder();
-    value.append( tag );
+    value.append( forXml( tag ) );
 
     for ( int i = 0; i < attributes.length; i += 2 ) {
-      value.append( " " ).append( encoder.encodeForXMLAttribute( attributes[i] ) ).append( "=\"" ).append(
-        attributes[i + 1] ).append( "\" " );
+      value.append( " " ).append( forXml( attributes[i] ) ).append( "=\"" ).append(
+         forXml( attributes[i + 1] ) ).append( "\" " );
     }
 
     if ( val != null && val.length() > 0 ) {
       value.append( '>' );
-      value.append( encoder.encodeForXML( val ) );
+      value.append( forXml( val ) );
 
       value.append( "</" );
-      value.append( tag );
+      value.append( forXml( tag ) );
       value.append( '>' );
     } else {
       value.append( "/>" );
@@ -795,8 +794,7 @@ public class XMLHandler {
   }
 
   public static void appendReplacedChars( StringBuilder value, String string ) {
-    Encoder encoder = ESAPI.encoder();
-    value.append( encoder.encodeForXML( string ) );
+    value.append( forXml( string ) );
   }
 
   /**

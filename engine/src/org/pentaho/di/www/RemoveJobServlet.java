@@ -29,14 +29,14 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.owasp.esapi.ESAPI;
-import org.owasp.esapi.Encoder;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
+
+import static org.owasp.encoder.Encode.forHtml;
 
 public class RemoveJobServlet extends BaseHttpServlet implements CartePluginInterface {
 
@@ -182,8 +182,6 @@ public class RemoveJobServlet extends BaseHttpServlet implements CartePluginInte
       job = getJobMap().getJob( entry );
     }
 
-    Encoder encoder = ESAPI.encoder();
-
     if ( job != null ) {
 
       KettleLogStore.discardLines( job.getLogChannelId(), true );
@@ -204,7 +202,7 @@ public class RemoveJobServlet extends BaseHttpServlet implements CartePluginInte
         out.println( "</HEAD>" );
         out.println( "<BODY>" );
         out.println( "<H3>"
-          + encoder.encodeForHTML( BaseMessages
+          + forHtml( BaseMessages
             .getString( PKG, "RemoveJobServlet.TheJobWasRemoved", jobName, id ) ) + "</H3>" );
         out.print( "<a href=\""
           + convertContextPath( GetStatusServlet.CONTEXT_PATH ) + "\">"
@@ -219,7 +217,7 @@ public class RemoveJobServlet extends BaseHttpServlet implements CartePluginInte
           PKG, "RemoveJobServlet.Log.CoundNotFindSpecJob", jobName ) ) );
       } else {
         out.println( "<H1>"
-          + encoder.encodeForHTML( BaseMessages.getString(
+          + forHtml( BaseMessages.getString(
             PKG, "RemoveJobServlet.JobRemoved.Log.CoundNotFindJob", jobName, id ) ) + "</H1>" );
         out.println( "<a href=\""
           + convertContextPath( GetStatusServlet.CONTEXT_PATH ) + "\">"

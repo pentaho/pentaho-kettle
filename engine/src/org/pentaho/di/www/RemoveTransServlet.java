@@ -29,14 +29,14 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.owasp.esapi.ESAPI;
-import org.owasp.esapi.Encoder;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
+
+import static org.owasp.encoder.Encode.forHtml;
 
 public class RemoveTransServlet extends BaseHttpServlet implements CartePluginInterface {
   private static Class<?> PKG = RemoveTransServlet.class; // for i18n purposes, needed by Translator2!!
@@ -184,8 +184,6 @@ public class RemoveTransServlet extends BaseHttpServlet implements CartePluginIn
       trans = getTransformationMap().getTransformation( entry );
     }
 
-    Encoder encoder = ESAPI.encoder();
-
     if ( trans != null ) {
 
       KettleLogStore.discardLines( trans.getLogChannelId(), true );
@@ -206,7 +204,7 @@ public class RemoveTransServlet extends BaseHttpServlet implements CartePluginIn
         out.println( "</HEAD>" );
         out.println( "<BODY>" );
         out.println( "<H3>"
-          + encoder.encodeForHTML( BaseMessages.getString(
+          + forHtml( BaseMessages.getString(
             PKG, "RemoveTransServlet.TheTransWasRemoved", transName, id ) ) + "</H3>" );
         out.print( "<a href=\""
           + convertContextPath( GetStatusServlet.CONTEXT_PATH ) + "\">"
@@ -221,7 +219,7 @@ public class RemoveTransServlet extends BaseHttpServlet implements CartePluginIn
           PKG, "TransStatusServlet.Log.CoundNotFindSpecTrans", transName ) ) );
       } else {
         out.println( "<H1>"
-          + encoder.encodeForHTML( BaseMessages.getString(
+          + forHtml( BaseMessages.getString(
             PKG, "RemoveTransServlet.TransRemoved.Log.CoundNotFindTrans", transName, id ) ) + "</H1>" );
         out.println( "<a href=\""
           + convertContextPath( GetStatusServlet.CONTEXT_PATH ) + "\">"
