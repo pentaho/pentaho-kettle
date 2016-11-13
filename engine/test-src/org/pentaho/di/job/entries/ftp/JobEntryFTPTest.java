@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -36,6 +36,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.Rule;
 import org.junit.rules.TemporaryFolder;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.KettleClientEnvironment;
@@ -49,6 +50,9 @@ public class JobEntryFTPTest {
   private Job job;
   private JobEntryFTP entry;
   private String existingDir;
+
+  @Rule
+  public TemporaryFolder tempFolder = new TemporaryFolder();
 
   @BeforeClass
   public static void setUpBeforeClass() throws Exception {
@@ -155,7 +159,7 @@ public class JobEntryFTPTest {
 
   @Test
   public void testTargetFilenameNoDateTime() throws Exception {
-    File destFolder = new TemporaryFolder().newFolder( "pdi5558" );
+    File destFolder = tempFolder.newFolder( "pdi5558" );
     destFolder.deleteOnExit();
     JobEntryFTP entry = new JobEntryFTP();
     entry.setTargetDirectory( destFolder.getAbsolutePath() );
@@ -173,7 +177,7 @@ public class JobEntryFTPTest {
     SimpleDateFormat yyyyMMdd = new SimpleDateFormat( "yyyyMMdd" );
     SimpleDateFormat HHmmssSSS = new SimpleDateFormat( "HHmmssSSS" );
     SimpleDateFormat yyyyMMddHHmmssSSS = new SimpleDateFormat( "yyyyMMdd_HHmmssSSS" );
-    File destFolder = new TemporaryFolder().newFolder( "pdi5558" );
+    File destFolder = tempFolder.newFolder( "pdi5558" );
     destFolder.deleteOnExit();
     String destFolderName = destFolder.getAbsolutePath();
     JobEntryFTP entry = new JobEntryFTP();

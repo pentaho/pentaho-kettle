@@ -107,7 +107,7 @@
     <dependency org="org.javassist" name="javassist" rev="3.20.0-GA" conf="test->default" transitive="false" />
     <dependency org="org.scannotation" name="scannotation" rev="1.0.2" conf="test->default" transitive="false"/>
     <dependency org="javax.jcr" name="jcr" rev="2.0" conf="test->default"/>
-    <dependency org="org.owasp.esapi" name="esapi" rev="2.0.1" transitive="false" conf="test->default"/>
+    <dependency org="org.owasp.encoder"   name="encoder"   rev="1.2"  transitive="false"/>
     <dependency org="org.mockito" name="mockito-all" rev="1.9.0" transitive="false" conf="test->default"/>
     <dependency org="pentaho" name="pentaho-platform-core-test" rev="${dependency.bi-platform.revision}" changing="true" transitive="false" conf="test->default" />
     <dependency org="pentaho" name="pentaho-platform-repository-test" rev="${dependency.bi-platform.revision}" changing="true" transitive="false" conf="test->default" />
