@@ -22,15 +22,14 @@
 
 package org.pentaho.di.ui.repo;
 
-import java.util.HashMap;
-
-import org.codehaus.jackson.map.ObjectMapper;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.BrowserFunction;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Shell;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.i18n.BaseMessages;
@@ -41,7 +40,6 @@ import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.util.HelpUtils;
 import org.pentaho.platform.settings.ServerPort;
 import org.pentaho.platform.settings.ServerPortRegistry;
-import org.pentaho.di.core.Const;
 
 /**
  * Created by bmorrise on 2/21/16.
@@ -98,7 +96,7 @@ public class RepositoryDialog extends ThinDialog {
 
     new BrowserFunction( browser, "setResult" ) {
       @Override public Object function( Object[] arguments ) {
-        setResult( (boolean) arguments[0] );
+        setResult( (boolean) arguments[ 0 ] );
         return true;
       }
     };
@@ -142,23 +140,14 @@ public class RepositoryDialog extends ThinDialog {
       }
     };
 
-    new BrowserFunction( browser, "createRepository" ) {
-      @SuppressWarnings( "unchecked" )
-      @Override public Object function( Object[] objects ) {
-        try {
-          return controller.createRepository( (String) objects[ 0 ],
-            new ObjectMapper().readValue( (String) objects[ 1 ], HashMap.class ) );
-        } catch ( Exception e ) {
-          log.logError( "Unable to load repository json object", e );
-        }
-        return false;
-      }
-    };
-
     new BrowserFunction( browser, "connectToRepository" ) {
       @Override public Object function( Object[] objects ) {
-        controller.connectToRepository();
-        dialog.dispose();
+        try {
+          controller.connectToRepository();
+          dialog.dispose();
+        } catch ( KettleException e ) {
+          return false;
+        }
         return true;
       }
     };
@@ -166,18 +155,6 @@ public class RepositoryDialog extends ThinDialog {
     new BrowserFunction( browser, "setDefaultRepository" ) {
       @Override public Object function( Object[] objects ) {
         return controller.setDefaultRepository( (String) objects[ 0 ] );
-      }
-    };
-
-    new BrowserFunction( browser, "loginToRepository" ) {
-      @Override public Object function( Object[] objects ) {
-        String username = (String) objects[0];
-        String password = (String) objects[1];
-        if ( relogin ) {
-          return controller.reconnectToRepository( username, password );
-        } else {
-          return controller.connectToRepository( username, password );
-        }
       }
     };
 
@@ -219,6 +196,7 @@ public class RepositoryDialog extends ThinDialog {
     new BrowserFunction( browser, "reset" ) {
       @Override public Object function( Object[] objects ) {
         controller.setCurrentRepository( null );
+        controller.setRelogin( false );
         return true;
       }
     };
@@ -232,7 +210,7 @@ public class RepositoryDialog extends ThinDialog {
     new BrowserFunction( browser, "getCurrentRepository" ) {
       @Override
       public Object function( Object[] objects ) {
-        return controller.getCurrentRepository() != null ? controller.getCurrentRepository().getName( ) : "";
+        return controller.getCurrentRepository() != null ? controller.getCurrentRepository().getName() : "";
       }
     };
 
@@ -255,6 +233,7 @@ public class RepositoryDialog extends ThinDialog {
     };
 
     controller.setCurrentRepository( repositoryMeta );
+    controller.setRelogin( relogin );
 
     while ( !dialog.isDisposed() ) {
       if ( !display.readAndDispatch() ) {

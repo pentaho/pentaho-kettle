@@ -105,7 +105,7 @@ public class RepositoryConnectControllerTest {
 
   @Before
   public void setUp() {
-    controller = new RepositoryConnectController( pluginRegistry, spoon, repositoriesMeta );
+    controller = new RepositoryConnectController( pluginRegistry, () -> spoon, repositoriesMeta );
 
     when( pluginInterface.getName() ).thenReturn( PLUGIN_NAME );
     when( pluginInterface.getIds() ).thenReturn( new String[] { ID } );

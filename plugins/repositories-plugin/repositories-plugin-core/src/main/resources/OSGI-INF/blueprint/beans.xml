@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
-           xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.0.0"
-           xmlns:ext="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.0.0"
-           xmlns:pen="http://www.pentaho.com/xml/schemas/pentaho-blueprint" default-timeout="20000">
+           xmlns:pen="http://www.pentaho.com/xml/schemas/pentaho-blueprint"
+           xmlns:jaxrs="http://cxf.apache.org/blueprint/jaxrs" default-timeout="20000">
 
   <bean id="repositoryConnectController" scope="singleton"
         class="org.pentaho.di.ui.repo.RepositoryConnectController">
@@ -36,7 +35,6 @@
     <property name="mainType" value="org.pentaho.di.ui.spoon.SpoonPluginInterface"/>
     <property name="name" value="RepoSpoonPlugin"/>
     <property name="ID" value="RepoSpoonPlugin"/>
-<!--    <property name="imageFile" value="MGL.png"/>-->
     <property name="description" value="The Repositories Plugin"/>
     <property name="pluginTypeInterface" value="org.pentaho.di.ui.spoon.SpoonPluginType"/>
     <property name="category" value="spoon"/>
@@ -78,6 +76,22 @@
    </bean>
   </service>
 
+  <jaxrs:server address="/repositories" id="repositories-endpoint">
+    <jaxrs:serviceBeans>
+      <bean class="org.pentaho.di.ui.repo.endpoints.RepositoryEndpoint">
+        <argument ref="repositoryConnectController" />
+      </bean>
+    </jaxrs:serviceBeans>
+
+    <jaxrs:extensionMappings>
+      <entry key="json" value="application/json"/>
+    </jaxrs:extensionMappings>
+
+    <jaxrs:providers>
+      <bean class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider"/>
+    </jaxrs:providers>
+
+  </jaxrs:server>
 
 
 </blueprint>

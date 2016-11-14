@@ -37,6 +37,7 @@ define( [
 
     repoConnectionApp.service("pentahoRepositoryModel",function() {
       this.default = {
+        id: "PentahoEnterpriseRepository",
         displayName: "",
         url: getDefaultUrl(),
         description: "Pentaho repository | " + getDefaultUrl(),
@@ -51,6 +52,7 @@ define( [
 
     repoConnectionApp.service("kettleFileRepositoryModel", function() {
       this.default = {
+        id: "KettleFileRepository",
         displayName: "",
         location: "",
         doNotModify: false,
@@ -67,6 +69,7 @@ define( [
 
     repoConnectionApp.service("kettleDatabaseRepositoryModel", function() {
       this.default = {
+        id: "KettleDatabaseRepository",
         displayName: "",
         databaseConnection: "None",
         description: "Database repository",

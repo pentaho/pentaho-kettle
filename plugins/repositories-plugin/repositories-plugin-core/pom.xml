@@ -90,11 +90,6 @@
         </exclusion>
       </exclusions>
     </dependency>
-    <dependency>
-      <groupId>org.codehaus.jackson</groupId>
-      <artifactId>jackson-mapper-asl</artifactId>
-      <version>${dependency.jackson-mapper-asl.version}</version>
-    </dependency>
 
     <!-- ######################### RUNTIME ######################### -->
     <dependency>

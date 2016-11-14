@@ -147,7 +147,7 @@ public class RepositoryConnectMenu {
             item.addSelectionListener( new SelectionAdapter() {
               @Override
               public void widgetSelected( SelectionEvent selectionEvent ) {
-                String repoName = (String) ( (MenuItem) selectionEvent.widget ).getData();
+                String repoName = (String) ( selectionEvent.widget ).getData();
                 RepositoryMeta repositoryMeta = repositoriesMeta.findRepository( repoName );
                 if ( repositoryMeta != null ) {
                   try {
@@ -156,7 +156,11 @@ public class RepositoryConnectMenu {
                     log.logError( "Error prompting for save", ke );
                   }
                   if ( repositoryMeta.getId().equals( "KettleFileRepository" ) ) {
-                    repoConnectController.connectToRepository( repositoryMeta );
+                    try {
+                      repoConnectController.connectToRepository( repositoryMeta );
+                    } catch ( KettleException ke ) {
+                      log.logError( "Error connecting to repository", ke );
+                    }
                   } else {
                     new RepositoryDialog( spoon.getShell(), repoConnectController ).openLogin( repositoryMeta );
                   }
