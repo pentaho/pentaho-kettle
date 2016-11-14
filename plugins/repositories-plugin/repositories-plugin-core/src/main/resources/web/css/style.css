@@ -637,8 +637,8 @@ hr {
   text-align: center;
 }
 
-.loading-clock {
-  background-image: url('../images/loading-clock.svg');
+.busy {
+  background-image: url('../images/busy_thin.gif');
   background-repeat: no-repeat;
   height: 66px;
   width: 66px;

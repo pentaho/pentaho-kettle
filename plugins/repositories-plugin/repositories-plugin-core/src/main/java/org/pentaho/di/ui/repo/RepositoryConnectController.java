@@ -27,36 +27,49 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.RepositoryPluginType;
-import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.core.util.ExecutorUtil;
 import org.pentaho.di.repository.AbstractRepository;
 import org.pentaho.di.repository.ReconnectableRepository;
 import org.pentaho.di.repository.RepositoriesMeta;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryMeta;
+import org.pentaho.di.trans.Trans;
 import org.pentaho.di.ui.core.PropsUI;
+import org.pentaho.di.ui.repo.model.RepositoryModel;
 import org.pentaho.di.ui.spoon.Spoon;
 
 import java.lang.reflect.Proxy;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
+import java.util.function.Supplier;
 
 /**
  * Created by bmorrise on 4/18/16.
  */
 public class RepositoryConnectController {
 
+  public static final String DISPLAY_NAME = "displayName";
+  public static final String DESCRIPTION = "description";
+  public static final String IS_DEFAULT = "isDefault";
+  public static final String URL = "url";
+  public static final String DATABASE_CONNECTION = "databaseConnection";
+  public static final String SHOW_HIDDEN_FOLDERS = "showHiddenFolders";
+  public static final String LOCATION = "location";
+  public static final String DO_NOT_MODIFY = "doNotModify";
+
   public static final String DEFAULT_URL = "defaultUrl";
-  public static final String ERROR_MESSAGE = "errorMessage";
-  public static final String SUCCESS = "success";
   public static final String ERROR_401 = "401";
 
   private static Class<?> PKG = RepositoryConnectController.class;
@@ -67,12 +80,14 @@ public class RepositoryConnectController {
   private RepositoryMeta connectedRepository;
   private RepositoriesMeta repositoriesMeta;
   private PluginRegistry pluginRegistry;
-  private Spoon spoon;
+  private Supplier<Spoon> spoonSupplier;
   private List<RepositoryContollerListener> listeners = new ArrayList<>();
+  private boolean relogin = false;
 
-  public RepositoryConnectController( PluginRegistry pluginRegistry, Spoon spoon, RepositoriesMeta repositoriesMeta ) {
+  public RepositoryConnectController( PluginRegistry pluginRegistry, Supplier<Spoon> spoonSupplier,
+                                      RepositoriesMeta repositoriesMeta ) {
     this.pluginRegistry = pluginRegistry;
-    this.spoon = spoon;
+    this.spoonSupplier = spoonSupplier;
     this.repositoriesMeta = repositoriesMeta;
     try {
       repositoriesMeta.readData();
@@ -82,7 +97,7 @@ public class RepositoryConnectController {
   }
 
   public RepositoryConnectController() {
-    this( PluginRegistry.getInstance(), Spoon.getInstance(), new RepositoriesMeta() );
+    this( PluginRegistry.getInstance(), Spoon::getInstance, new RepositoriesMeta() );
   }
 
   @SuppressWarnings( "unchecked" )
@@ -120,7 +135,7 @@ public class RepositoryConnectController {
         repositoriesMeta.addRepository( repositoryMeta );
         repositoriesMeta.writeData();
         currentRepository = repositoryMeta;
-        if ( !( (AbstractRepository) repository ).test() ) {
+        if ( !testRepository( repository ) ) {
           return false;
         }
         ( (AbstractRepository) repository ).create();
@@ -193,32 +208,27 @@ public class RepositoryConnectController {
     return list.toString();
   }
 
-  public String connectToRepository() {
-    return connectToRepository( currentRepository );
+  public void connectToRepository() throws KettleException {
+    connectToRepository( currentRepository );
   }
 
-  public String connectToRepository( String username, String password ) {
-    return connectToRepository( currentRepository, username, password );
+  public void connectToRepository( String username, String password ) throws KettleException {
+    connectToRepository( currentRepository, username, password );
   }
 
-  public String connectToRepository( RepositoryMeta repositoryMeta ) {
-    return connectToRepository( repositoryMeta, null, null );
+  public void connectToRepository( RepositoryMeta repositoryMeta ) throws KettleException {
+    connectToRepository( repositoryMeta, null, null );
   }
 
-  public String connectToRepository( RepositoryMeta repositoryMeta, String username, String password ) {
-    JSONObject jsonObject = new JSONObject();
-    try {
-      Repository repository =
-          pluginRegistry.loadClass( RepositoryPluginType.class, repositoryMeta.getId(), Repository.class );
-      if ( repository instanceof ReconnectableRepository ) {
-        repository = wrapWithRepositoryTimeoutHandler( (ReconnectableRepository) repository );
-      }
-      repository.init( repositoryMeta );
-      repository.connect( username, password );
-      if ( username != null ) {
-        getPropsUI().setLastRepositoryLogin( username );
-      }
-      Spoon spoon = getSpoon();
+  public void connectToRepository( RepositoryMeta repositoryMeta, String username, String password ) throws KettleException {
+    final Repository repository = loadRepositoryObject( repositoryMeta.getId() );
+    repository.init( repositoryMeta );
+    repositoryConnect( repository, username, password );
+    if ( username != null ) {
+      getPropsUI().setLastRepositoryLogin( username );
+    }
+    Spoon spoon = spoonSupplier.get();
+    Runnable execute = () -> {
       if ( spoon.getRepository() != null ) {
         spoon.closeRepository();
       } else {
@@ -227,57 +237,92 @@ public class RepositoryConnectController {
       spoon.setRepository( repository );
       setConnectedRepository( repositoryMeta );
       fireListeners();
-      jsonObject.put( SUCCESS, true );
-    } catch ( KettleException ke ) {
-      if ( ke.getMessage().contains( ERROR_401 ) ) {
-        jsonObject.put( ERROR_MESSAGE, BaseMessages.getString( PKG, "RepositoryConnection.Error.InvalidCredentials" ) );
-      } else {
-        jsonObject.put( ERROR_MESSAGE, BaseMessages.getString( PKG, "RepositoryConnection.Error.InvalidServer" ) );
-      }
-      jsonObject.put( SUCCESS, false );
-      log.logError( "Unable to connect to repository", ke );
+    };
+    if ( spoon.getShell() != null ) {
+      spoon.getShell().getDisplay().asyncExec( execute );
+    } else {
+      execute.run();
     }
-    return jsonObject.toString();
   }
 
-  public String reconnectToRepository( String username, String password ) {
+  private Repository loadRepositoryObject( String id ) throws KettleException {
+    Repository repository =
+      pluginRegistry.loadClass( RepositoryPluginType.class, id, Repository.class );
+    if ( repository instanceof ReconnectableRepository ) {
+      repository = wrapWithRepositoryTimeoutHandler( (ReconnectableRepository) repository );
+    }
+
+    return repository;
+  }
+
+  public void reconnectToRepository( String username, String password ) throws KettleException {
     Repository currentRepositoryInstance = getConnectedRepositoryInstance();
-    return reconnectToRepository( currentRepository, (ReconnectableRepository) currentRepositoryInstance, username,
-        password );
+    reconnectToRepository( currentRepository, (ReconnectableRepository) currentRepositoryInstance, username, password );
   }
 
-  public String reconnectToRepository( RepositoryMeta repositoryMeta, ReconnectableRepository repository,
-      String username, String password ) {
-    JSONObject jsonObject = new JSONObject();
-    try {
-      if ( username != null ) {
-        getPropsUI().setLastRepositoryLogin( username );
-      }
-      if ( repository.isConnected() ) {
-        repository.disconnect();
-      }
-      repository.init( repositoryMeta );
-      repository.connect( username, password );
-      jsonObject.put( "success", true );
-    } catch ( KettleException ke ) {
-      if ( ke.getMessage().contains( ERROR_401 ) ) {
-        jsonObject.put( ERROR_MESSAGE, BaseMessages.getString( PKG, "RepositoryConnection.Error.InvalidCredentials" ) );
-      } else {
-        jsonObject.put( ERROR_MESSAGE, BaseMessages.getString( PKG, "RepositoryConnection.Error.InvalidServer" ) );
-      }
-      jsonObject.put( "success", false );
-      log.logError( "Unable to connect to repository", ke );
+  private void reconnectToRepository( RepositoryMeta repositoryMeta, ReconnectableRepository repository,
+                                      String username, String password ) throws KettleException {
+    if ( username != null ) {
+      getPropsUI().setLastRepositoryLogin( username );
     }
-    return jsonObject.toString();
+    if ( repository.isConnected() ) {
+      repository.disconnect();
+    }
+    repository.init( repositoryMeta );
+    repositoryConnect( repository, username, password );
+  }
+
+  private void repositoryConnect( Repository repository, String username, String password ) throws KettleException {
+    ExecutorService executorService = ExecutorUtil.getExecutor();
+    Future<KettleException> future = executorService.submit( () -> {
+      ClassLoader currentClassLoader = Thread.currentThread().getContextClassLoader();
+      try {
+        Thread.currentThread().setContextClassLoader( Trans.class.getClassLoader() );
+        repository.connect( username, password );
+      } catch ( KettleException e ) {
+        return e;
+      } finally {
+        Thread.currentThread().setContextClassLoader( currentClassLoader );
+      }
+      return null;
+    } );
+
+    try {
+      KettleException exception = future.get();
+      if ( exception != null ) {
+        throw exception;
+      }
+    } catch ( InterruptedException | ExecutionException e ) {
+      throw new KettleException();
+    }
+  }
+
+  private boolean testRepository( Repository repository ) {
+    ExecutorService executorService = ExecutorUtil.getExecutor();
+    Future<Boolean> future = executorService.submit( () -> {
+      ClassLoader currentClassLoader = Thread.currentThread().getContextClassLoader();
+      try {
+        Thread.currentThread().setContextClassLoader( Trans.class.getClassLoader() );
+        return ( (AbstractRepository) repository ).test();
+      } finally {
+        Thread.currentThread().setContextClassLoader( currentClassLoader );
+      }
+    } );
+
+    try {
+      return future.get();
+    } catch ( InterruptedException | ExecutionException e ) {
+      return false;
+    }
   }
 
   public boolean deleteRepository( String name ) {
     RepositoryMeta repositoryMeta = repositoriesMeta.findRepository( name );
     int index = repositoriesMeta.indexOfRepository( repositoryMeta );
     if ( index != -1 ) {
-      if ( getSpoon().getRepositoryName() != null && getSpoon().getRepositoryName()
-        .equals( repositoryMeta.getName() ) ) {
-        getSpoon().closeRepository();
+      Spoon spoon = spoonSupplier.get();
+      if ( spoon.getRepositoryName() != null && spoon.getRepositoryName().equals( repositoryMeta.getName() ) ) {
+        spoon.closeRepository();
         setConnectedRepository( null );
       }
       repositoriesMeta.removeRepository( index );
@@ -344,34 +389,23 @@ public class RepositoryConnectController {
     return null;
   }
 
-  public Repository getRepository( RepositoryMeta repositoryMeta ) {
-    try {
-      Repository repository = pluginRegistry.loadClass( RepositoryPluginType.class, repositoryMeta.getId(), Repository.class );
-      return repository;
-    } catch ( KettlePluginException kpe ) {
-      log.logDebug( "Unabled to load repository", kpe );
-    }
-
-    return null;
-  }
-
   public RepositoryMeta getRepositoryMetaByName( String name ) {
     return repositoriesMeta.findRepository( name );
   }
 
   public boolean isConnected( String name ) {
-    if ( getSpoon().rep != null ) {
-      return getSpoon().rep.getName().equals( name );
+    if ( spoonSupplier.get().rep != null ) {
+      return spoonSupplier.get().rep.getName().equals( name );
     }
     return false;
   }
 
   public boolean isConnected() {
-    return getSpoon().rep != null;
+    return spoonSupplier.get().rep != null;
   }
 
   public Repository getConnectedRepositoryInstance() {
-    return getSpoon().rep;
+    return spoonSupplier.get().rep;
   }
 
   public void save() {
@@ -380,13 +414,6 @@ public class RepositoryConnectController {
     } catch ( KettleException ke ) {
       log.logError( "Unable to write to repositories", ke );
     }
-  }
-
-  private Spoon getSpoon() {
-    if ( spoon == null ) {
-      spoon = Spoon.getInstance();
-    }
-    return spoon;
   }
 
   @SuppressWarnings( "unchecked" )
@@ -413,6 +440,28 @@ public class RepositoryConnectController {
 
   public interface RepositoryContollerListener {
     void update();
+  }
+
+  public boolean isRelogin() {
+    return relogin;
+  }
+
+  public void setRelogin( boolean relogin ) {
+    this.relogin = relogin;
+  }
+
+  public Map<String, Object> modelToMap( RepositoryModel model ) {
+    Map<String, Object> properties = new HashMap<>();
+    properties.put( DISPLAY_NAME, model.getDisplayName() );
+    properties.put( DESCRIPTION, model.getDescription() );
+    properties.put( IS_DEFAULT, model.getIsDefault() );
+    properties.put( URL, model.getUrl() );
+    properties.put( DATABASE_CONNECTION, model.getDatabaseConnection() );
+    properties.put( SHOW_HIDDEN_FOLDERS, model.getShowHiddenFolders() );
+    properties.put( LOCATION, model.getLocation() );
+    properties.put( DO_NOT_MODIFY, model.getDoNotModify() );
+
+    return properties;
   }
 
 }

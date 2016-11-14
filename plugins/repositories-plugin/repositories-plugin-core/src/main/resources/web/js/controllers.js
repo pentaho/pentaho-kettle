@@ -22,16 +22,17 @@
 
 define(
     [
-        'angular',
-        'angular-sanitize',
-        'repositories/models'
+      'angular',
+      'angular-sanitize',
+      'repositories/models',
+      'repositories/services'
     ],
 
   function(angular) {
 
     var repoConnectionAppControllers = angular.module('repoConnectionAppControllers', []);
 
-    repoConnectionAppControllers.controller("PentahoRepositoryController", function($scope, $translate, $location, $rootScope, $timeout, $filter, pentahoRepositoryModel, repositoryTypesModel, loadingAnimationModel) {
+    repoConnectionAppControllers.controller("PentahoRepositoryController", function($scope, $translate, $location, $rootScope, $timeout, $filter, pentahoRepositoryModel, repositoryTypesModel, loadingAnimationModel, repositoriesService) {
       $scope.model = pentahoRepositoryModel.model;
       $rootScope.fromConnect = false;
       var connectedRepositoryName = getConnectedRepositoryName();
@@ -79,15 +80,17 @@ define(
         }
         loadingAnimationModel.displayName = this.model.displayName;
         $timeout(function(){
-          if (createRepository("PentahoEnterpriseRepository", JSON.stringify($scope.model))) {
+          repositoriesService.add( $scope.model ).
+          then(function(response) {
             $location.path("/pentaho-repository-creation-success");
-          } else {
+            if($scope.model.isDefault) {
+              setDefaultRepository($scope.model.displayName);
+            }
+            $rootScope.next();
+          }, function (response) {
             $location.path("/pentaho-repository-creation-failure");
-          }
-          if($scope.model.isDefault) {
-            setDefaultRepository($scope.model.displayName);
-          }
-          $rootScope.next();
+            $rootScope.next();
+          });
         },1000);
         $location.path("/loading-animation");
         $rootScope.next();
@@ -125,7 +128,7 @@ define(
       }
     });
 
-    repoConnectionAppControllers.controller("KettleFileRepositoryController", function($scope, $translate, $rootScope, $location, $filter, kettleFileRepositoryModel) {
+    repoConnectionAppControllers.controller("KettleFileRepositoryController", function($scope, $translate, $rootScope, $location, $filter, kettleFileRepositoryModel, repositoriesService) {
       $scope.model = kettleFileRepositoryModel.model;
       $rootScope.fromConnect = false;
       var connectedRepositoryName = getConnectedRepositoryName();
@@ -164,15 +167,17 @@ define(
             return;
           }
         }
-        if (createRepository("KettleFileRepository", JSON.stringify(this.model))) {
+        repositoriesService.add( $scope.model ).
+        then(function(response) {
           $location.path("/kettle-file-repository-creation-success");
-        } else {
+          if($scope.model.isDefault) {
+            setDefaultRepository($scope.model.displayName);
+          }
+          $rootScope.next();
+        }, function (response) {
           $location.path("/kettle-file-repository-creation-failure");
-        }
-        if(this.model.isDefault) {
-          setDefaultRepository(this.model.displayName);
-        }
-        $rootScope.next();
+          $rootScope.next();
+        });
       }
       $scope.createNewConnection = function() {
         $location.path("/repository-manager");
@@ -212,7 +217,7 @@ define(
       }
     });
 
-    repoConnectionAppControllers.controller("KettleDatabaseRepositoryController", function($scope, $rootScope, $location, $timeout, $filter, kettleDatabaseRepositoryModel, loadingAnimationModel) {
+    repoConnectionAppControllers.controller("KettleDatabaseRepositoryController", function($scope, $rootScope, $location, $timeout, $filter, kettleDatabaseRepositoryModel, loadingAnimationModel, repositoriesService) {
       $scope.model = kettleDatabaseRepositoryModel.model;
       $rootScope.fromConnect = false;
       var connectedRepositoryName = getConnectedRepositoryName();
@@ -255,15 +260,17 @@ define(
         }
         loadingAnimationModel.displayName = this.model.displayName;
         $timeout(function(){
-          if (createRepository("KettleDatabaseRepository", JSON.stringify($scope.model))) {
+          repositoriesService.add( $scope.model ).
+          then(function(response) {
             $location.path("/kettle-database-repository-creation-success");
-          } else {
+            if($scope.model.isDefault) {
+              setDefaultRepository($scope.model.displayName);
+            }
+            $rootScope.next();
+          }, function (response) {
             $location.path("/kettle-database-repository-creation-failure");
-          }
-          if($scope.model.isDefault) {
-            setDefaultRepository($scope.model.displayName);
-          }
-          $rootScope.next();
+            $rootScope.next();
+          });
         },1000);
         $location.path("/loading-animation");
         $rootScope.next();
@@ -448,7 +455,7 @@ define(
       $scope.addToolTips = addToolTips;
     });
 
-    repoConnectionAppControllers.controller("RepositoryConnectController", function($scope, $rootScope, $location, $timeout, repositoryConnectModel, loadingAnimationModel) {
+    repoConnectionAppControllers.controller("RepositoryConnectController", function($scope, $rootScope, $location, $timeout, repositoryConnectModel, loadingAnimationModel, repositoriesService) {
       $scope.model = repositoryConnectModel;
       $scope.model.username = getCurrentUser();
       $scope.model.currentRepositoryName = getCurrentRepository();
@@ -469,16 +476,18 @@ define(
         }
         loadingAnimationModel.displayName = this.model.currentRepositoryName;
         $timeout(function(){
-          var response = JSON.parse(loginToRepository($scope.model.username, $scope.model.password));
-          if( response.success == false){
+          repositoriesService.login( $scope.model.username, $scope.model.password ).
+          then(function(response) {
+            console.log(response);
+            close();
+          }, function (response) {
+            console.log(response);
             $timeout(function(){
-              $rootScope.triggerError(response.errorMessage);
+              $rootScope.triggerError(response.data.message);
             },600);
             $location.path("/repository-connect");
             $rootScope.backFade();
-          } else {
-            close();
-          }
+          });
         },1000);
         $location.path("/loading-animation");
         $rootScope.nextFade();
