@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -39,6 +39,7 @@ import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaInteger;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.trans.steps.memgroupby.MemoryGroupByData.HashEntry;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
 
@@ -52,6 +53,8 @@ public class MemoryGroupByAggregationNullsTest {
   static int def = 113;
 
   Aggregate aggregate;
+  private ValueMetaInterface vmi;
+  private RowMetaInterface rmi;
 
   @BeforeClass
   public static void setUpBeforeClass() throws Exception {
@@ -70,9 +73,9 @@ public class MemoryGroupByAggregationNullsTest {
     MemoryGroupByMeta meta = new MemoryGroupByMeta();
     meta.setAggregateType( new int[] { 5 } );
     meta.setAggregateField( new String[] { "x" } );
-    ValueMetaInterface vmi = new ValueMetaInteger();
+    vmi = new ValueMetaInteger();
     when( mockHelper.stepMeta.getStepMetaInterface() ).thenReturn( meta );
-    RowMetaInterface rmi = Mockito.mock( RowMetaInterface.class );
+    rmi = Mockito.mock( RowMetaInterface.class );
     data.inputRowMeta = rmi;
     data.outputRowMeta = rmi;
     data.groupMeta = rmi;
@@ -155,5 +158,16 @@ public class MemoryGroupByAggregationNullsTest {
     step.setAllNullsAreZero( false );
     Object[] row = step.getAggregateResult( aggregate );
     Assert.assertNull( "Returns null if aggregation is null", row[0] );
+  }
+
+  @Test
+  public void addToAggregateLazyConversionMinTest() throws Exception {
+    vmi.setStorageType( ValueMetaInterface.STORAGE_TYPE_BINARY_STRING );
+    vmi.setStorageMetadata( new ValueMetaString() );
+    aggregate.agg = new Object[] { new byte[0] };
+    byte[] bytes = { 51 };
+    step.addToAggregate( new Object[] { bytes } );
+    Aggregate result = data.map.get( getHashEntry() );
+    Assert.assertEquals( "Returns non-null value", bytes, result.agg[0] );
   }
 }
