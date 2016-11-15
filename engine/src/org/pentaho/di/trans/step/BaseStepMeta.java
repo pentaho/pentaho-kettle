@@ -1118,8 +1118,4 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
     RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
   }
-
-  public boolean cleanAfterHopFromRemove() {
-    return false;
-  }
 }

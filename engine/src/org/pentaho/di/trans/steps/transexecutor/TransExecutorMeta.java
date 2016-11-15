@@ -1458,15 +1458,4 @@ public class TransExecutorMeta extends BaseStepMeta implements StepMetaInterface
   public void setExecutorsOutputStepMeta( StepMeta executorsOutputStepMeta ) {
     this.executorsOutputStepMeta = executorsOutputStepMeta;
   }
-
-  @Override
-  public boolean cleanAfterHopFromRemove() {
-
-    setExecutionResultTargetStepMeta( null );
-    setOutputRowsSourceStepMeta( null );
-    setResultFilesTargetStepMeta( null );
-    setExecutorsOutputStepMeta( null );
-    return true;
-
-  }
 }

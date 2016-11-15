@@ -3562,29 +3562,25 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     addUndoDelete( transMeta, new Object[] { (TransHopMeta) transHopMeta.clone() }, new int[] { index } );
     transMeta.removeTransHop( index );
 
-    StepMeta fromStepMeta = transHopMeta.getFromStep();
-    StepMeta before = (StepMeta) fromStepMeta.clone();
-    index = transMeta.indexOfStep( fromStepMeta );
-
-    boolean stepFromNeedAddUndoChange = fromStepMeta.getStepMetaInterface().cleanAfterHopFromRemove();
     // If this is an error handling hop, disable it
     //
     if ( transHopMeta.getFromStep().isDoingErrorHandling() ) {
-      StepErrorMeta stepErrorMeta = fromStepMeta.getStepErrorMeta();
+      StepErrorMeta stepErrorMeta = transHopMeta.getFromStep().getStepErrorMeta();
 
       // We can only disable error handling if the target of the hop is the same as the target of the error handling.
       //
       if ( stepErrorMeta.getTargetStep() != null
         && stepErrorMeta.getTargetStep().equals( transHopMeta.getToStep() ) ) {
-
+        StepMeta stepMeta = transHopMeta.getFromStep();
         // Only if the target step is where the error handling is going to...
         //
+
+        StepMeta before = (StepMeta) stepMeta.clone();
         stepErrorMeta.setEnabled( false );
-        stepFromNeedAddUndoChange = true;
+
+        index = transMeta.indexOfStep( stepMeta );
+        addUndoChange( transMeta, new Object[] { before }, new Object[] { stepMeta }, new int[] { index } );
       }
-    }
-    if ( stepFromNeedAddUndoChange ) {
-      addUndoChange( transMeta, new Object[]{before}, new Object[]{fromStepMeta}, new int[]{index} );
     }
 
     refreshTree();

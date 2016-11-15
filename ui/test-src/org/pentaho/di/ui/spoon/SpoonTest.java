@@ -38,11 +38,9 @@ import org.pentaho.di.core.NotePadMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.logging.LogChannelInterface;
-import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepErrorMeta;
 import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.csvinput.CsvInputMeta;
 import org.pentaho.di.trans.steps.dummytrans.DummyTransMeta;
 
@@ -61,7 +59,7 @@ public class SpoonTest {
     Mockito.doCallRealMethod().when( spoon ).copySelected( Mockito.any( TransMeta.class ), Mockito.anyListOf( StepMeta.class ),
             Mockito.anyListOf( NotePadMeta.class ) );
     Mockito.doCallRealMethod().when( spoon ).pasteXML( Mockito.any( TransMeta.class ), anyString(), Mockito.any( Point.class ) );
-    Mockito.doCallRealMethod().when( spoon ).delHop( Mockito.any( TransMeta.class ), Mockito.any( TransHopMeta.class ) );
+
     LogChannelInterface log = Mockito.mock( LogChannelInterface.class );
     Mockito.when( spoon.getLog() ).thenReturn( log );
 
@@ -154,22 +152,4 @@ public class SpoonTest {
 
     spoon.copySelected( transMeta, transMeta.getSelectedSteps(), Collections.<NotePadMeta>emptyList() );
   }
-
-  @Test
-  public void testDelHop() throws Exception {
-
-    StepMetaInterface stepMetaInterface = Mockito.mock( StepMetaInterface.class );
-    StepMeta step = new StepMeta();
-    step.setStepMetaInterface( stepMetaInterface );
-
-    TransHopMeta transHopMeta = new TransHopMeta();
-    transHopMeta.setFromStep( step );
-
-    TransMeta transMeta = Mockito.mock( TransMeta.class );
-
-    spoon.delHop( transMeta, transHopMeta );
-    Mockito.verify( stepMetaInterface, Mockito.times( 1 ) ).cleanAfterHopFromRemove( );
-
-  }
-
 }
