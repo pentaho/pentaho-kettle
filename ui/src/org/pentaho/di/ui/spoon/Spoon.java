@@ -319,6 +319,7 @@ import org.pentaho.di.ui.spoon.wizards.CopyTableWizardPage2;
 import org.pentaho.di.ui.trans.dialog.TransDialogPluginType;
 import org.pentaho.di.ui.trans.dialog.TransHopDialog;
 import org.pentaho.di.ui.trans.dialog.TransLoadProgressDialog;
+import org.pentaho.di.ui.util.EngineMetaUtils;
 import org.pentaho.di.ui.util.HelpUtils;
 import org.pentaho.di.ui.util.ThreadGuiResources;
 import org.pentaho.di.ui.xul.KettleWaitBox;
@@ -3275,7 +3276,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     String activePerspectiveId = SpoonPerspectiveManager.getInstance().getActivePerspective().getId();
     boolean etlPerspective = activePerspectiveId.equals( MainSpoonPerspective.ID );
 
-    if ( etlPerspective ) {
+    if ( etlPerspective || EngineMetaUtils.isJobOrTransformation( getActiveMeta() ) ) {
       return tabClose( tabfolder.getSelected(), force );
     }
 
