@@ -1466,12 +1466,4 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
     return metaStore;
   }
 
-  @Override
-  public boolean cleanAfterHopFromRemove() {
-    setExecutionResultTargetStepMeta( null );
-    setResultRowsTargetStepMeta( null );
-    setResultFilesTargetStepMeta( null );
-    return true;
-  }
-
 }
