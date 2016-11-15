@@ -24,6 +24,7 @@ package org.pentaho.di.core.logging;
 
 import java.util.Date;
 
+import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.ObjectRevision;
@@ -92,7 +93,8 @@ public class LoggingObject implements LoggingObjectInterface {
 
       // If the filename is the same and parent is the same, it's the same object...
       if ( sameCarteFamily && !Utils.isEmpty( loggingObject.getFilename() )
-          && loggingObject.getFilename().equals( getFilename() ) && sameParents ) {
+          && loggingObject.getFilename().equals( getFilename() ) && sameParents
+              && StringUtils.equals( loggingObject.getObjectName(), getObjectName() ) ) {
         return true;
       }
 
