@@ -1168,7 +1168,4 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
     Repository repository, IMetaStore metaStore ) {
   }
 
-  public boolean cleanAfterHopFromRemove() {
-    return false;
-  }
 }
