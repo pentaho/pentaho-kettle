@@ -20,36 +20,29 @@
  *
  ******************************************************************************/
 
-package org.pentaho.di.job.entries.missing;
+package org.pentaho.di.trans.steps.missing;
 
-import org.pentaho.di.core.Result;
-import org.pentaho.di.core.exception.KettleJobException;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.job.entries.special.JobEntrySpecial;
+import org.pentaho.di.trans.Trans;
+import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.step.StepDataInterface;
+import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.steps.dummytrans.DummyTrans;
 
-public class MissingEntry extends JobEntrySpecial {
+public class MissingTransStep extends DummyTrans {
+  private static Class<?> PKG = MissingTransStep.class; // for i18n purposes, needed by Translator2!!
 
-  private String missingPluginId;
-
-  public MissingEntry() {
-    this( null, null );
+  public MissingTransStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
+      Trans trans ) {
+    super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
-  public MissingEntry( String name, String missingPluginId ) {
-    super( name, false, false );
-    setPluginId( "SPECIAL" );
-    this.missingPluginId = missingPluginId;
+  public boolean init( StepMetaInterface smi, StepDataInterface sdi ) {
+    if ( super.init( smi, sdi ) ) {
+      logError( BaseMessages.getString( PKG, "MissingTransStep.Log.CannotRunTrans" ) );
+    }
+    return false;
   }
 
-  @Override
-  public Result execute( Result previousResult, int nr ) throws KettleJobException {
-    previousResult.setResult( false );
-    previousResult.setNrErrors( previousResult.getNrErrors() + 1 );
-    getLogChannel().logError( BaseMessages.getString( MissingEntry.class, "MissingEntry.Log.CannotRunJob" ) );
-    return previousResult;
-  }
-
-  public String getMissingPluginId() {
-    return this.missingPluginId;
-  }
 }

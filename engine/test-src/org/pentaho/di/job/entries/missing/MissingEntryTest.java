@@ -22,34 +22,27 @@
 
 package org.pentaho.di.job.entries.missing;
 
+import org.junit.Test;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.exception.KettleJobException;
-import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.job.entries.special.JobEntrySpecial;
+import org.pentaho.di.core.logging.LogChannel;
 
-public class MissingEntry extends JobEntrySpecial {
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
-  private String missingPluginId;
+public class MissingEntryTest {
 
-  public MissingEntry() {
-    this( null, null );
+  @Test
+  public void testExecute() throws KettleJobException {
+    MissingEntry entry = spy( new MissingEntry() );
+    when( entry.getLogChannel() ).thenReturn( mock( LogChannel.class ) );
+    entry.setName( "MissingTest" );
+    Result result = new Result();
+    result.setNrErrors( 0 );
+    result.setResult( true );
+    entry.execute( result, 0 );
+    assertEquals( 1, result.getNrErrors() );
+    assertEquals( false, result.getResult() );
   }
 
-  public MissingEntry( String name, String missingPluginId ) {
-    super( name, false, false );
-    setPluginId( "SPECIAL" );
-    this.missingPluginId = missingPluginId;
-  }
-
-  @Override
-  public Result execute( Result previousResult, int nr ) throws KettleJobException {
-    previousResult.setResult( false );
-    previousResult.setNrErrors( previousResult.getNrErrors() + 1 );
-    getLogChannel().logError( BaseMessages.getString( MissingEntry.class, "MissingEntry.Log.CannotRunJob" ) );
-    return previousResult;
-  }
-
-  public String getMissingPluginId() {
-    return this.missingPluginId;
-  }
 }
