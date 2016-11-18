@@ -267,8 +267,18 @@ public class JsonInputTest {
     helper.redirectLog( out, LogLevel.ERROR );
 
     try ( LocaleChange enUS = new LocaleChange( Locale.US ) ) {
-      JsonInput jsonInput = createBasicTestJsonInput( "$..fail", new ValueMetaString( "result" ), "json",
-        new Object[] { getBasicTestJson() } );
+
+      ValueMetaString outputMeta = new ValueMetaString( "result" );
+
+      JsonInputField jpath = new JsonInputField( outputMeta.getName() );
+      jpath.setPath( "$..fail" );
+      jpath.setType( outputMeta.getType() );
+
+      JsonInputMeta jsonInputMeta = createSimpleMeta( "json", jpath );
+      jsonInputMeta.setIgnoreMissingPath( false );
+
+      JsonInput jsonInput = createJsonInput( "json", jsonInputMeta, new Object[] { getBasicTestJson() } );
+
       processRows( jsonInput, 2 );
       Assert.assertEquals( "errors", 1, jsonInput.getErrors() );
       Assert.assertEquals( "rows written", 0, jsonInput.getLinesWritten() );
@@ -364,21 +374,46 @@ public class JsonInputTest {
   }
 
   @Test
-  public void testDoNotSkipRowIfInputIsNull() throws Exception {
-    JsonInputField field = new JsonInputField( "foo" );
-    field.setPath( "$.foo" );
-    field.setType( ValueMetaInterface.TYPE_STRING );
-    JsonInputMeta meta = createSimpleMeta( "json", field );
-    JsonInput jsonInput = new JsonInput( helper.stepMeta, helper.stepDataInterface, 0, helper.transMeta, helper.trans );
-    JsonInputData data = new JsonInputData();
-    RowSet input = helper.getMockInputRowSet( new Object[] { null, "something" } );
-    RowMetaInterface rowMeta = createRowMeta( new ValueMetaString( "json" ), new ValueMetaString( "json1" ) );
-    input.setRowMeta( rowMeta );
-    jsonInput.getInputRowSets().add( input );
-    jsonInput.setInputRowMeta( rowMeta );
-    jsonInput.init( meta, data );
-    processRows( jsonInput, 1 );
-    Assert.assertEquals( 1, jsonInput.getLinesWritten() );
+  public void testIfIgnorePathDoNotSkipRowIfInputIsNullOrFieldNotFound() throws Exception {
+
+    final String input1 = "{ \"value1\": \"1\",\n"
+            + "  \"value2\": \"2\",\n"
+            + "}";
+    final String input2 = "{ \"value1\": \"3\""
+            + "}";
+    final String input3 = "{ \"value2\": \"4\""
+            + "}";
+    final String input4 = "{ \"value1\": null,\n"
+            + "  \"value2\": null,\n"
+            + "}";
+    final String input5 = "{}";
+    final String input6 = null;
+
+    final String inCol = "input";
+
+    JsonInputField aField = new JsonInputField();
+    aField.setName( "a" );
+    aField.setPath( "$.value1" );
+    aField.setType( ValueMetaInterface.TYPE_STRING );
+    JsonInputField bField = new JsonInputField();
+    bField.setName( "b" );
+    bField.setPath( "$.value2" );
+    bField.setType( ValueMetaInterface.TYPE_STRING );
+
+    JsonInputMeta meta = createSimpleMeta( inCol, aField, bField );
+    meta.setIgnoreMissingPath( true );
+    JsonInput step = createJsonInput( inCol, meta, new Object[] { input1 },
+             new Object[] { input2 },
+             new Object[] { input3 },
+             new Object[] { input4 },
+             new Object[] { input5 },
+             new Object[] { input6 }
+            );
+    step.addRowListener(
+            new RowComparatorListener(
+                     new Object[]{ input1, "1", "2" }, new Object[]{ input2, "3", null }, new Object[]{ input3, null, "4" },
+                     new Object[]{ input4, null, null }, new Object[]{ input5, null, null }, new Object[]{ input6, null, null }   ) );
+    processRows( step, 5 );
   }
 
   @Test
@@ -415,6 +450,7 @@ public class JsonInputTest {
     bField.setRepeated( true );
 
     JsonInputMeta meta = createSimpleMeta( inCol, aField, bField );
+    meta.setIgnoreMissingPath( true );
     JsonInput step = createJsonInput( inCol, meta, new Object[] { input } );
     step.addRowListener(
       new RowComparatorListener(
@@ -455,6 +491,7 @@ public class JsonInputTest {
     processRows( step, 1 );
     Assert.assertEquals( 1, step.getLinesWritten() );
   }
+
   /**
    * PDI-10384 Huge numbers causing exception in JSON input step<br>
    */
@@ -498,6 +535,7 @@ public class JsonInputTest {
     price.setType( ValueMetaInterface.TYPE_NUMBER );
 
     JsonInputMeta meta = createSimpleMeta( "json", isbn, price );
+    meta.setIgnoreMissingPath( true );
     meta.setRemoveSourceField( true );
 
     JsonInput jsonInput = createJsonInput( "json", meta, new Object[] { getBasicTestJson() } );
@@ -617,8 +655,11 @@ public class JsonInputTest {
         new Object[] { jsonInputField },
         new Object[] { null } },
       new Object[][] {
+        new Object[] { null, null },
         new Object[] { jsonInputField, "Herman Melville" },
-        new Object[] { jsonInputField, "J. R. R. Tolkien" } } );
+        new Object[] { jsonInputField, "J. R. R. Tolkien" },
+        new Object[] { null, null }
+      } );
   }
 
   /**
@@ -939,7 +980,7 @@ public class JsonInputTest {
     jsonInputMeta.setInFields( true );
     jsonInputMeta.setFieldValue( inputColumn );
     jsonInputMeta.setInputFields( jsonPathFields );
-    jsonInputMeta.setIgnoreMissingPath( false );
+    jsonInputMeta.setIgnoreMissingPath( true );
     return jsonInputMeta;
   }
 
