@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -47,7 +47,6 @@ import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.gui.GUIResource;
 
 import java.util.Arrays;
-import java.util.Comparator;
 
 public class ControlSpaceKeyAdapter extends KeyAdapter {
 
@@ -194,11 +193,7 @@ public class ControlSpaceKeyAdapter extends KeyAdapter {
 
   private static final void applyChanges( Shell shell, List list, Control control, int position,
     InsertTextInterface insertTextInterface ) {
-    String selection =
-        list.getSelection()[0].contains( Const.getDeprecatedPrefix() )
-        ? list.getSelection()[0].replace( Const.getDeprecatedPrefix(), "" )
-        : list.getSelection()[0];
-    String extra = "${" + selection + "}";
+    String extra = "${" + list.getSelection()[0] + "}";
     if ( insertTextInterface != null ) {
       insertTextInterface.insertText( extra, position );
     } else {
@@ -230,21 +225,20 @@ public class ControlSpaceKeyAdapter extends KeyAdapter {
 
   public static final String[] getVariableNames( VariableSpace space ) {
     String[] variableNames = space.listVariables();
-    Arrays.sort( variableNames, new Comparator<String>() {
-      public int compare( String var1, String var2 ) {
-        if ( var1.endsWith( Const.getDeprecatedPrefix() ) && var2.endsWith( Const.getDeprecatedPrefix() ) ) {
-          return 0;
-        }
-        if ( var1.endsWith( Const.getDeprecatedPrefix() ) && !var2.endsWith( Const.getDeprecatedPrefix() ) ) {
-          return 1;
-        }
-        if ( !var1.endsWith( Const.getDeprecatedPrefix() ) && var2.endsWith( Const.getDeprecatedPrefix() ) ) {
-          return -1;
-        }
-        return var1.compareTo( var2 );
-      }
-    } );
-    return variableNames;
+    Arrays.sort( variableNames );
+
+    // repeat a few entries at the top, for convenience...
+    //
+    String[] array = new String[variableNames.length + 2];
+    int index = 0;
+    array[index++] = Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY;
+    array[index++] = Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY;
+
+    for ( String name : variableNames ) {
+      array[index++] = name;
+    }
+
+    return array;
   }
 
   public void setVariables( VariableSpace vars ) {
