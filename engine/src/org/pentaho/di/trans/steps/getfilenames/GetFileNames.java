@@ -27,15 +27,16 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.vfs2.FileObject;
+import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.FileType;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.fileinput.FileInputList;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
@@ -76,6 +77,7 @@ public class GetFileNames extends BaseStep implements StepInterface {
     return rowData;
   }
 
+  @Override
   public boolean processRow( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
     if ( !meta.isFileField() ) {
       if ( data.filenr >= data.filessize ) {
@@ -215,10 +217,22 @@ public class GetFileNames extends BaseStep implements StepInterface {
           extraData[outputIndex++] = Boolean.valueOf( data.file.isHidden() );
 
           // isreadable
-          extraData[outputIndex++] = Boolean.valueOf( data.file.isReadable() );
+          Boolean isReadable = false;
+          try {
+            isReadable = Boolean.valueOf( data.file.isReadable() );
+          } catch ( FileSystemException e ) {
+            log.logDebug( e.getMessage() );
+          }
+          extraData[outputIndex++] = isReadable;
 
           // iswriteable
-          extraData[outputIndex++] = Boolean.valueOf( data.file.isWriteable() );
+          Boolean isWriteable = false;
+          try {
+            isWriteable = Boolean.valueOf( data.file.isWriteable() );
+          } catch ( FileSystemException e ) {
+            log.logDebug( e.getMessage() );
+          }
+          extraData[outputIndex++] = isWriteable;
 
           // lastmodifiedtime
           extraData[outputIndex++] = new Date( data.file.getContent().getLastModifiedTime() );
@@ -297,6 +311,7 @@ public class GetFileNames extends BaseStep implements StepInterface {
     }
   }
 
+  @Override
   public boolean init( StepMetaInterface smi, StepDataInterface sdi ) {
     meta = (GetFileNamesMeta) smi;
     data = (GetFileNamesData) sdi;
@@ -335,6 +350,7 @@ public class GetFileNames extends BaseStep implements StepInterface {
     return false;
   }
 
+  @Override
   public void dispose( StepMetaInterface smi, StepDataInterface sdi ) {
     meta = (GetFileNamesMeta) smi;
     data = (GetFileNamesData) sdi;
