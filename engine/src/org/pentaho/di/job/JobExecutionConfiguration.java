@@ -679,19 +679,22 @@ public class JobExecutionConfiguration implements ExecutionConfiguration {
     this.passedBatchId = passedBatchId;
   }
 
-  public void getUsedArguments( JobMeta jobMeta, String[] commandLineArguments, IMetaStore metaStore )
-    throws KettleException {
+  public void getUsedArguments( JobMeta jobMeta, String[] commandLineArguments, IMetaStore metaStore ) {
 
     for ( JobEntryCopy jobEntryCopy : jobMeta.jobcopies ) {
       if ( jobEntryCopy.isTransformation() ) {
         JobEntryTrans jobEntryTrans = (JobEntryTrans) jobEntryCopy.getEntry();
-        TransMeta transMeta = jobEntryTrans.getTransMeta( repository, metaStore, jobMeta );
-        Map<String, String> map = transMeta.getUsedArguments( commandLineArguments );
-        for ( String key : map.keySet() ) {
-          String value = map.get( key );
-          if ( !arguments.containsKey( key ) ) {
-            arguments.put( key, value );
+        try {
+          TransMeta transMeta = jobEntryTrans.getTransMeta( repository, metaStore, jobMeta );
+          Map<String, String> map = transMeta.getUsedArguments( commandLineArguments );
+          for ( String key : map.keySet() ) {
+            String value = map.get( key );
+            if ( !arguments.containsKey( key ) ) {
+              arguments.put( key, value );
+            }
           }
+        } catch ( KettleException ke ) {
+          log.logBasic( ke.getMessage(), ke );
         }
       }
     }
