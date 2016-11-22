@@ -27,6 +27,7 @@ import java.util.Date;
 
 import org.pentaho.di.cluster.HttpUtil;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.exception.KettleException;
@@ -64,6 +65,8 @@ public class SlaveServerJobStatus {
   }
 
   public String getXML() throws KettleException {
+    // See PDI-15781
+    boolean sendResultXmlWithStatus = EnvUtil.getSystemProperty( "KETTLE_COMPATIBILITY_SEND_RESULT_XML_WITH_STATUS", "N" ).equalsIgnoreCase( "Y" );
     StringBuilder xml = new StringBuilder();
 
     xml.append( XMLHandler.openTag( XML_TAG ) ).append( Const.CR );
@@ -76,7 +79,7 @@ public class SlaveServerJobStatus {
     xml.append( "  " ).append( XMLHandler.addTagValue( "first_log_line_nr", firstLoggingLineNr ) );
     xml.append( "  " ).append( XMLHandler.addTagValue( "last_log_line_nr", lastLoggingLineNr ) );
 
-    if ( result != null ) {
+    if ( ( sendResultXmlWithStatus ) && ( result != null )  ) {
       String resultXML = result.getXML();
       xml.append( resultXML );
     }
