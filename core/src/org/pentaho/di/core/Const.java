@@ -1039,6 +1039,9 @@ public class Const {
   public static final String KETTLE_COMPATIBILITY_SET_ERROR_ON_SPECIFIC_JOB_ENTRIES =
     "KETTLE_COMPATIBILITY_SET_ERROR_ON_SPECIFIC_JOB_ENTRIES";
 
+  // See PDI-15781 for details
+  public static final String KETTLE_COMPATIBILITY_SEND_RESULT_XML_WITH_STATUS = "KETTLE_COMPATIBILITY_SEND_RESULT_XML_WITH_STATUS";
+
   /**
    * The XML file that contains the list of native import rules
    */
