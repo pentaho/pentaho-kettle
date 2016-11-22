@@ -112,8 +112,10 @@
     <dependency org="jaxen"               name="jaxen"         rev="1.1.1"   conf="test->default" transitive="false"/>
     <dependency org="junit"               name="junit"         rev="4.7"     conf="test->default" transitive="false"/>
     <dependency org="org.mockito"         name="mockito-all"   rev="1.9.5"   conf="test->default" transitive="false" />
-    <dependency org="pentaho"             name="metastore-test" rev="${dependency.pentaho-metastore.revision}"
-                conf="test->default" transitive="false"/>
+    <dependency org="pentaho"             name="metastore" rev="${dependency.pentaho-metastore.revision}"
+                conf="test->default" transitive="false">
+        <artifact name="metastore" type="jar" m:classifier="tests"/>
+    </dependency>
 
 
 	<exclude org="org.eclipse.jetty.orbit" module="javax.servlet"/>
