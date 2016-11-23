@@ -129,6 +129,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
        Any of these properties can be overridden in either build.properties or override.properties
        =================================================================================-->
 
+  <!-- Pentaho Artifact Repository (Nexus/Artifactory) -->
+  <property name="artifact.repo.root.url" value="http://nexus.pentaho.org/content/groups/omni"/>
+       
   <!-- Project meta properties -->
   <property name="impl.vendor" value="Pentaho Corporation" description="Jar file metadata describing the jar's vendor"/>
   <property name="impl.productID"
@@ -177,7 +180,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             value="true"
             description="Prefer SVNKit binding over the command line client for native svn support (defaults to true)"/>
   <property name="ivy.url"
-            value="http://nexus.pentaho.org/content/groups/omni/org/apache/ivy/ivy/2.4.0/ivy-2.4.0.jar"
+            value="${artifact.repo.root.url}/org/apache/ivy/ivy/2.4.0/ivy-2.4.0.jar"
             description="The URL to the current release of Apache IVY"/>
 
   <!-- Enunciate properties -->
@@ -374,11 +377,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   <property name="checkstyle.reports.dir"
             value="${checkstyle.dir}/reports"/>
   <property name="checkstyle.config.url"
-            value="http://nexus.pentaho.org/content/groups/omni/com/pentaho/pentaho-coding-standards/pentaho-checkstyle/${pentaho.coding.standards.version}/pentaho-checkstyle-${pentaho.coding.standards.version}.xml"/>
+            value="${artifact.repo.root.url}/com/pentaho/pentaho-coding-standards/pentaho-checkstyle/${pentaho.coding.standards.version}/pentaho-checkstyle-${pentaho.coding.standards.version}.xml"/>
   <property name="checkstyle.suppressions.url"
-            value="http://nexus.pentaho.org/content/groups/omni/com/pentaho/pentaho-coding-standards/pentaho-checkstyle-suppressions/${pentaho.coding.standards.version}/pentaho-checkstyle-suppressions-${pentaho.coding.standards.version}.xml"/>
+            value="${artifact.repo.root.url}/com/pentaho/pentaho-coding-standards/pentaho-checkstyle-suppressions/${pentaho.coding.standards.version}/pentaho-checkstyle-suppressions-${pentaho.coding.standards.version}.xml"/>
   <property name="checkstyle.stylesheet.url"
-            value="http://nexus.pentaho.org/content/groups/omni/com/pentaho/pentaho-coding-standards/pentaho-checkstyle-stylesheet/${pentaho.coding.standards.version}/pentaho-checkstyle-stylesheet-${pentaho.coding.standards.version}.xsl"/>
+            value="${artifact.repo.root.url}/com/pentaho/pentaho-coding-standards/pentaho-checkstyle-stylesheet/${pentaho.coding.standards.version}/pentaho-checkstyle-stylesheet-${pentaho.coding.standards.version}.xsl"/>
   <property name="checkstyle.config.file"
             value="${checkstyle.dir}/pentaho-checkstyle-${pentaho.coding.standards.version}.xml"/>
   <property name="checkstyle.suppressions.file"
@@ -665,20 +668,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       Fetches ant-contrib from sourceforge
       ====================================================================-->
   <target name="antcontrib.download" unless="antcontrib.available">
-    <mkdir dir="${subfloor.tmp.dir}"/>
-    <get src="http://downloads.sourceforge.net/ant-contrib/ant-contrib-1.0b3-bin.zip"
-         dest="${subfloor.tmp.dir}/antcontrib.zip"
+    <mkdir dir="${antcontrib.build.cache.dir}"/>
+    <get src="${artifact.repo.root.url}/ant-contrib/ant-contrib/1.0b3/ant-contrib-1.0b3.jar"
+         dest="${antcontrib.build.cache.dir}"
          usetimestamp="true"/>
-    <unzip src="${subfloor.tmp.dir}/antcontrib.zip" dest="${subfloor.tmp.dir}">
-      <patternset>
-        <include name="**/*.jar"/>
-      </patternset>
-    </unzip>
-    <copy todir="${antcontrib.build.cache.dir}">
-      <fileset dir="${subfloor.tmp.dir}/ant-contrib">
-        <include name="**/*.jar"/>
-      </fileset>
-    </copy>
   </target>
 
 
