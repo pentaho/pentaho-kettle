@@ -43,6 +43,7 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.trans.step.StepIOMeta;
 import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.step.StepMetaChangeListenerInterface;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.datagrid.DataGridMeta;
 import org.pentaho.di.trans.steps.metainject.MetaInjectMeta;
@@ -56,17 +57,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.Assert.*;
-import static org.mockito.Matchers.same;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.anyString;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
+import org.junit.Assert;
+import org.mockito.Mockito;
 
 public class TransMetaTest {
 
@@ -91,16 +83,16 @@ public class TransMetaTest {
 
     //empty Trans return 0 coordinate point
     Point point = transMeta.getMinimum();
-    assertEquals( minimalCanvasPoint.x, point.x );
-    assertEquals( minimalCanvasPoint.y, point.y );
+    Assert.assertEquals( minimalCanvasPoint.x, point.x );
+    Assert.assertEquals( minimalCanvasPoint.y, point.y );
 
     //when Trans  content Step  than  trans should return minimal coordinate of step
-    StepMeta stepMeta = mock( StepMeta.class );
-    when( stepMeta.getLocation() ).thenReturn( stepPoint );
+    StepMeta stepMeta = Mockito.mock( StepMeta.class );
+    Mockito.when( stepMeta.getLocation() ).thenReturn( stepPoint );
     transMeta.addStep( stepMeta );
     Point actualStepPoint = transMeta.getMinimum();
-    assertEquals( stepPoint.x - TransMeta.BORDER_INDENT, actualStepPoint.x );
-    assertEquals( stepPoint.y - TransMeta.BORDER_INDENT, actualStepPoint.y );
+    Assert.assertEquals( stepPoint.x - TransMeta.BORDER_INDENT, actualStepPoint.x );
+    Assert.assertEquals( stepPoint.y - TransMeta.BORDER_INDENT, actualStepPoint.y );
   }
 
 
@@ -110,29 +102,29 @@ public class TransMetaTest {
 
     StepMeta nextStep = mockStepMeta( "nextStep" );
 
-    StepMetaInterface smi = mock( StepMetaInterface.class );
-    StepIOMeta ioMeta = mock( StepIOMeta.class );
-    when( smi.getStepIOMeta() ).thenReturn( ioMeta );
-    doAnswer( new Answer<Object>() {
+    StepMetaInterface smi = Mockito.mock( StepMetaInterface.class );
+    StepIOMeta ioMeta = Mockito.mock( StepIOMeta.class );
+    Mockito.when( smi.getStepIOMeta() ).thenReturn( ioMeta );
+    Mockito.doAnswer( new Answer<Object>() {
       @Override public Object answer( InvocationOnMock invocation ) throws Throwable {
         RowMetaInterface rmi = (RowMetaInterface) invocation.getArguments()[ 0 ];
         rmi.clear();
         rmi.addValueMeta( new ValueMetaString( overriddenValue ) );
         return null;
       } } ).when( smi ).getFields(
-        any( RowMetaInterface.class ), anyString(), any( RowMetaInterface[].class ), eq( nextStep ),
-        any( VariableSpace.class ), any( Repository.class ), any( IMetaStore.class ) );
+        Mockito.any( RowMetaInterface.class ), Mockito.anyString(), Mockito.any( RowMetaInterface[].class ), Mockito.eq( nextStep ),
+        Mockito.any( VariableSpace.class ), Mockito.any( Repository.class ), Mockito.any( IMetaStore.class ) );
 
     StepMeta thisStep = mockStepMeta( "thisStep" );
-    when( thisStep.getStepMetaInterface() ).thenReturn( smi );
+    Mockito.when( thisStep.getStepMetaInterface() ).thenReturn( smi );
 
     RowMeta rowMeta = new RowMeta();
     rowMeta.addValueMeta( new ValueMetaString( "value" ) );
 
     RowMetaInterface thisStepsFields = transMeta.getThisStepFields( thisStep, nextStep, rowMeta );
 
-    assertEquals( 1, thisStepsFields.size() );
-    assertEquals( overriddenValue, thisStepsFields.getValueMeta( 0 ).getName() );
+    Assert.assertEquals( 1, thisStepsFields.size() );
+    Assert.assertEquals( overriddenValue, thisStepsFields.getValueMeta( 0 ).getName() );
   }
 
   @Test
@@ -153,16 +145,16 @@ public class TransMetaTest {
     trans.setMetaStore( mstore );
     trans.importFromMetaStore();
     DatabaseMeta dbMeta = trans.findDatabase( name );
-    assertEquals( dbMetaShared.getHostname(), dbMeta.getHostname() );
+    Assert.assertEquals( dbMetaShared.getHostname(), dbMeta.getHostname() );
   }
 
   @Test
   public void testAddOrReplaceStep() throws Exception {
     StepMeta stepMeta = mockStepMeta( "ETL Metadata Injection" );
-    MetaInjectMeta stepMetaInterfaceMock = mock( MetaInjectMeta.class );
-    when( stepMeta.getStepMetaInterface() ).thenReturn( stepMetaInterfaceMock );
+    MetaInjectMeta stepMetaInterfaceMock = Mockito.mock( MetaInjectMeta.class );
+    Mockito.when( stepMeta.getStepMetaInterface() ).thenReturn( stepMetaInterfaceMock );
     transMeta.addOrReplaceStep( stepMeta );
-    verify( stepMeta ).setParentTransMeta( any( TransMeta.class ) );
+    Mockito.verify( stepMeta ).setParentTransMeta( Mockito.any( TransMeta.class ) );
     // to make sure that method comes through positive scenario
     assert transMeta.steps.size() == 1;
     assert transMeta.changed_steps;
@@ -175,87 +167,87 @@ public class TransMetaTest {
     try {
       transMeta.addOrReplaceStep( sm );
     } catch ( Exception ex ) {
-      fail();
+      Assert.fail();
     }
   }
 
   @Test
   public void testContentChangeListener() throws Exception {
-    ContentChangedListener listener = mock( ContentChangedListener.class );
+    ContentChangedListener listener = Mockito.mock( ContentChangedListener.class );
     transMeta.addContentChangedListener( listener );
 
     transMeta.setChanged();
     transMeta.setChanged( true );
 
-    verify( listener, times( 2 ) ).contentChanged( same( transMeta ) );
+    Mockito.verify( listener, Mockito.times( 2 ) ).contentChanged( Mockito.same( transMeta ) );
 
     transMeta.clearChanged();
     transMeta.setChanged( false );
 
-    verify( listener, times( 2 ) ).contentSafe( same( transMeta ) );
+    Mockito.verify( listener, Mockito.times( 2 ) ).contentSafe( Mockito.same( transMeta ) );
 
     transMeta.removeContentChangedListener( listener );
     transMeta.setChanged();
     transMeta.setChanged( true );
 
-    verifyNoMoreInteractions( listener );
+    Mockito.verifyNoMoreInteractions( listener );
   }
 
   @Test
   public void testCompare() throws Exception {
     TransMeta transMeta = new TransMeta( "aFile", "aName" );
     TransMeta transMeta2 = new TransMeta( "aFile", "aName" );
-    assertEquals( 0, transMeta.compare( transMeta, transMeta2 ) );
+    Assert.assertEquals( 0, transMeta.compare( transMeta, transMeta2 ) );
     transMeta2.setVariable( "myVariable", "myValue" );
-    assertEquals( 0, transMeta.compare( transMeta, transMeta2 ) );
+    Assert.assertEquals( 0, transMeta.compare( transMeta, transMeta2 ) );
     transMeta2.setFilename( null );
-    assertEquals( 1, transMeta.compare( transMeta, transMeta2 ) );
-    assertEquals( -1, transMeta.compare( transMeta2, transMeta ) );
+    Assert.assertEquals( 1, transMeta.compare( transMeta, transMeta2 ) );
+    Assert.assertEquals( -1, transMeta.compare( transMeta2, transMeta ) );
     transMeta2.setFilename( "aFile" );
     transMeta2.setName( null );
-    assertEquals( 1, transMeta.compare( transMeta, transMeta2 ) );
-    assertEquals( -1, transMeta.compare( transMeta2, transMeta ) );
+    Assert.assertEquals( 1, transMeta.compare( transMeta, transMeta2 ) );
+    Assert.assertEquals( -1, transMeta.compare( transMeta2, transMeta ) );
     transMeta2.setFilename( "aFile2" );
     transMeta2.setName( "aName" );
-    assertEquals( -1, transMeta.compare( transMeta, transMeta2 ) );
-    assertEquals( 1, transMeta.compare( transMeta2, transMeta ) );
+    Assert.assertEquals( -1, transMeta.compare( transMeta, transMeta2 ) );
+    Assert.assertEquals( 1, transMeta.compare( transMeta2, transMeta ) );
     transMeta2.setFilename( "aFile" );
     transMeta2.setName( "aName2" );
-    assertEquals( -1, transMeta.compare( transMeta, transMeta2 ) );
-    assertEquals( 1, transMeta.compare( transMeta2, transMeta ) );
+    Assert.assertEquals( -1, transMeta.compare( transMeta, transMeta2 ) );
+    Assert.assertEquals( 1, transMeta.compare( transMeta2, transMeta ) );
     transMeta.setFilename( null );
     transMeta2.setFilename( null );
     transMeta2.setName( "aName" );
-    assertEquals( 0, transMeta.compare( transMeta, transMeta2 ) );
-    RepositoryDirectoryInterface path1 = mock( RepositoryDirectoryInterface.class );
+    Assert.assertEquals( 0, transMeta.compare( transMeta, transMeta2 ) );
+    RepositoryDirectoryInterface path1 = Mockito.mock( RepositoryDirectoryInterface.class );
     transMeta.setRepositoryDirectory( path1 );
-    when( path1.getPath() ).thenReturn( "aPath2" );
-    RepositoryDirectoryInterface path2 = mock( RepositoryDirectoryInterface.class );
-    when( path2.getPath() ).thenReturn( "aPath" );
+    Mockito.when( path1.getPath() ).thenReturn( "aPath2" );
+    RepositoryDirectoryInterface path2 = Mockito.mock( RepositoryDirectoryInterface.class );
+    Mockito.when( path2.getPath() ).thenReturn( "aPath" );
     transMeta2.setRepositoryDirectory( path2 );
-    assertEquals( 1, transMeta.compare( transMeta, transMeta2 ) );
-    assertEquals( -1, transMeta.compare( transMeta2, transMeta ) );
-    when( path1.getPath() ).thenReturn( "aPath" );
-    assertEquals( 0, transMeta.compare( transMeta, transMeta2 ) );
-    ObjectRevision revision2 = mock( ObjectRevision.class );
+    Assert.assertEquals( 1, transMeta.compare( transMeta, transMeta2 ) );
+    Assert.assertEquals( -1, transMeta.compare( transMeta2, transMeta ) );
+    Mockito.when( path1.getPath() ).thenReturn( "aPath" );
+    Assert.assertEquals( 0, transMeta.compare( transMeta, transMeta2 ) );
+    ObjectRevision revision2 = Mockito.mock( ObjectRevision.class );
     transMeta2.setObjectRevision( revision2 );
-    assertEquals( -1, transMeta.compare( transMeta, transMeta2 ) );
-    assertEquals( 1, transMeta.compare( transMeta2, transMeta ) );
-    ObjectRevision revision1 = mock( ObjectRevision.class );
+    Assert.assertEquals( -1, transMeta.compare( transMeta, transMeta2 ) );
+    Assert.assertEquals( 1, transMeta.compare( transMeta2, transMeta ) );
+    ObjectRevision revision1 = Mockito.mock( ObjectRevision.class );
     transMeta.setObjectRevision( revision1 );
-    when( revision1.getName() ).thenReturn( "aRevision" );
-    when( revision2.getName() ).thenReturn( "aRevision" );
-    assertEquals( 0, transMeta.compare( transMeta, transMeta2 ) );
-    when( revision2.getName() ).thenReturn( "aRevision2" );
-    assertEquals( -1, transMeta.compare( transMeta, transMeta2 ) );
-    assertEquals( 1, transMeta.compare( transMeta2, transMeta ) );
+    Mockito.when( revision1.getName() ).thenReturn( "aRevision" );
+    Mockito.when( revision2.getName() ).thenReturn( "aRevision" );
+    Assert.assertEquals( 0, transMeta.compare( transMeta, transMeta2 ) );
+    Mockito.when( revision2.getName() ).thenReturn( "aRevision2" );
+    Assert.assertEquals( -1, transMeta.compare( transMeta, transMeta2 ) );
+    Assert.assertEquals( 1, transMeta.compare( transMeta2, transMeta ) );
   }
 
   @Test
   public void testEquals() throws Exception {
     TransMeta transMeta = new TransMeta( "1", "2" );
-    assertFalse( transMeta.equals( "somethingelse" ) );
-    assertTrue( transMeta.equals( new TransMeta( "1", "2" ) ) );
+    Assert.assertFalse( transMeta.equals( "somethingelse" ) );
+    Assert.assertTrue( transMeta.equals( new TransMeta( "1", "2" ) ) );
   }
 
   @Test
@@ -272,26 +264,26 @@ public class TransMetaTest {
     transMeta.addTransHop( 1, hopMeta2 );
     transMeta.addTransHop( 2, hopMeta3 );
     List<StepMeta> hops = transMeta.getTransHopSteps( true );
-    assertSame( step1, hops.get( 0 ) );
-    assertSame( step2, hops.get( 1 ) );
-    assertSame( step3, hops.get( 2 ) );
-    assertSame( step4, hops.get( 3 ) );
-    assertEquals( hopMeta2, transMeta.findTransHop( "name2 --> name3 (enabled)" ) );
-    assertEquals( hopMeta3, transMeta.findTransHopFrom( step3 ) );
-    assertEquals( hopMeta2, transMeta.findTransHop( hopMeta2 ) );
-    assertEquals( hopMeta1, transMeta.findTransHop( step1, step2 ) );
-    assertEquals( null, transMeta.findTransHop( step3, step4, false ) );
-    assertEquals( hopMeta3, transMeta.findTransHop( step3, step4, true ) );
-    assertEquals( hopMeta2, transMeta.findTransHopTo( step3 ) );
+    Assert.assertSame( step1, hops.get( 0 ) );
+    Assert.assertSame( step2, hops.get( 1 ) );
+    Assert.assertSame( step3, hops.get( 2 ) );
+    Assert.assertSame( step4, hops.get( 3 ) );
+    Assert.assertEquals( hopMeta2, transMeta.findTransHop( "name2 --> name3 (enabled)" ) );
+    Assert.assertEquals( hopMeta3, transMeta.findTransHopFrom( step3 ) );
+    Assert.assertEquals( hopMeta2, transMeta.findTransHop( hopMeta2 ) );
+    Assert.assertEquals( hopMeta1, transMeta.findTransHop( step1, step2 ) );
+    Assert.assertEquals( null, transMeta.findTransHop( step3, step4, false ) );
+    Assert.assertEquals( hopMeta3, transMeta.findTransHop( step3, step4, true ) );
+    Assert.assertEquals( hopMeta2, transMeta.findTransHopTo( step3 ) );
     transMeta.removeTransHop( 0 );
     hops = transMeta.getTransHopSteps( true );
-    assertSame( step2, hops.get( 0 ) );
-    assertSame( step3, hops.get( 1 ) );
-    assertSame( step4, hops.get( 2 ) );
+    Assert.assertSame( step2, hops.get( 0 ) );
+    Assert.assertSame( step3, hops.get( 1 ) );
+    Assert.assertSame( step4, hops.get( 2 ) );
     transMeta.removeTransHop( hopMeta2 );
     hops = transMeta.getTransHopSteps( true );
-    assertSame( step3, hops.get( 0 ) );
-    assertSame( step4, hops.get( 1 ) );
+    Assert.assertSame( step3, hops.get( 0 ) );
+    Assert.assertSame( step4, hops.get( 1 ) );
   }
 
   @Test
@@ -338,15 +330,37 @@ public class TransMetaTest {
 
     RowMetaInterface row = null;
     row = transMeta.getPrevInfoFields( udjc );
-    assertNotNull( row );
-    assertEquals( 1, row.size() );
-    assertEquals( "moreData", row.getValueMeta( 0 ).getName() );
-    assertEquals( ValueMetaInterface.TYPE_STRING, row.getValueMeta( 0 ).getType() );
+    Assert.assertNotNull( row );
+    Assert.assertEquals( 1, row.size() );
+    Assert.assertEquals( "moreData", row.getValueMeta( 0 ).getName() );
+    Assert.assertEquals( ValueMetaInterface.TYPE_STRING, row.getValueMeta( 0 ).getType() );
+  }
+
+  @Test
+  public void testAddStepWithChangeListenerInterface() {
+    StepMeta stepMeta = Mockito.mock( StepMeta.class );
+    StepMetaChangeListenerInterfaceMock metaInterface = Mockito.mock( StepMetaChangeListenerInterfaceMock.class );
+    Mockito.when( stepMeta.getStepMetaInterface() ).thenReturn( metaInterface );
+    Assert.assertEquals( 0, transMeta.steps.size() );
+    Assert.assertEquals( 0, transMeta.stepChangeListeners.size() );
+    // should not throw exception if there are no steps in step meta
+    transMeta.addStep( 0, stepMeta );
+    Assert.assertEquals( 1, transMeta.steps.size() );
+    Assert.assertEquals( 1, transMeta.stepChangeListeners.size() );
+
+    transMeta.addStep( 0, stepMeta );
+    Assert.assertEquals( 2, transMeta.steps.size() );
+    Assert.assertEquals( 2, transMeta.stepChangeListeners.size() );
   }
 
   private static StepMeta mockStepMeta( String name ) {
-    StepMeta meta = mock( StepMeta.class );
-    when( meta.getName() ).thenReturn( name );
+    StepMeta meta = Mockito.mock( StepMeta.class );
+    Mockito.when( meta.getName() ).thenReturn( name );
     return meta;
+  }
+
+  private abstract static class StepMetaChangeListenerInterfaceMock implements StepMetaInterface, StepMetaChangeListenerInterface {
+    @Override
+    public abstract Object clone();
   }
 }
