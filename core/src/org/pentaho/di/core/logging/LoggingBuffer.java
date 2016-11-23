@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,6 +23,7 @@
 package org.pentaho.di.core.logging;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.KettleClientEnvironment;
 
 import java.util.Collections;
 import java.util.ArrayList;
@@ -42,6 +43,9 @@ public class LoggingBuffer {
   private List<BufferLine> buffer;
 
   private int bufferSize;
+
+  // to check if buffer has unread logs bu  spoon log tab refresher
+  private boolean isBufferReadBySpoonLogTabRefresher = false;
 
   private KettleLogLayout layout;
 
@@ -129,6 +133,11 @@ public class LoggingBuffer {
           }
         }
       }
+      // notify discard log lines threads if log tab sniffer read buffer
+      if ( Const.KETTLE_LOG_TAB_REFRESH_THREAD.equals( Thread.currentThread().getName() ) ) {
+        isBufferReadBySpoonLogTabRefresher = true;
+        buffer.notifyAll();
+      }
     }
 
     return lines;
@@ -186,6 +195,7 @@ public class LoggingBuffer {
   public void doAppend( KettleLoggingEvent event ) {
     synchronized ( buffer ) {
       buffer.add( new BufferLine( event ) );
+      isBufferReadBySpoonLogTabRefresher = false;
       while ( bufferSize > 0 && buffer.size() > bufferSize ) {
         buffer.remove( 0 );
       }
@@ -246,6 +256,7 @@ public class LoggingBuffer {
    */
   public void removeChannelFromBuffer( String id ) {
     synchronized ( buffer ) {
+      waitSpoonLogTabRefresherBeforeRemoving();
       Iterator<BufferLine> iterator = buffer.iterator();
       while ( iterator.hasNext() ) {
         BufferLine bufferLine = iterator.next();
@@ -254,6 +265,31 @@ public class LoggingBuffer {
           LogMessage message = (LogMessage) payload;
           if ( id.equals( message.getLogChannelId() ) ) {
             iterator.remove();
+          }
+        }
+      }
+    }
+  }
+
+  public void waitSpoonLogTabRefresherBeforeRemoving() {
+    // check environment
+    if ( KettleClientEnvironment.ClientType.SPOON.equals( KettleClientEnvironment.getInstance().getClient() ) ) {
+      // check threads
+      String currentTreadName = Thread.currentThread().getName();
+      if ( Const.JOB_EXECUTOR_DISCARD_LINES_THREAD.equals( currentTreadName )
+        || Const.TRANS_EXECUTOR_DISCARD_LINES_THREAD.equals( currentTreadName ) ) {
+        // set timeout expiration for discard lines waiting
+        long timeoutExpired = System.currentTimeMillis() + Const.KETTLE_DISCARD_LOG_LINES_WAIT_TIMEOUT;
+        // wait until log tab refresher reads a new logs
+        while ( !isBufferReadBySpoonLogTabRefresher ) {
+          try {
+            buffer.wait( timeoutExpired - System.currentTimeMillis() );
+          } catch ( InterruptedException e ) {
+            e.printStackTrace();
+          }
+          // stop waiting if timeout is expired
+          if ( System.currentTimeMillis() >= timeoutExpired ) {
+            break;
           }
         }
       }
