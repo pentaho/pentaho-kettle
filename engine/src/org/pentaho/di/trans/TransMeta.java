@@ -814,13 +814,13 @@ public class TransMeta extends AbstractMeta
    *          The step to be added.
    */
   public void addStep( int p, StepMeta stepMeta ) {
+    steps.add( p, stepMeta );
+    stepMeta.setParentTransMeta( this );
+    changed_steps = true;
     StepMetaInterface iface = stepMeta.getStepMetaInterface();
     if ( iface instanceof StepMetaChangeListenerInterface ) {
       addStepChangeListener( p, (StepMetaChangeListenerInterface) stepMeta.getStepMetaInterface() );
     }
-    steps.add( p, stepMeta );
-    stepMeta.setParentTransMeta( this );
-    changed_steps = true;
   }
 
   /**
