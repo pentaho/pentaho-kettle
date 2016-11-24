@@ -716,11 +716,12 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
   }
 
   /**
+   * @param password string for resolving
    * @return Returns resolved decrypted password or null
-   * in case of {@link #getPassword()} returns null.
+   * in case of param returns null.
    */
-  public String getRealPassword() {
-    return Utils.resolvePassword( variables, getPassword() );
+  public String getRealPassword( String password ) {
+    return Utils.resolvePassword( variables, password );
   }
 
   public String getAttachmentFolder() {
@@ -908,7 +909,7 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 
       String realserver = getRealServername();
       String realusername = getRealUsername();
-      String realpassword = getRealPassword();
+      String realpassword = getRealPassword( getPassword() );
       String realFilenamePattern = getRealFilenamePattern();
       int realport = Const.toInt( environmentSubstitute( sslport ), -1 );
       String realIMAPFolder = environmentSubstitute( getIMAPFolder() );

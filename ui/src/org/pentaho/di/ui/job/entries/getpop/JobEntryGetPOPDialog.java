@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -1776,7 +1776,7 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
     if ( !retval ) {
       String realserver = jobMeta.environmentSubstitute( wServerName.getText() );
       String realuser = jobMeta.environmentSubstitute( wUserName.getText() );
-      String realpass = jobMeta.environmentSubstitute( wPassword.getText() );
+      String realpass = jobEntry.getRealPassword( jobMeta.environmentSubstitute( wPassword.getText() ) );
       int realport = Const.toInt( jobMeta.environmentSubstitute( wPort.getText() ), -1 );
       String realproxyuser = jobMeta.environmentSubstitute( wProxyUsername.getText() );
       try {

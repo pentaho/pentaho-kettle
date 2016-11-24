@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -63,6 +63,7 @@ import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.entries.getpop.MailConnection;
 import org.pentaho.di.job.entries.getpop.MailConnectionMeta;
@@ -1697,7 +1698,7 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
     if ( !retval ) {
       String realserver = transMeta.environmentSubstitute( wServerName.getText() );
       String realuser = transMeta.environmentSubstitute( wUserName.getText() );
-      String realpass = transMeta.environmentSubstitute( wPassword.getText() );
+      String realpass = Utils.resolvePassword( variables, transMeta.environmentSubstitute( wPassword.getText() ) );
       String realProxyUsername = transMeta.environmentSubstitute( wProxyUsername.getText() );
       int realport = Const.toInt( transMeta.environmentSubstitute( wPort.getText() ), -1 );
 
