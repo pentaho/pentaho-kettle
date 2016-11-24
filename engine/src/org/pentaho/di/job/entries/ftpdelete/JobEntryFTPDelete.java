@@ -655,15 +655,15 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
     // Here let's put some controls before stating the job
 
     String realservername = environmentSubstitute( serverName );
-    String realserverpassword = Encr.decryptPasswordOptionallyEncrypted( environmentSubstitute( password ) );
+    String realserverpassword = Utils.resolvePassword( this, password );
     String realFtpDirectory = environmentSubstitute( ftpDirectory );
 
     int realserverport = Const.toInt( environmentSubstitute( port ), 0 );
     String realUsername = environmentSubstitute( userName );
-    String realPassword = Encr.decryptPasswordOptionallyEncrypted( environmentSubstitute( password ) );
+    String realPassword = Utils.resolvePassword( this, password );
     String realproxyhost = environmentSubstitute( proxyHost );
     String realproxyusername = environmentSubstitute( proxyUsername );
-    String realproxypassword = environmentSubstitute( proxyPassword );
+    String realproxypassword = Utils.resolvePassword( this, proxyPassword );
     int realproxyport = Const.toInt( environmentSubstitute( proxyPort ), 0 );
     String realkeyFilename = environmentSubstitute( keyFilename );
     String realkeyPass = environmentSubstitute( keyFilePass );
@@ -700,7 +700,7 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
           // then if we have authentication information
           if ( !Utils.isEmpty( socksProxyUsername ) && !Utils.isEmpty( socksProxyPassword ) ) {
             FTPClient.initSOCKSAuthentication(
-              environmentSubstitute( socksProxyUsername ), environmentSubstitute( socksProxyPassword ) );
+              environmentSubstitute( socksProxyUsername ), Utils.resolvePassword( this, socksProxyPassword ) );
           } else if ( !Utils.isEmpty( socksProxyUsername )
             && Utils.isEmpty( socksProxyPassword ) || Utils.isEmpty( socksProxyUsername )
             && !Utils.isEmpty( socksProxyPassword ) ) {
@@ -1010,7 +1010,7 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
     if ( !Utils.isEmpty( proxyHost ) ) {
       String realProxy_host = environmentSubstitute( proxyHost );
       String realProxy_username = environmentSubstitute( proxyUsername );
-      String realProxy_password = environmentSubstitute( proxyPassword );
+      String realProxy_password = Utils.resolvePassword( this, proxyPassword );
 
       ftpsclient.setProxyHost( realProxy_host );
       if ( !Utils.isEmpty( realProxy_username ) ) {
