@@ -979,7 +979,7 @@ public class JobEntrySFTPDialog extends JobEntryDialog implements JobEntryDialog
             wProxyType.getText() );
         }
         // login to ftp host ...
-        sftpclient.login( jobMeta.environmentSubstitute( wPassword.getText() ) );
+        sftpclient.login( jobEntry.getRealPassword( jobMeta.environmentSubstitute( wPassword.getText() ) ) );
 
         retval = true;
       }
