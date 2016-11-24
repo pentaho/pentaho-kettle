@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -50,6 +50,7 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entries.ftpdelete.JobEntryFTPDelete;
@@ -1215,9 +1216,9 @@ public class JobEntryFTPDeleteDialog extends JobEntryDialog implements JobEntryD
               + jobMeta.environmentSubstitute( wProxyUsername.getText() ) : "" );
 
         String realPassword =
-          jobMeta.environmentSubstitute( wPassword.getText() )
+          Utils.resolvePassword( jobMeta, wPassword.getText() )
             + ( !Const.isEmpty( wProxyPassword.getText() ) ? " "
-              + jobMeta.environmentSubstitute( wProxyPassword.getText() ) : "" );
+              + Utils.resolvePassword( jobMeta, wProxyPassword.getText() ) : "" );
         // login now ...
         ftpclient.login( realUsername, realPassword );
         pwdFolder = ftpclient.pwd();
@@ -1248,7 +1249,7 @@ public class JobEntryFTPDeleteDialog extends JobEntryDialog implements JobEntryD
       if ( ftpsclient == null ) {
         String realServername = jobMeta.environmentSubstitute( wServerName.getText() );
         String realUsername = jobMeta.environmentSubstitute( wUserName.getText() );
-        String realPassword = jobMeta.environmentSubstitute( wPassword.getText() );
+        String realPassword = Utils.resolvePassword( jobMeta, wPassword.getText() );
         int port = Const.toInt( jobMeta.environmentSubstitute( wPort.getText() ), 0 );
 
         // Create ftp client to host:port ...
@@ -1261,7 +1262,7 @@ public class JobEntryFTPDeleteDialog extends JobEntryDialog implements JobEntryD
           // Set proxy
           String realProxy_host = jobMeta.environmentSubstitute( wProxyHost.getText() );
           String realProxy_user = jobMeta.environmentSubstitute( wProxyUsername.getText() );
-          String realProxy_pass = jobMeta.environmentSubstitute( wProxyPassword.getText() );
+          String realProxy_pass = Utils.resolvePassword( jobMeta, wProxyPassword.getText() );
           ftpsclient.setProxyHost( realProxy_host );
           int proxyport = Const.toInt( jobMeta.environmentSubstitute( wProxyPort.getText() ), 990 );
           if ( proxyport != 0 ) {
@@ -1309,7 +1310,7 @@ public class JobEntryFTPDeleteDialog extends JobEntryDialog implements JobEntryD
             .environmentSubstitute( wUserName.getText() ) );
 
         // login to ftp host ...
-        sftpclient.login( jobMeta.environmentSubstitute( wPassword.getText() ) );
+        sftpclient.login( Utils.resolvePassword( jobMeta, wPassword.getText() ) );
         pwdFolder = sftpclient.pwd();
       }
 
@@ -1347,8 +1348,8 @@ public class JobEntryFTPDeleteDialog extends JobEntryDialog implements JobEntryD
           if ( !Const.isEmpty( wProxyUsername.getText() ) ) {
             conn.setProxyData( new HTTPProxyData(
               jobMeta.environmentSubstitute( wProxyHost.getText() ), Const.toInt( wProxyPort.getText(), 22 ),
-              jobMeta.environmentSubstitute( wProxyUsername.getText() ), jobMeta
-                .environmentSubstitute( wProxyPassword.getText() ) ) );
+              jobMeta.environmentSubstitute( wProxyUsername.getText() ),
+                    Utils.resolvePassword( jobMeta, wProxyPassword.getText() ) ) );
           } else {
             conn.setProxyData( new HTTPProxyData( jobMeta.environmentSubstitute( wProxyHost.getText() ), Const
               .toInt( wProxyPort.getText(), 22 ) ) );
@@ -1366,8 +1367,8 @@ public class JobEntryFTPDeleteDialog extends JobEntryDialog implements JobEntryD
                 .environmentSubstitute( wkeyfilePass.getText() ) );
         } else {
           retval =
-            conn.authenticateWithPassword( jobMeta.environmentSubstitute( wUserName.getText() ), jobMeta
-              .environmentSubstitute( wPassword.getText() ) );
+            conn.authenticateWithPassword( jobMeta.environmentSubstitute( wUserName.getText() ),
+                    Utils.resolvePassword( jobMeta, wPassword.getText() ) );
         }
       }
 

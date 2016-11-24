@@ -51,6 +51,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entries.sftp.JobEntrySFTP;
@@ -974,7 +975,7 @@ public class JobEntrySFTPDialog extends JobEntryDialog implements JobEntryDialog
             realProxyHost,
             jobMeta.environmentSubstitute( wProxyPort.getText() ),
             jobMeta.environmentSubstitute( wProxyUsername.getText() ),
-            jobMeta.environmentSubstitute( wProxyPassword.getText() ),
+            Utils.resolvePassword( jobMeta, wProxyPassword.getText() ),
             wProxyType.getText() );
         }
         // login to ftp host ...

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -57,6 +57,7 @@ import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleJobException;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.entries.sftp.SFTPClient;
 import org.pentaho.di.job.entries.sftpput.JobEntrySFTPPUT;
@@ -1152,11 +1153,11 @@ public class SFTPPutDialog extends BaseStepDialog implements StepDialogInterface
         realProxyHost,
         transMeta.environmentSubstitute( wProxyPort.getText() ),
         transMeta.environmentSubstitute( wProxyUsername.getText() ),
-        transMeta.environmentSubstitute( wProxyPassword.getText() ),
+        Utils.resolvePassword( transMeta,  wProxyPassword.getText() ),
         wProxyType.getText() );
     }
     // login to ftp host ...
-    sftpclient.login( transMeta.environmentSubstitute( wPassword.getText() ) );
+    sftpclient.login( Utils.resolvePassword( transMeta, wPassword.getText() ) );
 
     return sftpclient;
   }
