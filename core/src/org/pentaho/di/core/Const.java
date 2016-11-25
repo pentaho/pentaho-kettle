@@ -818,6 +818,23 @@ public class Const {
   public static final String KETTLE_MAX_LOGGING_REGISTRY_SIZE = "KETTLE_MAX_LOGGING_REGISTRY_SIZE";
 
   /**
+   * A variable to configure the kettle log tab refresh delay.
+   */
+  public static final String KETTLE_LOG_TAB_REFRESH_DELAY = "KETTLE_LOG_TAB_REFRESH_DELAY";
+
+  /**
+   * A variable to configure the kettle log tab refresh period.
+   */
+  public static final String KETTLE_LOG_TAB_REFRESH_PERIOD = "KETTLE_LOG_TAB_REFRESH_PERIOD";
+
+  /**
+   * A variable to configure the executor discard lines (from log buffer) delay.
+   */
+  public static final int EXECUTOR_DISCARD_LINES_DELAY = Math
+    .max( Const.toInt( EnvUtil.getSystemProperty( Const.KETTLE_LOG_TAB_REFRESH_DELAY ), 1000 ),
+      Const.toInt( EnvUtil.getSystemProperty( Const.KETTLE_LOG_TAB_REFRESH_PERIOD ), 1000 ) ) + 1000;
+
+  /**
    * The name of the system wide variable that can contain the name of the SAP Connection factory for the test button in
    * the DB dialog. This defaults to
    */
