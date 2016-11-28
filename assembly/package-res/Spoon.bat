@@ -46,6 +46,7 @@ if exist java.exe goto USEJAVAFROMPENTAHOJAVAHOME
 popd
 pushd "%_PENTAHO_JAVA_HOME%\jre\bin"
 if exist java.exe goto USEJAVAFROMPATH
+popd
 goto USEJAVAFROMPATH
 :USEJAVAFROMPENTAHOJAVAHOME
 FOR /F %%a IN ('.\java.exe -version 2^>^&1^|%windir%\system32\find /C "64-Bit"') DO (SET /a IS64BITJAVA=%%a)
