@@ -39,6 +39,7 @@ REM Java HotSpot(TM) 64-Bit Server VM (build 14.3-b01, mixed mode)
 REM
 REM Below is a logic to find the directory where java can found. We will
 REM temporarily change the directory to that folder where we can run java there
+if not exist "%_PENTAHO_JAVA_HOME%" goto USEJAVAFROMPATH
 pushd "%_PENTAHO_JAVA_HOME%"
 if exist java.exe goto USEJAVAFROMPENTAHOJAVAHOME
 cd bin
