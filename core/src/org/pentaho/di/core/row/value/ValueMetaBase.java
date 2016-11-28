@@ -1699,7 +1699,7 @@ public class ValueMetaBase implements ValueMetaInterface {
   @Override
   public Double getNumber( Object object ) throws KettleValueException {
     try {
-      if ( object == null ) {
+      if ( isNull( object ) ) {
         return null;
       }
       switch ( type ) {
@@ -1785,7 +1785,7 @@ public class ValueMetaBase implements ValueMetaInterface {
   @Override
   public Long getInteger( Object object ) throws KettleValueException {
     try {
-      if ( object == null ) {
+      if ( isNull( object ) ) {
         return null;
       }
       switch ( type ) {
@@ -1872,7 +1872,7 @@ public class ValueMetaBase implements ValueMetaInterface {
 
   @Override
   public BigDecimal getBigNumber( Object object ) throws KettleValueException {
-    if ( object == null ) {
+    if ( isNull( object ) ) {
       return null;
     }
     switch ( type ) {
@@ -2025,7 +2025,7 @@ public class ValueMetaBase implements ValueMetaInterface {
 
   @Override
   public Date getDate( Object object ) throws KettleValueException {
-    if ( object == null ) {
+    if ( isNull( object ) ) {
       return null;
     }
     switch ( type ) {
