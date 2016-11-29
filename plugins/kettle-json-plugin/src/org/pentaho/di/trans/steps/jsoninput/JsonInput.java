@@ -247,6 +247,7 @@ public class JsonInput extends BaseFileInputStep<JsonInputMeta, JsonInputData> i
     if ( input != null ) {
       try {
         data.readerRowSet = data.reader.parse( input );
+        input.close();
         return true;
       } catch ( KettleException ke ) {
         logInputError( ke );
