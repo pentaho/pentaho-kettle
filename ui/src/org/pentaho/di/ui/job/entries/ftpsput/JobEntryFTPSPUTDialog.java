@@ -881,7 +881,7 @@ public class JobEntryFTPSPUTDialog extends JobEntryDialog implements JobEntryDia
       realServername = jobMeta.environmentSubstitute( wServerName.getText() );
       int realPort = Const.toInt( jobMeta.environmentSubstitute( wServerPort.getText() ), 0 );
       String realUsername = jobMeta.environmentSubstitute( wUserName.getText() );
-      String realPassword = jobMeta.environmentSubstitute( wPassword.getText() );
+      String realPassword = Utils.resolvePassword( jobMeta, wPassword.getText() );
 
       if ( connection == null ) { // Create ftp client to host:port ...
         connection =
@@ -893,7 +893,7 @@ public class JobEntryFTPSPUTDialog extends JobEntryDialog implements JobEntryDia
           // Set proxy
           String realProxy_host = jobMeta.environmentSubstitute( wProxyHost.getText() );
           String realProxy_user = jobMeta.environmentSubstitute( wProxyUsername.getText() );
-          String realProxy_pass = jobMeta.environmentSubstitute( wProxyPassword.getText() );
+          String realProxy_pass = Utils.resolvePassword( jobMeta, wProxyPassword.getText() );
 
           connection.setProxyHost( realProxy_host );
           int proxyport = Const.toInt( jobMeta.environmentSubstitute( wProxyPort.getText() ), 990 );
