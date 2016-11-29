@@ -116,6 +116,11 @@ public class MemoryRepository extends AbstractRepository {
       numberMap = new HashMap<String, String>();
       stepMap.put( nr, numberMap );
     }
+    if ( numberMap.containsKey( code ) ) {
+      // PDI-15793
+      throw new RuntimeException(
+        "Tried to insert code [" + code + "] twice, which may not be supported by all repository types." );
+    }
     numberMap.put( code, value );
   }
 
