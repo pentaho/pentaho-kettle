@@ -335,8 +335,8 @@ public class JsonInput extends BaseFileInputStep<JsonInputMeta, JsonInputData> i
     while ( ( rawReaderRow = data.readerRowSet.getRow() ) == null ) {
       if ( data.inputs.hasNext() && data.readerRowSet.isDone() ) {
         try ( InputStream nextIn = data.inputs.next() ) {
-          boolean parsed = parseNextInputToRowSet( nextIn );
-          if ( parsed && shouldOutputEmpty() ) {
+          parseNextInputToRowSet( nextIn );
+          if ( shouldOutputEmpty() ) {
             return buildBaseOutputRow();
           }
         } catch ( IOException e ) {
@@ -355,6 +355,8 @@ public class JsonInput extends BaseFileInputStep<JsonInputMeta, JsonInputData> i
     if ( rowContainsData ) {
       outputRow = rowOutputConverter.getRow( buildBaseOutputRow(), rawReaderRow, data );
       addExtraFields( outputRow, data );
+    } else {
+      outputRow = buildBaseOutputRow();
     }
     return outputRow;
   }
