@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,6 +22,11 @@
 
 package org.pentaho.di.trans.steps.missing;
 
+import org.pentaho.di.trans.Trans;
+import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.step.StepDataInterface;
+import org.pentaho.di.trans.step.StepInterface;
+import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.dummytrans.DummyTransMeta;
 
 public class MissingTrans extends DummyTransMeta {
@@ -48,5 +53,10 @@ public class MissingTrans extends DummyTransMeta {
 
   public void setMissingPluginId( String missingPluginId ) {
     this.missingPluginId = missingPluginId;
+  }
+
+  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta tr,
+      Trans trans ) {
+    return new MissingTransStep( stepMeta, stepDataInterface, cnr, tr, trans );
   }
 }
