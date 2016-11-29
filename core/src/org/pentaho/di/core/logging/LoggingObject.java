@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,6 +25,7 @@ package org.pentaho.di.core.logging;
 import java.util.Date;
 
 import org.pentaho.di.core.Const;
+import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.ObjectRevision;
 import org.pentaho.di.repository.RepositoryDirectory;
@@ -92,7 +93,8 @@ public class LoggingObject implements LoggingObjectInterface {
 
       // If the filename is the same and parent is the same, it's the same object...
       if ( sameCarteFamily && !Const.isEmpty( loggingObject.getFilename() )
-          && loggingObject.getFilename().equals( getFilename() ) && sameParents ) {
+          && loggingObject.getFilename().equals( getFilename() ) && sameParents
+              && StringUtils.equals( loggingObject.getObjectName(), getObjectName() ) ) {
         return true;
       }
 
