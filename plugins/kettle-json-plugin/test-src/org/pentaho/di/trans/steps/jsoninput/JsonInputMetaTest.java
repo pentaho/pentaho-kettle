@@ -27,15 +27,15 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.metastore.api.IMetaStore;
 
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 /**
  * Created by bmorrise on 3/22/16.
@@ -135,11 +135,20 @@ public class JsonInputMetaTest {
     jsonInputMeta.setFieldValue( DATA );
     jsonInputMeta.setInFields( true );
 
-    when( rowMeta.indexOfValue( DATA ) ).thenReturn( 0 );
+    Mockito.when( rowMeta.indexOfValue( DATA ) ).thenReturn( 0 );
 
     jsonInputMeta.getFields( rowMeta, NAME, info, nextStep, space, repository, metaStore );
 
-    verify( rowMeta ).removeValueMeta( 0 );
+    Mockito.verify( rowMeta ).removeValueMeta( 0 );
+  }
+
+  @Test
+  public void verifyReadingRepoSetsAcceptFilenames() throws Exception {
+    ObjectId objectId = () -> "id";
+    Mockito.when( repository.getStepAttributeBoolean( objectId, "IsInFields" ) ).thenReturn( true );
+    jsonInputMeta.readRep( repository, null, objectId, null );
+    Assert.assertTrue( jsonInputMeta.isInFields() );
+    Assert.assertTrue( jsonInputMeta.inputFiles.acceptingFilenames );
   }
 
   @Test
