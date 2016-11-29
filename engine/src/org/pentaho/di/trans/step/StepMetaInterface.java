@@ -715,5 +715,7 @@ public interface StepMetaInterface {
    * Action remove hop from this step
    * @return step was changed
    */
-  public boolean cleanAfterHopFromRemove();
+  public default boolean cleanAfterHopFromRemove() {
+    return false;
+  }
 }
