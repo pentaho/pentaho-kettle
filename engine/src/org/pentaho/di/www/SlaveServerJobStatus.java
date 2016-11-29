@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -26,6 +26,7 @@ import java.io.IOException;
 
 import org.pentaho.di.cluster.HttpUtil;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -61,6 +62,8 @@ public class SlaveServerJobStatus {
   }
 
   public String getXML() throws KettleException {
+    // See PDI-15781
+    boolean sendResultXmlWithStatus = EnvUtil.getSystemProperty( "KETTLE_COMPATIBILITY_SEND_RESULT_XML_WITH_STATUS", "N" ).equalsIgnoreCase( "Y" );
     StringBuffer xml = new StringBuffer();
 
     xml.append( "<" + XML_TAG + ">" ).append( Const.CR );
@@ -73,7 +76,7 @@ public class SlaveServerJobStatus {
     xml.append( XMLHandler.addTagValue( "first_log_line_nr", firstLoggingLineNr ) );
     xml.append( XMLHandler.addTagValue( "last_log_line_nr", lastLoggingLineNr ) );
 
-    if ( result != null ) {
+    if ( ( sendResultXmlWithStatus ) && ( result != null )  ) {
       String resultXML = result.getXML();
       xml.append( resultXML );
     }
