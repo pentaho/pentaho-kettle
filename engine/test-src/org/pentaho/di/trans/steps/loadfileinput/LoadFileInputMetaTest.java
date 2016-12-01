@@ -59,6 +59,7 @@ public class LoadFileInputMetaTest implements InitializerInterface<StepMetaInter
 
   String xmlOrig = "    " + "<include>N</include>\n" + "    <include_field/>\n" + "    <rownum>N</rownum>\n"
       + "    <addresultfile>Y</addresultfile>\n" + "    <IsIgnoreEmptyFile>N</IsIgnoreEmptyFile>\n"
+      + "    <IsIgnoreMissingPath>N</IsIgnoreMissingPath>\n"
       + "    <rownum_field/>\n" + "    <encoding/>\n" + "    <file>\n" + "      <name>D&#x3a;&#x5c;DZMITRY</name>\n"
       + "      <filemask>&#x2a;&#x2f;</filemask>\n"
       + "      <exclude_filemask>&#x2f;&#x2a;&#x2a;&#x2a;</exclude_filemask>\n"
@@ -125,7 +126,7 @@ public class LoadFileInputMetaTest implements InitializerInterface<StepMetaInter
   public void setUp() throws Exception {
     List<String> attributes =
         Arrays.asList( "includeFilename", "filenameField", "includeRowNumber", "rowNumberField", "rowLimit",
-            "encoding", "DynamicFilenameField", "fileinfield", "addresultfile", "IsIgnoreEmptyFile",
+            "encoding", "DynamicFilenameField", "fileinfield", "addresultfile", "IsIgnoreEmptyFile", "IsIgnoreMissingPath",
             "shortFileFieldName", "pathFieldName", "hiddenFieldName", "lastModificationTimeFieldName",
             "uriNameFieldName", "rootUriNameFieldName", "extensionFieldName", "includeSubFolders", "fileName",
             "fileMask", "excludeFileMask", "fileRequired", "inputFields" );
@@ -142,6 +143,7 @@ public class LoadFileInputMetaTest implements InitializerInterface<StepMetaInter
         put( "fileinfield", "getFileInFields" );
         put( "addresultfile", "getAddResultFile" );
         put( "IsIgnoreEmptyFile", "isIgnoreEmptyFile" );
+        put( "IsIgnoreMissingPath", "isIgnoreMissingPath" );
         put( "shortFileFieldName", "getShortFileNameField" );
         put( "pathFieldName", "getPathField" );
         put( "hiddenFieldName", "isHiddenField" );
@@ -170,6 +172,7 @@ public class LoadFileInputMetaTest implements InitializerInterface<StepMetaInter
         put( "fileinfield", "setFileInFields" );
         put( "addresultfile", "setAddResultFile" );
         put( "IsIgnoreEmptyFile", "setIgnoreEmptyFile" );
+        put( "IsIgnoreMissingPath", "setIgnoreMissingPath" );
         put( "shortFileFieldName", "setShortFileNameField" );
         put( "pathFieldName", "setPathField" );
         put( "hiddenFieldName", "setIsHiddenField" );
