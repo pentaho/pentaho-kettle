@@ -1,5 +1,5 @@
 /*!
- * Copyright 2010 - 2015 Pentaho Corporation.  All rights reserved.
+ * Copyright 2010 - 2016 Pentaho Corporation.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,12 +30,13 @@ import org.pentaho.platform.repository2.unified.IRepositoryFileDao;
 import org.pentaho.platform.repository2.unified.ServerRepositoryPaths;
 import org.pentaho.platform.repository2.unified.jcr.PentahoJcrConstants;
 import org.springframework.extensions.jcr.JcrCallback;
-import org.springframework.security.Authentication;
-import org.springframework.security.GrantedAuthorityImpl;
-import org.springframework.security.context.SecurityContextHolder;
-import org.springframework.security.providers.UsernamePasswordAuthenticationToken;
-import org.springframework.security.userdetails.User;
-import org.springframework.security.userdetails.UserDetails;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
@@ -44,7 +45,9 @@ import javax.jcr.Session;
 import javax.jcr.Workspace;
 import javax.jcr.security.AccessControlException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.List;
 
 /**
  * @author Andrey Khayrutdinov
@@ -88,9 +91,11 @@ class PurRepositoryTestingUtils {
    * @return {@code Authentication} instance
    */
   static Authentication createAuthentication( String userName, String... roles ) {
-    GrantedAuthorityImpl[] authorities = new GrantedAuthorityImpl[roles.length];
-    for ( int i = 0, rolesLength = roles.length; i < rolesLength; i++ ) {
-      authorities[i] = new GrantedAuthorityImpl( roles[i] );
+    List<GrantedAuthority> authorities = new ArrayList<>();
+    if ( roles != null ) {
+      for ( String role : roles ) {
+        authorities.add( new SimpleGrantedAuthority( role ) );
+      }
     }
     UserDetails userDetails = new User( userName, "", true, true, true, true, authorities );
     return new UsernamePasswordAuthenticationToken( userDetails, "", authorities );
