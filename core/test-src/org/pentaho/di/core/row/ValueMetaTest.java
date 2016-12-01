@@ -487,6 +487,51 @@ public class ValueMetaTest extends TestCase {
     assertEquals( originalValue, string );
   }
 
+  public void testLazyConversionNullInteger() throws Exception {
+    byte[] data = new byte[0];
+    ValueMetaInterface intValueMeta = new ValueMeta( "i", ValueMetaInterface.TYPE_BOOLEAN );
+    intValueMeta.setConversionMask( null );
+    intValueMeta.setLength( 7 );
+    intValueMeta.setStorageType( ValueMetaInterface.STORAGE_TYPE_BINARY_STRING );
+    ValueMetaInterface strValueMeta = new ValueMeta( "str", ValueMetaInterface.TYPE_STRING );
+    intValueMeta.setStorageMetadata( strValueMeta );
+
+    Double numberValue = intValueMeta.getNumber( data );
+    assertEquals( null, numberValue );
+    Long integerValue = intValueMeta.getInteger( data );
+    assertEquals( null, integerValue );
+    BigDecimal bigNumberValue = intValueMeta.getBigNumber( data );
+    assertEquals( null, bigNumberValue );
+    Date dateValue = intValueMeta.getDate( data );
+    assertEquals( null, dateValue );
+    String string = intValueMeta.getString( data );
+    assertEquals( null, string );
+  }
+
+  public void testLazyConversionNullNumber() throws Exception {
+    byte[] data = new byte[0];
+    ValueMetaInterface intValueMeta = new ValueMeta( "i", ValueMetaInterface.TYPE_NUMBER );
+    intValueMeta.setConversionMask( null );
+    intValueMeta.setLength( 7 );
+    intValueMeta.setStorageType( ValueMetaInterface.STORAGE_TYPE_BINARY_STRING );
+    ValueMetaInterface strValueMeta = new ValueMeta( "str", ValueMetaInterface.TYPE_STRING );
+    intValueMeta.setStorageMetadata( strValueMeta );
+
+    Double numberValue = intValueMeta.getNumber( data );
+    assertEquals( null, numberValue );
+    Long integerValue = intValueMeta.getInteger( data );
+    assertEquals( null, integerValue );
+    BigDecimal bigNumberValue = intValueMeta.getBigNumber( data );
+    assertEquals( null, bigNumberValue );
+    Date dateValue = intValueMeta.getDate( data );
+    assertEquals( null, dateValue );
+    String string = intValueMeta.getString( data );
+    assertEquals( null, string );
+
+    Boolean b = intValueMeta.getBoolean( data );
+    assertEquals( null, b );
+  }
+
   public void testCompareIntegersNormalStorageData() throws Exception {
     Long integer1 = new Long( 1234L );
     Long integer2 = new Long( 1235L );
