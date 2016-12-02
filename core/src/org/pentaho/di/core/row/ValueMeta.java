@@ -30,7 +30,10 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleEOFException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
+import org.pentaho.di.core.exception.KettlePluginException;
+import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.value.ValueMetaBase;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.i18n.BaseMessages;
 import org.w3c.dom.Node;
 
@@ -76,6 +79,8 @@ public class ValueMeta extends ValueMetaBase {
     "ISO8859_5", "ISO8859_6", "ISO8859_7", "ISO8859_8", "ISO8859_9", "ISO8859_13", "ISO8859_15",
     "ISO8859_15_FDIS", "MacCentralEurope", "MacCroatian", "MacCyrillic", "MacDingbat", "MacGreek", "MacHebrew",
     "MacIceland", "MacRoman", "MacRomania", "MacSymbol", "MacTurkish", "MacUkraine", };
+
+  private ValueMetaInterface nativeType; // Used only for getNativeDataTypeClass(), not a "deep" clone of this object
 
   public ValueMeta() {
     this( null, ValueMetaInterface.TYPE_NONE, -1, -1 );
@@ -148,4 +153,15 @@ public class ValueMeta extends ValueMetaBase {
     super.setType( type );
   }
 
+  @Override
+  public Class<?> getNativeDataTypeClass() throws KettleValueException {
+    if ( nativeType == null ) {
+      try {
+        nativeType = ValueMetaFactory.createValueMeta( getType() );
+      } catch ( KettlePluginException e ) {
+        throw new KettleValueException( e );
+      }
+    }
+    return nativeType.getNativeDataTypeClass();
+  }
 }
