@@ -213,8 +213,6 @@ public class JsonInputMeta extends BaseFileInputStepMeta implements StepMetaInte
 
   private boolean ignoreMissingPath;
 
-  private boolean defaultPathLeafToNull;
-
   /** Flag : read url as source */
   private boolean readurl;
 
@@ -538,16 +536,8 @@ public class JsonInputMeta extends BaseFileInputStepMeta implements StepMetaInte
     return ignoreMissingPath;
   }
 
-  public boolean isDefaultPathLeafToNull() {
-    return defaultPathLeafToNull;
-  }
-
   public void setIgnoreMissingPath( boolean ignoreMissingPath ) {
     this.ignoreMissingPath = ignoreMissingPath;
-  }
-
-  public void setDefaultPathLeafToNull( boolean defaultPathLeafToNull ) {
-    this.defaultPathLeafToNull = defaultPathLeafToNull;
   }
 
   public String getRowNumberField() {
@@ -600,7 +590,6 @@ public class JsonInputMeta extends BaseFileInputStepMeta implements StepMetaInte
     retval.append( "    " + XMLHandler.addTagValue( "IsIgnoreEmptyFile", isIgnoreEmptyFile ) );
     retval.append( "    " + XMLHandler.addTagValue( "doNotFailIfNoFile", doNotFailIfNoFile ) );
     retval.append( "    " + XMLHandler.addTagValue( "ignoreMissingPath", ignoreMissingPath ) );
-    retval.append( "    " + XMLHandler.addTagValue( "defaultPathLeafToNull", defaultPathLeafToNull ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "rownum_field", rowNumberField ) );
 
     retval.append( "    <file>" ).append( Const.CR );
@@ -671,7 +660,6 @@ public class JsonInputMeta extends BaseFileInputStepMeta implements StepMetaInte
       removeSourceField = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "removeSourceField" ) );
       isIgnoreEmptyFile = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "IsIgnoreEmptyFile" ) );
       ignoreMissingPath = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "ignoreMissingPath" ) );
-      defaultPathLeafToNull = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "defaultPathLeafToNull" ) );
 
       doNotFailIfNoFile = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "doNotFailIfNoFile" ) );
       includeRowNumber = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "rownum" ) );
@@ -739,7 +727,6 @@ public class JsonInputMeta extends BaseFileInputStepMeta implements StepMetaInte
 
     isIgnoreEmptyFile = false;
     ignoreMissingPath = false;
-    defaultPathLeafToNull = false;
     doNotFailIfNoFile = true;
     includeFilename = false;
     filenameField = "";
@@ -771,6 +758,14 @@ public class JsonInputMeta extends BaseFileInputStepMeta implements StepMetaInte
   @Override
   public void getFields( RowMetaInterface rowMeta, String name, RowMetaInterface[] info, StepMeta nextStep,
       VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+
+    if ( inFields && removeSourceField && !Const.isEmpty( valueField ) ) {
+      int index = rowMeta.indexOfValue( valueField );
+      if ( index != -1 ) {
+        rowMeta.removeValueMeta( index );
+      }
+    }
+
     for ( JsonInputField field : getInputFields() ) {
       try {
         rowMeta.addValueMeta( field.toValueMeta( name, space ) );
@@ -814,7 +809,6 @@ public class JsonInputMeta extends BaseFileInputStepMeta implements StepMetaInte
 
       isIgnoreEmptyFile = rep.getStepAttributeBoolean( id_step, "IsIgnoreEmptyFile" );
       ignoreMissingPath = rep.getStepAttributeBoolean( id_step, "ignoreMissingPath" );
-      defaultPathLeafToNull = rep.getStepAttributeBoolean( id_step, "defaultPathLeafToNull" );
 
       doNotFailIfNoFile = rep.getStepAttributeBoolean( id_step, "doNotFailIfNoFile" );
 
@@ -885,7 +879,6 @@ public class JsonInputMeta extends BaseFileInputStepMeta implements StepMetaInte
 
       rep.saveStepAttribute( id_transformation, id_step, "IsIgnoreEmptyFile", isIgnoreEmptyFile );
       rep.saveStepAttribute( id_transformation, id_step, "ignoreMissingPath", ignoreMissingPath );
-      rep.saveStepAttribute( id_transformation, id_step, "defaultPathLeafToNull", defaultPathLeafToNull );
 
       rep.saveStepAttribute( id_transformation, id_step, "doNotFailIfNoFile", doNotFailIfNoFile );
 

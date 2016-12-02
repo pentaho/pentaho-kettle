@@ -213,6 +213,24 @@ public class JsonInputTest {
   }
 
   @Test
+  public void testSingleField() throws Exception {
+    JsonInputField isbn = new JsonInputField( "isbn" );
+    isbn.setPath( "$..book[?(@.isbn)].isbn" );
+    isbn.setType( ValueMetaInterface.TYPE_STRING );
+
+    JsonInputMeta meta = createSimpleMeta( "json", isbn );
+    JsonInput jsonInput = createJsonInput( "json", meta, new Object[] { getBasicTestJson() } );
+    RowComparatorListener rowComparator = new RowComparatorListener(
+      new Object[] { null, "0-553-21311-3" },
+      new Object[] { null, "0-395-19395-8" } );
+    rowComparator.setComparator( 0, null );
+    jsonInput.addRowListener( rowComparator );
+    processRows( jsonInput, 3 );
+    Assert.assertEquals( "error", 0, jsonInput.getErrors() );
+    Assert.assertEquals( "lines written", 2, jsonInput.getLinesWritten() );
+  }
+
+  @Test
   public void testDualExp() throws Exception {
     JsonInputField isbn = new JsonInputField( "isbn" );
     isbn.setPath( "$..book[?(@.isbn)].isbn" );
@@ -295,7 +313,24 @@ public class JsonInputTest {
         new Object[] { "0-553-21311-3" },
         new Object[] { "0-395-19395-8"} );
     jsonInput.addRowListener( rowComparator );
-    processRows( jsonInput, 3 );
+    processRows( jsonInput, 4 );
+    Assert.assertEquals( "errors", 0, jsonInput.getErrors() );
+    Assert.assertEquals( "lines written", 2, jsonInput.getLinesWritten() );
+  }
+
+  @Test
+  public void testRowLimit() throws Exception {
+    final String inCol = "json";
+    JsonInputField jpath = new JsonInputField( "isbn" );
+    jpath.setPath( "$..book[*].isbn" );
+    jpath.setType( ValueMetaInterface.TYPE_STRING );
+
+    JsonInputMeta meta = createSimpleMeta( inCol, jpath );
+    meta.setRemoveSourceField( true );
+    meta.setIgnoreMissingPath( true );
+    meta.setRowLimit( 2 );
+    JsonInput jsonInput = createJsonInput( "json", meta, new Object[] { getBasicTestJson() } );
+    processRows( jsonInput, 4 );
     Assert.assertEquals( "errors", 0, jsonInput.getErrors() );
     Assert.assertEquals( "lines written", 2, jsonInput.getLinesWritten() );
   }
@@ -331,9 +366,9 @@ public class JsonInputTest {
    * if receiving rows, still echo if no results
    */
   @Test
-  public void testNoPath() throws Exception {
+  public void testDefaultLeafToNull() throws Exception {
     JsonInputField noPath = new JsonInputField( "price" );
-    noPath.setPath( "$.path.to.nowhere" );
+    noPath.setPath( "$..price" );
     noPath.setType( ValueMetaInterface.TYPE_STRING );
     ByteArrayOutputStream out = new ByteArrayOutputStream();
     helper.redirectLog( out, LogLevel.ERROR );
@@ -341,10 +376,13 @@ public class JsonInputTest {
     JsonInputMeta meta = createSimpleMeta( "json", noPath );
     final String input = getBasicTestJson();
     meta.setIgnoreMissingPath( true );
+    meta.setRemoveSourceField( true );
+
     JsonInput jsonInput = createJsonInput( "json", meta, new Object[] { input }, new Object[] { input } );
-    processRows( jsonInput, 2 );
-    Assert.assertEquals( "output", 2, jsonInput.getLinesWritten() );
-    Assert.assertEquals( "errors", 0, jsonInput.getErrors() );
+    processRows( jsonInput, 7 );
+    disposeJsonInput( jsonInput );
+
+    Assert.assertEquals( 5, jsonInput.getLinesWritten() );
   }
 
 
@@ -438,7 +476,6 @@ public class JsonInputTest {
 
     JsonInputMeta meta = createSimpleMeta( "json", isbn, price );
     meta.setRemoveSourceField( true );
-    meta.setDefaultPathLeafToNull( true );
 
     JsonInput jsonInput = createJsonInput( "json", meta, new Object[] { getBasicTestJson() } );
     RowComparatorListener rowComparator = new RowComparatorListener(
@@ -473,20 +510,18 @@ public class JsonInputTest {
     mushroom.setType( ValueMetaInterface.TYPE_STRING );
 
     JsonInputMeta meta = createSimpleMeta( "json", badger, mushroom );
-    meta.setDefaultPathLeafToNull( true );
     meta.setRemoveSourceField( true );
 
     JsonInput jsonInput = createJsonInput( "json", meta, new Object[] { input } );
     RowComparatorListener rowComparator = new RowComparatorListener(
-        new Object[] { null, null },
         new Object[] { 1L, null },
         new Object[] { 2L, null },
         new Object[] { 3L, 1L } );
     jsonInput.addRowListener( rowComparator );
 
-    processRows( jsonInput, 5 );
+    processRows( jsonInput, 4 );
     Assert.assertEquals( out.toString(), 0, jsonInput.getErrors() );
-    Assert.assertEquals( "rows written", 4, jsonInput.getLinesWritten() );
+    Assert.assertEquals( "rows written", 3, jsonInput.getLinesWritten() );
   }
 
   @Test
@@ -507,7 +542,6 @@ public class JsonInputTest {
     mushroom.setType( ValueMetaInterface.TYPE_INTEGER );
 
     JsonInputMeta meta = createSimpleMeta( "json", badger, mushroom );
-    meta.setDefaultPathLeafToNull( true );
     meta.setRemoveSourceField( true );
 
     JsonInput jsonInput = createJsonInput( "json", meta, new Object[] { input } );
@@ -532,7 +566,6 @@ public class JsonInputTest {
     bic.setType( ValueMetaInterface.TYPE_STRING );
 
     JsonInputMeta meta = createSimpleMeta( "json", bic );
-    meta.setDefaultPathLeafToNull( true );
     meta.setRemoveSourceField( true );
 
     JsonInput jsonInput = createJsonInput( "json", meta, new Object[] { getBasicTestJson() } );
@@ -629,6 +662,33 @@ public class JsonInputTest {
    * File tests
    */
   @Test
+  public void testNullFileList() throws Exception {
+    ByteArrayOutputStream err = new ByteArrayOutputStream();
+    helper.redirectLog( err, LogLevel.ERROR );
+
+    try {
+      JsonInputField price = new JsonInputField();
+      price.setName( "price" );
+      price.setType( ValueMetaInterface.TYPE_NUMBER );
+      price.setPath( "$..book[*].price" );
+      List<FileObject> fileList = Arrays.asList( null, null );
+      JsonInputMeta meta = createFileListMeta( fileList );
+      meta.setInputFields( new JsonInputField[] { price } );
+
+      meta.setIncludeRowNumber( true );
+      meta.setRowNumberField( "rownbr" );
+      meta.setShortFileNameField( "fname" );
+
+      JsonInput jsonInput = createJsonInput( meta );
+      processRows( jsonInput, 5 );
+      disposeJsonInput( jsonInput );
+      Assert.assertEquals( err.toString(), 2, jsonInput.getErrors() );
+    } finally {
+      deleteFiles();
+    }
+  }
+
+  @Test
   public void testFileList() throws Exception {
     ByteArrayOutputStream err = new ByteArrayOutputStream();
     helper.redirectLog( err, LogLevel.ERROR );
@@ -636,7 +696,7 @@ public class JsonInputTest {
     final String input1 = getBasicTestJson();
     final String input2 = "{ \"store\": { \"book\": [ { \"price\": 9.99 } ] } }";
     try ( FileObject fileObj1 = KettleVFS.getFileObject( BASE_RAM_DIR + "test1.json" );
-        FileObject fileObj2 = KettleVFS.getFileObject( BASE_RAM_DIR + "test2.json" ) ) {
+          FileObject fileObj2 = KettleVFS.getFileObject( BASE_RAM_DIR + "test2.json" ) ) {
       try ( OutputStream out = fileObj1.getContent().getOutputStream() ) {
         out.write( input1.getBytes() );
       }
@@ -658,14 +718,15 @@ public class JsonInputTest {
 
       JsonInput jsonInput = createJsonInput( meta );
       RowComparatorListener rowComparator = new RowComparatorListener(
-          new Object[] { 8.95d, 1L, "test1.json" },
-          new Object[] { 12.99d, 2L, "test1.json" },
-          new Object[] { 8.99d, 3L, "test1.json" },
-          new Object[] { 22.99d, 4L, "test1.json" },
-          new Object[] { 9.99d, 5L, "test2.json" } );
+        new Object[] { 8.95d, 1L, "test1.json" },
+        new Object[] { 12.99d, 2L, "test1.json" },
+        new Object[] { 8.99d, 3L, "test1.json" },
+        new Object[] { 22.99d, 4L, "test1.json" },
+        new Object[] { 9.99d, 5L, "test2.json" } );
       jsonInput.addRowListener( rowComparator );
 
       processRows( jsonInput, 5 );
+      disposeJsonInput( jsonInput );
       Assert.assertEquals( err.toString(), 0, jsonInput.getErrors() );
     } finally {
       deleteFiles();
@@ -931,6 +992,10 @@ public class JsonInputTest {
     JsonInput jsonInput = new JsonInput( helper.stepMeta, helper.stepDataInterface, 0, helper.transMeta, helper.trans );
     jsonInput.init( meta, data );
     return jsonInput;
+  }
+
+  protected void disposeJsonInput( JsonInput jsonInput ) {
+    jsonInput.dispose( null, helper.stepDataInterface );
   }
 
   protected JsonInputMeta createFileListMeta( final List<FileObject> files ) {

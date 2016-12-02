@@ -110,6 +110,22 @@ public class JsonInput extends BaseFileInputStep<JsonInputMeta, JsonInputData> i
         return false; // end of data or error.
       }
 
+      // filter out rows that only contain null
+      int start = 0;
+      if ( meta.isInFields() && !meta.isRemoveSourceField() ) {
+        start = 1;
+      }
+      boolean hasValues = false;
+      for ( int i = start; i < outRow.length; i++ ) {
+        if ( outRow[ i ] != null ) {
+          hasValues = true;
+          break;
+        }
+      }
+      if ( !hasValues ) {
+        return true;
+      }
+
       if ( log.isRowLevel() ) {
         logRowlevel( BaseMessages.getString( PKG, "JsonInput.Log.ReadRow", data.outputRowMeta.getString( outRow ) ) );
       }
@@ -435,7 +451,7 @@ public class JsonInput extends BaseFileInputStep<JsonInputMeta, JsonInputData> i
   }
 
   private void createReader() throws KettleException {
-    data.reader = new FastJsonReader( meta.getInputFields(), meta.isDefaultPathLeafToNull(), log );
+    data.reader = new FastJsonReader( meta.getInputFields(), log );
     data.reader.setIgnoreMissingPath( meta.isIgnoreMissingPath() );
   }
 

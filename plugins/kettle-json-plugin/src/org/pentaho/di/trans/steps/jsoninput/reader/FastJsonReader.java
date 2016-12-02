@@ -57,61 +57,28 @@ public class FastJsonReader implements IJsonReader {
   private Configuration jsonConfiguration;
 
   private boolean ignoreMissingPath;
-  private boolean defaultPathLeafToNull;
 
   private JsonInputField[] fields;
   private JsonPath[] paths = null;
   private LogChannelInterface log;
 
-  private static final Option[] DEFAULT_OPTIONS = { Option.SUPPRESS_EXCEPTIONS, Option.ALWAYS_RETURN_LIST };
+  private static final Option[] DEFAULT_OPTIONS =
+    { Option.SUPPRESS_EXCEPTIONS, Option.ALWAYS_RETURN_LIST, Option.DEFAULT_PATH_LEAF_TO_NULL };
 
   protected FastJsonReader( LogChannelInterface log ) throws KettleException {
     this.ignoreMissingPath = false;
-    this.defaultPathLeafToNull = false;
     this.jsonConfiguration = Configuration.defaultConfiguration().addOptions( DEFAULT_OPTIONS );
     this.log = log;
   }
 
-  protected FastJsonReader( JsonInputField[] fields, LogChannelInterface log ) throws KettleException {
+  public FastJsonReader( JsonInputField[] fields, LogChannelInterface log ) throws KettleException {
     this( log );
     this.fields = fields;
     this.paths = compilePaths( fields );
   }
 
-  public FastJsonReader( JsonInputField[] fields, boolean defaultPathLeafToNull, LogChannelInterface log )
-      throws KettleException {
-    this( fields, log );
-    setDefaultPathLeafToNull( defaultPathLeafToNull );
-  }
-
-  private Option[] getOptions() {
-    ArrayList<Option> options = new ArrayList<>();
-    for ( Option opt : DEFAULT_OPTIONS ) {
-      options.add( opt );
-    }
-    if ( defaultPathLeafToNull ) {
-      options.add( Option.DEFAULT_PATH_LEAF_TO_NULL );
-    }
-    return options.toArray( new Option[ options.size() ] );
-  }
-
-  private void updateConfig( Option option, boolean enabled ) {
-    if ( enabled ) {
-      jsonConfiguration = jsonConfiguration.addOptions( option );
-    } else {
-      jsonConfiguration = Configuration.defaultConfiguration().addOptions( getOptions() );
-    }
-  }
-
   public void setIgnoreMissingPath( boolean value ) {
     this.ignoreMissingPath = value;
-  }
-
-  public void setDefaultPathLeafToNull( boolean value ) {
-    if ( value != this.defaultPathLeafToNull ) {
-      this.defaultPathLeafToNull = value;
-      updateConfig( Option.DEFAULT_PATH_LEAF_TO_NULL, value );
-    }
   }
 
   private ParseContext getParseContext() {
@@ -212,7 +179,7 @@ public class FastJsonReader implements IJsonReader {
         throw new KettleException( BaseMessages.getString(
             PKG, "JsonInput.Error.BadStructure", res.size(), fields[i].getPath(), prevPath, lastSize ) );
       }
-      if ( res.size() == 0 && !isIgnoreMissingPath() ) {
+      if ( ( isAllNull( res ) || res.size() == 0 ) && !isIgnoreMissingPath() ) {
         throw new KettleException( BaseMessages.getString( PKG, "JsonReader.Error.CanNotFindPath", fields[i].getPath() ) );
       }
       results.add( res );
@@ -221,6 +188,15 @@ public class FastJsonReader implements IJsonReader {
       i++;
     }
     return results;
+  }
+
+  public static boolean isAllNull( Iterable<?> list ) {
+    for ( Object obj : list ) {
+      if ( obj != null ) {
+        return false;
+      }
+    }
+    return true;
   }
 
 }
