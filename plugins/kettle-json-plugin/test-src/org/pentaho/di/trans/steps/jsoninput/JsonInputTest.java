@@ -378,7 +378,7 @@ public class JsonInputTest {
     meta.setIgnoreMissingPath( true );
     meta.setRemoveSourceField( true );
 
-    JsonInput jsonInput = createJsonInput( "json", meta, new Object[] { input }, new Object[] { input } );
+    JsonInput jsonInput = createJsonInput( "json", meta, new Object[] { input } );
     processRows( jsonInput, 7 );
     disposeJsonInput( jsonInput );
 
@@ -446,6 +446,23 @@ public class JsonInputTest {
     }
   }
 
+  @Test
+   public void testDoNotSkipRowIfInputIsNull() throws Exception {
+    JsonInputField field = new JsonInputField( "foo" );
+    field.setPath( "$.foo" );
+    field.setType( ValueMetaInterface.TYPE_STRING );
+    JsonInputMeta meta = createSimpleMeta( "json", field );
+    JsonInput jsonInput = new JsonInput( helper.stepMeta, helper.stepDataInterface, 0, helper.transMeta, helper.trans );
+    JsonInputData data = new JsonInputData();
+    RowSet input = helper.getMockInputRowSet( new Object[] { null, "something" } );
+    RowMetaInterface rowMeta = createRowMeta( new ValueMetaString( "json" ), new ValueMetaString( "json1" ) );
+    input.setRowMeta( rowMeta );
+    jsonInput.getInputRowSets().add( input );
+    jsonInput.setInputRowMeta( rowMeta );
+    jsonInput.init( meta, data );
+    processRows( jsonInput, 1 );
+    Assert.assertEquals( 1, jsonInput.getLinesWritten() );
+  }
 
 
   @Test
@@ -489,71 +506,6 @@ public class JsonInputTest {
 
     Assert.assertEquals( out.toString(), 0, jsonInput.getErrors() );
     Assert.assertEquals( "rows written", 4, jsonInput.getLinesWritten() );
-  }
-
-  @Test
-  public void testPdi7770PathCardinality() throws Exception {
-    // started working with json-path 2.1
-    ByteArrayOutputStream out = new ByteArrayOutputStream();
-    helper.redirectLog( out, LogLevel.ERROR );
-
-    final String input = "{ \"results\": ["
-        + "  { \"badger\": 1 },"
-        + "  { \"badger\": 2 },"
-        + "  { \"badger\": 3, \"mushroom\" : 1 }]}";
-
-    JsonInputField badger = new JsonInputField( "badger" );
-    badger.setPath( "$..badger" );
-    badger.setType( ValueMetaInterface.TYPE_STRING );
-    JsonInputField mushroom = new JsonInputField( "mushroom" );
-    mushroom.setPath( "$..mushroom" );
-    mushroom.setType( ValueMetaInterface.TYPE_STRING );
-
-    JsonInputMeta meta = createSimpleMeta( "json", badger, mushroom );
-    meta.setRemoveSourceField( true );
-
-    JsonInput jsonInput = createJsonInput( "json", meta, new Object[] { input } );
-    RowComparatorListener rowComparator = new RowComparatorListener(
-        new Object[] { 1L, null },
-        new Object[] { 2L, null },
-        new Object[] { 3L, 1L } );
-    jsonInput.addRowListener( rowComparator );
-
-    processRows( jsonInput, 4 );
-    Assert.assertEquals( out.toString(), 0, jsonInput.getErrors() );
-    Assert.assertEquals( "rows written", 3, jsonInput.getLinesWritten() );
-  }
-
-  @Test
-  public void testPdi7770PathCardinalityWorkaround() throws Exception {
-    ByteArrayOutputStream out = new ByteArrayOutputStream();
-    helper.redirectLog( out, LogLevel.ERROR );
-
-    final String input = "{ \"results\": ["
-        + "  { \"badger\": 1 },"
-        + "  { \"badger\": 2 },"
-        + "  { \"badger\": 3, \"mushroom\" : 1 }]}";
-
-    JsonInputField badger = new JsonInputField( "badger" );
-    badger.setPath( "$..results[*].badger" );
-    badger.setType( ValueMetaInterface.TYPE_INTEGER );
-    JsonInputField mushroom = new JsonInputField( "mushroom" );
-    mushroom.setPath( "$..results[*].mushroom" );
-    mushroom.setType( ValueMetaInterface.TYPE_INTEGER );
-
-    JsonInputMeta meta = createSimpleMeta( "json", badger, mushroom );
-    meta.setRemoveSourceField( true );
-
-    JsonInput jsonInput = createJsonInput( "json", meta, new Object[] { input } );
-    RowComparatorListener rowComparator = new RowComparatorListener(
-        new Object[] { 1L, null },
-        new Object[] { 2L, null },
-        new Object[] { 3L, 1L } );
-    jsonInput.addRowListener( rowComparator );
-
-    processRows( jsonInput, 5 );
-    Assert.assertEquals( out.toString(), 0, jsonInput.getErrors() );
-    Assert.assertEquals( "rows written", 3, jsonInput.getLinesWritten() );
   }
 
   @Test
