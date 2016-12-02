@@ -145,6 +145,10 @@ public class FastJsonReader implements IJsonReader {
       }
       Object[] rowData = new Object[ results.size() ];
       for ( int col = 0; col < results.size(); col++ ) {
+        if ( results.get( col ).size() == 0 ) {
+          rowData[ col ] = null;
+          continue;
+        }
         rowData[ col ] = results.get( col ).get( rowNbr );
       }
       rowNbr++;
@@ -175,7 +179,7 @@ public class FastJsonReader implements IJsonReader {
     int i = 0;
     for ( JsonPath path : paths ) {
       List<Object> res = getReadContext().read( path );
-      if ( res.size() != lastSize && lastSize > 0 ) {
+      if ( res.size() != lastSize && lastSize > 0  & res.size() != 0 ) {
         throw new KettleException( BaseMessages.getString(
             PKG, "JsonInput.Error.BadStructure", res.size(), fields[i].getPath(), prevPath, lastSize ) );
       }
