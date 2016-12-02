@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -48,6 +48,7 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
@@ -846,7 +847,7 @@ public class SSHDialog extends BaseStepDialog implements StepDialogInterface {
     String servername = transMeta.environmentSubstitute( wServerName.getText() );
     int nrPort = Const.toInt( transMeta.environmentSubstitute( wPort.getText() ), 22 );
     String username = transMeta.environmentSubstitute( wUserName.getText() );
-    String password = transMeta.environmentSubstitute( wPassword.getText() );
+    String password = Utils.resolvePassword( variables, transMeta.environmentSubstitute( wPassword.getText() ) );
     String keyFilename = transMeta.environmentSubstitute( wPrivateKey.getText() );
     String passphrase = transMeta.environmentSubstitute( wPassphrase.getText() );
     int timeOut = Const.toInt( transMeta.environmentSubstitute( wTimeOut.getText() ), 0 );
