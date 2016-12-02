@@ -25,6 +25,7 @@ package org.pentaho.di.trans.steps.jsoninput;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.BitSet;
+import java.io.ByteArrayInputStream;
 
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.vfs2.FileObject;
@@ -50,6 +51,7 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.fileinput.BaseFileInputStep;
 import org.pentaho.di.trans.steps.fileinput.IBaseFileInputReader;
+import org.pentaho.di.trans.steps.jsoninput.exception.JsonInputException;
 import org.pentaho.di.trans.steps.jsoninput.reader.FastJsonReader;
 import org.pentaho.di.trans.steps.jsoninput.reader.InputsReader;
 import org.pentaho.di.trans.steps.jsoninput.reader.RowOutputConverter;
@@ -66,6 +68,8 @@ public class JsonInput extends BaseFileInputStep<JsonInputMeta, JsonInputData> i
   private static Class<?> PKG = JsonInputMeta.class; // for i18n purposes, needed by Translator2!!
 
   private RowOutputConverter rowOutputConverter;
+
+  private static final byte[] EMPTY_JSON = "{}".getBytes(); // for replacing null inputs
 
   public JsonInput( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
@@ -110,22 +114,6 @@ public class JsonInput extends BaseFileInputStep<JsonInputMeta, JsonInputData> i
         return false; // end of data or error.
       }
 
-      // filter out rows that only contain null
-      int start = 0;
-      if ( meta.isInFields() && !meta.isRemoveSourceField() ) {
-        start = 1;
-      }
-      boolean hasValues = false;
-      for ( int i = start; i < outRow.length; i++ ) {
-        if ( outRow[ i ] != null ) {
-          hasValues = true;
-          break;
-        }
-      }
-      if ( !hasValues ) {
-        return true;
-      }
-
       if ( log.isRowLevel() ) {
         logRowlevel( BaseMessages.getString( PKG, "JsonInput.Log.ReadRow", data.outputRowMeta.getString( outRow ) ) );
       }
@@ -139,19 +127,26 @@ public class JsonInput extends BaseFileInputStep<JsonInputMeta, JsonInputData> i
         setOutputDone();
         return false;
       }
-
+    } catch ( JsonInputException e ) {
+      if ( !getStepMeta().isDoingErrorHandling() ) {
+        stopErrorExecution( e );
+        return false;
+      }
     } catch ( Exception e ) {
+      logError( BaseMessages.getString( PKG, "JsonInput.ErrorInStepRunning", e.getMessage() ) );
       if ( getStepMeta().isDoingErrorHandling() ) {
         sendErrorRow( e.toString() );
       } else {
-        logError( BaseMessages.getString( PKG, "JsonInput.ErrorInStepRunning", e.getMessage() ) );
-        setErrors( getErrors() + 1 );
-        stopAll();
-        setOutputDone(); // signal end to receiver(s)
+        incrementErrors();
+        stopErrorExecution( e );
         return false;
       }
     }
     return true;
+  }
+  private void stopErrorExecution( Exception e ) {
+    stopAll();
+    setOutputDone();
   }
 
   @Override
@@ -259,19 +254,17 @@ public class JsonInput extends BaseFileInputStep<JsonInputMeta, JsonInputData> i
     addFileToResultFilesname( file );
   }
 
-  private boolean parseNextInputToRowSet( InputStream input ) throws KettleException {
-    if ( input != null ) {
-      try {
-        data.readerRowSet = data.reader.parse( input );
-        input.close();
-        return true;
-      } catch ( KettleException ke ) {
-        logInputError( ke );
-      } catch ( Exception e ) {
-        logInputError( e );
-      }
+  private void parseNextInputToRowSet( InputStream input ) throws KettleException {
+    try {
+      data.readerRowSet = data.reader.parse( input );
+      input.close();
+    } catch ( KettleException ke ) {
+      logInputError( ke );
+      throw new JsonInputException( ke );
+    } catch ( Exception e ) {
+      logInputError( e );
+      throw new JsonInputException( e );
     }
-    return false;
   }
 
   private void logInputError( KettleException e ) {
@@ -332,9 +325,10 @@ public class JsonInput extends BaseFileInputStep<JsonInputMeta, JsonInputData> i
     while ( ( rawReaderRow = data.readerRowSet.getRow() ) == null ) {
       if ( data.inputs.hasNext() && data.readerRowSet.isDone() ) {
         try ( InputStream nextIn = data.inputs.next() ) {
-          parseNextInputToRowSet( nextIn );
-          if ( shouldOutputEmpty() ) {
-            return buildBaseOutputRow();
+          if ( nextIn != null ) {
+            parseNextInputToRowSet( nextIn );
+          } else {
+            parseNextInputToRowSet( new ByteArrayInputStream( EMPTY_JSON ) );
           }
         } catch ( IOException e ) {
           logError( BaseMessages.getString( PKG, "JsonInput.Log.UnexpectedError", e.toString() ), e );
@@ -382,9 +376,6 @@ public class JsonInput extends BaseFileInputStep<JsonInputMeta, JsonInputData> i
     }
   }
 
-  private boolean shouldOutputEmpty() {
-    return meta.isInFields() && isEmpty( data.readerRowSet );
-  }
 
   private boolean hasAdditionalFileFields() {
     return data.file != null;
