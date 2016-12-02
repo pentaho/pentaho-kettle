@@ -27,6 +27,10 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.plugins.PluginRegistry;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
+import org.pentaho.di.core.row.value.ValueMetaPluginType;
 import org.pentaho.di.core.row.value.ValueMetaString;
 
 import junit.framework.TestCase;
@@ -675,5 +679,18 @@ public class ValueMetaTest extends TestCase {
 
   public void testValueMetaInheritance() {
     assertTrue( new ValueMeta() instanceof ValueMetaInterface );
+  }
+
+  public void testGetNativeDataTypeClass() throws KettleException {
+    PluginRegistry.addPluginType( ValueMetaPluginType.getInstance() );
+    PluginRegistry.init();
+    String[] valueMetaNames = ValueMetaFactory.getValueMetaNames();
+
+    for ( int i = 0; i < valueMetaNames.length; i++ ) {
+      int vmId = ValueMetaFactory.getIdForValueMeta( valueMetaNames[i] );
+      ValueMeta vm = new ValueMeta( "", vmId );
+      ValueMetaInterface vmi = ValueMetaFactory.createValueMeta( vmId );
+      assertTrue( vm.getNativeDataTypeClass().equals( vmi.getNativeDataTypeClass() ) );
+    }
   }
 }
