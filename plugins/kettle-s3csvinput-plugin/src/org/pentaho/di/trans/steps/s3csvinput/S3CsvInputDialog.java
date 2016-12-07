@@ -73,7 +73,7 @@ import org.pentaho.di.ui.core.dialog.PreviewRowsDialog;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.ComboValuesSelectionListener;
 import org.pentaho.di.ui.core.widget.TableView;
-import org.pentaho.di.ui.core.widget.TextVar;
+import org.pentaho.di.ui.core.widget.TextVar;import org.pentaho.di.ui.core.widget.PasswordTextVar;
 import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.trans.steps.textfileinput.TextFileCSVImportProgressDialog;
@@ -163,7 +163,7 @@ public class S3CsvInputDialog extends BaseStepDialog implements StepDialogInterf
     fdlAccessKey.left = new FormAttachment( 0, 0 );
     fdlAccessKey.right = new FormAttachment( middle, -margin );
     wlAccessKey.setLayoutData( fdlAccessKey );
-    wAccessKey = new TextVar( transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+    wAccessKey = new PasswordTextVar( transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     props.setLook( wAccessKey );
     wAccessKey.addModifyListener( lsMod );
     FormData fdAccessKey = new FormData();
@@ -182,7 +182,7 @@ public class S3CsvInputDialog extends BaseStepDialog implements StepDialogInterf
     fdlSecretKey.left = new FormAttachment( 0, 0 );
     fdlSecretKey.right = new FormAttachment( middle, -margin );
     wlSecretKey.setLayoutData( fdlSecretKey );
-    wSecretKey = new TextVar( transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+    wSecretKey = new PasswordTextVar( transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     props.setLook( wSecretKey );
     wSecretKey.addModifyListener( lsMod );
     FormData fdSecretKey = new FormData();
