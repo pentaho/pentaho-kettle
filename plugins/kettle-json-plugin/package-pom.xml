@@ -11,5 +11,5 @@
   <groupId>pentaho-kettle</groupId>
   <artifactId>kettle-json-plugin</artifactId>
   <packaging>zip</packaging>
-  <version>6.1-SNAPSHOT</version>
+  <version>6.1.0.1-295</version>
 </project>
