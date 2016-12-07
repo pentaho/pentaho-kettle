@@ -230,7 +230,7 @@ public class JsonOutput extends BaseStep implements StepInterface {
       putRow( data.outputRowMeta, outputRowData );
     }
 
-    if ( data.writeToFile ) {
+    if ( data.writeToFile && !data.ja.isEmpty() ) {
       // Open a file
       if ( !openNewFile() ) {
         throw new KettleStepException( BaseMessages.getString(
@@ -393,7 +393,7 @@ public class JsonOutput extends BaseStep implements StepInterface {
     return meta.buildFilename( environmentSubstitute( meta.getFileName() ), getCopy(), data.splitnr );
   }
 
-  private boolean closeFile() {
+  protected boolean closeFile() {
     if ( data.writer == null ) {
       return true;
     }
