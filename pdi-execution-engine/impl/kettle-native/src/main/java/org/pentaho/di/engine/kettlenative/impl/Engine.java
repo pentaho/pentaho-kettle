@@ -45,7 +45,7 @@ public class Engine implements IEngine {
   private List<IExecutableOperation> getExecutableOperations( ITransformation trans ) {
     return trans.getOperations()
         .stream()
-        .map( KettleNativeExecutable::compile )
+        .map( KettleExecOperation::compile )
         .collect( Collectors.toList() );
   }
 

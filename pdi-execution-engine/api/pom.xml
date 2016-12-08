@@ -19,6 +19,11 @@
       <artifactId>rxjava</artifactId>
       <version>${rxjava.dependency.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.reactivestreams</groupId>
+      <artifactId>reactive-streams</artifactId>
+      <version>1.0.0</version>
+    </dependency>
 
   </dependencies>
   <build>
