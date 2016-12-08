@@ -21,6 +21,7 @@ public class EngineITest {
   public void before() throws KettleException {
     KettleEnvironment.init();
     testMeta = new TransMeta( getClass().getClassLoader().getResource( "test2.ktr" ).getFile() );
+    System.out.println( EngineITest.class.getClassLoader().getResource("org/apache/xerce‌​s/jaxp/DocumentBuild‌​erFactoryImpl.class"));
   }
 
   @Test

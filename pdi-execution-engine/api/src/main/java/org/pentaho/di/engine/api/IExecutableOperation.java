@@ -11,9 +11,11 @@ package org.pentaho.di.engine.api;
  * tuples received "From" parent operations and published
  * "To" child ops.
  */
+import rx.Observable;
+import rx.Observer;
 import rx.Subscriber;
 
-public interface IExecutableOperation extends IOperation {
+public interface IExecutableOperation extends IOperation, Observer<ITuple> {
 
   void start();
 

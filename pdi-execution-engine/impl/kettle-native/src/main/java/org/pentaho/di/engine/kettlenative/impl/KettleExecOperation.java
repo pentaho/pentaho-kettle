@@ -1,31 +1,33 @@
 package org.pentaho.di.engine.kettlenative.impl;
 
+import org.pentaho.di.engine.api.AbstractExecutableOperation;
 import org.pentaho.di.engine.api.IExecutableOperation;
 import org.pentaho.di.engine.api.IOperation;
 import org.pentaho.di.engine.api.IOperationVisitor;
 import org.pentaho.di.engine.api.ITuple;
-import org.pentaho.di.engine.kettlenative.impl.wrappers.StepExecWrapper;
+import org.pentaho.di.engine.kettlenative.impl.wrappers.IStepWrapper;
+import org.pentaho.di.engine.kettlenative.impl.wrappers.NativeStepWrapper;
 import rx.Subscriber;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class KettleNativeExecutable implements IExecutableOperation {
+public class KettleExecOperation extends AbstractExecutableOperation implements IExecutableOperation {
 
   private final IOperation operation;
-  private final StepExecWrapper stepWrapper;
+  private final IStepWrapper stepWrapper;
   private List<Subscriber<? super ITuple> > subscribers = new ArrayList<>();
   private AtomicBoolean done = new AtomicBoolean( false );
 
-  private KettleNativeExecutable( IOperation op ) {
+  protected KettleExecOperation( IOperation op ) {
     this.operation = op;
-    stepWrapper = new StepExecWrapper( this, getFrom() );
+    stepWrapper = new NativeStepWrapper( this, getFrom() );
   }
 
 
   public static IExecutableOperation compile( IOperation operation ) {
-    return new KettleNativeExecutable( operation );
+    return new KettleExecOperation( operation );
   }
 
   @Override public void next( ITuple tuple ) {
@@ -39,7 +41,7 @@ public class KettleNativeExecutable implements IExecutableOperation {
   }
 
   @Override public void start() {
-    stepWrapper.exec();
+    stepWrapper.start();
   }
 
   @Override public void done() {

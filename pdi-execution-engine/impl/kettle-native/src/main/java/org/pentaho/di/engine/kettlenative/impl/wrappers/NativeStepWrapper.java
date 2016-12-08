@@ -24,14 +24,14 @@ import org.w3c.dom.Node;
 
 import java.util.List;
 
-public class StepExecWrapper {
+public class NativeStepWrapper implements IStepWrapper {
 
 
   final private Trans trans;
   private RowMetaInterface inputRowMeta;
   RowProducer producer = null;
 
-  public StepExecWrapper( IExecutableOperation execOp, List<IOperation> from ) {
+  public NativeStepWrapper( IExecutableOperation execOp, List<IOperation> from ) {
     try {
       trans = createTrans( execOp, from );
 
@@ -42,12 +42,32 @@ public class StepExecWrapper {
     }
   }
 
+  @Override public void start() {
+    try {
+      trans.startThreads();
+    } catch ( KettleException e ) {
+      e.printStackTrace();
+    }
+  }
+
+  @Override public void next( ITuple tuple ) {
+    if ( producer != null ) {
+      producer.putRow( inputRowMeta, tuple.getValues() );
+    }
+  }
+
+  @Override public void finished() {
+    if ( producer != null ) {
+      producer.finished();
+    }
+  }
+
   private void prepare( final IExecutableOperation execOp ) throws KettleException {
     trans.prepareExecution( new String[] {} );
     StepInterface step = trans.findRunThread( execOp.getId() );
 
     if (execOp.getFrom().size() > 0 ) {
-      producer = trans.addRowProducer( "Injector", 0 );  // assumes no copies
+      producer = trans.addRowProducer( "Injector", 0 );
     }
 
     step.addRowListener( new RowAdapter() {
@@ -60,7 +80,6 @@ public class StepExecWrapper {
         execOp.done();
       }
     } );
-    System.out.println(step);
   }
 
   private StepMeta getStepMeta( IOperation op ) throws KettleXMLException, KettlePluginLoaderException {
@@ -78,7 +97,7 @@ public class StepExecWrapper {
 
       TransMeta transMeta = new TransMeta();
       transMeta.addStep( currentOp );
-      if ( from.size() > 0 ) {
+      if ( !from.isEmpty() ) {
         transMeta.addStep( injector );
         transMeta.addTransHop( new TransHopMeta( injector, currentOp ) );
       }
@@ -86,32 +105,6 @@ public class StepExecWrapper {
 
     } catch ( KettleException e ) {
       throw new RuntimeException( e );
-    }
-  }
-
-  public void next( ITuple tuple ) {
-    if ( producer != null ) {
-      producer.putRow( inputRowMeta, tuple.getValues() );
-    }
-
-  }
-
-  public void finished() {
-    if ( producer != null ) {
-      producer.finished();
-    }
-  }
-
-
-  public boolean isRunning() {
-    return trans.isRunning();
-  }
-
-  public void exec() {
-    try {
-      trans.startThreads();
-    } catch ( KettleException e ) {
-      e.printStackTrace();
     }
   }
 
