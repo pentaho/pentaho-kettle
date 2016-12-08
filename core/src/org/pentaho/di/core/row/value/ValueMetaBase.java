@@ -2481,6 +2481,9 @@ public class ValueMetaBase implements ValueMetaInterface {
               case TYPE_BINARY:
                 writeBinary( outputStream, (byte[]) object );
                 break;
+              case TYPE_INET:
+                writeBinary( outputStream, ( (InetAddress) object ).getAddress() );
+                break;
               default:
                 throw new KettleFileException( toString() + " : Unable to serialize data type " + getType() );
             }
@@ -2541,6 +2544,8 @@ public class ValueMetaBase implements ValueMetaInterface {
               return readBoolean( inputStream );
             case TYPE_BINARY:
               return readBinary( inputStream );
+            case TYPE_INET:
+              return InetAddress.getByAddress( readBinary( inputStream ) );
             default:
               throw new KettleFileException( toString() + " : Unable to de-serialize data of type " + getType() );
           }
