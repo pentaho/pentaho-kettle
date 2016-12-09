@@ -485,6 +485,17 @@ public class Const {
     Const.INTERNAL_VARIABLE_JOB_NAME, Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY,
     Const.INTERNAL_VARIABLE_JOB_RUN_ID, Const.INTERNAL_VARIABLE_JOB_RUN_ATTEMPTNR, };
 
+  /*
+   * Deprecated variables array.
+   * Variables in this array will display with the prefix (deprecated) and will be moved
+   * at the bottom of the variables dropdown when pressing ctrl+space
+   * */
+  public static final String[] DEPRECATED_VARIABLES = new String[] {
+    Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY,
+    Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_NAME, Const.INTERNAL_VARIABLE_TRANSFORMATION_NAME,
+    Const.INTERNAL_VARIABLE_TRANSFORMATION_REPOSITORY_DIRECTORY
+  };
+
   /** The transformation filename directory */
   public static final String INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY = INTERNAL_VARIABLE_PREFIX
     + ".Transformation.Filename.Directory";
@@ -3473,5 +3484,9 @@ public class Const {
       return false;
     }
     return clazz.equals( superClass ) || classIsOrExtends( clazz.getSuperclass(), superClass );
+  }
+
+  public static String getDeprecatedPrefix() {
+    return " " + BaseMessages.getString( PKG, "Const.Deprecated" );
   }
 }
