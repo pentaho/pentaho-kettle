@@ -55,6 +55,15 @@
       <artifactId>kettle-ui-swt</artifactId>
       <version>${project.version}</version>
     </dependency>
+
+    <!-- Trans depends on servlet -->
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>javax.servlet-api</artifactId>
+      <version>3.0.1</version>
+    </dependency>
+
+
   </dependencies>
 
 
