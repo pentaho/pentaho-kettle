@@ -468,16 +468,6 @@
       <to>Calculator</to>
       <enabled>Y</enabled>
     </hop>
-    <hop>
-      <from>Calculator</from>
-      <to>Filter rows</to>
-      <enabled>Y</enabled>
-    </hop>
-    <hop>
-      <from>Filter rows</from>
-      <to>Dummy &#x28;do nothing&#x29;</to>
-      <enabled>Y</enabled>
-    </hop>
   </order>
   <step>
     <name>Add sequence</name>
@@ -654,66 +644,6 @@
     </GUI>
     </step>
 
-  <step>
-    <name>Filter rows</name>
-    <type>FilterRows</type>
-    <description/>
-    <distribute>Y</distribute>
-    <custom_distribution/>
-    <copies>1</copies>
-    <partitioning>
-      <method>none</method>
-      <schema_name/>
-    </partitioning>
-<send_true_to/>
-<send_false_to/>
-    <compare>
-<condition>
- <negated>N</negated>
- <leftvalue>lorem_ipsum</leftvalue>
- <function>&#x3d;</function>
- <rightvalue/>
- <value><name>constant</name><type>String</type><text>vim</text><length>-1</length><precision>-1</precision><isnull>N</isnull><mask/></value> </condition>
-    </compare>
-    <cluster_schema/>
-    <remotesteps>
-      <input>
-      </input>
-      <output>
-      </output>
-    </remotesteps>
-    <GUI>
-      <xloc>968</xloc>
-      <yloc>276</yloc>
-      <draw>Y</draw>
-    </GUI>
-    </step>
-
-  <step>
-    <name>Dummy &#x28;do nothing&#x29;</name>
-    <type>Dummy</type>
-    <description/>
-    <distribute>Y</distribute>
-    <custom_distribution/>
-    <copies>1</copies>
-    <partitioning>
-      <method>none</method>
-      <schema_name/>
-    </partitioning>
-    <cluster_schema/>
-    <remotesteps>
-      <input>
-      </input>
-      <output>
-      </output>
-    </remotesteps>
-    <GUI>
-      <xloc>1168</xloc>
-      <yloc>276</yloc>
-      <draw>Y</draw>
-    </GUI>
-    </step>
-
   <step_error_handling>
   </step_error_handling>
   <slave-step-copy-partition-distribution>
@@ -723,7 +653,7 @@
 <attribute><key>Kettle Data Service</key>
 <value>&#x7b;&#x22;namespace&#x22;&#x3a;&#x22;pentaho&#x22;,&#x22;id&#x22;&#x3a;&#x22;Kettle Data Service&#x22;,&#x22;name&#x22;&#x3a;&#x22;Kettle Data Service&#x22;,&#x22;description&#x22;&#x3a;&#x22;The elements describing data services based upon transformation output&#x22;,&#x22;metaStoreName&#x22;&#x3a;null&#x7d;</value>
 </attribute></group><group><name>&#x7b;&#x22;_&#x22;&#x3a;&#x22;Embedded MetaStore Elements&#x22;,&#x22;namespace&#x22;&#x3a;&#x22;pentaho&#x22;,&#x22;type&#x22;&#x3a;&#x22;Kettle Data Service&#x22;&#x7d;</name>
-<attribute><key>lorem2</key>
-<value>&#x7b;&#x22;children&#x22;&#x3a;&#x5b;&#x7b;&#x22;children&#x22;&#x3a;&#x5b;&#x5d;,&#x22;id&#x22;&#x3a;&#x22;step_name&#x22;,&#x22;value&#x22;&#x3a;&#x22;Add sequence&#x22;&#x7d;,&#x7b;&#x22;children&#x22;&#x3a;&#x5b;&#x7b;&#x22;children&#x22;&#x3a;&#x5b;&#x7b;&#x22;children&#x22;&#x3a;&#x5b;&#x5d;,&#x22;id&#x22;&#x3a;&#x22;step_name&#x22;,&#x22;value&#x22;&#x3a;&#x22;Add sequence&#x22;&#x7d;,&#x7b;&#x22;children&#x22;&#x3a;&#x5b;&#x5d;,&#x22;id&#x22;&#x3a;&#x22;name&#x22;,&#x22;value&#x22;&#x3a;&#x22;172295b1-11f5-47fe-9ab4-7f4845f3727d&#x22;&#x7d;,&#x7b;&#x22;children&#x22;&#x3a;&#x5b;&#x7b;&#x22;children&#x22;&#x3a;&#x5b;&#x7b;&#x22;children&#x22;&#x3a;&#x5b;&#x5d;,&#x22;id&#x22;&#x3a;&#x22;template_name&#x22;,&#x22;value&#x22;&#x3a;&#x22;default&#x22;&#x7d;,&#x7b;&#x22;children&#x22;&#x3a;&#x5b;&#x5d;,&#x22;id&#x22;&#x3a;&#x22;time_to_live&#x22;,&#x22;value&#x22;&#x3a;null&#x7d;&#x5d;,&#x22;id&#x22;&#x3a;&#x22;_POJO_&#x22;,&#x22;value&#x22;&#x3a;&#x22;org.pentaho.di.trans.dataservice.optimization.cache.ServiceCache&#x22;&#x7d;&#x5d;,&#x22;id&#x22;&#x3a;&#x22;type&#x22;,&#x22;value&#x22;&#x3a;null&#x7d;,&#x7b;&#x22;children&#x22;&#x3a;&#x5b;&#x5d;,&#x22;id&#x22;&#x3a;&#x22;enabled&#x22;,&#x22;value&#x22;&#x3a;&#x22;N&#x22;&#x7d;&#x5d;,&#x22;id&#x22;&#x3a;&#x22;0&#x22;,&#x22;value&#x22;&#x3a;null&#x7d;,&#x7b;&#x22;children&#x22;&#x3a;&#x5b;&#x7b;&#x22;children&#x22;&#x3a;&#x5b;&#x5d;,&#x22;id&#x22;&#x3a;&#x22;step_name&#x22;,&#x22;value&#x22;&#x3a;&#x22;Add sequence&#x22;&#x7d;,&#x7b;&#x22;children&#x22;&#x3a;&#x5b;&#x5d;,&#x22;id&#x22;&#x3a;&#x22;name&#x22;,&#x22;value&#x22;&#x3a;&#x22;03fc6261-7665-499e-89f7-59e298b5e220&#x22;&#x7d;,&#x7b;&#x22;children&#x22;&#x3a;&#x5b;&#x7b;&#x22;children&#x22;&#x3a;&#x5b;&#x7b;&#x22;children&#x22;&#x3a;&#x5b;&#x5d;,&#x22;id&#x22;&#x3a;&#x22;definitions_list&#x22;,&#x22;value&#x22;&#x3a;null&#x7d;&#x5d;,&#x22;id&#x22;&#x3a;&#x22;_POJO_&#x22;,&#x22;value&#x22;&#x3a;&#x22;org.pentaho.di.trans.dataservice.optimization.pushdown.ParameterPushdown&#x22;&#x7d;&#x5d;,&#x22;id&#x22;&#x3a;&#x22;type&#x22;,&#x22;value&#x22;&#x3a;null&#x7d;,&#x7b;&#x22;children&#x22;&#x3a;&#x5b;&#x5d;,&#x22;id&#x22;&#x3a;&#x22;enabled&#x22;,&#x22;value&#x22;&#x3a;&#x22;Y&#x22;&#x7d;&#x5d;,&#x22;id&#x22;&#x3a;&#x22;1&#x22;,&#x22;value&#x22;&#x3a;null&#x7d;&#x5d;,&#x22;id&#x22;&#x3a;&#x22;push_down_opt_meta&#x22;,&#x22;value&#x22;&#x3a;&#x22;org.pentaho.di.trans.dataservice.optimization.PushDownOptimizationMeta&#x22;&#x7d;,&#x7b;&#x22;children&#x22;&#x3a;&#x5b;&#x5d;,&#x22;id&#x22;&#x3a;&#x22;is_user_defined&#x22;,&#x22;value&#x22;&#x3a;&#x22;Y&#x22;&#x7d;&#x5d;,&#x22;id&#x22;&#x3a;&#x22;lorem2&#x22;,&#x22;value&#x22;&#x3a;null,&#x22;name&#x22;&#x3a;&#x22;lorem2&#x22;,&#x22;owner&#x22;&#x3a;null,&#x22;ownerPermissionsList&#x22;&#x3a;&#x5b;&#x5d;&#x7d;</value>
+<attribute><key>lorem3</key>
+<value>&#x7b;&#x22;children&#x22;&#x3a;&#x5b;&#x7b;&#x22;children&#x22;&#x3a;&#x5b;&#x5d;,&#x22;id&#x22;&#x3a;&#x22;step_name&#x22;,&#x22;value&#x22;&#x3a;&#x22;Add sequence&#x22;&#x7d;,&#x7b;&#x22;children&#x22;&#x3a;&#x5b;&#x7b;&#x22;children&#x22;&#x3a;&#x5b;&#x7b;&#x22;children&#x22;&#x3a;&#x5b;&#x5d;,&#x22;id&#x22;&#x3a;&#x22;step_name&#x22;,&#x22;value&#x22;&#x3a;&#x22;Add sequence&#x22;&#x7d;,&#x7b;&#x22;children&#x22;&#x3a;&#x5b;&#x5d;,&#x22;id&#x22;&#x3a;&#x22;name&#x22;,&#x22;value&#x22;&#x3a;&#x22;172295b1-11f5-47fe-9ab4-7f4845f3727d&#x22;&#x7d;,&#x7b;&#x22;children&#x22;&#x3a;&#x5b;&#x7b;&#x22;children&#x22;&#x3a;&#x5b;&#x7b;&#x22;children&#x22;&#x3a;&#x5b;&#x5d;,&#x22;id&#x22;&#x3a;&#x22;template_name&#x22;,&#x22;value&#x22;&#x3a;&#x22;default&#x22;&#x7d;,&#x7b;&#x22;children&#x22;&#x3a;&#x5b;&#x5d;,&#x22;id&#x22;&#x3a;&#x22;time_to_live&#x22;,&#x22;value&#x22;&#x3a;null&#x7d;&#x5d;,&#x22;id&#x22;&#x3a;&#x22;_POJO_&#x22;,&#x22;value&#x22;&#x3a;&#x22;org.pentaho.di.trans.dataservice.optimization.cache.ServiceCache&#x22;&#x7d;&#x5d;,&#x22;id&#x22;&#x3a;&#x22;type&#x22;,&#x22;value&#x22;&#x3a;null&#x7d;,&#x7b;&#x22;children&#x22;&#x3a;&#x5b;&#x5d;,&#x22;id&#x22;&#x3a;&#x22;enabled&#x22;,&#x22;value&#x22;&#x3a;&#x22;N&#x22;&#x7d;&#x5d;,&#x22;id&#x22;&#x3a;&#x22;0&#x22;,&#x22;value&#x22;&#x3a;null&#x7d;,&#x7b;&#x22;children&#x22;&#x3a;&#x5b;&#x7b;&#x22;children&#x22;&#x3a;&#x5b;&#x5d;,&#x22;id&#x22;&#x3a;&#x22;step_name&#x22;,&#x22;value&#x22;&#x3a;&#x22;Add sequence&#x22;&#x7d;,&#x7b;&#x22;children&#x22;&#x3a;&#x5b;&#x5d;,&#x22;id&#x22;&#x3a;&#x22;name&#x22;,&#x22;value&#x22;&#x3a;&#x22;03fc6261-7665-499e-89f7-59e298b5e220&#x22;&#x7d;,&#x7b;&#x22;children&#x22;&#x3a;&#x5b;&#x7b;&#x22;children&#x22;&#x3a;&#x5b;&#x7b;&#x22;children&#x22;&#x3a;&#x5b;&#x5d;,&#x22;id&#x22;&#x3a;&#x22;definitions_list&#x22;,&#x22;value&#x22;&#x3a;null&#x7d;&#x5d;,&#x22;id&#x22;&#x3a;&#x22;_POJO_&#x22;,&#x22;value&#x22;&#x3a;&#x22;org.pentaho.di.trans.dataservice.optimization.pushdown.ParameterPushdown&#x22;&#x7d;&#x5d;,&#x22;id&#x22;&#x3a;&#x22;type&#x22;,&#x22;value&#x22;&#x3a;null&#x7d;,&#x7b;&#x22;children&#x22;&#x3a;&#x5b;&#x5d;,&#x22;id&#x22;&#x3a;&#x22;enabled&#x22;,&#x22;value&#x22;&#x3a;&#x22;Y&#x22;&#x7d;&#x5d;,&#x22;id&#x22;&#x3a;&#x22;1&#x22;,&#x22;value&#x22;&#x3a;null&#x7d;&#x5d;,&#x22;id&#x22;&#x3a;&#x22;push_down_opt_meta&#x22;,&#x22;value&#x22;&#x3a;&#x22;org.pentaho.di.trans.dataservice.optimization.PushDownOptimizationMeta&#x22;&#x7d;,&#x7b;&#x22;children&#x22;&#x3a;&#x5b;&#x5d;,&#x22;id&#x22;&#x3a;&#x22;is_user_defined&#x22;,&#x22;value&#x22;&#x3a;&#x22;Y&#x22;&#x7d;&#x5d;,&#x22;id&#x22;&#x3a;&#x22;lorem3&#x22;,&#x22;value&#x22;&#x3a;null,&#x22;name&#x22;&#x3a;&#x22;lorem3&#x22;,&#x22;owner&#x22;&#x3a;null,&#x22;ownerPermissionsList&#x22;&#x3a;&#x5b;&#x5d;&#x7d;</value>
 </attribute></group></attributes>
 </transformation>

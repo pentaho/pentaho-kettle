@@ -21,12 +21,11 @@ public class EngineITest {
   public void before() throws KettleException {
     KettleEnvironment.init();
     testMeta = new TransMeta( getClass().getClassLoader().getResource( "test2.ktr" ).getFile() );
-    System.out.println( EngineITest.class.getClassLoader().getResource("org/apache/xerce‌​s/jaxp/DocumentBuild‌​erFactoryImpl.class"));
   }
 
   @Test
   public void testExec() throws KettleXMLException, KettleMissingPluginsException, InterruptedException {
-    TransMeta meta = new TransMeta( getClass().getClassLoader().getResource( "test2.ktr" ).getFile() );
+    TransMeta meta = new TransMeta( getClass().getClassLoader().getResource( "lorem.ktr" ).getFile() );
     ITransformation trans = Transformation.convert( meta );
 
     IEngine engine = new Engine();
