@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -727,10 +727,6 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
     wAppend.addSelectionListener( new SelectionAdapter() {
       public void widgetSelected( SelectionEvent e ) {
         input.setChanged();
-
-        if ( checkAppendNoHeaderVariable( "y" ) ) {
-          headerDisabling();
-        }
       }
 
       private void headerDisabling() {
@@ -1278,11 +1274,6 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 
     getData();
 
-    if ( checkAppendNoHeaderVariable( "y" ) ) {
-      // Actual info just after getData() calling
-      wHeader.setEnabled( !wAppend.getSelection() );
-    }
-
     activeFileNameField();
     enableParentFolder();
     input.setChanged( changed );
@@ -1726,8 +1717,4 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
     wCreateParentFolder.setEnabled( !wFileIsCommand.getSelection() );
   }
 
-  private boolean checkAppendNoHeaderVariable( String expectedResult ) {
-    String value = Const.NVL( System.getProperty( Const.KETTLE_COMPATIBILITY_TEXT_FILE_OUTPUT_APPEND_NO_HEADER ), "N" );
-    return value.equalsIgnoreCase( expectedResult );
-  }
 }
