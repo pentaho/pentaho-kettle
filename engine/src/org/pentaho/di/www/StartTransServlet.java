@@ -32,8 +32,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
-import org.owasp.esapi.ESAPI;
-import org.owasp.esapi.Encoder;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
@@ -43,6 +41,8 @@ import org.pentaho.di.core.logging.SimpleLoggingObject;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
+
+import static org.owasp.encoder.Encode.forHtml;
 
 public class StartTransServlet extends BaseHttpServlet implements CartePluginInterface {
 
@@ -181,8 +181,6 @@ public class StartTransServlet extends BaseHttpServlet implements CartePluginInt
       out.println( "<BODY>" );
     }
 
-    Encoder encoder = ESAPI.encoder();
-
     try {
       // ID is optional...
       //
@@ -225,7 +223,7 @@ public class StartTransServlet extends BaseHttpServlet implements CartePluginInt
           out.println( new WebResult( WebResult.STRING_OK, message ).getXML() );
         } else {
 
-          out.println( "<H1>" + encoder.encodeForHTML( message ) + "</H1>" );
+          out.println( "<H1>" + forHtml( message ) + "</H1>" );
           out.println( "<a href=\""
             + convertContextPath( GetTransStatusServlet.CONTEXT_PATH ) + "?name="
             + URLEncoder.encode( transName, "UTF-8" ) + "&id=" + URLEncoder.encode( id, "UTF-8" ) + "\">"
@@ -236,7 +234,7 @@ public class StartTransServlet extends BaseHttpServlet implements CartePluginInt
         if ( useXML ) {
           out.println( new WebResult( WebResult.STRING_ERROR, message, id ) );
         } else {
-          out.println( "<H1>" + encoder.encodeForHTML( message ) + "</H1>" );
+          out.println( "<H1>" + forHtml( message ) + "</H1>" );
           out.println( "<a href=\""
             + convertContextPath( GetStatusServlet.CONTEXT_PATH ) + "\">"
             + BaseMessages.getString( PKG, "TransStatusServlet.BackToStatusPage" ) + "</a><p>" );
@@ -249,7 +247,7 @@ public class StartTransServlet extends BaseHttpServlet implements CartePluginInt
       } else {
         out.println( "<p>" );
         out.println( "<pre>" );
-        out.println( encoder.encodeForHTML( Const.getStackTracker( ex ) ) );
+        out.println( forHtml( Const.getStackTracker( ex ) ) );
         out.println( "</pre>" );
       }
     }

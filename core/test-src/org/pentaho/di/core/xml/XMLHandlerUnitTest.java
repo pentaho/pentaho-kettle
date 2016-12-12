@@ -148,7 +148,7 @@ public class XMLHandlerUnitTest {
 
   @Test
   public void addTagValueDate() {
-    String result = "2014&#x2f;12&#x2f;29 15&#x3a;59&#x3a;45.789";
+    String result = "2014/12/29 15:59:45.789";
     Calendar aDate = new GregorianCalendar();
     aDate.set( 2014, ( 12 - 1 ), 29, 15, 59, 45 );
     aDate.set( Calendar.MILLISECOND, 789 );
@@ -195,11 +195,32 @@ public class XMLHandlerUnitTest {
   @Test
   public void addTagValueBinary() throws IOException {
     byte[] input = "Test Data".getBytes();
-    String result = "H4sIAAAAAAAAAAtJLS5RcEksSQQAL4PL8QkAAAA&#x3d;";
+    String result = "H4sIAAAAAAAAAAtJLS5RcEksSQQAL4PL8QkAAAA=";
 
     assertEquals( "<bytedata>" + result + "</bytedata>" + cr, XMLHandler.addTagValue( "bytedata", input ) );
     assertEquals( "<bytedata>" + result + "</bytedata>" + cr, XMLHandler.addTagValue( "bytedata", input, true ) );
     assertEquals( "<bytedata>" + result + "</bytedata>", XMLHandler.addTagValue( "bytedata", input, false ) );
+  }
+
+  @Test
+  public void addTagValueWithSurrogateCharacters() throws Exception {
+    String expected = "<testTag attributeTest=\"test attribute value \uD842\uDFB7\" >a\uD800\uDC01\uD842\uDFB7ﻉＤtest \uD802\uDF44&lt;</testTag>";
+    String tagValueWithSurrogates = "a\uD800\uDC01\uD842\uDFB7ﻉＤtest \uD802\uDF44<";
+    String attributeValueWithSurrogates = "test attribute value \uD842\uDFB7";
+    String result = XMLHandler.addTagValue( "testTag", tagValueWithSurrogates, false, "attributeTest", attributeValueWithSurrogates );
+    assertEquals( expected, result );
+    DocumentBuilder builder = XMLHandler.createDocumentBuilder( false, false );
+    builder.parse( new ByteArrayInputStream( result.getBytes() ) );
+  }
+
+  @Test
+  public void testEscapingXmlBagCharacters() throws Exception {
+    String testString = "\"\'<&>tag test@#$% )(+!@#?//| <&>";
+    String expectedStrAfterConversion = "&#34;&#39;&lt;&amp;&gt;tag test@#$% )(+!@#?//| &lt;&amp;&gt;";
+    String result = XMLHandler.addTagValue( testString, testString, false, testString, testString );
+    String expected = "<" + expectedStrAfterConversion + " " + expectedStrAfterConversion
+     + "=\"" + expectedStrAfterConversion + "\"" + " >" + expectedStrAfterConversion + "</" + expectedStrAfterConversion + ">";
+    assertEquals( expected, result );
   }
 
   @Test( expected = SAXParseException.class )

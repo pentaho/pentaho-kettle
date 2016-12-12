@@ -31,8 +31,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.owasp.esapi.ESAPI;
-import org.owasp.esapi.Encoder;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
@@ -43,6 +41,8 @@ import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobConfiguration;
+
+import static org.owasp.encoder.Encode.forHtml;
 
 public class StartJobServlet extends BaseHttpServlet implements CartePluginInterface {
   private static Class<?> PKG = StartJobServlet.class; // for i18n purposes,
@@ -161,8 +161,6 @@ public class StartJobServlet extends BaseHttpServlet implements CartePluginInter
 
     response.setStatus( HttpServletResponse.SC_OK );
 
-    Encoder encoder = ESAPI.encoder();
-
     PrintWriter out = response.getWriter();
     if ( useXML ) {
       response.setContentType( "text/xml" );
@@ -251,7 +249,7 @@ public class StartJobServlet extends BaseHttpServlet implements CartePluginInter
           out.println( new WebResult( WebResult.STRING_OK, message, id ).getXML() );
         } else {
 
-          out.println( "<H1>" + encoder.encodeForHTML( message ) + "</H1>" );
+          out.println( "<H1>" + forHtml( message ) + "</H1>" );
           out.println( "<a href=\""
             + convertContextPath( GetJobStatusServlet.CONTEXT_PATH ) + "?name="
             + URLEncoder.encode( jobName, "UTF-8" ) + "&id=" + URLEncoder.encode( id, "UTF-8" ) + "\">"
@@ -262,7 +260,7 @@ public class StartJobServlet extends BaseHttpServlet implements CartePluginInter
         if ( useXML ) {
           out.println( new WebResult( WebResult.STRING_ERROR, message ) );
         } else {
-          out.println( "<H1>" + encoder.encodeForHTML( message ) + "</H1>" );
+          out.println( "<H1>" + forHtml( message ) + "</H1>" );
           out.println( "<a href=\""
             + convertContextPath( GetStatusServlet.CONTEXT_PATH ) + "\">"
             + BaseMessages.getString( PKG, "TransStatusServlet.BackToStatusPage" ) + "</a><p>" );
@@ -275,7 +273,7 @@ public class StartJobServlet extends BaseHttpServlet implements CartePluginInter
       } else {
         out.println( "<p>" );
         out.println( "<pre>" );
-        out.println( encoder.encodeForHTML( Const.getStackTracker( ex ) ) );
+        out.println( forHtml( Const.getStackTracker( ex ) ) );
         out.println( "</pre>" );
       }
     }

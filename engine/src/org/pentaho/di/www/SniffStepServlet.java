@@ -32,8 +32,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.owasp.esapi.ESAPI;
-import org.owasp.esapi.Encoder;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -44,6 +42,8 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.step.RowListener;
 import org.pentaho.di.trans.step.StepInterface;
+
+import static org.owasp.encoder.Encode.forHtml;
 
 public class SniffStepServlet extends BaseHttpServlet implements CartePluginInterface {
   private static Class<?> PKG = GetTransStatusServlet.class; // for i18n purposes, needed by Translator2!!
@@ -267,8 +267,6 @@ public class SniffStepServlet extends BaseHttpServlet implements CartePluginInte
       trans = getTransformationMap().getTransformation( entry );
     }
 
-    Encoder encoder = ESAPI.encoder();
-
     if ( trans != null ) {
 
       // Find the step to look at...
@@ -376,7 +374,7 @@ public class SniffStepServlet extends BaseHttpServlet implements CartePluginInte
           out.println( "</HEAD>" );
           out.println( "<BODY>" );
           out.println( "<H1>"
-            + encoder.encodeForHTML( BaseMessages.getString(
+            + forHtml( BaseMessages.getString(
               PKG, "SniffStepServlet.SniffResultsForStep", stepName ) ) + "</H1>" );
 
           try {
@@ -413,7 +411,7 @@ public class SniffStepServlet extends BaseHttpServlet implements CartePluginInte
           } catch ( Exception ex ) {
             out.println( "<p>" );
             out.println( "<pre>" );
-            out.println( encoder.encodeForHTML( Const.getStackTracker( ex ) ) );
+            out.println( forHtml( Const.getStackTracker( ex ) ) );
             out.println( "</pre>" );
           }
 
@@ -427,7 +425,7 @@ public class SniffStepServlet extends BaseHttpServlet implements CartePluginInte
             PKG, "SniffStepServlet.Log.CoundNotFindSpecStep", stepName ) ).getXML() );
         } else {
           out.println( "<H1>"
-            + encoder.encodeForHTML( BaseMessages.getString(
+            + forHtml( BaseMessages.getString(
               PKG, "SniffStepServlet.Log.CoundNotFindSpecStep", stepName ) ) + "</H1>" );
           out.println( "<a href=\""
             + convertContextPath( GetStatusServlet.CONTEXT_PATH ) + "\">"
@@ -440,7 +438,7 @@ public class SniffStepServlet extends BaseHttpServlet implements CartePluginInte
           PKG, "SniffStepServlet.Log.CoundNotFindSpecTrans", transName ) ).getXML() );
       } else {
         out.println( "<H1>"
-          + encoder.encodeForHTML( BaseMessages.getString(
+          + forHtml( BaseMessages.getString(
             PKG, "SniffStepServlet.Log.CoundNotFindTrans", transName ) ) + "</H1>" );
         out.println( "<a href=\""
           + convertContextPath( GetStatusServlet.CONTEXT_PATH ) + "\">"

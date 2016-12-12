@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -31,8 +31,6 @@ import java.util.List;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.owasp.esapi.ESAPI;
-import org.owasp.esapi.Encoder;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMeta;
@@ -40,6 +38,8 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
+
+import static org.owasp.encoder.Encode.forHtml;
 
 @XmlRootElement
 public class StepStatus {
@@ -106,14 +106,13 @@ public class StepStatus {
   }
 
   public String getHTMLTableRow( boolean urlInStepname ) {
-    Encoder encoder = ESAPI.encoder();
     return "<tr> " + "<th>"
-      + ( urlInStepname ? stepname : encoder.encodeForHTML( stepname ) ) + "</th> " + "<th>" + copy + "</th> "
+      + ( urlInStepname ? stepname : forHtml( stepname ) ) + "</th> " + "<th>" + copy + "</th> "
       + "<th>" + linesRead + "</th> " + "<th>" + linesWritten + "</th> " + "<th>" + linesInput + "</th> "
       + "<th>" + linesOutput + "</th> " + "<th>" + linesUpdated + "</th> " + "<th>" + linesRejected + "</th> "
-      + "<th>" + errors + "</th> " + "<th>" + encoder.encodeForHTML( statusDescription ) + "</th> " + "<th>"
-      + seconds + "</th> " + "<th>" + encoder.encodeForHTML( speed ) + "</th> " + "<th>"
-      + encoder.encodeForHTML( priority ) + "</th> " + "</tr>";
+      + "<th>" + errors + "</th> " + "<th>" + forHtml( statusDescription ) + "</th> " + "<th>"
+      + seconds + "</th> " + "<th>" + forHtml( speed ) + "</th> " + "<th>"
+      + forHtml( priority ) + "</th> " + "</tr>";
   }
 
   public String getXML() throws KettleException {

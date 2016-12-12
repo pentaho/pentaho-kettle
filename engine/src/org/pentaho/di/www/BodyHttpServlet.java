@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,8 +23,6 @@ package org.pentaho.di.www;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
-import org.owasp.esapi.ESAPI;
-import org.owasp.esapi.Encoder;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.PackageMessages;
@@ -35,11 +33,11 @@ import java.io.PrintWriter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import static org.owasp.encoder.Encode.forHtml;
+
 public abstract class BodyHttpServlet extends BaseHttpServlet implements CartePluginInterface {
 
   private static final long serialVersionUID = 6576714217004890327L;
-  private static final Encoder ENCODER = ESAPI.encoder();
-
   private final PackageMessages messages;
 
   public BodyHttpServlet() {
@@ -81,7 +79,7 @@ public abstract class BodyHttpServlet extends BaseHttpServlet implements CartePl
         out.println( new WebResult( WebResult.STRING_ERROR, st ).getXML() );
       } else {
         out.println( "<p><pre>" );
-        out.println( ENCODER.encodeForHTML( st ) );
+        out.println( forHtml( st ) );
         out.println( "</pre>" );
       }
     } finally {
@@ -98,7 +96,7 @@ public abstract class BodyHttpServlet extends BaseHttpServlet implements CartePl
     out.println( "<HTML>" );
     out.println( "<HEAD>" );
     out.println( "<TITLE>" );
-    out.println( ENCODER.encodeForHTML( getTitle() ) );
+    out.println( forHtml( getTitle() ) );
     out.println( "</TITLE>" );
     out.println( "<META http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">" );
     out.println( "</HEAD>" );

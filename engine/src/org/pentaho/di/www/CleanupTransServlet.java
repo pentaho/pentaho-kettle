@@ -30,13 +30,13 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.owasp.esapi.ESAPI;
-import org.owasp.esapi.Encoder;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
+
+import static org.owasp.encoder.Encode.forHtml;
 
 public class CleanupTransServlet extends BaseHttpServlet implements CartePluginInterface {
   private static Class<?> PKG = CleanupTransServlet.class; // i18n
@@ -180,7 +180,6 @@ public class CleanupTransServlet extends BaseHttpServlet implements CartePluginI
       out.println( "<BODY>" );
     }
 
-    Encoder encoder = ESAPI.encoder();
     try {
       String message = "";
       boolean error = false;
@@ -223,7 +222,7 @@ public class CleanupTransServlet extends BaseHttpServlet implements CartePluginI
           if ( useXML ) {
             out.println( new WebResult( WebResult.STRING_ERROR, message ) );
           } else {
-            out.println( "<H1>" + encoder.encodeForHTML( message ) + "</H1>" );
+            out.println( "<H1>" + forHtml( message ) + "</H1>" );
             out.println( "<a href=\""
               + convertContextPath( GetStatusServlet.CONTEXT_PATH ) + "\">"
               + BaseMessages.getString( PKG, "TransStatusServlet.BackToStatusPage" ) + "</a><p>" );
@@ -235,7 +234,7 @@ public class CleanupTransServlet extends BaseHttpServlet implements CartePluginI
         if ( useXML ) {
           out.println( new WebResult( WebResult.STRING_OK, message ).getXML() );
         } else {
-          out.println( "<H1>" + encoder.encodeForHTML( message ) + "</H1>" );
+          out.println( "<H1>" + forHtml( message ) + "</H1>" );
           out.println( "<a href=\""
             + convertContextPath( GetTransStatusServlet.CONTEXT_PATH ) + "?name="
             + URLEncoder.encode( transName, "UTF-8" ) + "\">"
@@ -250,7 +249,7 @@ public class CleanupTransServlet extends BaseHttpServlet implements CartePluginI
       } else {
         out.println( "<p>" );
         out.println( "<pre>" );
-        out.println( encoder.encodeForHTML( Const.getStackTracker( ex ) ) );
+        out.println( forHtml( Const.getStackTracker( ex ) ) );
         out.println( "</pre>" );
       }
     }
