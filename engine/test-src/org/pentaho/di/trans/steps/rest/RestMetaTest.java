@@ -22,23 +22,37 @@
 
 package org.pentaho.di.trans.steps.rest;
 
+import static org.junit.Assert.assertTrue;
+
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.encryption.TwoWayPasswordEncoderPluginType;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.plugins.PluginRegistry;
+import org.pentaho.di.core.row.RowMeta;
+import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.util.EnvUtil;
+import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.variables.Variables;
+import org.pentaho.di.repository.Repository;
+import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
 import org.pentaho.di.trans.steps.loadsave.validator.ArrayLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.StringLoadSaveValidator;
+import org.pentaho.metastore.api.IMetaStore;
 
 public class RestMetaTest {
 
@@ -73,10 +87,49 @@ public class RestMetaTest {
     fieldLoadSaveValidatorAttributeMap.put( "matrixParameterField", stringArrayLoadSaveValidator );
     fieldLoadSaveValidatorAttributeMap.put( "matrixParameterName", stringArrayLoadSaveValidator );
 
-    LoadSaveTester loadSaveTester =
-      new LoadSaveTester( RestMeta.class, attributes, new HashMap<String, String>(), new HashMap<String, String>(),
-        fieldLoadSaveValidatorAttributeMap, new HashMap<String, FieldLoadSaveValidator<?>>() );
+    LoadSaveTester<RestMeta> loadSaveTester =
+      new LoadSaveTester<RestMeta>( RestMeta.class, attributes, new HashMap<String, String>(),
+        new HashMap<String, String>(), fieldLoadSaveValidatorAttributeMap,
+        new HashMap<String, FieldLoadSaveValidator<?>>() );
 
     loadSaveTester.testSerialization();
+  }
+
+  @Test
+  public void testStepChecks() {
+    RestMeta meta = new RestMeta();
+    List<CheckResultInterface> remarks = new ArrayList<CheckResultInterface>();
+    TransMeta transMeta = new TransMeta();
+    StepMeta step = new StepMeta();
+    RowMetaInterface prev = new RowMeta();
+    RowMetaInterface info = new RowMeta();
+    String[] input = new String[0];
+    String[] output = new String[0];
+    VariableSpace variables = new Variables();
+    Repository repo = null;
+    IMetaStore metaStore = null;
+
+    // In a default configuration, it's expected that some errors will occur.
+    // For this, we'll grab a baseline count of the number of errors
+    // as the error count should decrease as we change configuration settings to proper values.
+    remarks.clear();
+    meta.check( remarks, transMeta, step, prev, input, output, info, variables, repo, metaStore );
+    final int errorsDefault = getCheckResultErrorCount( remarks );
+    assertTrue( errorsDefault > 0 );
+
+    // Setting the step to read the URL from a field should fix one of the check() errors
+    meta.setUrlInField( true );
+    meta.setUrlField( "urlField" );
+    prev.addValueMeta( new ValueMetaString( "urlField" ) );
+    remarks.clear();
+    meta.check( remarks, transMeta, step, prev, input, output, info, variables, repo, metaStore );
+    int errorsCurrent = getCheckResultErrorCount( remarks );
+    assertTrue( errorsDefault > errorsCurrent );
+  }
+
+  private static int getCheckResultErrorCount( List<CheckResultInterface> remarks ) {
+    return remarks.stream()
+      .filter( p -> p.getType() == CheckResultInterface.TYPE_RESULT_ERROR )
+      .collect( Collectors.toList() ).size();
   }
 }
