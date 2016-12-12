@@ -320,4 +320,34 @@ public class DatabaseMetaTest {
       databaseMeta.databaseForBothDbInterfacesIsTheSame( mssqlServerDatabaseMeta, mssqlServerNativeDatabaseMetaChild ) );
   }
 
+  @Test
+  public void testCheckParameters() {
+    DatabaseMeta meta = mock( DatabaseMeta.class );
+    BaseDatabaseMeta databaseInterface = mock( BaseDatabaseMeta.class );
+    when( databaseInterface.requiresName() ).thenReturn( true );
+    when( meta.getDatabaseInterface() ).thenReturn( databaseInterface );
+    when( meta.getName() ).thenReturn( null );
+    when( meta.isPartitioned() ).thenReturn( false );
+    when( meta.checkParameters() ).thenCallRealMethod();
+    assertEquals( 2, meta.checkParameters().length );
+  }
+
+  @Test
+  public void setSQLServerInstanceTest() {
+    DatabaseMeta dbmeta = new DatabaseMeta();
+    DatabaseInterface mssqlServerDatabaseMeta =  new MSSQLServerDatabaseMeta();
+    mssqlServerDatabaseMeta.setPluginId( "MSSQL" );
+    DatabaseInterface mssqlServerNativeDatabaseMeta =  new MSSQLServerNativeDatabaseMeta();
+    mssqlServerNativeDatabaseMeta.setPluginId( "MSSQLNATIVE" );
+    dbmeta.setDatabaseInterface( mssqlServerDatabaseMeta );
+    dbmeta.setSQLServerInstance( "" );
+    assertEquals( dbmeta.getSQLServerInstance(), null );
+    dbmeta.setSQLServerInstance( "instance1" );
+    assertEquals( dbmeta.getSQLServerInstance(), "instance1" );
+    dbmeta.setDatabaseInterface( mssqlServerNativeDatabaseMeta );
+    dbmeta.setSQLServerInstance( "" );
+    assertEquals( dbmeta.getSQLServerInstance(), null );
+    dbmeta.setSQLServerInstance( "instance1" );
+    assertEquals( dbmeta.getSQLServerInstance(), "instance1" );
+  }
 }
