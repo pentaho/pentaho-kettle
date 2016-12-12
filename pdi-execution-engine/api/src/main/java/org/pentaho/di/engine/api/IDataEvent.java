@@ -6,7 +6,7 @@ package org.pentaho.di.engine.api;
  * <p>
  * Created by nbaker on 5/30/16.
  */
-public interface IDataEvent<T> extends IPDIEvent {
+public interface IDataEvent extends IPDIEvent {
   enum TYPE {IN, OUT, ERROR}
 
   TYPE getType();

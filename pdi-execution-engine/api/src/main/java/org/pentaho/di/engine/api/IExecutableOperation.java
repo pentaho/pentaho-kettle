@@ -11,9 +11,7 @@ package org.pentaho.di.engine.api;
  * tuples received "From" parent operations and published
  * "To" child ops.
  */
-import org.reactivestreams.Processor;
-
-public interface IExecutableOperation extends Processor<IDataEvent, IDataEvent>, IOperation {
+public interface IExecutableOperation extends IOperation, IProgressReporting<IDataEvent> {
 
 
   boolean isRunning();
