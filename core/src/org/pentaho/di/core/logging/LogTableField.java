@@ -22,314 +22,361 @@
 
 package org.pentaho.di.core.logging;
 
-
 /**
  * This is a single log table field.<br>
- * The user can select this field or not, sees a field name, a description in the UI too.
- * The user can also specify a subject like a step name.
+ * The user can select this field or not, sees a field name, a description in the UI too. The user can also specify a
+ * subject like a step name.
  * 
  * @author matt
- *
+ * 
  */
 public class LogTableField implements Cloneable {
-	private String  id;
-	private boolean enabled;
-	private String  fieldName;
-	private Object  subject;
-	private String  name;
-	private String  description;
-	private int     dataType;
-	private int     length;
-	private boolean subjectAllowed;
-	
-	// Field indicators...
-	//
-	
-	private boolean key;
-	private boolean logDateField;
-	private boolean logField;
-	private boolean visible;
-	private boolean statusField;
-	private boolean errorsField;
-	private boolean nameField;
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ( ( id == null ) ? 0 : id.hashCode() );
+    return result;
+  }
 
-	/**
-	 * @param id the ID to reference this field by in the log table
-	 * @param enabled
-	 * @param fieldName
-	 * @param subject
-	 * @param description
-	 */
-	public LogTableField(String id, boolean enabled, String fieldName, Object subject, String name, String description) {
-		this.id = id;
-		this.enabled = enabled;
-		this.fieldName = fieldName;
-		this.subject = subject;
-		this.name = name;
-		this.description = description;
-		this.subjectAllowed = true;
-		this.visible=true;
-	}
+  @Override
+  public boolean equals( Object obj ) {
+    if ( this == obj ) {
+      return true;
+    }
+    if ( obj == null ) {
+      return false;
+    }
+    if ( getClass() != obj.getClass() ) {
+      return false;
+    }
+    LogTableField other = (LogTableField) obj;
+    if ( id == null ) {
+      if ( other.id != null ) {
+        return false;
+      }
+    } else if ( !id.equals( other.id ) ) {
+      return false;
+    }
+    return true;
+  }
 
-	/**
-	 * @param id
-	 * @param enabled
-	 * @param fieldName
-	 * @param description
-	 * @param dataType
-	 * @param length
-	 */
-	public LogTableField(String id, boolean enabled, boolean subjectAllowed, String fieldName, String name, String description, int dataType, int length) {
-		this.id = id;
-		this.enabled = enabled;
-		this.subjectAllowed = subjectAllowed;
-		this.fieldName = fieldName;
-		this.name = name;
-		this.description = description;
-		this.dataType = dataType;
-		this.length = length;
-		this.visible=true;
-	}
+  private String id;
+  private boolean enabled;
+  private String fieldName;
+  private Object subject;
+  private String name;
+  private String description;
+  private int dataType;
+  private int length;
+  private boolean subjectAllowed;
 
-	/**
-	 * Create a new enabled log table field with the specified field name for the specified subject.
-	 * 
-	 * @param fieldname
-	 * @param subject
-	 */
-	public LogTableField(String id, String fieldName, Object subject) {
-		this.id = id;
-		this.enabled = true;
-		this.fieldName = fieldName;
-		this.subject = subject;
-		this.subjectAllowed = true;
-		this.visible=true;
-	}
+  // Field indicators...
+  //
 
-	@Override
-	public Object clone() throws CloneNotSupportedException {
-		return super.clone();
-	}
+  private boolean key;
+  private boolean logDateField;
+  private boolean logField;
+  private boolean visible;
+  private boolean statusField;
+  private boolean errorsField;
+  private boolean nameField;
 
-	@Override
-	public String toString() {
-		return id;
-	}
-	
-	/**
-	 * @return the enabled
-	 */
-	public boolean isEnabled() {
-		return enabled;
-	}
+  /**
+   * @param id
+   *          the ID to reference this field by in the log table
+   * @param enabled
+   * @param fieldName
+   * @param subject
+   * @param description
+   */
+  public LogTableField( String id, boolean enabled, String fieldName,
+      Object subject, String name, String description ) {
+    this.id = id;
+    this.enabled = enabled;
+    this.fieldName = fieldName;
+    this.subject = subject;
+    this.name = name;
+    this.description = description;
+    this.subjectAllowed = true;
+    this.visible = true;
+  }
 
-	/**
-	 * @param enabled the enabled to set
-	 */
-	public void setEnabled(boolean enabled) {
-		this.enabled = enabled;
-	}
+  /**
+   * @param id
+   * @param enabled
+   * @param fieldName
+   * @param description
+   * @param dataType
+   * @param length
+   */
+  public LogTableField( String id, boolean enabled, boolean subjectAllowed, String fieldName, String name,
+      String description, int dataType, int length ) {
+    this.id = id;
+    this.enabled = enabled;
+    this.subjectAllowed = subjectAllowed;
+    this.fieldName = fieldName;
+    this.name = name;
+    this.description = description;
+    this.dataType = dataType;
+    this.length = length;
+    this.visible = true;
+  }
 
-	/**
-	 * @return the subject
-	 */
-	public Object getSubject() {
-		return subject;
-	}
-	
-	/**
-	 * @param subject the subject to set
-	 */
-	public void setSubject(Object subject) {
-		this.subject = subject;
-	}
+  /**
+   * Create a new enabled log table field with the specified field name for the specified subject.
+   * 
+   * @param fieldname
+   * @param subject
+   */
+  public LogTableField( String id, String fieldName, Object subject ) {
+    this.id = id;
+    this.enabled = true;
+    this.fieldName = fieldName;
+    this.subject = subject;
+    this.subjectAllowed = true;
+    this.visible = true;
+  }
 
-	/**
-	 * @return the id
-	 */
-	public String getId() {
-		return id;
-	}
+  @Override
+  public Object clone() throws CloneNotSupportedException {
+    return super.clone();
+  }
 
-	/**
-	 * @return the fieldName
-	 */
-	public String getFieldName() {
-		return fieldName;
-	}
+  @Override
+  public String toString() {
+    return id;
+  }
 
-	/**
-	 * @param fieldName the fieldName to set
-	 */
-	public void setFieldName(String fieldName) {
-		this.fieldName = fieldName;
-	}
+  /**
+   * @return the enabled
+   */
+  public boolean isEnabled() {
+    return enabled;
+  }
 
-	/**
-	 * @return the description
-	 */
-	public String getDescription() {
-		return description;
-	}
+  /**
+   * @param enabled
+   *          the enabled to set
+   */
+  public void setEnabled( boolean enabled ) {
+    this.enabled = enabled;
+  }
 
-	/**
-	 * @param description the description to set
-	 */
-	public void setDescription(String description) {
-		this.description = description;
-	}
+  /**
+   * @return the subject
+   */
+  public Object getSubject() {
+    return subject;
+  }
 
-	/**
-	 * @return the dataType
-	 */
-	public int getDataType() {
-		return dataType;
-	}
+  /**
+   * @param subject
+   *          the subject to set
+   */
+  public void setSubject( Object subject ) {
+    this.subject = subject;
+  }
 
-	/**
-	 * @param dataType the dataType to set
-	 */
-	public void setDataType(int dataType) {
-		this.dataType = dataType;
-	}
+  /**
+   * @return the id
+   */
+  public String getId() {
+    return id;
+  }
 
-	/**
-	 * @return the length
-	 */
-	public int getLength() {
-		return length;
-	}
+  /**
+   * @return the fieldName
+   */
+  public String getFieldName() {
+    return fieldName;
+  }
 
-	/**
-	 * @param length the length to set
-	 */
-	public void setLength(int length) {
-		this.length = length;
-	}
+  /**
+   * @param fieldName
+   *          the fieldName to set
+   */
+  public void setFieldName( String fieldName ) {
+    this.fieldName = fieldName;
+  }
 
-	/**
-	 * @return the subjectAllowed
-	 */
-	public boolean isSubjectAllowed() {
-		return subjectAllowed;
-	}
+  /**
+   * @return the description
+   */
+  public String getDescription() {
+    return description;
+  }
 
-	/**
-	 * @param subjectAllowed the subjectAllowed to set
-	 */
-	public void setSubjectAllowed(boolean subjectAllowed) {
-		this.subjectAllowed = subjectAllowed;
-	}
+  /**
+   * @param description
+   *          the description to set
+   */
+  public void setDescription( String description ) {
+    this.description = description;
+  }
 
-	/**
-	 * @return the key
-	 */
-	public boolean isKey() {
-		return key;
-	}
+  /**
+   * @return the dataType
+   */
+  public int getDataType() {
+    return dataType;
+  }
 
-	/**
-	 * @param key the key to set
-	 */
-	public void setKey(boolean key) {
-		this.key = key;
-	}
+  /**
+   * @param dataType
+   *          the dataType to set
+   */
+  public void setDataType( int dataType ) {
+    this.dataType = dataType;
+  }
 
-	/**
-	 * @return the logDateField
-	 */
-	public boolean isLogDateField() {
-		return logDateField;
-	}
+  /**
+   * @return the length
+   */
+  public int getLength() {
+    return length;
+  }
 
-	/**
-	 * @param logDateField the logDateField to set
-	 */
-	public void setLogDateField(boolean logDateField) {
-		this.logDateField = logDateField;
-	}
+  /**
+   * @param length
+   *          the length to set
+   */
+  public void setLength( int length ) {
+    this.length = length;
+  }
 
-	/**
-	 * @return the name
-	 */
-	public String getName() {
-		return name;
-	}
+  /**
+   * @return the subjectAllowed
+   */
+  public boolean isSubjectAllowed() {
+    return subjectAllowed;
+  }
 
-	/**
-	 * @param name the name to set
-	 */
-	public void setName(String name) {
-		this.name = name;
-	}
+  /**
+   * @param subjectAllowed
+   *          the subjectAllowed to set
+   */
+  public void setSubjectAllowed( boolean subjectAllowed ) {
+    this.subjectAllowed = subjectAllowed;
+  }
 
-	/**
-	 * @return the logField
-	 */
-	public boolean isLogField() {
-		return logField;
-	}
+  /**
+   * @return the key
+   */
+  public boolean isKey() {
+    return key;
+  }
 
-	/**
-	 * @param logField the logField to set
-	 */
-	public void setLogField(boolean logField) {
-		this.logField = logField;
-	}
+  /**
+   * @param key
+   *          the key to set
+   */
+  public void setKey( boolean key ) {
+    this.key = key;
+  }
 
-	/**
-	 * @return the visible
-	 */
-	public boolean isVisible() {
-		return visible;
-	}
+  /**
+   * @return the logDateField
+   */
+  public boolean isLogDateField() {
+    return logDateField;
+  }
 
-	/**
-	 * @param visible the visible to set
-	 */
-	public void setVisible(boolean visible) {
-		this.visible = visible;
-	}
+  /**
+   * @param logDateField
+   *          the logDateField to set
+   */
+  public void setLogDateField( boolean logDateField ) {
+    this.logDateField = logDateField;
+  }
 
-	/**
-	 * @return the statusField
-	 */
-	public boolean isStatusField() {
-		return statusField;
-	}
+  /**
+   * @return the name
+   */
+  public String getName() {
+    return name;
+  }
 
-	/**
-	 * @param statusField the statusField to set
-	 */
-	public void setStatusField(boolean statusField) {
-		this.statusField = statusField;
-	}
+  /**
+   * @param name
+   *          the name to set
+   */
+  public void setName( String name ) {
+    this.name = name;
+  }
 
-	/**
-	 * @return the errorsField
-	 */
-	public boolean isErrorsField() {
-		return errorsField;
-	}
+  /**
+   * @return the logField
+   */
+  public boolean isLogField() {
+    return logField;
+  }
 
-	/**
-	 * @param errorsField the errorsField to set
-	 */
-	public void setErrorsField(boolean errorsField) {
-		this.errorsField = errorsField;
-	}
+  /**
+   * @param logField
+   *          the logField to set
+   */
+  public void setLogField( boolean logField ) {
+    this.logField = logField;
+  }
 
-	/**
-	 * @return the nameField
-	 */
-	public boolean isNameField() {
-		return nameField;
-	}
+  /**
+   * @return the visible
+   */
+  public boolean isVisible() {
+    return visible;
+  }
 
-	/**
-	 * @param nameField the nameField to set
-	 */
-	public void setNameField(boolean nameField) {
-		this.nameField = nameField;
-	}	
+  /**
+   * @param visible
+   *          the visible to set
+   */
+  public void setVisible( boolean visible ) {
+    this.visible = visible;
+  }
+
+  /**
+   * @return the statusField
+   */
+  public boolean isStatusField() {
+    return statusField;
+  }
+
+  /**
+   * @param statusField
+   *          the statusField to set
+   */
+  public void setStatusField( boolean statusField ) {
+    this.statusField = statusField;
+  }
+
+  /**
+   * @return the errorsField
+   */
+  public boolean isErrorsField() {
+    return errorsField;
+  }
+
+  /**
+   * @param errorsField
+   *          the errorsField to set
+   */
+  public void setErrorsField( boolean errorsField ) {
+    this.errorsField = errorsField;
+  }
+
+  /**
+   * @return the nameField
+   */
+  public boolean isNameField() {
+    return nameField;
+  }
+
+  /**
+   * @param nameField
+   *          the nameField to set
+   */
+  public void setNameField( boolean nameField ) {
+    this.nameField = nameField;
+  }
 }
