@@ -31,9 +31,9 @@ import org.w3c.dom.Node;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class KettleExecOperation implements IExecutableOperation {
 
@@ -48,6 +48,11 @@ public class KettleExecOperation implements IExecutableOperation {
   private StepMeta stepMeta;
 
   private TransMeta transMeta;
+  private AtomicInteger inCount = new AtomicInteger( 0 );
+  private AtomicInteger outCount = new AtomicInteger( 0 );
+  private AtomicInteger droppedCount = new AtomicInteger( 0 );
+  private AtomicInteger inFlightCount = new AtomicInteger( 0 );
+
 
   protected KettleExecOperation( IOperation op ) {
     this.operation = op;
@@ -58,18 +63,14 @@ public class KettleExecOperation implements IExecutableOperation {
     trans.getRowsets().add( inputRowset );
     trans.getRowsets().add( outputRowset );
 
-
-    initializeStepMeta( this );
-
+    initializeStepMeta();
   }
-
 
   public static IExecutableOperation compile( IOperation operation ) {
     return new KettleExecOperation( operation );
   }
 
-
-  @Override public void subscribe( org.reactivestreams.Subscriber<? super IDataEvent> subscriber ) {
+  @Override public void subscribe( Subscriber<? super IDataEvent> subscriber ) {
     subscribers.add( subscriber );
   }
 
@@ -115,7 +116,9 @@ public class KettleExecOperation implements IExecutableOperation {
   }
 
   @Override public void onNext( IDataEvent dataEvent ) {
-
+    if ( dataEvent != null ) {
+      inCount.incrementAndGet();
+    }
     if ( dataEvent != null ) {
       System.out.println(  Arrays.toString( dataEvent.getData().getData() ) );
       inputRowset.putRow( ((KettleDataEvent)dataEvent).getRowMeta(), dataEvent.getData().getData() );
@@ -133,30 +136,9 @@ public class KettleExecOperation implements IExecutableOperation {
 
   }
 
-  private void initializeStepMeta( IExecutableOperation execOp ) {
+  private void initializeStepMeta() {
 
-
-    stepMeta.setRowDistribution( new RowDistributionInterface() {
-      @Override public String getCode() {
-        return "spark-distributor";
-      }
-
-      @Override public String getDescription() {
-        return "bypasses output rowsets, all distribute thru this guy";
-      }
-
-      @Override
-      public void distributeRow( RowMetaInterface rowMetaInterface, Object[] objects, StepInterface stepInterface )
-        throws KettleStepException {
-        subscribers.stream()
-          .forEach( sub -> sub.onNext(
-            new KettleDataEvent( rowMetaInterface, objects ) ) );
-      }
-
-      @Override public PrimitiveGCInterface.EImage getDistributionImage() {
-        return null;
-      }
-    } );
+    stepMeta.setRowDistribution( getRowDistribution() );
 
     trans.setRunning( true );
     trans.setLog( LogChannel.GENERAL );
@@ -189,6 +171,35 @@ public class KettleExecOperation implements IExecutableOperation {
 
   }
 
+  /**
+   *  RowDistribution which publishes distributed rows to
+   *  all subscribers.
+   */
+  private RowDistributionInterface getRowDistribution() {
+    return new RowDistributionInterface() {
+      @Override public String getCode() {
+        return "spark-distributor";
+      }
+
+      @Override public String getDescription() {
+        return "bypasses output rowsets, all distribute thru this guy";
+      }
+
+      @Override
+      public void distributeRow( RowMetaInterface rowMetaInterface, Object[] objects, StepInterface stepInterface )
+        throws KettleStepException {
+        outCount.incrementAndGet();
+        subscribers.stream()
+          .forEach( sub -> sub.onNext(
+            new KettleDataEvent( rowMetaInterface, objects ) ) );
+      }
+
+      @Override public PrimitiveGCInterface.EImage getDistributionImage() {
+        return null;
+      }
+    };
+  }
+
   private StepMeta getStepMeta( IOperation op )  {
     String config = op.getConfig();
     Document doc;
@@ -218,5 +229,25 @@ public class KettleExecOperation implements IExecutableOperation {
     } catch ( NoSuchFieldException | IllegalAccessException e ) {
       throw new RuntimeException( e );
     }
+  }
+
+  @Override public int getIn() {
+    return inCount.get();
+  }
+
+  @Override public int getOut() {
+    return outCount.get();
+  }
+
+  @Override public int getDropped() {
+    return droppedCount.get();
+  }
+
+  @Override public int getInFlight() {
+    return inFlightCount.get();
+  }
+
+  @Override public Status getStatus() {
+    return null;
   }
 }

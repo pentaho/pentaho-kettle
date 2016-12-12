@@ -1,6 +1,6 @@
 package org.pentaho.di.engine.api;
 
-public interface IData {
+public interface IData<T> {
   Object[] getData();
 
 

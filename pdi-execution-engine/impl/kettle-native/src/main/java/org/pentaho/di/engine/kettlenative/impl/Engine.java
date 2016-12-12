@@ -4,6 +4,7 @@ import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.engine.api.IEngine;
 import org.pentaho.di.engine.api.IExecutableOperation;
+import org.pentaho.di.engine.api.IExecutionResultFuture;
 import org.pentaho.di.engine.api.IOperation;
 import org.pentaho.di.engine.api.ITransformation;
 
@@ -13,7 +14,7 @@ import java.util.stream.Stream;
 
 public class Engine implements IEngine {
 
-  @Override public void execute( ITransformation trans ) {
+  @Override public IExecutionResultFuture execute( ITransformation trans ) {
     try {
       KettleEnvironment.init();
     } catch ( KettleException e ) {
@@ -23,18 +24,26 @@ public class Engine implements IEngine {
 
     wireExecution( execOps );
 
-    sourceExecOpsStream( trans, execOps )
-      .forEach(
-        execOp -> {
-          while ( execOp.isRunning() ) {
-            execOp.onNext( null );
-          }
-        }
-      );
+//    sourceExecOpsStream( trans, execOps )
+//      .forEach(
+//        execOp -> {
+//          while ( execOp.isRunning() ) {
+//            execOp.onNext( null );
+//          }
+//        }
+//      );
+
+    return getResultFuture( trans, execOps );
   }
 
   private Stream<IExecutableOperation> sourceExecOpsStream( ITransformation trans,
                                                             List<IExecutableOperation> execOps ) {
+    return trans.getSourceOperations().stream()
+      .map( op -> getExecOp( op, execOps  ) );
+  }
+
+  private Stream<IExecutableOperation> sinkExecOpsStream( ITransformation trans,
+                                                          List<IExecutableOperation> execOps ) {
     return trans.getSourceOperations().stream()
       .map( op -> getExecOp( op, execOps  ) );
   }
@@ -63,4 +72,9 @@ public class Engine implements IEngine {
       .findFirst()
       .orElseThrow( () -> new RuntimeException( "no matching exec op" ) );
   }
+
+  public IExecutionResultFuture getResultFuture( ITransformation trans, List<IExecutableOperation> execOps ) {
+    return new ExecutionResultFuture( trans, execOps );
+  }
+
 }

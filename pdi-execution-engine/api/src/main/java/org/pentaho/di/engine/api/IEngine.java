@@ -9,6 +9,6 @@ package org.pentaho.di.engine.api;
  */
 public interface IEngine {
 
-   void execute( ITransformation trans );
+   IExecutionResultFuture execute( ITransformation trans );
 }
 
