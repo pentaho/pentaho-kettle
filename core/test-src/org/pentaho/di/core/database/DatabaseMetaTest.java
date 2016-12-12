@@ -22,8 +22,8 @@
 
 package org.pentaho.di.core.database;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import org.junit.Assert;
+import org.mockito.Mockito;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,9 +49,9 @@ public class DatabaseMetaTest {
 
   @Before
   public void setUp() {
-    databaseMeta = mock( DatabaseMeta.class );
-    when( databaseMeta
-      .databaseForBothDbInterfacesIsTheSame( any( DatabaseInterface.class ), any( DatabaseInterface.class ) ) )
+    databaseMeta = Mockito.mock( DatabaseMeta.class );
+    Mockito.when( databaseMeta
+      .databaseForBothDbInterfacesIsTheSame( Mockito.any( DatabaseInterface.class ), Mockito.any( DatabaseInterface.class ) ) )
       .thenCallRealMethod();
   }
 
@@ -74,7 +74,7 @@ public class DatabaseMetaTest {
       public Exception call() throws Exception {
         int i = 0;
         while ( !done.get() ) {
-          assertNotNull( "Got null on try: " + i++, DatabaseMeta.getDatabaseInterfacesMap() );
+          Assert.assertNotNull( "Got null on try: " + i++, DatabaseMeta.getDatabaseInterfacesMap() );
           if ( i > 30000 ) {
             done.set( true );
           }
@@ -89,7 +89,7 @@ public class DatabaseMetaTest {
   public void testDatabaseAccessTypeCode() throws Exception {
     String expectedJndi = "JNDI";
     String access = DatabaseMeta.getAccessTypeDesc( DatabaseMeta.getAccessType( expectedJndi ) );
-    assertEquals( expectedJndi, access );
+    Assert.assertEquals( expectedJndi, access );
   }
 
   @Test
@@ -106,27 +106,27 @@ public class DatabaseMetaTest {
     // Register Natives to create a default DatabaseMeta
     DatabasePluginType.getInstance().searchPlugins();
     DatabaseMeta meta = new DatabaseMeta();
-    DatabaseInterface type = mock( DatabaseInterface.class );
+    DatabaseInterface type = Mockito.mock( DatabaseInterface.class );
     meta.setDatabaseInterface( type );
 
-    when( type.getExtraOptions() ).thenReturn( existingOptions );
-    when( type.getDefaultOptions() ).thenReturn( newOptions );
+    Mockito.when( type.getExtraOptions() ).thenReturn( existingOptions );
+    Mockito.when( type.getDefaultOptions() ).thenReturn( newOptions );
 
     meta.applyDefaultOptions( type );
-    verify( type ).addExtraOption( "type1", "new", "newValue" );
-    verify( type, never() ).addExtraOption( "type1", "existing", "existingDefault" );
+    Mockito.verify( type ).addExtraOption( "type1", "new", "newValue" );
+    Mockito.verify( type, Mockito.never() ).addExtraOption( "type1", "existing", "existingDefault" );
   }
 
   @Test
   public void testQuoteReservedWords() {
-    DatabaseMeta databaseMeta = mock( DatabaseMeta.class );
-    doCallRealMethod().when( databaseMeta ).quoteReservedWords( any( RowMetaInterface.class ) );
-    doCallRealMethod().when( databaseMeta ).quoteField( anyString() );
-    doCallRealMethod().when( databaseMeta ).setDatabaseInterface( any( DatabaseInterface.class ) );
-    doReturn( "\"" ).when( databaseMeta ).getStartQuote();
-    doReturn( "\"" ).when( databaseMeta ).getEndQuote();
-    final DatabaseInterface databaseInterface = mock( DatabaseInterface.class );
-    doReturn( true ).when( databaseInterface ).isQuoteAllFields();
+    DatabaseMeta databaseMeta = Mockito.mock( DatabaseMeta.class );
+    Mockito.doCallRealMethod().when( databaseMeta ).quoteReservedWords( Mockito.any( RowMetaInterface.class ) );
+    Mockito.doCallRealMethod().when( databaseMeta ).quoteField( Mockito.anyString() );
+    Mockito.doCallRealMethod().when( databaseMeta ).setDatabaseInterface( Mockito.any( DatabaseInterface.class ) );
+    Mockito.doReturn( "\"" ).when( databaseMeta ).getStartQuote();
+    Mockito.doReturn( "\"" ).when( databaseMeta ).getEndQuote();
+    final DatabaseInterface databaseInterface = Mockito.mock( DatabaseInterface.class );
+    Mockito.doReturn( true ).when( databaseInterface ).isQuoteAllFields();
     databaseMeta.setDatabaseInterface( databaseInterface );
 
     final RowMeta fields = new RowMeta();
@@ -143,80 +143,80 @@ public class DatabaseMetaTest {
       databaseMeta.quoteReservedWords( fields );
       final String name = fields.getValueMeta( i ).getName();
       // check valueMeta index in list
-      assertTrue( name.contains( "test_" + i ) );
+      Assert.assertTrue( name.contains( "test_" + i ) );
       // check valueMeta is found by quoted name
-      assertNotNull( fields.searchValueMeta( name ) );
+      Assert.assertNotNull( fields.searchValueMeta( name ) );
     }
   }
 
   @Test
   public void testModifyingName() throws Exception {
-    DatabaseMeta databaseMeta = mock( DatabaseMeta.class );
+    DatabaseMeta databaseMeta = Mockito.mock( DatabaseMeta.class );
     OracleDatabaseMeta odbm = new OracleDatabaseMeta();
-    doCallRealMethod().when( databaseMeta ).setDatabaseInterface( any( DatabaseInterface.class ) );
-    doCallRealMethod().when( databaseMeta ).setName( anyString() );
-    doCallRealMethod().when( databaseMeta ).getName();
-    doCallRealMethod().when( databaseMeta ).getDisplayName();
+    Mockito.doCallRealMethod().when( databaseMeta ).setDatabaseInterface( Mockito.any( DatabaseInterface.class ) );
+    Mockito.doCallRealMethod().when( databaseMeta ).setName( Mockito.anyString() );
+    Mockito.doCallRealMethod().when( databaseMeta ).getName();
+    Mockito.doCallRealMethod().when( databaseMeta ).getDisplayName();
     databaseMeta.setDatabaseInterface( odbm );
     databaseMeta.setName( "test" );
 
     List<DatabaseMeta> list = new ArrayList<DatabaseMeta>();
     list.add( databaseMeta );
 
-    DatabaseMeta databaseMeta2 = mock( DatabaseMeta.class );
+    DatabaseMeta databaseMeta2 = Mockito.mock( DatabaseMeta.class );
     OracleDatabaseMeta odbm2 = new OracleDatabaseMeta();
-    doCallRealMethod().when( databaseMeta2 ).setDatabaseInterface( any( DatabaseInterface.class ) );
-    doCallRealMethod().when( databaseMeta2 ).setName( anyString() );
-    doCallRealMethod().when( databaseMeta2 ).getName();
-    doCallRealMethod().when( databaseMeta2 ).setDisplayName( anyString() );
-    doCallRealMethod().when( databaseMeta2 ).getDisplayName();
-    doCallRealMethod().when( databaseMeta2 ).verifyAndModifyDatabaseName( any( ArrayList.class ), anyString() );
+    Mockito.doCallRealMethod().when( databaseMeta2 ).setDatabaseInterface( Mockito.any( DatabaseInterface.class ) );
+    Mockito.doCallRealMethod().when( databaseMeta2 ).setName( Mockito.anyString() );
+    Mockito.doCallRealMethod().when( databaseMeta2 ).getName();
+    Mockito.doCallRealMethod().when( databaseMeta2 ).setDisplayName( Mockito.anyString() );
+    Mockito.doCallRealMethod().when( databaseMeta2 ).getDisplayName();
+    Mockito.doCallRealMethod().when( databaseMeta2 ).verifyAndModifyDatabaseName( Mockito.any( ArrayList.class ), Mockito.anyString() );
     databaseMeta2.setDatabaseInterface( odbm2 );
     databaseMeta2.setName( "test" );
 
     databaseMeta2.verifyAndModifyDatabaseName( list, null );
 
-    assertTrue( !databaseMeta.getDisplayName().equals( databaseMeta2.getDisplayName() ) );
+    Assert.assertTrue( !databaseMeta.getDisplayName().equals( databaseMeta2.getDisplayName() ) );
   }
 
   @Test
   public void testGetFeatureSummary() throws Exception {
-    DatabaseMeta databaseMeta = mock( DatabaseMeta.class );
+    DatabaseMeta databaseMeta = Mockito.mock( DatabaseMeta.class );
     OracleDatabaseMeta odbm = new OracleDatabaseMeta();
-    doCallRealMethod().when( databaseMeta ).setDatabaseInterface( any( DatabaseInterface.class ) );
-    doCallRealMethod().when( databaseMeta ).getFeatureSummary();
-    doCallRealMethod().when( databaseMeta ).getAttributes();
+    Mockito.doCallRealMethod().when( databaseMeta ).setDatabaseInterface( Mockito.any( DatabaseInterface.class ) );
+    Mockito.doCallRealMethod().when( databaseMeta ).getFeatureSummary();
+    Mockito.doCallRealMethod().when( databaseMeta ).getAttributes();
     databaseMeta.setDatabaseInterface( odbm );
     List<RowMetaAndData> result = databaseMeta.getFeatureSummary();
-    assertNotNull( result );
+    Assert.assertNotNull( result );
     for ( RowMetaAndData rmd : result ) {
-      assertEquals( 2, rmd.getRowMeta().size() );
-      assertEquals( "Parameter", rmd.getRowMeta().getValueMeta( 0 ).getName() );
-      assertEquals( ValueMetaInterface.TYPE_STRING, rmd.getRowMeta().getValueMeta( 0 ).getType() );
-      assertEquals( "Value", rmd.getRowMeta().getValueMeta( 1 ).getName() );
-      assertEquals( ValueMetaInterface.TYPE_STRING, rmd.getRowMeta().getValueMeta( 1 ).getType() );
+      Assert.assertEquals( 2, rmd.getRowMeta().size() );
+      Assert.assertEquals( "Parameter", rmd.getRowMeta().getValueMeta( 0 ).getName() );
+      Assert.assertEquals( ValueMetaInterface.TYPE_STRING, rmd.getRowMeta().getValueMeta( 0 ).getType() );
+      Assert.assertEquals( "Value", rmd.getRowMeta().getValueMeta( 1 ).getName() );
+      Assert.assertEquals( ValueMetaInterface.TYPE_STRING, rmd.getRowMeta().getValueMeta( 1 ).getType() );
     }
   }
 
 
   @Test
   public void indexOfName_NullArray() {
-    assertEquals( -1, DatabaseMeta.indexOfName( null, "" ) );
+    Assert.assertEquals( -1, DatabaseMeta.indexOfName( null, "" ) );
   }
 
   @Test
   public void indexOfName_NullName() {
-    assertEquals( -1, DatabaseMeta.indexOfName( new String[] { "1" }, null ) );
+    Assert.assertEquals( -1, DatabaseMeta.indexOfName( new String[] { "1" }, null ) );
   }
 
   @Test
   public void indexOfName_ExactMatch() {
-    assertEquals( 1, DatabaseMeta.indexOfName( new String[] { "a", "b", "c" }, "b" ) );
+    Assert.assertEquals( 1, DatabaseMeta.indexOfName( new String[] { "a", "b", "c" }, "b" ) );
   }
 
   @Test
   public void indexOfName_NonExactMatch() {
-    assertEquals( 1, DatabaseMeta.indexOfName( new String[] { "a", "b", "c" }, "B" ) );
+    Assert.assertEquals( 1, DatabaseMeta.indexOfName( new String[] { "a", "b", "c" }, "B" ) );
   }
 
 
@@ -225,7 +225,7 @@ public class DatabaseMetaTest {
     DatabaseInterface mssqlServerDatabaseMeta =  new MSSQLServerDatabaseMeta();
     mssqlServerDatabaseMeta.setPluginId( "MSSQL" );
 
-    assertTrue( databaseMeta.databaseForBothDbInterfacesIsTheSame( mssqlServerDatabaseMeta, mssqlServerDatabaseMeta ) );
+    Assert.assertTrue( databaseMeta.databaseForBothDbInterfacesIsTheSame( mssqlServerDatabaseMeta, mssqlServerDatabaseMeta ) );
   }
 
   @Test
@@ -233,7 +233,7 @@ public class DatabaseMetaTest {
     DatabaseInterface mssqlServerDatabaseMeta =  new MSSQLServerDatabaseMeta();
     mssqlServerDatabaseMeta.setPluginId( null );
 
-    assertFalse( databaseMeta.databaseForBothDbInterfacesIsTheSame( mssqlServerDatabaseMeta, mssqlServerDatabaseMeta ) );
+    Assert.assertFalse( databaseMeta.databaseForBothDbInterfacesIsTheSame( mssqlServerDatabaseMeta, mssqlServerDatabaseMeta ) );
   }
 
   @Test
@@ -243,7 +243,7 @@ public class DatabaseMetaTest {
     DatabaseInterface oracleDatabaseMeta = new OracleDatabaseMeta();
     oracleDatabaseMeta.setPluginId( "ORACLE" );
 
-    assertFalse( databaseMeta.databaseForBothDbInterfacesIsTheSame( mssqlServerDatabaseMeta, oracleDatabaseMeta ) );
+    Assert.assertFalse( databaseMeta.databaseForBothDbInterfacesIsTheSame( mssqlServerDatabaseMeta, oracleDatabaseMeta ) );
   }
 
   @Test
@@ -254,7 +254,7 @@ public class DatabaseMetaTest {
     mssqlServerNativeDatabaseMeta.setPluginId( "MSSQLNATIVE" );
 
 
-    assertTrue( databaseMeta.databaseForBothDbInterfacesIsTheSame( mssqlServerDatabaseMeta,
+    Assert.assertTrue( databaseMeta.databaseForBothDbInterfacesIsTheSame( mssqlServerDatabaseMeta,
       mssqlServerNativeDatabaseMeta ) );
   }
 
@@ -271,7 +271,37 @@ public class DatabaseMetaTest {
     mssqlServerDatabaseMeta.setPluginId( "MSSQL" );
     DatabaseInterface mssqlServerNativeDatabaseMetaChild = new MSSQLServerNativeDatabaseMetaChild();
 
-    assertTrue(
+    Assert.assertTrue(
       databaseMeta.databaseForBothDbInterfacesIsTheSame( mssqlServerDatabaseMeta, mssqlServerNativeDatabaseMetaChild ) );
+  }
+
+  @Test
+  public void testCheckParameters() {
+    DatabaseMeta meta = Mockito.mock( DatabaseMeta.class );
+    BaseDatabaseMeta databaseInterface = Mockito.mock( BaseDatabaseMeta.class );
+    Mockito.when( meta.getDatabaseInterface() ).thenReturn( databaseInterface );
+    Mockito.when( meta.getName() ).thenReturn( null );
+    Mockito.when( meta.isPartitioned() ).thenReturn( false );
+    Mockito.when( meta.checkParameters() ).thenCallRealMethod();
+    Assert.assertEquals( 2, meta.checkParameters().length );
+  }
+
+  @Test
+  public void setSQLServerInstanceTest() {
+    DatabaseMeta dbmeta = new DatabaseMeta();
+    DatabaseInterface mssqlServerDatabaseMeta =  new MSSQLServerDatabaseMeta();
+    mssqlServerDatabaseMeta.setPluginId( "MSSQL" );
+    DatabaseInterface mssqlServerNativeDatabaseMeta =  new MSSQLServerNativeDatabaseMeta();
+    mssqlServerNativeDatabaseMeta.setPluginId( "MSSQLNATIVE" );
+    dbmeta.setDatabaseInterface( mssqlServerDatabaseMeta );
+    dbmeta.setSQLServerInstance( "" );
+    Assert.assertEquals( dbmeta.getSQLServerInstance(), null );
+    dbmeta.setSQLServerInstance( "instance1" );
+    Assert.assertEquals( dbmeta.getSQLServerInstance(), "instance1" );
+    dbmeta.setDatabaseInterface( mssqlServerNativeDatabaseMeta );
+    dbmeta.setSQLServerInstance( "" );
+    Assert.assertEquals( dbmeta.getSQLServerInstance(), null );
+    dbmeta.setSQLServerInstance( "instance1" );
+    Assert.assertEquals( dbmeta.getSQLServerInstance(), "instance1" );
   }
 }
