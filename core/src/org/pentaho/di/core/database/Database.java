@@ -2259,6 +2259,12 @@ public class Database implements VariableSpace, LoggingObjectInterface {
         valueMeta.setComments( name );
         valueMeta.setLength( size );
         valueMeta.setOriginalColumnTypeName( type );
+
+        valueMeta.setConversionMask( columns.getString( "SOURCE_MASK" ) );
+        valueMeta.setDecimalSymbol( columns.getString( "SOURCE_DECIMAL_SYMBOL" ) );
+        valueMeta.setGroupingSymbol( columns.getString( "SOURCE_GROUPING_SYMBOL" ) );
+        valueMeta.setCurrencySymbol( columns.getString( "SOURCE_CURRENCY_SYMBOL" ) );
+
         rowMeta.addValueMeta( valueMeta );
       } else {
         log.logBasic( "Database.getQueryFields() ValueMetaInterface mapping not resolved for the column " + name );
