@@ -697,7 +697,7 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
           false ),
         new ColumnInfo(
           BaseMessages.getString( PKG, "MetaInjectDialog.ColumnInfo.Type" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
-          ValueMeta.getAllTypes() ),
+          ValueMetaFactory.getAllValueMetaNames() ),
         new ColumnInfo(
           BaseMessages.getString( PKG, "MetaInjectDialog.ColumnInfo.Length" ), ColumnInfo.COLUMN_TYPE_TEXT,
           false ),

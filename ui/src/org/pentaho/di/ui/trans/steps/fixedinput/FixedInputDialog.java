@@ -57,8 +57,9 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -411,7 +412,7 @@ public class FixedInputDialog extends BaseStepDialog implements StepDialogInterf
           false ),
         new ColumnInfo(
           BaseMessages.getString( PKG, "FixedInputDialog.TypeColumn.Column" ),
-          ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes(), true ),
+          ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMetaFactory.getValueMetaNames(), true ),
         new ColumnInfo(
           BaseMessages.getString( PKG, "FixedInputDialog.FormatColumn.Column" ),
           ColumnInfo.COLUMN_TYPE_FORMAT, 2 ),
@@ -435,13 +436,13 @@ public class FixedInputDialog extends BaseStepDialog implements StepDialogInterf
           false ),
         new ColumnInfo(
           BaseMessages.getString( PKG, "FixedInputDialog.TrimColumn.Column" ),
-          ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.trimTypeDesc ), };
+          ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMetaString.trimTypeDesc ), };
 
     colinf[2].setComboValuesSelectionListener( new ComboValuesSelectionListener() {
 
       public String[] getComboValues( TableItem tableItem, int rowNr, int colNr ) {
         String[] comboValues = new String[] {};
-        int type = ValueMeta.getType( tableItem.getText( colNr - 1 ) );
+        int type = ValueMetaFactory.getIdForValueMeta( tableItem.getText( colNr - 1 ) );
         switch ( type ) {
           case ValueMetaInterface.TYPE_DATE:
             comboValues = Const.getDateFormats();
@@ -600,7 +601,7 @@ public class FixedInputDialog extends BaseStepDialog implements StepDialogInterf
       FixedFileInputField field = inputMeta.getFieldDefinition()[i];
 
       item.setText( colnr++, Const.NVL( field.getName(), "" ) );
-      item.setText( colnr++, ValueMeta.getTypeDesc( field.getType() ) );
+      item.setText( colnr++, ValueMetaFactory.getValueMetaName( field.getType() ) );
       item.setText( colnr++, Const.NVL( field.getFormat(), "" ) );
       item.setText( colnr++, field.getWidth() >= 0 ? Integer.toString( field.getWidth() ) : "" );
       item.setText( colnr++, field.getLength() >= 0 ? Integer.toString( field.getLength() ) : "" );
@@ -608,7 +609,7 @@ public class FixedInputDialog extends BaseStepDialog implements StepDialogInterf
       item.setText( colnr++, Const.NVL( field.getCurrency(), "" ) );
       item.setText( colnr++, Const.NVL( field.getDecimal(), "" ) );
       item.setText( colnr++, Const.NVL( field.getGrouping(), "" ) );
-      item.setText( colnr++, ValueMeta.getTrimTypeCode( field.getTrimType() ) );
+      item.setText( colnr++, ValueMetaString.getTrimTypeCode( field.getTrimType() ) );
     }
     wFields.removeEmptyRows();
     wFields.setRowNums();
@@ -661,7 +662,7 @@ public class FixedInputDialog extends BaseStepDialog implements StepDialogInterf
       FixedFileInputField field = new FixedFileInputField();
 
       field.setName( item.getText( colnr++ ) );
-      field.setType( ValueMeta.getType( item.getText( colnr++ ) ) );
+      field.setType( ValueMetaFactory.getIdForValueMeta( item.getText( colnr++ ) ) );
       field.setFormat( item.getText( colnr++ ) );
       field.setWidth( Const.toInt( item.getText( colnr++ ), -1 ) );
       field.setLength( Const.toInt( item.getText( colnr++ ), -1 ) );
@@ -669,7 +670,7 @@ public class FixedInputDialog extends BaseStepDialog implements StepDialogInterf
       field.setCurrency( item.getText( colnr++ ) );
       field.setDecimal( item.getText( colnr++ ) );
       field.setGrouping( item.getText( colnr++ ) );
-      field.setTrimType( ValueMeta.getTrimTypeByDesc( item.getText( colnr++ ) ) );
+      field.setTrimType( ValueMetaString.getTrimTypeByDesc( item.getText( colnr++ ) ) );
 
       //CHECKSTYLE:Indentation:OFF
       fixedInputMeta.getFieldDefinition()[i] = field;
@@ -794,7 +795,7 @@ public class FixedInputDialog extends BaseStepDialog implements StepDialogInterf
             if ( field.getWidth() > 0 ) {
               TableItem item = new TableItem( wFields.table, SWT.NONE );
               item.setText( 1, field.getName() );
-              item.setText( 2, "" + ValueMeta.getTypeDesc( field.getType() ) );
+              item.setText( 2, "" + ValueMetaFactory.getValueMetaName( field.getType() ) );
               item.setText( 3, "" + field.getFormat() );
               item.setText( 4, "" + field.getWidth() );
               item.setText( 5, field.getLength() < 0 ? "" : "" + field.getLength() );

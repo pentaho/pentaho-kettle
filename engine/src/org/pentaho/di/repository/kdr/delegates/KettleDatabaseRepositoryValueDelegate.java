@@ -24,7 +24,6 @@ package org.pentaho.di.repository.kdr.delegates;
 
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaAndData;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
@@ -55,7 +54,8 @@ public class KettleDatabaseRepositoryValueDelegate extends KettleDatabaseReposit
         int valtype = ValueMetaFactory.getIdForValueMeta(
           r.getString( KettleDatabaseRepository.FIELD_VALUE_VALUE_TYPE, null ) );
         boolean isNull = r.getBoolean( KettleDatabaseRepository.FIELD_VALUE_IS_NULL, false );
-        valueMetaAndData.setValueMeta( new ValueMeta( name, valtype ) );
+        ValueMetaInterface v = ValueMetaFactory.createValueMeta( name, valtype );
+        valueMetaAndData.setValueMeta( v );
 
         if ( isNull ) {
           valueMetaAndData.setValueData( null );
@@ -84,7 +84,7 @@ public class KettleDatabaseRepositoryValueDelegate extends KettleDatabaseReposit
           // OK, now comes the dirty part...
           // We want the defaults back on there...
           //
-          valueMeta = new ValueMeta( name, valueMeta.getType() );
+          valueMeta = ValueMetaFactory.createValueMeta( name, valueMeta.getType() );
         }
       }
 

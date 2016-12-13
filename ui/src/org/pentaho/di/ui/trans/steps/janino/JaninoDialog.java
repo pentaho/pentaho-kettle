@@ -50,7 +50,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
@@ -150,7 +150,7 @@ public class JaninoDialog extends BaseStepDialog implements StepDialogInterface 
           BaseMessages.getString( PKG, "JaninoDialog.Janino.Column" ), ColumnInfo.COLUMN_TYPE_TEXT, false ),
         new ColumnInfo(
           BaseMessages.getString( PKG, "JaninoDialog.ValueType.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
-          ValueMeta.getTypes() ),
+          ValueMetaFactory.getValueMetaNames() ),
         new ColumnInfo(
           BaseMessages.getString( PKG, "JaninoDialog.Length.Column" ), ColumnInfo.COLUMN_TYPE_TEXT, false ),
         new ColumnInfo(
@@ -301,7 +301,7 @@ public class JaninoDialog extends BaseStepDialog implements StepDialogInterface 
         TableItem item = wFields.table.getItem( i );
         item.setText( 1, Const.NVL( fn.getFieldName(), "" ) );
         item.setText( 2, Const.NVL( fn.getFormula(), "" ) );
-        item.setText( 3, Const.NVL( ValueMeta.getTypeDesc( fn.getValueType() ), "" ) );
+        item.setText( 3, Const.NVL( ValueMetaFactory.getValueMetaName( fn.getValueType() ), "" ) );
         if ( fn.getValueLength() >= 0 ) {
           item.setText( 4, "" + fn.getValueLength() );
         }
@@ -340,7 +340,7 @@ public class JaninoDialog extends BaseStepDialog implements StepDialogInterface 
 
       String fieldName = item.getText( 1 );
       String formula = item.getText( 2 );
-      int valueType = ValueMeta.getType( item.getText( 3 ) );
+      int valueType = ValueMetaFactory.getIdForValueMeta( item.getText( 3 ) );
       int valueLength = Const.toInt( item.getText( 4 ), -1 );
       int valuePrecision = Const.toInt( item.getText( 5 ), -1 );
       String replaceField = item.getText( 6 );

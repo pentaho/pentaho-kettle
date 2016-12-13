@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,7 +24,8 @@ package org.pentaho.di.trans.steps.selectvalues;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.injection.Injection;
-import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.value.ValueMetaBase;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.xml.XMLInterface;
 import org.pentaho.di.trans.step.StepAttributesInterface;
@@ -149,7 +150,8 @@ public class SelectMetadataChange implements Cloneable, XMLInterface {
     retval.append( "        " ).append(
       XMLHandler.addTagValue( attributesInterface.getXmlCode( "META_RENAME" ), rename ) );
     retval.append( "        " ).append(
-      XMLHandler.addTagValue( attributesInterface.getXmlCode( "META_TYPE" ), ValueMeta.getTypeDesc( type ) ) );
+      XMLHandler.addTagValue( attributesInterface.getXmlCode( "META_TYPE" ),
+        ValueMetaFactory.getValueMetaName( type ) ) );
     retval.append( "        " ).append(
       XMLHandler.addTagValue( attributesInterface.getXmlCode( "META_LENGTH" ), length ) );
     retval.append( "        " ).append(
@@ -177,7 +179,7 @@ public class SelectMetadataChange implements Cloneable, XMLInterface {
     retval.append( "        " ).append(
       XMLHandler.addTagValue( attributesInterface.getXmlCode( "META_CURRENCY" ), currencySymbol ) );
     retval.append( "        " ).append(
-      XMLHandler.addTagValue( attributesInterface.getXmlCode( "META_STORAGE_TYPE" ), ValueMeta
+      XMLHandler.addTagValue( attributesInterface.getXmlCode( "META_STORAGE_TYPE" ), ValueMetaBase
         .getStorageTypeCode( storageType ) ) );
     retval.append( "      " ).append( XMLHandler.closeTag( XML_TAG ) );
     return retval.toString();
@@ -186,12 +188,13 @@ public class SelectMetadataChange implements Cloneable, XMLInterface {
   public void loadXML( Node metaNode ) {
     name = XMLHandler.getTagValue( metaNode, attributesInterface.getXmlCode( "META_NAME" ) );
     rename = XMLHandler.getTagValue( metaNode, attributesInterface.getXmlCode( "META_RENAME" ) );
-    type = ValueMeta.getType( XMLHandler.getTagValue( metaNode, attributesInterface.getXmlCode( "META_TYPE" ) ) );
+    type = ValueMetaFactory.getIdForValueMeta(
+      XMLHandler.getTagValue( metaNode, attributesInterface.getXmlCode( "META_TYPE" ) ) );
     length = Const.toInt( XMLHandler.getTagValue( metaNode, attributesInterface.getXmlCode( "META_LENGTH" ) ), -2 );
     precision =
       Const.toInt( XMLHandler.getTagValue( metaNode, attributesInterface.getXmlCode( "META_PRECISION" ) ), -2 );
     storageType =
-      ValueMeta.getStorageType( XMLHandler.getTagValue( metaNode, attributesInterface
+      ValueMetaBase.getStorageType( XMLHandler.getTagValue( metaNode, attributesInterface
         .getXmlCode( "META_STORAGE_TYPE" ) ) );
     conversionMask = XMLHandler.getTagValue( metaNode, attributesInterface.getXmlCode( "META_CONVERSION_MASK" ) );
     dateFormatLenient =
@@ -266,7 +269,7 @@ public class SelectMetadataChange implements Cloneable, XMLInterface {
 
   @Injection( name = "META_TYPE", group = "METAS" )
   public void setType( String value ) {
-    type = ValueMeta.getType( value );
+    type = ValueMetaFactory.getIdForValueMeta( value );
   }
 
   /**
@@ -316,7 +319,7 @@ public class SelectMetadataChange implements Cloneable, XMLInterface {
 
   @Injection( name = "META_STORAGE_TYPE", group = "METAS" )
   public void setStorageType( String storageType ) {
-    this.storageType = ValueMeta.getStorageType( storageType );
+    this.storageType = ValueMetaBase.getStorageType( storageType );
   }
 
   /**

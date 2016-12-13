@@ -49,8 +49,9 @@ import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
@@ -199,7 +200,7 @@ public class SasInputDialog extends BaseStepDialog implements StepDialogInterfac
           ColumnInfo.COLUMN_TYPE_TEXT, false ),
         new ColumnInfo(
           BaseMessages.getString( PKG, "SASInputDialog.OutputFieldColumn.Type" ),
-          ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes(), true ),
+          ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMetaFactory.getValueMetaNames(), true ),
         new ColumnInfo(
           BaseMessages.getString( PKG, "SASInputDialog.OutputFieldColumn.Mask" ),
           ColumnInfo.COLUMN_TYPE_FORMAT, 2 ),
@@ -217,13 +218,13 @@ public class SasInputDialog extends BaseStepDialog implements StepDialogInterfac
           ColumnInfo.COLUMN_TYPE_TEXT, false ),
         new ColumnInfo(
           BaseMessages.getString( PKG, "SASInputDialog.OutputFieldColumn.TrimType" ),
-          ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.trimTypeDesc ), };
+          ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMetaString.trimTypeDesc ), };
 
     colinf[3].setComboValuesSelectionListener( new ComboValuesSelectionListener() {
 
       public String[] getComboValues( TableItem tableItem, int rowNr, int colNr ) {
         String[] comboValues = new String[] {};
-        int type = ValueMeta.getType( tableItem.getText( colNr - 1 ) );
+        int type = ValueMetaFactory.getIdForValueMeta( tableItem.getText( colNr - 1 ) );
         switch ( type ) {
           case ValueMetaInterface.TYPE_DATE:
             comboValues = Const.getDateFormats();
@@ -293,7 +294,7 @@ public class SasInputDialog extends BaseStepDialog implements StepDialogInterfac
       int colnr = 1;
       item.setText( colnr++, Const.NVL( field.getName(), "" ) );
       item.setText( colnr++, Const.NVL( field.getRename(), "" ) );
-      item.setText( colnr++, ValueMeta.getTypeDesc( field.getType() ) );
+      item.setText( colnr++, ValueMetaFactory.getValueMetaName( field.getType() ) );
       item.setText( colnr++, Const.NVL( field.getConversionMask(), "" ) );
       item.setText( colnr++, field.getLength() >= 0 ? Integer.toString( field.getLength() ) : "" );
       item.setText( colnr++, field.getPrecision() >= 0 ? Integer.toString( field.getPrecision() ) : "" );
@@ -332,13 +333,13 @@ public class SasInputDialog extends BaseStepDialog implements StepDialogInterfac
       if ( Utils.isEmpty( field.getRename() ) ) {
         field.setRename( field.getName() );
       }
-      field.setType( ValueMeta.getType( item.getText( colnr++ ) ) );
+      field.setType( ValueMetaFactory.getIdForValueMeta( item.getText( colnr++ ) ) );
       field.setConversionMask( item.getText( colnr++ ) );
       field.setLength( Const.toInt( item.getText( colnr++ ), -1 ) );
       field.setPrecision( Const.toInt( item.getText( colnr++ ), -1 ) );
       field.setDecimalSymbol( item.getText( colnr++ ) );
       field.setGroupingSymbol( item.getText( colnr++ ) );
-      field.setTrimType( ValueMeta.getTrimTypeByDesc( item.getText( colnr++ ) ) );
+      field.setTrimType( ValueMetaString.getTrimTypeByDesc( item.getText( colnr++ ) ) );
 
       meta.getOutputFields().add( field );
     }

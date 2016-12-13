@@ -58,7 +58,7 @@ import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.fileinput.FileInputList;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -804,7 +804,7 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
           org.pentaho.di.trans.steps.loadfileinput.LoadFileInputField.ElementTypeDesc, true ),
         new ColumnInfo(
           BaseMessages.getString( PKG, "LoadFileInputDialog.FieldsTable.Type.Column" ),
-          ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes(), true ),
+          ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMetaFactory.getValueMetaNames(), true ),
         new ColumnInfo(
           BaseMessages.getString( PKG, "LoadFileInputDialog.FieldsTable.Format.Column" ),
           ColumnInfo.COLUMN_TYPE_CCOMBO, Const.getConversionFormats() ),
@@ -1403,7 +1403,7 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
 
       field.setName( item.getText( 1 ) );
       field.setElementType( LoadFileInputField.getElementTypeByDesc( item.getText( 2 ) ) );
-      field.setType( ValueMeta.getType( item.getText( 3 ) ) );
+      field.setType( ValueMetaFactory.getIdForValueMeta( item.getText( 3 ) ) );
       field.setFormat( item.getText( 4 ) );
       field.setLength( Const.toInt( item.getText( 5 ), -1 ) );
       field.setPrecision( Const.toInt( item.getText( 6 ), -1 ) );
