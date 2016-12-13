@@ -60,6 +60,7 @@ import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.trans.DatabaseImpact;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.TransMeta.TransformationType;
+import org.pentaho.di.trans.step.errorhandling.Stream;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Document;
@@ -114,12 +115,27 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
   public Object clone() {
     try {
       BaseStepMeta retval = (BaseStepMeta) super.clone();
-      // PDI-14419: there are several problems with cloning ioMeta
-      //  - we cannot clone all existing streams, as the duplicate should be treated independently
-      //  - we cannot clear ioMeta's stream list, because other classes do not expect the list to be empty
-      // hence, the best solution for now is to assign NULL to the field
-      // meta will re-create properly-configured instance on next attempt to get it
-      retval.ioMeta = null;
+
+      // PDI-15799: Makes a copy of the StepMeta. This copy can be used within the same Transformation.
+      // That means than inner step references are copied rather then cloned.
+      // If the copy is acquired for another Transformation (e.g. this method is called from Transformation.clone() )
+      // then the step references must be corrected.
+      if ( ioMeta != null ) {
+        StepIOMetaInterface stepIOMeta = new StepIOMeta( ioMeta.isInputAcceptor(), ioMeta.isOutputProducer(), ioMeta.isInputOptional(), ioMeta.isSortedDataRequired(), ioMeta.isInputDynamic(), ioMeta.isOutputDynamic() );
+
+        List<StreamInterface> infoStreams = ioMeta.getInfoStreams();
+        for ( StreamInterface infoStream : infoStreams ) {
+          stepIOMeta.addStream( new Stream( infoStream ) );
+        }
+
+        List<StreamInterface> targetStreams = ioMeta.getTargetStreams();
+        for ( StreamInterface targetStream : targetStreams ) {
+          stepIOMeta.addStream( new Stream( targetStream ) );
+        }
+
+        retval.ioMeta = stepIOMeta;
+      }
+
       return retval;
     } catch ( CloneNotSupportedException e ) {
       return null;
