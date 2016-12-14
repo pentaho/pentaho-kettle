@@ -22,76 +22,78 @@
 
 package org.pentaho.di.www;
 
-import static org.junit.Assert.*;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.owasp.encoder.Encode;
+import org.pentaho.di.trans.Trans;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.pentaho.di.core.gui.Point;
-import org.pentaho.di.core.logging.KettleLogStore;
-import org.pentaho.di.core.logging.LogChannelInterface;
-import org.pentaho.di.trans.Trans;
-import org.pentaho.di.trans.TransMeta;
+import static junit.framework.Assert.assertFalse;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-public class GetStatusServletTest {
+
+@RunWith( PowerMockRunner.class )
+public class CleanupTransServletTest {
   private TransformationMap mockTransformationMap;
-  private JobMap mockJobMap;
-  private GetStatusServlet getStatusServlet;
+
+  private CleanupTransServlet cleanupTransServlet;
 
   @Before
   public void setup() {
     mockTransformationMap = mock( TransformationMap.class );
-    mockJobMap = mock( JobMap.class );
-    getStatusServlet = new GetStatusServlet( mockTransformationMap, mockJobMap );
+    cleanupTransServlet = new CleanupTransServlet( mockTransformationMap );
   }
 
   @Test
-  public void testGetStatusServletEscapesHtmlWhenTransNotFound() throws ServletException, IOException {
+  @PrepareForTest( { Encode.class } )
+  public void testCleanupTransServletEscapesHtmlWhenTransNotFound() throws ServletException, IOException {
     HttpServletRequest mockHttpServletRequest = mock( HttpServletRequest.class );
     HttpServletResponse mockHttpServletResponse = mock( HttpServletResponse.class );
-
     StringWriter out = new StringWriter();
     PrintWriter printWriter = new PrintWriter( out );
-
-    when( mockHttpServletRequest.getContextPath() ).thenReturn( GetStatusServlet.CONTEXT_PATH );
+    PowerMockito.spy( Encode.class );
+    when( mockHttpServletRequest.getContextPath() ).thenReturn( CleanupTransServlet.CONTEXT_PATH );
     when( mockHttpServletRequest.getParameter( anyString() ) ).thenReturn( ServletTestUtils.BAD_STRING_TO_TEST );
     when( mockHttpServletResponse.getWriter() ).thenReturn( printWriter );
 
-    getStatusServlet.doGet( mockHttpServletRequest, mockHttpServletResponse );
+    cleanupTransServlet.doGet( mockHttpServletRequest, mockHttpServletResponse );
+
     assertFalse( ServletTestUtils.hasBadText( ServletTestUtils.getInsideOfTag( "H1", out.toString() ) ) );
+    PowerMockito.verifyStatic( atLeastOnce() );
+    Encode.forHtml( anyString() );
   }
 
   @Test
-  public void testGetStatusServletEscapesHtmlWhenTransFound() throws ServletException, IOException {
-    KettleLogStore.init();
+  @PrepareForTest( { Encode.class } )
+  public void testCleanupTransServletEscapesHtmlWhenTransFound() throws ServletException, IOException {
     HttpServletRequest mockHttpServletRequest = mock( HttpServletRequest.class );
     HttpServletResponse mockHttpServletResponse = mock( HttpServletResponse.class );
     Trans mockTrans = mock( Trans.class );
-    TransMeta mockTransMeta = mock( TransMeta.class );
-    LogChannelInterface mockChannelInterface = mock( LogChannelInterface.class );
     StringWriter out = new StringWriter();
     PrintWriter printWriter = new PrintWriter( out );
-
-    when( mockHttpServletRequest.getContextPath() ).thenReturn( GetStatusServlet.CONTEXT_PATH );
+    PowerMockito.spy( Encode.class );
+    when( mockHttpServletRequest.getContextPath() ).thenReturn( CleanupTransServlet.CONTEXT_PATH );
     when( mockHttpServletRequest.getParameter( anyString() ) ).thenReturn( ServletTestUtils.BAD_STRING_TO_TEST );
     when( mockHttpServletResponse.getWriter() ).thenReturn( printWriter );
     when( mockTransformationMap.getTransformation( any( CarteObjectEntry.class ) ) ).thenReturn( mockTrans );
-    when( mockTrans.getLogChannel() ).thenReturn( mockChannelInterface );
-    when( mockTrans.getTransMeta() ).thenReturn( mockTransMeta );
-    when( mockTransMeta.getMaximum() ).thenReturn( new Point( 10, 10 ) );
 
-    getStatusServlet.doGet( mockHttpServletRequest, mockHttpServletResponse );
-    assertFalse( out.toString().contains( ServletTestUtils.BAD_STRING_TO_TEST ) );
+    cleanupTransServlet.doGet( mockHttpServletRequest, mockHttpServletResponse );
+    assertFalse( ServletTestUtils.hasBadText( ServletTestUtils.getInsideOfTag( "H1", out.toString() ) ) );
+    PowerMockito.verifyStatic( atLeastOnce() );
+    Encode.forHtml( anyString() );
   }
 }
