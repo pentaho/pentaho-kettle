@@ -254,7 +254,7 @@
       <target name="resolve"/>
       <target name="resolve-swtlibs"/>
       <property name="approot.stage.dir" value="${basedir}"/>
-      <target name="unzip-swtlibs"/>
+      <target name="copy-swtlibs"/>
     </ant>
     <copy file="classpath.template" tofile=".classpath" overwrite="true"/>
     <switch value="${os.classifier}">

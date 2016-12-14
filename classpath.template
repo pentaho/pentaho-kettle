@@ -30,7 +30,6 @@
   <classpathentry kind="src" path="plugins/lucid-db-streaming-loader/src"/>
   <classpathentry kind="src" path="plugins/ms-access-bulk-loader/src"/>
   <classpathentry kind="src" path="plugins/pdi-pur-plugin/src"/>
-  <classpathentry kind="src" path="plugins/repositories-plugin/src"/>
   <classpathentry kind="src" path="plugins/salesforce/src"/>
   <classpathentry kind="src" path="plugins/ssh2-plugin/src"/>
   <classpathentry kind="src" path="plugins/star-modeler/src"/>
