@@ -21,37 +21,19 @@ public class Engine implements IEngine {
       e.printStackTrace();
     }
     List<IExecutableOperation> execOps = getExecutableOperations( trans );
-
     wireExecution( execOps );
 
-//    sourceExecOpsStream( trans, execOps )
-//      .forEach(
-//        execOp -> {
-//          while ( execOp.isRunning() ) {
-//            execOp.onNext( null );
-//          }
-//        }
-//      );
+    execOps.stream()
+      .forEach( o -> System.out.print( o.toString() ) );
 
-    return getResultFuture( trans, execOps );
+    return new ExecutionResultFuture( trans, execOps );
   }
 
-  private Stream<IExecutableOperation> sourceExecOpsStream( ITransformation trans,
-                                                            List<IExecutableOperation> execOps ) {
-    return trans.getSourceOperations().stream()
-      .map( op -> getExecOp( op, execOps  ) );
-  }
-
-  private Stream<IExecutableOperation> sinkExecOpsStream( ITransformation trans,
-                                                          List<IExecutableOperation> execOps ) {
-    return trans.getSourceOperations().stream()
-      .map( op -> getExecOp( op, execOps  ) );
-  }
 
   private List<IExecutableOperation> getExecutableOperations( ITransformation trans ) {
     return trans.getOperations()
       .stream()
-      .map( KettleExecOperation::compile )
+      .map( op -> KettleExecOperation.compile( op, trans ) )
       .collect( Collectors.toList() );
   }
 
@@ -60,21 +42,16 @@ public class Engine implements IEngine {
     execOps.stream()
       .forEach( op ->
         op.getFrom().stream()
-        .map( fromOp -> getExecOp( fromOp, execOps  ) )
-        .forEach( fromExecOp -> fromExecOp.subscribe( op ) )
+          .map( fromOp -> getExecOp( fromOp, execOps ) )
+          .forEach( fromExecOp -> fromExecOp.subscribe( op ) )
       );
   }
-
 
   private IExecutableOperation getExecOp( IOperation op, List<IExecutableOperation> execOps ) {
     return execOps.stream()
       .filter( execOp -> execOp.getId().equals( op.getId() ) )
       .findFirst()
       .orElseThrow( () -> new RuntimeException( "no matching exec op" ) );
-  }
-
-  public IExecutionResultFuture getResultFuture( ITransformation trans, List<IExecutableOperation> execOps ) {
-    return new ExecutionResultFuture( trans, execOps );
   }
 
 }

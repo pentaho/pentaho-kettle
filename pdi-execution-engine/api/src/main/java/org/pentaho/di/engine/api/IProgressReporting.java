@@ -47,4 +47,5 @@ public interface IProgressReporting<T extends IPDIEvent> extends IPDIEventSource
    * @return
    */
   Status getStatus();
+
 }

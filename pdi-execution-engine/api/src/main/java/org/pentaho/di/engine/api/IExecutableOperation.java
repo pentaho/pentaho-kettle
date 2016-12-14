@@ -1,5 +1,7 @@
 package org.pentaho.di.engine.api;
 
+import java.util.List;
+
 /**
  * ICallableOperation is the materialized version of
  * an IOperation.  It represents the mapping of the
@@ -15,5 +17,7 @@ public interface IExecutableOperation extends IOperation, IProgressReporting<IDa
 
 
   boolean isRunning();
+
+
 
 }
