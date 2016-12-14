@@ -99,7 +99,7 @@ public class LogBrowser {
           public void run() {
             HasLogChannelInterface provider = logProvider.getLogChannelProvider();
 
-            if ( provider != null && !text.isDisposed() && !busy.get() && !paused.get() ) {
+            if ( provider != null && !text.isDisposed() && !busy.get() && !paused.get() && text.isVisible() ) {
               busy.set( true );
 
               LogChannelInterface logChannel = provider.getLogChannel();

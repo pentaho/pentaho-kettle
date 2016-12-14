@@ -330,4 +330,23 @@ public class DatabaseMetaTest {
     when( meta.checkParameters() ).thenCallRealMethod();
     assertEquals( 2, meta.checkParameters().length );
   }
+
+  @Test
+  public void setSQLServerInstanceTest() {
+    DatabaseMeta dbmeta = new DatabaseMeta();
+    DatabaseInterface mssqlServerDatabaseMeta =  new MSSQLServerDatabaseMeta();
+    mssqlServerDatabaseMeta.setPluginId( "MSSQL" );
+    DatabaseInterface mssqlServerNativeDatabaseMeta =  new MSSQLServerNativeDatabaseMeta();
+    mssqlServerNativeDatabaseMeta.setPluginId( "MSSQLNATIVE" );
+    dbmeta.setDatabaseInterface( mssqlServerDatabaseMeta );
+    dbmeta.setSQLServerInstance( "" );
+    assertEquals( dbmeta.getSQLServerInstance(), null );
+    dbmeta.setSQLServerInstance( "instance1" );
+    assertEquals( dbmeta.getSQLServerInstance(), "instance1" );
+    dbmeta.setDatabaseInterface( mssqlServerNativeDatabaseMeta );
+    dbmeta.setSQLServerInstance( "" );
+    assertEquals( dbmeta.getSQLServerInstance(), null );
+    dbmeta.setSQLServerInstance( "instance1" );
+    assertEquals( dbmeta.getSQLServerInstance(), "instance1" );
+  }
 }

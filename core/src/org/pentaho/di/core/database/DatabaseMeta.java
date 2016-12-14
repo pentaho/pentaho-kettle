@@ -2752,7 +2752,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
     // This is also covered/persisted by JDBC option MS SQL Server / instancename / <somevalue>
     // We want to return <somevalue>
     // --> MSSQL.instancename
-    return getExtraOptions().get( "MSSQL.instance" );
+    return getExtraOptions().get( getPluginId() + ".instance" );
   }
 
   /**
@@ -2763,7 +2763,9 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
     // This is also covered/persisted by JDBC option MS SQL Server / instancename / <somevalue>
     // We want to return set <somevalue>
     // --> MSSQL.instancename
-    addExtraOption( "MSSQL", "instance", instanceName );
+    if ( ( instanceName != null ) && ( instanceName.length() > 0 ) ) {
+      addExtraOption( getPluginId(), "instance", instanceName );
+    }
   }
 
   /**

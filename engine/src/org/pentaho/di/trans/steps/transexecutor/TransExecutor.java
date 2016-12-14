@@ -23,8 +23,6 @@
 package org.pentaho.di.trans.steps.transexecutor;
 
 import java.util.ArrayList;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import com.google.common.annotations.VisibleForTesting;
 import org.pentaho.di.core.Const;
@@ -190,7 +188,9 @@ public class TransExecutor extends BaseStep implements StepInterface {
     }
     transExecutorData.groupTimeStart = System.currentTimeMillis();
 
-    discardLogLines( transExecutorData );
+    if ( first ) {
+      discardLogLines( transExecutorData );
+    }
 
     Trans executorTrans = createInternalTrans();
     transExecutorData.setExecutorTrans( executorTrans );
@@ -241,15 +241,8 @@ public class TransExecutor extends BaseStep implements StepInterface {
     // TODO: make this optional/user-defined later
     Trans executorTrans = transExecutorData.getExecutorTrans();
     if ( executorTrans != null ) {
-      final String logChannelId = executorTrans.getLogChannelId();
-      final Timer discardLogLinesTimer = new Timer( "TransExecutor.discardLogLines Timer" );
-      TimerTask timerTask = new TimerTask() {
-        @Override public void run() {
-          KettleLogStore.discardLines( logChannelId, false );
-          LoggingRegistry.getInstance().removeIncludingChildren( logChannelId );
-        }
-      };
-      discardLogLinesTimer.schedule( timerTask, Const.EXECUTOR_DISCARD_LINES_DELAY );
+      KettleLogStore.discardLines( executorTrans.getLogChannelId(), false );
+      LoggingRegistry.getInstance().removeIncludingChildren( executorTrans.getLogChannelId() );
     }
   }
 

@@ -1127,8 +1127,8 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
       repos.init( repositoryMeta );
 
       try {
-        repos.connect( jobMeta.environmentSubstitute( wUserName.getText() ), jobMeta
-          .environmentSubstitute( wPassword.getText() ) );
+        repos.connect( jobMeta.environmentSubstitute( wUserName.getText() ), Utils
+          .resolvePassword( jobMeta, wPassword.getText() ) );
       } catch ( Exception e ) {
         displayMsg( BaseMessages.getString( PKG, "JobExportRepository.Error.CanNotConnect" ), BaseMessages
           .getString( PKG, "JobExportRepository.Error.CanNotConnectMsg", wRepositoryname.getText() ), true );

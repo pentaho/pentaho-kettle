@@ -1023,9 +1023,9 @@ public class JobEntryFTPPUTDialog extends JobEntryDialog implements JobEntryDial
               + jobMeta.environmentSubstitute( wProxyUsername.getText() ) : "" );
 
         String realPassword =
-          jobMeta.environmentSubstitute( wPassword.getText() )
+          Utils.resolvePassword( jobMeta, wPassword.getText() )
             + ( !Utils.isEmpty( wProxyPassword.getText() ) ? " "
-              + jobMeta.environmentSubstitute( wProxyPassword.getText() ) : "" );
+              + Utils.resolvePassword( jobMeta, wProxyPassword.getText() ) : "" );
         // login now ...
         ftpclient.login( realUsername, realPassword );
 

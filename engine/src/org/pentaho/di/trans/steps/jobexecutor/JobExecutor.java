@@ -23,8 +23,6 @@
 package org.pentaho.di.trans.steps.jobexecutor;
 
 import java.util.ArrayList;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import com.google.common.annotations.VisibleForTesting;
 
@@ -189,7 +187,9 @@ public class JobExecutor extends BaseStep implements StepInterface {
 
     data.groupTimeStart = System.currentTimeMillis();
 
-    discardLogLines( data );
+    if ( first ) {
+      discardLogLines( data );
+    }
 
     data.executorJob = createJob( meta.getRepository(), data.executorJobMeta, this );
 
@@ -357,15 +357,8 @@ public class JobExecutor extends BaseStep implements StepInterface {
     // Keep the strain on the logging back-end conservative.
     // TODO: make this optional/user-defined later
     if ( data.executorJob != null ) {
-      final String logChannelId = data.executorJob.getLogChannelId();
-      final Timer discardLogLinesTimer = new Timer( "JobExecutor.discardLogLines Timer" );
-      TimerTask timerTask = new TimerTask() {
-        @Override public void run() {
-          KettleLogStore.discardLines( logChannelId, false );
-          LoggingRegistry.getInstance().removeIncludingChildren( logChannelId );
-        }
-      };
-      discardLogLinesTimer.schedule( timerTask, Const.EXECUTOR_DISCARD_LINES_DELAY );
+      KettleLogStore.discardLines( data.executorJob.getLogChannelId(), false );
+      LoggingRegistry.getInstance().removeIncludingChildren( data.executorJob.getLogChannelId() );
     }
   }
 

@@ -1698,7 +1698,7 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
     if ( !retval ) {
       String realserver = transMeta.environmentSubstitute( wServerName.getText() );
       String realuser = transMeta.environmentSubstitute( wUserName.getText() );
-      String realpass = transMeta.environmentSubstitute( wPassword.getText() );
+      String realpass = Utils.resolvePassword( transMeta, wPassword.getText() );
       String realProxyUsername = transMeta.environmentSubstitute( wProxyUsername.getText() );
       int realport = Const.toInt( transMeta.environmentSubstitute( wPort.getText() ), -1 );
 
