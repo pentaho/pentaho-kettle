@@ -26,7 +26,7 @@ public class TransformationTest {
   public void testConversion() throws KettleXMLException, KettleMissingPluginsException {
     TransMeta meta = new TransMeta( getClass().getClassLoader().getResource( "lorem.ktr" ).getFile() );
     ITransformation trans = Transformation.convert( meta );
-    assertThat( trans.getOperations().size(), is( 7 ) );
+    assertThat( trans.getOperations().size(), is( 5 ) );
     assertThat( trans.getSourceOperations().size(), is( 1 ) );
     assertThat( trans.getSinkOperations().size(), is( 1 ) );
   }

@@ -17,6 +17,11 @@ public interface IOperation {
   List<IOperation> getFrom();
   List<IOperation> getTo();
 
+
+  List<IHop> getHopsIn();
+  List<IHop> getHopsOut();
+
+
   String getConfig();
 
   // how to represent and manage config metadata?

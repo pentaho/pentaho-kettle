@@ -16,5 +16,9 @@ public interface ITransformation {
   List<IOperation> getSinkOperations();
 
 
+  List<IHop> getHops();
 
+  String getConfig();
+
+  String getId();
 }

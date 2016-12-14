@@ -11,6 +11,4 @@ public interface IExecutionContext {
 
   Map<String, Object> getEnvironment();
 
-  IEngine getEngine();
-
 }
