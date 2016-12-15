@@ -1,6 +1,6 @@
 package org.pentaho.di.engine.kettlenative.impl;
 
-import com.google.common.collect.ImmutableList;
+import org.pentaho.di.core.QueueRowSet;
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.SingleRowRowSet;
 import org.pentaho.di.core.exception.KettleException;
@@ -33,19 +33,21 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class KettleExecOperation implements IExecutableOperation {
 
   private final IOperation operation;
   private final Trans trans;
-  private List<org.reactivestreams.Subscriber<? super IDataEvent>> subscribers = new ArrayList<>();
+  private List<Subscriber<? super IDataEvent>> subscribers = new ArrayList<>();
   private AtomicBoolean done = new AtomicBoolean( false );
   private StepDataInterface data;
   private StepInterface step;
 
-  private RowSet inputRowset, outputRowset;
   private StepMeta stepMeta;
 
   private TransMeta transMeta;
@@ -58,15 +60,8 @@ public class KettleExecOperation implements IExecutableOperation {
   protected KettleExecOperation( IOperation op, ITransformation transformation ) {
     this.operation = op;
     trans = createTrans();
-    inputRowset = new SingleRowRowSet();
-    inputRowset.setThreadNameFromToCopy( "", 0, "", 1 );
-    outputRowset = new SingleRowRowSet();
-    outputRowset.setThreadNameFromToCopy( "", 0, "", 1 );
     transMeta = getTransMeta( op, transformation );
     stepMeta = transMeta.findStep( op.getId() );
-
-    trans.getRowsets().add( inputRowset );
-    trans.getRowsets().add( outputRowset );
 
     initializeStepMeta();
   }
@@ -132,11 +127,14 @@ public class KettleExecOperation implements IExecutableOperation {
     if ( dataEvent != null ) {
       inCount.incrementAndGet();
     }
-    if ( dataEvent != null ) {
-      System.out.println( Arrays.toString( dataEvent.getData().getData() ) );
-      inputRowset.putRow( ( (KettleDataEvent) dataEvent ).getRowMeta(), dataEvent.getData().getData() );
-    }
     try {
+      if ( dataEvent != null ) {
+        System.out.println( Arrays.toString( dataEvent.getData().getData() ) );
+
+        RowSet inputRow = ( (BaseStep) step ).findInputRowSet( dataEvent.getEventSource().getId() );
+        inputRow.putRow( ( (KettleDataEvent) dataEvent ).getRowMeta(), dataEvent.getData().getData() );
+      }
+
       boolean ongoing = step.processRow( stepMeta.getStepMetaInterface(), data );
       if ( !ongoing ) {
         done.set( true );
@@ -150,29 +148,21 @@ public class KettleExecOperation implements IExecutableOperation {
   }
 
   private void initializeStepMeta() {
-    stepMeta.setRowDistribution( getRowDistribution() );
-
     trans.setRunning( true );
     trans.setLog( LogChannel.GENERAL );
 
-    List<StepMeta> nextSteps = stepMeta.getParentTransMeta().findNextSteps( stepMeta );
-    List<StepMeta> prevSteps = stepMeta.getParentTransMeta().findPreviousSteps( stepMeta );
+    List<RowSet> outRowSets = nextStepStream()
+      .map( next -> createRowSet( stepMeta, next ) )
+      .collect( Collectors.toList());
+    List<RowSet> inRowSets = prevStepStream()
+      .map( prev -> createRowSet( prev, stepMeta ) )
+      .collect( Collectors.toList());
 
-    for (StepMeta next : nextSteps) {
-      RowSet out = new SingleRowRowSet();
-      out.setThreadNameFromToCopy(stepMeta.getName(), 0, next.getName(), 0);
-      trans.getRowsets().add(out);
-    }
-
-    for (StepMeta prev : prevSteps) {
-      RowSet in = new SingleRowRowSet();
-      in.setThreadNameFromToCopy(prev.getName(), 0, stepMeta.getName(), 0);
-      trans.getRowsets().add(in);
-    }
+    trans.getRowsets().addAll( outRowSets );
+    trans.getRowsets().addAll( inRowSets );
 
     data = stepMeta.getStepMetaInterface().getStepData();
-    step = stepMeta.getStepMetaInterface().getStep( stepMeta, data, 1, stepMeta.getParentTransMeta(), trans );
-
+    step = stepMeta.getStepMetaInterface().getStep( stepMeta, data, 0, stepMeta.getParentTransMeta(), trans );
 
     // Copy the variables of the transformation to the step...
     // don't share. Each copy of the step has its own variables.
@@ -181,46 +171,42 @@ public class KettleExecOperation implements IExecutableOperation {
     step.setUsingThreadPriorityManagment( false );
 
     if ( !getTo().isEmpty() ) {
-      ( (BaseStep) step ).setOutputRowSets( ImmutableList.of( outputRowset ) );
+      ( (BaseStep) step ).setOutputRowSets( outRowSets );
     }
     if ( !getFrom().isEmpty() ) {
-      ( (BaseStep) step ).setInputRowSets( ImmutableList.of( inputRowset ) );
+      ( (BaseStep) step ).setInputRowSets( inRowSets );
     }
-
-    inputRowset.setThreadNameFromToCopy( "dummyPrev", 0, stepMeta.getName(), 0 );
-    inputRowset.setThreadNameFromToCopy( stepMeta.getName(), 0, "dummyNext", 0 );
-
     // Pass the connected repository & metaStore to the steps runtime
     step.setRepository( null );
     step.setMetaStore( null );
   }
 
-  /**
-   * RowDistribution which publishes distributed rows to all subscribers.
-   */
-  private RowDistributionInterface getRowDistribution() {
-    return new RowDistributionInterface() {
-      @Override public String getCode() {
-        return "spark-distributor";
-      }
+  private Stream<StepMeta> prevStepStream() {
+    return stepMeta.getParentTransMeta().findPreviousSteps( stepMeta ).stream();
+  }
 
-      @Override public String getDescription() {
-        return "bypasses output rowsets, all distribute thru this guy";
-      }
+  private Stream<StepMeta> nextStepStream() {
+    return stepMeta.getParentTransMeta().findNextSteps( stepMeta ).stream();
+  }
 
-      @Override
-      public void distributeRow( RowMetaInterface rowMetaInterface, Object[] objects, StepInterface stepInterface )
-        throws KettleStepException {
+
+  private RowSet createRowSet( StepMeta prev, StepMeta next ) {
+    RowSet out = new QueueRowSet( ) {
+      @Override public boolean putRow(RowMetaInterface rowMeta, Object[] rowData) {
         outCount.incrementAndGet();
-        subscribers.stream()
-          .forEach( sub -> sub.onNext(
-            new KettleDataEvent( rowMetaInterface, objects ) ) );
+        getSubscriber().ifPresent( sub -> sub.onNext(
+          new KettleDataEvent( KettleExecOperation.this, rowMeta, rowData) ) );
+        return super.putRow( rowMeta, rowData );
       }
 
-      @Override public PrimitiveGCInterface.EImage getDistributionImage() {
-        return null;
+      private Optional<Subscriber<? super IDataEvent>> getSubscriber() {
+        return KettleExecOperation.this.subscribers.stream()
+          .filter( sub -> (( KettleExecOperation ) sub).getId().equals( next.getName() ) )
+          .findFirst();
       }
     };
+    out.setThreadNameFromToCopy(prev.getName(), 0, next.getName(), 0);
+    return out;
   }
 
   private TransMeta getTransMeta( IOperation op, ITransformation transformation ) {

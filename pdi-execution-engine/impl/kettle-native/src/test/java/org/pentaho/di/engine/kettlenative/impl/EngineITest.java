@@ -16,11 +16,13 @@ import org.pentaho.di.engine.api.IProgressReporting;
 import org.pentaho.di.engine.api.ITransformation;
 import org.pentaho.di.trans.TransMeta;
 
+import java.io.File;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public class EngineITest {
 
@@ -54,7 +56,6 @@ public class EngineITest {
     assertThat( dataGrid1.getOut(), is( 1 ) );
     assertThat( dataGrid2.getOut(), is( 1 ) );
     assertThat( "dummy should get rows fromm both data grids", dummy.getIn(), is( 2 ) );
-    assertThat( "dummy is a sink operation", dummy.getOut(), is( 0 ) );
     System.out.println( reports );
   }
 
@@ -68,13 +69,21 @@ public class EngineITest {
 
   }
 
-  @Ignore( "lookup step unsupported yet" )
   @Test
-  public void testOutputFile()
+  public void simpleFilter()
+    throws KettleXMLException, KettleMissingPluginsException, InterruptedException, ExecutionException {
+    IExecutionResult result = getTestExecutionResult( "simpleFilter.ktr" );
+    List<IProgressReporting<IDataEvent>> reports = result.getDataEventReport();
+    System.out.println( reports );
+
+  }
+
+  @Test
+  public void testLookup()
     throws KettleXMLException, KettleMissingPluginsException, InterruptedException, ExecutionException {
     IExecutionResult result = getTestExecutionResult( "SparkSample.ktr" );
     List<IProgressReporting<IDataEvent>> reports = result.getDataEventReport();
-    System.out.println( reports );
+    assertTrue( new File( getClass().getClassLoader().getResource( "Output.txt" ).getFile()).length() > 0 );
   }
 
 

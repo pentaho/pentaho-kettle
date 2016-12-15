@@ -4,14 +4,17 @@ import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.engine.api.IData;
 import org.pentaho.di.engine.api.IDataEvent;
+import org.pentaho.di.engine.api.IExecutableOperation;
 import org.pentaho.di.engine.api.IPDIEventSource;
 
 public class KettleDataEvent implements IDataEvent {
 
   final private IData data;
   private final RowMetaInterface rowMeta;
+  private final IExecutableOperation operation;
 
-  public KettleDataEvent( RowMetaInterface rowMeta, Object[] values ) {
+  public KettleDataEvent( IExecutableOperation operation, RowMetaInterface rowMeta, Object[] values ) {
+    this.operation = operation;
     data = () -> values;
     this.rowMeta = rowMeta;
   }
@@ -25,7 +28,7 @@ public class KettleDataEvent implements IDataEvent {
   }
 
   @Override public IPDIEventSource getEventSource() {
-    return null;
+    return operation;
   }
 
   public RowMetaInterface getRowMeta() {
