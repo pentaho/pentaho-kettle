@@ -53,29 +53,6 @@
 	    <antcall target="antcontrib.download" />
 	  </target>
 	
-	
-	  <!--=======================================================================
-	      antcontrib.download (borrowed from subfloor.xml)
-	      
-	      Fetches ant-contrib from sourceforge
-	      ====================================================================-->
-	  <target name="antcontrib.download" unless="antcontrib.available">
-	    <mkdir dir="${user.home}/.subfloor/tmp" />
-	    <get src="http://downloads.sourceforge.net/ant-contrib/ant-contrib-1.0b3-bin.zip"
-	         dest="${user.home}/.subfloor/tmp/antcontrib.zip"
-	         usetimestamp="true" />
-	    <unzip src="${user.home}/.subfloor/tmp/antcontrib.zip" dest="${user.home}/.subfloor/tmp">
-	      <patternset>
-	        <include name="**/*.jar" />
-	      </patternset>
-	    </unzip>
-	    <copy todir="${user.home}/.subfloor/ant-contrib">
-	      <fileset dir="${user.home}/.subfloor/tmp/ant-contrib">
-	        <include name="**/*.jar" />
-	      </fileset>
-	    </copy>
-	  </target>
-	
 	<target name="create-dot-classpath" depends="init,resolve,subfloor.create-dot-classpath"/>
 	   
 	<target name="default" depends="clean,init, resolve, dist" />
