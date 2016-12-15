@@ -1,0 +1,89 @@
+@startuml
+
+interface IEngine {
++ IExecutionResult execute( IGraph, IExecutionContext )
+}
+
+
+interface IGraph {
+Represents logical structure of the trans
++List<IOperation> getOperations();
+
++List<IOperation> getSourceOperations();
+
++List<IOperation> getSinkOperations();
+}
+
+interface IMaterializer {
+Takes the logical graph and produces an executable trans.
+Can split up, group, rewrite the graph.
+..
+Materializers are pluggable and chainable, with
+implementations specific to context
+--
++int getCost( IGraph, IExecutionContext )
++ITransformation materialize( IGraph, IExecutionContext )
+}
+
+
+
+Operation <|-- Processor
+
+interface IOperation {
++ String getId();
+
++ List<IOperation> getFrom();
++ List<IOperation> getTo();
+
+
+
++ String getConfig();
+
++ <T> T accept( IOperationVisitor<T> );
+  }
+
+  abstract class Operation implements IOperation {
+  An executable unit.
+  Could correspond to 1 or more kettle steps.
++ void subscribe(Subscriber<? super ITuple> )
+
++ void onComplete();
+
++ void onError( Throwable );
+
++ void onNext( ITuple );
+
+  }
+
+interface IOperationFactory {
++ Operation create()
++ boolean supports(IExecutionContext)
+}
+
+class KettleNativeOperationFactory implements IOperationFactory
+
+class SparkOperationFactory implements IOperationFactory
+
+IGraph <--* IOperation
+
+IEngine - IMaterializer : uses >
+IMaterializer - OperationFactoryRegistry : uses >
+
+IOperationFactory --> Operation : creates <
+
+OperationFactoryRegistry -- IOperationFactory : retrieves >
+
+class OperationFactoryRegistry {
++ List<IOperationFactory> getOperationFactory(String operationID)
+}
+
+IOperation - ITuple : processes >
+
+interface ITuple {
++ Object[] getValues()
++ Class[] getTypes()
++ getLineage()
+}
+
+
+@enduml

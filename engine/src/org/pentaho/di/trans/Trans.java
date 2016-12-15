@@ -526,6 +526,10 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 
   }
 
+  public void setRowsets(List<RowSet>  rowsets) {
+    this.rowsets = rowsets;
+  }
+
   /**
    * Gets the log channel interface for the transformation.
    *
