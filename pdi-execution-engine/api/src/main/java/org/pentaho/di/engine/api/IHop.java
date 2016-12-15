@@ -15,5 +15,4 @@ public interface IHop {
     return TYPE_NORMAL;
   }
 
-  void setTo( IOperation to );
 }
