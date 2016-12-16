@@ -1,7 +1,6 @@
 package org.pentaho.di.engine.kettlenative.impl;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
@@ -16,13 +15,13 @@ import org.pentaho.di.engine.api.IProgressReporting;
 import org.pentaho.di.engine.api.ITransformation;
 import org.pentaho.di.trans.TransMeta;
 
-import java.io.File;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.function.Predicate;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 public class EngineITest {
 
@@ -53,9 +52,10 @@ public class EngineITest {
     IExecutableOperation dataGrid1 = getByName( "Data Grid", reports );
     IExecutableOperation dataGrid2 = getByName( "Data Grid 2", reports );
     IExecutableOperation dummy = getByName( "Dummy (do nothing)", reports );
-    assertThat( dataGrid1.getOut(), is( 1 ) );
-    assertThat( dataGrid2.getOut(), is( 1 ) );
-    assertThat( "dummy should get rows fromm both data grids", dummy.getIn(), is( 2 ) );
+    System.out.println( reports );
+    assertThat( dataGrid1.getOut(), is( 1l ) );
+    assertThat( dataGrid2.getOut(), is( 1l ) );
+    assertThat( "dummy should get rows fromm both data grids", dummy.getIn(), is( 2l ) );
     System.out.println( reports );
   }
 
@@ -83,7 +83,18 @@ public class EngineITest {
     throws KettleXMLException, KettleMissingPluginsException, InterruptedException, ExecutionException {
     IExecutionResult result = getTestExecutionResult( "SparkSample.ktr" );
     List<IProgressReporting<IDataEvent>> reports = result.getDataEventReport();
-    assertTrue( new File( getClass().getClassLoader().getResource( "Output.txt" ).getFile()).length() > 0 );
+    assertThat(
+      reports.stream()
+        .filter( isOp( "Merged Output" ) )
+        .findFirst()
+        .get()
+        .getOut(),
+      is( 2001l ) );  // hmm, out + written
+    System.out.println( reports );
+  }
+
+  private Predicate<? super IProgressReporting<IDataEvent>> isOp( String s ) {
+    return o -> o.getId().equals( s );
   }
 
 
@@ -92,7 +103,7 @@ public class EngineITest {
     ExecutionException {
     TransMeta meta = new TransMeta( getClass().getClassLoader().getResource( transName ).getFile() );
     ITransformation trans = Transformation.convert( meta );
-    IExecutionResultFuture resultFuture = engine.execute( trans );
+    Future<IExecutionResult> resultFuture = engine.execute( trans );
     return resultFuture.get();
   }
 
