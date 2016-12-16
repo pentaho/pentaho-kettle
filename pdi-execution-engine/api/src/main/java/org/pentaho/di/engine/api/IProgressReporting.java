@@ -18,21 +18,21 @@ public interface IProgressReporting<T extends IPDIEvent> extends IPDIEventSource
    *
    * @return
    */
-  int getIn();
+  long getIn();
 
   /**
    * Get number of {@link IPDIEvent}s out from this component
    *
    * @return
    */
-  int getOut();
+  long getOut();
 
   /**
    * Get number of {@link IPDIEvent}s dropped (errorred)
    *
    * @return
    */
-  int getDropped();
+  long getDropped();
 
   /**
    * Get number of {@link IPDIEvent}s currently in-flight

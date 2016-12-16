@@ -537,7 +537,7 @@
       <method>none</method>
       <schema_name/>
     </partitioning>
-    <from/>
+    <from>App Input</from>
     <input_sorted>N</input_sorted>
     <preserve_memory>Y</preserve_memory>
     <sorted_list>N</sorted_list>
