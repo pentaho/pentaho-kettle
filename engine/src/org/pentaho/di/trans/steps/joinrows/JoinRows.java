@@ -198,7 +198,7 @@ public class JoinRows extends BaseStep implements StepInterface {
         }
         if ( log.isRowLevel() ) {
           logRowlevel( BaseMessages.getString( PKG, "JoinRows.Log.ReadRowFromFile" )
-            + filenr + " : " + getInputRowMeta().getString( rowData ) );
+            + filenr + " : " + data.fileRowMeta[filenr].getString( rowData ) );
         }
 
         data.position[filenr]++;
