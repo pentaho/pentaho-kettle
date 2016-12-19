@@ -1,5 +1,7 @@
 package org.pentaho.di.engine.api;
 
+import java.util.concurrent.Future;
+
 /**
  * An IEngine is responsible for executing an ITransformation.
  *
@@ -9,6 +11,6 @@ package org.pentaho.di.engine.api;
  */
 public interface IEngine {
 
-   IExecutionResultFuture execute( ITransformation trans );
+   Future<IExecutionResult> execute( ITransformation trans );
 }
 

@@ -9,7 +9,11 @@ package org.pentaho.di.engine.api;
 public interface IDataEvent extends IPDIEvent {
   enum TYPE {IN, OUT, ERROR}
 
+  enum STATE {ACTIVE, COMPLETE, EMPTY}
+
   TYPE getType();
+
+  STATE getState();
 
   /**
    * Row of data or otherwise
