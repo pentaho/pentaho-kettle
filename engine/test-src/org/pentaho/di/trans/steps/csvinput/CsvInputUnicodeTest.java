@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -47,7 +47,11 @@ public class CsvInputUnicodeTest extends CsvInputUnitTestBase {
   private static final String UTF16LE = "UTF-16LE";
   private static final String UTF16LEBOM = "x-UTF-16LE-BOM";
   private static final String UTF16BE = "UTF-16LE";
-  private static final String TEST_DATA = "Header1\tHeader2\nValue\tValue\nValue\tValue\n";
+  private static final String ONE_CHAR_DELIM = "\t";
+  private static final String MULTI_CHAR_DELIM = "|||";
+  private static final String TEXT = "Header1%1$sHeader2\nValue%1$sValue\nValue%1$sValue\n";
+  private static final String TEST_DATA = String.format( TEXT, ONE_CHAR_DELIM );
+  private static final String TEST_DATA1 = String.format( TEXT, MULTI_CHAR_DELIM );
 
   private static StepMockHelper<?, ?> stepMockHelper;
 
@@ -62,28 +66,39 @@ public class CsvInputUnicodeTest extends CsvInputUnitTestBase {
 
   @Test
   public void testUTF16LE() throws Exception {
-    doTest( UTF16LE, UTF16LE, TEST_DATA );
+    doTest( UTF16LE, UTF16LE, TEST_DATA, ONE_CHAR_DELIM );
   }
 
   @Test
   public void testUTF16BE() throws Exception {
-    doTest( UTF16BE, UTF16BE, TEST_DATA );
+    doTest( UTF16BE, UTF16BE, TEST_DATA, ONE_CHAR_DELIM );
+  }
+
+  @Test
+  public void testUTF16BE_multiDelim() throws Exception {
+    doTest( UTF16BE, UTF16BE, TEST_DATA1, MULTI_CHAR_DELIM );
   }
 
   @Test
   public void testUTF16LEBOM() throws Exception {
-    doTest( UTF16LEBOM, UTF16LE, TEST_DATA );
+    doTest( UTF16LEBOM, UTF16LE, TEST_DATA, ONE_CHAR_DELIM );
   }
 
   @Test
   public void testUTF8() throws Exception {
-    doTest( UTF8, UTF8, TEST_DATA );
+    doTest( UTF8, UTF8, TEST_DATA, ONE_CHAR_DELIM );
   }
 
-  private void doTest( final String fileEncoding, final String stepEncoding, final String testData ) throws Exception {
+  @Test
+  public void testUTF8_multiDelim() throws Exception {
+    doTest( UTF8, UTF8, TEST_DATA1, MULTI_CHAR_DELIM );
+  }
+
+  private void doTest( final String fileEncoding, final String stepEncoding, final String testData,
+    final String delimiter ) throws Exception {
     String testFilePath = createTestFile( fileEncoding, testData ).getAbsolutePath();
 
-    CsvInputMeta meta = createStepMeta( testFilePath, stepEncoding );
+    CsvInputMeta meta = createStepMeta( testFilePath, stepEncoding, delimiter );
     CsvInputData data = new CsvInputData();
 
     CsvInput csvInput =
@@ -110,10 +125,10 @@ public class CsvInputUnicodeTest extends CsvInputUnitTestBase {
     assertEquals( 2, csvInput.getLinesWritten() );
   }
 
-  private CsvInputMeta createStepMeta( final String testFilePath, final String encoding ) {
+  private CsvInputMeta createStepMeta( final String testFilePath, final String encoding, final String delimiter ) {
     final CsvInputMeta meta = new CsvInputMeta();
     meta.setFilename( testFilePath );
-    meta.setDelimiter( "\t" );
+    meta.setDelimiter( delimiter );
     meta.setEncoding( encoding );
     meta.setEnclosure( "\"" );
     meta.setBufferSize( "50000" );
