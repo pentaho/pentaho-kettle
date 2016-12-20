@@ -92,6 +92,7 @@ public class ValueMetaBase implements ValueMetaInterface {
 
   public static final String XML_META_TAG = "value-meta";
   public static final String XML_DATA_TAG = "value-data";
+  public static final String COMPATIBLE_DATE_FORMAT_PATTERN = "yyyy/MM/dd HH:mm:ss.SSS";
 
   public static final boolean EMPTY_STRING_AND_NULL_ARE_DIFFERENT = convertStringToBoolean( Const.NVL( System
       .getProperty( Const.KETTLE_EMPTY_STRING_DIFFERS_FROM_NULL, "N" ), "N" ) );
@@ -755,7 +756,7 @@ public class ValueMetaBase implements ValueMetaInterface {
     return getDateFormat().format( date );
   }
 
-  protected static SimpleDateFormat compatibleDateFormat = new SimpleDateFormat( "yyyy/MM/dd HH:mm:ss.SSS" );
+  protected static SimpleDateFormat compatibleDateFormat = new SimpleDateFormat( COMPATIBLE_DATE_FORMAT_PATTERN );
 
   protected synchronized String convertDateToCompatibleString( Date date ) {
     if ( date == null ) {
