@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,6 +24,8 @@ package org.pentaho.di.ui.core.dialog;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
+import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -279,11 +281,18 @@ public class EnterValueDialog extends Dialog {
     // If the user changes data type or if we type a text, we set the default mask for the type
     // We also set the list of possible masks in the wFormat
     //
-    wInputString.addModifyListener( new ModifyListener() {
-      public void modifyText( ModifyEvent event ) {
+    wInputString.addFocusListener( new FocusListener() {
+      @Override
+      public void focusGained( FocusEvent focusEvent ) {
+
+      }
+
+      @Override
+      public void focusLost( FocusEvent focusEvent ) {
         setFormats();
       }
     } );
+
     wValueType.addSelectionListener( new SelectionAdapter() {
       public void widgetSelected( SelectionEvent event ) {
         setFormats();
