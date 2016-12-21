@@ -1,8 +1,8 @@
 package org.pentaho.di.engine.api;
 
-import java.util.List;
+import java.util.Optional;
 
 public interface IExecutableOperationFactory {
 
-  IExecutableOperation create( IOperation operation );
+  Optional<IExecutableOperation> create( ITransformation transformation, IOperation operation, IExecutionContext context );
 }

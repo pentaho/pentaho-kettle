@@ -1,5 +1,6 @@
 package org.pentaho.di.engine.api;
 
+import java.io.Serializable;
 import java.util.concurrent.Future;
 
 /**
@@ -9,7 +10,7 @@ import java.util.concurrent.Future;
  * trans, rewrite or modify if necessary (leveraging IOperationVisitors),
  * and "resolve" the trans IOperations to concrete functions (ICallableOperations).
  */
-public interface IEngine {
+public interface IEngine extends Serializable {
 
    Future<IExecutionResult> execute( ITransformation trans );
 }

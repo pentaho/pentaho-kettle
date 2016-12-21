@@ -8,8 +8,11 @@ import org.pentaho.di.core.exception.KettleMissingPluginsException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.LogChannel;
+import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.engine.api.IData;
 import org.pentaho.di.engine.api.IDataEvent;
 import org.pentaho.di.engine.api.IExecutableOperation;
 import org.pentaho.di.engine.api.IHop;
@@ -39,30 +42,33 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static org.pentaho.di.engine.kettlenative.impl.KettleNativeUtil.createTrans;
+import static org.pentaho.di.engine.kettlenative.impl.KettleNativeUtil.getTransMeta;
+
 public class KettleExecOperation implements IExecutableOperation {
 
   private final IOperation operation;
-  private final Trans trans;
-  private final ExecutorService executor;
+  private transient final Trans trans;
+  private transient final ExecutorService executor;
   private List<Subscriber<? super IDataEvent>> subscribers = new ArrayList<>();
   private AtomicBoolean done = new AtomicBoolean( false );
-  private StepDataInterface data;
-  private StepInterface step;
-  private StepMeta stepMeta;
-  private TransMeta transMeta;
+  private transient StepDataInterface data;
+  private transient StepInterface step;
+  private transient StepMeta stepMeta;
+  private transient TransMeta transMeta;
 
   private AtomicBoolean started = new AtomicBoolean( false );
 
   protected KettleExecOperation( IOperation op, ITransformation transformation, ExecutorService executorService ) {
     this.operation = op;
     trans = createTrans();
-    transMeta = getTransMeta( op, transformation );
+    transMeta = getTransMeta( transformation );
     stepMeta = transMeta.findStep( op.getId() );
     this.executor = executorService;
     initializeStepMeta();
   }
 
-  public static KettleExecOperation compile( IOperation operation, ITransformation trans,
+  public static IExecutableOperation compile( IOperation operation, ITransformation trans,
                                              ExecutorService executorService ) {
     return new KettleExecOperation( operation, trans, executorService );
   }
@@ -124,19 +130,50 @@ public class KettleExecOperation implements IExecutableOperation {
     try {
       switch( dataEvent.getState() ) {
         case ACTIVE:
+          final RowMetaInterface rowMetaInterface = getRowMetaInterface( dataEvent );
           getInputRowset( dataEvent ).ifPresent(
-            rowset -> rowset.putRow( (
-              (KettleDataEvent) dataEvent ).getRowMeta(), dataEvent.getData().getData() ) );
+            rowset -> {
+              List<IData> data = dataEvent.getData();
+              if (data.size() > 1) {
+                // TEMP hack, this only happens with Spark right now
+                data.stream()
+                  .forEach( d -> rowset.putRow( rowMetaInterface, d.getData() ) );
+                rowset.putRow( rowMetaInterface, null );
+                rowset.setDone();
+                return;
+              } else {
+                rowset.putRow(
+                  rowMetaInterface, data.get( 0 ).getData() );
+              }
+            } );  // TODO assuming 1 for now
+
           break;
         case COMPLETE:
           // terminal row
-          getInputRowset( dataEvent ).ifPresent( rowset -> rowset.setDone() );
+          terminalRow( dataEvent );
           break;
       }
-    } catch ( KettleException e ) {
+    } catch ( KettleException   e ) {
       throw new RuntimeException( e );
     }
 
+  }
+
+  private void terminalRow( IDataEvent dataEvent )  {
+    try {
+      getInputRowset( dataEvent ).ifPresent( rowset -> rowset.setDone() );
+    } catch ( KettleStepException e ) {
+      throw new RuntimeException( e );
+    }
+  }
+
+  private RowMetaInterface getRowMetaInterface( IDataEvent dataEvent ) {
+    RowMetaInterface rowMetaInterface = new RowMeta();
+    rowMetaInterface.addValueMeta( new ValueMetaString( "name" ) );
+    if ( dataEvent instanceof KettleDataEvent ) {
+      rowMetaInterface = ((KettleDataEvent) dataEvent ).getRowMeta();
+    }
+    return rowMetaInterface;
   }
 
   private Optional<RowSet> getInputRowset( IDataEvent dataEvent ) throws KettleStepException {
@@ -153,7 +190,7 @@ public class KettleExecOperation implements IExecutableOperation {
 
   private void initializeStepMeta() {
     trans.setRunning( true );
-    trans.setLog( LogChannel.GENERAL );
+
 
     List<RowSet> outRowSets = nextStepStream()
       .map( next -> createRowSet( stepMeta, next ) )
@@ -200,6 +237,9 @@ public class KettleExecOperation implements IExecutableOperation {
     return stepMeta.getParentTransMeta().findNextSteps( stepMeta ).stream();
   }
 
+  protected List<Subscriber<? super IDataEvent>> getSubscribers() {
+    return subscribers;
+  }
 
   private RowSet createRowSetNoSub( StepMeta prev, StepMeta next ) {
     RowSet out = new QueueRowSet();
@@ -217,7 +257,7 @@ public class KettleExecOperation implements IExecutableOperation {
 
       private Optional<Subscriber<? super IDataEvent>> getSubscriber() {
         return KettleExecOperation.this.subscribers.stream()
-          .filter( sub -> ( (KettleExecOperation) sub ).getId().equals( next.getName() ) )
+          .filter( sub -> ( (IExecutableOperation) sub ).getId().equals( next.getName() ) )
           .findFirst();
       }
     };
@@ -225,32 +265,7 @@ public class KettleExecOperation implements IExecutableOperation {
     return out;
   }
 
-  private TransMeta getTransMeta( IOperation op, ITransformation transformation ) {
-    String config = transformation.getConfig();
-    Document doc;
-    try {
-      doc = XMLHandler.loadXMLString( config );
-      Node stepNode = XMLHandler.getSubNode( doc, "transformation" );
-      return new TransMeta( stepNode, null );
-    } catch ( KettleXMLException | KettleMissingPluginsException e ) {
-      throw new RuntimeException( e );
-    }
-  }
 
-  /**
-   * Temp hack to set rowsets w/o modifying kettle Trans
-   */
-  public Trans createTrans() {
-    Trans trans = new Trans();
-    try {
-      Field rowsets = Trans.class.getDeclaredField( "rowsets" );
-      rowsets.setAccessible( true );
-      rowsets.set( trans, new ArrayList<RowSet>() );
-      return trans;
-    } catch ( NoSuchFieldException | IllegalAccessException e ) {
-      throw new RuntimeException( e );
-    }
-  }
 
   @Override public long getIn() {
     return step.getLinesRead();

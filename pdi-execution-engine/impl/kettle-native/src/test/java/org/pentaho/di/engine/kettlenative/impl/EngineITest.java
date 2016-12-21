@@ -26,7 +26,7 @@ import static org.junit.Assert.assertThat;
 public class EngineITest {
 
   TransMeta testMeta;
-  Engine engine = new Engine();
+  static Engine engine = new Engine();
 
   @Before
   public void before() throws KettleException {
@@ -38,8 +38,6 @@ public class EngineITest {
   public void testExec() throws KettleXMLException, KettleMissingPluginsException, InterruptedException {
     TransMeta meta = new TransMeta( getClass().getClassLoader().getResource( "lorem.ktr" ).getFile() );
     ITransformation trans = Transformation.convert( meta );
-
-    IEngine engine = new Engine();
     engine.execute( trans );
   }
 
@@ -83,6 +81,7 @@ public class EngineITest {
     throws KettleXMLException, KettleMissingPluginsException, InterruptedException, ExecutionException {
     IExecutionResult result = getTestExecutionResult( "SparkSample.ktr" );
     List<IProgressReporting<IDataEvent>> reports = result.getDataEventReport();
+    Thread.sleep( 100 );  // Don't check before file is done being written
     assertThat(
       reports.stream()
         .filter( isOp( "Merged Output" ) )
@@ -92,6 +91,17 @@ public class EngineITest {
       is( 2001l ) );  // hmm, out + written
     System.out.println( reports );
   }
+
+  @Test
+  public void testChainedCalc()
+    throws KettleXMLException, KettleMissingPluginsException, InterruptedException, ExecutionException {
+    // executes a series of Calculation steps as a chain of Spark FlatMapFunctions.
+    IExecutionResult result = getTestExecutionResult( "StringCalc.ktr" );
+    List<IProgressReporting<IDataEvent>> reports = result.getDataEventReport();
+    System.out.println( reports );
+
+  }
+
 
   private Predicate<? super IProgressReporting<IDataEvent>> isOp( String s ) {
     return o -> o.getId().equals( s );

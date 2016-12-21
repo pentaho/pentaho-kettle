@@ -19,7 +19,7 @@ public class Hop implements IHop {
   private final IOperation fromOp;
   private final IOperation toOp;
 
-  private final BaseHopMeta hopMeta;
+  private final transient BaseHopMeta hopMeta;
 
   public Hop( TransHopMeta hopMeta, TransMeta transMeta, Map<StepMeta, IOperation> operations,
               Map<TransHopMeta, IHop> hops ) {
