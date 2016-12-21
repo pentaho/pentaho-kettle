@@ -183,6 +183,7 @@ public class ValueMetaAndData {
           originMeta.setGroupingSymbol( null );
           originMeta.setCurrencySymbol( null );
         }
+        originMeta.setConversionMask( ValueMetaBase.COMPATIBLE_DATE_FORMAT_PATTERN );
         valueData = Const.trim( text );
         valueData = valueMeta.convertData( originMeta, valueData );
       }
