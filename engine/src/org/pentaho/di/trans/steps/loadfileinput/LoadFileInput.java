@@ -161,6 +161,12 @@ public class LoadFileInput extends BaseStep implements StepInterface {
         data.file = data.files.getFile( data.filenr );
       }
 
+      // Check if file exists
+      if ( meta.isIgnoreMissingPath() && !data.file.exists() ) {
+        logBasic( BaseMessages.getString( PKG, "LoadFileInput.Error.FileNotExists", "" + data.file.getName() ) );
+        return openNextFile();
+      }
+      
       // Check if file is empty
       data.fileSize = data.file.getContent().getSize();
       // Move file pointer ahead!

@@ -138,6 +138,10 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
   private Button wIgnoreEmptyFile;
   private FormData fdlIgnoreEmptyFile, fdIgnoreEmptyFile;
 
+  private Label wlIgnoreMissingPath;
+  private Button wIgnoreMissingPath;
+  private FormData fdlIgnoreMissingPath, fdIgnoreMissingPath;
+
   private Label wlInclRownumField;
   private TextVar wInclRownumField;
   private FormData fdlInclRownumField, fdInclRownumField;
@@ -582,13 +586,30 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
     fdIgnoreEmptyFile.top = new FormAttachment( wEncoding, margin );
     wIgnoreEmptyFile.setLayoutData( fdIgnoreEmptyFile );
 
+    // Ignore missing path
+    wlIgnoreMissingPath = new Label( wFileConf, SWT.RIGHT );
+    wlIgnoreMissingPath.setText( BaseMessages.getString( PKG, "LoadFileInputDialog.IgnoreMissingPath.Label" ) );
+    props.setLook( wlIgnoreMissingPath );
+    fdlIgnoreMissingPath = new FormData();
+    fdlIgnoreMissingPath.left = new FormAttachment( 0, 0 );
+    fdlIgnoreMissingPath.top = new FormAttachment( wIgnoreEmptyFile, margin );
+    fdlIgnoreMissingPath.right = new FormAttachment( middle, -margin );
+    wlIgnoreMissingPath.setLayoutData( fdlIgnoreMissingPath );
+    wIgnoreMissingPath = new Button( wFileConf, SWT.CHECK );
+    props.setLook( wIgnoreMissingPath );
+    wIgnoreMissingPath.setToolTipText( BaseMessages.getString( PKG, "LoadFileInputDialog.IgnoreMissingPath.Tooltip" ) );
+    fdIgnoreMissingPath = new FormData();
+    fdIgnoreMissingPath.left = new FormAttachment( middle, 0 );
+    fdIgnoreMissingPath.top = new FormAttachment( wIgnoreEmptyFile, margin );
+    wIgnoreMissingPath.setLayoutData( fdIgnoreMissingPath );
+
     // preview limit
     wlLimit = new Label( wFileConf, SWT.RIGHT );
     wlLimit.setText( BaseMessages.getString( PKG, "LoadFileInputDialog.Limit.Label" ) );
     props.setLook( wlLimit );
     fdlLimit = new FormData();
     fdlLimit.left = new FormAttachment( 0, 0 );
-    fdlLimit.top = new FormAttachment( wIgnoreEmptyFile, margin );
+    fdlLimit.top = new FormAttachment( wIgnoreMissingPath, margin );
     fdlLimit.right = new FormAttachment( middle, -margin );
     wlLimit.setLayoutData( fdlLimit );
     wLimit = new Text( wFileConf, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
@@ -596,7 +617,7 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
     wLimit.addModifyListener( lsMod );
     fdLimit = new FormData();
     fdLimit.left = new FormAttachment( middle, 0 );
-    fdLimit.top = new FormAttachment( wIgnoreEmptyFile, margin );
+    fdLimit.top = new FormAttachment( wIgnoreMissingPath, margin );
     fdLimit.right = new FormAttachment( 100, 0 );
     wLimit.setLayoutData( fdLimit );
 
@@ -1213,7 +1234,7 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
     wAddResult.setSelection( in.addResultFile() );
 
     wIgnoreEmptyFile.setSelection( in.isIgnoreEmptyFile() );
-
+    wIgnoreMissingPath.setSelection( in.isIgnoreMissingPath() );
     wFilenameInField.setSelection( in.getIsInFields() );
 
     if ( in.getDynamicFilenameField() != null ) {
@@ -1345,6 +1366,7 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
     in.setRowNumberField( wInclRownumField.getText() );
     in.setAddResultFile( wAddResult.getSelection() );
     in.setIgnoreEmptyFile( wIgnoreEmptyFile.getSelection() );
+    in.setIgnoreMissingPath( wIgnoreMissingPath.getSelection() );
 
     in.setIncludeFilename( wInclFilename.getSelection() );
     in.setIncludeRowNumber( wInclRownum.getSelection() );

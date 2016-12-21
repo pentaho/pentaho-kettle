@@ -58,7 +58,8 @@ public class LoadFileInputMetaTest implements InitializerInterface<StepMetaInter
   LoadSaveTester loadSaveTester;
 
   String xmlOrig = "    " + "<include>N</include>    <include_field/>    <rownum>N</rownum>   "
-          + " <addresultfile>Y</addresultfile>    <IsIgnoreEmptyFile>N</IsIgnoreEmptyFile>    <rownum_field/>   "
+          + " <addresultfile>Y</addresultfile>    <IsIgnoreEmptyFile>N</IsIgnoreEmptyFile>   "
+          + " <IsIgnoreMissingPath>N</IsIgnoreMissingPath>    <rownum_field/>   "
           + " <encoding/>    <file>      <name>D:\\DZMITRY</name>      <filemask>*/</filemask>     "
           + " <exclude_filemask>/***</exclude_filemask>      <file_required>N</file_required>     "
           + " <include_subfolders>N</include_subfolders>      </file>    <fields>      </fields>   "
@@ -123,7 +124,7 @@ public class LoadFileInputMetaTest implements InitializerInterface<StepMetaInter
   public void setUp() throws Exception {
     List<String> attributes =
         Arrays.asList( "includeFilename", "filenameField", "includeRowNumber", "rowNumberField", "rowLimit",
-            "encoding", "DynamicFilenameField", "fileinfield", "addresultfile", "IsIgnoreEmptyFile",
+            "encoding", "DynamicFilenameField", "fileinfield", "addresultfile", "IsIgnoreEmptyFile", "IsIgnoreMissingPath",
             "shortFileFieldName", "pathFieldName", "hiddenFieldName", "lastModificationTimeFieldName",
             "uriNameFieldName", "rootUriNameFieldName", "extensionFieldName", "includeSubFolders", "fileName",
             "fileMask", "excludeFileMask", "fileRequired", "inputFields" );
@@ -140,6 +141,7 @@ public class LoadFileInputMetaTest implements InitializerInterface<StepMetaInter
         put( "fileinfield", "getFileInFields" );
         put( "addresultfile", "getAddResultFile" );
         put( "IsIgnoreEmptyFile", "isIgnoreEmptyFile" );
+        put( "IsIgnoreMissingPath", "isIgnoreMissingPath" );
         put( "shortFileFieldName", "getShortFileNameField" );
         put( "pathFieldName", "getPathField" );
         put( "hiddenFieldName", "isHiddenField" );
@@ -168,6 +170,7 @@ public class LoadFileInputMetaTest implements InitializerInterface<StepMetaInter
         put( "fileinfield", "setFileInFields" );
         put( "addresultfile", "setAddResultFile" );
         put( "IsIgnoreEmptyFile", "setIgnoreEmptyFile" );
+        put( "IsIgnoreMissingPath", "setIgnoreMissingPath" );
         put( "shortFileFieldName", "setShortFileNameField" );
         put( "pathFieldName", "setPathField" );
         put( "hiddenFieldName", "setIsHiddenField" );
