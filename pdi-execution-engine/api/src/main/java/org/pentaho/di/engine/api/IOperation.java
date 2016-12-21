@@ -1,5 +1,6 @@
 package org.pentaho.di.engine.api;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -10,7 +11,7 @@ import java.util.List;
  * which is associated with the behavior specific to
  * an IEngine.
  */
-public interface IOperation {
+public interface IOperation extends Serializable {
 
   String getId();
 

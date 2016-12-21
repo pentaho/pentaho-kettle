@@ -1,6 +1,8 @@
 package org.pentaho.di.engine.api;
 
-public interface IData<T> {
+import java.io.Serializable;
+
+public interface IData<T> extends Serializable {
   Object[] getData();
 
 
