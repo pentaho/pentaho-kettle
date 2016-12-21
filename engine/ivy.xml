@@ -85,7 +85,7 @@
     <dependency org="org.hibernate"                    name="hibernate-commons-annotations" rev="3.2.0.Final" transitive="false" />
     <dependency org="org.hibernate"                    name="hibernate-ehcache"    rev="3.6.9.Final"     transitive="false" />
     <dependency org="cglib"                            name="cglib-nodep"          rev="2.2"             transitive="false"/>
-    <dependency org="org.owasp.esapi"                  name="esapi"                rev="2.0.1"           transitive="false"/>
+    <dependency org="org.owasp.encoder"                name="encoder"              rev="1.2"             transitive="false"/>
     <dependency org="net.sourceforge.nekohtml"         name="nekohtml"             rev="1.9.15"          transitive="false"/>
     <dependency org="rhino"                            name="js"                   rev="1.7R3"           transitive="false"/>
     <dependency org="javax.mail"                       name="mail"                 rev="1.4.7"           transitive="false" />
@@ -110,13 +110,14 @@
     <dependency org="com.h2database"      name="h2"            rev="1.2.131" conf="test->default" transitive="false"/>
     <dependency org="oro"                 name="oro"           rev="2.0.8"   conf="test->default" transitive="false"/>
     <dependency org="jaxen"               name="jaxen"         rev="1.1.1"   conf="test->default" transitive="false"/>
-    <dependency org="junit"               name="junit"         rev="4.7"     conf="test->default" transitive="false"/>
-    <dependency org="org.mockito"         name="mockito-all"   rev="1.9.5"   conf="test->default" transitive="false" />
     <dependency org="pentaho"             name="metastore" rev="${dependency.pentaho-metastore.revision}"
                 conf="test->default" transitive="false">
         <artifact name="metastore" type="jar" m:classifier="tests"/>
     </dependency>
-
+    <dependency org="org.powermock" name="powermock-module-junit4" rev="1.6.6" conf="test->default" />
+    <dependency org="org.powermock" name="powermock-api-mockito" rev="1.6.6" conf="test->default" />
+	<dependency org="junit"               name="junit"         rev="4.7"     conf="test->default" transitive="false"/>
+ 
 
 	<exclude org="org.eclipse.jetty.orbit" module="javax.servlet"/>
   </dependencies>

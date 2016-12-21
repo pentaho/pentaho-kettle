@@ -48,10 +48,14 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.extensions.jcr.JcrTemplate;
 import org.springframework.extensions.jcr.SessionFactory;
-import org.springframework.security.Authentication;
-import org.springframework.security.context.SecurityContextHolder;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestContextManager;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
+import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
@@ -66,6 +70,8 @@ import static org.mockito.Mockito.when;
  */
 @ContextConfiguration( locations = { "classpath:/repository.spring.xml",
   "classpath:/repository-test-override.spring.xml", "classpath:/pdi-pur-plugin-test-override.spring.xml" } )
+@TestExecutionListeners( listeners = { DependencyInjectionTestExecutionListener.class,
+  DirtiesContextTestExecutionListener.class, TransactionalTestExecutionListener.class } )
 public abstract class PurRepositoryTestBase extends RepositoryTestLazySupport implements ApplicationContextAware {
 
   protected static final String TEST_LOGIN = "tester";

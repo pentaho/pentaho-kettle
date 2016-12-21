@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,8 +22,17 @@
 
 package org.pentaho.di.www;
 
+import org.apache.commons.lang.StringUtils;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class ServletTestUtils {
-  public static final String BAD_STRING = "!@#$%^&*()<>/";
+  public static final char[] BAD_CHARACTERS_TO_ESCAPE = {'<', '>', '\'', '\"'};
+  public static final String BAD_STRING_TO_TEST = "!@#$%\"\'^&*()<>&/test string&";
+ // Pattern to check that ampersand character '&' was successfully escaped.
+ // Eg search excluding '&amp;', '&lt;', '&gt;', '&quote;', '&apos;', and numeric reference '&#'
+  public static final Pattern PATTERN = Pattern.compile( "(&(?=(?!amp;))(?=(?!#[0-9a-f]{1,5};))(?=(?!lt;))(?=(?!gt;))(?=(?!quote;))(?=(?!apos;)))" );
 
   public static String getInsideOfTag( String tag, String string ) {
     String open = "<" + tag + ">";
@@ -32,10 +41,11 @@ public class ServletTestUtils {
   }
 
   public static boolean hasBadText( String value ) {
-    return value.indexOf( '!' ) != -1
-      || value.indexOf( '@' ) != -1 || value.indexOf( '$' ) != -1 || value.indexOf( '%' ) != -1
-      || value.indexOf( '^' ) != -1 || value.indexOf( '*' ) != -1 || value.indexOf( '(' ) != -1
-      || value.indexOf( ')' ) != -1 || value.indexOf( '<' ) != -1 || value.indexOf( '>' ) != -1
-      || value.indexOf( '/' ) != -1;
+    Matcher matcher = PATTERN.matcher( value );
+    if ( matcher.find() ) {
+      return true;
+    }
+    return StringUtils.containsAny( value, BAD_CHARACTERS_TO_ESCAPE );
   }
+
 }

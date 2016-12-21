@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -110,6 +110,19 @@ public class PartitionSettingsTest {
     when( partitionSchemasProvider.getPartitionSchemasNames( any( TransMeta.class ) ) ).thenReturn( schemas );
 
     assertEquals( 1, settings.getDefaultSelectedSchemaIndex() );
+  }
+
+  @Test
+  public void defaultSelectedSchemaIndexWhenSchemaNameIsNotDefined() throws Exception {
+    PartitionSchema schema = new PartitionSchema( );
+    StepPartitioningMeta meta = mock( StepPartitioningMeta.class );
+    when( meta.getPartitionSchema() ).thenReturn( schema );
+    when( stepMeta.getStepPartitioningMeta() ).thenReturn( meta );
+
+    List<String> schemas = Arrays.asList( "test" );
+    when( partitionSchemasProvider.getPartitionSchemasNames( any( TransMeta.class ) ) ).thenReturn( schemas );
+
+    assertEquals( 0, settings.getDefaultSelectedSchemaIndex() );
   }
 
   @Test
