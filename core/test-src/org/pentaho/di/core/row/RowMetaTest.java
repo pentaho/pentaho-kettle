@@ -31,6 +31,8 @@ import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.value.ValueMetaBase;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
+import org.pentaho.di.core.row.value.ValueMetaString;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -425,4 +427,26 @@ public class RowMetaTest {
 
   }
 
+  @Test
+  public void testGetFieldNames() {
+    rowMeta.clear();
+    fillRowMeta();
+    String[] names = rowMeta.getFieldNames();
+    assertEquals(10, names.length);
+    for( int i = 0; i < names.length; i++ ) {
+      assertNotNull(names[i]);
+    }
+  }
+
+  private void fillRowMeta() {
+    for ( int i = 0; i < 10; i++ ) {
+      ValueMetaInterface meta;
+      if ( i != 0 ) {
+        meta = new ValueMetaString("sample" );
+      } else {
+        meta = new ValueMetaInteger( null );
+      }
+      rowMeta.addValueMeta(i, meta);
+    }
+  }
 }
