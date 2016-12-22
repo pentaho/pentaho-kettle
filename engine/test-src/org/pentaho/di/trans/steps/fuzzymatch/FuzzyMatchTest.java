@@ -28,6 +28,7 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 
@@ -181,5 +182,37 @@ public class FuzzyMatchTest {
     fuzzyMatch.processRow( meta, data );
     Assert.assertEquals( rowMetaInterface.getString( row3B, 0 ),
         data.outputRowMeta.getString( fuzzyMatch.resultRow, 1 ) );
+  }
+
+  @Test
+  public void testLookupValuesWhenMainFieldIsNull() throws Exception {
+    FuzzyMatchData data = spy( new FuzzyMatchData() );
+    FuzzyMatchMeta meta = spy( new FuzzyMatchMeta() );
+    data.readLookupValues = false;
+    fuzzyMatch =
+            new FuzzyMatchHandler( mockHelper.stepMeta, mockHelper.stepDataInterface, 0, mockHelper.transMeta,
+                    mockHelper.trans );
+    fuzzyMatch.init( meta, data );
+    fuzzyMatch.first = false;
+    data.indexOfMainField = 1;
+    Object[] inputRow = { "test input", null };
+    RowSet lookupRowSet = mockHelper.getMockInputRowSet( new Object[]{ "test lookup" } );
+    fuzzyMatch.getInputRowSets().add( mockHelper.getMockInputRowSet( inputRow ) );
+    fuzzyMatch.getInputRowSets().add( lookupRowSet );
+    fuzzyMatch.rowset = lookupRowSet;
+
+    RowMetaInterface rowMetaInterface = new RowMeta();
+    ValueMetaInterface valueMeta = new ValueMetaString( "field1" );
+    valueMeta.setStorageMetadata( new ValueMetaString( "field1" ) );
+    valueMeta.setStorageType( ValueMetaInterface.TYPE_STRING );
+    rowMetaInterface.addValueMeta( valueMeta );
+    when( lookupRowSet.getRowMeta() ).thenReturn( rowMetaInterface );
+    fuzzyMatch.setInputRowMeta( rowMetaInterface.clone() );
+    data.outputRowMeta = rowMetaInterface.clone();
+
+    fuzzyMatch.processRow( meta, data );
+    Assert.assertEquals( inputRow[0], fuzzyMatch.resultRow[0] );
+    Assert.assertNull( fuzzyMatch.resultRow[1] );
+    Assert.assertTrue( Arrays.stream( fuzzyMatch.resultRow, 3, fuzzyMatch.resultRow.length ).allMatch( val ->  val == null ) );
   }
 }
