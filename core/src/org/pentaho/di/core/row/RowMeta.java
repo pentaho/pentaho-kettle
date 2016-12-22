@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -626,7 +626,8 @@ public class RowMeta implements RowMetaInterface {
       String[] retval = new String[ size() ];
 
       for ( int i = 0; i < size(); i++ ) {
-        retval[ i ] = getValueMeta( i ).getName();
+        String valueName = getValueMeta( i ).getName();
+        retval[i] = valueName == null ? "" : valueName;
       }
 
       return retval;
