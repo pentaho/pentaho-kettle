@@ -1,5 +1,6 @@
 package org.pentaho.di.engine.api;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -13,7 +14,7 @@ import java.util.List;
  * tuples received "From" parent operations and published
  * "To" child ops.
  */
-public interface IExecutableOperation extends IOperation, IProgressReporting<IDataEvent> {
+public interface IExecutableOperation extends Serializable, IOperation, IProgressReporting<IDataEvent> {
 
 
   boolean isRunning();

@@ -1,9 +1,11 @@
 package org.pentaho.di.engine.api;
 
+import java.io.Serializable;
+
 /**
  * @author nhudak
  */
-public interface IHop {
+public interface IHop extends Serializable {
 
   String TYPE_NORMAL = "NORMAL";
 
