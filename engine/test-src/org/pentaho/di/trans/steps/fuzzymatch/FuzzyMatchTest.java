@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -36,6 +36,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
+import org.mockito.Mockito;
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
@@ -43,6 +44,7 @@ import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
@@ -181,5 +183,36 @@ public class FuzzyMatchTest {
     fuzzyMatch.processRow( meta, data );
     Assert.assertEquals( rowMetaInterface.getString( row3B, 0 ),
         data.outputRowMeta.getString( fuzzyMatch.resultRow, 1 ) );
+  }
+
+  @Test
+  public void testLookupValuesWhenMainFieldIsNull() throws Exception {
+    FuzzyMatchData data = Mockito.spy( new FuzzyMatchData() );
+    FuzzyMatchMeta meta = Mockito.spy( new FuzzyMatchMeta() );
+    data.readLookupValues = false;
+    fuzzyMatch =
+            new FuzzyMatchHandler( mockHelper.stepMeta, mockHelper.stepDataInterface, 0, mockHelper.transMeta,
+                    mockHelper.trans );
+    fuzzyMatch.init( meta, data );
+    fuzzyMatch.first = false;
+    data.indexOfMainField = 1;
+    Object[] inputRow = { "test input", null };
+    RowSet lookupRowSet = mockHelper.getMockInputRowSet( new Object[]{ "test lookup" } );
+    fuzzyMatch.getInputRowSets().add( mockHelper.getMockInputRowSet( inputRow ) );
+    fuzzyMatch.getInputRowSets().add( lookupRowSet );
+    fuzzyMatch.rowset = lookupRowSet;
+
+    RowMetaInterface rowMetaInterface = new RowMeta();
+    ValueMetaInterface valueMeta = new ValueMetaString( "field1" );
+    valueMeta.setStorageMetadata( new ValueMetaString( "field1" ) );
+    valueMeta.setStorageType( ValueMetaInterface.TYPE_STRING );
+    rowMetaInterface.addValueMeta( valueMeta );
+    Mockito.when( lookupRowSet.getRowMeta() ).thenReturn( rowMetaInterface );
+    fuzzyMatch.setInputRowMeta( rowMetaInterface.clone() );
+    data.outputRowMeta = rowMetaInterface.clone();
+
+    fuzzyMatch.processRow( meta, data );
+    Assert.assertEquals( inputRow[0], fuzzyMatch.resultRow[0] );
+    Assert.assertNull( fuzzyMatch.resultRow[1] );
   }
 }
