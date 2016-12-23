@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -73,9 +73,6 @@ public class PGBulkLoaderMeta extends BaseStepMeta implements StepMetaInjectionI
 
   /** what's the table for the target? */
   private String tableName;
-
-  /** Path to the PsqlPath utility */
-  private String PsqlPath;
 
   /** database connection */
   private DatabaseMeta databaseMeta;
@@ -156,41 +153,6 @@ public class PGBulkLoaderMeta extends BaseStepMeta implements StepMetaInjectionI
   }
 
   /**
-   * 
-   * @return PSQL Path
-   * @deprecated doesn't follow naming standards - use getPsqlPath
-   */
-  @Deprecated
-  public String getPsqlpath() {
-    return PsqlPath;
-  }
-
-  /**
-   * Gets the PostgreSQL path
-   */
-  public String getPsqlPath() {
-    return PsqlPath;
-  }
-
-  /**
-   * 
-   * @param PSQL Path
-   * @deprecated doesn't follow naming standards - use setPsqlPath
-   */
-  @Deprecated
-  public void setPsqlpath( String PsqlPath ) {
-    this.PsqlPath = PsqlPath;
-  }
-
-  /**
-   * Sets the PostgreSQL path
-   * @param PsqlPath
-   */
-  public void setPsqlPath( String PsqlPath ) {
-    this.PsqlPath = PsqlPath;
-  }
-
-  /**
    * @return Returns the fieldTable.
    */
   public String[] getFieldTable() {
@@ -243,9 +205,12 @@ public class PGBulkLoaderMeta extends BaseStepMeta implements StepMetaInjectionI
     int nrvalues = fieldTable.length;
 
     retval.allocate( nrvalues );
-    System.arraycopy( fieldTable, 0, retval.fieldTable, 0, nrvalues );
-    System.arraycopy( fieldStream, 0, retval.fieldStream, 0, nrvalues );
-    System.arraycopy( dateMask, 0, retval.dateMask, 0, nrvalues );
+
+    for ( int i = 0; i < nrvalues; i++ ) {
+      retval.fieldTable[i] = fieldTable[i];
+      retval.fieldStream[i] = fieldStream[i];
+      retval.dateMask[i] = dateMask[i];
+    }
     return retval;
   }
 
@@ -261,7 +226,6 @@ public class PGBulkLoaderMeta extends BaseStepMeta implements StepMetaInjectionI
       delimiter = XMLHandler.getTagValue( stepnode, "delimiter" );
 
       loadAction = XMLHandler.getTagValue( stepnode, "load_action" );
-      PsqlPath = XMLHandler.getTagValue( stepnode, "PsqlPath" );
       dbNameOverride = XMLHandler.getTagValue( stepnode, "dbname_override" );
       stopOnError = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "stop_on_error" ) );
 
@@ -300,7 +264,6 @@ public class PGBulkLoaderMeta extends BaseStepMeta implements StepMetaInjectionI
     databaseMeta = null;
     schemaName = "";
     tableName = BaseMessages.getString( PKG, "GPBulkLoaderMeta.DefaultTableName" );
-    PsqlPath = "PsqlPath";
     dbNameOverride = "";
     delimiter = ";";
     enclosure = "\"";
@@ -310,7 +273,7 @@ public class PGBulkLoaderMeta extends BaseStepMeta implements StepMetaInjectionI
   }
 
   public String getXML() {
-    StringBuilder retval = new StringBuilder( 300 );
+    StringBuffer retval = new StringBuffer( 300 );
 
     retval
       .append( "    " ).append(
@@ -318,7 +281,6 @@ public class PGBulkLoaderMeta extends BaseStepMeta implements StepMetaInjectionI
     retval.append( "    " ).append( XMLHandler.addTagValue( "schema", schemaName ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "table", tableName ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "load_action", loadAction ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "PsqlPath", PsqlPath ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "dbname_override", dbNameOverride ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "enclosure", enclosure ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "delimiter", delimiter ) );
@@ -341,7 +303,6 @@ public class PGBulkLoaderMeta extends BaseStepMeta implements StepMetaInjectionI
       schemaName = rep.getStepAttributeString( id_step, "schema" );
       tableName = rep.getStepAttributeString( id_step, "table" );
       loadAction = rep.getStepAttributeString( id_step, "load_action" );
-      PsqlPath = rep.getStepAttributeString( id_step, "PsqlPath" );
       stopOnError = rep.getStepAttributeBoolean( id_step, "stop_on_error" );
 
       dbNameOverride = rep.getStepAttributeString( id_step, "dbname_override" );
@@ -371,7 +332,6 @@ public class PGBulkLoaderMeta extends BaseStepMeta implements StepMetaInjectionI
       rep.saveStepAttribute( id_transformation, id_step, "table", tableName );
 
       rep.saveStepAttribute( id_transformation, id_step, "load_action", loadAction );
-      rep.saveStepAttribute( id_transformation, id_step, "PsqlPath", PsqlPath );
 
       rep.saveStepAttribute( id_transformation, id_step, "dbname_override", dbNameOverride );
       rep.saveStepAttribute( id_transformation, id_step, "enclosure", enclosure );
@@ -718,10 +678,6 @@ public class PGBulkLoaderMeta extends BaseStepMeta implements StepMetaInjectionI
     this.stopOnError = value;
   }
 
-  public void setStopOnError( boolean value ) {
-    this.stopOnError = value;
-  }
-
   public StepMetaInjectionInterface getStepMetaInjectionInterface() {
     return this;
   }
@@ -747,8 +703,6 @@ public class PGBulkLoaderMeta extends BaseStepMeta implements StepMetaInjectionI
           tableName = (String) entry.getValue();
         } else if ( entry.getKey().equals( "LOADACTION" ) ) {
           loadAction = (String) entry.getValue();
-        } else if ( entry.getKey().equals( "PSQLPATH" ) ) {
-          setPsqlpath( (String) entry.getValue() );
         } else if ( entry.getKey().equals( "DBNAMEOVERRIDE" ) ) {
           dbNameOverride = (String) entry.getValue();
         } else if ( entry.getKey().equals( "ENCLOSURE" ) ) {

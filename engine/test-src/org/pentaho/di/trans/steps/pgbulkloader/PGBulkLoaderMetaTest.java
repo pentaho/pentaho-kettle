@@ -160,7 +160,7 @@ public class PGBulkLoaderMetaTest {
       List<StepInjectionMetaEntry> entries =
         loader.getStepMeta().getStepMetaInterface().getStepMetaInjectionInterface().getStepInjectionMetadataEntries();
 
-      String masterKeys = "SCHEMA TABLE LOADACTION STOPONERROR DELIMITER ENCLOSURE PSQLPATH DBNAMEOVERRIDE MAPPINGS ";
+      String masterKeys = "SCHEMA TABLE LOADACTION STOPONERROR DELIMITER ENCLOSURE DBNAMEOVERRIDE MAPPINGS ";
 
       for ( StepInjectionMetaEntry entry : entries ) {
         String key = entry.getKey();
@@ -254,7 +254,6 @@ public class PGBulkLoaderMetaTest {
       assertEquals( "Delimiter not properly injected... ", "new_DELIMITER", lm.getDelimiter() );
       assertEquals( "Enclosure not properly injected... ", "new_ENCLOSURE", lm.getEnclosure() );
       assertEquals( "Load action not properly injected... ", "new_LOADACTION", lm.getLoadAction() );
-      assertEquals( "PSQL path not properly injected... ", "new_PSQLPATH", lm.getPsqlpath() );
       assertEquals( "Stop on error not properly injected... ", Boolean.TRUE, lm.isStopOnError() );
 
       assertEquals( "Field name not properly injected... ", "new_FIELDNAME", lm.getFieldTable()[0] );
