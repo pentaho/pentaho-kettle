@@ -627,7 +627,8 @@ public class RowMeta implements RowMetaInterface {
       String[] retval = new String[ size() ];
 
       for ( int i = 0; i < size(); i++ ) {
-        retval[ i ] = getValueMeta( i ).getName();
+        String valueName = getValueMeta( i ).getName();
+        retval[i] = valueName == null ? "" : valueName;
       }
 
       return retval;
