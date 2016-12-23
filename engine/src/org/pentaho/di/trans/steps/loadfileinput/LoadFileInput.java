@@ -166,7 +166,7 @@ public class LoadFileInput extends BaseStep implements StepInterface {
         logBasic( BaseMessages.getString( PKG, "LoadFileInput.Error.FileNotExists", "" + data.file.getName() ) );
         return openNextFile();
       }
-      
+
       // Check if file is empty
       data.fileSize = data.file.getContent().getSize();
       // Move file pointer ahead!
