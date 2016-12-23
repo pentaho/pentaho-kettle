@@ -675,7 +675,7 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
             PKG, "RestMeta.CheckResult.UrlfieldMissing" ), stepMeta );
       } else {
         cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
             PKG, "RestMeta.CheckResult.UrlfieldOk" ), stepMeta );
       }
 
