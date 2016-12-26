@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,11 +22,8 @@
 
 package org.pentaho.di.job.entries.ftpdelete;
 
-import static org.pentaho.di.job.entry.validator.AndValidator.putValidators;
-import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.andValidator;
-import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.fileExistsValidator;
-import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notBlankValidator;
-import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notNullValidator;
+import org.pentaho.di.job.entry.validator.AndValidator;
+import org.pentaho.di.job.entry.validator.JobEntryValidatorUtils;
 
 import java.io.File;
 import java.net.InetAddress;
@@ -47,6 +44,7 @@ import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -657,15 +655,15 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
     // Here let's put some controls before stating the job
 
     String realservername = environmentSubstitute( serverName );
-    String realserverpassword = Encr.decryptPasswordOptionallyEncrypted( environmentSubstitute( password ) );
+    String realserverpassword = Utils.resolvePassword( this, password );
     String realFtpDirectory = environmentSubstitute( ftpDirectory );
 
     int realserverport = Const.toInt( environmentSubstitute( port ), 0 );
     String realUsername = environmentSubstitute( userName );
-    String realPassword = Encr.decryptPasswordOptionallyEncrypted( environmentSubstitute( password ) );
+    String realPassword = Utils.resolvePassword( this, password );
     String realproxyhost = environmentSubstitute( proxyHost );
     String realproxyusername = environmentSubstitute( proxyUsername );
-    String realproxypassword = environmentSubstitute( proxyPassword );
+    String realproxypassword = Utils.resolvePassword( this, proxyPassword );
     int realproxyport = Const.toInt( environmentSubstitute( proxyPort ), 0 );
     String realkeyFilename = environmentSubstitute( keyFilename );
     String realkeyPass = environmentSubstitute( keyFilePass );
@@ -702,7 +700,7 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
           // then if we have authentication information
           if ( !Const.isEmpty( socksProxyUsername ) && !Const.isEmpty( socksProxyPassword ) ) {
             FTPClient.initSOCKSAuthentication(
-              environmentSubstitute( socksProxyUsername ), environmentSubstitute( socksProxyPassword ) );
+              environmentSubstitute( socksProxyUsername ), Utils.resolvePassword( this, socksProxyPassword ) );
           } else if ( !Const.isEmpty( socksProxyUsername )
             && Const.isEmpty( socksProxyPassword ) || Const.isEmpty( socksProxyUsername )
             && !Const.isEmpty( socksProxyPassword ) ) {
@@ -1012,7 +1010,7 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
     if ( !Const.isEmpty( proxyHost ) ) {
       String realProxy_host = environmentSubstitute( proxyHost );
       String realProxy_username = environmentSubstitute( proxyUsername );
-      String realProxy_password = environmentSubstitute( proxyPassword );
+      String realProxy_password = Utils.resolvePassword( this, proxyPassword );
 
       ftpsclient.setProxyHost( realProxy_host );
       if ( !Const.isEmpty( realProxy_username ) ) {
@@ -1173,11 +1171,11 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
 
   public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
-    andValidator().validate( this, "serverName", remarks, putValidators( notBlankValidator() ) );
-    andValidator().validate(
-      this, "targetDirectory", remarks, putValidators( notBlankValidator(), fileExistsValidator() ) );
-    andValidator().validate( this, "userName", remarks, putValidators( notBlankValidator() ) );
-    andValidator().validate( this, "password", remarks, putValidators( notNullValidator() ) );
+    JobEntryValidatorUtils.andValidator().validate( this, "serverName", remarks, AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
+    JobEntryValidatorUtils.andValidator().validate(
+      this, "targetDirectory", remarks, AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator(), JobEntryValidatorUtils.fileExistsValidator() ) );
+    JobEntryValidatorUtils.andValidator().validate( this, "userName", remarks, AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
+    JobEntryValidatorUtils.andValidator().validate( this, "password", remarks, AndValidator.putValidators( JobEntryValidatorUtils.notNullValidator() ) );
   }
 
   public List<ResourceReference> getResourceDependencies( JobMeta jobMeta ) {

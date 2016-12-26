@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -51,6 +51,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.RepositoryPluginType;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entries.exportrepository.JobEntryExportRepository;
@@ -1126,8 +1127,8 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
       repos.init( repositoryMeta );
 
       try {
-        repos.connect( jobMeta.environmentSubstitute( wUserName.getText() ), jobMeta
-          .environmentSubstitute( wPassword.getText() ) );
+        repos.connect( jobMeta.environmentSubstitute( wUserName.getText() ), Utils
+          .resolvePassword( jobMeta, wPassword.getText() ) );
       } catch ( Exception e ) {
         displayMsg( BaseMessages.getString( PKG, "JobExportRepository.Error.CanNotConnect" ), BaseMessages
           .getString( PKG, "JobExportRepository.Error.CanNotConnectMsg", wRepositoryname.getText() ), true );

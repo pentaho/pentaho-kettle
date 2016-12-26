@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -50,6 +50,7 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entries.ftp.JobEntryFTP;
@@ -1401,9 +1402,9 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
               + jobMeta.environmentSubstitute( wProxyUsername.getText() ) : "" );
 
         String realPassword =
-          jobMeta.environmentSubstitute( wPassword.getText() )
+          Utils.resolvePassword( jobMeta, wPassword.getText() )
             + ( !Const.isEmpty( wProxyPassword.getText() ) ? " "
-              + jobMeta.environmentSubstitute( wProxyPassword.getText() ) : "" );
+              + Utils.resolvePassword( jobMeta, wProxyPassword.getText() ) : "" );
         // login now ...
         ftpclient.login( realUsername, realPassword );
         pwdFolder = ftpclient.pwd();
