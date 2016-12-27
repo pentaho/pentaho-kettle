@@ -75,7 +75,7 @@ public class LoadFileInput extends BaseStep implements StepInterface {
     }
   }
 
-  private boolean openNextFile() {
+  boolean openNextFile() {
     try {
       if ( meta.getIsInFields() ) {
         data.readrow = getRow(); // Grab another row ...
@@ -166,7 +166,7 @@ public class LoadFileInput extends BaseStep implements StepInterface {
         logBasic( BaseMessages.getString( PKG, "LoadFileInput.Error.FileNotExists", "" + data.file.getName() ) );
         return openNextFile();
       }
-      
+
       // Check if file is empty
       data.fileSize = data.file.getContent().getSize();
       // Move file pointer ahead!
@@ -174,7 +174,7 @@ public class LoadFileInput extends BaseStep implements StepInterface {
 
       if ( meta.isIgnoreEmptyFile() && data.fileSize == 0 ) {
         logError( BaseMessages.getString( PKG, "LoadFileInput.Error.FileSizeZero", "" + data.file.getName() ) );
-        openNextFile();
+        return openNextFile();
 
       } else {
         if ( isDetailed() ) {
