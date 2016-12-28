@@ -70,14 +70,13 @@ public class PGBulkLoaderMetaTest {
     KettleEnvironment.init();
     PluginRegistry.init( true );
     List<String> attributes =
-        Arrays.asList( "schemaName", "tableName", "PsqlPath", "loadAction", "dbNameOverride", "delimiter",
+        Arrays.asList( "schemaName", "tableName", "loadAction", "dbNameOverride", "delimiter",
             "enclosure", "stopOnError", "fieldTable", "fieldStream", "dateMask", "databaseMeta" );
 
     Map<String, String> getterMap = new HashMap<String, String>() {
       {
         put( "schemaName", "getSchemaName" );
         put( "tableName", "getTableName" );
-        put( "PsqlPath", "getPsqlPath" );
         put( "loadAction", "getLoadAction" );
         put( "dbNameOverride", "getDbNameOverride" );
         put( "delimiter", "getDelimiter" );
@@ -93,7 +92,6 @@ public class PGBulkLoaderMetaTest {
       {
         put( "schemaName", "setSchemaName" );
         put( "tableName", "setTableName" );
-        put( "PsqlPath", "setPsqlPath" );
         put( "loadAction", "setLoadAction" );
         put( "dbNameOverride", "setDbNameOverride" );
         put( "delimiter", "setDelimiter" );

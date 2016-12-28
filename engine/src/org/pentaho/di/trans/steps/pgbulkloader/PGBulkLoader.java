@@ -147,7 +147,7 @@ public class PGBulkLoader extends BaseStep implements StepInterface {
     return contents.toString();
   }
 
-  private void do_copy ( PGBulkLoaderMeta meta, boolean wait ) throws KettleException {
+  private void do_copy( PGBulkLoaderMeta meta, boolean wait ) throws KettleException {
     Runtime rt = Runtime.getRuntime();
 
     data.db = new Database( this, meta.getDatabaseMeta() );
@@ -162,7 +162,7 @@ public class PGBulkLoader extends BaseStep implements StepInterface {
       }
 
       logBasic( "Launching command: " + copyCmd );
-      pgCopyOut = new PGCopyOutputStream((PGConnection) data.db.getConnection(), copyCmd);
+      pgCopyOut = new PGCopyOutputStream( ( PGConnection ) data.db.getConnection(), copyCmd );
 
     } catch ( Exception ex ) {
       throw new KettleException( "Error while preparing the COPY " + copyCmd, ex );
@@ -185,7 +185,7 @@ public class PGBulkLoader extends BaseStep implements StepInterface {
         if ( data != null && pgCopyOut != null ) {
           pgCopyOut.flush();
           pgCopyOut.endCopy();
-        } 
+        }
 
         return false;
       }
@@ -202,7 +202,7 @@ public class PGBulkLoader extends BaseStep implements StepInterface {
 
         // execute the copy statement... pgCopyOut is setup there
         //
-        do_copy ( meta, true );
+        do_copy( meta, true );
 
 
         // Write rows of data hereafter...
@@ -216,10 +216,10 @@ public class PGBulkLoader extends BaseStep implements StepInterface {
 
       return true;
     } catch ( Exception e ) {
-      if (pgCopyOut != null) {
+      if ( pgCopyOut != null ) {
         try {
           pgCopyOut.cancelCopy();
-        } catch (SQLException ie) {
+        } catch ( SQLException ie ) {
           // safe to ignore, send info about previous exception
         }
       }
@@ -254,8 +254,9 @@ public class PGBulkLoader extends BaseStep implements StepInterface {
           switch ( valueMeta.getType() ) {
             case ValueMetaInterface.TYPE_STRING:
               // Don't load empty strings into DB, load null instead
-              if ("".equals(valueData))
+              if ( "".equals( valueData ) ) {
                 break;
+              }
               pgCopyOut.write( data.quote );
 
               // No longer dump the bytes for a Lazy Conversion;
@@ -264,11 +265,11 @@ public class PGBulkLoader extends BaseStep implements StepInterface {
               String escapedString = valueMeta.getString( valueData ).replace( quoteStr, quoteStr + quoteStr );
               pgCopyOut.write( escapedString.getBytes() );
 
-              pgCopyOut.write( data.quote);
+              pgCopyOut.write( data.quote );
               break;
             case ValueMetaInterface.TYPE_INTEGER:
               if ( valueMeta.isStorageBinaryString() ) {
-                pgCopyOut.write( (byte[]) valueData);
+                pgCopyOut.write( ( byte[] ) valueData );
               } else {
                 pgCopyOut.write( Long.toString( valueMeta.getInteger( valueData ) ).getBytes() );
               }
@@ -281,11 +282,11 @@ public class PGBulkLoader extends BaseStep implements StepInterface {
               //
                 case PGBulkLoaderMeta.NR_DATE_MASK_PASS_THROUGH:
                   if ( valueMeta.isStorageBinaryString() ) {
-                    pgCopyOut.write( (byte[]) valueData);
+                    pgCopyOut.write( (byte[] ) valueData );
                   } else {
                     String dateString = valueMeta.getString( valueData );
                     if ( dateString != null ) {
-                      pgCopyOut.write( dateString.getBytes());
+                      pgCopyOut.write( dateString.getBytes() );
                     }
                   }
                   break;
@@ -309,7 +310,7 @@ public class PGBulkLoader extends BaseStep implements StepInterface {
                   break;
 
                 default:
-                  throw new KettleException ( "PGBulkLoader doesn't know how to handle date (neither passthrough, nor date or datetime for field " + valueMeta.getName() );
+                  throw new KettleException( "PGBulkLoader doesn't know how to handle date (neither passthrough, nor date or datetime for field " + valueMeta.getName() );
               }
               break;
             case ValueMetaInterface.TYPE_TIMESTAMP:
@@ -320,11 +321,11 @@ public class PGBulkLoader extends BaseStep implements StepInterface {
               //
                 case PGBulkLoaderMeta.NR_DATE_MASK_PASS_THROUGH:
                   if ( valueMeta.isStorageBinaryString() ) {
-                    pgCopyOut.write( (byte[]) valueData);
+                    pgCopyOut.write( (byte[] ) valueData );
                   } else {
                     String dateString = valueMeta.getString( valueData );
                     if ( dateString != null ) {
-                      pgCopyOut.write( dateString.getBytes());
+                      pgCopyOut.write( dateString.getBytes() );
                     }
                   }
                   break;
@@ -348,10 +349,10 @@ public class PGBulkLoader extends BaseStep implements StepInterface {
                   break;
 
                 default:
-                  throw new KettleException ( "PGBulkLoader doesn't know how to handle timestamp (neither passthrough, nor date or datetime for field " + valueMeta.getName() );
+                  throw new KettleException( "PGBulkLoader doesn't know how to handle timestamp (neither passthrough, nor date or datetime for field " + valueMeta.getName() );
               }
               break;
-             case ValueMetaInterface.TYPE_BOOLEAN:
+            case ValueMetaInterface.TYPE_BOOLEAN:
               if ( valueMeta.isStorageBinaryString() ) {
                 pgCopyOut.write( (byte[]) valueData );
               } else {
@@ -376,7 +377,7 @@ public class PGBulkLoader extends BaseStep implements StepInterface {
               }
               break;
             default:
-              throw new KettleException ( "PGBulkLoader doesn't handle the type " + valueMeta.getTypeDesc() );
+              throw new KettleException( "PGBulkLoader doesn't handle the type " + valueMeta.getTypeDesc() );
           }
         }
       }
