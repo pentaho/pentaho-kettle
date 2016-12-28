@@ -55,8 +55,8 @@ import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -1065,7 +1065,7 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
             BaseMessages.getString( PKG, "System.Combo.No" ) }, true ),
         new ColumnInfo(
           BaseMessages.getString( PKG, "LDAPInputDialog.FieldsTable.Type.Column" ),
-          ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes(), true ),
+          ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMetaFactory.getValueMetaNames(), true ),
         new ColumnInfo(
           BaseMessages.getString( PKG, "LDAPInputDialog.FieldsTable.Format.Column" ),
           ColumnInfo.COLUMN_TYPE_FORMAT, 3 ),
@@ -1538,7 +1538,7 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
       field.setAttribute( item.getText( 2 ) );
       field.setFetchAttributeAs( LDAPInputField.getFetchAttributeAsByDesc( item.getText( 3 ) ) );
       field.setSortedKey( BaseMessages.getString( PKG, "System.Combo.Yes" ).equalsIgnoreCase( item.getText( 4 ) ) );
-      field.setType( ValueMeta.getType( item.getText( 5 ) ) );
+      field.setType( ValueMetaFactory.getIdForValueMeta( item.getText( 5 ) ) );
       field.setFormat( item.getText( 6 ) );
       field.setLength( Const.toInt( item.getText( 7 ), -1 ) );
       field.setPrecision( Const.toInt( item.getText( 8 ), -1 ) );

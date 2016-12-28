@@ -34,17 +34,18 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.fileinput.FileInputList;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaAndData;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaBoolean;
 import org.pentaho.di.core.row.value.ValueMetaDate;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.row.value.ValueMetaInteger;
+import org.pentaho.di.core.row.value.ValueMetaNone;
 import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
@@ -855,7 +856,12 @@ public class AccessInputMeta extends BaseStepMeta implements StepMetaInterface {
       if ( type == ValueMetaInterface.TYPE_NONE ) {
         type = ValueMetaInterface.TYPE_STRING;
       }
-      ValueMetaInterface v = new ValueMeta( space.environmentSubstitute( field.getName() ), type );
+      ValueMetaInterface v;
+      try {
+        v = ValueMetaFactory.createValueMeta( space.environmentSubstitute( field.getName() ), type );
+      } catch ( KettlePluginException e ) {
+        v = new ValueMetaNone( space.environmentSubstitute( field.getName() ) );
+      }
       v.setLength( field.getLength() );
       v.setPrecision( field.getPrecision() );
       v.setOrigin( name );
@@ -1317,7 +1323,12 @@ public class AccessInputMeta extends BaseStepMeta implements StepMetaInterface {
         break;
     }
 
-    ValueMetaInterface sourceValueMeta = new ValueMeta( name == null ? c.getName() : name, sourceValueType );
+    ValueMetaInterface sourceValueMeta;
+    try {
+      sourceValueMeta = ValueMetaFactory.createValueMeta( name == null ? c.getName() : name, sourceValueType );
+    } catch ( KettlePluginException e ) {
+      sourceValueMeta = new ValueMetaNone( name == null ? c.getName() : name );
+    }
     sourceValueMeta.setLength( c.getLength(), c.getPrecision() );
 
     // set value meta data and return it

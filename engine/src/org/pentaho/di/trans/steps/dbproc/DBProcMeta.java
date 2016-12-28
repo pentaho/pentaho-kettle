@@ -31,11 +31,13 @@ import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaBase;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -257,16 +259,26 @@ public class DBProcMeta extends BaseStepMeta implements StepMetaInterface {
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
 
     if ( !Utils.isEmpty( resultName ) ) {
-      ValueMetaInterface v = new ValueMeta( resultName, resultType );
-      v.setOrigin( name );
-      r.addValueMeta( v );
+      ValueMetaInterface v;
+      try {
+        v = ValueMetaFactory.createValueMeta( resultName, resultType );
+        v.setOrigin( name );
+        r.addValueMeta( v );
+      } catch ( KettlePluginException e ) {
+        throw new KettleStepException( e );
+      }
     }
 
     for ( int i = 0; i < argument.length; i++ ) {
       if ( argumentDirection[i].equalsIgnoreCase( "OUT" ) ) {
-        ValueMetaInterface v = new ValueMeta( argument[i], argumentType[i] );
-        v.setOrigin( name );
-        r.addValueMeta( v );
+        ValueMetaInterface v;
+        try {
+          v = ValueMetaFactory.createValueMeta( argument[i], argumentType[i] );
+          v.setOrigin( name );
+          r.addValueMeta( v );
+        } catch ( KettlePluginException e ) {
+          throw new KettleStepException( e );
+        }
       }
     }
 
@@ -286,7 +298,7 @@ public class DBProcMeta extends BaseStepMeta implements StepMetaInterface {
       retval.append( "        " ).append( XMLHandler.addTagValue( "name", argument[i] ) );
       retval.append( "        " ).append( XMLHandler.addTagValue( "direction", argumentDirection[i] ) );
       retval.append( "        " ).append(
-        XMLHandler.addTagValue( "type", ValueMeta.getTypeDesc( argumentType[i] ) ) );
+        XMLHandler.addTagValue( "type", ValueMetaFactory.getValueMetaName( argumentType[i] ) ) );
       retval.append( "      </arg>" ).append( Const.CR );
     }
 
@@ -294,7 +306,8 @@ public class DBProcMeta extends BaseStepMeta implements StepMetaInterface {
 
     retval.append( "    <result>" ).append( Const.CR );
     retval.append( "      " ).append( XMLHandler.addTagValue( "name", resultName ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "type", ValueMeta.getTypeDesc( resultType ) ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "type",
+      ValueMetaFactory.getValueMetaName( resultType ) ) );
     retval.append( "    </result>" ).append( Const.CR );
 
     retval.append( "    " ).append( XMLHandler.addTagValue( "auto_commit", autoCommit ) );
@@ -321,12 +334,12 @@ public class DBProcMeta extends BaseStepMeta implements StepMetaInterface {
 
         argument[i] = XMLHandler.getTagValue( anode, "name" );
         argumentDirection[i] = XMLHandler.getTagValue( anode, "direction" );
-        argumentType[i] = ValueMeta.getType( XMLHandler.getTagValue( anode, "type" ) );
+        argumentType[i] = ValueMetaFactory.getIdForValueMeta( XMLHandler.getTagValue( anode, "type" ) );
       }
 
       resultName = XMLHandler.getTagValue( stepnode, "result", "name" ); // Optional, can be null
                                                                          //
-      resultType = ValueMeta.getType( XMLHandler.getTagValue( stepnode, "result", "type" ) );
+      resultType = ValueMetaFactory.getIdForValueMeta( XMLHandler.getTagValue( stepnode, "result", "type" ) );
       autoCommit = !"N".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "auto_commit" ) );
     } catch ( Exception e ) {
       throw new KettleXMLException( BaseMessages.getString( PKG, "DBProcMeta.Exception.UnableToReadStepInfo" ), e );
@@ -344,11 +357,11 @@ public class DBProcMeta extends BaseStepMeta implements StepMetaInterface {
       for ( int i = 0; i < nrargs; i++ ) {
         argument[i] = rep.getStepAttributeString( id_step, i, "arg_name" );
         argumentDirection[i] = rep.getStepAttributeString( id_step, i, "arg_direction" );
-        argumentType[i] = ValueMeta.getType( rep.getStepAttributeString( id_step, i, "arg_type" ) );
+        argumentType[i] = ValueMetaFactory.getIdForValueMeta( rep.getStepAttributeString( id_step, i, "arg_type" ) );
       }
 
       resultName = rep.getStepAttributeString( id_step, "result_name" );
-      resultType = ValueMeta.getType( rep.getStepAttributeString( id_step, "result_type" ) );
+      resultType = ValueMetaFactory.getIdForValueMeta( rep.getStepAttributeString( id_step, "result_type" ) );
       autoCommit = rep.getStepAttributeBoolean( id_step, 0, "auto_commit", true );
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString(
@@ -364,12 +377,13 @@ public class DBProcMeta extends BaseStepMeta implements StepMetaInterface {
       for ( int i = 0; i < argument.length; i++ ) {
         rep.saveStepAttribute( id_transformation, id_step, i, "arg_name", argument[i] );
         rep.saveStepAttribute( id_transformation, id_step, i, "arg_direction", argumentDirection[i] );
-        rep
-          .saveStepAttribute( id_transformation, id_step, i, "arg_type", ValueMeta.getTypeDesc( argumentType[i] ) );
+        rep.saveStepAttribute( id_transformation, id_step, i, "arg_type",
+          ValueMetaFactory.getValueMetaName( argumentType[i] ) );
       }
 
       rep.saveStepAttribute( id_transformation, id_step, "result_name", resultName );
-      rep.saveStepAttribute( id_transformation, id_step, "result_type", ValueMeta.getTypeDesc( resultType ) );
+      rep.saveStepAttribute( id_transformation, id_step, "result_type",
+        ValueMetaFactory.getValueMetaName( resultType ) );
       rep.saveStepAttribute( id_transformation, id_step, "auto_commit", autoCommit );
 
       // Also, save the step-database relationship!
@@ -412,14 +426,14 @@ public class DBProcMeta extends BaseStepMeta implements StepMetaInterface {
             } else {
               // Argument exists in input stream: same type?
 
-              if ( v.getType() != argumentType[i] && !( v.isNumeric() && ValueMeta.isNumeric( argumentType[i] ) ) ) {
+              if ( v.getType() != argumentType[i] && !( v.isNumeric() && ValueMetaBase.isNumeric( argumentType[i] ) ) ) {
                 error_found = true;
                 error_message +=
                   "\t\t"
                     + argument[i]
                     + BaseMessages.getString(
-                      PKG, "DBProcMeta.CheckResult.WrongTypeArguments", v.getTypeDesc(), ValueMeta
-                        .getTypeDesc( argumentType[i] ) ) + Const.CR;
+                      PKG, "DBProcMeta.CheckResult.WrongTypeArguments", v.getTypeDesc(),
+                      ValueMetaFactory.getValueMetaName( argumentType[i] ) ) + Const.CR;
               }
             }
           }

@@ -45,7 +45,7 @@ import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -247,8 +247,8 @@ public class RowGeneratorDialog extends BaseStepDialog implements StepDialogInte
         new ColumnInfo(
           BaseMessages.getString( PKG, "System.Column.Name" ), ColumnInfo.COLUMN_TYPE_TEXT, false ),
         new ColumnInfo(
-          BaseMessages.getString( PKG, "System.Column.Type" ), ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta
-            .getTypes() ),
+          BaseMessages.getString( PKG, "System.Column.Type" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+          ValueMetaFactory.getValueMetaNames() ),
         new ColumnInfo(
           BaseMessages.getString( PKG, "System.Column.Format" ), ColumnInfo.COLUMN_TYPE_FORMAT, 2 ),
         new ColumnInfo(

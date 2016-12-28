@@ -61,8 +61,8 @@ import org.pentaho.di.core.SourceToTargetMapping;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
@@ -409,7 +409,7 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
           ColumnInfo.COLUMN_TYPE_TEXT, false ),
         new ColumnInfo(
           BaseMessages.getString( PKG, "SelectValuesDialog.ColumnInfo.Type" ),
-          ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getAllTypes(), false ),
+          ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMetaFactory.getAllValueMetaNames(), false ),
         new ColumnInfo(
           BaseMessages.getString( PKG, "SelectValuesDialog.ColumnInfo.Length" ),
           ColumnInfo.COLUMN_TYPE_TEXT, false ),
@@ -655,7 +655,7 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
         } else {
           index++;
         }
-        item.setText( index++, ValueMeta.getTypeDesc( change.getType() ) );
+        item.setText( index++, ValueMetaFactory.getValueMetaName( change.getType() ) );
         item.setText( index++, change.getLength() < 0 ? "" : "" + change.getLength() );
         item.setText( index++, change.getPrecision() < 0 ? "" : "" + change.getPrecision() );
         item.setText( index++, change.getStorageType() == ValueMetaInterface.STORAGE_TYPE_NORMAL ? BaseMessages
@@ -757,7 +757,7 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
       if ( Utils.isEmpty( change.getRename() ) ) {
         change.setRename( change.getName() );
       }
-      change.setType( ValueMeta.getType( item.getText( index++ ) ) );
+      change.setType( ValueMetaFactory.getIdForValueMeta( item.getText( index++ ) ) );
 
       change.setLength( Const.toInt( item.getText( index++ ), -2 ) );
       change.setPrecision( Const.toInt( item.getText( index++ ), -2 ) );

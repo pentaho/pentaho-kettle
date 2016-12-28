@@ -41,15 +41,17 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
+import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueDataUtil;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaBase;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.row.value.ValueMetaInteger;
+import org.pentaho.di.core.row.value.ValueMetaNone;
 import org.pentaho.di.core.row.value.ValueMetaNumber;
 import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.vfs.KettleVFS;
@@ -584,9 +586,15 @@ public class GroupBy extends BaseStep implements StepInterface {
         case GroupByMeta.TYPE_GROUP_AVERAGE:
         case GroupByMeta.TYPE_GROUP_CUMULATIVE_SUM:
         case GroupByMeta.TYPE_GROUP_CUMULATIVE_AVERAGE:
-          vMeta =
-              new ValueMeta( meta.getAggregateField()[ i ], subjMeta.isNumeric()
-                  ? subjMeta.getType() : ValueMetaInterface.TYPE_NUMBER );
+          if ( subjMeta.isNumeric() ) {
+            try {
+              vMeta = ValueMetaFactory.createValueMeta( meta.getAggregateField()[ i ], subjMeta.getType() );
+            } catch ( KettlePluginException e ) {
+              vMeta = new ValueMetaNone( meta.getAggregateField()[ i ] );
+            }
+          } else {
+            vMeta = new ValueMetaNumber( meta.getAggregateField()[ i ] );
+          }
           break;
         case GroupByMeta.TYPE_GROUP_MEDIAN:
         case GroupByMeta.TYPE_GROUP_PERCENTILE:

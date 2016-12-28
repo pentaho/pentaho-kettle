@@ -88,8 +88,8 @@ import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransHopMeta;
@@ -659,7 +659,7 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
           ColumnInfo.COLUMN_TYPE_TEXT, false ),
         new ColumnInfo(
           BaseMessages.getString( PKG, "UserDefinedJavaClassDialog.ColumnInfo.Type" ),
-          ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes() ),
+          ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMetaFactory.getValueMetaNames() ),
         new ColumnInfo(
           BaseMessages.getString( PKG, "UserDefinedJavaClassDialog.ColumnInfo.Length" ),
           ColumnInfo.COLUMN_TYPE_TEXT, false ),
@@ -1073,7 +1073,7 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
       TableItem item = wFields.table.getItem( i );
       i++;
       item.setText( 1, fi.name );
-      item.setText( 2, ValueMeta.getTypeDesc( fi.type ) );
+      item.setText( 2, ValueMetaFactory.getValueMetaName( fi.type ) );
       if ( fi.length >= 0 ) {
         item.setText( 3, "" + fi.length );
       }
@@ -1183,8 +1183,8 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
     List<FieldInfo> newFields = new ArrayList<FieldInfo>( nrfields );
     for ( int i = 0; i < nrfields; i++ ) {
       TableItem item = wFields.getNonEmpty( i );
-      newFields.add( new FieldInfo( item.getText( 1 ), ValueMeta.getType( item.getText( 2 ) ), Const.toInt( item
-        .getText( 3 ), -1 ), Const.toInt( item.getText( 4 ), -1 ) ) );
+      newFields.add( new FieldInfo( item.getText( 1 ), ValueMetaFactory.getIdForValueMeta( item.getText( 2 ) ),
+        Const.toInt( item.getText( 3 ), -1 ), Const.toInt( item.getText( 4 ), -1 ) ) );
     }
     meta.replaceFields( newFields );
 

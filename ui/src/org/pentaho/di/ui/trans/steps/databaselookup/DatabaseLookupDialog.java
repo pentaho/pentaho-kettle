@@ -54,8 +54,8 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
@@ -478,7 +478,7 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
     ciReturn[3] =
       new ColumnInfo(
         BaseMessages.getString( PKG, "DatabaseLookupDialog.ColumnInfo.Type" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
-        ValueMeta.getTypes() );
+        ValueMetaFactory.getValueMetaNames() );
     tableFieldColumns.add( ciReturn[0] );
 
     wReturn =
@@ -687,7 +687,7 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
         if ( input.getReturnValueDefault()[i] != null ) {
           item.setText( 3, input.getReturnValueDefault()[i] );
         }
-        item.setText( 4, ValueMeta.getTypeDesc( input.getReturnValueDefaultType()[i] ) );
+        item.setText( 4, ValueMetaFactory.getValueMetaName( input.getReturnValueDefaultType()[i] ) );
       }
     }
 
@@ -760,7 +760,7 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
       }
 
       input.getReturnValueDefault()[i] = item.getText( 3 );
-      input.getReturnValueDefaultType()[i] = ValueMeta.getType( item.getText( 4 ) );
+      input.getReturnValueDefaultType()[i] = ValueMetaFactory.getIdForValueMeta( item.getText( 4 ) );
 
       if ( input.getReturnValueDefaultType()[i] < 0 ) {
         input.getReturnValueDefaultType()[i] = ValueMetaInterface.TYPE_STRING;

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -30,8 +30,9 @@ import java.util.Calendar;
 import java.util.Date;
 
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.xml.XMLInterface;
 import org.w3c.dom.Node;
@@ -72,9 +73,9 @@ public class FixedFileInputField implements Cloneable, XMLInterface {
 
   public FixedFileInputField( Node fnode ) {
     name = XMLHandler.getTagValue( fnode, "name" );
-    type = ValueMeta.getType( XMLHandler.getTagValue( fnode, "type" ) );
+    type = ValueMetaFactory.getIdForValueMeta( XMLHandler.getTagValue( fnode, "type" ) );
     format = XMLHandler.getTagValue( fnode, "format" );
-    trimType = ValueMeta.getTrimTypeByCode( XMLHandler.getTagValue( fnode, "trim_type" ) );
+    trimType = ValueMetaString.getTrimTypeByCode( XMLHandler.getTagValue( fnode, "trim_type" ) );
     currency = XMLHandler.getTagValue( fnode, "currency" );
     decimal = XMLHandler.getTagValue( fnode, "decimal" );
     grouping = XMLHandler.getTagValue( fnode, "group" );
@@ -101,10 +102,11 @@ public class FixedFileInputField implements Cloneable, XMLInterface {
 
     retval.append( "      " ).append( XMLHandler.openTag( XML_TAG ) ).append( Const.CR );
     retval.append( "        " ).append( XMLHandler.addTagValue( "name", name ) );
-    retval.append( "        " ).append( XMLHandler.addTagValue( "type", ValueMeta.getTypeDesc( type ) ) );
+    retval.append( "        " ).append( XMLHandler.addTagValue( "type",
+      ValueMetaFactory.getValueMetaName( type ) ) );
     retval.append( "        " ).append( XMLHandler.addTagValue( "format", format ) );
     retval.append( "        " ).append(
-      XMLHandler.addTagValue( "trim_type", ValueMeta.getTrimTypeCode( trimType ) ) );
+      XMLHandler.addTagValue( "trim_type", ValueMetaString.getTrimTypeCode( trimType ) ) );
     retval.append( "        " ).append( XMLHandler.addTagValue( "currency", currency ) );
     retval.append( "        " ).append( XMLHandler.addTagValue( "decimal", decimal ) );
     retval.append( "        " ).append( XMLHandler.addTagValue( "group", grouping ) );
