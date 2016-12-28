@@ -22,8 +22,6 @@
 
 package org.pentaho.di.trans.steps.pgbulkloader;
 
-import java.io.IOException;
-
 //
 // The "designer" notes of the PostgreSQL bulkloader:
 // ----------------------------------------------
@@ -35,17 +33,13 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.SQLException;
 
-import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.core.util.StreamLogger;
-import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -54,10 +48,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
-import java.sql.Connection;
-import java.sql.DriverManager;
 import org.postgresql.copy.PGCopyOutputStream;
-import org.postgresql.core.BaseConnection;
 import org.postgresql.PGConnection;
 
 /**
