@@ -47,8 +47,8 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
@@ -261,7 +261,7 @@ public class FieldSplitterDialog extends BaseStepDialog implements StepDialogInt
           ColumnInfo.COLUMN_TYPE_TEXT, false ),
         new ColumnInfo(
           BaseMessages.getString( PKG, "FieldSplitterDialog.ColumnInfo.TrimType" ),
-          ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.trimTypeDesc, true ), };
+          ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMetaString.trimTypeDesc, true ), };
     wFields =
       new TableView(
         transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, fieldsRows, lsMod, props );
@@ -387,7 +387,7 @@ public class FieldSplitterDialog extends BaseStepDialog implements StepDialogInt
       if ( input.getFieldIfNull()[i] != null ) {
         ti.setText( 12, input.getFieldIfNull()[i] );
       }
-      ti.setText( 13, ValueMeta.getTrimTypeDesc( input.getFieldTrimType()[i] ) );
+      ti.setText( 13, ValueMetaString.getTrimTypeDesc( input.getFieldTrimType()[i] ) );
     }
     wFields.setRowNums();
     wFields.optWidth( true );
@@ -433,7 +433,7 @@ public class FieldSplitterDialog extends BaseStepDialog implements StepDialogInt
       input.getFieldCurrency()[i] = ti.getText( 10 );
       input.getFieldNullIf()[i] = ti.getText( 11 );
       input.getFieldIfNull()[i] = ti.getText( 12 );
-      input.getFieldTrimType()[i] = ValueMeta.getTrimTypeByDesc( ti.getText( 13 ) );
+      input.getFieldTrimType()[i] = ValueMetaString.getTrimTypeByDesc( ti.getText( 13 ) );
     }
 
     dispose();

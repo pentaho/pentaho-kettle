@@ -56,8 +56,8 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
@@ -280,7 +280,7 @@ public class DBProcDialog extends BaseStepDialog implements StepDialogInterface 
     wlResultType.setLayoutData( fdlResultType );
     wResultType = new CCombo( shell, SWT.BORDER | SWT.READ_ONLY );
     props.setLook( wResultType );
-    String[] types = ValueMeta.getTypes();
+    String[] types = ValueMetaFactory.getValueMetaNames();
     for ( int x = 0; x < types.length; x++ ) {
       wResultType.add( types[x] );
     }
@@ -315,7 +315,7 @@ public class DBProcDialog extends BaseStepDialog implements StepDialogInterface 
     colinf[2] =
       new ColumnInfo(
         BaseMessages.getString( PKG, "DBProcDialog.ColumnInfo.Type" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
-        ValueMeta.getTypes() );
+        ValueMetaFactory.getValueMetaNames() );
 
     wFields =
       new TableView(
@@ -455,7 +455,7 @@ public class DBProcDialog extends BaseStepDialog implements StepDialogInterface 
         if ( input.getArgumentDirection()[i] != null ) {
           item.setText( 2, input.getArgumentDirection()[i] );
         }
-        item.setText( 3, ValueMeta.getTypeDesc( input.getArgumentType()[i] ) );
+        item.setText( 3, ValueMetaFactory.getValueMetaName( input.getArgumentType()[i] ) );
       }
     }
 
@@ -470,7 +470,7 @@ public class DBProcDialog extends BaseStepDialog implements StepDialogInterface 
     if ( input.getResultName() != null ) {
       wResult.setText( input.getResultName() );
     }
-    wResultType.setText( ValueMeta.getTypeDesc( input.getResultType() ) );
+    wResultType.setText( ValueMetaFactory.getValueMetaName( input.getResultType() ) );
 
     wAutoCommit.setSelection( input.isAutoCommit() );
 
@@ -504,13 +504,13 @@ public class DBProcDialog extends BaseStepDialog implements StepDialogInterface 
       TableItem item = wFields.getNonEmpty( i );
       input.getArgument()[i] = item.getText( 1 );
       input.getArgumentDirection()[i] = item.getText( 2 );
-      input.getArgumentType()[i] = ValueMeta.getType( item.getText( 3 ) );
+      input.getArgumentType()[i] = ValueMetaFactory.getIdForValueMeta( item.getText( 3 ) );
     }
 
     input.setDatabase( transMeta.findDatabase( wConnection.getText() ) );
     input.setProcedure( wProcName.getText() );
     input.setResultName( wResult.getText() );
-    input.setResultType( ValueMeta.getType( wResultType.getText() ) );
+    input.setResultType( ValueMetaFactory.getIdForValueMeta( wResultType.getText() ) );
     input.setAutoCommit( wAutoCommit.getSelection() );
 
     stepname = wStepname.getText(); // return value

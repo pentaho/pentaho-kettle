@@ -58,7 +58,6 @@ import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseInterface;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.database.GreenplumDatabaseMeta;
-import org.pentaho.di.core.database.MySQLDatabaseMeta;
 import org.pentaho.di.core.database.NetezzaDatabaseMeta;
 import org.pentaho.di.core.database.OracleDatabaseMeta;
 import org.pentaho.di.core.database.PostgreSQLDatabaseMeta;
@@ -93,6 +92,7 @@ public class ValueMetaBase implements ValueMetaInterface {
 
   public static final String XML_META_TAG = "value-meta";
   public static final String XML_DATA_TAG = "value-data";
+  public static final String COMPATIBLE_DATE_FORMAT_PATTERN = "yyyy/MM/dd HH:mm:ss.SSS";
 
   public static final boolean EMPTY_STRING_AND_NULL_ARE_DIFFERENT = convertStringToBoolean( Const.NVL( System
       .getProperty( Const.KETTLE_EMPTY_STRING_DIFFERS_FROM_NULL, "N" ), "N" ) );
@@ -756,7 +756,7 @@ public class ValueMetaBase implements ValueMetaInterface {
     return getDateFormat().format( date );
   }
 
-  protected static SimpleDateFormat compatibleDateFormat = new SimpleDateFormat( "yyyy/MM/dd HH:mm:ss.SSS" );
+  protected static SimpleDateFormat compatibleDateFormat = new SimpleDateFormat( COMPATIBLE_DATE_FORMAT_PATTERN );
 
   protected synchronized String convertDateToCompatibleString( Date date ) {
     if ( date == null ) {
@@ -1700,7 +1700,7 @@ public class ValueMetaBase implements ValueMetaInterface {
   @Override
   public Double getNumber( Object object ) throws KettleValueException {
     try {
-      if ( object == null ) {
+      if ( isNull( object ) ) {
         return null;
       }
       switch ( type ) {
@@ -1786,7 +1786,7 @@ public class ValueMetaBase implements ValueMetaInterface {
   @Override
   public Long getInteger( Object object ) throws KettleValueException {
     try {
-      if ( object == null ) {
+      if ( isNull( object ) ) {
         return null;
       }
       switch ( type ) {
@@ -1873,7 +1873,7 @@ public class ValueMetaBase implements ValueMetaInterface {
 
   @Override
   public BigDecimal getBigNumber( Object object ) throws KettleValueException {
-    if ( object == null ) {
+    if ( isNull( object ) ) {
       return null;
     }
     switch ( type ) {
@@ -2026,7 +2026,7 @@ public class ValueMetaBase implements ValueMetaInterface {
 
   @Override
   public Date getDate( Object object ) throws KettleValueException {
-    if ( object == null ) {
+    if ( isNull( object ) ) {
       return null;
     }
     switch ( type ) {
@@ -2482,6 +2482,9 @@ public class ValueMetaBase implements ValueMetaInterface {
               case TYPE_BINARY:
                 writeBinary( outputStream, (byte[]) object );
                 break;
+              case TYPE_INET:
+                writeBinary( outputStream, ( (InetAddress) object ).getAddress() );
+                break;
               default:
                 throw new KettleFileException( toString() + " : Unable to serialize data type " + getType() );
             }
@@ -2542,6 +2545,8 @@ public class ValueMetaBase implements ValueMetaInterface {
               return readBoolean( inputStream );
             case TYPE_BINARY:
               return readBinary( inputStream );
+            case TYPE_INET:
+              return InetAddress.getByAddress( readBinary( inputStream ) );
             default:
               throw new KettleFileException( toString() + " : Unable to de-serialize data of type " + getType() );
           }
@@ -4574,7 +4579,7 @@ public class ValueMetaBase implements ValueMetaInterface {
 
             // MySQL: max resolution is double precision floating point (double)
             // The (12,31) that is given back is not correct
-            if ( databaseMeta.getDatabaseInterface() instanceof MySQLDatabaseMeta ) {
+            if ( databaseMeta.getDatabaseInterface().isMySQLVariant() ) {
               if ( precision >= length ) {
                 precision = -1;
                 length = -1;
@@ -4641,7 +4646,7 @@ public class ValueMetaBase implements ValueMetaInterface {
         case java.sql.Types.TIME:
           valtype = ValueMetaInterface.TYPE_DATE;
           //
-          if ( databaseMeta.getDatabaseInterface() instanceof MySQLDatabaseMeta ) {
+          if ( databaseMeta.getDatabaseInterface().isMySQLVariant() ) {
             String property = databaseMeta.getConnectionProperties().getProperty( "yearIsDateType" );
             if ( property != null && property.equalsIgnoreCase( "false" )
                 && rm.getColumnTypeName( index ).equalsIgnoreCase( "YEAR" ) ) {

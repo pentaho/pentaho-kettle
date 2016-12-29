@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,13 +22,12 @@
 
 package org.pentaho.di.job;
 
+import org.pentaho.di.base.BaseHopMeta;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.xml.XMLHandler;
-import org.pentaho.di.core.xml.XMLInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.entry.JobEntryCopy;
-import org.pentaho.di.repository.ObjectId;
 import org.w3c.dom.Node;
 
 /**
@@ -38,28 +37,19 @@ import org.w3c.dom.Node;
  * @since 19-06-2003
  *
  */
-public class JobHopMeta implements Cloneable, XMLInterface {
-  private static final String XML_TAG = "hop";
-
+public class JobHopMeta extends BaseHopMeta<JobEntryCopy> {
   private static Class<?> PKG = JobHopMeta.class; // for i18n purposes, needed by Translator2!!
 
-  private JobEntryCopy from_entry, to_entry;
-  private boolean enabled;
-  public boolean split = false;
   private boolean evaluation;
   private boolean unconditional;
-
-  private boolean changed;
-
-  private ObjectId id;
 
   public JobHopMeta() {
     this( (JobEntryCopy) null, (JobEntryCopy) null );
   }
 
   public JobHopMeta( JobEntryCopy from, JobEntryCopy to ) {
-    from_entry = from;
-    to_entry = to;
+    this.from = from;
+    this.to = to;
     enabled = true;
     split = false;
     evaluation = true;
@@ -85,8 +75,8 @@ public class JobHopMeta implements Cloneable, XMLInterface {
       from_nr = Const.toInt( sfrom_nr, 0 );
       to_nr = Const.toInt( sto_nr, 0 );
 
-      from_entry = job.findJobEntry( from_name, from_nr, true );
-      to_entry = job.findJobEntry( to_name, to_nr, true );
+      this.from = job.findJobEntry( from_name, from_nr, true );
+      this.to = job.findJobEntry( to_name, to_nr, true );
 
       if ( senabled == null ) {
         enabled = true;
@@ -107,12 +97,12 @@ public class JobHopMeta implements Cloneable, XMLInterface {
 
   public String getXML() {
     StringBuilder retval = new StringBuilder( 200 );
-    if ( ( null != from_entry ) && ( null != to_entry ) ) {
+    if ( ( null != this.from ) && ( null != this.to ) ) {
       retval.append( "    " ).append( XMLHandler.openTag( XML_TAG ) ).append( Const.CR );
-      retval.append( "      " ).append( XMLHandler.addTagValue( "from", from_entry.getName() ) );
-      retval.append( "      " ).append( XMLHandler.addTagValue( "to", to_entry.getName() ) );
-      retval.append( "      " ).append( XMLHandler.addTagValue( "from_nr", from_entry.getNr() ) );
-      retval.append( "      " ).append( XMLHandler.addTagValue( "to_nr", to_entry.getNr() ) );
+      retval.append( "      " ).append( XMLHandler.addTagValue( "from", this.from.getName() ) );
+      retval.append( "      " ).append( XMLHandler.addTagValue( "to", this.to.getName() ) );
+      retval.append( "      " ).append( XMLHandler.addTagValue( "from_nr", this.from.getNr() ) );
+      retval.append( "      " ).append( XMLHandler.addTagValue( "to_nr", this.to.getNr() ) );
       retval.append( "      " ).append( XMLHandler.addTagValue( "enabled", enabled ) );
       retval.append( "      " ).append( XMLHandler.addTagValue( "evaluation", evaluation ) );
       retval.append( "      " ).append( XMLHandler.addTagValue( "unconditional", unconditional ) );
@@ -120,50 +110,6 @@ public class JobHopMeta implements Cloneable, XMLInterface {
     }
 
     return retval.toString();
-  }
-
-  public void setObjectId( ObjectId id ) {
-    this.id = id;
-  }
-
-  public ObjectId getObjectId() {
-    return id;
-  }
-
-  public Object clone() {
-    try {
-      Object retval = super.clone();
-      return retval;
-    } catch ( CloneNotSupportedException e ) {
-      return null;
-    }
-  }
-
-  public void setChanged() {
-    setChanged( true );
-  }
-
-  public void setChanged( boolean ch ) {
-    changed = ch;
-  }
-
-  public boolean hasChanged() {
-    return changed;
-  }
-
-  public void setEnabled() {
-    setEnabled( true );
-  }
-
-  public void setEnabled( boolean en ) {
-    if ( enabled != en ) {
-      setChanged();
-    }
-    enabled = en;
-  }
-
-  public boolean isEnabled() {
-    return enabled;
   }
 
   public boolean getEvaluation() {
@@ -231,20 +177,20 @@ public class JobHopMeta implements Cloneable, XMLInterface {
   }
 
   public JobEntryCopy getFromEntry() {
-    return from_entry;
+    return this.from;
   }
 
   public void setFromEntry( JobEntryCopy fromEntry ) {
-    this.from_entry = fromEntry;
+    this.from = fromEntry;
     changed = true;
   }
 
   public JobEntryCopy getToEntry() {
-    return to_entry;
+    return this.to;
   }
 
   public void setToEntry( JobEntryCopy toEntry ) {
-    this.to_entry = toEntry;
+    this.to = toEntry;
     changed = true;
   }
 

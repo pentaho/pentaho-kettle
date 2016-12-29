@@ -36,6 +36,9 @@ import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.DBCache;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.plugins.DatabasePluginType;
+import org.pentaho.di.core.plugins.PluginInterface;
+import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaDate;
@@ -85,7 +88,8 @@ public class MySQLBulkLoader extends BaseStep implements StepInterface {
         // MKFIFO!
         //
         String mkFifoCmd = "mkfifo " + data.fifoFilename;
-        logBasic( "Creating FIFO file using this command : " + mkFifoCmd );
+        //
+        logBasic( BaseMessages.getString( PKG, "MySQLBulkLoader.Message.CREATINGFIFO",  data.dbDescription, mkFifoCmd ) );
         Process mkFifoProcess = rt.exec( mkFifoCmd );
         StreamLogger errorLogger = new StreamLogger( log, mkFifoProcess.getErrorStream(), "mkFifoError" );
         StreamLogger outputLogger = new StreamLogger( log, mkFifoProcess.getInputStream(), "mkFifoOuptut" );
@@ -93,11 +97,11 @@ public class MySQLBulkLoader extends BaseStep implements StepInterface {
         new Thread( outputLogger ).start();
         int result = mkFifoProcess.waitFor();
         if ( result != 0 ) {
-          throw new Exception( "Return code " + result + " received from statement : " + mkFifoCmd );
+          throw new Exception( BaseMessages.getString( PKG, "MySQLBulkLoader.Message.ERRORFIFORC", result, mkFifoCmd ) );
         }
 
         String chmodCmd = "chmod 666 " + data.fifoFilename;
-        logBasic( "Setting FIFO file permissings using this command : " + chmodCmd );
+        logBasic( BaseMessages.getString( PKG, "MySQLBulkLoader.Message.SETTINGPERMISSIONSFIFO",  data.dbDescription, chmodCmd ) );
         Process chmodProcess = rt.exec( chmodCmd );
         errorLogger = new StreamLogger( log, chmodProcess.getErrorStream(), "chmodError" );
         outputLogger = new StreamLogger( log, chmodProcess.getInputStream(), "chmodOuptut" );
@@ -105,7 +109,7 @@ public class MySQLBulkLoader extends BaseStep implements StepInterface {
         new Thread( outputLogger ).start();
         result = chmodProcess.waitFor();
         if ( result != 0 ) {
-          throw new Exception( "Return code " + result + " received from statement : " + chmodCmd );
+          throw new Exception( BaseMessages.getString( PKG, "MySQLBulkLoader.Message.ERRORFIFORC", result, chmodCmd ) );
         }
       }
 
@@ -118,6 +122,10 @@ public class MySQLBulkLoader extends BaseStep implements StepInterface {
       }
       data.db = new Database( this, meta.getDatabaseMeta() );
       data.db.shareVariablesWith( this );
+      PluginInterface dbPlugin =
+          PluginRegistry.getInstance().getPlugin( DatabasePluginType.class, meta.getDatabaseMeta().getDatabaseInterface() );
+      data.dbDescription = ( dbPlugin != null ) ? dbPlugin.getDescription() : BaseMessages.getString( PKG, "MySQLBulkLoader.UnknownDB" );
+
       // Connect to the database
       if ( getTransMeta().isUsingUniqueConnections() ) {
         synchronized ( getTrans() ) {
@@ -127,7 +135,7 @@ public class MySQLBulkLoader extends BaseStep implements StepInterface {
         data.db.connect( getPartitionID() );
       }
 
-      logBasic( "Connected to MySQL" );
+      logBasic( BaseMessages.getString( PKG, "MySQLBulkLoader.Message.CONNECTED",  data.dbDescription ) );
 
       // 3) Now we are ready to run the load command...
       //
@@ -178,14 +186,15 @@ public class MySQLBulkLoader extends BaseStep implements StepInterface {
 
     loadCommand += ");" + Const.CR;
 
-    logBasic( "Starting the MySQL bulk Load in a separate thread : " + loadCommand );
+    logBasic( BaseMessages.getString( PKG, "MySQLBulkLoader.Message.STARTING",  data.dbDescription, loadCommand ) );
+
     data.sqlRunner = new SqlRunner( data, loadCommand );
     data.sqlRunner.start();
 
     // Ready to start writing rows to the FIFO file now...
     //
     if ( !Const.isWindows() ) {
-      logBasic( "Opening fifo " + data.fifoFilename + " for writing." );
+      logBasic( BaseMessages.getString( PKG, "MySQLBulkLoader.Message.OPENFIFO",  data.fifoFilename ) );
       OpenFifo openFifo = new OpenFifo( data.fifoFilename, 1000 );
       openFifo.start();
 
@@ -204,7 +213,7 @@ public class MySQLBulkLoader extends BaseStep implements StepInterface {
           // that was waiting for the sqlRunner that now isn't running
           new BufferedInputStream( new FileInputStream( data.fifoFilename ) ).close();
           openFifo.join();
-          logError( "Make sure user has been granted the FILE privilege." );
+          logError( BaseMessages.getString( PKG, "MySQLBulkLoader.Message.ERRORFIFO" ) );
           logError( "" );
           throw e;
         }
@@ -304,7 +313,7 @@ public class MySQLBulkLoader extends BaseStep implements StepInterface {
     if ( data.sqlRunner != null ) {
 
       // wait for the INSERT statement to finish and check for any error and/or warning...
-      logDebug( "Waiting up to " + this.threadWaitTimeText + " for the MySQL load command thread to finish processing." );
+      logDebug( "Waiting up to " + this.threadWaitTimeText + " for the MySQL load command thread to finish processing." ); // no requirement for NLS debug messages
       data.sqlRunner.join( this.threadWaitTime );
       SqlRunner sqlRunner = data.sqlRunner;
       data.sqlRunner = null;
@@ -429,8 +438,7 @@ public class MySQLBulkLoader extends BaseStep implements StepInterface {
     } catch ( IOException e ) {
       // If something went wrong with writing to the fifo, get the underlying error from MySQL
       try {
-        logError( "IOException writing to fifo.  Waiting up to " + this.threadWaitTimeText
-            + " for the MySQL load command thread to return with the error." );
+        logError( BaseMessages.getString( PKG, "MySQLBulkLoader.Message.IOERROR", this.threadWaitTimeText ) );
         try {
           data.sqlRunner.join( this.threadWaitTime );
         } catch ( InterruptedException ex ) {
@@ -438,15 +446,15 @@ public class MySQLBulkLoader extends BaseStep implements StepInterface {
         }
         data.sqlRunner.checkExcn();
       } catch ( Exception loadEx ) {
-        throw new KettleException( "Error serializing rows of data to the fifo file", loadEx );
+        throw new KettleException( BaseMessages.getString( PKG, "MySQLBulkLoader.Message.ERRORSERIALIZING" ), loadEx );
       }
 
       // MySQL didn't finish, throw the generic "Pipe" exception.
-      throw new KettleException( "Error serializing rows of data to the fifo file", e );
+      throw new KettleException( BaseMessages.getString( PKG, "MySQLBulkLoader.Message.ERRORSERIALIZING" ), e );
 
     } catch ( Exception e2 ) {
       // Null pointer exceptions etc.
-      throw new KettleException( "Error serializing rows of data to the fifo file", e2 );
+      throw new KettleException( BaseMessages.getString( PKG, "MySQLBulkLoader.Message.ERRORSERIALIZING" ), e2 );
     }
   }
 
@@ -527,11 +535,11 @@ public class MySQLBulkLoader extends BaseStep implements StepInterface {
           new File( data.fifoFilename ).delete();
         }
       } catch ( Exception e ) {
-        logError( "Unable to delete FIFO file : " + data.fifoFilename, e );
+        logError( BaseMessages.getString( PKG, "MySQLBulkLoader.Message.UNABLETODELETE", data.fifoFilename ), e );
       }
     } catch ( Exception e ) {
       setErrors( 1L );
-      logError( "Unexpected error encountered while closing the client connection", e );
+      logError( BaseMessages.getString( PKG, "MySQLBulkLoader.Message.UNEXPECTEDERRORCLOSING" ), e );
     }
 
     super.dispose( smi, sdi );

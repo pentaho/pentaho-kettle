@@ -34,7 +34,6 @@ import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.di.core.database.MySQLDatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -911,7 +910,7 @@ public class DimensionLookup extends BaseStep implements StepInterface {
       if ( databaseMeta.supportsSetMaxRows() ) {
         data.prepStatementLookup.setMaxRows( 1 ); // alywas get only 1 line back!
       }
-      if ( databaseMeta.getDatabaseInterface() instanceof MySQLDatabaseMeta ) {
+      if ( databaseMeta.getDatabaseInterface().isMySQLVariant() ) {
         data.prepStatementLookup.setFetchSize( 0 ); // Make sure to DISABLE Streaming Result sets
       }
       logDetailed( "Finished preparing dimension lookup statement." );
@@ -1700,6 +1699,7 @@ public class DimensionLookup extends BaseStep implements StepInterface {
     data = (DimensionLookupData) sdi;
 
     if ( super.init( smi, sdi ) ) {
+      meta.normalizeAllocationFields();
       data.min_date = meta.getMinDate();
       data.max_date = meta.getMaxDate();
 

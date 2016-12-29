@@ -66,7 +66,7 @@ import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.fileinput.FileInputList;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
@@ -816,7 +816,7 @@ public class LDIFInputDialog extends BaseStepDialog implements StepDialogInterfa
           ColumnInfo.COLUMN_TYPE_TEXT, false ),
         new ColumnInfo(
           BaseMessages.getString( PKG, "LDIFInputDialog.FieldsTable.Type.Column" ),
-          ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes(), true ),
+          ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMetaFactory.getValueMetaNames(), true ),
         new ColumnInfo(
           BaseMessages.getString( PKG, "LDIFInputDialog.FieldsTable.Format.Column" ),
           ColumnInfo.COLUMN_TYPE_FORMAT, 3 ),
@@ -1489,7 +1489,7 @@ public class LDIFInputDialog extends BaseStepDialog implements StepDialogInterfa
 
       field.setName( item.getText( 1 ) );
       field.setAttribut( item.getText( 2 ) );
-      field.setType( ValueMeta.getType( item.getText( 3 ) ) );
+      field.setType( ValueMetaFactory.getIdForValueMeta( item.getText( 3 ) ) );
       field.setFormat( item.getText( 4 ) );
       field.setLength( Const.toInt( item.getText( 5 ), -1 ) );
       field.setPrecision( Const.toInt( item.getText( 6 ), -1 ) );

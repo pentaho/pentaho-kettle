@@ -267,8 +267,18 @@ public class JsonInputTest {
     helper.redirectLog( out, LogLevel.ERROR );
 
     try ( LocaleChange enUS = new LocaleChange( Locale.US ) ) {
-      JsonInput jsonInput = createBasicTestJsonInput( "$..fail", new ValueMetaString( "result" ), "json",
-        new Object[] { getBasicTestJson() } );
+
+      ValueMetaString outputMeta = new ValueMetaString( "result" );
+
+      JsonInputField jpath = new JsonInputField( outputMeta.getName() );
+      jpath.setPath( "$..fail" );
+      jpath.setType( outputMeta.getType() );
+
+      JsonInputMeta jsonInputMeta = createSimpleMeta( "json", jpath );
+      jsonInputMeta.setIgnoreMissingPath( false );
+
+      JsonInput jsonInput = createJsonInput( "json", jsonInputMeta, new Object[] { getBasicTestJson() } );
+
       processRows( jsonInput, 2 );
       Assert.assertEquals( "errors", 1, jsonInput.getErrors() );
       Assert.assertEquals( "rows written", 0, jsonInput.getLinesWritten() );
@@ -356,13 +366,55 @@ public class JsonInputTest {
     meta.setRemoveSourceField( true );
     final String input = getBasicTestJson();
 
-    JsonInput jsonInput = createJsonInput( "json", meta, new Object[] { input }, new Object[] { input } );
+    JsonInput jsonInput = createJsonInput( "json", meta, new Object[] { input } );
     processRows( jsonInput, 8 );
     disposeJsonInput( jsonInput );
 
     Assert.assertEquals( 5, jsonInput.getLinesWritten() );
   }
 
+  @Test
+  public void testIfIgnorePathDoNotSkipRowIfInputIsNullOrFieldNotFound() throws Exception {
+
+    final String input1 = "{ \"value1\": \"1\",\n"
+            + "  \"value2\": \"2\",\n"
+            + "}";
+    final String input2 = "{ \"value1\": \"3\""
+            + "}";
+    final String input3 = "{ \"value2\": \"4\""
+            + "}";
+    final String input4 = "{ \"value1\": null,\n"
+            + "  \"value2\": null,\n"
+            + "}";
+    final String input5 = "{}";
+    final String input6 = null;
+
+    final String inCol = "input";
+
+    JsonInputField aField = new JsonInputField();
+    aField.setName( "a" );
+    aField.setPath( "$.value1" );
+    aField.setType( ValueMetaInterface.TYPE_STRING );
+    JsonInputField bField = new JsonInputField();
+    bField.setName( "b" );
+    bField.setPath( "$.value2" );
+    bField.setType( ValueMetaInterface.TYPE_STRING );
+
+    JsonInputMeta meta = createSimpleMeta( inCol, aField, bField );
+    meta.setIgnoreMissingPath( true );
+    JsonInput step = createJsonInput( inCol, meta, new Object[] { input1 },
+             new Object[] { input2 },
+             new Object[] { input3 },
+             new Object[] { input4 },
+             new Object[] { input5 },
+             new Object[] { input6 }
+            );
+    step.addRowListener(
+            new RowComparatorListener(
+                     new Object[]{ input1, "1", "2" }, new Object[]{ input2, "3", null }, new Object[]{ input3, null, "4" },
+                     new Object[]{ input4, null, null }, new Object[]{ input5, null, null }, new Object[]{ input6, null, null }   ) );
+    processRows( step, 5 );
+  }
 
   @Test
   public void testBfsMatchOrder() throws Exception {
@@ -398,6 +450,7 @@ public class JsonInputTest {
     bField.setRepeated( true );
 
     JsonInputMeta meta = createSimpleMeta( inCol, aField, bField );
+    meta.setIgnoreMissingPath( true );
     JsonInput step = createJsonInput( inCol, meta, new Object[] { input } );
     step.addRowListener(
       new RowComparatorListener(
@@ -407,6 +460,36 @@ public class JsonInputTest {
         new Object[] { input, 4L, 4L } ) );
     processRows( step, 4 );
     Assert.assertEquals( 4, step.getLinesWritten() );
+  }
+
+  @Test
+  public void testPathMissingIgnore() throws Exception {
+    final String input = "{ \"value1\": \"1\",\n"
+      + "  \"value2\": \"2\",\n"
+      + "}";
+    final String inCol = "input";
+
+    JsonInputField aField = new JsonInputField();
+    aField.setName( "a" );
+    aField.setPath( "$.value1" );
+    aField.setType( ValueMetaInterface.TYPE_STRING );
+    JsonInputField bField = new JsonInputField();
+    bField.setName( "b" );
+    bField.setPath( "$.value2" );
+    bField.setType( ValueMetaInterface.TYPE_STRING );
+    JsonInputField cField = new JsonInputField();
+    cField.setName( "c" );
+    cField.setPath( "$.notexistpath.value3" );
+    cField.setType( ValueMetaInterface.TYPE_STRING );
+
+    JsonInputMeta meta = createSimpleMeta( inCol, aField, bField, cField );
+    meta.setIgnoreMissingPath( true );
+    JsonInput step = createJsonInput( inCol, meta, new Object[] { input } );
+    step.addRowListener(
+      new RowComparatorListener(
+        new Object[] { input, "1", "2", null } ) );
+    processRows( step, 1 );
+    Assert.assertEquals( 1, step.getLinesWritten() );
   }
 
   /**
@@ -452,6 +535,7 @@ public class JsonInputTest {
     price.setType( ValueMetaInterface.TYPE_NUMBER );
 
     JsonInputMeta meta = createSimpleMeta( "json", isbn, price );
+    meta.setIgnoreMissingPath( true );
     meta.setRemoveSourceField( true );
 
     JsonInput jsonInput = createJsonInput( "json", meta, new Object[] { getBasicTestJson() } );
@@ -571,8 +655,11 @@ public class JsonInputTest {
         new Object[] { jsonInputField },
         new Object[] { null } },
       new Object[][] {
+        new Object[] { null, null },
         new Object[] { jsonInputField, "Herman Melville" },
-        new Object[] { jsonInputField, "J. R. R. Tolkien" } } );
+        new Object[] { jsonInputField, "J. R. R. Tolkien" },
+        new Object[] { null, null }
+      } );
   }
 
   /**
@@ -893,7 +980,7 @@ public class JsonInputTest {
     jsonInputMeta.setInFields( true );
     jsonInputMeta.setFieldValue( inputColumn );
     jsonInputMeta.setInputFields( jsonPathFields );
-    jsonInputMeta.setIgnoreMissingPath( false );
+    jsonInputMeta.setIgnoreMissingPath( true );
     return jsonInputMeta;
   }
 

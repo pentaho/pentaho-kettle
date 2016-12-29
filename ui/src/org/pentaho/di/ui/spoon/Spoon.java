@@ -319,6 +319,7 @@ import org.pentaho.di.ui.spoon.wizards.CopyTableWizardPage2;
 import org.pentaho.di.ui.trans.dialog.TransDialogPluginType;
 import org.pentaho.di.ui.trans.dialog.TransHopDialog;
 import org.pentaho.di.ui.trans.dialog.TransLoadProgressDialog;
+import org.pentaho.di.ui.util.EngineMetaUtils;
 import org.pentaho.di.ui.util.HelpUtils;
 import org.pentaho.di.ui.util.ThreadGuiResources;
 import org.pentaho.di.ui.xul.KettleWaitBox;
@@ -3275,7 +3276,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     String activePerspectiveId = SpoonPerspectiveManager.getInstance().getActivePerspective().getId();
     boolean etlPerspective = activePerspectiveId.equals( MainSpoonPerspective.ID );
 
-    if ( etlPerspective ) {
+    if ( etlPerspective || EngineMetaUtils.isJobOrTransformation( getActiveMeta() ) ) {
       return tabClose( tabfolder.getSelected(), force );
     }
 
@@ -3576,25 +3577,29 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     addUndoDelete( transMeta, new Object[] { (TransHopMeta) transHopMeta.clone() }, new int[] { index } );
     transMeta.removeTransHop( index );
 
+    StepMeta fromStepMeta = transHopMeta.getFromStep();
+    StepMeta before = (StepMeta) fromStepMeta.clone();
+    index = transMeta.indexOfStep( fromStepMeta );
+
+    boolean stepFromNeedAddUndoChange = fromStepMeta.getStepMetaInterface().cleanAfterHopFromRemove();
     // If this is an error handling hop, disable it
     //
     if ( transHopMeta.getFromStep().isDoingErrorHandling() ) {
-      StepErrorMeta stepErrorMeta = transHopMeta.getFromStep().getStepErrorMeta();
+      StepErrorMeta stepErrorMeta = fromStepMeta.getStepErrorMeta();
 
       // We can only disable error handling if the target of the hop is the same as the target of the error handling.
       //
       if ( stepErrorMeta.getTargetStep() != null
         && stepErrorMeta.getTargetStep().equals( transHopMeta.getToStep() ) ) {
-        StepMeta stepMeta = transHopMeta.getFromStep();
+
         // Only if the target step is where the error handling is going to...
         //
-
-        StepMeta before = (StepMeta) stepMeta.clone();
         stepErrorMeta.setEnabled( false );
-
-        index = transMeta.indexOfStep( stepMeta );
-        addUndoChange( transMeta, new Object[] { before }, new Object[] { stepMeta }, new int[] { index } );
+        stepFromNeedAddUndoChange = true;
       }
+    }
+    if ( stepFromNeedAddUndoChange ) {
+      addUndoChange( transMeta, new Object[]{before}, new Object[]{fromStepMeta}, new int[]{index} );
     }
 
     refreshTree();
@@ -7945,8 +7950,6 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
   public void start( CommandLineOption[] options ) throws KettleException {
 
-    ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.SpoonStart.id, options );
-
     // Read the start option parameters
     //
     handleStartOptions( options );
@@ -9285,6 +9288,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     setBlockOnOpen( false );
     try {
       open();
+      ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.SpoonStart.id, commandLineOptions );
       // Load the last loaded files
       loadLastUsedFiles();
       waitForDispose();

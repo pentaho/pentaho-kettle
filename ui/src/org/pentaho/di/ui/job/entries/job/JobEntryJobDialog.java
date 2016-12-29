@@ -1193,7 +1193,7 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
     } catch ( Exception e ) {
       new ErrorDialog(
         shell, BaseMessages.getString( PKG, "JobEntryJobDialog.Exception.UnableToLoadJob.Title" ), BaseMessages
-          .getString( PKG, "JobEntryJobDialog.Exception.UnableToLoadJob.Message" ), e );
+        .getString( PKG, "JobEntryJobDialog.Exception.UnableToLoadJob.Message" ), e );
     }
   }
 
@@ -1243,7 +1243,6 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
   }
 
   protected void pickFileVFS() {
-
     FileDialog dialog = new FileDialog( shell, SWT.OPEN );
     dialog.setFilterExtensions( Const.STRING_JOB_FILTER_EXT );
     dialog.setFilterNames( Const.getJobFilterNames() );
@@ -1263,10 +1262,7 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
         } else {
 
           if ( !prevName.endsWith( ".kjb" ) ) {
-            prevName =
-              "${"
-                + Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY + "}/" + Const.trim( wFilename.getText() )
-                + ".kjb";
+            prevName = getEntryName( Const.trim( wFilename.getText() ) + ".kjb" );
           }
           if ( KettleVFS.fileExists( prevName ) ) {
             wFilename.setText( prevName );
@@ -1309,12 +1305,17 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
       String parentFolderSelection = file.getParentFile().toString();
 
       if ( !Utils.isEmpty( parentFolder ) && parentFolder.equals( parentFolderSelection ) ) {
-        wFilename.setText( "${" + Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY + "}/" + name );
+        wFilename.setText( getEntryName( name ) );
       } else {
         wFilename.setText( fname );
       }
 
     }
+  }
+
+  String getEntryName( String name ) {
+    return "${"
+      + Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY + "}/" + name;
   }
 
   public void dispose() {

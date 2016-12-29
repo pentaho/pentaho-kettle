@@ -57,16 +57,15 @@ import org.xml.sax.InputSource;
 public class LoadFileInputMetaTest implements InitializerInterface<StepMetaInterface> {
   LoadSaveTester loadSaveTester;
 
-  String xmlOrig = "    " + "<include>N</include>\n" + "    <include_field/>\n" + "    <rownum>N</rownum>\n"
-      + "    <addresultfile>Y</addresultfile>\n" + "    <IsIgnoreEmptyFile>N</IsIgnoreEmptyFile>\n"
-      + "    <rownum_field/>\n" + "    <encoding/>\n" + "    <file>\n" + "      <name>D&#x3a;&#x5c;DZMITRY</name>\n"
-      + "      <filemask>&#x2a;&#x2f;</filemask>\n"
-      + "      <exclude_filemask>&#x2f;&#x2a;&#x2a;&#x2a;</exclude_filemask>\n"
-      + "      <file_required>N</file_required>\n" + "      <include_subfolders>N</include_subfolders>\n"
-      + "      </file>\n" + "    <fields>\n" + "      </fields>\n" + "    <limit>0</limit>\n"
-      + "    <IsInFields>N</IsInFields>\n" + "    <DynamicFilenameField/>\n" + "    <shortFileFieldName/>\n"
-      + "    <pathFieldName/>\n" + "    <hiddenFieldName/>\n" + "    <lastModificationTimeFieldName/>\n"
-      + "    <uriNameFieldName/>\n" + "    <rootUriNameFieldName/>\n" + "    <extensionFieldName/>\n";
+  String xmlOrig = "    " + "<include>N</include>    <include_field/>    <rownum>N</rownum>   "
+          + " <addresultfile>Y</addresultfile>    <IsIgnoreEmptyFile>N</IsIgnoreEmptyFile>   "
+          + " <IsIgnoreMissingPath>N</IsIgnoreMissingPath>    <rownum_field/>   "
+          + " <encoding/>    <file>      <name>D:\\DZMITRY</name>      <filemask>*/</filemask>     "
+          + " <exclude_filemask>/***</exclude_filemask>      <file_required>N</file_required>     "
+          + " <include_subfolders>N</include_subfolders>      </file>    <fields>      </fields>   "
+          + " <limit>0</limit>    <IsInFields>N</IsInFields>    <DynamicFilenameField/>   "
+          + " <shortFileFieldName/>    <pathFieldName/>    <hiddenFieldName/>    <lastModificationTimeFieldName/>   "
+          + " <uriNameFieldName/>    <rootUriNameFieldName/>    <extensionFieldName/>";
 
   public LoadFileInputMeta createMeta() throws Exception {
     LoadFileInputMeta meta = new LoadFileInputMeta();
@@ -125,7 +124,7 @@ public class LoadFileInputMetaTest implements InitializerInterface<StepMetaInter
   public void setUp() throws Exception {
     List<String> attributes =
         Arrays.asList( "includeFilename", "filenameField", "includeRowNumber", "rowNumberField", "rowLimit",
-            "encoding", "DynamicFilenameField", "fileinfield", "addresultfile", "IsIgnoreEmptyFile",
+            "encoding", "DynamicFilenameField", "fileinfield", "addresultfile", "IsIgnoreEmptyFile", "IsIgnoreMissingPath",
             "shortFileFieldName", "pathFieldName", "hiddenFieldName", "lastModificationTimeFieldName",
             "uriNameFieldName", "rootUriNameFieldName", "extensionFieldName", "includeSubFolders", "fileName",
             "fileMask", "excludeFileMask", "fileRequired", "inputFields" );
@@ -142,6 +141,7 @@ public class LoadFileInputMetaTest implements InitializerInterface<StepMetaInter
         put( "fileinfield", "getFileInFields" );
         put( "addresultfile", "getAddResultFile" );
         put( "IsIgnoreEmptyFile", "isIgnoreEmptyFile" );
+        put( "IsIgnoreMissingPath", "isIgnoreMissingPath" );
         put( "shortFileFieldName", "getShortFileNameField" );
         put( "pathFieldName", "getPathField" );
         put( "hiddenFieldName", "isHiddenField" );
@@ -170,6 +170,7 @@ public class LoadFileInputMetaTest implements InitializerInterface<StepMetaInter
         put( "fileinfield", "setFileInFields" );
         put( "addresultfile", "setAddResultFile" );
         put( "IsIgnoreEmptyFile", "setIgnoreEmptyFile" );
+        put( "IsIgnoreMissingPath", "setIgnoreMissingPath" );
         put( "shortFileFieldName", "setShortFileNameField" );
         put( "pathFieldName", "setPathField" );
         put( "hiddenFieldName", "setIsHiddenField" );

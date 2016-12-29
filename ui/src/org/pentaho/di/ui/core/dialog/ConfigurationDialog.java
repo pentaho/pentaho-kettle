@@ -416,7 +416,6 @@ public abstract class ConfigurationDialog extends Dialog {
     shell.pack();
     // Set the focus on the OK button
     wOK.setFocus();
-    shell.open();
 
     Rectangle shellBounds = getParent().getBounds();
     Point dialogSize = shell.getSize();
@@ -424,6 +423,7 @@ public abstract class ConfigurationDialog extends Dialog {
     shell.setLocation( shellBounds.x + ( shellBounds.width - dialogSize.x ) / 2, shellBounds.y
         + ( shellBounds.height - dialogSize.y ) / 2 );
 
+    shell.open();
     while ( !shell.isDisposed() ) {
       if ( !display.readAndDispatch() ) {
         display.sleep();

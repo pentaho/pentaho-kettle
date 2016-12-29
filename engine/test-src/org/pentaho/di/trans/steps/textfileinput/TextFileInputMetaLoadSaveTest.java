@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,7 +24,10 @@ package org.pentaho.di.trans.steps.textfileinput;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
+import org.pentaho.di.core.exception.KettlePluginException;
+import org.pentaho.di.core.row.value.ValueMetaPluginType;
 import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
 import org.pentaho.di.trans.steps.loadsave.validator.ArrayLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
@@ -47,7 +50,12 @@ import static org.junit.Assert.assertTrue;
 @Deprecated
 public class TextFileInputMetaLoadSaveTest {
 
-  private LoadSaveTester tester;
+  private LoadSaveTester<TextFileInputMeta> tester;
+
+  @BeforeClass
+  public static void setUpBeforeClass() throws KettlePluginException {
+    ValueMetaPluginType.getInstance().searchPlugins();
+  }
 
   @Before
   public void setUp() throws Exception {
@@ -150,7 +158,7 @@ public class TextFileInputMetaLoadSaveTest {
     assertTrue( !commonAttributes.isEmpty() || !( xmlAttributes.isEmpty() || repoAttributes.isEmpty() ) );
 
     tester =
-        new LoadSaveTester( TextFileInputMeta.class, commonAttributes, xmlAttributes,
+        new LoadSaveTester<TextFileInputMeta>( TextFileInputMeta.class, commonAttributes, xmlAttributes,
             repoAttributes, getters, setters, attributeValidators, typeValidators );
   }
 

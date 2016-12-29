@@ -254,7 +254,7 @@
       <target name="resolve"/>
       <target name="resolve-swtlibs"/>
       <property name="approot.stage.dir" value="${basedir}"/>
-      <target name="unzip-swtlibs"/>
+      <target name="copy-swtlibs"/>
     </ant>
     <copy file="classpath.template" tofile=".classpath" overwrite="true"/>
     <switch value="${os.classifier}">
@@ -814,6 +814,8 @@
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.trans.steps.gpload.GPLoadTest"
             haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.trans.steps.rest.RestInputTest"
+            haltonerror="false"/>
+      <test todir="${testreports.xml.dir}" name="org.pentaho.di.trans.steps.metainject.MetaDataInjectionTest"
             haltonerror="false"/>
     </junit>
     <junitreport todir="${testreports.html.dir}">

@@ -22,11 +22,14 @@
 
 package org.pentaho.di.trans.steps.mappinginput;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaPluginType;
 import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.trans.steps.mapping.MappingValueRename;
 
@@ -42,6 +45,11 @@ import static org.junit.Assert.*;
  */
 @RunWith( Parameterized.class )
 public class MappingInputMeta_GetFields_Test {
+
+  @BeforeClass
+  public static void setUpBeforeClass() throws KettlePluginException {
+    ValueMetaPluginType.getInstance().searchPlugins();
+  }
 
   @Parameterized.Parameters
   public static List<Object[]> getData() {

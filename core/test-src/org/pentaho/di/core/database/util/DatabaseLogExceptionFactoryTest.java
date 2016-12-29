@@ -27,11 +27,13 @@ import com.mysql.jdbc.PacketTooBigException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.mariadb.jdbc.internal.stream.MaxAllowedPacketException;
 
 import static org.junit.Assert.assertEquals;
 
 import org.pentaho.di.core.database.DatabaseInterface;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.database.MariaDBDatabaseMeta;
 import org.pentaho.di.core.database.MySQLDatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.logging.LogTableCoreInterface;
@@ -105,6 +107,26 @@ public class DatabaseLogExceptionFactoryTest {
     String strategyName = exceptionStrategy.getClass().getName();
     assertEquals( SUPPRESSABLE_WITH_SHORT_MESSAGE, strategyName );
   }
+
+  /**
+   * PDI-5153
+   * Test that in case of MaxAllowedPacketException exception there will be no stack trace in log (MariaDB)
+   */
+  @Test public void testExceptionStrategyWithMaxAllowedPacketException() {
+    DatabaseMeta databaseMeta = mock( DatabaseMeta.class );
+    DatabaseInterface databaseInterface = new MariaDBDatabaseMeta();
+    MaxAllowedPacketException e = new MaxAllowedPacketException();
+
+    when( logTable.getDatabaseMeta() ).thenReturn( databaseMeta );
+    when( databaseMeta.getDatabaseInterface() ).thenReturn( databaseInterface );
+
+    LogExceptionBehaviourInterface
+      exceptionStrategy =
+      DatabaseLogExceptionFactory.getExceptionStrategy( logTable, new KettleDatabaseException( e ) );
+    String strategyName = exceptionStrategy.getClass().getName();
+    assertEquals( SUPPRESSABLE_WITH_SHORT_MESSAGE, strategyName );
+  }
+
 
   /**
    * PDI-5153

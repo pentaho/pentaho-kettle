@@ -42,7 +42,7 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
-import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
@@ -129,7 +129,7 @@ public class RowsFromResultDialog extends BaseStepDialog implements StepDialogIn
           ColumnInfo.COLUMN_TYPE_TEXT, false ),
         new ColumnInfo(
           BaseMessages.getString( PKG, "RowsFromResultDialog.ColumnInfo.Type" ),
-          ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getAllTypes() ),
+          ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMetaFactory.getAllValueMetaNames() ),
         new ColumnInfo(
           BaseMessages.getString( PKG, "RowsFromResultDialog.ColumnInfo.Length" ),
           ColumnInfo.COLUMN_TYPE_TEXT, false ),
@@ -208,7 +208,7 @@ public class RowsFromResultDialog extends BaseStepDialog implements StepDialogIn
     for ( int i = 0; i < input.getFieldname().length; i++ ) {
       TableItem item = wFields.table.getItem( i );
       item.setText( 1, input.getFieldname()[i] == null ? "" : input.getFieldname()[i] );
-      item.setText( 2, ValueMeta.getTypeDesc( input.getType()[i] ) );
+      item.setText( 2, ValueMetaFactory.getValueMetaName( input.getType()[i] ) );
       int len = input.getLength()[i];
       int prc = input.getPrecision()[i];
       item.setText( 3, len >= 0 ? "" + len : "" );
@@ -237,7 +237,7 @@ public class RowsFromResultDialog extends BaseStepDialog implements StepDialogIn
     for ( int i = 0; i < nrfields; i++ ) {
       TableItem item = wFields.getNonEmpty( i );
       input.getFieldname()[i] = item.getText( 1 );
-      input.getType()[i] = ValueMeta.getType( item.getText( 2 ) );
+      input.getType()[i] = ValueMetaFactory.getIdForValueMeta( item.getText( 2 ) );
       input.getLength()[i] = Const.toInt( item.getText( 3 ), -1 );
       input.getPrecision()[i] = Const.toInt( item.getText( 4 ), -1 );
     }

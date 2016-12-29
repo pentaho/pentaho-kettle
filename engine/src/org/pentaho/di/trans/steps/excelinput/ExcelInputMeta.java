@@ -33,6 +33,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.fileinput.FileInputList;
@@ -41,12 +42,12 @@ import org.pentaho.di.core.injection.InjectionDeep;
 import org.pentaho.di.core.injection.InjectionSupported;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaBoolean;
 import org.pentaho.di.core.row.value.ValueMetaDate;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.row.value.ValueMetaInteger;
+import org.pentaho.di.core.row.value.ValueMetaNone;
 import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
@@ -1344,7 +1345,12 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface {
   public RowMetaInterface getEmptyFields() {
     RowMetaInterface row = new RowMeta();
     for ( int i = 0; i < field.length; i++ ) {
-      ValueMetaInterface v = new ValueMeta( field[i].getName(), field[i].getType() );
+      ValueMetaInterface v;
+      try {
+        v = ValueMetaFactory.createValueMeta( field[i].getName(), field[i].getType() );
+      } catch ( KettlePluginException e ) {
+        v = new ValueMetaNone( field[i].getName() );
+      }
       row.addValueMeta( v );
     }
 

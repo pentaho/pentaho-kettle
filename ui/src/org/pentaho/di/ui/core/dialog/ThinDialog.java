@@ -27,6 +27,8 @@ import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.browser.CloseWindowListener;
 import org.eclipse.swt.browser.WindowEvent;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Dialog;
 import org.eclipse.swt.widgets.Display;
@@ -80,7 +82,14 @@ public class ThinDialog extends Dialog {
       messageBox.setText( "Exit" );
       messageBox.open();
     }
-
+    setPosition();
     dialog.open();
+  }
+
+  protected void setPosition() {
+    Rectangle shellBounds = getParent().getBounds();
+    Point dialogSize = dialog.getSize();
+    dialog.setLocation( shellBounds.x + ( shellBounds.width - dialogSize.x ) / 2, shellBounds.y
+        + ( shellBounds.height - dialogSize.y ) / 2 );
   }
 }

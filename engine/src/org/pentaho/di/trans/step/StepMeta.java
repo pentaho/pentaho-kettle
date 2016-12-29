@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.pentaho.di.base.BaseMeta;
 import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.core.AttributesInterface;
 import org.pentaho.di.core.CheckResultInterface;
@@ -73,7 +74,7 @@ import org.w3c.dom.Node;
  */
 public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<StepMeta>, GUIPositionInterface,
     SharedObjectInterface, CheckResultSourceInterface, ResourceExportInterface, ResourceHolderInterface,
-    AttributesInterface {
+    AttributesInterface, BaseMeta {
   private static Class<?> PKG = StepMeta.class; // for i18n purposes, needed by Translator2!!
 
   public static final String XML_TAG = "step";

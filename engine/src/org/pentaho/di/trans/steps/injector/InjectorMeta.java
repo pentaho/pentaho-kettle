@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -29,11 +29,12 @@ import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -153,7 +154,8 @@ public class InjectorMeta extends BaseStepMeta implements StepMetaInterface {
     for ( int i = 0; i < fieldname.length; i++ ) {
       retval.append( "      <field>" );
       retval.append( "        " ).append( XMLHandler.addTagValue( "name", fieldname[i] ) );
-      retval.append( "        " ).append( XMLHandler.addTagValue( "type", ValueMeta.getTypeDesc( type[i] ) ) );
+      retval.append( "        " ).append( XMLHandler.addTagValue( "type",
+        ValueMetaFactory.getValueMetaName( type[i] ) ) );
       retval.append( "        " ).append( XMLHandler.addTagValue( "length", length[i] ) );
       retval.append( "        " ).append( XMLHandler.addTagValue( "precision", precision[i] ) );
       retval.append( "      </field>" );
@@ -172,7 +174,7 @@ public class InjectorMeta extends BaseStepMeta implements StepMetaInterface {
     for ( int i = 0; i < nrfields; i++ ) {
       Node line = XMLHandler.getSubNodeByNr( fields, "field", i );
       fieldname[i] = XMLHandler.getTagValue( line, "name" );
-      type[i] = ValueMeta.getType( XMLHandler.getTagValue( line, "type" ) );
+      type[i] = ValueMetaFactory.getIdForValueMeta( XMLHandler.getTagValue( line, "type" ) );
       length[i] = Const.toInt( XMLHandler.getTagValue( line, "length" ), -2 );
       precision[i] = Const.toInt( XMLHandler.getTagValue( line, "precision" ), -2 );
     }
@@ -190,7 +192,7 @@ public class InjectorMeta extends BaseStepMeta implements StepMetaInterface {
 
       for ( int i = 0; i < nrfields; i++ ) {
         fieldname[i] = rep.getStepAttributeString( id_step, i, "field_name" );
-        type[i] = ValueMeta.getType( rep.getStepAttributeString( id_step, i, "field_type" ) );
+        type[i] = ValueMetaFactory.getIdForValueMeta( rep.getStepAttributeString( id_step, i, "field_type" ) );
         length[i] = (int) rep.getStepAttributeInteger( id_step, i, "field_length" );
         precision[i] = (int) rep.getStepAttributeInteger( id_step, i, "field_precision" );
       }
@@ -205,7 +207,8 @@ public class InjectorMeta extends BaseStepMeta implements StepMetaInterface {
     try {
       for ( int i = 0; i < fieldname.length; i++ ) {
         rep.saveStepAttribute( id_transformation, id_step, i, "field_name", fieldname[i] );
-        rep.saveStepAttribute( id_transformation, id_step, i, "field_type", ValueMeta.getTypeDesc( type[i] ) );
+        rep.saveStepAttribute( id_transformation, id_step, i, "field_type",
+          ValueMetaFactory.getValueMetaName( type[i] ) );
         rep.saveStepAttribute( id_transformation, id_step, i, "field_length", length[i] );
         rep.saveStepAttribute( id_transformation, id_step, i, "field_precision", precision[i] );
       }
@@ -219,8 +222,13 @@ public class InjectorMeta extends BaseStepMeta implements StepMetaInterface {
   public void getFields( RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info, StepMeta nextStep,
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     for ( int i = 0; i < this.fieldname.length; i++ ) {
-      ValueMetaInterface v = new ValueMeta( this.fieldname[i], type[i], length[i], precision[i] );
-      inputRowMeta.addValueMeta( v );
+      ValueMetaInterface v;
+      try {
+        v = ValueMetaFactory.createValueMeta( this.fieldname[i], type[i], length[i], precision[i] );
+        inputRowMeta.addValueMeta( v );
+      } catch ( KettlePluginException e ) {
+        throw new KettleStepException( e );
+      }
     }
   }
 

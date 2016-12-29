@@ -30,7 +30,6 @@ import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.injection.Injection;
 import org.pentaho.di.core.injection.InjectionTypeConverter;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -144,7 +143,7 @@ public class Validation implements Cloneable {
     xml.append( XMLHandler.addTagValue( "only_null_allowed", onlyNullAllowed ) );
     xml.append( XMLHandler.addTagValue( "only_numeric_allowed", onlyNumericAllowed ) );
 
-    xml.append( XMLHandler.addTagValue( "data_type", ValueMeta.getTypeDesc( dataType ) ) );
+    xml.append( XMLHandler.addTagValue( "data_type", ValueMetaFactory.getValueMetaName( dataType ) ) );
     xml.append( XMLHandler.addTagValue( "data_type_verified", dataTypeVerified ) );
     xml.append( XMLHandler.addTagValue( "conversion_mask", conversionMask ) );
     xml.append( XMLHandler.addTagValue( "decimal_symbol", decimalSymbol ) );
@@ -199,7 +198,7 @@ public class Validation implements Cloneable {
     onlyNullAllowed = "Y".equalsIgnoreCase( XMLHandler.getTagValue( calcnode, "only_null_allowed" ) );
     onlyNumericAllowed = "Y".equalsIgnoreCase( XMLHandler.getTagValue( calcnode, "only_numeric_allowed" ) );
 
-    dataType = ValueMeta.getType( XMLHandler.getTagValue( calcnode, "data_type" ) );
+    dataType = ValueMetaFactory.getIdForValueMeta( XMLHandler.getTagValue( calcnode, "data_type" ) );
     dataTypeVerified = "Y".equalsIgnoreCase( XMLHandler.getTagValue( calcnode, "data_type_verified" ) );
     conversionMask = XMLHandler.getTagValue( calcnode, "conversion_mask" );
     decimalSymbol = XMLHandler.getTagValue( calcnode, "decimal_symbol" );
@@ -246,7 +245,8 @@ public class Validation implements Cloneable {
     onlyNullAllowed = rep.getStepAttributeBoolean( id_step, i, "validator_field_only_null_allowed" );
     onlyNumericAllowed = rep.getStepAttributeBoolean( id_step, i, "validator_field_only_numeric_allowed" );
 
-    dataType = ValueMeta.getType( rep.getStepAttributeString( id_step, i, "validator_field_data_type" ) );
+    dataType = ValueMetaFactory.getIdForValueMeta(
+      rep.getStepAttributeString( id_step, i, "validator_field_data_type" ) );
     dataTypeVerified = rep.getStepAttributeBoolean( id_step, i, "validator_field_data_type_verified" );
     conversionMask = rep.getStepAttributeString( id_step, i, "validator_field_conversion_mask" );
     decimalSymbol = rep.getStepAttributeString( id_step, i, "validator_field_decimal_symbol" );
@@ -295,8 +295,8 @@ public class Validation implements Cloneable {
     rep.saveStepAttribute(
       id_transformation, id_step, i, "validator_field_only_numeric_allowed", onlyNumericAllowed );
 
-    rep.saveStepAttribute( id_transformation, id_step, i, "validator_field_data_type", ValueMeta
-      .getTypeDesc( dataType ) );
+    rep.saveStepAttribute( id_transformation, id_step, i, "validator_field_data_type",
+      ValueMetaFactory.getValueMetaName( dataType ) );
     rep.saveStepAttribute( id_transformation, id_step, i, "validator_field_data_type_verified", dataTypeVerified );
     rep.saveStepAttribute( id_transformation, id_step, i, "validator_field_conversion_mask", conversionMask );
     rep.saveStepAttribute( id_transformation, id_step, i, "validator_field_decimal_symbol", decimalSymbol );

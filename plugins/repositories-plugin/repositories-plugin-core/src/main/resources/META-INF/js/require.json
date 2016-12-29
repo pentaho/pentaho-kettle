@@ -1,0 +1,54 @@
+{
+  "paths": {
+    "repositories-plugin_${project.version}": "repositories/web/js"
+  },
+
+  "packages": [
+    {
+      "name": "repositories-plugin_${project.version}",
+      "location": "repositories/web/js",
+      "main": "app.js"
+    },
+    {
+      "name": "repositories-plugin-main_${project.version}",
+      "location": "repositories/web",
+      "main": "main.js"
+    }
+  ],
+
+  "map": {
+    "repositories-plugin_${project.version}": {
+      "angular": "angular_${dependency.angular.version}",
+      "jquery": "jquery_${dependency.jquery.version}",
+      "angular-sanitize": "angular-sanitize_${dependency.angular-sanitize.version}",
+      "angular-route": "angular-route_${dependency.angular-route.version}",
+      "angular-translate": "angular-translate_${dependency.angular-translate.version}",
+      "angular-animate": "angular-animate_${dependency.angular-animate.version}",
+      "repositories": "repositories-plugin_${project.version}"
+    },
+    "repositories-plugin-main_${project.version}": {
+      "angular": "angular_${dependency.angular.version}",
+      "repositories": "repositories-plugin_${project.version}",
+      "repositories-main": "repositories-plugin-main_${project.version}"
+    },
+    "angular-translate_${dependency.angular-translate.version}": {
+      "angular-translate": "angular-translate_${dependency.angular-translate.version}",
+      "angular": "angular_${dependency.angular.version}"
+    }
+  },
+
+  "shim": {
+    "angular_${dependency.angular.version}": {
+      "deps": [ "jquery_${dependency.jquery.version}" ]
+    },
+    "angular-animate_${dependency.angular-animate.version}": {
+      "deps": [ "angular_${dependency.angular.version}" ]
+    },
+    "angular-translate_${dependency.angular-translate.version}": {
+      "deps": [ "angular_${dependency.angular.version}" ]
+    },
+    "angular-translate_${dependency.angular-translate.version}/angular-translate": {
+      "deps": [ "angular_${dependency.angular.version}" ]
+    }
+  }
+}

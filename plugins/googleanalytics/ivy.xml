@@ -44,7 +44,12 @@ explicitly covering such access.
     <dependency org="com.google.api-client" name="google-api-client" rev="1.20.0" transitive="false" conf="default->default"/>
     <dependency org="com.google.oauth-client" name="google-oauth-client" rev="1.20.0" transitive="false" conf="default->default"/>
     <dependency org="com.google.http-client" name="google-http-client-jackson2" rev="1.20.0" transitive="true" conf="default->default"/>
-    <dependency org="com.google.http-client" name="google-http-client" rev="1.20.0" transitive="false" conf="default->default"/>
+    <dependency org="com.google.http-client" name="google-http-client" rev="1.20.0" transitive="false" conf="default->default">
+      <!-- Vulnerable component - need more recent version [PPP-3571] -->
+      <exclude org="org.apache.httpcomponents" conf="default->default" />
+    </dependency>
+
+    <dependency org="org.apache.httpcomponents" name="httpclient" rev="4.5.2" transitive="false" conf="default->default"/>
 
     <dependency org="pentaho-kettle" name="kettle-engine" rev="${dependency.kettle.revision}" transitive="true" changing="true"/>
     <dependency org="pentaho-kettle" name="kettle-core" rev="${dependency.kettle.revision}" transitive="true" changing="true"/>

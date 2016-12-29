@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,6 +22,9 @@
 
 package org.pentaho.di.job.entries.missing;
 
+import org.pentaho.di.core.Result;
+import org.pentaho.di.core.exception.KettleJobException;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.entries.special.JobEntrySpecial;
 
 public class MissingEntry extends JobEntrySpecial {
@@ -36,6 +39,14 @@ public class MissingEntry extends JobEntrySpecial {
     super( name, false, false );
     setPluginId( "SPECIAL" );
     this.missingPluginId = missingPluginId;
+  }
+
+  @Override
+  public Result execute( Result previousResult, int nr ) throws KettleJobException {
+    previousResult.setResult( false );
+    previousResult.setNrErrors( previousResult.getNrErrors() + 1 );
+    getLogChannel().logError( BaseMessages.getString( MissingEntry.class, "MissingEntry.Log.CannotRunJob" ) );
+    return previousResult;
   }
 
   public String getMissingPluginId() {

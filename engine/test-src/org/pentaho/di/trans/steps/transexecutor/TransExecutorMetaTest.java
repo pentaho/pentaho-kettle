@@ -316,4 +316,22 @@ public class TransExecutorMetaTest {
     when( stream.getStepMeta() ).thenReturn( stepMeta );
     return stream;
   }
+
+
+  @Test
+  public void testRemoveHopFrom() throws Exception {
+    TransExecutorMeta transExecutorMeta = new TransExecutorMeta();
+    transExecutorMeta.setExecutionResultTargetStepMeta( new StepMeta() );
+    transExecutorMeta.setOutputRowsSourceStepMeta( new StepMeta() );
+    transExecutorMeta.setResultFilesTargetStepMeta( new StepMeta() );
+    transExecutorMeta.setExecutorsOutputStepMeta( new StepMeta() );
+
+    transExecutorMeta.cleanAfterHopFromRemove();
+
+    assertNull( transExecutorMeta.getExecutionResultTargetStepMeta() );
+    assertNull( transExecutorMeta.getOutputRowsSourceStepMeta() );
+    assertNull( transExecutorMeta.getResultFilesTargetStepMeta() );
+    assertNull( transExecutorMeta.getExecutorsOutputStepMeta() );
+  }
+
 }

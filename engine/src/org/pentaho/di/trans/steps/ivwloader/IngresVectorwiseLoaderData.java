@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -34,7 +34,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.steps.ivwloader.IngresVectorwiseLoader.FifoOpener;
 
 /**
- * Stores data for the MySQL bulk load step.
+ * Stores data for the VectorWise bulk load step.
  *
  * @author Matt
  * @since 14-apr-2009

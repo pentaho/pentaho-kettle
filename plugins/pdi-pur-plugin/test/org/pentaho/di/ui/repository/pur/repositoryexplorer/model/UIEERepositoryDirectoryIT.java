@@ -90,13 +90,13 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.extensions.jcr.JcrCallback;
 import org.springframework.extensions.jcr.JcrTemplate;
 import org.springframework.extensions.jcr.SessionFactory;
-import org.springframework.security.Authentication;
-import org.springframework.security.GrantedAuthority;
-import org.springframework.security.GrantedAuthorityImpl;
-import org.springframework.security.context.SecurityContextHolder;
-import org.springframework.security.providers.UsernamePasswordAuthenticationToken;
-import org.springframework.security.userdetails.User;
-import org.springframework.security.userdetails.UserDetails;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestContextManager;
 import org.springframework.transaction.TransactionStatus;
@@ -267,9 +267,9 @@ public class UIEERepositoryDirectoryIT extends RepositoryTestBase implements App
     StandaloneSession pentahoSession = new StandaloneSession( userInfo.getLogin() );
     pentahoSession.setAuthenticated( userInfo.getLogin() );
     pentahoSession.setAttribute( IPentahoSession.TENANT_ID_KEY, "/pentaho/" + EXP_TENANT );
-    final GrantedAuthority[] authorities = new GrantedAuthority[2];
-    authorities[0] = new GrantedAuthorityImpl( "Authenticated" );
-    authorities[1] = new GrantedAuthorityImpl( "acme_Authenticated" );
+    List<GrantedAuthority> authorities = new ArrayList<>( 2 );
+    authorities.add( new SimpleGrantedAuthority( "Authenticated" ) );
+    authorities.add( new SimpleGrantedAuthority( "acme_Authenticated" ) );
     final String password = "ignored"; //$NON-NLS-1$
     UserDetails userDetails = new User( userInfo.getLogin(), password, true, true, true, true, authorities );
     Authentication authentication = new UsernamePasswordAuthenticationToken( userDetails, password, authorities );
@@ -285,8 +285,8 @@ public class UIEERepositoryDirectoryIT extends RepositoryTestBase implements App
   private void loginAsRepositoryAdmin() {
     StandaloneSession pentahoSession = new StandaloneSession( repositoryAdminUsername );
     pentahoSession.setAuthenticated( repositoryAdminUsername );
-    final GrantedAuthority[] repositoryAdminAuthorities =
-        new GrantedAuthority[] { new GrantedAuthorityImpl( superAdminRoleName ) };
+    List<GrantedAuthority> repositoryAdminAuthorities = new ArrayList<>();
+    repositoryAdminAuthorities.add( new SimpleGrantedAuthority( superAdminRoleName ) );
     final String password = "ignored";
     UserDetails repositoryAdminUserDetails =
         new User( repositoryAdminUsername, password, true, true, true, true, repositoryAdminAuthorities );
@@ -318,12 +318,13 @@ public class UIEERepositoryDirectoryIT extends RepositoryTestBase implements App
     pentahoSession.setAttribute( IPentahoSession.TENANT_ID_KEY, tenant.getId() );
     final String password = "password";
 
-    List<GrantedAuthority> authList = new ArrayList<GrantedAuthority>();
+    List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
 
-    for ( String roleName : roles ) {
-      authList.add( new GrantedAuthorityImpl( roleName ) );
+    if ( roles != null ) {
+      for ( String roleName : roles ) {
+        authorities.add( new SimpleGrantedAuthority( roleName ) );
+      }
     }
-    GrantedAuthority[] authorities = authList.toArray( new GrantedAuthority[0] );
     UserDetails userDetails = new User( username, password, true, true, true, true, authorities );
     Authentication auth = new UsernamePasswordAuthenticationToken( userDetails, password, authorities );
     PentahoSessionHolder.setSession( pentahoSession );

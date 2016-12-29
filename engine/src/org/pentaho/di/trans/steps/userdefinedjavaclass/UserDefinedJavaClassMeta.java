@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -43,7 +43,7 @@ import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -284,7 +284,7 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
         Node fnode = XMLHandler.getSubNodeByNr( fieldsNode, ElementNames.field.name(), i );
         fields.add( new FieldInfo(
           XMLHandler.getTagValue( fnode, ElementNames.field_name.name() ),
-          ValueMeta.getType( XMLHandler.getTagValue( fnode, ElementNames.field_type.name() ) ),
+          ValueMetaFactory.getIdForValueMeta( XMLHandler.getTagValue( fnode, ElementNames.field_type.name() ) ),
           Const.toInt( XMLHandler.getTagValue( fnode, ElementNames.field_length.name() ), -1 ),
           Const.toInt( XMLHandler.getTagValue( fnode, ElementNames.field_precision.name() ), -1 ) ) );
       }
@@ -435,7 +435,7 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
       retval.append( String.format( "\n        <%s>", ElementNames.field.name() ) );
       retval.append( "\n        " ).append( XMLHandler.addTagValue( ElementNames.field_name.name(), fi.name ) );
       retval.append( "\n        " ).append(
-        XMLHandler.addTagValue( ElementNames.field_type.name(), ValueMeta.getTypeDesc( fi.type ) ) );
+        XMLHandler.addTagValue( ElementNames.field_type.name(), ValueMetaFactory.getValueMetaName( fi.type ) ) );
       retval.append( "\n        " ).append( XMLHandler.addTagValue( ElementNames.field_length.name(), fi.length ) );
       retval.append( "\n        " ).append(
         XMLHandler.addTagValue( ElementNames.field_precision.name(), fi.precision ) );
@@ -499,10 +499,11 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
       int nrfields = rep.countNrStepAttributes( id_step, ElementNames.field_name.name() );
       for ( int i = 0; i < nrfields; i++ ) {
         fields.add( new FieldInfo(
-          rep.getStepAttributeString( id_step, i, ElementNames.field_name.name() ), ValueMeta.getType( rep
-            .getStepAttributeString( id_step, i, ElementNames.field_type.name() ) ), (int) rep
-            .getStepAttributeInteger( id_step, i, ElementNames.field_length.name() ), (int) rep
-            .getStepAttributeInteger( id_step, i, ElementNames.field_precision.name() ) ) );
+          rep.getStepAttributeString( id_step, i, ElementNames.field_name.name() ),
+          ValueMetaFactory.getIdForValueMeta(
+            rep.getStepAttributeString( id_step, i, ElementNames.field_type.name() ) ),
+          (int) rep.getStepAttributeInteger( id_step, i, ElementNames.field_length.name() ),
+          (int) rep.getStepAttributeInteger( id_step, i, ElementNames.field_precision.name() ) ) );
       }
 
       clearingResultFields = rep.getStepAttributeBoolean( id_step, ElementNames.clear_result_fields.name() );
@@ -562,8 +563,8 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
       for ( int i = 0; i < fields.size(); i++ ) {
         FieldInfo fi = fields.get( i );
         rep.saveStepAttribute( id_transformation, id_step, i, ElementNames.field_name.name(), fi.name );
-        rep.saveStepAttribute( id_transformation, id_step, i, ElementNames.field_type.name(), ValueMeta
-          .getTypeDesc( fi.type ) );
+        rep.saveStepAttribute( id_transformation, id_step, i, ElementNames.field_type.name(),
+          ValueMetaFactory.getValueMetaName( fi.type ) );
         rep.saveStepAttribute( id_transformation, id_step, i, ElementNames.field_length.name(), fi.length );
         rep.saveStepAttribute( id_transformation, id_step, i, ElementNames.field_precision.name(), fi.precision );
       }

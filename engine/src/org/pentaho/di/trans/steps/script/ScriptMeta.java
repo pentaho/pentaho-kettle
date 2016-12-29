@@ -48,7 +48,6 @@ import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.plugins.KettleURLClassLoader;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.variables.VariableSpace;
@@ -245,7 +244,7 @@ public class ScriptMeta extends BaseStepMeta implements StepMetaInterface {
 
         fieldname[i] = XMLHandler.getTagValue( fnode, "name" );
         rename[i] = XMLHandler.getTagValue( fnode, "rename" );
-        type[i] = ValueMeta.getType( XMLHandler.getTagValue( fnode, "type" ) );
+        type[i] = ValueMetaFactory.getIdForValueMeta( XMLHandler.getTagValue( fnode, "type" ) );
 
         String slen = XMLHandler.getTagValue( fnode, "length" );
         String sprc = XMLHandler.getTagValue( fnode, "precision" );
@@ -346,7 +345,8 @@ public class ScriptMeta extends BaseStepMeta implements StepMetaInterface {
       retval.append( "      <field>" );
       retval.append( "        " ).append( XMLHandler.addTagValue( "name", fieldname[i] ) );
       retval.append( "        " ).append( XMLHandler.addTagValue( "rename", rename[i] ) );
-      retval.append( "        " ).append( XMLHandler.addTagValue( "type", ValueMeta.getTypeDesc( type[i] ) ) );
+      retval.append( "        " ).append( XMLHandler.addTagValue( "type",
+        ValueMetaFactory.getValueMetaName( type[i] ) ) );
       retval.append( "        " ).append( XMLHandler.addTagValue( "length", length[i] ) );
       retval.append( "        " ).append( XMLHandler.addTagValue( "precision", precision[i] ) );
       retval.append( "        " ).append( XMLHandler.addTagValue( "replace", replace[i] ) );
@@ -383,7 +383,7 @@ public class ScriptMeta extends BaseStepMeta implements StepMetaInterface {
       for ( int i = 0; i < nrfields; i++ ) {
         fieldname[i] = rep.getStepAttributeString( id_step, i, "field_name" );
         rename[i] = rep.getStepAttributeString( id_step, i, "field_rename" );
-        type[i] = ValueMeta.getType( rep.getStepAttributeString( id_step, i, "field_type" ) );
+        type[i] = ValueMetaFactory.getIdForValueMeta( rep.getStepAttributeString( id_step, i, "field_type" ) );
         length[i] = (int) rep.getStepAttributeInteger( id_step, i, "field_length" );
         precision[i] = (int) rep.getStepAttributeInteger( id_step, i, "field_precision" );
         replace[i] = rep.getStepAttributeBoolean( id_step, i, "field_replace" );
@@ -405,7 +405,8 @@ public class ScriptMeta extends BaseStepMeta implements StepMetaInterface {
       for ( int i = 0; i < fieldname.length; i++ ) {
         rep.saveStepAttribute( id_transformation, id_step, i, "field_name", fieldname[i] );
         rep.saveStepAttribute( id_transformation, id_step, i, "field_rename", rename[i] );
-        rep.saveStepAttribute( id_transformation, id_step, i, "field_type", ValueMeta.getTypeDesc( type[i] ) );
+        rep.saveStepAttribute( id_transformation, id_step, i, "field_type",
+          ValueMetaFactory.getValueMetaName( type[i] ) );
         rep.saveStepAttribute( id_transformation, id_step, i, "field_length", length[i] );
         rep.saveStepAttribute( id_transformation, id_step, i, "field_precision", precision[i] );
         rep.saveStepAttribute( id_transformation, id_step, i, "field_replace", replace[i] );

@@ -1,0 +1,7 @@
+<div class="loading-main">
+  <div class="margin_bottom_20 busy"></div>
+  <div class="margin_bottom_20 title_text">{{ 'repositories.loading.almostDone.label' | translate }}</div>
+  <div class="primary_text break-word" ng-show="!fromEdit && fromConnect">{{ 'repositories.loading.connectingYouTo.label' | translate }} {{model.displayName}}.</div>
+  <div class="primary_text break-word" ng-show="!fromEdit && !fromConnect">{{ 'repositories.loading.creating.label' | translate }} {{model.displayName}}.</div>
+  <div class="primary_text break-word" ng-show="fromEdit">{{ 'repositories.loading.updating.label' | translate }} {{model.displayName}}.</div>
+</div>

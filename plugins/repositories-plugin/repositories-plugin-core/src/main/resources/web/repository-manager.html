@@ -1,0 +1,40 @@
+<div class="main_div">
+  <div class="title_text margin_bottom_30">{{ 'repositories.manager.title.label' | translate }}</div>
+  <div id="table-wrapper" class="margin_bottom_20 table_border">
+    <div class="table-scroll-mng">
+      <table id="repoMngTable">
+        <tr ng-repeat="repository in model.repositories" ng-class="{active : repository === model.selectedRepository}"  ng-click="selectRepository(repository)" ng-init="$last && addToolTips()">
+          <td class="bullet" />
+          <td class="repo_type text_left">
+            <div class="repoType mightOverflow">
+              {{repository.displayName}}
+            </div>
+            <div id="repoDesc">{{repository.description}}</div>
+          </td>
+          <td class="default">
+            <button class="defaultBtn" ng-click="setDefault(repository)"
+                ng-show="repository.isDefault == false" title="{{ 'repositories.launch.label' | translate }}"></button>
+            <button class="defaultBtn activate" ng-click="setDefault(null)"
+                ng-show="repository.isDefault == true" title="{{ 'repositories.launch.label' | translate }}">
+              <div id="defaultBtnCheckmark"></div>
+            </button>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </div>
+  <div>
+    <button id="deleteBtn" class="right margin_left_10 secondary" type="button" ng-class="{invisible : !model.selectedRepository || model.repositories.length == 0}" ng-click="delete(model.selectedRepository)">{{ 'repositories.delete.label' | translate }}</button>
+    <button id="editBtn" class="right secondary" type="button" style="margin-left: 85px;" ng-class="{invisible : !model.selectedRepository || model.repositories.length == 0}" ng-click="edit(model.selectedRepository)">{{ 'repositories.edit.label' | translate }}</button>
+    <button id="addBtn" class="right standard" type="button" ng-click="add()">{{ 'repositories.manager.add.label' | translate }}</button>
+  </div>
+  <div class="bottom">
+    <div class="margin_bottom_20">
+      <hr />
+    </div>
+    <div>
+      <img class="left helpImg" alt="" src="images/u42.png" /><a id="btnHelp" class="left" ng-click="help()">{{ 'repositories.help.label' | translate }}</a>
+      <button id="btnClose" class="right secondary" type="button" ng-click="close()">{{ 'repositories.close.label' | translate }}</button>
+    </div>
+  </div>
+</div>

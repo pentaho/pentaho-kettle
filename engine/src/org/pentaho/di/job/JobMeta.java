@@ -71,6 +71,7 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
+import org.pentaho.di.core.xml.XMLFormatter;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.xml.XMLInterface;
 import org.pentaho.di.i18n.BaseMessages;
@@ -676,7 +677,7 @@ public class JobMeta extends AbstractMeta
 
     retval.append( XMLHandler.closeTag( XML_TAG ) ).append( Const.CR );
 
-    return retval.toString();
+    return XMLFormatter.format( retval.toString() );
   }
 
   /**

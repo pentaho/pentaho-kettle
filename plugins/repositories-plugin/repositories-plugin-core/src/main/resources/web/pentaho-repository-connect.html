@@ -1,0 +1,24 @@
+<div class="main_div">
+  <div class="header" style="margin-bottom:37px;margin-top:77px;">
+    <img id="pentaho-img" alt="" src="images/u135.png" />
+  </div>
+  <div class="middle_div2">
+    <label class="block text_left">{{ 'repositories.connect.connectto.label' | translate }}</label>
+    <div ng-init="addToolTips()"
+      class="connection_name_label block text_left mightOverflow" style="margin-bottom:18px;">{{model.currentRepositoryName}}
+    </div>
+    <form>
+    <div style="margin-bottom:18px;">
+      <label for="userName" class="margin_bottom_5 block text_left">{{ 'repositories.connect.username.label' | translate }}</label>
+      <input set-focus id="userName" class="block repo_conn_txt" type="text" ng-model="model.username" ng-change="resetErrorMsg()"/>
+    </div>
+    <div style="margin-bottom:18px;">
+      <label for="password" class="margin_bottom_5 block text_left">{{ 'repositories.connect.password.label' | translate }}</label>
+      <input id="password" class="block repo_conn_txt" type="password" ng-model="model.password" ng-change="resetErrorMsg()"/>
+    </div>
+    <div>
+      <button id="connect" class="standard" type="submit" ng-disabled="!canConnect()" ng-click="connect()">{{ 'repositories.connect.connect.label' | translate }}</button>
+    </div>
+    </form>
+  </div>
+</div>

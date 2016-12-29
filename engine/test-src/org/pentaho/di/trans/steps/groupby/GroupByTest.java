@@ -31,16 +31,19 @@ import java.util.List;
 import org.apache.commons.vfs2.FileSystemException;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.pentaho.di.core.BlockingRowSet;
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaInteger;
+import org.pentaho.di.core.row.value.ValueMetaPluginType;
 import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.repository.Repository;
@@ -62,6 +65,11 @@ import static org.mockito.Mockito.when;
 
 public class GroupByTest  {
   private StepMockHelper<GroupByMeta, GroupByData> mockHelper;
+
+  @BeforeClass
+  public static void setUpBeforeClass() throws KettlePluginException {
+    ValueMetaPluginType.getInstance().searchPlugins();
+  }
 
   @Before
   public void setUp() throws Exception {

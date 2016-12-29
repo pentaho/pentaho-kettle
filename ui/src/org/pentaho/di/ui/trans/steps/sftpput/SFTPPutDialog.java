@@ -1153,11 +1153,11 @@ public class SFTPPutDialog extends BaseStepDialog implements StepDialogInterface
         realProxyHost,
         transMeta.environmentSubstitute( wProxyPort.getText() ),
         transMeta.environmentSubstitute( wProxyUsername.getText() ),
-        transMeta.environmentSubstitute( wProxyPassword.getText() ),
+        Utils.resolvePassword( transMeta,  wProxyPassword.getText() ),
         wProxyType.getText() );
     }
     // login to ftp host ...
-    sftpclient.login( transMeta.environmentSubstitute( wPassword.getText() ) );
+    sftpclient.login( Utils.resolvePassword( transMeta, wPassword.getText() ) );
 
     return sftpclient;
   }

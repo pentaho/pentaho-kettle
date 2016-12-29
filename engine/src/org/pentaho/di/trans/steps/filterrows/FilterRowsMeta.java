@@ -22,14 +22,10 @@
 
 package org.pentaho.di.trans.steps.filterrows;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Condition;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -40,6 +36,7 @@ import org.pentaho.di.core.injection.InjectionSupported;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaAndData;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -61,6 +58,11 @@ import org.pentaho.di.trans.step.errorhandling.StreamInterface.StreamType;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+
 /*
  * Created on 02-jun-2003
  *
@@ -75,10 +77,6 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface {
    * @since version 2.1
    */
   private Condition condition;
-
-  private String trueStepname;
-
-  private String falseStepname;
 
   private String conditionXML;
 
@@ -113,6 +111,9 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface {
   public Object clone() {
     FilterRowsMeta retval = (FilterRowsMeta) super.clone();
 
+    retval.setTrueStepname( getTrueStepname() );
+    retval.setFalseStepname( getFalseStepname() );
+
     if ( condition != null ) {
       retval.condition = (Condition) condition.clone();
     } else {
@@ -125,9 +126,8 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface {
   public String getXML() throws KettleException {
     StringBuilder retval = new StringBuilder( 200 );
 
-    retval.append( XMLHandler.addTagValue( "send_true_to", trueStepname ) );
-    retval.append( XMLHandler.addTagValue( "send_false_to", falseStepname ) );
-
+    retval.append( XMLHandler.addTagValue( "send_true_to", getTrueStepname() ) );
+    retval.append( XMLHandler.addTagValue( "send_false_to", getFalseStepname() ) );
     retval.append( "    <compare>" ).append( Const.CR );
 
     if ( condition != null ) {
@@ -141,15 +141,8 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface {
 
   private void readData( Node stepnode ) throws KettleXMLException {
     try {
-      List<StreamInterface> targetStreams = getStepIOMeta().getTargetStreams();
-
-      String trueStepName = XMLHandler.getTagValue( stepnode, "send_true_to" );
-      String falseStepName = XMLHandler.getTagValue( stepnode, "send_false_to" );
-      targetStreams.get( 0 ).setSubject( trueStepName );
-      targetStreams.get( 1 ).setSubject( falseStepName );
-
-      this.trueStepname = trueStepName;
-      this.falseStepname = falseStepName;
+      setTrueStepname( XMLHandler.getTagValue( stepnode, "send_true_to" ) );
+      setFalseStepname( XMLHandler.getTagValue( stepnode, "send_false_to" ) );
 
       Node compare = XMLHandler.getSubNode( stepnode, "compare" );
       Node condnode = XMLHandler.getSubNode( compare, "condition" );
@@ -213,15 +206,8 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface {
     try {
       allocate();
 
-      List<StreamInterface> targetStreams = getStepIOMeta().getTargetStreams();
-
-      String trueStepName = rep.getStepAttributeString( id_step, "send_true_to" );
-      String falseStepName = rep.getStepAttributeString( id_step, "send_false_to" );
-      targetStreams.get( 0 ).setSubject( trueStepName );
-      targetStreams.get( 1 ).setSubject( falseStepName );
-
-      this.trueStepname = trueStepName;
-      this.falseStepname = falseStepName;
+      setTrueStepname( rep.getStepAttributeString( id_step, "send_true_to" ) );
+      setFalseStepname( rep.getStepAttributeString( id_step, "send_false_to" ) );
 
       condition = rep.loadConditionFromStepAttribute( id_step, "id_condition" );
 
@@ -233,22 +219,17 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface {
 
   @Override
   public void searchInfoAndTargetSteps( List<StepMeta> steps ) {
-    List<StreamInterface> targetStreams = getStepIOMeta().getTargetStreams();
-    for ( StreamInterface stream : targetStreams ) {
+    for ( StreamInterface stream : getStepIOMeta().getTargetStreams() ) {
       stream.setStepMeta( StepMeta.findStep( steps, (String) stream.getSubject() ) );
     }
-
-    this.trueStepname = targetStreams.get( 0 ).getStepname();
-    this.falseStepname = targetStreams.get( 1 ).getStepname();
   }
 
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       if ( condition != null ) {
-
         rep.saveConditionStepAttribute( id_transformation, id_step, "id_condition", condition );
-        rep.saveStepAttribute( id_transformation, id_step, "send_true_to", trueStepname );
-        rep.saveStepAttribute( id_transformation, id_step, "send_false_to", falseStepname );
+        rep.saveStepAttribute( id_transformation, id_step, "send_true_to", getTrueStepname() );
+        rep.saveStepAttribute( id_transformation, id_step, "send_false_to", getFalseStepname() );
       }
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString(
@@ -277,30 +258,8 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface {
     CheckResult cr;
     String error_message = "";
 
-    List<StreamInterface> targetStreams = getStepIOMeta().getTargetStreams();
-
-    if ( targetStreams.get( 0 ).getStepname() != null ) {
-      int trueTargetIdx = Const.indexOfString( targetStreams.get( 0 ).getStepname(), output );
-      if ( trueTargetIdx < 0 ) {
-        cr =
-          new CheckResult(
-            CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
-              PKG, "FilterRowsMeta.CheckResult.TargetStepInvalid", "true", targetStreams
-                .get( 0 ).getStepname() ), stepMeta );
-        remarks.add( cr );
-      }
-    }
-
-    if ( targetStreams.get( 1 ).getStepname() != null ) {
-      int falseTargetIdx = Const.indexOfString( targetStreams.get( 1 ).getStepname(), output );
-      if ( falseTargetIdx < 0 ) {
-        cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages
-            .getString( PKG, "FilterRowsMeta.CheckResult.TargetStepInvalid", "false", targetStreams
-              .get( 1 ).getStepname() ), stepMeta );
-        remarks.add( cr );
-      }
-    }
+    checkTarget( stepMeta, "true", getTrueStepname(), output ).ifPresent( remarks::add );
+    checkTarget( stepMeta, "false", getFalseStepname(), output ).ifPresent( remarks::add );
 
     if ( condition.isEmpty() ) {
       cr =
@@ -356,6 +315,21 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
+  private Optional<CheckResult> checkTarget( StepMeta stepMeta, String target, String targetStepName,
+                                             String[] output ) {
+    if ( targetStepName != null ) {
+      int trueTargetIdx = Const.indexOfString( targetStepName, output );
+      if ( trueTargetIdx < 0 ) {
+        return Optional.of( new CheckResult(
+          CheckResultInterface.TYPE_RESULT_ERROR,
+          BaseMessages.getString( PKG, "FilterRowsMeta.CheckResult.TargetStepInvalid", target, targetStepName ),
+          stepMeta
+        ) );
+      }
+    }
+    return Optional.empty();
+  }
+
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta tr,
     Trans trans ) {
     return new FilterRows( stepMeta, stepDataInterface, cnr, tr, trans );
@@ -405,7 +379,6 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface {
       StepMeta falseStep = targets.get( 1 ).getStepMeta();
       if ( falseStep != null && falseStep.equals( stream.getStepMeta() ) ) {
         targets.get( 1 ).setStepMeta( null );
-        this.falseStepname = null;
       }
     }
     if ( index == 1 ) {
@@ -414,7 +387,6 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface {
       StepMeta trueStep = targets.get( 0 ).getStepMeta();
       if ( trueStep != null && trueStep.equals( stream.getStepMeta() ) ) {
         targets.get( 0 ).setStepMeta( null );
-        this.trueStepname = null;
       }
     }
   }
@@ -449,25 +421,28 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public String getTrueStepname() {
-    return trueStepname;
+    return getTargetStepName( 0 );
   }
 
   @Injection( name = "SEND_TRUE_STEP" )
   public void setTrueStepname( String trueStepname ) {
-    this.trueStepname = trueStepname;
-    List<StreamInterface> targetStreams = getStepIOMeta().getTargetStreams();
-    targetStreams.get( 0 ).setSubject( trueStepname );
+    getStepIOMeta().getTargetStreams().get( 0 ).setSubject( trueStepname );
   }
 
   public String getFalseStepname() {
-    return falseStepname;
+    return getTargetStepName( 1 );
   }
 
   @Injection( name = "SEND_FALSE_STEP" )
   public void setFalseStepname( String falseStepname ) {
-    this.falseStepname = falseStepname;
-    List<StreamInterface> targetStreams = getStepIOMeta().getTargetStreams();
-    targetStreams.get( 1 ).setSubject( falseStepname );
+    getStepIOMeta().getTargetStreams().get( 1 ).setSubject( falseStepname );
+  }
+
+  private String getTargetStepName( int streamIndex ) {
+    StreamInterface stream = getStepIOMeta().getTargetStreams().get( streamIndex );
+    return java.util.stream.Stream.of( stream.getStepname(), stream.getSubject() )
+      .filter( Objects::nonNull )
+      .findFirst().map( Object::toString ).orElse( null );
   }
 
   public String getConditionXML() {

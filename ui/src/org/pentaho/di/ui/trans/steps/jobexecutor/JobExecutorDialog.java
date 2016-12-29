@@ -60,7 +60,7 @@ import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.gui.SpoonFactory;
 import org.pentaho.di.core.gui.SpoonInterface;
-import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
@@ -801,7 +801,7 @@ public class JobExecutorDialog extends BaseStepDialog implements StepDialogInter
     for ( int i = 0; i < jobExecutorMeta.getResultRowsField().length; i++ ) {
       TableItem item = new TableItem( wResultRowsFields.table, SWT.NONE );
       item.setText( 1, Const.NVL( jobExecutorMeta.getResultRowsField()[i], "" ) );
-      item.setText( 2, ValueMeta.getTypeDesc( jobExecutorMeta.getResultRowsType()[i] ) );
+      item.setText( 2, ValueMetaFactory.getValueMetaName( jobExecutorMeta.getResultRowsType()[i] ) );
       int length = jobExecutorMeta.getResultRowsLength()[i];
       item.setText( 3, length < 0 ? "" : Integer.toString( length ) );
       int precision = jobExecutorMeta.getResultRowsPrecision()[i];
@@ -1499,7 +1499,7 @@ public class JobExecutorDialog extends BaseStepDialog implements StepDialogInter
           false, false ),
         new ColumnInfo(
           BaseMessages.getString( PKG, "JobExecutorDialog.ColumnInfo.Type" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
-          ValueMeta.getTypes() ),
+          ValueMetaFactory.getValueMetaNames() ),
         new ColumnInfo(
           BaseMessages.getString( PKG, "JobExecutorDialog.ColumnInfo.Length" ), ColumnInfo.COLUMN_TYPE_TEXT,
           false ),
@@ -1667,7 +1667,7 @@ public class JobExecutorDialog extends BaseStepDialog implements StepDialogInter
     for ( int i = 0; i < nrFields; i++ ) {
       TableItem item = wResultRowsFields.getNonEmpty( i );
       jobExecutorMeta.getResultRowsField()[i] = item.getText( 1 );
-      jobExecutorMeta.getResultRowsType()[i] = ValueMeta.getType( item.getText( 2 ) );
+      jobExecutorMeta.getResultRowsType()[i] = ValueMetaFactory.getIdForValueMeta( item.getText( 2 ) );
       jobExecutorMeta.getResultRowsLength()[i] = Const.toInt( item.getText( 3 ), -1 );
       jobExecutorMeta.getResultRowsPrecision()[i] = Const.toInt( item.getText( 4 ), -1 );
     }

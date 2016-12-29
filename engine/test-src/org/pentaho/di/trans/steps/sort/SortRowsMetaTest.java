@@ -22,12 +22,15 @@
 
 package org.pentaho.di.trans.steps.sort;
 
+import java.text.Collator;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.junit.Test;
+import static org.junit.Assert.assertEquals;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
 import org.pentaho.di.trans.steps.loadsave.validator.ArrayLoadSaveValidator;
@@ -74,5 +77,13 @@ public class SortRowsMetaTest {
         fieldLoadSaveValidatorAttributeMap, new HashMap<String, FieldLoadSaveValidator<?>>() );
 
     loadSaveTester.testSerialization();
+  }
+
+  @Test
+  public void testGetDefaultStrength() {
+    SortRowsMeta srm = new SortRowsMeta();
+    int usStrength = srm.getDefaultCollationStrength( Locale.US );
+    assertEquals( Collator.TERTIARY, usStrength );
+    assertEquals( Collator.IDENTICAL, srm.getDefaultCollationStrength( null ) );
   }
 }

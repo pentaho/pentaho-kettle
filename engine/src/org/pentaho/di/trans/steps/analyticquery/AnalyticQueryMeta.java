@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -31,6 +31,8 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.injection.Injection;
+import org.pentaho.di.core.injection.InjectionSupported;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
@@ -54,7 +56,7 @@ import org.w3c.dom.Node;
  * @author ngoodman
  * @since 27-jan-2009
  */
-
+@InjectionSupported( localizationPrefix = "AnalyticQuery.Injection." )
 public class AnalyticQueryMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = AnalyticQuery.class; // for i18n purposes, needed by Translator2!!
 
@@ -69,18 +71,23 @@ public class AnalyticQueryMeta extends BaseStepMeta implements StepMetaInterface
     BaseMessages.getString( PKG, "AnalyticQueryMeta.TypeGroupLongDesc.LAG" ) };
 
   /** Fields to partition by ie, CUSTOMER, PRODUCT */
+  @Injection( name = "GROUP_FIELDS" )
   private String[] groupField;
 
   private int number_of_fields;
   /** BEGIN arrays (each of size number_of_fields) */
 
   /** Name of OUTPUT fieldname "MYNEWLEADFUNCTION" */
+  @Injection( name = "OUTPUT.AGGREGATE_FIELD" )
   private String[] aggregateField;
   /** Name of the input fieldname it operates on "ORDERTOTAL" */
+  @Injection( name = "OUTPUT.SUBJECT_FIELD" )
   private String[] subjectField;
   /** Aggregate type (LEAD/LAG, etc) */
+  @Injection( name = "OUTPUT.AGGREGATE_TYPE" )
   private int[] aggregateType;
   /** Offset "N" of how many rows to go forward/back */
+  @Injection( name = "OUTPUT.VALUE_FIELD" )
   private int[] valueField;
 
   /** END arrays are one for each configured analytic function */
