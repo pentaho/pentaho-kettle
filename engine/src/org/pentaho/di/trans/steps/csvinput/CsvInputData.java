@@ -244,7 +244,12 @@ public class CsvInputData extends BaseStepData implements StepDataInterface {
 
     if ( enclosureFound ) {
       if ( length > 1 ) {
-        length -= delimiter.length;
+        if ( delimiterFound ) {
+          length -= delimiter.length;
+        }
+        if ( endOfBuffer || newLineFound ) {
+          length--;
+        }
       }
 
       fieldStart += enclosure.length;
@@ -256,10 +261,10 @@ public class CsvInputData extends BaseStepData implements StepDataInterface {
       }
 
       length -= enclosure.length - 1;
-    }
-
-    if ( delimiterFound ) {
-      length -= delimiter.length - 1;
+    } else {
+      if ( delimiterFound ) {
+        length -= delimiter.length - 1;
+      }
     }
 
     if ( length <= 0 ) {
