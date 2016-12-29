@@ -108,10 +108,12 @@ import org.pentaho.di.shared.SharedObjects;
 import org.pentaho.di.trans.step.BaseStep;
 import org.pentaho.di.trans.step.RemoteStep;
 import org.pentaho.di.trans.step.StepErrorMeta;
+import org.pentaho.di.trans.step.StepIOMetaInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaChangeListenerInterface;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.step.StepPartitioningMeta;
+import org.pentaho.di.trans.step.errorhandling.StreamInterface;
 import org.pentaho.di.trans.steps.jobexecutor.JobExecutorMeta;
 import org.pentaho.di.trans.steps.mapping.MappingMeta;
 import org.pentaho.di.trans.steps.missing.MissingTrans;
@@ -635,6 +637,22 @@ public class TransMeta extends AbstractMeta
       }
       for ( StepMeta step : steps ) {
         transMeta.addStep( (StepMeta) step.clone() );
+      }
+      // PDI-15799: Step references are original yet. Set them to the clones.
+      for ( StepMeta step : transMeta.getSteps() ) {
+        final StepMetaInterface stepMetaInterface = step.getStepMetaInterface();
+        if ( stepMetaInterface != null ) {
+          final StepIOMetaInterface stepIOMeta = stepMetaInterface.getStepIOMeta();
+          if ( stepIOMeta != null ) {
+            for ( StreamInterface stream : stepIOMeta.getInfoStreams() ) {
+              String streamStepName = stream.getStepname();
+              if ( streamStepName != null ) {
+                StepMeta streamStepMeta = transMeta.findStep( streamStepName );
+                stream.setStepMeta( streamStepMeta );
+              }
+            }
+          }
+        }
       }
       for ( TransHopMeta hop : hops ) {
         transMeta.addTransHop( (TransHopMeta) hop.clone() );
