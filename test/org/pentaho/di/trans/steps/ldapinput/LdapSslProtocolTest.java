@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -36,6 +36,7 @@ import javax.naming.ldap.InitialLdapContext;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.variables.VariableSpace;
@@ -212,6 +213,8 @@ public class LdapSslProtocolTest {
 
     when( mockVariableSpace.environmentSubstitute( eq( hostConcrete ) ) ).thenReturn( hostConcrete );
     when( mockVariableSpace.environmentSubstitute( eq( portConcrete ) ) ).thenReturn( portConcrete );
+    when( mockVariableSpace.environmentSubstitute( eq( trustStorePath ) ) ).thenReturn( trustStorePath );
+    when( mockVariableSpace.environmentSubstitute( eq( trustStorePassword ) ) ).thenReturn( trustStorePassword );
 
     TestableLdapProtocol testableLdapProtocol =
       new TestableLdapProtocol( mockLogChannelInterface, mockVariableSpace, mockLdapMeta, null );
@@ -221,4 +224,94 @@ public class LdapSslProtocolTest {
     assertEquals( trustStorePath, testableLdapProtocol.trustStorePath );
     assertEquals( trustStorePassword, testableLdapProtocol.trustStorePassword );
   }
+
+  @Test
+  public void testResolvingPathVariables() throws KettleException {
+    String hostConcrete = "host_concrete";
+    String portConcrete = "12345";
+    String trustStorePath = "${KETTLE_SSL_PATH}";
+    String trustStorePathResolved = "/home/test_path";
+    String trustStorePassword = "TEST_PASSWORD";
+
+    when( mockLdapMeta.getHost() ).thenReturn( hostConcrete );
+    when( mockLdapMeta.getPort() ).thenReturn( portConcrete );
+    when( mockLdapMeta.getDerefAliases() ).thenReturn( "always" );
+    when( mockLdapMeta.getReferrals() ).thenReturn( "follow" );
+    when( mockLdapMeta.isUseCertificate() ).thenReturn( true );
+    when( mockLdapMeta.isTrustAllCertificates() ).thenReturn( true );
+    when( mockLdapMeta.getTrustStorePath() ).thenReturn( trustStorePath );
+    when( mockLdapMeta.getTrustStorePassword() ).thenReturn( trustStorePassword );
+
+    when( mockVariableSpace.environmentSubstitute( eq( hostConcrete ) ) ).thenReturn( hostConcrete );
+    when( mockVariableSpace.environmentSubstitute( eq( portConcrete ) ) ).thenReturn( portConcrete );
+    when( mockVariableSpace.environmentSubstitute( eq( trustStorePath ) ) ).thenReturn( trustStorePathResolved );
+    when( mockVariableSpace.environmentSubstitute( eq( trustStorePassword ) ) ).thenReturn( trustStorePassword );
+
+    KettleClientEnvironment.init();
+    TestableLdapProtocol testableLdapProtocol =
+            new TestableLdapProtocol( mockLogChannelInterface, mockVariableSpace, mockLdapMeta, null );
+    testableLdapProtocol.connect( null, null );
+    assertEquals( trustStorePathResolved, testableLdapProtocol.trustStorePath );
+  }
+
+
+  @Test
+  public void testResolvingPasswordVariables() throws KettleException {
+    String hostConcrete = "host_concrete";
+    String portConcrete = "12345";
+    String trustStorePath = "/home/test_path";
+    String trustStorePassword = "${PASSWORD_VARIABLE}";
+    String trustStorePasswordResolved = "TEST_PASSWORD_VALUE";
+
+    when( mockLdapMeta.getHost() ).thenReturn( hostConcrete );
+    when( mockLdapMeta.getPort() ).thenReturn( portConcrete );
+    when( mockLdapMeta.getDerefAliases() ).thenReturn( "always" );
+    when( mockLdapMeta.getReferrals() ).thenReturn( "follow" );
+    when( mockLdapMeta.isUseCertificate() ).thenReturn( true );
+    when( mockLdapMeta.isTrustAllCertificates() ).thenReturn( true );
+    when( mockLdapMeta.getTrustStorePath() ).thenReturn( trustStorePath );
+    when( mockLdapMeta.getTrustStorePassword() ).thenReturn( trustStorePassword );
+
+    when( mockVariableSpace.environmentSubstitute( eq( hostConcrete ) ) ).thenReturn( hostConcrete );
+    when( mockVariableSpace.environmentSubstitute( eq( portConcrete ) ) ).thenReturn( portConcrete );
+    when( mockVariableSpace.environmentSubstitute( eq( trustStorePath ) ) ).thenReturn( trustStorePath );
+    when( mockVariableSpace.environmentSubstitute( eq( trustStorePassword ) ) ).thenReturn( trustStorePasswordResolved );
+
+    KettleClientEnvironment.init();
+    TestableLdapProtocol testableLdapProtocol =
+            new TestableLdapProtocol( mockLogChannelInterface, mockVariableSpace, mockLdapMeta, null );
+    testableLdapProtocol.connect( null, null );
+    assertEquals( trustStorePasswordResolved, testableLdapProtocol.trustStorePassword );
+  }
+
+  @Test
+  public void testResolvingPasswordAndDecryptVariables() throws KettleException {
+    String hostConcrete = "host_concrete";
+    String portConcrete = "12345";
+    String trustStorePath = "/home/test_path";
+    String trustStorePassword = "${PASSWORD_VARIABLE}";
+    String trustStorePasswordResolved = "Encrypted 2be98afc86aa7f2e4cb79ff228dc6fa8c"; //original value 123456
+
+
+    when( mockLdapMeta.getHost() ).thenReturn( hostConcrete );
+    when( mockLdapMeta.getPort() ).thenReturn( portConcrete );
+    when( mockLdapMeta.getDerefAliases() ).thenReturn( "always" );
+    when( mockLdapMeta.getReferrals() ).thenReturn( "follow" );
+    when( mockLdapMeta.isUseCertificate() ).thenReturn( true );
+    when( mockLdapMeta.isTrustAllCertificates() ).thenReturn( true );
+    when( mockLdapMeta.getTrustStorePath() ).thenReturn( trustStorePath );
+    when( mockLdapMeta.getTrustStorePassword() ).thenReturn( trustStorePassword );
+
+    when( mockVariableSpace.environmentSubstitute( eq( hostConcrete ) ) ).thenReturn( hostConcrete );
+    when( mockVariableSpace.environmentSubstitute( eq( portConcrete ) ) ).thenReturn( portConcrete );
+    when( mockVariableSpace.environmentSubstitute( eq( trustStorePath ) ) ).thenReturn( trustStorePath );
+    when( mockVariableSpace.environmentSubstitute( eq( trustStorePassword ) ) ).thenReturn( trustStorePasswordResolved );
+
+    KettleClientEnvironment.init();
+    TestableLdapProtocol testableLdapProtocol =
+            new TestableLdapProtocol( mockLogChannelInterface, mockVariableSpace, mockLdapMeta, null );
+    testableLdapProtocol.connect( null, null );
+    assertEquals( "123456", testableLdapProtocol.trustStorePassword );
+  }
+
 }

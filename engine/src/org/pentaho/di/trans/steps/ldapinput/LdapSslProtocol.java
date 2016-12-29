@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,6 +27,7 @@ import java.util.Map;
 
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.trans.steps.ldapinput.store.CustomSocketFactory;
 
@@ -46,8 +47,9 @@ public class LdapSslProtocol extends LdapProtocol {
     boolean trustAllCertificates = false;
 
     if ( meta.isUseCertificate() ) {
-      trustStorePath = meta.getTrustStorePath();
-      trustStorePassword = meta.getTrustStorePassword();
+      trustStorePath = variableSpace.environmentSubstitute( meta.getTrustStorePath() );
+      trustStorePassword =  Utils.resolvePassword( variableSpace,
+              meta.getTrustStorePassword() );
       trustAllCertificates = meta.isTrustAllCertificates();
     }
 
