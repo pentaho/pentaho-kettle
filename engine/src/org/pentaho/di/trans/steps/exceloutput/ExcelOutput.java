@@ -95,26 +95,16 @@ public class ExcelOutput extends BaseStep implements StepInterface {
         }
       }
 
-      if ( meta.isDoNotOpenNewFileInit() ) {
-        data.oneFileOpened = true;
+      if ( meta.isDoNotOpenNewFileInit() && !openNewFile() ) {
+        logError( "Couldn't open file " + buildFilename() );
+        return false;
+      }
 
-        if ( !openNewFile() ) {
-          logError( "Couldn't open file " + buildFilename() );
-          return false;
-        }
-        // If we need to write a header, do so...
-        //
-        if ( meta.isHeaderEnabled() && !data.headerWrote ) {
-          writeHeader();
-          data.headerWrote = true;
-        }
-      } else {
-        // If we need to write a header, do so...
-        //
-        if ( meta.isHeaderEnabled() && !data.headerWrote ) {
-          writeHeader();
-          data.headerWrote = true;
-        }
+      data.oneFileOpened = true;
+      // If we need to write a header, do so...
+      if ( meta.isHeaderEnabled() && !data.headerWrote ) {
+        writeHeader();
+        data.headerWrote = true;
       }
     }
 
@@ -327,7 +317,7 @@ public class ExcelOutput extends BaseStep implements StepInterface {
         }
       }
       if ( meta.isAutoSizeColums() ) {
-        // prepare auto size colums
+        // prepare auto size columns
         int vlen = vMeta.getName().length();
         if ( !isHeader && v != null ) {
           vlen = v.toString().trim().length();
@@ -345,6 +335,8 @@ public class ExcelOutput extends BaseStep implements StepInterface {
           data.formats.put( hashName, data.headerCellFormat ); // save for next time around...
         }
       } else {
+        // Will write new row after existing ones
+        data.positionY = data.sheet.getRows();
         switch ( vMeta.getType() ) {
           case ValueMetaInterface.TYPE_DATE: {
             if ( v != null && vMeta.getDate( v ) != null ) {
@@ -506,21 +498,12 @@ public class ExcelOutput extends BaseStep implements StepInterface {
         if ( meta.isAppend() && fle.exists() ) {
           Workbook workbook = Workbook.getWorkbook( fle );
           data.workbook = Workbook.createWorkbook( fle, workbook );
-
-          if ( data.workbook.getSheet( data.realSheetname ) != null ) {
-            // get available sheets
-            String[] listSheets = data.workbook.getSheetNames();
-
-            // Let's see if this sheet already exist...
-            for ( int i = 0; i < listSheets.length; i++ ) {
-              if ( listSheets[i].equals( data.realSheetname ) ) {
-                // let's remove sheet
-                data.workbook.removeSheet( i );
-              }
-            }
-          }
-          // and now .. we create the sheet
-          data.sheet = data.workbook.createSheet( data.realSheetname, data.workbook.getNumberOfSheets() );
+          // and now .. we create the sheet          
+          int numberOfSheets = data.workbook.getNumberOfSheets();
+          data.sheet = data.workbook.getSheet( numberOfSheets - 1 );
+          // if file exists and append option is set do not rewrite header
+          // and ignore header option
+          meta.setHeaderEnabled( false );
         } else {
           // Create a new Workbook
           data.outputStream = KettleVFS.getOutputStream( data.file, false );
