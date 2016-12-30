@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -187,12 +187,15 @@ public class FuzzyMatch extends BaseStep implements StepInterface {
       }
     }
     Object[] add = null;
-    try {
-      add = getFromCache( row );
-    } catch ( Exception e ) {
-      throw new KettleStepException( e );
+    if ( row[ data.indexOfMainField ] == null ) {
+      add = buildEmptyRow();
+    } else {
+      try {
+        add = getFromCache( row );
+      } catch ( Exception e ) {
+        throw new KettleStepException( e );
+      }
     }
-
     return RowDataUtil.addRowData( row, rowMeta.size(), add );
   }
 
