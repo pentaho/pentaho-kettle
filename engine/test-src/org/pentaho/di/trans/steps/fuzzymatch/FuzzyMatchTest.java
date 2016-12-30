@@ -22,11 +22,6 @@
 
 package org.pentaho.di.trans.steps.fuzzymatch;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -113,9 +108,9 @@ public class FuzzyMatchTest {
   public void setUp() throws Exception {
     mockHelper =
         new StepMockHelper<FuzzyMatchMeta, FuzzyMatchData>( "Fuzzy Match", FuzzyMatchMeta.class, FuzzyMatchData.class );
-    when( mockHelper.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) ).thenReturn(
+    Mockito.when( mockHelper.logChannelInterfaceFactory.create( Mockito.any(), Mockito.any( LoggingObjectInterface.class ) ) ).thenReturn(
         mockHelper.logChannelInterface );
-    when( mockHelper.trans.isRunning() ).thenReturn( true );
+    Mockito.when( mockHelper.trans.isRunning() ).thenReturn( true );
   }
 
   @After
@@ -133,9 +128,9 @@ public class FuzzyMatchTest {
     fuzzyMatch.getInputRowSets().add( mockHelper.getMockInputRowSet( rows ) );
     fuzzyMatch.getInputRowSets().add( mockHelper.getMockInputRowSet( lookupRows ) );
 
-    when( mockHelper.processRowsStepMetaInterface.getAlgorithmType() ).thenReturn( 8 );
-    mockHelper.processRowsStepDataInterface.look = mock( HashSet.class );
-    when( mockHelper.processRowsStepDataInterface.look.iterator() ).thenReturn( lookupRows.iterator() );
+    Mockito.when( mockHelper.processRowsStepMetaInterface.getAlgorithmType() ).thenReturn( 8 );
+    mockHelper.processRowsStepDataInterface.look = Mockito.mock( HashSet.class );
+    Mockito.when( mockHelper.processRowsStepDataInterface.look.iterator() ).thenReturn( lookupRows.iterator() );
 
     fuzzyMatch.processRow( mockHelper.processRowsStepMetaInterface, mockHelper.processRowsStepDataInterface );
     Assert.assertEquals( fuzzyMatch.resultRow[0], row3[0] );
@@ -143,11 +138,11 @@ public class FuzzyMatchTest {
 
   @Test
   public void testReadLookupValues() throws Exception {
-    FuzzyMatchData data = spy( new FuzzyMatchData() );
+    FuzzyMatchData data = Mockito.spy( new FuzzyMatchData() );
     data.indexOfCachedFields = new int[2];
     data.minimalDistance = 0;
     data.maximalDistance = 5;
-    FuzzyMatchMeta meta = spy( new FuzzyMatchMeta() );
+    FuzzyMatchMeta meta = Mockito.spy( new FuzzyMatchMeta() );
     meta.setOutputMatchField( "I don't want NPE here!" );
     data.readLookupValues = true;
     fuzzyMatch =
@@ -165,20 +160,20 @@ public class FuzzyMatchTest {
     valueMeta.setStorageMetadata( new ValueMeta( "field1", ValueMeta.TYPE_STRING ) );
     valueMeta.setStorageType( ValueMetaInterface.STORAGE_TYPE_BINARY_STRING );
     rowMetaInterface.addValueMeta( valueMeta );
-    when( lookupRowSet.getRowMeta() ).thenReturn( rowMetaInterface );
-    when( meta.getLookupField() ).thenReturn( "field1" );
-    when( meta.getMainStreamField() ).thenReturn( "field1" );
+    Mockito.when( lookupRowSet.getRowMeta() ).thenReturn( rowMetaInterface );
+    Mockito.when( meta.getLookupField() ).thenReturn( "field1" );
+    Mockito.when( meta.getMainStreamField() ).thenReturn( "field1" );
     fuzzyMatch.setInputRowMeta( rowMetaInterface.clone() );
 
-    when( meta.getAlgorithmType() ).thenReturn( 1 );
-    StepIOMetaInterface stepIOMetaInterface = mock( StepIOMetaInterface.class );
-    when( meta.getStepIOMeta() ).thenReturn( stepIOMetaInterface );
-    StreamInterface streamInterface = mock( StreamInterface.class );
+    Mockito.when( meta.getAlgorithmType() ).thenReturn( 1 );
+    StepIOMetaInterface stepIOMetaInterface = Mockito.mock( StepIOMetaInterface.class );
+    Mockito.when( meta.getStepIOMeta() ).thenReturn( stepIOMetaInterface );
+    StreamInterface streamInterface = Mockito.mock( StreamInterface.class );
     List<StreamInterface> streamInterfaceList = new ArrayList<StreamInterface>();
     streamInterfaceList.add( streamInterface );
-    when( streamInterface.getStepMeta() ).thenReturn( mockHelper.stepMeta );
+    Mockito.when( streamInterface.getStepMeta() ).thenReturn( mockHelper.stepMeta );
 
-    when( stepIOMetaInterface.getInfoStreams() ).thenReturn( streamInterfaceList );
+    Mockito.when( stepIOMetaInterface.getInfoStreams() ).thenReturn( streamInterfaceList );
 
     fuzzyMatch.processRow( meta, data );
     Assert.assertEquals( rowMetaInterface.getString( row3B, 0 ),
