@@ -63,21 +63,21 @@ public class SlaveServerJobStatus {
 
   public String getXML() throws KettleException {
     // See PDI-15781
-    boolean sendResultXmlWithStatus = EnvUtil.getSystemProperty( "KETTLE_COMPATIBILITY_SEND_RESULT_XML_WITH_STATUS", "N" ).equalsIgnoreCase( "Y" );
-    StringBuffer xml = new StringBuffer();
+    boolean sendResultXmlWithStatus = EnvUtil.getSystemProperty( "KETTLE_COMPATIBILITY_SEND_RESULT_XML_WITH_FULL_STATUS", "N" ).equalsIgnoreCase( "Y" );
+    StringBuilder xml = new StringBuilder();
 
-    xml.append( "<" + XML_TAG + ">" ).append( Const.CR );
-    xml.append( XMLHandler.addTagValue( "jobname", jobName ) );
-    xml.append( XMLHandler.addTagValue( "id", id ) );
-    xml.append( XMLHandler.addTagValue( "status_desc", statusDescription ) );
-    xml.append( XMLHandler.addTagValue( "error_desc", errorDescription ) );
+    xml.append( XMLHandler.openTag( XML_TAG ) ).append( Const.CR );
+    xml.append( "  " ).append( XMLHandler.addTagValue( "jobname", jobName ) );
+    xml.append( "  " ).append( XMLHandler.addTagValue( "id", id ) );
+    xml.append( "  " ).append( XMLHandler.addTagValue( "status_desc", statusDescription ) );
+    xml.append( "  " ).append( XMLHandler.addTagValue( "error_desc", errorDescription ) );
+    xml.append( "  " ).append( XMLHandler.addTagValue( "log_date", XMLHandler.date2string( logDate ) ) );
+    xml.append( "  " ).append( XMLHandler.addTagValue( "logging_string", XMLHandler.buildCDATA( loggingString ) ) );
+    xml.append( "  " ).append( XMLHandler.addTagValue( "first_log_line_nr", firstLoggingLineNr ) );
+    xml.append( "  " ).append( XMLHandler.addTagValue( "last_log_line_nr", lastLoggingLineNr ) );
 
-    xml.append( XMLHandler.addTagValue( "logging_string", XMLHandler.buildCDATA( loggingString ) ) );
-    xml.append( XMLHandler.addTagValue( "first_log_line_nr", firstLoggingLineNr ) );
-    xml.append( XMLHandler.addTagValue( "last_log_line_nr", lastLoggingLineNr ) );
-
-    if ( ( sendResultXmlWithStatus ) && ( result != null )  ) {
-      String resultXML = result.getXML();
+    if ( result != null ) {
+      String resultXML = sendResultXmlWithStatus ? result.getXML() : result.getBasicXml();
       xml.append( resultXML );
     }
 

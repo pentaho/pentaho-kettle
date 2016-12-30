@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -560,30 +560,9 @@ public class Result implements Cloneable {
    */
   public String getXML() {
     try {
-      StringBuffer xml = new StringBuffer();
-
+      StringBuilder xml = new StringBuilder();
       xml.append( XMLHandler.openTag( XML_TAG ) );
-
-      // First the metrics...
-      //
-      xml.append( XMLHandler.addTagValue( "lines_input", nrLinesInput ) );
-      xml.append( XMLHandler.addTagValue( "lines_output", nrLinesOutput ) );
-      xml.append( XMLHandler.addTagValue( "lines_read", nrLinesRead ) );
-      xml.append( XMLHandler.addTagValue( "lines_written", nrLinesWritten ) );
-      xml.append( XMLHandler.addTagValue( "lines_updated", nrLinesUpdated ) );
-      xml.append( XMLHandler.addTagValue( "lines_rejected", nrLinesRejected ) );
-      xml.append( XMLHandler.addTagValue( "lines_deleted", nrLinesDeleted ) );
-      xml.append( XMLHandler.addTagValue( "nr_errors", nrErrors ) );
-      xml.append( XMLHandler.addTagValue( "nr_files_retrieved", nrFilesRetrieved ) );
-      xml.append( XMLHandler.addTagValue( "entry_nr", entryNr ) );
-
-      // The high level results...
-      //
-      xml.append( XMLHandler.addTagValue( "result", result ) );
-      xml.append( XMLHandler.addTagValue( "exit_status", exitStatus ) );
-      xml.append( XMLHandler.addTagValue( "is_stopped", stopped ) );
-      xml.append( XMLHandler.addTagValue( "log_channel_id", logChannelId ) );
-      xml.append( XMLHandler.addTagValue( "log_text", logText ) );
+      setBasicXmlAttrs( xml );
 
       // Export the result files
       //
@@ -612,6 +591,39 @@ public class Result implements Cloneable {
     } catch ( IOException e ) {
       throw new RuntimeException( "Unexpected error encoding job result as XML", e );
     }
+  }
+
+  private StringBuilder setBasicXmlAttrs( StringBuilder xml ) {
+    // First the metrics...
+    //
+    xml.append( XMLHandler.addTagValue( "lines_input", nrLinesInput ) );
+    xml.append( XMLHandler.addTagValue( "lines_output", nrLinesOutput ) );
+    xml.append( XMLHandler.addTagValue( "lines_read", nrLinesRead ) );
+    xml.append( XMLHandler.addTagValue( "lines_written", nrLinesWritten ) );
+    xml.append( XMLHandler.addTagValue( "lines_updated", nrLinesUpdated ) );
+    xml.append( XMLHandler.addTagValue( "lines_rejected", nrLinesRejected ) );
+    xml.append( XMLHandler.addTagValue( "lines_deleted", nrLinesDeleted ) );
+    xml.append( XMLHandler.addTagValue( "nr_errors", nrErrors ) );
+    xml.append( XMLHandler.addTagValue( "nr_files_retrieved", nrFilesRetrieved ) );
+    xml.append( XMLHandler.addTagValue( "entry_nr", entryNr ) );
+
+    // The high level results...
+    //
+    xml.append( XMLHandler.addTagValue( "result", result ) );
+    xml.append( XMLHandler.addTagValue( "exit_status", exitStatus ) );
+    xml.append( XMLHandler.addTagValue( "is_stopped", stopped ) );
+    xml.append( XMLHandler.addTagValue( "log_channel_id", logChannelId ) );
+    xml.append( XMLHandler.addTagValue( "log_text", logText ) );
+
+    return xml;
+  }
+
+  public String getBasicXml() {
+    StringBuilder xml = new StringBuilder();
+    xml.append( XMLHandler.openTag( XML_TAG ) );
+    setBasicXmlAttrs( xml );
+    xml.append( XMLHandler.closeTag( XML_TAG ) );
+    return xml.toString();
   }
 
   /**
