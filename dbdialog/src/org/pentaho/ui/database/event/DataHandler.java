@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -34,11 +34,9 @@ import java.util.SortedMap;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
-
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.swt.widgets.Display;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.BaseDatabaseMeta;
 import org.pentaho.di.core.database.DatabaseConnectionPoolParameter;
 import org.pentaho.di.core.database.DatabaseInterface;
@@ -52,6 +50,7 @@ import org.pentaho.di.core.plugins.DatabasePluginType;
 import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.PluginTypeListener;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.ui.database.Messages;
 import org.pentaho.ui.util.Launch;
 import org.pentaho.ui.util.Launch.Status;
@@ -88,9 +87,9 @@ public class DataHandler extends AbstractXulEventHandler {
   public static final Map<String, String> connectionNametoID = new HashMap<>();
 
   // Kettle thin related
-  private static final String WEB_APPLICATION_NAME = "WEB_APPLICATION_NAME";
   private static final String EXTRA_OPTION_WEB_APPLICATION_NAME = BaseDatabaseMeta.ATTRIBUTE_PREFIX_EXTRA_OPTION
       + "KettleThin.webappname";
+  private static final String DEFAULT_WEB_APPLICATION_NAME = "pentaho";
 
   // The connectionMap allows us to keep track of the connection
   // type we are working with and the correlating database interface
@@ -1367,8 +1366,9 @@ public class DataHandler extends AbstractXulEventHandler {
     }
 
     if ( webAppName != null ) {
-      if ( Utils.isEmpty( meta.getDatabaseName() ) ) {
-        webAppName.setValue( "pentaho" );
+      // Insert default value only for new connection, allowing it to be empty in case of editing existing one
+      if ( databaseMeta == null || Utils.isEmpty( databaseMeta.getDisplayName() ) ) {
+        webAppName.setValue( DEFAULT_WEB_APPLICATION_NAME );
       } else {
         webAppName.setValue( meta.getDatabaseName() );
       }
