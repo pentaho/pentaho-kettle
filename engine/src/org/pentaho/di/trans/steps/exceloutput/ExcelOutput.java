@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -531,7 +531,7 @@ public class ExcelOutput extends BaseStep implements StepInterface {
         // create the openFile from the template
         Workbook templateWorkbook = Workbook.getWorkbook( KettleVFS.getInputStream( templateFile ), data.ws );
 
-        if ( meta.isAppend() && isTemplateContained( templateWorkbook, targetFile ) ) {
+        if ( meta.isAppend() && targetFile.exists() && isTemplateContained( templateWorkbook, targetFile ) ) {
           Workbook targetFileWorkbook = Workbook.getWorkbook( targetFile );
           data.workbook = Workbook.createWorkbook( targetFile, targetFileWorkbook );
         } else {
@@ -600,9 +600,9 @@ public class ExcelOutput extends BaseStep implements StepInterface {
     return retval;
   }
 
-  private boolean isTemplateContained( Workbook templateWorkbook, File targetWorkbook )
+  private boolean isTemplateContained( Workbook templateWorkbook, File targetFile )
        throws IOException, BiffException {
-    Workbook targetFileWorkbook = Workbook.getWorkbook( targetWorkbook );
+    Workbook targetFileWorkbook = Workbook.getWorkbook( targetFile );
     int templateWorkbookNumberOfSheets = templateWorkbook.getNumberOfSheets();
     int targetWorkbookNumberOfSheets = targetFileWorkbook.getNumberOfSheets();
     if ( templateWorkbookNumberOfSheets > targetWorkbookNumberOfSheets ) {
