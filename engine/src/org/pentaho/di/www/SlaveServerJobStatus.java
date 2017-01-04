@@ -71,7 +71,6 @@ public class SlaveServerJobStatus {
     xml.append( "  " ).append( XMLHandler.addTagValue( "id", id ) );
     xml.append( "  " ).append( XMLHandler.addTagValue( "status_desc", statusDescription ) );
     xml.append( "  " ).append( XMLHandler.addTagValue( "error_desc", errorDescription ) );
-    xml.append( "  " ).append( XMLHandler.addTagValue( "log_date", XMLHandler.date2string( logDate ) ) );
     xml.append( "  " ).append( XMLHandler.addTagValue( "logging_string", XMLHandler.buildCDATA( loggingString ) ) );
     xml.append( "  " ).append( XMLHandler.addTagValue( "first_log_line_nr", firstLoggingLineNr ) );
     xml.append( "  " ).append( XMLHandler.addTagValue( "last_log_line_nr", lastLoggingLineNr ) );
