@@ -480,7 +480,7 @@ public class MSSQLServerDatabaseMeta extends BaseDatabaseMeta implements Databas
 
   @Override
   public String getSQLSequenceExists( String sequenceName ) {
-    return String.format( "SELECT * FROM sys.sequences WHERE name = '%s'", sequenceName );
+    return String.format( "SELECT 1 FROM sys.sequences WHERE name = '%s'", sequenceName );
   }
 
   @Override
