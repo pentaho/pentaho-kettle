@@ -446,10 +446,10 @@ public class PropertyInput extends BaseStep implements StepInterface {
         if ( !Utils.isEmpty( data.realEncoding ) ) {
           data.wini.getConfig().setFileEncoding( Charset.forName( data.realEncoding ) );
         }
-        
+
         // load INI file
         data.wini.load( fis );
-        
+
         if ( data.realSection != null ) {
           // just one section
           data.iniSection = data.wini.get( data.realSection );
