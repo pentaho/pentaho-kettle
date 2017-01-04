@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -55,8 +55,11 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.csvinput.CsvInputMeta;
 import org.pentaho.di.trans.steps.dummytrans.DummyTransMeta;
+import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.spoon.delegates.SpoonDelegates;
 import org.pentaho.di.ui.spoon.delegates.SpoonTabsDelegate;
+import org.pentaho.metastore.stores.delegate.DelegatingMetaStore;
+import org.pentaho.xul.swt.tab.TabItem;
 
 /**
  * Spoon tests
@@ -67,6 +70,13 @@ import org.pentaho.di.ui.spoon.delegates.SpoonTabsDelegate;
 public class SpoonTest {
 
   private final Spoon spoon = mock( Spoon.class );
+  private final LogChannelInterface log = mock( LogChannelInterface.class );
+  private static SpoonPerspective mockSpoonPerspective = mock( SpoonPerspective.class );
+  private static SpoonPerspectiveManager perspective = SpoonPerspectiveManager.getInstance();
+
+  static {
+    perspective.addPerspective( mockSpoonPerspective );
+  }
 
   @Before
   public void setUp() throws KettleException {
@@ -74,7 +84,6 @@ public class SpoonTest {
         anyListOf( NotePadMeta.class ) );
     doCallRealMethod().when( spoon ).pasteXML( any( TransMeta.class ), anyString(), any( Point.class ) );
     doCallRealMethod().when( spoon ).delHop( any( TransMeta.class ), any( TransHopMeta.class ) );
-    LogChannelInterface log = mock( LogChannelInterface.class );
     when( spoon.getLog() ).thenReturn( log );
 
     KettleEnvironment.init();
@@ -391,4 +400,259 @@ public class SpoonTest {
 
   }
 
+  @Test
+  public void testNullParamSaveToFile() throws Exception {
+    doCallRealMethod().when( spoon ).saveToFile( any() );
+    assertFalse( spoon.saveToFile( null ) );
+  }
+
+  @Test
+  public void testJobToRepSaveToFile() throws Exception {
+    JobMeta mockJobMeta = mock( JobMeta.class );
+
+    prepareSetSaveTests( spoon, log, mockSpoonPerspective, mockJobMeta, false, false, MainSpoonPerspective.ID, true,
+        true, null, null );
+
+    doCallRealMethod().when( spoon ).saveToFile( mockJobMeta );
+    assertTrue( spoon.saveToFile( mockJobMeta ) );
+    verify( mockJobMeta ).setRepository( spoon.rep );
+    verify( mockJobMeta ).setMetaStore( spoon.metaStore );
+
+    verify( mockJobMeta ).setObjectId( null );
+    verify( mockJobMeta ).setFilename( null );
+
+    verify( spoon.delegates.tabs ).renameTabs();
+    verify( spoon ).enableMenus();
+  }
+
+  @Test
+  public void testJobToFileSaveToFile() throws Exception {
+    JobMeta mockJobMeta = mock( JobMeta.class );
+
+    prepareSetSaveTests( spoon, log, mockSpoonPerspective, mockJobMeta, true, false, "NotMainSpoonPerspective", true,
+        true, null, "filename" );
+
+    doCallRealMethod().when( spoon ).saveToFile( mockJobMeta );
+    assertTrue( spoon.saveToFile( mockJobMeta ) );
+    verify( mockJobMeta ).setRepository( spoon.rep );
+    verify( mockJobMeta ).setMetaStore( spoon.metaStore );
+
+    verify( spoon.delegates.tabs ).renameTabs();
+    verify( spoon ).enableMenus();
+  }
+
+  @Test
+  public void testJobToFileWithoutNameSaveToFile() throws Exception {
+    JobMeta mockJobMeta = mock( JobMeta.class );
+
+    prepareSetSaveTests( spoon, log, mockSpoonPerspective, mockJobMeta, true, false, "NotMainSpoonPerspective", true,
+        true, null, null );
+
+    doCallRealMethod().when( spoon ).saveToFile( mockJobMeta );
+    doReturn( true ).when( spoon ).saveFileAs( mockJobMeta );
+    assertTrue( spoon.saveToFile( mockJobMeta ) );
+    verify( mockJobMeta ).setRepository( spoon.rep );
+    verify( mockJobMeta ).setMetaStore( spoon.metaStore );
+
+    verify( spoon.delegates.tabs ).renameTabs();
+    verify( spoon ).enableMenus();
+  }
+
+  @Test
+  public void testTransToRepSaveToFile() throws Exception {
+    TransMeta mockTransMeta = mock( TransMeta.class );
+
+    prepareSetSaveTests( spoon, log, mockSpoonPerspective, mockTransMeta, false, false, MainSpoonPerspective.ID, true,
+        true, null, null );
+
+    doCallRealMethod().when( spoon ).saveToFile( mockTransMeta );
+    assertTrue( spoon.saveToFile( mockTransMeta ) );
+    verify( mockTransMeta ).setRepository( spoon.rep );
+    verify( mockTransMeta ).setMetaStore( spoon.metaStore );
+
+    verify( mockTransMeta ).setObjectId( null );
+    verify( mockTransMeta ).setFilename( null );
+
+    verify( spoon.delegates.tabs ).renameTabs();
+    verify( spoon ).enableMenus();
+  }
+
+  @Test
+  public void testJobToRepSaveFileAs() throws Exception {
+    JobMeta mockJobMeta = mock( JobMeta.class );
+
+    //passing a invalid type so not running GUIResource class
+    prepareSetSaveTests( spoon, log, mockSpoonPerspective, mockJobMeta, false, false, MainSpoonPerspective.ID, true,
+        true, "Invalid TYPE", null );
+
+    doCallRealMethod().when( spoon ).saveFileAs( mockJobMeta );
+    assertTrue( spoon.saveFileAs( mockJobMeta ) );
+    verify( mockJobMeta ).setRepository( spoon.rep );
+    verify( mockJobMeta ).setMetaStore( spoon.metaStore );
+
+    verify( mockJobMeta ).setObjectId( null );
+    verify( mockJobMeta ).setFilename( null );
+
+    verify( spoon.delegates.tabs ).findTabMapEntry( mockJobMeta );
+    verify( spoon ).enableMenus();
+  }
+
+  @Test
+  public void testJobToRepSaveFileAsFailed() throws Exception {
+    JobMeta mockJobMeta = mock( JobMeta.class );
+
+    //passing a invalid type so not running GUIResource class
+    prepareSetSaveTests( spoon, log, mockSpoonPerspective, mockJobMeta, false, false, MainSpoonPerspective.ID, false,
+        true, "Invalid TYPE", null );
+
+    doCallRealMethod().when( spoon ).saveFileAs( mockJobMeta );
+    assertFalse( spoon.saveFileAs( mockJobMeta ) );
+    verify( mockJobMeta ).setRepository( spoon.rep );
+    verify( mockJobMeta ).setMetaStore( spoon.metaStore );
+
+    verify( mockJobMeta ).setObjectId( null );
+    verify( mockJobMeta ).setFilename( null );
+
+    verify( spoon ).enableMenus();
+  }
+
+  @Test
+  public void testJobToXMLFileSaveFileAs() throws Exception {
+    JobMeta mockJobMeta = mock( JobMeta.class );
+
+    //passing a invalid type so not running GUIResource class
+    prepareSetSaveTests( spoon, log, mockSpoonPerspective, mockJobMeta, true, true, "NotMainSpoonPerspective", true,
+        true, "Invalid TYPE", null );
+
+    doCallRealMethod().when( spoon ).saveFileAs( mockJobMeta );
+    assertTrue( spoon.saveFileAs( mockJobMeta ) );
+    verify( mockJobMeta ).setRepository( spoon.rep );
+    verify( mockJobMeta ).setMetaStore( spoon.metaStore );
+
+    verify( spoon.delegates.tabs ).findTabMapEntry( mockJobMeta );
+    verify( spoon ).enableMenus();
+  }
+
+  @Test
+  public void testJobToXMLFileSaveFileAsFailed() throws Exception {
+    JobMeta mockJobMeta = mock( JobMeta.class );
+
+    //passing a invalid type so not running GUIResource class
+    prepareSetSaveTests( spoon, log, mockSpoonPerspective, mockJobMeta, true, true, "NotMainSpoonPerspective", true,
+        false, "Invalid TYPE", null );
+
+    doCallRealMethod().when( spoon ).saveFileAs( mockJobMeta );
+    assertFalse( spoon.saveFileAs( mockJobMeta ) );
+    verify( mockJobMeta ).setRepository( spoon.rep );
+    verify( mockJobMeta ).setMetaStore( spoon.metaStore );
+
+    verify( spoon ).enableMenus();
+  }
+
+  @Test
+  public void testTransToRepSaveFileAs() throws Exception {
+    TransMeta mockTransMeta = mock( TransMeta.class );
+
+    //passing a invalid type so not running GUIResource class
+    prepareSetSaveTests( spoon, log, mockSpoonPerspective, mockTransMeta, false, false, MainSpoonPerspective.ID, true,
+        true, "Invalid TYPE", null );
+
+    doCallRealMethod().when( spoon ).saveFileAs( mockTransMeta );
+    assertTrue( spoon.saveFileAs( mockTransMeta ) );
+    verify( mockTransMeta ).setRepository( spoon.rep );
+    verify( mockTransMeta ).setMetaStore( spoon.metaStore );
+
+    verify( mockTransMeta ).setObjectId( null );
+    verify( mockTransMeta ).setFilename( null );
+
+    verify( spoon.delegates.tabs ).findTabMapEntry( mockTransMeta );
+    verify( spoon ).enableMenus();
+  }
+
+  @Test
+  public void testTransToRepSaveFileAsFailed() throws Exception {
+    TransMeta mockTransMeta = mock( TransMeta.class );
+
+    //passing a invalid type so not running GUIResource class
+    prepareSetSaveTests( spoon, log, mockSpoonPerspective, mockTransMeta, false, false, MainSpoonPerspective.ID, false,
+        true, "Invalid TYPE", null );
+
+    doCallRealMethod().when( spoon ).saveFileAs( mockTransMeta );
+    assertFalse( spoon.saveFileAs( mockTransMeta ) );
+    verify( mockTransMeta ).setRepository( spoon.rep );
+    verify( mockTransMeta ).setMetaStore( spoon.metaStore );
+
+    verify( mockTransMeta ).setObjectId( null );
+    verify( mockTransMeta ).setFilename( null );
+
+    verify( spoon ).enableMenus();
+  }
+
+  @Test
+  public void testTransToXMLFileSaveFileAs() throws Exception {
+    TransMeta mockTransMeta = mock( TransMeta.class );
+
+    //passing a invalid type so not running GUIResource class
+    prepareSetSaveTests( spoon, log, mockSpoonPerspective, mockTransMeta, true, true, "NotMainSpoonPerspective", true,
+        true, "Invalid TYPE", null );
+
+    doCallRealMethod().when( spoon ).saveFileAs( mockTransMeta );
+    assertTrue( spoon.saveFileAs( mockTransMeta ) );
+    verify( mockTransMeta ).setRepository( spoon.rep );
+    verify( mockTransMeta ).setMetaStore( spoon.metaStore );
+
+    verify( spoon.delegates.tabs ).findTabMapEntry( mockTransMeta );
+    verify( spoon ).enableMenus();
+  }
+
+  @Test
+  public void testTransToXMLFileSaveFileAsFailed() throws Exception {
+    TransMeta mockTransMeta = mock( TransMeta.class );
+
+    //passing a invalid type so not running GUIResource class
+    prepareSetSaveTests( spoon, log, mockSpoonPerspective, mockTransMeta, true, true, "NotMainSpoonPerspective", true,
+        false, "Invalid TYPE", null );
+
+    doCallRealMethod().when( spoon ).saveFileAs( mockTransMeta );
+    assertFalse( spoon.saveFileAs( mockTransMeta ) );
+    verify( mockTransMeta ).setRepository( spoon.rep );
+    verify( mockTransMeta ).setMetaStore( spoon.metaStore );
+
+    verify( spoon ).enableMenus();
+  }
+
+  private static void prepareSetSaveTests( Spoon spoon, LogChannelInterface log, SpoonPerspective spoonPerspective,
+      AbstractMeta metaData, boolean repIsNull, boolean basicLevel, String perspectiveID, boolean saveToRepository,
+      boolean saveXMLFile, String fileType, String filename ) throws Exception {
+
+    TabMapEntry mockTabMapEntry = mock( TabMapEntry.class );
+    TabItem mockTabItem = mock( TabItem.class );
+
+    Repository mockRepository = mock( Repository.class );
+    DelegatingMetaStore mockMetaStore = mock( DelegatingMetaStore.class );
+
+    spoon.rep = repIsNull ? null : mockRepository;
+    spoon.metaStore = mockMetaStore;
+    spoon.delegates = mock( SpoonDelegates.class );
+    spoon.delegates.tabs = mock( SpoonTabsDelegate.class );
+    spoon.props = mock( PropsUI.class );
+
+    doReturn( perspectiveID ).when( spoonPerspective ).getId();
+
+    doReturn( basicLevel ).when( log ).isBasic();
+    doReturn( basicLevel ).when( log ).isDetailed();
+    doReturn( mockTabMapEntry ).when( spoon.delegates.tabs ).findTabMapEntry( any() );
+    doReturn( mockTabItem ).when( mockTabMapEntry ).getTabItem();
+    doReturn( saveToRepository ).when( spoon ).saveToRepository( metaData, true );
+    doReturn( saveXMLFile ).when( spoon ).saveXMLFile( metaData, false );
+
+    //saveFile
+    doReturn( filename ).when( metaData ).getFilename();
+    doReturn( true ).when( metaData ).canSave();
+    doReturn( false ).when( spoon.props ).useDBCache();
+    doReturn( saveToRepository ).when( spoon ).saveToRepository( metaData );
+    doReturn( saveXMLFile ).when( spoon ).save( metaData, filename, false );
+
+    doReturn( fileType ).when( metaData ).getFileType();
+  }
 }
