@@ -32,4 +32,9 @@ public class InfobrightDatabaseMeta extends MySQLDatabaseMeta implements Databas
     return -1;
   }
 
+  @Override
+  public void addDefaultOptions() {
+    addExtraOption( getPluginId(), "characterEncoding", "UTF-8" );
+  }
+
 }
