@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -5055,18 +5055,12 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
     boolean saved = false;
 
-    if ( meta instanceof TransMeta ) {
-      ( (TransMeta) meta ).setRepository( rep );
-      ( (TransMeta) meta ).setMetaStore( metaStore );
-    }
-    if ( meta instanceof JobMeta ) {
-      ( (JobMeta) meta ).setRepository( rep );
-      ( (JobMeta) meta ).setMetaStore( metaStore );
-    }
+    ( (AbstractMeta) meta ).setRepository( rep );
+    ( (AbstractMeta) meta ).setMetaStore( metaStore );
 
-    if ( log.isDetailed() ) {
+    if ( getLog().isDetailed() ) {
       // "Save to file or repository...
-      log.logDetailed( BaseMessages.getString( PKG, "Spoon.Log.SaveToFileOrRepository" ) );
+      getLog().logDetailed( BaseMessages.getString( PKG, "Spoon.Log.SaveToFileOrRepository" ) );
     }
 
     SpoonPerspective activePerspective = SpoonPerspectiveManager.getInstance().getActivePerspective();
@@ -5080,6 +5074,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     String activePerspectiveId = activePerspective.getId();
     boolean etlPerspective = activePerspectiveId.equals( MainSpoonPerspective.ID );
     if ( rep != null && etlPerspective ) {
+      meta.setObjectId( null );
+      meta.setFilename( null );
       saved = saveToRepository( meta );
     } else {
       if ( meta.getFilename() != null ) {
@@ -5363,14 +5359,18 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   public boolean saveFileAs( EngineMetaInterface meta ) throws KettleException {
     boolean saved;
 
-    if ( log.isBasic() ) {
-      log.logBasic( BaseMessages.getString( PKG, "Spoon.Log.SaveAs" ) ); // "Save as..."
+    if ( getLog().isBasic() ) {
+      getLog().logBasic( BaseMessages.getString( PKG, "Spoon.Log.SaveAs" ) ); // "Save as..."
     }
+
+    ( (AbstractMeta) meta ).setRepository( rep );
+    ( (AbstractMeta) meta ).setMetaStore( metaStore );
 
     String activePerspectiveId = SpoonPerspectiveManager.getInstance().getActivePerspective().getId();
     boolean etlPerspective = activePerspectiveId.equals( MainSpoonPerspective.ID );
     if ( rep != null && etlPerspective ) {
       meta.setObjectId( null );
+      meta.setFilename( null );
       saved = saveToRepository( meta, true );
 
     } else {
