@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.pentaho</groupId>
+    <artifactId>pentaho-ce-jar-parent-pom</artifactId>
+    <version>1.2.1</version>
+  </parent>
+  <artifactId>pentaho-execution-engine</artifactId>
+  <version>7.1-SNAPSHOT</version>
+  <packaging>bundle</packaging>
+  <name>Pentaho Community Edition Project: ${project.artifactId}</name>
+  <description>a Pentaho open source project</description>
+  <url>http://www.pentaho.com</url>
+  <properties>
+    <publish-sonar-phase>site</publish-sonar-phase>
+    <dependency.kettle.revision>7.1-SNAPSHOT</dependency.kettle.revision>
+    <dependency.maven-bundle-plugin.version>2.4.0</dependency.maven-bundle-plugin.version>
+  </properties>
+  <dependencies>
+    <dependency>
+      <groupId>pentaho-kettle</groupId>
+      <artifactId>kettle-core</artifactId>
+      <version>${dependency.kettle.revision}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>pentaho-kettle</groupId>
+      <artifactId>kettle-engine</artifactId>
+      <version>${dependency.kettle.revision}</version>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <version>${dependency.maven-bundle-plugin.version}</version>
+        <extensions>true</extensions>
+        <configuration>
+          <instructions>
+            <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+            <Import-Package>org.pentaho.di.engine,org.pentaho.di.osgi</Import-Package>
+          </instructions>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>
