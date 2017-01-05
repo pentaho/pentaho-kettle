@@ -593,7 +593,7 @@
     <fileNameField/>
     <create_parent_folder>Y</create_parent_folder>
     <file>
-      <name>src&#x2f;test&#x2f;resources&#x2f;Output</name>
+      <name>${java.io.tmpdir}/Output</name>
       <is_command>N</is_command>
       <servlet_output>N</servlet_output>
       <do_not_open_new_file_init>N</do_not_open_new_file_init>
