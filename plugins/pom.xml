@@ -14,5 +14,6 @@
   <modules>
     <module>repositories-plugin</module>
     <module>meta-inject-plugin</module>
+    <module>execution-engine-plugin</module>
   </modules>
 </project>
