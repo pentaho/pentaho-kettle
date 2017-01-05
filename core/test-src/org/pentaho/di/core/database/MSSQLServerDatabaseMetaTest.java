@@ -168,7 +168,7 @@ public class MSSQLServerDatabaseMetaTest {
     assertEquals( "insert into FOO(FOOVERSION) values (1)", nativeMeta.getSQLInsertAutoIncUnknownDimensionRow( "FOO", "FOOKEY", "FOOVERSION" ) );
     assertEquals( "SELECT NEXT VALUE FOR FOO", nativeMeta.getSQLNextSequenceValue( "FOO" ) );
     assertEquals( "SELECT current_value FROM sys.sequences WHERE name = 'FOO'", nativeMeta.getSQLCurrentSequenceValue( "FOO" ) );
-    assertEquals( "SELECT * FROM sys.sequences WHERE name = 'FOO'", nativeMeta.getSQLSequenceExists( "FOO" ) );
+    assertEquals( "SELECT 1 FROM sys.sequences WHERE name = 'FOO'", nativeMeta.getSQLSequenceExists( "FOO" ) );
     assertEquals( "SELECT name FROM sys.sequences", nativeMeta.getSQLListOfSequences() );
   }
 

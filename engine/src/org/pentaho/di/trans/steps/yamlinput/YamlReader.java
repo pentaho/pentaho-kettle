@@ -36,10 +36,12 @@ import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
+import org.pentaho.di.core.row.value.ValueMetaNone;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.yaml.snakeyaml.Yaml;
 
@@ -333,7 +335,13 @@ public class YamlReader {
         Iterator it = map.entrySet().iterator();
         while ( it.hasNext() ) {
           Map.Entry pairs = (Map.Entry) it.next();
-          ValueMetaInterface valueMeta = new ValueMeta( pairs.getKey().toString(), getType( pairs.getValue() ) );
+          String valueName = pairs.getKey().toString();
+          ValueMetaInterface valueMeta;
+          try {
+            valueMeta = ValueMetaFactory.createValueMeta( valueName, getType( pairs.getValue() ) );
+          } catch ( KettlePluginException e ) {
+            valueMeta = new ValueMetaNone( valueName );
+          }
           rowMeta.addValueMeta( valueMeta );
         }
       } else if ( data instanceof List ) {
@@ -349,11 +357,23 @@ public class YamlReader {
           Iterator its = map.entrySet().iterator();
           while ( its.hasNext() ) {
             Map.Entry pairs = (Map.Entry) its.next();
-            ValueMetaInterface valueMeta = new ValueMeta( pairs.getKey().toString(), getType( pairs.getValue() ) );
+            String valueName = pairs.getKey().toString();
+            ValueMetaInterface valueMeta;
+            try {
+              valueMeta = ValueMetaFactory.createValueMeta( valueName, getType( pairs.getValue() ) );
+            } catch ( KettlePluginException e ) {
+              valueMeta = new ValueMetaNone( valueName );
+            }
             rowMeta.addValueMeta( valueMeta );
           }
         } else {
-          rowMeta.addValueMeta( new ValueMeta( DEFAULT_LIST_VALUE_NAME, getType( value ) ) );
+          ValueMetaInterface valueMeta;
+          try {
+            valueMeta = ValueMetaFactory.createValueMeta( DEFAULT_LIST_VALUE_NAME, getType( value ) );
+          } catch ( KettlePluginException e ) {
+            valueMeta = new ValueMetaNone( DEFAULT_LIST_VALUE_NAME );
+          }
+          rowMeta.addValueMeta( valueMeta );
         }
       }
     }

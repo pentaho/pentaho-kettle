@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -58,8 +58,8 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.fileinput.FileInputList;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -734,7 +734,7 @@ public class YamlInputDialog extends BaseStepDialog implements StepDialogInterfa
           ColumnInfo.COLUMN_TYPE_TEXT, false ),
         new ColumnInfo(
           BaseMessages.getString( PKG, "YamlInputDialog.FieldsTable.Type.Column" ),
-          ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes(), true ),
+          ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMetaFactory.getValueMetaNames(), true ),
         new ColumnInfo(
           BaseMessages.getString( PKG, "YamlInputDialog.FieldsTable.Format.Column" ),
           ColumnInfo.COLUMN_TYPE_FORMAT, 4 ),
@@ -1256,7 +1256,7 @@ public class YamlInputDialog extends BaseStepDialog implements StepDialogInterfa
 
       field.setName( item.getText( 1 ) );
       field.setPath( item.getText( 2 ) );
-      field.setType( ValueMeta.getType( item.getText( 3 ) ) );
+      field.setType( ValueMetaFactory.getIdForValueMeta( item.getText( 3 ) ) );
       field.setFormat( item.getText( 4 ) );
       field.setLength( Const.toInt( item.getText( 5 ), -1 ) );
       field.setPrecision( Const.toInt( item.getText( 6 ), -1 ) );

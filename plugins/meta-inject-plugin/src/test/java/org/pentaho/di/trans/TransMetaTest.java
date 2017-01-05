@@ -137,7 +137,7 @@ public class TransMetaTest {
     }
 
     // verify another functions
-    TransMeta.addStep( 1, deletedStep );
+    TransMeta.addStep( deletedStep );
     assertEquals( TransMeta.nrSteps(), 3 );
     assertEquals( TransMeta.nrStepChangeListeners(), 2 );
 

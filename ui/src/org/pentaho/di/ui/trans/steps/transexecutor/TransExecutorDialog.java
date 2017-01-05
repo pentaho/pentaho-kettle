@@ -57,7 +57,7 @@ import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.gui.SpoonFactory;
 import org.pentaho.di.core.gui.SpoonInterface;
-import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.ObjectId;
@@ -800,7 +800,7 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
     for ( int i = 0; i < transExecutorMeta.getOutputRowsField().length; i++ ) {
       TableItem item = new TableItem( wOutputFields.table, SWT.NONE );
       item.setText( 1, Const.NVL( transExecutorMeta.getOutputRowsField()[i], "" ) );
-      item.setText( 2, ValueMeta.getTypeDesc( transExecutorMeta.getOutputRowsType()[i] ) );
+      item.setText( 2, ValueMetaFactory.getValueMetaName( transExecutorMeta.getOutputRowsType()[i] ) );
       int length = transExecutorMeta.getOutputRowsLength()[i];
       item.setText( 3, length < 0 ? "" : Integer.toString( length ) );
       int precision = transExecutorMeta.getOutputRowsPrecision()[i];
@@ -1473,7 +1473,7 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
         new ColumnInfo( BaseMessages.getString( PKG, "TransExecutorDialog.ColumnInfo.Field" ),
           ColumnInfo.COLUMN_TYPE_TEXT, false, false ),
         new ColumnInfo( BaseMessages.getString( PKG, "TransExecutorDialog.ColumnInfo.Type" ),
-          ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes() ),
+          ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMetaFactory.getValueMetaNames() ),
         new ColumnInfo( BaseMessages.getString( PKG, "TransExecutorDialog.ColumnInfo.Length" ),
           ColumnInfo.COLUMN_TYPE_TEXT, false ),
         new ColumnInfo( BaseMessages.getString( PKG, "TransExecutorDialog.ColumnInfo.Precision" ),
@@ -1645,7 +1645,7 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
     for ( int i = 0; i < nrFields; i++ ) {
       TableItem item = wOutputFields.getNonEmpty( i );
       transExecutorMeta.getOutputRowsField()[i] = item.getText( 1 );
-      transExecutorMeta.getOutputRowsType()[i] = ValueMeta.getType( item.getText( 2 ) );
+      transExecutorMeta.getOutputRowsType()[i] = ValueMetaFactory.getIdForValueMeta( item.getText( 2 ) );
       transExecutorMeta.getOutputRowsLength()[i] = Const.toInt( item.getText( 3 ), -1 );
       transExecutorMeta.getOutputRowsPrecision()[i] = Const.toInt( item.getText( 4 ), -1 );
     }

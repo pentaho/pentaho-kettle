@@ -65,7 +65,7 @@ public class GetStatusServletTest {
     PrintWriter printWriter = new PrintWriter( out );
 
     when( mockHttpServletRequest.getContextPath() ).thenReturn( GetStatusServlet.CONTEXT_PATH );
-    when( mockHttpServletRequest.getParameter( anyString() ) ).thenReturn( ServletTestUtils.BAD_STRING );
+    when( mockHttpServletRequest.getParameter( anyString() ) ).thenReturn( ServletTestUtils.BAD_STRING_TO_TEST );
     when( mockHttpServletResponse.getWriter() ).thenReturn( printWriter );
 
     getStatusServlet.doGet( mockHttpServletRequest, mockHttpServletResponse );
@@ -84,7 +84,7 @@ public class GetStatusServletTest {
     PrintWriter printWriter = new PrintWriter( out );
 
     when( mockHttpServletRequest.getContextPath() ).thenReturn( GetStatusServlet.CONTEXT_PATH );
-    when( mockHttpServletRequest.getParameter( anyString() ) ).thenReturn( ServletTestUtils.BAD_STRING );
+    when( mockHttpServletRequest.getParameter( anyString() ) ).thenReturn( ServletTestUtils.BAD_STRING_TO_TEST );
     when( mockHttpServletResponse.getWriter() ).thenReturn( printWriter );
     when( mockTransformationMap.getTransformation( any( CarteObjectEntry.class ) ) ).thenReturn( mockTrans );
     when( mockTrans.getLogChannel() ).thenReturn( mockChannelInterface );
@@ -92,6 +92,6 @@ public class GetStatusServletTest {
     when( mockTransMeta.getMaximum() ).thenReturn( new Point( 10, 10 ) );
 
     getStatusServlet.doGet( mockHttpServletRequest, mockHttpServletResponse );
-    assertFalse( out.toString().contains( ServletTestUtils.BAD_STRING ) );
+    assertFalse( out.toString().contains( ServletTestUtils.BAD_STRING_TO_TEST ) );
   }
 }

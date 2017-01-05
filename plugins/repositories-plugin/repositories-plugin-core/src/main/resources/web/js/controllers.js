@@ -113,7 +113,8 @@ define(
       }
       $scope.back = function() {
         $rootScope.clearError();
-        if (this.model.id) {
+        if ($rootScope.fromEdit) {
+          $rootScope.fromEdit = false;
           $location.path("/repository-manager");
         } else {
           $location.path("/pentaho-repository");
@@ -202,7 +203,8 @@ define(
       }
       $scope.back = function() {
         $rootScope.clearError();
-        if (this.model.id) {
+        if ($rootScope.fromEdit) {
+          $rootScope.fromEdit = false;
           $location.path("/repository-manager");
         } else {
           $location.path("/create-new-connection");
@@ -293,7 +295,8 @@ define(
       }
       $scope.back = function() {
         $rootScope.clearError();
-        if (this.model.id) {
+        if ($rootScope.fromEdit) {
+          $rootScope.fromEdit = false;
           $location.path("/repository-manager");
         } else {
           $location.path("/create-new-connection");

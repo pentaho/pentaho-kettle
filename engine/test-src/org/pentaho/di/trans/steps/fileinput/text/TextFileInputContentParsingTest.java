@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -136,6 +136,46 @@ public class TextFileInputContentParsingTest extends BaseTextParsingTest {
     process();
 
     check( new Object[][] { { "first  ", "1      ", "1.1" }, { "second ", "2      ", "2.2" }, { "third  ", "3      ", "3.3" } } );
+  }
+
+  @Test
+  public void testFixedWidthBytes() throws Exception {
+
+    meta.content.header = false;
+    meta.content.fileType = "Fixed";
+    meta.content.fileFormat = "Unix";
+    meta.content.encoding = "Shift_JIS";
+    meta.content.length = "Bytes";
+    initByFile( "test-fixed-length-bytes.txt" );
+
+    setFields(
+        new BaseFileInputField( "f1", 0, 5 ),
+        new BaseFileInputField( "f2", 5, 3 ),
+        new BaseFileInputField( "f3", 8, 1 ),
+        new BaseFileInputField( "f4", 9, 3 ) );
+
+    process();
+
+    check( new Object[][] { { "1.000", "個 ", "T", "1.0" }, { "2.000", "M  ", "Z", "1.0" } } );
+  }
+
+  @Test
+  public void testFixedWidthCharacters() throws Exception {
+    meta.content.header = false;
+    meta.content.fileType = "Fixed";
+    meta.content.fileFormat = "DOS";
+    meta.content.encoding = "ISO-8859-1";
+    meta.content.length = "Characters";
+    initByFile( "test-fixed-length-characters.txt" );
+
+    setFields(
+        new BaseFileInputField( "f1", 0, 3 ),
+        new BaseFileInputField( "f2", 3, 2 ),
+        new BaseFileInputField( "f3", 5, 2 ),
+        new BaseFileInputField( "f4", 7, 4 ) );
+
+    process();
+    check( new Object[][] { { "ABC", "DE", "FG", "HIJK" }, { "LmN", "oP", "qR", "sTuV" } } );
   }
 
   @Test

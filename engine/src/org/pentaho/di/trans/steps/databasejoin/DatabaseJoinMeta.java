@@ -31,13 +31,14 @@ import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
+import org.pentaho.di.core.row.value.ValueMetaNone;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -528,7 +529,13 @@ public class DatabaseJoinMeta extends BaseStepMeta implements StepMetaInterface 
     //
     RowMetaInterface param = new RowMeta();
     for ( int i = 0; i < parameterField.length; i++ ) {
-      param.addValueMeta( new ValueMeta( parameterField[i], parameterType[i] ) );
+      ValueMetaInterface v;
+      try {
+        v = ValueMetaFactory.createValueMeta( parameterField[i], parameterType[i] );
+      } catch ( KettlePluginException e ) {
+        v = new ValueMetaNone( parameterField[i] );
+      }
+      param.addValueMeta( v );
     }
 
     RowMetaInterface fields = null;

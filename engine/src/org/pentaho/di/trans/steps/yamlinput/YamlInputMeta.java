@@ -33,11 +33,11 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.fileinput.FileInputList;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.row.value.ValueMetaInteger;
@@ -568,7 +568,13 @@ public class YamlInputMeta extends BaseStepMeta implements StepMetaInterface {
       if ( type == ValueMetaInterface.TYPE_NONE ) {
         type = ValueMetaInterface.TYPE_STRING;
       }
-      ValueMetaInterface v = new ValueMeta( space.environmentSubstitute( field.getName() ), type );
+      String valueName = space.environmentSubstitute( field.getName() );
+      ValueMetaInterface v;
+      try {
+        v = ValueMetaFactory.createValueMeta( valueName, type );
+      } catch ( KettlePluginException e ) {
+        v = new ValueMetaString( valueName );
+      }
       v.setLength( field.getLength() );
       v.setPrecision( field.getPrecision() );
       v.setOrigin( name );

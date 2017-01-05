@@ -29,6 +29,8 @@ import java.lang.management.RuntimeMXBean;
 import java.lang.management.ThreadMXBean;
 import java.net.URLEncoder;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -252,7 +254,25 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
           + BaseMessages.getString( PKG, "GetStatusServlet.LastLogDate" ) + "</th> <th>"
           + BaseMessages.getString( PKG, "GetStatusServlet.Remove" ) + "</th> </tr>" );
 
-        Collections.sort( transEntries );
+        Comparator<CarteObjectEntry> transComparator = new Comparator<CarteObjectEntry>() {
+          @Override
+          public int compare( CarteObjectEntry o1, CarteObjectEntry o2 ) {
+            Trans t1 = getTransformationMap().getTransformation( o1 ); 
+            Trans t2 = getTransformationMap().getTransformation( o2 ); 
+            Date d1 = t1.getLogDate();
+            Date d2 = t2.getLogDate();
+            // if both transformations have last log date, desc sort by log date
+            if (d1 != null && d2 != null) {
+              int logDateCompare = d2.compareTo( d1 );
+              if ( logDateCompare != 0 ) {
+                return logDateCompare;
+              }
+            }
+            return o1.compareTo( o2 );
+          }
+        };
+
+        Collections.sort( transEntries, transComparator );
 
         for ( CarteObjectEntry entry : transEntries ) {
           String name = entry.getName();
@@ -290,7 +310,25 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
           + BaseMessages.getString( PKG, "GetStatusServlet.LastLogDate" ) + "</th> <th>"
           + BaseMessages.getString( PKG, "GetStatusServlet.Remove" ) + "</th> </tr>" );
 
-        Collections.sort( jobEntries );
+        Comparator<CarteObjectEntry> jobComparator = new Comparator<CarteObjectEntry>() {
+          @Override
+          public int compare( CarteObjectEntry o1, CarteObjectEntry o2 ) {
+            Job t1 = getJobMap().getJob( o1 ); 
+            Job t2 = getJobMap().getJob( o2 ); 
+            Date d1 = t1.getLogDate();
+            Date d2 = t2.getLogDate();
+            // if both jobs have last log date, desc sort by log date
+            if (d1 != null && d2 != null) {
+              int logDateCompare = d2.compareTo( d1 );
+              if ( logDateCompare != 0 ) {
+                return logDateCompare;
+              }
+            }
+            return o1.compareTo( o2 );
+          }
+        };
+
+        Collections.sort( jobEntries, jobComparator );
 
         for ( CarteObjectEntry entry : jobEntries ) {
           String name = entry.getName();

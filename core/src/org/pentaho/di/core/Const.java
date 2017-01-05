@@ -485,6 +485,17 @@ public class Const {
     Const.INTERNAL_VARIABLE_JOB_NAME, Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY,
     Const.INTERNAL_VARIABLE_JOB_RUN_ID, Const.INTERNAL_VARIABLE_JOB_RUN_ATTEMPTNR, };
 
+  /*
+   * Deprecated variables array.
+   * Variables in this array will display with the prefix (deprecated) and will be moved
+   * at the bottom of the variables dropdown when pressing ctrl+space
+   * */
+  public static final String[] DEPRECATED_VARIABLES = new String[] {
+    Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY,
+    Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_NAME, Const.INTERNAL_VARIABLE_TRANSFORMATION_NAME,
+    Const.INTERNAL_VARIABLE_TRANSFORMATION_REPOSITORY_DIRECTORY
+  };
+
   /** The transformation filename directory */
   public static final String INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY = INTERNAL_VARIABLE_PREFIX
     + ".Transformation.Filename.Directory";
@@ -818,6 +829,16 @@ public class Const {
   public static final String KETTLE_MAX_LOGGING_REGISTRY_SIZE = "KETTLE_MAX_LOGGING_REGISTRY_SIZE";
 
   /**
+   * A variable to configure the kettle log tab refresh delay.
+   */
+  public static final String KETTLE_LOG_TAB_REFRESH_DELAY = "KETTLE_LOG_TAB_REFRESH_DELAY";
+
+  /**
+   * A variable to configure the kettle log tab refresh period.
+   */
+  public static final String KETTLE_LOG_TAB_REFRESH_PERIOD = "KETTLE_LOG_TAB_REFRESH_PERIOD";
+
+  /**
    * The name of the system wide variable that can contain the name of the SAP Connection factory for the test button in
    * the DB dialog. This defaults to
    */
@@ -1038,6 +1059,9 @@ public class Const {
   // see PDI-10270 for details.
   public static final String KETTLE_COMPATIBILITY_SET_ERROR_ON_SPECIFIC_JOB_ENTRIES =
     "KETTLE_COMPATIBILITY_SET_ERROR_ON_SPECIFIC_JOB_ENTRIES";
+
+  // See PDI-15781 for details
+  public static final String KETTLE_COMPATIBILITY_SEND_RESULT_XML_WITH_FULL_STATUS = "KETTLE_COMPATIBILITY_SEND_RESULT_XML_WITH_FULL_STATUS";
 
   /**
    * The XML file that contains the list of native import rules
@@ -3460,5 +3484,9 @@ public class Const {
       return false;
     }
     return clazz.equals( superClass ) || classIsOrExtends( clazz.getSuperclass(), superClass );
+  }
+
+  public static String getDeprecatedPrefix() {
+    return " " + BaseMessages.getString( PKG, "Const.Deprecated" );
   }
 }

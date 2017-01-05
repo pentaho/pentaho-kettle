@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -45,7 +45,7 @@ import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.ScrollBar;
-import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.trans.steps.fixedinput.FixedFileInputField;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.gui.GUIResource;
@@ -199,7 +199,8 @@ public class FixedTableDraw extends Canvas {
         FixedFileInputField field = getFieldOnPosition( posx );
         if ( field != null && !field.getName().equalsIgnoreCase( prevfieldname ) ) {
           setToolTipText( field.getName()
-            + " is a " + ValueMeta.getTypeDesc( field.getType() ) + ".  The width is " + field.getWidth() );
+            + " is a " + ValueMetaFactory.getValueMetaName( field.getType() )
+            + ".  The width is " + field.getWidth() );
           prevfieldname = field.getName();
         }
       }

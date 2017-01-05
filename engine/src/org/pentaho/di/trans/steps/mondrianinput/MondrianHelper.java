@@ -47,9 +47,13 @@ import org.pentaho.di.core.database.util.DatabaseUtil;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaBigNumber;
+import org.pentaho.di.core.row.value.ValueMetaBoolean;
+import org.pentaho.di.core.row.value.ValueMetaDate;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
+import org.pentaho.di.core.row.value.ValueMetaNumber;
 import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.variables.VariableSpace;
@@ -242,38 +246,38 @@ public class MondrianHelper {
             continue; // skip this row and look for the metadata in a new one
           }
 
-          int valueType;
+          String valueName = headings.get( c );
+          ValueMetaInterface valueMeta;
 
           if ( valueData instanceof String ) {
-            valueType = ValueMetaInterface.TYPE_STRING;
+            valueMeta = new ValueMetaString( valueName );
           } else if ( valueData instanceof Date ) {
-            valueType = ValueMetaInterface.TYPE_DATE;
+            valueMeta = new ValueMetaDate( valueName );
           } else if ( valueData instanceof Boolean ) {
-            valueType = ValueMetaInterface.TYPE_BOOLEAN;
+            valueMeta = new ValueMetaBoolean( valueName );
           } else if ( valueData instanceof Integer ) {
-            valueType = ValueMetaInterface.TYPE_INTEGER;
+            valueMeta = new ValueMetaInteger( valueName );
             valueData = Long.valueOf( ( (Integer) valueData ).longValue() );
           } else if ( valueData instanceof Short ) {
-            valueType = ValueMetaInterface.TYPE_INTEGER;
+            valueMeta = new ValueMetaInteger( valueName );
             valueData = Long.valueOf( ( (Short) valueData ).longValue() );
           } else if ( valueData instanceof Byte ) {
-            valueType = ValueMetaInterface.TYPE_INTEGER;
+            valueMeta = new ValueMetaInteger( valueName );
             valueData = Long.valueOf( ( (Byte) valueData ).longValue() );
           } else if ( valueData instanceof Long ) {
-            valueType = ValueMetaInterface.TYPE_INTEGER;
+            valueMeta = new ValueMetaInteger( valueName );
           } else if ( valueData instanceof Double ) {
-            valueType = ValueMetaInterface.TYPE_NUMBER;
+            valueMeta = new ValueMetaNumber( valueName );
           } else if ( valueData instanceof Float ) {
-            valueType = ValueMetaInterface.TYPE_NUMBER;
+            valueMeta = new ValueMetaNumber( valueName );
             valueData = Double.valueOf( ( (Float) valueData ).doubleValue() );
           } else if ( valueData instanceof BigDecimal ) {
-            valueType = ValueMetaInterface.TYPE_BIGNUMBER;
+            valueMeta = new ValueMetaBigNumber( valueName );
           } else {
             throw new KettleDatabaseException( "Unhandled data type found '"
               + valueData.getClass().toString() + "'" );
           }
 
-          ValueMetaInterface valueMeta = new ValueMeta( headings.get( c ), valueType );
           valueMetaHash.put( c, valueMeta );
         }
 

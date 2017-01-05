@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -299,7 +299,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 
   private TransDebugMeta lastTransDebugMeta;
 
-  private Map<String, XulMenupopup> menuMap = new HashMap<String, XulMenupopup>();
+  private Map<String, XulMenupopup> menuMap = new HashMap<>();
 
   protected int currentMouseX = 0;
 
@@ -406,12 +406,12 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     this.shell = parent.getShell();
     this.spoon = spoon;
     this.transMeta = transMeta;
-    this.areaOwners = new ArrayList<AreaOwner>();
+    this.areaOwners = new ArrayList<>();
     this.log = spoon.getLog();
     spoon.selectionFilter.setText( "" );
 
-    this.mouseOverSteps = new ArrayList<StepMeta>();
-    this.delayTimers = new HashMap<StepMeta, DelayTimer>();
+    this.mouseOverSteps = new ArrayList<>();
+    this.delayTimers = new HashMap<>();
 
     transLogDelegate = new TransLogDelegate( spoon, this );
     transGridDelegate = new TransGridDelegate( spoon, this );
@@ -420,7 +420,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     transMetricsDelegate = new TransMetricsDelegate( spoon, this );
     transPreviewDelegate = new TransPreviewDelegate( spoon, this );
 
-    stepListeners = new ArrayList<SelectedStepListener>();
+    stepListeners = new ArrayList<>();
 
     try {
       KettleXulLoader loader = new KettleXulLoader();
@@ -515,8 +515,8 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 
     clearSettings();
 
-    remarks = new ArrayList<CheckResultInterface>();
-    impact = new ArrayList<DatabaseImpact>();
+    remarks = new ArrayList<>();
+    impact = new ArrayList<>();
     impactFinished = false;
 
     hori = canvas.getHorizontalBar();
@@ -1009,6 +1009,8 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     }
 
     boolean control = ( e.stateMask & SWT.MOD1 ) != 0;
+    TransHopMeta selectedHop = findHop( e.x, e.y );
+    updateErrorMetaForHop( selectedHop );
 
     if ( iconoffset == null ) {
       iconoffset = new Point( 0, 0 );
@@ -1305,14 +1307,14 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     if ( selectedStep != null && !selectedStep.isSelected() ) {
       transMeta.unselectAll();
       selectedStep.setSelected( true );
-      selectedSteps = new ArrayList<StepMeta>();
+      selectedSteps = new ArrayList<>();
       selectedSteps.add( selectedStep );
       previous_step_locations = new Point[]{ selectedStep.getLocation() };
       redraw();
     } else if ( selectedNote != null && !selectedNote.isSelected() ) {
       transMeta.unselectAll();
       selectedNote.setSelected( true );
-      selectedNotes = new ArrayList<NotePadMeta>();
+      selectedNotes = new ArrayList<>();
       selectedNotes.add( selectedNote );
       previous_note_locations = new Point[]{ selectedNote.getLocation() };
       redraw();
@@ -1503,7 +1505,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     // - Does the source step has multiple stream options?
     // - Does the target step have multiple input stream options?
     //
-    List<StreamInterface> streams = new ArrayList<StreamInterface>();
+    List<StreamInterface> streams = new ArrayList<>();
 
     StepIOMetaInterface fromIoMeta = fromStep.getStepMetaInterface().getStepIOMeta();
     List<StreamInterface> targetStreams = fromIoMeta.getTargetStreams();
@@ -1601,6 +1603,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     switch ( stream.getStreamType() ) {
       case ERROR:
         addErrorHop();
+        candidate.setErrorHop( true );
         spoon.newHop( transMeta, candidate );
         break;
       case INPUT:
@@ -2096,7 +2099,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
    * @param y
    * @return the transformation hop on the specified location, otherwise: null
    */
-  private TransHopMeta findHop( int x, int y ) {
+  protected TransHopMeta findHop( int x, int y ) {
     return findHop( x, y, null );
   }
 
@@ -2228,7 +2231,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     if ( Utils.isEmpty( plugins ) ) {
       return null;
     }
-    List<String> choices = new ArrayList<String>();
+    List<String> choices = new ArrayList<>();
     for ( PluginInterface plugin : plugins ) {
       choices.add( plugin.getName() + " : " + plugin.getDescription() );
     }
@@ -2374,12 +2377,22 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
       spoon.refreshGraph();
       spoon.refreshTree();
     }
+    updateErrorMetaForHop( hi );
   }
 
   public void deleteHop() {
     selectionRegion = null;
     TransHopMeta hi = getCurrentHop();
     spoon.delHop( transMeta, hi );
+  }
+
+  private void updateErrorMetaForHop( TransHopMeta hop ) {
+    if ( hop != null && hop.isErrorHop() ) {
+      StepErrorMeta errorMeta = hop.getFromStep().getStepErrorMeta();
+      if ( errorMeta != null ) {
+        errorMeta.setEnabled( hop.isEnabled() );
+      }
+    }
   }
 
   public void enableHopsBetweenSelectedSteps() {
@@ -4301,7 +4314,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     if ( trans.getErrors() > 0 ) {
       // Get the logging text and filter it out. Store it in the stepLogMap...
       //
-      stepLogMap = new HashMap<StepMeta, String>();
+      stepLogMap = new HashMap<>();
       shell.getDisplay().syncExec( new Runnable() {
 
         @Override
@@ -4346,9 +4359,9 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
       return;
     }
 
-    final List<String> stepnames = new ArrayList<String>();
-    final List<RowMetaInterface> rowMetas = new ArrayList<RowMetaInterface>();
-    final List<List<Object[]>> rowBuffers = new ArrayList<List<Object[]>>();
+    final List<String> stepnames = new ArrayList<>();
+    final List<RowMetaInterface> rowMetas = new ArrayList<>();
+    final List<List<Object[]>> rowBuffers = new ArrayList<>();
 
     // Assemble the buffers etc in the old style...
     //
@@ -4575,7 +4588,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     final StepInterface runThread = trans.findRunThread( stepMeta.getName() );
     if ( runThread != null ) {
 
-      List<Object[]> rows = new ArrayList<Object[]>();
+      List<Object[]> rows = new ArrayList<>();
 
       final PreviewRowsDialog dialog = new PreviewRowsDialog( shell, trans, SWT.NONE, stepMeta.getName(), null, rows );
       dialog.setDynamic( true );
@@ -4743,8 +4756,8 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
   public void autoLayout() {
     // Initialize...
     //
-    Map<StepMeta, StepVelocity> speeds = new HashMap<StepMeta, StepVelocity>();
-    Map<StepMeta, StepLocation> locations = new HashMap<StepMeta, StepLocation>();
+    Map<StepMeta, StepVelocity> speeds = new HashMap<>();
+    Map<StepMeta, StepLocation> locations = new HashMap<>();
     for ( StepMeta stepMeta : transMeta.getSteps() ) {
       speeds.put( stepMeta, new StepVelocity( 0, 0 ) );
       StepLocation location = new StepLocation( stepMeta.getLocation().x, stepMeta.getLocation().y );

@@ -59,7 +59,7 @@ import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
@@ -331,7 +331,7 @@ public class DatabaseJoinDialog extends BaseStepDialog implements StepDialogInte
     ciKey[1] =
       new ColumnInfo(
         BaseMessages.getString( PKG, "DatabaseJoinDialog.ColumnInfo.ParameterType" ),
-        ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes() );
+        ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMetaFactory.getValueMetaNames() );
 
     wParam =
       new TableView(
@@ -472,7 +472,7 @@ public class DatabaseJoinDialog extends BaseStepDialog implements StepDialogInte
           item.setText( 1, input.getParameterField()[i] );
         }
         if ( input.getParameterType()[i] != 0 ) {
-          item.setText( 2, ValueMeta.getTypeDesc( input.getParameterType()[i] ) );
+          item.setText( 2, ValueMetaFactory.getValueMetaName( input.getParameterType()[i] ) );
         }
       }
     }
@@ -515,7 +515,7 @@ public class DatabaseJoinDialog extends BaseStepDialog implements StepDialogInte
     for ( int i = 0; i < nrparam; i++ ) {
       TableItem item = wParam.getNonEmpty( i );
       input.getParameterField()[i] = item.getText( 1 );
-      input.getParameterType()[i] = ValueMeta.getType( item.getText( 2 ) );
+      input.getParameterType()[i] = ValueMetaFactory.getIdForValueMeta( item.getText( 2 ) );
     }
 
     input.setDatabaseMeta( transMeta.findDatabase( wConnection.getText() ) );

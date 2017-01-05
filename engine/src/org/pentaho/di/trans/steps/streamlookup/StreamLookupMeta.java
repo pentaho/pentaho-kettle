@@ -34,7 +34,6 @@ import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.injection.Injection;
 import org.pentaho.di.core.injection.InjectionSupported;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.variables.VariableSpace;
@@ -191,7 +190,7 @@ public class StreamLookupMeta extends BaseStepMeta implements StepMetaInterface 
 
         getValueDefault()[i] = XMLHandler.getTagValue( vnode, "default" );
         dtype = XMLHandler.getTagValue( vnode, "type" );
-        getValueDefaultType()[i] = ValueMeta.getType( dtype );
+        getValueDefaultType()[i] = ValueMetaFactory.getIdForValueMeta( dtype );
         // CHECKSTYLE:Indentation:ON
       }
     } catch ( Exception e ) {
@@ -270,7 +269,7 @@ public class StreamLookupMeta extends BaseStepMeta implements StepMetaInterface 
       retval.append( "        " ).append( XMLHandler.addTagValue( "rename", getValueName()[i] ) );
       retval.append( "        " ).append( XMLHandler.addTagValue( "default", getValueDefault()[i] ) );
       retval.append( "        " ).append(
-          XMLHandler.addTagValue( "type", ValueMeta.getTypeDesc( getValueDefaultType()[i] ) ) );
+          XMLHandler.addTagValue( "type", ValueMetaFactory.getValueMetaName( getValueDefaultType()[i] ) ) );
       retval.append( "      </value>" ).append( Const.CR );
     }
     retval.append( "    </lookup>" ).append( Const.CR );
@@ -307,7 +306,8 @@ public class StreamLookupMeta extends BaseStepMeta implements StepMetaInterface 
         getValue()[i] = rep.getStepAttributeString( id_step, i, "return_value_name" );
         getValueName()[i] = rep.getStepAttributeString( id_step, i, "return_value_rename" );
         getValueDefault()[i] = rep.getStepAttributeString( id_step, i, "return_value_default" );
-        getValueDefaultType()[i] = ValueMeta.getType( rep.getStepAttributeString( id_step, i, "return_value_type" ) );
+        getValueDefaultType()[i] =
+          ValueMetaFactory.getIdForValueMeta( rep.getStepAttributeString( id_step, i, "return_value_type" ) );
         // CHECKSTYLE:Indentation:ON
       }
     } catch ( Exception e ) {
@@ -335,8 +335,8 @@ public class StreamLookupMeta extends BaseStepMeta implements StepMetaInterface 
         rep.saveStepAttribute( id_transformation, id_step, i, "return_value_name", getValue()[i] );
         rep.saveStepAttribute( id_transformation, id_step, i, "return_value_rename", getValueName()[i] );
         rep.saveStepAttribute( id_transformation, id_step, i, "return_value_default", getValueDefault()[i] );
-        rep.saveStepAttribute( id_transformation, id_step, i, "return_value_type", ValueMeta
-            .getTypeDesc( getValueDefaultType()[i] ) );
+        rep.saveStepAttribute( id_transformation, id_step, i, "return_value_type",
+          ValueMetaFactory.getValueMetaName( getValueDefaultType()[i] ) );
       }
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString(

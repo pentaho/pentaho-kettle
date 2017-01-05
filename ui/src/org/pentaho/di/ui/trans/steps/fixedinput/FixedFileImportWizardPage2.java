@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -41,7 +41,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
-import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.steps.fixedinput.FixedFileInputField;
 import org.pentaho.di.trans.steps.fixedinput.FixedInputMeta;
@@ -217,8 +217,8 @@ public class FixedFileImportWizardPage2 extends WizardPage {
     wlFieldtype.setLayoutData( fdlFieldtype );
     wFieldtype = new CCombo( composite, SWT.BORDER | SWT.READ_ONLY );
     props.setLook( wFieldtype );
-    for ( int i = 0; i < ValueMeta.getTypes().length; i++ ) {
-      wFieldtype.add( ValueMeta.getTypes()[i] );
+    for ( int i = 0; i < ValueMetaFactory.getValueMetaNames().length; i++ ) {
+      wFieldtype.add( ValueMetaFactory.getValueMetaNames()[i] );
     }
     fdFieldtype = new FormData();
     fdFieldtype.left = new FormAttachment( middle, margin );
@@ -404,7 +404,7 @@ public class FixedFileImportWizardPage2 extends WizardPage {
       public void widgetSelected( SelectionEvent e ) {
         int idx = wFields.getSelectionIndex();
         if ( idx >= 0 ) {
-          int valtype = ValueMeta.getType( wFieldtype.getText() );
+          int valtype = ValueMetaFactory.getIdForValueMeta( wFieldtype.getText() );
           FixedFileInputField field = fields.get( idx );
           field.setType( valtype );
         }
@@ -609,7 +609,7 @@ public class FixedFileImportWizardPage2 extends WizardPage {
       String name = field.getName();
       int width = field.getWidth();
       int length = field.getLength();
-      String type = ValueMeta.getTypeDesc( field.getType() );
+      String type = ValueMetaFactory.getValueMetaName( field.getType() );
       String format = field.getFormat();
       int precision = field.getPrecision();
       String currency = field.getCurrency();

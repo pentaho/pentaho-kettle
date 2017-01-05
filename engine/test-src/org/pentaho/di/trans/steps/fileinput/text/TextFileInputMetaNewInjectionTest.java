@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -173,6 +173,12 @@ public class TextFileInputMetaNewInjectionTest extends BaseMetadataInjectionTest
     check( "ENCODING", new StringGetter() {
       public String get() {
         return meta.content.encoding;
+      }
+    } );
+
+    check( "LENGTH", new StringGetter() {
+      public String get() {
+        return meta.content.length;
       }
     } );
 

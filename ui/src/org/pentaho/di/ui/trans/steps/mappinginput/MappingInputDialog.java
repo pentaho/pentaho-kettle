@@ -42,7 +42,7 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
-import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
@@ -156,7 +156,7 @@ public class MappingInputDialog extends BaseStepDialog implements StepDialogInte
           false ),
         new ColumnInfo(
           BaseMessages.getString( PKG, "MappingInputDialog.ColumnInfo.Type" ),
-          ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes() ),
+          ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMetaFactory.getValueMetaNames() ),
         new ColumnInfo(
           BaseMessages.getString( PKG, "MappingInputDialog.ColumnInfo.Length" ),
           ColumnInfo.COLUMN_TYPE_TEXT, false ),
@@ -228,7 +228,7 @@ public class MappingInputDialog extends BaseStepDialog implements StepDialogInte
       if ( input.getFieldName()[i] != null ) {
         TableItem item = wFields.table.getItem( i );
         item.setText( 1, input.getFieldName()[i] );
-        String type = ValueMeta.getTypeDesc( input.getFieldType()[i] );
+        String type = ValueMetaFactory.getValueMetaName( input.getFieldType()[i] );
         int length = input.getFieldLength()[i];
         int prec = input.getFieldPrecision()[i];
         if ( type != null ) {
@@ -272,7 +272,7 @@ public class MappingInputDialog extends BaseStepDialog implements StepDialogInte
     for ( int i = 0; i < nrfields; i++ ) {
       TableItem item = wFields.getNonEmpty( i );
       input.getFieldName()[i] = item.getText( 1 );
-      input.getFieldType()[i] = ValueMeta.getType( item.getText( 2 ) );
+      input.getFieldType()[i] = ValueMetaFactory.getIdForValueMeta( item.getText( 2 ) );
       String slength = item.getText( 3 );
       String sprec = item.getText( 4 );
 

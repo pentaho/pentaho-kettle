@@ -34,10 +34,10 @@ import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaBoolean;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -378,7 +378,7 @@ public class RegexEvalMeta extends BaseStepMeta implements StepMetaInterface {
         fieldType[i] = ValueMetaFactory.getIdForValueMeta( stype );
         fieldLength[i] = Const.toInt( slen, -1 );
         fieldPrecision[i] = Const.toInt( sprc, -1 );
-        fieldTrimType[i] = ValueMeta.getTrimTypeByCode( trim );
+        fieldTrimType[i] = ValueMetaString.getTrimTypeByCode( trim );
       }
     } catch ( Exception e ) {
       throw new KettleXMLException( BaseMessages.getString(
@@ -517,7 +517,7 @@ public class RegexEvalMeta extends BaseStepMeta implements StepMetaInterface {
         retval.append( "        " ).append( XMLHandler.addTagValue( "nullif", fieldNullIf[i] ) );
         retval.append( "        " ).append( XMLHandler.addTagValue( "ifnull", fieldIfNull[i] ) );
         retval.append( "        " ).append(
-          XMLHandler.addTagValue( "trimtype", ValueMeta.getTrimTypeCode( fieldTrimType[i] ) ) );
+          XMLHandler.addTagValue( "trimtype", ValueMetaString.getTrimTypeCode( fieldTrimType[i] ) ) );
         retval.append( "        " ).append( XMLHandler.addTagValue( "currency", fieldCurrency[i] ) );
         retval.append( "      </field>" ).append( Const.CR );
       }
@@ -560,7 +560,7 @@ public class RegexEvalMeta extends BaseStepMeta implements StepMetaInterface {
         fieldIfNull[i] = rep.getStepAttributeString( id_step, i, "field_ifnull" );
         fieldCurrency[i] = rep.getStepAttributeString( id_step, i, "field_currency" );
         fieldTrimType[i] =
-          ValueMeta.getTrimTypeByCode( rep.getStepAttributeString( id_step, i, "field_trimtype" ) );
+          ValueMetaString.getTrimTypeByCode( rep.getStepAttributeString( id_step, i, "field_trimtype" ) );
       }
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString(
@@ -585,7 +585,7 @@ public class RegexEvalMeta extends BaseStepMeta implements StepMetaInterface {
           rep.saveStepAttribute( id_transformation, id_step, i, "field_nullif", fieldNullIf[i] );
           rep.saveStepAttribute( id_transformation, id_step, i, "field_ifnull", fieldIfNull[i] );
           rep.saveStepAttribute( id_transformation, id_step, i, "field_currency", fieldCurrency[i] );
-          rep.saveStepAttribute( id_transformation, id_step, i, "field_trimtype", ValueMeta
+          rep.saveStepAttribute( id_transformation, id_step, i, "field_trimtype", ValueMetaString
             .getTrimTypeCode( fieldTrimType[i] ) );
         }
       }

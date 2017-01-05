@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,7 +27,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaPluginType;
 import org.pentaho.di.trans.step.StepMeta;
 
@@ -80,19 +80,19 @@ public class TransExecutorMeta_GetFields_Test {
   @Test
   public void getFieldsForExecutionResults() throws Exception {
     RowMetaInterface mock = invokeGetFieldsWith( executionResult );
-    verify( mock, times( 3 ) ).addValueMeta( any( ValueMeta.class ) );
+    verify( mock, times( 3 ) ).addValueMeta( any( ValueMetaInterface.class ) );
   }
 
   @Test
   public void getFieldsForResultFiles() throws Exception {
     RowMetaInterface mock = invokeGetFieldsWith( resultFiles );
-    verify( mock ).addValueMeta( any( ValueMeta.class ) );
+    verify( mock ).addValueMeta( any( ValueMetaInterface.class ) );
   }
 
   @Test
   public void getFieldsForInternalTransformationOutputRows() throws Exception {
     RowMetaInterface mock = invokeGetFieldsWith( outputRows );
-    verify( mock ).addValueMeta( any( ValueMeta.class ) );
+    verify( mock ).addValueMeta( any( ValueMetaInterface.class ) );
   }
 
   private RowMetaInterface invokeGetFieldsWith( StepMeta stepMeta ) throws Exception {

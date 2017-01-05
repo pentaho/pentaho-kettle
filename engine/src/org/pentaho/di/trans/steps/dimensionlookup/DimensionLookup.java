@@ -1699,6 +1699,7 @@ public class DimensionLookup extends BaseStep implements StepInterface {
     data = (DimensionLookupData) sdi;
 
     if ( super.init( smi, sdi ) ) {
+      meta.normalizeAllocationFields();
       data.min_date = meta.getMinDate();
       data.max_date = meta.getMaxDate();
 

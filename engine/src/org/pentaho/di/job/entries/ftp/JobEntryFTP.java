@@ -980,7 +980,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
         // then if we have authentication information
         if ( !Utils.isEmpty( socksProxyUsername ) && !Utils.isEmpty( socksProxyPassword ) ) {
           FTPClient.initSOCKSAuthentication(
-            environmentSubstitute( socksProxyUsername ), environmentSubstitute( socksProxyPassword ) );
+            environmentSubstitute( socksProxyUsername ), Utils.resolvePassword( this, socksProxyPassword ) );
         } else if ( !Utils.isEmpty( socksProxyUsername )
           && Utils.isEmpty( socksProxyPassword ) || Utils.isEmpty( socksProxyUsername )
           && !Utils.isEmpty( socksProxyPassword ) ) {
@@ -1000,9 +1000,9 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
           + ( !Utils.isEmpty( proxyUsername ) ? " " + environmentSubstitute( proxyUsername ) : "" );
 
       String realPassword =
-        Encr.decryptPasswordOptionallyEncrypted( environmentSubstitute( password ) )
+              Utils.resolvePassword( this, password )
           + ( !Utils.isEmpty( proxyPassword ) ? " "
-            + Encr.decryptPasswordOptionallyEncrypted( environmentSubstitute( proxyPassword ) ) : "" );
+            + Utils.resolvePassword( this, proxyPassword ) : "" );
 
       ftpclient.login( realUsername, realPassword );
       // Remove password from logging, you don't know where it ends up.

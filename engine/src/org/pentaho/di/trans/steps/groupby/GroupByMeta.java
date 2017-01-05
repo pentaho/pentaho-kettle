@@ -30,12 +30,14 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.row.value.ValueMetaInteger;
+import org.pentaho.di.core.row.value.ValueMetaNone;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -520,7 +522,12 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface {
         }
 
         if ( valueType != ValueMetaInterface.TYPE_NONE ) {
-          ValueMetaInterface v = new ValueMeta( valueName, valueType );
+          ValueMetaInterface v;
+          try {
+            v = ValueMetaFactory.createValueMeta( valueName, valueType );
+          } catch ( KettlePluginException e ) {
+            v = new ValueMetaNone( valueName );
+          }
           v.setOrigin( origin );
           v.setLength( length, precision );
           fields.addValueMeta( v );

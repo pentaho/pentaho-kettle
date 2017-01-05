@@ -109,7 +109,11 @@ public class JoinRows extends BaseStep implements StepInterface {
 
       for ( int i = 1; i < getInputRowSets().size(); i++ ) {
         String directoryName = environmentSubstitute( meta.getDirectory() );
-        data.file[i] = File.createTempFile( meta.getPrefix(), ".tmp", new File( directoryName ) );
+        File file = null;
+        if ( directoryName != null ) {
+          file = new File( directoryName );
+        }
+        data.file[i] = File.createTempFile( meta.getPrefix(), ".tmp", file );
 
         data.size[i] = 0;
         data.rs[i] = getInputRowSets().get( i );
@@ -198,7 +202,7 @@ public class JoinRows extends BaseStep implements StepInterface {
         }
         if ( log.isRowLevel() ) {
           logRowlevel( BaseMessages.getString( PKG, "JoinRows.Log.ReadRowFromFile" )
-            + filenr + " : " + getInputRowMeta().getString( rowData ) );
+            + filenr + " : " + data.fileRowMeta[filenr].getString( rowData ) );
         }
 
         data.position[filenr]++;
@@ -446,7 +450,9 @@ public class JoinRows extends BaseStep implements StepInterface {
     // Remove the temporary files...
     if ( data.file != null ) {
       for ( int i = 1; i < data.file.length; i++ ) {
-        data.file[i].delete();
+        if ( data.file[i] != null ) {
+          data.file[i].delete();
+        }
       }
     }
 

@@ -951,6 +951,9 @@ public class KettleFileRepository extends AbstractRepository {
     jobMeta.setName( jobname );
     jobMeta.setObjectId( new StringObjectId( calcObjectId( repdir, jobname, EXT_JOB ) ) );
 
+    jobMeta.setRepository( this );
+    jobMeta.setMetaStore( getMetaStore() );
+
     readDatabases( jobMeta, true );
     jobMeta.clearChanged();
 

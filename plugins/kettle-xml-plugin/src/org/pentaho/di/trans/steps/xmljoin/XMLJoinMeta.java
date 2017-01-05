@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,6 +22,7 @@
 
 package org.pentaho.di.trans.steps.xmljoin;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.pentaho.di.core.annotations.Step;
@@ -153,7 +154,14 @@ public class XMLJoinMeta extends BaseStepMeta implements StepMetaInterface {
 
     ValueMetaInterface v = new ValueMeta( this.getValueXMLfield(), ValueMetaInterface.TYPE_STRING );
     v.setOrigin( name );
-    row.addValueMeta( v );
+
+    RowMetaInterface rowMeta = ( (TransMeta) space ) .getStepFields( getTargetXMLstep() ).clone();
+    if ( rowMeta != null ) {
+      rowMeta.addValueMeta( v );
+      row.setValueMetaList( rowMeta.getValueMetaList() );
+    } else {
+      row.setValueMetaList( Arrays.asList( v ) );
+    }
   }
 
   public String getXML() {

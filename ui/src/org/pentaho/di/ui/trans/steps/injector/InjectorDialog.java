@@ -42,7 +42,7 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
-import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
@@ -127,7 +127,7 @@ public class InjectorDialog extends BaseStepDialog implements StepDialogInterfac
           false ),
         new ColumnInfo(
           BaseMessages.getString( PKG, "InjectorDialog.ColumnInfo.Type" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
-          ValueMeta.getAllTypes() ),
+          ValueMetaFactory.getAllValueMetaNames() ),
         new ColumnInfo(
           BaseMessages.getString( PKG, "InjectorDialog.ColumnInfo.Length" ), ColumnInfo.COLUMN_TYPE_TEXT,
           false ),
@@ -206,7 +206,7 @@ public class InjectorDialog extends BaseStepDialog implements StepDialogInterfac
     for ( int i = 0; i < input.getFieldname().length; i++ ) {
       TableItem item = wFields.table.getItem( i );
       item.setText( 1, input.getFieldname()[i] );
-      item.setText( 2, ValueMeta.getTypeDesc( input.getType()[i] ) );
+      item.setText( 2, ValueMetaFactory.getValueMetaName( input.getType()[i] ) );
       int len = input.getLength()[i];
       int prc = input.getPrecision()[i];
       item.setText( 3, len >= 0 ? "" + len : "" );
@@ -235,7 +235,7 @@ public class InjectorDialog extends BaseStepDialog implements StepDialogInterfac
     for ( int i = 0; i < nrfields; i++ ) {
       TableItem item = wFields.getNonEmpty( i );
       input.getFieldname()[i] = item.getText( 1 );
-      input.getType()[i] = ValueMeta.getType( item.getText( 2 ) );
+      input.getType()[i] = ValueMetaFactory.getIdForValueMeta( item.getText( 2 ) );
       input.getLength()[i] = Const.toInt( item.getText( 3 ), -1 );
       input.getPrecision()[i] = Const.toInt( item.getText( 4 ), -1 );
     }
