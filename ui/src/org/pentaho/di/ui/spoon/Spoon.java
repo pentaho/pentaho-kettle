@@ -525,9 +525,9 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
   private int coreObjectsState = STATE_CORE_OBJECTS_NONE;
 
-  protected Map<String, FileListener> fileExtensionMap = new HashMap<String, FileListener>();
+  protected Map<String, FileListener> fileExtensionMap = new HashMap<>();
 
-  private List<Object[]> menuListeners = new ArrayList<Object[]>();
+  private List<Object[]> menuListeners = new ArrayList<>();
 
   // loads the lifecycle listeners
   private LifecycleSupport lifecycleSupport = new LifecycleSupport();
@@ -553,12 +553,12 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
    */
   public String lastDirOpened;
 
-  private List<FileListener> fileListeners = new ArrayList<FileListener>();
+  private List<FileListener> fileListeners = new ArrayList<>();
 
   private XulDomContainer mainSpoonContainer;
 
   // Menu controllers to modify the main spoon menu
-  private List<ISpoonMenuController> menuControllers = new ArrayList<ISpoonMenuController>();
+  private List<ISpoonMenuController> menuControllers = new ArrayList<>();
 
   private XulToolbar mainToolbar;
 
@@ -566,7 +566,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
   public static final String XUL_FILE_MAIN = "ui/spoon.xul";
 
-  private Map<String, XulComponent> menuMap = new HashMap<String, XulComponent>();
+  private Map<String, XulComponent> menuMap = new HashMap<>();
 
   private RepositoriesDialog loginDialog;
 
@@ -652,7 +652,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       // before the PluginRegistry is inited.
       splash = new Splash( display );
 
-      List<String> args = new ArrayList<String>( Arrays.asList( a ) );
+      List<String> args = new ArrayList<>( Arrays.asList( a ) );
 
       CommandLineOption[] commandLineOptions = getCommandLineArgs( args );
 
@@ -755,7 +755,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     setRepository( rep );
 
     props = PropsUI.getInstance();
-    sharedObjectsFileMap = new Hashtable<String, SharedObjects>();
+    sharedObjectsFileMap = new Hashtable<>();
     Thread uiThread = Thread.currentThread();
 
     display = Display.findDisplay( uiThread );
@@ -1151,7 +1151,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       return;
     }
 
-    List<Object[]> rows = new ArrayList<Object[]>();
+    List<Object[]> rows = new ArrayList<>();
 
     for ( TransMeta transMeta : transMetas ) {
       String filter = esd.getFilterString();
@@ -2026,8 +2026,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
     disposeVariableComposite( true, false, false, false );
 
-    coreStepToolTipMap = new Hashtable<String, String>();
-    coreJobToolTipMap = new Hashtable<String, String>();
+    coreStepToolTipMap = new Hashtable<>();
+    coreJobToolTipMap = new Hashtable<>();
 
     addDefaultKeyListeners( tabFolder );
     addDefaultKeyListeners( mainComposite );
@@ -2300,7 +2300,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         item.setText( baseCategory );
         item.setImage( GUIResource.getInstance().getImageFolder() );
 
-        List<PluginInterface> sortedCat = new ArrayList<PluginInterface>();
+        List<PluginInterface> sortedCat = new ArrayList<>();
         for ( PluginInterface baseStep : baseSteps ) {
           if ( baseStep.getCategory().equalsIgnoreCase( baseCategory ) ) {
             sortedCat.add( baseStep );
@@ -2743,7 +2743,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     // Show a minimal window to allow you to quickly select the database
     // connection to explore
     //
-    List<DatabaseMeta> databases = new ArrayList<DatabaseMeta>();
+    List<DatabaseMeta> databases = new ArrayList<>();
 
     // First load the connections from the loaded file
     //
@@ -3355,7 +3355,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         getLog().logDebug( BaseMessages.getString( PKG, "Spoon.Log.FoundSteps", "" + nr ) + loc );
       }
       StepMeta[] steps = new StepMeta[nr];
-      ArrayList<String> stepOldNames = new ArrayList<String>( nr );
+      ArrayList<String> stepOldNames = new ArrayList<>( nr );
 
       // Point min = new Point(loc.x, loc.y);
       Point min = new Point( 99999999, 99999999 );
@@ -3443,9 +3443,9 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
       // Set the error handling hops
       Node errorHandlingNode = XMLHandler.getSubNode( transNode, TransMeta.XML_TAG_STEP_ERROR_HANDLING );
-      int nrErrorHandlers = XMLHandler.countNodes( errorHandlingNode, StepErrorMeta.XML_TAG );
+      int nrErrorHandlers = XMLHandler.countNodes( errorHandlingNode, StepErrorMeta.XML_ERROR_TAG );
       for ( int i = 0; i < nrErrorHandlers; i++ ) {
-        Node stepErrorMetaNode = XMLHandler.getSubNodeByNr( errorHandlingNode, StepErrorMeta.XML_TAG, i );
+        Node stepErrorMetaNode = XMLHandler.getSubNodeByNr( errorHandlingNode, StepErrorMeta.XML_ERROR_TAG, i );
         StepErrorMeta stepErrorMeta =
           new StepErrorMeta( transMeta.getParentVariableSpace(), stepErrorMetaNode, transMeta.getSteps() );
 
@@ -3740,7 +3740,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   }
 
   private String[] getRowDistributionLabels() {
-    ArrayList<String> labels = new ArrayList<String>();
+    ArrayList<String> labels = new ArrayList<>();
     labels.add( BaseMessages.getString( PKG, "Spoon.Dialog.CopyOrDistribute.Distribute" ) );
     labels.add( BaseMessages.getString( PKG, "Spoon.Dialog.CopyOrDistribute.Copy" ) );
     if ( PluginRegistry.getInstance().getPlugins( RowDistributionPluginType.class ).size() > 0 ) {
@@ -4249,8 +4249,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
         FileDialog dialog = new FileDialog( shell, SWT.OPEN );
 
-        LinkedHashSet<String> extensions = new LinkedHashSet<String>();
-        LinkedHashSet<String> extensionNames = new LinkedHashSet<String>();
+        LinkedHashSet<String> extensions = new LinkedHashSet<>();
+        LinkedHashSet<String> extensionNames = new LinkedHashSet<>();
         StringBuilder allExtensions = new StringBuilder();
         for ( FileListener l : fileListeners ) {
           for ( String ext : l.getSupportedExtensions() ) {
@@ -6022,8 +6022,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     try {
       // First we collect information concerning all the plugin types...
       //
-      Map<String, RowMetaInterface> metaMap = new HashMap<String, RowMetaInterface>();
-      Map<String, List<Object[]>> dataMap = new HashMap<String, List<Object[]>>();
+      Map<String, RowMetaInterface> metaMap = new HashMap<>();
+      Map<String, List<Object[]>> dataMap = new HashMap<>();
 
       PluginRegistry registry = PluginRegistry.getInstance();
       List<Class<? extends PluginTypeInterface>> pluginTypeClasses = registry.getPluginTypes();
@@ -6428,7 +6428,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   private List<PartitionSchema> pickupPartitionSchemas( TransMeta transMeta ) throws KettleException {
     if ( rep != null ) {
       ObjectId[] ids = rep.getPartitionSchemaIDs( false );
-      List<PartitionSchema> result = new ArrayList<PartitionSchema>( ids.length );
+      List<PartitionSchema> result = new ArrayList<>( ids.length );
       for ( ObjectId id : ids ) {
         PartitionSchema schema = rep.loadPartitionSchema( id, null );
         result.add( schema );
@@ -7566,7 +7566,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       return;
     }
 
-    List<Object[]> rows = new ArrayList<Object[]>();
+    List<Object[]> rows = new ArrayList<>();
     RowMetaInterface rowMeta = null;
     for ( int i = 0; i < transGraph.getImpact().size(); i++ ) {
       DatabaseImpact ii = transGraph.getImpact().get( i );
@@ -7752,7 +7752,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   }
 
   public List<DatabaseMeta> getActiveDatabases() {
-    Map<String, DatabaseMeta> map = new Hashtable<String, DatabaseMeta>();
+    Map<String, DatabaseMeta> map = new Hashtable<>();
 
     HasDatabasesInterface hasDatabasesInterface = getActiveHasDatabasesInterface();
     if ( hasDatabasesInterface != null ) {
@@ -7772,7 +7772,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       }
     }
 
-    List<DatabaseMeta> databases = new ArrayList<DatabaseMeta>();
+    List<DatabaseMeta> databases = new ArrayList<>();
     databases.addAll( map.values() );
 
     return databases;
