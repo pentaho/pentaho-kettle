@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -43,6 +43,10 @@ import org.w3c.dom.Node;
 public class TransHopMeta extends BaseHopMeta<StepMeta> implements Comparable<TransHopMeta> {
   private static Class<?> PKG = Trans.class; // for i18n purposes, needed by Translator2!!
 
+  public static final String XML_HOP_TAG = "hop";
+  public static final String XML_FROM_TAG = "from";
+  public static final String XML_TO_TAG = "to";
+
   public TransHopMeta( StepMeta from, StepMeta to, boolean en ) {
     this.from = from;
     this.to = to;
@@ -61,8 +65,8 @@ public class TransHopMeta extends BaseHopMeta<StepMeta> implements Comparable<Tr
 
   public TransHopMeta( Node hopnode, List<StepMeta> steps ) throws KettleXMLException {
     try {
-      this.from = searchStep( steps, XMLHandler.getTagValue( hopnode, "from" ) );
-      this.to = searchStep( steps, XMLHandler.getTagValue( hopnode, "to" ) );
+      this.from = searchStep( steps, XMLHandler.getTagValue( hopnode, TransHopMeta.XML_FROM_TAG ) );
+      this.to = searchStep( steps, XMLHandler.getTagValue( hopnode, TransHopMeta.XML_TO_TAG ) );
       String en = XMLHandler.getTagValue( hopnode, "enabled" );
 
       if ( en == null ) {
@@ -133,8 +137,8 @@ public class TransHopMeta extends BaseHopMeta<StepMeta> implements Comparable<Tr
 
     if ( this.from != null && this.to != null ) {
       retval.append( "    " ).append( XMLHandler.openTag( XML_TAG ) ).append( Const.CR );
-      retval.append( "      " ).append( XMLHandler.addTagValue( "from", this.from.getName() ) );
-      retval.append( "      " ).append( XMLHandler.addTagValue( "to", this.to.getName() ) );
+      retval.append( "      " ).append( XMLHandler.addTagValue( TransHopMeta.XML_FROM_TAG, this.from.getName() ) );
+      retval.append( "      " ).append( XMLHandler.addTagValue( TransHopMeta.XML_TO_TAG, this.to.getName() ) );
       retval.append( "      " ).append( XMLHandler.addTagValue( "enabled", enabled ) );
       retval.append( "    " ).append( XMLHandler.closeTag( XML_TAG ) ).append( Const.CR );
     }
