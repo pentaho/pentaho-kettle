@@ -26,6 +26,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Arrays;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
@@ -739,15 +740,45 @@ public class TextFileInputUtils {
         for ( int i = 0; i < inf.inputFiles.inputFields.length; i++ ) {
           BaseFileInputField field = inf.inputFiles.inputFields[i];
 
-          int length = line.length();
+          int length;
+          if ( inf.content.length == null || inf.content.length.equalsIgnoreCase( "Characters" ) ) {
+            length = line.length();
 
-          if ( field.getPosition() + field.getLength() <= length ) {
-            strings[i] = line.substring( field.getPosition(), field.getPosition() + field.getLength() );
-          } else {
-            if ( field.getPosition() < length ) {
-              strings[i] = line.substring( field.getPosition() );
+            if ( field.getPosition() + field.getLength() <= length ) {
+              strings[i] = line.substring( field.getPosition(), field.getPosition() + field.getLength() );
             } else {
-              strings[i] = "";
+              if ( field.getPosition() < length ) {
+                strings[i] = line.substring( field.getPosition() );
+              } else {
+                strings[i] = "";
+              }
+            }
+          } else {
+            if ( inf.getEncoding() != null ) {
+              byte[] b = null;
+              b = line.getBytes( inf.getEncoding() );
+              length = b.length;
+              if ( field.getPosition() + field.getLength() <= length ) {
+                strings[i] = new String( Arrays.copyOfRange( b, field.getPosition(), field.getPosition() + field.getLength() ), inf.getEncoding() );
+              } else {
+                if ( field.getPosition() < length ) {
+                  strings[i] = new String( Arrays.copyOfRange( b, field.getPosition(), b.length - 1 ), inf.getEncoding() );
+                } else {
+                  strings[i] = "";
+                }
+              }
+            } else {
+              length = line.length();
+
+              if ( field.getPosition() + field.getLength() <= length ) {
+                strings[i] = line.substring( field.getPosition(), field.getPosition() + field.getLength() );
+              } else {
+                if ( field.getPosition() < length ) {
+                  strings[i] = line.substring( field.getPosition() );
+                } else {
+                  strings[i] = "";
+                }
+              }
             }
           }
         }

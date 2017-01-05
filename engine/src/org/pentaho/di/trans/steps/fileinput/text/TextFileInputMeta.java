@@ -184,6 +184,10 @@ public class TextFileInputMeta extends
     @Injection( name = "ENCODING" )
     public String encoding;
 
+    /** The length of characters or bytes */
+    @Injection( name = "LENGTH" )
+    public String length;
+
     /** The maximum number or lines to read */
     @Injection( name = "ROW_LIMIT" )
     public long rowLimit = -1;
@@ -299,6 +303,7 @@ public class TextFileInputMeta extends
       content.rowNumberField = XMLHandler.getTagValue( stepnode, "rownum_field" );
       content.fileFormat = XMLHandler.getTagValue( stepnode, "format" );
       content.encoding = XMLHandler.getTagValue( stepnode, "encoding" );
+      content.length = XMLHandler.getTagValue( stepnode, "length" );
 
       Node filenode = XMLHandler.getSubNode( stepnode, "file" );
       Node fields = XMLHandler.getSubNode( stepnode, "fields" );
@@ -710,6 +715,7 @@ public class TextFileInputMeta extends
     retval.append( "    " ).append( XMLHandler.addTagValue( "rownum_field", content.rowNumberField ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "format", content.fileFormat ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "encoding", content.encoding ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "length", content.length ) );
     retval.append( "    " + XMLHandler.addTagValue( "add_to_result_filenames", inputFiles.isaddresult ) );
 
     retval.append( "    <file>" ).append( Const.CR );
@@ -871,6 +877,7 @@ public class TextFileInputMeta extends
 
       content.fileFormat = rep.getStepAttributeString( id_step, "format" );
       content.encoding = rep.getStepAttributeString( id_step, "encoding" );
+      content.length = rep.getStepAttributeString( id_step, "length" );
       String addToResult = rep.getStepAttributeString( id_step, "add_to_result_filenames" );
       if ( Utils.isEmpty( addToResult ) ) {
         inputFiles.isaddresult = true;
@@ -1010,6 +1017,7 @@ public class TextFileInputMeta extends
 
       rep.saveStepAttribute( id_transformation, id_step, "format", content.fileFormat );
       rep.saveStepAttribute( id_transformation, id_step, "encoding", content.encoding );
+      rep.saveStepAttribute( id_transformation, id_step, "length", content.length );
       rep.saveStepAttribute( id_transformation, id_step, "add_to_result_filenames", inputFiles.isaddresult );
 
       rep.saveStepAttribute( id_transformation, id_step, "limit", content.rowLimit );
@@ -1293,6 +1301,21 @@ public class TextFileInputMeta extends
   @Override
   public String getEncoding() {
     return content.encoding;
+  }
+
+  /**
+   * @return the length
+   */
+  public String getLength() {
+    return content.length;
+  }
+
+  /**
+   * @param length
+   *          the length to set
+   */
+  public void setLength( String length ) {
+    content.length = length;
   }
 
   /**

@@ -52,7 +52,8 @@ public class TextFileInputMetaLoadSaveTest {
     List<String> commonAttributes = Arrays.asList(
       "errorCountField",
       "errorFieldsField",
-      "errorTextField"    );
+      "errorTextField",
+      "length" );
     List<String> xmlAttributes = Collections.emptyList();
     List<String> repoAttributes = Collections.emptyList();
 
