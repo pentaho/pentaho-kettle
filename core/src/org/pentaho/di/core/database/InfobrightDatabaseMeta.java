@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -30,6 +30,11 @@ public class InfobrightDatabaseMeta extends MySQLDatabaseMeta implements Databas
       return 5029;
     }
     return -1;
+  }
+
+  @Override
+  public void addDefaultOptions() {
+    addExtraOption( getPluginId(), "characterEncoding", "UTF-8" );
   }
 
 }
