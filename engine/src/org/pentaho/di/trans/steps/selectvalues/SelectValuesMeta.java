@@ -42,8 +42,8 @@ import org.pentaho.di.core.injection.InjectionDeep;
 import org.pentaho.di.core.injection.InjectionSupported;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaBase;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.core.variables.VariableSpace;
@@ -540,7 +540,7 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface 
         meta[i].setType( (int) rep.getStepAttributeInteger( id_step, i, getRepCode( "META_TYPE" ) ) );
         meta[i].setLength( (int) rep.getStepAttributeInteger( id_step, i, getRepCode( "META_LENGTH" ) ) );
         meta[i].setPrecision( (int) rep.getStepAttributeInteger( id_step, i, getRepCode( "META_PRECISION" ) ) );
-        meta[i].setStorageType( ValueMeta.getStorageType( rep.getStepAttributeString( id_step, i, getRepCode(
+        meta[i].setStorageType( ValueMetaBase.getStorageType( rep.getStepAttributeString( id_step, i, getRepCode(
             "META_STORAGE_TYPE" ) ) ) );
         meta[i].setConversionMask( rep.getStepAttributeString( id_step, i, getRepCode( "META_CONVERSION_MASK" ) ) );
         meta[i].setDateFormatLenient( Boolean.parseBoolean( rep.getStepAttributeString( id_step, i, getRepCode(
@@ -588,7 +588,7 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface 
         rep.saveStepAttribute( id_transformation, id_step, i, getRepCode( "META_TYPE" ), meta[i].getType() );
         rep.saveStepAttribute( id_transformation, id_step, i, getRepCode( "META_LENGTH" ), meta[i].getLength() );
         rep.saveStepAttribute( id_transformation, id_step, i, getRepCode( "META_PRECISION" ), meta[i].getPrecision() );
-        rep.saveStepAttribute( id_transformation, id_step, i, getRepCode( "META_STORAGE_TYPE" ), ValueMeta
+        rep.saveStepAttribute( id_transformation, id_step, i, getRepCode( "META_STORAGE_TYPE" ), ValueMetaBase
             .getStorageTypeCode( meta[i].getStorageType() ) );
         rep.saveStepAttribute( id_transformation, id_step, i, getRepCode( "META_CONVERSION_MASK" ), meta[i]
             .getConversionMask() );

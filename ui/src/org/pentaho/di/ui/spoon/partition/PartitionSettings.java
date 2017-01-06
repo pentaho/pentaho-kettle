@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -85,10 +85,13 @@ public class PartitionSettings {
     } catch ( KettleException e ) {
       schemaNames = Collections.emptyList();
     }
+
+    PartitionSchema partitioningSchema = stepMeta.getStepPartitioningMeta().getPartitionSchema();
     int defaultSelectedSchemaIndex = 0;
-    if ( stepMeta.getStepPartitioningMeta().getPartitionSchema() != null && !schemaNames.isEmpty() ) {
+    if ( partitioningSchema != null && partitioningSchema.getName() != null
+        && !schemaNames.isEmpty() ) {
       defaultSelectedSchemaIndex =
-        Const.indexOfString( stepMeta.getStepPartitioningMeta().getPartitionSchema().getName(), schemaNames );
+        Const.indexOfString( partitioningSchema.getName(), schemaNames );
     }
     return defaultSelectedSchemaIndex != -1 ? defaultSelectedSchemaIndex : 0;
   }

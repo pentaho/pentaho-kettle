@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,6 +25,7 @@ package org.pentaho.di.core.database;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -41,11 +42,15 @@ import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaNone;
+import org.pentaho.di.core.row.value.ValueMetaPluginType;
+import org.pentaho.di.core.KettleClientEnvironment;
+import org.pentaho.di.core.exception.KettleException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doCallRealMethod;
@@ -60,17 +65,15 @@ public class DatabaseMetaTest {
   private static final String DROP_STATEMENT = "dropStatement";
   private static final String DROP_STATEMENT_FALLBACK = "DROP TABLE IF EXISTS " + TABLE_NAME;
 
-  private static final String CONNECTION_TYPE_ID_MSSQL = "MSSQL";
-  private static final String CONNECTION_TYPE_ID_MSSQL_NATIVE = "MSSQLNATIVE";
-  private static final String CONNECTION_TYPE_ID_ORACLE = "ORACLE";
-
   private DatabaseMeta databaseMeta;
   private DatabaseInterface databaseInterface;
 
   @BeforeClass
-  public static void setUpOnce() throws KettlePluginException {
+  public static void setUpOnce() throws KettlePluginException, KettleException {
     // Register Natives to create a default DatabaseMeta
     DatabasePluginType.getInstance().searchPlugins();
+    ValueMetaPluginType.getInstance().searchPlugins();
+    KettleClientEnvironment.init();
   }
 
   @Before
@@ -330,4 +333,51 @@ public class DatabaseMetaTest {
     when( meta.checkParameters() ).thenCallRealMethod();
     assertEquals( 2, meta.checkParameters().length );
   }
+
+  @Test
+  public void setSQLServerInstanceTest() {
+    DatabaseMeta dbmeta = new DatabaseMeta();
+    DatabaseInterface mssqlServerDatabaseMeta =  new MSSQLServerDatabaseMeta();
+    mssqlServerDatabaseMeta.setPluginId( "MSSQL" );
+    DatabaseInterface mssqlServerNativeDatabaseMeta =  new MSSQLServerNativeDatabaseMeta();
+    mssqlServerNativeDatabaseMeta.setPluginId( "MSSQLNATIVE" );
+    dbmeta.setDatabaseInterface( mssqlServerDatabaseMeta );
+    dbmeta.setSQLServerInstance( "" );
+    assertEquals( dbmeta.getSQLServerInstance(), null );
+    dbmeta.setSQLServerInstance( "instance1" );
+    assertEquals( dbmeta.getSQLServerInstance(), "instance1" );
+    dbmeta.setDatabaseInterface( mssqlServerNativeDatabaseMeta );
+    dbmeta.setSQLServerInstance( "" );
+    assertEquals( dbmeta.getSQLServerInstance(), null );
+    dbmeta.setSQLServerInstance( "instance1" );
+    assertEquals( dbmeta.getSQLServerInstance(), "instance1" );
+  }
+
+  @Test
+  public void testAddOptionsMysql() {
+    DatabaseMeta databaseMeta = new DatabaseMeta( "", "Mysql", "JDBC", null, "stub:stub", null, null, null );
+    Map<String, String> options = databaseMeta.getExtraOptions();
+    if ( !options.keySet().contains( "MYSQL.defaultFetchSize" ) ) {
+      fail();
+    }
+  }
+
+  @Test
+  public void testAddOptionsMariaDB() {
+    DatabaseMeta databaseMeta = new DatabaseMeta( "", "MariaDB", "JDBC", null, "stub:stub", null, null, null );
+    Map<String, String> options = databaseMeta.getExtraOptions();
+    if ( !options.keySet().contains( "MARIADB.defaultFetchSize" ) ) {
+      fail();
+    }
+  }
+
+  @Test
+  public void testAddOptionsInfobright() {
+    DatabaseMeta databaseMeta = new DatabaseMeta( "", "Infobright", "JDBC", null, "stub:stub", null, null, null );
+    Map<String, String> options = databaseMeta.getExtraOptions();
+    if ( !options.keySet().contains( "INFOBRIGHT.characterEncoding" ) ) {
+      fail();
+    }
+  }
+
 }

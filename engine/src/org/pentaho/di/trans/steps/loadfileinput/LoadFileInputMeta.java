@@ -67,6 +67,7 @@ public class LoadFileInputMeta extends BaseStepMeta implements StepMetaInterface
   private static final String ROWNUM = "rownum";
   private static final String ADDRESULTFILE = "addresultfile";
   private static final String IS_IGNORE_EMPTY_FILE = "IsIgnoreEmptyFile";
+  private static final String IS_IGNORE_MISSING_PATH = "IsIgnoreMissingPath";
   private static final String ROWNUM_FIELD = "rownum_field";
   private static final String ENCODING = "encoding";
   private static final String NAME = "name";
@@ -155,6 +156,9 @@ public class LoadFileInputMeta extends BaseStepMeta implements StepMetaInterface
 
   /** Flag : do we ignore empty file? */
   private boolean IsIgnoreEmptyFile;
+
+  /** Flag : do we ignore missing path? */
+  private boolean IsIgnoreMissingPath;
 
   /** Array of boolean values as string, indicating if we need to fetch sub folders. */
   private String[] includeSubFolders;
@@ -336,6 +340,21 @@ public class LoadFileInputMeta extends BaseStepMeta implements StepMetaInterface
    */
   public void setIgnoreEmptyFile( boolean IsIgnoreEmptyFile ) {
     this.IsIgnoreEmptyFile = IsIgnoreEmptyFile;
+  }
+
+  /**
+   * @return the IsIgnoreMissingPath flag
+   */
+  public boolean isIgnoreMissingPath() {
+    return IsIgnoreMissingPath;
+  }
+
+  /**
+   * @param the
+   *          IsIgnoreMissingPath to set
+   */
+  public void setIgnoreMissingPath( boolean IsIgnoreMissingPath ) {
+    this.IsIgnoreMissingPath = IsIgnoreMissingPath;
   }
 
   public void setAddResultFile( boolean addresultfile ) {
@@ -602,6 +621,7 @@ public class LoadFileInputMeta extends BaseStepMeta implements StepMetaInterface
     retval.append( "    " + XMLHandler.addTagValue( ROWNUM, includeRowNumber ) );
     retval.append( "    " + XMLHandler.addTagValue( ADDRESULTFILE, addresultfile ) );
     retval.append( "    " + XMLHandler.addTagValue( IS_IGNORE_EMPTY_FILE, IsIgnoreEmptyFile ) );
+    retval.append( "    " + XMLHandler.addTagValue( IS_IGNORE_MISSING_PATH, IsIgnoreMissingPath ) );
 
     retval.append( "    " + XMLHandler.addTagValue( ROWNUM_FIELD, rowNumberField ) );
     retval.append( "    " + XMLHandler.addTagValue( ENCODING, encoding ) );
@@ -644,6 +664,7 @@ public class LoadFileInputMeta extends BaseStepMeta implements StepMetaInterface
 
       addresultfile = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, ADDRESULTFILE ) );
       IsIgnoreEmptyFile = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, IS_IGNORE_EMPTY_FILE ) );
+      IsIgnoreMissingPath = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, IS_IGNORE_MISSING_PATH ) );
 
       includeRowNumber = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, ROWNUM ) );
       rowNumberField = XMLHandler.getTagValue( stepnode, ROWNUM_FIELD );
@@ -716,6 +737,7 @@ public class LoadFileInputMeta extends BaseStepMeta implements StepMetaInterface
 
     encoding = "";
     IsIgnoreEmptyFile = false;
+    IsIgnoreMissingPath = false;
     includeFilename = false;
     filenameField = "";
     includeRowNumber = false;
@@ -854,6 +876,7 @@ public class LoadFileInputMeta extends BaseStepMeta implements StepMetaInterface
 
       addresultfile = rep.getStepAttributeBoolean( id_step, ADDRESULTFILE );
       IsIgnoreEmptyFile = rep.getStepAttributeBoolean( id_step, IS_IGNORE_EMPTY_FILE );
+      IsIgnoreMissingPath = rep.getStepAttributeBoolean( id_step, IS_IGNORE_MISSING_PATH );
 
       includeRowNumber = rep.getStepAttributeBoolean( id_step, ROWNUM );
       rowNumberField = rep.getStepAttributeString( id_step, ROWNUM_FIELD );
@@ -921,6 +944,7 @@ public class LoadFileInputMeta extends BaseStepMeta implements StepMetaInterface
       rep.saveStepAttribute( id_transformation, id_step, INCLUDE_FIELD, filenameField );
       rep.saveStepAttribute( id_transformation, id_step, ADDRESULTFILE, addresultfile );
       rep.saveStepAttribute( id_transformation, id_step, IS_IGNORE_EMPTY_FILE, IsIgnoreEmptyFile );
+      rep.saveStepAttribute( id_transformation, id_step, IS_IGNORE_MISSING_PATH, IsIgnoreMissingPath );
 
       rep.saveStepAttribute( id_transformation, id_step, ROWNUM, includeRowNumber );
       rep.saveStepAttribute( id_transformation, id_step, ROWNUM_FIELD, rowNumberField );
@@ -1085,6 +1109,9 @@ public class LoadFileInputMeta extends BaseStepMeta implements StepMetaInterface
     if ( IsIgnoreEmptyFile != that.IsIgnoreEmptyFile ) {
       return false;
     }
+    if ( IsIgnoreMissingPath != that.IsIgnoreMissingPath ) {
+      return false;
+    }
     if ( addresultfile != that.addresultfile ) {
       return false;
     }
@@ -1175,6 +1202,7 @@ public class LoadFileInputMeta extends BaseStepMeta implements StepMetaInterface
     result = 31 * result + ( addresultfile ? 1 : 0 );
     result = 31 * result + ( fileRequired != null ? Arrays.hashCode( fileRequired ) : 0 );
     result = 31 * result + ( IsIgnoreEmptyFile ? 1 : 0 );
+    result = 31 * result + ( IsIgnoreMissingPath ? 1 : 0 );
     result = 31 * result + ( includeSubFolders != null ? Arrays.hashCode( includeSubFolders ) : 0 );
     result = 31 * result + ( shortFileFieldName != null ? shortFileFieldName.hashCode() : 0 );
     result = 31 * result + ( pathFieldName != null ? pathFieldName.hashCode() : 0 );

@@ -64,8 +64,6 @@
     <dependency org="javax.servlet"           name="servlet-api"          rev="2.5"  transitive="false" conf="compile->default"/>
 
     <!--  test dependencies -->
-    <dependency org="org.springframework.security" name="spring-security-core" rev="2.0.5.RELEASE"
-      transitive="false" />
     <dependency org="junit" name="junit" rev="4.11" conf="test->default" />
     <dependency org="commons-codec" name="commons-codec" rev="1.3" conf="test->default" />
     <dependency org="commons-logging" name="commons-logging" rev="1.1" conf="test->default" />
@@ -83,14 +81,14 @@
     <dependency org="org.springframework" name="spring-context" rev="${dependency.spring.framework.revision}" transitive="false" conf="test->default" />
     <dependency org="org.springframework" name="spring-expression" rev="${dependency.spring.framework.revision}" transitive="false" conf="test->default" />
     <dependency org="org.springframework" name="spring-context-support" rev="${dependency.spring.framework.revision}" transitive="false" conf="test->default" />
-    <dependency org="org.springframework" name="spring-orm" rev="${dependency.spring.framework.revision}" transitive="false" conf="test->default" /> 
+    <dependency org="org.springframework" name="spring-orm" rev="${dependency.spring.framework.revision}" transitive="false" conf="test->default" />
+    <dependency org="org.springframework.security" name="spring-security-config" rev="${dependency.spring.security.revision}" transitive="false" conf="test->default"/>
+    <dependency org="org.springframework.webflow"  name="spring-binding"         rev="${dependency.spring.webflow.revision}"     transitive="false" conf="test->default"/>
     <dependency org="org.springframework" name="se-jcr" rev="${dependency.spring.extensions.jcr.revision}" transitive="false" conf="test->default">
-      <!--transitive dependency that is not needed and not fetchable by Ivy--> 
+      <!--transitive dependency that is not needed and not fetchable by Ivy-->
       <exclude org="org.apache.jackrabbit" name="jackrabbit-jcr-rmi" />
     </dependency>
-    <dependency org="org.springframework.security" name="spring-security-core" rev="${dependency.spring.security.revision}"
-      transitive="false" />
-      
+
     <dependency org="org.json" name="json" rev="${dependency.json.revision}" transitive="false" changing="true"/>
     <dependency org="com.googlecode.json-simple" name="json-simple" rev="1.1" transitive="false" conf="compile->default;test->default"/>
 
@@ -107,7 +105,7 @@
     <dependency org="org.javassist" name="javassist" rev="3.20.0-GA" conf="test->default" transitive="false" />
     <dependency org="org.scannotation" name="scannotation" rev="1.0.2" conf="test->default" transitive="false"/>
     <dependency org="javax.jcr" name="jcr" rev="2.0" conf="test->default"/>
-    <dependency org="org.owasp.esapi" name="esapi" rev="2.0.1" transitive="false" conf="test->default"/>
+    <dependency org="org.owasp.encoder"   name="encoder"   rev="1.2"  transitive="false"/>
     <dependency org="org.mockito" name="mockito-all" rev="1.9.0" transitive="false" conf="test->default"/>
     <dependency org="pentaho" name="pentaho-platform-core-test" rev="${dependency.bi-platform.revision}" changing="true" transitive="false" conf="test->default" />
     <dependency org="pentaho" name="pentaho-platform-repository-test" rev="${dependency.bi-platform.revision}" changing="true" transitive="false" conf="test->default" />

@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -78,8 +78,9 @@ import org.pentaho.di.core.compress.CompressionProviderFactory;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.fileinput.FileInputList;
 import org.pentaho.di.core.gui.TextFileInputFieldInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
@@ -281,6 +282,10 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
   private Label wlEncoding;
   private CCombo wEncoding;
   private FormData fdlEncoding, fdEncoding;
+
+  private Label wlLength;
+  private CCombo wLength;
+  private FormData fdlLength, fdLength;
 
   private Label wlLimit;
   private Text wLimit;
@@ -675,8 +680,8 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
           CompressionProvider provider =
               CompressionProviderFactory.getInstance().getCompressionProviderByName( wCompression.getText() );
 
-          List<String> filterExtensions = new ArrayList<String>();
-          List<String> filterNames = new ArrayList<String>();
+          List<String> filterExtensions = new ArrayList<>();
+          List<String> filterNames = new ArrayList<>();
 
           if ( !Utils.isEmpty( provider.getDefaultExtension() ) && !Utils.isEmpty( provider.getName() ) ) {
             filterExtensions.add( "*." + provider.getDefaultExtension() );
@@ -1492,12 +1497,34 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
       }
     } );
 
+
+    wlLength = new Label( wContentComp, SWT.RIGHT );
+    wlLength.setText( BaseMessages.getString( PKG, "TextFileInputDialog.Length.Label" ) );
+    props.setLook( wlLength );
+    fdlLength = new FormData();
+    fdlLength.left = new FormAttachment( 0, 0 );
+    fdlLength.top = new FormAttachment( wEncoding, margin );
+    fdlLength.right = new FormAttachment( middle, -margin );
+    wlLength.setLayoutData( fdlLength );
+    wLength = new CCombo( wContentComp, SWT.BORDER | SWT.READ_ONLY );
+    wLength.setText( BaseMessages.getString( PKG, "TextFileInputDialog.Length.Label" ) );
+    props.setLook( wLength );
+    wLength.add( "Characters" );
+    wLength.add( "Bytes" );
+    wLength.select( 0 );
+    wLength.addModifyListener( lsMod );
+    fdLength = new FormData();
+    fdLength.left = new FormAttachment( middle, 0 );
+    fdLength.top = new FormAttachment( wEncoding, margin );
+    fdLength.right = new FormAttachment( 100, 0 );
+    wLength.setLayoutData( fdLength );
+
     wlLimit = new Label( wContentComp, SWT.RIGHT );
     wlLimit.setText( BaseMessages.getString( PKG, "TextFileInputDialog.Limit.Label" ) );
     props.setLook( wlLimit );
     fdlLimit = new FormData();
     fdlLimit.left = new FormAttachment( 0, 0 );
-    fdlLimit.top = new FormAttachment( wEncoding, margin );
+    fdlLimit.top = new FormAttachment( wLength, margin );
     fdlLimit.right = new FormAttachment( middle, -margin );
     wlLimit.setLayoutData( fdlLimit );
     wLimit = new Text( wContentComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
@@ -1505,7 +1532,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
     wLimit.addModifyListener( lsMod );
     fdLimit = new FormData();
     fdLimit.left = new FormAttachment( middle, 0 );
-    fdLimit.top = new FormAttachment( wEncoding, margin );
+    fdLimit.top = new FormAttachment( wLength, margin );
     fdLimit.right = new FormAttachment( 100, 0 );
     wLimit.setLayoutData( fdLimit );
 
@@ -2062,7 +2089,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
     ColumnInfo[] colinf =
         new ColumnInfo[] { new ColumnInfo( BaseMessages.getString( PKG, "TextFileInputDialog.NameColumn.Column" ),
             ColumnInfo.COLUMN_TYPE_TEXT, false ), new ColumnInfo( BaseMessages.getString( PKG,
-                "TextFileInputDialog.TypeColumn.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes(), true ),
+                "TextFileInputDialog.TypeColumn.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMetaFactory.getValueMetaNames(), true ),
           new ColumnInfo( BaseMessages.getString( PKG, "TextFileInputDialog.FormatColumn.Column" ),
               ColumnInfo.COLUMN_TYPE_FORMAT, 2 ), new ColumnInfo( BaseMessages.getString( PKG,
                   "TextFileInputDialog.PositionColumn.Column" ), ColumnInfo.COLUMN_TYPE_TEXT, false ), new ColumnInfo(
@@ -2077,7 +2104,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
                           "TextFileInputDialog.NullIfColumn.Column" ), ColumnInfo.COLUMN_TYPE_TEXT, false ),
           new ColumnInfo( BaseMessages.getString( PKG, "TextFileInputDialog.IfNullColumn.Column" ),
               ColumnInfo.COLUMN_TYPE_TEXT, false ), new ColumnInfo( BaseMessages.getString( PKG,
-                  "TextFileInputDialog.TrimTypeColumn.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.trimTypeDesc,
+                  "TextFileInputDialog.TrimTypeColumn.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMetaString.trimTypeDesc,
                   true ), new ColumnInfo( BaseMessages.getString( PKG, "TextFileInputDialog.RepeatColumn.Column" ),
                       ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { BaseMessages.getString( PKG, "System.Combo.Yes" ),
                         BaseMessages.getString( PKG, "System.Combo.No" ) }, true ) };
@@ -2254,6 +2281,11 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
     if ( meta.content.fileFormat != null ) {
       wFormat.setText( meta.content.fileFormat );
     }
+
+    if ( meta.content.length != null ) {
+      wLength.setText( meta.content.length );
+    }
+
     wLimit.setText( "" + meta.content.rowLimit );
 
     logDebug( "getting fields info..." );
@@ -2442,7 +2474,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
       gotEncodings = true;
 
       wEncoding.removeAll();
-      List<Charset> values = new ArrayList<Charset>( Charset.availableCharsets().values() );
+      List<Charset> values = new ArrayList<>( Charset.availableCharsets().values() );
       for ( Charset charSet : values ) {
         wEncoding.add( charSet.displayName() );
       }
@@ -2473,7 +2505,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 
   /**
    * Fill meta object from UI options.
-   * 
+   *
    * @param meta
    *          meta object
    * @param preview
@@ -2521,6 +2553,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
     meta.content.dateFormatLenient = wDateLenient.getSelection();
     meta.content.noEmptyLines = wNoempty.getSelection();
     meta.content.encoding = wEncoding.getText();
+    meta.content.length = wLength.getText();
 
     int nrfiles = wFilenameList.getItemCount();
     int nrfields = wFields.nrNonEmpty();
@@ -2538,7 +2571,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 
       TableItem item = wFields.getNonEmpty( i );
       field.setName( item.getText( 1 ) );
-      field.setType( ValueMeta.getType( item.getText( 2 ) ) );
+      field.setType( ValueMetaFactory.getIdForValueMeta( item.getText( 2 ) ) );
       field.setFormat( item.getText( 3 ) );
       field.setPosition( Const.toInt( item.getText( 4 ), -1 ) );
       field.setLength( Const.toInt( item.getText( 5 ), -1 ) );
@@ -2548,7 +2581,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
       field.setGroupSymbol( item.getText( 9 ) );
       field.setNullString( item.getText( 10 ) );
       field.setIfNullValue( item.getText( 11 ) );
-      field.setTrimType( ValueMeta.getTrimTypeByDesc( item.getText( 12 ) ) );
+      field.setTrimType( ValueMetaString.getTrimTypeByDesc( item.getText( 12 ) ) );
       field.setRepeated( BaseMessages.getString( PKG, "System.Combo.Yes" ).equalsIgnoreCase( item.getText( 13 ) ) );
 
       // CHECKSTYLE:Indentation:OFF
@@ -2904,7 +2937,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
     StringBuilder lineStringBuilder = new StringBuilder( 256 );
     int fileFormatType = meta.getFileFormatTypeNr();
 
-    List<String> retval = new ArrayList<String>();
+    List<String> retval = new ArrayList<>();
 
     if ( textFileList.nrOfFiles() > 0 ) {
       FileObject file = textFileList.getFile( 0 );
@@ -3041,7 +3074,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
   }
 
   private Vector<TextFileInputFieldInterface> getFields( TextFileInputMeta info, List<String> rows ) {
-    Vector<TextFileInputFieldInterface> fields = new Vector<TextFileInputFieldInterface>();
+    Vector<TextFileInputFieldInterface> fields = new Vector<>();
 
     int maxsize = 0;
     for ( String row : rows ) {
@@ -3116,9 +3149,9 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 
       item.setText( 5, "" );
       item.setText( 6, "" );
-      item.setText( 12, ValueMeta.getTrimTypeDesc( ValueMetaInterface.TRIM_TYPE_BOTH ) );
+      item.setText( 12, ValueMetaString.getTrimTypeDesc( ValueMetaInterface.TRIM_TYPE_BOTH ) );
 
-      int type = ValueMeta.getType( item.getText( 2 ) );
+      int type = ValueMetaFactory.getIdForValueMeta( item.getText( 2 ) );
       switch ( type ) {
         case ValueMetaInterface.TYPE_STRING:
           item.setText( 3, "" );

@@ -291,10 +291,7 @@ public class WriteToLogMeta extends BaseStepMeta implements StepMetaInterface {
       rep.saveStepAttribute( id_transformation, id_step, "displayHeader", displayHeader );
       rep.saveStepAttribute( id_transformation, id_step, "limitRows", limitRows );
       rep.saveStepAttribute( id_transformation, id_step, "limitRowsNumber", limitRowsNumber );
-
       rep.saveStepAttribute( id_transformation, id_step, "logmessage", logmessage );
-      rep.saveStepAttribute( id_transformation, id_step, "limitRows", limitRows );
-      rep.saveStepAttribute( id_transformation, id_step, "limitRowsNumber", limitRowsNumber );
       for ( int i = 0; i < fieldName.length; i++ ) {
         rep.saveStepAttribute( id_transformation, id_step, i, "field_name", fieldName[i] );
       }

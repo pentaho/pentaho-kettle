@@ -1307,7 +1307,8 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
       XMLHandler.addTagValue( "line_number_files_extension", lineNumberFilesExtension ) );
 
     retval.append( "    " ).append( XMLHandler.addTagValue( "date_format_lenient", dateFormatLenient ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "date_format_locale", dateFormatLocale.toString() ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "date_format_locale", dateFormatLocale != null
+      ? dateFormatLocale.toString() : Locale.getDefault().toString() ) );
 
     retval.append( "    " ).append( XMLHandler.addTagValue( "shortFileFieldName", shortFileFieldName ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "pathFieldName", pathFieldName ) );

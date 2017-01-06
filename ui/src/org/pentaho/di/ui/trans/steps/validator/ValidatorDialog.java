@@ -58,8 +58,8 @@ import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
@@ -471,7 +471,7 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
     fdlDataType.top = new FormAttachment( wDataTypeVerified, margin );
     wlDataType.setLayoutData( fdlDataType );
     wDataType = new Combo( wgType, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-    wDataType.setItems( ValueMeta.getTypes() );
+    wDataType.setItems( ValueMetaFactory.getValueMetaNames() );
     props.setLook( wDataType );
     FormData fdDataType = new FormData();
     fdDataType.left = new FormAttachment( middle, margin + extra );
@@ -1089,7 +1089,7 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
     wErrorDescription.setText( Const.NVL( field.getErrorDescription(), "" ) );
 
     wDataTypeVerified.setSelection( field.isDataTypeVerified() );
-    wDataType.setText( ValueMeta.getTypeDesc( field.getDataType() ) );
+    wDataType.setText( ValueMetaFactory.getValueMetaName( field.getDataType() ) );
     wConversionMask.setText( Const.NVL( field.getConversionMask(), "" ) );
     wDecimalSymbol.setText( Const.NVL( field.getDecimalSymbol(), "" ) );
     wGroupingSymbol.setText( Const.NVL( field.getGroupingSymbol(), "" ) );
@@ -1178,7 +1178,7 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
       selectedField.setErrorDescription( wErrorDescription.getText() );
 
       selectedField.setDataTypeVerified( wDataTypeVerified.getSelection() );
-      selectedField.setDataType( ValueMeta.getType( wDataType.getText() ) );
+      selectedField.setDataType( ValueMetaFactory.getIdForValueMeta( wDataType.getText() ) );
       selectedField.setConversionMask( wConversionMask.getText() );
       selectedField.setDecimalSymbol( wDecimalSymbol.getText() );
       selectedField.setGroupingSymbol( wGroupingSymbol.getText() );

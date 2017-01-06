@@ -36,9 +36,9 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -202,9 +202,9 @@ public class FixedInputMeta extends BaseStepMeta implements StepMetaInterface {
         FixedFileInputField field = new FixedFileInputField();
 
         field.setName( rep.getStepAttributeString( id_step, i, "field_name" ) );
-        field.setType( ValueMeta.getType( rep.getStepAttributeString( id_step, i, "field_type" ) ) );
+        field.setType( ValueMetaFactory.getIdForValueMeta( rep.getStepAttributeString( id_step, i, "field_type" ) ) );
         field.setFormat( rep.getStepAttributeString( id_step, i, "field_format" ) );
-        field.setTrimType( ValueMeta
+        field.setTrimType( ValueMetaString
           .getTrimTypeByCode( rep.getStepAttributeString( id_step, i, "field_trim_type" ) ) );
         field.setCurrency( rep.getStepAttributeString( id_step, i, "field_currency" ) );
         field.setDecimal( rep.getStepAttributeString( id_step, i, "field_decimal" ) );
@@ -235,10 +235,10 @@ public class FixedInputMeta extends BaseStepMeta implements StepMetaInterface {
 
       for ( int i = 0; i < fieldDefinition.length; i++ ) {
         rep.saveStepAttribute( id_transformation, id_step, i, "field_name", fieldDefinition[i].getName() );
-        rep.saveStepAttribute( id_transformation, id_step, i, "field_type", ValueMeta
-          .getTypeDesc( fieldDefinition[i].getType() ) );
+        rep.saveStepAttribute( id_transformation, id_step, i, "field_type",
+          ValueMetaFactory.getValueMetaName( fieldDefinition[i].getType() ) );
         rep.saveStepAttribute( id_transformation, id_step, i, "field_format", fieldDefinition[i].getFormat() );
-        rep.saveStepAttribute( id_transformation, id_step, i, "field_trim_type", ValueMeta
+        rep.saveStepAttribute( id_transformation, id_step, i, "field_trim_type", ValueMetaString
           .getTrimTypeCode( fieldDefinition[i].getTrimType() ) );
         rep.saveStepAttribute( id_transformation, id_step, i, "field_currency", fieldDefinition[i].getCurrency() );
         rep.saveStepAttribute( id_transformation, id_step, i, "field_decimal", fieldDefinition[i].getDecimal() );

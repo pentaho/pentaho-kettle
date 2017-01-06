@@ -53,7 +53,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
@@ -245,7 +245,7 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
     ciReturn[3] =
       new ColumnInfo(
         BaseMessages.getString( PKG, "StreamLookupDialog.ColumnInfo.Type" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
-        ValueMeta.getTypes() );
+        ValueMetaFactory.getValueMetaNames() );
 
     wReturn =
       new TableView(
@@ -519,7 +519,7 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
         if ( input.getValueDefault()[i] != null ) {
           item.setText( 3, input.getValueDefault()[i] );
         }
-        item.setText( 4, ValueMeta.getTypeDesc( input.getValueDefaultType()[i] ) );
+        item.setText( 4, ValueMetaFactory.getValueMetaName( input.getValueDefaultType()[i] ) );
       }
     }
 
@@ -587,7 +587,7 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
         input.getValueName()[i] = input.getValue()[i];
       }
       input.getValueDefault()[i] = item.getText( 3 );
-      input.getValueDefaultType()[i] = ValueMeta.getType( item.getText( 4 ) );
+      input.getValueDefaultType()[i] = ValueMetaFactory.getIdForValueMeta( item.getText( 4 ) );
     }
 
     StreamInterface infoStream = input.getStepIOMeta().getInfoStreams().get( 0 );

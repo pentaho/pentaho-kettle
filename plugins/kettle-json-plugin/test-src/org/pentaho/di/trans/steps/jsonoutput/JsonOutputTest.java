@@ -23,6 +23,7 @@
 package org.pentaho.di.trans.steps.jsonoutput;
 
 import java.io.File;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,6 +32,7 @@ import junit.framework.TestCase;
 import org.apache.commons.io.FileUtils;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.json.simple.JSONObject;
 import org.junit.Assert;
 import org.pentaho.di.TestUtilities;
 import org.pentaho.di.core.util.Utils;
@@ -357,6 +359,59 @@ public class JsonOutputTest extends TestCase {
     doReturn( null ).when( step ).getRow();
 
     step.processRow( mockHelper.processRowsStepMetaInterface, mockHelper.processRowsStepDataInterface );
+  }
+
+  public void testEmptyDoesntWriteToFile() throws Exception {
+    StepMockHelper<JsonOutputMeta, JsonOutputData> mockHelper =
+            new StepMockHelper<JsonOutputMeta, JsonOutputData>( "jsonOutput", JsonOutputMeta.class, JsonOutputData.class );
+    when( mockHelper.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) ).thenReturn(
+            mockHelper.logChannelInterface );
+    when( mockHelper.trans.isRunning() ).thenReturn( true );
+    when( mockHelper.stepMeta.getStepMetaInterface() ).thenReturn( new JsonOutputMeta() );
+
+    JsonOutputData stepData = new JsonOutputData();
+    stepData.writeToFile = true;
+    JsonOutput step =
+            new JsonOutput( mockHelper.stepMeta, stepData, 0, mockHelper.transMeta, mockHelper.trans );
+    step = spy( step );
+
+    doReturn( null ).when( step ).getRow();
+    doReturn( true ).when( step ).openNewFile();
+    doReturn( true ).when( step ).closeFile();
+
+    step.processRow( mockHelper.processRowsStepMetaInterface, stepData );
+    verify( step, times( 0 ) ).openNewFile();
+    verify( step, times( 0 ) ).closeFile();
+  }
+
+  @SuppressWarnings( "unchecked" )
+  public void testWriteToFile() throws Exception {
+    StepMockHelper<JsonOutputMeta, JsonOutputData> mockHelper =
+            new StepMockHelper<JsonOutputMeta, JsonOutputData>( "jsonOutput", JsonOutputMeta.class, JsonOutputData.class );
+    when( mockHelper.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) ).thenReturn(
+            mockHelper.logChannelInterface );
+    when( mockHelper.trans.isRunning() ).thenReturn( true );
+    when( mockHelper.stepMeta.getStepMetaInterface() ).thenReturn( new JsonOutputMeta() );
+
+    JsonOutputData stepData = new JsonOutputData();
+    stepData.writeToFile = true;
+    JSONObject jsonObject = new JSONObject();
+    jsonObject.put( "key", "value" );
+    stepData.ja.add( jsonObject );
+    stepData.writer = mock( Writer.class );
+
+    JsonOutput step =
+            new JsonOutput( mockHelper.stepMeta, stepData, 0, mockHelper.transMeta, mockHelper.trans );
+    step = spy( step );
+
+    doReturn( null ).when( step ).getRow();
+    doReturn( true ).when( step ).openNewFile();
+    doReturn( true ).when( step ).closeFile();
+    doNothing().when( stepData.writer ).write( anyString() );
+
+    step.processRow( mockHelper.processRowsStepMetaInterface, stepData );
+    verify( step ).openNewFile();
+    verify( step ).closeFile();
   }
 
   /**

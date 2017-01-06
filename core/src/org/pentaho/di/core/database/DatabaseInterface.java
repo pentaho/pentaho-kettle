@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -1170,4 +1170,10 @@ public interface DatabaseInterface extends Cloneable {
    * @return String the create table statement
    */
   public String getCreateTableStatement();
+
+   /**
+   * Set default options for this database
+   */
+  public void addDefaultOptions();
+
 }

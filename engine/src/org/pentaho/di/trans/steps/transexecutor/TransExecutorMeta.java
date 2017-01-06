@@ -38,7 +38,6 @@ import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.util.CurrentDirectoryResolver;
@@ -320,7 +319,7 @@ public class TransExecutorMeta extends BaseStepMeta implements StepMetaInterface
     for ( int i = 0; i < outputRowsField.length; i++ ) {
       retval.append( "      " ).append( XMLHandler.openTag( "result_rows_field" ) );
       retval.append( XMLHandler.addTagValue( "name", outputRowsField[i], false ) );
-      retval.append( XMLHandler.addTagValue( "type", ValueMeta.getTypeDesc( outputRowsType[i] ), false ) );
+      retval.append( XMLHandler.addTagValue( "type", ValueMetaFactory.getValueMetaName( outputRowsType[i] ), false ) );
       retval.append( XMLHandler.addTagValue( "length", outputRowsLength[i], false ) );
       retval.append( XMLHandler.addTagValue( "precision", outputRowsPrecision[i], false ) );
       retval.append( XMLHandler.closeTag( "result_rows_field" ) ).append( Const.CR );
@@ -385,7 +384,7 @@ public class TransExecutorMeta extends BaseStepMeta implements StepMetaInterface
         Node fieldNode = XMLHandler.getSubNodeByNr( stepnode, "result_rows_field", i );
 
         outputRowsField[i] = XMLHandler.getTagValue( fieldNode, "name" );
-        outputRowsType[i] = ValueMeta.getType( XMLHandler.getTagValue( fieldNode, "type" ) );
+        outputRowsType[i] = ValueMetaFactory.getIdForValueMeta( XMLHandler.getTagValue( fieldNode, "type" ) );
         outputRowsLength[i] = Const.toInt( XMLHandler.getTagValue( fieldNode, "length" ), -1 );
         outputRowsPrecision[i] = Const.toInt( XMLHandler.getTagValue( fieldNode, "precision" ), -1 );
       }
@@ -437,7 +436,8 @@ public class TransExecutorMeta extends BaseStepMeta implements StepMetaInterface
 
     for ( int i = 0; i < nrFields; i++ ) {
       outputRowsField[i] = rep.getStepAttributeString( id_step, i, "result_rows_field_name" );
-      outputRowsType[i] = ValueMeta.getType( rep.getStepAttributeString( id_step, i, "result_rows_field_type" ) );
+      outputRowsType[i] = ValueMetaFactory.getIdForValueMeta(
+        rep.getStepAttributeString( id_step, i, "result_rows_field_type" ) );
       outputRowsLength[i] = (int) rep.getStepAttributeInteger( id_step, i, "result_rows_field_length" );
       outputRowsPrecision[i] = (int) rep.getStepAttributeInteger( id_step, i, "result_rows_field_precision" );
     }
@@ -490,8 +490,8 @@ public class TransExecutorMeta extends BaseStepMeta implements StepMetaInterface
 
     for ( int i = 0; i < outputRowsField.length; i++ ) {
       rep.saveStepAttribute( id_transformation, id_step, i, "result_rows_field_name", outputRowsField[i] );
-      rep.saveStepAttribute( id_transformation, id_step, i, "result_rows_field_type", ValueMeta.getTypeDesc(
-          outputRowsType[i] ) );
+      rep.saveStepAttribute( id_transformation, id_step, i, "result_rows_field_type",
+        ValueMetaFactory.getValueMetaName( outputRowsType[i] ) );
       rep.saveStepAttribute( id_transformation, id_step, i, "result_rows_field_length", outputRowsLength[i] );
       rep.saveStepAttribute( id_transformation, id_step, i, "result_rows_field_precision", outputRowsPrecision[i] );
     }
@@ -1347,7 +1347,7 @@ public class TransExecutorMeta extends BaseStepMeta implements StepMetaInterface
   }
 
   private boolean isTransDefined() {
-    return !Utils.isEmpty( fileName ) || transObjectId != null || ( !Utils.isEmpty( this.directoryPath ) && !Const
+    return !Utils.isEmpty( fileName ) || transObjectId != null || ( !Utils.isEmpty( this.directoryPath ) && !Utils
         .isEmpty( transName ) );
   }
 

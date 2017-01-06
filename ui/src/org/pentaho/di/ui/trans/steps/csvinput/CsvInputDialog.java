@@ -65,8 +65,9 @@ import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LoggingRegistry;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
@@ -538,7 +539,7 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
           ColumnInfo.COLUMN_TYPE_TEXT, false ),
         new ColumnInfo(
           BaseMessages.getString( PKG, inputMeta.getDescription( "FIELD_TYPE" ) ),
-          ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes(), true ),
+          ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMetaFactory.getValueMetaNames(), true ),
         new ColumnInfo(
           BaseMessages.getString( PKG, inputMeta.getDescription( "FIELD_FORMAT" ) ),
           ColumnInfo.COLUMN_TYPE_FORMAT, 2 ),
@@ -559,13 +560,13 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
           ColumnInfo.COLUMN_TYPE_TEXT, false ),
         new ColumnInfo(
           BaseMessages.getString( PKG, inputMeta.getDescription( "FIELD_TRIM_TYPE" ) ),
-          ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.trimTypeDesc ), };
+          ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMetaString.trimTypeDesc ), };
 
     colinf[2].setComboValuesSelectionListener( new ComboValuesSelectionListener() {
 
       public String[] getComboValues( TableItem tableItem, int rowNr, int colNr ) {
         String[] comboValues = new String[] {};
-        int type = ValueMeta.getType( tableItem.getText( colNr - 1 ) );
+        int type = ValueMetaFactory.getIdForValueMeta( tableItem.getText( colNr - 1 ) );
         switch ( type ) {
           case ValueMetaInterface.TYPE_DATE:
             comboValues = Const.getDateFormats();
@@ -768,7 +769,7 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
       TableItem item = new TableItem( wFields.table, SWT.NONE );
       int colnr = 1;
       item.setText( colnr++, Const.NVL( field.getName(), "" ) );
-      item.setText( colnr++, ValueMeta.getTypeDesc( field.getType() ) );
+      item.setText( colnr++, ValueMetaFactory.getValueMetaName( field.getType() ) );
       item.setText( colnr++, Const.NVL( field.getFormat(), "" ) );
       item.setText( colnr++, field.getLength() >= 0 ? Integer.toString( field.getLength() ) : "" );
       item.setText( colnr++, field.getPrecision() >= 0 ? Integer.toString( field.getPrecision() ) : "" );
@@ -823,14 +824,14 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
 
       int colnr = 1;
       inputMeta.getInputFields()[i].setName( item.getText( colnr++ ) );
-      inputMeta.getInputFields()[i].setType( ValueMeta.getType( item.getText( colnr++ ) ) );
+      inputMeta.getInputFields()[i].setType( ValueMetaFactory.getIdForValueMeta( item.getText( colnr++ ) ) );
       inputMeta.getInputFields()[i].setFormat( item.getText( colnr++ ) );
       inputMeta.getInputFields()[i].setLength( Const.toInt( item.getText( colnr++ ), -1 ) );
       inputMeta.getInputFields()[i].setPrecision( Const.toInt( item.getText( colnr++ ), -1 ) );
       inputMeta.getInputFields()[i].setCurrencySymbol( item.getText( colnr++ ) );
       inputMeta.getInputFields()[i].setDecimalSymbol( item.getText( colnr++ ) );
       inputMeta.getInputFields()[i].setGroupSymbol( item.getText( colnr++ ) );
-      inputMeta.getInputFields()[i].setTrimType( ValueMeta.getTrimTypeByDesc( item.getText( colnr++ ) ) );
+      inputMeta.getInputFields()[i].setTrimType( ValueMetaString.getTrimTypeByDesc( item.getText( colnr++ ) ) );
     }
     wFields.removeEmptyRows();
     wFields.setRowNums();
@@ -923,7 +924,7 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
       for ( int i = 0; i < fieldNames.length; i++ ) {
         TableItem item = new TableItem( wFields.table, SWT.NONE );
         item.setText( 1, fieldNames[i] );
-        item.setText( 2, ValueMeta.getTypeDesc( ValueMetaInterface.TYPE_STRING ) );
+        item.setText( 2, ValueMetaFactory.getValueMetaName( ValueMetaInterface.TYPE_STRING ) );
       }
       wFields.removeEmptyRows();
       wFields.setRowNums();

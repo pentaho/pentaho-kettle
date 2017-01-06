@@ -52,7 +52,8 @@ import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
@@ -386,7 +387,7 @@ public class RegexEvalDialog extends BaseStepDialog implements StepDialogInterfa
           false ),
         new ColumnInfo(
           BaseMessages.getString( PKG, "RegexEvalDialog.ColumnInfo.Type" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
-          ValueMeta.getTypes() ),
+          ValueMetaFactory.getValueMetaNames() ),
         new ColumnInfo(
           BaseMessages.getString( PKG, "RegexEvalDialog.ColumnInfo.Length" ), ColumnInfo.COLUMN_TYPE_TEXT,
           false ),
@@ -413,7 +414,7 @@ public class RegexEvalDialog extends BaseStepDialog implements StepDialogInterfa
           false ),
         new ColumnInfo(
           BaseMessages.getString( PKG, "RegexEvalDialog.ColumnInfo.TrimType" ),
-          ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.trimTypeDesc, true ), };
+          ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMetaString.trimTypeDesc, true ), };
 
     wFields =
       new TableView(
@@ -765,7 +766,7 @@ public class RegexEvalDialog extends BaseStepDialog implements StepDialogInterfa
       if ( input.getFieldName()[i] != null ) {
         ti.setText( 1, input.getFieldName()[i] );
       }
-      ti.setText( 2, ValueMeta.getTypeDesc( input.getFieldType()[i] ) );
+      ti.setText( 2, ValueMetaFactory.getValueMetaName( input.getFieldType()[i] ) );
       ti.setText( 3, input.getFieldLength()[i] >= 0 ? "" + input.getFieldLength()[i] : "" );
       ti.setText( 4, input.getFieldPrecision()[i] >= 0 ? ( "" + input.getFieldPrecision()[i] ) : "" );
       if ( input.getFieldFormat()[i] != null ) {
@@ -786,7 +787,7 @@ public class RegexEvalDialog extends BaseStepDialog implements StepDialogInterfa
       if ( input.getFieldIfNull()[i] != null ) {
         ti.setText( 10, input.getFieldIfNull()[i] );
       }
-      ti.setText( 11, ValueMeta.getTrimTypeDesc( input.getFieldTrimType()[i] ) );
+      ti.setText( 11, ValueMetaString.getTrimTypeDesc( input.getFieldTrimType()[i] ) );
     }
     wFields.setRowNums();
     wFields.optWidth( true );
@@ -818,7 +819,7 @@ public class RegexEvalDialog extends BaseStepDialog implements StepDialogInterfa
     for ( int i = 0; i < input.getFieldName().length; i++ ) {
       TableItem ti = wFields.getNonEmpty( i );
       input.getFieldName()[i] = ti.getText( 1 );
-      input.getFieldType()[i] = ValueMeta.getType( ti.getText( 2 ) );
+      input.getFieldType()[i] = ValueMetaFactory.getIdForValueMeta( ti.getText( 2 ) );
       input.getFieldLength()[i] = Const.toInt( ti.getText( 3 ), -1 );
       input.getFieldPrecision()[i] = Const.toInt( ti.getText( 4 ), -1 );
       input.getFieldFormat()[i] = ti.getText( 5 );
@@ -827,7 +828,7 @@ public class RegexEvalDialog extends BaseStepDialog implements StepDialogInterfa
       input.getFieldCurrency()[i] = ti.getText( 8 );
       input.getFieldNullIf()[i] = ti.getText( 9 );
       input.getFieldIfNull()[i] = ti.getText( 10 );
-      input.getFieldTrimType()[i] = ValueMeta.getTrimTypeByDesc( ti.getText( 11 ) );
+      input.getFieldTrimType()[i] = ValueMetaString.getTrimTypeByDesc( ti.getText( 11 ) );
     }
 
     dispose();

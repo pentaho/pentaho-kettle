@@ -100,8 +100,8 @@ import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransHopMeta;
@@ -473,7 +473,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
           ColumnInfo.COLUMN_TYPE_TEXT, false ),
         new ColumnInfo(
           BaseMessages.getString( PKG, "ScriptValuesDialogMod.ColumnInfo.Type" ),
-          ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes() ),
+          ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMetaFactory.getValueMetaNames() ),
         new ColumnInfo(
           BaseMessages.getString( PKG, "ScriptValuesDialogMod.ColumnInfo.Length" ),
           ColumnInfo.COLUMN_TYPE_TEXT, false ),
@@ -955,7 +955,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
         if ( input.getRename()[i] != null && !input.getFieldname()[i].equals( input.getRename()[i] ) ) {
           item.setText( 2, input.getRename()[i] );
         }
-        item.setText( 3, ValueMeta.getTypeDesc( input.getType()[i] ) );
+        item.setText( 3, ValueMetaFactory.getValueMetaName( input.getType()[i] ) );
         if ( input.getLength()[i] >= 0 ) {
           item.setText( 4, "" + input.getLength()[i] );
         }
@@ -1053,7 +1053,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
         || meta.getRename()[i].length() == 0 || meta.getRename()[i].equalsIgnoreCase( meta.getFieldname()[i] ) ) {
         meta.getRename()[i] = meta.getFieldname()[i];
       }
-      meta.getType()[i] = ValueMeta.getType( item.getText( 3 ) );
+      meta.getType()[i] = ValueMetaFactory.getIdForValueMeta( item.getText( 3 ) );
       String slen = item.getText( 4 );
       String sprc = item.getText( 5 );
       meta.getLength()[i] = Const.toInt( slen, -1 );
@@ -1499,7 +1499,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
                 TableItem ti = new TableItem( wFields.table, SWT.NONE );
                 ti.setText( 1, varname );
                 ti.setText( 2, "" );
-                ti.setText( 3, ValueMeta.getTypeDesc( type ) );
+                ti.setText( 3, ValueMetaFactory.getValueMetaName( type ) );
                 ti.setText( 4, length >= 0 ? ( "" + length ) : "" );
                 ti.setText( 5, precision >= 0 ? ( "" + precision ) : "" );
 

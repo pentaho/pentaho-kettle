@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -46,7 +46,8 @@ public class LdapSslProtocol extends LdapProtocol {
     boolean trustAllCertificates = false;
 
     if ( meta.isUseCertificate() ) {
-      trustStorePath = meta.getTrustStorePath();
+      trustStorePath = meta.getParentStepMeta().getParentTransMeta().
+              environmentSubstitute( meta.getTrustStorePath() );
       trustStorePassword = meta.getTrustStorePassword();
       trustAllCertificates = meta.isTrustAllCertificates();
     }

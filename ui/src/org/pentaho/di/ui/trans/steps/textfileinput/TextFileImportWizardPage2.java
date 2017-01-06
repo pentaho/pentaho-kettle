@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -44,7 +44,8 @@ import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.gui.TextFileInputFieldInterface;
-import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.steps.textfileinput.TextFileInputField;
 import org.pentaho.di.trans.steps.textfileinput.TextFileInputMeta;
@@ -229,8 +230,8 @@ public class TextFileImportWizardPage2 extends WizardPage {
     wlFieldtype.setLayoutData( fdlFieldtype );
     wFieldtype = new CCombo( composite, SWT.BORDER | SWT.READ_ONLY );
     props.setLook( wFieldtype );
-    for ( int i = 0; i < ValueMeta.getTypes().length; i++ ) {
-      wFieldtype.add( ValueMeta.getTypes()[i] );
+    for ( int i = 0; i < ValueMetaFactory.getValueMetaNames().length; i++ ) {
+      wFieldtype.add( ValueMetaFactory.getValueMetaNames()[i] );
     }
     fdFieldtype = new FormData();
     fdFieldtype.left = new FormAttachment( middle, margin );
@@ -283,8 +284,8 @@ public class TextFileImportWizardPage2 extends WizardPage {
     wlTrimtype.setLayoutData( fdlTrimtype );
     wTrimtype = new CCombo( composite, SWT.BORDER | SWT.READ_ONLY );
     props.setLook( wTrimtype );
-    for ( int i = 0; i < ValueMeta.trimTypeDesc.length; i++ ) {
-      wTrimtype.add( ValueMeta.trimTypeDesc[i] );
+    for ( int i = 0; i < ValueMetaString.trimTypeDesc.length; i++ ) {
+      wTrimtype.add( ValueMetaString.trimTypeDesc[i] );
     }
     fdTrimtype = new FormData();
     fdTrimtype.left = new FormAttachment( middle, margin );
@@ -450,7 +451,7 @@ public class TextFileImportWizardPage2 extends WizardPage {
       public void widgetSelected( SelectionEvent e ) {
         int idx = wFields.getSelectionIndex();
         if ( idx >= 0 ) {
-          int valtype = ValueMeta.getType( wFieldtype.getText() );
+          int valtype = ValueMetaFactory.getIdForValueMeta( wFieldtype.getText() );
           TextFileInputField field = (TextFileInputField) fields.get( idx );
           field.setType( valtype );
         }
@@ -603,7 +604,7 @@ public class TextFileImportWizardPage2 extends WizardPage {
       public void widgetSelected( SelectionEvent e ) {
         int idx = wFields.getSelectionIndex();
         if ( idx >= 0 ) {
-          int trimType = ValueMeta.getTrimTypeByDesc( wTrimtype.getText() );
+          int trimType = ValueMetaString.getTrimTypeByDesc( wTrimtype.getText() );
           TextFileInputField field = (TextFileInputField) fields.get( idx );
           field.setTrimType( trimType );
         }

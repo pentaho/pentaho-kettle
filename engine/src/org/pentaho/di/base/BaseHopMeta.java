@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2016-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -37,6 +37,7 @@ public abstract class BaseHopMeta<T> implements Cloneable, XMLInterface {
   protected boolean enabled;
   protected boolean changed;
   protected ObjectId id;
+  private boolean errorHop;
 
   public ObjectId getObjectId() {
     return id;
@@ -81,4 +82,13 @@ public abstract class BaseHopMeta<T> implements Cloneable, XMLInterface {
       enabled = en;
     }
   }
+
+  public boolean isErrorHop() {
+    return errorHop;
+  }
+
+  public void setErrorHop( boolean errorHop ) {
+    this.errorHop = errorHop;
+  }
+
 }

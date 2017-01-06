@@ -27,6 +27,10 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.plugins.PluginRegistry;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
+import org.pentaho.di.core.row.value.ValueMetaPluginType;
 import org.pentaho.di.core.row.value.ValueMetaString;
 
 import junit.framework.TestCase;
@@ -487,6 +491,51 @@ public class ValueMetaTest extends TestCase {
     assertEquals( originalValue, string );
   }
 
+  public void testLazyConversionNullInteger() throws Exception {
+    byte[] data = new byte[0];
+    ValueMetaInterface intValueMeta = new ValueMeta( "i", ValueMetaInterface.TYPE_BOOLEAN );
+    intValueMeta.setConversionMask( null );
+    intValueMeta.setLength( 7 );
+    intValueMeta.setStorageType( ValueMetaInterface.STORAGE_TYPE_BINARY_STRING );
+    ValueMetaInterface strValueMeta = new ValueMeta( "str", ValueMetaInterface.TYPE_STRING );
+    intValueMeta.setStorageMetadata( strValueMeta );
+
+    Double numberValue = intValueMeta.getNumber( data );
+    assertEquals( null, numberValue );
+    Long integerValue = intValueMeta.getInteger( data );
+    assertEquals( null, integerValue );
+    BigDecimal bigNumberValue = intValueMeta.getBigNumber( data );
+    assertEquals( null, bigNumberValue );
+    Date dateValue = intValueMeta.getDate( data );
+    assertEquals( null, dateValue );
+    String string = intValueMeta.getString( data );
+    assertEquals( null, string );
+  }
+
+  public void testLazyConversionNullNumber() throws Exception {
+    byte[] data = new byte[0];
+    ValueMetaInterface intValueMeta = new ValueMeta( "i", ValueMetaInterface.TYPE_NUMBER );
+    intValueMeta.setConversionMask( null );
+    intValueMeta.setLength( 7 );
+    intValueMeta.setStorageType( ValueMetaInterface.STORAGE_TYPE_BINARY_STRING );
+    ValueMetaInterface strValueMeta = new ValueMeta( "str", ValueMetaInterface.TYPE_STRING );
+    intValueMeta.setStorageMetadata( strValueMeta );
+
+    Double numberValue = intValueMeta.getNumber( data );
+    assertEquals( null, numberValue );
+    Long integerValue = intValueMeta.getInteger( data );
+    assertEquals( null, integerValue );
+    BigDecimal bigNumberValue = intValueMeta.getBigNumber( data );
+    assertEquals( null, bigNumberValue );
+    Date dateValue = intValueMeta.getDate( data );
+    assertEquals( null, dateValue );
+    String string = intValueMeta.getString( data );
+    assertEquals( null, string );
+
+    Boolean b = intValueMeta.getBoolean( data );
+    assertEquals( null, b );
+  }
+
   public void testCompareIntegersNormalStorageData() throws Exception {
     Long integer1 = new Long( 1234L );
     Long integer2 = new Long( 1235L );
@@ -630,5 +679,18 @@ public class ValueMetaTest extends TestCase {
 
   public void testValueMetaInheritance() {
     assertTrue( new ValueMeta() instanceof ValueMetaInterface );
+  }
+
+  public void testGetNativeDataTypeClass() throws KettleException {
+    PluginRegistry.addPluginType( ValueMetaPluginType.getInstance() );
+    PluginRegistry.init();
+    String[] valueMetaNames = ValueMetaFactory.getValueMetaNames();
+
+    for ( int i = 0; i < valueMetaNames.length; i++ ) {
+      int vmId = ValueMetaFactory.getIdForValueMeta( valueMetaNames[i] );
+      ValueMeta vm = new ValueMeta( "", vmId );
+      ValueMetaInterface vmi = ValueMetaFactory.createValueMeta( vmId );
+      assertTrue( vm.getNativeDataTypeClass().equals( vmi.getNativeDataTypeClass() ) );
+    }
   }
 }

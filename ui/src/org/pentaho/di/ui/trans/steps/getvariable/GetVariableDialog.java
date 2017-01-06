@@ -43,7 +43,8 @@ import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -147,8 +148,8 @@ public class GetVariableDialog extends BaseStepDialog implements StepDialogInter
           BaseMessages.getString( PKG, "GetVariableDialog.VariableColumn.Column" ),
           ColumnInfo.COLUMN_TYPE_TEXT, false ),
         new ColumnInfo(
-          BaseMessages.getString( PKG, "System.Column.Type" ), ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta
-            .getTypes() ),
+          BaseMessages.getString( PKG, "System.Column.Type" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+          ValueMetaFactory.getValueMetaNames() ),
         new ColumnInfo(
           BaseMessages.getString( PKG, "System.Column.Format" ), ColumnInfo.COLUMN_TYPE_FORMAT, 3 ),
         new ColumnInfo(
@@ -163,7 +164,7 @@ public class GetVariableDialog extends BaseStepDialog implements StepDialogInter
           BaseMessages.getString( PKG, "System.Column.Group" ), ColumnInfo.COLUMN_TYPE_TEXT, false ),
         new ColumnInfo(
           BaseMessages.getString( PKG, "GetVariableDialog.TrimType.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
-          ValueMeta.getTrimTypeDescriptions() ), };
+          ValueMetaString.getTrimTypeDescriptions() ), };
 
     colinf[1].setToolTip( BaseMessages.getString( PKG, "GetVariableDialog.VariableColumn.Tooltip" ) );
     colinf[1].setUsingVariables( true );
@@ -261,14 +262,14 @@ public class GetVariableDialog extends BaseStepDialog implements StepDialogInter
       FieldDefinition currentField = input.getFieldDefinitions()[i];
       item.setText( index++, Const.NVL( currentField.getFieldName(), "" ) );
       item.setText( index++, Const.NVL( currentField.getVariableString(), "" ) );
-      item.setText( index++, ValueMeta.getTypeDesc( currentField.getFieldType() ) );
+      item.setText( index++, ValueMetaFactory.getValueMetaName( currentField.getFieldType() ) );
       item.setText( index++, Const.NVL( currentField.getFieldFormat(), "" ) );
       item.setText( index++, currentField.getFieldLength() < 0 ? "" : ( "" + currentField.getFieldLength() ) );
       item.setText( index++, currentField.getFieldPrecision() < 0 ? "" : ( "" + currentField.getFieldPrecision() ) );
       item.setText( index++, Const.NVL( currentField.getCurrency(), "" ) );
       item.setText( index++, Const.NVL( currentField.getDecimal(), "" ) );
       item.setText( index++, Const.NVL( currentField.getGroup(), "" ) );
-      item.setText( index++, ValueMeta.getTrimTypeDesc( currentField.getTrimType() ) );
+      item.setText( index++, ValueMetaString.getTrimTypeDesc( currentField.getTrimType() ) );
     }
 
     wFields.setRowNums();
@@ -300,14 +301,14 @@ public class GetVariableDialog extends BaseStepDialog implements StepDialogInter
       int index = 1;
       currentField.setFieldName( item.getText( index++ ) );
       currentField.setVariableString( item.getText( index++ ) );
-      currentField.setFieldType( ValueMeta.getType( item.getText( index++ ) ) );
+      currentField.setFieldType( ValueMetaFactory.getIdForValueMeta( item.getText( index++ ) ) );
       currentField.setFieldFormat( item.getText( index++ ) );
       currentField.setFieldLength( Const.toInt( item.getText( index++ ), -1 ) );
       currentField.setFieldPrecision( Const.toInt( item.getText( index++ ), -1 ) );
       currentField.setCurrency( item.getText( index++ ) );
       currentField.setDecimal( item.getText( index++ ) );
       currentField.setGroup( item.getText( index++ ) );
-      currentField.setTrimType( ValueMeta.getTrimTypeByDesc( item.getText( index++ ) ) );
+      currentField.setTrimType( ValueMetaString.getTrimTypeByDesc( item.getText( index++ ) ) );
     }
   }
 

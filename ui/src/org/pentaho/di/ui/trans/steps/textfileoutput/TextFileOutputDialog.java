@@ -62,8 +62,9 @@ import org.pentaho.di.core.Props;
 import org.pentaho.di.core.compress.CompressionProviderFactory;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
@@ -728,10 +729,6 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
     wAppend.addSelectionListener( new SelectionAdapter() {
       public void widgetSelected( SelectionEvent e ) {
         input.setChanged();
-
-        if ( checkAppendNoHeaderVariable( "y" ) ) {
-          headerDisabling();
-        }
       }
 
       private void headerDisabling() {
@@ -1089,7 +1086,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
     colinf[1] =
       new ColumnInfo(
         BaseMessages.getString( PKG, "TextFileOutputDialog.TypeColumn.Column" ),
-        ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes() );
+        ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMetaFactory.getValueMetaNames() );
     colinf[2] =
       new ColumnInfo(
         BaseMessages.getString( PKG, "TextFileOutputDialog.FormatColumn.Column" ),
@@ -1117,7 +1114,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
     colinf[8] =
       new ColumnInfo(
         BaseMessages.getString( PKG, "TextFileOutputDialog.TrimTypeColumn.Column" ),
-        ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.trimTypeDesc, true );
+        ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMetaString.trimTypeDesc, true );
     colinf[9] =
       new ColumnInfo(
         BaseMessages.getString( PKG, "TextFileOutputDialog.NullColumn.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
@@ -1278,11 +1275,6 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
     setSize();
 
     getData();
-
-    if ( checkAppendNoHeaderVariable( "y" ) ) {
-      // Actual info just after getData() calling
-      wHeader.setEnabled( !wAppend.getSelection() );
-    }
 
     activeFileNameField();
     enableParentFolder();
@@ -1606,7 +1598,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
       field.setCurrencySymbol( item.getText( 6 ) );
       field.setDecimalSymbol( item.getText( 7 ) );
       field.setGroupingSymbol( item.getText( 8 ) );
-      field.setTrimType( ValueMeta.getTrimTypeByDesc( item.getText( 9 ) ) );
+      field.setTrimType( ValueMetaString.getTrimTypeByDesc( item.getText( 9 ) ) );
       field.setNullString( item.getText( 10 ) );
       //CHECKSTYLE:Indentation:OFF
       tfoi.getOutputFields()[i] = field;
@@ -1642,7 +1634,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
             }
 
             // trim type
-            tableItem.setText( 9, Const.NVL( ValueMeta.getTrimTypeDesc( v.getTrimType() ), "" ) );
+            tableItem.setText( 9, Const.NVL( ValueMetaString.getTrimTypeDesc( v.getTrimType() ), "" ) );
 
             // conversion mask
             if ( !Utils.isEmpty( v.getConversionMask() ) ) {
@@ -1695,9 +1687,9 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 
       item.setText( 4, "" );
       item.setText( 5, "" );
-      item.setText( 9, ValueMeta.getTrimTypeDesc( ValueMetaInterface.TRIM_TYPE_BOTH ) );
+      item.setText( 9, ValueMetaString.getTrimTypeDesc( ValueMetaInterface.TRIM_TYPE_BOTH ) );
 
-      int type = ValueMeta.getType( item.getText( 2 ) );
+      int type = ValueMetaFactory.getIdForValueMeta( item.getText( 2 ) );
       switch ( type ) {
         case ValueMetaInterface.TYPE_STRING:
           item.setText( 3, "" );
@@ -1727,8 +1719,4 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
     wCreateParentFolder.setEnabled( !wFileIsCommand.getSelection() );
   }
 
-  private boolean checkAppendNoHeaderVariable( String expectedResult ) {
-    String value = Const.NVL( System.getProperty( Const.KETTLE_COMPATIBILITY_TEXT_FILE_OUTPUT_APPEND_NO_HEADER ), "N" );
-    return value.equalsIgnoreCase( expectedResult );
-  }
 }

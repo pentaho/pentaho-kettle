@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,20 +22,22 @@
 
 package org.pentaho.di.trans.step;
 
+import java.util.List;
+
 import org.junit.Test;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.trans.step.errorhandling.Stream;
+import org.pentaho.di.trans.step.errorhandling.StreamInterface;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.doReturn;
 
-/**
- * @author Andrey Khayrutdinov
- */
 public class BaseStepMetaCloningTest {
 
   @Test
-  public void cloningKeepsAllExceptIoMeta() throws Exception {
+  public void testClone() throws Exception {
     final Database db1 = mock( Database.class );
     final Database db2 = mock( Database.class );
     final Repository repository = mock( Repository.class );
@@ -58,6 +60,64 @@ public class BaseStepMetaCloningTest {
     assertEquals( meta.repository, clone.repository );
     assertEquals( meta.parentStepMeta, clone.parentStepMeta );
 
-    assertNull( clone.ioMeta );
+    assertNotNull( clone.ioMeta );
+    assertEquals( meta.ioMeta.isInputAcceptor(), clone.ioMeta.isInputAcceptor() );
+    assertEquals( meta.ioMeta.isInputDynamic(), clone.ioMeta.isInputDynamic() );
+    assertEquals( meta.ioMeta.isInputOptional(), clone.ioMeta.isInputOptional() );
+    assertEquals( meta.ioMeta.isOutputDynamic(), clone.ioMeta.isOutputDynamic() );
+    assertEquals( meta.ioMeta.isOutputProducer(), clone.ioMeta.isOutputProducer() );
+    assertEquals( meta.ioMeta.isSortedDataRequired(), clone.ioMeta.isSortedDataRequired() );
+    assertNotNull( clone.ioMeta.getInfoStreams() );
+    assertEquals( 0, clone.ioMeta.getInfoStreams().size() );
+  }
+
+  @Test
+  public void testCloneWithInfoSteps() throws Exception {
+    final Database db1 = mock( Database.class );
+    final Database db2 = mock( Database.class );
+    final Repository repository = mock( Repository.class );
+    final StepMeta stepMeta = mock( StepMeta.class );
+
+    BaseStepMeta meta = new BaseStepMeta();
+    meta.setChanged( true );
+    meta.databases = new Database[] { db1, db2 };
+    meta.ioMeta = new StepIOMeta( true, false, false, false, false, false );
+
+    final String refStepName = "referenced step";
+    final StepMeta refStepMeta = mock( StepMeta.class );
+    doReturn( refStepName ).when( refStepMeta ).getName();
+    StreamInterface stream = new Stream( StreamInterface.StreamType.INFO, refStepMeta, null, null, refStepName );
+    meta.ioMeta.addStream( stream );
+    meta.repository = repository;
+    meta.parentStepMeta = stepMeta;
+
+    BaseStepMeta clone = (BaseStepMeta) meta.clone();
+    assertTrue( clone.hasChanged() );
+
+    // is it OK ?
+    assertTrue( clone.databases == meta.databases );
+    assertArrayEquals( meta.databases, clone.databases );
+
+    assertEquals( meta.repository, clone.repository );
+    assertEquals( meta.parentStepMeta, clone.parentStepMeta );
+
+    assertNotNull( clone.ioMeta );
+    assertEquals( meta.ioMeta.isInputAcceptor(), clone.ioMeta.isInputAcceptor() );
+    assertEquals( meta.ioMeta.isInputDynamic(), clone.ioMeta.isInputDynamic() );
+    assertEquals( meta.ioMeta.isInputOptional(), clone.ioMeta.isInputOptional() );
+    assertEquals( meta.ioMeta.isOutputDynamic(), clone.ioMeta.isOutputDynamic() );
+    assertEquals( meta.ioMeta.isOutputProducer(), clone.ioMeta.isOutputProducer() );
+    assertEquals( meta.ioMeta.isSortedDataRequired(), clone.ioMeta.isSortedDataRequired() );
+
+    final List<StreamInterface> clonedInfoStreams = clone.ioMeta.getInfoStreams();
+    assertNotNull( clonedInfoStreams );
+    assertEquals( 1, clonedInfoStreams.size() );
+
+    final StreamInterface clonedStream = clonedInfoStreams.get( 0 );
+    assertNotSame( stream, clonedStream );
+    assertEquals( stream.getStreamType(), clonedStream.getStreamType() );
+    assertEquals( refStepName, clonedStream.getStepname() );
+
+    assertSame( refStepMeta, clonedStream.getStepMeta() ); // PDI-15799
   }
 }

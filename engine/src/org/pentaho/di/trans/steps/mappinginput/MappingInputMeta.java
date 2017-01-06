@@ -32,12 +32,13 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -175,7 +176,7 @@ public class MappingInputMeta extends BaseStepMeta implements StepMetaInterface 
         Node fnode = XMLHandler.getSubNodeByNr( fields, "field", i );
 
         fieldName[ i ] = XMLHandler.getTagValue( fnode, "name" );
-        fieldType[ i ] = ValueMeta.getType( XMLHandler.getTagValue( fnode, "type" ) );
+        fieldType[ i ] = ValueMetaFactory.getIdForValueMeta( XMLHandler.getTagValue( fnode, "type" ) );
         String slength = XMLHandler.getTagValue( fnode, "length" );
         String sprecision = XMLHandler.getTagValue( fnode, "precision" );
 
@@ -200,7 +201,8 @@ public class MappingInputMeta extends BaseStepMeta implements StepMetaInterface 
         retval.append( "      <field>" ).append( Const.CR );
         retval.append( "        " ).append( XMLHandler.addTagValue( "name", fieldName[ i ] ) );
         retval
-          .append( "        " ).append( XMLHandler.addTagValue( "type", ValueMeta.getTypeDesc( fieldType[ i ] ) ) );
+          .append( "        " ).append( XMLHandler.addTagValue( "type",
+            ValueMetaFactory.getValueMetaName( fieldType[ i ] ) ) );
         retval.append( "        " ).append( XMLHandler.addTagValue( "length", fieldLength[ i ] ) );
         retval.append( "        " ).append( XMLHandler.addTagValue( "precision", fieldPrecision[ i ] ) );
         retval.append( "      </field>" ).append( Const.CR );
@@ -320,11 +322,16 @@ public class MappingInputMeta extends BaseStepMeta implements StepMetaInterface 
             if ( valueType == ValueMetaInterface.TYPE_NONE ) {
               valueType = ValueMetaInterface.TYPE_STRING;
             }
-            ValueMetaInterface v = new ValueMeta( fieldName[ i ], valueType );
-            v.setLength( fieldLength[ i ] );
-            v.setPrecision( fieldPrecision[ i ] );
-            v.setOrigin( origin );
-            row.addValueMeta( v );
+            ValueMetaInterface v;
+            try {
+              v = ValueMetaFactory.createValueMeta( fieldName[ i ], valueType );
+              v.setLength( fieldLength[ i ] );
+              v.setPrecision( fieldPrecision[ i ] );
+              v.setOrigin( origin );
+              row.addValueMeta( v );
+            } catch ( KettlePluginException e ) {
+              throw new KettleStepException( e );
+            }
           }
         }
       }
@@ -342,7 +349,7 @@ public class MappingInputMeta extends BaseStepMeta implements StepMetaInterface 
 
       for ( int i = 0; i < nrfields; i++ ) {
         fieldName[ i ] = rep.getStepAttributeString( id_step, i, "field_name" );
-        fieldType[ i ] = ValueMeta.getType( rep.getStepAttributeString( id_step, i, "field_type" ) );
+        fieldType[ i ] = ValueMetaFactory.getIdForValueMeta( rep.getStepAttributeString( id_step, i, "field_type" ) );
         fieldLength[ i ] = (int) rep.getStepAttributeInteger( id_step, i, "field_length" );
         fieldPrecision[ i ] = (int) rep.getStepAttributeInteger( id_step, i, "field_precision" );
       }
@@ -360,9 +367,8 @@ public class MappingInputMeta extends BaseStepMeta implements StepMetaInterface 
       for ( int i = 0; i < fieldName.length; i++ ) {
         if ( fieldName[ i ] != null && fieldName[ i ].length() != 0 ) {
           rep.saveStepAttribute( id_transformation, id_step, i, "field_name", fieldName[ i ] );
-          rep
-            .saveStepAttribute( id_transformation, id_step, i, "field_type", ValueMeta
-              .getTypeDesc( fieldType[ i ] ) );
+          rep.saveStepAttribute( id_transformation, id_step, i, "field_type",
+            ValueMetaFactory.getValueMetaName( fieldType[ i ] ) );
           rep.saveStepAttribute( id_transformation, id_step, i, "field_length", fieldLength[ i ] );
           rep.saveStepAttribute( id_transformation, id_step, i, "field_precision", fieldPrecision[ i ] );
         }

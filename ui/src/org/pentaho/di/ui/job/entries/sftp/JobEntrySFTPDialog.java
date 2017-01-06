@@ -975,11 +975,11 @@ public class JobEntrySFTPDialog extends JobEntryDialog implements JobEntryDialog
             realProxyHost,
             jobMeta.environmentSubstitute( wProxyPort.getText() ),
             jobMeta.environmentSubstitute( wProxyUsername.getText() ),
-            jobMeta.environmentSubstitute( wProxyPassword.getText() ),
+            Utils.resolvePassword( jobMeta, wProxyPassword.getText() ),
             wProxyType.getText() );
         }
         // login to ftp host ...
-        sftpclient.login( jobMeta.environmentSubstitute( wPassword.getText() ) );
+        sftpclient.login( jobEntry.getRealPassword( jobMeta.environmentSubstitute( wPassword.getText() ) ) );
 
         retval = true;
       }

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -26,6 +26,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Arrays;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
@@ -52,7 +53,7 @@ public class TextFileInputUtils {
 
   public static final String[] guessStringsFromLine( VariableSpace space, LogChannelInterface log, String line,
       TextFileInputMeta inf, String delimiter, String enclosure, String escapeCharacter ) throws KettleException {
-    List<String> strings = new ArrayList<String>();
+    List<String> strings = new ArrayList<>();
 
     String pol; // piece of line
 
@@ -736,18 +737,42 @@ public class TextFileInputUtils {
         }
       } else {
         // Fixed file format: Simply get the strings at the required positions...
+        // Note - charBased is the old default behavior. If this is an old transformation, content.length will be null
+        // and should be processed as before. If the content.length is equal to "Characters" or there is no specified encoding,
+        // it will still use the old behavior. The *only* way to get the new behavior is if content.length = "Bytes" and
+        // the encoding is specified.
+        boolean charBased = ( inf.content.length == null || inf.content.length.equalsIgnoreCase( "Characters" ) || inf.getEncoding() == null ); // Default to classic behavior
         for ( int i = 0; i < inf.inputFiles.inputFields.length; i++ ) {
           BaseFileInputField field = inf.inputFiles.inputFields[i];
 
-          int length = line.length();
-
-          if ( field.getPosition() + field.getLength() <= length ) {
-            strings[i] = line.substring( field.getPosition(), field.getPosition() + field.getLength() );
-          } else {
-            if ( field.getPosition() < length ) {
-              strings[i] = line.substring( field.getPosition() );
+          int length;
+          int fPos = field.getPosition();
+          int fLength = field.getLength();
+          int fPl = fPos + fLength;
+          if ( charBased ) {
+            length = line.length();
+            if ( fPl <= length ) {
+              strings[i] = line.substring( fPos, fPl );
             } else {
-              strings[i] = "";
+              if ( fPos < length ) {
+                strings[i] = line.substring( fPos );
+              } else {
+                strings[i] = "";
+              }
+            }
+          } else {
+            byte[] b = null;
+            String enc = inf.getEncoding();
+            b = line.getBytes( enc );
+            length = b.length;
+            if ( fPl <= length ) {
+              strings[i] = new String( Arrays.copyOfRange( b, fPos, fPl ), enc );
+            } else {
+              if ( fPos < length ) {
+                strings[i] = new String( Arrays.copyOfRange( b, fPos, length - 1 ), enc );
+              } else {
+                strings[i] = "";
+              }
             }
           }
         }

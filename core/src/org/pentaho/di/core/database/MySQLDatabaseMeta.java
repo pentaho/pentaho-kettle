@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -458,5 +458,11 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
   @Override public boolean fullExceptionLog( Exception e ) {
     Throwable cause = ( e == null ? null : e.getCause() );
     return !( cause != null && SHORT_MESSAGE_EXCEPTIONS.contains( cause.getClass().getName() ) );
+  }
+
+  @Override
+  public void addDefaultOptions() {
+    addExtraOption( getPluginId(), "defaultFetchSize", "500" );
+    addExtraOption( getPluginId(), "useCursorFetch", "true" );
   }
 }

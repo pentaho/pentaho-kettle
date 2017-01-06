@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -44,7 +44,9 @@ import org.w3c.dom.Node;
  *
  */
 public class StepErrorMeta extends ChangedFlag implements XMLInterface, Cloneable {
-  public static final String XML_TAG = "error";
+  public static final String XML_ERROR_TAG = "error";
+  public static final String XML_SOURCE_STEP_TAG = "source_step";
+  public static final String XML_TARGET_STEP_TAG = "target_step";
 
   /** The source step that can send the error rows */
   private StepMeta sourceStep;
@@ -150,11 +152,11 @@ public class StepErrorMeta extends ChangedFlag implements XMLInterface, Cloneabl
   public String getXML() {
     StringBuilder xml = new StringBuilder( 300 );
 
-    xml.append( "      " ).append( XMLHandler.openTag( XML_TAG ) ).append( Const.CR );
+    xml.append( "      " ).append( XMLHandler.openTag( StepErrorMeta.XML_ERROR_TAG ) ).append( Const.CR );
     xml.append( "        " ).append(
-      XMLHandler.addTagValue( "source_step", sourceStep != null ? sourceStep.getName() : "" ) );
+      XMLHandler.addTagValue( StepErrorMeta.XML_SOURCE_STEP_TAG, sourceStep != null ? sourceStep.getName() : "" ) );
     xml.append( "        " ).append(
-      XMLHandler.addTagValue( "target_step", targetStep != null ? targetStep.getName() : "" ) );
+      XMLHandler.addTagValue( StepErrorMeta.XML_TARGET_STEP_TAG, targetStep != null ? targetStep.getName() : "" ) );
     xml.append( "        " ).append( XMLHandler.addTagValue( "is_enabled", enabled ) );
     xml.append( "        " ).append( XMLHandler.addTagValue( "nr_valuename", nrErrorsValuename ) );
     xml
@@ -165,7 +167,7 @@ public class StepErrorMeta extends ChangedFlag implements XMLInterface, Cloneabl
     xml.append( "        " ).append( XMLHandler.addTagValue( "max_errors", maxErrors ) );
     xml.append( "        " ).append( XMLHandler.addTagValue( "max_pct_errors", maxPercentErrors ) );
     xml.append( "        " ).append( XMLHandler.addTagValue( "min_pct_rows", minPercentRows ) );
-    xml.append( "      " ).append( XMLHandler.closeTag( XML_TAG ) ).append( Const.CR );
+    xml.append( "      " ).append( XMLHandler.closeTag( StepErrorMeta.XML_ERROR_TAG ) ).append( Const.CR );
 
     return xml.toString();
   }
@@ -173,8 +175,8 @@ public class StepErrorMeta extends ChangedFlag implements XMLInterface, Cloneabl
   public StepErrorMeta( VariableSpace variables, Node node, List<StepMeta> steps ) {
     this.variables = variables;
 
-    sourceStep = StepMeta.findStep( steps, XMLHandler.getTagValue( node, "source_step" ) );
-    targetStep = StepMeta.findStep( steps, XMLHandler.getTagValue( node, "target_step" ) );
+    sourceStep = StepMeta.findStep( steps, XMLHandler.getTagValue( node, StepErrorMeta.XML_SOURCE_STEP_TAG ) );
+    targetStep = StepMeta.findStep( steps, XMLHandler.getTagValue( node, StepErrorMeta.XML_TARGET_STEP_TAG ) );
     enabled = "Y".equals( XMLHandler.getTagValue( node, "is_enabled" ) );
     nrErrorsValuename = XMLHandler.getTagValue( node, "nr_valuename" );
     errorDescriptionsValuename = XMLHandler.getTagValue( node, "descriptions_valuename" );
