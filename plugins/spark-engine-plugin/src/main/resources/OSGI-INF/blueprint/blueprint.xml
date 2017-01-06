@@ -6,7 +6,7 @@
             http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
             http://www.pentaho.com/xml/schemas/pentaho-blueprint http://www.pentaho.com/xml/schemas/pentaho-blueprint.xsd">
 
-  <bean id="osgiEngine" class="org.pentaho.engine.foobar.FooBarOSGiEngine" scope="prototype">
+  <bean id="sparkEngine" class="org.pentaho.engine.spark.SparkEngine" scope="prototype">
     <pen:di-plugin type="org.pentaho.di.engine.ExecutionEnginePluginType"/>
   </bean>
 
