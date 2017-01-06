@@ -2383,6 +2383,7 @@ public class TransMeta extends AbstractMeta
    */
   public String getXML( boolean includeSteps, boolean includeDatabase, boolean includeSlaves, boolean includeClusters,
       boolean includePartitions ) throws KettleException {
+    sortSteps();
     Props props = null;
     if ( Props.isInitialized() ) {
       props = Props.getInstance();
