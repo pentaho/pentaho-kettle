@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -34,11 +34,9 @@ import java.util.SortedMap;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
-
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.swt.widgets.Display;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.BaseDatabaseMeta;
 import org.pentaho.di.core.database.DatabaseConnectionPoolParameter;
 import org.pentaho.di.core.database.DatabaseInterface;
@@ -1366,12 +1364,10 @@ public class DataHandler extends AbstractXulEventHandler {
       }
     }
 
-    if ( webAppName != null ) {
-      if ( Utils.isEmpty( meta.getDatabaseName() ) ) {
-        webAppName.setValue( "pentaho" );
-      } else {
-        webAppName.setValue( meta.getDatabaseName() );
-      }
+    if ( webAppName == null ) {
+      meta.getDatabaseInterface().setDatabaseName( "pentaho" );
+    } else {
+      webAppName.setValue( meta.getDatabaseName() );
     }
   }
 
