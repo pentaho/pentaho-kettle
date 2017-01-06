@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -69,6 +69,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 public class TransMetaTest {
+  public static final String STEP_NAME = "Any step name";
 
   @BeforeClass
   public static void initKettle() throws Exception {
@@ -296,7 +297,7 @@ public class TransMetaTest {
     dgm1.setFieldType( new String[]{
       ValueMetaFactory.getValueMetaName( ValueMetaInterface.TYPE_INTEGER ),
       ValueMetaFactory.getValueMetaName( ValueMetaInterface.TYPE_STRING ) } );
-    List<List<String>> dgm1Data = new ArrayList<List<String>>();
+    List<List<String>> dgm1Data = new ArrayList<>();
     dgm1Data.add( Arrays.asList( new String[]{ "1", "A" } ) );
     dgm1Data.add( Arrays.asList( new String[]{ "2", "B" } ) );
     dgm1.setDataLines( dgm1Data );
@@ -306,7 +307,7 @@ public class TransMetaTest {
     dgm2.setFieldName( new String[]{ "moreData" } );
     dgm2.setFieldType( new String[]{
       ValueMetaFactory.getValueMetaName( ValueMetaInterface.TYPE_STRING ) } );
-    List<List<String>> dgm2Data = new ArrayList<List<String>>();
+    List<List<String>> dgm2Data = new ArrayList<>();
     dgm2Data.add( Arrays.asList( new String[]{ "Some Informational Data" } ) );
     dgm2.setDataLines( dgm2Data );
 
@@ -353,6 +354,30 @@ public class TransMetaTest {
     transMeta.addStep( 0, stepMeta );
     assertEquals( 2, transMeta.steps.size() );
     assertEquals( 2, transMeta.stepChangeListeners.size() );
+  }
+
+  @Test
+  public void testIsAnySelectedStepUsedInTransHopsNothingSelectedCase() {
+    List<StepMeta> selectedSteps = Arrays.asList( new StepMeta(), new StepMeta(), new StepMeta() );
+    transMeta.getSteps().addAll( selectedSteps );
+
+    assertFalse( transMeta.isAnySelectedStepUsedInTransHops() );
+  }
+
+  @Test
+  public void testIsAnySelectedStepUsedInTransHopsAnySelectedCase() {
+    StepMeta stepMeta = new StepMeta();
+    stepMeta.setName( STEP_NAME );
+    TransHopMeta transHopMeta = new TransHopMeta();
+    stepMeta.setSelected( true );
+    List<StepMeta> selectedSteps = Arrays.asList( new StepMeta(), stepMeta, new StepMeta() );
+
+    transHopMeta.setToStep( stepMeta );
+    transHopMeta.setFromStep( stepMeta );
+    transMeta.getSteps().addAll( selectedSteps );
+    transMeta.addTransHop( transHopMeta );
+
+    assertTrue( transMeta.isAnySelectedStepUsedInTransHops() );
   }
 
   private static StepMeta mockStepMeta( String name ) {

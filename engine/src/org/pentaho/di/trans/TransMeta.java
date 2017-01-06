@@ -3532,6 +3532,26 @@ public class TransMeta extends AbstractMeta
   }
 
   /**
+   * Checks if any selected step has been used in a hop or not.
+   *
+   * @param stepMeta
+   *          The step queried.
+   * @return true if a step is used in a hop (active or not), false otherwise
+   */
+  public boolean isAnySelectedStepUsedInTransHops() {
+    List<StepMeta> selectedSteps = getSelectedSteps();
+    int i = 0;
+    while ( i < selectedSteps.size() ) {
+      StepMeta stepMeta = selectedSteps.get( i );
+      if ( isStepUsedInTransHops( stepMeta ) ) {
+        return true;
+      }
+      i++;
+    }
+    return false;
+  }
+
+  /**
    * Clears the different changed flags of the transformation.
    *
    */

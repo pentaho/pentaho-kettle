@@ -232,6 +232,10 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 
   public static final String STOP_TEXT = BaseMessages.getString( PKG, "TransLog.Button.StopTransformation" );
 
+  public static final String TRANS_GRAPH_ENTRY_SNIFF = "trans-graph-entry-sniff";
+
+  public static final String TRANS_GRAPH_ENTRY_AGAIN = "trans-graph-entry-align";
+
   private TransMeta transMeta;
 
   public Trans trans;
@@ -2565,8 +2569,6 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
           int sels = selection.size();
 
           Document doc = getXulDomContainer().getDocumentRoot();
-          XulMenuitem item = (XulMenuitem) doc.getElementById( "trans-graph-entry-newhop" );
-          item.setDisabled( sels != 2 );
 
           // TODO: cache the next line (seems fast enough)?
           //
@@ -2678,47 +2680,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
             }
           }
 
-          item = (XulMenuitem) doc.getElementById( "trans-graph-entry-align-snap" );
-
-          item.setAcceltext( "ALT-HOME" );
-          item.setLabel( BaseMessages.getString( PKG, "TransGraph.PopupMenu.SnapToGrid" ) );
-          item.setAccesskey( "alt-home" );
-
-          item = (XulMenuitem) doc.getElementById( "trans-graph-entry-open-mapping" );
-
-          XulMenu men = (XulMenu) doc.getElementById( "trans-graph-entry-sniff" );
-          men.setDisabled( trans == null || trans.isRunning() == false );
-          item = (XulMenuitem) doc.getElementById( "trans-graph-entry-sniff-input" );
-          item.setDisabled( trans == null || trans.isRunning() == false );
-          item = (XulMenuitem) doc.getElementById( "trans-graph-entry-sniff-output" );
-          item.setDisabled( trans == null || trans.isRunning() == false );
-          item = (XulMenuitem) doc.getElementById( "trans-graph-entry-sniff-error" );
-          item.setDisabled( !( stepMeta.supportsErrorHandling() && stepMeta.getStepErrorMeta() != null
-            && stepMeta.getStepErrorMeta().getTargetStep() != null && trans != null && trans.isRunning() ) );
-
-          XulMenu aMenu = (XulMenu) doc.getElementById( "trans-graph-entry-align" );
-          if ( aMenu != null ) {
-            aMenu.setDisabled( sels < 2 );
-          }
-
-          // item = (XulMenuitem) doc.getElementById("trans-graph-entry-data-movement-distribute");
-          // item.setSelected(stepMeta.isDistributes());
-
-          item = (XulMenuitem) doc.getElementById( "trans-graph-entry-partitioning" );
-          item.setDisabled( spoon.getPartitionSchemasNames( transMeta ).isEmpty() );
-
-          item = (XulMenuitem) doc.getElementById( "trans-graph-entry-data-movement-copy" );
-          item.setSelected( !stepMeta.isDistributes() );
-
-          item = (XulMenuitem) doc.getElementById( "trans-graph-entry-hide" );
-          item.setDisabled( !( stepMeta.isDrawn() && !transMeta.isStepUsedInTransHops( stepMeta ) ) );
-
-          item = (XulMenuitem) doc.getElementById( "trans-graph-entry-detach" );
-          item.setDisabled( !transMeta.isStepUsedInTransHops( stepMeta ) );
-
-          item = (XulMenuitem) doc.getElementById( "trans-graph-entry-errors" );
-          item.setDisabled( !stepMeta.supportsErrorHandling() );
-
+          initializeXulMenu( doc, selection, stepMeta );
           ConstUI.displayMenu( menu, canvas );
         }
       } else {
@@ -2777,6 +2739,53 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 
   public void clearSelection() {
     spoon.editUnselectAll();
+  }
+
+  protected void initializeXulMenu( Document doc, List<StepMeta> selection, StepMeta stepMeta ) throws KettleException {
+    XulMenuitem item = (XulMenuitem) doc.getElementById( "trans-graph-entry-newhop" );
+    int sels = selection.size();
+    item.setDisabled( sels != 2 );
+
+    item = (XulMenuitem) doc.getElementById( "trans-graph-entry-align-snap" );
+
+    item.setAcceltext( "ALT-HOME" );
+    item.setLabel( BaseMessages.getString( PKG, "TransGraph.PopupMenu.SnapToGrid" ) );
+    item.setAccesskey( "alt-home" );
+
+    item = (XulMenuitem) doc.getElementById( "trans-graph-entry-open-mapping" );
+
+    XulMenu men = (XulMenu) doc.getElementById( TRANS_GRAPH_ENTRY_SNIFF );
+    men.setDisabled( trans == null || trans.isRunning() == false );
+    item = (XulMenuitem) doc.getElementById( "trans-graph-entry-sniff-input" );
+    item.setDisabled( trans == null || trans.isRunning() == false );
+    item = (XulMenuitem) doc.getElementById( "trans-graph-entry-sniff-output" );
+    item.setDisabled( trans == null || trans.isRunning() == false );
+    item = (XulMenuitem) doc.getElementById( "trans-graph-entry-sniff-error" );
+    item.setDisabled( !( stepMeta.supportsErrorHandling() && stepMeta.getStepErrorMeta() != null
+      && stepMeta.getStepErrorMeta().getTargetStep() != null && trans != null && trans.isRunning() ) );
+
+    XulMenu aMenu = (XulMenu) doc.getElementById( TRANS_GRAPH_ENTRY_AGAIN );
+    if ( aMenu != null ) {
+      aMenu.setDisabled( sels < 2 );
+    }
+
+    // item = (XulMenuitem) doc.getElementById("trans-graph-entry-data-movement-distribute");
+    // item.setSelected(stepMeta.isDistributes());
+
+    item = (XulMenuitem) doc.getElementById( "trans-graph-entry-partitioning" );
+    item.setDisabled( spoon.getPartitionSchemasNames( transMeta ).isEmpty() );
+
+    item = (XulMenuitem) doc.getElementById( "trans-graph-entry-data-movement-copy" );
+    item.setSelected( !stepMeta.isDistributes() );
+
+    item = (XulMenuitem) doc.getElementById( "trans-graph-entry-hide" );
+    item.setDisabled( !( stepMeta.isDrawn() && !transMeta.isAnySelectedStepUsedInTransHops() ) );
+
+    item = (XulMenuitem) doc.getElementById( "trans-graph-entry-detach" );
+    item.setDisabled( !transMeta.isStepUsedInTransHops( stepMeta ) );
+
+    item = (XulMenuitem) doc.getElementById( "trans-graph-entry-errors" );
+    item.setDisabled( !stepMeta.supportsErrorHandling() );
   }
 
   private boolean checkNumberOfCopies( TransMeta transMeta, StepMeta stepMeta ) {
