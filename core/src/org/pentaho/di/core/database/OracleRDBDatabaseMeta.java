@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,6 +23,7 @@
 package org.pentaho.di.core.database;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.row.ValueMetaInterface;
 
 /**
@@ -64,7 +65,21 @@ public class OracleRDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseI
    */
   @Override
   public String getSQLQueryFields( String tableName ) {
-    return "SELECT /*+FIRST_ROWS*/ * FROM " + tableName + " WHERE ROWNUM < 1";
+    return "SELECT * FROM " + tableName + " WHERE 1=0";
+  }
+
+  @Override
+  public String getSQLTableExists( String tablename ) {
+    return getSQLQueryFields( tablename );
+  }
+
+  @Override
+  public String getSQLColumnExists( String columnname, String tablename ) {
+    return getSQLQueryColumnFields( columnname, tablename );
+  }
+
+  public String getSQLQueryColumnFields( String columnname, String tableName ) {
+    return "SELECT " + columnname + " FROM " + tableName + " WHERE 1=0";
   }
 
   @Override
@@ -77,7 +92,7 @@ public class OracleRDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseI
   }
 
   @Override
-  public String getURL( String hostname, String port, String databaseName ) {
+  public String getURL( String hostname, String port, String databaseName ) throws KettleDatabaseException {
     if ( getAccessType() == DatabaseMeta.TYPE_ACCESS_ODBC ) {
       return "jdbc:odbc:" + databaseName;
     } else {
