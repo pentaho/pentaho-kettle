@@ -100,6 +100,11 @@ public class ConnectionPoolUtil {
     password = Encr.decryptPasswordOptionallyEncrypted( password );
     // Get the list of pool properties
     Properties originalProperties = databaseMeta.getConnectionPoolingProperties();
+    
+    // add config to pool
+    GenericObjectPool.Config config = createGenericObjectPoolConfig(originalProperties, databaseMeta, maximumSize);
+    gpool.setConfig(config);
+	
     // Add user/pass
     originalProperties.setProperty( "user", Const.NVL( userName, "" ) );
     originalProperties.setProperty( "password", Const.NVL( password, "" ) );
@@ -156,6 +161,50 @@ public class ConnectionPoolUtil {
     return dbMeta.getName() + Const.NVL( dbMeta.getDatabaseName(), "" )
         + Const.NVL( dbMeta.getHostname(),  ""  ) + Const.NVL( dbMeta.getDatabasePortNumberString(),  ""  )
         + Const.NVL( partitionId, "" );
+  }
+  
+  
+  private static GenericObjectPool.Config createGenericObjectPoolConfig(Properties properties, DatabaseMeta databaseMeta, Integer maxActive){
+  	GenericObjectPool.Config config = new GenericObjectPool.Config();
+  	
+    String _maxIdle = properties.getProperty("maxIdle");
+    config.maxIdle = (_maxIdle == null ? GenericObjectPool.DEFAULT_MAX_IDLE : Integer.parseInt(_maxIdle));
+
+    String _minIdle = properties.getProperty("minIdle");
+    config.minIdle = (_minIdle == null ? GenericObjectPool.DEFAULT_MIN_IDLE : Integer.parseInt(_minIdle));
+
+    String _maxActive = properties.getProperty("maxActive");
+    config.maxActive = (_maxActive == null ? (maxActive == null ? GenericObjectPool.DEFAULT_MAX_ACTIVE : maxActive): Integer.parseInt(_maxActive));
+
+    String _maxWait = properties.getProperty("maxWait");
+    config.maxWait = (_maxWait == null ? GenericObjectPool.DEFAULT_MAX_WAIT : Integer.parseInt(_maxWait));
+
+    String _minEvictableIdleTimeMillis = properties.getProperty("minEvictableIdleTimeMillis");
+    config.minEvictableIdleTimeMillis = (_minEvictableIdleTimeMillis == null ? GenericObjectPool.DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS : Integer.parseInt(_minEvictableIdleTimeMillis));
+
+    String _numTestsPerEvictionRun = properties.getProperty("numTestsPerEvictionRun");
+    config.numTestsPerEvictionRun = (_numTestsPerEvictionRun == null ? GenericObjectPool.DEFAULT_NUM_TESTS_PER_EVICTION_RUN : Integer.parseInt(_numTestsPerEvictionRun));
+
+    String _softMinEvictableIdleTimeMillis = properties.getProperty("softMinEvictableIdleTimeMillis");
+    config.softMinEvictableIdleTimeMillis = (_softMinEvictableIdleTimeMillis == null ? GenericObjectPool.DEFAULT_SOFT_MIN_EVICTABLE_IDLE_TIME_MILLIS : Integer.parseInt(_softMinEvictableIdleTimeMillis));
+
+    String _testOnBorrow = properties.getProperty("testOnBorrow");
+    config.testOnBorrow = (_testOnBorrow == null ? GenericObjectPool.DEFAULT_TEST_ON_BORROW : Boolean.parseBoolean(_testOnBorrow));
+
+    String _testOnReturn = properties.getProperty("testOnReturn");
+    config.testOnReturn = (_testOnReturn == null ? GenericObjectPool.DEFAULT_TEST_ON_RETURN : Boolean.parseBoolean(_testOnReturn));
+
+    String _testWhileIdle = properties.getProperty("testWhileIdle");
+    config.testWhileIdle = (_testWhileIdle == null ? GenericObjectPool.DEFAULT_TEST_WHILE_IDLE : Boolean.parseBoolean(_testWhileIdle));
+
+    String _timeBetweenEvictionRunsMillis = properties.getProperty("timeBetweenEvictionRunsMillis");
+    config.timeBetweenEvictionRunsMillis = (_timeBetweenEvictionRunsMillis == null ? GenericObjectPool.DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS : Integer.parseInt(_timeBetweenEvictionRunsMillis));
+
+    String _whenExhaustedAction = properties.getProperty("whenExhaustedAction");
+    config.whenExhaustedAction = (_whenExhaustedAction == null ? GenericObjectPool.DEFAULT_WHEN_EXHAUSTED_ACTION : Byte.parseByte(_whenExhaustedAction));
+
+    return config;
+    }
   }
 
 }
