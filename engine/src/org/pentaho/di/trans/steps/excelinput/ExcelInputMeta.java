@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -30,6 +30,7 @@ import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
@@ -442,9 +443,13 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public void setIncludeSubFolders( String[] includeSubFoldersin ) {
-    includeSubFolders = new String[includeSubFoldersin.length];
-    for ( int i = 0; i < includeSubFoldersin.length && i < includeSubFolders.length; i++ ) {
-      this.includeSubFolders[i] = getRequiredFilesCode( includeSubFoldersin[i] );
+    if ( includeSubFoldersin != null ) {
+      includeSubFolders = new String[includeSubFoldersin.length];
+      for ( int i = 0; i < includeSubFoldersin.length && i < includeSubFolders.length; i++ ) {
+        this.includeSubFolders[i] = getRequiredFilesCode( includeSubFoldersin[i] );
+      }
+    } else {
+      includeSubFolders = new String[0];
     }
   }
 
@@ -643,6 +648,7 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface {
   @Override
   public Object clone() {
     ExcelInputMeta retval = (ExcelInputMeta) super.clone();
+    normilizeAllocation();
 
     int nrfiles = fileName.length;
     int nrsheets = sheetName.length;
@@ -776,6 +782,57 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
+  public String[] normilizeArray( String[] array, int length ) {
+    String[] newArray = new String[ length ];
+    if ( array != null ) {
+      if ( array.length <= length ) {
+        System.arraycopy( array, 0, newArray, 0, array.length );
+      } else {
+        System.arraycopy( array, 0, newArray, 0, length );
+      }
+    }
+    return newArray;
+  }
+
+  public int[] normilizeArray( int[] array, int length ) {
+    int[] newArray = new int[ length ];
+    if ( array != null ) {
+      if ( array.length <= length ) {
+        System.arraycopy( array, 0, newArray, 0, array.length );
+      } else {
+        System.arraycopy( array, 0, newArray, 0, length );
+      }
+    }
+    return newArray;
+  }
+
+  public void normilizeAllocation() {
+    int nrfiles = 0;
+    int nrsheets = 0;
+
+    if ( fileName != null ) {
+      nrfiles = fileName.length;
+    } else {
+      fileName = new String[ 0 ];
+    }
+    if ( sheetName != null ) {
+      nrsheets = sheetName.length;
+    } else {
+      sheetName = new String[ 0 ];
+    }
+    if ( field == null ) {
+      field = new ExcelInputField[ 0 ];
+    }
+
+    fileMask = normilizeArray( fileMask, nrfiles );
+    excludeFileMask = normilizeArray( excludeFileMask, nrfiles );
+    fileRequired = normilizeArray( fileRequired, nrfiles );
+    includeSubFolders = normilizeArray( includeSubFolders, nrfiles );
+
+    startRow = normilizeArray( startRow, nrsheets );
+    startColumn = normilizeArray( startColumn, nrsheets );
+  }
+
   public void allocate( int nrfiles, int nrsheets, int nrfields ) {
     allocateFiles( nrfiles );
     sheetName = new String[nrsheets];
@@ -796,32 +853,14 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface {
   public void setDefault() {
     startsWithHeader = true;
     ignoreEmptyRows = true;
-    rowNumberField = "";
-    sheetRowNumberField = "";
+    rowNumberField = StringUtil.EMPTY_STRING;
+    sheetRowNumberField = StringUtil.EMPTY_STRING;
     isaddresult = true;
     int nrfiles = 0;
     int nrfields = 0;
     int nrsheets = 0;
 
     allocate( nrfiles, nrsheets, nrfields );
-
-    for ( int i = 0; i < nrfiles; i++ ) {
-      fileName[i] = "filename" + ( i + 1 );
-      fileMask[i] = "";
-      excludeFileMask[i] = "";
-      fileRequired[i] = NO;
-      includeSubFolders[i] = NO;
-    }
-
-    for ( int i = 0; i < nrfields; i++ ) {
-      field[i] = new ExcelInputField();
-      field[i].setName( "field" + i );
-      field[i].setType( ValueMetaInterface.TYPE_NUMBER );
-      field[i].setLength( 9 );
-      field[i].setPrecision( 2 );
-      field[i].setTrimType( TYPE_TRIM_NONE );
-      field[i].setRepeated( false );
-    }
 
     rowLimit = 0L;
 
@@ -952,6 +991,7 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface {
   @Override
   public String getXML() {
     StringBuilder retval = new StringBuilder( 1024 );
+    normilizeAllocation();
 
     retval.append( "    " ).append( XMLHandler.addTagValue( "header", startsWithHeader ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "noempty", ignoreEmptyRows ) );
@@ -969,7 +1009,7 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface {
     retval.append( "    " ).append( XMLHandler.addTagValue( "accept_filenames", acceptingFilenames ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "accept_field", acceptingField ) );
     retval.append( "    " ).append(
-      XMLHandler.addTagValue( "accept_stepname", ( acceptingStep != null ? acceptingStep.getName() : "" ) ) );
+      XMLHandler.addTagValue( "accept_stepname", ( acceptingStep != null ? acceptingStep.getName() : StringUtil.EMPTY_STRING ) ) );
 
     /*
      * Describe the files to read
@@ -1045,7 +1085,8 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface {
     retval.append( "    " ).append( XMLHandler.addTagValue( "extensionFieldName", extensionFieldName ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "sizeFieldName", sizeFieldName ) );
 
-    retval.append( "    " ).append( XMLHandler.addTagValue( "spreadsheet_type", spreadSheetType.toString() ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "spreadsheet_type",
+      ( spreadSheetType != null ? spreadSheetType.toString() : StringUtil.EMPTY_STRING ) ) );
 
     return retval.toString();
   }
@@ -1149,6 +1190,7 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface {
   @Override
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
+      normilizeAllocation();
       rep.saveStepAttribute( id_transformation, id_step, "header", startsWithHeader );
       rep.saveStepAttribute( id_transformation, id_step, "noempty", ignoreEmptyRows );
       rep.saveStepAttribute( id_transformation, id_step, "stoponempty", stopOnEmpty );
@@ -1163,7 +1205,7 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface {
       rep.saveStepAttribute( id_transformation, id_step, "accept_filenames", acceptingFilenames );
       rep.saveStepAttribute( id_transformation, id_step, "accept_field", acceptingField );
       rep.saveStepAttribute( id_transformation, id_step, "accept_stepname", ( acceptingStep != null
-        ? acceptingStep.getName() : "" ) );
+        ? acceptingStep.getName() : StringUtil.EMPTY_STRING ) );
 
       for ( int i = 0; i < fileName.length; i++ ) {
         rep.saveStepAttribute( id_transformation, id_step, i, "file_name", getValueOrEmptyIfNull( fileName[i] ) );
@@ -1218,7 +1260,8 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface {
       rep.saveStepAttribute( id_transformation, id_step, "extensionFieldName", extensionFieldName );
       rep.saveStepAttribute( id_transformation, id_step, "sizeFieldName", sizeFieldName );
 
-      rep.saveStepAttribute( id_transformation, id_step, "spreadsheet_type", spreadSheetType.toString() );
+      rep.saveStepAttribute( id_transformation, id_step, "spreadsheet_type",
+        ( spreadSheetType != null ? spreadSheetType.toString() : StringUtil.EMPTY_STRING ) );
     } catch ( Exception e ) {
       throw new KettleException( "Unable to save step information to the repository for id_step=" + id_step, e );
     }
@@ -1266,16 +1309,19 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public String[] getFilePaths( VariableSpace space ) {
+    normilizeAllocation();
     return FileInputList.createFilePathList(
       space, fileName, fileMask, excludeFileMask, fileRequired, includeSubFolderBoolean() );
   }
 
   public FileInputList getFileList( VariableSpace space ) {
+    normilizeAllocation();
     return FileInputList.createFileList(
       space, fileName, fileMask, excludeFileMask, fileRequired, includeSubFolderBoolean() );
   }
 
   private boolean[] includeSubFolderBoolean() {
+    normilizeAllocation();
     int len = fileName.length;
     boolean[] includeSubFolderBoolean = new boolean[len];
     for ( int i = 0; i < len; i++ ) {
@@ -1337,21 +1383,23 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface {
     } else {
       cr =
         new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
-          PKG, "ExcelInputMeta.CheckResult.ExpectedFilesOk", "" + fileList.nrOfFiles() ), stepMeta );
+          PKG, "ExcelInputMeta.CheckResult.ExpectedFilesOk", StringUtil.EMPTY_STRING + fileList.nrOfFiles() ), stepMeta );
       remarks.add( cr );
     }
   }
 
   public RowMetaInterface getEmptyFields() {
     RowMetaInterface row = new RowMeta();
-    for ( int i = 0; i < field.length; i++ ) {
-      ValueMetaInterface v;
-      try {
-        v = ValueMetaFactory.createValueMeta( field[i].getName(), field[i].getType() );
-      } catch ( KettlePluginException e ) {
-        v = new ValueMetaNone( field[i].getName() );
+    if ( field != null ) {
+      for ( int i = 0; i < field.length; i++ ) {
+        ValueMetaInterface v;
+        try {
+          v = ValueMetaFactory.createValueMeta( field[ i ].getName(), field[ i ].getType() );
+        } catch ( KettlePluginException e ) {
+          v = new ValueMetaNone( field[ i ].getName() );
+        }
+        row.addValueMeta( v );
       }
-      row.addValueMeta( v );
     }
 
     return row;
@@ -1571,6 +1619,7 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface {
   public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
     ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore ) throws KettleException {
     try {
+      normilizeAllocation();
       // The object that we're modifying here is a copy of the original!
       // So let's change the filename from relative to absolute by grabbing the file object...
       // In case the name of the file comes from previous steps, forget about this!

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -30,7 +30,9 @@ import java.util.Random;
 import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.SystemUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.di.core.KettleEnvironment;
@@ -45,11 +47,20 @@ import org.pentaho.di.trans.steps.loadsave.validator.StringLoadSaveValidator;
 
 public class ExcelInputMetaTest {
   LoadSaveTester loadSaveTester;
+  ExcelInputMeta meta;
 
   @Before
   public void setUp() throws Exception {
     KettleEnvironment.init();
     PluginRegistry.init( true );
+
+    meta = new ExcelInputMeta();
+    meta.setFileName( new String[] { "1", "2", "3" } );
+    meta.setSheetName( new String[] { "1", "2", "3", "4" } );
+    meta.setField( new ExcelInputField[] {
+      new ExcelInputField( "1", 1, 1 ),
+      new ExcelInputField( "2", 2, 2 ) } );
+    meta.normilizeAllocation();
   }
 
   @Test
@@ -250,5 +261,148 @@ public class ExcelInputMetaTest {
     }
   }
 
+  @Test
+  public void testNormilizeAllocation() throws KettleException {
+    Assert.assertEquals( 3, meta.getFileName().length );
+    Assert.assertEquals( 3, meta.getFileMask().length );
+    Assert.assertEquals( 3, meta.getExcludeFileMask().length );
+    Assert.assertEquals( 3, meta.getFileRequired().length );
+    Assert.assertEquals( 3, meta.getIncludeSubFolders().length );
+
+    Assert.assertEquals( 4, meta.getSheetName().length );
+    Assert.assertEquals( 4, meta.getStartRow().length );
+    Assert.assertEquals( 4, meta.getStartColumn().length );
+
+    Assert.assertArrayEquals( new String[] {"1", "2", "3"}, meta.getFileName() );
+    Assert.assertArrayEquals( new String[] {"1", "2", "3", "4"}, meta.getSheetName() );
+
+    for ( String str : meta.getFileMask() ) {
+      Assert.assertEquals( null, str );
+    }
+    for ( String str : meta.getExcludeFileMask() ) {
+      Assert.assertEquals( null, str );
+    }
+    for ( String str : meta.getFileRequired() ) {
+      Assert.assertEquals( null, str );
+    }
+    for ( String str : meta.getIncludeSubFolders() ) {
+      Assert.assertEquals( null, str );
+    }
+    for ( int itr : meta.getStartRow() ) {
+      Assert.assertEquals( 0, itr );
+    }
+    for ( int itr : meta.getStartColumn() ) {
+      Assert.assertEquals( 0, itr );
+    }
+  }
+
+  @Test
+  public void testGetXML() throws KettleException {
+    Assert.assertEquals(
+      "    <header>N</header>" + SystemUtils.LINE_SEPARATOR
+      + "    <noempty>N</noempty>" + SystemUtils.LINE_SEPARATOR
+      + "    <stoponempty>N</stoponempty>" + SystemUtils.LINE_SEPARATOR
+      + "    <filefield/>" + SystemUtils.LINE_SEPARATOR
+      + "    <sheetfield/>" + SystemUtils.LINE_SEPARATOR
+      + "    <sheetrownumfield/>" + SystemUtils.LINE_SEPARATOR
+      + "    <rownumfield/>" + SystemUtils.LINE_SEPARATOR
+      + "    <sheetfield/>" + SystemUtils.LINE_SEPARATOR
+      + "    <filefield/>" + SystemUtils.LINE_SEPARATOR
+      + "    <limit>0</limit>" + SystemUtils.LINE_SEPARATOR
+      + "    <encoding/>" + SystemUtils.LINE_SEPARATOR
+      + "    <add_to_result_filenames>N</add_to_result_filenames>" + SystemUtils.LINE_SEPARATOR
+      + "    <accept_filenames>N</accept_filenames>" + SystemUtils.LINE_SEPARATOR
+      + "    <accept_field/>" + SystemUtils.LINE_SEPARATOR
+      + "    <accept_stepname/>" + SystemUtils.LINE_SEPARATOR
+      + "    <file>" + SystemUtils.LINE_SEPARATOR
+      + "      <name>1</name>" + SystemUtils.LINE_SEPARATOR
+      + "      <filemask/>" + SystemUtils.LINE_SEPARATOR
+      + "      <exclude_filemask/>" + SystemUtils.LINE_SEPARATOR
+      + "      <file_required/>" + SystemUtils.LINE_SEPARATOR
+      + "      <include_subfolders/>" + SystemUtils.LINE_SEPARATOR
+      + "      <name>2</name>" + SystemUtils.LINE_SEPARATOR
+      + "      <filemask/>" + SystemUtils.LINE_SEPARATOR
+      + "      <exclude_filemask/>" + SystemUtils.LINE_SEPARATOR
+      + "      <file_required/>" + SystemUtils.LINE_SEPARATOR
+      + "      <include_subfolders/>" + SystemUtils.LINE_SEPARATOR
+      + "      <name>3</name>" + SystemUtils.LINE_SEPARATOR
+      + "      <filemask/>" + SystemUtils.LINE_SEPARATOR
+      + "      <exclude_filemask/>" + SystemUtils.LINE_SEPARATOR
+      + "      <file_required/>" + SystemUtils.LINE_SEPARATOR
+      + "      <include_subfolders/>" + SystemUtils.LINE_SEPARATOR
+      + "    </file>" + SystemUtils.LINE_SEPARATOR
+      + "    <fields>" + SystemUtils.LINE_SEPARATOR
+      + "      <field>" + SystemUtils.LINE_SEPARATOR
+      + "        <name>1</name>" + SystemUtils.LINE_SEPARATOR
+      + "        <type>String</type>" + SystemUtils.LINE_SEPARATOR
+      + "        <length>1</length>" + SystemUtils.LINE_SEPARATOR
+      + "        <precision>-1</precision>" + SystemUtils.LINE_SEPARATOR
+      + "        <trim_type>none</trim_type>" + SystemUtils.LINE_SEPARATOR
+      + "        <repeat>N</repeat>" + SystemUtils.LINE_SEPARATOR
+      + "        <format/>" + SystemUtils.LINE_SEPARATOR
+      + "        <currency/>" + SystemUtils.LINE_SEPARATOR
+      + "        <decimal/>" + SystemUtils.LINE_SEPARATOR
+      + "        <group/>" + SystemUtils.LINE_SEPARATOR
+      + "      </field>" + SystemUtils.LINE_SEPARATOR
+      + "      <field>" + SystemUtils.LINE_SEPARATOR
+      + "        <name>2</name>" + SystemUtils.LINE_SEPARATOR
+      + "        <type>String</type>" + SystemUtils.LINE_SEPARATOR
+      + "        <length>2</length>" + SystemUtils.LINE_SEPARATOR
+      + "        <precision>-1</precision>" + SystemUtils.LINE_SEPARATOR
+      + "        <trim_type>none</trim_type>" + SystemUtils.LINE_SEPARATOR
+      + "        <repeat>N</repeat>" + SystemUtils.LINE_SEPARATOR
+      + "        <format/>" + SystemUtils.LINE_SEPARATOR
+      + "        <currency/>" + SystemUtils.LINE_SEPARATOR
+      + "        <decimal/>" + SystemUtils.LINE_SEPARATOR
+      + "        <group/>" + SystemUtils.LINE_SEPARATOR
+      + "      </field>" + SystemUtils.LINE_SEPARATOR
+      + "    </fields>" + SystemUtils.LINE_SEPARATOR
+      + "    <sheets>" + SystemUtils.LINE_SEPARATOR
+      + "      <sheet>" + SystemUtils.LINE_SEPARATOR
+      + "        <name>1</name>" + SystemUtils.LINE_SEPARATOR
+      + "        <startrow>0</startrow>" + SystemUtils.LINE_SEPARATOR
+      + "        <startcol>0</startcol>" + SystemUtils.LINE_SEPARATOR
+      + "        </sheet>" + SystemUtils.LINE_SEPARATOR
+      + "      <sheet>" + SystemUtils.LINE_SEPARATOR
+      + "        <name>2</name>" + SystemUtils.LINE_SEPARATOR
+      + "        <startrow>0</startrow>" + SystemUtils.LINE_SEPARATOR
+      + "        <startcol>0</startcol>" + SystemUtils.LINE_SEPARATOR
+      + "        </sheet>" + SystemUtils.LINE_SEPARATOR
+      + "      <sheet>" + SystemUtils.LINE_SEPARATOR
+      + "        <name>3</name>" + SystemUtils.LINE_SEPARATOR
+      + "        <startrow>0</startrow>" + SystemUtils.LINE_SEPARATOR
+      + "        <startcol>0</startcol>" + SystemUtils.LINE_SEPARATOR
+      + "        </sheet>" + SystemUtils.LINE_SEPARATOR
+      + "      <sheet>" + SystemUtils.LINE_SEPARATOR
+      + "        <name>4</name>" + SystemUtils.LINE_SEPARATOR
+      + "        <startrow>0</startrow>" + SystemUtils.LINE_SEPARATOR
+      + "        <startcol>0</startcol>" + SystemUtils.LINE_SEPARATOR
+      + "        </sheet>" + SystemUtils.LINE_SEPARATOR
+      + "    </sheets>" + SystemUtils.LINE_SEPARATOR
+      + "    <strict_types>N</strict_types>" + SystemUtils.LINE_SEPARATOR
+      + "    <error_ignored>N</error_ignored>" + SystemUtils.LINE_SEPARATOR
+      + "    <error_line_skipped>N</error_line_skipped>" + SystemUtils.LINE_SEPARATOR
+      + "    <bad_line_files_destination_directory/>" + SystemUtils.LINE_SEPARATOR
+      + "    <bad_line_files_extension/>" + SystemUtils.LINE_SEPARATOR
+      + "    <error_line_files_destination_directory/>" + SystemUtils.LINE_SEPARATOR
+      + "    <error_line_files_extension/>" + SystemUtils.LINE_SEPARATOR
+      + "    <line_number_files_destination_directory/>" + SystemUtils.LINE_SEPARATOR
+      + "    <line_number_files_extension/>" + SystemUtils.LINE_SEPARATOR
+      + "    <shortFileFieldName/>" + SystemUtils.LINE_SEPARATOR
+      + "    <pathFieldName/>" + SystemUtils.LINE_SEPARATOR
+      + "    <hiddenFieldName/>" + SystemUtils.LINE_SEPARATOR
+      + "    <lastModificationTimeFieldName/>" + SystemUtils.LINE_SEPARATOR
+      + "    <uriNameFieldName/>" + SystemUtils.LINE_SEPARATOR
+      + "    <rootUriNameFieldName/>" + SystemUtils.LINE_SEPARATOR
+      + "    <extensionFieldName/>" + SystemUtils.LINE_SEPARATOR
+      + "    <sizeFieldName/>" + SystemUtils.LINE_SEPARATOR
+      + "    <spreadsheet_type/>" + SystemUtils.LINE_SEPARATOR, meta.getXML() );
+  }
+
+  @Test
+  public void testClone() throws KettleException {
+    ExcelInputMeta clone = (ExcelInputMeta) meta.clone();
+    Assert.assertEquals( meta.getXML(), clone.getXML() );
+  }
   // Note - removed cloneTest as it's now covered by the load/save tester.
 }
