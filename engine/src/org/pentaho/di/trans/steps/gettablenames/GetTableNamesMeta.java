@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -104,7 +104,7 @@ public class GetTableNamesMeta extends BaseStepMeta implements StepMetaInterface
   @Injection( name = "DYNAMICSCHEMA", group = "FIELDS" )
   private boolean dynamicSchema;
 
-  @Injection( name = "SCHENAMENAMEFIELD", group = "FIELDS" )
+  @Injection( name = "SCHEMENAMEFIELD", group = "FIELDS" )
   private String schenameNameField;
 
   private List<? extends SharedObjectInterface> databases;
