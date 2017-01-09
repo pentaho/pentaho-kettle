@@ -17,6 +17,7 @@
   <packaging>pom</packaging>
 
   <modules>
+    <module>kettle-classic</module>
     <module>kettle-native</module>
   </modules>
 

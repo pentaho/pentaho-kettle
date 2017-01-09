@@ -189,7 +189,7 @@ public class TransExecutionConfigurationDialog extends ConfigurationDialog {
           "TransExecutionConfigurationDialog.ExecCluster.DisabledTooltip" ) );
       props.setLook( execClusterComposite );
       fdExecClusterComposite = new FormData();
-      fdExecClusterComposite.left = new FormAttachment( wExecLocal, 0, SWT.LEFT );
+      fdExecClusterComposite.left = new FormAttachment( lastWidget, 0, SWT.LEFT );
       if ( abstractMeta.getSlaveServers() == null || abstractMeta.getSlaveServers().size() == 0 ) {
         fdExecClusterComposite.top = new FormAttachment( composite, 7 );
       } else {
@@ -268,8 +268,8 @@ public class TransExecutionConfigurationDialog extends ConfigurationDialog {
   }
 
   public void getData() {
-
-    wExecLocal.setSelection( configuration.isExecutingLocally() );
+    // TODO: Set previously selected  button
+//    wExecLocal.setSelection( configuration.isExecutingLocally() );
     if ( configuration.isExecutingLocally() ) {
       stackedLayout.topControl = localOptionsComposite;
     }
@@ -297,7 +297,8 @@ public class TransExecutionConfigurationDialog extends ConfigurationDialog {
   public void getInfo() {
     try {
       configuration.setReplayDate( null ); // removed from new execution dialog.
-      configuration.setExecutingLocally( wExecLocal.getSelection() );
+      configuration.setEngine( getSelectedEngine() );
+      configuration.setExecutingLocally( getSelectedEngine() != null );
       configuration.setExecutingRemotely( wExecRemote.getSelection() );
       getConfiguration().setExecutingClustered( wExecCluster.getSelection() );
 

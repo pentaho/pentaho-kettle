@@ -227,7 +227,8 @@ public class JobExecutionConfigurationDialog extends ConfigurationDialog {
   }
 
   public void getData() {
-    wExecLocal.setSelection( configuration.isExecutingLocally() );
+    // TODO: Set Engine
+//    wExecLocal.setSelection( configuration.isExecutingLocally() );
     if ( configuration.isExecutingLocally() ) {
       stackedLayout.topControl = localOptionsComposite;
     }
@@ -261,7 +262,7 @@ public class JobExecutionConfigurationDialog extends ConfigurationDialog {
 
   public void getInfo() {
     try {
-      configuration.setExecutingLocally( wExecLocal.getSelection() );
+//      configuration.setExecutingLocally(  );
       configuration.setExecutingRemotely( wExecRemote.getSelection() );
 
       // Remote data

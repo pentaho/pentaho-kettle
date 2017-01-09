@@ -1,5 +1,6 @@
 package org.pentaho.di.engine.api;
 
+
 import java.io.Serializable;
 import java.util.concurrent.Future;
 
@@ -12,6 +13,6 @@ import java.util.concurrent.Future;
  */
 public interface IEngine extends Serializable {
 
-   Future<IExecutionResult> execute( ITransformation trans );
+   IExecutionContext prepare( ITransformation trans );
+   IExecutionResultFuture execute( IExecutionContext context );
 }
-

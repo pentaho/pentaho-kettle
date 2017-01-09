@@ -1,7 +1,6 @@
 package org.pentaho.di.engine.api;
 
 import java.io.Serializable;
-import java.util.List;
 
 /**
  * ICallableOperation is the materialized version of
@@ -14,11 +13,10 @@ import java.util.List;
  * tuples received "From" parent operations and published
  * "To" child ops.
  */
-public interface IExecutableOperation extends Serializable, IOperation, IProgressReporting<IDataEvent> {
+public interface IExecutableOperation extends Serializable, IOperation, IProgressReporting<IDataEvent>, IPDIEventSource<IDataEvent>, IPDIEventSink<IDataEvent> {
 
 
   boolean isRunning();
-
 
 
 }
