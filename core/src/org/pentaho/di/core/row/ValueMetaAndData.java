@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -183,7 +183,9 @@ public class ValueMetaAndData {
           originMeta.setGroupingSymbol( null );
           originMeta.setCurrencySymbol( null );
         }
-        originMeta.setConversionMask( ValueMetaBase.COMPATIBLE_DATE_FORMAT_PATTERN );
+        if ( valtype == ValueMetaInterface.TYPE_DATE ) {
+          originMeta.setConversionMask( ValueMetaBase.COMPATIBLE_DATE_FORMAT_PATTERN );
+        }
         valueData = Const.trim( text );
         valueData = valueMeta.convertData( originMeta, valueData );
       }
