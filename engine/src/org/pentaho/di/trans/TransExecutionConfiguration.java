@@ -49,6 +49,7 @@ import org.pentaho.di.core.plugins.RepositoryPluginType;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.engine.api.IEngine;
 import org.pentaho.di.repository.RepositoriesMeta;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryMeta;
@@ -93,6 +94,7 @@ public class TransExecutionConfiguration implements ExecutionConfiguration {
   private String logFileName;
   private boolean createParentFolder;
   private Long passedBatchId;
+  private IEngine engine;
 
   public TransExecutionConfiguration() {
     executingLocally = true;
@@ -837,4 +839,11 @@ public class TransExecutionConfiguration implements ExecutionConfiguration {
     this.passedBatchId = passedBatchId;
   }
 
+  @Override public void setEngine( IEngine engine ) {
+    this.engine = engine;
+  }
+
+  @Override public IEngine getEngine() {
+    return engine;
+  }
 }

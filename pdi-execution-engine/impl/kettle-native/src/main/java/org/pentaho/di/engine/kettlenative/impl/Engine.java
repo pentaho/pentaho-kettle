@@ -12,6 +12,7 @@ import org.pentaho.di.engine.api.IExecutableOperation;
 import org.pentaho.di.engine.api.IExecutableOperationFactory;
 import org.pentaho.di.engine.api.IExecutionContext;
 import org.pentaho.di.engine.api.IExecutionResult;
+import org.pentaho.di.engine.api.IExecutionResultFuture;
 import org.pentaho.di.engine.api.IOperation;
 import org.pentaho.di.engine.api.IProgressReporting;
 import org.pentaho.di.engine.api.ITransformation;
@@ -27,7 +28,6 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -43,15 +43,22 @@ public class Engine implements IEngine {
   private final List<IExecutableOperationFactory> factories = ImmutableList.of(
     new SparkExecOperationFactory(), new KettleExecOperationFactory() );  // TODO: injectable, rankable
 
-  @Override public Future<IExecutionResult> execute( ITransformation trans ) {
+  @Override public IExecutionContext prepare( ITransformation trans ) {
+    return new ExecutionContext( trans,Collections.emptyMap(),
+      ImmutableMap.of( "sparkcontext", javaSparkContext,
+        "executor", executorService )  );
+  }
+
+  @Override public IExecutionResultFuture execute( IExecutionContext context ) {
+    ITransformation trans = context.getTransformation();
     initKettle();
     // convert ops to executable ops
     List<IExecutableOperation> execOps = getExecutableOperations( trans,
-      getExecContext() );
+      context );
     // wire up the execution graph
     wireExecution( execOps );
     // submit for execution
-    return executorService.submit( () -> getResult( trans, execOps ) );
+    return new ExecutionResultFuture( context, executorService.submit( () -> getResult( trans, execOps ) ) );
   }
 
   private List<IExecutableOperation> getExecutableOperations( ITransformation trans, IExecutionContext context ) {
@@ -117,12 +124,6 @@ public class Engine implements IEngine {
       .build();
   }
 
-  /** temp hack for testing.  context should be passed in to the engine **/
-  private IExecutionContext getExecContext() {
-    return new ExecutionContext( Collections.emptyMap(),
-      ImmutableMap.of( "sparkcontext", javaSparkContext,
-        "executor", executorService ) );
-  }
 
   private class CountdownSubscriber implements Serializable, Subscriber<IDataEvent> {
 

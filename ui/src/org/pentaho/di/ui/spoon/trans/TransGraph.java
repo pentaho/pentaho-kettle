@@ -90,6 +90,7 @@ import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.swt.widgets.Widget;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.plugins.EnginePluginType;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.EngineMetaInterface;
 import org.pentaho.di.core.NotePadMeta;
@@ -125,6 +126,12 @@ import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.engine.api.IEngine;
+import org.pentaho.di.engine.api.IExecutionContext;
+import org.pentaho.di.engine.api.IExecutionResultFuture;
+import org.pentaho.di.engine.api.ITransformation;
+import org.pentaho.di.engine.kettleclassic.ClassicKettleExecutionContext;
+import org.pentaho.di.engine.kettleclassic.ClassicUtils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
@@ -368,6 +375,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
   private StepMeta showTargetStreamsStep;
 
   Timer redrawTimer;
+  private IExecutionResultFuture executionResultFuture1;
 
   public void setCurrentNote( NotePadMeta ni ) {
     this.ni = ni;
@@ -3725,6 +3733,8 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     }
   }
 
+  private IExecutionResultFuture executionResultFuture;
+
   public synchronized void start( TransExecutionConfiguration executionConfiguration ) throws KettleException {
     // Auto save feature...
     handleTransMetaChanges( transMeta );
@@ -3736,63 +3746,15 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     )
       && !transMeta.hasChanged() // Didn't change
       ) {
-      if ( trans == null || ( trans != null && !running ) ) {
+      if( executionResultFuture == null || ( executionResultFuture.isDone() || ! running ) ){
+
         try {
-          // Set the requested logging level..
-          //
-          DefaultLogLevel.setLogLevel( executionConfiguration.getLogLevel() );
+          IEngine iEngine = executionConfiguration.getEngine();
+          ITransformation iTransformation = ClassicUtils.convert( transMeta );
+          IExecutionContext executionContext = iEngine.prepare( iTransformation );
+          ClassicKettleExecutionContext classicKettleExecutionContext = (ClassicKettleExecutionContext) executionContext;
+          classicKettleExecutionContext.setExecutionConfiguration( executionConfiguration);
 
-          transMeta.injectVariables( executionConfiguration.getVariables() );
-
-          // Set the named parameters
-          Map<String, String> paramMap = executionConfiguration.getParams();
-          Set<String> keys = paramMap.keySet();
-          for ( String key : keys ) {
-            transMeta.setParameterValue( key, Const.NVL( paramMap.get( key ), "" ) );
-          }
-
-          transMeta.activateParameters();
-
-          // Do we need to clear the log before running?
-          //
-          if ( executionConfiguration.isClearingLog() ) {
-            transLogDelegate.clearLog();
-          }
-
-          // Also make sure to clear the log entries in the central log store & registry
-          //
-          if ( trans != null ) {
-            KettleLogStore.discardLines( trans.getLogChannelId(), true );
-          }
-
-          // Important: even though transMeta is passed to the Trans constructor, it is not the same object as is in
-          // memory
-          // To be able to completely test this, we need to run it as we would normally do in pan
-          //
-          trans =
-            new Trans( transMeta, spoon.rep, transMeta.getName(), transMeta.getRepositoryDirectory().getPath(),
-              transMeta.getFilename() );
-
-          trans.setRepository( spoon.getRepository() );
-          trans.setMetaStore( spoon.getMetaStore() );
-
-          String spoonLogObjectId = UUID.randomUUID().toString();
-          SimpleLoggingObject spoonLoggingObject = new SimpleLoggingObject( "SPOON", LoggingObjectType.SPOON, null );
-          spoonLoggingObject.setContainerObjectId( spoonLogObjectId );
-          spoonLoggingObject.setLogLevel( executionConfiguration.getLogLevel() );
-          trans.setParent( spoonLoggingObject );
-
-          trans.setLogLevel( executionConfiguration.getLogLevel() );
-          trans.setReplayDate( executionConfiguration.getReplayDate() );
-          trans.setRepository( executionConfiguration.getRepository() );
-          trans.setMonitored( true );
-          log.logBasic( BaseMessages.getString( PKG, "TransLog.Log.TransformationOpened" ) );
-        } catch ( KettleException e ) {
-          trans = null;
-          new ErrorDialog( shell, BaseMessages.getString( PKG, "TransLog.Dialog.ErrorOpeningTransformation.Title" ),
-            BaseMessages.getString( PKG, "TransLog.Dialog.ErrorOpeningTransformation.Message" ), e );
-        }
-        if ( trans != null ) {
           Map<String, String> arguments = executionConfiguration.getArguments();
           final String[] args;
           if ( arguments != null ) {
@@ -3800,29 +3762,40 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
           } else {
             args = null;
           }
+          classicKettleExecutionContext.setArguments( args );
 
-          log.logMinimal( BaseMessages.getString( PKG, "TransLog.Log.LaunchingTransformation" )
-            + trans.getTransMeta().getName() + "]..." );
 
-          trans.setSafeModeEnabled( executionConfiguration.isSafeModeEnabled() );
-          trans.setGatheringMetrics( executionConfiguration.isGatheringMetrics() );
-
-          // Launch the step preparation in a different thread.
-          // That way Spoon doesn't block anymore and that way we can follow the progress of the initialization
+          // Also make sure to clear the log entries in the central log store & registry
           //
-          final Thread parentThread = Thread.currentThread();
+          if ( trans != null ) {
+            KettleLogStore.discardLines( trans.getLogChannelId(), true );
+          }
+
+          // Do we need to clear the log before running?
+          //
+          if ( executionConfiguration.isClearingLog() ) {
+            transLogDelegate.clearLog();
+          }
+//
+//          trans = null;
+//          new ErrorDialog( shell, BaseMessages.getString( PKG, "TransLog.Dialog.ErrorOpeningTransformation.Title" ),
+//            BaseMessages.getString( PKG, "TransLog.Dialog.ErrorOpeningTransformation.Message" ), e );
 
           shell.getDisplay().asyncExec( new Runnable() {
             @Override
             public void run() {
               addAllTabs();
-              prepareTrans( parentThread, args );
             }
           } );
 
-          log.logMinimal( BaseMessages.getString( PKG, "TransLog.Log.StartedExecutionOfTransformation" ) );
-
           setControlStates();
+
+          executionResultFuture = iEngine.execute( executionContext );
+          log.logBasic( BaseMessages.getString( PKG, "TransLog.Log.TransformationOpened" ) );
+
+          checkErrorVisuals();
+        } catch ( Exception e ) {
+          e.printStackTrace();
         }
       } else {
         MessageBox m = new MessageBox( shell, SWT.OK | SWT.ICON_WARNING );
@@ -4161,6 +4134,12 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 
   }
 
+  /**
+   * Has some error handling
+   *
+   * @param parentThread
+   * @param args
+   */
   private synchronized void prepareTrans( final Thread parentThread, final String[] args ) {
     Runnable runnable = new Runnable() {
       @Override
@@ -4311,7 +4290,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
   }
 
   private void checkErrorVisuals() {
-    if ( trans.getErrors() > 0 ) {
+    if ( executionResultFuture.getDropped() > 0 ) {
       // Get the logging text and filter it out. Store it in the stepLogMap...
       //
       stepLogMap = new HashMap<>();
@@ -4320,24 +4299,25 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
         @Override
         public void run() {
 
-          for ( StepMetaDataCombi combi : trans.getSteps() ) {
-            if ( combi.step.getErrors() > 0 ) {
-              String channelId = combi.step.getLogChannel().getLogChannelId();
-              List<KettleLoggingEvent> eventList =
-                KettleLogStore.getLogBufferFromTo( channelId, false, 0, KettleLogStore.getLastBufferLineNr() );
-              StringBuilder logText = new StringBuilder();
-              for ( KettleLoggingEvent event : eventList ) {
-                Object message = event.getMessage();
-                if ( message instanceof LogMessage ) {
-                  LogMessage logMessage = (LogMessage) message;
-                  if ( logMessage.isError() ) {
-                    logText.append( logMessage.getMessage() ).append( Const.CR );
-                  }
-                }
-              }
-              stepLogMap.put( combi.stepMeta, logText.toString() );
-            }
-          }
+          // TODO: We don't have logging yet
+//          for ( StepMetaDataCombi combi : trans.getSteps() ) {
+//            if ( combi.step.getErrors() > 0 ) {
+//              String channelId = combi.step.getLogChannel().getLogChannelId();
+//              List<KettleLoggingEvent> eventList =
+//                KettleLogStore.getLogBufferFromTo( channelId, false, 0, KettleLogStore.getLastBufferLineNr() );
+//              StringBuilder logText = new StringBuilder();
+//              for ( KettleLoggingEvent event : eventList ) {
+//                Object message = event.getMessage();
+//                if ( message instanceof LogMessage ) {
+//                  LogMessage logMessage = (LogMessage) message;
+//                  if ( logMessage.isError() ) {
+//                    logText.append( logMessage.getMessage() ).append( Const.CR );
+//                  }
+//                }
+//              }
+//              stepLogMap.put( combi.stepMeta, logText.toString() );
+//            }
+//          }
         }
       } );
 

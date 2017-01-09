@@ -25,6 +25,7 @@ package org.pentaho.di.ui.core.dialog;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.swt.SWT;
@@ -42,18 +43,25 @@ import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Dialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.swt.widgets.Widget;
 import org.pentaho.di.ExecutionConfiguration;
 import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.exception.KettlePluginException;
+import org.pentaho.di.core.plugins.EnginePluginType;
+import org.pentaho.di.core.plugins.PluginInterface;
+import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.parameters.UnknownParamException;
+import org.pentaho.di.engine.api.IEngine;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.gui.GUIResource;
@@ -70,7 +78,6 @@ public abstract class ConfigurationDialog extends Dialog {
   protected boolean retval;
   protected Shell shell;
   protected PropsUI props;
-  protected Button wExecLocal;
   protected Button wExecRemote;
   protected Button wGatherMetrics;
   protected Label wlLogLevel;
@@ -103,6 +110,8 @@ public abstract class ConfigurationDialog extends Dialog {
   private FormData fdComposite;
   private CTabFolder tabFolder;
   private Button alwaysShowOption;
+  private IEngine selectedEngine;
+  protected Control lastWidget;
 
   public ConfigurationDialog( Shell parent, ExecutionConfiguration configuration, AbstractMeta meta ) {
     super( parent );
@@ -447,20 +456,51 @@ public abstract class ConfigurationDialog extends Dialog {
     gLocal.setBackground( shell.getBackground() ); // the default looks ugly
     gLocal.setLayoutData( fdLocal );
 
-    wExecLocal = new Button( gLocal, SWT.RADIO );
-    wExecLocal.setText( BaseMessages.getString( PKG, prefix + ".ExecLocal.Label" ) );
-    wExecLocal.setToolTipText( BaseMessages.getString( PKG, prefix + ".ExecLocal.Tooltip" ) );
-    props.setLook( wExecLocal );
-    fdExecLocal = new FormData();
-    fdExecLocal.top = new FormAttachment( 0, 10 );
-    fdExecLocal.left = new FormAttachment( 0, 10 );
-    wExecLocal.setLayoutData( fdExecLocal );
-    wExecLocal.addSelectionListener( new SelectionAdapter() {
-      public void widgetSelected( SelectionEvent e ) {
-        stackedLayout.topControl = localOptionsComposite;
-        stackedLayoutComposite.layout();
-      }
-    } );
+//    wExecLocal = new Button( gLocal, SWT.RADIO );
+//    wExecLocal.setText( BaseMessages.getString( PKG, prefix + ".ExecLocal.Label" ) );
+//    wExecLocal.setToolTipText( BaseMessages.getString( PKG, prefix + ".ExecLocal.Tooltip" ) );
+//    props.setLook( wExecLocal );
+//    fdExecLocal = new FormData();
+//    fdExecLocal.top = new FormAttachment( 0, 10 );
+//    fdExecLocal.left = new FormAttachment( 0, 10 );
+//    wExecLocal.setLayoutData( fdExecLocal );
+//    wExecLocal.addSelectionListener( new SelectionAdapter() {
+//      public void widgetSelected( SelectionEvent e ) {
+//        stackedLayout.topControl = localOptionsComposite;
+//        stackedLayoutComposite.layout();
+//      }
+//    } );
+
+    // wExecLocal;
+    lastWidget = null;
+
+
+    List<PluginInterface> enginePlugins = PluginRegistry.getInstance().getPlugins( EnginePluginType.class );
+    for ( final PluginInterface enginePlugin : enginePlugins ) {
+      Button btn = new Button( gLocal, SWT.RADIO );
+      btn.setText( enginePlugin.getIds()[0] );
+      btn.setToolTipText( enginePlugin.getName() );
+      props.setLook( btn );
+      FormData layoutData = new FormData();
+      layoutData.top = lastWidget != null ? new FormAttachment( lastWidget, 10 ) : new FormAttachment( 0, 10 );
+      layoutData.left = new FormAttachment( 0, 10 );
+      btn.setLayoutData( layoutData );
+      btn.addSelectionListener( new SelectionAdapter() {
+        public void widgetSelected( SelectionEvent e ) {
+          stackedLayout.topControl = optionsComposites.get( enginePlugin.getIds()[0] );
+          stackedLayoutComposite.layout();
+          try {
+            ConfigurationDialog.this.setSelectedEngine(
+              (IEngine) PluginRegistry.getInstance().loadClass( enginePlugin) );
+          } catch ( KettlePluginException e1 ) {
+            e1.printStackTrace();
+          }
+        }
+      } );
+      lastWidget = btn;
+    }
+
+
 
     if ( abstractMeta.getSlaveServers() == null || abstractMeta.getSlaveServers().size() == 0 ) {
       composite = new Composite( gLocal, SWT.NONE );
@@ -469,7 +509,7 @@ public abstract class ConfigurationDialog extends Dialog {
       composite.setToolTipText( BaseMessages.getString( PKG, prefix + ".ExecRemote.DisabledTooltip" ) );
       fdComposite = new FormData();
       fdComposite.left = new FormAttachment( 0, 10 );
-      fdComposite.top = new FormAttachment( wExecLocal, 7 );
+      fdComposite.top = new FormAttachment( lastWidget, 7 );
       composite.setLayoutData( fdComposite );
 
       wExecRemote = new Button( composite, SWT.RADIO );
@@ -486,7 +526,7 @@ public abstract class ConfigurationDialog extends Dialog {
       props.setLook( wExecRemote );
       fdExecRemote = new FormData();
       fdExecRemote.left = new FormAttachment( 0, 10 );
-      fdExecRemote.top = new FormAttachment( wExecLocal, 7 );
+      fdExecRemote.top = new FormAttachment( lastWidget, 7 );
       wExecRemote.setLayoutData( fdExecRemote );
       wExecRemote.addSelectionListener( new SelectionAdapter() {
         public void widgetSelected( SelectionEvent e ) {
@@ -500,7 +540,7 @@ public abstract class ConfigurationDialog extends Dialog {
     environmentSeparator = new Label( gLocal, SWT.SEPARATOR | SWT.VERTICAL );
     FormData fd_environmentSeparator = new FormData();
     fd_environmentSeparator.top = new FormAttachment( 0, 10 );
-    fd_environmentSeparator.left = new FormAttachment( wExecLocal, 50 );
+    fd_environmentSeparator.left = new FormAttachment( lastWidget, 50 );
     fd_environmentSeparator.bottom = new FormAttachment( 100, -10 );
     environmentSeparator.setLayoutData( fd_environmentSeparator );
 
@@ -526,8 +566,35 @@ public abstract class ConfigurationDialog extends Dialog {
 
     stackedLayout.topControl = localOptionsComposite;
 
-    localOptionsComposite( PKG, prefix );
+//    localOptionsComposite( PKG, prefix );
     serverOptionsComposite( PKG, prefix );
+
+    for ( final PluginInterface enginePlugin : enginePlugins ) {
+     createPlainOptionsComposite( enginePlugin.getIds()[0], enginePlugin.getName() );
+    }
+
+
+  }
+
+  Map<String, Composite> optionsComposites = new HashMap<>();
+
+  protected void createPlainOptionsComposite( String name, String description ) {
+
+    Composite comp = new Composite( stackedLayoutComposite, SWT.NONE );
+    comp.setLayout( new FormLayout() );
+    props.setLook( comp );
+    optionsComposites.put( name, comp );
+
+    Label localDescriptionLabel = new Label( comp, SWT.NONE );
+    props.setLook( localDescriptionLabel );
+    localDescriptionLabel.setText( description );
+    FormData fd_localDescriptionLabel = new FormData();
+    fd_localDescriptionLabel.left = new FormAttachment( environmentSeparator, 5 );
+    fd_localDescriptionLabel.top = new FormAttachment( 0, 12 );
+    if ( Const.isOSX() ) {
+      fd_localDescriptionLabel.top = new FormAttachment( 0, 10 );
+    }
+    localDescriptionLabel.setLayoutData( fd_localDescriptionLabel );
   }
 
   protected void localOptionsComposite( Class<?> PKG, String prefix ) {
@@ -547,4 +614,12 @@ public abstract class ConfigurationDialog extends Dialog {
   protected abstract void serverOptionsComposite( Class<?> PKG, String prefix );
 
   protected abstract void optionsSectionControls();
+
+  public void setSelectedEngine( IEngine selectedEngine ) {
+    this.selectedEngine = selectedEngine;
+  }
+
+  public IEngine getSelectedEngine() {
+    return selectedEngine;
+  }
 }
