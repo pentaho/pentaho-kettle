@@ -11,4 +11,7 @@ public interface IExecutionContext {
 
   Map<String, Object> getEnvironment();
 
+  ITransformation getTransformation();
+
+  String[] getArguments();
 }

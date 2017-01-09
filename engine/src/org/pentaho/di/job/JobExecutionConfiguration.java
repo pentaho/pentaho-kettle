@@ -48,6 +48,7 @@ import org.pentaho.di.core.plugins.RepositoryPluginType;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.engine.api.IEngine;
 import org.pentaho.di.job.entries.trans.JobEntryTrans;
 import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.repository.RepositoriesMeta;
@@ -99,6 +100,7 @@ public class JobExecutionConfiguration implements ExecutionConfiguration {
   private Map<String, String> extensionOptions;
 
   private Long passedBatchId;
+  private IEngine engine;
 
   public JobExecutionConfiguration() {
     executingLocally = true;
@@ -699,5 +701,14 @@ public class JobExecutionConfiguration implements ExecutionConfiguration {
         }
       }
     }
+  }
+
+
+  @Override public void setEngine( IEngine engine ) {
+    this.engine = engine;
+  }
+
+  @Override public IEngine getEngine() {
+    return engine;
   }
 }

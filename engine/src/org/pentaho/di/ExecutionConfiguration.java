@@ -27,6 +27,7 @@ import org.pentaho.di.core.Result;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.engine.api.IEngine;
 import org.pentaho.di.repository.RepositoriesMeta;
 import org.pentaho.di.repository.Repository;
 
@@ -108,4 +109,9 @@ public interface ExecutionConfiguration extends Cloneable {
   public boolean isSafeModeEnabled();
 
   public void setSafeModeEnabled( boolean usingSafeMode );
+
+  void setEngine( IEngine engine );
+
+  IEngine getEngine();
+
 }

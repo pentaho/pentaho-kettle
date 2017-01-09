@@ -31,6 +31,7 @@
     <dependency org="com.google.guava"    name="guava"               rev="17.0"            transitive="false"/>
 
     <dependency org="pentaho"             name="metastore"           rev="${dependency.pentaho-metastore.revision}"   changing="true"/>
+    <dependency org="org.pentaho"                name="pdi-execution-engine-api"          rev="${project.revision}"   changing="true"/>
     
     <dependency org="org.apache.commons"  name="commons-compress"    rev="1.4.1"              transitive="false"/>
     <dependency org="dom4j"               name="dom4j"               rev="1.6.1"            transitive="false"/>
@@ -70,7 +71,7 @@
 
     <dependency org="org.springframework" name="spring-test"         rev="${dependency.spring.framework.revision}"      transitive="true" conf="test->default"/>
     <dependency org="pentaho"             name="simple-jndi"         rev="1.0.0"      transitive="true" conf="test->default"/>
-    
+
 
   </dependencies>
 </ivy-module>

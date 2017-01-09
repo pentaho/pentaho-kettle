@@ -9,6 +9,7 @@ import org.pentaho.di.core.exception.KettleMissingPluginsException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.engine.api.IDataEvent;
 import org.pentaho.di.engine.api.IExecutableOperation;
+import org.pentaho.di.engine.api.IExecutionContext;
 import org.pentaho.di.engine.api.IExecutionResult;
 import org.pentaho.di.engine.api.IProgressReporting;
 import org.pentaho.di.engine.api.ITransformation;
@@ -37,7 +38,8 @@ public class EngineITest {
   public void testExec() throws KettleXMLException, KettleMissingPluginsException, InterruptedException {
     TransMeta meta = new TransMeta( getClass().getClassLoader().getResource( "lorem.ktr" ).getFile() );
     ITransformation trans = Transformation.convert( meta );
-    engine.execute( trans );
+    IExecutionContext executionContext = engine.prepare( trans );
+    engine.execute( executionContext );
   }
 
   @Test
@@ -112,7 +114,8 @@ public class EngineITest {
     ExecutionException {
     TransMeta meta = new TransMeta( getClass().getClassLoader().getResource( transName ).getFile() );
     ITransformation trans = Transformation.convert( meta );
-    Future<IExecutionResult> resultFuture = engine.execute( trans );
+    IExecutionContext executionContext = engine.prepare( trans );
+    Future<IExecutionResult> resultFuture = engine.execute( executionContext );
     return resultFuture.get();
   }
 

@@ -876,7 +876,7 @@ public class SpoonTransformationDelegate extends SpoonDelegate {
 
       // Is this a local execution?
       //
-      if ( executionConfiguration.isExecutingLocally() ) {
+      if ( executionConfiguration.isExecutingLocally() || executionConfiguration.getEngine() != null ) {
         if ( debug || preview ) {
           activeTransGraph.debug( executionConfiguration, transDebugMeta );
         } else {
