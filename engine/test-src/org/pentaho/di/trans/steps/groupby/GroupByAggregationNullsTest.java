@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -87,32 +87,41 @@ public class GroupByAggregationNullsTest {
    * @throws KettleValueException
    */
   @Test
-  public void calcAggregateResulTestMin_1_Test() throws KettleValueException {
+  public void calcAggregateResultTestMin_1_Test() throws KettleValueException {
     step.setMinNullIsValued( true );
     step.calcAggregate( new Object[] { null } );
     Assert.assertNull( "Value is set", data.agg[0] );
   }
 
   @Test
-  public void calcAggregateResulTestMin_2_Test() throws KettleValueException {
+  public void calcAggregateResultTestMin_2_Test() throws KettleValueException {
     step.setMinNullIsValued( true );
     step.calcAggregate( new Object[] { null } );
     Assert.assertNull( "Value is set", data.agg[0] );
   }
 
   @Test
-  public void calcAggregateResulTestMin_5_Test() throws KettleValueException {
+  public void calcAggregateResultTestMin_5_Test() throws KettleValueException {
     step.calcAggregate( new Object[] { null } );
     Assert.assertEquals( "Value is NOT set", def, data.agg[0] );
   }
 
   @Test
-  public void calcAggregateResulTestMin_3_Test() throws KettleValueException {
+  public void calcAggregateResultTestMin_3_Test() throws KettleValueException {
     step.setMinNullIsValued( false );
     step.calcAggregate( new Object[] { null } );
     Assert.assertEquals( "Value is NOT set", def, data.agg[0] );
   }
 
+  //PDI-15648 - Minimum aggregation doesn't work when null value in first row
+  @Test
+  public void getMinAggregateResultFirstValIsNullTest() throws KettleValueException {
+    data.agg[0] = null;
+    step.setMinNullIsValued( false );
+    step.calcAggregate( new Object[] { null } );
+    step.calcAggregate( new Object[] { 2 } );
+    Assert.assertEquals( "Min aggregation doesn't properly work if the first value is null", 2, data.agg[0] );
+  }
   /**
    * Set this variable to Y to return 0 when all values within an aggregate are NULL. Otherwise by default a NULL is
    * returned when all values are NULL.
@@ -120,7 +129,7 @@ public class GroupByAggregationNullsTest {
    * @throws KettleValueException
    */
   @Test
-  public void getAggregateResulTestMin_0_Test() throws KettleValueException {
+  public void getAggregateResultTestMin_0_Test() throws KettleValueException {
     // data.agg[0] is not null - this is the default behaviour
     step.setAllNullsAreZero( true );
     Object[] row = step.getAggregateResult();
@@ -128,7 +137,7 @@ public class GroupByAggregationNullsTest {
   }
 
   @Test
-  public void getAggregateResulTestMin_1_Test() throws KettleValueException {
+  public void getAggregateResultTestMin_1_Test() throws KettleValueException {
     data.agg[0] = null;
     step.setAllNullsAreZero( true );
     Object[] row = step.getAggregateResult();
@@ -136,7 +145,7 @@ public class GroupByAggregationNullsTest {
   }
 
   @Test
-  public void getAggregateResulTestMin_3_Test() throws KettleValueException {
+  public void getAggregateResultTestMin_3_Test() throws KettleValueException {
     data.agg[0] = null;
     step.setAllNullsAreZero( false );
     Object[] row = step.getAggregateResult();
