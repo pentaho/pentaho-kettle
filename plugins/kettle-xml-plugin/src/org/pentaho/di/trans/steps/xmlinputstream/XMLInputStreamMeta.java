@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,7 +27,6 @@ import java.util.List;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
@@ -37,6 +36,7 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaInteger;
 import org.pentaho.di.core.row.value.ValueMetaString;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.ObjectId;
@@ -126,6 +126,12 @@ public class XMLInputStreamMeta extends BaseStepMeta implements StepMetaInterfac
 
   private boolean includeXmlDataValueField;
   private String xmlDataValueField;
+
+  /** Are we accepting filenames in input rows? */
+  public boolean sourceFromInput;
+
+  /** The field in which the filename is placed */
+  public String sourceFieldName;
 
   public XMLInputStreamMeta() {
     super(); // allocate BaseStepMeta
@@ -235,6 +241,9 @@ public class XMLInputStreamMeta extends BaseStepMeta implements StepMetaInterfac
   @Override
   public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     try {
+      sourceFromInput = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "sourceFromInput" ) );
+      sourceFieldName = Const.NVL( XMLHandler.getTagValue( stepnode, "sourceFieldName" ), "" );
+
       filename = Const.NVL( XMLHandler.getTagValue( stepnode, "filename" ), "" );
       addResultFile = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "addResultFile" ) );
 
@@ -315,6 +324,8 @@ public class XMLInputStreamMeta extends BaseStepMeta implements StepMetaInterfac
   @Override
   public String getXML() {
     StringBuffer retval = new StringBuffer();
+    retval.append( "    " + XMLHandler.addTagValue( "sourceFromInput", sourceFromInput ) );
+    retval.append( "    " + XMLHandler.addTagValue( "sourceFieldName", sourceFieldName ) );
     retval.append( "    " + XMLHandler.addTagValue( "filename", filename ) );
     retval.append( "    " + XMLHandler.addTagValue( "addResultFile", addResultFile ) );
 
@@ -427,6 +438,8 @@ public class XMLInputStreamMeta extends BaseStepMeta implements StepMetaInterfac
   public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
     throws KettleException {
     try {
+      sourceFromInput = rep.getStepAttributeBoolean( id_step, "sourceFromInput" );
+      sourceFieldName = Const.NVL( rep.getStepAttributeString( id_step, "sourceFieldName" ), "" );
       filename = Const.NVL( rep.getStepAttributeString( id_step, "filename" ), "" );
       addResultFile = rep.getStepAttributeBoolean( id_step, "addResultFile" );
 
@@ -493,6 +506,9 @@ public class XMLInputStreamMeta extends BaseStepMeta implements StepMetaInterfac
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
     throws KettleException {
     try {
+      rep.saveStepAttribute( id_transformation, id_step, "sourceFromInput", sourceFromInput );
+      rep.saveStepAttribute( id_transformation, id_step, "sourceFieldName", sourceFieldName );
+
       rep.saveStepAttribute( id_transformation, id_step, "filename", filename );
       rep.saveStepAttribute( id_transformation, id_step, "addResultFile", addResultFile );
 
