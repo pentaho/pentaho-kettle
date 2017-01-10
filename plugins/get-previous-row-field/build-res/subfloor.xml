@@ -129,6 +129,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
        Any of these properties can be overridden in either build.properties or override.properties
        =================================================================================-->
 
+  <!-- Pentaho Artifact Repository (Nexus/Artifactory) -->
+  <property name="artifact.repo.root.url" value="http://nexus.pentaho.org/content/groups/omni"/>
+	   
   <!-- Project meta properties -->
   <property name="impl.vendor" value="Pentaho Corporation" description="Jar file metadata describing the jar's vendor"/>
   <property name="impl.productID"
@@ -177,7 +180,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             value="true"
             description="Prefer SVNKit binding over the command line client for native svn support (defaults to true)"/>
   <property name="ivy.url"
-            value="http://nexus.pentaho.org/content/groups/omni/org/apache/ivy/ivy/2.4.0/ivy-2.4.0.jar"
+            value="${artifact.repo.root.url}/org/apache/ivy/ivy/2.4.0/ivy-2.4.0.jar"
             description="The URL to the current release of Apache IVY"/>
 
   <!-- Enunciate properties -->
@@ -374,11 +377,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   <property name="checkstyle.reports.dir"
             value="${checkstyle.dir}/reports"/>
   <property name="checkstyle.config.url"
-            value="http://nexus.pentaho.org/content/groups/omni/com/pentaho/pentaho-coding-standards/pentaho-checkstyle/${pentaho.coding.standards.version}/pentaho-checkstyle-${pentaho.coding.standards.version}.xml"/>
+            value="${artifact.repo.root.url}/com/pentaho/pentaho-coding-standards/pentaho-checkstyle/${pentaho.coding.standards.version}/pentaho-checkstyle-${pentaho.coding.standards.version}.xml"/>
   <property name="checkstyle.suppressions.url"
-            value="http://nexus.pentaho.org/content/groups/omni/com/pentaho/pentaho-coding-standards/pentaho-checkstyle-suppressions/${pentaho.coding.standards.version}/pentaho-checkstyle-suppressions-${pentaho.coding.standards.version}.xml"/>
+            value="${artifact.repo.root.url}/com/pentaho/pentaho-coding-standards/pentaho-checkstyle-suppressions/${pentaho.coding.standards.version}/pentaho-checkstyle-suppressions-${pentaho.coding.standards.version}.xml"/>
   <property name="checkstyle.stylesheet.url"
-            value="http://nexus.pentaho.org/content/groups/omni/com/pentaho/pentaho-coding-standards/pentaho-checkstyle-stylesheet/${pentaho.coding.standards.version}/pentaho-checkstyle-stylesheet-${pentaho.coding.standards.version}.xsl"/>
+            value="${artifact.repo.root.url}/omni/com/pentaho/pentaho-coding-standards/pentaho-checkstyle-stylesheet/${pentaho.coding.standards.version}/pentaho-checkstyle-stylesheet-${pentaho.coding.standards.version}.xsl"/>
   <property name="checkstyle.config.file"
             value="${checkstyle.dir}/pentaho-checkstyle-${pentaho.coding.standards.version}.xml"/>
   <property name="checkstyle.suppressions.file"
@@ -666,7 +669,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       ====================================================================-->
   <target name="antcontrib.download" unless="antcontrib.available">
     <mkdir dir="${antcontrib.build.cache.dir}"/>
-    <get src="http://nexus.pentaho.org/content/groups/omni/ant-contrib/ant-contrib/1.0b3/ant-contrib-1.0b3.jar"
+    <get src="${artifact.repo.root.url}/ant-contrib/ant-contrib/1.0b3/ant-contrib-1.0b3.jar"
          dest="${antcontrib.build.cache.dir}"
          usetimestamp="true"/>
   </target>
@@ -726,6 +729,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         svn-revision
 
         Prints and sets the SVN revision for the repository at the current dir (if svn.revision is not set)
+		
+		DEPRECATED TARGET
         ====================================================================-->
   <target name="svn-revision" depends="install-svnant">
 
@@ -741,6 +746,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
         Sets a property build.id to the either "development" or the svn revision
         if in release mode
+		
+		DEPRECATED TARGET
         ====================================================================-->
   <target name="set-build.id" unless="build.id" depends="install-antcontrib">
     <if>
@@ -760,7 +767,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
        a package or packages should run this target.  Projects that produce
        jars only should NOT.
    ===================================================================================-->
-  <target name="version-properties" depends="set-build.id">
+  <target name="version-properties">
     <tstamp>
       <format property="build.time" pattern="yyyy/MM/dd hh:mm aa"/>
     </tstamp>
@@ -771,10 +778,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       <entry key="release.candidate.token" value="${release.candidate.token}"/>
       <entry key="impl.vendor" value="${impl.vendor}"/>
       <entry key="impl.version"
-             value="${release.major.number}.${release.minor.number}.${release.milestone.number}.${build.id}"/>
+             value="${release.major.number}.${release.minor.number}.${release.milestone.number}"/>
       <entry key="impl.title" value="${impl.title}"/>
       <entry key="buildDate" value="${build.time}"/>
-      <entry key="svn.revision" value="${build.id}"/>
       <entry key="release.build.number" default="0" type="int" operation="+" value="1" pattern="0000"/>
     </propertyfile>
     <property file="${basedir}/version.properties"/>
@@ -1658,7 +1664,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   </target>
 
   <target name="jar.main"
-          depends="compile,set-build.id,generate.manifest">
+          depends="compile,generate.manifest">
     <jar destfile="${dist.dir}/${ivy.artifact.id}-${project.revision}.jar" manifest="${dist.manifest.file}">
       <fileset dir="${classes.dir}"/>
     </jar>
@@ -1670,14 +1676,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       Creates a new manifest file if one is not specified, or updates
       an existing manifest file if one is specified.
       ====================================================================-->
-  <target name="generate.manifest" depends="init,set-build.id">
+  <target name="generate.manifest" depends="init">
     <delete file="${dist.manifest.file}"/>
     <touch file="${dist.manifest.file}"/>
     <copy file="${manifest.file}" tofile="${dist.manifest.file}" overwrite="true" failonerror="false"/>
 
     <manifest file="${dist.manifest.file}" mode="update">
       <attribute name="Implementation-Title" value="${impl.title}"/>
-      <attribute name="Implementation-Version" value="${project.revision}.${build.id}"/>
+      <attribute name="Implementation-Version" value="${project.revision}"/>
       <attribute name="Implementation-Vendor" value="${impl.vendor}"/>
       <attribute name="Implementation-ProductID" value="${impl.productID}"/>
     </manifest>
