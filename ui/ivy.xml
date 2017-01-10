@@ -20,6 +20,9 @@
     <dependency org="${ivy.artifact.group}" name="kettle-engine"       rev="${dependency.kettle.revision}" changing="true"/>
     <dependency org="${ivy.artifact.group}" name="kettle-dbdialog"     rev="${dependency.kettle.revision}" changing="true"/>
 
+
+    <dependency org="org.pentaho"                name="pdi-execution-engine-classic"          rev="${project.revision}"   changing="true"/>
+
     <!-- Pentaho (non-Kettle) dependencies -->
     <dependency org="pentaho"               name="pentaho-vfs-browser" rev="${dependency.pentaho-vfs-browser.revision}" changing="true"/>
     <dependency org="pentaho"               name="pentaho-xul-core"    rev="${dependency.pentaho-xul.revision}"         changing="true"/>

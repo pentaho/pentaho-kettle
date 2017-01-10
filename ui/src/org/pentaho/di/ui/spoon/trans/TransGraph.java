@@ -131,6 +131,7 @@ import org.pentaho.di.engine.api.IExecutionContext;
 import org.pentaho.di.engine.api.IExecutionResultFuture;
 import org.pentaho.di.engine.api.ITransformation;
 import org.pentaho.di.engine.kettleclassic.ClassicKettleExecutionContext;
+import org.pentaho.di.engine.kettleclassic.ClassicTransformation;
 import org.pentaho.di.engine.kettleclassic.ClassicUtils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
@@ -196,6 +197,8 @@ import org.pentaho.di.ui.spoon.dialog.EnterPreviewRowsDialog;
 import org.pentaho.di.ui.spoon.dialog.NotePadDialog;
 import org.pentaho.di.ui.spoon.dialog.SearchFieldsProgressDialog;
 import org.pentaho.di.ui.spoon.job.JobGraph;
+import org.pentaho.di.ui.spoon.trans.executionstate.api.ExecutionStatePublisher;
+import org.pentaho.di.ui.spoon.trans.executionstate.impl.local.LocalExecutionStatePublisher;
 import org.pentaho.di.ui.trans.dialog.TransDialog;
 import org.pentaho.di.ui.xul.KettleXulLoader;
 import org.pentaho.ui.xul.XulDomContainer;
@@ -3791,6 +3794,11 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
           setControlStates();
 
           executionResultFuture = iEngine.execute( executionContext );
+
+          ExecutionStatePublisher statePublisher = new LocalExecutionStatePublisher(
+            spoon, ((ClassicTransformation)executionContext.getTransformation()).getTrans() );
+          statePublisher.subscribe( transGridDelegate );
+
           log.logBasic( BaseMessages.getString( PKG, "TransLog.Log.TransformationOpened" ) );
 
           checkErrorVisuals();
