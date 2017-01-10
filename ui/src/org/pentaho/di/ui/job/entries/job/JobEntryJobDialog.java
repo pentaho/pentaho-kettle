@@ -113,7 +113,10 @@ public class JobEntryJobDialog extends JobEntryBaseDialog implements JobEntryDia
 
     BaseStepDialog.setSize( shell );
 
-    shell.setSize( 750, 750 );
+    int width = 750;
+    int height = Const.isWindows() ? 730 : 718;
+
+    shell.setSize( width, height );
     shell.open();
     while ( !shell.isDisposed() ) {
       if ( !display.readAndDispatch() ) {
@@ -125,6 +128,10 @@ public class JobEntryJobDialog extends JobEntryBaseDialog implements JobEntryDia
 
   protected void createElements() {
     super.createElements();
+
+    wlPath.setText( BaseMessages.getString( PKG, "JobJob.JobStep.Job.Label" ) );
+    wlDescription.setText( BaseMessages.getString( PKG, "JobJob.Local.Label" ) );
+    wPassParams.setText( BaseMessages.getString( PKG, "JobJob.PassAllParameters.Label" ) );
 
     // Start Server Section
     wWaitingToFinish = new Button( wServer, SWT.CHECK );
