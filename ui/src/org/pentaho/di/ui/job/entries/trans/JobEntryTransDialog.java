@@ -111,7 +111,10 @@ public class JobEntryTransDialog extends JobEntryBaseDialog implements JobEntryD
 
     BaseStepDialog.setSize( shell );
 
-    shell.setSize( 750, 750 );
+    int width = 750;
+    int height = Const.isWindows() ? 730 : 720;
+
+    shell.setSize( width, height );
     shell.open();
     while ( !shell.isDisposed() ) {
       if ( !display.readAndDispatch() ) {
@@ -123,6 +126,10 @@ public class JobEntryTransDialog extends JobEntryBaseDialog implements JobEntryD
 
   protected void createElements() {
     super.createElements();
+
+    wlPath.setText( BaseMessages.getString( PKG, "JobTrans.JobStep.Transformation.Label" ) );
+    wlDescription.setText( BaseMessages.getString( PKG, "JobTrans.Local.Label" ) );
+    wPassParams.setText( BaseMessages.getString( PKG, "JobTrans.PassAllParameters.Label" ) );
 
     wCluster = new Button( typeComposite, SWT.RADIO );
     props.setLook( wCluster );
