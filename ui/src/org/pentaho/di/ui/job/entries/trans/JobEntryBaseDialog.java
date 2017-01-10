@@ -73,6 +73,7 @@ public abstract class JobEntryBaseDialog extends JobEntryDialog {
 
   public static Class<?> PKG = JobEntryTrans.class;
 
+  protected Label wlPath;
   protected TextVar wPath;
 
   protected Button wbBrowse;
@@ -88,6 +89,8 @@ public abstract class JobEntryBaseDialog extends JobEntryDialog {
   protected Button wbServer;
 
   protected Label vSpacer;
+
+  protected Label wlDescription;
 
   protected Group gLogFile;
 
@@ -228,20 +231,19 @@ public abstract class JobEntryBaseDialog extends JobEntryDialog {
     fdSpacer.right = new FormAttachment( 100, 0 );
     spacer.setLayoutData( fdSpacer );
 
-    Label wlTransformation = new Label( shell, SWT.LEFT );
-    props.setLook( wlTransformation );
-    wlTransformation.setText( BaseMessages.getString( PKG, "JobTrans.JobStep.Transformation.Label" ) );
+    wlPath = new Label( shell, SWT.LEFT );
+    props.setLook( wlPath );
     FormData fdlTransformation = new FormData();
     fdlTransformation.left = new FormAttachment( 0, 0 );
     fdlTransformation.top = new FormAttachment( spacer, 20 );
     fdlTransformation.right = new FormAttachment( 50, 0 );
-    wlTransformation.setLayoutData( fdlTransformation );
+    wlPath.setLayoutData( fdlTransformation );
 
     wPath = new TextVar( jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     props.setLook( wPath );
     FormData fdTransformation = new FormData();
     fdTransformation.left = new FormAttachment( 0, 0 );
-    fdTransformation.top = new FormAttachment( wlTransformation, 5 );
+    fdTransformation.top = new FormAttachment( wlPath, 5 );
     fdTransformation.right = new FormAttachment( 50, 0 );
     wPath.setLayoutData( fdTransformation );
 
@@ -250,7 +252,7 @@ public abstract class JobEntryBaseDialog extends JobEntryDialog {
     wbBrowse.setText( BaseMessages.getString( PKG, "JobTrans.Browse.Label" ) );
     FormData fdBrowse = new FormData();
     fdBrowse.left = new FormAttachment( wPath, 5 );
-    fdBrowse.top = new FormAttachment( wlTransformation, 5 );
+    fdBrowse.top = new FormAttachment( wlPath, 5 );
     wbBrowse.setLayoutData( fdBrowse );
 
     CTabFolder wTabFolder = new CTabFolder( shell, SWT.BORDER );
@@ -331,9 +333,8 @@ public abstract class JobEntryBaseDialog extends JobEntryDialog {
     fdwLocal.top = new FormAttachment( 0, 0 );
     wLocal.setLayoutData( fdwLocal );
 
-    Label wlDescription = new Label( wLocal, SWT.LEFT );
+    wlDescription = new Label( wLocal, SWT.LEFT );
     props.setLook( wlDescription );
-    wlDescription.setText( BaseMessages.getString( PKG, "JobTrans.Local.Label" ) );
     FormData fdlDescription = new FormData();
     fdlDescription.top = new FormAttachment( 0, 0 );
     fdlDescription.left = new FormAttachment( 0, 0 );
@@ -632,7 +633,6 @@ public abstract class JobEntryBaseDialog extends JobEntryDialog {
 
     wPassParams = new Button( wParameterComp, SWT.CHECK );
     props.setLook( wPassParams );
-    wPassParams.setText( BaseMessages.getString( PKG, "JobTrans.PassAllParameters.Label" ) );
     FormData fdPassParams = new FormData();
     fdPassParams.left = new FormAttachment( 0, 0 );
     fdPassParams.top = new FormAttachment( wPrevToParams, 10 );
