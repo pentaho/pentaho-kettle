@@ -23,7 +23,7 @@
         </url>
         <ibiblio name="pentaho-mvn" m2compatible="true" root="${pentaho.resolve.repo}" checkmodified="true" changingPattern=".*-SNAPSHOT.*" />
       </dual>
-      <ibiblio name="local-mvn" m2compatible="true" root="file://${maven.local.repo}" checkmodified="true" changingPattern=".*-SNAPSHOT.*" />
+      <ibiblio name="local-mvn" m2compatible="true" root="file:///${maven.local.repo}" checkmodified="true" changingPattern=".*-SNAPSHOT.*" />
       <ibiblio name="public-maven" root="${public.resolve.repo}" m2compatible="true" />
     </chain>
   </resolvers>
