@@ -334,13 +334,15 @@ public class ExcelOutput extends BaseStep implements StepInterface {
       // Do we need to use a specific format to header?
       if ( isHeader ) {
         // Set font for header and footer+
-        data.sheet.addCell( new Label( data.positionX, data.positionY, vMeta.getName(), data.headerCellFormat ) );
+        // row to write in
+        int rowNumber = data.sheet.getColumn( data.positionX ).length;
+        data.sheet.addCell( new Label( data.positionX, rowNumber, vMeta.getName(), data.headerCellFormat ) );
         if ( cellFormat == null ) {
           data.formats.put( hashName, data.headerCellFormat ); // save for next time around...
         }
       } else {
-        // Will write new row after existing ones
-        data.positionY = data.sheet.getRows();
+        // Will write new row after existing ones in current column
+        data.positionY = data.sheet.getColumn( data.positionX ).length;
         switch ( vMeta.getType() ) {
           case ValueMetaInterface.TYPE_DATE: {
             if ( v != null && vMeta.getDate( v ) != null ) {
@@ -502,7 +504,7 @@ public class ExcelOutput extends BaseStep implements StepInterface {
         if ( meta.isAppend() && targetFile.exists() ) {
           Workbook workbook = Workbook.getWorkbook( targetFile );
           data.workbook = Workbook.createWorkbook( targetFile, workbook );
-          // and now .. we create the sheet          
+          // and now .. we create the sheet
           int numberOfSheets = data.workbook.getNumberOfSheets();
           data.sheet = data.workbook.getSheet( numberOfSheets - 1 );
           // if file exists and append option is set do not rewrite header
@@ -521,15 +523,14 @@ public class ExcelOutput extends BaseStep implements StepInterface {
           }
         }
       } else {
-         // do not write header if template is used
-        meta.setHeaderEnabled( false );
-
         FileObject templateFile
             = KettleVFS.getFileObject( environmentSubstitute( meta.getTemplateFileName() ), getTransMeta() );
         // create the openFile from the template
         Workbook templateWorkbook = Workbook.getWorkbook( KettleVFS.getInputStream( templateFile ), data.ws );
 
         if ( meta.isAppend() && targetFile.exists() && isTemplateContained( templateWorkbook, targetFile ) ) {
+          // do not write header if file has already existed
+          meta.setHeaderEnabled( false );
           Workbook targetFileWorkbook = Workbook.getWorkbook( targetFile );
           data.workbook = Workbook.createWorkbook( targetFile, targetFileWorkbook );
         } else {
@@ -559,7 +560,7 @@ public class ExcelOutput extends BaseStep implements StepInterface {
 
       data.positionX = 0;
       if ( meta.isTemplateEnabled() && meta.isTemplateAppend() ) {
-        data.positionY = data.sheet.getRows();
+        data.positionY = data.sheet.getColumn( data.positionX ).length;
       } else {
         data.positionY = 0;
       }
