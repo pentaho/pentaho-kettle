@@ -42,7 +42,7 @@
         <configuration>
           <instructions>
             <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
-            <Import-Package>org.pentaho.di.engine,org.pentaho.di.osgi</Import-Package>
+            <Import-Package>org.pentaho.di.engine,org.pentaho.di.engine.api,org.pentaho.di.osgi,org.pentaho.di.core.plugins,*</Import-Package>
           </instructions>
         </configuration>
       </plugin>
