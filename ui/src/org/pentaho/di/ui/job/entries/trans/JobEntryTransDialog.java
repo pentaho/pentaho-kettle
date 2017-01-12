@@ -126,6 +126,7 @@ public class JobEntryTransDialog extends JobEntryBaseDialog implements JobEntryD
 
   protected void createElements() {
     super.createElements();
+    shell.setText( BaseMessages.getString( PKG, "JobTrans.Header" ) );
 
     wlPath.setText( BaseMessages.getString( PKG, "JobTrans.JobStep.Transformation.Label" ) );
     wlDescription.setText( BaseMessages.getString( PKG, "JobTrans.Local.Label" ) );

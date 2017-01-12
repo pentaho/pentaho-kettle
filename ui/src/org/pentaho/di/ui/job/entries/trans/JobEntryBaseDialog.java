@@ -44,6 +44,8 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
@@ -197,7 +199,6 @@ public abstract class JobEntryBaseDialog extends JobEntryDialog {
     formLayout.marginHeight = 15;
 
     shell.setLayout( formLayout );
-    shell.setText( BaseMessages.getString( PKG, "JobTrans.Header" ) );
 
     Label wicon = new Label( shell, SWT.RIGHT );
     wicon.setImage( getImage() );
@@ -587,8 +588,8 @@ public abstract class JobEntryBaseDialog extends JobEntryDialog {
     colinf[ 0 ].setUsingVariables( true );
 
     wFields =
-      new TableView( jobMeta, wFieldComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, false, lsMod,
-        props, false );
+      new TableView( jobMeta, wFieldComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.NO_SCROLL | SWT.V_SCROLL,
+        colinf, FieldsRows, false, lsMod, props, false );
 
     FormData fdFields = new FormData();
     fdFields.left = new FormAttachment( 0, 0 );
@@ -596,6 +597,7 @@ public abstract class JobEntryBaseDialog extends JobEntryDialog {
     fdFields.right = new FormAttachment( 100, 0 );
     fdFields.bottom = new FormAttachment( 100, 0 );
     wFields.setLayoutData( fdFields );
+    wFields.getTable().addListener( SWT.Resize, new ColumnsResizer( 0, 100 ) );
 
     FormData fdFieldsComp = new FormData();
     fdFieldsComp.left = new FormAttachment( 0, 0 );
@@ -663,13 +665,14 @@ public abstract class JobEntryBaseDialog extends JobEntryDialog {
     wParameters =
       new TableView( jobMeta, wParameterComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, parameterRows, false,
         lsMod, props, false );
-
+    props.setLook( wParameters );
     FormData fdParameters = new FormData();
     fdParameters.left = new FormAttachment( 0, 0 );
     fdParameters.top = new FormAttachment( wPassParams, 10 );
     fdParameters.right = new FormAttachment( 100 );
     fdParameters.bottom = new FormAttachment( wbGetParams, -10 );
     wParameters.setLayoutData( fdParameters );
+    wParameters.getTable().addListener( SWT.Resize, new ColumnsResizer( 0, 33, 33, 33 ) );
 
     FormData fdParametersComp = new FormData();
     fdParametersComp.left = new FormAttachment( 0, 0 );
@@ -812,5 +815,31 @@ public abstract class JobEntryBaseDialog extends JobEntryDialog {
   protected abstract String[] getArguments();
 
   protected abstract String[] getParamters();
+
+  public class ColumnsResizer implements Listener {
+    private int[] weights;
+
+    public ColumnsResizer( int... weights ) {
+      this.weights = weights;
+    }
+
+    @Override
+    public void handleEvent( Event event ) {
+      Table table = (Table) event.widget;
+      float width = table.getSize().x - 2;
+      TableColumn[] columns = table.getColumns();
+
+      int f = 0;
+      for ( int w : weights ) {
+        f += w;
+      }
+      for ( int i = 0; i < weights.length; i++ ) {
+        int cw = weights[ i ] == 0 ? 0 : Math.round( width / f * weights[ i ] );
+        width -= cw + 1;
+        columns[ i ].setWidth( cw );
+        f -= weights[ i ];
+      }
+    }
+  }
 
 }

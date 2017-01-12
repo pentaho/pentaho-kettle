@@ -128,6 +128,7 @@ public class JobEntryJobDialog extends JobEntryBaseDialog implements JobEntryDia
 
   protected void createElements() {
     super.createElements();
+    shell.setText( BaseMessages.getString( PKG, "JobJob.Header" ) );
 
     wlPath.setText( BaseMessages.getString( PKG, "JobJob.JobStep.Job.Label" ) );
     wlDescription.setText( BaseMessages.getString( PKG, "JobJob.Local.Label" ) );
