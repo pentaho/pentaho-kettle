@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -1105,6 +1105,25 @@ public class PropsUI extends Props {
 
   public void setCanvasGridSize( int gridSize ) {
     properties.setProperty( CANVAS_GRID_SIZE, Integer.toString( gridSize ) );
+  }
+
+  /**
+   * getSupportedVersion
+   *
+   * @param property the key for the software version
+   * @return an integer that represents the supported version for the software.
+   */
+  public int getSupportedVersion( String property ) {
+    return Integer.parseInt( properties.getProperty( property ) );
+  }
+
+  /**
+   * getHelpLinkUrl
+   *
+   * @return the url for the pentaho help page.
+   */
+  public String getHelpLinkUrl() {
+    return properties.getProperty("browser.warning.dialog.url");
   }
 
   public boolean isLegacyPerspectiveMode() {

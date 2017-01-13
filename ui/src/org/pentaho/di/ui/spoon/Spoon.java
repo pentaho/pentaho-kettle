@@ -276,6 +276,7 @@ import org.pentaho.di.ui.core.dialog.ShowBrowserDialog;
 import org.pentaho.di.ui.core.dialog.ShowMessageDialog;
 import org.pentaho.di.ui.core.dialog.Splash;
 import org.pentaho.di.ui.core.dialog.SubjectDataBrowserDialog;
+import org.pentaho.di.ui.core.dialog.BrowserEnvironmentWarningDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.widget.OsHelper;
@@ -319,6 +320,7 @@ import org.pentaho.di.ui.spoon.wizards.CopyTableWizardPage2;
 import org.pentaho.di.ui.trans.dialog.TransDialogPluginType;
 import org.pentaho.di.ui.trans.dialog.TransHopDialog;
 import org.pentaho.di.ui.trans.dialog.TransLoadProgressDialog;
+import org.pentaho.di.ui.util.EnvironmentUtils;
 import org.pentaho.di.ui.util.EngineMetaUtils;
 import org.pentaho.di.ui.util.HelpUtils;
 import org.pentaho.di.ui.util.ThreadGuiResources;
@@ -502,6 +504,12 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
   // "Redo : not available \tCTRL-Y"
   private static final String REDO_UNAVAILABLE = BaseMessages.getString( PKG, "Spoon.Menu.Redo.NotAvailable" );
+
+  private static boolean unsupportedBrowserEnvironment;
+
+  private static boolean webkitUnavailable;
+
+  private static String availableBrowser;
 
   public static final String REFRESH_SELECTION_EXTENSION = "REFRESH_SELECTION_EXTENSION";
 
@@ -9238,6 +9246,26 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     }
   }
 
+  private void checkEnvironment() {
+    webkitUnavailable = EnvironmentUtils.getInstance().isWebkitUnavailable();
+    unsupportedBrowserEnvironment = EnvironmentUtils.getInstance().isUnsupportedBrowserEnvironment();
+    availableBrowser = EnvironmentUtils.getInstance().getBrowserName();
+    if ( webkitUnavailable ) {
+      ( new BrowserEnvironmentWarningDialog( shell ) ).showWarningDialog(
+          BrowserEnvironmentWarningDialog.EnvironmentCase.UBUNTU );
+      return;
+    }
+    if ( unsupportedBrowserEnvironment ) {
+      if ( availableBrowser.contains( EnvironmentUtils.WINDOWS_BROWSER ) ) {
+        ( new BrowserEnvironmentWarningDialog( shell ) ).showWarningDialog(
+            BrowserEnvironmentWarningDialog.EnvironmentCase.WINDOWS );
+      } else if ( availableBrowser.contains( EnvironmentUtils.MAC_BROWSER ) ) {
+        ( new BrowserEnvironmentWarningDialog( shell ) ).showWarningDialog(
+            BrowserEnvironmentWarningDialog.EnvironmentCase.MAC_OS_X );
+      }
+    }
+  }
+
   /**
    * Hides or shows the main toolbar
    *
@@ -9297,6 +9325,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     setBlockOnOpen( false );
     try {
       open();
+      checkEnvironment();
       ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.SpoonStart.id, commandLineOptions );
       // Load the last loaded files
       loadLastUsedFiles();
@@ -9373,6 +9402,18 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
   public Composite getDesignParent() {
     return sashform;
+  }
+
+  public static boolean isUnsupportedBrowserEnvironment() {
+    return unsupportedBrowserEnvironment;
+  }
+
+  public static boolean isWebkitUnavailable() {
+    return webkitUnavailable;
+  }
+
+  public static String getAvailableBrowser() {
+    return availableBrowser;
   }
 
   public void disableCutCopyPaste() {
