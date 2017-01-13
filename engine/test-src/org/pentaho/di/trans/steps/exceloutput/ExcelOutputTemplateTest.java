@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,16 +22,15 @@
 
 package org.pentaho.di.trans.steps.exceloutput;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.when;
-
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 
 import junit.framework.Assert;
-
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.mockito.Matchers;
+import org.mockito.Mockito;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
@@ -51,9 +50,9 @@ public class ExcelOutputTemplateTest {
     helper =
         new StepMockHelper<ExcelOutputMeta, ExcelOutputData>( "ExcelOutputTest", ExcelOutputMeta.class,
             ExcelOutputData.class );
-    when( helper.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) ).thenReturn(
+    Mockito.when( helper.logChannelInterfaceFactory.create( Matchers.any(), Matchers.any( LoggingObjectInterface.class ) ) ).thenReturn(
         helper.logChannelInterface );
-    when( helper.trans.isRunning() ).thenReturn( true );
+    Mockito.when( helper.trans.isRunning() ).thenReturn( true );
   }
 
   @Test
@@ -63,6 +62,7 @@ public class ExcelOutputTemplateTest {
     ExcelOutputMeta meta = createStepMeta();
     excelOutput.init( meta, helper.initStepDataInterface );
     Assert.assertEquals( "Step init error.", 0, excelOutput.getErrors() );
+    helper.initStepDataInterface.formats = new HashMap<>();
     excelOutput.dispose( meta, helper.initStepDataInterface );
     Assert.assertEquals( "Step dispose error", 0, excelOutput.getErrors() );
   }
