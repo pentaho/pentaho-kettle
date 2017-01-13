@@ -1,16 +1,17 @@
 package org.pentaho.di.engine.kettleclassic;
 
-import org.pentaho.di.engine.api.IDataEvent;
+import com.google.common.collect.ImmutableMap;
 import org.pentaho.di.engine.api.IExecutionResult;
-import org.pentaho.di.engine.api.IProgressReporting;
+import org.pentaho.di.engine.api.IOperation;
+import org.pentaho.di.engine.api.reporting.Metrics;
 
-import java.util.List;
+import java.util.Map;
 
 /**
  * Created by nbaker on 1/5/17.
  */
 public class ClassicExecutionResult implements IExecutionResult {
-  @Override public List<IProgressReporting<IDataEvent>> getDataEventReport() {
-    return null;
+  @Override public Map<IOperation, Metrics> getDataEventReport() {
+    return ImmutableMap.of();
   }
 }

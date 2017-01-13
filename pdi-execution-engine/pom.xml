@@ -11,8 +11,10 @@
   </parent>
 
   <properties>
+    <hamcrest.version>2.0.0.0</hamcrest.version>
     <mockito.version>1.9.5</mockito.version>
-    <rxjava.dependency.version>1.1.5</rxjava.dependency.version>
+    <rxjava.dependency.version>1.2.5</rxjava.dependency.version>
+    <guava.dependency.version>17.0</guava.dependency.version>
   </properties>
 
 

@@ -1,6 +1,5 @@
 package org.pentaho.di.engine.kettlenative.impl;
 
-import org.apache.spark.SparkContext;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.api.java.function.FlatMapFunction;
@@ -63,7 +62,7 @@ public class SparkDataEvent implements IDataEvent {
     return rdd;
   }
 
-  @Override public IPDIEventSource getEventSource() {
+  @Override public IPDIEventSource<IDataEvent> getEventSource() {
     return operation;
   }
 }

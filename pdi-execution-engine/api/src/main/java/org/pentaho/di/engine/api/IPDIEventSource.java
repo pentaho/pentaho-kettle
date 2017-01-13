@@ -8,6 +8,6 @@ import java.io.Serializable;
 /**
  * Created by nbaker on 6/13/16.
  */
-public interface IPDIEventSource<T extends IPDIEvent> extends Publisher<T>, Serializable {
+public interface IPDIEventSource<T extends IDataEvent> extends Publisher<T> {
   String getId();
 }

@@ -29,5 +29,5 @@ public interface IDataEvent extends IPDIEvent {
    *
    * @return
    */
-  IPDIEventSource getEventSource();
+  IPDIEventSource<?> getEventSource();
 }

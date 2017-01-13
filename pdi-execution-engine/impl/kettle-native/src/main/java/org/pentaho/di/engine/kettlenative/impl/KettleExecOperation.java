@@ -4,21 +4,18 @@ import com.google.common.base.Preconditions;
 import org.pentaho.di.core.QueueRowSet;
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.exception.KettleMissingPluginsException;
 import org.pentaho.di.core.exception.KettleStepException;
-import org.pentaho.di.core.exception.KettleXMLException;
-import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaString;
-import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.engine.api.IData;
 import org.pentaho.di.engine.api.IDataEvent;
 import org.pentaho.di.engine.api.IExecutableOperation;
-import org.pentaho.di.engine.api.IHop;
 import org.pentaho.di.engine.api.IOperation;
-import org.pentaho.di.engine.api.IOperationVisitor;
+import org.pentaho.di.engine.api.IPDIEventSource;
 import org.pentaho.di.engine.api.ITransformation;
+import org.pentaho.di.engine.api.Status;
+import org.pentaho.di.engine.api.reporting.Metrics;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -30,10 +27,7 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaDataCombi;
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -45,7 +39,7 @@ import java.util.stream.Stream;
 import static org.pentaho.di.engine.kettlenative.impl.KettleNativeUtil.createTrans;
 import static org.pentaho.di.engine.kettlenative.impl.KettleNativeUtil.getTransMeta;
 
-public class KettleExecOperation implements IExecutableOperation {
+public class KettleExecOperation implements IExecutableOperation, Subscriber<IDataEvent> {
 
   private final IOperation operation;
   private transient final Trans trans;
@@ -69,7 +63,7 @@ public class KettleExecOperation implements IExecutableOperation {
   }
 
   public static IExecutableOperation compile( IOperation operation, ITransformation trans,
-                                             ExecutorService executorService ) {
+                                              ExecutorService executorService ) {
     return new KettleExecOperation( operation, trans, executorService );
   }
 
@@ -81,33 +75,24 @@ public class KettleExecOperation implements IExecutableOperation {
     return !done.get();
   }
 
-  @Override public List<IHop> getHopsIn() {
-    return operation.getHopsIn();
+  @Override public void subscribeTo( IPDIEventSource<IDataEvent> source ) {
+    source.subscribe( this );
   }
 
-  @Override public List<IHop> getHopsOut() {
-    return operation.getHopsOut();
+  @Override public void start() {
+    onNext( KettleDataEvent.empty() );
+  }
+
+  @Override public IOperation getParent() {
+    return operation;
+  }
+
+  @Override public Metrics getMetrics() {
+    return new Metrics( getIn(), getOut(), getDropped(), getInFlight() );
   }
 
   @Override public String getId() {
     return operation.getId();
-  }
-
-  @Override public List<IOperation> getFrom() {
-    return operation.getFrom();
-  }
-
-  @Override public List<IOperation> getTo() {
-    return operation.getTo();
-  }
-
-
-  @Override public String getConfig() {
-    return operation.getConfig();
-  }
-
-  @Override public <T> T accept( IOperationVisitor<T> visitor ) {
-    return operation.accept( visitor );
   }
 
   @Override public void onComplete() {
@@ -134,7 +119,7 @@ public class KettleExecOperation implements IExecutableOperation {
           getInputRowset( dataEvent ).ifPresent(
             rowset -> {
               List<IData> data = dataEvent.getData();
-              if (data.size() > 1) {
+              if ( data.size() > 1 ) {
                 // TEMP hack, this only happens with Spark right now
                 data.stream()
                   .forEach( d -> rowset.putRow( rowMetaInterface, d.getData() ) );
@@ -153,13 +138,13 @@ public class KettleExecOperation implements IExecutableOperation {
           terminalRow( dataEvent );
           break;
       }
-    } catch ( KettleException   e ) {
+    } catch ( KettleException e ) {
       throw new RuntimeException( e );
     }
 
   }
 
-  private void terminalRow( IDataEvent dataEvent )  {
+  private void terminalRow( IDataEvent dataEvent ) {
     try {
       getInputRowset( dataEvent ).ifPresent( rowset -> rowset.setDone() );
     } catch ( KettleStepException e ) {
@@ -171,7 +156,7 @@ public class KettleExecOperation implements IExecutableOperation {
     RowMetaInterface rowMetaInterface = new RowMeta();
     rowMetaInterface.addValueMeta( new ValueMetaString( "name" ) );
     if ( dataEvent instanceof KettleDataEvent ) {
-      rowMetaInterface = ((KettleDataEvent) dataEvent ).getRowMeta();
+      rowMetaInterface = ( (KettleDataEvent) dataEvent ).getRowMeta();
     }
     return rowMetaInterface;
   }
@@ -266,25 +251,24 @@ public class KettleExecOperation implements IExecutableOperation {
   }
 
 
-
-  @Override public long getIn() {
+  public long getIn() {
     return step.getLinesRead();
   }
 
-  @Override public long getOut() {
+  public long getOut() {
     return step.getLinesOutput() + step.getLinesWritten();
   }
 
-  @Override public long getDropped() {
+  public long getDropped() {
     return step.getLinesRejected();
   }
 
-  @Override public int getInFlight() {
+  public long getInFlight() {
     return 0; // ?
   }
 
-  @Override public Status getStatus() {
-    return null;
+  public Status getStatus() {
+    return isRunning() ? Status.RUNNING : Status.FINISHED;
   }
 
   @Override public String toString() {

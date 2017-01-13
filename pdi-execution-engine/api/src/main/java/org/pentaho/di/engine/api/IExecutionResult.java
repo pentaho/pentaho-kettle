@@ -1,19 +1,12 @@
 package org.pentaho.di.engine.api;
 
-import java.util.List;
+import org.pentaho.di.engine.api.reporting.Metrics;
+
+import java.util.Map;
 
 /**
  * Created by nbaker on 6/22/16.
  */
-public interface IExecutionResult  {
-
-  default IProgressReporting.Status getStatus() {
-    // Man I wish we could make this final
-
-    return IProgressReporting.Status.FINISHED;
-  }
-
-  List<IProgressReporting<IDataEvent>> getDataEventReport();
-
-
+public interface IExecutionResult {
+  Map<IOperation, Metrics> getDataEventReport();
 }

@@ -1,16 +1,15 @@
 package org.pentaho.di.engine.kettleclassic;
 
+import com.google.common.base.Throwables;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.DefaultLogLevel;
-import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LoggingObjectType;
 import org.pentaho.di.core.logging.SimpleLoggingObject;
 import org.pentaho.di.engine.api.IEngine;
 import org.pentaho.di.engine.api.IExecutionContext;
-import org.pentaho.di.engine.api.IExecutionResultFuture;
+import org.pentaho.di.engine.api.IExecutionResult;
 import org.pentaho.di.engine.api.ITransformation;
-import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.trans.TransMeta;
@@ -18,6 +17,9 @@ import org.pentaho.di.trans.TransMeta;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ThreadFactory;
+import java.util.function.Function;
 
 /**
  * Created by nbaker on 1/4/17.
@@ -25,17 +27,16 @@ import java.util.UUID;
 public class ClassicKettleEngine implements IEngine {
 
   @Override public IExecutionContext prepare( ITransformation trans ) {
-    return new ClassicKettleExecutionContext( trans );
+    return new ClassicKettleExecutionContext( this, trans );
   }
 
-  @Override public IExecutionResultFuture execute( IExecutionContext context ) {
-
-    ClassicKettleExecutionContext cContext = (ClassicKettleExecutionContext) context;
-    ClassicTransformation transformation = (ClassicTransformation) cContext.getTransformation();
+  CompletableFuture<IExecutionResult> execute( ClassicKettleExecutionContext context ) {
+    CompletableFuture<IExecutionResult> future = new CompletableFuture<>();
+    ClassicTransformation transformation = (ClassicTransformation) context.getTransformation();
     TransMeta transMeta = transformation.getTransMeta();
-    TransExecutionConfiguration executionConfiguration = cContext.getExecutionConfiguration();
+    TransExecutionConfiguration executionConfiguration = context.getExecutionConfiguration();
 
-    Trans trans = null;
+    Trans trans;
     try {
       // Set the requested logging level..
       //
@@ -56,11 +57,12 @@ public class ClassicKettleEngine implements IEngine {
       // memory
       // To be able to completely test this, we need to run it as we would normally do in pan
       //
-      trans = new Trans( transMeta, cContext.getRepository(), transMeta.getName(), transMeta.getRepositoryDirectory().getPath(),
+      trans = new Trans( transMeta, context.getRepository(), transMeta.getName(),
+        transMeta.getRepositoryDirectory().getPath(),
         transMeta.getFilename() );
 
-      trans.setRepository( cContext.getRepository() );
-      trans.setMetaStore( cContext.getMetaStore() );
+      trans.setRepository( context.getRepository() );
+      trans.setMetaStore( context.getMetaStore() );
 
       String spoonLogObjectId = UUID.randomUUID().toString();
       SimpleLoggingObject spoonLoggingObject = new SimpleLoggingObject( "SPOON", LoggingObjectType.SPOON, null );
@@ -72,13 +74,9 @@ public class ClassicKettleEngine implements IEngine {
       trans.setReplayDate( executionConfiguration.getReplayDate() );
       trans.setRepository( executionConfiguration.getRepository() );
       trans.setMonitored( true );
-    } catch ( KettleException e ) {
 
-    }
-    if ( trans != null ) {
-
-//      log.logMinimal( BaseMessages.getString( PKG, "TransLog.Log.LaunchingTransformation" )
-//        + trans.getTransMeta().getName() + "]..." );
+      //      log.logMinimal( BaseMessages.getString( PKG, "TransLog.Log.LaunchingTransformation" )
+      //        + trans.getTransMeta().getName() + "]..." );
 
       trans.setSafeModeEnabled( executionConfiguration.isSafeModeEnabled() );
       trans.setGatheringMetrics( executionConfiguration.isGatheringMetrics() );
@@ -86,23 +84,23 @@ public class ClassicKettleEngine implements IEngine {
       // Launch the step preparation in a different thread.
       // That way Spoon doesn't block anymore and that way we can follow the progress of the initialization
       //
-      final Thread parentThread = Thread.currentThread();
 
 
-      try {
-        trans.prepareExecution( context.getArguments() );
-        transformation.setTrans( trans );
-        trans.startThreads();
-      } catch ( KettleException e ) {
-        e.printStackTrace();
-      }
+      trans.prepareExecution( context.getArguments() );
+      transformation.setTrans( trans );
 
-//      log.logMinimal( BaseMessages.getString( PKG, "TransLog.Log.StartedExecutionOfTransformation" ) );
-
+      new Thread( () -> {
+        try {
+          trans.startThreads();
+          future.complete( new ClassicExecutionResult() );
+        } catch ( KettleException e ) {
+          future.completeExceptionally( e );
+        }
+      } ).start();
+    } catch ( KettleException e ) {
+      future.completeExceptionally( e );
     }
 
-
-
-    return new ClassicExecutionResultsFuture( trans );
+    return future;
   }
 }

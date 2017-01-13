@@ -1,7 +1,6 @@
 package org.pentaho.di.engine.kettlenative.impl;
 
 import com.google.common.collect.ImmutableList;
-import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.engine.api.IData;
 import org.pentaho.di.engine.api.IDataEvent;
@@ -53,7 +52,7 @@ public class KettleDataEvent implements IDataEvent, Serializable {
     return ImmutableList.of( data );
   }
 
-  @Override public IPDIEventSource getEventSource() {
+  @Override public IPDIEventSource<IDataEvent> getEventSource() {
     return operation;
   }
 

@@ -1,8 +1,10 @@
 package org.pentaho.di.engine.api;
 
+import org.pentaho.di.engine.api.reporting.IReportingEventSource;
+
 import java.util.List;
 
-public interface ITransformation {
+public interface ITransformation extends IReportingEventSource {
   List<IOperation> getOperations();
 
   /**
@@ -20,5 +22,5 @@ public interface ITransformation {
 
   String getConfig();
 
-  String getId();
+  @Override String getId();
 }
