@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,6 +27,7 @@ import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 
 import junit.framework.Assert;
 
@@ -63,6 +64,7 @@ public class ExcelOutputTemplateTest {
     ExcelOutputMeta meta = createStepMeta();
     excelOutput.init( meta, helper.initStepDataInterface );
     Assert.assertEquals( "Step init error.", 0, excelOutput.getErrors() );
+    helper.initStepDataInterface.formats = new HashMap<>();
     excelOutput.dispose( meta, helper.initStepDataInterface );
     Assert.assertEquals( "Step dispose error", 0, excelOutput.getErrors() );
   }
