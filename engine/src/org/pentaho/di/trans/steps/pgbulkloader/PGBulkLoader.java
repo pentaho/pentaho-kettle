@@ -153,7 +153,7 @@ public class PGBulkLoader extends BaseStep implements StepInterface {
       }
 
       logBasic( "Launching command: " + copyCmd );
-      pgCopyOut = new PGCopyOutputStream( ( PGConnection ) data.db.getConnection(), copyCmd );
+      pgCopyOut = new PGCopyOutputStream( (PGConnection) data.db.getConnection(), copyCmd );
 
     } catch ( Exception ex ) {
       throw new KettleException( "Error while preparing the COPY " + copyCmd, ex );
@@ -260,7 +260,7 @@ public class PGBulkLoader extends BaseStep implements StepInterface {
               break;
             case ValueMetaInterface.TYPE_INTEGER:
               if ( valueMeta.isStorageBinaryString() ) {
-                pgCopyOut.write( ( byte[] ) valueData );
+                pgCopyOut.write( (byte[]) valueData );
               } else {
                 pgCopyOut.write( Long.toString( valueMeta.getInteger( valueData ) ).getBytes() );
               }
@@ -273,7 +273,7 @@ public class PGBulkLoader extends BaseStep implements StepInterface {
               //
                 case PGBulkLoaderMeta.NR_DATE_MASK_PASS_THROUGH:
                   if ( valueMeta.isStorageBinaryString() ) {
-                    pgCopyOut.write( (byte[] ) valueData );
+                    pgCopyOut.write( (byte[]) valueData );
                   } else {
                     String dateString = valueMeta.getString( valueData );
                     if ( dateString != null ) {
@@ -312,7 +312,7 @@ public class PGBulkLoader extends BaseStep implements StepInterface {
               //
                 case PGBulkLoaderMeta.NR_DATE_MASK_PASS_THROUGH:
                   if ( valueMeta.isStorageBinaryString() ) {
-                    pgCopyOut.write( (byte[] ) valueData );
+                    pgCopyOut.write( (byte[]) valueData );
                   } else {
                     String dateString = valueMeta.getString( valueData );
                     if ( dateString != null ) {

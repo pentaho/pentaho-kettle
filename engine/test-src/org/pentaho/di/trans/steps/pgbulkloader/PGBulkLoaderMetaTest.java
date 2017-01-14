@@ -71,7 +71,7 @@ public class PGBulkLoaderMetaTest {
     PluginRegistry.init( true );
     List<String> attributes =
         Arrays.asList( "schemaName", "tableName", "loadAction", "dbNameOverride", "delimiter",
-            "enclosure", "stopOnError", "fieldTable", "fieldStream", "dateMask", "databaseMeta" );
+            "enclosure", "fieldTable", "fieldStream", "dateMask", "databaseMeta" );
 
     Map<String, String> getterMap = new HashMap<String, String>() {
       {
@@ -81,7 +81,6 @@ public class PGBulkLoaderMetaTest {
         put( "dbNameOverride", "getDbNameOverride" );
         put( "delimiter", "getDelimiter" );
         put( "enclosure", "getEnclosure" );
-        put( "stopOnError", "isStopOnError" );
         put( "fieldTable", "getFieldTable" );
         put( "fieldStream", "getFieldStream" );
         put( "dateMask", "getDateMask" );
@@ -96,7 +95,6 @@ public class PGBulkLoaderMetaTest {
         put( "dbNameOverride", "setDbNameOverride" );
         put( "delimiter", "setDelimiter" );
         put( "enclosure", "setEnclosure" );
-        put( "stopOnError", "setStopOnError" );
         put( "fieldTable", "setFieldTable" );
         put( "fieldStream", "setFieldStream" );
         put( "dateMask", "setDateMask" );
