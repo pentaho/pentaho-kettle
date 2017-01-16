@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -35,10 +35,14 @@ import java.util.List;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.pentaho.di.core.RowSet;
+import org.pentaho.di.core.SingleRowRowSet;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
+import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.trans.step.RowAdapter;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
 
@@ -245,6 +249,57 @@ public class XMLInputStreamTest {
       haveRowsToRead = !xmlInputStream.processRow( xmlInputStreamMeta, xmlInputStreamData );
 
     } while ( !haveRowsToRead );
+  }
+
+  @Test
+  public void testFromPreviousStep() throws Exception {
+    xmlInputStreamMeta.sourceFromInput = true;
+    xmlInputStreamMeta.sourceFieldName = "inf";
+    xmlInputStreamData.outputRowMeta = new RowMeta();
+
+    RowMeta rm = new RowMeta();
+    String xml = "<ProductGroup attribute1=\"v1\"/>";
+    ValueMetaString ms = new ValueMetaString( "inf" );
+    RowSet rs = new SingleRowRowSet();
+    rs.putRow( rm, new Object[] { xml } );
+    rs.setDone();
+
+    XMLInputStream xmlInputStream =
+        new XMLInputStream( stepMockHelper.stepMeta, stepMockHelper.stepDataInterface, 0, stepMockHelper.transMeta,
+            stepMockHelper.trans );
+    xmlInputStream.setInputRowMeta( rm );
+    xmlInputStream.getInputRowMeta().addValueMeta( ms );
+    xmlInputStream.getInputRowSets().add( rs );
+    xmlInputStream.setOutputRowSets( new ArrayList<>() );
+
+    xmlInputStream.init( xmlInputStreamMeta, xmlInputStreamData );
+    xmlInputStream.addRowListener( rl );
+    boolean haveRowsToRead;
+    do {
+      haveRowsToRead = !xmlInputStream.processRow( xmlInputStreamMeta, xmlInputStreamData );
+    } while ( !haveRowsToRead );
+
+    int expectedRowNum = 1;
+    assertEquals( INCORRECT_XML_DATA_TYPE_DESCRIPTION_MESSAGE, "START_ELEMENT", rl.getWritten().get(
+        expectedRowNum )[typeDescriptionPos] );
+    assertEquals( INCORRECT_XML_PATH_MESSAGE, "/ProductGroup", rl.getWritten().get( expectedRowNum )[pathPos] );
+    assertEquals( INCORRECT_XML_DATA_NAME_MESSAGE, "ProductGroup", rl.getWritten().get( expectedRowNum )[dataNamePos] );
+
+    // attributes
+    // ATTRIBUTE_1
+    expectedRowNum++;
+    assertEquals( INCORRECT_XML_DATA_TYPE_DESCRIPTION_MESSAGE, "ATTRIBUTE", rl.getWritten().get(
+        expectedRowNum )[typeDescriptionPos] );
+    assertEquals( INCORRECT_XML_PATH_MESSAGE, "/ProductGroup", rl.getWritten().get( expectedRowNum )[pathPos] );
+    assertEquals( INCORRECT_XML_DATA_NAME_MESSAGE, "attribute1", rl.getWritten().get( expectedRowNum )[dataNamePos] );
+    assertEquals( INCORRECT_XML_DATA_VALUE_MESSAGE, "v1", rl.getWritten().get( expectedRowNum )[dataValue] );
+
+    // check EndElement for the ProductGroup element
+    expectedRowNum++;
+    assertEquals( INCORRECT_XML_DATA_TYPE_DESCRIPTION_MESSAGE, "END_ELEMENT", rl.getWritten().get(
+        expectedRowNum )[typeDescriptionPos] );
+    assertEquals( INCORRECT_XML_PATH_MESSAGE, "/ProductGroup", rl.getWritten().get( expectedRowNum )[pathPos] );
+    assertEquals( INCORRECT_XML_DATA_NAME_MESSAGE, "ProductGroup", rl.getWritten().get( expectedRowNum )[dataNamePos] );
   }
 
   private String createTestFile( String xmlContent ) throws IOException {
