@@ -14,8 +14,6 @@ import java.util.List;
  */
 public interface IOperation extends IReportingEventSource {
 
-  @Override String getId();
-
   List<IOperation> getFrom();
   List<IOperation> getTo();
 
