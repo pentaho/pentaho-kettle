@@ -1,13 +1,14 @@
 package org.pentaho.di.engine.kettlenative.impl;
 
+import com.google.common.collect.ImmutableMap;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.engine.api.IHop;
 import org.pentaho.di.engine.api.IOperation;
 import org.pentaho.di.engine.api.ITransformation;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.trans.step.StepMeta;
 
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -19,7 +20,7 @@ public class Transformation implements ITransformation {
 
   private Transformation( TransMeta transMeta ) {
     this.transMeta = transMeta;
-    operations =  opConverter.apply( transMeta );
+    operations = opConverter.apply( transMeta );
   }
 
   public static ITransformation convert( TransMeta transMeta ) {
@@ -46,9 +47,9 @@ public class Transformation implements ITransformation {
     return null;
   }
 
-  @Override public String getConfig() {
+  @Override public Map<String, Object> getConfig() {
     try {
-      return transMeta.getXML();
+      return ImmutableMap.of( "TransMeta.xml", transMeta.getXML() );
     } catch ( KettleException e ) {
       throw new RuntimeException( e );
     }
