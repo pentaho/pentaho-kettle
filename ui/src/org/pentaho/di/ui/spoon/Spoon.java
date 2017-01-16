@@ -603,6 +603,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         KettleLogStore.OriginalSystemOut = System.out;
         KettleLogStore.OriginalSystemErr = System.err;
       } catch ( Throwable ignored ) {
+        // ignored
       }
     }
 
@@ -825,10 +826,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     variables = new RowMetaAndData( new RowMeta() );
 
     // props.setLook(shell);
-    Image[] images = { GUIResource.getInstance().getImageSpoonHigh(), GUIResource.getInstance().getImageSpoon() };
-    shell.setImages( images );
-
-    // shell.setImage(GUIResource.getInstance().getImageSpoon());
+    shell.setImage( GUIResource.getInstance().getImageSpoon() );
 
     cursor_hourglass = new Cursor( display, SWT.CURSOR_WAIT );
     cursor_hand = new Cursor( display, SWT.CURSOR_HAND );
