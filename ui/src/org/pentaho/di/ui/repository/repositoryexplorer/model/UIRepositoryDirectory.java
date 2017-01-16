@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -33,7 +33,6 @@ import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryElementMetaInterface;
 import org.pentaho.di.repository.RepositoryObjectType;
-import org.pentaho.di.repository.StringObjectId;
 
 public class UIRepositoryDirectory extends UIRepositoryObject {
 
@@ -119,21 +118,20 @@ public class UIRepositoryDirectory extends UIRepositoryObject {
 
     List<? extends RepositoryElementMetaInterface> jobsAndTransformations = getDirectory().getRepositoryObjects();
 
-    if ( jobsAndTransformations == null || jobsAndTransformations.size() == 0 ) {
-      jobsAndTransformations = rep.getJobAndTransformationObjects( new StringObjectId( getId() ), false );
-    }
-    for ( RepositoryElementMetaInterface child : jobsAndTransformations ) {
-      if ( child.getObjectType().equals( RepositoryObjectType.TRANSFORMATION ) ) {
-        try {
-          kidElementCache.add( UIObjectRegistry.getInstance().constructUITransformation( child, this, rep ) );
-        } catch ( UIObjectCreationException e ) {
-          kidElementCache.add( new UITransformation( child, this, rep ) );
-        }
-      } else if ( child.getObjectType().equals( RepositoryObjectType.JOB ) ) {
-        try {
-          kidElementCache.add( UIObjectRegistry.getInstance().constructUIJob( child, this, rep ) );
-        } catch ( UIObjectCreationException e ) {
-          kidElementCache.add( new UIJob( child, this, rep ) );
+    if ( jobsAndTransformations != null ) {
+      for ( RepositoryElementMetaInterface child : jobsAndTransformations ) {
+        if ( child.getObjectType().equals( RepositoryObjectType.TRANSFORMATION ) ) {
+          try {
+            kidElementCache.add( UIObjectRegistry.getInstance().constructUITransformation( child, this, rep ) );
+          } catch ( UIObjectCreationException e ) {
+            kidElementCache.add( new UITransformation( child, this, rep ) );
+          }
+        } else if ( child.getObjectType().equals( RepositoryObjectType.JOB ) ) {
+          try {
+            kidElementCache.add( UIObjectRegistry.getInstance().constructUIJob( child, this, rep ) );
+          } catch ( UIObjectCreationException e ) {
+            kidElementCache.add( new UIJob( child, this, rep ) );
+          }
         }
       }
     }

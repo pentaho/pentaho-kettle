@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -342,10 +342,9 @@ public class SelectObjectDialog extends Dialog {
 
     try {
 
-      // We're terrible and load the entire repository, disable lazy loading if set
       if ( rep instanceof RepositoryExtended ) {
         RepositoryExtended repositoryExtended = (RepositoryExtended) this.rep;
-        directoryTree = repositoryExtended.loadRepositoryDirectoryTree( true );
+        directoryTree = repositoryExtended.loadRepositoryDirectoryTree( "*.kjb|*.ktr", true, false );
       } else {
         directoryTree = this.rep.loadRepositoryDirectoryTree();
       }

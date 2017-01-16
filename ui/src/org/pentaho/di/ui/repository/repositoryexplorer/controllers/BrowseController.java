@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -40,6 +40,7 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
+import org.pentaho.di.repository.RepositoryExtended;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.repository.repositoryexplorer.ContextChangeVetoer;
 import org.pentaho.di.ui.repository.repositoryexplorer.ContextChangeVetoer.TYPE;
@@ -154,9 +155,16 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
       this.repository = repository;
 
       mainController = (MainController) this.getXulDomContainer().getEventHandler( "mainController" );
+
+      RepositoryDirectoryInterface root;
       try {
+        if ( repository instanceof RepositoryExtended ) {
+          root = ( (RepositoryExtended) repository ).loadRepositoryDirectoryTree( "*.ktr|*.kjb", true, true );
+        } else {
+          root = repository.loadRepositoryDirectoryTree();
+        }
         this.repositoryDirectory =
-            UIObjectRegistry.getInstance().constructUIRepositoryDirectory( repository.loadRepositoryDirectoryTree(),
+            UIObjectRegistry.getInstance().constructUIRepositoryDirectory( root,
                 null, repository );
       } catch ( UIObjectCreationException uoe ) {
         this.repositoryDirectory =
