@@ -266,6 +266,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   }
 
   /**
+   * All databases are equal? *SCNR*
    * This implementation is NullPointerException subject, and may not follow fundamental equals contract.
    * <p/>
    * Databases equality is based on {@link DatabaseMeta} equality.
