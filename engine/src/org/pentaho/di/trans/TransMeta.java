@@ -3679,34 +3679,35 @@ public class TransMeta extends AbstractMeta
   }
 
   private boolean isErrorNode( Node errorHandingNode, Node checkNode ) {
-    NodeList errors = errorHandingNode.getChildNodes();
+    if ( errorHandingNode != null ) {
+      NodeList errors = errorHandingNode.getChildNodes();
 
-    Node nodeHopFrom = XMLHandler.getSubNode( checkNode, TransHopMeta.XML_FROM_TAG );
-    Node nodeHopTo = XMLHandler.getSubNode( checkNode, TransHopMeta.XML_TO_TAG );
+      Node nodeHopFrom = XMLHandler.getSubNode( checkNode, TransHopMeta.XML_FROM_TAG );
+      Node nodeHopTo = XMLHandler.getSubNode( checkNode, TransHopMeta.XML_TO_TAG );
 
-    int i = 0;
-    while ( i < errors.getLength() ) {
+      int i = 0;
+      while ( i < errors.getLength() ) {
 
-      Node errorNode = errors.item( i );
+        Node errorNode = errors.item( i );
 
-      if ( !StepErrorMeta.XML_ERROR_TAG.equals( errorNode.getNodeName() ) ) {
+        if ( !StepErrorMeta.XML_ERROR_TAG.equals( errorNode.getNodeName() ) ) {
+          i++;
+          continue;
+        }
+
+        Node errorSourceNode = XMLHandler.getSubNode( errorNode, StepErrorMeta.XML_SOURCE_STEP_TAG );
+        Node errorTagetNode = XMLHandler.getSubNode( errorNode, StepErrorMeta.XML_TARGET_STEP_TAG );
+
+        String sourceContent = errorSourceNode.getTextContent().trim();
+        String tagetContent = errorTagetNode.getTextContent().trim();
+
+        if ( sourceContent.equals( nodeHopFrom.getTextContent().trim() )
+            && tagetContent.equals( nodeHopTo.getTextContent().trim() ) ) {
+          return true;
+        }
         i++;
-        continue;
       }
-
-      Node errorSourceNode = XMLHandler.getSubNode( errorNode, StepErrorMeta.XML_SOURCE_STEP_TAG );
-      Node errorTagetNode = XMLHandler.getSubNode( errorNode, StepErrorMeta.XML_TARGET_STEP_TAG );
-
-      String sourceContent = errorSourceNode.getTextContent().trim();
-      String tagetContent = errorTagetNode.getTextContent().trim();
-
-      if ( sourceContent.equals( nodeHopFrom.getTextContent().trim() )
-           && tagetContent.equals( nodeHopTo.getTextContent().trim() ) ) {
-        return true;
-      }
-      i++;
     }
-
     return false;
   }
 
