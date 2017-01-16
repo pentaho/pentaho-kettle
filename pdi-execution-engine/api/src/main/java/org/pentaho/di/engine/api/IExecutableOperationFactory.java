@@ -4,5 +4,5 @@ import java.util.Optional;
 
 public interface IExecutableOperationFactory {
 
-  Optional<IExecutableOperation> create( ITransformation transformation, IOperation operation, IExecutionContext context );
+  Optional<IExecutableOperation> create( IOperation operation, IExecutionContext context );
 }

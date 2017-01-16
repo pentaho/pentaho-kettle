@@ -1,17 +1,25 @@
 package org.pentaho.di.engine.kettlenative.impl;
 
+import com.google.common.collect.ImmutableList;
 import org.pentaho.di.engine.api.IExecutionContext;
+import org.pentaho.di.engine.api.IExecutionResult;
 import org.pentaho.di.engine.api.ITransformation;
-import org.pentaho.di.repository.Repository;
+import org.pentaho.di.engine.api.reporting.IReportingEvent;
+import org.pentaho.di.engine.api.reporting.IReportingEventSource;
 import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.metastore.api.IMetaStore;
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
 
+import java.io.Serializable;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 public class ExecutionContext implements IExecutionContext {
 
+  private final Engine engine;
   private Map<String, Object> parameters = new HashMap<String, Object>();
   private Map<String, Object> environment = new HashMap<String, Object>();
   private ITransformation transformation;
@@ -19,12 +27,9 @@ public class ExecutionContext implements IExecutionContext {
   private TransExecutionConfiguration executionConfiguration;
   private String[] arguments;
 
-  public ExecutionContext( ITransformation trans ) {
-    this.transformation = trans;
-  }
-
-  public ExecutionContext( ITransformation transformation, Map<String, Object> parameters,
+  public ExecutionContext( Engine engine, ITransformation transformation, Map<String, Object> parameters,
                            Map<String, Object> environment ) {
+    this.engine = engine;
     this.parameters = parameters;
     this.environment = environment;
     this.transformation = transformation;
@@ -76,5 +81,19 @@ public class ExecutionContext implements IExecutionContext {
 
   public void setArguments( String[] arguments ) {
     this.arguments = arguments;
+  }
+
+  @Override public CompletableFuture<IExecutionResult> execute() {
+    return engine.execute( this );
+  }
+
+  @Override
+  public <S extends IReportingEventSource, D extends Serializable>
+  Publisher<IReportingEvent<S, D>> eventStream( S source, Class<D> type ) {
+    return Subscriber::onComplete;
+  }
+
+  @Override public Collection<IReportingEventSource> getReportingSources() {
+    return ImmutableList.of();
   }
 }

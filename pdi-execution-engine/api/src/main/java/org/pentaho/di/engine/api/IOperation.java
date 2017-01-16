@@ -1,6 +1,7 @@
 package org.pentaho.di.engine.api;
 
-import java.io.Serializable;
+import org.pentaho.di.engine.api.reporting.IReportingEventSource;
+
 import java.util.List;
 
 /**
@@ -11,9 +12,7 @@ import java.util.List;
  * which is associated with the behavior specific to
  * an IEngine.
  */
-public interface IOperation extends Serializable {
-
-  String getId();
+public interface IOperation extends IReportingEventSource {
 
   List<IOperation> getFrom();
   List<IOperation> getTo();

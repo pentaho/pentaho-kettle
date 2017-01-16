@@ -12,13 +12,10 @@ import java.util.concurrent.ExecutorService;
 
 public class KettleExecOperationFactory implements IExecutableOperationFactory {
 
-  @Override public Optional<IExecutableOperation> create(
-    ITransformation transformation, IOperation operation, IExecutionContext context ) {
+  @Override public Optional<IExecutableOperation> create( IOperation operation, IExecutionContext context ) {
+    ITransformation transformation = context.getTransformation();
     ExecutorService executorService = Optional.ofNullable((ExecutorService) context.getEnvironment().get( "executor" ))
       .orElseThrow( () -> new RuntimeException( "no executor" ));
     return Optional.of( KettleExecOperation.compile( operation, transformation, executorService ) );
   }
-
-
-
 }
