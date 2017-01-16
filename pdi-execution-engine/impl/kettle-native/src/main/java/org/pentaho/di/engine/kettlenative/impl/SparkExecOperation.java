@@ -44,10 +44,6 @@ public class SparkExecOperation extends KettleExecOperation {
     return 0;
   }
 
-  @Override public int getInFlight() {
-    return 0;
-  }
-
   @Override public void onNext( IDataEvent dataEvent ) {
     Optional<JavaRDD<IData>> parentRDD = Optional.empty();
     if ( previousStepIsSpark( dataEvent ) ) {

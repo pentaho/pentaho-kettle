@@ -25,6 +25,12 @@
       <artifactId>reactive-streams</artifactId>
       <version>1.0.0</version>
     </dependency>
+    <!-- https://mvnrepository.com/artifact/io.reactivex/rxjava-reactive-streams -->
+    <dependency>
+      <groupId>io.reactivex</groupId>
+      <artifactId>rxjava-reactive-streams</artifactId>
+      <version>1.2.1</version>
+    </dependency>
 
     <dependency>
       <groupId>org.apache.spark</groupId>
@@ -85,7 +91,6 @@
 
 
   </dependencies>
-
 
 
   <build>
