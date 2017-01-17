@@ -1,5 +1,6 @@
 package org.pentaho.di.engine.kettleclassic;
 
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.engine.api.IHop;
 import org.pentaho.di.engine.api.IOperation;
 import org.pentaho.di.engine.api.ITransformation;
@@ -15,10 +16,15 @@ public class ClassicTransformation implements ITransformation {
   private List<ClassicOperation> operations;
   private Trans trans;
   private TransMeta transMeta;
+  private String config;
 
   public ClassicTransformation( TransMeta transMeta ) {
-
     this.transMeta = transMeta;
+    try {
+      this.config = transMeta.getXML();
+    } catch ( KettleException e ) {
+      e.printStackTrace();
+    }
   }
 
   @Override public List<IOperation> getOperations() {
@@ -38,7 +44,7 @@ public class ClassicTransformation implements ITransformation {
   }
 
   @Override public String getConfig() {
-    return null;
+    return config;
   }
 
   @Override public String getId() {

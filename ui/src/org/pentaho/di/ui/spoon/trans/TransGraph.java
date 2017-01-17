@@ -34,8 +34,8 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.UUID;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.action.Action;
@@ -90,7 +90,6 @@ import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.swt.widgets.Widget;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.plugins.EnginePluginType;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.EngineMetaInterface;
 import org.pentaho.di.core.NotePadMeta;
@@ -110,26 +109,22 @@ import org.pentaho.di.core.gui.GCInterface;
 import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.gui.Redrawable;
 import org.pentaho.di.core.gui.SnapAllignDistribute;
-import org.pentaho.di.core.logging.DefaultLogLevel;
 import org.pentaho.di.core.logging.HasLogChannelInterface;
 import org.pentaho.di.core.logging.KettleLogStore;
-import org.pentaho.di.core.logging.KettleLoggingEvent;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
-import org.pentaho.di.core.logging.LogMessage;
 import org.pentaho.di.core.logging.LogParentProvidedInterface;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
-import org.pentaho.di.core.logging.LoggingObjectType;
 import org.pentaho.di.core.logging.LoggingRegistry;
-import org.pentaho.di.core.logging.SimpleLoggingObject;
 import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.engine.api.IEngine;
 import org.pentaho.di.engine.api.IExecutionContext;
-import org.pentaho.di.engine.api.IExecutionResultFuture;
+import org.pentaho.di.engine.api.IExecutionResult;
 import org.pentaho.di.engine.api.ITransformation;
+import org.pentaho.di.engine.kettleclassic.ClassicKettleEngine;
 import org.pentaho.di.engine.kettleclassic.ClassicKettleExecutionContext;
 import org.pentaho.di.engine.kettleclassic.ClassicTransformation;
 import org.pentaho.di.engine.kettleclassic.ClassicUtils;
@@ -161,7 +156,6 @@ import org.pentaho.di.trans.step.StepErrorMeta;
 import org.pentaho.di.trans.step.StepIOMetaInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.step.StepMetaDataCombi;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.step.errorhandling.Stream;
 import org.pentaho.di.trans.step.errorhandling.StreamIcon;
@@ -378,7 +372,6 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
   private StepMeta showTargetStreamsStep;
 
   Timer redrawTimer;
-  private IExecutionResultFuture executionResultFuture1;
 
   public void setCurrentNote( NotePadMeta ni ) {
     this.ni = ni;
@@ -3736,7 +3729,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     }
   }
 
-  private IExecutionResultFuture executionResultFuture;
+  private CompletableFuture<IExecutionResult> executionResultFuture;
 
   public synchronized void start( TransExecutionConfiguration executionConfiguration ) throws KettleException {
     // Auto save feature...
@@ -3753,51 +3746,84 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 
         try {
           IEngine iEngine = executionConfiguration.getEngine();
-          ITransformation iTransformation = ClassicUtils.convert( transMeta );
-          IExecutionContext executionContext = iEngine.prepare( iTransformation );
-          ClassicKettleExecutionContext classicKettleExecutionContext = (ClassicKettleExecutionContext) executionContext;
-          classicKettleExecutionContext.setExecutionConfiguration( executionConfiguration);
 
-          Map<String, String> arguments = executionConfiguration.getArguments();
-          final String[] args;
-          if ( arguments != null ) {
-            args = convertArguments( arguments );
-          } else {
-            args = null;
-          }
-          classicKettleExecutionContext.setArguments( args );
+          // TODO Discuss this . . .
+          // Talking with Matt the ClassicKettleEngine is unique and we may have to have a special case for that, but
+          // the rest of the engine implementations should be handled the same way.  What is the best way to do this
+          // and how do we integrate the TransExecutionConfiguration and ExecutionStatePublisher into the API.
+          if(iEngine instanceof ClassicKettleEngine){
+            ITransformation iTransformation = ClassicUtils.convert( transMeta );
+            IExecutionContext executionContext = iEngine.prepare( iTransformation );
+            ClassicKettleExecutionContext classicKettleExecutionContext = (ClassicKettleExecutionContext) executionContext;
+            classicKettleExecutionContext.setExecutionConfiguration( executionConfiguration);
 
-
-          // Also make sure to clear the log entries in the central log store & registry
-          //
-          if ( trans != null ) {
-            KettleLogStore.discardLines( trans.getLogChannelId(), true );
-          }
-
-          // Do we need to clear the log before running?
-          //
-          if ( executionConfiguration.isClearingLog() ) {
-            transLogDelegate.clearLog();
-          }
-//
-//          trans = null;
-//          new ErrorDialog( shell, BaseMessages.getString( PKG, "TransLog.Dialog.ErrorOpeningTransformation.Title" ),
-//            BaseMessages.getString( PKG, "TransLog.Dialog.ErrorOpeningTransformation.Message" ), e );
-
-          shell.getDisplay().asyncExec( new Runnable() {
-            @Override
-            public void run() {
-              addAllTabs();
+            Map<String, String> arguments = executionConfiguration.getArguments();
+            final String[] args;
+            if ( arguments != null ) {
+              args = convertArguments( arguments );
+            } else {
+              args = null;
             }
-          } );
+            classicKettleExecutionContext.setArguments( args );
 
-          setControlStates();
 
-          executionResultFuture = iEngine.execute( executionContext );
+            // Also make sure to clear the log entries in the central log store & registry
+            //
+            if ( trans != null ) {
+              KettleLogStore.discardLines( trans.getLogChannelId(), true );
+            }
 
-          ExecutionStatePublisher statePublisher = new LocalExecutionStatePublisher(
-            spoon, ((ClassicTransformation)executionContext.getTransformation()).getTrans() );
-          statePublisher.subscribe( transGridDelegate );
+            // Do we need to clear the log before running?
+            //
+            if ( executionConfiguration.isClearingLog() ) {
+              transLogDelegate.clearLog();
+            }
+            //
+            //          trans = null;
+            //          new ErrorDialog( shell, BaseMessages.getString( PKG, "TransLog.Dialog.ErrorOpeningTransformation.Title" ),
+            //            BaseMessages.getString( PKG, "TransLog.Dialog.ErrorOpeningTransformation.Message" ), e );
+
+            shell.getDisplay().asyncExec( new Runnable() {
+              @Override
+              public void run() {
+                addAllTabs();
+              }
+            } );
+
+            setControlStates();
+
+            executionResultFuture = executionContext.execute(  );
+
+            ExecutionStatePublisher statePublisher = new LocalExecutionStatePublisher(
+              spoon, ((ClassicTransformation)executionContext.getTransformation()).getTrans() );
+            statePublisher.subscribe( transGridDelegate );
+          } else {
+            // TODO Discuss who should be responsible for converting a transMeta into an ITransformation?
+            // I know we don't want to "bleed" legacy code into the new API, but if this is engine specific we might
+            // need to.   Does the ITransformation need to be engine specific?
+            ITransformation iTransformation = ClassicUtils.convert( transMeta );
+
+            IExecutionContext executionContext = iEngine.prepare( iTransformation );
+
+            // Also make sure to clear the log entries in the central log store & registry
+            if ( trans != null ) {
+              KettleLogStore.discardLines( trans.getLogChannelId(), true );
+            }
+
+            // Do we need to clear the log before running?
+            if ( executionConfiguration.isClearingLog() ) {
+              transLogDelegate.clearLog();
+            }
+
+            shell.getDisplay().asyncExec( () -> addAllTabs() );
+            setControlStates();
+            executionResultFuture = executionContext.execute();
+
+            ExecutionStatePublisher statePublisher = new LocalExecutionStatePublisher(
+              spoon, new Trans(transMeta));
+            statePublisher.subscribe( transGridDelegate );
+          }
+
 
           log.logBasic( BaseMessages.getString( PKG, "TransLog.Log.TransformationOpened" ) );
 
@@ -4298,16 +4324,16 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
   }
 
   private void checkErrorVisuals() {
-    if ( executionResultFuture.getDropped() > 0 ) {
-      // Get the logging text and filter it out. Store it in the stepLogMap...
-      //
-      stepLogMap = new HashMap<>();
-      shell.getDisplay().syncExec( new Runnable() {
-
-        @Override
-        public void run() {
-
-          // TODO: We don't have logging yet
+//    if ( executionResultFuture.getDropped() > 0 ) {
+//      // Get the logging text and filter it out. Store it in the stepLogMap...
+//      //
+//      stepLogMap = new HashMap<>();
+//      shell.getDisplay().syncExec( new Runnable() {
+//
+//        @Override
+//        public void run() {
+//
+//          // TODO: We don't have logging yet
 //          for ( StepMetaDataCombi combi : trans.getSteps() ) {
 //            if ( combi.step.getErrors() > 0 ) {
 //              String channelId = combi.step.getLogChannel().getLogChannelId();
@@ -4326,12 +4352,12 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 //              stepLogMap.put( combi.stepMeta, logText.toString() );
 //            }
 //          }
-        }
-      } );
-
-    } else {
-      stepLogMap = null;
-    }
+//        }
+//      } );
+//
+//    } else {
+//      stepLogMap = null;
+//    }
     // Redraw the canvas to show the error icons etc.
     //
     shell.getDisplay().asyncExec( new Runnable() {

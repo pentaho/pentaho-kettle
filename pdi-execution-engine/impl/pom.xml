@@ -20,6 +20,7 @@
     <module>kettle-classic</module>
     <module>kettle-native</module>
     <module>spark-engine-client</module>
+    <module>spark-application</module>
   </modules>
 
 </project>
