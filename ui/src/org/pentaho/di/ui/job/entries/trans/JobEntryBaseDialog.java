@@ -771,6 +771,14 @@ public abstract class JobEntryBaseDialog extends JobEntryDialog {
     }
   }
 
+  protected String getPath( String path ) {
+    String parentPath = this.jobMeta.getRepositoryDirectory().getPath();
+    if ( path.startsWith( parentPath ) ) {
+      path = path.replace( parentPath, "${" + Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY + "}" );
+    }
+    return path;
+  }
+
   protected void setRadioButtons() {
     wLocal.setVisible( wbLocal.getSelection() );
     wServer.setVisible( wbServer.getSelection() );
