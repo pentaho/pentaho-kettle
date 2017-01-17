@@ -581,6 +581,7 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
     repoRequest.setChildNodeFilter( "*" );
     repoRequest.setTypes( FILES_TYPE_FILTER.FOLDERS );
     repoRequest.setPath( path );
+    repoRequest.setShowHidden( true );
     return pur.getTree( repoRequest );
   }
 
@@ -590,6 +591,7 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
     repoRequest.setChildNodeFilter( filter );
     repoRequest.setPath( path );
     repoRequest.setIncludeAcls( includeAcls );
+    repoRequest.setShowHidden( true );
     RepositoryFileTree fileTree = pur.getTree( repoRequest );
 
     return fileTree;
