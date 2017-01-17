@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,13 +22,15 @@
 
 package org.pentaho.di.trans.steps.httppost;
 
-import java.io.IOException;
+
+
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.ByteArrayInputStream;
 import java.io.InputStreamReader;
-
-
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.net.UnknownHostException;
 
 import org.apache.commons.httpclient.Credentials;
@@ -40,6 +42,7 @@ import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.InputStreamRequestEntity;
 import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.json.simple.JSONObject;
 import org.pentaho.di.cluster.SlaveConnectionManager;
 import org.pentaho.di.core.Const;
@@ -156,7 +159,8 @@ public class HTTPPOST extends BaseStep implements StepInterface {
                 data.inputRowMeta.getString( rowData, data.body_parameters_nrs[i] ) ) );
           }
         }
-        post.setRequestBody( data.bodyParameters );
+        String bodyParams = getRequestBodyParamsAsStr( data.bodyParameters, data.realEncoding );
+        post.setRequestEntity( new StringRequestEntity( bodyParams, CONTENT_TYPE_TEXT_XML, "US-ASCII" ) );
       }
 
       // QUERY PARAMETERS
@@ -483,6 +487,29 @@ public class HTTPPOST extends BaseStep implements StepInterface {
     }
 
     return true;
+  }
+
+  private String getRequestBodyParamsAsStr( NameValuePair[] pairs, String charset ) throws KettleException {
+    StringBuffer buf = new StringBuffer();
+    try {
+      for ( int i = 0; i < pairs.length; ++i ) {
+        NameValuePair pair = pairs[i];
+        if ( pair.getName() != null ) {
+          if ( i > 0 ) {
+            buf.append( "&" );
+          }
+
+          buf.append( URLEncoder.encode( pair.getName(), charset ) );
+          buf.append( "=" );
+          if ( pair.getValue() != null ) {
+            buf.append( URLEncoder.encode( pair.getValue(), charset ) );
+          }
+        }
+      }
+      return buf.toString();
+    } catch ( UnsupportedEncodingException e ) {
+      throw new KettleException( e.getMessage(), e.getCause() );
+    }
   }
 
   public boolean init( StepMetaInterface smi, StepDataInterface sdi ) {
