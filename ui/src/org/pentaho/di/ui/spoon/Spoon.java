@@ -2578,7 +2578,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     }
     if ( jobMeta != null ) {
 
-      TabMapEntry entry = delegates.tabs.findTabMapEntry( jobMeta );
+      TabMapEntry entry = delegates.tabs.findTabMapEntry( transMeta );
       if ( entry != null ) {
         int current = tabfolder.getSelectedIndex();
         int desired = tabfolder.indexOf( entry.getTabItem() );
