@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2016-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,6 +27,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.di.core.injection.BaseMetadataInjectionTest;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.row.value.ValueMetaString;
 
 public class DimensionLookupMetaInjectionTest extends BaseMetadataInjectionTest<DimensionLookupMeta> {
@@ -180,6 +181,14 @@ public class DimensionLookupMetaInjectionTest extends BaseMetadataInjectionTest<
     injector.setProperty( meta, "ALTERNATIVE_START_OPTION", setValue( mftt, DimensionLookupMeta
         .getStartDateAlternativeCode( 0 ) ), "f" );
     Assert.assertEquals( 0, meta.getStartDateAlternative() );
+
+    String[] valueMetaNames = ValueMetaFactory.getValueMetaNames();
+    checkStringToInt( "TYPE_OF_RETURN_FIELD", new IntGetter() {
+      @Override
+      public int get() {
+        return meta.getReturnType()[0];
+      }
+    }, valueMetaNames, getTypeCodes( valueMetaNames ) );
 
     skipPropertyTest( "ALTERNATIVE_START_OPTION" );
 
