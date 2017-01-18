@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -274,6 +274,8 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface, S
         SourceStepField source = new SourceStepField( sourceStepname, sourceField );
         targetSourceMapping.put( target, source );
       }
+
+      MetaInjectMigration.migrateFrom70( targetSourceMapping );
     } catch ( Exception e ) {
       throw new KettleXMLException( "Unable to load step info from XML", e );
     }
@@ -319,6 +321,8 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface, S
         SourceStepField source = new SourceStepField( sourceStepname, sourceField );
         targetSourceMapping.put( target, source );
       }
+
+      MetaInjectMigration.migrateFrom70( targetSourceMapping );
     } catch ( Exception e ) {
       throw new KettleException( "Unexpected error reading step information from the repository", e );
     }
