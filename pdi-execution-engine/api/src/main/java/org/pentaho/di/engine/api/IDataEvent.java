@@ -3,7 +3,7 @@ package org.pentaho.di.engine.api;
 import java.util.List;
 
 /**
- * An {@link IPDIEvent} associated with an {@link IData} element. This event contains the data, the IPDIEventSource
+ * An {@link IPDIEvent} associated with an {@link IRow} element. This event contains the data, the IPDIEventSource
  * which emitted the event and the direction of the flow.
  * <p>
  * Created by nbaker on 5/30/16.
@@ -22,7 +22,7 @@ public interface IDataEvent extends IPDIEvent {
    *
    * @return
    */
-  List<IData> getData();
+  List<IRow> getRows();
 
   /**
    * Component which emitted the event

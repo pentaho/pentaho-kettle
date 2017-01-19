@@ -1,17 +1,20 @@
 package org.pentaho.di.engine.kettlenative.impl.sparkfun;
 
+import com.google.common.collect.ImmutableList;
 import org.apache.spark.api.java.function.FlatMapFunction;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
-import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaInteger;
 import org.pentaho.di.core.row.value.ValueMetaNone;
 import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.xml.XMLHandler;
-import org.pentaho.di.engine.api.IData;
+import org.pentaho.di.engine.api.IRow;
+import org.pentaho.di.engine.api.converter.RowConversionManager;
+import org.pentaho.di.engine.kettlenative.impl.KettleRow;
+import org.pentaho.di.engine.kettlenative.impl.KettleRowConverter;
+import org.pentaho.di.engine.kettlenative.impl.SparkRowConverter;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.calculator.Calculator;
 import org.pentaho.di.trans.steps.calculator.CalculatorData;
 import org.w3c.dom.Document;
@@ -32,13 +35,16 @@ import static org.pentaho.di.engine.kettlenative.impl.KettleNativeUtil.createTra
 /**
  * Wrap Kettle's Calculator step, allowing it to be run as a spark FlatMapFunction.
  */
-public class CalcSparkFlatMapFunction implements Serializable, FlatMapFunction<IData, IData> {
+public class CalcSparkFlatMapFunction implements Serializable, FlatMapFunction<IRow, IRow> {
+  private final RowConversionManager conversionManager;
   private  transient TransMeta transMeta;
   String stepName;
 
-  public CalcSparkFlatMapFunction( TransMeta transMeta, String stepName ) {
+
+  public CalcSparkFlatMapFunction( TransMeta transMeta, String stepName, RowConversionManager conversionManager ) {
     this.stepName = stepName;
     this.transMeta = transMeta;
+    this.conversionManager = conversionManager;
   }
 
   private Calculator createCalculator( TransMeta transMeta, String stepName, List<Object[]> input, List<Object[]> output ) {
@@ -54,52 +60,29 @@ public class CalcSparkFlatMapFunction implements Serializable, FlatMapFunction<I
     };
   }
 
-  @Override public Iterator<IData> call( IData data ) throws Exception {
+  @Override public Iterator<IRow> call( IRow row ) throws Exception {
+
+
     try {
-      if (data == null || data.getData() == null || data.getData()[0] == null) {
-        return Collections.<IData>emptyList().iterator();
-      }
       List<Object[]> input = new ArrayList<>();
       List<Object[]> output = new ArrayList<>();
       Calculator calc = createCalculator( transMeta, stepName, input, output );
-      RowMetaInterface rowMetaInterface = inferRowMeta( data.getData() );
+      RowMetaInterface rowMetaInterface = transMeta.getStepFields( transMeta.findStep( stepName ) );
+
       CalculatorData calcData = new CalculatorData();
       calcData.setCalcRowMeta( rowMetaInterface );
-      input.add( data.getData() );
-      calc.setInputRowMeta( rowMetaInterface );
+      input.add( row.getObjects().get() );
+      calc.setInputRowMeta( conversionManager.convert( row, RowMetaInterface.class ) );
       calc.processRow( transMeta.findStep( stepName ).getStepMetaInterface(), calcData );
 
       return output.stream()
-        .map( objects -> (IData) () -> objects )
+        .map( objects ->  (IRow) new KettleRow( rowMetaInterface, objects)  )
         .collect( Collectors.toList() )
         .iterator();
     } catch ( KettleException e ) {
       throw new RuntimeException( e );
     }
 
-  }
-
-  private RowMetaInterface inferRowMeta( Object[] input ) {
-    RowMetaInterface rowMeta;
-    try {
-      rowMeta = transMeta.getStepFields( transMeta.findStep( stepName ) );
-    } catch ( KettleStepException e ) {
-      throw new RuntimeException( e );
-    }
-    int i = 1;
-    for ( Object o : input ) {
-      if ( o == null ) {
-        continue;
-      }
-      switch( o.getClass().getTypeName() ) {
-        case "java.lang.String": rowMeta.addValueMeta( new ValueMetaString( rowMeta.getFieldNames()[ i++ ] ) );
-          break;
-        case "java.lang.Long": rowMeta.addValueMeta( new ValueMetaInteger( rowMeta.getFieldNames()[ i++ ] ) );
-          break;
-        default: rowMeta.addValueMeta( new ValueMetaNone( rowMeta.getFieldNames()[ i++ ] ) );
-      }
-    }
-    return rowMeta;
   }
 
 
