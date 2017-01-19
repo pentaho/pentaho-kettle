@@ -53,7 +53,9 @@ public class Transformation extends Configurable implements ITransformation {
   }
 
   public Operation createOperation( String id ) {
-    return new Operation( id, this );
+    Operation operation = new Operation( id, this );
+    operations.add( operation );
+    return operation;
   }
 
   public Hop createHop( IOperation from, IOperation to ) {
