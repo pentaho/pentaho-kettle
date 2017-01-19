@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -104,8 +104,8 @@ public class GetTableNamesMeta extends BaseStepMeta implements StepMetaInterface
   @Injection( name = "DYNAMICSCHEMA", group = "FIELDS" )
   private boolean dynamicSchema;
 
-  @Injection( name = "SCHENAMENAMEFIELD", group = "FIELDS" )
-  private String schenameNameField;
+  @Injection( name = "SCHEMANAMEFIELD", group = "FIELDS" )
+  private String schemaNameField;
 
   private List<? extends SharedObjectInterface> databases;
 
@@ -212,15 +212,15 @@ public class GetTableNamesMeta extends BaseStepMeta implements StepMetaInterface
    * @return Returns the schenameNameField.
    */
   public String getSchemaFieldName() {
-    return schenameNameField;
+    return schemaNameField;
   }
 
   /**
    * @param schenameNameField
-   *          teh schenameNameField to set.
+   *          The schemaNameField to set.
    */
-  public void setSchemaFieldName( String schenameNameField ) {
-    this.schenameNameField = schenameNameField;
+  public void setSchemaFieldName( String schemaNameField ) {
+    this.schemaNameField = schemaNameField;
   }
 
   public void setIncludeTable( boolean includetable ) {
@@ -317,7 +317,7 @@ public class GetTableNamesMeta extends BaseStepMeta implements StepMetaInterface
     objecttypefieldname = "type";
     issystemobjectfieldname = "is system";
     dynamicSchema = false;
-    schenameNameField = null;
+    schemaNameField = null;
   }
 
   public void getFields( RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep,
@@ -374,7 +374,7 @@ public class GetTableNamesMeta extends BaseStepMeta implements StepMetaInterface
     retval.append( "    " + XMLHandler.addTagValue( "includeSynonym", includeSynonym ) );
     retval.append( "    " + XMLHandler.addTagValue( "addSchemaInOutput", addSchemaInOutput ) );
     retval.append( "    " + XMLHandler.addTagValue( "dynamicSchema", dynamicSchema ) );
-    retval.append( "    " + XMLHandler.addTagValue( "schenameNameField", schenameNameField ) );
+    retval.append( "    " + XMLHandler.addTagValue( "schemaNameField", schemaNameField ) );
 
     return retval.toString();
   }
@@ -398,7 +398,15 @@ public class GetTableNamesMeta extends BaseStepMeta implements StepMetaInterface
       includeSynonym = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "includeSynonym" ) );
       addSchemaInOutput = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "addSchemaInOutput" ) );
       dynamicSchema = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "dynamicSchema" ) );
-      schenameNameField = XMLHandler.getTagValue( stepnode, "schenameNameField" );
+      schemaNameField = XMLHandler.getTagValue( stepnode, "schemaNameField" );
+
+      if ( XMLHandler.getTagValue( stepnode, "schenameNameField" ) != null ) {
+        /*
+         * Fix for wrong field name in the 7.0. Can be removed if we don't want to keep backward compatibility with 7.0
+         * tranformations.
+         */
+        schemaNameField = XMLHandler.getTagValue( stepnode, "schenameNameField" );
+      }
     } catch ( Exception e ) {
       throw new KettleXMLException( BaseMessages.getString(
         PKG, "GetTableNamesMeta.Exception.UnableToReadStepInfo" ), e );
@@ -423,7 +431,15 @@ public class GetTableNamesMeta extends BaseStepMeta implements StepMetaInterface
       includeSynonym = rep.getStepAttributeBoolean( id_step, "includeSynonym" );
       addSchemaInOutput = rep.getStepAttributeBoolean( id_step, "addSchemaInOutput" );
       dynamicSchema = rep.getStepAttributeBoolean( id_step, "dynamicSchema" );
-      schenameNameField = rep.getStepAttributeString( id_step, "schenameNameField" );
+      schemaNameField = rep.getStepAttributeString( id_step, "schemaNameField" );
+
+      if ( rep.getStepAttributeString( id_step, "schenameNameField" ) != null ) {
+        /*
+         * Fix for wrong field name in the 7.0. Can be removed if we don't want to keep backward compatibility with 7.0
+         * tranformations.
+         */
+        schemaNameField = rep.getStepAttributeString( id_step, "schenameNameField" );
+      }
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString(
         PKG, "GetTableNamesMeta.Exception.UnexpectedErrorReadingStepInfo" ), e );
@@ -451,7 +467,7 @@ public class GetTableNamesMeta extends BaseStepMeta implements StepMetaInterface
       rep.saveStepAttribute( id_transformation, id_step, "includeSynonym", includeSynonym );
       rep.saveStepAttribute( id_transformation, id_step, "addSchemaInOutput", addSchemaInOutput );
       rep.saveStepAttribute( id_transformation, id_step, "dynamicSchema", dynamicSchema );
-      rep.saveStepAttribute( id_transformation, id_step, "schenameNameField", schenameNameField );
+      rep.saveStepAttribute( id_transformation, id_step, "schemaNameField", schemaNameField );
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString( PKG, "GetTableNamesMeta.Exception.UnableToSaveStepInfo" )
         + id_step, e );
