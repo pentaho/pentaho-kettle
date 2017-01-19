@@ -37,6 +37,7 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.core.KettleEnvironment;
+import org.pentaho.di.core.LastUsedFile;
 import org.pentaho.di.core.NotePadMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.gui.Point;
@@ -654,5 +655,73 @@ public class SpoonTest {
     doReturn( saveXMLFile ).when( spoon ).save( metaData, filename, false );
 
     doReturn( fileType ).when( metaData ).getFileType();
+  }
+
+  @Test
+  public void testLoadLastUsedTransLocalWithRepository() throws Exception {
+    String repositoryName = "repositoryName";
+    String fileName = "fileName";
+
+    setLoadLastUsedJobLocalWithRepository( false, repositoryName, null, fileName, true );
+    verify( spoon ).openFile( fileName, true );
+  }
+
+  @Test
+  public void testLoadLastUsedTransLocalNoRepository() throws Exception {
+    String repositoryName = null;
+    String fileName = "fileName";
+
+    setLoadLastUsedJobLocalWithRepository( false, repositoryName, null, fileName, true );
+    verify( spoon ).openFile( fileName, false );
+  }
+
+  @Test
+  public void testLoadLastUsedTransLocalNoFilename() throws Exception {
+    String repositoryName = null;
+    String fileName = null;
+
+    setLoadLastUsedJobLocalWithRepository( false, repositoryName, null, fileName, true );
+    verify( spoon, never() ).openFile( anyString(), anyBoolean() );
+  }
+
+  @Test
+  public void testLoadLastUsedJobLocalWithRepository() throws Exception {
+    String repositoryName = null;
+    String fileName = "fileName";
+
+    setLoadLastUsedJobLocalWithRepository( false, repositoryName, null, fileName, false );
+    verify( spoon ).openFile( fileName, false );
+  }
+
+  @Test
+  public void testLoadLastUsedRepTransNoRepository() throws Exception {
+    String repositoryName = null;
+    String fileName = "fileName";
+
+    setLoadLastUsedJobLocalWithRepository( true, repositoryName, null, fileName, false );
+    verify( spoon, never() ).openFile( anyString(), anyBoolean() );
+  }
+
+  private void setLoadLastUsedJobLocalWithRepository( boolean isSourceRepository, String repositoryName,
+      String directoryName, String fileName, boolean isTransformation ) throws Exception {
+    LastUsedFile mockLastUsedFile = mock( LastUsedFile.class );
+
+    if ( repositoryName != null ) {
+      Repository mockRepository = mock( Repository.class );
+      spoon.rep = mockRepository;
+      doReturn( repositoryName ).when( mockRepository ).getName();
+    } else {
+      spoon.rep = null;
+    }
+
+    doReturn( isSourceRepository ).when( mockLastUsedFile ).isSourceRepository();
+    doReturn( repositoryName ).when( mockLastUsedFile ).getRepositoryName();
+    doReturn( directoryName ).when( mockLastUsedFile ).getDirectory();
+    doReturn( fileName ).when( mockLastUsedFile ).getFilename();
+    doReturn( isTransformation ).when( mockLastUsedFile ).isTransformation();
+    doReturn( !isTransformation ).when( mockLastUsedFile ).isJob();
+
+    doCallRealMethod().when( spoon ).loadLastUsedFile( mockLastUsedFile, repositoryName );
+    spoon.loadLastUsedFile( mockLastUsedFile, repositoryName );
   }
 }
