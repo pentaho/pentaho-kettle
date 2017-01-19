@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -200,6 +200,8 @@ public class GUIResource {
   private SwtUniversalImage imageCluster;
 
   private SwtUniversalImage imageSlave;
+
+  private SwtUniversalImage imageSlaveTree;
 
   private SwtUniversalImage imageArrow;
 
@@ -567,6 +569,7 @@ public class GUIResource {
       imageCalendar.dispose();
       imageCluster.dispose();
       imageSlave.dispose();
+      imageSlaveTree.dispose();
       imageArrow.dispose();
       imageFolder.dispose();
       imageTransRepo.dispose();
@@ -860,6 +863,9 @@ public class GUIResource {
 
     // , "ui/images/slave.png"
     imageSlave = SwtSvgImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Slave_image" ) );
+
+    // , "ui/images/slave-tree.png"
+    imageSlaveTree = SwtSvgImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Slave_tree_image" ) );
 
     // "ui/images/logo_kettle_lrg.png"
     imageKettleLogo = loadAsResource( display, BasePropertyHandler.getProperty( "Logo_lrg_image" ), 0 );
@@ -1453,6 +1459,20 @@ public class GUIResource {
    */
   public Image getImageSlaveMedium() {
     return imageSlave.getAsBitmapForSize( display, ConstUI.MEDIUM_ICON_SIZE, ConstUI.MEDIUM_ICON_SIZE );
+  }
+
+  /**
+   * @return Returns the imageSlaveTree.
+   */
+  public Image getImageSlaveTree() {
+    return imageSlaveTree.getAsBitmapForSize( display, ConstUI.MEDIUM_ICON_SIZE, ConstUI.MEDIUM_ICON_SIZE );
+  }
+
+  /**
+   * @return Returns the imageSlave.
+   */
+  public Image getImageSlaveTreeMedium() {
+    return imageSlaveTree.getAsBitmapForSize( display, ConstUI.MEDIUM_ICON_SIZE, ConstUI.MEDIUM_ICON_SIZE );
   }
 
   /**
