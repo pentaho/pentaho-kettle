@@ -1024,8 +1024,13 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     AreaOwner areaOwner = getVisibleAreaOwner( real.x, real.y );
 
     try {
-      ExtensionPointHandler.callExtensionPoint( LogChannel.GENERAL, KettleExtensionPoint.TransGraphMouseUp.id,
-        new TransGraphExtension( this, e, real ) );
+      TransGraphExtension ext = new TransGraphExtension( this, e, real );
+      ExtensionPointHandler.callExtensionPoint( LogChannel.GENERAL, KettleExtensionPoint.TransGraphMouseUp.id, ext );
+      if ( ext.isPreventDefault() ) {
+        redraw();
+        clearSettings();
+        return;
+      }
     } catch ( Exception ex ) {
       LogChannel.GENERAL.logError( "Error calling TransGraphMouseUp extension point", ex );
     }
