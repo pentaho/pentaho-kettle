@@ -4,7 +4,7 @@ import org.pentaho.di.engine.api.reporting.IReportingEventSource;
 
 import java.util.List;
 
-public interface ITransformation extends IReportingEventSource {
+public interface ITransformation extends IReportingEventSource, IHasConfig {
   List<IOperation> getOperations();
 
   /**
@@ -17,10 +17,7 @@ public interface ITransformation extends IReportingEventSource {
    */
   List<IOperation> getSinkOperations();
 
-
   List<IHop> getHops();
-
-  String getConfig();
 
   @Override String getId();
 }

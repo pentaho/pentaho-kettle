@@ -1,11 +1,13 @@
 package org.pentaho.di.engine.kettleclassic;
 
+import com.google.common.collect.ImmutableMap;
 import org.pentaho.di.engine.api.IHop;
 import org.pentaho.di.engine.api.IOperation;
 import org.pentaho.di.engine.api.IOperationVisitor;
 import org.pentaho.di.trans.step.StepMeta;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by nbaker on 1/6/17.
@@ -38,8 +40,8 @@ public class ClassicOperation implements IOperation {
     return null;
   }
 
-  @Override public String getConfig() {
-    return null;
+  @Override public Map<String, Object> getConfig() {
+    return ImmutableMap.of();
   }
 
   @Override public <T> T accept( IOperationVisitor<T> visitor ) {

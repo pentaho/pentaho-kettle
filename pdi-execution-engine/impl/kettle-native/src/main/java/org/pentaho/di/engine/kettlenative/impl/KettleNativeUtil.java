@@ -17,7 +17,9 @@ import java.util.ArrayList;
 public class KettleNativeUtil {
 
   public static TransMeta getTransMeta( ITransformation transformation ) {
-    String config = transformation.getConfig();
+    String config = transformation.getConfig( "TransMeta.xml", String.class )
+      .orElseThrow( IllegalStateException::new );
+
     Document doc;
     try {
       doc = XMLHandler.loadXMLString( config );

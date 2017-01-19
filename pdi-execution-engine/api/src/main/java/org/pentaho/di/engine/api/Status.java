@@ -6,9 +6,9 @@ import java.io.Serializable;
  * Created by hudak on 1/6/17.
  */
 public enum Status implements Serializable {
-  STOPPED( false ),
   RUNNING( false ),
   PAUSED( false ),
+  STOPPED( true ),
   FAILED( true ),
   FINISHED( true );
 
