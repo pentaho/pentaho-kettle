@@ -68,7 +68,7 @@
     <dependency org="net.sf.saxon"                     name="saxon-dom"            rev="9.1.0.8"         transitive="false"/>
     <dependency org="org.yaml"                         name="snakeyaml"            rev="1.7"             transitive="false"/>
     <dependency org="org.snmp4j"                       name="snmp4j"               rev="1.9.3d"          transitive="false"/>
-    <dependency org="org.syslog4j"                     name="syslog4j"             rev="0.9.34"          transitive="false"/>
+    <dependency org="org.syslog4j"                     name="syslog4j"             rev="0.9.46"          transitive="false"/>
     <dependency org="trilead-ssh2"                     name="trilead-ssh2"         rev="build213"        transitive="false"/>
     <dependency org="javax.xml"                        name="jaxrpc-api"           rev="1.1"             transitive="false"/>
     <dependency org="org.olap4j"                       name="olap4j"               rev="1.2.0"           transitive="false"/>

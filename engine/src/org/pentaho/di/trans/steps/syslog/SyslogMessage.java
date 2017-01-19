@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -33,8 +33,10 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
-import org.productivity.java.syslog4j.Syslog;
+import org.productivity.java.syslog4j.SyslogConstants;
 import org.productivity.java.syslog4j.SyslogIF;
+import org.productivity.java.syslog4j.impl.net.udp.UDPNetSyslog;
+import org.productivity.java.syslog4j.impl.net.udp.UDPNetSyslogConfig;
 
 /**
  * Write message to SyslogMessage *
@@ -162,7 +164,7 @@ public class SyslogMessage extends BaseStep implements StepInterface {
         data.syslog.getConfig().setFacility( meta.getFacility() );
         data.syslog.getConfig().setSendLocalName( false );
         data.syslog.getConfig().setSendLocalTimestamp( false );
-        data.syslog.initialize( SyslogDefs.DEFAULT_PROTOCOL_UDP, data.syslog.getConfig() );
+        data.syslog.initialize( SyslogConstants.UDP, new UDPNetSyslogConfig() );
       } catch ( Exception ex ) {
         logError( BaseMessages.getString( PKG, "SyslogMessage.UnknownHost", servername, ex.getMessage() ) );
         logError( Const.getStackTracker( ex ) );
@@ -174,7 +176,7 @@ public class SyslogMessage extends BaseStep implements StepInterface {
   }
 
   protected SyslogIF getSyslog() {
-    return Syslog.getInstance( SyslogDefs.DEFAULT_PROTOCOL_UDP );
+    return new UDPNetSyslog();
   }
 
   public void dispose( StepMetaInterface smi, StepDataInterface sdi ) {
