@@ -1,11 +1,13 @@
 package org.pentaho.di.engine.kettlenative.impl;
 
+import com.google.common.collect.ImmutableList;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
-import org.pentaho.di.engine.api.IData;
+import org.pentaho.di.engine.api.IRow;
 import org.pentaho.di.engine.api.IDataEvent;
 import org.pentaho.di.engine.api.IOperation;
 import org.pentaho.di.engine.api.ITransformation;
+import org.pentaho.di.engine.api.converter.RowConversionManager;
 import org.pentaho.di.engine.kettlenative.impl.sparkfun.CalcSparkFlatMapFunction;
 import org.pentaho.di.trans.TransMeta;
 import org.reactivestreams.Subscriber;
@@ -20,7 +22,11 @@ public class SparkExecOperation extends KettleExecOperation {
 
   private final JavaSparkContext context;
   private final TransMeta transMeta;
-  private final List<IData> upstreamData = new ArrayList<>();
+  private final List<IRow> upstreamData = new ArrayList<>();
+
+  RowConversionManager conversionManager
+    = new RowConversionManager( ImmutableList.of( new KettleRowConverter(), new SparkRowConverter() ) );
+
 
   public SparkExecOperation( IOperation op, ITransformation transformation, JavaSparkContext sc) {
     super(op, transformation, null);
@@ -45,20 +51,20 @@ public class SparkExecOperation extends KettleExecOperation {
   }
 
   @Override public void onNext( IDataEvent dataEvent ) {
-    Optional<JavaRDD<IData>> parentRDD = Optional.empty();
+    Optional<JavaRDD<IRow>> parentRDD = Optional.empty();
     if ( previousStepIsSpark( dataEvent ) ) {
       // attach upstream RDD
       parentRDD = Optional.of( ((SparkDataEvent) dataEvent).getRDD() );
 
     } else {
-      upstreamData.addAll( dataEvent.getData() );
+      upstreamData.addAll( dataEvent.getRows() );
       // previous step is not spark.  Do we have all rows?
       if ( !dataEvent.getState().equals( IDataEvent.STATE.COMPLETE ) ) {
         return;
       }
     }
     IDataEvent nextEvent = new SparkDataEvent( this, IDataEvent.STATE.ACTIVE, upstreamData,
-      new CalcSparkFlatMapFunction( transMeta, getId() ), context, parentRDD );
+      new CalcSparkFlatMapFunction( transMeta, getId(), conversionManager ), context, parentRDD );
     getSubscribers().stream()
       .forEach( sub -> sub.onNext( nextEvent ) );
     getSubscribers().stream()

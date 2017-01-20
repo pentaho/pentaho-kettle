@@ -66,7 +66,7 @@ public class EngineITest {
 
   }
 
-  @Test @Ignore // Missing KTR?
+  @Test
   public void simpleFilter()
     throws KettleXMLException, KettleMissingPluginsException, InterruptedException, ExecutionException {
     IExecutionResult result = getTestExecutionResult( "simpleFilter.ktr" );
@@ -84,6 +84,7 @@ public class EngineITest {
     assertThat( getByName( "Merged Output", reports ).getOut(), is( 2001l ) );  // hmm, out + written
     System.out.println( reports );
   }
+
 
   @Test
   public void testChainedCalc()

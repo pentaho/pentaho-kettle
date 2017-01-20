@@ -1,6 +1,8 @@
 package org.pentaho.di.engine.kettlenative.impl;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import org.pentaho.di.core.QueueRowSet;
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleException;
@@ -8,13 +10,15 @@ import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaString;
-import org.pentaho.di.engine.api.IData;
+import org.pentaho.di.engine.api.IRow;
 import org.pentaho.di.engine.api.IDataEvent;
 import org.pentaho.di.engine.api.IExecutableOperation;
 import org.pentaho.di.engine.api.IOperation;
 import org.pentaho.di.engine.api.IPDIEventSource;
 import org.pentaho.di.engine.api.ITransformation;
 import org.pentaho.di.engine.api.Status;
+import org.pentaho.di.engine.api.converter.IRowConverter;
+import org.pentaho.di.engine.api.converter.RowConversionManager;
 import org.pentaho.di.engine.api.reporting.Metrics;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -52,6 +56,9 @@ public class KettleExecOperation implements IExecutableOperation, Subscriber<IDa
   private transient TransMeta transMeta;
 
   private AtomicBoolean started = new AtomicBoolean( false );
+
+  private RowConversionManager conversionManager
+    = new RowConversionManager( ImmutableList.of( new KettleRowConverter(), new SparkRowConverter() ) );
 
   protected KettleExecOperation( IOperation op, ITransformation transformation, ExecutorService executorService ) {
     this.operation = op;
@@ -115,20 +122,26 @@ public class KettleExecOperation implements IExecutableOperation, Subscriber<IDa
     try {
       switch( dataEvent.getState() ) {
         case ACTIVE:
-          final RowMetaInterface rowMetaInterface = getRowMetaInterface( dataEvent );
+
           getInputRowset( dataEvent ).ifPresent(
             rowset -> {
-              List<IData> data = dataEvent.getData();
-              if ( data.size() > 1 ) {
+              List<IRow> rows = dataEvent.getRows();
+              final RowMetaInterface rowMetaInterface =
+                conversionManager.convert( rows.get( 0 ), RowMetaInterface.class )
+
+                ;
+
+              if ( rows.size() > 1 ) {
                 // TEMP hack, this only happens with Spark right now
-                data.stream()
-                  .forEach( d -> rowset.putRow( rowMetaInterface, d.getData() ) );
+                rows
+                  .forEach( row -> rowset.putRow( rowMetaInterface, getRowObjects( row ) ) );
                 rowset.putRow( rowMetaInterface, null );
                 rowset.setDone();
                 return;
               } else {
                 rowset.putRow(
-                  rowMetaInterface, data.get( 0 ).getData() );
+                  rowMetaInterface,
+                  getRowObjects( rows.get( 0 ) ) );
               }
             } );  // TODO assuming 1 for now
 
@@ -144,6 +157,10 @@ public class KettleExecOperation implements IExecutableOperation, Subscriber<IDa
 
   }
 
+  private Object[] getRowObjects( IRow row ) {
+    return row.getObjects().orElse( new Object[row.size()] );
+  }
+
   private void terminalRow( IDataEvent dataEvent ) {
     try {
       getInputRowset( dataEvent ).ifPresent( rowset -> rowset.setDone() );
@@ -152,14 +169,6 @@ public class KettleExecOperation implements IExecutableOperation, Subscriber<IDa
     }
   }
 
-  private RowMetaInterface getRowMetaInterface( IDataEvent dataEvent ) {
-    RowMetaInterface rowMetaInterface = new RowMeta();
-    rowMetaInterface.addValueMeta( new ValueMetaString( "name" ) );
-    if ( dataEvent instanceof KettleDataEvent ) {
-      rowMetaInterface = ( (KettleDataEvent) dataEvent ).getRowMeta();
-    }
-    return rowMetaInterface;
-  }
 
   private Optional<RowSet> getInputRowset( IDataEvent dataEvent ) throws KettleStepException {
     return Optional.ofNullable( ( (BaseStep) step ).findInputRowSet( dataEvent.getEventSource().getId() ) );
