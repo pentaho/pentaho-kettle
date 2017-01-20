@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -151,7 +151,10 @@ public class RepositoryConnectMenu {
                 RepositoryMeta repositoryMeta = repositoriesMeta.findRepository( repoName );
                 if ( repositoryMeta != null ) {
                   try {
-                    spoon.promptForSave();
+                    //if prompt for save was cancelled return, don't show repository dialog
+                    if ( !spoon.promptForSave() ) {
+                      return;
+                    }
                   } catch ( KettleException ke ) {
                     log.logError( "Error prompting for save", ke );
                   }

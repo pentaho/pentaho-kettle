@@ -29,6 +29,7 @@ import static junit.framework.Assert.*;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Shell;
 import org.junit.Before;
 import org.junit.Test;
@@ -61,6 +62,7 @@ import org.pentaho.di.ui.spoon.delegates.SpoonDelegates;
 import org.pentaho.di.ui.spoon.delegates.SpoonTabsDelegate;
 import org.pentaho.metastore.stores.delegate.DelegatingMetaStore;
 import org.pentaho.xul.swt.tab.TabItem;
+import org.pentaho.xul.swt.tab.TabSet;
 
 /**
  * Spoon tests
@@ -723,5 +725,53 @@ public class SpoonTest {
 
     doCallRealMethod().when( spoon ).loadLastUsedFile( mockLastUsedFile, repositoryName );
     spoon.loadLastUsedFile( mockLastUsedFile, repositoryName );
+  }
+
+  @Test
+  public void testCancelPromptToSave() throws Exception {
+    setPromptToSave( SWT.CANCEL, false );
+    assertFalse( spoon.promptForSave() );
+  }
+
+  @Test
+  public void testNoPromptToSave() throws Exception {
+    SpoonBrowser mockBrowser = setPromptToSave( SWT.NO, false );
+    assertTrue( spoon.promptForSave() );
+    verify( mockBrowser, never() ).applyChanges();
+  }
+
+  @Test
+  public void testYesPromptToSave() throws Exception {
+    SpoonBrowser mockBrowser = setPromptToSave( SWT.YES, false );
+    assertTrue( spoon.promptForSave() );
+    verify( mockBrowser ).applyChanges();
+  }
+
+  @Test
+  public void testCanClosePromptToSave() throws Exception {
+    setPromptToSave( SWT.YES, true );
+    assertTrue( spoon.promptForSave() );
+  }
+
+  private SpoonBrowser setPromptToSave( int buttonPressed, boolean canbeClosed ) throws Exception {
+    TabMapEntry mockTabMapEntry = mock( TabMapEntry.class );
+    TabSet mockTabSet = mock( TabSet.class );
+    ArrayList<TabMapEntry> lTabs = new ArrayList<>();
+    lTabs.add( mockTabMapEntry );
+
+    SpoonBrowser mockSpoonBrowser = mock( SpoonBrowser.class );
+
+    spoon.delegates = mock( SpoonDelegates.class );
+    spoon.delegates.tabs = mock( SpoonTabsDelegate.class );
+    spoon.tabfolder = mockTabSet;
+
+    doReturn( lTabs ).when( spoon.delegates.tabs ).getTabs();
+    doReturn( mockSpoonBrowser ).when( mockTabMapEntry ).getObject();
+    doReturn( canbeClosed ).when( mockSpoonBrowser ).canBeClosed();
+    doReturn( buttonPressed ).when( mockSpoonBrowser ).showChangedWarning();
+
+    doCallRealMethod().when( spoon ).promptForSave();
+
+    return mockSpoonBrowser;
   }
 }
