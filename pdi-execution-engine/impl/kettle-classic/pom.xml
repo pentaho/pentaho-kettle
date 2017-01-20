@@ -63,6 +63,11 @@
       <artifactId>mockito-all</artifactId>
       <version>${mockito.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.pentaho</groupId>
+      <artifactId>pdi-execution-engine-model</artifactId>
+      <version>7.1-SNAPSHOT</version>
+    </dependency>
 
 
   </dependencies>

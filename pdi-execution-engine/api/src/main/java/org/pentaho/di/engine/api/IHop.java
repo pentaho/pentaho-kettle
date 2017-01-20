@@ -1,11 +1,11 @@
 package org.pentaho.di.engine.api;
 
-import org.pentaho.di.engine.api.reporting.IReportingEventSource;
+import org.pentaho.di.engine.api.reporting.ILogicalModelElement;
 
 /**
  * @author nhudak
  */
-public interface IHop extends IReportingEventSource {
+public interface IHop extends ILogicalModelElement {
   @Override default String getId() {
     return getFrom().getId() + " -> " + getTo().getId();
   }

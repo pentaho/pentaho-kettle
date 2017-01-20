@@ -2,18 +2,21 @@ package org.pentaho.di.engine.model;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
+import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.engine.api.IHop;
 import org.pentaho.di.engine.api.IOperation;
 import org.pentaho.di.engine.api.ITransformation;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Predicate;
 
 /**
  * Created by hudak on 1/17/17.
  */
-public class Transformation extends Configurable implements ITransformation {
+public class Transformation extends Configurable implements ITransformation{
   private final String id;
   private final LinkedList<IOperation> operations = new LinkedList<>();
   private final LinkedList<IHop> hops = new LinkedList<>();
@@ -25,6 +28,7 @@ public class Transformation extends Configurable implements ITransformation {
   @Override public String getId() {
     return id;
   }
+
 
   @Override public List<IOperation> getOperations() {
     return ImmutableList.copyOf( operations );
@@ -54,7 +58,7 @@ public class Transformation extends Configurable implements ITransformation {
 
   public Operation createOperation( String id ) {
     Operation operation = new Operation( id, this );
-    operations.add( operation );
+    this.operations.add( operation );
     return operation;
   }
 
@@ -75,4 +79,5 @@ public class Transformation extends Configurable implements ITransformation {
 
     return hop;
   }
+
 }
