@@ -34,6 +34,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toMap;
+import static org.pentaho.di.engine.kettleclassic.ClassicUtils.TRANS_META_CONF_KEY;
 
 /**
  * Created by nbaker on 1/5/17.
@@ -41,9 +42,7 @@ import static java.util.stream.Collectors.toMap;
 public class ClassicKettleExecutionContext implements IExecutionContext {
   private Map<String, Object> parameters = new HashMap<String, Object>();
   private Map<String, Object> environment = new HashMap<String, Object>();
-  private final ClassicKettleEngine engine;
   private Scheduler scheduler = Schedulers.io();
-  private ITransformation logicalTrans;
   private TransExecutionConfiguration executionConfiguration = new TransExecutionConfiguration();
   private String[] arguments;
   private IMetaStore metaStore;
@@ -53,15 +52,13 @@ public class ClassicKettleExecutionContext implements IExecutionContext {
 
   private Map<ILogicalModelElement, IMaterializedModelElement> logical2MaterializedMap = new HashMap<>();
 
-  private TransMeta transMeta;
-  private ClassicTransformation materializedTrans;
+  private final ITransformation logicalTrans;
+  private final ClassicKettleEngine engine;
+  private final TransMeta transMeta;
+  private final ClassicTransformation materializedTrans;
 
   public TransMeta getTransMeta() {
     return transMeta;
-  }
-
-  public void setTransMeta( TransMeta transMeta ) {
-    this.transMeta = transMeta;
   }
 
   public ClassicTransformation getMaterializedTransformation() {
@@ -74,15 +71,18 @@ public class ClassicKettleExecutionContext implements IExecutionContext {
     this.logicalTrans = trans;
 
     // Materialize Trans and populate Logical -> Materialized map
-    materializedTrans = ClassicUtils.materialize(  this, logicalTrans );
+    materializedTrans = ClassicUtils.materialize( this, logicalTrans );
+    transMeta = trans.getConfig( TRANS_META_CONF_KEY, TransMeta.class )
+      .orElseThrow( () -> new RuntimeException( "TransMeta is required in config for ClassicKettleExecutionContext" ) );
 
-    List<IModelElement> modelElements = new ArrayList<>( );
+    List<IModelElement> modelElements = new ArrayList<>();
     modelElements.add( materializedTrans );
     modelElements.addAll( materializedTrans.getOperations() );
     modelElements.addAll( materializedTrans.getHops() );
 
-    logical2MaterializedMap.putAll( modelElements.stream().map(IMaterializedModelElement.class::cast).collect( Collectors.toMap(
-      IMaterializedModelElement::getLogicalElement, Function.identity()) ) );
+    logical2MaterializedMap
+      .putAll( modelElements.stream().map( IMaterializedModelElement.class::cast ).collect( Collectors.toMap(
+        IMaterializedModelElement::getLogicalElement, Function.identity() ) ) );
 
   }
 
@@ -96,7 +96,7 @@ public class ClassicKettleExecutionContext implements IExecutionContext {
       return publishers.get( new PublisherKey( source, type ),
         () -> Optional.ofNullable( logical2MaterializedMap.get( source ) )
           .map( iMaterializedModelElement -> iMaterializedModelElement.getPublisher( type ).get() ).orElse(
-            RxReactiveStreams.toPublisher( Observable.empty() )) );
+            RxReactiveStreams.toPublisher( Observable.empty() ) ) );
     } catch ( ExecutionException e ) {
       throw new RuntimeException( e );
     }
@@ -120,10 +120,6 @@ public class ClassicKettleExecutionContext implements IExecutionContext {
 
   @Override public ITransformation getTransformation() {
     return logicalTrans;
-  }
-
-  public void setTransformation( ITransformation transformation ) {
-    this.logicalTrans = transformation;
   }
 
 
@@ -162,7 +158,6 @@ public class ClassicKettleExecutionContext implements IExecutionContext {
   public Scheduler getScheduler() {
     return scheduler;
   }
-
 
 
   private static class PublisherKey {

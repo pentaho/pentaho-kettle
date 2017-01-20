@@ -14,12 +14,17 @@ import static java.util.stream.Collectors.toList;
  * Created by nbaker on 1/6/17.
  */
 public class ClassicUtils {
-  public static ITransformation convert( TransMeta meta ) {
-    final Transformation transformation = new Transformation( meta.getName() );
-    meta.getSteps().forEach( stepMeta -> {
+
+  public static final String TRANS_META_CONF_KEY = "TransMeta";
+  public static final String STEP_META_CONF_KEY = "StepMeta";
+
+  public static ITransformation convert( TransMeta transMeta ) {
+    final Transformation transformation = new Transformation( transMeta.getName() );
+    transMeta.getSteps().forEach( stepMeta -> {
       Operation operation = transformation.createOperation( stepMeta.getName() );
-      operation.setConfig( "StepMeta", stepMeta );
+      operation.setConfig( STEP_META_CONF_KEY, stepMeta );
     } );
+    transformation.setConfig( TRANS_META_CONF_KEY, transMeta );
     return transformation;
   }
 

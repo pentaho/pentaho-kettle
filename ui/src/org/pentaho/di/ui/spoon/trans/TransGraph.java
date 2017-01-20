@@ -3798,7 +3798,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
           executionResultFuture = executionContext.execute();
 
           ExecutionStatePublisher statePublisher = new LocalExecutionStatePublisher(
-            spoon, ((ClassicTransformation)executionContext.getTransformation()).getTrans() );
+            spoon, ( (ClassicKettleExecutionContext) executionContext ).getMaterializedTransformation().getTrans() );
           statePublisher.subscribe( transGridDelegate );
 
           log.logBasic( BaseMessages.getString( PKG, "TransLog.Log.TransformationOpened" ) );

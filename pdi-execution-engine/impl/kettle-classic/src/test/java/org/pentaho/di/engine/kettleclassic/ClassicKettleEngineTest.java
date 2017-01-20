@@ -23,7 +23,6 @@ public class ClassicKettleEngineTest {
     TransMeta meta = new TransMeta( "src/test/resources/test.ktr" );
     ITransformation transformation = ClassicUtils.convert( meta );
     ClassicKettleExecutionContext context = (ClassicKettleExecutionContext) engine.prepare( transformation );
-    context.setTransMeta( meta );
 
     context.subscribe( transformation, Status.class,  d -> {
       System.out.println( "Received Transformation Status event: " + d );
