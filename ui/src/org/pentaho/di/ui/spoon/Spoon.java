@@ -4885,7 +4885,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     }
   }
 
-  public void promptForSave() throws KettleException {
+  public boolean promptForSave() throws KettleException {
     List<TabMapEntry> list = delegates.tabs.getTabs();
 
     for ( TabMapEntry mapEntry : list ) {
@@ -4900,9 +4900,12 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         int reply = itemInterface.showChangedWarning();
         if ( reply == SWT.YES ) {
           itemInterface.applyChanges();
+        } else if ( reply == SWT.CANCEL ) {
+          return false;
         }
       }
     }
+    return true;
   }
 
   public boolean quitFile( boolean canCancel ) throws KettleException {
