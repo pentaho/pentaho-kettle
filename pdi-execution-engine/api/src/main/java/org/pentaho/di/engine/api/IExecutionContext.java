@@ -15,12 +15,5 @@ public interface IExecutionContext extends IProgressReporting {
 
   ITransformation getTransformation();
 
-  /**
-   * Transformation parameters are the preferred way of controlling execution.
-   * Maybe arguments can be rolled into environment?
-   */
-  @Deprecated
-  String[] getArguments();
-
   CompletableFuture<IExecutionResult> execute();
 }

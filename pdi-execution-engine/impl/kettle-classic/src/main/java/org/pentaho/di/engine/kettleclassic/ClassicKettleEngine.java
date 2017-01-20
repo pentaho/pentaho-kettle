@@ -32,7 +32,7 @@ public class ClassicKettleEngine implements IEngine {
 
   CompletableFuture<IExecutionResult> execute( ClassicKettleExecutionContext context ) {
     CompletableFuture<IExecutionResult> future = new CompletableFuture<>();
-    ClassicTransformation transformation = (ClassicTransformation) context.getTransformation();
+    ClassicTransformation transformation = context.getMaterializedTransformation();
     TransMeta transMeta = transformation.getTransMeta();
     TransExecutionConfiguration executionConfiguration = context.getExecutionConfiguration();
 
@@ -86,12 +86,14 @@ public class ClassicKettleEngine implements IEngine {
       //
 
 
-      trans.prepareExecution( context.getArguments() );
+      trans.prepareExecution( null );
       transformation.setTrans( trans );
+      transformation.init();
 
       new Thread( () -> {
         try {
           trans.startThreads();
+          trans.waitUntilFinished();
           future.complete( new ClassicExecutionResult() );
         } catch ( KettleException e ) {
           future.completeExceptionally( e );

@@ -36,6 +36,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.action.Action;
@@ -128,8 +130,9 @@ import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.engine.api.IEngine;
 import org.pentaho.di.engine.api.IExecutionContext;
-import org.pentaho.di.engine.api.IExecutionResultFuture;
+import org.pentaho.di.engine.api.IExecutionResult;
 import org.pentaho.di.engine.api.ITransformation;
+import org.pentaho.di.engine.api.reporting.Metrics;
 import org.pentaho.di.engine.kettleclassic.ClassicKettleExecutionContext;
 import org.pentaho.di.engine.kettleclassic.ClassicTransformation;
 import org.pentaho.di.engine.kettleclassic.ClassicUtils;
@@ -378,7 +381,6 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
   private StepMeta showTargetStreamsStep;
 
   Timer redrawTimer;
-  private IExecutionResultFuture executionResultFuture1;
 
   public void setCurrentNote( NotePadMeta ni ) {
     this.ni = ni;
@@ -3736,7 +3738,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     }
   }
 
-  private IExecutionResultFuture executionResultFuture;
+  private CompletableFuture<IExecutionResult> executionResultFuture;
 
   public synchronized void start( TransExecutionConfiguration executionConfiguration ) throws KettleException {
     // Auto save feature...
@@ -3793,7 +3795,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 
           setControlStates();
 
-          executionResultFuture = iEngine.execute( executionContext );
+          executionResultFuture = executionContext.execute();
 
           ExecutionStatePublisher statePublisher = new LocalExecutionStatePublisher(
             spoon, ((ClassicTransformation)executionContext.getTransformation()).getTrans() );
@@ -4298,39 +4300,45 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
   }
 
   private void checkErrorVisuals() {
-    if ( executionResultFuture.getDropped() > 0 ) {
-      // Get the logging text and filter it out. Store it in the stepLogMap...
-      //
-      stepLogMap = new HashMap<>();
-      shell.getDisplay().syncExec( new Runnable() {
+    try {
+      if ( executionResultFuture.get().getDataEventReport().values().stream().mapToLong( Metrics::getDropped ).sum() > 0 ) {
+        // Get the logging text and filter it out. Store it in the stepLogMap...
+        //
+        stepLogMap = new HashMap<>();
+        shell.getDisplay().syncExec( new Runnable() {
 
-        @Override
-        public void run() {
+          @Override
+          public void run() {
 
-          // TODO: We don't have logging yet
-//          for ( StepMetaDataCombi combi : trans.getSteps() ) {
-//            if ( combi.step.getErrors() > 0 ) {
-//              String channelId = combi.step.getLogChannel().getLogChannelId();
-//              List<KettleLoggingEvent> eventList =
-//                KettleLogStore.getLogBufferFromTo( channelId, false, 0, KettleLogStore.getLastBufferLineNr() );
-//              StringBuilder logText = new StringBuilder();
-//              for ( KettleLoggingEvent event : eventList ) {
-//                Object message = event.getMessage();
-//                if ( message instanceof LogMessage ) {
-//                  LogMessage logMessage = (LogMessage) message;
-//                  if ( logMessage.isError() ) {
-//                    logText.append( logMessage.getMessage() ).append( Const.CR );
-//                  }
-//                }
-//              }
-//              stepLogMap.put( combi.stepMeta, logText.toString() );
-//            }
-//          }
-        }
-      } );
+            // TODO: We don't have logging yet
+  //          for ( StepMetaDataCombi combi : trans.getSteps() ) {
+  //            if ( combi.step.getErrors() > 0 ) {
+  //              String channelId = combi.step.getLogChannel().getLogChannelId();
+  //              List<KettleLoggingEvent> eventList =
+  //                KettleLogStore.getLogBufferFromTo( channelId, false, 0, KettleLogStore.getLastBufferLineNr() );
+  //              StringBuilder logText = new StringBuilder();
+  //              for ( KettleLoggingEvent event : eventList ) {
+  //                Object message = event.getMessage();
+  //                if ( message instanceof LogMessage ) {
+  //                  LogMessage logMessage = (LogMessage) message;
+  //                  if ( logMessage.isError() ) {
+  //                    logText.append( logMessage.getMessage() ).append( Const.CR );
+  //                  }
+  //                }
+  //              }
+  //              stepLogMap.put( combi.stepMeta, logText.toString() );
+  //            }
+  //          }
+          }
+        } );
 
-    } else {
-      stepLogMap = null;
+      } else {
+        stepLogMap = null;
+      }
+    } catch ( InterruptedException e ) {
+      e.printStackTrace();
+    } catch ( ExecutionException e ) {
+      e.printStackTrace();
     }
     // Redraw the canvas to show the error icons etc.
     //

@@ -5,7 +5,7 @@ import org.pentaho.di.engine.api.IExecutionContext;
 import org.pentaho.di.engine.api.IExecutionResult;
 import org.pentaho.di.engine.api.ITransformation;
 import org.pentaho.di.engine.api.reporting.IReportingEvent;
-import org.pentaho.di.engine.api.reporting.IReportingEventSource;
+import org.pentaho.di.engine.api.reporting.ILogicalModelElement;
 import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.trans.TransMeta;
 import org.reactivestreams.Publisher;
@@ -75,9 +75,6 @@ public class ExecutionContext implements IExecutionContext {
     return executionConfiguration;
   }
 
-  @Override public String[] getArguments() {
-    return new String[ 0 ];
-  }
 
   public void setArguments( String[] arguments ) {
     this.arguments = arguments;
@@ -88,12 +85,12 @@ public class ExecutionContext implements IExecutionContext {
   }
 
   @Override
-  public <S extends IReportingEventSource, D extends Serializable>
+  public <S extends ILogicalModelElement, D extends Serializable>
   Publisher<IReportingEvent<S, D>> eventStream( S source, Class<D> type ) {
     return Subscriber::onComplete;
   }
 
-  @Override public Collection<IReportingEventSource> getReportingSources() {
+  @Override public Collection<ILogicalModelElement> getReportingSources() {
     return ImmutableList.of();
   }
 }

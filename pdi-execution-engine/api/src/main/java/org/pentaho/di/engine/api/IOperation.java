@@ -1,6 +1,6 @@
 package org.pentaho.di.engine.api;
 
-import org.pentaho.di.engine.api.reporting.IReportingEventSource;
+import org.pentaho.di.engine.api.reporting.ILogicalModelElement;
 
 import java.util.List;
 import java.util.Map;
@@ -13,7 +13,7 @@ import java.util.Map;
  * which is associated with the behavior specific to
  * an IEngine.
  */
-public interface IOperation extends IReportingEventSource, IHasConfig {
+public interface IOperation extends ILogicalModelElement, IHasConfig {
 
   List<IOperation> getFrom();
   List<IOperation> getTo();

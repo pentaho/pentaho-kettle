@@ -1,6 +1,8 @@
 package org.pentaho.di.engine.model;
 
 import com.google.common.collect.ImmutableList;
+import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.engine.api.IHop;
 import org.pentaho.di.engine.api.IOperation;
 import org.pentaho.di.engine.api.IOperationVisitor;
@@ -69,4 +71,5 @@ public class Operation extends Configurable implements IOperation {
   public Hop createHopTo( IOperation to, String type ) {
     return transformation.createHop( this, to, type );
   }
+
 }

@@ -7,7 +7,7 @@ import java.io.Serializable;
 /**
  * Created by hudak on 1/11/17.
  */
-public interface IReportingEvent<S extends IReportingEventSource, D extends Serializable> extends IPDIEvent {
+public interface IReportingEvent<S extends ILogicalModelElement, D extends Serializable> extends IPDIEvent {
   S getSource();
 
   D getData();
