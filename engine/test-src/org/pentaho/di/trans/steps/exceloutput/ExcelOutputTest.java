@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,6 +24,7 @@ package org.pentaho.di.trans.steps.exceloutput;
 
 import jxl.Sheet;
 import jxl.Workbook;
+import jxl.write.WritableCellFormat;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -110,6 +111,41 @@ public class ExcelOutputTest {
     Sheet sheet = workbook.getSheet( 0 );
     int rows = sheet.getRows();
     Assert.assertSame( rows, 2 );
+
+  }
+
+  @Test
+  /**
+   * Tests http://jira.pentaho.com/browse/PDI-13487 issue
+   */
+  public void testClosingFile() throws Exception {
+
+    ValueMetaInterface vmi = new ValueMetaString( "new_row" );
+
+    ExcelOutputData data = new ExcelOutputData();
+    int[] ints = { 0 };
+    data.fieldnrs = ints;
+    String testColumnName = "testColumnName";
+    data.formats.put( testColumnName, new WritableCellFormat() );
+    RowMeta rowMetaToBeReturned = Mockito.spy( new RowMeta() );
+    rowMetaToBeReturned.addValueMeta( 0, vmi );
+
+    data.previousMeta = rowMetaToBeReturned;
+    ExcelOutput excelOutput =
+            Mockito.spy( new ExcelOutput( helper.stepMeta, data, 0, helper.transMeta, helper.trans ) );
+    excelOutput.first = false;
+
+    Object[] row = { new Date() };
+    doReturn( row ).when( excelOutput ).getRow();
+    doReturn( rowMetaToBeReturned ).when( excelOutput ).getInputRowMeta();
+    doReturn( 1L ).when( excelOutput ).getLinesOutput();
+
+    ExcelOutputMeta meta = createStepMeta();
+    meta.setSplitEvery( 1 );
+
+    excelOutput.init( meta, data );
+    excelOutput.processRow( meta, data );
+    Assert.assertNull( data.formats.get( testColumnName ) );
 
   }
 
