@@ -533,7 +533,7 @@ public class CsvInput extends BaseStep implements StepInterface {
           } else if ( data.enclosureFound() && !ignoreEnclosuresInField ) {
             int enclosurePosition = data.getEndBuffer();
             int fieldFirstBytePosition = data.getStartBuffer();
-            if ( fieldFirstBytePosition == enclosurePosition ) {
+            if ( fieldFirstBytePosition == enclosurePosition - ( data.enclosure.length - 1 )  ) {
               // Perhaps we need to skip over an enclosed part?
               // We always expect exactly one enclosure character
               // If we find the enclosure doubled, we consider it escaped.
