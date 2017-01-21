@@ -50,8 +50,11 @@ public class CsvInputUnicodeTest extends CsvInputUnitTestBase {
   private static final String ONE_CHAR_DELIM = "\t";
   private static final String MULTI_CHAR_DELIM = "|||";
   private static final String TEXT = "Header1%1$sHeader2\nValue%1$sValue\nValue%1$sValue\n";
+  private static final String TEXT_WITH_ENCLOSURES = "Header1%1$sHeader2\n\"Value\"%1$s\"Value\"\n\"Value\"%1$s\"Value\"\n";
   private static final String TEST_DATA = String.format( TEXT, ONE_CHAR_DELIM );
   private static final String TEST_DATA1 = String.format( TEXT, MULTI_CHAR_DELIM );
+  private static final String TEST_DATA2 = String.format( TEXT_WITH_ENCLOSURES, ONE_CHAR_DELIM );
+  private static final String TEST_DATA3 = String.format( TEXT_WITH_ENCLOSURES, MULTI_CHAR_DELIM );
 
   private static StepMockHelper<?, ?> stepMockHelper;
 
@@ -92,6 +95,36 @@ public class CsvInputUnicodeTest extends CsvInputUnitTestBase {
   @Test
   public void testUTF8_multiDelim() throws Exception {
     doTest( UTF8, UTF8, TEST_DATA1, MULTI_CHAR_DELIM );
+  }
+
+  @Test
+  public void testUTF16LEDataWithEnclosures() throws Exception {
+    doTest( UTF16LE, UTF16LE, TEST_DATA2, ONE_CHAR_DELIM );
+  }
+
+  @Test
+  public void testUTF16BEDataWithEnclosures() throws Exception {
+    doTest( UTF16BE, UTF16BE, TEST_DATA2, ONE_CHAR_DELIM );
+  }
+
+  @Test
+  public void testUTF16LEBOMDataWithEnclosures() throws Exception {
+    doTest( UTF16LEBOM, UTF16LE, TEST_DATA2, ONE_CHAR_DELIM );
+  }
+
+  @Test
+  public void testUTF16BE_multiDelim_DataWithEnclosures() throws Exception {
+    doTest( UTF16BE, UTF16BE, TEST_DATA3, MULTI_CHAR_DELIM );
+  }
+
+  @Test
+  public void testUTF16LE_multiDelim_DataWithEnclosures() throws Exception {
+    doTest( UTF16LE, UTF16LE, TEST_DATA3, MULTI_CHAR_DELIM );
+  }
+
+  @Test
+  public void testUTF8_multiDelim_DataWithEnclosures() throws Exception {
+    doTest( UTF8, UTF8, TEST_DATA3, MULTI_CHAR_DELIM );
   }
 
   private void doTest( final String fileEncoding, final String stepEncoding, final String testData,
