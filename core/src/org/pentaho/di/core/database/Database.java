@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -3680,7 +3680,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
         if ( includeSchema ) {
           res.add( databaseMeta.getQuotedSchemaTableCombination( schema, table ) );
         } else {
-          res.add( table );
+          res.add( databaseMeta.getQuotedSchemaTableCombination( null, table ) );
         }
       }
     }
