@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -173,6 +173,9 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
   /** The type of update to perform on the fields: insert, update, punch-through */
   @Injection( name = "UPDATE_TYPE", group = "FIELDS", converter = UpdateTypeCodeConverter.class )
   private int[] fieldUpdate;
+
+  @Injection( name = "TYPE_OF_RETURN_FIELD", group = "FIELDS", converter = ReturnTypeCodeConverter.class )
+  private int[] returnType = {};
 
   /** Name of the technical key (surrogate key) field to return from the dimension */
   @Injection( name = "TECHNICAL_KEY_FIELD" )
@@ -431,6 +434,21 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
   }
 
   /**
+   * @return Returns the returnType.
+   */
+  public int[] getReturnType() {
+    return returnType;
+  }
+
+  /**
+   * @param returnType
+   *          The returnType to set.
+   */
+  public void setReturnType( int[] returnType ) {
+    this.returnType = returnType;
+  }
+
+  /**
    * @return Returns the keyField.
    */
   public String getKeyField() {
@@ -550,6 +568,13 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
     this.versionField = versionField;
   }
 
+  public void actualizeWithInjectedValues() {
+    if ( !update && returnType.length > 0 ) {
+      fieldUpdate = returnType;
+    }
+    normalizeAllocationFields();
+  }
+
   @Override
   public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     readData( stepnode, databases );
@@ -562,6 +587,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
     fieldStream = new String[nrfields];
     fieldLookup = new String[nrfields];
     fieldUpdate = new int[nrfields];
+    returnType = new int[nrfields];
   }
 
   @Override
@@ -579,6 +605,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
     System.arraycopy( fieldStream, 0, retval.fieldStream, 0, nrfields );
     System.arraycopy( fieldLookup, 0, retval.fieldLookup, 0, nrfields );
     System.arraycopy( fieldUpdate, 0, retval.fieldUpdate, 0, nrfields );
+    System.arraycopy( returnType, 0, retval.returnType, 0, nrfields );
 
     return retval;
   }
@@ -802,7 +829,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 
   @Override
   public String getXML() {
-    normalizeAllocationFields();
+    actualizeWithInjectedValues();
     StringBuilder retval = new StringBuilder( 512 );
 
     retval.append( "      " ).append( XMLHandler.addTagValue( "schema", schemaName ) );
@@ -1927,6 +1954,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
       int fieldsGroupSize = fieldLookup.length;
       fieldStream = normalizeAllocation( fieldStream, fieldsGroupSize );
       fieldUpdate = normalizeAllocation( fieldUpdate, fieldsGroupSize );
+      returnType = normalizeAllocation( returnType, fieldsGroupSize );
     }
   }
 
@@ -1969,6 +1997,13 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
     @Override
     public int string2intPrimitive( String v ) throws KettleValueException {
       return DimensionLookupMeta.getUpdateType( true, v );
+    }
+  }
+
+  public static class ReturnTypeCodeConverter extends InjectionTypeConverter {
+    @Override
+    public int string2intPrimitive( String v ) throws KettleValueException {
+      return DimensionLookupMeta.getUpdateType( false, v );
     }
   }
 
