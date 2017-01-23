@@ -13,6 +13,6 @@
   <groupId>org.pentaho</groupId>
   <artifactId>pdi-engine-api</artifactId>
   <version>7.1-SNAPSHOT</version>
-  <packaging>pom</packaging>
+  <packaging>jar</packaging>
 
 </project>
