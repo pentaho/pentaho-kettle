@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -29,17 +29,31 @@ import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 
+import org.apache.commons.vfs2.FileContent;
+import org.apache.commons.vfs2.FileName;
+import org.apache.commons.vfs2.FileObject;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.fileinput.FileInputList;
+import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
+import org.pentaho.di.trans.step.BaseStep;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
 import org.pentaho.di.trans.steps.loadsave.initializer.InitializerInterface;
 import org.pentaho.di.trans.steps.loadsave.validator.ArrayLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.StringLoadSaveValidator;
+
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.nio.charset.Charset;
 
 public class PropertyInputMetaTest implements InitializerInterface<StepMetaInterface> {
   Class<PropertyInputMeta> testMetaClass = PropertyInputMeta.class;
@@ -183,6 +197,53 @@ public class PropertyInputMetaTest implements InitializerInterface<StepMetaInter
       PropertyInputField actualInput = (PropertyInputField) actual;
       return ( testObject.toString().equals( actualInput.toString() ) );
     }
+  }
+
+  @Test
+  public void testOpenNextFile() throws Exception {
+
+    PropertyInputMeta propertyInputMeta = Mockito.mock( PropertyInputMeta.class );
+    PropertyInputData propertyInputData = new PropertyInputData();
+    FileInputList fileInputList = new FileInputList();
+    FileObject fileObject = Mockito.mock( FileObject.class );
+    FileName fileName = Mockito.mock( FileName.class );
+    Mockito.when( fileName.getRootURI() ).thenReturn( "testFolder" );
+    Mockito.when( fileName.getURI() ).thenReturn( "testFileName.ini" );
+
+    String header = "test ini data with umlauts";
+    String key = "key";
+    String testValue = "value-with-äöü";
+    String testData = "[" + header + "]\r\n"
+            + key + "=" + testValue;
+    String charsetEncode = "Windows-1252";
+
+    InputStream inputStream = new ByteArrayInputStream( testData.getBytes(
+            Charset.forName( charsetEncode ) ) );
+    FileContent fileContent = Mockito.mock( FileContent.class );
+    Mockito.when( fileObject.getContent() ).thenReturn( fileContent );
+    Mockito.when( fileContent.getInputStream() ).thenReturn( inputStream );
+    Mockito.when( fileObject.getName() ).thenReturn( fileName );
+    fileInputList.addFile( fileObject );
+
+    propertyInputData.files = fileInputList;
+    propertyInputData.propfiles = false;
+    propertyInputData.realEncoding = charsetEncode;
+
+    PropertyInput propertyInput = Mockito.mock( PropertyInput.class );
+
+    Field logField = BaseStep.class.getDeclaredField( "log" );
+    logField.setAccessible( true );
+    logField.set( propertyInput, Mockito.mock( LogChannelInterface.class ) );
+
+    Mockito.doCallRealMethod().when( propertyInput ).dispose( propertyInputMeta, propertyInputData );
+
+    propertyInput.dispose( propertyInputMeta, propertyInputData );
+
+    Method method = PropertyInput.class.getDeclaredMethod( "openNextFile" );
+    method.setAccessible( true );
+    method.invoke( propertyInput );
+
+    Assert.assertEquals( testValue, propertyInputData.wini.get( header ).get( key ) );
   }
 
 }
