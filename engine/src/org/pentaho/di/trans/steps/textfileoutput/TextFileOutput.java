@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.vfs2.FileObject;
+import org.apache.commons.vfs2.FileSystemException;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.ResultFile;
@@ -91,6 +92,12 @@ public class TextFileOutput extends BaseStep implements StepInterface {
 
     boolean result = true;
     boolean bEndedLineWrote = false;
+    boolean newFile;
+    try {
+      newFile = !getFileObject( buildFilename( environmentSubstitute( meta.getFileName() ), true ), getTransMeta() ).exists();
+    } catch ( FileSystemException e ) {
+      throw new KettleException( e );
+    }
     Object[] r = getRow(); // This also waits for a row to be finished.
 
     if ( r != null && first ) {
@@ -124,10 +131,8 @@ public class TextFileOutput extends BaseStep implements StepInterface {
         initBinaryDataFields();
       }
 
-      if ( !meta.isFileAppended() && ( meta.isHeaderEnabled() || meta.isFooterEnabled() ) ) { // See if we have to write a header-line)
-        if ( !meta.isFileNameInField() && meta.isHeaderEnabled() && data.outputRowMeta != null ) {
-          writeHeader();
-        }
+      if ( isNeedWriteHeader( newFile ) ) {
+        writeHeader();
       }
 
       data.fieldnrs = new int[meta.getOutputFields().length];
@@ -199,6 +204,22 @@ public class TextFileOutput extends BaseStep implements StepInterface {
     }
 
     return result;
+  }
+
+  private boolean isNeedWriteHeader( boolean newFile ) {
+    if ( !meta.isFileAppended() && ( meta.isHeaderEnabled() || meta.isFooterEnabled() ) ) { // See if we have to write a header-line)
+      if ( !meta.isFileNameInField() && meta.isHeaderEnabled() && data.outputRowMeta != null ) {
+        return true;
+      }
+    }
+
+    //PDI-15650
+    //File Exists=N Flag Set=N Add Header=Y Append=Y
+    //Result = File is created, header is written at top of file (this changed by the fix)
+    boolean compatibilityAppendNoHeader = "Y".equals(
+            Const.NVL( System.getProperty( Const.KETTLE_COMPATIBILITY_TEXT_FILE_OUTPUT_APPEND_NO_HEADER ), "N" ) );
+    return meta.isHeaderEnabled() && newFile && meta.isFileAppended() && !compatibilityAppendNoHeader;
+
   }
 
   /**
