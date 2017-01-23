@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -45,10 +45,11 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.util.Utils;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -84,7 +85,11 @@ public class XMLInputStreamDialog extends BaseStepDialog implements StepDialogIn
 
   private Button wAddResult;
 
+  private Button cbFromSource;
+
   private TextVar wRowsToSkip;
+
+  private CCombo cbSourceField;
 
   private TextVar wLimit;
 
@@ -277,6 +282,43 @@ public class XMLInputStreamDialog extends BaseStepDialog implements StepDialogIn
       wFilename.setLayoutData( fdFilename );
       lastControl = wFilename;
     }
+    // data from previous step
+    Label lblAcceptingFilenames = new Label( shell, SWT.RIGHT );
+    lblAcceptingFilenames.setText( BaseMessages.getString( PKG, "XMLInputStreamDialog.SourceStreamField.Label" ) );
+    props.setLook( lblAcceptingFilenames );
+    FormData fdlAcceptingFilenames = new FormData();
+    fdlAcceptingFilenames.left = new FormAttachment( 0, 0 );
+    fdlAcceptingFilenames.top = new FormAttachment( lastControl, margin );
+    fdlAcceptingFilenames.right = new FormAttachment( middle, -margin );
+    lblAcceptingFilenames.setLayoutData( fdlAcceptingFilenames );
+    cbFromSource = new Button( shell, SWT.CHECK );
+    props.setLook( cbFromSource );
+    fdlAcceptingFilenames = new FormData();
+    fdlAcceptingFilenames.left = new FormAttachment( middle, 0 );
+    fdlAcceptingFilenames.top = new FormAttachment( lastControl, margin );
+    cbFromSource.setLayoutData( fdlAcceptingFilenames );
+    lastControl = cbFromSource;
+    // field name
+    Label lblAcceptingField = new Label( shell, SWT.RIGHT );
+    lblAcceptingField.setText( BaseMessages.getString( PKG, "XMLInputStreamDialog.SourceField.Label" ) );
+    props.setLook( lblAcceptingField );
+    FormData fdlAcceptingField = new FormData();
+    fdlAcceptingField = new FormData();
+    fdlAcceptingField.left = new FormAttachment( 0, 0 );
+    fdlAcceptingField.top = new FormAttachment( lastControl, margin );
+    fdlAcceptingField.right = new FormAttachment( middle, -margin );
+    lblAcceptingField.setLayoutData( fdlAcceptingField );
+    cbSourceField = new CCombo( shell, SWT.BORDER | SWT.READ_ONLY );
+    props.setLook( cbSourceField );
+    cbSourceField.addModifyListener( lsMod );
+    fdlAcceptingField = new FormData();
+    fdlAcceptingField = new FormData();
+    fdlAcceptingField.left = new FormAttachment( middle, 0 );
+    fdlAcceptingField.top = new FormAttachment( lastControl, margin );
+    fdlAcceptingField.right = new FormAttachment( 100, 0 );
+    cbSourceField.setLayoutData( fdlAcceptingField );
+    lastControl = cbSourceField;
+    setSourceStreamField();
 
     // add filename to result?
     //
@@ -1016,6 +1058,24 @@ public class XMLInputStreamDialog extends BaseStepDialog implements StepDialogIn
     return stepname;
   }
 
+  private void setSourceStreamField() {
+    try {
+      String value = cbSourceField.getText();
+      cbSourceField.removeAll();
+
+      RowMetaInterface r = transMeta.getPrevStepFields( stepname );
+      if ( r != null ) {
+        cbSourceField.setItems( r.getFieldNames() );
+      }
+      if ( value != null ) {
+        cbSourceField.setText( value );
+      }
+    } catch ( KettleException ke ) {
+      new ErrorDialog( shell, BaseMessages.getString( PKG, "XMLInputStreamDialog.FailedToGetFields.DialogTitle" ),
+          BaseMessages.getString( PKG, "XMLInputStreamDialog.FailedToGetFields.DialogMessage" ), ke );
+    }
+  }
+
   // private void addFilesTab()
   // {
   // //////////////////////////
@@ -1101,6 +1161,9 @@ public class XMLInputStreamDialog extends BaseStepDialog implements StepDialogIn
     } else {
       wFilename.setText( Const.NVL( inputMeta.getFilename(), "" ) );
     }
+    cbFromSource.setSelection( inputMeta.sourceFromInput );
+    cbSourceField.setText( Const.NVL( inputMeta.sourceFieldName, "" ) );
+
     wAddResult.setSelection( inputMeta.isAddResultFile() );
     wRowsToSkip.setText( Const.NVL( inputMeta.getNrRowsToSkip(), "0" ) );
     wLimit.setText( Const.NVL( inputMeta.getRowLimit(), "0" ) );
@@ -1177,6 +1240,9 @@ public class XMLInputStreamDialog extends BaseStepDialog implements StepDialogIn
     } else {
       xmlInputMeta.setFilename( wFilename.getText() );
     }
+    xmlInputMeta.sourceFromInput = cbFromSource.getSelection();
+    xmlInputMeta.sourceFieldName = cbSourceField.getText();
+
     xmlInputMeta.setAddResultFile( wAddResult.getSelection() );
     xmlInputMeta.setNrRowsToSkip( Const.NVL( wRowsToSkip.getText(), "0" ) );
     xmlInputMeta.setRowLimit( Const.NVL( wLimit.getText(), "0" ) );

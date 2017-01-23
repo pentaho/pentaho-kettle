@@ -126,6 +126,7 @@ public class JobEntryTransDialog extends JobEntryBaseDialog implements JobEntryD
 
   protected void createElements() {
     super.createElements();
+    shell.setText( BaseMessages.getString( PKG, "JobTrans.Header" ) );
 
     wlPath.setText( BaseMessages.getString( PKG, "JobTrans.JobStep.Transformation.Label" ) );
     wlDescription.setText( BaseMessages.getString( PKG, "JobTrans.Local.Label" ) );
@@ -180,10 +181,10 @@ public class JobEntryTransDialog extends JobEntryBaseDialog implements JobEntryD
     props.setLook( wlClusteredDescription );
     wlClusteredDescription.setText( BaseMessages.getString( PKG, "JobTrans.Clustered.Label" ) );
     wlClusteredDescription.setVisible( true );
-    FormData fdlCusteredDescription = new FormData();
-    fdlCusteredDescription.top = new FormAttachment( 0, 0 );
-    fdlCusteredDescription.left = new FormAttachment( 0, 0 );
-    wlClusteredDescription.setLayoutData( fdlCusteredDescription );
+    FormData fdlClusteredDescription = new FormData();
+    fdlClusteredDescription.top = new FormAttachment( 0, 0 );
+    fdlClusteredDescription.left = new FormAttachment( 0, 0 );
+    wlClusteredDescription.setLayoutData( fdlClusteredDescription );
 
     wClearRows = new Button( gExecution, SWT.CHECK );
     props.setLook( wClearRows );
@@ -289,11 +290,7 @@ public class JobEntryTransDialog extends JobEntryBaseDialog implements JobEntryD
       SelectObjectDialog sod = new SelectObjectDialog( shell, rep, true, false );
       String transname = sod.open();
       if ( transname != null ) {
-        String path = sod.getDirectory().getPath();
-        String parentPath = this.jobMeta.getRepositoryDirectory().getPath();
-        if ( path.startsWith( parentPath ) ) {
-          path = path.replace( parentPath, "${" + Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY + "}" );
-        }
+        String path = getPath( sod.getDirectory().getPath() );
         String fullPath = path + "/" + transname;
         wPath.setText( fullPath );
       }
@@ -472,8 +469,9 @@ public class JobEntryTransDialog extends JobEntryBaseDialog implements JobEntryD
   private void getByReferenceData( ObjectId transObjectId ) {
     try {
       RepositoryObject transInf = rep.getObjectInformation( transObjectId, RepositoryObjectType.TRANSFORMATION );
+      String path = getPath( transInf.getRepositoryDirectory().getPath() );
       String fullPath =
-        Const.NVL( transInf.getRepositoryDirectory().getPath(), "" ) + "/" + Const.NVL( transInf.getName(), "" );
+        Const.NVL( path, "" ) + "/" + Const.NVL( transInf.getName(), "" );
       wPath.setText( fullPath );
     } catch ( KettleException e ) {
       new ErrorDialog( shell,

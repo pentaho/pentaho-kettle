@@ -381,7 +381,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   <property name="checkstyle.suppressions.url"
             value="${artifact.repo.root.url}/com/pentaho/pentaho-coding-standards/pentaho-checkstyle-suppressions/${pentaho.coding.standards.version}/pentaho-checkstyle-suppressions-${pentaho.coding.standards.version}.xml"/>
   <property name="checkstyle.stylesheet.url"
-            value="${artifact.repo.root.url}/omni/com/pentaho/pentaho-coding-standards/pentaho-checkstyle-stylesheet/${pentaho.coding.standards.version}/pentaho-checkstyle-stylesheet-${pentaho.coding.standards.version}.xsl"/>
+            value="${artifact.repo.root.url}/com/pentaho/pentaho-coding-standards/pentaho-checkstyle-stylesheet/${pentaho.coding.standards.version}/pentaho-checkstyle-stylesheet-${pentaho.coding.standards.version}.xsl"/>
   <property name="checkstyle.config.file"
             value="${checkstyle.dir}/pentaho-checkstyle-${pentaho.coding.standards.version}.xml"/>
   <property name="checkstyle.suppressions.file"

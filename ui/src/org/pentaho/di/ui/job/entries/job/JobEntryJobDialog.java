@@ -128,6 +128,7 @@ public class JobEntryJobDialog extends JobEntryBaseDialog implements JobEntryDia
 
   protected void createElements() {
     super.createElements();
+    shell.setText( BaseMessages.getString( PKG, "JobJob.Header" ) );
 
     wlPath.setText( BaseMessages.getString( PKG, "JobJob.JobStep.Job.Label" ) );
     wlDescription.setText( BaseMessages.getString( PKG, "JobJob.Local.Label" ) );
@@ -246,11 +247,7 @@ public class JobEntryJobDialog extends JobEntryBaseDialog implements JobEntryDia
       SelectObjectDialog sod = new SelectObjectDialog( shell, rep, false, true );
       String jobname = sod.open();
       if ( jobname != null ) {
-        String path = sod.getDirectory().getPath();
-        String parentPath = this.jobMeta.getRepositoryDirectory().getPath();
-        if ( path.startsWith( parentPath ) ) {
-          path = path.replace( parentPath, "${" + Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY + "}" );
-        }
+        String path = getPath( sod.getDirectory().getPath() );
         String fullPath = path + "/" + jobname;
         wPath.setText( fullPath );
         specificationMethod = ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME;
@@ -445,8 +442,9 @@ public class JobEntryJobDialog extends JobEntryBaseDialog implements JobEntryDia
   private void getByReferenceData( ObjectId referenceObjectId ) {
     try {
       RepositoryObject jobInf = rep.getObjectInformation( referenceObjectId, RepositoryObjectType.JOB );
+      String path = getPath( jobInf.getRepositoryDirectory().getPath() );
       String fullPath =
-        Const.NVL( jobInf.getRepositoryDirectory().getPath(), "" ) + "/" + Const.NVL( jobInf.getName(), "" );
+        Const.NVL( path, "" ) + "/" + Const.NVL( jobInf.getName(), "" );
       wPath.setText( fullPath );
     } catch ( KettleException e ) {
       new ErrorDialog( shell,

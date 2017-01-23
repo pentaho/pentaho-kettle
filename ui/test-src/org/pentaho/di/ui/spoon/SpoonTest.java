@@ -29,6 +29,7 @@ import static junit.framework.Assert.*;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Shell;
 import org.junit.Before;
 import org.junit.Test;
@@ -37,6 +38,7 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.core.KettleEnvironment;
+import org.pentaho.di.core.LastUsedFile;
 import org.pentaho.di.core.NotePadMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.gui.Point;
@@ -60,6 +62,7 @@ import org.pentaho.di.ui.spoon.delegates.SpoonDelegates;
 import org.pentaho.di.ui.spoon.delegates.SpoonTabsDelegate;
 import org.pentaho.metastore.stores.delegate.DelegatingMetaStore;
 import org.pentaho.xul.swt.tab.TabItem;
+import org.pentaho.xul.swt.tab.TabSet;
 
 /**
  * Spoon tests
@@ -654,5 +657,121 @@ public class SpoonTest {
     doReturn( saveXMLFile ).when( spoon ).save( metaData, filename, false );
 
     doReturn( fileType ).when( metaData ).getFileType();
+  }
+
+  @Test
+  public void testLoadLastUsedTransLocalWithRepository() throws Exception {
+    String repositoryName = "repositoryName";
+    String fileName = "fileName";
+
+    setLoadLastUsedJobLocalWithRepository( false, repositoryName, null, fileName, true );
+    verify( spoon ).openFile( fileName, true );
+  }
+
+  @Test
+  public void testLoadLastUsedTransLocalNoRepository() throws Exception {
+    String repositoryName = null;
+    String fileName = "fileName";
+
+    setLoadLastUsedJobLocalWithRepository( false, repositoryName, null, fileName, true );
+    verify( spoon ).openFile( fileName, false );
+  }
+
+  @Test
+  public void testLoadLastUsedTransLocalNoFilename() throws Exception {
+    String repositoryName = null;
+    String fileName = null;
+
+    setLoadLastUsedJobLocalWithRepository( false, repositoryName, null, fileName, true );
+    verify( spoon, never() ).openFile( anyString(), anyBoolean() );
+  }
+
+  @Test
+  public void testLoadLastUsedJobLocalWithRepository() throws Exception {
+    String repositoryName = null;
+    String fileName = "fileName";
+
+    setLoadLastUsedJobLocalWithRepository( false, repositoryName, null, fileName, false );
+    verify( spoon ).openFile( fileName, false );
+  }
+
+  @Test
+  public void testLoadLastUsedRepTransNoRepository() throws Exception {
+    String repositoryName = null;
+    String fileName = "fileName";
+
+    setLoadLastUsedJobLocalWithRepository( true, repositoryName, null, fileName, false );
+    verify( spoon, never() ).openFile( anyString(), anyBoolean() );
+  }
+
+  private void setLoadLastUsedJobLocalWithRepository( boolean isSourceRepository, String repositoryName,
+      String directoryName, String fileName, boolean isTransformation ) throws Exception {
+    LastUsedFile mockLastUsedFile = mock( LastUsedFile.class );
+
+    if ( repositoryName != null ) {
+      Repository mockRepository = mock( Repository.class );
+      spoon.rep = mockRepository;
+      doReturn( repositoryName ).when( mockRepository ).getName();
+    } else {
+      spoon.rep = null;
+    }
+
+    doReturn( isSourceRepository ).when( mockLastUsedFile ).isSourceRepository();
+    doReturn( repositoryName ).when( mockLastUsedFile ).getRepositoryName();
+    doReturn( directoryName ).when( mockLastUsedFile ).getDirectory();
+    doReturn( fileName ).when( mockLastUsedFile ).getFilename();
+    doReturn( isTransformation ).when( mockLastUsedFile ).isTransformation();
+    doReturn( !isTransformation ).when( mockLastUsedFile ).isJob();
+
+    doCallRealMethod().when( spoon ).loadLastUsedFile( mockLastUsedFile, repositoryName );
+    spoon.loadLastUsedFile( mockLastUsedFile, repositoryName );
+  }
+
+  @Test
+  public void testCancelPromptToSave() throws Exception {
+    setPromptToSave( SWT.CANCEL, false );
+    assertFalse( spoon.promptForSave() );
+  }
+
+  @Test
+  public void testNoPromptToSave() throws Exception {
+    SpoonBrowser mockBrowser = setPromptToSave( SWT.NO, false );
+    assertTrue( spoon.promptForSave() );
+    verify( mockBrowser, never() ).applyChanges();
+  }
+
+  @Test
+  public void testYesPromptToSave() throws Exception {
+    SpoonBrowser mockBrowser = setPromptToSave( SWT.YES, false );
+    assertTrue( spoon.promptForSave() );
+    verify( mockBrowser ).applyChanges();
+  }
+
+  @Test
+  public void testCanClosePromptToSave() throws Exception {
+    setPromptToSave( SWT.YES, true );
+    assertTrue( spoon.promptForSave() );
+  }
+
+  private SpoonBrowser setPromptToSave( int buttonPressed, boolean canbeClosed ) throws Exception {
+    TabMapEntry mockTabMapEntry = mock( TabMapEntry.class );
+    TabSet mockTabSet = mock( TabSet.class );
+    ArrayList<TabMapEntry> lTabs = new ArrayList<>();
+    lTabs.add( mockTabMapEntry );
+
+    SpoonBrowser mockSpoonBrowser = mock( SpoonBrowser.class );
+
+    spoon.delegates = mock( SpoonDelegates.class );
+    spoon.delegates.tabs = mock( SpoonTabsDelegate.class );
+    spoon.tabfolder = mockTabSet;
+
+    doReturn( lTabs ).when( spoon.delegates.tabs ).getTabs();
+    doReturn( mockSpoonBrowser ).when( mockTabMapEntry ).getObject();
+    doReturn( canbeClosed ).when( mockSpoonBrowser ).canBeClosed();
+    doReturn( buttonPressed ).when( mockSpoonBrowser ).showChangedWarning();
+
+    doCallRealMethod().when( spoon ).promptForSave();
+
+    return mockSpoonBrowser;
   }
 }
