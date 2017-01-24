@@ -125,7 +125,7 @@ import org.pentaho.di.engine.api.IEngine;
 import org.pentaho.di.engine.api.IExecutionContext;
 import org.pentaho.di.engine.api.IExecutionResult;
 import org.pentaho.di.engine.api.ITransformation;
-import org.pentaho.di.engine.api.Status;
+import org.pentaho.di.engine.api.reporting.Status;
 import org.pentaho.di.engine.api.reporting.Metrics;
 import org.pentaho.di.engine.kettleclassic.ClassicKettleExecutionContext;
 import org.pentaho.di.engine.kettleclassic.ClassicUtils;

@@ -36,8 +36,9 @@ import org.eclipse.swt.widgets.ToolBar;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.engine.api.IOperation;
-import org.pentaho.di.engine.api.Status;
+import org.pentaho.di.engine.api.reporting.Status;
 import org.pentaho.di.engine.api.reporting.Metrics;
+import org.pentaho.di.engine.kettleclassic.ClassicKettleMetrics;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.i18n.GlobalMessages;
 import org.pentaho.di.trans.step.BaseStepData.StepExecutionStatus;
@@ -59,6 +60,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
@@ -371,8 +373,21 @@ public class TransGridDelegate extends SpoonDelegate implements XulEventHandler 
 
   private void applyMetrics( Metrics metric, TableItem item ) {
     Preconditions.checkArgument( metric != null  && item != null );
-    item.setText( 3, Long.toString( metric.getIn() ) );
-    item.setText( 4, Long.toString( metric.getOut() ) );
+    item.setText( 5, Long.toString( metric.getIn() ) );
+    item.setText( 6, Long.toString( metric.getOut() ) );
+    maybeApplyClassicKettleMetrics( metric, item );
+  }
+
+  private void maybeApplyClassicKettleMetrics( Metrics metric, TableItem item ) {
+    Optional<ClassicKettleMetrics> kettleMetrics = metric.unwrap( ClassicKettleMetrics.class );
+    if ( kettleMetrics.isPresent() ) {
+      item.setText( 2, Long.toString( kettleMetrics.get().getCopy() ) );
+      item.setText( 3, Long.toString( kettleMetrics.get().getRead() ) );
+      item.setText( 4, Long.toString( kettleMetrics.get().getWritten() ) );
+      item.setText( 7, Long.toString( kettleMetrics.get().getUpdated() ) );
+      item.setText( 8, Long.toString( kettleMetrics.get().getRejected() ) );
+      item.setText( 9, Long.toString( kettleMetrics.get().getErrors() ) );
+    }
   }
 
   private void applyStatus( Status status, TableItem item ) {

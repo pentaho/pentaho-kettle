@@ -1,4 +1,4 @@
-package org.pentaho.di.engine.api;
+package org.pentaho.di.engine.api.reporting;
 
 import java.io.Serializable;
 
@@ -11,6 +11,8 @@ public enum Status implements Serializable {
   STOPPED( true ),
   FAILED( true ),
   FINISHED( true );
+
+
 
   final boolean finalState;
 

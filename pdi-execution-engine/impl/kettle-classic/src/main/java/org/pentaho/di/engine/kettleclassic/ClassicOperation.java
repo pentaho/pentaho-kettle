@@ -6,7 +6,7 @@ import org.pentaho.di.engine.api.IExecutionContext;
 import org.pentaho.di.engine.api.IHop;
 import org.pentaho.di.engine.api.IOperation;
 import org.pentaho.di.engine.api.IOperationVisitor;
-import org.pentaho.di.engine.api.Status;
+import org.pentaho.di.engine.api.reporting.Status;
 import org.pentaho.di.engine.api.reporting.ILogicalModelElement;
 import org.pentaho.di.engine.api.reporting.IMaterializedModelElement;
 import org.pentaho.di.engine.api.reporting.IReportingEvent;
@@ -30,9 +30,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.atomic.LongAccumulator;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -157,17 +154,23 @@ public class ClassicOperation implements IOperation, IMaterializedModelElement {
   }
 
   private void sendMetricsEvent( List<StepInterface> stepInterfaces) {
-    metricsExecutorService.execute( () -> metricsPublisher.onNext( createMetricsEvent( stepInterfaces ) ) );
+    stepInterfaces.stream()
+      .forEach( stepInterface ->
+        metricsExecutorService.execute( () -> metricsPublisher.onNext( createMetricsEvent( stepInterface ) ) ) );
   }
-  private MetricsEvent<IOperation> createMetricsEvent( List<StepInterface> stepInterfaces ) {
+  private MetricsEvent<IOperation> createMetricsEvent( StepInterface stepInterfaces ) {
 
-    Metrics metrics = new Metrics(
-      stepInterfaces.stream().mapToLong( StepInterface::getLinesRead ).sum(),
-      stepInterfaces.stream().mapToLong( StepInterface::getLinesWritten ).sum(),
-      stepInterfaces.stream().mapToLong( StepInterface::getLinesRejected ).sum(),
-      stepInterfaces.stream().mapToLong( value -> value.getLinesRead() - value.getProcessed() ).sum()
-      );
-    return new MetricsEvent<>( logicalOperation, metrics );
+    return new MetricsEvent<>( logicalOperation, new ClassicKettleMetrics.Builder()
+      .withDropped( stepInterfaces.getLinesRejected() )
+      .withRead( stepInterfaces.getLinesRead() )
+      .withWritten( stepInterfaces.getLinesWritten() )
+      .withIn( stepInterfaces.getLinesInput() )
+      .withOut( stepInterfaces.getLinesOutput() )
+      .withUpdated( stepInterfaces.getLinesUpdated() )
+      .withRejected( stepInterfaces.getLinesRejected() )
+      .withErrors( stepInterfaces.getErrors() )
+      .withInflight( stepInterfaces.getLinesRead() - stepInterfaces.getProcessed() )
+      .build() );
   }
 
   @Override

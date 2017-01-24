@@ -3,11 +3,12 @@ package org.pentaho.di.engine.api.reporting;
 import org.pentaho.di.engine.api.IPDIEvent;
 
 import java.io.Serializable;
+import java.util.Optional;
 
 /**
  * Created by hudak on 1/5/17.
  */
-public class Metrics implements Serializable {
+public class Metrics implements Wrapper, Serializable {
   private final long in, out, dropped, inFlight;
 
   public static Metrics empty() {
@@ -57,15 +58,6 @@ public class Metrics implements Serializable {
     return inFlight;
   }
 
-  @Override public String toString() {
-    return "Metrics{" +
-      "in=" + in +
-      ", out=" + out +
-      ", dropped=" + dropped +
-      ", inFlight=" + inFlight +
-      '}';
-  }
-
   public Metrics add( Metrics right ) {
     return new Metrics(
       getIn() + right.getIn(),
@@ -73,5 +65,21 @@ public class Metrics implements Serializable {
       getDropped() + right.getDropped(),
       getInFlight() + right.getInFlight()
     );
+  }
+
+  @Override public <T> Optional<T> unwrap( Class<T> clazz ) {
+    if ( clazz.isAssignableFrom( getClass() ) ) {
+      return Optional.of( clazz.cast( this ) );
+    }
+    return Optional.empty();
+  }
+
+  @Override public String toString() {
+    return "Metrics{" +
+      "in=" + in +
+      ", out=" + out +
+      ", dropped=" + dropped +
+      ", inFlight=" + inFlight +
+      '}';
   }
 }

@@ -4,13 +4,12 @@ import org.junit.Test;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.engine.api.IExecutionResult;
 import org.pentaho.di.engine.api.ITransformation;
-import org.pentaho.di.engine.api.Status;
+import org.pentaho.di.engine.api.reporting.Status;
 import org.pentaho.di.engine.api.reporting.Metrics;
 import org.pentaho.di.trans.TransMeta;
 
 import java.io.Serializable;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
 
 /**
  * Created by nbaker on 1/4/17.
