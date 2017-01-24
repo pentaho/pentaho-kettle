@@ -8,6 +8,7 @@ import org.pentaho.di.engine.api.Status;
 import org.pentaho.di.engine.api.reporting.Metrics;
 import org.pentaho.di.trans.TransMeta;
 
+import java.io.Serializable;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
@@ -24,8 +25,13 @@ public class ClassicKettleEngineTest {
     ITransformation transformation = ClassicUtils.convert( meta );
     ClassicKettleExecutionContext context = (ClassicKettleExecutionContext) engine.prepare( transformation );
 
-    context.subscribe( transformation, Status.class,  d -> {
-      System.out.println( "Received Transformation Status event: " + d );
+    context.subscribe( transformation, Serializable.class, d -> {
+      System.out.println( "Received Transformation Event: " + d );
+    } );
+
+    // Receives both Status and Metrics
+    context.subscribe( transformation.getOperations().get( 0 ), Serializable.class, d -> {
+      System.out.println( "Received Operation Event: " + d );
     } );
 
     context.subscribe( transformation.getOperations().get( 0 ), Status.class,  d -> {
@@ -33,7 +39,7 @@ public class ClassicKettleEngineTest {
     } );
 
     context.subscribe( transformation.getOperations().get( 0 ), Metrics.class, d -> {
-      System.out.println( "Received Operation Status event: \n" + d );
+      System.out.println( "Received Operation Metrics event: \n" + d );
     } );
 
     IExecutionResult result = context.execute().get( 30, TimeUnit.SECONDS );
