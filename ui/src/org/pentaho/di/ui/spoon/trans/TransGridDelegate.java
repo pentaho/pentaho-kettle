@@ -22,6 +22,8 @@
 
 package org.pentaho.di.ui.spoon.trans;
 
+import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableMap;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.layout.FormAttachment;
@@ -33,6 +35,10 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.ToolBar;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
+import org.pentaho.di.engine.api.IOperation;
+import org.pentaho.di.engine.api.reporting.Status;
+import org.pentaho.di.engine.api.reporting.Metrics;
+import org.pentaho.di.engine.kettleclassic.ClassicKettleMetrics;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.i18n.GlobalMessages;
 import org.pentaho.di.trans.step.BaseStepData.StepExecutionStatus;
@@ -43,9 +49,6 @@ import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.XulSpoonSettingsManager;
 import org.pentaho.di.ui.spoon.delegates.SpoonDelegate;
-import org.pentaho.di.ui.spoon.trans.executionstate.api.ExecutionState;
-import org.pentaho.di.ui.spoon.trans.executionstate.api.ExecutionStateEvent;
-import org.pentaho.di.ui.spoon.trans.executionstate.api.ExecutionStateSubscriber;
 import org.pentaho.di.ui.xul.KettleXulLoader;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulLoader;
@@ -53,12 +56,15 @@ import org.pentaho.ui.xul.containers.XulToolbar;
 import org.pentaho.ui.xul.impl.XulEventHandler;
 import org.pentaho.ui.xul.swt.tags.SwtToolbarbutton;
 
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
-import static org.pentaho.di.ui.spoon.trans.executionstate.api.ExecutionState.StepState.StepStateField.*;
-
-public class TransGridDelegate extends SpoonDelegate implements XulEventHandler, ExecutionStateSubscriber {
+public class TransGridDelegate extends SpoonDelegate implements XulEventHandler {
   private static Class<?> PKG = Spoon.class; // for i18n purposes, needed by Translator2!!
 
   private static final String XUL_FILE_TRANS_GRID_TOOLBAR = "ui/trans-grid-toolbar.xul";
@@ -73,10 +79,6 @@ public class TransGridDelegate extends SpoonDelegate implements XulEventHandler,
 
   private TableView transGridView;
 
-  private boolean refresh_busy;
-
-  private long lastUpdateView;
-
   private XulToolbar toolbar;
 
   private Composite transGridComposite;
@@ -84,6 +86,15 @@ public class TransGridDelegate extends SpoonDelegate implements XulEventHandler,
   private boolean hideInactiveSteps;
 
   private boolean showSelectedSteps;
+
+  // These 2 maps should only be used within the Swt thread.
+  // Used to handle grid updates that are independent of execution events (like show-hide inactive).
+  private Map<String, Status> stepStatus = new HashMap<>();
+  private Map<String, Metrics> stepMetrics = new HashMap<>();
+
+  private static final Map<Status, StepExecutionStatus> statusMap = ImmutableMap.of(
+    Status.RUNNING, StepExecutionStatus.STATUS_RUNNING,
+    Status.STOPPED, StepExecutionStatus.STATUS_STOPPED );
 
   /**
    * @param spoon
@@ -109,7 +120,6 @@ public class TransGridDelegate extends SpoonDelegate implements XulEventHandler,
 
   /**
    * Add a grid with the execution metrics per step in a table view
-   *
    */
   public void addTransGrid() {
 
@@ -178,18 +188,18 @@ public class TransGridDelegate extends SpoonDelegate implements XulEventHandler,
           BaseMessages.getString( PKG, "TransLog.Column.PriorityBufferSizes" ), ColumnInfo.COLUMN_TYPE_TEXT,
           false, true ), };
 
-    colinf[1].setAllignement( SWT.RIGHT );
-    colinf[2].setAllignement( SWT.RIGHT );
-    colinf[3].setAllignement( SWT.RIGHT );
-    colinf[4].setAllignement( SWT.RIGHT );
-    colinf[5].setAllignement( SWT.RIGHT );
-    colinf[6].setAllignement( SWT.RIGHT );
-    colinf[7].setAllignement( SWT.RIGHT );
-    colinf[8].setAllignement( SWT.RIGHT );
-    colinf[9].setAllignement( SWT.LEFT );
-    colinf[10].setAllignement( SWT.RIGHT );
-    colinf[11].setAllignement( SWT.RIGHT );
-    colinf[12].setAllignement( SWT.RIGHT );
+    colinf[ 1 ].setAllignement( SWT.RIGHT );
+    colinf[ 2 ].setAllignement( SWT.RIGHT );
+    colinf[ 3 ].setAllignement( SWT.RIGHT );
+    colinf[ 4 ].setAllignement( SWT.RIGHT );
+    colinf[ 5 ].setAllignement( SWT.RIGHT );
+    colinf[ 6 ].setAllignement( SWT.RIGHT );
+    colinf[ 7 ].setAllignement( SWT.RIGHT );
+    colinf[ 8 ].setAllignement( SWT.RIGHT );
+    colinf[ 9 ].setAllignement( SWT.LEFT );
+    colinf[ 10 ].setAllignement( SWT.RIGHT );
+    colinf[ 11 ].setAllignement( SWT.RIGHT );
+    colinf[ 12 ].setAllignement( SWT.RIGHT );
 
     transGridView = new TableView( transGraph.getManagedObject(), transGridComposite, SWT.BORDER
       | SWT.FULL_SELECTION | SWT.MULTI, colinf, 1,
@@ -242,8 +252,27 @@ public class TransGridDelegate extends SpoonDelegate implements XulEventHandler,
         onlyActiveButton.setImage( GUIResource.getInstance().getImageShowInactive() );
       }
     }
+    // TODO This doesn't persist ordering.
+    List<String> stepsToShow = stepStatus.keySet().stream()
+      .filter( k -> !( hideInactiveSteps && stepStatus.get( k ).equals( Status.STOPPED ) ) )
+      .collect( Collectors.toList() );
+    if ( stepsToShow.size() != transGridView.table.getItemCount() ) {
+      transGridView.table.removeAll(); // table changing.  Clear out old items and reconstruct.
+      stepsToShow.stream()
+        .forEach( step -> {
+          TableItem tableItemForOp = getTableItemForOp( step );
+          applyMetrics( stepMetrics.get( step ), tableItemForOp );
+          applyStatus( stepStatus.get( step), tableItemForOp );
+          tableUpdate();
+        } );
+    }
+
+
+
+
   }
 
+  //  TODO:  Doesn't appear to be used.  Yank.
   public void showHideSelected() {
     showSelectedSteps = !showSelectedSteps;
 
@@ -257,7 +286,6 @@ public class TransGridDelegate extends SpoonDelegate implements XulEventHandler,
       }
     }
   }
-
 
 
   public CTabItem getTransGridTab() {
@@ -323,42 +351,102 @@ public class TransGridDelegate extends SpoonDelegate implements XulEventHandler,
 
   }
 
-  /**
-   * Reworking of view refresh based on pushed events rather than polling.
-   */
-  @Override public void execStateChanged( ExecutionStateEvent event ) {
-    if ( transGridView == null || transGridView.isDisposed() || transGridView.table == null ) {
+  public void rowMetricEvent( IOperation op, Metrics metric ) {
+    inSwtThread( () -> {
+      stepMetrics.put( op.getId(), metric );
+      if ( stepStatus.getOrDefault( op.getId(), Status.RUNNING ).equals( Status.STOPPED ) && hideInactiveSteps ) {
+        return;
+      }
+      TableItem tableItem = getTableItemForOp( op.getId() );
+      applyMetrics( metric, tableItem );
+      tableUpdate();
+    } );
+  }
+
+  public void statusEvent( IOperation op, Status status ) {
+    inSwtThread( () -> {
+      stepStatus.put( op.getId(), status );
+      TableItem item = getTableItemForOp( op.getId() );
+      applyStatus( status, item );
+    } );
+  }
+
+  private void applyMetrics( Metrics metric, TableItem item ) {
+    Preconditions.checkArgument( metric != null  && item != null );
+    item.setText( 5, Long.toString( metric.getIn() ) );
+    item.setText( 6, Long.toString( metric.getOut() ) );
+    maybeApplyClassicKettleMetrics( metric, item );
+  }
+
+  private void maybeApplyClassicKettleMetrics( Metrics metric, TableItem item ) {
+    Optional<ClassicKettleMetrics> kettleMetrics = metric.unwrap( ClassicKettleMetrics.class );
+    if ( kettleMetrics.isPresent() ) {
+      item.setText( 2, Long.toString( kettleMetrics.get().getCopy() ) );
+      item.setText( 3, Long.toString( kettleMetrics.get().getRead() ) );
+      item.setText( 4, Long.toString( kettleMetrics.get().getWritten() ) );
+      item.setText( 7, Long.toString( kettleMetrics.get().getUpdated() ) );
+      item.setText( 8, Long.toString( kettleMetrics.get().getRejected() ) );
+      item.setText( 9, Long.toString( kettleMetrics.get().getErrors() ) );
+    }
+  }
+
+  private void applyStatus( Status status, TableItem item ) {
+    Preconditions.checkArgument( status != null && item != null );
+    item.setText( 10, statusMap.get( status ).toString() );
+    if ( Status.FAILED.equals( status ) ) {
+      setError( item );
+    }
+  }
+
+  private void setError( TableItem item ) {
+    item.setBackground( GUIResource.getInstance().getColorRed() );
+  }
+
+  private void tableUpdate() {
+    // Update row numbers
+    Arrays.stream( transGridView.table.getItems() )
+      .filter( tableItem -> tableItem.getText( 0 ).isEmpty() )
+      .forEach( tableItem -> {
+        tableItem.setText( 0, Integer.toString( tableItemRowNum( tableItem ) ) );
+        setBackground( tableItem );
+      } );
+  }
+
+  private int tableItemRowNum( TableItem tableItem ) {
+    return transGridView.table.indexOf( tableItem ) + 1;
+  }
+
+  private void setBackground( TableItem tableItem ) {
+    int rowNum = tableItemRowNum( tableItem );
+    if ( tableItem.getBackground().equals( GUIResource.getInstance().getColorRed() ) ) {
+      // error row, leave as is
       return;
     }
-    transGridView.table.removeAll();  // completely recreates with each change.  Could improve.
-
-    event.getState().getStepStates().stream()
-      .filter( this::showStepCriteria )
-      .forEach( this::updateTableData );
+    if ( rowNum % 2 == 0 ) {
+      tableItem.setBackground( GUIResource.getInstance().getColorWhite() );
+    } else {
+      tableItem.setBackground( GUIResource.getInstance().getColorBlueCustomGrid() );
     }
-
-  /**
-   *   showHideSelectd doesn't seem to be used.  Is it?
-   *   Need to closely compare original show logic.
-   */
-  private boolean showStepCriteria( ExecutionState.StepState stepState ) {
-    StepExecutionStatus status = stepState.getExecStatus();
-    return status != StepExecutionStatus.STATUS_EMPTY
-      && ( !hideInactiveSteps || status != StepExecutionStatus.STATUS_FINISHED );
   }
 
-  /**
-   * TODO handle background formatting, for errors and alternating rows.
-   */
-  private void updateTableData( ExecutionState.StepState stepState ) {
-    // request fields corresponding to table layout
-    List<String> values = stepState.getStringFieldValues(
-      NAME, COPY, READ, WRITTEN, INPUT, OUTPUT,
-      UPDATED, REJECTED, ERRORS, DESC, SECONDS, SPEED, PRIORITY );
-    values.add( 0, "" );  // Row number
-
-    TableItem ti = new TableItem( transGridView.table, SWT.NONE );
-    ti.setText( values.toArray( new String[ values.size() ] ) );
+  private void inSwtThread( Runnable runnable ) {
+    spoon.getDisplay().asyncExec( () -> runnable.run() );
   }
 
+  private TableItem getTableItemForOp( String opName ) {
+    TableItem ti = Arrays.stream( transGridView.table.getItems() )
+      .filter( tableItem -> ( tableItemMatchesOp( opName, tableItem ) || onlyPlaceholderRowPresent( tableItem ) ) )
+      .findFirst()
+      .orElseGet( () -> new TableItem( transGridView.table, SWT.NONE ) );
+    ti.setText( 1, opName );
+    return ti;
+  }
+
+  private boolean tableItemMatchesOp( String stepName, TableItem tableItem ) {
+    return stepName.equals( tableItem.getText( 1 ) );
+  }
+
+  private boolean onlyPlaceholderRowPresent( TableItem tableItem ) {
+    return tableItem.getText( 1 ).isEmpty() && transGridView.table.getItemCount() == 1;
+  }
 }

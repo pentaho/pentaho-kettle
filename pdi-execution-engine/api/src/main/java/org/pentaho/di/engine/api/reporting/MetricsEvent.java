@@ -1,7 +1,5 @@
 package org.pentaho.di.engine.api.reporting;
 
-import org.pentaho.di.engine.api.Status;
-
 /**
  * Created by nbaker on 1/20/17.
  */

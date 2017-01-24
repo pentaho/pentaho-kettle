@@ -6,7 +6,7 @@ import org.pentaho.di.engine.api.IExecutionContext;
 import org.pentaho.di.engine.api.IHop;
 import org.pentaho.di.engine.api.IOperation;
 import org.pentaho.di.engine.api.ITransformation;
-import org.pentaho.di.engine.api.Status;
+import org.pentaho.di.engine.api.reporting.Status;
 import org.pentaho.di.engine.api.reporting.ILogicalModelElement;
 import org.pentaho.di.engine.api.reporting.IMaterializedModelElement;
 import org.pentaho.di.engine.api.reporting.IReportingEvent;
