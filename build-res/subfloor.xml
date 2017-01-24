@@ -180,7 +180,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             value="true"
             description="Prefer SVNKit binding over the command line client for native svn support (defaults to true)"/>
   <property name="ivy.url"
-            value="${artifact.repo.root.url}/org/apache/ivy/ivy/2.4.0/ivy-2.4.0.jar"
+            value="${artifact.repo.root.url}/org/apache/ivy/ivy/2.4.0-patched/ivy-2.4.0-patched.jar"
             description="The URL to the current release of Apache IVY"/>
 
   <!-- Enunciate properties -->
