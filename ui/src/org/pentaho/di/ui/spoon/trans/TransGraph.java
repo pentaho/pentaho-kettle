@@ -34,7 +34,6 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -92,7 +91,6 @@ import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.swt.widgets.Widget;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.plugins.EnginePluginType;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.EngineMetaInterface;
 import org.pentaho.di.core.NotePadMeta;
@@ -112,18 +110,13 @@ import org.pentaho.di.core.gui.GCInterface;
 import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.gui.Redrawable;
 import org.pentaho.di.core.gui.SnapAllignDistribute;
-import org.pentaho.di.core.logging.DefaultLogLevel;
 import org.pentaho.di.core.logging.HasLogChannelInterface;
 import org.pentaho.di.core.logging.KettleLogStore;
-import org.pentaho.di.core.logging.KettleLoggingEvent;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
-import org.pentaho.di.core.logging.LogMessage;
 import org.pentaho.di.core.logging.LogParentProvidedInterface;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
-import org.pentaho.di.core.logging.LoggingObjectType;
 import org.pentaho.di.core.logging.LoggingRegistry;
-import org.pentaho.di.core.logging.SimpleLoggingObject;
 import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
@@ -132,9 +125,9 @@ import org.pentaho.di.engine.api.IEngine;
 import org.pentaho.di.engine.api.IExecutionContext;
 import org.pentaho.di.engine.api.IExecutionResult;
 import org.pentaho.di.engine.api.ITransformation;
+import org.pentaho.di.engine.api.Status;
 import org.pentaho.di.engine.api.reporting.Metrics;
 import org.pentaho.di.engine.kettleclassic.ClassicKettleExecutionContext;
-import org.pentaho.di.engine.kettleclassic.ClassicTransformation;
 import org.pentaho.di.engine.kettleclassic.ClassicUtils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
@@ -164,7 +157,6 @@ import org.pentaho.di.trans.step.StepErrorMeta;
 import org.pentaho.di.trans.step.StepIOMetaInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.step.StepMetaDataCombi;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.step.errorhandling.Stream;
 import org.pentaho.di.trans.step.errorhandling.StreamIcon;
@@ -200,8 +192,6 @@ import org.pentaho.di.ui.spoon.dialog.EnterPreviewRowsDialog;
 import org.pentaho.di.ui.spoon.dialog.NotePadDialog;
 import org.pentaho.di.ui.spoon.dialog.SearchFieldsProgressDialog;
 import org.pentaho.di.ui.spoon.job.JobGraph;
-import org.pentaho.di.ui.spoon.trans.executionstate.api.ExecutionStatePublisher;
-import org.pentaho.di.ui.spoon.trans.executionstate.impl.local.LocalExecutionStatePublisher;
 import org.pentaho.di.ui.trans.dialog.TransDialog;
 import org.pentaho.di.ui.xul.KettleXulLoader;
 import org.pentaho.ui.xul.XulDomContainer;
@@ -3795,11 +3785,14 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 
           setControlStates();
 
-          executionResultFuture = executionContext.execute();
+          iTransformation.getOperations().stream()
+            .forEach( op -> executionContext.subscribe( op,
+              Metrics.class, metric -> transGridDelegate.rowMetricEvent( op,  metric ) ) );
+          iTransformation.getOperations().stream()
+            .forEach( op -> executionContext.subscribe( op,
+              Status.class, status -> transGridDelegate.statusEvent( op,  status ) ) );
 
-          ExecutionStatePublisher statePublisher = new LocalExecutionStatePublisher(
-            spoon, ( (ClassicKettleExecutionContext) executionContext ).getMaterializedTransformation().getTrans() );
-          statePublisher.subscribe( transGridDelegate );
+          executionResultFuture = executionContext.execute();
 
           log.logBasic( BaseMessages.getString( PKG, "TransLog.Log.TransformationOpened" ) );
 
@@ -4301,7 +4294,8 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 
   private void checkErrorVisuals() {
     try {
-      if ( executionResultFuture.get().getDataEventReport().values().stream().mapToLong( Metrics::getDropped ).sum() > 0 ) {
+      if ( executionResultFuture.isDone() &&
+        executionResultFuture.get().getDataEventReport().values().stream().mapToLong( Metrics::getDropped ).sum() > 0 ) {
         // Get the logging text and filter it out. Store it in the stepLogMap...
         //
         stepLogMap = new HashMap<>();
