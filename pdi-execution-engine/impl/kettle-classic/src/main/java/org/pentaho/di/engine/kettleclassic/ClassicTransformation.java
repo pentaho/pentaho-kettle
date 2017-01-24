@@ -23,8 +23,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.toList;
 
 /**
  * Created by nbaker on 1/6/17.
@@ -37,7 +38,7 @@ public class ClassicTransformation implements ITransformation, IMaterializedMode
   private ITransformation logicalTransformation;
 
   private PublishSubject<StatusEvent<ITransformation>> statusPublisher = PublishSubject.create();
-  private Map<Serializable, PublishSubject<? extends IReportingEvent>> eventPublisherMap = new HashMap<>();
+  private Map<Class< ? extends Serializable>, PublishSubject<? extends IReportingEvent>> eventPublisherMap = new HashMap<>();
 
   {
     eventPublisherMap.put( Status.class, statusPublisher );
@@ -50,7 +51,7 @@ public class ClassicTransformation implements ITransformation, IMaterializedMode
   }
 
   @Override public List<IOperation> getOperations() {
-    return operations.stream().collect( Collectors.toList() );
+    return operations.stream().collect( toList() );
   }
 
   @Override public List<IOperation> getSourceOperations() {
@@ -110,12 +111,16 @@ public class ClassicTransformation implements ITransformation, IMaterializedMode
     return executionContext.getTransMeta();
   }
 
-  @Override public <D extends Serializable> Optional<Publisher> getPublisher( Class<D> type ) {
-    return Optional.ofNullable( eventPublisherMap.get( type ) ).map( RxReactiveStreams::toPublisher );
+  @Override
+  public <D extends Serializable> List<Publisher<? extends IReportingEvent>> getPublisher(
+    Class<D> type ) {
+    return eventPublisherMap.entrySet().stream().filter( e -> type.isAssignableFrom( e.getKey() ) )
+      .flatMap( e -> Stream.of(e.getValue()) ).map( RxReactiveStreams::toPublisher  ).collect( toList() );
+
   }
 
   @Override public List<Serializable> getEventTypes() {
-    return Collections.unmodifiableList( eventPublisherMap.keySet().stream().collect( Collectors.toList() ) );
+    return Collections.unmodifiableList( eventPublisherMap.keySet().stream().collect( toList() ) );
   }
 
   @Override public Map<String, Object> getConfig() {

@@ -34,6 +34,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.LongAccumulator;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.toList;
 
 /**
  * Created by nbaker on 1/6/17.
@@ -46,7 +49,7 @@ public class ClassicOperation implements IOperation, IMaterializedModelElement {
 
   private PublishSubject<MetricsEvent<IOperation>> metricsPublisher = PublishSubject.create();
   private PublishSubject<StatusEvent<IOperation>> statusPublisher = PublishSubject.create();
-  private Map<Serializable, PublishSubject<? extends IReportingEvent>> eventPublisherMap = new HashMap<>();
+  private Map<Class<? extends Serializable>, PublishSubject<? extends IReportingEvent>> eventPublisherMap = new HashMap<>();
   private ExecutorService metricsExecutorService;
 
   {
@@ -167,8 +170,12 @@ public class ClassicOperation implements IOperation, IMaterializedModelElement {
     return new MetricsEvent<>( logicalOperation, metrics );
   }
 
-  @Override public <D extends Serializable> Optional<Publisher> getPublisher( Class<D> type ) {
-    return Optional.ofNullable( eventPublisherMap.get( type ) ).map( RxReactiveStreams::toPublisher );
+  @Override
+  public <D extends Serializable> List<Publisher<? extends IReportingEvent>> getPublisher(
+    Class<D> type ) {
+    return eventPublisherMap.entrySet().stream().filter( e -> type.isAssignableFrom( e.getKey() ) )
+      .flatMap( e -> Stream.of(e.getValue()) ).map( RxReactiveStreams::toPublisher  ).collect( toList() );
+
   }
 
   @Override public List<Serializable> getEventTypes() {

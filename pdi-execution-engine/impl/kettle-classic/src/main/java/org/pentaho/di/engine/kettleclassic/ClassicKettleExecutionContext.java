@@ -32,7 +32,9 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 import static org.pentaho.di.engine.kettleclassic.ClassicUtils.TRANS_META_CONF_KEY;
 
@@ -91,12 +93,18 @@ public class ClassicKettleExecutionContext implements IExecutionContext {
   public <S extends ILogicalModelElement, D extends Serializable>
   Publisher<IReportingEvent<S, D>> eventStream( S source, Class<D> type ) {
     try {
-      // Cache cannot use these method type parameters. Having to cast. Creator function can insert nulls to prevent
-      // reattempts
+      // Cache as a member cannot use these method type parameters. Having to ignore types
+
       return publishers.get( new PublisherKey( source, type ),
-        () -> Optional.ofNullable( logical2MaterializedMap.get( source ) )
-          .map( iMaterializedModelElement -> iMaterializedModelElement.getPublisher( type ).get() ).orElse(
-            RxReactiveStreams.toPublisher( Observable.empty() ) ) );
+        () -> {
+          IMaterializedModelElement iMaterializedModelElement1 = logical2MaterializedMap.get( source );
+          List<Publisher<? extends IReportingEvent>> publishers = iMaterializedModelElement1.getPublisher( type );
+          Stream<Observable<? extends IReportingEvent>> observableStream = publishers.stream().map( RxReactiveStreams::toObservable );
+          List<Observable<? extends IReportingEvent>> collect = observableStream.collect( toList() );
+          Observable<IReportingEvent> concat = Observable.merge( collect );
+          return RxReactiveStreams.toPublisher( concat );
+        });
+
     } catch ( ExecutionException e ) {
       throw new RuntimeException( e );
     }
