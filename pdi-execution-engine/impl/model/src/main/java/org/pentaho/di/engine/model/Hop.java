@@ -1,8 +1,8 @@
 package org.pentaho.di.engine.model;
 
 import com.google.common.base.Objects;
-import org.pentaho.di.engine.api.IHop;
-import org.pentaho.di.engine.api.IOperation;
+import org.pentaho.di.engine.api.model.IHop;
+import org.pentaho.di.engine.api.model.IOperation;
 
 /**
  * Created by hudak on 1/18/17.

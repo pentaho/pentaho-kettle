@@ -1,7 +1,6 @@
 package org.pentaho.di.engine.kettlenative.impl;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
@@ -9,8 +8,8 @@ import org.pentaho.di.core.exception.KettleMissingPluginsException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.engine.api.IExecutionContext;
 import org.pentaho.di.engine.api.IExecutionResult;
-import org.pentaho.di.engine.api.IOperation;
-import org.pentaho.di.engine.api.ITransformation;
+import org.pentaho.di.engine.api.model.IOperation;
+import org.pentaho.di.engine.api.model.ITransformation;
 import org.pentaho.di.engine.api.reporting.Metrics;
 import org.pentaho.di.trans.TransMeta;
 

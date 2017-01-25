@@ -3,10 +3,10 @@ package org.pentaho.di.engine.kettlenative.impl;
 import com.google.common.collect.ImmutableList;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
-import org.pentaho.di.engine.api.IRow;
-import org.pentaho.di.engine.api.IDataEvent;
-import org.pentaho.di.engine.api.IOperation;
-import org.pentaho.di.engine.api.ITransformation;
+import org.pentaho.di.engine.api.model.IRow;
+import org.pentaho.di.engine.api.events.IDataEvent;
+import org.pentaho.di.engine.api.model.IOperation;
+import org.pentaho.di.engine.api.model.ITransformation;
 import org.pentaho.di.engine.api.converter.RowConversionManager;
 import org.pentaho.di.engine.kettlenative.impl.sparkfun.CalcSparkFlatMapFunction;
 import org.pentaho.di.trans.TransMeta;
@@ -32,10 +32,6 @@ public class SparkExecOperation extends KettleExecOperation {
     super(op, transformation, null);
     this.transMeta =  getTransMeta( transformation );
     context = sc;
-  }
-
-  @Override public boolean isRunning() {
-    return false;
   }
 
   @Override public long getIn() {

@@ -1,10 +1,9 @@
 package org.pentaho.di.engine.kettlenative.impl.factories;
 
-import org.pentaho.di.engine.api.IExecutableOperation;
-import org.pentaho.di.engine.api.IExecutableOperationFactory;
 import org.pentaho.di.engine.api.IExecutionContext;
-import org.pentaho.di.engine.api.IOperation;
-import org.pentaho.di.engine.api.ITransformation;
+import org.pentaho.di.engine.api.model.IOperation;
+import org.pentaho.di.engine.api.model.ITransformation;
+import org.pentaho.di.engine.kettlenative.impl.IExecutableOperation;
 import org.pentaho.di.engine.kettlenative.impl.KettleExecOperation;
 
 import java.util.Optional;

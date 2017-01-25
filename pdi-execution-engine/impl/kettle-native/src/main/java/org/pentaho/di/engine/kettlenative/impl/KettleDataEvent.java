@@ -2,10 +2,9 @@ package org.pentaho.di.engine.kettlenative.impl;
 
 import com.google.common.collect.ImmutableList;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.engine.api.IRow;
-import org.pentaho.di.engine.api.IDataEvent;
-import org.pentaho.di.engine.api.IExecutableOperation;
-import org.pentaho.di.engine.api.IPDIEventSource;
+import org.pentaho.di.engine.api.model.IRow;
+import org.pentaho.di.engine.api.events.IDataEvent;
+import org.pentaho.di.engine.api.events.IPDIEventSource;
 
 import java.io.Serializable;
 import java.util.Collections;

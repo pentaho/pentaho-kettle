@@ -1,11 +1,8 @@
 package org.pentaho.di.engine.model;
 
 import com.google.common.collect.ImmutableList;
-import org.pentaho.di.core.variables.VariableSpace;
-import org.pentaho.di.core.variables.Variables;
-import org.pentaho.di.engine.api.IHop;
-import org.pentaho.di.engine.api.IOperation;
-import org.pentaho.di.engine.api.IOperationVisitor;
+import org.pentaho.di.engine.api.model.IHop;
+import org.pentaho.di.engine.api.model.IOperation;
 
 import java.util.List;
 import java.util.function.Function;
@@ -54,10 +51,6 @@ public class Operation extends Configurable implements IOperation {
     ImmutableList.Builder<IHop> builder = ImmutableList.builder();
     getHopsWhere( IHop::getFrom ).forEach( builder::add );
     return builder.build();
-  }
-
-  @Override public <T> T accept( IOperationVisitor<T> visitor ) {
-    return visitor.visit( this );
   }
 
   @Override public String toString() {

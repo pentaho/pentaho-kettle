@@ -1,5 +1,6 @@
 package org.pentaho.di.engine.api;
 
+import org.pentaho.di.engine.api.model.IOperation;
 import org.pentaho.di.engine.api.reporting.Metrics;
 
 import java.util.Map;

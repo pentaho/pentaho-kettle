@@ -2,9 +2,9 @@ package org.pentaho.di.engine.kettlenative.impl;
 
 import com.google.common.collect.ImmutableMap;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.engine.api.IHop;
-import org.pentaho.di.engine.api.IOperation;
-import org.pentaho.di.engine.api.ITransformation;
+import org.pentaho.di.engine.api.model.IHop;
+import org.pentaho.di.engine.api.model.IOperation;
+import org.pentaho.di.engine.api.model.ITransformation;
 import org.pentaho.di.trans.TransMeta;
 
 import java.util.List;
@@ -31,13 +31,13 @@ public class Transformation implements ITransformation {
     return operations;
   }
 
-  @Override public List<IOperation> getSourceOperations() {
+  public List<IOperation> getSourceOperations() {
     return operations.stream()
       .filter( op -> op.getFrom().isEmpty() )
       .collect( Collectors.toList() );
   }
 
-  @Override public List<IOperation> getSinkOperations() {
+  public List<IOperation> getSinkOperations() {
     return operations.stream()
       .filter( op -> op.getTo().isEmpty() )
       .collect( Collectors.toList() );

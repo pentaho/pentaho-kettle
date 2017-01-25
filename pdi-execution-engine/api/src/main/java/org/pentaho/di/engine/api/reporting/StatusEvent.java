@@ -1,6 +1,6 @@
 package org.pentaho.di.engine.api.reporting;
 
-import org.pentaho.di.engine.api.Status;
+import org.pentaho.di.engine.api.model.ILogicalModelElement;
 
 /**
  * Created by nbaker on 1/17/17.

@@ -1,5 +1,6 @@
 package org.pentaho.di.engine.api;
 
+import org.pentaho.di.engine.api.model.ITransformation;
 import org.pentaho.di.engine.api.reporting.IProgressReporting;
 
 import java.util.Map;

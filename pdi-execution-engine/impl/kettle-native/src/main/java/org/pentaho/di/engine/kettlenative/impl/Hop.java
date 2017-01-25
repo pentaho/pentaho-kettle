@@ -1,9 +1,8 @@
 package org.pentaho.di.engine.kettlenative.impl;
 
 import org.pentaho.di.base.BaseHopMeta;
-import org.pentaho.di.core.RowSet;
-import org.pentaho.di.engine.api.IHop;
-import org.pentaho.di.engine.api.IOperation;
+import org.pentaho.di.engine.api.model.IHop;
+import org.pentaho.di.engine.api.model.IOperation;
 import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
@@ -25,8 +24,10 @@ public class Hop implements IHop {
               Map<TransHopMeta, IHop> hops ) {
     this.hopMeta = hopMeta;
 
-    fromOp = operations.computeIfAbsent( hopMeta.getFromStep(), thisStepMeta -> Operation.convert( hopMeta.getFromStep(), transMeta, operations, hops ));
-    toOp = operations.computeIfAbsent( hopMeta.getToStep(), thisStepMeta -> Operation.convert( hopMeta.getToStep(), transMeta, operations, hops ));
+    fromOp = operations.computeIfAbsent( hopMeta.getFromStep(),
+      thisStepMeta -> Operation.convert( hopMeta.getFromStep(), transMeta, operations, hops ) );
+    toOp = operations.computeIfAbsent( hopMeta.getToStep(),
+      thisStepMeta -> Operation.convert( hopMeta.getToStep(), transMeta, operations, hops ) );
   }
 
   @Override public IOperation getFrom() {
@@ -45,7 +46,7 @@ public class Hop implements IHop {
   }
 
   public static List<IHop> convertFrom( TransMeta transMeta, StepMeta stepMeta, Map<StepMeta, IOperation> operations,
-                                      Map<TransHopMeta, IHop> hops ) {
+                                        Map<TransHopMeta, IHop> hops ) {
     List<TransHopMeta> toHopMetas = getTransHopMetas( transMeta, hop -> stepMeta.equals( hop.getFromStep() ) );
     return getIHops( transMeta, operations, hops, toHopMetas );
 
@@ -56,15 +57,14 @@ public class Hop implements IHop {
     return toHopMetas.stream()
       .map( hopMeta -> hops.computeIfAbsent(
         hopMeta, thisHopMeta -> new Hop( thisHopMeta, transMeta, operations, hops ) ) )
-      .collect( Collectors.toList());
+      .collect( Collectors.toList() );
   }
 
   private static List<TransHopMeta> getTransHopMetas( TransMeta transMeta,
-                                                      Predicate<? super TransHopMeta> predicate )
-  {
+                                                      Predicate<? super TransHopMeta> predicate ) {
     return IntStream.range( 0, transMeta.nrTransHops() )
-        .mapToObj( transMeta::getTransHop )
-        .filter( predicate )
-        .collect( Collectors.toList());
+      .mapToObj( transMeta::getTransHop )
+      .filter( predicate )
+      .collect( Collectors.toList() );
   }
 }

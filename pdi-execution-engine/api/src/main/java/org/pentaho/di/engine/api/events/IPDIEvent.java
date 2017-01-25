@@ -1,4 +1,4 @@
-package org.pentaho.di.engine.api;
+package org.pentaho.di.engine.api.events;
 
 import java.io.Serializable;
 

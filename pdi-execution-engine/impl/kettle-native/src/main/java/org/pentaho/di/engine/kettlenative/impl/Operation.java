@@ -2,9 +2,8 @@ package org.pentaho.di.engine.kettlenative.impl;
 
 import com.google.common.collect.ImmutableMap;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.engine.api.IHop;
-import org.pentaho.di.engine.api.IOperation;
-import org.pentaho.di.engine.api.IOperationVisitor;
+import org.pentaho.di.engine.api.model.IHop;
+import org.pentaho.di.engine.api.model.IOperation;
 import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
@@ -72,10 +71,6 @@ public class Operation implements IOperation {
 
   @Override public Map<String, Object> getConfig() {
     return ImmutableMap.of( "StepMeta.xml", config );
-  }
-
-  @Override public <T> T accept( IOperationVisitor<T> visitor ) {
-    return null;
   }
 
 }

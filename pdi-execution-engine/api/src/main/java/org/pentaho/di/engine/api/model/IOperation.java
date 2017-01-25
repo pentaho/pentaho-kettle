@@ -1,9 +1,8 @@
-package org.pentaho.di.engine.api;
+package org.pentaho.di.engine.api.model;
 
-import org.pentaho.di.engine.api.reporting.ILogicalModelElement;
+import org.pentaho.di.engine.api.IHasConfig;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * IOperation roughly corresponds to a Step in PDI.
@@ -21,14 +20,5 @@ public interface IOperation extends ILogicalModelElement, IHasConfig {
 
   List<IHop> getHopsIn();
   List<IHop> getHopsOut();
-
-  // how to represent and manage config metadata?
-
-  /**
-   * Accepts an IOperationVisitor.  Used for inspecting or modifying
-   * the Trans graph.
-   */
-  <T> T accept( IOperationVisitor<T> visitor );
-
 
 }

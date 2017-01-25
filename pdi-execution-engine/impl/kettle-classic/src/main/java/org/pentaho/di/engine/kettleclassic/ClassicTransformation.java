@@ -3,12 +3,12 @@ package org.pentaho.di.engine.kettleclassic;
 import com.google.common.collect.ImmutableMap;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.engine.api.IExecutionContext;
-import org.pentaho.di.engine.api.IHop;
-import org.pentaho.di.engine.api.IOperation;
-import org.pentaho.di.engine.api.ITransformation;
-import org.pentaho.di.engine.api.Status;
-import org.pentaho.di.engine.api.reporting.ILogicalModelElement;
-import org.pentaho.di.engine.api.reporting.IMaterializedModelElement;
+import org.pentaho.di.engine.api.model.IHop;
+import org.pentaho.di.engine.api.model.IOperation;
+import org.pentaho.di.engine.api.model.ITransformation;
+import org.pentaho.di.engine.api.reporting.Status;
+import org.pentaho.di.engine.api.model.ILogicalModelElement;
+import org.pentaho.di.engine.api.model.IMaterializedModelElement;
 import org.pentaho.di.engine.api.reporting.IReportingEvent;
 import org.pentaho.di.engine.api.reporting.StatusEvent;
 import org.pentaho.di.trans.Trans;
@@ -38,7 +38,8 @@ public class ClassicTransformation implements ITransformation, IMaterializedMode
   private ITransformation logicalTransformation;
 
   private PublishSubject<StatusEvent<ITransformation>> statusPublisher = PublishSubject.create();
-  private Map<Class< ? extends Serializable>, PublishSubject<? extends IReportingEvent>> eventPublisherMap = new HashMap<>();
+  private Map<Class<? extends Serializable>, PublishSubject<? extends IReportingEvent>> eventPublisherMap =
+    new HashMap<>();
 
   {
     eventPublisherMap.put( Status.class, statusPublisher );
@@ -52,14 +53,6 @@ public class ClassicTransformation implements ITransformation, IMaterializedMode
 
   @Override public List<IOperation> getOperations() {
     return operations.stream().collect( toList() );
-  }
-
-  @Override public List<IOperation> getSourceOperations() {
-    return null;
-  }
-
-  @Override public List<IOperation> getSinkOperations() {
-    return null;
   }
 
   @Override public List<IHop> getHops() {
@@ -115,7 +108,7 @@ public class ClassicTransformation implements ITransformation, IMaterializedMode
   public <D extends Serializable> List<Publisher<? extends IReportingEvent>> getPublisher(
     Class<D> type ) {
     return eventPublisherMap.entrySet().stream().filter( e -> type.isAssignableFrom( e.getKey() ) )
-      .flatMap( e -> Stream.of(e.getValue()) ).map( RxReactiveStreams::toPublisher  ).collect( toList() );
+      .flatMap( e -> Stream.of( e.getValue() ) ).map( RxReactiveStreams::toPublisher ).collect( toList() );
 
   }
 

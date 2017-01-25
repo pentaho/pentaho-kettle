@@ -1,5 +1,6 @@
-package org.pentaho.di.engine.api.reporting;
+package org.pentaho.di.engine.api.model;
 
+import org.pentaho.di.engine.api.reporting.IReportingEvent;
 import org.reactivestreams.Publisher;
 
 import java.io.Serializable;

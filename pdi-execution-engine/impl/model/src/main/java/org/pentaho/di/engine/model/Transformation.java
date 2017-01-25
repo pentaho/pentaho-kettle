@@ -2,15 +2,12 @@ package org.pentaho.di.engine.model;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import org.pentaho.di.core.variables.VariableSpace;
-import org.pentaho.di.core.variables.Variables;
-import org.pentaho.di.engine.api.IHop;
-import org.pentaho.di.engine.api.IOperation;
-import org.pentaho.di.engine.api.ITransformation;
+import org.pentaho.di.engine.api.model.IHop;
+import org.pentaho.di.engine.api.model.IOperation;
+import org.pentaho.di.engine.api.model.ITransformation;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Predicate;
 
 /**
@@ -38,14 +35,6 @@ public class Transformation extends Configurable implements ITransformation{
     ImmutableList.Builder<IOperation> builder = ImmutableList.builder();
     operations.stream().filter( filter ).forEach( builder::add );
     return builder.build();
-  }
-
-  @Override public List<IOperation> getSourceOperations() {
-    return filterOperations( op -> op.getFrom().isEmpty() );
-  }
-
-  @Override public List<IOperation> getSinkOperations() {
-    return filterOperations( op -> op.getTo().isEmpty() );
   }
 
   @Override public List<IHop> getHops() {

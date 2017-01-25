@@ -3,10 +3,9 @@ package org.pentaho.di.engine.kettlenative.impl;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.api.java.function.FlatMapFunction;
-import org.pentaho.di.engine.api.IRow;
-import org.pentaho.di.engine.api.IDataEvent;
-import org.pentaho.di.engine.api.IExecutableOperation;
-import org.pentaho.di.engine.api.IPDIEventSource;
+import org.pentaho.di.engine.api.model.IRow;
+import org.pentaho.di.engine.api.events.IDataEvent;
+import org.pentaho.di.engine.api.events.IPDIEventSource;
 
 import java.util.Arrays;
 import java.util.List;

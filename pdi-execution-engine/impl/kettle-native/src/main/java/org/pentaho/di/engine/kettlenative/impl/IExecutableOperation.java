@@ -1,6 +1,12 @@
-package org.pentaho.di.engine.api;
+package org.pentaho.di.engine.kettlenative.impl;
 
+import org.pentaho.di.engine.api.events.IDataEvent;
+import org.pentaho.di.engine.api.model.IOperation;
+import org.pentaho.di.engine.api.events.IPDIEventSink;
+import org.pentaho.di.engine.api.events.IPDIEventSource;
 import org.pentaho.di.engine.api.reporting.Metrics;
+
+import java.util.List;
 
 /**
  * IExecutableOperation is the materialized version of
@@ -14,11 +20,11 @@ import org.pentaho.di.engine.api.reporting.Metrics;
  * "To" child ops.
  */
 public interface IExecutableOperation extends IPDIEventSource<IDataEvent>, IPDIEventSink<IDataEvent> {
-  boolean isRunning();
 
   void start();
 
   IOperation getParent();
 
   Metrics getMetrics();
+
 }

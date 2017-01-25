@@ -1,4 +1,4 @@
-package org.pentaho.di.engine.api.reporting;
+package org.pentaho.di.engine.api.model;
 
 
 /**
