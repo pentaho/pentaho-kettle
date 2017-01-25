@@ -682,7 +682,7 @@ public class ExcelOutput extends BaseStep implements StepInterface {
         }
 
       }
-      // data.formats.clear();
+      data.formats.clear();
       if ( log.isDebug() ) {
         logDebug( BaseMessages.getString( PKG, "ExcelOutput.Log.FileClosed", filename ) );
       }
