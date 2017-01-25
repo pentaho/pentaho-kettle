@@ -3,6 +3,7 @@ package org.pentaho.di.engine.kettleclassic;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.ImmutableList;
+import io.reactivex.Flowable;
 import org.pentaho.di.engine.api.IExecutionContext;
 import org.pentaho.di.engine.api.IExecutionResult;
 import org.pentaho.di.engine.api.ITransformation;
@@ -15,10 +16,6 @@ import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.metastore.api.IMetaStore;
 import org.reactivestreams.Publisher;
-import rx.Observable;
-import rx.RxReactiveStreams;
-import rx.Scheduler;
-import rx.schedulers.Schedulers;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -26,16 +23,11 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 import static org.pentaho.di.engine.kettleclassic.ClassicUtils.TRANS_META_CONF_KEY;
 
 /**
@@ -44,7 +36,6 @@ import static org.pentaho.di.engine.kettleclassic.ClassicUtils.TRANS_META_CONF_K
 public class ClassicKettleExecutionContext implements IExecutionContext {
   private Map<String, Object> parameters = new HashMap<String, Object>();
   private Map<String, Object> environment = new HashMap<String, Object>();
-  private Scheduler scheduler = Schedulers.io();
   private TransExecutionConfiguration executionConfiguration = new TransExecutionConfiguration();
   private String[] arguments;
   private IMetaStore metaStore;
@@ -96,14 +87,8 @@ public class ClassicKettleExecutionContext implements IExecutionContext {
       // Cache as a member cannot use these method type parameters. Having to ignore types
 
       return publishers.get( new PublisherKey( source, type ),
-        () -> {
-          IMaterializedModelElement iMaterializedModelElement1 = logical2MaterializedMap.get( source );
-          List<Publisher<? extends IReportingEvent>> publishers = iMaterializedModelElement1.getPublisher( type );
-          Stream<Observable<? extends IReportingEvent>> observableStream = publishers.stream().map( RxReactiveStreams::toObservable );
-          List<Observable<? extends IReportingEvent>> collect = observableStream.collect( toList() );
-          Observable<IReportingEvent> concat = Observable.merge( collect );
-          return RxReactiveStreams.toPublisher( concat );
-        });
+        () -> Flowable.merge( logical2MaterializedMap.get( source ).getPublisher( type ) )
+      );
 
     } catch ( ExecutionException e ) {
       throw new RuntimeException( e );
@@ -157,14 +142,6 @@ public class ClassicKettleExecutionContext implements IExecutionContext {
 
   public Repository getRepository() {
     return repository;
-  }
-
-  public void setScheduler( Scheduler scheduler ) {
-    this.scheduler = scheduler;
-  }
-
-  public Scheduler getScheduler() {
-    return scheduler;
   }
 
 
