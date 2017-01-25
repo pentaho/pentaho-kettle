@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -33,11 +33,8 @@ import org.pentaho.di.trans.steps.mock.StepMockHelper;
 
 import java.util.regex.Pattern;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyObject;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.*;
+import org.junit.Assert;
+import org.mockito.Mockito;
 
 /**
  * User: Dzmitry Stsiapanau Date: 1/31/14 Time: 11:19 AM
@@ -55,12 +52,12 @@ public class ReplaceStringTest {
     stepMockHelper =
         new StepMockHelper<ReplaceStringMeta, ReplaceStringData>( "REPLACE STRING TEST", ReplaceStringMeta.class,
             ReplaceStringData.class );
-    when( stepMockHelper.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) ).thenReturn(
+    Mockito.when( stepMockHelper.logChannelInterfaceFactory.create( Mockito.any(), Mockito.any( LoggingObjectInterface.class ) ) ).thenReturn(
         stepMockHelper.logChannelInterface );
-    verify( stepMockHelper.logChannelInterface, never() ).logError( anyString() );
-    verify( stepMockHelper.logChannelInterface, never() ).logError( anyString(), anyObject() );
-    verify( stepMockHelper.logChannelInterface, never() ).logError( anyString(), (Throwable) anyObject() );
-    when( stepMockHelper.trans.isRunning() ).thenReturn( true );
+    Mockito.verify( stepMockHelper.logChannelInterface, Mockito.never() ).logError( Mockito.anyString() );
+    Mockito.verify( stepMockHelper.logChannelInterface, Mockito.never() ).logError( Mockito.anyString(), Mockito.any( Object[].class ) );
+    Mockito.verify( stepMockHelper.logChannelInterface, Mockito.never() ).logError( Mockito.anyString(), (Throwable) Mockito.anyObject() );
+    Mockito.when( stepMockHelper.trans.isRunning() ).thenReturn( true );
   }
 
   @After
@@ -93,6 +90,6 @@ public class ReplaceStringTest {
     // when( inputRowMeta.getString( anyObject(), 1 ) ).thenReturn((String) row[1]);
 
     Object[] output = replaceString.getOneRow( inputRowMeta, row );
-    assertArrayEquals( "Output varies", expectedRow, output );
+    Assert.assertArrayEquals( "Output varies", expectedRow, output );
   }
 }
