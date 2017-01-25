@@ -15,6 +15,7 @@
     <mockito.version>1.9.5</mockito.version>
     <rxjava.dependency.version>2.0.4</rxjava.dependency.version>
     <guava.dependency.version>17.0</guava.dependency.version>
+    <maven-bundle-plugin.version>3.2.0</maven-bundle-plugin.version>
   </properties>
 
 
