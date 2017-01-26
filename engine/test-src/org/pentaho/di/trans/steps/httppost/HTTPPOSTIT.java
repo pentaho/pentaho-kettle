@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,16 +22,22 @@
 
 package org.pentaho.di.trans.steps.httppost;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.InputStream;
 import java.net.InetSocketAddress;
+import java.net.URLDecoder;
+import java.util.concurrent.atomic.AtomicBoolean;
 
+import com.google.common.io.ByteStreams;
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HostConfiguration;
 import org.apache.commons.httpclient.HttpClient;
@@ -57,7 +63,6 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
 
-import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 
@@ -65,14 +70,14 @@ import com.sun.net.httpserver.HttpServer;
  * User: Dzmitry Stsiapanau Date: 12/2/13 Time: 4:35 PM
  */
 public class HTTPPOSTIT {
-  private class HTTPPOSTHandler extends HTTPPOST {
+  class HTTPPOSTHandler extends HTTPPOST {
 
     Object[] row = new Object[] { "anyData" };
     Object[] outputRow;
     boolean  override;
 
     public HTTPPOSTHandler( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans, boolean override ) {
+                            Trans trans, boolean override ) {
       super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
       this.override = override;
     }
@@ -109,7 +114,7 @@ public class HTTPPOSTIT {
 
     @Override
     protected int requestStatusCode( PostMethod post, HostConfiguration hostConfiguration, HttpClient httpPostClient )
-            throws IOException {
+      throws IOException {
       if ( override ) {
         return 402;
       } else {
@@ -143,6 +148,7 @@ public class HTTPPOSTIT {
   public static final String host = "localhost";
   public static final int port = 9998;
   public static final String HTTP_LOCALHOST_9998 = "http://localhost:9998/";
+
   @InjectMocks
   private StepMockHelper<HTTPPOSTMeta, HTTPPOSTData> stepMockHelper;
   private HttpServer httpServer;
@@ -161,7 +167,6 @@ public class HTTPPOSTIT {
       stepMockHelper.logChannelInterface );
     when( stepMockHelper.trans.isRunning() ).thenReturn( true );
     verify( stepMockHelper.trans, never() ).stopAll();
-    startHttp204Answer();
   }
 
   @After
@@ -172,6 +177,7 @@ public class HTTPPOSTIT {
 
   @Test
   public void test204Answer() throws Exception {
+    startHttpServer( get204AnswerHandler() );
     HTTPPOSTData data = new HTTPPOSTData();
     int[] index = { 0, 1 };
     RowMeta meta = new RowMeta();
@@ -179,7 +185,7 @@ public class HTTPPOSTIT {
     meta.addValueMeta( new ValueMetaInteger( "codeFieldName" ) );
     Object[] expectedRow = new Object[] { "", 204L };
     HTTPPOST HTTPPOST = new HTTPPOSTHandler(
-            stepMockHelper.stepMeta, data, 0, stepMockHelper.transMeta, stepMockHelper.trans, false );
+      stepMockHelper.stepMeta, data, 0, stepMockHelper.transMeta, stepMockHelper.trans, false );
     RowMetaInterface inputRowMeta = mock( RowMetaInterface.class );
     HTTPPOST.setInputRowMeta( inputRowMeta );
     when( inputRowMeta.clone() ).thenReturn( inputRowMeta );
@@ -196,6 +202,7 @@ public class HTTPPOSTIT {
 
   @Test
   public void testResponseHeader() throws Exception {
+    startHttpServer( get204AnswerHandler() );
     HTTPPOSTData data = new HTTPPOSTData();
     int[] index = { 0, 1, 2 };
     RowMeta meta = new RowMeta();
@@ -203,9 +210,9 @@ public class HTTPPOSTIT {
     meta.addValueMeta( new ValueMetaInteger( "codeFieldName" ) );
     meta.addValueMeta( new ValueMetaString( "headerFieldName" ) );
     Object[] expectedRow =
-            new Object[] { "", 402L, "{\"host\":\"localhost\"}" };
+      new Object[] { "", 402L, "{\"host\":\"localhost\"}" };
     HTTPPOST HTTPPOST = new HTTPPOSTHandler(
-            stepMockHelper.stepMeta, data, 0, stepMockHelper.transMeta, stepMockHelper.trans, true );
+      stepMockHelper.stepMeta, data, 0, stepMockHelper.transMeta, stepMockHelper.trans, true );
     RowMetaInterface inputRowMeta = mock( RowMetaInterface.class );
     HTTPPOST.setInputRowMeta( inputRowMeta );
     when( inputRowMeta.clone() ).thenReturn( inputRowMeta );
@@ -214,26 +221,89 @@ public class HTTPPOSTIT {
     when( stepMockHelper.processRowsStepMetaInterface.getArgumentField() ).thenReturn( new String[] {} );
     when( stepMockHelper.processRowsStepMetaInterface.getResultCodeFieldName() ).thenReturn( "ResultCodeFieldName" );
     when( stepMockHelper.processRowsStepMetaInterface.getFieldName() ).thenReturn( "ResultFieldName" );
-    when( stepMockHelper.processRowsStepMetaInterface.getEncoding() ).thenReturn( "UTF8" );
+    when( stepMockHelper.processRowsStepMetaInterface.getEncoding() ).thenReturn( "UTF-8" );
     when( stepMockHelper.processRowsStepMetaInterface.getResponseHeaderFieldName() ).thenReturn(
-            "ResponseHeaderFieldName" );
+      "ResponseHeaderFieldName" );
     HTTPPOST.init( stepMockHelper.processRowsStepMetaInterface, data );
     Assert.assertTrue( HTTPPOST.processRow( stepMockHelper.processRowsStepMetaInterface, data ) );
     Object[] out = ( (HTTPPOSTHandler) HTTPPOST ).getOutputRow();
     Assert.assertTrue( meta.equals( out, expectedRow, index ) );
   }
 
+  @Test
+  public void testUTF8() throws Exception {
+    testServerReturnsCorrectlyEncodedParams( "test string \uD842\uDFB7 øó 測試", "UTF-8" );
+  }
 
-  private void startHttp204Answer() throws IOException {
+  @Test
+  public void testUTF16() throws Exception {
+    testServerReturnsCorrectlyEncodedParams( "test string \uD842\uDFB7 øó 測試", "UTF-16" );
+  }
+
+  @Test
+  public void testUTF32() throws Exception {
+    testServerReturnsCorrectlyEncodedParams( "test string \uD842\uDFB7 øó 測試", "UTF-32" );
+  }
+
+  public void testServerReturnsCorrectlyEncodedParams( String testString, String testCharset ) throws Exception {
+    AtomicBoolean testStatus = new AtomicBoolean();
+    startHttpServer( getEncodingCheckingHandler( testString, testCharset, testStatus ) );
+    HTTPPOSTData data = new HTTPPOSTData();
+    RowMeta meta = new RowMeta();
+    meta.addValueMeta( new ValueMetaString( "fieldName" ) );
+    HTTPPOSTHandler httpPost = new HTTPPOSTHandler(
+      stepMockHelper.stepMeta, data, 0, stepMockHelper.transMeta, stepMockHelper.trans, false );
+    RowMetaInterface inputRowMeta = mock( RowMetaInterface.class );
+    httpPost.setInputRowMeta( inputRowMeta );
+    httpPost.row = new Object[] { testString };
+    when( inputRowMeta.clone() ).thenReturn( inputRowMeta );
+    when( inputRowMeta.getString( httpPost.row, 0 ) ).thenReturn( testString );
+    when( stepMockHelper.processRowsStepMetaInterface.getUrl() ).thenReturn( HTTP_LOCALHOST_9998 );
+    when( stepMockHelper.processRowsStepMetaInterface.getQueryField() ).thenReturn( new String[] {} );
+    when( stepMockHelper.processRowsStepMetaInterface.getArgumentField() ).thenReturn( new String[] { "testBodyField" } );
+    when( stepMockHelper.processRowsStepMetaInterface.getArgumentParameter() ).thenReturn( new String[] { "testBodyParam" } );
+    when( stepMockHelper.processRowsStepMetaInterface.getArgumentHeader() ).thenReturn( new boolean[] { false } );
+    when( stepMockHelper.processRowsStepMetaInterface.getFieldName() ).thenReturn( "ResultFieldName" );
+    when( stepMockHelper.processRowsStepMetaInterface.getEncoding() ).thenReturn( testCharset );
+    httpPost.init( stepMockHelper.processRowsStepMetaInterface, data );
+    Assert.assertTrue( httpPost.processRow( stepMockHelper.processRowsStepMetaInterface, data ) );
+    Assert.assertTrue( testStatus.get(), "Test failed" );
+  }
+
+  private void startHttpServer( HttpHandler httpHandler ) throws IOException {
     httpServer = HttpServer.create( new InetSocketAddress( HTTPPOSTIT.host, HTTPPOSTIT.port ), 10 );
-    httpServer.createContext( "/", new HttpHandler() {
-      @Override
-      public void handle( HttpExchange httpExchange ) throws IOException {
-        httpExchange.sendResponseHeaders( 204, 0 );
+    httpServer.createContext( "/", httpHandler );
+    httpServer.start();
+  }
+
+  private HttpHandler get204AnswerHandler() {
+    return httpExchange -> {
+      httpExchange.sendResponseHeaders( 204, 0 );
+      httpExchange.close();
+    };
+  }
+
+  private HttpHandler getEncodingCheckingHandler( String expectedResultString, String expectedEncoding, AtomicBoolean testStatus ) {
+    return httpExchange -> {
+      try {
+        checkEncoding( expectedResultString, expectedEncoding, httpExchange.getRequestBody() );
+        testStatus.set( true );
+      } catch ( Throwable e ) {
+        e.printStackTrace();
+        testStatus.set( false );
+      } finally {
+        httpExchange.sendResponseHeaders( 200, 0 );
         httpExchange.close();
       }
-    } );
-    httpServer.start();
+    };
+  }
+
+  private void checkEncoding( String expectedResult, String encoding, InputStream inputStream ) throws Exception {
+    byte[] receivedBytes = ByteStreams.toByteArray( inputStream );
+    String urlEncodedString = new String( receivedBytes, "US-ASCII" );
+    String finalString = URLDecoder.decode( urlEncodedString, encoding );
+    expectedResult = "testBodyParam=" + expectedResult;
+    assertEquals( "The final received string is not the same", expectedResult, finalString );
   }
 
 }
