@@ -1,4 +1,6 @@
-package org.pentaho.di.engine.api;
+package org.pentaho.di.engine.api.events;
+
+import org.pentaho.di.engine.api.model.IRow;
 
 import java.util.List;
 
@@ -9,16 +11,16 @@ import java.util.List;
  * Created by nbaker on 5/30/16.
  */
 public interface IDataEvent extends IPDIEvent {
-  enum TYPE {IN, OUT, ERROR}
+  enum TYPE { IN, OUT, ERROR }
 
-  enum STATE {ACTIVE, COMPLETE, EMPTY}
+  enum STATE { ACTIVE, COMPLETE, EMPTY }
 
   TYPE getType();
 
   STATE getState();
 
   /**
-   * Row of data or otherwise
+   * Rows of data or otherwise
    *
    * @return
    */

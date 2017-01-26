@@ -1,5 +1,6 @@
 package org.pentaho.di.engine.api.reporting;
 
+import org.pentaho.di.engine.api.model.ILogicalModelElement;
 import org.reactivestreams.Publisher;
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
@@ -14,18 +15,18 @@ import java.util.function.Consumer;
  */
 public interface IProgressReporting {
   <S extends ILogicalModelElement, D extends Serializable>
-  Publisher<IReportingEvent<S, D>> eventStream( S source, Class<D> type );
+    Publisher<IReportingEvent<S, D>> eventStream( S source, Class<D> type );
 
   Collection<ILogicalModelElement> getReportingSources();
 
   // Ease-of-use functions
   default <S extends ILogicalModelElement, D extends Serializable>
-  void subscribe( S source, Class<D> type, Subscriber<? super IReportingEvent<S, D>> subscriber ) {
+    void subscribe( S source, Class<D> type, Subscriber<? super IReportingEvent<S, D>> subscriber ) {
     eventStream( source, type ).subscribe( subscriber );
   }
 
   default <S extends ILogicalModelElement, D extends Serializable>
-  void subscribe( S source, Class<D> type, Consumer<D> onNext, Consumer<Throwable> onError, Runnable onComplete ) {
+    void subscribe( S source, Class<D> type, Consumer<D> onNext, Consumer<Throwable> onError, Runnable onComplete ) {
     subscribe( source, type, new Subscriber<IReportingEvent<S, D>>() {
       @Override public void onSubscribe( Subscription s ) {
         // Start subscription immediately, get everything
@@ -53,22 +54,22 @@ public interface IProgressReporting {
   }
 
   default <S extends ILogicalModelElement, D extends Serializable>
-  void subscribe( S source, Class<D> type, Consumer<D> onNext, Runnable onComplete ) {
+    void subscribe( S source, Class<D> type, Consumer<D> onNext, Runnable onComplete ) {
     subscribe( source, type, onNext, null, onComplete );
   }
 
   default <S extends ILogicalModelElement, D extends Serializable>
-  void subscribe( S source, Class<D> type, Consumer<D> onNext, Consumer<Throwable> onError ) {
+    void subscribe( S source, Class<D> type, Consumer<D> onNext, Consumer<Throwable> onError ) {
     subscribe( source, type, onNext, onError, null );
   }
 
   default <S extends ILogicalModelElement, D extends Serializable>
-  void subscribe( S source, Class<D> type, Consumer<D> onNext ) {
+    void subscribe( S source, Class<D> type, Consumer<D> onNext ) {
     subscribe( source, type, onNext, null, null );
   }
 
   default <S extends ILogicalModelElement, D extends Serializable>
-  void subscribeAll( Class<S> sourceType, Class<D> type,
+    void subscribeAll( Class<S> sourceType, Class<D> type,
                      BiConsumer<S, D> onNext, BiConsumer<S, Throwable> onError, Consumer<S> onComplete ) {
     getReportingSources().stream()
       .filter( sourceType::isInstance )
@@ -82,17 +83,17 @@ public interface IProgressReporting {
   }
 
   default <S extends ILogicalModelElement, D extends Serializable>
-  void subscribeAll( Class<S> sourceType, Class<D> type, BiConsumer<S, D> onNext, Consumer<S> onComplete ) {
+    void subscribeAll( Class<S> sourceType, Class<D> type, BiConsumer<S, D> onNext, Consumer<S> onComplete ) {
     subscribeAll( sourceType, type, onNext, null, onComplete );
   }
 
   default <S extends ILogicalModelElement, D extends Serializable>
-  void subscribeAll( Class<S> sourceType, Class<D> type, BiConsumer<S, D> onNext, BiConsumer<S, Throwable> onError ) {
+    void subscribeAll( Class<S> sourceType, Class<D> type, BiConsumer<S, D> onNext, BiConsumer<S, Throwable> onError ) {
     subscribeAll( sourceType, type, onNext, onError, null );
   }
 
   default <S extends ILogicalModelElement, D extends Serializable>
-  void subscribeAll( Class<S> sourceType, Class<D> type, BiConsumer<S, D> onNext ) {
+    void subscribeAll( Class<S> sourceType, Class<D> type, BiConsumer<S, D> onNext ) {
     subscribeAll( sourceType, type, onNext, null, null );
   }
 }

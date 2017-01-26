@@ -5,10 +5,10 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.ImmutableList;
 import org.pentaho.di.engine.api.IExecutionContext;
 import org.pentaho.di.engine.api.IExecutionResult;
-import org.pentaho.di.engine.api.ITransformation;
-import org.pentaho.di.engine.api.reporting.ILogicalModelElement;
-import org.pentaho.di.engine.api.reporting.IMaterializedModelElement;
-import org.pentaho.di.engine.api.reporting.IModelElement;
+import org.pentaho.di.engine.api.model.ILogicalModelElement;
+import org.pentaho.di.engine.api.model.IMaterializedModelElement;
+import org.pentaho.di.engine.api.model.IModelElement;
+import org.pentaho.di.engine.api.model.ITransformation;
 import org.pentaho.di.engine.api.reporting.IReportingEvent;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.TransExecutionConfiguration;
@@ -26,8 +26,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
@@ -35,7 +33,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 import static org.pentaho.di.engine.kettleclassic.ClassicUtils.TRANS_META_CONF_KEY;
 
 /**
@@ -91,7 +88,7 @@ public class ClassicKettleExecutionContext implements IExecutionContext {
   @Override
   @SuppressWarnings( "unchecked" )
   public <S extends ILogicalModelElement, D extends Serializable>
-  Publisher<IReportingEvent<S, D>> eventStream( S source, Class<D> type ) {
+    Publisher<IReportingEvent<S, D>> eventStream( S source, Class<D> type ) {
     try {
       // Cache as a member cannot use these method type parameters. Having to ignore types
 
@@ -99,11 +96,12 @@ public class ClassicKettleExecutionContext implements IExecutionContext {
         () -> {
           IMaterializedModelElement iMaterializedModelElement1 = logical2MaterializedMap.get( source );
           List<Publisher<? extends IReportingEvent>> publishers = iMaterializedModelElement1.getPublisher( type );
-          Stream<Observable<? extends IReportingEvent>> observableStream = publishers.stream().map( RxReactiveStreams::toObservable );
+          Stream<Observable<? extends IReportingEvent>> observableStream =
+            publishers.stream().map( RxReactiveStreams::toObservable );
           List<Observable<? extends IReportingEvent>> collect = observableStream.collect( toList() );
           Observable<IReportingEvent> concat = Observable.merge( collect );
           return RxReactiveStreams.toPublisher( concat );
-        });
+        } );
 
     } catch ( ExecutionException e ) {
       throw new RuntimeException( e );

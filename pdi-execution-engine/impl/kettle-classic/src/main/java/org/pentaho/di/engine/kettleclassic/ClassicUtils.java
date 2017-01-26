@@ -1,7 +1,7 @@
 package org.pentaho.di.engine.kettleclassic;
 
 import org.pentaho.di.engine.api.IExecutionContext;
-import org.pentaho.di.engine.api.ITransformation;
+import org.pentaho.di.engine.api.model.ITransformation;
 import org.pentaho.di.engine.model.Operation;
 import org.pentaho.di.engine.model.Transformation;
 import org.pentaho.di.trans.TransMeta;

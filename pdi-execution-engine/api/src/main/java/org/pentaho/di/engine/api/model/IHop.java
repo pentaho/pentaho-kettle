@@ -1,6 +1,4 @@
-package org.pentaho.di.engine.api;
-
-import org.pentaho.di.engine.api.reporting.ILogicalModelElement;
+package org.pentaho.di.engine.api.model;
 
 /**
  * @author nhudak

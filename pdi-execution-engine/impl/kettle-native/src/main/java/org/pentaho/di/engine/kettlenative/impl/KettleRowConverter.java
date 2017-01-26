@@ -1,7 +1,7 @@
 package org.pentaho.di.engine.kettlenative.impl;
 
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.engine.api.IRow;
+import org.pentaho.di.engine.api.model.IRow;
 import org.pentaho.di.engine.api.converter.IRowConverter;
 
 import java.util.Optional;

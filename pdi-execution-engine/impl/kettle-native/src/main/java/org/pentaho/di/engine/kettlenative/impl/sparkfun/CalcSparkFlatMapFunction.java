@@ -1,19 +1,13 @@
 package org.pentaho.di.engine.kettlenative.impl.sparkfun;
 
-import com.google.common.collect.ImmutableList;
 import org.apache.spark.api.java.function.FlatMapFunction;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.value.ValueMetaInteger;
-import org.pentaho.di.core.row.value.ValueMetaNone;
-import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.xml.XMLHandler;
-import org.pentaho.di.engine.api.IRow;
+import org.pentaho.di.engine.api.model.IRow;
 import org.pentaho.di.engine.api.converter.RowConversionManager;
 import org.pentaho.di.engine.kettlenative.impl.KettleRow;
-import org.pentaho.di.engine.kettlenative.impl.KettleRowConverter;
-import org.pentaho.di.engine.kettlenative.impl.SparkRowConverter;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.steps.calculator.Calculator;
 import org.pentaho.di.trans.steps.calculator.CalculatorData;
@@ -25,7 +19,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -37,7 +30,7 @@ import static org.pentaho.di.engine.kettlenative.impl.KettleNativeUtil.createTra
  */
 public class CalcSparkFlatMapFunction implements Serializable, FlatMapFunction<IRow, IRow> {
   private final RowConversionManager conversionManager;
-  private  transient TransMeta transMeta;
+  private transient TransMeta transMeta;
   String stepName;
 
 
@@ -47,15 +40,17 @@ public class CalcSparkFlatMapFunction implements Serializable, FlatMapFunction<I
     this.conversionManager = conversionManager;
   }
 
-  private Calculator createCalculator( TransMeta transMeta, String stepName, List<Object[]> input, List<Object[]> output ) {
+  private Calculator createCalculator( TransMeta transMeta, String stepName, List<Object[]> input,
+                                       List<Object[]> output ) {
     return new Calculator( transMeta.findStep( stepName ), null, 0, transMeta, createTrans() ) {
       @Override
       public void putRow( RowMetaInterface rowMeta, Object[] row ) throws KettleStepException {
-        output.add(row );
+        output.add( row );
       }
+
       @Override
       public Object[] getRow() throws KettleException {
-        return input.size() == 0 ? null : input.remove(0);
+        return input.size() == 0 ? null : input.remove( 0 );
       }
     };
   }
@@ -76,7 +71,7 @@ public class CalcSparkFlatMapFunction implements Serializable, FlatMapFunction<I
       calc.processRow( transMeta.findStep( stepName ).getStepMetaInterface(), calcData );
 
       return output.stream()
-        .map( objects ->  (IRow) new KettleRow( rowMetaInterface, objects)  )
+        .map( objects -> (IRow) new KettleRow( rowMetaInterface, objects ) )
         .collect( Collectors.toList() )
         .iterator();
     } catch ( KettleException e ) {
@@ -89,7 +84,7 @@ public class CalcSparkFlatMapFunction implements Serializable, FlatMapFunction<I
   /**
    * transMeta is not serializable.  Leverage the custom serialization.
    */
-  private void writeObject(ObjectOutputStream oos)
+  private void writeObject( ObjectOutputStream oos )
     throws IOException {
     oos.defaultWriteObject();
     try {
@@ -100,14 +95,14 @@ public class CalcSparkFlatMapFunction implements Serializable, FlatMapFunction<I
 
   }
 
-  private void readObject(ObjectInputStream ois)
+  private void readObject( ObjectInputStream ois )
     throws ClassNotFoundException, IOException {
     ois.defaultReadObject();
     try {
-      String xml = ois.readObject( ).toString();
+      String xml = ois.readObject().toString();
       Document doc = XMLHandler.loadXMLString( xml );
       Node stepNode = XMLHandler.getSubNode( doc, "transformation" );
-      transMeta =  new TransMeta( stepNode, null );
+      transMeta = new TransMeta( stepNode, null );
 
     } catch ( KettleException e ) {
       e.printStackTrace();

@@ -7,14 +7,13 @@ import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.engine.api.IDataEvent;
+import org.pentaho.di.engine.api.events.IDataEvent;
 import org.pentaho.di.engine.api.IEngine;
-import org.pentaho.di.engine.api.IExecutableOperation;
-import org.pentaho.di.engine.api.IExecutableOperationFactory;
+import org.pentaho.di.engine.kettlenative.impl.factories.IExecutableOperationFactory;
 import org.pentaho.di.engine.api.IExecutionContext;
 import org.pentaho.di.engine.api.IExecutionResult;
-import org.pentaho.di.engine.api.IOperation;
-import org.pentaho.di.engine.api.ITransformation;
+import org.pentaho.di.engine.api.model.IOperation;
+import org.pentaho.di.engine.api.model.ITransformation;
 import org.pentaho.di.engine.api.reporting.Metrics;
 import org.pentaho.di.engine.kettlenative.impl.factories.KettleExecOperationFactory;
 import org.pentaho.di.engine.kettlenative.impl.factories.SparkExecOperationFactory;
@@ -96,7 +95,7 @@ public class Engine implements IEngine {
 
   private Stream<IExecutableOperation> sourceExecOpsStream( ITransformation trans,
                                                             List<IExecutableOperation> execOps ) {
-    return trans.getSourceOperations().stream()
+    return ( (Transformation) trans ).getSourceOperations().stream()
       .map( op -> getExecOp( op, execOps ) );
   }
 
@@ -124,7 +123,7 @@ public class Engine implements IEngine {
           Map<IOperation, Metrics> report = execOps.stream()
             .collect( Collectors.toMap( IExecutableOperation::getParent, IExecutableOperation::getMetrics ) );
           return (IExecutionResult) () -> report;
-        }
+          }
       );
   }
 

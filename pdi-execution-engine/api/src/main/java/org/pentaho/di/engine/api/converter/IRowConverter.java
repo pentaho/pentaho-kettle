@@ -1,6 +1,6 @@
 package org.pentaho.di.engine.api.converter;
 
-import org.pentaho.di.engine.api.IRow;
+import org.pentaho.di.engine.api.model.IRow;
 
 import java.io.Serializable;
 import java.util.Optional;

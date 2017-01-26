@@ -2,22 +2,16 @@ package org.pentaho.di.engine.kettlenative.impl;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 import org.pentaho.di.core.QueueRowSet;
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
-import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.value.ValueMetaString;
-import org.pentaho.di.engine.api.IRow;
-import org.pentaho.di.engine.api.IDataEvent;
-import org.pentaho.di.engine.api.IExecutableOperation;
-import org.pentaho.di.engine.api.IOperation;
-import org.pentaho.di.engine.api.IPDIEventSource;
-import org.pentaho.di.engine.api.ITransformation;
-import org.pentaho.di.engine.api.Status;
-import org.pentaho.di.engine.api.converter.IRowConverter;
+import org.pentaho.di.engine.api.model.IRow;
+import org.pentaho.di.engine.api.events.IDataEvent;
+import org.pentaho.di.engine.api.model.IOperation;
+import org.pentaho.di.engine.api.events.IPDIEventSource;
+import org.pentaho.di.engine.api.model.ITransformation;
 import org.pentaho.di.engine.api.converter.RowConversionManager;
 import org.pentaho.di.engine.api.reporting.Metrics;
 import org.pentaho.di.trans.Trans;
@@ -76,10 +70,6 @@ public class KettleExecOperation implements IExecutableOperation, Subscriber<IDa
 
   @Override public void subscribe( Subscriber<? super IDataEvent> subscriber ) {
     subscribers.add( subscriber );
-  }
-
-  @Override public boolean isRunning() {
-    return !done.get();
   }
 
   @Override public void subscribeTo( IPDIEventSource<IDataEvent> source ) {
@@ -168,6 +158,7 @@ public class KettleExecOperation implements IExecutableOperation, Subscriber<IDa
       throw new RuntimeException( e );
     }
   }
+
 
 
   private Optional<RowSet> getInputRowset( IDataEvent dataEvent ) throws KettleStepException {
@@ -274,10 +265,6 @@ public class KettleExecOperation implements IExecutableOperation, Subscriber<IDa
 
   public long getInFlight() {
     return 0; // ?
-  }
-
-  public Status getStatus() {
-    return isRunning() ? Status.RUNNING : Status.FINISHED;
   }
 
   @Override public String toString() {

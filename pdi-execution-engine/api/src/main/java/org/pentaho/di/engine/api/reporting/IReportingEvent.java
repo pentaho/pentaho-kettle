@@ -1,6 +1,7 @@
 package org.pentaho.di.engine.api.reporting;
 
-import org.pentaho.di.engine.api.IPDIEvent;
+import org.pentaho.di.engine.api.events.IPDIEvent;
+import org.pentaho.di.engine.api.model.ILogicalModelElement;
 
 import java.io.Serializable;
 

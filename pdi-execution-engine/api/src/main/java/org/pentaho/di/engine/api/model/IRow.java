@@ -1,4 +1,6 @@
-package org.pentaho.di.engine.api;
+package org.pentaho.di.engine.api.model;
+
+import org.pentaho.di.engine.api.RowException;
 
 import java.io.Serializable;
 import java.math.BigDecimal;

@@ -1,6 +1,5 @@
 package org.pentaho.di.engine.kettleclassic;
 
-import com.google.common.base.Throwables;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.DefaultLogLevel;
@@ -9,7 +8,7 @@ import org.pentaho.di.core.logging.SimpleLoggingObject;
 import org.pentaho.di.engine.api.IEngine;
 import org.pentaho.di.engine.api.IExecutionContext;
 import org.pentaho.di.engine.api.IExecutionResult;
-import org.pentaho.di.engine.api.ITransformation;
+import org.pentaho.di.engine.api.model.ITransformation;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.trans.TransMeta;
@@ -18,8 +17,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ThreadFactory;
-import java.util.function.Function;
 
 /**
  * Created by nbaker on 1/4/17.
