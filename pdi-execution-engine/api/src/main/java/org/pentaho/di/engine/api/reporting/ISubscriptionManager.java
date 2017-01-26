@@ -13,7 +13,7 @@ import java.util.function.Consumer;
 /**
  * Created by hudak on 1/11/17.
  */
-public interface IProgressReporting {
+public interface ISubscriptionManager {
   <S extends ILogicalModelElement, D extends Serializable>
     Publisher<IReportingEvent<S, D>> eventStream( S source, Class<D> type );
 
