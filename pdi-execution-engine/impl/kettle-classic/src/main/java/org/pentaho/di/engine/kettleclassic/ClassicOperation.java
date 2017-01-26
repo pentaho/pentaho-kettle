@@ -1,5 +1,7 @@
 package org.pentaho.di.engine.kettleclassic;
 
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.subjects.PublishSubject;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.engine.api.IExecutionContext;
@@ -18,8 +20,6 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepListener;
 import org.pentaho.di.trans.step.StepMeta;
 import org.reactivestreams.Publisher;
-import rx.RxReactiveStreams;
-import rx.subjects.PublishSubject;
 
 import java.io.Serializable;
 import java.util.Collections;
@@ -166,10 +166,11 @@ public class ClassicOperation implements IOperation, IMaterializedModelElement {
   }
 
   @Override
-  public <D extends Serializable> List<Publisher<? extends IReportingEvent>> getPublisher(
-    Class<D> type ) {
-    return eventPublisherMap.entrySet().stream().filter( e -> type.isAssignableFrom( e.getKey() ) )
-      .flatMap( e -> Stream.of( e.getValue() ) ).map( RxReactiveStreams::toPublisher ).collect( toList() );
+  public <D extends Serializable> List<Publisher<? extends IReportingEvent>> getPublisher( Class<D> type ) {
+    return eventPublisherMap.entrySet().stream()
+      .filter( e -> type.isAssignableFrom( e.getKey() ) )
+      .map( entry -> entry.getValue().toFlowable( BackpressureStrategy.BUFFER ) )
+      .collect( toList() );
 
   }
 
