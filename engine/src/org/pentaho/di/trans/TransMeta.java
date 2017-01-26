@@ -774,6 +774,7 @@ public class TransMeta extends AbstractMeta
       addStepChangeListener( (StepMetaChangeListenerInterface) iface );
     }
     changed_steps = true;
+    clearCaches();     // Invalidate caches since steps have changed
   }
 
   /**
@@ -797,6 +798,7 @@ public class TransMeta extends AbstractMeta
       addStepChangeListener( index, (StepMetaChangeListenerInterface) iface );
     }
     changed_steps = true;
+    clearCaches();     // Invalidate caches since steps have changed
   }
 
   /**
@@ -809,6 +811,7 @@ public class TransMeta extends AbstractMeta
   public void addTransHop( TransHopMeta hi ) {
     hops.add( hi );
     changed_hops = true;
+    clearCaches();     // Invalidate caches since steps have changed
   }
 
   /**
@@ -834,6 +837,7 @@ public class TransMeta extends AbstractMeta
     steps.add( p, stepMeta );
     stepMeta.setParentTransMeta( this );
     changed_steps = true;
+    clearCaches();     // Invalidate caches since steps have changed
     StepMetaInterface iface = stepMeta.getStepMetaInterface();
     if ( iface instanceof StepMetaChangeListenerInterface ) {
       addStepChangeListener( p, (StepMetaChangeListenerInterface) stepMeta.getStepMetaInterface() );
@@ -856,6 +860,7 @@ public class TransMeta extends AbstractMeta
       hops.add( hi );
     }
     changed_hops = true;
+    clearCaches();     // Invalidate caches since steps have changed
   }
 
   /**
@@ -937,6 +942,7 @@ public class TransMeta extends AbstractMeta
     }
 
     changed_steps = true;
+    clearCaches();     // Invalidate caches since steps have changed
   }
 
   /**
@@ -953,6 +959,7 @@ public class TransMeta extends AbstractMeta
 
     hops.remove( i );
     changed_hops = true;
+    clearCaches();     // Invalidate caches since steps have changed
   }
 
   /**
@@ -965,6 +972,7 @@ public class TransMeta extends AbstractMeta
   public void removeTransHop( TransHopMeta hop ) {
     hops.remove( hop );
     changed_hops = true;
+    clearCaches();     // Invalidate caches since steps have changed
   }
 
   /**
@@ -1040,6 +1048,7 @@ public class TransMeta extends AbstractMeta
     }
     steps.set( i, stepMeta );
     stepMeta.setParentTransMeta( this );
+    clearCaches();     // Invalidate caches since steps have changed
   }
 
   /**
@@ -1053,6 +1062,7 @@ public class TransMeta extends AbstractMeta
    */
   public void setTransHop( int i, TransHopMeta hi ) {
     hops.set( i, hi );
+    clearCaches();     // Invalidate caches since steps have changed
   }
 
   /**
@@ -1786,7 +1796,6 @@ public class TransMeta extends AbstractMeta
    *           the kettle step exception
    */
   public RowMetaInterface getStepFields( StepMeta stepMeta, ProgressMonitorListener monitor ) throws KettleStepException {
-    clearStepFieldsCachce();
     setRepositoryOnMappingSteps();
     return getStepFields( stepMeta, null, monitor );
   }
@@ -1907,7 +1916,6 @@ public class TransMeta extends AbstractMeta
    *           the kettle step exception
    */
   public RowMetaInterface getPrevStepFields( String stepname ) throws KettleStepException {
-    clearStepFieldsCachce();
     return getPrevStepFields( findStep( stepname ) );
   }
 
@@ -1921,7 +1929,6 @@ public class TransMeta extends AbstractMeta
    *           the kettle step exception
    */
   public RowMetaInterface getPrevStepFields( StepMeta stepMeta ) throws KettleStepException {
-    clearStepFieldsCachce();
     return getPrevStepFields( stepMeta, null );
   }
 
@@ -1937,8 +1944,6 @@ public class TransMeta extends AbstractMeta
    *           the kettle step exception
    */
   public RowMetaInterface getPrevStepFields( StepMeta stepMeta, ProgressMonitorListener monitor ) throws KettleStepException {
-    clearStepFieldsCachce();
-
     RowMetaInterface row = new RowMeta();
 
     if ( stepMeta == null ) {
@@ -6246,6 +6251,8 @@ public class TransMeta extends AbstractMeta
   }
 
   public void notifyAllListeners( StepMeta oldMeta, StepMeta newMeta ) {
+	// Steps have changed, so invalidate all caches
+	clearCaches();
     for ( StepMetaChangeListenerInterface listener : stepChangeListeners ) {
       listener.onStepChange( this, oldMeta, newMeta );
     }
