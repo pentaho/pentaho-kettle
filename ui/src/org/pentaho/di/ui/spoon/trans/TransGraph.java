@@ -23,6 +23,20 @@
 
 package org.pentaho.di.ui.spoon.trans;
 
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.ResourceBundle;
+import java.util.Set;
+import java.util.StringTokenizer;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.UUID;
+import java.util.concurrent.Callable;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -76,6 +90,7 @@ import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.swt.widgets.Widget;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.EngineMetaInterface;
 import org.pentaho.di.core.NotePadMeta;
 import org.pentaho.di.core.Props;
@@ -94,25 +109,22 @@ import org.pentaho.di.core.gui.GCInterface;
 import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.gui.Redrawable;
 import org.pentaho.di.core.gui.SnapAllignDistribute;
+import org.pentaho.di.core.logging.DefaultLogLevel;
 import org.pentaho.di.core.logging.HasLogChannelInterface;
 import org.pentaho.di.core.logging.KettleLogStore;
+import org.pentaho.di.core.logging.KettleLoggingEvent;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.core.logging.LogMessage;
 import org.pentaho.di.core.logging.LogParentProvidedInterface;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
+import org.pentaho.di.core.logging.LoggingObjectType;
 import org.pentaho.di.core.logging.LoggingRegistry;
+import org.pentaho.di.core.logging.SimpleLoggingObject;
 import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.util.Utils;
-import org.pentaho.di.engine.api.IEngine;
-import org.pentaho.di.engine.api.IExecutionContext;
-import org.pentaho.di.engine.api.IExecutionResult;
-import org.pentaho.di.engine.api.model.ITransformation;
-import org.pentaho.di.engine.api.reporting.Metrics;
-import org.pentaho.di.engine.kettleclassic.ClassicKettleExecutionContext;
-import org.pentaho.di.engine.kettleclassic.ClassicUtils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
@@ -124,7 +136,6 @@ import org.pentaho.di.repository.RepositoryOperation;
 import org.pentaho.di.shared.SharedObjects;
 import org.pentaho.di.trans.DatabaseImpact;
 import org.pentaho.di.trans.Trans;
-import org.pentaho.di.trans.TransAdapter;
 import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
@@ -133,6 +144,7 @@ import org.pentaho.di.trans.debug.BreakPointListener;
 import org.pentaho.di.trans.debug.StepDebugMeta;
 import org.pentaho.di.trans.debug.TransDebugMeta;
 import org.pentaho.di.trans.debug.TransDebugMetaWrapper;
+import org.pentaho.di.trans.nextgen.TransAdapter;
 import org.pentaho.di.trans.step.RemoteStep;
 import org.pentaho.di.trans.step.RowDistributionInterface;
 import org.pentaho.di.trans.step.RowDistributionPluginType;
@@ -141,6 +153,7 @@ import org.pentaho.di.trans.step.StepErrorMeta;
 import org.pentaho.di.trans.step.StepIOMetaInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.step.StepMetaDataCombi;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.step.errorhandling.Stream;
 import org.pentaho.di.trans.step.errorhandling.StreamIcon;
@@ -176,8 +189,6 @@ import org.pentaho.di.ui.spoon.dialog.EnterPreviewRowsDialog;
 import org.pentaho.di.ui.spoon.dialog.NotePadDialog;
 import org.pentaho.di.ui.spoon.dialog.SearchFieldsProgressDialog;
 import org.pentaho.di.ui.spoon.job.JobGraph;
-import org.pentaho.di.ui.spoon.trans.executionstate.api.ExecutionStatePublisher;
-import org.pentaho.di.ui.spoon.trans.executionstate.impl.local.LocalExecutionStatePublisher;
 import org.pentaho.di.ui.trans.dialog.TransDialog;
 import org.pentaho.di.ui.xul.KettleXulLoader;
 import org.pentaho.ui.xul.XulDomContainer;
@@ -191,21 +202,6 @@ import org.pentaho.ui.xul.dom.Document;
 import org.pentaho.ui.xul.impl.XulEventHandler;
 import org.pentaho.ui.xul.jface.tags.JfaceMenuitem;
 import org.pentaho.ui.xul.jface.tags.JfaceMenupopup;
-
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.ResourceBundle;
-import java.util.Set;
-import java.util.StringTokenizer;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.concurrent.Callable;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 
 /**
  * This class handles the display of the transformations in a graphical way using icons, arrows, etc. One transformation
@@ -1176,8 +1172,8 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
         new MessageDialogWithToggle( shell, BaseMessages.getString( PKG, "TransGraph.Dialog.SplitHop.Title" ), null,
           BaseMessages.getString( PKG, "TransGraph.Dialog.SplitHop.Message" ) + Const.CR + hi.toString(),
           MessageDialog.QUESTION, new String[]{ BaseMessages.getString( PKG, "System.Button.Yes" ),
-            BaseMessages.getString( PKG, "System.Button.No" ) }, 0, BaseMessages.getString( PKG,
-              "TransGraph.Dialog.Option.SplitHop.DoNotAskAgain" ), spoon.props.getAutoSplit() );
+          BaseMessages.getString( PKG, "System.Button.No" ) }, 0, BaseMessages.getString( PKG,
+          "TransGraph.Dialog.Option.SplitHop.DoNotAskAgain" ), spoon.props.getAutoSplit() );
       MessageDialogWithToggle.setDefaultImage( GUIResource.getInstance().getImageSpoon() );
       id = md.open();
       spoon.props.setAutoSplit( md.getToggleState() );
@@ -1297,7 +1293,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     try {
       TransGraphExtension ext = new TransGraphExtension( this, e, real );
       ExtensionPointHandler.callExtensionPoint(
-          LogChannel.GENERAL, KettleExtensionPoint.TransGraphMouseMoved.id, ext );
+        LogChannel.GENERAL, KettleExtensionPoint.TransGraphMouseMoved.id, ext );
 
     } catch ( Exception ex ) {
       LogChannel.GENERAL.logError( "Error calling TransGraphMouseMoved extension point", ex );
@@ -2996,10 +2992,10 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     if ( areaOwner != null && areaOwner.getExtensionAreaType() != null ) {
       try {
         TransPainterFlyoutTooltipExtension extension =
-            new TransPainterFlyoutTooltipExtension( areaOwner, this, new Point( screenX, screenY ) );
+          new TransPainterFlyoutTooltipExtension( areaOwner, this, new Point( screenX, screenY ) );
 
         ExtensionPointHandler.callExtensionPoint(
-            LogChannel.GENERAL, KettleExtensionPoint.TransPainterFlyoutTooltip.id, extension );
+          LogChannel.GENERAL, KettleExtensionPoint.TransPainterFlyoutTooltip.id, extension );
 
       } catch ( Exception e ) {
         LogChannel.GENERAL.logError( "Error calling extension point(s) for the transformation painter step", e );
@@ -3729,8 +3725,6 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     }
   }
 
-  private CompletableFuture<IExecutionResult> executionResultFuture;
-
   public synchronized void start( TransExecutionConfiguration executionConfiguration ) throws KettleException {
     // Auto save feature...
     handleTransMetaChanges( transMeta );
@@ -3742,24 +3736,28 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     )
       && !transMeta.hasChanged() // Didn't change
       ) {
-      if( executionResultFuture == null || ( executionResultFuture.isDone() || ! running ) ){
-
+      if ( trans == null || ( trans != null && !running ) ) {
         try {
-          IEngine iEngine = executionConfiguration.getEngine();
-          ITransformation iTransformation = ClassicUtils.convert( transMeta );
-          IExecutionContext executionContext = iEngine.prepare( iTransformation );
-          ClassicKettleExecutionContext classicKettleExecutionContext = (ClassicKettleExecutionContext) executionContext;
-          classicKettleExecutionContext.setExecutionConfiguration( executionConfiguration);
+          // Set the requested logging level..
+          //
+          DefaultLogLevel.setLogLevel( executionConfiguration.getLogLevel() );
 
-          Map<String, String> arguments = executionConfiguration.getArguments();
-          final String[] args;
-          if ( arguments != null ) {
-            args = convertArguments( arguments );
-          } else {
-            args = null;
+          transMeta.injectVariables( executionConfiguration.getVariables() );
+
+          // Set the named parameters
+          Map<String, String> paramMap = executionConfiguration.getParams();
+          Set<String> keys = paramMap.keySet();
+          for ( String key : keys ) {
+            transMeta.setParameterValue( key, Const.NVL( paramMap.get( key ), "" ) );
           }
-          classicKettleExecutionContext.setArguments( args );
 
+          transMeta.activateParameters();
+
+          // Do we need to clear the log before running?
+          //
+          if ( executionConfiguration.isClearingLog() ) {
+            transLogDelegate.clearLog();
+          }
 
           // Also make sure to clear the log entries in the central log store & registry
           //
@@ -3767,36 +3765,68 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
             KettleLogStore.discardLines( trans.getLogChannelId(), true );
           }
 
-          // Do we need to clear the log before running?
+          // Important: even though transMeta is passed to the Trans constructor, it is not the same object as is in
+          // memory
+          // To be able to completely test this, we need to run it as we would normally do in pan
           //
-          if ( executionConfiguration.isClearingLog() ) {
-            transLogDelegate.clearLog();
+
+          if( executionConfiguration.getEngine() != null ){
+            trans = new TransAdapter( executionConfiguration.getEngine(), transMeta );
+          } else {
+            trans =
+              new Trans( transMeta, spoon.rep, transMeta.getName(), transMeta.getRepositoryDirectory().getPath(),
+                transMeta.getFilename() );
           }
-//
-//          trans = null;
-//          new ErrorDialog( shell, BaseMessages.getString( PKG, "TransLog.Dialog.ErrorOpeningTransformation.Title" ),
-//            BaseMessages.getString( PKG, "TransLog.Dialog.ErrorOpeningTransformation.Message" ), e );
+          trans.setRepository( spoon.getRepository() );
+          trans.setMetaStore( spoon.getMetaStore() );
+
+          String spoonLogObjectId = UUID.randomUUID().toString();
+          SimpleLoggingObject spoonLoggingObject = new SimpleLoggingObject( "SPOON", LoggingObjectType.SPOON, null );
+          spoonLoggingObject.setContainerObjectId( spoonLogObjectId );
+          spoonLoggingObject.setLogLevel( executionConfiguration.getLogLevel() );
+          trans.setParent( spoonLoggingObject );
+
+          trans.setLogLevel( executionConfiguration.getLogLevel() );
+          trans.setReplayDate( executionConfiguration.getReplayDate() );
+          trans.setRepository( executionConfiguration.getRepository() );
+          trans.setMonitored( true );
+          log.logBasic( BaseMessages.getString( PKG, "TransLog.Log.TransformationOpened" ) );
+        } catch ( KettleException e ) {
+          trans = null;
+          new ErrorDialog( shell, BaseMessages.getString( PKG, "TransLog.Dialog.ErrorOpeningTransformation.Title" ),
+            BaseMessages.getString( PKG, "TransLog.Dialog.ErrorOpeningTransformation.Message" ), e );
+        }
+        if ( trans != null ) {
+          Map<String, String> arguments = executionConfiguration.getArguments();
+          final String[] args;
+          if ( arguments != null ) {
+            args = convertArguments( arguments );
+          } else {
+            args = null;
+          }
+
+          log.logMinimal( BaseMessages.getString( PKG, "TransLog.Log.LaunchingTransformation" )
+            + trans.getTransMeta().getName() + "]..." );
+
+          trans.setSafeModeEnabled( executionConfiguration.isSafeModeEnabled() );
+          trans.setGatheringMetrics( executionConfiguration.isGatheringMetrics() );
+
+          // Launch the step preparation in a different thread.
+          // That way Spoon doesn't block anymore and that way we can follow the progress of the initialization
+          //
+          final Thread parentThread = Thread.currentThread();
 
           shell.getDisplay().asyncExec( new Runnable() {
             @Override
             public void run() {
               addAllTabs();
+              prepareTrans( parentThread, args );
             }
           } );
 
+          log.logMinimal( BaseMessages.getString( PKG, "TransLog.Log.StartedExecutionOfTransformation" ) );
+
           setControlStates();
-
-          executionResultFuture = executionContext.execute();
-
-          ExecutionStatePublisher statePublisher = new LocalExecutionStatePublisher(
-            spoon, ( (ClassicKettleExecutionContext) executionContext ).getMaterializedTransformation().getTrans() );
-          statePublisher.subscribe( transGridDelegate );
-
-          log.logBasic( BaseMessages.getString( PKG, "TransLog.Log.TransformationOpened" ) );
-
-          checkErrorVisuals();
-        } catch ( Exception e ) {
-          e.printStackTrace();
         }
       } else {
         MessageBox m = new MessageBox( shell, SWT.OK | SWT.ICON_WARNING );
@@ -4135,12 +4165,6 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 
   }
 
-  /**
-   * Has some error handling
-   *
-   * @param parentThread
-   * @param args
-   */
   private synchronized void prepareTrans( final Thread parentThread, final String[] args ) {
     Runnable runnable = new Runnable() {
       @Override
@@ -4185,7 +4209,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
       // Add a listener to the transformation.
       // If the transformation is done, we want to do the end processing, etc.
       //
-      trans.addTransListener( new TransAdapter() {
+      trans.addTransListener( new org.pentaho.di.trans.TransAdapter() {
 
         @Override
         public void transFinished( Trans trans ) {
@@ -4291,45 +4315,38 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
   }
 
   private void checkErrorVisuals() {
-    try {
-      if ( executionResultFuture.get().getDataEventReport().values().stream().mapToLong( Metrics::getDropped ).sum() > 0 ) {
-        // Get the logging text and filter it out. Store it in the stepLogMap...
-        //
-        stepLogMap = new HashMap<>();
-        shell.getDisplay().syncExec( new Runnable() {
+    if ( trans.getErrors() > 0 ) {
+      // Get the logging text and filter it out. Store it in the stepLogMap...
+      //
+      stepLogMap = new HashMap<>();
+      shell.getDisplay().syncExec( new Runnable() {
 
-          @Override
-          public void run() {
+        @Override
+        public void run() {
 
-            // TODO: We don't have logging yet
-  //          for ( StepMetaDataCombi combi : trans.getSteps() ) {
-  //            if ( combi.step.getErrors() > 0 ) {
-  //              String channelId = combi.step.getLogChannel().getLogChannelId();
-  //              List<KettleLoggingEvent> eventList =
-  //                KettleLogStore.getLogBufferFromTo( channelId, false, 0, KettleLogStore.getLastBufferLineNr() );
-  //              StringBuilder logText = new StringBuilder();
-  //              for ( KettleLoggingEvent event : eventList ) {
-  //                Object message = event.getMessage();
-  //                if ( message instanceof LogMessage ) {
-  //                  LogMessage logMessage = (LogMessage) message;
-  //                  if ( logMessage.isError() ) {
-  //                    logText.append( logMessage.getMessage() ).append( Const.CR );
-  //                  }
-  //                }
-  //              }
-  //              stepLogMap.put( combi.stepMeta, logText.toString() );
-  //            }
-  //          }
+          for ( StepMetaDataCombi combi : trans.getSteps() ) {
+            if ( combi.step.getErrors() > 0 ) {
+              String channelId = combi.step.getLogChannel().getLogChannelId();
+              List<KettleLoggingEvent> eventList =
+                KettleLogStore.getLogBufferFromTo( channelId, false, 0, KettleLogStore.getLastBufferLineNr() );
+              StringBuilder logText = new StringBuilder();
+              for ( KettleLoggingEvent event : eventList ) {
+                Object message = event.getMessage();
+                if ( message instanceof LogMessage ) {
+                  LogMessage logMessage = (LogMessage) message;
+                  if ( logMessage.isError() ) {
+                    logText.append( logMessage.getMessage() ).append( Const.CR );
+                  }
+                }
+              }
+              stepLogMap.put( combi.stepMeta, logText.toString() );
+            }
           }
-        } );
+        }
+      } );
 
-      } else {
-        stepLogMap = null;
-      }
-    } catch ( InterruptedException e ) {
-      e.printStackTrace();
-    } catch ( ExecutionException e ) {
-      e.printStackTrace();
+    } else {
+      stepLogMap = null;
     }
     // Redraw the canvas to show the error icons etc.
     //
@@ -4543,7 +4560,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
       halted = trans.isStopped();
 
       if ( running ) {
-        trans.addTransListener( new TransAdapter() {
+        trans.addTransListener( new org.pentaho.di.trans.TransAdapter() {
 
           @Override
           public void transFinished( Trans trans ) {

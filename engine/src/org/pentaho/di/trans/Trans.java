@@ -169,7 +169,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
     ExecutorInterface, ExtensionDataInterface {
 
   /** The package name, used for internationalization of messages. */
-  private static Class<?> PKG = Trans.class; // for i18n purposes, needed by Translator2!!
+  protected static Class<?> PKG = Trans.class; // for i18n purposes, needed by Translator2!!
 
   /** The replay date format. */
   public static final String REPLAY_DATE_FORMAT = "yyyy/MM/dd HH:mm:ss";
@@ -203,50 +203,50 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
    * The job that's launching this transformation. This gives us access to the whole chain, including the parent
    * variables, etc.
    */
-  private Job parentJob;
+  protected Job parentJob;
 
   /**
    * The transformation that is executing this transformation in case of mappings.
    */
-  private Trans parentTrans;
+  protected Trans parentTrans;
 
   /** The parent logging object interface (this could be a transformation or a job). */
-  private LoggingObjectInterface parent;
+  protected LoggingObjectInterface parent;
 
   /** The name of the mapping step that executes this transformation in case this is a mapping. */
-  private String mappingStepName;
+  protected String mappingStepName;
 
   /** Indicates that we want to monitor the running transformation in a GUI. */
-  private boolean monitored;
+  protected boolean monitored;
 
   /**
    * Indicates that we are running in preview mode...
    */
-  private boolean preview;
+  protected boolean preview;
 
   /** The date objects for logging information about the transformation such as start and end time, etc. */
-  private Date startDate, endDate, currentDate, logDate, depDate;
+  protected Date startDate, endDate, currentDate, logDate, depDate;
 
   /** The job start and end date. */
-  private Date jobStartDate, jobEndDate;
+  protected Date jobStartDate, jobEndDate;
 
   /** The batch id. */
-  private long batchId;
+  protected long batchId;
 
   /**
    * This is the batch ID that is passed from job to job to transformation, if nothing is passed, it's the
    * transformation's batch id.
    */
-  private long passedBatchId;
+  protected long passedBatchId;
 
   /** The variable bindings for the transformation. */
-  private VariableSpace variables = new Variables();
+  protected VariableSpace variables = new Variables();
 
   /** A list of all the row sets. */
-  private List<RowSet> rowsets;
+  protected List<RowSet> rowsets;
 
   /** A list of all the steps. */
-  private List<StepMetaDataCombi> steps;
+  protected List<StepMetaDataCombi> steps;
 
   /** The class number. */
   public int class_nr;
@@ -255,7 +255,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
    * The replayDate indicates that this transformation is a replay transformation for a transformation executed on
    * replayDate. If replayDate is null, the transformation is not a replay.
    */
-  private Date replayDate;
+  protected Date replayDate;
 
   /** Constant indicating a dispatch type of 1-to-1. */
   public static final int TYPE_DISP_1_1 = 1;
@@ -303,17 +303,17 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
   public static final String CONFIGURATION_IN_EXPORT_FILENAME = "__job_execution_configuration__.xml";
 
   /** Whether safe mode is enabled. */
-  private boolean safeModeEnabled;
+  protected boolean safeModeEnabled;
 
   /** The thread name. */
   @Deprecated
-  private String threadName;
+  protected String threadName;
 
   /** The transaction ID */
-  private String transactionId;
+  protected String transactionId;
 
   /** Int value for storage trans statuses*/
-  private AtomicInteger status;
+  protected AtomicInteger status;
 
   /**
    * <p>This enum stores bit masks which are used to manipulate with
@@ -338,72 +338,72 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
   }
 
   /** The number of errors that have occurred during execution of the transformation. */
-  private AtomicInteger errors;
+  protected AtomicInteger errors;
 
   /** Whether the transformation is ready to start. */
-  private boolean readyToStart;
+  protected boolean readyToStart;
 
   /** Step performance snapshots. */
-  private Map<String, List<StepPerformanceSnapShot>> stepPerformanceSnapShots;
+  protected Map<String, List<StepPerformanceSnapShot>> stepPerformanceSnapShots;
 
   /** The step performance snapshot timer. */
-  private Timer stepPerformanceSnapShotTimer;
+  protected Timer stepPerformanceSnapShotTimer;
 
   /** A list of listeners attached to the transformation. */
-  private List<TransListener> transListeners;
+  protected List<TransListener> transListeners;
 
   /** A list of stop-event listeners attached to the transformation. */
-  private List<TransStoppedListener> transStoppedListeners;
+  protected List<TransStoppedListener> transStoppedListeners;
 
   /** In case this transformation starts to delegate work to a local transformation or job */
-  private List<DelegationListener> delegationListeners;
+  protected List<DelegationListener> delegationListeners;
 
   /** The number of finished steps. */
-  private int nrOfFinishedSteps;
+  protected int nrOfFinishedSteps;
 
   /** The number of active steps. */
-  private int nrOfActiveSteps;
+  protected int nrOfActiveSteps;
 
   /** The named parameters. */
-  private NamedParams namedParams = new NamedParamsDefault();
+  protected NamedParams namedParams = new NamedParamsDefault();
 
   /** The socket repository. */
-  private SocketRepository socketRepository;
+  protected SocketRepository socketRepository;
 
   /** The transformation log table database connection. */
-  private Database transLogTableDatabaseConnection;
+  protected Database transLogTableDatabaseConnection;
 
   /** The step performance snapshot sequence number. */
-  private AtomicInteger stepPerformanceSnapshotSeqNr;
+  protected AtomicInteger stepPerformanceSnapshotSeqNr;
 
   /** The last written step performance sequence number. */
-  private int lastWrittenStepPerformanceSequenceNr;
+  protected int lastWrittenStepPerformanceSequenceNr;
 
   /** The last step performance snapshot sequence number added. */
-  private int lastStepPerformanceSnapshotSeqNrAdded;
+  protected int lastStepPerformanceSnapshotSeqNrAdded;
 
   /** The active subtransformations. */
-  private Map<String, Trans> activeSubtransformations;
+  protected Map<String, Trans> activeSubtransformations;
 
   /** The active subjobs */
-  private Map<String, Job> activeSubjobs;
+  protected Map<String, Job> activeSubjobs;
 
   /** The step performance snapshot size limit. */
-  private int stepPerformanceSnapshotSizeLimit;
+  protected int stepPerformanceSnapshotSizeLimit;
 
   /** The servlet print writer. */
-  private PrintWriter servletPrintWriter;
+  protected PrintWriter servletPrintWriter;
 
   /** The trans finished blocking queue. */
-  private ArrayBlockingQueue<Object> transFinishedBlockingQueue;
+  protected ArrayBlockingQueue<Object> transFinishedBlockingQueue;
 
   /** The name of the executing server */
-  private String executingServer;
+  protected String executingServer;
 
   /** The name of the executing user */
-  private String executingUser;
+  protected String executingUser;
 
-  private Result previousResult;
+  protected Result previousResult;
 
   protected List<RowMetaAndData> resultRows;
 
@@ -417,13 +417,13 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
    */
   protected Hashtable<String, Counter> counters;
 
-  private HttpServletResponse servletResponse;
+  protected HttpServletResponse servletResponse;
 
-  private HttpServletRequest servletRequest;
+  protected HttpServletRequest servletRequest;
 
-  private Map<String, Object> extensionDataMap;
+  protected Map<String, Object> extensionDataMap;
 
-  private ExecutorService heartbeat = null; // this transformations's heartbeat scheduled executor
+  protected ExecutorService heartbeat = null; // this transformations's heartbeat scheduled executor
 
   /**
    * Instantiates a new transformation.
@@ -513,7 +513,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
   /**
    * Sets the default log commit size.
    */
-  private void setDefaultLogCommitSize() {
+  protected void setDefaultLogCommitSize() {
     String propLogCommitSize = this.getVariable( "pentaho.log.commit.size" );
     if ( propLogCommitSize != null ) {
       // override the logCommit variable
@@ -1167,7 +1167,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
   }
 
   @SuppressWarnings( "deprecation" )
-  private void checkCompatibility() {
+  protected void checkCompatibility() {
     // If we don't have a previous result and transMeta does have one, someone has been using a deprecated method.
     //
     if ( transMeta.getPreviousResult() != null && getPreviousResult() == null ) {
@@ -1673,7 +1673,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
     return exist != 0;
   }
 
-  private void setFinished( boolean finished ) {
+  protected void setFinished( boolean finished ) {
     status.updateAndGet( v -> finished ? v | FINISHED.mask : ( BIT_STATUS_SUM ^ FINISHED.mask ) & v );
   }
 
@@ -1724,7 +1724,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
   /**
    * Asks all steps to stop but doesn't wait around for it to happen. This is a special method for use with mappings.
    */
-  private void killAllNoWait() {
+  protected void killAllNoWait() {
     if ( steps == null ) {
       return;
     }
@@ -2624,7 +2624,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
    * @throws KettleException
    *           if any errors occur during processing
    */
-  private synchronized boolean endProcessing() throws KettleException {
+  protected synchronized boolean endProcessing() throws KettleException {
     LogStatus status;
 
     if ( isFinished() ) {
@@ -2710,7 +2710,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
    * @throws KettleException
    *           if any errors occur during logging
    */
-  private int writeStepPerformanceLogRecords( int startSequenceNr, LogStatus status ) throws KettleException {
+  protected int writeStepPerformanceLogRecords( int startSequenceNr, LogStatus status ) throws KettleException {
     int lastSeqNr = 0;
     Database ldb = null;
     PerformanceLogTable performanceLogTable = transMeta.getPerformanceLogTable();
@@ -2779,7 +2779,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
    * @param result
    *          the result of the transformation execution
    */
-  private void closeUniqueDatabaseConnections( Result result ) {
+  protected void closeUniqueDatabaseConnections( Result result ) {
 
     // Don't close any connections if the parent job is using the same transaction
     //
@@ -5664,7 +5664,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
     }
   }
 
-  private int getHeartbeatIntervalInSeconds() {
+  protected int getHeartbeatIntervalInSeconds() {
 
     TransMeta meta = this.getTransMeta();
 
