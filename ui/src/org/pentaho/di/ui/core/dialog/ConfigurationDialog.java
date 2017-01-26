@@ -112,6 +112,7 @@ public abstract class ConfigurationDialog extends Dialog {
   private Button alwaysShowOption;
   private IEngine selectedEngine;
   protected Control lastWidget;
+  protected Button wExecLocal;
 
   public ConfigurationDialog( Shell parent, ExecutionConfiguration configuration, AbstractMeta meta ) {
     super( parent );
@@ -456,21 +457,6 @@ public abstract class ConfigurationDialog extends Dialog {
     gLocal.setBackground( shell.getBackground() ); // the default looks ugly
     gLocal.setLayoutData( fdLocal );
 
-//    wExecLocal = new Button( gLocal, SWT.RADIO );
-//    wExecLocal.setText( BaseMessages.getString( PKG, prefix + ".ExecLocal.Label" ) );
-//    wExecLocal.setToolTipText( BaseMessages.getString( PKG, prefix + ".ExecLocal.Tooltip" ) );
-//    props.setLook( wExecLocal );
-//    fdExecLocal = new FormData();
-//    fdExecLocal.top = new FormAttachment( 0, 10 );
-//    fdExecLocal.left = new FormAttachment( 0, 10 );
-//    wExecLocal.setLayoutData( fdExecLocal );
-//    wExecLocal.addSelectionListener( new SelectionAdapter() {
-//      public void widgetSelected( SelectionEvent e ) {
-//        stackedLayout.topControl = localOptionsComposite;
-//        stackedLayoutComposite.layout();
-//      }
-//    } );
-
     // wExecLocal;
     lastWidget = null;
 
@@ -500,6 +486,21 @@ public abstract class ConfigurationDialog extends Dialog {
       lastWidget = btn;
     }
 
+    wExecLocal = new Button( gLocal, SWT.RADIO );
+    wExecLocal.setText( BaseMessages.getString( PKG, prefix + ".ExecLocal.Label" ) );
+    wExecLocal.setToolTipText( BaseMessages.getString( PKG, prefix + ".ExecLocal.Tooltip" ) );
+    props.setLook( wExecLocal );
+    fdExecLocal = new FormData();
+    fdExecLocal.top = new FormAttachment( lastWidget, 10 );
+    fdExecLocal.left = new FormAttachment( 0, 10 );
+    wExecLocal.setLayoutData( fdExecLocal );
+    wExecLocal.addSelectionListener( new SelectionAdapter() {
+      public void widgetSelected( SelectionEvent e ) {
+        stackedLayout.topControl = localOptionsComposite;
+        stackedLayoutComposite.layout();
+      }
+    } );
+    lastWidget = wExecLocal;
 
 
     if ( abstractMeta.getSlaveServers() == null || abstractMeta.getSlaveServers().size() == 0 ) {

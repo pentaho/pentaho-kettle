@@ -2,9 +2,11 @@ package org.pentaho.di.engine.kettleclassic;
 
 import org.pentaho.di.engine.api.IExecutionContext;
 import org.pentaho.di.engine.api.model.ITransformation;
+import org.pentaho.di.engine.api.model.IOperation;
 import org.pentaho.di.engine.model.Operation;
 import org.pentaho.di.engine.model.Transformation;
 import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.step.StepMeta;
 
 import java.util.List;
 
@@ -34,5 +36,9 @@ public class ClassicUtils {
       iTransformation.getOperations().stream().map( op -> new ClassicOperation( context, op ) ).collect( toList() );
     transformation.setOperations( materializedOps );
     return transformation;
+  }
+
+  public static IOperation getOperation( ITransformation transformation, StepMeta selectedStep ) {
+    return transformation.getOperations().stream().filter( op -> op.getId().equals( selectedStep.getStepID() ) ).findFirst().get();
   }
 }

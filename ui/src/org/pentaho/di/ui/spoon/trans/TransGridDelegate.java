@@ -22,13 +22,24 @@
 
 package org.pentaho.di.ui.spoon.trans;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.ResourceBundle;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabItem;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.ToolBar;
 import org.pentaho.di.core.Const;
@@ -36,6 +47,9 @@ import org.pentaho.di.core.Props;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.i18n.GlobalMessages;
 import org.pentaho.di.trans.step.BaseStepData.StepExecutionStatus;
+import org.pentaho.di.trans.step.StepInterface;
+import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.step.StepStatus;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
@@ -43,9 +57,6 @@ import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.XulSpoonSettingsManager;
 import org.pentaho.di.ui.spoon.delegates.SpoonDelegate;
-import org.pentaho.di.ui.spoon.trans.executionstate.api.ExecutionState;
-import org.pentaho.di.ui.spoon.trans.executionstate.api.ExecutionStateEvent;
-import org.pentaho.di.ui.spoon.trans.executionstate.api.ExecutionStateSubscriber;
 import org.pentaho.di.ui.xul.KettleXulLoader;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulLoader;
@@ -53,12 +64,7 @@ import org.pentaho.ui.xul.containers.XulToolbar;
 import org.pentaho.ui.xul.impl.XulEventHandler;
 import org.pentaho.ui.xul.swt.tags.SwtToolbarbutton;
 
-import java.util.List;
-import java.util.ResourceBundle;
-
-import static org.pentaho.di.ui.spoon.trans.executionstate.api.ExecutionState.StepState.StepStateField.*;
-
-public class TransGridDelegate extends SpoonDelegate implements XulEventHandler, ExecutionStateSubscriber {
+public class TransGridDelegate extends SpoonDelegate implements XulEventHandler {
   private static Class<?> PKG = Spoon.class; // for i18n purposes, needed by Translator2!!
 
   private static final String XUL_FILE_TRANS_GRID_TOOLBAR = "ui/trans-grid-toolbar.xul";
@@ -203,6 +209,35 @@ public class TransGridDelegate extends SpoonDelegate implements XulEventHandler,
     fdView.bottom = new FormAttachment( 100, 0 );
     transGridView.setLayoutData( fdView );
 
+    // Add a timer to update this view every couple of seconds...
+    //
+    final Timer tim = new Timer( "TransGraph: " + transGraph.getMeta().getName() );
+    final AtomicBoolean busy = new AtomicBoolean( false );
+
+    TimerTask timtask = new TimerTask() {
+      public void run() {
+        if ( !spoon.getDisplay().isDisposed() ) {
+          spoon.getDisplay().asyncExec( new Runnable() {
+            public void run() {
+              if ( !busy.get() ) {
+                busy.set( true );
+                refreshView();
+                busy.set( false );
+              }
+            }
+          } );
+        }
+      }
+    };
+
+    tim.schedule( timtask, 0L, REFRESH_TIME ); // schedule to repeat a couple of times per second to get fast feedback
+
+    transGridTab.addDisposeListener( new DisposeListener() {
+      public void widgetDisposed( DisposeEvent disposeEvent ) {
+        tim.cancel();
+      }
+    } );
+
     transGridTab.setControl( transGridComposite );
 
     transGraph.extraViewTabFolder.setSelection( transGridTab );
@@ -258,7 +293,163 @@ public class TransGridDelegate extends SpoonDelegate implements XulEventHandler,
     }
   }
 
+  private void refreshView() {
+    boolean insert = true;
+    int nrSteps = -1;
+    int totalSteps = -1;
 
+    if ( transGridView == null || transGridView.isDisposed() ) {
+      return;
+    }
+    if ( refresh_busy ) {
+      return;
+    }
+
+    List<StepMeta> selectedSteps = new ArrayList<StepMeta>();
+    if ( showSelectedSteps ) {
+      selectedSteps = transGraph.trans.getTransMeta().getSelectedSteps();
+    }
+
+    int topIdx = transGridView.getTable().getTopIndex();
+
+    refresh_busy = true;
+
+    Table table = transGridView.table;
+
+    long time = new Date().getTime();
+    long msSinceLastUpdate = time - lastUpdateView;
+    if ( transGraph.trans != null && !transGraph.trans.isPreparing() && msSinceLastUpdate > UPDATE_TIME_VIEW ) {
+      lastUpdateView = time;
+
+      nrSteps = transGraph.trans.nrSteps();
+      totalSteps = nrSteps;
+      if ( hideInactiveSteps ) {
+        nrSteps = transGraph.trans.nrActiveSteps();
+      }
+
+      StepExecutionStatus[] stepStatusLookup = transGraph.trans.getTransStepExecutionStatusLookup();
+      boolean[] isRunningLookup = transGraph.trans.getTransStepIsRunningLookup();
+
+      int sortColumn = transGridView.getSortField();
+      boolean sortDescending = transGridView.isSortingDescending();
+      int[] selectedItems = transGridView.getSelectionIndices();
+
+      if ( table.getItemCount() != nrSteps ) {
+        table.removeAll();
+      } else {
+        insert = false;
+      }
+
+      if ( nrSteps == 0 && table.getItemCount() == 0 ) {
+        new TableItem( table, SWT.NONE );
+        refresh_busy = false;
+        return;
+      }
+
+      int nr = 0;
+
+      for ( int i = 0; i < totalSteps; i++ ) {
+        StepInterface baseStep = transGraph.trans.getRunThread( i );
+
+        // See if the step is selected & in need of display
+        //
+        boolean showSelected;
+        if ( showSelectedSteps ) {
+          if ( selectedSteps.size() == 0 ) {
+            showSelected = true;
+          } else {
+            showSelected = false;
+            for ( StepMeta stepMeta : selectedSteps ) {
+              if ( baseStep.getStepMeta().equals( stepMeta ) ) {
+                showSelected = true;
+                break;
+              }
+            }
+          }
+        } else {
+          showSelected = true;
+        }
+
+        // when "Hide active" steps is enabled show only alive steps
+        // otherwise only those that have not STATUS_EMPTY
+        //
+        if ( showSelected
+          && ( hideInactiveSteps && ( isRunningLookup[i]
+          || stepStatusLookup[i] != StepExecutionStatus.STATUS_FINISHED ) )
+          || ( !hideInactiveSteps && stepStatusLookup[i] != StepExecutionStatus.STATUS_EMPTY ) ) {
+          TableItem ti = null;
+          if ( insert ) {
+            ti = new TableItem( table, SWT.NONE );
+          } else {
+            ti = table.getItem( nr );
+          }
+
+          if ( ti == null ) {
+            continue;
+          }
+
+          String num = "" + ( i + 1 );
+          if ( ti.getText( 0 ).length() < 1 ) {
+            ti.setText( 0, num );
+          }
+
+          if ( ti.getText( 0 ).length() > 0 ) {
+            Integer tIndex = Integer.parseInt( ti.getText( 0 ) );
+            tIndex--;
+            baseStep = transGraph.trans.getRunThread( tIndex );
+          }
+
+          StepStatus stepStatus = new StepStatus( baseStep );
+
+          String[] fields = stepStatus.getTransLogFields();
+
+          // Anti-flicker: if nothing has changed, don't change it on the
+          // screen!
+          for ( int f = 1; f < fields.length; f++ ) {
+            if ( !fields[f].equalsIgnoreCase( ti.getText( f ) ) ) {
+              ti.setText( f, fields[f] );
+            }
+          }
+
+          // Error lines should appear in red:
+          if ( baseStep.getErrors() > 0 ) {
+            ti.setBackground( GUIResource.getInstance().getColorRed() );
+          } else {
+            if ( nr % 2 == 0 ) {
+              ti.setBackground( GUIResource.getInstance().getColorWhite() );
+            } else {
+              ti.setBackground( GUIResource.getInstance().getColorBlueCustomGrid() );
+            }
+          }
+          nr++;
+        }
+      }
+
+      // Only need to resort if the output has been sorted differently to the
+      // default
+      if ( table.getItemCount() > 0 && ( sortColumn != 0 || !sortDescending ) ) {
+        transGridView.sortTable( sortColumn, sortDescending );
+      }
+
+      // if (updateRowNumbers) { transGridView.setRowNums(); }
+      transGridView.optWidth( true );
+
+      if ( selectedItems != null && selectedItems.length > 0 ) {
+        transGridView.setSelection( selectedItems );
+      }
+      // transGridView.getTable().setTopIndex(topIdx);
+      if ( transGridView.getTable().getTopIndex() != topIdx ) {
+        transGridView.getTable().setTopIndex( topIdx );
+      }
+    } else {
+      // We need at least one table-item in a table!
+      if ( table.getItemCount() == 0 ) {
+        new TableItem( table, SWT.NONE );
+      }
+    }
+
+    refresh_busy = false;
+  }
 
   public CTabItem getTransGridTab() {
     return transGridTab;
@@ -322,43 +513,4 @@ public class TransGridDelegate extends SpoonDelegate implements XulEventHandler,
     // TODO Auto-generated method stub
 
   }
-
-  /**
-   * Reworking of view refresh based on pushed events rather than polling.
-   */
-  @Override public void execStateChanged( ExecutionStateEvent event ) {
-    if ( transGridView == null || transGridView.isDisposed() || transGridView.table == null ) {
-      return;
-    }
-    transGridView.table.removeAll();  // completely recreates with each change.  Could improve.
-
-    event.getState().getStepStates().stream()
-      .filter( this::showStepCriteria )
-      .forEach( this::updateTableData );
-    }
-
-  /**
-   *   showHideSelectd doesn't seem to be used.  Is it?
-   *   Need to closely compare original show logic.
-   */
-  private boolean showStepCriteria( ExecutionState.StepState stepState ) {
-    StepExecutionStatus status = stepState.getExecStatus();
-    return status != StepExecutionStatus.STATUS_EMPTY
-      && ( !hideInactiveSteps || status != StepExecutionStatus.STATUS_FINISHED );
-  }
-
-  /**
-   * TODO handle background formatting, for errors and alternating rows.
-   */
-  private void updateTableData( ExecutionState.StepState stepState ) {
-    // request fields corresponding to table layout
-    List<String> values = stepState.getStringFieldValues(
-      NAME, COPY, READ, WRITTEN, INPUT, OUTPUT,
-      UPDATED, REJECTED, ERRORS, DESC, SECONDS, SPEED, PRIORITY );
-    values.add( 0, "" );  // Row number
-
-    TableItem ti = new TableItem( transGridView.table, SWT.NONE );
-    ti.setText( values.toArray( new String[ values.size() ] ) );
-  }
-
 }

@@ -299,6 +299,7 @@ public class TransExecutionConfigurationDialog extends ConfigurationDialog {
       configuration.setReplayDate( null ); // removed from new execution dialog.
       configuration.setEngine( getSelectedEngine() );
       configuration.setExecutingLocally( getSelectedEngine() != null );
+      configuration.setExecutingLocally( wExecLocal.getSelection() || getSelectedEngine() != null );
       configuration.setExecutingRemotely( wExecRemote.getSelection() );
       getConfiguration().setExecutingClustered( wExecCluster.getSelection() );
 

@@ -1,12 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <engines>
 
-  <engine id="Local">
-    <name>Local</name>
-    <description>Classic PDI Engine. Runs locally on the machine you're using</description>
-    <classname>org.pentaho.di.engine.kettleclassic.ClassicKettleEngine</classname>
-  </engine>
-
   <engine id="Classic">
     <name>Local</name>
     <description>Classic PDI Engine. Runs locally on the machine you're using</description>
