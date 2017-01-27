@@ -1,18 +1,17 @@
 package org.pentaho.di.engine.model;
 
 import com.google.common.base.Objects;
-import org.pentaho.di.engine.api.model.IHop;
-import org.pentaho.di.engine.api.model.IOperation;
+import org.pentaho.di.engine.api.model.Operation;
 
 /**
  * Created by hudak on 1/18/17.
  */
-public class Hop implements IHop {
-  private final IOperation from;
-  private final IOperation to;
+public class Hop implements org.pentaho.di.engine.api.model.Hop {
+  private final Operation from;
+  private final Operation to;
   private final String type;
 
-  public Hop( IOperation from, IOperation to, String type ) {
+  public Hop( Operation from, Operation to, String type ) {
     this.from = from;
     this.to = to;
     this.type = type;
@@ -22,11 +21,11 @@ public class Hop implements IHop {
     return type;
   }
 
-  @Override public IOperation getFrom() {
+  @Override public Operation getFrom() {
     return from;
   }
 
-  @Override public IOperation getTo() {
+  @Override public Operation getTo() {
     return to;
   }
 

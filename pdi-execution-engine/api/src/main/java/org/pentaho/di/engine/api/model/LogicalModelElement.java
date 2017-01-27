@@ -6,5 +6,5 @@ package org.pentaho.di.engine.api.model;
  * <p>
  * Created by nbaker on 5/30/16.
  */
-public interface ILogicalModelElement extends IModelElement {
+public interface LogicalModelElement extends ModelElement {
 }

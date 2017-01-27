@@ -4,13 +4,13 @@ import io.reactivex.BackpressureStrategy;
 import io.reactivex.subjects.PublishSubject;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.engine.api.IExecutionContext;
-import org.pentaho.di.engine.api.model.IHop;
-import org.pentaho.di.engine.api.model.IOperation;
+import org.pentaho.di.engine.api.ExecutionContext;
+import org.pentaho.di.engine.api.model.Hop;
+import org.pentaho.di.engine.api.model.Operation;
 import org.pentaho.di.engine.api.reporting.Status;
-import org.pentaho.di.engine.api.model.ILogicalModelElement;
-import org.pentaho.di.engine.api.model.IMaterializedModelElement;
-import org.pentaho.di.engine.api.reporting.IReportingEvent;
+import org.pentaho.di.engine.api.model.LogicalModelElement;
+import org.pentaho.di.engine.api.model.MaterializedModelElement;
+import org.pentaho.di.engine.api.reporting.ReportingEvent;
 import org.pentaho.di.engine.api.reporting.Metrics;
 import org.pentaho.di.engine.api.reporting.MetricsEvent;
 import org.pentaho.di.engine.api.reporting.StatusEvent;
@@ -37,15 +37,15 @@ import static java.util.stream.Collectors.toList;
 /**
  * Created by nbaker on 1/6/17.
  */
-public class ClassicOperation implements IOperation, IMaterializedModelElement {
-  private IExecutionContext context;
-  private IOperation logicalOperation;
+public class ClassicOperation implements Operation, MaterializedModelElement {
+  private ExecutionContext context;
+  private Operation logicalOperation;
   private ClassicTransformation transformation;
 
 
-  private PublishSubject<MetricsEvent<IOperation>> metricsPublisher = PublishSubject.create();
-  private PublishSubject<StatusEvent<IOperation>> statusPublisher = PublishSubject.create();
-  private Map<Class<? extends Serializable>, PublishSubject<? extends IReportingEvent>> eventPublisherMap =
+  private PublishSubject<MetricsEvent<Operation>> metricsPublisher = PublishSubject.create();
+  private PublishSubject<StatusEvent<Operation>> statusPublisher = PublishSubject.create();
+  private Map<Class<? extends Serializable>, PublishSubject<? extends ReportingEvent>> eventPublisherMap =
     new HashMap<>();
   private ExecutorService metricsExecutorService;
 
@@ -54,7 +54,7 @@ public class ClassicOperation implements IOperation, IMaterializedModelElement {
     eventPublisherMap.put( Status.class, statusPublisher );
   }
 
-  public ClassicOperation( IExecutionContext context, IOperation logicalOperation ) {
+  public ClassicOperation( ExecutionContext context, Operation logicalOperation ) {
     this.context = context;
     this.logicalOperation = logicalOperation;
   }
@@ -71,19 +71,19 @@ public class ClassicOperation implements IOperation, IMaterializedModelElement {
     return null;
   }
 
-  @Override public List<IOperation> getFrom() {
+  @Override public List<Operation> getFrom() {
     return null;
   }
 
-  @Override public List<IOperation> getTo() {
+  @Override public List<Operation> getTo() {
     return null;
   }
 
-  @Override public List<IHop> getHopsIn() {
+  @Override public List<Hop> getHopsIn() {
     return null;
   }
 
-  @Override public List<IHop> getHopsOut() {
+  @Override public List<Hop> getHopsOut() {
     return null;
   }
 
@@ -95,7 +95,7 @@ public class ClassicOperation implements IOperation, IMaterializedModelElement {
     this.transformation = transformation;
   }
 
-  @Override public ILogicalModelElement getLogicalElement() {
+  @Override public LogicalModelElement getLogicalElement() {
     return logicalOperation;
   }
 
@@ -154,7 +154,7 @@ public class ClassicOperation implements IOperation, IMaterializedModelElement {
     metricsExecutorService.execute( () -> metricsPublisher.onNext( createMetricsEvent( stepInterfaces ) ) );
   }
 
-  private MetricsEvent<IOperation> createMetricsEvent( List<StepInterface> stepInterfaces ) {
+  private MetricsEvent<Operation> createMetricsEvent( List<StepInterface> stepInterfaces ) {
 
     Metrics metrics = new Metrics(
       stepInterfaces.stream().mapToLong( StepInterface::getLinesRead ).sum(),
@@ -166,12 +166,11 @@ public class ClassicOperation implements IOperation, IMaterializedModelElement {
   }
 
   @Override
-  public <D extends Serializable> List<Publisher<? extends IReportingEvent>> getPublisher( Class<D> type ) {
+  public <D extends Serializable> List<Publisher<? extends ReportingEvent>> getPublisher( Class<D> type ) {
     return eventPublisherMap.entrySet().stream()
       .filter( e -> type.isAssignableFrom( e.getKey() ) )
       .map( entry -> entry.getValue().toFlowable( BackpressureStrategy.BUFFER ) )
       .collect( toList() );
-
   }
 
   @Override public List<Serializable> getEventTypes() {

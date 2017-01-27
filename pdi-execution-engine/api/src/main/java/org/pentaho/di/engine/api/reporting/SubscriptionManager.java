@@ -1,6 +1,6 @@
 package org.pentaho.di.engine.api.reporting;
 
-import org.pentaho.di.engine.api.model.ILogicalModelElement;
+import org.pentaho.di.engine.api.model.LogicalModelElement;
 import org.reactivestreams.Publisher;
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
@@ -13,27 +13,27 @@ import java.util.function.Consumer;
 /**
  * Created by hudak on 1/11/17.
  */
-public interface ISubscriptionManager {
-  <S extends ILogicalModelElement, D extends Serializable>
-    Publisher<IReportingEvent<S, D>> eventStream( S source, Class<D> type );
+public interface SubscriptionManager {
+  <S extends LogicalModelElement, D extends Serializable>
+    Publisher<ReportingEvent<S, D>> eventStream( S source, Class<D> type );
 
-  Collection<ILogicalModelElement> getReportingSources();
+  Collection<LogicalModelElement> getReportingSources();
 
   // Ease-of-use functions
-  default <S extends ILogicalModelElement, D extends Serializable>
-    void subscribe( S source, Class<D> type, Subscriber<? super IReportingEvent<S, D>> subscriber ) {
+  default <S extends LogicalModelElement, D extends Serializable>
+    void subscribe( S source, Class<D> type, Subscriber<? super ReportingEvent<S, D>> subscriber ) {
     eventStream( source, type ).subscribe( subscriber );
   }
 
-  default <S extends ILogicalModelElement, D extends Serializable>
+  default <S extends LogicalModelElement, D extends Serializable>
     void subscribe( S source, Class<D> type, Consumer<D> onNext, Consumer<Throwable> onError, Runnable onComplete ) {
-    subscribe( source, type, new Subscriber<IReportingEvent<S, D>>() {
+    subscribe( source, type, new Subscriber<ReportingEvent<S, D>>() {
       @Override public void onSubscribe( Subscription s ) {
         // Start subscription immediately, get everything
         s.request( Long.MAX_VALUE );
       }
 
-      @Override public void onNext( IReportingEvent<S, D> reportingEvent ) {
+      @Override public void onNext( ReportingEvent<S, D> reportingEvent ) {
         if ( onNext != null ) {
           onNext.accept( reportingEvent.getData() );
         }
@@ -53,22 +53,22 @@ public interface ISubscriptionManager {
     } );
   }
 
-  default <S extends ILogicalModelElement, D extends Serializable>
+  default <S extends LogicalModelElement, D extends Serializable>
     void subscribe( S source, Class<D> type, Consumer<D> onNext, Runnable onComplete ) {
     subscribe( source, type, onNext, null, onComplete );
   }
 
-  default <S extends ILogicalModelElement, D extends Serializable>
+  default <S extends LogicalModelElement, D extends Serializable>
     void subscribe( S source, Class<D> type, Consumer<D> onNext, Consumer<Throwable> onError ) {
     subscribe( source, type, onNext, onError, null );
   }
 
-  default <S extends ILogicalModelElement, D extends Serializable>
+  default <S extends LogicalModelElement, D extends Serializable>
     void subscribe( S source, Class<D> type, Consumer<D> onNext ) {
     subscribe( source, type, onNext, null, null );
   }
 
-  default <S extends ILogicalModelElement, D extends Serializable>
+  default <S extends LogicalModelElement, D extends Serializable>
     void subscribeAll( Class<S> sourceType, Class<D> type,
                      BiConsumer<S, D> onNext, BiConsumer<S, Throwable> onError, Consumer<S> onComplete ) {
     getReportingSources().stream()
@@ -82,17 +82,17 @@ public interface ISubscriptionManager {
       } );
   }
 
-  default <S extends ILogicalModelElement, D extends Serializable>
+  default <S extends LogicalModelElement, D extends Serializable>
     void subscribeAll( Class<S> sourceType, Class<D> type, BiConsumer<S, D> onNext, Consumer<S> onComplete ) {
     subscribeAll( sourceType, type, onNext, null, onComplete );
   }
 
-  default <S extends ILogicalModelElement, D extends Serializable>
+  default <S extends LogicalModelElement, D extends Serializable>
     void subscribeAll( Class<S> sourceType, Class<D> type, BiConsumer<S, D> onNext, BiConsumer<S, Throwable> onError ) {
     subscribeAll( sourceType, type, onNext, onError, null );
   }
 
-  default <S extends ILogicalModelElement, D extends Serializable>
+  default <S extends LogicalModelElement, D extends Serializable>
     void subscribeAll( Class<S> sourceType, Class<D> type, BiConsumer<S, D> onNext ) {
     subscribeAll( sourceType, type, onNext, null, null );
   }

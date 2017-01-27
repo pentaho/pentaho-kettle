@@ -1,11 +1,10 @@
 package org.pentaho.di.engine.kettlenative.impl;
 
 import com.google.common.collect.ImmutableList;
-import org.pentaho.di.engine.api.IExecutionContext;
-import org.pentaho.di.engine.api.IExecutionResult;
-import org.pentaho.di.engine.api.model.ITransformation;
-import org.pentaho.di.engine.api.reporting.IReportingEvent;
-import org.pentaho.di.engine.api.model.ILogicalModelElement;
+import org.pentaho.di.engine.api.ExecutionResult;
+import org.pentaho.di.engine.api.model.Transformation;
+import org.pentaho.di.engine.api.reporting.ReportingEvent;
+import org.pentaho.di.engine.api.model.LogicalModelElement;
 import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.trans.TransMeta;
 import org.reactivestreams.Publisher;
@@ -17,17 +16,17 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-public class ExecutionContext implements IExecutionContext {
+public class ExecutionContext implements org.pentaho.di.engine.api.ExecutionContext {
 
   private final Engine engine;
   private Map<String, Object> parameters = new HashMap<String, Object>();
   private Map<String, Object> environment = new HashMap<String, Object>();
-  private ITransformation transformation;
+  private Transformation transformation;
   private TransMeta transMeta;
   private TransExecutionConfiguration executionConfiguration;
   private String[] arguments;
 
-  public ExecutionContext( Engine engine, ITransformation transformation, Map<String, Object> parameters,
+  public ExecutionContext( Engine engine, Transformation transformation, Map<String, Object> parameters,
                            Map<String, Object> environment ) {
     this.engine = engine;
     this.parameters = parameters;
@@ -51,11 +50,11 @@ public class ExecutionContext implements IExecutionContext {
     this.environment = environment;
   }
 
-  @Override public ITransformation getTransformation() {
+  @Override public Transformation getTransformation() {
     return transformation;
   }
 
-  public void setTransformation( ITransformation transformation ) {
+  public void setTransformation( Transformation transformation ) {
     this.transformation = transformation;
   }
 
@@ -80,17 +79,17 @@ public class ExecutionContext implements IExecutionContext {
     this.arguments = arguments;
   }
 
-  @Override public CompletableFuture<IExecutionResult> execute() {
+  @Override public CompletableFuture<ExecutionResult> execute() {
     return engine.execute( this );
   }
 
   @Override
-  public <S extends ILogicalModelElement, D extends Serializable>
-  Publisher<IReportingEvent<S, D>> eventStream( S source, Class<D> type ) {
+  public <S extends LogicalModelElement, D extends Serializable>
+  Publisher<ReportingEvent<S, D>> eventStream( S source, Class<D> type ) {
     return Subscriber::onComplete;
   }
 
-  @Override public Collection<ILogicalModelElement> getReportingSources() {
+  @Override public Collection<LogicalModelElement> getReportingSources() {
     return ImmutableList.of();
   }
 }

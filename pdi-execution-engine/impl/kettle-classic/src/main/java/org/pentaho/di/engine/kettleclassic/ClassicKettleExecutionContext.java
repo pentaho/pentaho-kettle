@@ -4,13 +4,13 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.ImmutableList;
 import io.reactivex.Flowable;
-import org.pentaho.di.engine.api.IExecutionContext;
-import org.pentaho.di.engine.api.IExecutionResult;
-import org.pentaho.di.engine.api.model.ILogicalModelElement;
-import org.pentaho.di.engine.api.model.IMaterializedModelElement;
-import org.pentaho.di.engine.api.model.IModelElement;
-import org.pentaho.di.engine.api.model.ITransformation;
-import org.pentaho.di.engine.api.reporting.IReportingEvent;
+import org.pentaho.di.engine.api.ExecutionContext;
+import org.pentaho.di.engine.api.ExecutionResult;
+import org.pentaho.di.engine.api.model.LogicalModelElement;
+import org.pentaho.di.engine.api.model.MaterializedModelElement;
+import org.pentaho.di.engine.api.model.ModelElement;
+import org.pentaho.di.engine.api.model.Transformation;
+import org.pentaho.di.engine.api.reporting.ReportingEvent;
 import org.pentaho.di.engine.api.reporting.Topic;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.TransExecutionConfiguration;
@@ -34,7 +34,7 @@ import static org.pentaho.di.engine.kettleclassic.ClassicUtils.TRANS_META_CONF_K
 /**
  * Created by nbaker on 1/5/17.
  */
-public class ClassicKettleExecutionContext implements IExecutionContext {
+public class ClassicKettleExecutionContext implements ExecutionContext {
   private Map<String, Object> parameters = new HashMap<String, Object>();
   private Map<String, Object> environment = new HashMap<String, Object>();
   private TransExecutionConfiguration executionConfiguration = new TransExecutionConfiguration();
@@ -44,9 +44,9 @@ public class ClassicKettleExecutionContext implements IExecutionContext {
 
   private Cache<Topic, Publisher> publishers = CacheBuilder.newBuilder().build();
 
-  private Map<ILogicalModelElement, IMaterializedModelElement> logical2MaterializedMap = new HashMap<>();
+  private Map<LogicalModelElement, MaterializedModelElement> logical2MaterializedMap = new HashMap<>();
 
-  private final ITransformation logicalTrans;
+  private final Transformation logicalTrans;
   private final ClassicKettleEngine engine;
   private final TransMeta transMeta;
   private final ClassicTransformation materializedTrans;
@@ -60,7 +60,7 @@ public class ClassicKettleExecutionContext implements IExecutionContext {
   }
 
 
-  public ClassicKettleExecutionContext( ClassicKettleEngine engine, ITransformation trans ) {
+  public ClassicKettleExecutionContext( ClassicKettleEngine engine, Transformation trans ) {
     this.engine = engine;
     this.logicalTrans = trans;
 
@@ -69,21 +69,21 @@ public class ClassicKettleExecutionContext implements IExecutionContext {
     transMeta = trans.getConfig( TRANS_META_CONF_KEY, TransMeta.class )
       .orElseThrow( () -> new RuntimeException( "TransMeta is required in config for ClassicKettleExecutionContext" ) );
 
-    List<IModelElement> modelElements = new ArrayList<>();
+    List<ModelElement> modelElements = new ArrayList<>();
     modelElements.add( materializedTrans );
     modelElements.addAll( materializedTrans.getOperations() );
     modelElements.addAll( materializedTrans.getHops() );
 
     logical2MaterializedMap
-      .putAll( modelElements.stream().map( IMaterializedModelElement.class::cast ).collect( Collectors.toMap(
-        IMaterializedModelElement::getLogicalElement, Function.identity() ) ) );
+      .putAll( modelElements.stream().map( MaterializedModelElement.class::cast ).collect( Collectors.toMap(
+        MaterializedModelElement::getLogicalElement, Function.identity() ) ) );
 
   }
 
   @Override
   @SuppressWarnings( "unchecked" )
-  public <S extends ILogicalModelElement, D extends Serializable>
-    Publisher<IReportingEvent<S, D>> eventStream( S source, Class<D> type ) {
+  public <S extends LogicalModelElement, D extends Serializable>
+    Publisher<ReportingEvent<S, D>> eventStream( S source, Class<D> type ) {
     try {
       // Cache as a member cannot use these method type parameters. Having to ignore types
 
@@ -96,11 +96,11 @@ public class ClassicKettleExecutionContext implements IExecutionContext {
     }
   }
 
-  @Override public Collection<ILogicalModelElement> getReportingSources() {
+  @Override public Collection<LogicalModelElement> getReportingSources() {
     return ImmutableList.of();
   }
 
-  @Override public CompletableFuture<IExecutionResult> execute() {
+  @Override public CompletableFuture<ExecutionResult> execute() {
     return engine.execute( this );
   }
 
@@ -112,7 +112,7 @@ public class ClassicKettleExecutionContext implements IExecutionContext {
     return environment;
   }
 
-  @Override public ITransformation getTransformation() {
+  @Override public Transformation getTransformation() {
     return logicalTrans;
   }
 

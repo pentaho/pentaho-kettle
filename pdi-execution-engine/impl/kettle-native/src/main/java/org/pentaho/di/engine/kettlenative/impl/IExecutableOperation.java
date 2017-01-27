@@ -1,12 +1,10 @@
 package org.pentaho.di.engine.kettlenative.impl;
 
-import org.pentaho.di.engine.api.events.IDataEvent;
-import org.pentaho.di.engine.api.model.IOperation;
-import org.pentaho.di.engine.api.events.IPDIEventSink;
-import org.pentaho.di.engine.api.events.IPDIEventSource;
+import org.pentaho.di.engine.api.events.DataEvent;
+import org.pentaho.di.engine.api.model.Operation;
+import org.pentaho.di.engine.api.events.PDIEventSink;
+import org.pentaho.di.engine.api.events.PDIEventSource;
 import org.pentaho.di.engine.api.reporting.Metrics;
-
-import java.util.List;
 
 /**
  * IExecutableOperation is the materialized version of
@@ -19,11 +17,11 @@ import java.util.List;
  * tuples received "From" parent operations and published
  * "To" child ops.
  */
-public interface IExecutableOperation extends IPDIEventSource<IDataEvent>, IPDIEventSink<IDataEvent> {
+public interface IExecutableOperation extends PDIEventSource<DataEvent>, PDIEventSink<DataEvent> {
 
   void start();
 
-  IOperation getParent();
+  Operation getParent();
 
   Metrics getMetrics();
 

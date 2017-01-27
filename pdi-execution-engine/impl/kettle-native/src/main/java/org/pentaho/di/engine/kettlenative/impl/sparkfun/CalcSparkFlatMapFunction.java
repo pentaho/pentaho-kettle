@@ -5,7 +5,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.xml.XMLHandler;
-import org.pentaho.di.engine.api.model.IRow;
+import org.pentaho.di.engine.api.model.Row;
 import org.pentaho.di.engine.api.converter.RowConversionManager;
 import org.pentaho.di.engine.kettlenative.impl.KettleRow;
 import org.pentaho.di.trans.TransMeta;
@@ -28,7 +28,7 @@ import static org.pentaho.di.engine.kettlenative.impl.KettleNativeUtil.createTra
 /**
  * Wrap Kettle's Calculator step, allowing it to be run as a spark FlatMapFunction.
  */
-public class CalcSparkFlatMapFunction implements Serializable, FlatMapFunction<IRow, IRow> {
+public class CalcSparkFlatMapFunction implements Serializable, FlatMapFunction<Row, Row> {
   private final RowConversionManager conversionManager;
   private transient TransMeta transMeta;
   String stepName;
@@ -55,7 +55,7 @@ public class CalcSparkFlatMapFunction implements Serializable, FlatMapFunction<I
     };
   }
 
-  @Override public Iterator<IRow> call( IRow row ) throws Exception {
+  @Override public Iterator<Row> call( Row row ) throws Exception {
 
 
     try {
@@ -71,7 +71,7 @@ public class CalcSparkFlatMapFunction implements Serializable, FlatMapFunction<I
       calc.processRow( transMeta.findStep( stepName ).getStepMetaInterface(), calcData );
 
       return output.stream()
-        .map( objects -> (IRow) new KettleRow( rowMetaInterface, objects ) )
+        .map( objects -> (Row) new KettleRow( rowMetaInterface, objects ) )
         .collect( Collectors.toList() )
         .iterator();
     } catch ( KettleException e ) {

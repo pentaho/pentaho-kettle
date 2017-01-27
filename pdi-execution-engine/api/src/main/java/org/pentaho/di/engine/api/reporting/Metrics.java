@@ -1,6 +1,6 @@
 package org.pentaho.di.engine.api.reporting;
 
-import org.pentaho.di.engine.api.events.IPDIEvent;
+import org.pentaho.di.engine.api.events.PDIEvent;
 
 import java.io.Serializable;
 
@@ -22,7 +22,7 @@ public class Metrics implements Serializable {
   }
 
   /**
-   * Get number of {@link IPDIEvent}s into this component
+   * Get number of {@link PDIEvent}s into this component
    *
    * @return
    */
@@ -31,7 +31,7 @@ public class Metrics implements Serializable {
   }
 
   /**
-   * Get number of {@link IPDIEvent}s out from this component
+   * Get number of {@link PDIEvent}s out from this component
    *
    * @return
    */
@@ -40,7 +40,7 @@ public class Metrics implements Serializable {
   }
 
   /**
-   * Get number of {@link IPDIEvent}s dropped (errorred)
+   * Get number of {@link PDIEvent}s dropped (errorred)
    *
    * @return
    */
@@ -49,7 +49,7 @@ public class Metrics implements Serializable {
   }
 
   /**
-   * Get number of {@link IPDIEvent}s currently in-flight
+   * Get number of {@link PDIEvent}s currently in-flight
    *
    * @return
    */

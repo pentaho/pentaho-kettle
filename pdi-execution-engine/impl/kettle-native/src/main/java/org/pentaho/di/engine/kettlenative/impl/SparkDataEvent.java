@@ -3,28 +3,28 @@ package org.pentaho.di.engine.kettlenative.impl;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.api.java.function.FlatMapFunction;
-import org.pentaho.di.engine.api.model.IRow;
-import org.pentaho.di.engine.api.events.IDataEvent;
-import org.pentaho.di.engine.api.events.IPDIEventSource;
+import org.pentaho.di.engine.api.model.Row;
+import org.pentaho.di.engine.api.events.DataEvent;
+import org.pentaho.di.engine.api.events.PDIEventSource;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 
-public class SparkDataEvent implements IDataEvent {
+public class SparkDataEvent implements DataEvent {
 
   private final IExecutableOperation operation;
   private  STATE state;
-  private final List<IRow> data;
+  private final List<Row> data;
   private final JavaSparkContext sc;
-  private FlatMapFunction<IRow, IRow> function;
+  private FlatMapFunction<Row, Row> function;
 
-  private final Optional<JavaRDD<IRow>> parentRDD;
+  private final Optional<JavaRDD<Row>> parentRDD;
 
   public SparkDataEvent( IExecutableOperation op, STATE state,
-                         List<IRow> data, FlatMapFunction<IRow, IRow> function,
-                         JavaSparkContext sc, Optional<JavaRDD<IRow>> parentRDD ) {
+                         List<Row> data, FlatMapFunction<Row, Row> function,
+                         JavaSparkContext sc, Optional<JavaRDD<Row>> parentRDD ) {
     this.operation = op;
     this.state = state;
     this.function = function;
@@ -42,8 +42,8 @@ public class SparkDataEvent implements IDataEvent {
   }
 
   // materializes rdd
-  @Override public List<IRow> getRows() {
-    List<IRow> collect = getRDD().collect();
+  @Override public List<Row> getRows() {
+    List<Row> collect = getRDD().collect();
     if ( collect.size() == 0 ) {
       state = STATE.COMPLETE;
     }
@@ -53,14 +53,14 @@ public class SparkDataEvent implements IDataEvent {
     return collect;
   }
 
-  JavaRDD<IRow> getRDD() {
-    JavaRDD<IRow> rdd = parentRDD.map( prdd -> prdd.flatMap( function ) )    // RDD is incoming
+  JavaRDD<Row> getRDD() {
+    JavaRDD<Row> rdd = parentRDD.map( prdd -> prdd.flatMap( function ) )    // RDD is incoming
       .orElse( sc.parallelize( data ).flatMap( function ) );     // No parent RDD, create one from incoming data
     System.out.println( rdd.toDebugString() );
     return rdd;
   }
 
-  @Override public IPDIEventSource<IDataEvent> getEventSource() {
+  @Override public PDIEventSource<DataEvent> getEventSource() {
     return operation;
   }
 }

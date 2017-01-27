@@ -1,8 +1,8 @@
 package org.pentaho.di.trans.nextgen;
 
-import org.pentaho.di.engine.api.IExecutionContext;
-import org.pentaho.di.engine.api.model.IOperation;
-import org.pentaho.di.engine.api.reporting.IReportingEvent;
+import org.pentaho.di.engine.api.ExecutionContext;
+import org.pentaho.di.engine.api.model.Operation;
+import org.pentaho.di.engine.api.reporting.ReportingEvent;
 import org.pentaho.di.engine.api.reporting.Metrics;
 import org.pentaho.di.engine.api.reporting.Status;
 import org.pentaho.di.trans.Trans;
@@ -19,10 +19,10 @@ import org.reactivestreams.Subscription;
 public class StepInterfaceAdapter extends BaseStep {
 
 
-  private IOperation operation;
-  private IExecutionContext executionContext;
+  private Operation operation;
+  private ExecutionContext executionContext;
 
-  public StepInterfaceAdapter( IOperation op, IExecutionContext executionContext, StepMeta stepMeta,
+  public StepInterfaceAdapter( Operation op, ExecutionContext executionContext, StepMeta stepMeta,
                                TransMeta transMeta, StepDataInterface dataInterface, Trans trans ) {
     super( stepMeta, dataInterface, 0, transMeta, trans );
     operation = op;
@@ -37,15 +37,14 @@ public class StepInterfaceAdapter extends BaseStep {
   private void init() {
 
     executionContext.subscribe( operation, Metrics.class, data -> {
-        StepInterfaceAdapter.this.setLinesInput( data.getIn() );
-        StepInterfaceAdapter.this.setLinesOutput( data.getOut() );
+        StepInterfaceAdapter.this.setLinesRead( data.getIn() );
+        StepInterfaceAdapter.this.setLinesWritten( data.getOut() );
     } );
 
 
 
     executionContext.subscribe( operation, Status.class, data -> {
         switch( data ) {
-
 
           case RUNNING:
             StepInterfaceAdapter.this.setRunning( true );

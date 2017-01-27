@@ -7,13 +7,12 @@ import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.engine.api.events.IDataEvent;
-import org.pentaho.di.engine.api.IEngine;
+import org.pentaho.di.engine.api.events.DataEvent;
 import org.pentaho.di.engine.kettlenative.impl.factories.IExecutableOperationFactory;
-import org.pentaho.di.engine.api.IExecutionContext;
-import org.pentaho.di.engine.api.IExecutionResult;
-import org.pentaho.di.engine.api.model.IOperation;
-import org.pentaho.di.engine.api.model.ITransformation;
+import org.pentaho.di.engine.api.ExecutionContext;
+import org.pentaho.di.engine.api.ExecutionResult;
+import org.pentaho.di.engine.api.model.Operation;
+import org.pentaho.di.engine.api.model.Transformation;
 import org.pentaho.di.engine.api.reporting.Metrics;
 import org.pentaho.di.engine.kettlenative.impl.factories.KettleExecOperationFactory;
 import org.pentaho.di.engine.kettlenative.impl.factories.SparkExecOperationFactory;
@@ -31,7 +30,7 @@ import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class Engine implements IEngine {
+public class Engine implements org.pentaho.di.engine.api.Engine {
 
   private final ExecutorService executorService = Executors.newFixedThreadPool( 10 );
 
@@ -43,14 +42,14 @@ public class Engine implements IEngine {
   private final List<IExecutableOperationFactory> factories = ImmutableList.of(
     new SparkExecOperationFactory(), new KettleExecOperationFactory() );  // TODO: injectable, rankable
 
-  @Override public IExecutionContext prepare( ITransformation trans ) {
-    return new ExecutionContext( this, trans, Collections.emptyMap(),
+  @Override public ExecutionContext prepare( Transformation trans ) {
+    return new org.pentaho.di.engine.kettlenative.impl.ExecutionContext( this, trans, Collections.emptyMap(),
       ImmutableMap.of( "sparkcontext", javaSparkContext,
         "executor", executorService ) );
   }
 
-  CompletableFuture<IExecutionResult> execute( IExecutionContext context ) {
-    ITransformation trans = context.getTransformation();
+  CompletableFuture<ExecutionResult> execute( ExecutionContext context ) {
+    Transformation trans = context.getTransformation();
     initKettle();
     // convert ops to executable ops
     List<IExecutableOperation> execOps = getExecutableOperations( trans,
@@ -61,14 +60,14 @@ public class Engine implements IEngine {
     return getResult( trans, execOps );
   }
 
-  private List<IExecutableOperation> getExecutableOperations( ITransformation trans, IExecutionContext context ) {
+  private List<IExecutableOperation> getExecutableOperations( Transformation trans, ExecutionContext context ) {
     return trans.getOperations()
       .stream()
       .map( op -> getExecOp( op, context ) )
       .collect( Collectors.toList() );
   }
 
-  private IExecutableOperation getExecOp( IOperation op, IExecutionContext context ) {
+  private IExecutableOperation getExecOp( Operation op, ExecutionContext context ) {
     return factories.stream()
       .map( factory -> factory.create( op, context ) )
       .filter( o -> o.isPresent() )
@@ -86,20 +85,20 @@ public class Engine implements IEngine {
     );
   }
 
-  private IExecutableOperation getExecOp( IOperation op, List<IExecutableOperation> execOps ) {
+  private IExecutableOperation getExecOp( Operation op, List<IExecutableOperation> execOps ) {
     return execOps.stream()
       .filter( execOp -> execOp.getId().equals( op.getId() ) )
       .findFirst()
       .orElseThrow( () -> new RuntimeException( "no matching exec op" ) );
   }
 
-  private Stream<IExecutableOperation> sourceExecOpsStream( ITransformation trans,
+  private Stream<IExecutableOperation> sourceExecOpsStream( Transformation trans,
                                                             List<IExecutableOperation> execOps ) {
-    return ( (Transformation) trans ).getSourceOperations().stream()
+    return ( (org.pentaho.di.engine.kettlenative.impl.Transformation) trans ).getSourceOperations().stream()
       .map( op -> getExecOp( op, execOps ) );
   }
 
-  private CompletableFuture<IExecutionResult> getResult( ITransformation trans, List<IExecutableOperation> execOps ) {
+  private CompletableFuture<ExecutionResult> getResult( Transformation trans, List<IExecutableOperation> execOps ) {
     CountDownLatch countdown = new CountDownLatch( execOps.size() );
     CountdownSubscriber subscriber =
       new CountdownSubscriber( countdown );
@@ -120,15 +119,15 @@ public class Engine implements IEngine {
         }
       } )
       .thenApply( done -> {
-          Map<IOperation, Metrics> report = execOps.stream()
+          Map<Operation, Metrics> report = execOps.stream()
             .collect( Collectors.toMap( IExecutableOperation::getParent, IExecutableOperation::getMetrics ) );
-          return (IExecutionResult) () -> report;
+          return (ExecutionResult) () -> report;
           }
       );
   }
 
 
-  private class CountdownSubscriber implements Serializable, Subscriber<IDataEvent> {
+  private class CountdownSubscriber implements Serializable, Subscriber<DataEvent> {
 
     private final CountDownLatch countDownLatch;
 
@@ -140,7 +139,7 @@ public class Engine implements IEngine {
 
     }
 
-    @Override public void onNext( IDataEvent iDataEvent ) {
+    @Override public void onNext( DataEvent dataEvent ) {
     }
 
     @Override public void onError( Throwable throwable ) {

@@ -1,6 +1,6 @@
 package org.pentaho.di.engine.api.reporting;
 
-import org.pentaho.di.engine.api.model.ILogicalModelElement;
+import org.pentaho.di.engine.api.model.LogicalModelElement;
 
 import java.io.Serializable;
 import java.util.Objects;
@@ -9,10 +9,10 @@ import java.util.Objects;
  * Created by hudak on 1/25/17.
  */
 public class Topic {
-  private final ILogicalModelElement source;
+  private final LogicalModelElement source;
   private final Class<? extends Serializable> eventType;
 
-  public Topic( ILogicalModelElement source, Class<? extends Serializable> eventType ) {
+  public Topic( LogicalModelElement source, Class<? extends Serializable> eventType ) {
     this.source = source;
     this.eventType = eventType;
   }
@@ -32,7 +32,7 @@ public class Topic {
     return Objects.hash( source, eventType );
   }
 
-  public ILogicalModelElement getSource() {
+  public LogicalModelElement getSource() {
     return source;
   }
 

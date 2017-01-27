@@ -1,17 +1,17 @@
 package org.pentaho.di.engine.api.remote;
 
-import org.pentaho.di.engine.api.model.ITransformation;
-import org.pentaho.di.engine.api.reporting.IReportingEvent;
+import org.pentaho.di.engine.api.model.Transformation;
+import org.pentaho.di.engine.api.reporting.ReportingEvent;
 
 import java.io.Serializable;
 import java.util.Objects;
 
 /**
- * {@link IReportingEvent} data holder for remote execution. These objects should be passed to {@link
- * IExecutionRequest#update(Notification)} to signal when a request state should change.
+ * {@link ReportingEvent} data holder for remote execution. These objects should be passed to {@link
+ * ExecutionRequest#update(Notification)} to signal when a request state should change.
  * <p>
  * These events can also be subscribed to through the execution context.
- * Use the {@link ITransformation} as the event source.
+ * Use the {@link Transformation} as the event source.
  * <p>
  * Created by hudak on 1/26/17.
  */
@@ -38,7 +38,7 @@ public class Notification implements Serializable {
 
   public enum Type {
     /**
-     * Submit a bid to process this request. If {@link IExecutionRequest#update(Notification)} returns true, the request
+     * Submit a bid to process this request. If {@link ExecutionRequest#update(Notification)} returns true, the request
      * will expect more updates from this service.
      */
     CLAIM,
@@ -49,16 +49,16 @@ public class Notification implements Serializable {
     CLOSE
   }
 
-  static class Event implements IReportingEvent<ITransformation, Notification> {
-    private final ITransformation source;
+  static class Event implements ReportingEvent<Transformation, Notification> {
+    private final Transformation source;
     private final Notification notification;
 
-    Event( ITransformation source, Notification notification ) {
+    Event( Transformation source, Notification notification ) {
       this.source = source;
       this.notification = notification;
     }
 
-    @Override public ITransformation getSource() {
+    @Override public Transformation getSource() {
       return source;
     }
 

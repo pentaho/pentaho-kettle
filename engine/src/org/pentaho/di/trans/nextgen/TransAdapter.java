@@ -1,12 +1,12 @@
 package org.pentaho.di.trans.nextgen;
 
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.engine.api.IEngine;
-import org.pentaho.di.engine.api.IExecutionContext;
-import org.pentaho.di.engine.api.IExecutionResult;
-import org.pentaho.di.engine.api.model.IOperation;
-import org.pentaho.di.engine.api.model.ITransformation;
-import org.pentaho.di.engine.api.reporting.IReportingEvent;
+import org.pentaho.di.engine.api.Engine;
+import org.pentaho.di.engine.api.ExecutionContext;
+import org.pentaho.di.engine.api.ExecutionResult;
+import org.pentaho.di.engine.api.model.Operation;
+import org.pentaho.di.engine.api.model.Transformation;
+import org.pentaho.di.engine.api.reporting.ReportingEvent;
 import org.pentaho.di.engine.api.reporting.Status;
 import org.pentaho.di.engine.kettleclassic.ClassicUtils;
 import org.pentaho.di.trans.RowProducer;
@@ -31,16 +31,16 @@ import static org.pentaho.di.engine.kettleclassic.ClassicUtils.STEP_META_CONF_KE
  */
 public class TransAdapter extends Trans {
 
-  private final ITransformation transformation;
-  private final IExecutionContext executionContext;
-  private CompletableFuture<IExecutionResult>
+  private final Transformation transformation;
+  private final ExecutionContext executionContext;
+  private CompletableFuture<ExecutionResult>
     executionResultFuture;
-  private Map<IOperation, StepInterfaceAdapter>
+  private Map<Operation, StepInterfaceAdapter>
     operationToStep;
-  private Map<IOperation, StepMetaDataCombi>
+  private Map<Operation, StepMetaDataCombi>
     operationToCombi;
 
-  public TransAdapter( IEngine engine, TransMeta transMeta ) {
+  public TransAdapter( Engine engine, TransMeta transMeta ) {
     transformation = ClassicUtils.convert( transMeta );
     executionContext = engine.prepare( transformation );
     this.transMeta = transMeta;
@@ -50,6 +50,7 @@ public class TransAdapter extends Trans {
 
 
   @Override public void killAll() {
+    System.out.println("killAll");
   }
 
   @Override public void prepareExecution( String[] arguments ) throws KettleException {
@@ -72,12 +73,13 @@ public class TransAdapter extends Trans {
 
     // Subscribe to status and notify trans listeners
     executionContext.subscribe( transformation, Status.class,
-      new Subscriber<IReportingEvent<ITransformation, Status>>() {
+      new Subscriber<ReportingEvent<Transformation, Status>>() {
         @Override public void onSubscribe( Subscription s ) {
-
+          s.request( Long.MAX_VALUE );
         }
 
-        @Override public void onNext( IReportingEvent<ITransformation, Status> iTransformationStatusIReportingEvent ) {
+        @Override public void onNext( ReportingEvent<Transformation, Status> iTransformationStatusIReportingEvent ) {
+          addStepPerformanceSnapShot();
           getTransListeners().forEach( l -> {
             try {
               switch( iTransformationStatusIReportingEvent.getData() ) {
@@ -93,6 +95,7 @@ public class TransAdapter extends Trans {
                   break;
                 case FINISHED:
                   l.transFinished( TransAdapter.this );
+                  setFinished( true );
                   break;
               }
             } catch ( KettleException e ) {
@@ -117,7 +120,7 @@ public class TransAdapter extends Trans {
 
   @Override public void waitUntilFinished() {
     try {
-      IExecutionResult iExecutionResult = executionResultFuture.get();
+      ExecutionResult iExecutionResult = executionResultFuture.get();
     } catch ( InterruptedException e ) {
       throw new RuntimeException("Waiting for transformation to be finished interrupted!", e );
     } catch ( ExecutionException e ) {

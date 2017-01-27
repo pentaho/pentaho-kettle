@@ -20,7 +20,7 @@ import java.util.Optional;
  * If the requested type is not compatible, or if the index is OOB,
  * the implementation should throw RowException.
  */
-public interface IRow extends Serializable {
+public interface Row extends Serializable {
   int size();
 
   List<String> getColumnNames();
