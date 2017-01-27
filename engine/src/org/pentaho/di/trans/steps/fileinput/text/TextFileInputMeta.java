@@ -894,7 +894,7 @@ public class TextFileInputMeta extends
       allocate( nrfiles, nrfields, nrfilters );
 
       for ( int i = 0; i < nrfiles; i++ ) {
-        inputFiles.fileName[i] = loadSourceRep( rep, id_step, i );
+        inputFiles.fileName[i] = loadSourceRep( rep, id_step, i, metaStore );
         inputFiles.fileMask[i] = rep.getStepAttributeString( id_step, i, "file_mask" );
         inputFiles.excludeFileMask[i] = rep.getStepAttributeString( id_step, i, "exclude_file_mask" );
         inputFiles.fileRequired[i] = rep.getStepAttributeString( id_step, i, "file_required" );
@@ -1289,7 +1289,7 @@ public class TextFileInputMeta extends
     retVal.append( "      " ).append( XMLHandler.addTagValue( "name", source ) );
   }
 
-  protected String loadSourceRep( Repository rep, ObjectId id_step, int i ) throws KettleException {
+  protected String loadSourceRep( Repository rep, ObjectId id_step, int i, IMetaStore metaStore ) throws KettleException {
     return rep.getStepAttributeString( id_step, i, "file_name" );
   }
 
