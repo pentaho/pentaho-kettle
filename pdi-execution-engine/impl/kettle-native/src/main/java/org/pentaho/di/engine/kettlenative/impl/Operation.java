@@ -2,8 +2,7 @@ package org.pentaho.di.engine.kettlenative.impl;
 
 import com.google.common.collect.ImmutableMap;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.engine.api.model.IHop;
-import org.pentaho.di.engine.api.model.IOperation;
+import org.pentaho.di.engine.api.model.Hop;
 import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
@@ -13,16 +12,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class Operation implements IOperation {
+public class Operation implements org.pentaho.di.engine.api.model.Operation {
 
   private final String id;
   private final String config;
 
-  private final List<IHop> hopsIn;
-  private final List<IHop> hopsOut;
+  private final List<Hop> hopsIn;
+  private final List<Hop> hopsOut;
 
   private Operation(
-    StepMeta stepMeta, TransMeta transMeta, Map<TransHopMeta, IHop> hops, Map<StepMeta, IOperation> operations ) {
+    StepMeta stepMeta, TransMeta transMeta, Map<TransHopMeta, Hop> hops, Map<StepMeta, org.pentaho.di.engine.api.model.Operation> operations ) {
     operations.put( stepMeta, this );
     id = stepMeta.getName();
     try {
@@ -30,21 +29,21 @@ public class Operation implements IOperation {
     } catch ( KettleException e ) {
       throw new RuntimeException( e );
     }
-    hopsIn = Hop.convertTo( transMeta, stepMeta, operations, hops );
-    hopsOut = Hop.convertFrom( transMeta, stepMeta, operations, hops );
+    hopsIn = org.pentaho.di.engine.kettlenative.impl.Hop.convertTo( transMeta, stepMeta, operations, hops );
+    hopsOut = org.pentaho.di.engine.kettlenative.impl.Hop.convertFrom( transMeta, stepMeta, operations, hops );
   }
 
-  public static List<IOperation> convert( TransMeta transMeta ) {
+  public static List<org.pentaho.di.engine.api.model.Operation> convert( TransMeta transMeta ) {
     List<StepMeta> metas = transMeta.getSteps();
-    Map<TransHopMeta, IHop> hops = new HashMap<>();
-    Map<StepMeta, IOperation> operations = new HashMap<>();
+    Map<TransHopMeta, Hop> hops = new HashMap<>();
+    Map<StepMeta, org.pentaho.di.engine.api.model.Operation> operations = new HashMap<>();
     return metas.stream()
       .map( meta -> convert( meta, transMeta, operations, hops ) )
       .collect( Collectors.toList() );
   }
 
-  public static IOperation convert( StepMeta stepMeta, TransMeta transMeta, Map<StepMeta, IOperation> convertedOps,
-                                    Map<TransHopMeta, IHop> hops ) {
+  public static org.pentaho.di.engine.api.model.Operation convert( StepMeta stepMeta, TransMeta transMeta, Map<StepMeta, org.pentaho.di.engine.api.model.Operation> convertedOps,
+                                                                   Map<TransHopMeta, Hop> hops ) {
     return convertedOps
       .computeIfAbsent( stepMeta, meta -> new Operation( meta, transMeta, hops, convertedOps ) );
   }
@@ -53,19 +52,19 @@ public class Operation implements IOperation {
     return id;
   }
 
-  @Override public List<IOperation> getFrom() {
+  @Override public List<org.pentaho.di.engine.api.model.Operation> getFrom() {
     return getHopsIn().stream().map( out -> out.getFrom() ).collect( Collectors.toList() );
   }
 
-  @Override public List<IOperation> getTo() {
+  @Override public List<org.pentaho.di.engine.api.model.Operation> getTo() {
     return getHopsOut().stream().map( out -> out.getTo() ).collect( Collectors.toList() );
   }
 
-  @Override public List<IHop> getHopsIn() {
+  @Override public List<Hop> getHopsIn() {
     return hopsIn;
   }
 
-  @Override public List<IHop> getHopsOut() {
+  @Override public List<Hop> getHopsOut() {
     return hopsOut;
   }
 

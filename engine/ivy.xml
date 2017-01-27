@@ -16,6 +16,7 @@
 
   <dependencies defaultconf="default-ext->default">
 
+    <dependency org="org.pentaho"                name="pdi-execution-engine-classic"          rev="${project.revision}"   changing="true"/>
 
     <!-- Kettle dependencies -->
     <dependency org="${ivy.artifact.group}"                name="kettle-core"          rev="${dependency.kettle.revision}"   changing="true"/>
@@ -117,7 +118,7 @@
     <dependency org="org.powermock" name="powermock-module-junit4" rev="1.6.6" conf="test->default" />
     <dependency org="org.powermock" name="powermock-api-mockito" rev="1.6.6" conf="test->default" />
 	<dependency org="junit"               name="junit"         rev="4.7"     conf="test->default" transitive="false"/>
- 
+
 
 	<exclude org="org.eclipse.jetty.orbit" module="javax.servlet"/>
   </dependencies>

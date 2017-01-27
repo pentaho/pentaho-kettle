@@ -1,8 +1,8 @@
 package org.pentaho.di.engine.api.remote;
 
-import org.pentaho.di.engine.api.model.ILogicalModelElement;
-import org.pentaho.di.engine.api.model.ITransformation;
-import org.pentaho.di.engine.api.reporting.IReportingEvent;
+import org.pentaho.di.engine.api.model.LogicalModelElement;
+import org.pentaho.di.engine.api.model.Transformation;
+import org.pentaho.di.engine.api.reporting.ReportingEvent;
 
 import java.io.Serializable;
 import java.util.Map;
@@ -13,12 +13,12 @@ import java.util.Set;
  * <p>
  * Created by hudak on 1/25/17.
  */
-public interface IExecutionRequest {
+public interface ExecutionRequest {
   Map<String, Object> getParameters();
 
   Map<String, Object> getEnvironment();
 
-  ITransformation getTransformation();
+  Transformation getTransformation();
 
   Map<String, Set<Class<? extends Serializable>>> getReportingTopics();
 
@@ -34,14 +34,14 @@ public interface IExecutionRequest {
   boolean update( Notification notification );
 
   /**
-   * Update a {@link ILogicalModelElement} from this request.
+   * Update a {@link LogicalModelElement} from this request.
    * This will be routed to the proper event stream on the client.
    * <p>
    * The update will be rejected and method will return false if the request has not yet been claimed or if the request
    * has been canceled
    *
-   * @param sourceId {@link ILogicalModelElement#getId()}
-   * @param value    {@link IReportingEvent#getData()}
+   * @param sourceId {@link LogicalModelElement#getId()}
+   * @param value    {@link ReportingEvent#getData()}
    * @return true if update was accepted
    */
   boolean update( String sourceId, Serializable value );

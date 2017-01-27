@@ -1,7 +1,7 @@
 package org.pentaho.di.engine.model;
 
 import com.google.common.collect.ImmutableMap;
-import org.pentaho.di.engine.api.IHasConfig;
+import org.pentaho.di.engine.api.HasConfig;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -9,7 +9,7 @@ import java.util.Map;
 /**
  * Created by hudak on 1/18/17.
  */
-abstract class Configurable implements IHasConfig {
+abstract class Configurable implements HasConfig {
   private final HashMap<String, Object> config = new HashMap<>();
 
   @Override public Map<String, Object> getConfig() {

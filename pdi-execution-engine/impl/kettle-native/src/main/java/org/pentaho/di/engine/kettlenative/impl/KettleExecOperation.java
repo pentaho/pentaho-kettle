@@ -7,11 +7,11 @@ import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.engine.api.model.IRow;
-import org.pentaho.di.engine.api.events.IDataEvent;
-import org.pentaho.di.engine.api.model.IOperation;
-import org.pentaho.di.engine.api.events.IPDIEventSource;
-import org.pentaho.di.engine.api.model.ITransformation;
+import org.pentaho.di.engine.api.model.Row;
+import org.pentaho.di.engine.api.events.DataEvent;
+import org.pentaho.di.engine.api.model.Operation;
+import org.pentaho.di.engine.api.events.PDIEventSource;
+import org.pentaho.di.engine.api.model.Transformation;
 import org.pentaho.di.engine.api.converter.RowConversionManager;
 import org.pentaho.di.engine.api.reporting.Metrics;
 import org.pentaho.di.trans.Trans;
@@ -37,12 +37,12 @@ import java.util.stream.Stream;
 import static org.pentaho.di.engine.kettlenative.impl.KettleNativeUtil.createTrans;
 import static org.pentaho.di.engine.kettlenative.impl.KettleNativeUtil.getTransMeta;
 
-public class KettleExecOperation implements IExecutableOperation, Subscriber<IDataEvent> {
+public class KettleExecOperation implements IExecutableOperation, Subscriber<DataEvent> {
 
-  private final IOperation operation;
+  private final Operation operation;
   private transient final Trans trans;
   private transient final ExecutorService executor;
-  private List<Subscriber<? super IDataEvent>> subscribers = new ArrayList<>();
+  private List<Subscriber<? super DataEvent>> subscribers = new ArrayList<>();
   private AtomicBoolean done = new AtomicBoolean( false );
   private transient StepDataInterface data;
   private transient StepInterface step;
@@ -54,7 +54,7 @@ public class KettleExecOperation implements IExecutableOperation, Subscriber<IDa
   private RowConversionManager conversionManager
     = new RowConversionManager( ImmutableList.of( new KettleRowConverter(), new SparkRowConverter() ) );
 
-  protected KettleExecOperation( IOperation op, ITransformation transformation, ExecutorService executorService ) {
+  protected KettleExecOperation( Operation op, Transformation transformation, ExecutorService executorService ) {
     this.operation = op;
     trans = createTrans();
     transMeta = getTransMeta( transformation );
@@ -63,16 +63,16 @@ public class KettleExecOperation implements IExecutableOperation, Subscriber<IDa
     initializeStepMeta();
   }
 
-  public static IExecutableOperation compile( IOperation operation, ITransformation trans,
+  public static IExecutableOperation compile( Operation operation, Transformation trans,
                                               ExecutorService executorService ) {
     return new KettleExecOperation( operation, trans, executorService );
   }
 
-  @Override public void subscribe( Subscriber<? super IDataEvent> subscriber ) {
+  @Override public void subscribe( Subscriber<? super DataEvent> subscriber ) {
     subscribers.add( subscriber );
   }
 
-  @Override public void subscribeTo( IPDIEventSource<IDataEvent> source ) {
+  @Override public void subscribeTo( PDIEventSource<DataEvent> source ) {
     source.subscribe( this );
   }
 
@@ -80,7 +80,7 @@ public class KettleExecOperation implements IExecutableOperation, Subscriber<IDa
     onNext( KettleDataEvent.empty() );
   }
 
-  @Override public IOperation getParent() {
+  @Override public Operation getParent() {
     return operation;
   }
 
@@ -104,7 +104,7 @@ public class KettleExecOperation implements IExecutableOperation, Subscriber<IDa
 
   }
 
-  @Override public void onNext( IDataEvent dataEvent ) {
+  @Override public void onNext( DataEvent dataEvent ) {
     Preconditions.checkNotNull( dataEvent );
     if ( !started.getAndSet( true ) ) {
       startStep();
@@ -115,7 +115,7 @@ public class KettleExecOperation implements IExecutableOperation, Subscriber<IDa
 
           getInputRowset( dataEvent ).ifPresent(
             rowset -> {
-              List<IRow> rows = dataEvent.getRows();
+              List<Row> rows = dataEvent.getRows();
               final RowMetaInterface rowMetaInterface =
                 conversionManager.convert( rows.get( 0 ), RowMetaInterface.class )
 
@@ -147,11 +147,11 @@ public class KettleExecOperation implements IExecutableOperation, Subscriber<IDa
 
   }
 
-  private Object[] getRowObjects( IRow row ) {
+  private Object[] getRowObjects( Row row ) {
     return row.getObjects().orElse( new Object[row.size()] );
   }
 
-  private void terminalRow( IDataEvent dataEvent ) {
+  private void terminalRow( DataEvent dataEvent ) {
     try {
       getInputRowset( dataEvent ).ifPresent( rowset -> rowset.setDone() );
     } catch ( KettleStepException e ) {
@@ -161,7 +161,7 @@ public class KettleExecOperation implements IExecutableOperation, Subscriber<IDa
 
 
 
-  private Optional<RowSet> getInputRowset( IDataEvent dataEvent ) throws KettleStepException {
+  private Optional<RowSet> getInputRowset( DataEvent dataEvent ) throws KettleStepException {
     return Optional.ofNullable( ( (BaseStep) step ).findInputRowSet( dataEvent.getEventSource().getId() ) );
   }
 
@@ -222,7 +222,7 @@ public class KettleExecOperation implements IExecutableOperation, Subscriber<IDa
     return stepMeta.getParentTransMeta().findNextSteps( stepMeta ).stream();
   }
 
-  protected List<Subscriber<? super IDataEvent>> getSubscribers() {
+  protected List<Subscriber<? super DataEvent>> getSubscribers() {
     return subscribers;
   }
 
@@ -240,7 +240,7 @@ public class KettleExecOperation implements IExecutableOperation, Subscriber<IDa
         return super.putRow( rowMeta, rowData );
       }
 
-      private Optional<Subscriber<? super IDataEvent>> getSubscriber() {
+      private Optional<Subscriber<? super DataEvent>> getSubscriber() {
         return KettleExecOperation.this.subscribers.stream()
           .filter( sub -> ( (IExecutableOperation) sub ).getId().equals( next.getName() ) )
           .findFirst();

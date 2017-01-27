@@ -61,7 +61,7 @@ import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.parameters.UnknownParamException;
-import org.pentaho.di.engine.api.IEngine;
+import org.pentaho.di.engine.api.Engine;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.gui.GUIResource;
@@ -110,7 +110,7 @@ public abstract class ConfigurationDialog extends Dialog {
   private FormData fdComposite;
   private CTabFolder tabFolder;
   private Button alwaysShowOption;
-  private IEngine selectedEngine;
+  private Engine selectedEngine;
   protected Control lastWidget;
   protected Button wExecLocal;
 
@@ -477,7 +477,7 @@ public abstract class ConfigurationDialog extends Dialog {
           stackedLayoutComposite.layout();
           try {
             ConfigurationDialog.this.setSelectedEngine(
-              (IEngine) PluginRegistry.getInstance().loadClass( enginePlugin) );
+              (Engine) PluginRegistry.getInstance().loadClass( enginePlugin) );
           } catch ( KettlePluginException e1 ) {
             e1.printStackTrace();
           }
@@ -616,11 +616,11 @@ public abstract class ConfigurationDialog extends Dialog {
 
   protected abstract void optionsSectionControls();
 
-  public void setSelectedEngine( IEngine selectedEngine ) {
+  public void setSelectedEngine( Engine selectedEngine ) {
     this.selectedEngine = selectedEngine;
   }
 
-  public IEngine getSelectedEngine() {
+  public Engine getSelectedEngine() {
     return selectedEngine;
   }
 }

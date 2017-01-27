@@ -5,7 +5,7 @@ import org.pentaho.di.core.exception.KettleMissingPluginsException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.xml.XMLHandler;
-import org.pentaho.di.engine.api.model.ITransformation;
+import org.pentaho.di.engine.api.model.Transformation;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.w3c.dom.Document;
@@ -16,7 +16,7 @@ import java.util.ArrayList;
 
 public class KettleNativeUtil {
 
-  public static TransMeta getTransMeta( ITransformation transformation ) {
+  public static TransMeta getTransMeta( Transformation transformation ) {
     String config = transformation.getConfig( "TransMeta.xml", String.class )
       .orElseThrow( IllegalStateException::new );
 

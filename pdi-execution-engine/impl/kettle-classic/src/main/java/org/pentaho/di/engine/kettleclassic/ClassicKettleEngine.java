@@ -5,10 +5,10 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.DefaultLogLevel;
 import org.pentaho.di.core.logging.LoggingObjectType;
 import org.pentaho.di.core.logging.SimpleLoggingObject;
-import org.pentaho.di.engine.api.IEngine;
-import org.pentaho.di.engine.api.IExecutionContext;
-import org.pentaho.di.engine.api.IExecutionResult;
-import org.pentaho.di.engine.api.model.ITransformation;
+import org.pentaho.di.engine.api.Engine;
+import org.pentaho.di.engine.api.ExecutionContext;
+import org.pentaho.di.engine.api.ExecutionResult;
+import org.pentaho.di.engine.api.model.Transformation;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.trans.TransMeta;
@@ -21,14 +21,14 @@ import java.util.concurrent.CompletableFuture;
 /**
  * Created by nbaker on 1/4/17.
  */
-public class ClassicKettleEngine implements IEngine {
+public class ClassicKettleEngine implements Engine {
 
-  @Override public IExecutionContext prepare( ITransformation trans ) {
+  @Override public ExecutionContext prepare( Transformation trans ) {
     return new ClassicKettleExecutionContext( this, trans );
   }
 
-  CompletableFuture<IExecutionResult> execute( ClassicKettleExecutionContext context ) {
-    CompletableFuture<IExecutionResult> future = new CompletableFuture<>();
+  CompletableFuture<ExecutionResult> execute( ClassicKettleExecutionContext context ) {
+    CompletableFuture<ExecutionResult> future = new CompletableFuture<>();
     ClassicTransformation transformation = context.getMaterializedTransformation();
     TransMeta transMeta = transformation.getTransMeta();
     TransExecutionConfiguration executionConfiguration = context.getExecutionConfiguration();

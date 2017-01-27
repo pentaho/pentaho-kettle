@@ -4,14 +4,14 @@ import com.google.common.collect.ImmutableMap;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.subjects.PublishSubject;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.engine.api.IExecutionContext;
-import org.pentaho.di.engine.api.model.IHop;
-import org.pentaho.di.engine.api.model.IOperation;
-import org.pentaho.di.engine.api.model.ITransformation;
+import org.pentaho.di.engine.api.ExecutionContext;
+import org.pentaho.di.engine.api.model.Hop;
+import org.pentaho.di.engine.api.model.Operation;
+import org.pentaho.di.engine.api.model.Transformation;
 import org.pentaho.di.engine.api.reporting.Status;
-import org.pentaho.di.engine.api.model.ILogicalModelElement;
-import org.pentaho.di.engine.api.model.IMaterializedModelElement;
-import org.pentaho.di.engine.api.reporting.IReportingEvent;
+import org.pentaho.di.engine.api.model.LogicalModelElement;
+import org.pentaho.di.engine.api.model.MaterializedModelElement;
+import org.pentaho.di.engine.api.reporting.ReportingEvent;
 import org.pentaho.di.engine.api.reporting.StatusEvent;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransListener;
@@ -29,15 +29,15 @@ import static java.util.stream.Collectors.toList;
 /**
  * Created by nbaker on 1/6/17.
  */
-public class ClassicTransformation implements ITransformation, IMaterializedModelElement {
+public class ClassicTransformation implements Transformation, MaterializedModelElement {
   private List<ClassicOperation> operations;
   private Trans trans;
   private ClassicKettleExecutionContext executionContext;
   private TransMeta transMeta;
-  private ITransformation logicalTransformation;
+  private Transformation logicalTransformation;
 
-  private PublishSubject<StatusEvent<ITransformation>> statusPublisher = PublishSubject.create();
-  private Map<Class<? extends Serializable>, PublishSubject<? extends IReportingEvent>> eventPublisherMap =
+  private PublishSubject<StatusEvent<Transformation>> statusPublisher = PublishSubject.create();
+  private Map<Class<? extends Serializable>, PublishSubject<? extends ReportingEvent>> eventPublisherMap =
     new HashMap<>();
 
   {
@@ -45,16 +45,16 @@ public class ClassicTransformation implements ITransformation, IMaterializedMode
   }
 
 
-  public ClassicTransformation( IExecutionContext executionContext, ITransformation logicalTransformation ) {
+  public ClassicTransformation( ExecutionContext executionContext, Transformation logicalTransformation ) {
     this.executionContext = (ClassicKettleExecutionContext) executionContext;
     this.logicalTransformation = logicalTransformation;
   }
 
-  @Override public List<IOperation> getOperations() {
+  @Override public List<Operation> getOperations() {
     return operations.stream().collect( toList() );
   }
 
-  @Override public List<IHop> getHops() {
+  @Override public List<Hop> getHops() {
     return Collections.emptyList();
   }
 
@@ -91,8 +91,7 @@ public class ClassicTransformation implements ITransformation, IMaterializedMode
     }
 
     // propagate to operations
-    operations.forEach( IMaterializedModelElement::init );
-
+    operations.forEach( MaterializedModelElement::init );
   }
 
   public Trans getTrans() {
@@ -104,7 +103,7 @@ public class ClassicTransformation implements ITransformation, IMaterializedMode
   }
 
   @Override
-  public <D extends Serializable> List<Publisher<? extends IReportingEvent>> getPublisher(
+  public <D extends Serializable> List<Publisher<? extends ReportingEvent>> getPublisher(
     Class<D> type ) {
     return eventPublisherMap.entrySet().stream()
       .filter( e -> type.isAssignableFrom( e.getKey() ) )
@@ -121,7 +120,7 @@ public class ClassicTransformation implements ITransformation, IMaterializedMode
     return ImmutableMap.of();
   }
 
-  @Override public ILogicalModelElement getLogicalElement() {
+  @Override public LogicalModelElement getLogicalElement() {
     return logicalTransformation;
   }
 }

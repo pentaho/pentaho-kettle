@@ -2,8 +2,8 @@ package org.pentaho.di.engine.kettleclassic;
 
 import org.junit.Test;
 import org.pentaho.di.core.KettleEnvironment;
-import org.pentaho.di.engine.api.IExecutionResult;
-import org.pentaho.di.engine.api.model.ITransformation;
+import org.pentaho.di.engine.api.ExecutionResult;
+import org.pentaho.di.engine.api.model.Transformation;
 import org.pentaho.di.engine.api.reporting.Status;
 import org.pentaho.di.engine.api.reporting.Metrics;
 import org.pentaho.di.trans.TransMeta;
@@ -21,7 +21,7 @@ public class ClassicKettleEngineTest {
     KettleEnvironment.init();
     ClassicKettleEngine engine = new ClassicKettleEngine();
     TransMeta meta = new TransMeta( "src/test/resources/test.ktr" );
-    ITransformation transformation = ClassicUtils.convert( meta );
+    Transformation transformation = ClassicUtils.convert( meta );
     ClassicKettleExecutionContext context = (ClassicKettleExecutionContext) engine.prepare( transformation );
 
     context.subscribe( transformation, Serializable.class, d -> {
@@ -41,7 +41,7 @@ public class ClassicKettleEngineTest {
       System.out.println( "Received Operation Metrics event: \n" + d );
     } );
 
-    IExecutionResult result = context.execute().get( 30, TimeUnit.SECONDS );
+    ExecutionResult result = context.execute().get( 30, TimeUnit.SECONDS );
   }
 
 }

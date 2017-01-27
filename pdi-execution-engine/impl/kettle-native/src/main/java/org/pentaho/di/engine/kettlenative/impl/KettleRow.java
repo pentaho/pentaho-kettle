@@ -5,7 +5,7 @@ import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.xml.XMLHandler;
-import org.pentaho.di.engine.api.model.IRow;
+import org.pentaho.di.engine.api.model.Row;
 import org.pentaho.di.engine.api.RowException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-public class KettleRow implements IRow {
+public class KettleRow implements Row {
 
   private transient RowMetaInterface rowMeta;
   private final Object[] values;

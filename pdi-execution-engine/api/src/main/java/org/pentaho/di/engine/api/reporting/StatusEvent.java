@@ -1,11 +1,11 @@
 package org.pentaho.di.engine.api.reporting;
 
-import org.pentaho.di.engine.api.model.ILogicalModelElement;
+import org.pentaho.di.engine.api.model.LogicalModelElement;
 
 /**
  * Created by nbaker on 1/17/17.
  */
-public class StatusEvent<S extends ILogicalModelElement> implements IReportingEvent<S, Status> {
+public class StatusEvent<S extends LogicalModelElement> implements ReportingEvent<S, Status> {
   private final S source;
   private final Status status;
 

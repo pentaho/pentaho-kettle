@@ -7,7 +7,7 @@ import java.util.Optional;
  * I can haz config?
  * Created by hudak on 1/17/17.
  */
-public interface IHasConfig {
+public interface HasConfig {
   Map<String, Object> getConfig();
 
   default Optional<Object> getConfig( String key ) {

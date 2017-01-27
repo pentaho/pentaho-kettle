@@ -25,7 +25,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.xml.XMLHandler;
-import org.pentaho.di.engine.api.IEngine;
+import org.pentaho.di.engine.api.Engine;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -35,7 +35,7 @@ import java.util.List;
 import java.util.Map;
 
 
-@PluginMainClassType( IEngine.class )
+@PluginMainClassType( Engine.class )
 @PluginAnnotationType( EnginePlugin.class )
 public class EnginePluginType extends BasePluginType implements PluginTypeInterface {
 

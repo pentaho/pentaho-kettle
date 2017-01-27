@@ -6,10 +6,10 @@ import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleMissingPluginsException;
 import org.pentaho.di.core.exception.KettleXMLException;
-import org.pentaho.di.engine.api.IExecutionContext;
-import org.pentaho.di.engine.api.IExecutionResult;
-import org.pentaho.di.engine.api.model.IOperation;
-import org.pentaho.di.engine.api.model.ITransformation;
+import org.pentaho.di.engine.api.ExecutionContext;
+import org.pentaho.di.engine.api.ExecutionResult;
+import org.pentaho.di.engine.api.model.Operation;
+import org.pentaho.di.engine.api.model.Transformation;
 import org.pentaho.di.engine.api.reporting.Metrics;
 import org.pentaho.di.trans.TransMeta;
 
@@ -34,16 +34,16 @@ public class EngineITest {
   @Test
   public void testExec() throws KettleXMLException, KettleMissingPluginsException, InterruptedException {
     TransMeta meta = new TransMeta( getClass().getClassLoader().getResource( "lorem.ktr" ).getFile() );
-    ITransformation trans = Transformation.convert( meta );
-    IExecutionContext executionContext = engine.prepare( trans );
+    Transformation trans = org.pentaho.di.engine.kettlenative.impl.Transformation.convert( meta );
+    ExecutionContext executionContext = engine.prepare( trans );
     engine.execute( executionContext );
   }
 
   @Test
   public void test2Sources1Sink()
     throws KettleXMLException, KettleMissingPluginsException, InterruptedException, ExecutionException {
-    IExecutionResult result = getTestExecutionResult( "2InputsWithConsistentColumns.ktr" );
-    Map<IOperation, Metrics> reports = result.getDataEventReport();
+    ExecutionResult result = getTestExecutionResult( "2InputsWithConsistentColumns.ktr" );
+    Map<Operation, Metrics> reports = result.getDataEventReport();
     assertThat( reports.size(), is( 3 ) );
     Metrics dataGrid1 = getByName( "Data Grid", reports );
     Metrics dataGrid2 = getByName( "Data Grid 2", reports );
@@ -58,8 +58,8 @@ public class EngineITest {
   @Test
   public void test1source2trans1sink()
     throws KettleXMLException, KettleMissingPluginsException, InterruptedException, ExecutionException {
-    IExecutionResult result = getTestExecutionResult( "1source.2Trans.1sink.ktr" );
-    Map<IOperation, Metrics> reports = result.getDataEventReport();
+    ExecutionResult result = getTestExecutionResult( "1source.2Trans.1sink.ktr" );
+    Map<Operation, Metrics> reports = result.getDataEventReport();
     assertThat( reports.size(), is( 5 ) );
     System.out.println( reports );
 
@@ -68,8 +68,8 @@ public class EngineITest {
   @Test
   public void simpleFilter()
     throws KettleXMLException, KettleMissingPluginsException, InterruptedException, ExecutionException {
-    IExecutionResult result = getTestExecutionResult( "simpleFilter.ktr" );
-    Map<IOperation, Metrics> reports = result.getDataEventReport();
+    ExecutionResult result = getTestExecutionResult( "simpleFilter.ktr" );
+    Map<Operation, Metrics> reports = result.getDataEventReport();
     System.out.println( reports );
 
   }
@@ -77,8 +77,8 @@ public class EngineITest {
   @Test
   public void testLookup()
     throws KettleXMLException, KettleMissingPluginsException, InterruptedException, ExecutionException {
-    IExecutionResult result = getTestExecutionResult( "SparkSample.ktr" );
-    Map<IOperation, Metrics> reports = result.getDataEventReport();
+    ExecutionResult result = getTestExecutionResult( "SparkSample.ktr" );
+    Map<Operation, Metrics> reports = result.getDataEventReport();
     Thread.sleep( 100 );  // Don't check before file is done being written
     assertThat( getByName( "Merged Output", reports ).getOut(), is( 2001l ) );  // hmm, out + written
     System.out.println( reports );
@@ -89,23 +89,23 @@ public class EngineITest {
   public void testChainedCalc()
     throws KettleXMLException, KettleMissingPluginsException, InterruptedException, ExecutionException {
     // executes a series of Calculation steps as a chain of Spark FlatMapFunctions.
-    IExecutionResult result = getTestExecutionResult( "StringCalc.ktr" );
-    Map<IOperation, Metrics> reports = result.getDataEventReport();
+    ExecutionResult result = getTestExecutionResult( "StringCalc.ktr" );
+    Map<Operation, Metrics> reports = result.getDataEventReport();
     System.out.println( reports );
 
   }
 
-  private IExecutionResult getTestExecutionResult( String transName )
+  private ExecutionResult getTestExecutionResult( String transName )
     throws KettleXMLException, KettleMissingPluginsException, InterruptedException,
     ExecutionException {
     TransMeta meta = new TransMeta( getClass().getClassLoader().getResource( transName ).getFile() );
-    ITransformation trans = Transformation.convert( meta );
-    IExecutionContext executionContext = engine.prepare( trans );
-    Future<IExecutionResult> resultFuture = engine.execute( executionContext );
+    Transformation trans = org.pentaho.di.engine.kettlenative.impl.Transformation.convert( meta );
+    ExecutionContext executionContext = engine.prepare( trans );
+    Future<ExecutionResult> resultFuture = engine.execute( executionContext );
     return resultFuture.get();
   }
 
-  private Metrics getByName( String name, Map<IOperation, Metrics> reports ) {
+  private Metrics getByName( String name, Map<Operation, Metrics> reports ) {
     return reports.keySet().stream()
       .filter( report -> report.getId().equals( name ) )
       .findFirst()

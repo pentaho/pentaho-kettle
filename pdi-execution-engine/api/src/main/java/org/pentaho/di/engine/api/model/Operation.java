@@ -1,6 +1,6 @@
 package org.pentaho.di.engine.api.model;
 
-import org.pentaho.di.engine.api.IHasConfig;
+import org.pentaho.di.engine.api.HasConfig;
 
 import java.util.List;
 
@@ -12,13 +12,13 @@ import java.util.List;
  * which is associated with the behavior specific to
  * an IEngine.
  */
-public interface IOperation extends ILogicalModelElement, IHasConfig {
+public interface Operation extends LogicalModelElement, HasConfig {
 
-  List<IOperation> getFrom();
-  List<IOperation> getTo();
+  List<Operation> getFrom();
+  List<Operation> getTo();
 
 
-  List<IHop> getHopsIn();
-  List<IHop> getHopsOut();
+  List<Hop> getHopsIn();
+  List<Hop> getHopsOut();
 
 }
