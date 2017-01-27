@@ -23,6 +23,7 @@
 package org.pentaho.di.ui.spoon;
 
 import org.eclipse.swt.browser.Browser;
+import org.eclipse.swt.browser.ProgressListener;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -33,6 +34,7 @@ import org.pentaho.xul.swt.tab.TabSet;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -76,7 +78,7 @@ public class ExpandedContentManagerTest {
     when( transGraphMock.getChildren() ).thenReturn( children );
     ExpandedContentManager.createExpandedContent( transGraphMock, "" );
     verify( browser ).setUrl( "" );
-    verify( browser ).refresh();
+    verify( browser ).addProgressListener( any( ProgressListener.class ) );
   }
 
   @Test
