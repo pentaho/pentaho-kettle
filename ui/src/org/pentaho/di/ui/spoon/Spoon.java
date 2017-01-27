@@ -5077,8 +5077,9 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     String activePerspectiveId = activePerspective.getId();
     boolean etlPerspective = activePerspectiveId.equals( MainSpoonPerspective.ID );
     if ( rep != null && etlPerspective ) {
-      meta.setObjectId( null );
-      meta.setFilename( null );
+      if ( meta.getObjectId() == null ) {
+        meta.setFilename( null );
+      }
       saved = saveToRepository( meta );
     } else {
       if ( meta.getFilename() != null ) {
