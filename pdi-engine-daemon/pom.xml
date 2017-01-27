@@ -6,13 +6,20 @@
 
   <parent>
     <groupId>org.pentaho</groupId>
-    <artifactId>pentaho-ce-jar-parent-pom</artifactId>
+    <artifactId>pentaho-ce-parent-pom</artifactId>
     <version>7.1-SNAPSHOT</version>
   </parent>
 
   <groupId>org.pentaho</groupId>
-  <artifactId>pdi-engine-api</artifactId>
+  <artifactId>pdi-engine-daemon</artifactId>
   <version>7.1-SNAPSHOT</version>
-  <packaging>jar</packaging>
+  <packaging>pom</packaging>
+
+  <modules>
+    <module>assemblies</module>
+    <module>features</module>
+    <module>pdi-daemon-spark</module>
+    <module>pdi-daemon-hdfs</module>
+  </modules>
 
 </project>
