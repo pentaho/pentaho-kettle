@@ -20,6 +20,13 @@ public interface ExecutionRequest {
 
   Transformation getTransformation();
 
+  /**
+   * Map of source ids and types that should be used to filter reporting events sent back to the client.
+   * The map keys are {@link LogicalModelElement#getId() logical model element ids}.
+   * Values are sets of types expected from each source.
+   *
+   * @return topic map
+   */
   Map<String, Set<Class<? extends Serializable>>> getReportingTopics();
 
   /**
