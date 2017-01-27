@@ -11,6 +11,7 @@ import org.pentaho.di.engine.api.model.IMaterializedModelElement;
 import org.pentaho.di.engine.api.model.IModelElement;
 import org.pentaho.di.engine.api.model.ITransformation;
 import org.pentaho.di.engine.api.reporting.IReportingEvent;
+import org.pentaho.di.engine.api.reporting.Topic;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.trans.TransMeta;
@@ -41,7 +42,7 @@ public class ClassicKettleExecutionContext implements IExecutionContext {
   private IMetaStore metaStore;
   private Repository repository;
 
-  private Cache<PublisherKey, Publisher> publishers = CacheBuilder.newBuilder().build();
+  private Cache<Topic, Publisher> publishers = CacheBuilder.newBuilder().build();
 
   private Map<ILogicalModelElement, IMaterializedModelElement> logical2MaterializedMap = new HashMap<>();
 
@@ -86,7 +87,7 @@ public class ClassicKettleExecutionContext implements IExecutionContext {
     try {
       // Cache as a member cannot use these method type parameters. Having to ignore types
 
-      return publishers.get( new PublisherKey( source, type ),
+      return publishers.get( new Topic( source, type ),
         () -> Flowable.merge( logical2MaterializedMap.get( source ).getPublisher( type ) )
       );
 
@@ -145,20 +146,4 @@ public class ClassicKettleExecutionContext implements IExecutionContext {
   }
 
 
-  private static class PublisherKey {
-    private final ILogicalModelElement source;
-    private final Class<? extends Serializable> eventType;
-
-    public PublisherKey( ILogicalModelElement source, Class<? extends Serializable> eventType ) {
-      this.source = source;
-      this.eventType = eventType;
-    }
-
-    @Override public int hashCode() {
-      int result = source.hashCode();
-      result = 31 * result + eventType.hashCode();
-      return result;
-    }
-
-  }
 }
