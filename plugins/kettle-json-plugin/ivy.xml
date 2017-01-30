@@ -38,8 +38,8 @@
     <dependency org="org.mockito"    name="mockito-all"        rev="1.9.5" conf="test->default" transitive="false" />
     <dependency org="pentaho-kettle" name="kettle-engine-test" rev="${dependency.kettle.revision}" changing="true" transitive="false" conf="test->default"/>
 
-    <dependency org="org.slf4j" name="slf4j-api" rev="1.7.22" transitive="false"/>
-    <dependency org="org.slf4j" name="slf4j-log4j12" rev="1.7.22" transitive="false"/>
+    <dependency org="org.slf4j" name="slf4j-api" rev="1.7.5" transitive="false"/>
+    <dependency org="org.slf4j" name="slf4j-log4j12" rev="1.7.5" transitive="false"/>
     <dependency org="com.jayway.jsonpath" name="json-path" rev="2.1.0" transitive="false"/>
     <dependency org="net.minidev" name="json-smart" rev="2.2" transitive="false"/>
 

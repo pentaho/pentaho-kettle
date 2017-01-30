@@ -118,8 +118,8 @@
 
     <dependency org="pentaho" name="pentaho-platform-repository"  rev="${dependency.pentaho-platform.revision}" transitive="false"/>
     <dependency org="pentaho" name="pentaho-platform-extensions"  rev="${dependency.pentaho-platform.revision}" transitive="false"/>
-    <dependency org="org.slf4j" name="slf4j-api" rev="1.7.22"/>
-    <dependency org="org.slf4j" name="slf4j-log4j12" rev="1.7.22"/>
+    <dependency org="org.slf4j" name="slf4j-api" rev="1.7.5"/>
+    <dependency org="org.slf4j" name="slf4j-log4j12" rev="1.7.5"/>
     <dependency org="org.springframework" name="spring-aop"     rev="${dependency.spring.framework.revision}" />
     <dependency org="org.springframework" name="spring-beans"   rev="${dependency.spring.framework.revision}" />
     <dependency org="org.springframework" name="spring-context" rev="${dependency.spring.framework.revision}" />
