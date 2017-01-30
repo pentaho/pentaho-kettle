@@ -23,13 +23,16 @@ package org.pentaho.di.core.plugins;
 
 import org.pentaho.di.core.annotations.EnginePlugin;
 import org.pentaho.di.core.exception.KettlePluginException;
-import org.pentaho.di.engine.api.IEngine;
+import org.pentaho.di.engine.api.Engine;
 
 import java.lang.annotation.Annotation;
 import java.util.Map;
 
-
-@PluginMainClassType( IEngine.class )
+/**
+ * Plugin for interacting with {@link Engine} implementations.
+ *
+ */
+@PluginMainClassType( Engine.class )
 @PluginAnnotationType( EnginePlugin.class )
 public class EnginePluginType extends BasePluginType implements PluginTypeInterface {
 
