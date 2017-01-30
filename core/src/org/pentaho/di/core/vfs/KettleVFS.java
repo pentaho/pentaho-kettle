@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -349,6 +349,9 @@ public class KettleVFS {
   }
 
   public static String getFriendlyURI( String filename ) {
+    if ( filename == null ) {
+      return null;
+    }
     String friendlyName;
     try {
       friendlyName = getFriendlyURI( KettleVFS.getFileObject( filename ) );
