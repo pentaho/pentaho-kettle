@@ -31,6 +31,8 @@
     <dependency.javax.ws.rs-api.version>2.0</dependency.javax.ws.rs-api.version>
     <dependency.eclipse.version>3.6.0</dependency.eclipse.version>
     <dependency.commons-vfs2.version>2.1-20150824</dependency.commons-vfs2.version>
+    <dependency.metastore.revision>7.1-SNAPSHOT</dependency.metastore.revision>
+    <dependency.pentaho-vfs-browser.revision>7.1-SNAPSHOT</dependency.pentaho-vfs-browser.revision>
   </properties>
   <dependencies>
 
@@ -151,7 +153,7 @@
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>metastore</artifactId>
-      <version>${dependency.pentaho-kettle.version}</version>
+      <version>${dependency.metastore.revision}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -231,7 +233,7 @@
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>pentaho-vfs-browser</artifactId>
-      <version>${dependency.pentaho-kettle.version}</version>
+      <version>${dependency.pentaho-vfs-browser.revision}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
