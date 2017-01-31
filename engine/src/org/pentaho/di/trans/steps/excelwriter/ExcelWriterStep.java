@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -824,8 +824,9 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
 
       // Find last row and append accordingly
       if ( !data.createNewSheet && meta.isAppendLines() && appendingToSheet ) {
-        data.posY = data.sheet.getLastRowNum();
-        if ( data.posY > 0 ) {
+        data.posY = 0;
+        if ( data.sheet.getPhysicalNumberOfRows() > 0 ) {
+          data.posY = data.sheet.getLastRowNum();
           data.posY++;
         }
       }
