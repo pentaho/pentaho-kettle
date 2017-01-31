@@ -16,7 +16,7 @@
 
   <dependencies defaultconf="default-ext->default">
 
-    <dependency org="org.pentaho"                name="pdi-execution-engine-classic"          rev="${project.revision}"   changing="true"/>
+    <dependency org="org.pentaho"                name="pdi-execution-engine-model"          rev="${project.revision}"   changing="true"/>
 
     <!-- Kettle dependencies -->
     <dependency org="${ivy.artifact.group}"                name="kettle-core"          rev="${dependency.kettle.revision}"   changing="true"/>

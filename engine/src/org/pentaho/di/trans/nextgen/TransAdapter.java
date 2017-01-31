@@ -8,7 +8,6 @@ import org.pentaho.di.engine.api.model.Operation;
 import org.pentaho.di.engine.api.model.Transformation;
 import org.pentaho.di.engine.api.reporting.ReportingEvent;
 import org.pentaho.di.engine.api.reporting.Status;
-import org.pentaho.di.engine.kettleclassic.ClassicUtils;
 import org.pentaho.di.trans.RowProducer;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -24,8 +23,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static org.pentaho.di.engine.kettleclassic.ClassicUtils.STEP_META_CONF_KEY;
-
 /**
  * Created by nbaker on 1/24/17.
  */
@@ -40,10 +37,24 @@ public class TransAdapter extends Trans {
   private Map<Operation, StepMetaDataCombi>
     operationToCombi;
 
+  public static final String TRANS_META_CONF_KEY = "TransMeta";
+  public static final String STEP_META_CONF_KEY = "StepMeta";
+
   public TransAdapter( Engine engine, TransMeta transMeta ) {
-    transformation = ClassicUtils.convert( transMeta );
+    transformation = convert( transMeta );
     executionContext = engine.prepare( transformation );
     this.transMeta = transMeta;
+  }
+
+
+  private static Transformation convert( TransMeta transMeta ) {
+    final org.pentaho.di.engine.model.Transformation transformation = new org.pentaho.di.engine.model.Transformation( transMeta.getName() );
+    transMeta.getSteps().forEach( stepMeta -> {
+      org.pentaho.di.engine.model.Operation operation = transformation.createOperation( stepMeta.getName() );
+      operation.setConfig( STEP_META_CONF_KEY, stepMeta );
+    } );
+    transformation.setConfig( TRANS_META_CONF_KEY, transMeta );
+    return transformation;
   }
 
   // ======================== Need to implement ================================= //

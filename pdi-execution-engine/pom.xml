@@ -27,6 +27,7 @@
   <modules>
     <module>api</module>
     <module>impl</module>
+    <module>feature</module>
   </modules>
 
 </project>

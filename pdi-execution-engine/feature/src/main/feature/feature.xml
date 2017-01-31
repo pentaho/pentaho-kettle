@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<features xmlns="http://karaf.apache.org/xmlns/features/v1.4.0" name="pdi-features">
+  <feature name="pdi-classic-engine-embedded" description="Classic PDI engine working within OSGI with new Engine APIs" version="${project.version}">
+    <details>a parent pom for general configuration of Pentaho sponsored open source projects</details>
+    <bundle start-level="80">mvn:org.pentaho/pdi-execution-engine-classic/${project.version}</bundle>
+  </feature>
+
+  <feature name="standalone-engine" description="All of PDI running within OSGI, including the Classic Engine" version="7.1.0.SNAPSHOT">
+  </feature>
+</features>

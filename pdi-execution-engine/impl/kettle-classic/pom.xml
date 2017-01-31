@@ -12,6 +12,7 @@
 
   <artifactId>pdi-execution-engine-classic</artifactId>
   <version>7.1-SNAPSHOT</version>
+  <packaging>bundle</packaging>
 
   <dependencies>
 
@@ -77,6 +78,7 @@
         <configuration>
           <instructions>
             <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+            <Import-Package>org.pentaho.di.osgi,*</Import-Package>
           </instructions>
         </configuration>
       </plugin>

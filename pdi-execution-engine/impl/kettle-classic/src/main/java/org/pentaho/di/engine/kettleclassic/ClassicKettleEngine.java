@@ -5,6 +5,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.DefaultLogLevel;
 import org.pentaho.di.core.logging.LoggingObjectType;
 import org.pentaho.di.core.logging.SimpleLoggingObject;
+import org.pentaho.di.core.plugins.EnginePlugin;
 import org.pentaho.di.engine.api.Engine;
 import org.pentaho.di.engine.api.ExecutionContext;
 import org.pentaho.di.engine.api.ExecutionResult;
@@ -21,6 +22,9 @@ import java.util.concurrent.CompletableFuture;
 /**
  * Created by nbaker on 1/4/17.
  */
+@EnginePlugin(
+  id="classic", name="Classic Engine"
+)
 public class ClassicKettleEngine implements Engine {
 
   @Override public ExecutionContext prepare( Transformation trans ) {
