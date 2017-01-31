@@ -19,7 +19,7 @@
 
 
   <groupId>org.pentaho</groupId>
-  <artifactId>pdi-execution-engine</artifactId>
+  <artifactId>pdi-engine</artifactId>
   <version>7.1-SNAPSHOT</version>
   <packaging>pom</packaging>
 
