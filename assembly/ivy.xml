@@ -133,7 +133,7 @@
     <dependency org="org.glassfish.metro" name="webservices-rt" rev="2.1" transitive="false"/>
 
     <!-- pentaho-metaverse -->
-    <dependency org="pentaho" name="pentaho-metaverse-api" rev="${project.revision}" changing="true" transitive="false"/>
+    <dependency org="pentaho" name="pentaho-metaverse-api" rev="${dependency.pentaho-metaverse.revision}" changing="true" transitive="false"/>
     <dependency org="pentaho" name="pentaho-platform-api"  rev="${dependency.pentaho-platform.revision}" transitive="false"/>
     <dependency org="pentaho" name="pentaho-platform-core"  rev="${dependency.pentaho-platform.revision}" transitive="false"/>
 
