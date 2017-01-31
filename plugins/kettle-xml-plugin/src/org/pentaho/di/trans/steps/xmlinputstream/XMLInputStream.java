@@ -102,6 +102,9 @@ public class XMLInputStream extends BaseStep implements StepInterface {
         first = false;
         row = getRow();
         // get input field index
+        if ( getInputRowMeta() == null ) {
+          throw new KettleException( BaseMessages.getString( PKG, "XMLInputStream.NoIncomingRowsFound" ) );
+        }
         inputFieldIndex = getInputRowMeta().indexOfValue( meta.sourceFieldName );
         if ( inputFieldIndex < 0 ) {
           throw new KettleException( BaseMessages.getString( PKG, "XMLInputStream.FilenameFieldNotFound",
