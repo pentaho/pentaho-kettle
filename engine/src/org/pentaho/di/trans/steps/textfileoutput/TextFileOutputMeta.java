@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -1078,7 +1078,7 @@ public class TextFileOutputMeta extends BaseStepMeta implements StepMetaInterfac
       }
       encoding = rep.getStepAttributeString( id_step, "encoding" );
 
-      fileName = loadSourceRep( rep, id_step );
+      fileName = loadSourceRep( rep, id_step, metaStore );
       fileAsCommand = rep.getStepAttributeBoolean( id_step, "file_is_command" );
       servletOutput = rep.getStepAttributeBoolean( id_step, "file_servlet_output" );
       doNotOpenNewFileInit = rep.getStepAttributeBoolean( id_step, "do_not_open_new_file_init" );
@@ -1305,7 +1305,7 @@ public class TextFileOutputMeta extends BaseStepMeta implements StepMetaInterfac
     retVal.append( "      " ).append( XMLHandler.addTagValue( "name", fileName ) );
   }
 
-  protected String loadSourceRep( Repository rep, ObjectId id_step ) throws KettleException {
+  protected String loadSourceRep( Repository rep, ObjectId id_step, IMetaStore metaStore  ) throws KettleException {
     return rep.getStepAttributeString( id_step, "file_name" );
   }
 
