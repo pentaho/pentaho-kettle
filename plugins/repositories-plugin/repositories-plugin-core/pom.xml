@@ -33,6 +33,7 @@
     <dependency.commons-vfs2.version>2.1-20150824</dependency.commons-vfs2.version>
     <dependency.metastore.revision>7.1-SNAPSHOT</dependency.metastore.revision>
     <dependency.pentaho-vfs-browser.revision>7.1-SNAPSHOT</dependency.pentaho-vfs-browser.revision>
+    <dependency.platform.extensions.version>7.1-SNAPSHOT</dependency.platform.extensions.version>
   </properties>
   <dependencies>
 
@@ -201,7 +202,7 @@
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>pentaho-platform-extensions</artifactId>
-      <version>${project.version}</version>
+      <version>${dependency.platform.extensions.version}</version>
       <scope>provided</scope>
       <exclusions>
         <exclusion>
