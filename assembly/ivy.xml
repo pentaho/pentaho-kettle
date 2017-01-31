@@ -33,7 +33,7 @@
     <dependency org="pentaho" name="pdi-osgi-bridge-core" rev="${dependency.pdi-osgi-bridge.revision}" changing="true" />
 
     <!-- Data Service JDBC Driver -->
-    <dependency org="pentaho" name="pdi-dataservice-driver-bundle" rev="${dependency.dataservice.driver.bundle}" changing="true" conf="dataservice-jdbc->default" transitive="false">
+    <dependency org="pentaho" name="pdi-dataservice-driver-bundle" rev="${dependency.dataservice-driver-bundle.revision}" changing="true" conf="dataservice-jdbc->default" transitive="false">
       <artifact name="pdi-dataservice-driver-bundle" type="zip"/>
     </dependency>
 
@@ -95,7 +95,7 @@
     <dependency org="${ivy.artifact.group}" name="kettle-sap-plugin" rev="${project.revision}" changing="true" conf="plugins->default">
         <artifact name="kettle-sap-plugin" type="zip"/>
     </dependency>    
-    <dependency org="pentaho" name="pentaho-karaf-assembly" rev="${project.revision}" changing="true" conf="pentaho-system->default" m:classifier="client">
+    <dependency org="pentaho" name="pentaho-karaf-assembly" rev="${dependency.karaf-assembly.revision}" changing="true" conf="pentaho-system->default" m:classifier="client">
       <artifact name="pentaho-karaf-assembly" type="zip" m:classifier="client"/>
     </dependency>
     
