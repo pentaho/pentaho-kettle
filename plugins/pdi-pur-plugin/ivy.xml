@@ -89,7 +89,7 @@
       <exclude org="org.apache.jackrabbit" name="jackrabbit-jcr-rmi" />
     </dependency>
 
-    <dependency org="org.json" name="json" rev="${dependency.json.revision}" transitive="false" changing="true"/>
+    <dependency org="org.pentaho" name="json" rev="${dependency.json.revision}" transitive="false" changing="true"/>
     <dependency org="com.googlecode.json-simple" name="json-simple" rev="1.1" transitive="false" conf="compile->default;test->default"/>
 
     <dependency org="org.aspectj" name="aspectjrt" rev="1.6.6" conf="test->default" />
