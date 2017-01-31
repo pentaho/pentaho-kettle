@@ -23,9 +23,19 @@
 package org.pentaho.di.engine.foobar;
 
 import org.pentaho.di.core.annotations.EnginePlugin;
-import org.pentaho.di.engine.api.IEngine;
+import org.pentaho.di.engine.api.Engine;
+import org.pentaho.di.engine.api.ExecutionContext;
+import org.pentaho.di.engine.api.model.Transformation;
 
+/**
+ * Temporary, test-only class for verifying Engine implementations
+ * can be loaded and used.
+ */
 @EnginePlugin( id = "FooBarOSGiEngine", name = "Foo Bar OSGi Engine" )
-public class FooBarOSGiEngine implements IEngine {
+public class FooBarOSGiEngine implements Engine {
 
+  @Override public ExecutionContext prepare( Transformation trans ) {
+    System.out.println( "Foo Engine" );
+    return null;
+  }
 }
