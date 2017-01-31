@@ -20,6 +20,7 @@
     <!-- Kettle dependencies -->
     <dependency org="${ivy.artifact.group}"                name="kettle-core"          rev="${dependency.kettle.revision}"   changing="true"/>
     <dependency org="org.pentaho"                          name="pdi-engine-api"       rev="${dependency.kettle.revision}"   changing="true"/>
+    <dependency org="org.pentaho"                          name="pdi-execution-engine-model"       rev="${dependency.kettle.revision}"   changing="true"/>
 
     <!--  Pentaho (internal, non-Kettle) dependencies -->
     <dependency org="pentaho"                              name="pentaho-registry"                      rev="${dependency.pentaho-registry.revision}" changing="true" />
