@@ -5,6 +5,7 @@ import io.reactivex.Single;
 import io.reactivex.functions.Function;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
+import org.pentaho.di.core.plugins.EnginePlugin;
 import org.pentaho.di.engine.api.Engine;
 import org.pentaho.di.engine.api.ExecutionContext;
 import org.pentaho.di.engine.api.ExecutionResult;
@@ -21,6 +22,9 @@ import java.util.concurrent.CompletableFuture;
 /**
  * Created by hudak on 1/25/17.
  */
+@EnginePlugin(
+  id="Remote", name="Remoting Engine"
+)
 public class SparkClientEngine implements Engine {
   private final BundleContext bundleContext;
 

@@ -15,6 +15,14 @@
   <version>7.1-SNAPSHOT</version>
   <packaging>pom</packaging>
 
+  <dependencies>
+    <dependency>
+      <groupId>pentaho-kettle</groupId>
+      <artifactId>kettle-engine</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+  </dependencies>
+
   <modules>
     <module>model</module>
     <module>kettle-classic</module>

@@ -7,13 +7,9 @@
             http://www.pentaho.com/xml/schemas/pentaho-blueprint http://www.pentaho.com/xml/schemas/pentaho-blueprint.xsd">
 
   <bean scope="prototype"
-        class="org.pentaho.di.engine.kettleclassic.ClassicKettleEngine">
+        class="org.pentaho.di.engine.remote.client.SparkClientEngine">
+    <argument ref="blueprintBundleContext" />
     <pen:di-plugin type="org.pentaho.di.core.plugins.EnginePluginType"/>
   </bean>
 
-  <reference-list interface="org.pentaho.di.engine.api.remote.ExecutionRequest" availability="optional">
-    <reference-listener bind-method="requestAdded" unbind-method="requestRemoved">
-      <bean class="org.pentaho.di.engine.kettleclassic.RequestListener"/>
-    </reference-listener>
-  </reference-list>
 </blueprint>
