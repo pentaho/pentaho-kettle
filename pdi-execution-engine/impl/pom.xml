@@ -19,6 +19,7 @@
     <module>model</module>
     <module>kettle-classic</module>
     <module>kettle-native</module>
+    <module>remote-spark-client</module>
   </modules>
 
 </project>
