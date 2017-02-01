@@ -24,9 +24,9 @@
 
 package org.pentaho.di.engine.api.remote;
 
+import org.pentaho.di.engine.api.events.PDIEvent;
 import org.pentaho.di.engine.api.model.LogicalModelElement;
 import org.pentaho.di.engine.api.model.Transformation;
-import org.pentaho.di.engine.api.reporting.ReportingEvent;
 
 import java.io.Serializable;
 import java.util.Map;
@@ -65,7 +65,7 @@ public interface ExecutionRequest {
    * has been canceled
    *
    * @param sourceId {@link LogicalModelElement#getId()}
-   * @param value    {@link ReportingEvent#getData()}
+   * @param value    {@link PDIEvent#getData()}
    * @return true if update was accepted
    */
   boolean update( String sourceId, Serializable value );

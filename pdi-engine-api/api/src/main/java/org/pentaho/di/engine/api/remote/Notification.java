@@ -24,14 +24,14 @@
 
 package org.pentaho.di.engine.api.remote;
 
+import org.pentaho.di.engine.api.events.PDIEvent;
 import org.pentaho.di.engine.api.model.Transformation;
-import org.pentaho.di.engine.api.reporting.ReportingEvent;
 
 import java.io.Serializable;
 import java.util.Objects;
 
 /**
- * {@link ReportingEvent} data holder for remote execution. These objects should be passed to {@link
+ * {@link PDIEvent} data holder for remote execution. These objects should be passed to {@link
  * ExecutionRequest#update(Notification)} to signal when a request state should change.
  * <p>
  * These events can also be subscribed to through the execution context.
@@ -73,7 +73,7 @@ public class Notification implements Serializable {
     CLOSE
   }
 
-  static class Event implements ReportingEvent<Transformation, Notification> {
+  static class Event implements PDIEvent<Transformation, Notification> {
     private final Transformation source;
     private final Notification notification;
 
