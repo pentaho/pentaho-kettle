@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,99 +22,73 @@
 
 package org.pentaho.di.ui.trans.steps.singlethreader;
 
-import java.io.IOException;
-
 import org.apache.commons.vfs2.FileObject;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CTabFolder;
+import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
+import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.gui.SpoonFactory;
-import org.pentaho.di.core.gui.SpoonInterface;
-import org.pentaho.di.core.row.RowMeta;
-import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
-import org.pentaho.di.repository.RepositoryElementMetaInterface;
 import org.pentaho.di.repository.RepositoryObject;
 import org.pentaho.di.repository.RepositoryObjectType;
-import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.steps.mappinginput.MappingInputMeta;
-import org.pentaho.di.trans.steps.mappingoutput.MappingOutputMeta;
 import org.pentaho.di.trans.steps.singlethreader.SingleThreaderMeta;
+import org.pentaho.di.ui.core.ConstUI;
 import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
-import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
-import org.pentaho.di.ui.core.widget.LabelTextVar;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.repository.dialog.SelectObjectDialog;
 import org.pentaho.di.ui.spoon.Spoon;
-import org.pentaho.di.ui.trans.dialog.TransDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
+import org.pentaho.di.ui.util.SwtSvgImageUtil;
 import org.pentaho.vfs.ui.VfsFileChooserDialog;
+
+import java.io.IOException;
 
 public class SingleThreaderDialog extends BaseStepDialog implements StepDialogInterface {
   private static Class<?> PKG = SingleThreaderMeta.class; // for i18n purposes, needed by Translator2!!
 
   private SingleThreaderMeta singleThreaderMeta;
 
-  private Group gTransGroup;
+  private Label wlPath;
+  private TextVar wPath;
 
-  // File
-  //
-  private Button radioFilename;
-  private Button wbbFilename;
-  private TextVar wFilename;
+  private Button wbBrowse;
 
-  // Repository by name
-  //
-  private Button radioByName;
-  private TextVar wTransname, wDirectory;
-  private Button wbTrans;
-
-  // Repository by reference
-  //
-  private Button radioByReference;
-  private Button wbByReference;
-  private TextVar wByReference;
-
-  // Edit the mapping transformation in Spoon
-  //
-  private Button wEditTrans;
-  private Button wNewTrans;
-
-  private LabelTextVar wBatchSize;
-  private LabelTextVar wInjectStep;
+  private TextVar wBatchSize;
+  private TextVar wInjectStep;
   private Button wGetInjectStep;
-  private LabelTextVar wRetrieveStep;
+  private TextVar wRetrieveStep;
   private Button wGetRetrieveStep;
 
   private TableView wParameters;
@@ -125,20 +99,14 @@ public class SingleThreaderDialog extends BaseStepDialog implements StepDialogIn
 
   private ModifyListener lsMod;
 
-  private int middle;
-
-  private int margin;
-
   private ObjectId referenceObjectId;
   private ObjectLocationSpecificationMethod specificationMethod;
-
-  private Group gParametersGroup;
 
   private Button wPassParams;
 
   private Button wbGetParams;
 
-  private LabelTextVar wBatchTime;
+  private TextVar wBatchTime;
 
   public SingleThreaderDialog( Shell parent, Object in, TransMeta tr, String sname ) {
     super( parent, (BaseStepMeta) in, tr, sname );
@@ -162,14 +130,19 @@ public class SingleThreaderDialog extends BaseStepDialog implements StepDialogIn
     changed = singleThreaderMeta.hasChanged();
 
     FormLayout formLayout = new FormLayout();
-    formLayout.marginWidth = Const.FORM_MARGIN;
-    formLayout.marginHeight = Const.FORM_MARGIN;
+    formLayout.marginWidth = 15;
+    formLayout.marginHeight = 15;
 
     shell.setLayout( formLayout );
     shell.setText( BaseMessages.getString( PKG, "SingleThreaderDialog.Shell.Title" ) );
 
-    middle = props.getMiddlePct();
-    margin = Const.MARGIN;
+    Label wicon = new Label( shell, SWT.RIGHT );
+    wicon.setImage( getImage() );
+    FormData fdlicon = new FormData();
+    fdlicon.top = new FormAttachment( 0, 0 );
+    fdlicon.right = new FormAttachment( 100, 0 );
+    wicon.setLayoutData( fdlicon );
+    props.setLook( wicon );
 
     // Stepname line
     wlStepname = new Label( shell, SWT.RIGHT );
@@ -177,239 +150,101 @@ public class SingleThreaderDialog extends BaseStepDialog implements StepDialogIn
     props.setLook( wlStepname );
     fdlStepname = new FormData();
     fdlStepname.left = new FormAttachment( 0, 0 );
-    fdlStepname.right = new FormAttachment( middle, -margin );
-    fdlStepname.top = new FormAttachment( 0, margin );
+    fdlStepname.top = new FormAttachment( 0, 0 );
     wlStepname.setLayoutData( fdlStepname );
+
     wStepname = new Text( shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     wStepname.setText( stepname );
     props.setLook( wStepname );
     wStepname.addModifyListener( lsMod );
     fdStepname = new FormData();
-    fdStepname.left = new FormAttachment( middle, 0 );
-    fdStepname.top = new FormAttachment( 0, margin );
-    fdStepname.right = new FormAttachment( 100, 0 );
+    fdStepname.width = 250;
+    fdStepname.left = new FormAttachment( 0, 0 );
+    fdStepname.top = new FormAttachment( wlStepname, 5 );
     wStepname.setLayoutData( fdStepname );
 
-    // Show a group with 2 main options: a transformation in the repository
-    // or on file
-    //
+    Label spacer = new Label( shell, SWT.HORIZONTAL | SWT.SEPARATOR );
+    FormData fdSpacer = new FormData();
+    fdSpacer.height = 1;
+    fdSpacer.left = new FormAttachment( 0, 0 );
+    fdSpacer.top = new FormAttachment( wStepname, 15 );
+    fdSpacer.right = new FormAttachment( 100, 0 );
+    spacer.setLayoutData( fdSpacer );
 
-    // //////////////////////////////////////////////////
-    // The sub-transformation definition box
-    // //////////////////////////////////////////////////
-    //
-    gTransGroup = new Group( shell, SWT.SHADOW_ETCHED_IN );
-    gTransGroup.setText( BaseMessages.getString( PKG, "SingleThreaderDialog.TransGroup.Label" ) );
-    gTransGroup.setBackground( shell.getBackground() ); // the default looks
-    // ugly
-    FormLayout transGroupLayout = new FormLayout();
-    transGroupLayout.marginLeft = margin * 2;
-    transGroupLayout.marginTop = margin * 2;
-    transGroupLayout.marginRight = margin * 2;
-    transGroupLayout.marginBottom = margin * 2;
-    gTransGroup.setLayout( transGroupLayout );
+    wlPath = new Label( shell, SWT.LEFT );
+    props.setLook( wlPath );
+    wlPath.setText( BaseMessages.getString( PKG, "SingleThreaderDialog.Transformation.Label" ) );
+    FormData fdlTransformation = new FormData();
+    fdlTransformation.left = new FormAttachment( 0, 0 );
+    fdlTransformation.top = new FormAttachment( spacer, 20 );
+    fdlTransformation.right = new FormAttachment( 50, 0 );
+    wlPath.setLayoutData( fdlTransformation );
 
-    // Radio button: The mapping is in a file
-    //
-    radioFilename = new Button( gTransGroup, SWT.RADIO );
-    props.setLook( radioFilename );
-    radioFilename.setSelection( false );
-    radioFilename.setText( BaseMessages.getString( PKG, "SingleThreaderDialog.RadioFile.Label" ) );
-    radioFilename
-      .setToolTipText( BaseMessages.getString( PKG, "SingleThreaderDialog.RadioFile.Tooltip", Const.CR ) );
-    FormData fdFileRadio = new FormData();
-    fdFileRadio.left = new FormAttachment( 0, 0 );
-    fdFileRadio.right = new FormAttachment( 100, 0 );
-    fdFileRadio.top = new FormAttachment( 0, 0 );
-    radioFilename.setLayoutData( fdFileRadio );
-    radioFilename.addSelectionListener( new SelectionAdapter() {
+    wPath = new TextVar( transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+    props.setLook( wPath );
+    FormData fdTransformation = new FormData();
+    fdTransformation.left = new FormAttachment( 0, 0 );
+    fdTransformation.top = new FormAttachment( wlPath, 5 );
+    fdTransformation.width = 350;
+    wPath.setLayoutData( fdTransformation );
+
+    wbBrowse = new Button( shell, SWT.PUSH );
+    props.setLook( wbBrowse );
+    wbBrowse.setText( BaseMessages.getString( PKG, "SingleThreaderDialog.Browse.Label" ) );
+    FormData fdBrowse = new FormData();
+    fdBrowse.left = new FormAttachment( wPath, 5 );
+    fdBrowse.top = new FormAttachment( wlPath, 5 );
+    wbBrowse.setLayoutData( fdBrowse );
+
+    wbBrowse.addSelectionListener( new SelectionAdapter() {
       public void widgetSelected( SelectionEvent e ) {
-        specificationMethod = ObjectLocationSpecificationMethod.FILENAME;
-        setRadioButtons();
+        if ( repository != null ) {
+          selectRepositoryTrans();
+        } else {
+          selectFileTrans( true );
+        }
       }
     } );
 
-    wbbFilename = new Button( gTransGroup, SWT.PUSH | SWT.CENTER ); // Browse
-    props.setLook( wbbFilename );
-    wbbFilename.setText( BaseMessages.getString( PKG, "System.Button.Browse" ) );
-    wbbFilename.setToolTipText( BaseMessages.getString( PKG, "System.Tooltip.BrowseForFileOrDirAndAdd" ) );
-    FormData fdbFilename = new FormData();
-    fdbFilename.right = new FormAttachment( 100, 0 );
-    fdbFilename.top = new FormAttachment( radioFilename, margin );
-    wbbFilename.setLayoutData( fdbFilename );
-    wbbFilename.addSelectionListener( new SelectionAdapter() {
-      public void widgetSelected( SelectionEvent e ) {
-        selectFileTrans();
-      }
-    } );
+    CTabFolder wTabFolder = new CTabFolder( shell, SWT.BORDER );
+    props.setLook( wTabFolder, Props.WIDGET_STYLE_TAB );
 
-    wFilename = new TextVar( transMeta, gTransGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-    props.setLook( wFilename );
-    wFilename.addModifyListener( lsMod );
-    FormData fdFilename = new FormData();
-    fdFilename.left = new FormAttachment( 0, 25 );
-    fdFilename.right = new FormAttachment( wbbFilename, -margin );
-    fdFilename.top = new FormAttachment( wbbFilename, 0, SWT.CENTER );
-    wFilename.setLayoutData( fdFilename );
-    wFilename.addModifyListener( new ModifyListener() {
-      public void modifyText( ModifyEvent e ) {
-        specificationMethod = ObjectLocationSpecificationMethod.FILENAME;
-        setRadioButtons();
-      }
-    } );
+    // Options Tab Start
+    CTabItem wOptionsTab = new CTabItem( wTabFolder, SWT.NONE );
+    wOptionsTab.setText( BaseMessages.getString( PKG, "SingleThreaderDialog.Options.Group.Label" ) );
 
-    // Radio button: The mapping is in the repository
-    //
-    radioByName = new Button( gTransGroup, SWT.RADIO );
-    props.setLook( radioByName );
-    radioByName.setSelection( false );
-    radioByName.setText( BaseMessages.getString( PKG, "SingleThreaderDialog.RadioRep.Label" ) );
-    radioByName.setToolTipText( BaseMessages.getString( PKG, "SingleThreaderDialog.RadioRep.Tooltip", Const.CR ) );
-    FormData fdRepRadio = new FormData();
-    fdRepRadio.left = new FormAttachment( 0, 0 );
-    fdRepRadio.right = new FormAttachment( 100, 0 );
-    fdRepRadio.top = new FormAttachment( wbbFilename, 2 * margin );
-    radioByName.setLayoutData( fdRepRadio );
-    radioByName.addSelectionListener( new SelectionAdapter() {
-      public void widgetSelected( SelectionEvent e ) {
-        specificationMethod = ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME;
-        setRadioButtons();
-      }
-    } );
-    wbTrans = new Button( gTransGroup, SWT.PUSH | SWT.CENTER ); // Browse
-    props.setLook( wbTrans );
-    wbTrans.setText( BaseMessages.getString( PKG, "SingleThreaderDialog.Select.Button" ) );
-    wbTrans.setToolTipText( BaseMessages.getString( PKG, "System.Tooltip.BrowseForFileOrDirAndAdd" ) );
-    FormData fdbTrans = new FormData();
-    fdbTrans.right = new FormAttachment( 100, 0 );
-    fdbTrans.top = new FormAttachment( radioByName, 2 * margin );
-    wbTrans.setLayoutData( fdbTrans );
-    wbTrans.addSelectionListener( new SelectionAdapter() {
-      public void widgetSelected( SelectionEvent e ) {
-        selectRepositoryTrans();
-      }
-    } );
+    Composite wOptions = new Composite( wTabFolder, SWT.SHADOW_NONE );
+    props.setLook( wOptions );
 
-    wDirectory = new TextVar( transMeta, gTransGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-    props.setLook( wDirectory );
-    wDirectory.addModifyListener( lsMod );
-    FormData fdTransDir = new FormData();
-    fdTransDir.left = new FormAttachment( middle + ( 100 - middle ) / 2, 0 );
-    fdTransDir.right = new FormAttachment( wbTrans, -margin );
-    fdTransDir.top = new FormAttachment( wbTrans, 0, SWT.CENTER );
-    wDirectory.setLayoutData( fdTransDir );
-    wDirectory.addModifyListener( new ModifyListener() {
-      public void modifyText( ModifyEvent e ) {
-        specificationMethod = ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME;
-        setRadioButtons();
-      }
-    } );
-
-    wTransname = new TextVar( transMeta, gTransGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-    props.setLook( wTransname );
-    wTransname.addModifyListener( lsMod );
-    FormData fdTransName = new FormData();
-    fdTransName.left = new FormAttachment( 0, 25 );
-    fdTransName.right = new FormAttachment( wDirectory, -margin );
-    fdTransName.top = new FormAttachment( wbTrans, 0, SWT.CENTER );
-    wTransname.setLayoutData( fdTransName );
-    wTransname.addModifyListener( new ModifyListener() {
-      public void modifyText( ModifyEvent e ) {
-        specificationMethod = ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME;
-        setRadioButtons();
-      }
-    } );
-
-    // Radio button: The mapping is in the repository
-    //
-    radioByReference = new Button( gTransGroup, SWT.RADIO );
-    props.setLook( radioByReference );
-    radioByReference.setSelection( false );
-    radioByReference.setText( BaseMessages.getString( PKG, "SingleThreaderDialog.RadioRepByReference.Label" ) );
-    radioByReference.setToolTipText( BaseMessages.getString(
-      PKG, "SingleThreaderDialog.RadioRepByReference.Tooltip", Const.CR ) );
-    FormData fdRadioByReference = new FormData();
-    fdRadioByReference.left = new FormAttachment( 0, 0 );
-    fdRadioByReference.right = new FormAttachment( 100, 0 );
-    fdRadioByReference.top = new FormAttachment( wTransname, 2 * margin );
-    radioByReference.setLayoutData( fdRadioByReference );
-    radioByReference.addSelectionListener( new SelectionAdapter() {
-      public void widgetSelected( SelectionEvent e ) {
-        specificationMethod = ObjectLocationSpecificationMethod.REPOSITORY_BY_REFERENCE;
-        setRadioButtons();
-      }
-    } );
-
-    wbByReference = new Button( gTransGroup, SWT.PUSH | SWT.CENTER );
-    props.setLook( wbByReference );
-    wbByReference.setImage( GUIResource.getInstance().getImageTransGraph() );
-    wbByReference.setToolTipText( BaseMessages.getString( PKG, "SingleThreaderDialog.SelectTrans.Tooltip" ) );
-    FormData fdbByReference = new FormData();
-    fdbByReference.top = new FormAttachment( radioByReference, margin );
-    fdbByReference.right = new FormAttachment( 100, 0 );
-    wbByReference.setLayoutData( fdbByReference );
-    wbByReference.addSelectionListener( new SelectionAdapter() {
-      public void widgetSelected( SelectionEvent e ) {
-        selectTransformationByReference();
-      }
-    } );
-
-    wByReference = new TextVar( transMeta, gTransGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER | SWT.READ_ONLY );
-    props.setLook( wByReference );
-    wByReference.addModifyListener( lsMod );
-    FormData fdByReference = new FormData();
-    fdByReference.top = new FormAttachment( radioByReference, margin );
-    fdByReference.left = new FormAttachment( 0, 25 );
-    fdByReference.right = new FormAttachment( wbByReference, -margin );
-    wByReference.setLayoutData( fdByReference );
-    wByReference.addModifyListener( new ModifyListener() {
-      public void modifyText( ModifyEvent e ) {
-        specificationMethod = ObjectLocationSpecificationMethod.REPOSITORY_BY_REFERENCE;
-        setRadioButtons();
-      }
-    } );
-
-    wNewTrans = new Button( gTransGroup, SWT.PUSH | SWT.CENTER ); // Browse
-    props.setLook( wNewTrans );
-    wNewTrans.setText( BaseMessages.getString( PKG, "SingleThreaderDialog.New.Button" ) );
-    FormData fdNewTrans = new FormData();
-    fdNewTrans.left = new FormAttachment( 0, 0 );
-    fdNewTrans.top = new FormAttachment( wByReference, 3 * margin );
-    wNewTrans.setLayoutData( fdNewTrans );
-    wNewTrans.addSelectionListener( new SelectionAdapter() {
-      public void widgetSelected( SelectionEvent e ) {
-        newTransformation();
-      }
-    } );
-
-    wEditTrans = new Button( gTransGroup, SWT.PUSH | SWT.CENTER ); // Browse
-    props.setLook( wEditTrans );
-    wEditTrans.setText( BaseMessages.getString( PKG, "SingleThreaderDialog.Edit.Button" ) );
-    wEditTrans.setToolTipText( BaseMessages.getString( PKG, "System.Tooltip.BrowseForFileOrDirAndAdd" ) );
-    FormData fdEditTrans = new FormData();
-    fdEditTrans.left = new FormAttachment( wNewTrans, 2 * margin );
-    fdEditTrans.top = new FormAttachment( wByReference, 3 * margin );
-    wEditTrans.setLayoutData( fdEditTrans );
-    wEditTrans.addSelectionListener( new SelectionAdapter() {
-      public void widgetSelected( SelectionEvent e ) {
-        editTrans();
-      }
-    } );
-
-    FormData fdTransGroup = new FormData();
-    fdTransGroup.left = new FormAttachment( 0, 0 );
-    fdTransGroup.top = new FormAttachment( wStepname, 2 * margin );
-    fdTransGroup.right = new FormAttachment( 100, 0 );
-    // fdTransGroup.bottom = new FormAttachment(wStepname, 350);
-    gTransGroup.setLayoutData( fdTransGroup );
+    FormLayout specLayout = new FormLayout();
+    specLayout.marginWidth = 15;
+    specLayout.marginHeight = 15;
+    wOptions.setLayout( specLayout );
 
     // Inject step
     //
-    wGetInjectStep = new Button( shell, SWT.PUSH );
+    Label wlInjectStep = new Label( wOptions, SWT.LEFT );
+    wlInjectStep.setText( BaseMessages.getString( PKG, "SingleThreaderDialog.InjectStep.Label" ) );
+    props.setLook( wlInjectStep );
+    FormData fdlInjectStep = new FormData();
+    fdlInjectStep.top = new FormAttachment( 0, 0 );
+    fdlInjectStep.left = new FormAttachment( 0, 0 );
+    wlInjectStep.setLayoutData( fdlInjectStep );
+
+    wInjectStep = new TextVar( transMeta, wOptions, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+    props.setLook( wInjectStep );
+    wInjectStep.addModifyListener( lsMod );
+    FormData fdInjectStep = new FormData();
+    fdInjectStep.width = 250;
+    fdInjectStep.left = new FormAttachment( 0, 0 );
+    fdInjectStep.top = new FormAttachment( wlInjectStep, 5 );
+    wInjectStep.setLayoutData( fdInjectStep );
+
+    wGetInjectStep = new Button( wOptions, SWT.PUSH );
     wGetInjectStep.setText( BaseMessages.getString( PKG, "SingleThreaderDialog.Button.Get" ) );
     FormData fdGetInjectStep = new FormData();
-    fdGetInjectStep.top = new FormAttachment( gTransGroup, margin );
-    fdGetInjectStep.right = new FormAttachment( 100, 0 );
+    fdGetInjectStep.top = new FormAttachment( wlInjectStep, 5 );
+    fdGetInjectStep.left = new FormAttachment( wInjectStep, 5 );
     wGetInjectStep.setLayoutData( fdGetInjectStep );
     wGetInjectStep.addSelectionListener( new SelectionAdapter() {
       @Override
@@ -426,23 +261,30 @@ public class SingleThreaderDialog extends BaseStepDialog implements StepDialogIn
       }
     } );
 
-    wInjectStep = new LabelTextVar( transMeta, shell,
-      BaseMessages.getString( PKG, "SingleThreaderDialog.InjectStep.Label" ),
-      BaseMessages.getString( PKG, "SingleThreaderDialog.InjectStep.Tooltip" ) );
-    wInjectStep.addModifyListener( lsMod );
-    FormData fdInjectStep = new FormData();
-    fdInjectStep.left = new FormAttachment( 0, 0 );
-    fdInjectStep.top = new FormAttachment( gTransGroup, 2 * margin );
-    fdInjectStep.right = new FormAttachment( wGetInjectStep, -margin );
-    wInjectStep.setLayoutData( fdInjectStep );
-
     // Retrieve step...
     //
-    wGetRetrieveStep = new Button( shell, SWT.PUSH );
+    Label wlRetrieveStep = new Label( wOptions, SWT.LEFT );
+    wlRetrieveStep.setText( BaseMessages.getString( PKG, "SingleThreaderDialog.RetrieveStep.Label" ) );
+    props.setLook( wlRetrieveStep );
+    FormData fdlRetrieveStep = new FormData();
+    fdlRetrieveStep.top = new FormAttachment( wInjectStep, 10 );
+    fdlRetrieveStep.left = new FormAttachment( 0, 0 );
+    wlRetrieveStep.setLayoutData( fdlRetrieveStep );
+
+    wRetrieveStep = new TextVar( transMeta, wOptions, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+    props.setLook( wRetrieveStep );
+    wRetrieveStep.addModifyListener( lsMod );
+    FormData fdRetrieveStep = new FormData();
+    fdRetrieveStep.width = 250;
+    fdRetrieveStep.left = new FormAttachment( 0, 0 );
+    fdRetrieveStep.top = new FormAttachment( wlRetrieveStep, 5 );
+    wRetrieveStep.setLayoutData( fdRetrieveStep );
+
+    wGetRetrieveStep = new Button( wOptions, SWT.PUSH );
     wGetRetrieveStep.setText( BaseMessages.getString( PKG, "SingleThreaderDialog.Button.Get" ) );
     FormData fdGetRetrieveStep = new FormData();
-    fdGetRetrieveStep.top = new FormAttachment( wInjectStep, 2 * margin );
-    fdGetRetrieveStep.right = new FormAttachment( 100, 0 );
+    fdGetRetrieveStep.top = new FormAttachment( wlRetrieveStep, 5 );
+    fdGetRetrieveStep.left = new FormAttachment( wRetrieveStep, 5 );
     wGetRetrieveStep.setLayoutData( fdGetRetrieveStep );
     wGetRetrieveStep.addSelectionListener( new SelectionAdapter() {
       @Override
@@ -467,65 +309,68 @@ public class SingleThreaderDialog extends BaseStepDialog implements StepDialogIn
       }
     } );
 
-    wRetrieveStep = new LabelTextVar( transMeta, shell,
-      BaseMessages.getString( PKG, "SingleThreaderDialog.RetrieveStep.Label" ),
-      BaseMessages.getString( PKG, "SingleThreaderDialog.RetrieveStep.Tooltip" ) );
-    wRetrieveStep.addModifyListener( lsMod );
-    FormData fdRetrieveStep = new FormData();
-    fdRetrieveStep.left = new FormAttachment( 0, 0 );
-    fdRetrieveStep.top = new FormAttachment( wInjectStep, margin );
-    fdRetrieveStep.right = new FormAttachment( wGetRetrieveStep, -margin );
-    wRetrieveStep.setLayoutData( fdRetrieveStep );
-
     // Here come the batch size, inject and retrieve fields...
     //
-    wBatchSize =
-      new LabelTextVar(
-        transMeta, shell, BaseMessages.getString( PKG, "SingleThreaderDialog.BatchSize.Label" ), BaseMessages
-          .getString( PKG, "SingleThreaderDialog.BatchSize.Tooltip" ) );
+    Label wlBatchSize = new Label( wOptions, SWT.LEFT );
+    wlBatchSize.setText( BaseMessages.getString( PKG, "SingleThreaderDialog.BatchSize.Label" ) );
+    props.setLook( wlBatchSize );
+    FormData fdlBatchSize = new FormData();
+    fdlBatchSize.top = new FormAttachment( wRetrieveStep, 10 );
+    fdlBatchSize.left = new FormAttachment( 0, 0 );
+    wlBatchSize.setLayoutData( fdlBatchSize );
+
+    wBatchSize = new TextVar( transMeta, wOptions, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     FormData fdBatchSize = new FormData();
     fdBatchSize.left = new FormAttachment( 0, 0 );
-    fdBatchSize.top = new FormAttachment( wRetrieveStep, margin );
-    fdBatchSize.right = new FormAttachment( wGetRetrieveStep, -margin );
+    fdBatchSize.top = new FormAttachment( wlBatchSize, 5 );
     wBatchSize.setLayoutData( fdBatchSize );
 
-    wBatchTime =
-      new LabelTextVar(
-        transMeta, shell, BaseMessages.getString( PKG, "SingleThreaderDialog.BatchTime.Label" ), BaseMessages
-          .getString( PKG, "SingleThreaderDialog.BatchTime.Tooltip" ) );
+    Label wlBatchTime = new Label( wOptions, SWT.LEFT );
+    wlBatchTime.setText(  BaseMessages.getString( PKG, "SingleThreaderDialog.BatchTime.Label" ) );
+    props.setLook( wlBatchTime );
+    FormData fdlBatchTime = new FormData();
+    fdlBatchTime.top = new FormAttachment( wBatchSize, 10 );
+    fdlBatchTime.left = new FormAttachment( 0, 0 );
+    wlBatchTime.setLayoutData( fdlBatchTime );
+
+    wBatchTime = new TextVar( transMeta, wOptions, SWT.SINGLE | SWT.LEFT | SWT.BORDER  );
     wBatchTime.addModifyListener( lsMod );
     FormData fdBatchTime = new FormData();
     fdBatchTime.left = new FormAttachment( 0, 0 );
-    fdBatchTime.top = new FormAttachment( wBatchSize, margin );
-    fdBatchTime.right = new FormAttachment( wGetRetrieveStep, -margin );
+    fdBatchTime.top = new FormAttachment( wlBatchTime, 5 );
     wBatchTime.setLayoutData( fdBatchTime );
 
-    gParametersGroup = new Group( shell, SWT.SHADOW_ETCHED_IN );
-    gParametersGroup.setText( BaseMessages.getString( PKG, "SingleThreaderDialog.ParamGroup.Label" ) );
-    gParametersGroup.setBackground( shell.getBackground() ); // the default looks ugly
-    FormLayout paramGroupLayout = new FormLayout();
-    paramGroupLayout.marginLeft = margin * 2;
-    paramGroupLayout.marginTop = margin * 2;
-    paramGroupLayout.marginRight = margin * 2;
-    paramGroupLayout.marginBottom = margin * 2;
-    gParametersGroup.setLayout( paramGroupLayout );
+    wOptionsTab.setControl( wOptions );
+
+    FormData fdOptions = new FormData();
+    fdOptions.left = new FormAttachment( 0, 0 );
+    fdOptions.top = new FormAttachment( 0, 0 );
+    fdOptions.right = new FormAttachment( 100, 0 );
+    fdOptions.bottom = new FormAttachment( 100, 0 );
+    wOptions.setLayoutData( fdOptions );
+    // Options Tab End
+
+    // Parameters Tab Start
+
+    CTabItem wParametersTab = new CTabItem( wTabFolder, SWT.NONE );
+    wParametersTab.setText( BaseMessages.getString( PKG, "SingleThreaderDialog.Fields.Parameters.Label" ) );
+
+    FormLayout fieldLayout = new FormLayout();
+    fieldLayout.marginWidth = 15;
+    fieldLayout.marginHeight = 15;
+
+    Composite wParameterComp = new Composite( wTabFolder, SWT.NONE );
+    props.setLook( wParameterComp );
+    wParameterComp.setLayout( fieldLayout );
 
     // Pass all parameters down
     //
-    Label wlPassParams = new Label( gParametersGroup, SWT.RIGHT );
-    wlPassParams.setText( BaseMessages.getString( PKG, "SingleThreaderDialog.PassAllParameters.Label" ) );
-    props.setLook( wlPassParams );
-    FormData fdlPassParams = new FormData();
-    fdlPassParams.left = new FormAttachment( 0, 0 );
-    fdlPassParams.top = new FormAttachment( 0, 0 );
-    fdlPassParams.right = new FormAttachment( middle, -margin );
-    wlPassParams.setLayoutData( fdlPassParams );
-    wPassParams = new Button( gParametersGroup, SWT.CHECK );
+    wPassParams = new Button( wParameterComp, SWT.CHECK );
     props.setLook( wPassParams );
+    wPassParams.setText( BaseMessages.getString( PKG, "SingleThreaderDialog.PassAllParameters.Label" ) );
     FormData fdPassParams = new FormData();
-    fdPassParams.left = new FormAttachment( middle, 0 );
+    fdPassParams.left = new FormAttachment( 0, 0 );
     fdPassParams.top = new FormAttachment( 0, 0 );
-    fdPassParams.right = new FormAttachment( 100, 0 );
     wPassParams.setLayoutData( fdPassParams );
     wPassParams.addSelectionListener( new SelectionAdapter() {
       public void widgetSelected( SelectionEvent arg0 ) {
@@ -533,10 +378,10 @@ public class SingleThreaderDialog extends BaseStepDialog implements StepDialogIn
       }
     } );
 
-    wbGetParams = new Button( gParametersGroup, SWT.PUSH );
+    wbGetParams = new Button( wParameterComp, SWT.PUSH );
     wbGetParams.setText( BaseMessages.getString( PKG, "SingleThreaderDialog.GetParameters.Button.Label" ) );
     FormData fdGetParams = new FormData();
-    fdGetParams.top = new FormAttachment( wPassParams, margin );
+    fdGetParams.bottom = new FormAttachment( 100, 0 );
     fdGetParams.right = new FormAttachment( 100, 0 );
     wbGetParams.setLayoutData( fdGetParams );
     wbGetParams.addSelectionListener( new SelectionAdapter() {
@@ -560,31 +405,56 @@ public class SingleThreaderDialog extends BaseStepDialog implements StepDialogIn
     colinf[1].setUsingVariables( true );
 
     wParameters =
-      new TableView(
-        transMeta, gParametersGroup, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, parameterRows,
-        lsMod, props );
+      new TableView( transMeta, wParameterComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, parameterRows,
+        false, lsMod, props, false );
 
     FormData fdParameters = new FormData();
     fdParameters.left = new FormAttachment( 0, 0 );
-    fdParameters.top = new FormAttachment( wPassParams, margin );
-    fdParameters.right = new FormAttachment( wbGetParams, -margin );
-    fdParameters.bottom = new FormAttachment( 100, 0 );
+    fdParameters.top = new FormAttachment( wPassParams, 10 );
+    fdParameters.right = new FormAttachment( 100 );
+    fdParameters.bottom = new FormAttachment( wbGetParams, -10 );
     wParameters.setLayoutData( fdParameters );
 
     FormData fdParametersComp = new FormData();
     fdParametersComp.left = new FormAttachment( 0, 0 );
-    fdParametersComp.top = new FormAttachment( wBatchTime, 0 );
+    fdParametersComp.top = new FormAttachment( 0, 0 );
     fdParametersComp.right = new FormAttachment( 100, 0 );
-    fdParametersComp.bottom = new FormAttachment( 100, -50 );
-    gParametersGroup.setLayoutData( fdParametersComp );
+    fdParametersComp.bottom = new FormAttachment( 100, 0 );
+    wParameterComp.setLayoutData( fdParametersComp );
 
-    // Some buttons
-    wOK = new Button( shell, SWT.PUSH );
-    wOK.setText( BaseMessages.getString( PKG, "System.Button.OK" ) );
+    wParameterComp.layout();
+    wParametersTab.setControl( wParameterComp );
+
+    wTabFolder.setSelection( 0 );
+
     wCancel = new Button( shell, SWT.PUSH );
     wCancel.setText( BaseMessages.getString( PKG, "System.Button.Cancel" ) );
+    FormData fdCancel = new FormData();
+    fdCancel.right = new FormAttachment( 100, 0 );
+    fdCancel.bottom = new FormAttachment( 100, 0 );
+    wCancel.setLayoutData( fdCancel );
 
-    setButtonPositions( new Button[] { wOK, wCancel }, margin, gParametersGroup );
+    wOK = new Button( shell, SWT.PUSH );
+    wOK.setText( BaseMessages.getString( PKG, "System.Button.OK" ) );
+    FormData fdOk = new FormData();
+    fdOk.right = new FormAttachment( wCancel, -5 );
+    fdOk.bottom = new FormAttachment( 100, 0 );
+    wOK.setLayoutData( fdOk );
+
+    Label hSpacer = new Label( shell, SWT.HORIZONTAL | SWT.SEPARATOR );
+    FormData fdhSpacer = new FormData();
+    fdhSpacer.height = 1;
+    fdhSpacer.left = new FormAttachment( 0, 0 );
+    fdhSpacer.bottom = new FormAttachment( wCancel, -15 );
+    fdhSpacer.right = new FormAttachment( 100, 0 );
+    hSpacer.setLayoutData( fdhSpacer );
+
+    FormData fdTabFolder = new FormData();
+    fdTabFolder.left = new FormAttachment( 0, 0 );
+    fdTabFolder.top = new FormAttachment( wPath, 20 );
+    fdTabFolder.right = new FormAttachment( 100, 0 );
+    fdTabFolder.bottom = new FormAttachment( hSpacer, -15 );
+    wTabFolder.setLayoutData( fdTabFolder );
 
     // Add listeners
     lsCancel = new Listener() {
@@ -598,18 +468,17 @@ public class SingleThreaderDialog extends BaseStepDialog implements StepDialogIn
       }
     };
 
-    wCancel.addListener( SWT.Selection, lsCancel );
     wOK.addListener( SWT.Selection, lsOK );
+    wCancel.addListener( SWT.Selection, lsCancel );
 
     lsDef = new SelectionAdapter() {
       public void widgetDefaultSelected( SelectionEvent e ) {
         ok();
       }
     };
+    wPath.addSelectionListener( lsDef );
 
     wStepname.addSelectionListener( lsDef );
-    wFilename.addSelectionListener( lsDef );
-    wTransname.addSelectionListener( lsDef );
     wBatchSize.addSelectionListener( lsDef );
     wBatchTime.addSelectionListener( lsDef );
     wInjectStep.addSelectionListener( lsDef );
@@ -636,18 +505,10 @@ public class SingleThreaderDialog extends BaseStepDialog implements StepDialogIn
     return stepname;
   }
 
-  protected void selectTransformationByReference() {
-    if ( repository != null ) {
-      SelectObjectDialog sod = new SelectObjectDialog( shell, repository, true, false );
-      sod.open();
-      RepositoryElementMetaInterface repositoryObject = sod.getRepositoryObject();
-      if ( repositoryObject != null ) {
-        specificationMethod = ObjectLocationSpecificationMethod.REPOSITORY_BY_REFERENCE;
-        getByReferenceData( repositoryObject );
-        referenceObjectId = repositoryObject.getObjectId();
-        setRadioButtons();
-      }
-    }
+  protected Image getImage() {
+    return SwtSvgImageUtil
+      .getImage( shell.getDisplay(), getClass().getClassLoader(), "MAP.svg", ConstUI.ICON_SIZE,
+        ConstUI.ICON_SIZE );
   }
 
   private void selectRepositoryTrans() {
@@ -657,19 +518,24 @@ public class SingleThreaderDialog extends BaseStepDialog implements StepDialogIn
       RepositoryDirectoryInterface repdir = sod.getDirectory();
       if ( transName != null && repdir != null ) {
         loadRepositoryTrans( transName, repdir );
-        wTransname.setText( mappingTransMeta.getName() );
-        wDirectory.setText( mappingTransMeta.getRepositoryDirectory().getPath() );
-        wFilename.setText( "" );
-        radioByName.setSelection( true );
-        radioFilename.setSelection( false );
+        String path = getPath( mappingTransMeta.getRepositoryDirectory().getPath() );
+        String fullPath = path + "/" + mappingTransMeta.getName();
+        wPath.setText( fullPath );
         specificationMethod = ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME;
-        setRadioButtons();
       }
     } catch ( KettleException ke ) {
       new ErrorDialog( shell,
         BaseMessages.getString( PKG, "SingleThreaderDialog.ErrorSelectingObject.DialogTitle" ),
         BaseMessages.getString( PKG, "SingleThreaderDialog.ErrorSelectingObject.DialogMessage" ), ke );
     }
+  }
+
+  protected String getPath( String path ) {
+    String parentPath = this.transMeta.getRepositoryDirectory().getPath();
+    if ( path.startsWith( parentPath ) ) {
+      path = path.replace( parentPath, "${" + Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY + "}" );
+    }
+    return path;
   }
 
   private void loadRepositoryTrans( String transName, RepositoryDirectoryInterface repdir ) throws KettleException {
@@ -680,42 +546,46 @@ public class SingleThreaderDialog extends BaseStepDialog implements StepDialogIn
     mappingTransMeta.clearChanged();
   }
 
-  private void selectFileTrans() {
-    String curFile = wFilename.getText();
-    FileObject root = null;
 
-    try {
-      root = KettleVFS.getFileObject( curFile != null ? curFile : Const.getUserHomeDirectory() );
+  private void selectFileTrans( boolean useVfs ) {
+    String curFile = transMeta.environmentSubstitute( wPath.getText() );
 
-      VfsFileChooserDialog vfsFileChooser = Spoon.getInstance().getVfsFileChooserDialog( root.getParent(), root );
-      FileObject file =
-        vfsFileChooser.open(
-          shell, null, Const.STRING_TRANS_FILTER_EXT, Const.getTransformationFilterNames(),
-          VfsFileChooserDialog.VFS_DIALOG_OPEN_FILE );
-      if ( file == null ) {
-        return;
+    if ( useVfs ) {
+      FileObject root = null;
+
+      String parentFolder = null;
+      try {
+        parentFolder =
+          KettleVFS.getFileObject( transMeta.environmentSubstitute( transMeta.getFilename() ) ).getParent().toString();
+      } catch ( Exception e ) {
+        // Take no action
       }
-      String fname = null;
 
-      fname = file.getURL().getFile();
+      try {
+        root = KettleVFS.getFileObject( curFile != null ? curFile : Const.getUserHomeDirectory() );
 
-      if ( fname != null ) {
-
-        loadFileTrans( fname );
-        wFilename.setText( mappingTransMeta.getFilename() );
-        wTransname.setText( Const.NVL( mappingTransMeta.getName(), "" ) );
-        wDirectory.setText( "" );
-        specificationMethod = ObjectLocationSpecificationMethod.FILENAME;
-        setRadioButtons();
+        VfsFileChooserDialog vfsFileChooser = Spoon.getInstance().getVfsFileChooserDialog( root.getParent(), root );
+        FileObject file =
+          vfsFileChooser.open(
+            shell, null, Const.STRING_TRANS_FILTER_EXT, Const.getTransformationFilterNames(),
+            VfsFileChooserDialog.VFS_DIALOG_OPEN_FILE );
+        if ( file == null ) {
+          return;
+        }
+        String fileName = file.getName().toString();
+        if ( fileName != null ) {
+          loadFileTrans( fileName );
+          if ( parentFolder != null && fileName.startsWith( parentFolder ) ) {
+            fileName = fileName.replace( parentFolder, "${" + Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY + "}" );
+          }
+          wPath.setText( fileName );
+          specificationMethod = ObjectLocationSpecificationMethod.FILENAME;
+        }
+      } catch ( IOException | KettleException e ) {
+        new ErrorDialog( shell,
+          BaseMessages.getString( PKG, "SingleThreaderDialog.ErrorLoadingTransformation.DialogTitle" ),
+          BaseMessages.getString( PKG, "SingleThreaderDialog.ErrorLoadingTransformation.DialogMessage" ), e );
       }
-    } catch ( IOException e ) {
-      new ErrorDialog( shell,
-        BaseMessages.getString( PKG, "SingleThreaderDialog.ErrorLoadingTransformation.DialogTitle" ),
-        BaseMessages.getString( PKG, "SingleThreaderDialog.ErrorLoadingTransformation.DialogMessage" ), e );
-    } catch ( KettleException e ) {
-      new ErrorDialog( shell,
-        BaseMessages.getString( PKG, "SingleThreaderDialog.ErrorLoadingTransformation.DialogTitle" ),
-        BaseMessages.getString( PKG, "SingleThreaderDialog.ErrorLoadingTransformation.DialogMessage" ), e );
     }
   }
 
@@ -724,35 +594,40 @@ public class SingleThreaderDialog extends BaseStepDialog implements StepDialogIn
     mappingTransMeta.clearChanged();
   }
 
-  private void editTrans() {
-    // Load the transformation again to make sure it's still there and
-    // refreshed
-    // It's an extra check to make sure it's still OK...
-    //
-    try {
-      loadTransformation();
-
-      // If we're still here, mappingTransMeta is valid.
-      //
-      SpoonInterface spoon = SpoonFactory.getInstance();
-      if ( spoon != null ) {
-        spoon.addTransGraph( mappingTransMeta );
-      }
-    } catch ( KettleException e ) {
-      new ErrorDialog( shell,
-        BaseMessages.getString( PKG, "SingleThreaderDialog.ErrorShowingTransformation.Title" ),
-        BaseMessages.getString( PKG, "SingleThreaderDialog.ErrorShowingTransformation.Message" ), e );
-    }
-  }
-
   private void loadTransformation() throws KettleException {
+    String filename = wPath.getText();
+    if ( repository != null ) {
+      specificationMethod = ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME;
+    } else {
+      specificationMethod = ObjectLocationSpecificationMethod.FILENAME;
+    }
     switch ( specificationMethod ) {
       case FILENAME:
-        loadFileTrans( wFilename.getText() );
+        if ( Utils.isEmpty( filename ) ) {
+          return;
+        }
+        if ( !filename.endsWith( ".ktr" ) ) {
+          filename = filename + ".ktr";
+          wPath.setText( filename );
+        }
+        loadFileTrans( filename );
         break;
       case REPOSITORY_BY_NAME:
-        String realDirectory = transMeta.environmentSubstitute( wDirectory.getText() );
-        String realTransname = transMeta.environmentSubstitute( wTransname.getText() );
+        if ( Utils.isEmpty( filename ) ) {
+          return;
+        }
+        if ( filename.endsWith( ".ktr" ) ) {
+          filename = filename.replace( ".ktr", "" );
+          wPath.setText( filename );
+        }
+        String transPath = transMeta.environmentSubstitute( filename );
+        String realTransname = transPath;
+        String realDirectory = "";
+        int index = transPath.lastIndexOf( "/" );
+        if ( index != -1 ) {
+          realTransname = transPath.substring( index + 1 );
+          realDirectory = transPath.substring( 0, index );
+        }
 
         if ( Utils.isEmpty( realDirectory ) || Utils.isEmpty( realTransname ) ) {
           throw new KettleException(
@@ -776,38 +651,6 @@ public class SingleThreaderDialog extends BaseStepDialog implements StepDialogIn
     wInjectStep.setText( getInjectorStep( mappingTransMeta ) );
   }
 
-  public void setActive() {
-    radioByName.setEnabled( repository != null );
-    radioByReference.setEnabled( repository != null );
-    wFilename.setEnabled( radioFilename.getSelection() );
-    wbbFilename.setEnabled( radioFilename.getSelection() );
-    wTransname.setEnabled( repository != null && radioByName.getSelection() );
-
-    wDirectory.setEnabled( repository != null && radioByName.getSelection() );
-
-    wbTrans.setEnabled( repository != null && radioByName.getSelection() );
-
-    wByReference.setEnabled( repository != null && radioByReference.getSelection() );
-    wbByReference.setEnabled( repository != null && radioByReference.getSelection() );
-  }
-
-  protected void setRadioButtons() {
-    radioFilename.setSelection( specificationMethod == ObjectLocationSpecificationMethod.FILENAME );
-    radioByName.setSelection( specificationMethod == ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME );
-    radioByReference
-      .setSelection( specificationMethod == ObjectLocationSpecificationMethod.REPOSITORY_BY_REFERENCE );
-    setActive();
-  }
-
-  private void getByReferenceData( RepositoryElementMetaInterface transInf ) {
-    String path = transInf.getRepositoryDirectory().getPath();
-    if ( !path.endsWith( "/" ) ) {
-      path += "/";
-    }
-    path += transInf.getName();
-    wByReference.setText( path );
-  }
-
   /**
    * Copy information from the meta-data input to the dialog fields.
    */
@@ -815,21 +658,20 @@ public class SingleThreaderDialog extends BaseStepDialog implements StepDialogIn
     specificationMethod = singleThreaderMeta.getSpecificationMethod();
     switch ( specificationMethod ) {
       case FILENAME:
-        wFilename.setText( Const.NVL( singleThreaderMeta.getFileName(), "" ) );
+        wPath.setText( Const.NVL( singleThreaderMeta.getFileName(), "" ) );
         break;
       case REPOSITORY_BY_NAME:
-        wDirectory.setText( Const.NVL( singleThreaderMeta.getDirectoryPath(), "" ) );
-        wTransname.setText( Const.NVL( singleThreaderMeta.getTransName(), "" ) );
+        String fullPath = Const.NVL( singleThreaderMeta.getDirectoryPath(), "" ) + "/" + Const
+          .NVL( singleThreaderMeta.getTransName(), "" );
+        wPath.setText( fullPath );
         break;
       case REPOSITORY_BY_REFERENCE:
         referenceObjectId = singleThreaderMeta.getTransObjectId();
-        wByReference.setText( "" );
         getByReferenceData( referenceObjectId );
         break;
       default:
         break;
     }
-    setRadioButtons();
 
     wBatchSize.setText( Const.NVL( singleThreaderMeta.getBatchSize(), "" ) );
     wBatchTime.setText( Const.NVL( singleThreaderMeta.getBatchTime(), "" ) );
@@ -863,22 +705,17 @@ public class SingleThreaderDialog extends BaseStepDialog implements StepDialogIn
     wStepname.setFocus();
   }
 
-  private void getByReferenceData( ObjectId referenceObjectId ) {
+  private void getByReferenceData( ObjectId transObjectId ) {
     try {
-      if ( repository == null ) {
-        throw new KettleException(
-          BaseMessages.getString( PKG, "SingleThreaderDialog.Exception.NotConnectedToRepository.Message" ) );
-      }
-      RepositoryObject transInf = repository.getObjectInformation(
-        referenceObjectId,
-        RepositoryObjectType.TRANSFORMATION );
-      if ( transInf != null ) {
-        getByReferenceData( transInf );
-      }
+      RepositoryObject transInf = repository.getObjectInformation( transObjectId, RepositoryObjectType.TRANSFORMATION );
+      String path = getPath( transInf.getRepositoryDirectory().getPath() );
+      String fullPath =
+        Const.NVL( path, "" ) + "/" + Const.NVL( transInf.getName(), "" );
+      wPath.setText( fullPath );
     } catch ( KettleException e ) {
       new ErrorDialog( shell,
-        BaseMessages.getString( PKG, "SingleThreaderDialog.Exception.UnableToReferenceObjectId.Title" ),
-        BaseMessages.getString( PKG, "SingleThreaderDialog.Exception.UnableToReferenceObjectId.Message" ), e );
+        BaseMessages.getString( PKG, "JobEntryTransDialog.Exception.UnableToReferenceObjectId.Title" ),
+        BaseMessages.getString( PKG, "JobEntryTransDialog.Exception.UnableToReferenceObjectId.Message" ), e );
     }
   }
 
@@ -898,28 +735,34 @@ public class SingleThreaderDialog extends BaseStepDialog implements StepDialogIn
   }
 
   private void getInfo( SingleThreaderMeta meta ) throws KettleException {
-
     loadTransformation();
+    if ( repository != null ) {
+      specificationMethod = ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME;
+    } else {
+      specificationMethod = ObjectLocationSpecificationMethod.FILENAME;
+    }
 
     meta.setSpecificationMethod( specificationMethod );
     switch ( specificationMethod ) {
       case FILENAME:
-        meta.setFileName( wFilename.getText() );
+        meta.setFileName( wPath.getText() );
         meta.setDirectoryPath( null );
         meta.setTransName( null );
         meta.setTransObjectId( null );
         break;
       case REPOSITORY_BY_NAME:
-        meta.setDirectoryPath( wDirectory.getText() );
-        meta.setTransName( wTransname.getText() );
+        String transPath = wPath.getText();
+        String transName = transPath;
+        String directory = "";
+        int index = transPath.lastIndexOf( "/" );
+        if ( index != -1 ) {
+          transName = transPath.substring( index + 1 );
+          directory = transPath.substring( 0, index );
+        }
+        meta.setDirectoryPath( directory );
+        meta.setTransName( transName );
         meta.setFileName( null );
         meta.setTransObjectId( null );
-        break;
-      case REPOSITORY_BY_REFERENCE:
-        meta.setFileName( null );
-        meta.setDirectoryPath( null );
-        meta.setTransName( null );
-        meta.setTransObjectId( referenceObjectId );
         break;
       default:
         break;
@@ -1002,109 +845,6 @@ public class SingleThreaderDialog extends BaseStepDialog implements StepDialogIn
         PKG, "SingleThreaderDialog.Exception.UnableToLoadTransformation.Message" ), e );
     }
 
-  }
-
-  /**
-   * Ask the user to fill in the details...
-   */
-  protected void newTransformation() {
-
-    // Get input fields for this step so we can put this metadata in the mapping
-    //
-    RowMetaInterface inFields = new RowMeta();
-    try {
-      inFields = transMeta.getPrevStepFields( stepname );
-    } catch ( Exception e ) {
-      // Just show the error but continue operations.
-      //
-      new ErrorDialog( shell, "Error", "Unable to get input fields from previous step", e );
-    }
-
-    TransMeta newTransMeta = new TransMeta();
-
-    newTransMeta.getDatabases().addAll( transMeta.getDatabases() );
-    newTransMeta.setRepository( transMeta.getRepository() );
-    newTransMeta.setRepositoryDirectory( transMeta.getRepositoryDirectory() );
-
-    // Pass some interesting settings from the parent transformations...
-    //
-    newTransMeta.setUsingUniqueConnections( transMeta.isUsingUniqueConnections() );
-
-    // Add MappingInput and MappingOutput steps
-    //
-    String INPUTSTEP_NAME = "Mapping Input";
-    MappingInputMeta inputMeta = new MappingInputMeta();
-    inputMeta.allocate( inFields.size() );
-    for ( int i = 0; i < inFields.size(); i++ ) {
-      ValueMetaInterface valueMeta = inFields.getValueMeta( i );
-      inputMeta.getFieldName()[i] = valueMeta.getName();
-      inputMeta.getFieldType()[i] = valueMeta.getType();
-      inputMeta.getFieldLength()[i] = valueMeta.getLength();
-      inputMeta.getFieldPrecision()[i] = valueMeta.getPrecision();
-    }
-    StepMeta inputStep = new StepMeta( INPUTSTEP_NAME, inputMeta );
-    inputStep.setLocation( 50, 50 );
-    inputStep.setDraw( true );
-    newTransMeta.addStep( inputStep );
-
-    String OUTPUTSTEP_NAME = "Mapping Output";
-    MappingOutputMeta outputMeta = new MappingOutputMeta();
-    outputMeta.allocate( 0 );
-    StepMeta outputStep = new StepMeta( OUTPUTSTEP_NAME, outputMeta );
-    outputStep.setLocation( 500, 50 );
-    outputStep.setDraw( true );
-    newTransMeta.addStep( outputStep );
-    newTransMeta.addTransHop( new TransHopMeta( inputStep, outputStep ) );
-
-    TransDialog transDialog = new TransDialog( shell, SWT.NONE, newTransMeta, repository );
-    if ( transDialog.open() != null ) {
-      Spoon spoon = Spoon.getInstance();
-      spoon.addTransGraph( newTransMeta );
-      boolean saved = false;
-      try {
-        if ( repository != null ) {
-          if ( !Utils.isEmpty( newTransMeta.getName() ) ) {
-            wStepname.setText( newTransMeta.getName() );
-          }
-          saved = spoon.saveToRepository( newTransMeta, false );
-          if ( repository.getRepositoryMeta().getRepositoryCapabilities().supportsReferences() ) {
-            specificationMethod = ObjectLocationSpecificationMethod.REPOSITORY_BY_REFERENCE;
-          } else {
-            specificationMethod = ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME;
-          }
-        } else {
-          saved = spoon.saveToFile( newTransMeta );
-          specificationMethod = ObjectLocationSpecificationMethod.FILENAME;
-        }
-      } catch ( Exception e ) {
-        new ErrorDialog( shell, "Error", "Error saving new transformation", e );
-      }
-      if ( saved ) {
-        setRadioButtons();
-        switch ( specificationMethod ) {
-          case FILENAME:
-            wFilename.setText( Const.NVL( newTransMeta.getFilename(), "" ) );
-            break;
-          case REPOSITORY_BY_NAME:
-            wTransname.setText( Const.NVL( newTransMeta.getName(), "" ) );
-            wDirectory.setText( newTransMeta.getRepositoryDirectory().getPath() );
-            break;
-          case REPOSITORY_BY_REFERENCE:
-            getByReferenceData( newTransMeta.getObjectId() );
-            break;
-          default:
-            break;
-        }
-
-        getParameters( newTransMeta );
-
-        // Connect mapping input/output
-        //
-        wInjectStep.setText( INPUTSTEP_NAME );
-        wRetrieveStep.setText( OUTPUTSTEP_NAME );
-
-      }
-    }
   }
 
 }
