@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -110,8 +110,8 @@ public class DimensionLookupMetaTest implements InitializerInterface<StepMetaInt
     // ValueMetaInterface.TYPE_STRING. This happens about once out of every 3 or so runs of
     // the test which made it a bit difficult to track down.
     // MB - 5/2016
-    attrValidatorMap.put( "fieldUpdate",
-        new PrimitiveIntArrayLoadSaveValidator( new NonZeroIntLoadSaveValidator( DimensionLookupMeta.typeDesc.length ), 5 ) );
+    attrValidatorMap.put( "fieldUpdate", new FieldUpdateIntArrayLoadSaveValidator( new NonZeroIntLoadSaveValidator(
+        DimensionLookupMeta.typeDesc.length ), 5 ) );
     attrValidatorMap.put( "databaseMeta", new DatabaseMetaLoadSaveValidator() );
     attrValidatorMap.put( "startDateAlternative", new IntLoadSaveValidator( DimensionLookupMeta.getStartDateAlternativeCodes().length ) );
     attrValidatorMap.put( "sequenceName", new SequenceNameLoadSaveValidator() );
@@ -299,6 +299,27 @@ public class DimensionLookupMetaTest implements InitializerInterface<StepMetaInt
       } else {
         return ( another == null ); // If !isUpdate, another should be null
       }
+    }
+  }
+
+  public class FieldUpdateIntArrayLoadSaveValidator extends PrimitiveIntArrayLoadSaveValidator {
+
+    public FieldUpdateIntArrayLoadSaveValidator( FieldLoadSaveValidator<Integer> fieldValidator ) {
+      this( fieldValidator, null );
+    }
+
+    public FieldUpdateIntArrayLoadSaveValidator( FieldLoadSaveValidator<Integer> fieldValidator, Integer elements ) {
+      super( fieldValidator, elements );
+    }
+
+    @Override
+    public int[] getTestObject() {
+      DimensionLookupMeta dlm = holdTestingMeta.get();
+      int[] testObject = super.getTestObject();
+      if ( !dlm.isUpdate() ) {
+        dlm.setReturnType( testObject );
+      }
+      return testObject;
     }
   }
 

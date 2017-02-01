@@ -1002,6 +1002,9 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
         fieldStream[i] = rep.getStepAttributeString( id_step, i, "field_name" );
         fieldLookup[i] = rep.getStepAttributeString( id_step, i, "field_lookup" );
         fieldUpdate[i] = getUpdateType( update, rep.getStepAttributeString( id_step, i, "field_update" ) );
+        if ( !update ) {
+          returnType[i] = fieldUpdate[i];
+        }
       }
 
       keyField = rep.getStepAttributeString( id_step, "return_name" );
@@ -1032,6 +1035,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
     throws KettleException {
     try {
+      actualizeWithInjectedValues();
       rep.saveStepAttribute( id_transformation, id_step, "schema", schemaName );
       rep.saveStepAttribute( id_transformation, id_step, "table", tableName );
       rep.saveDatabaseMetaStepAttribute( id_transformation, id_step, "id_connection", databaseMeta );
