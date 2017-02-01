@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.pentaho</groupId>
+    <artifactId>pdi-execution-engine</artifactId>
+    <version>7.1-SNAPSHOT</version>
+    <relativePath>../pom.xml</relativePath>
+  </parent>
+
+  <artifactId>pdi-feature</artifactId>
+  <version>7.1-SNAPSHOT</version>
+  <packaging>feature</packaging>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.pentaho</groupId>
+      <artifactId>pdi-execution-engine-classic</artifactId>
+      <version>7.1-SNAPSHOT</version>
+      <!--<exclusions>-->
+        <!--<exclusion>-->
+          <!--<artifactId>*</artifactId>-->
+          <!--<groupId>*</groupId>-->
+        <!--</exclusion>-->
+      <!--</exclusions>-->
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.karaf.tooling</groupId>
+        <artifactId>karaf-maven-plugin</artifactId>
+        <version>4.0.8</version>
+        <extensions>true</extensions>
+        <configuration>
+          <startLevel>80</startLevel>
+          <primaryFeatureName>standalone-engine</primaryFeatureName>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>
