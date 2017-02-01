@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,6 +23,7 @@
 package org.pentaho.di.trans.steps.xmlinputstream;
 
 import java.io.IOException;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -37,13 +38,13 @@ import javax.xml.stream.events.XMLEvent;
 
 import org.apache.commons.vfs2.FileSystemException;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
@@ -71,6 +72,8 @@ public class XMLInputStream extends BaseStep implements StepInterface {
 
   private XMLInputStreamData data;
 
+  private int inputFieldIndex;
+
   static final String[] eventDescription = { "UNKNOWN", "START_ELEMENT", "END_ELEMENT", "PROCESSING_INSTRUCTION",
     "CHARACTERS", "COMMENT", "SPACE", "START_DOCUMENT", "END_DOCUMENT", "ENTITY_REFERENCE", "ATTRIBUTE", "DTD",
     "CDATA", "NAMESPACE", "NOTATION_DECLARATION", "ENTITY_DECLARATION" };
@@ -82,7 +85,7 @@ public class XMLInputStream extends BaseStep implements StepInterface {
 
   @Override
   public boolean processRow( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
-    if ( first ) {
+    if ( first && !meta.sourceFromInput ) {
       first = false;
 
       if ( data.filenames == null ) {
@@ -92,14 +95,53 @@ public class XMLInputStream extends BaseStep implements StepInterface {
       resetElementCounters();
     }
 
-    Object[] outputRowData = getRowFromXML();
-    if ( outputRowData == null ) {
-      if ( openNextFile() ) {
+    Object[] outputRowData;
+    if ( meta.sourceFromInput ) {
+      Object[] row = null;
+      if ( first ) {
+        first = false;
+        row = getRow();
+        // get input field index
+        if ( getInputRowMeta() == null ) {
+          throw new KettleException( BaseMessages.getString( PKG, "XMLInputStream.NoIncomingRowsFound" ) );
+        }
+        inputFieldIndex = getInputRowMeta().indexOfValue( meta.sourceFieldName );
+        if ( inputFieldIndex < 0 ) {
+          throw new KettleException( BaseMessages.getString( PKG, "XMLInputStream.FilenameFieldNotFound",
+              meta.sourceFieldName ) );
+        }
+      }
+      if ( data.xmlEventReader == null ) {
+        if ( row == null ) {
+          row = getRow();
+        }
+        if ( row == null ) {
+          setOutputDone(); // signal end to receiver(s)
+          return false; // This is the end of this step.
+        }
+        String xml = getInputRowMeta().getString( row, inputFieldIndex );
+        try {
+          data.xmlEventReader = data.staxInstance.createXMLEventReader( new StringReader( xml ) );
+        } catch ( XMLStreamException e ) {
+          throw new KettleException( e );
+        }
         resetElementCounters();
+      }
+      outputRowData = getRowFromXML();
+      if ( outputRowData == null ) {
+        data.xmlEventReader = null;
         return true;
-      } else {
-        setOutputDone(); // signal end to receiver(s)
-        return false; // This is the end of this step.
+      }
+    } else {
+      outputRowData = getRowFromXML();
+      if ( outputRowData == null ) {
+        if ( openNextFile() ) {
+          resetElementCounters();
+          return true;
+        } else {
+          setOutputDone(); // signal end to receiver(s)
+          return false; // This is the end of this step.
+        }
       }
     }
 
@@ -536,7 +578,7 @@ public class XMLInputStream extends BaseStep implements StepInterface {
     if ( super.init( smi, sdi ) ) {
       data.staxInstance = XMLInputFactory.newInstance(); // could select the parser later on
       data.filenr = 0;
-      if ( getTransMeta().findNrPrevSteps( getStepMeta() ) == 0 ) {
+      if ( getTransMeta().findNrPrevSteps( getStepMeta() ) == 0 && !meta.sourceFromInput ) {
         String filename = environmentSubstitute( meta.getFilename() );
         if ( Utils.isEmpty( filename ) ) {
           logError( BaseMessages.getString( PKG, "XMLInputStream.MissingFilename.Message" ) );

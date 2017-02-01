@@ -20,9 +20,14 @@
     <!-- Kettle module dependencies-->
     <dependency org="${ivy.artifact.group}" name="kettle-core"          rev="${project.revision}" changing="true" force="true"/>
     <dependency org="${ivy.artifact.group}" name="kettle-engine"        rev="${project.revision}" changing="true" force="true"/>
-    <dependency org="${ivy.artifact.group}" name="kettle-dbdialog"      rev="${project.revision}" changing="true" force="true"/>
+    <dependency org="${ivy.artifact.group}" name="kettle-dbdialog"      rev="${project.revision}" changing="true" force="true">
+      <exclude name="jaxen" module="jaxen"/>
+      <exclude name="dom4j" module="dom4j"/>
+    </dependency>
     <dependency org="${ivy.artifact.group}" name="kettle-ui-swt"        rev="${project.revision}" changing="true" force="true">
       <exclude name="org.eclipse.swt.gtk.linux.x86_64"/>
+      <exclude name="jaxen" module="jaxen"/>
+      <exclude name="dom4j" module="dom4j"/>
     </dependency>
     
     <dependency org="pentaho" name="pdi-osgi-bridge-core" rev="${dependency.pdi-osgi-bridge.revision}" changing="true" />
@@ -137,12 +142,26 @@
     <!--  Pentaho reporting dependencies -->
     <dependency org="${dependency.reporting-engine.group}" name="pentaho-reporting-engine-classic-extensions" rev="${dependency.pentaho-reporting.revision}" changing="true">
       <exclude name="pentaho-reporting-engine-classic-core-test"/>
+      <exclude name="javax.mail" module="mail"/>
+      <exclude org="org.apache.axis2" module="axis2-kernel" />
+      <exclude org="org.scannotation" module="scannotation" />
     </dependency>
     <dependency org="${dependency.reporting-engine.group}" name="pentaho-reporting-engine-classic-extensions-drill-down" rev="${dependency.pentaho-reporting.revision}" changing="true"/>
-    <dependency org="${dependency.reporting-engine.group}" name="pentaho-reporting-engine-classic-extensions-kettle" rev="${dependency.pentaho-reporting.revision}" changing="true"/>
+    <dependency org="${dependency.reporting-engine.group}" name="pentaho-reporting-engine-classic-extensions-kettle" rev="${dependency.pentaho-reporting.revision}" changing="true">
+      <exclude org="org.apache.axis2" module="axis2-kernel" />
+      <exclude org="org.apache.axis2" module="axis2-adb" />
+      <exclude org="org.scannotation" module="scannotation" />
+    </dependency>
     <dependency org="${dependency.reporting-engine.group}" name="pentaho-reporting-engine-classic-extensions-mondrian" rev="${dependency.pentaho-reporting.revision}" transitive="true" changing="true"/>
     <dependency org="${dependency.reporting-engine.group}" name="pentaho-reporting-engine-classic-extensions-olap4j" rev="${dependency.pentaho-reporting.revision}" transitive="true" changing="true"/>
-    <dependency org="${dependency.reporting-engine.group}" name="pentaho-reporting-engine-classic-extensions-pmd" rev="${dependency.pentaho-reporting.revision}" transitive="true" changing="true"/>
+    <dependency org="${dependency.reporting-engine.group}" name="pentaho-reporting-engine-classic-extensions-pmd" rev="${dependency.pentaho-reporting.revision}" transitive="true" changing="true">
+      <exclude org="org.apache.axis2" module="axis2-kernel" />
+      <exclude org="org.apache.axis2" module="axis2-adb" />
+      <exclude org="org.scannotation" module="scannotation" />
+    </dependency>
+    <dependency org="org.apache.axis2" name="axis2-kernel" rev="1.5" transitive="false" />
+    <dependency org="org.apache.axis2" name="axis2-adb" rev="1.5" transitive="false" />
+    
     <dependency org="${dependency.reporting-engine.group}" name="pentaho-reporting-engine-classic-extensions-reportdesigner-parser" rev="${dependency.pentaho-reporting.revision}" transitive="true" changing="true"/>
     <dependency org="${dependency.reporting-engine.group}" name="pentaho-reporting-engine-classic-extensions-sampledata" rev="${dependency.pentaho-reporting.revision}" transitive="true" changing="true"/>
     <dependency org="${dependency.reporting-engine.group}" name="pentaho-reporting-engine-classic-extensions-scripting" rev="${dependency.pentaho-reporting.revision}" transitive="true" changing="true"/>

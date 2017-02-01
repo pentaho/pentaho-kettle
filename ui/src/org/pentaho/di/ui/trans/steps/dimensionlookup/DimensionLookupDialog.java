@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -1350,10 +1350,16 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
       // key creation.
       if ( DimensionLookupMeta.CREATION_METHOD_AUTOINC.equals( techKeyCreation ) ) {
         wAutoinc.setSelection( true );
+        wSeqButton.setSelection( false );
+        wTableMax.setSelection( false );
       } else if ( ( DimensionLookupMeta.CREATION_METHOD_SEQUENCE.equals( techKeyCreation ) ) ) {
         wSeqButton.setSelection( true );
+        wAutoinc.setSelection( false );
+        wTableMax.setSelection( false );
       } else { // the rest
         wTableMax.setSelection( true );
+        wAutoinc.setSelection( false );
+        wSeqButton.setSelection( false );
         input.setTechKeyCreation( DimensionLookupMeta.CREATION_METHOD_TABLEMAX );
       }
       if ( input.getSequenceName() != null ) {

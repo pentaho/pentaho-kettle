@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -31,6 +31,7 @@ import org.pentaho.di.core.exception.KettleException;
 @Deprecated
 public interface RepositoryExtended extends Repository {
   /**
+   * @deprecated more deprecated than the others 
    * Loads the RepositoryDirectoryTree either Eagerly or Lazilly based on the value passed. This value will
    * override the default and any specified setting value for KETTLE_LAZY_REPOSITORY.
    *
@@ -39,6 +40,17 @@ public interface RepositoryExtended extends Repository {
    * @throws KettleException
    */
   RepositoryDirectoryInterface loadRepositoryDirectoryTree( boolean eager ) throws KettleException;
+
+  /**
+   * Loads the RepositoryDirectoryTree, filtering at the server.
+   * @param filter file filter with wildcards, if null only folders are returned
+   * @param fullDirs include directories without any match
+   * @param includeAcls include ACLs 
+   * @return
+   * @throws KettleException
+   */
+  RepositoryDirectoryInterface loadRepositoryDirectoryTree( String filter, boolean fullDirs, boolean includeAcls )
+    throws KettleException;
 
   /**
    * Move / rename a repository directory

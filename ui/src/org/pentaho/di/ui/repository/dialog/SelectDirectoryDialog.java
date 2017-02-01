@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -128,10 +128,9 @@ public class SelectDirectoryDialog extends Dialog {
     props.setLook( wTree );
 
     try {
-      // We're terrible and load the entire repository, disable lazy loading if set
       if ( rep instanceof RepositoryExtended ) {
         RepositoryExtended repositoryExtended = (RepositoryExtended) this.rep;
-        repositoryTree = repositoryExtended.loadRepositoryDirectoryTree( true );
+        repositoryTree = repositoryExtended.loadRepositoryDirectoryTree( null, true, false );
       } else {
         repositoryTree = this.rep.loadRepositoryDirectoryTree();
       }

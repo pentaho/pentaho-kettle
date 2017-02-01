@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -26,6 +26,7 @@ import java.util.List;
 
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -41,6 +42,7 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  * @since 8-apr-2003
  */
 public class MondrianInput extends BaseStep implements StepInterface {
+  private static Class<?> PKG = MondrianInputMeta.class; // for i18n purposes, needed by Translator2!!
   private MondrianInputMeta meta;
   private MondrianData data;
 
@@ -71,6 +73,10 @@ public class MondrianInput extends BaseStep implements StepInterface {
 
     if ( data.rowNumber >= data.mondrianHelper.getRows().size() ) {
       setOutputDone(); // signal end to receiver(s)
+      if ( log.isBasic() ) {
+        logBasic( BaseMessages.getString( PKG, "MondrianInputMessageDone" ) );
+      }
+      data.mondrianHelper.close();
       return false; // end of data or error.
     }
 
@@ -81,18 +87,18 @@ public class MondrianInput extends BaseStep implements StepInterface {
     }
 
     putRow( data.outputRowMeta, outputRowData );
-
+    // PDI-14120 request
+    if ( checkFeedback( getLinesOutput() ) ) {
+      if ( log.isBasic() ) {
+        logBasic( "linenr " + getLinesOutput() ); // Not nls-ized because none of the linenr messages are at this time
+      }
+    }
     return true;
   }
 
   public void dispose( StepMetaInterface smi, StepDataInterface sdi ) {
-    if ( log.isBasic() ) {
-      logBasic( "Finished reading query, closing connection." );
-    }
-
-    data.mondrianHelper.close();
-
     super.dispose( smi, sdi );
+    data.mondrianHelper.close(); // For safety sake in case the processing of rows is interrupted.
   }
 
   public boolean init( StepMetaInterface smi, StepDataInterface sdi ) {

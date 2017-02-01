@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -525,6 +525,12 @@ public class ValueMetaBaseTest {
     assertEquals( 1, intMeta.compare( int1, int2 ) );
     assertEquals( -1, intMeta.compare( int2, int1 ) );
     assertEquals( 0, intMeta.compare( int1, int1 ) );
+
+    int1 = null;
+    int2 = new Long( 6223372036854775804L );
+    assertEquals( -1, intMeta.compare( int1, int2 ) );
+    intMeta.setSortedDescending( true );
+    assertEquals( 1, intMeta.compare( int1, int2 ) );
 
   }
 

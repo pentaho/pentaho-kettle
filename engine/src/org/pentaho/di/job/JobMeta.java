@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -2447,6 +2447,10 @@ public class JobMeta extends AbstractMeta
       variables.setVariable( Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY, "" );
       variables.setVariable( Const.INTERNAL_VARIABLE_JOB_FILENAME_NAME, "" );
     }
+
+    variables.setVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY, variables.getVariable(
+        repository != null ? Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY
+            : Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY ) );
   }
 
   @Deprecated

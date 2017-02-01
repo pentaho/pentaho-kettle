@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -488,6 +488,12 @@ public class GroupBy extends BaseStep implements StepInterface {
             // PDI-10250 do not compare null
             break;
           }
+          // PDI-15648 set the initial value for further comparing
+          if ( value == null && subj != null && !minNullIsValued ) {
+            data.agg[ i ] = subj;
+            break;
+          }
+
           if ( subjMeta.isSortedDescending() ) {
             // Account for negation in ValueMeta.compare() - See PDI-2302
             if ( subjMeta.compare( value, valueMeta, subj ) < 0 ) {

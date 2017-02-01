@@ -603,6 +603,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         KettleLogStore.OriginalSystemOut = System.out;
         KettleLogStore.OriginalSystemErr = System.err;
       } catch ( Throwable ignored ) {
+        // ignored
       }
     }
 
@@ -825,10 +826,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     variables = new RowMetaAndData( new RowMeta() );
 
     // props.setLook(shell);
-    Image[] images = { GUIResource.getInstance().getImageSpoonHigh(), GUIResource.getInstance().getImageSpoon() };
-    shell.setImages( images );
-
-    // shell.setImage(GUIResource.getInstance().getImageSpoon());
+    shell.setImage( GUIResource.getInstance().getImageSpoon() );
 
     cursor_hourglass = new Cursor( display, SWT.CURSOR_WAIT );
     cursor_hand = new Cursor( display, SWT.CURSOR_HAND );
@@ -1126,7 +1124,9 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       // Yes - User specified that they want to close all.
       return closeAllFiles( force );
     } else if ( ( isCloseAllFiles == SWT.NO ) && ( executePerms ) ) {
-      // No - don't close tabs only if user has execute permissions.
+      // No - don't close tabs
+      // if user has execute permissions mark tabs for save
+      markTabsChanged( force );
       // Return true so we can disconnect from repo
       return true;
     } else {
@@ -4567,7 +4567,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         VfsFileChooserDialog.VFS_DIALOG_OPEN_FILE );
     if ( selectedFile != null ) {
       setLastFileOpened( selectedFile.getName().getFriendlyURI() );
-      openFile( selectedFile.getName().getFriendlyURI(), false );
+      openFile( selectedFile.getName().getFriendlyURI(), rep != null );
     }
   }
 
@@ -4885,7 +4885,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     }
   }
 
-  public void promptForSave() throws KettleException {
+  public boolean promptForSave() throws KettleException {
     List<TabMapEntry> list = delegates.tabs.getTabs();
 
     for ( TabMapEntry mapEntry : list ) {
@@ -4900,9 +4900,12 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         int reply = itemInterface.showChangedWarning();
         if ( reply == SWT.YES ) {
           itemInterface.applyChanges();
+        } else if ( reply == SWT.CANCEL ) {
+          return false;
         }
       }
     }
+    return true;
   }
 
   public boolean quitFile( boolean canCancel ) throws KettleException {
@@ -5074,8 +5077,9 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     String activePerspectiveId = activePerspective.getId();
     boolean etlPerspective = activePerspectiveId.equals( MainSpoonPerspective.ID );
     if ( rep != null && etlPerspective ) {
-      meta.setObjectId( null );
-      meta.setFilename( null );
+      if ( meta.getObjectId() == null ) {
+        meta.setFilename( null );
+      }
       saved = saveToRepository( meta );
     } else {
       if ( meta.getFilename() != null ) {
@@ -6526,7 +6530,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
       SlaveServer slaveServer = SlaveServer.findSlaveServer( servers, slaveName );
 
-      TreeItem tiSlave = createTreeItem( tiSlaveTitle, slaveServer.getName(), guiResource.getImageSlaveMedium() );
+      TreeItem tiSlave = createTreeItem( tiSlaveTitle, slaveServer.getName(), guiResource.getImageSlaveTree() );
       if ( slaveServer.isShared() ) {
         tiSlave.setFont( guiResource.getFontBold() );
       }
@@ -6847,7 +6851,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
     shell.setText( text );
 
-    markTabsChanged();
+    markTabsChanged( false );
   }
 
   public void enableMenus() {
@@ -7030,14 +7034,14 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     }
   }
 
-  private void markTabsChanged() {
+  private void markTabsChanged( boolean force ) {
 
     for ( TabMapEntry entry : delegates.tabs.getTabs() ) {
       if ( entry.getTabItem().isDisposed() ) {
         continue;
       }
 
-      boolean changed = entry.getObject().hasContentChanged();
+      boolean changed = force || entry.getObject().hasContentChanged();
       if ( changed ) {
         // Call extension point to alert plugins that a transformation or job has changed
         Object tabObject = entry.getObject().getManagedObject();
@@ -7046,10 +7050,15 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
           changedId = KettleExtensionPoint.TransChanged.id;
         } else if ( tabObject instanceof JobMeta ) {
           changedId = KettleExtensionPoint.JobChanged.id;
+        } else {
+          changed = false;
         }
 
         if ( changedId != null ) {
           try {
+            if ( force ) {
+              ( (AbstractMeta) tabObject ).setChanged();
+            }
             ExtensionPointHandler.callExtensionPoint( log, changedId, tabObject );
           } catch ( KettleException e ) {
             // fails gracefully
@@ -8159,7 +8168,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
     if ( !lastUsedFile.isSourceRepository() && !Utils.isEmpty( lastUsedFile.getFilename() ) ) {
       if ( lastUsedFile.isTransformation() ) {
-        openFile( lastUsedFile.getFilename(), false );
+        openFile( lastUsedFile.getFilename(), rep != null );
       }
       if ( lastUsedFile.isJob() ) {
         openFile( lastUsedFile.getFilename(), false );

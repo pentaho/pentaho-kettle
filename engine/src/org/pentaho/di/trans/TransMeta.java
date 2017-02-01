@@ -3532,6 +3532,26 @@ public class TransMeta extends AbstractMeta
   }
 
   /**
+   * Checks if any selected step has been used in a hop or not.
+   *
+   * @param stepMeta
+   *          The step queried.
+   * @return true if a step is used in a hop (active or not), false otherwise
+   */
+  public boolean isAnySelectedStepUsedInTransHops() {
+    List<StepMeta> selectedSteps = getSelectedSteps();
+    int i = 0;
+    while ( i < selectedSteps.size() ) {
+      StepMeta stepMeta = selectedSteps.get( i );
+      if ( isStepUsedInTransHops( stepMeta ) ) {
+        return true;
+      }
+      i++;
+    }
+    return false;
+  }
+
+  /**
    * Clears the different changed flags of the transformation.
    *
    */
@@ -3659,34 +3679,35 @@ public class TransMeta extends AbstractMeta
   }
 
   private boolean isErrorNode( Node errorHandingNode, Node checkNode ) {
-    NodeList errors = errorHandingNode.getChildNodes();
+    if ( errorHandingNode != null ) {
+      NodeList errors = errorHandingNode.getChildNodes();
 
-    Node nodeHopFrom = XMLHandler.getSubNode( checkNode, TransHopMeta.XML_FROM_TAG );
-    Node nodeHopTo = XMLHandler.getSubNode( checkNode, TransHopMeta.XML_TO_TAG );
+      Node nodeHopFrom = XMLHandler.getSubNode( checkNode, TransHopMeta.XML_FROM_TAG );
+      Node nodeHopTo = XMLHandler.getSubNode( checkNode, TransHopMeta.XML_TO_TAG );
 
-    int i = 0;
-    while ( i < errors.getLength() ) {
+      int i = 0;
+      while ( i < errors.getLength() ) {
 
-      Node errorNode = errors.item( i );
+        Node errorNode = errors.item( i );
 
-      if ( !StepErrorMeta.XML_ERROR_TAG.equals( errorNode.getNodeName() ) ) {
+        if ( !StepErrorMeta.XML_ERROR_TAG.equals( errorNode.getNodeName() ) ) {
+          i++;
+          continue;
+        }
+
+        Node errorSourceNode = XMLHandler.getSubNode( errorNode, StepErrorMeta.XML_SOURCE_STEP_TAG );
+        Node errorTagetNode = XMLHandler.getSubNode( errorNode, StepErrorMeta.XML_TARGET_STEP_TAG );
+
+        String sourceContent = errorSourceNode.getTextContent().trim();
+        String tagetContent = errorTagetNode.getTextContent().trim();
+
+        if ( sourceContent.equals( nodeHopFrom.getTextContent().trim() )
+            && tagetContent.equals( nodeHopTo.getTextContent().trim() ) ) {
+          return true;
+        }
         i++;
-        continue;
       }
-
-      Node errorSourceNode = XMLHandler.getSubNode( errorNode, StepErrorMeta.XML_SOURCE_STEP_TAG );
-      Node errorTagetNode = XMLHandler.getSubNode( errorNode, StepErrorMeta.XML_TARGET_STEP_TAG );
-
-      String sourceContent = errorSourceNode.getTextContent().trim();
-      String tagetContent = errorTagetNode.getTextContent().trim();
-
-      if ( sourceContent.equals( nodeHopFrom.getTextContent().trim() )
-           && tagetContent.equals( nodeHopTo.getTextContent().trim() ) ) {
-        return true;
-      }
-      i++;
     }
-
     return false;
   }
 
@@ -5687,6 +5708,9 @@ public class TransMeta extends AbstractMeta
       variables.setVariable( Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_NAME, "" );
     }
 
+    variables.setVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY,
+        variables.getVariable( repository != null ? Const.INTERNAL_VARIABLE_TRANSFORMATION_REPOSITORY_DIRECTORY
+          : Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY ) );
   }
 
   /**

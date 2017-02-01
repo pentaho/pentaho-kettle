@@ -1,6 +1,6 @@
 //CHECKSTYLE:FileLength:OFF
 /*!
-* Copyright 2010 - 2016 Pentaho Corporation.  All rights reserved.
+* Copyright 2010 - 2017 Pentaho Corporation.  All rights reserved.
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -99,7 +99,9 @@ import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
 import org.pentaho.platform.api.repository2.unified.RepositoryFile;
 import org.pentaho.platform.api.repository2.unified.RepositoryFileAcl;
 import org.pentaho.platform.api.repository2.unified.RepositoryFileTree;
+import org.pentaho.platform.api.repository2.unified.RepositoryRequest;
 import org.pentaho.platform.api.repository2.unified.VersionSummary;
+import org.pentaho.platform.api.repository2.unified.RepositoryRequest.FILES_TYPE_FILTER;
 import org.pentaho.platform.api.repository2.unified.data.node.DataNode;
 import org.pentaho.platform.api.repository2.unified.data.node.NodeRepositoryFileData;
 import org.pentaho.platform.repository.RepositoryFilenameUtils;
@@ -555,6 +557,60 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
     return pur.getTree( path, -1, null, true );
   }
 
+  @Override
+  public RepositoryDirectoryInterface loadRepositoryDirectoryTree( String filter, boolean fullDirs, boolean includeAcls )
+    throws KettleException {
+    if ( filter == null ) {
+      return initRepositoryDirectoryTree( loadRepositoryFileTreeFolders( "/", -1, includeAcls ) );
+    }
+    RepositoryDirectoryInterface files =
+        initRepositoryDirectoryTree( loadRepositoryFileTree( "/", -1, filter, includeAcls ) );
+    if ( fullDirs ) {
+      RepositoryDirectoryInterface folders =
+          initRepositoryDirectoryTree( loadRepositoryFileTreeFolders( "/", -1, includeAcls  ) );
+      return copyFrom( folders, files );
+    } else {
+      return files;
+    }
+  }
+
+  private RepositoryFileTree loadRepositoryFileTreeFolders( String path, int depth, boolean includeAcls ) {
+    RepositoryRequest repoRequest = new RepositoryRequest();
+    repoRequest.setDepth( depth );
+    repoRequest.setIncludeAcls( includeAcls );
+    repoRequest.setChildNodeFilter( "*" );
+    repoRequest.setTypes( FILES_TYPE_FILTER.FOLDERS );
+    repoRequest.setPath( path );
+    repoRequest.setShowHidden( true );
+    return pur.getTree( repoRequest );
+  }
+
+  private RepositoryFileTree loadRepositoryFileTree( String path, int depth, String filter, boolean includeAcls ) {
+    RepositoryRequest repoRequest = new RepositoryRequest();
+    repoRequest.setDepth( depth );
+    repoRequest.setChildNodeFilter( filter );
+    repoRequest.setPath( path );
+    repoRequest.setIncludeAcls( includeAcls );
+    repoRequest.setShowHidden( true );
+    RepositoryFileTree fileTree = pur.getTree( repoRequest );
+
+    return fileTree;
+  }
+
+  // copies repo objects into folder struct on left
+  private RepositoryDirectoryInterface copyFrom( RepositoryDirectoryInterface folders, RepositoryDirectoryInterface withFiles ) {
+    if ( folders.getName().equals( withFiles.getName() ) ) {
+      for ( RepositoryDirectoryInterface dir2 : withFiles.getChildren() ) {
+        for ( RepositoryDirectoryInterface dir1 : folders.getChildren() ) {
+          copyFrom( dir1, dir2 );
+        }
+      }
+      folders.setRepositoryObjects( withFiles.getRepositoryObjects() );
+    }
+    return folders;
+  }
+
+  @Deprecated
   @Override public RepositoryDirectoryInterface loadRepositoryDirectoryTree( boolean eager ) throws KettleException {
 
     // this method forces a reload of the repository directory tree structure

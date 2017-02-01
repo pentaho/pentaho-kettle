@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -3499,12 +3499,20 @@ public class ValueMetaBase implements ValueMetaInterface {
     boolean n1 = isNull( data1 );
     boolean n2 = isNull( data2 );
 
-    // null is always smaller!
     if ( n1 && !n2 ) {
-      return -1;
+      if ( isSortedDescending() ) {
+        // BACKLOG-14028
+        return 1;
+      } else {
+        return -1;
+      }
     }
     if ( !n1 && n2 ) {
-      return 1;
+      if ( isSortedDescending() ) {
+        return -1;
+      } else {
+        return 1;
+      }
     }
     if ( n1 && n2 ) {
       return 0;

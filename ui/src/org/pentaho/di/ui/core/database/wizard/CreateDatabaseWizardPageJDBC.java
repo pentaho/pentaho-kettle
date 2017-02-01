@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -49,6 +49,9 @@ import org.pentaho.di.ui.core.PropsUI;
  * @since 04-apr-2005
  */
 public class CreateDatabaseWizardPageJDBC extends WizardPage {
+  private static final String DATA_SERVICES_PLUGIN_ID = "KettleThin";
+  private static final String DEFAULT_WEB_APPLICATION_NAME = "pentaho";
+
   private static Class<?> PKG = CreateDatabaseWizard.class; // for i18n purposes, needed by Translator2!!
 
   private Label wlHostname;
@@ -65,6 +68,8 @@ public class CreateDatabaseWizardPageJDBC extends WizardPage {
 
   private PropsUI props;
   private DatabaseMeta databaseMeta;
+
+  private boolean defaultWebAppNameSet = false;
 
   public CreateDatabaseWizardPageJDBC( String arg, PropsUI props, DatabaseMeta info ) {
     super( arg );
@@ -137,7 +142,6 @@ public class CreateDatabaseWizardPageJDBC extends WizardPage {
 
     // DATABASE NAME
     wlDBName = new Label( composite, SWT.RIGHT );
-    wlDBName.setText( BaseMessages.getString( PKG, "CreateDatabaseWizardPageJDBC.DBName.Label" ) );
     props.setLook( wlDBName );
     fdlDBName = new FormData();
     fdlDBName.top = new FormAttachment( wPort, margin );
@@ -163,41 +167,50 @@ public class CreateDatabaseWizardPageJDBC extends WizardPage {
 
   public void setData() {
     wHostname.setText( Const.NVL( databaseMeta.getHostname(), "" ) );
+    wPort.setText( Const.NVL( databaseMeta.getDatabasePortNumberString(), "" ) );
 
-    wPort.setText( databaseMeta.getDatabasePortNumberString() );
+    if ( !defaultWebAppNameSet && isDataServiceConnection() ) {
+      wDBName.setText( DEFAULT_WEB_APPLICATION_NAME );
+      defaultWebAppNameSet = true;
+    } else {
+      wDBName.setText( Const.NVL( databaseMeta.getDatabaseName(), "" ) );
+    }
 
-    wDBName.setText( Const.NVL( databaseMeta.getDatabaseName(), "" ) );
+    if ( isDataServiceConnection() ) {
+      wlDBName.setText( BaseMessages.getString( PKG, "CreateDatabaseWizardPageJDBC.WebAppName.Label" ) );
+    } else {
+      wlDBName.setText( BaseMessages.getString( PKG, "CreateDatabaseWizardPageJDBC.DBName.Label" ) );
+    }
   }
 
   public boolean canFlipToNextPage() {
-    String server =
-      wHostname.getText() != null ? wHostname.getText().length() > 0 ? wHostname.getText() : null : null;
-    String port = wPort.getText() != null ? wPort.getText().length() > 0 ? wPort.getText() : null : null;
-    String dbname = wDBName.getText() != null ? wDBName.getText().length() > 0 ? wDBName.getText() : null : null;
+    String server = wHostname.getText().length() > 0 ? wHostname.getText() : null;
+    String port = wPort.getText().length() > 0 ? wPort.getText() : null;
+    String dbname = wDBName.getText().length() > 0 ? wDBName.getText() : null;
 
-    if ( server == null || port == null || dbname == null ) {
+    if ( ( server == null || port == null || dbname == null ) && !isDataServiceConnection() ) {
       setErrorMessage( BaseMessages.getString( PKG, "CreateDatabaseWizardPageJDBC.ErrorMessage.InvalidInput" ) );
+
       return false;
-    } else {
-      getDatabaseInfo();
-      setErrorMessage( null );
-      setMessage( BaseMessages.getString( PKG, "CreateDatabaseWizardPageJDBC.Message.Input" ) );
-      return true;
     }
+
+    if ( ( server == null || port == null ) && isDataServiceConnection() ) {
+      setErrorMessage( BaseMessages.getString( PKG, "CreateDatabaseWizardPageJDBC.PDSHostPort.ErrorMessage" ) );
+
+      return false;
+    }
+
+    getDatabaseInfo();
+    setErrorMessage( null );
+    setMessage( BaseMessages.getString( PKG, "CreateDatabaseWizardPageJDBC.Message.Input" ) );
+
+    return true;
   }
 
   public DatabaseMeta getDatabaseInfo() {
-    if ( wHostname.getText() != null && wHostname.getText().length() > 0 ) {
-      databaseMeta.setHostname( wHostname.getText() );
-    }
-
-    if ( wPort.getText() != null && wPort.getText().length() > 0 ) {
-      databaseMeta.setDBPort( wPort.getText() );
-    }
-
-    if ( wDBName.getText() != null && wDBName.getText().length() > 0 ) {
-      databaseMeta.setDBName( wDBName.getText() );
-    }
+    databaseMeta.setHostname( wHostname.getText() );
+    databaseMeta.setDBPort( wPort.getText() );
+    databaseMeta.setDBName( wDBName.getText() );
 
     return databaseMeta;
   }
@@ -222,4 +235,7 @@ public class CreateDatabaseWizardPageJDBC extends WizardPage {
     return nextPage;
   }
 
+  private boolean isDataServiceConnection() {
+    return DATA_SERVICES_PLUGIN_ID.equals( databaseMeta.getPluginId() );
+  }
 }

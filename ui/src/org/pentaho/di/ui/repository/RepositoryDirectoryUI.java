@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -51,6 +51,8 @@ import org.pentaho.di.ui.repository.dialog.SelectDirectoryDialog;
 
 public class RepositoryDirectoryUI {
 
+  private static final String DATE_FORMAT = "yyyy/MM/dd HH:mm:ss";
+
   /**
    * Set the name of this directory on a TreeItem. Also, create children on this TreeItem to reflect the subdirectories.
    * In these sub-directories, fill in the available transformations from the repository.
@@ -98,109 +100,78 @@ public class RepositoryDirectoryUI {
         filterString, pattern );
     }
 
-    try {
-
-      // Then show the transformations & jobs in that directory...
-      List<RepositoryElementMetaInterface> repositoryObjects = new ArrayList<RepositoryElementMetaInterface>();
-      if ( dir.getRepositoryObjects() != null ) {
-        repositoryObjects.addAll( dir.getRepositoryObjects() );
+    // Then show the transformations & jobs in that directory...
+    List<RepositoryElementMetaInterface> repositoryObjects = new ArrayList<RepositoryElementMetaInterface>();
+    if ( dir.getRepositoryObjects() != null ) {
+      List<RepositoryObjectType> allowedTypes = new ArrayList<>( 2 );
+      if ( getTransformations ) {
+        allowedTypes.add( RepositoryObjectType.TRANSFORMATION );
       }
-
-      if ( getTransformations && !getJobs ) {
-        if ( repositoryObjects.size() == 0 ) {
-          repositoryObjects = rep.getTransformationObjects( dir.getObjectId(), includeDeleted );
-        } else {
-          // need to strip out all non transformation types
-          for ( int i = repositoryObjects.size() - 1; i >= 0; i-- ) {
-            if ( !repositoryObjects.get( i ).getObjectType().equals( RepositoryObjectType.TRANSFORMATION ) ) {
-              repositoryObjects.remove( i );
-            }
-          }
-        }
-      } else if ( getJobs && !getTransformations ) {
-        if ( repositoryObjects.size() == 0 ) {
-          repositoryObjects = rep.getJobObjects( dir.getObjectId(), includeDeleted );
-        } else {
-          // need to strip out all non job types
-          for ( int i = repositoryObjects.size() - 1; i >= 0; i-- ) {
-            if ( !repositoryObjects.get( i ).getObjectType().equals( RepositoryObjectType.JOB ) ) {
-              repositoryObjects.remove( i );
-            }
-          }
-        }
-      } else if ( getJobs && getTransformations ) {
-        if ( repositoryObjects.size() == 0 ) {
-          repositoryObjects = rep.getJobAndTransformationObjects( dir.getObjectId(), includeDeleted );
-        } else {
-          // need to strip out all non trans/job types
-          for ( int i = repositoryObjects.size() - 1; i >= 0; i-- ) {
-            if ( !repositoryObjects.get( i ).getObjectType().equals( RepositoryObjectType.JOB )
-              && !repositoryObjects.get( i ).getObjectType().equals( RepositoryObjectType.TRANSFORMATION ) ) {
-              repositoryObjects.remove( i );
-            }
-          }
+      if ( getJobs ) {
+        allowedTypes.add( RepositoryObjectType.JOB );
+      }
+      for ( RepositoryElementMetaInterface repoObject : dir.getRepositoryObjects() ) {
+        if ( allowedTypes.contains( repoObject.getObjectType() ) ) {
+          repositoryObjects.add( repoObject );
         }
       }
-
-      // Sort the directory list appropriately...
-      //
-      RepositoryObject.sortRepositoryObjects( repositoryObjects, sortPosition, ascending );
-
-      for ( int i = 0; i < repositoryObjects.size(); i++ ) {
-        boolean add = false;
-        RepositoryElementMetaInterface repositoryObject = repositoryObjects.get( i );
-
-        if ( filterString == null && pattern == null ) {
-          add = true;
-        } else {
-          add = addItem( repositoryObject.getName(), filterString, pattern );
-          if ( !add ) {
-            add = addItem( repositoryObject.getDescription(), filterString, pattern );
-          }
-          if ( !add ) {
-            add = addItem( repositoryObject.getModifiedUser(), filterString, pattern );
-          }
-          if ( !add ) {
-            if ( repositoryObject.getModifiedDate() != null ) {
-              SimpleDateFormat simpleDateFormat = new SimpleDateFormat( "yyyy/MM/dd HH:mm:ss" );
-              add = addItem( simpleDateFormat.format( repositoryObject.getModifiedDate() ), filterString, pattern );
-            }
-          }
-          if ( !add ) {
-            if ( repositoryObject.getObjectType() != null ) {
-              add = addItem( repositoryObject.getObjectType().getTypeDescription(), filterString, pattern );
-            }
-          }
-        }
-
-        if ( add ) {
-          TreeItem tiObject = new TreeItem( ti, SWT.NONE );
-          tiObject.setData( repositoryObject );
-          if ( repositoryObject.getObjectType() == RepositoryObjectType.TRANSFORMATION ) {
-            tiObject.setImage( GUIResource.getInstance().getImageTransRepo() );
-          } else if ( repositoryObject.getObjectType() == RepositoryObjectType.JOB ) {
-            tiObject.setImage( GUIResource.getInstance().getImageJobRepo() );
-          }
-
-          SimpleDateFormat simpleDateFormat = new SimpleDateFormat( "yyyy/MM/dd HH:mm:ss" );
-          tiObject.setText( 0, Const.NVL( repositoryObject.getName(), "" ) );
-          tiObject.setText( 1, Const.NVL( repositoryObject.getObjectType().getTypeDescription(), "" ).toUpperCase() );
-          tiObject.setText( 2, Const.NVL( repositoryObject.getModifiedUser(), "" ) );
-          tiObject.setText( 3, repositoryObject.getModifiedDate() != null ? simpleDateFormat
-            .format( repositoryObject.getModifiedDate() ) : "" );
-          tiObject.setText( 4, Const.NVL( repositoryObject.getDescription(), "" ) );
-
-          if ( repositoryObject.isDeleted() ) {
-            tiObject.setForeground( GUIResource.getInstance().getColorRed() );
-          }
-        }
-      }
-
-    } catch ( KettleException dbe ) {
-      throw new KettleDatabaseException( "Unable to populate tree with repository objects", dbe );
     }
 
+    // Sort the directory list appropriately...
+    RepositoryObject.sortRepositoryObjects( repositoryObjects, sortPosition, ascending );
+
+    addToTree( ti, filterString, pattern, repositoryObjects );
+
     ti.setExpanded( dir.isRoot() );
+  }
+
+  private static void addToTree( TreeItem ti, String filterString, Pattern pattern,
+      List<RepositoryElementMetaInterface> repositoryObjects ) {
+    for ( int i = 0; i < repositoryObjects.size(); i++ ) {
+      boolean add = false;
+      RepositoryElementMetaInterface repositoryObject = repositoryObjects.get( i );
+
+      if ( filterString == null && pattern == null ) {
+        add = true;
+      } else {
+        add |= addItem( repositoryObject.getName(), filterString, pattern );
+        add |= addItem( repositoryObject.getDescription(), filterString, pattern );
+        add |= addItem( repositoryObject.getModifiedUser(), filterString, pattern );
+        if ( !add && repositoryObject.getModifiedDate() != null ) {
+          SimpleDateFormat simpleDateFormat = new SimpleDateFormat( DATE_FORMAT );
+          add = addItem( simpleDateFormat.format( repositoryObject.getModifiedDate() ), filterString, pattern );
+        }
+        if ( !add && repositoryObject.getObjectType() != null ) {
+          add = addItem( repositoryObject.getObjectType().getTypeDescription(), filterString, pattern );
+        }
+      }
+
+      if ( add ) {
+        createTreeItem( ti, repositoryObject );
+      }
+    }
+  }
+
+  private static void createTreeItem( TreeItem parent, RepositoryElementMetaInterface repositoryObject ) {
+    TreeItem tiObject = new TreeItem( parent, SWT.NONE );
+    tiObject.setData( repositoryObject );
+    if ( repositoryObject.getObjectType() == RepositoryObjectType.TRANSFORMATION ) {
+      tiObject.setImage( GUIResource.getInstance().getImageTransRepo() );
+    } else if ( repositoryObject.getObjectType() == RepositoryObjectType.JOB ) {
+      tiObject.setImage( GUIResource.getInstance().getImageJobRepo() );
+    }
+
+    SimpleDateFormat simpleDateFormat = new SimpleDateFormat( DATE_FORMAT );
+    tiObject.setText( 0, Const.NVL( repositoryObject.getName(), "" ) );
+    tiObject.setText( 1, Const.NVL( repositoryObject.getObjectType().getTypeDescription(), "" ).toUpperCase() );
+    tiObject.setText( 2, Const.NVL( repositoryObject.getModifiedUser(), "" ) );
+    tiObject.setText( 3, repositoryObject.getModifiedDate() != null ? simpleDateFormat
+      .format( repositoryObject.getModifiedDate() ) : "" );
+    tiObject.setText( 4, Const.NVL( repositoryObject.getDescription(), "" ) );
+
+    if ( repositoryObject.isDeleted() ) {
+      tiObject.setForeground( GUIResource.getInstance().getColorRed() );
+    }
   }
 
   private static boolean addItem( String name, String filter, Pattern pattern ) {

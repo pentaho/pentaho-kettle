@@ -89,7 +89,7 @@
       <exclude org="org.apache.jackrabbit" name="jackrabbit-jcr-rmi" />
     </dependency>
 
-    <dependency org="org.json" name="json" rev="${dependency.json.revision}" transitive="false" changing="true"/>
+    <dependency org="org.pentaho" name="json" rev="${dependency.json.revision}" transitive="false" changing="true"/>
     <dependency org="com.googlecode.json-simple" name="json-simple" rev="1.1" transitive="false" conf="compile->default;test->default"/>
 
     <dependency org="org.aspectj" name="aspectjrt" rev="1.6.6" conf="test->default" />
@@ -107,8 +107,12 @@
     <dependency org="javax.jcr" name="jcr" rev="2.0" conf="test->default"/>
     <dependency org="org.owasp.encoder"   name="encoder"   rev="1.2"  transitive="false"/>
     <dependency org="org.mockito" name="mockito-all" rev="1.9.0" transitive="false" conf="test->default"/>
-    <dependency org="pentaho" name="pentaho-platform-core-test" rev="${dependency.bi-platform.revision}" changing="true" transitive="false" conf="test->default" />
-    <dependency org="pentaho" name="pentaho-platform-repository-test" rev="${dependency.bi-platform.revision}" changing="true" transitive="false" conf="test->default" />
+    <dependency org="pentaho" name="pentaho-platform-core" rev="${dependency.bi-platform.revision}" changing="true" transitive="false" conf="test->default">
+      <artifact name="pentaho-platform-core" ext="jar" m:classifier="tests" />
+    </dependency>
+    <dependency org="pentaho" name="pentaho-platform-repository" rev="${dependency.bi-platform.revision}" changing="true" transitive="false" conf="test->default">
+      <artifact name="pentaho-platform-repository" ext="jar" m:classifier="tests" />
+    </dependency>
 
     <dependency org="org.mortbay.jetty" name="jetty"      rev="6.1.21" transitive="false" conf="test->default" />
     <dependency org="org.mortbay.jetty" name="jetty-plus" rev="6.1.21" transitive="false" conf="test->default" />
