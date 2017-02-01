@@ -24,9 +24,26 @@
 
 package org.pentaho.di.engine.api.events;
 
+import org.pentaho.di.engine.api.model.LogicalModelElement;
+import org.pentaho.di.engine.api.reporting.Status;
+
 /**
- * Created by nbaker on 1/7/17.
+ * Created by nbaker on 1/17/17.
  */
-public interface PDIEventSink<T extends DataEvent> {
-  void subscribeTo( PDIEventSource<T> source );
+public class StatusEvent<S extends LogicalModelElement> implements PDIEvent<S, Status> {
+  private final S source;
+  private final Status status;
+
+  public StatusEvent( S source, Status status ) {
+    this.source = source;
+    this.status = status;
+  }
+
+  @Override public S getSource() {
+    return source;
+  }
+
+  @Override public Status getData() {
+    return status;
+  }
 }

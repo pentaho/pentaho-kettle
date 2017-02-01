@@ -22,27 +22,28 @@
  * *****************************************************************************
  */
 
-package org.pentaho.di.engine.api.reporting;
+package org.pentaho.di.engine.api.events;
 
 import org.pentaho.di.engine.api.model.LogicalModelElement;
+import org.pentaho.di.engine.api.reporting.Metrics;
 
 /**
- * Created by nbaker on 1/17/17.
+ * Created by nbaker on 1/20/17.
  */
-public class StatusEvent<S extends LogicalModelElement> implements ReportingEvent<S, Status> {
+public class MetricsEvent<S extends LogicalModelElement> implements PDIEvent<S, Metrics> {
   private final S source;
-  private final Status status;
+  private final Metrics metrics;
 
-  public StatusEvent( S source, Status status ) {
+  public MetricsEvent( S source, Metrics metrics ) {
     this.source = source;
-    this.status = status;
+    this.metrics = metrics;
   }
 
   @Override public S getSource() {
     return source;
   }
 
-  @Override public Status getData() {
-    return status;
+  @Override public Metrics getData() {
+    return metrics;
   }
 }

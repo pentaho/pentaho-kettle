@@ -24,6 +24,7 @@
 
 package org.pentaho.di.engine.api.reporting;
 
+import org.pentaho.di.engine.api.events.PDIEvent;
 import org.pentaho.di.engine.api.model.LogicalModelElement;
 import org.reactivestreams.Publisher;
 import org.reactivestreams.Subscriber;
@@ -39,27 +40,27 @@ import java.util.function.Consumer;
  */
 public interface SubscriptionManager {
   <S extends LogicalModelElement, D extends Serializable>
-    Publisher<ReportingEvent<S, D>> eventStream( S source, Class<D> type );
+    Publisher<PDIEvent<S, D>> eventStream( S source, Class<D> type );
 
   Collection<LogicalModelElement> getReportingSources();
 
   // Ease-of-use functions
   default <S extends LogicalModelElement, D extends Serializable>
-    void subscribe( S source, Class<D> type, Subscriber<? super ReportingEvent<S, D>> subscriber ) {
+    void subscribe( S source, Class<D> type, Subscriber<? super PDIEvent<S, D>> subscriber ) {
     eventStream( source, type ).subscribe( subscriber );
   }
 
   default <S extends LogicalModelElement, D extends Serializable>
     void subscribe( S source, Class<D> type, Consumer<D> onNext, Consumer<Throwable> onError, Runnable onComplete ) {
-    subscribe( source, type, new Subscriber<ReportingEvent<S, D>>() {
+    subscribe( source, type, new Subscriber<PDIEvent<S, D>>() {
       @Override public void onSubscribe( Subscription s ) {
         // Start subscription immediately, get everything
         s.request( Long.MAX_VALUE );
       }
 
-      @Override public void onNext( ReportingEvent<S, D> reportingEvent ) {
+      @Override public void onNext( PDIEvent<S, D> event ) {
         if ( onNext != null ) {
-          onNext.accept( reportingEvent.getData() );
+          onNext.accept( event.getData() );
         }
       }
 

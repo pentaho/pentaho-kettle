@@ -24,7 +24,7 @@
 
 package org.pentaho.di.engine.api.model;
 
-import org.pentaho.di.engine.api.reporting.ReportingEvent;
+import org.pentaho.di.engine.api.events.PDIEvent;
 import org.reactivestreams.Publisher;
 
 import java.io.Serializable;
@@ -35,7 +35,7 @@ import java.util.List;
  */
 public interface MaterializedModelElement extends ModelElement {
 
-  <D extends Serializable> List<Publisher<? extends ReportingEvent>> getPublisher( Class<D> type );
+  <D extends Serializable> List<Publisher<? extends PDIEvent>> getPublisher( Class<D> type );
 
   <D extends Serializable> List<Serializable> getEventTypes();
 

@@ -24,8 +24,16 @@
 
 package org.pentaho.di.engine.api.events;
 
+import org.pentaho.di.engine.api.model.LogicalModelElement;
+
+import java.io.Serializable;
+
 /**
  * Created by nbaker on 6/9/16.
  */
-public interface PDIEvent {
+public interface PDIEvent<S extends LogicalModelElement, D extends Serializable> {
+  S getSource();
+
+  D getData();
+
 }
