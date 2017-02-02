@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,6 +22,7 @@
 
 package org.pentaho.di.job.entries.copyfiles;
 
+import org.apache.commons.vfs2.NameScope;
 import org.pentaho.di.job.entry.validator.AbstractFileValidator;
 import org.pentaho.di.job.entry.validator.AndValidator;
 import org.pentaho.di.job.entry.validator.JobEntryValidatorUtils;
@@ -356,7 +357,7 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
                   vdestinationfilefolder_previous, vwildcard_previous ) );
             }
 
-            if ( !ProcessFileFolder( vsourcefilefolder_previous, vdestinationfilefolder_previous, vwildcard_previous,
+            if ( !processFileFolder( vsourcefilefolder_previous, vdestinationfilefolder_previous, vwildcard_previous,
                 parentJob, result ) ) {
               // The copy process fail
               NbrFail++;
@@ -379,7 +380,7 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
                   vdestinationfilefolder[i], vwildcard[i] ) );
             }
 
-            if ( !ProcessFileFolder( vsourcefilefolder[i], vdestinationfilefolder[i], vwildcard[i], parentJob, result ) ) {
+            if ( !processFileFolder( vsourcefilefolder[i], vdestinationfilefolder[i], vwildcard[i], parentJob, result ) ) {
               // The copy process fail
               NbrFail++;
             }
@@ -407,7 +408,7 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
     return result;
   }
 
-  private boolean ProcessFileFolder( String sourcefilefoldername, String destinationfilefoldername, String wildcard,
+  boolean processFileFolder( String sourcefilefoldername, String destinationfilefoldername, String wildcard,
       Job parentJob, Result result ) {
     boolean entrystatus = false;
     FileObject sourcefilefolder = null;
@@ -768,7 +769,10 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
             destinationFolderObject = KettleVFS.getFileObject( destinationFolder, JobEntryCopyFiles.this );
           }
 
-          file_name = destinationFolderObject.getChild( short_filename );
+          String fullName = info.getFile().toString();
+          String baseFolder = info.getBaseFolder().toString();
+          String path = fullName.substring( fullName.indexOf( baseFolder ) + baseFolder.length() + 1 );
+          file_name = destinationFolderObject.resolveFile( path, NameScope.DESCENDENT );
 
           if ( !info.getFile().getParent().equals( info.getBaseFolder() ) ) {
 
