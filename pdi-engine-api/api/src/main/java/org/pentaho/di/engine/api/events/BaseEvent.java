@@ -22,26 +22,29 @@
  * *****************************************************************************
  */
 
-package org.pentaho.di.engine.api;
+package org.pentaho.di.engine.api.events;
 
-import org.pentaho.di.engine.api.converter.RowConversionManager;
-import org.pentaho.di.engine.api.model.Transformation;
-import org.pentaho.di.engine.api.reporting.SubscriptionManager;
 
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
+import org.pentaho.di.engine.api.model.LogicalModelElement;
 
-/**
- * Created by nbaker on 5/31/16.
- */
-public interface ExecutionContext extends SubscriptionManager {
-  Map<String, Object> getParameters();
+import java.io.Serializable;
 
-  Map<String, Object> getEnvironment();
+public abstract class BaseEvent<S extends LogicalModelElement, D extends Serializable>  implements PDIEvent<S, D> {
+  private final S source;
+  private final D data;
 
-  Transformation getTransformation();
+  public BaseEvent( S source, D data ) {
+    this.source = source;
+    this.data = data;
+  }
 
-  CompletableFuture<ExecutionResult> execute();
+  @Override public S getSource() {
+    return source;
+  }
 
-  RowConversionManager getConversionManager();
+  @Override public D getData() {
+    return data;
+  }
 }
+
+
