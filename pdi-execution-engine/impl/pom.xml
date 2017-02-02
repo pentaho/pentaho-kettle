@@ -28,6 +28,7 @@
     <module>kettle-classic</module>
     <module>kettle-native</module>
     <module>remote-spark-client</module>
+    <module>remote-spark-server</module>
   </modules>
 
 </project>

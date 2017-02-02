@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="
+            http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd">
+
+  <reference-list interface="org.pentaho.di.engine.api.remote.ExecutionRequest" availability="optional">
+    <reference-listener bind-method="requestAdded" unbind-method="requestRemoved">
+      <bean class="org.pentaho.di.engine.remote.server.ExecutionRequestListener"/>
+    </reference-listener>
+  </reference-list>
+
+</blueprint>

@@ -5,6 +5,12 @@
     <bundle start-level="80">mvn:org.pentaho/pdi-execution-engine-classic/${project.version}</bundle>
   </feature>
 
+  <feature name="pdi-execution-request-server" description="Handles ExecutionRequests put on the registry" version="${project.version}">
+    <bundle start-level="80">mvn:org.pentaho/pdi-execution-engine-api/${project.version}</bundle>
+    <bundle start-level="80">mvn:org.pentaho/remote-spark-server/${project.version}</bundle>
+  </feature>
+
+
   <feature name="standalone-engine" description="All of PDI running within OSGI, including the Classic Engine" version="7.1.0.SNAPSHOT">
   </feature>
 </features>
