@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -140,7 +140,7 @@ public class SimpleMappingTest {
     verify( stepMockHelper.trans, times( 1 ) ).isFinished();
     verify( stepMockHelper.trans, never() ).waitUntilFinished();
     verify( stepMockHelper.trans, never() ).addActiveSubTransformation( anyString(), any( Trans.class ) );
-    verify( stepMockHelper.trans, never() ).removeActiveSubTransformation( anyString() );
+    verify( stepMockHelper.trans, times( 1 ) ).removeActiveSubTransformation( anyString() );
     verify( stepMockHelper.trans, never() ).getActiveSubTransformation( anyString() );
     verify( stepMockHelper.trans, times( 1 ) ).getErrors();
     assertTrue( "The step contains the errors", smp.getErrors() == errorCount );
@@ -188,4 +188,28 @@ public class SimpleMappingTest {
   public void tearDown() {
     stepMockHelper.cleanUp();
   }
+
+  @Test
+  public void testDispose() throws KettleException {
+
+    // Set Up TransMock to return the error
+    when( stepMockHelper.trans.getErrors() ).thenReturn( 0 );
+
+    // The step has been already finished
+    when( stepMockHelper.trans.isFinished() ).thenReturn( Boolean.FALSE );
+    // The step was started
+    simpleMpData.wasStarted = true;
+
+    smp =
+            new SimpleMapping( stepMockHelper.stepMeta, stepMockHelper.stepDataInterface, 0, stepMockHelper.transMeta,
+                    stepMockHelper.trans );
+    smp.init( stepMockHelper.initStepMetaInterface, simpleMpData );
+
+    smp.dispose( stepMockHelper.processRowsStepMetaInterface, simpleMpData );
+    verify( stepMockHelper.trans, times( 1 ) ).isFinished();
+    verify( stepMockHelper.trans, times( 1 ) ).waitUntilFinished();
+    verify( stepMockHelper.trans, times( 1 ) ).removeActiveSubTransformation( anyString() );
+
+  }
+
 }

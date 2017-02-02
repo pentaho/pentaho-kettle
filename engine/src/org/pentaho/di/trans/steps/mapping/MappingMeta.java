@@ -987,5 +987,4 @@ public class MappingMeta extends StepWithMappingMeta implements StepMetaInterfac
   public void setMetaStore( IMetaStore metaStore ) {
     this.metaStore = metaStore;
   }
-
 }

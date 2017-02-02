@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -310,11 +310,10 @@ public class SimpleMapping extends BaseStep implements StepInterface {
       if ( !getData().mappingTrans.isFinished() ) {
         // Wait until the child transformation has finished.
         getData().mappingTrans.waitUntilFinished();
-
-        // Remove it from the list of active sub-transformations...
-        //
-        getTrans().removeActiveSubTransformation( getStepname() );
       }
+      // Remove it from the list of active sub-transformations...
+      //
+      getTrans().removeActiveSubTransformation( getStepname() );
 
       // See if there was an error in the sub-transformation, in that case, flag error etc.
       if ( getData().mappingTrans.getErrors() > 0 ) {
