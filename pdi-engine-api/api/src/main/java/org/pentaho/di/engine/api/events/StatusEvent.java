@@ -30,20 +30,8 @@ import org.pentaho.di.engine.api.reporting.Status;
 /**
  * Created by nbaker on 1/17/17.
  */
-public class StatusEvent<S extends LogicalModelElement> implements PDIEvent<S, Status> {
-  private final S source;
-  private final Status status;
-
+public class StatusEvent<S extends LogicalModelElement> extends BaseEvent<S, Status> {
   public StatusEvent( S source, Status status ) {
-    this.source = source;
-    this.status = status;
-  }
-
-  @Override public S getSource() {
-    return source;
-  }
-
-  @Override public Status getData() {
-    return status;
+    super( source, status );
   }
 }

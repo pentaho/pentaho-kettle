@@ -84,6 +84,5 @@ public interface Row extends Serializable {
 
   Optional<Object> getObject( String name ) throws RowException;
 
-
   Optional<Object[]> getObjects();
 }

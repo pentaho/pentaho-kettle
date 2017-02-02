@@ -26,26 +26,20 @@ package org.pentaho.di.engine.api.events;
 
 import org.pentaho.di.engine.api.model.LogicalModelElement;
 import org.pentaho.di.engine.api.model.Row;
-
-import java.io.Serializable;
-import java.util.List;
+import org.pentaho.di.engine.api.model.Rows;
 
 /**
- * A {@link PDIEvent} associated with a list of {@link Row} elements. This event contains the data, the
- * {@link LogicalModelElement} source, as well as the flow information (TYPE) and STATE, indicating
- * whether the datastream is still ACTIVE, has no remaining rows (COMPLETE) or is EMPTY.
- *
+ * A {@link PDIEvent} associated with a list of {@link Row} elements.
  * <p>
  * Created by nbaker on 5/30/16.
  */
-public interface DataEvent<S extends LogicalModelElement, D extends Serializable & List<Row>> extends PDIEvent<S, D> {
-  enum TYPE { IN, OUT, ERROR }
+public class DataEvent<S extends LogicalModelElement> extends BaseEvent<S, Rows> {
 
-  enum STATE { ACTIVE, COMPLETE, EMPTY }
+  public DataEvent( S source, Rows rows ) {
+    super( source, rows );
+  }
 
-  TYPE getType();
 
-  STATE getState();
 
 
 

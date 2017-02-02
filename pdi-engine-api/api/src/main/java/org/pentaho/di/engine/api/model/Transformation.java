@@ -31,7 +31,6 @@ import java.util.List;
 public interface Transformation extends LogicalModelElement, HasConfig {
   List<Operation> getOperations();
 
-
   List<Hop> getHops();
 
 }

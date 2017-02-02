@@ -43,11 +43,8 @@ public final class RowConversionManager implements Serializable {
       .map( converter -> converter.convert( row, clazz ) )
       .filter( Optional::isPresent )
       .findFirst()
-      .orElseThrow( () -> new RuntimeException( "failed to convert IRow to " + clazz.toString() ) )
+      .orElseThrow( () -> new RuntimeException( "failed to convert Row to " + clazz.toString() ) )
       .get();
-
-
-
   }
 
 }
