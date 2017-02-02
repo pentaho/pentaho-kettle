@@ -183,6 +183,8 @@ public class Rest extends BaseStep implements StepInterface {
           response = builder.head();
         } else if ( data.method.equals( RestMeta.HTTP_METHOD_OPTIONS ) ) {
           response = builder.options( ClientResponse.class );
+        } else if ( data.method.equals( RestMeta.HTTP_METHOD_PATCH ) ) {
+          response = builder.type( data.mediaType ).method( RestMeta.HTTP_METHOD_PATCH, ClientResponse.class, entityString );
         } else {
           throw new KettleException( BaseMessages.getString( PKG, "Rest.Error.UnknownMethod", data.method ) );
         }
