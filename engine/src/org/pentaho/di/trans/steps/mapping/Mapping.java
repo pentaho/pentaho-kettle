@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -85,6 +85,7 @@ public class Mapping extends BaseStep implements StepInterface {
       MappingInput[] mappingInputs = getData().getMappingTrans().findMappingInput();
       MappingOutput[] mappingOutputs = getData().getMappingTrans().findMappingOutput();
 
+      getData().wasStarted = true;
       switch ( getData().mappingTransMeta.getTransformationType() ) {
         case Normal:
         case SerialSingleThreaded:
@@ -619,9 +620,10 @@ public class Mapping extends BaseStep implements StepInterface {
   public void dispose( StepMetaInterface smi, StepDataInterface sdi ) {
     // Close the running transformation
     if ( getData().wasStarted ) {
-      // Wait until the child transformation has finished.
-      getData().getMappingTrans().waitUntilFinished();
-
+      if ( !getData().mappingTrans.isFinished() ) {
+        // Wait until the child transformation has finished.
+        getData().getMappingTrans().waitUntilFinished();
+      }
       // Remove it from the list of active sub-transformations...
       //
       getTrans().removeActiveSubTransformation( getStepname() );
