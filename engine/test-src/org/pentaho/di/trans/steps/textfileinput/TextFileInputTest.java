@@ -97,7 +97,6 @@ public class TextFileInputTest {
     assertEquals( expected, output );
   }
 
-  @Test( timeout = 100 )
   public void test_PDI695() throws KettleFileException, UnsupportedEncodingException {
     String inputDOS = "col1\tcol2\tcol3\r\ndata1\tdata2\tdata3\r\n";
     String inputUnix = "col1\tcol2\tcol3\ndata1\tdata2\tdata3\n";
