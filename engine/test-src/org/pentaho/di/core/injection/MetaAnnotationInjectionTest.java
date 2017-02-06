@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,6 +25,7 @@ package org.pentaho.di.core.injection;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -105,6 +106,35 @@ public class MetaAnnotationInjectionTest {
     assertEquals( 1234567891213L, obj.flong );
     assertEquals( "123", obj.getSub().first() );
     assertArrayEquals( new String[] { "/tmp/file.txt", "/tmp/file2.txt" }, obj.getSub().getFilenames() );
+  }
+
+  @Test
+  public void testInjectionConstant() throws Exception {
+    MetaBeanLevel1 obj = new MetaBeanLevel1();
+
+    BeanInjector inj = buildBeanInjectorFor( MetaBeanLevel1.class );
+    inj.setProperty( obj, "SEPARATOR", null, "<sep>" );
+    inj.setProperty( obj, "FINT", null, "123" );
+    inj.setProperty( obj, "FLONG", null, "1234567891213" );
+    inj.setProperty( obj, "FBOOLEAN", null, "true" );
+    inj.setProperty( obj, "FILENAME", null, "f1" );
+    inj.setProperty( obj, "FILENAME_ARRAY", null, "f2" );
+
+    assertEquals( "<sep>", obj.getSub().getSeparator() );
+    assertTrue( obj.fboolean );
+    assertEquals( 123, obj.fint );
+    assertEquals( 1234567891213L, obj.flong );
+    assertNull( obj.getSub().getFiles() );
+    assertNull( obj.getSub().getFilenames() );
+
+    obj.getSub().files = new MetaBeanLevel3[] { new MetaBeanLevel3(), new MetaBeanLevel3() };
+    obj.getSub().filenames = new String[] { "", "", "" };
+    inj.setProperty( obj, "FILENAME", null, "f1" );
+    inj.setProperty( obj, "FILENAME_ARRAY", null, "f2" );
+    assertEquals( 2, obj.getSub().getFiles().length );
+    assertEquals( "f1", obj.getSub().getFiles()[0].getName() );
+    assertEquals( "f1", obj.getSub().getFiles()[1].getName() );
+    assertArrayEquals( new String[] { "f2", "f2", "f2" }, obj.getSub().getFilenames() );
   }
 
   @Test
