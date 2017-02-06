@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -14,7 +14,7 @@
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * WITHOUT WARRANTIES OR CONDITIONS OF Matchers.any KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
@@ -22,9 +22,9 @@
 
 package org.pentaho.di.trans.steps.csvinput;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.when;
+import org.junit.Assert;
+import org.mockito.Matchers;
+import org.mockito.Mockito;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -46,7 +46,7 @@ public class CsvInputDoubleLineEndTest extends CsvInputUnitTestBase {
   private static final String ASCII = "windows-1252";
   private static final String UTF8 = "UTF-8";
   private static final String UTF16LE = "UTF-16LE";
-  private static final String UTF16BE = "UTF-16LE";
+  private static final String UTF16BE = "UTF-16BE";
   private static final String TEST_DATA = "Header1\tHeader2\r\nValue\tValue\r\nValue\tValue\r\n";
 
   private static StepMockHelper<?, ?> stepMockHelper;
@@ -55,9 +55,9 @@ public class CsvInputDoubleLineEndTest extends CsvInputUnitTestBase {
   public static void setUp() throws KettleException {
     stepMockHelper =
       new StepMockHelper<CsvInputMeta, CsvInputData>( "CsvInputTest", CsvInputMeta.class, CsvInputData.class );
-    when( stepMockHelper.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) )
+    Mockito.when( stepMockHelper.logChannelInterfaceFactory.create( Matchers.any(), Matchers.any( LoggingObjectInterface.class ) ) )
       .thenReturn( stepMockHelper.logChannelInterface );
-    when( stepMockHelper.trans.isRunning() ).thenReturn( true );
+    Mockito.when( stepMockHelper.trans.isRunning() ).thenReturn( true );
   }
 
   @Test
@@ -96,7 +96,7 @@ public class CsvInputDoubleLineEndTest extends CsvInputUnitTestBase {
       @Override
       public void rowWrittenEvent( RowMetaInterface rowMeta, Object[] row ) throws KettleStepException {
         for ( int i = 0; i < rowMeta.size(); i++ ) {
-          assertEquals( "Value", row[ i ] );
+          Assert.assertEquals( "Value", row[ i ] );
         }
       }
     } );
@@ -107,7 +107,7 @@ public class CsvInputDoubleLineEndTest extends CsvInputUnitTestBase {
     } while ( !haveRowsToRead );
 
     csvInput.dispose( meta, data );
-    assertEquals( 2, csvInput.getLinesWritten() );
+    Assert.assertEquals( 2, csvInput.getLinesWritten() );
   }
 
   private CsvInputMeta createStepMeta( final String testFilePath, final String encoding ) {
