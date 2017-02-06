@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,7 +22,7 @@
 
 package org.pentaho.di.trans.steps.csvinput;
 
-import static junit.framework.Assert.assertEquals;
+import junit.framework.Assert;
 
 import org.junit.Test;
 
@@ -32,7 +32,7 @@ public class CsvInputDataTest {
     CsvInputData csvInputData = new CsvInputData();
     csvInputData.enclosure = "\"".getBytes();
     String result = new String( csvInputData.removeEscapedEnclosures( "abcd \"\" defg".getBytes(), 1 ) );
-    assertEquals( "abcd \" defg", result );
+    Assert.assertEquals( "abcd \" defg", result );
   }
 
   @Test
@@ -40,7 +40,7 @@ public class CsvInputDataTest {
     CsvInputData csvInputData = new CsvInputData();
     csvInputData.enclosure = "\"".getBytes();
     String result = new String( csvInputData.removeEscapedEnclosures( "abcd \"\"\"\" defg".getBytes(), 2 ) );
-    assertEquals( "abcd \"\" defg", result );
+    Assert.assertEquals( "abcd \"\" defg", result );
   }
 
   @Test
@@ -48,7 +48,7 @@ public class CsvInputDataTest {
     CsvInputData csvInputData = new CsvInputData();
     csvInputData.enclosure = "\"".getBytes();
     String result = new String( csvInputData.removeEscapedEnclosures( "\"\"".getBytes(), 1 ) );
-    assertEquals( "\"", result );
+    Assert.assertEquals( "\"", result );
   }
 
   @Test
@@ -56,7 +56,7 @@ public class CsvInputDataTest {
     CsvInputData csvInputData = new CsvInputData();
     csvInputData.enclosure = "\"".getBytes();
     String result = new String( csvInputData.removeEscapedEnclosures( "\"\"\"\"".getBytes(), 2 ) );
-    assertEquals( "\"\"", result );
+    Assert.assertEquals( "\"\"", result );
   }
 
   @Test
@@ -64,6 +64,6 @@ public class CsvInputDataTest {
     CsvInputData csvInputData = new CsvInputData();
     csvInputData.enclosure = "\"".getBytes();
     String result = new String( csvInputData.removeEscapedEnclosures( "345\"\"1\"\"abc".getBytes(), 2 ) );
-    assertEquals( "345\"1\"abc", result );
+    Assert.assertEquals( "345\"1\"abc", result );
   }
 }

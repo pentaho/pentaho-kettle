@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -33,9 +33,7 @@ import org.pentaho.di.trans.steps.textfileinput.TextFileInputField;
 
 import java.io.File;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import org.junit.Assert;
 
 /**
  * @author Andrey Khayrutdinov
@@ -55,31 +53,65 @@ public class CsvInputEnclosureTest extends CsvInputUnitTestBase {
 
   @Test
   public void hasEnclosures_HasNewLine() throws Exception {
-    doTest( "\"value1\";\"value2\"\n" );
+    doTest( "\"value1\";\"value2\"\n", "\"" );
   }
 
   @Test
   public void hasEnclosures_HasNotNewLine() throws Exception {
-    doTest( "\"value1\";\"value2\"" );
+    doTest( "\"value1\";\"value2\"", "\"" );
   }
 
   @Test
   public void hasNotEnclosures_HasNewLine() throws Exception {
-    doTest( "value1;value2\n" );
+    doTest( "value1;value2\n", "\"" );
   }
 
   @Test
   public void hasNotEnclosures_HasNotNewLine() throws Exception {
-    doTest( "value1;value2" );
+    doTest( "value1;value2", "\"" );
   }
 
+  @Test
+  public void hasMultiSymbolsEnclosureWithoutEnclosureAndEndFile() throws Exception {
+    doTest( "value1;value2", "\"!" );
+  }
 
-  public void doTest( String content ) throws Exception {
+  @Test
+  public void hasMultiSymbolsEnclosureWithEnclosureAndWithoutEndFile() throws Exception {
+    doTest( "\"!value1\"!;value2", "\"!" );
+  }
+
+  @Test
+  public void hasMultiSymbolsEnclosurewithEnclosureInBothfield() throws Exception {
+    doTest( "\"!value1\"!;\"!value2\"!", "\"!" );
+  }
+
+  @Test
+  public void hasMultiSymbolsEnclosureWithoutEnclosureAndWithEndfileRN() throws Exception {
+    doTest( "value1;value2\r\n", "\"!" );
+  }
+
+  @Test
+  public void hasMultiSymbolsEnclosureWithEnclosureAndWithEndfileRN() throws Exception {
+    doTest( "value1;\"!value2\"!\r\n", "\"!" );
+  }
+
+  @Test
+  public void hasMultiSymbolsEnclosureWithoutEnclosureAndWithEndfileN() throws Exception {
+    doTest( "value1;value2\n", "\"!" );
+  }
+
+  @Test
+  public void hasMultiSymbolsEnclosureWithEnclosureAndWithEndfileN() throws Exception {
+    doTest( "value1;\"!value2\"!\n", "\"!" );
+  }
+
+  public void doTest( String content, String enclosure ) throws Exception {
     RowSet output = new QueueRowSet();
 
     File tmp = createTestFile( "utf-8", content );
     try {
-      CsvInputMeta meta = createMeta( tmp, createInputFileFields( "f1", "f2" ) );
+      CsvInputMeta meta = createMeta( tmp, createInputFileFields( "f1", "f2" ), enclosure );
       CsvInputData data = new CsvInputData();
       csvInput.init( meta, data );
 
@@ -96,19 +128,19 @@ public class CsvInputEnclosureTest extends CsvInputUnitTestBase {
     }
 
     Object[] row = output.getRowImmediate();
-    assertNotNull( row );
-    assertEquals( "value1", row[ 0 ] );
-    assertEquals( "value2", row[ 1 ] );
+    Assert.assertNotNull( row );
+    Assert.assertEquals( "value1", row[ 0 ] );
+    Assert.assertEquals( "value2", row[ 1 ] );
 
-    assertNull( output.getRowImmediate() );
+    Assert.assertNull( output.getRowImmediate() );
   }
 
-  private CsvInputMeta createMeta( File file, TextFileInputField[] fields ) {
+  private CsvInputMeta createMeta( File file, TextFileInputField[] fields, String enclosure ) {
     CsvInputMeta meta = new CsvInputMeta();
     meta.setFilename( file.getAbsolutePath() );
     meta.setDelimiter( ";" );
     meta.setEncoding( "utf-8" );
-    meta.setEnclosure( "\"" );
+    meta.setEnclosure( enclosure );
     meta.setBufferSize( "1024" );
     meta.setInputFields( fields );
     meta.setHeaderPresent( false );
