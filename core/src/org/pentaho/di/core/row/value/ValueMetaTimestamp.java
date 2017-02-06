@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -628,12 +628,7 @@ public class ValueMetaTimestamp extends ValueMetaDate {
       // This may not become static as the class is not thread-safe!
       dateFormat = new SimpleTimestampFormat( new SimpleDateFormat().toPattern() );
 
-      String mask;
-      if ( Utils.isEmpty( conversionMask ) ) {
-        mask = DEFAULT_TIMESTAMP_FORMAT_MASK;
-      } else {
-        mask = conversionMask;
-      }
+      String mask = getFormatMask();
 
       // Do we have a locale?
       //
@@ -655,7 +650,18 @@ public class ValueMetaTimestamp extends ValueMetaDate {
 
       dateFormatChanged = false;
     }
+
     return dateFormat;
+  }
+
+  @Override
+  public String getFormatMask() {
+    String mask = conversionMask;
+    if ( Utils.isEmpty( mask ) ) {
+      mask = DEFAULT_TIMESTAMP_FORMAT_MASK;
+    }
+
+    return mask;
   }
 
   @Override
