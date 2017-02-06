@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -37,6 +37,7 @@ import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Dialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
@@ -51,11 +52,13 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.HasDatabasesInterface;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
+import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.delegates.SpoonDBDelegate;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
@@ -73,6 +76,8 @@ public class EnterSelectionDialog extends Dialog {
   private Label wlSelection;
   private List wSelection;
   private FormData fdlSelection, fdSelection;
+  private TextVar wConstantValue;
+  private Button wbUseConstant;
 
   private Button wOK, wCancel;
   private Listener lsOK, lsCancel;
@@ -91,6 +96,8 @@ public class EnterSelectionDialog extends Dialog {
   private String shellText;
   private String lineText;
   private PropsUI props;
+  private String constant;
+  private VariableSpace variableSpace;
 
   private boolean viewOnly, modal;
   private int[] selectedNrs;
@@ -151,6 +158,13 @@ public class EnterSelectionDialog extends Dialog {
     this.databasesInterface = databasesInterface;
   }
 
+  public EnterSelectionDialog( Shell parent, String[] choices, String shellText, String message, String constant,
+                               VariableSpace variableSpace ) {
+    this( parent, choices, shellText, message );
+    this.constant = constant;
+    this.variableSpace = variableSpace;
+  }
+
   public void setViewOnly() {
     viewOnly = true;
   }
@@ -178,8 +192,8 @@ public class EnterSelectionDialog extends Dialog {
     props.setLook( shell );
 
     FormLayout formLayout = new FormLayout();
-    formLayout.marginWidth = Const.FORM_MARGIN;
-    formLayout.marginHeight = Const.FORM_MARGIN;
+    formLayout.marginWidth = 15;
+    formLayout.marginHeight = 15;
 
     shell.setLayout( formLayout );
     shell.setText( shellText );
@@ -190,17 +204,6 @@ public class EnterSelectionDialog extends Dialog {
     if ( quickSearch ) {
       ToolBar treeTb = new ToolBar( shell, SWT.HORIZONTAL | SWT.FLAT );
       props.setLook( treeTb );
-
-      ToolItem wtfilter = new ToolItem( treeTb, SWT.SEPARATOR );
-      Label wlfilter = new Label( treeTb, SWT.SEARCH );
-      props.setLook( wlfilter );
-      wlfilter.setText( BaseMessages.getString( PKG, "EnterSelectionDialog.FilterString.Label" ) );
-      wtfilter.setControl( wlfilter );
-      if ( Const.isOSX() ) {
-        wtfilter.setWidth( 100 );
-      } else {
-        wtfilter.setWidth( 70 );
-      }
 
       wfilter = new ToolItem( treeTb, SWT.SEPARATOR );
       searchText = new Text( treeTb, SWT.SEARCH | SWT.CANCEL );
@@ -236,9 +239,17 @@ public class EnterSelectionDialog extends Dialog {
       }
 
       FormData fd = new FormData();
-      fd.right = new FormAttachment( 100, -margin );
-      fd.top = new FormAttachment( 0, margin );
+      fd.right = new FormAttachment( 100 );
+      fd.top = new FormAttachment( 0, 0 );
       treeTb.setLayoutData( fd );
+
+      Label wlFilter = new Label( shell, SWT.RIGHT );
+      props.setLook( wlFilter );
+      wlFilter.setText( BaseMessages.getString( PKG, "EnterSelectionDialog.FilterString.Label" ) );
+      FormData fdlFilter = new FormData();
+      fdlFilter.top = new FormAttachment( 0, 5 );
+      fdlFilter.right = new FormAttachment( treeTb, -5 );
+      wlFilter.setLayoutData( fdlFilter );
 
       searchText.addSelectionListener( new SelectionAdapter() {
         public void widgetDefaultSelected( SelectionEvent e ) {
@@ -252,7 +263,7 @@ public class EnterSelectionDialog extends Dialog {
       props.setLook( wlSelection );
       fdlSelection = new FormData();
       fdlSelection.left = new FormAttachment( 0, 0 );
-      fdlSelection.top = new FormAttachment( treeTb, margin );
+      fdlSelection.top = new FormAttachment( treeTb, 10 );
       wlSelection.setLayoutData( fdlSelection );
     } else {
       // From step line
@@ -314,13 +325,46 @@ public class EnterSelectionDialog extends Dialog {
       buttons = new Button[] { wOK, wCancel };
     }
 
-    BaseStepDialog.positionBottomButtons( shell, buttons, margin, null );
+    BaseStepDialog.positionBottomRightButtons( shell, buttons, margin, null );
+
+    Control nextControl = wOK;
+
+    if ( constant != null ) {
+      wConstantValue = new TextVar( variableSpace, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+      if ( !Utils.isEmpty( constant ) ) {
+        wConstantValue.setText( constant );
+      }
+      props.setLook( wConstantValue );
+      FormData fdConstantValue = new FormData();
+      fdConstantValue.left = new FormAttachment( 0, 0 );
+      fdConstantValue.bottom = new FormAttachment( wOK, -10 );
+      fdConstantValue.right = new FormAttachment( 100, 0 );
+      wConstantValue.setLayoutData( fdConstantValue );
+
+      wbUseConstant = new Button( shell, SWT.CHECK );
+      props.setLook( wbUseConstant );
+      wbUseConstant.setText( BaseMessages.getString( PKG, "EnterSelectionDialog.UseConstant.Label" ) );
+      wbUseConstant.setSelection( !Utils.isEmpty( constant ) );
+      nextControl = wbUseConstant;
+      FormData fdUseConstant = new FormData();
+      fdUseConstant.left = new FormAttachment( 0, 0 );
+      fdUseConstant.bottom = new FormAttachment( wConstantValue, -5 );
+      wbUseConstant.setLayoutData( fdUseConstant );
+      wbUseConstant.addSelectionListener( new SelectionAdapter() {
+        @Override public void widgetSelected( SelectionEvent selectionEvent ) {
+          super.widgetSelected( selectionEvent );
+          setActive();
+        }
+      } );
+
+      setActive();
+    }
 
     fdSelection = new FormData();
     fdSelection.left = new FormAttachment( 0, 0 );
     fdSelection.right = new FormAttachment( 100, 0 );
-    fdSelection.top = new FormAttachment( wlSelection, margin );
-    fdSelection.bottom = new FormAttachment( wOK, -margin * 3 );
+    fdSelection.top = new FormAttachment( wlSelection, 5 );
+    fdSelection.bottom = new FormAttachment( nextControl, -10 );
     wSelection.setLayoutData( fdSelection );
 
     // Add listeners
@@ -359,6 +403,11 @@ public class EnterSelectionDialog extends Dialog {
       }
     }
     return selection;
+  }
+
+  private void setActive() {
+    wSelection.setEnabled( !wbUseConstant.getSelection() );
+    wConstantValue.setEnabled( wbUseConstant.getSelection() );
   }
 
   public String openRepoDialog() {
@@ -524,7 +573,9 @@ public class EnterSelectionDialog extends Dialog {
   }
 
   private void ok() {
-    if ( wSelection.getSelectionCount() > 0 ) {
+    if ( constant != null && wbUseConstant.getSelection() ) {
+      selection = wConstantValue.getText();
+    } else if ( wSelection.getSelectionCount() > 0 ) {
       selection = wSelection.getSelection()[0];
       selectionNr = wSelection.getSelectionIndices()[0];
       if ( quickSearch ) {
