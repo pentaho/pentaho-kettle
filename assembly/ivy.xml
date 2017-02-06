@@ -113,8 +113,8 @@
     <dependency org="pentaho" name="pdi-platform-utils-plugin" rev="${dependency.pdi-platform-utils-plugin.revision}" changing="true" transitive="false" conf="plugins->default">
       <artifact name="pdi-platform-utils-plugin" type="zip"/>
     </dependency>
-    <dependency org="pentaho" name="VerticaBulkLoader" rev="${dependency.vertica-bulkloader-plugin.revision}" conf="plugins->default" changing="true" transitive="false">
-      <artifact name="VerticaBulkLoader" type="zip" ext="zip" />
+    <dependency org="org.pentaho" name="vertica-bulkloader-plugin" rev="${dependency.vertica-bulkloader-plugin.revision}" conf="plugins->default" changing="true" transitive="false">
+      <artifact name="vertica-bulkloader-plugin" type="zip" ext="zip" />
     </dependency>
     <dependency org="pentaho-kettle" name="pdi-pur-plugin" rev="${dependency.pdi-pur-plugin.revision}" changing="true" transitive="false" conf="plugins->default">
       <artifact name="pdi-pur-plugin" type="zip"/>
