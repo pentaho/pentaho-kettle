@@ -533,7 +533,7 @@ public class CsvInput extends BaseStep implements StepInterface {
           } else if ( data.enclosureFound() && !ignoreEnclosuresInField ) {
             int enclosurePosition = data.getEndBuffer();
             int fieldFirstBytePosition = data.getStartBuffer();
-            if ( fieldFirstBytePosition == enclosurePosition - ( data.enclosure.length - 1 )  ) {
+            if ( fieldFirstBytePosition == enclosurePosition ) {
               // Perhaps we need to skip over an enclosed part?
               // We always expect exactly one enclosure character
               // If we find the enclosure doubled, we consider it escaped.
@@ -550,10 +550,12 @@ public class CsvInput extends BaseStep implements StepInterface {
                 if ( !keepGoing ) {
                   // We found an enclosure character.
                   // Read another byte...
-                  if ( data.moveEndBufferPointer() ) {
+                  if ( !data.endOfBuffer() && data.moveEndBufferPointer() ) {
                     break;
                   }
-
+                  if ( data.enclosure.length > 1 ) {
+                    data.moveEndBufferPointer();
+                  }
                   // If this character is also an enclosure, we can consider the enclosure "escaped".
                   // As such, if this is an enclosure, we keep going...
                   //
@@ -637,15 +639,20 @@ public class CsvInput extends BaseStep implements StepInterface {
         // do-while loop below) and possibly skipping a newline character. This can occur if there is an
         // empty column at the end of the row (see the Jira case for details)
         if ( ( !newLineFound && outputIndex < meta.getInputFields().length ) || ( newLineFound && doubleLineEnd ) ) {
-          data.moveEndBufferPointer();
+          int i = 0;
+          while ( ( !data.newLineFound() && ( i < data.delimiter.length ) ) ) {
+            data.moveEndBufferPointer();
+            i++;
+          }
+          if ( data.newLineFound() ) {
+            data.moveEndBufferPointer();
+          }
+          if ( doubleLineEnd && data.encodingType.getLength() > 1 ) {
+            data.moveEndBufferPointer();
+          }
         }
 
-        if ( newLineFound && !doubleLineEnd ) {
-          // Consider bytes skipped checking for double line end
-          data.setStartBuffer( data.getEndBuffer() - ( data.encodingType.getLength() - 1 ) );
-        } else {
-          data.setStartBuffer( data.getEndBuffer() );
-        }
+        data.setStartBuffer( data.getEndBuffer() );
       }
 
       // See if we reached the end of the line.
