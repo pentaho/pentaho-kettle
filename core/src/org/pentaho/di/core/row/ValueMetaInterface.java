@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -403,6 +403,13 @@ public interface ValueMetaInterface extends Cloneable {
    *          the new conversion mask
    */
   public void setConversionMask( String conversionMask );
+
+  /**
+   * Gets a formatting mask using this value's meta information.
+   *
+   * @return the format mask.
+   */
+  public String getFormatMask();
 
   /**
    * Gets the decimal symbol.

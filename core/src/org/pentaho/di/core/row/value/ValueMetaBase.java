@@ -971,88 +971,98 @@ public class ValueMetaBase implements ValueMetaInterface {
       }
       decimalFormat.setDecimalFormatSymbols( decimalFormatSymbols );
 
-      // Apply the conversion mask if we have one...
-      if ( !Utils.isEmpty( conversionMask ) ) {
-        decimalFormat.applyPattern( conversionMask );
-      } else {
-        switch ( type ) {
-          case TYPE_INTEGER:
-            if ( length < 1 ) {
-              decimalFormat.applyPattern( " ###############0;-###############0" ); // Same
-              // as
-              // before
-              // version
-              // 3.0
-            } else {
-              StringBuilder integerPattern = new StringBuilder();
-
-              // First the format for positive integers...
-              //
-              integerPattern.append( " " );
-              for ( int i = 0; i < getLength(); i++ ) {
-                integerPattern.append( '0' ); // all zeroes.
-              }
-              integerPattern.append( ";" );
-
-              // Then the format for the negative numbers...
-              //
-              integerPattern.append( "-" );
-              for ( int i = 0; i < getLength(); i++ ) {
-                integerPattern.append( '0' ); // all zeroes.
-              }
-              decimalFormat.applyPattern( integerPattern.toString() );
-            }
-            break;
-          case TYPE_BIGNUMBER:
-          case TYPE_NUMBER:
-            if ( length < 1 ) {
-              decimalFormat.applyPattern( " ##########0.0########;-#########0.0########" );
-            } else {
-              StringBuilder numberPattern = new StringBuilder();
-
-              // First do the format for positive numbers...
-              //
-              numberPattern.append( ' ' ); // to compensate for minus sign.
-              if ( precision < 0 ) {
-                // Default: two decimals
-                for ( int i = 0; i < length; i++ ) {
-                  numberPattern.append( '0' );
-                }
-                numberPattern.append( ".00" ); // for the .00
-              } else {
-                // Floating point format 00001234,56 --> (12,2)
-                for ( int i = 0; i <= length; i++ ) {
-                  numberPattern.append( '0' ); // all zeroes.
-                }
-                int pos = length - precision + 1;
-                if ( pos >= 0 && pos < numberPattern.length() ) {
-                  numberPattern.setCharAt( length - precision + 1, '.' ); // one
-                  // 'comma'
-                }
-              }
-
-              // Now do the format for negative numbers...
-              //
-              StringBuilder negativePattern = new StringBuilder( numberPattern );
-              negativePattern.setCharAt( 0, '-' );
-
-              numberPattern.append( ";" );
-              numberPattern.append( negativePattern );
-
-              // Apply the pattern...
-              //
-              decimalFormat.applyPattern( numberPattern.toString() );
-            }
-            break;
-          default:
-            break;
-        }
-
+      String decimalPattern = getFormatMask();
+      if ( !Utils.isEmpty( decimalPattern ) ) {
+        decimalFormat.applyPattern( decimalPattern );
       }
 
       decimalFormatChanged = false;
     }
+
     return decimalFormat;
+  }
+
+  @Override
+  public String getFormatMask() {
+    // Apply the conversion mask if we have one...
+    if ( !Utils.isEmpty( conversionMask ) ) {
+      return conversionMask;
+    }
+
+    switch ( type ) {
+      case TYPE_INTEGER:
+        if ( length < 1 ) {
+          return " ###############0;-###############0"; // Same
+          // as
+          // before
+          // version
+          // 3.0
+        } else {
+          StringBuilder integerPattern = new StringBuilder();
+
+          // First the format for positive integers...
+          //
+          integerPattern.append( " " );
+          for ( int i = 0; i < getLength(); i++ ) {
+            integerPattern.append( '0' ); // all zeroes.
+          }
+          integerPattern.append( ";" );
+
+          // Then the format for the negative numbers...
+          //
+          integerPattern.append( "-" );
+          for ( int i = 0; i < getLength(); i++ ) {
+            integerPattern.append( '0' ); // all zeroes.
+          }
+
+          return integerPattern.toString();
+        }
+
+      case TYPE_BIGNUMBER:
+      case TYPE_NUMBER:
+        if ( length < 1 ) {
+          return " ##########0.0########;-#########0.0########";
+        } else {
+          StringBuilder numberPattern = new StringBuilder();
+
+          // First do the format for positive numbers...
+          //
+          numberPattern.append( ' ' ); // to compensate for minus sign.
+          if ( precision < 0 ) {
+            // Default: two decimals
+            for ( int i = 0; i < length; i++ ) {
+              numberPattern.append( '0' );
+            }
+            numberPattern.append( ".00" ); // for the .00
+          } else {
+            // Floating point format 00001234,56 --> (12,2)
+            for ( int i = 0; i <= length; i++ ) {
+              numberPattern.append( '0' ); // all zeroes.
+            }
+            int pos = length - precision + 1;
+            if ( pos >= 0 && pos < numberPattern.length() ) {
+              numberPattern.setCharAt( length - precision + 1, '.' ); // one
+              // 'comma'
+            }
+          }
+
+          // Now do the format for negative numbers...
+          //
+          StringBuilder negativePattern = new StringBuilder( numberPattern );
+          negativePattern.setCharAt( 0, '-' );
+
+          numberPattern.append( ";" );
+          numberPattern.append( negativePattern );
+
+          // Return the pattern...
+          //
+          return numberPattern.toString();
+        }
+
+      default:
+        return null;
+    }
+
   }
 
   protected synchronized String convertIntegerToString( Long integer ) throws KettleValueException {
