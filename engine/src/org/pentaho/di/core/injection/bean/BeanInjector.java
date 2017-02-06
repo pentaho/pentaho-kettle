@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -89,25 +89,42 @@ public class BeanInjector {
     return prop != null;
   }
 
-  public void setProperty( Object root, String propName, List<RowMetaAndData> data, String dataName )
+  public void setProperty( Object root, String propName, List<RowMetaAndData> data, String dataN )
     throws KettleException {
     BeanInjectionInfo.Property prop = info.getProperties().get( propName );
     if ( prop == null ) {
       throw new KettleException( "Property '" + propName + "' not found for injection to " + root.getClass() );
     }
 
+    String dataName, dataValue;
+    if ( data != null ) {
+      dataName = dataN;
+      dataValue = null;
+    } else {
+      dataName = null;
+      dataValue = dataN;
+    }
     if ( prop.pathArraysCount == 0 ) {
       // no arrays in path
       try {
-        setProperty( root, prop, 0, data.get( 0 ), dataName );
+        setProperty( root, prop, 0, data != null ? data.get( 0 ) : null, dataName, dataValue );
       } catch ( Exception ex ) {
         throw new KettleException( "Error inject property '" + propName + "' into " + root.getClass(), ex );
       }
     } else if ( prop.pathArraysCount == 1 ) {
       // one array in path
       try {
-        for ( int i = 0; i < data.size(); i++ ) {
-          setProperty( root, prop, i, data.get( i ), dataName );
+        if ( data != null ) {
+          for ( int i = 0; i < data.size(); i++ ) {
+            setProperty( root, prop, i, data.get( i ), dataName, dataValue );
+          }
+        } else {
+          for ( int i = 0;; i++ ) {
+            boolean found = setProperty( root, prop, i, null, null, dataValue );
+            if ( !found ) {
+              break;
+            }
+          }
         }
       } catch ( Exception ex ) {
         throw new KettleException( "Error inject property '" + propName + "' into " + root.getClass(), ex );
@@ -120,8 +137,11 @@ public class BeanInjector {
     }
   }
 
-  private void setProperty( Object root, BeanInjectionInfo.Property prop, int index, RowMetaAndData data,
-      String dataName ) throws Exception {
+  /**
+   * Sets data from RowMetaAndData, or constant value from dataValue depends on 'data != null'.
+   */
+  private boolean setProperty( Object root, BeanInjectionInfo.Property prop, int index, RowMetaAndData data,
+      String dataName, String dataValue ) throws Exception {
     Object obj = root;
     for ( int i = 1; i < prop.path.size(); i++ ) {
       BeanLevelInfo s = prop.path.get( i );
@@ -131,7 +151,11 @@ public class BeanInjector {
         switch ( s.dim ) {
           case ARRAY:
             // array
-            Object existArray = extendArray( s, obj, index + 1 );
+            Object existArray = data != null ? extendArray( s, obj, index + 1 ) : checkArray( s, obj, index );
+            if ( existArray == null ) {
+              // out of array for constant
+              return false;
+            }
             next = Array.get( existArray, index ); // get specific element
             if ( next == null ) {
               next = createObject( s.leafClass, root );
@@ -141,7 +165,11 @@ public class BeanInjector {
             break;
           case LIST:
             // list
-            List<Object> existList = extendList( s, obj, index + 1 );
+            List<Object> existList = data != null ? extendList( s, obj, index + 1 ) : checkList( s, obj, index );
+            if ( existList == null ) {
+              // out of array for constant
+              return false;
+            }
             next = existList.get( index ); // get specific element
             if ( next == null ) {
               next = createObject( s.leafClass, root );
@@ -175,28 +203,51 @@ public class BeanInjector {
         }
       } else {
         // set to latest field
-        if ( !s.convertEmpty && data.isEmptyValue( dataName ) ) {
-          return;
+        if ( !s.convertEmpty ) {
+          if ( data != null ) {
+            if ( data.isEmptyValue( dataName ) ) {
+              return true;
+            }
+          } else {
+            if ( dataValue == null ) {
+              return true;
+            }
+          }
         }
         if ( s.setter != null ) {
-          Object value = data.getAsJavaType( dataName, s.leafClass, s.converter );
           // usual setter
+          Object value;
+          if ( data != null ) {
+            value = data.getAsJavaType( dataName, s.leafClass, s.converter );
+          } else {
+            value = RowMetaAndData.getStringAsJavaType( dataValue, s.leafClass, s.converter );
+          }
           s.setter.invoke( obj, value );
         } else if ( s.field != null ) {
           Object value;
+          if ( data != null ) {
+            value = data.getAsJavaType( dataName, s.leafClass, s.converter );
+          } else {
+            value = RowMetaAndData.getStringAsJavaType( dataValue, s.leafClass, s.converter );
+          }
           switch ( s.dim ) {
             case ARRAY:
-              Object existArray = extendArray( s, obj, index + 1 );
-              value = data.getAsJavaType( dataName, s.leafClass, s.converter );
+              Object existArray = data != null ? extendArray( s, obj, index + 1 ) : checkArray( s, obj, index );
+              if ( existArray == null ) {
+                // out of array for constant
+                return false;
+              }
               Array.set( existArray, index, value );
               break;
             case LIST:
-              List<Object> existList = extendList( s, obj, index + 1 );
-              value = data.getAsJavaType( dataName, s.leafClass, s.converter );
+              List<Object> existList = data != null ? extendList( s, obj, index + 1 ) : checkList( s, obj, index );
+              if ( existList == null ) {
+                // out of array for constant
+                return false;
+              }
               existList.set( index, value );
               break;
             case NONE:
-              value = data.getAsJavaType( dataName, s.leafClass, s.converter );
               s.field.set( obj, value );
               break;
           }
@@ -205,6 +256,7 @@ public class BeanInjector {
         }
       }
     }
+    return true;
   }
 
   private Object createObject( Class<?> clazz, Object root ) throws KettleException {
@@ -240,6 +292,15 @@ public class BeanInjector {
     return existArray;
   }
 
+  private Object checkArray( BeanLevelInfo s, Object obj, int index ) throws Exception {
+    Object existArray = s.field.get( obj );
+    if ( existArray == null ) {
+      return null;
+    }
+    int existSize = Array.getLength( existArray );
+    return index < existSize ? existArray : null;
+  }
+
   private List<Object> extendList( BeanLevelInfo s, Object obj, int newSize ) throws Exception {
     @SuppressWarnings( "unchecked" )
     List<Object> existList = (List<Object>) s.field.get( obj );
@@ -252,5 +313,15 @@ public class BeanInjector {
     }
 
     return existList;
+  }
+
+  private List<Object> checkList( BeanLevelInfo s, Object obj, int index ) throws Exception {
+    @SuppressWarnings( "unchecked" )
+    List<Object> existList = (List<Object>) s.field.get( obj );
+    if ( existList == null ) {
+      return null;
+    }
+
+    return index < existList.size() ? existList : null;
   }
 }

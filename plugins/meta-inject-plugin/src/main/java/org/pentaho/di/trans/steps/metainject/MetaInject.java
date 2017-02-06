@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -112,6 +112,15 @@ public class MetaInject extends BaseStep implements StepInterface {
     List<StepMeta> steps = data.transMeta.getSteps();
     for ( Map.Entry<String, StepMetaInterface> en : data.stepInjectionMetasMap.entrySet() ) {
       newInjection( en.getKey(), en.getValue() );
+    }
+    /*
+     * constants injection should be executed after steps, because if constant should be inserted into target with array
+     * in path, constants should be inserted into all arrays items
+     */
+    for ( Map.Entry<String, StepMetaInterface> en : data.stepInjectionMetasMap.entrySet() ) {
+      newInjectionConstants( en.getKey(), en.getValue() );
+    }
+    for ( Map.Entry<String, StepMetaInterface> en : data.stepInjectionMetasMap.entrySet() ) {
       en.getValue().searchInfoAndTargetSteps( steps );
     }
 
@@ -244,6 +253,9 @@ public class MetaInject extends BaseStep implements StepInterface {
     }
   }
 
+  /**
+   * Inject values from steps.
+   */
   private void newInjection( String targetStep, StepMetaInterface targetStepMeta ) throws KettleException {
     if ( log.isDetailed() ) {
       logDetailed( "Handing step '" + targetStep + "' injection!" );
@@ -261,25 +273,63 @@ public class MetaInject extends BaseStep implements StepInterface {
         // This is the step to collect data for...
         // We also know which step to read the data from. (source)
         //
-        List<RowMetaAndData> rows = data.rowMap.get( source.getStepname() );
-        if ( rows != null && !rows.isEmpty() ) {
-          // Which metadata key is this referencing? Find the attribute key in the metadata entries...
-          //
+        if ( source.getStepname() != null ) {
+          // from specified steo
+          List<RowMetaAndData> rows = data.rowMap.get( source.getStepname() );
+          if ( rows != null && !rows.isEmpty() ) {
+            // Which metadata key is this referencing? Find the attribute key in the metadata entries...
+            //
+            if ( injector.hasProperty( targetStepMeta, target.getAttributeKey() ) ) {
+              // target step has specified key
+              boolean skip = false;
+              for ( RowMetaAndData r : rows ) {
+                if ( r.getRowMeta().indexOfValue( source.getField() ) < 0 ) {
+                  logError( BaseMessages.getString( PKG, "MetaInject.SourceFieldIsNotDefined.Message", source
+                      .getField(), getTransMeta().getName() ) );
+                  // source step doesn't contain specified field
+                  skip = true;
+                }
+              }
+              if ( !skip ) {
+                // specified field exist - need to inject
+                injector.setProperty( targetStepMeta, target.getAttributeKey(), rows, source.getField() );
+              }
+            } else {
+              // target step doesn't have specified key - just report but don't fail like in 6.0 (BACKLOG-6753)
+              logError( BaseMessages.getString( PKG, "MetaInject.TargetKeyIsNotDefined.Message", target
+                  .getAttributeKey(), getTransMeta().getName() ) );
+            }
+          }
+        }
+      }
+    }
+  }
+
+  /**
+   * Inject constant values.
+   */
+  private void newInjectionConstants( String targetStep, StepMetaInterface targetStepMeta ) throws KettleException {
+    if ( log.isDetailed() ) {
+      logDetailed( "Handing step '" + targetStep + "' constants injection!" );
+    }
+    BeanInjectionInfo injectionInfo = new BeanInjectionInfo( targetStepMeta.getClass() );
+    BeanInjector injector = new BeanInjector( injectionInfo );
+
+    // Collect all the metadata for this target step...
+    //
+    Map<TargetStepAttribute, SourceStepField> targetMap = meta.getTargetSourceMapping();
+    for ( TargetStepAttribute target : targetMap.keySet() ) {
+      SourceStepField source = targetMap.get( target );
+
+      if ( target.getStepname().equalsIgnoreCase( targetStep ) ) {
+        // This is the step to collect data for...
+        // We also know which step to read the data from. (source)
+        //
+        if ( source.getStepname() == null ) {
+          // inject constant
           if ( injector.hasProperty( targetStepMeta, target.getAttributeKey() ) ) {
             // target step has specified key
-            boolean skip = false;
-            for ( RowMetaAndData r : rows ) {
-              if ( r.getRowMeta().indexOfValue( source.getField() ) < 0 ) {
-                logError( BaseMessages.getString( PKG, "MetaInject.SourceFieldIsNotDefined.Message", source.getField(),
-                    getTransMeta().getName() ) );
-                // source step doesn't contain specified field
-                skip = true;
-              }
-            }
-            if ( !skip ) {
-              // specified field exist - need to inject
-              injector.setProperty( targetStepMeta, target.getAttributeKey(), rows, source.getField() );
-            }
+            injector.setProperty( targetStepMeta, target.getAttributeKey(), null, source.getField() );
           } else {
             // target step doesn't have specified key - just report but don't fail like in 6.0 (BACKLOG-6753)
             logError( BaseMessages.getString( PKG, "MetaInject.TargetKeyIsNotDefined.Message", target.getAttributeKey(),
@@ -635,8 +685,10 @@ public class MetaInject extends BaseStep implements StepInterface {
     Set<String> existedStepNames = convertToUpperCaseSet( stepNamesArray );
     Set<SourceStepField> unavailableSourceSteps = new HashSet<SourceStepField>();
     for ( SourceStepField currentSource : targetMap.values() ) {
-      if ( !existedStepNames.contains( currentSource.getStepname().toUpperCase() ) ) {
-        unavailableSourceSteps.add( currentSource );
+      if ( currentSource.getStepname() != null ) {
+        if ( !existedStepNames.contains( currentSource.getStepname().toUpperCase() ) ) {
+          unavailableSourceSteps.add( currentSource );
+        }
       }
     }
     return Collections.unmodifiableSet( unavailableSourceSteps );
