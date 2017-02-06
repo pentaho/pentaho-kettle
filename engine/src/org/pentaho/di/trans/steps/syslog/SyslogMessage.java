@@ -160,12 +160,12 @@ public class SyslogMessage extends BaseStep implements StepInterface {
       try {
         // Connect to syslog ...
         data.syslog = getSyslog();
+        data.syslog.initialize( SyslogConstants.UDP, new UDPNetSyslogConfig() );
         data.syslog.getConfig().setHost( servername );
         data.syslog.getConfig().setPort( nrPort );
         data.syslog.getConfig().setFacility( meta.getFacility() );
         data.syslog.getConfig().setSendLocalName( false );
         data.syslog.getConfig().setSendLocalTimestamp( false );
-        data.syslog.initialize( SyslogConstants.UDP, new UDPNetSyslogConfig() );
       } catch ( Exception ex ) {
         logError( BaseMessages.getString( PKG, "SyslogMessage.UnknownHost", servername, ex.getMessage() ) );
         logError( Const.getStackTracker( ex ) );
