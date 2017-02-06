@@ -1163,7 +1163,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 
     KettleEnvironment.setExecutionInformation( this, repository );
 
-    readyToStart = true;
+    setReadyToStart( true );
   }
 
   @SuppressWarnings( "deprecation" )
@@ -1673,7 +1673,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
     return exist != 0;
   }
 
-  private void setFinished( boolean finished ) {
+  protected void setFinished( boolean finished ) {
     status.updateAndGet( v -> finished ? v | FINISHED.mask : ( BIT_STATUS_SUM ^ FINISHED.mask ) & v );
   }
 
@@ -3092,6 +3092,10 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
     return steps;
   }
 
+  protected void setSteps( List<StepMetaDataCombi> steps ) {
+    this.steps = steps;
+  }
+
   /**
    * Gets a string representation of the transformation.
    *
@@ -4270,6 +4274,11 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
   public boolean isReadyToStart() {
     return readyToStart;
   }
+
+  protected void setReadyToStart( boolean ready ) {
+    readyToStart = ready;
+  }
+
 
   /**
    * Sets the internal kettle variables.

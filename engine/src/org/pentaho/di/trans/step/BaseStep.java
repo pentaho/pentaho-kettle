@@ -273,7 +273,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
   private StepDataInterface stepDataInterface;
 
   /** The list of RowListener interfaces */
-  private List<RowListener> rowListeners;
+  protected List<RowListener> rowListeners;
 
   /**
    * Map of files that are generated or used by this step. After execution, these can be added to result. The entry to
