@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -46,7 +46,7 @@ public class CsvInputUnicodeTest extends CsvInputUnitTestBase {
   private static final String UTF8 = "UTF-8";
   private static final String UTF16LE = "UTF-16LE";
   private static final String UTF16LEBOM = "x-UTF-16LE-BOM";
-  private static final String UTF16BE = "UTF-16LE";
+  private static final String UTF16BE = "UTF-16BE";
   private static final String ONE_CHAR_DELIM = "\t";
   private static final String MULTI_CHAR_DELIM = "|||";
   private static final String TEXT = "Header1%1$sHeader2\nValue%1$sValue\nValue%1$sValue\n";
