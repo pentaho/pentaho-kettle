@@ -80,11 +80,14 @@
     <dependency org="org.springframework" name="spring-core" rev="${dependency.spring.framework.revision}" transitive="false" conf="test->default" />
     <dependency org="org.springframework" name="spring-context" rev="${dependency.spring.framework.revision}" transitive="false" conf="test->default" />
     <dependency org="org.springframework" name="spring-expression" rev="${dependency.spring.framework.revision}" transitive="false" conf="test->default" />
+    <dependency org="org.springframework" name="spring-tx" rev="${dependency.spring.framework.revision}" transitive="false" conf="test->default" />
     <dependency org="org.springframework" name="spring-context-support" rev="${dependency.spring.framework.revision}" transitive="false" conf="test->default" />
     <dependency org="org.springframework" name="spring-orm" rev="${dependency.spring.framework.revision}" transitive="false" conf="test->default" />
+    <dependency org="org.springframework.security" name="spring-security-core" rev="${dependency.spring.security.revision}" transitive="false" conf="test->default" />
     <dependency org="org.springframework.security" name="spring-security-config" rev="${dependency.spring.security.revision}" transitive="false" conf="test->default"/>
     <dependency org="org.springframework.webflow"  name="spring-binding"         rev="${dependency.spring.webflow.revision}"     transitive="false" conf="test->default"/>
     <dependency org="org.springframework" name="se-jcr" rev="${dependency.spring.extensions.jcr.revision}" transitive="false" conf="test->default">
+
       <!--transitive dependency that is not needed and not fetchable by Ivy-->
       <exclude org="org.apache.jackrabbit" name="jackrabbit-jcr-rmi" />
     </dependency>
