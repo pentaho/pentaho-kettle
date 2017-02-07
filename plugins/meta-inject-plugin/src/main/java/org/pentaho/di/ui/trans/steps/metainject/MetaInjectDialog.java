@@ -87,6 +87,7 @@ import org.pentaho.di.ui.core.ConstUI;
 import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
+import org.pentaho.di.ui.core.widget.ColumnsResizer;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.repository.dialog.SelectObjectDialog;
@@ -474,6 +475,7 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
     fdFields.top = new FormAttachment( wSourceStep, 10 );
     fdFields.right = new FormAttachment( 100, 0 );
     wSourceFields.setLayoutData( fdFields );
+    wSourceFields.getTable().addListener( SWT.Resize, new ColumnsResizer( 0, 25, 25, 25, 25 ) );
 
     Label wlTargetFile = new Label( wOptionsComp, SWT.RIGHT );
     wlTargetFile.setText( BaseMessages.getString( PKG, "MetaInjectDialog.TargetFile.Label" ) );
