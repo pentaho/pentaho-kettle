@@ -65,6 +65,7 @@ import org.pentaho.di.ui.core.ConstUI;
 import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
+import org.pentaho.di.ui.core.widget.ColumnsResizer;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.repository.dialog.SelectObjectDialog;
@@ -414,6 +415,7 @@ public class SingleThreaderDialog extends BaseStepDialog implements StepDialogIn
     fdParameters.right = new FormAttachment( 100 );
     fdParameters.bottom = new FormAttachment( wbGetParams, -10 );
     wParameters.setLayoutData( fdParameters );
+    wParameters.getTable().addListener( SWT.Resize, new ColumnsResizer( 0, 50, 50 ) );
 
     FormData fdParametersComp = new FormData();
     fdParametersComp.left = new FormAttachment( 0, 0 );
