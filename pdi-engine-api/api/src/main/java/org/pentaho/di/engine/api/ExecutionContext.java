@@ -37,6 +37,12 @@ import java.util.concurrent.CompletableFuture;
 public interface ExecutionContext extends SubscriptionManager {
   Map<String, Object> getParameters();
 
+  /**
+   * Implementors should return new instance of the ExecutionContext using
+   * @param parameters
+   */
+  ExecutionContext withParameters( Map<String, Object> parameters );
+
   Map<String, Object> getEnvironment();
 
   Transformation getTransformation();
