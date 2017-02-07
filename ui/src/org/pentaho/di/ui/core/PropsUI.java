@@ -1117,15 +1117,6 @@ public class PropsUI extends Props {
     return Integer.parseInt( properties.getProperty( property ) );
   }
 
-  /**
-   * getHelpLinkUrl
-   *
-   * @return the url for the pentaho help page.
-   */
-  public String getHelpLinkUrl() {
-    return properties.getProperty("browser.warning.dialog.url");
-  }
-
   public boolean isLegacyPerspectiveMode() {
     return "Y".equalsIgnoreCase( properties.getProperty( LEGACY_PERSPECTIVE_MODE, "N" ) );
   }

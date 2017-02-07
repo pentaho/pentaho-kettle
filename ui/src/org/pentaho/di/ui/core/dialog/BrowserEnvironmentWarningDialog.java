@@ -64,6 +64,7 @@ public class BrowserEnvironmentWarningDialog extends Dialog {
   private final int MAX_TEXT_WIDTH_WINDOWS = 286;
   private final int MAX_TEXT_WIDTH_MAC = 326;
   private final LogChannelInterface log = new LogChannel( this );
+  private static final String URI_PATH = "/0D0/160/000";
 
   public BrowserEnvironmentWarningDialog( Shell parent ) {
     super( parent, SWT.NONE );
@@ -224,7 +225,7 @@ public class BrowserEnvironmentWarningDialog extends Dialog {
       public void handleEvent( Event event ) {
         if ( Desktop.isDesktopSupported() ) {
           try {
-            Desktop.getDesktop().browse( new URI( props.getHelpLinkUrl() ) );
+            Desktop.getDesktop().browse( new URI( Const.getDocUrl( URI_PATH ) ) );
           } catch ( Exception e ) {
             log.logError( "Error opening external browser", e );
           }
