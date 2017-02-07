@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,6 +22,7 @@
 
 package org.pentaho.di.trans.steps.transexecutor;
 
+import java.util.Arrays;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -29,6 +30,7 @@ import org.junit.Test;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.QueueRowSet;
 import org.pentaho.di.core.Result;
+import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleException;
@@ -45,8 +47,21 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.StepMockUtil;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * @author Andrey Khayrutdinov
@@ -303,6 +318,60 @@ public class TransExecutorUnitTest {
     executor.processRow( meta, data ); // end of file
     // group buffer should be flushed in the end
     assertEquals( 0, data.groupBuffer.size() );
+  }
+
+  @Test
+  public void testCollectTransResultsDisabledHop() throws KettleException {
+    StepMeta outputRowsSourceStepMeta = mock( StepMeta.class );
+    meta.setOutputRowsSourceStepMeta( outputRowsSourceStepMeta );
+
+    Result result = mock( Result.class );
+    RowMetaAndData rowMetaAndData = mock( RowMetaAndData.class );
+    when( result.getRows() ).thenReturn( Arrays.asList( rowMetaAndData ) );
+
+    doNothing().when( executor ).putRowTo( any(), any(), any() );
+
+    executor.init( meta, data );
+    executor.collectTransResults( result );
+    verify( executor, never() ).putRowTo( any(), any(), any() );
+  }
+
+  @Test
+  public void testCollectExecutionResultsDisabledHop() throws KettleException {
+    StepMeta executionResultTargetStepMeta = mock( StepMeta.class );
+    meta.setExecutionResultTargetStepMeta( executionResultTargetStepMeta );
+
+    RowMetaInterface executionResultsOutputRowMeta = mock( RowMetaInterface.class );
+    data.setExecutionResultsOutputRowMeta( executionResultsOutputRowMeta );
+
+    doNothing().when( executor ).putRowTo( any(), any(), any() );
+
+    executor.init( meta, data );
+    Result result = mock( Result.class );
+    executor.collectExecutionResults( result );
+
+    verify( executor, never() ).putRowTo( any(), any(), any() );
+  }
+
+  @Test
+  public void testCollectExecutionResultFilesDisabledHop() throws KettleException {
+    Result result = mock( Result.class );
+    ResultFile resultFile = mock( ResultFile.class, RETURNS_DEEP_STUBS );
+
+    when( result.getResultFilesList() ).thenReturn( Arrays.asList( resultFile ) );
+
+    StepMeta resultFilesTargetStepMeta = mock( StepMeta.class );
+    meta.setResultFilesTargetStepMeta( resultFilesTargetStepMeta );
+
+    RowMetaInterface resultFilesOutputRowMeta = mock( RowMetaInterface.class );
+    data.setResultFilesOutputRowMeta( resultFilesOutputRowMeta );
+
+    doNothing().when( executor ).putRowTo( any(), any(), any() );
+
+    executor.init( meta, data );
+    executor.collectExecutionResultFiles( result );
+
+    verify( executor, never() ).putRowTo( any(), any(), any() );
   }
 
   // values to be grouped

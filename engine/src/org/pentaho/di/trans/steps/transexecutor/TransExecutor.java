@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -94,9 +94,9 @@ public class TransExecutor extends BaseStep implements StepInterface {
         initOnFirstProcessingIteration();
       }
 
-      if ( transExecutorData.getExecutorStepOutputRowMeta() != null ) {
-        putRowTo( transExecutorData.getExecutorStepOutputRowMeta(), row,
-          transExecutorData.getExecutorStepOutputRowSet() );
+      RowSet executorStepOutputRowSet = transExecutorData.getExecutorStepOutputRowSet();
+      if ( transExecutorData.getExecutorStepOutputRowMeta() != null && executorStepOutputRowSet != null ) {
+        putRowTo( transExecutorData.getExecutorStepOutputRowMeta(), row, executorStepOutputRowSet );
       }
 
       // Grouping by field and execution time works ONLY if grouping by size is disabled.
@@ -307,17 +307,20 @@ public class TransExecutor extends BaseStep implements StepInterface {
     internalTrans.activateParameters();
   }
 
-  private void collectTransResults( Result result ) throws KettleException {
-    if ( meta.getOutputRowsSourceStepMeta() != null ) {
-      RowSet rowSet = getData().getResultRowsRowSet();
+  @VisibleForTesting
+  void collectTransResults( Result result ) throws KettleException {
+    RowSet transResultsRowSet = getData().getResultRowsRowSet();
+    if ( meta.getOutputRowsSourceStepMeta() != null && transResultsRowSet != null ) {
       for ( RowMetaAndData metaAndData : result.getRows() ) {
-        putRowTo( metaAndData.getRowMeta(), metaAndData.getData(), rowSet );
+        putRowTo( metaAndData.getRowMeta(), metaAndData.getData(), transResultsRowSet );
       }
     }
   }
 
-  private void collectExecutionResults( Result result ) throws KettleException {
-    if ( meta.getExecutionResultTargetStepMeta() != null ) {
+  @VisibleForTesting
+  void collectExecutionResults( Result result ) throws KettleException {
+    RowSet executionResultsRowSet = getData().getExecutionResultRowSet();
+    if ( meta.getExecutionResultTargetStepMeta() != null && executionResultsRowSet != null ) {
       Object[] outputRow = RowDataUtil.allocateRowData( getData().getExecutionResultsOutputRowMeta().size() );
       int idx = 0;
 
@@ -366,12 +369,14 @@ public class TransExecutor extends BaseStep implements StepInterface {
         outputRow[ idx++ ] = getData().getExecutorTrans().getLogChannelId();
       }
 
-      putRowTo( getData().getExecutionResultsOutputRowMeta(), outputRow, getData().getExecutionResultRowSet() );
+      putRowTo( getData().getExecutionResultsOutputRowMeta(), outputRow, executionResultsRowSet );
     }
   }
 
-  private void collectExecutionResultFiles( Result result ) throws KettleException {
-    if ( meta.getResultFilesTargetStepMeta() != null && result.getResultFilesList() != null ) {
+  @VisibleForTesting
+  void collectExecutionResultFiles( Result result ) throws KettleException {
+    RowSet resultFilesRowSet = getData().getResultFilesRowSet();
+    if ( meta.getResultFilesTargetStepMeta() != null && result.getResultFilesList() != null && resultFilesRowSet != null ) {
       for ( ResultFile resultFile : result.getResultFilesList() ) {
         Object[] targetRow = RowDataUtil.allocateRowData( getData().getResultFilesOutputRowMeta().size() );
         int idx = 0;
@@ -379,7 +384,7 @@ public class TransExecutor extends BaseStep implements StepInterface {
 
         // TODO: time, origin, ...
 
-        putRowTo( getData().getResultFilesOutputRowMeta(), targetRow, getData().getResultFilesRowSet() );
+        putRowTo( getData().getResultFilesOutputRowMeta(), targetRow, resultFilesRowSet );
       }
     }
   }
