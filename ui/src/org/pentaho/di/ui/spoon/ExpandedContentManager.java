@@ -44,6 +44,10 @@ public final class ExpandedContentManager {
 
   static Supplier<Spoon> spoonSupplier = Spoon::getInstance;
 
+  // The setUrl on the Browser Object does not change (only hash changes) the current url and we have to keep the last
+  // opened url manually.
+  static String lastNavigateURL;
+
   /**
    * isBrowserVisible
    * 
@@ -114,7 +118,7 @@ public final class ExpandedContentManager {
           if ( copyContent ) {
             Browser thisBrowser = (Browser) keyEvent.getSource();
             Clipboard clipboard = new Clipboard( thisBrowser.getDisplay() );
-            clipboard.setContents( new String[]{thisBrowser.getUrl()}, new Transfer[]{ TextTransfer.getInstance()} );
+            clipboard.setContents( new String[] { lastNavigateURL }, new Transfer[] { TextTransfer.getInstance() } );
             clipboard.dispose();
           } else if ( arrowNavigation || backslashNavigation || reloadContent || zoomContent ) {
             keyEvent.doit = false;
@@ -127,6 +131,7 @@ public final class ExpandedContentManager {
     }
 
     browser.setUrl( url );
+    lastNavigateURL = url;
   }
 
   /**
