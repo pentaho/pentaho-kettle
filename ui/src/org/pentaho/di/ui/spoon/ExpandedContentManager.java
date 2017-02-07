@@ -24,8 +24,6 @@ package org.pentaho.di.ui.spoon;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
-import org.eclipse.swt.browser.ProgressEvent;
-import org.eclipse.swt.browser.ProgressListener;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.dnd.TextTransfer;
@@ -127,15 +125,6 @@ public final class ExpandedContentManager {
         }
       } );
     }
-
-    browser.addProgressListener( new ProgressListener() {
-      public void changed( ProgressEvent event ) { }
-      public void completed( ProgressEvent event ) {
-        final Browser browser = (Browser) event.widget;
-        browser.removeProgressListener( this );
-        browser.refresh();
-      }
-    } );
 
     browser.setUrl( url );
   }
