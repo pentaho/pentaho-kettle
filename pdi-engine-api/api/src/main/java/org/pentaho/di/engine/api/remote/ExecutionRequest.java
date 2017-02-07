@@ -24,8 +24,6 @@
 
 package org.pentaho.di.engine.api.remote;
 
-import org.pentaho.di.engine.api.events.PDIEvent;
-import org.pentaho.di.engine.api.model.LogicalModelElement;
 import org.pentaho.di.engine.api.model.Transformation;
 
 import java.io.Serializable;
@@ -33,40 +31,31 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * A request for execution by a remote Engine. All method parameters and return types should be Serializable.
+ * A request for execution by a remote Engine. All fields should be Serializable.
  * <p>
  * Created by hudak on 1/25/17.
  */
-public interface ExecutionRequest {
-  Map<String, Object> getParameters();
+public final class ExecutionRequest implements Serializable {
+  private final Map<String, Object> parameters;
+  private final Transformation transformation;
+  private final Map<String, Set<Class<? extends Serializable>>> reportingTopics;
 
-  Map<String, Object> getEnvironment();
+  public ExecutionRequest( Map<String, Object> parameters, Transformation transformation,
+                           Map<String, Set<Class<? extends Serializable>>> reportingTopics ) {
+    this.parameters = parameters;
+    this.transformation = transformation;
+    this.reportingTopics = reportingTopics;
+  }
 
-  Transformation getTransformation();
+  public Map<String, Object> getParameters() {
+    return parameters;
+  }
 
-  Map<String, Set<Class<? extends Serializable>>> getReportingTopics();
+  public Transformation getTransformation() {
+    return transformation;
+  }
 
-  /**
-   * Update this Execution request's state. Usually this is to either claim or close a request. Notifications will be
-   * mirrored onto the Transformation's event stream so subscribers may track the request.
-   * <p>
-   * This notification will be ignored if the request as already been claimed by another service.
-   *
-   * @param notification a state-change update from the request-processing service
-   * @return true if the notification was accepted.
-   */
-  boolean update( Notification notification );
-
-  /**
-   * Update a {@link LogicalModelElement} from this request.
-   * This will be routed to the proper event stream on the client.
-   * <p>
-   * The update will be rejected and method will return false if the request has not yet been claimed or if the request
-   * has been canceled
-   *
-   * @param sourceId {@link LogicalModelElement#getId()}
-   * @param value    {@link PDIEvent#getData()}
-   * @return true if update was accepted
-   */
-  boolean update( String sourceId, Serializable value );
+  public Map<String, Set<Class<? extends Serializable>>> getReportingTopics() {
+    return reportingTopics;
+  }
 }

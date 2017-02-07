@@ -29,9 +29,14 @@ import org.pentaho.di.engine.api.model.LogicalModelElement;
 import java.io.Serializable;
 
 /**
+ * Execution event with a logical-model source.
+ * <p>
+ * This event object should be serializable if the source is too.
+ * Data should always be serializable.
+ * <p>
  * Created by nbaker on 6/9/16.
  */
-public interface PDIEvent<S extends LogicalModelElement, D extends Serializable> {
+public interface PDIEvent<S extends LogicalModelElement, D extends Serializable> extends Serializable {
   S getSource();
 
   D getData();
