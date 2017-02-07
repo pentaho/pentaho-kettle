@@ -777,8 +777,16 @@ public class TextFileOutput extends BaseStep implements StepInterface {
   }
 
   public boolean removeMapEntry() {
-    String filename = buildFilename( environmentSubstitute( meta.getFileName() ), true );
-    return ( data.fileWriterMap.remove( filename ) != null );
+    if ( meta != null ) {
+      String filename = buildFilename( environmentSubstitute( meta.getFileName() ), true );
+      if ( data.fileWriterMap != null ) {
+        return ( data.fileWriterMap.remove( filename ) != null );
+      } else {
+        return false;
+      }
+    } else {
+      return false;
+    }
   }
 
   public boolean checkPreviouslyOpened( String filename ) {
