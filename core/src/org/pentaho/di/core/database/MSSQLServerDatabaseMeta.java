@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -262,12 +262,10 @@ public class MSSQLServerDatabaseMeta extends BaseDatabaseMeta implements Databas
               }
             }
           } else {
-            if ( precision > 0 ) {
-              if ( length > 0 ) {
-                retval += "DECIMAL(" + length + "," + precision + ")";
-              } else {
-                retval += "FLOAT(53)";
-              }
+            if ( precision > 0 && length > 0 ) {
+              retval += "DECIMAL(" + length + "," + precision + ")";
+            } else {
+              retval += "FLOAT(53)";
             }
           }
         }
@@ -283,6 +281,9 @@ public class MSSQLServerDatabaseMeta extends BaseDatabaseMeta implements Databas
         } else {
           retval += "TEXT"; // Up to 2bilion characters.
         }
+        break;
+      case ValueMetaInterface.TYPE_BINARY:
+        retval += "VARBINARY(MAX)";
         break;
       default:
         retval += " UNKNOWN";
