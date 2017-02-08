@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -70,9 +70,13 @@ public class TextFileOutput extends BaseStep implements StepInterface {
   private static final String FILE_COMPRESSION_TYPE_NONE =
       TextFileOutputMeta.fileCompressionTypeCodes[TextFileOutputMeta.FILE_COMPRESSION_TYPE_NONE];
 
+  private static final String DISABLE_STREAM_CACHE_KEY = "DISABLE_STREAM_CACHE";
+
   public TextFileOutputMeta meta;
 
   public TextFileOutputData data;
+
+  private boolean disableStreamCache;
 
   public TextFileOutput( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
       Trans trans ) {
@@ -102,6 +106,12 @@ public class TextFileOutput extends BaseStep implements StepInterface {
 
     if ( r != null && first ) {
       first = false;
+
+      String disableCacheStr = environmentSubstitute( this.getVariable( DISABLE_STREAM_CACHE_KEY, "false" ) );
+      if ( disableCacheStr != null ) {
+        this.disableStreamCache = Boolean.valueOf( disableCacheStr );
+      }
+
       data.outputRowMeta = getInputRowMeta().clone();
       meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
 
@@ -123,6 +133,7 @@ public class TextFileOutput extends BaseStep implements StepInterface {
         data.fileNameMeta = getInputRowMeta().getValueMeta( data.fileNameFieldIndex );
         data.fileName = data.fileNameMeta.getString( r[data.fileNameFieldIndex] );
         setDataWriterForFilename( data.fileName );
+
       } else if ( meta.isDoNotOpenNewFileInit() && !meta.isFileNameInField() ) {
         // Open a new file here
         //
@@ -185,6 +196,7 @@ public class TextFileOutput extends BaseStep implements StepInterface {
         bEndedLineWrote = true;
       }
 
+      closeFile();
       setOutputDone();
       return false;
     }
@@ -238,7 +250,9 @@ public class TextFileOutput extends BaseStep implements StepInterface {
     if ( data.writer == null ) {
       openNewFile( filename );
       data.oneFileOpened = true;
-      data.fileWriterMap.put( filename, data.writer );
+      if ( !this.disableStreamCache ) {
+        data.fileWriterMap.put( filename, data.writer );
+      }
 
       // If it's the first time we open it and we have a header, we write a header...
       //
@@ -471,7 +485,7 @@ public class TextFileOutput extends BaseStep implements StepInterface {
         }
         if ( found ) {
           if ( positions == null ) {
-            positions = new ArrayList<Integer>();
+            positions = new ArrayList<>();
           }
           positions.add( i );
         }
@@ -641,6 +655,11 @@ public class TextFileOutput extends BaseStep implements StepInterface {
           logDetailed( "Opening output stream using provider: " + compressionProvider.getName() );
         }
 
+        if ( this.disableStreamCache ) {
+          // Close previously opened file
+          closeFile();
+        }
+
         if ( checkPreviouslyOpened( filename ) ) {
           data.fos = getOutputStream( filename, getTransMeta(), true );
         } else {
@@ -694,6 +713,7 @@ public class TextFileOutput extends BaseStep implements StepInterface {
 
     try {
       if ( data.writer != null ) {
+
         data.writer.flush();
 
         // If writing a ZIP or GZIP file not from a command, do not close the writer or else
@@ -705,12 +725,14 @@ public class TextFileOutput extends BaseStep implements StepInterface {
             logDebug( "Closing output stream" );
           }
           data.writer.close();
+
           if ( log.isDebug() ) {
             logDebug( "Closed output stream" );
           }
         }
       }
       data.writer = null;
+      removeMapEntry();
       if ( data.cmdProc != null ) {
         if ( log.isDebug() ) {
           logDebug( "Ending running external command" );
@@ -744,7 +766,6 @@ public class TextFileOutput extends BaseStep implements StepInterface {
           data.fos = null;
         }
       }
-
       retval = true;
     } catch ( Exception e ) {
       logError( "Exception trying to close file: " + e.toString() );
@@ -753,6 +774,19 @@ public class TextFileOutput extends BaseStep implements StepInterface {
     }
 
     return retval;
+  }
+
+  public boolean removeMapEntry() {
+    if ( meta != null ) {
+      String filename = buildFilename( environmentSubstitute( meta.getFileName() ), true );
+      if ( data.fileWriterMap != null ) {
+        return ( data.fileWriterMap.remove( filename ) != null );
+      } else {
+        return false;
+      }
+    } else {
+      return false;
+    }
   }
 
   public boolean checkPreviouslyOpened( String filename ) {
