@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -131,7 +131,7 @@ public class PartitionSchemaDialog extends Dialog {
     Shell parent = getParent();
     shell = new Shell( parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN );
     props.setLook( shell );
-    shell.setImage( GUIResource.getInstance().getImageFolderConnections() );
+    shell.setImage( GUIResource.getInstance().getImageSpoon() );
 
     lsMod = new ModifyListener() {
       public void modifyText( ModifyEvent e ) {
