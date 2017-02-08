@@ -1174,6 +1174,8 @@ public interface DatabaseInterface extends Cloneable {
    /**
    * Set default options for this database
    */
-  public void addDefaultOptions();
+  default void addDefaultOptions() {
+    // Default implementation does nothing
+  }
 
 }
