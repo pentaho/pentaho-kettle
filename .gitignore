@@ -1,3 +1,4 @@
+out/
 bin/
 dist/
 js-lib/
@@ -12,6 +13,7 @@ override.properties
 testdata.log
 testdata.properties
 testdata.script
+.idea/
 .classpath
 .project
 projects/
@@ -25,3 +27,4 @@ build-res/module-scripts/
 *.ipr
 /.idea/
 /*.launch
+package-pom.xml
