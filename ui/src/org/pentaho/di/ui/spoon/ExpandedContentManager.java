@@ -44,8 +44,12 @@ public final class ExpandedContentManager {
 
   static Supplier<Spoon> spoonSupplier = Spoon::getInstance;
 
-  // The setUrl on the Browser Object does not change (only hash changes) the current url and we have to keep the last
-  // opened url manually.
+  /**
+   * The value of the most recent URL navigated to.
+   * Storing this value is useful because in some Operating Systems the internal browser implementations used via the
+   * SWT browser widget seem to always return the same URL when a new value is set that only contains changes in its
+   * hash section.
+   */
   static String lastNavigateURL;
 
   /**
