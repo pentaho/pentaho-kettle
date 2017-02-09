@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -26,6 +26,7 @@ import java.util.Date;
 
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.util.Utils;
 
 public class ValueMetaDate extends ValueMetaBase implements ValueMetaInterface {
 
@@ -58,5 +59,15 @@ public class ValueMetaDate extends ValueMetaBase implements ValueMetaInterface {
   @Override
   public Class<?> getNativeDataTypeClass() throws KettleValueException {
     return Date.class;
+  }
+
+  @Override
+  public String getFormatMask() {
+    String mask = this.conversionMask;
+    if ( Utils.isEmpty( mask ) ) {
+      mask = DEFAULT_DATE_FORMAT_MASK;
+    }
+
+    return mask;
   }
 }

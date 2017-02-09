@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,6 +24,7 @@ package org.pentaho.di.core.row.value;
 
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.util.Utils;
 
 public class ValueMetaInteger extends ValueMetaBase implements ValueMetaInterface {
 
@@ -47,5 +48,42 @@ public class ValueMetaInteger extends ValueMetaBase implements ValueMetaInterfac
   @Override
   public Class<?> getNativeDataTypeClass() throws KettleValueException {
     return Long.class;
+  }
+
+  @Override
+  public String getFormatMask() {
+    String integerMask = this.conversionMask;
+
+    if ( Utils.isEmpty( integerMask ) ) {
+      if ( this.isLengthInvalidOrZero() ) {
+        integerMask = DEFAULT_INTEGER_FORMAT_MASK;
+        // as
+        // before
+        // version
+        // 3.0
+      } else {
+        StringBuilder integerPattern = new StringBuilder();
+
+        // First the format for positive integers...
+        //
+        integerPattern.append( " " );
+        for ( int i = 0; i < getLength(); i++ ) {
+          integerPattern.append( '0' ); // all zeroes.
+        }
+        integerPattern.append( ";" );
+
+        // Then the format for the negative numbers...
+        //
+        integerPattern.append( "-" );
+        for ( int i = 0; i < getLength(); i++ ) {
+          integerPattern.append( '0' ); // all zeroes.
+        }
+
+        integerMask = integerPattern.toString();
+
+      }
+    }
+
+    return integerMask;
   }
 }

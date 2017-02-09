@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -26,6 +26,7 @@ import java.math.BigDecimal;
 
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.util.Utils;
 
 public class ValueMetaBigNumber extends ValueMetaBase implements ValueMetaInterface {
 
@@ -49,5 +50,20 @@ public class ValueMetaBigNumber extends ValueMetaBase implements ValueMetaInterf
   @Override
   public Class<?> getNativeDataTypeClass() throws KettleValueException {
     return BigDecimal.class;
+  }
+
+  @Override
+  public String getFormatMask() {
+    String bigNumberMask = this.conversionMask;
+
+    if ( Utils.isEmpty( bigNumberMask ) ) {
+      if ( this.isLengthInvalidOrZero() ) {
+        bigNumberMask = DEFAULT_BIG_NUMBER_FORMAT_MASK;
+      } else {
+        bigNumberMask = this.buildNumberPattern();
+      }
+    }
+
+    return bigNumberMask;
   }
 }

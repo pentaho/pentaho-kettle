@@ -78,13 +78,16 @@ import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.w3c.dom.Node;
 
-/**
- * @author jb
- */
 public class ValueMetaBase implements ValueMetaInterface {
 
   // region ValueMetaBase Attributes
   protected static Class<?> PKG = Const.class; // for i18n purposes, needed by Translator2
+
+  static final String DEFAULT_INTEGER_FORMAT_MASK = " ###############0;-###############0";
+
+  //TODO: this value was extracted from the code. Does it make sense to have the same mask for this types?
+  static final String DEFAULT_NUMBER_FORMAT_MASK = " ##########0.0########;-#########0.0########";
+  static final String DEFAULT_BIG_NUMBER_FORMAT_MASK = " ##########0.0########;-#########0.0########";
 
   public static final String DEFAULT_DATE_FORMAT_MASK = Const.NVL( EnvUtil
       .getSystemProperty( Const.KETTLE_DEFAULT_DATE_FORMAT ), "yyyy/MM/dd HH:mm:ss.SSS" );
@@ -171,6 +174,7 @@ public class ValueMetaBase implements ValueMetaInterface {
         BaseMessages.getString( PKG, "ValueMeta.TrimType.Left" ),
         BaseMessages.getString( PKG, "ValueMeta.TrimType.Right" ),
         BaseMessages.getString( PKG, "ValueMeta.TrimType.Both" ) };
+  // endregion
 
   public ValueMetaBase() {
     this( null, ValueMetaInterface.TYPE_NONE, -1, -1 );
@@ -495,6 +499,14 @@ public class ValueMetaBase implements ValueMetaInterface {
   }
 
   /**
+   *
+   * @return
+   */
+  boolean isLengthInvalidOrZero() {
+    return this.length < 1;
+  }
+
+  /**
    * @return the name
    */
   @Override
@@ -740,7 +752,7 @@ public class ValueMetaBase implements ValueMetaInterface {
     return this.collatorLocale;
   }
 
-   /**
+  /**
    * @ sets the collator Locale
    */
   @Override
@@ -752,7 +764,7 @@ public class ValueMetaBase implements ValueMetaInterface {
     }
   }
 
-    /**
+  /**
    * @get the collatorStrength
    */
   @Override
@@ -1020,12 +1032,7 @@ public class ValueMetaBase implements ValueMetaInterface {
       // This may not become static as the class is not thread-safe!
       dateFormat = new SimpleDateFormat();
 
-      String mask;
-      if ( Utils.isEmpty( conversionMask ) ) {
-        mask = DEFAULT_DATE_FORMAT_MASK;
-      } else {
-        mask = conversionMask;
-      }
+      String mask = this.getFormatMask();
 
       // Do we have a locale?
       //
@@ -1047,6 +1054,7 @@ public class ValueMetaBase implements ValueMetaInterface {
 
       dateFormatChanged = false;
     }
+
     return dateFormat;
   }
 
@@ -1101,85 +1109,50 @@ public class ValueMetaBase implements ValueMetaInterface {
 
   @Override
   public String getFormatMask() {
-    // Apply the conversion mask if we have one...
-    if ( !Utils.isEmpty( conversionMask ) ) {
-      return conversionMask;
+    String mask = null;
+
+    if ( !Utils.isEmpty( this.conversionMask ) ) {
+      mask = this.conversionMask;
     }
 
-    switch ( type ) {
-      case TYPE_INTEGER:
-        if ( length < 1 ) {
-          return " ###############0;-###############0"; // Same
-          // as
-          // before
-          // version
-          // 3.0
-        } else {
-          StringBuilder integerPattern = new StringBuilder();
+    return mask;
+  }
 
-          // First the format for positive integers...
-          //
-          integerPattern.append( " " );
-          for ( int i = 0; i < getLength(); i++ ) {
-            integerPattern.append( '0' ); // all zeroes.
-          }
-          integerPattern.append( ";" );
+  String buildNumberPattern() {
+    StringBuilder numberPattern = new StringBuilder();
 
-          // Then the format for the negative numbers...
-          //
-          integerPattern.append( "-" );
-          for ( int i = 0; i < getLength(); i++ ) {
-            integerPattern.append( '0' ); // all zeroes.
-          }
-
-          return integerPattern.toString();
-        }
-
-      case TYPE_BIGNUMBER:
-      case TYPE_NUMBER:
-        if ( length < 1 ) {
-          return " ##########0.0########;-#########0.0########";
-        } else {
-          StringBuilder numberPattern = new StringBuilder();
-
-          // First do the format for positive numbers...
-          //
-          numberPattern.append( ' ' ); // to compensate for minus sign.
-          if ( precision < 0 ) {
-            // Default: two decimals
-            for ( int i = 0; i < length; i++ ) {
-              numberPattern.append( '0' );
-            }
-            numberPattern.append( ".00" ); // for the .00
-          } else {
-            // Floating point format 00001234,56 --> (12,2)
-            for ( int i = 0; i <= length; i++ ) {
-              numberPattern.append( '0' ); // all zeroes.
-            }
-            int pos = length - precision + 1;
-            if ( pos >= 0 && pos < numberPattern.length() ) {
-              numberPattern.setCharAt( length - precision + 1, '.' ); // one
-              // 'comma'
-            }
-          }
-
-          // Now do the format for negative numbers...
-          //
-          StringBuilder negativePattern = new StringBuilder( numberPattern );
-          negativePattern.setCharAt( 0, '-' );
-
-          numberPattern.append( ";" );
-          numberPattern.append( negativePattern );
-
-          // Return the pattern...
-          //
-          return numberPattern.toString();
-        }
-
-      default:
-        return null;
+    // First do the format for positive numbers...
+    //
+    numberPattern.append( ' ' ); // to compensate for minus sign.
+    if ( precision < 0 ) {
+      // Default: two decimals
+      for ( int i = 0; i < length; i++ ) {
+        numberPattern.append( '0' );
+      }
+      numberPattern.append( ".00" ); // for the .00
+    } else {
+      // Floating point format 00001234,56 --> (12,2)
+      for ( int i = 0; i <= length; i++ ) {
+        numberPattern.append( '0' ); // all zeroes.
+      }
+      int pos = length - precision + 1;
+      if ( pos >= 0 && pos < numberPattern.length() ) {
+        numberPattern.setCharAt( length - precision + 1, '.' ); // one
+        // 'comma'
+      }
     }
 
+    // Now do the format for negative numbers...
+    //
+    StringBuilder negativePattern = new StringBuilder( numberPattern );
+    negativePattern.setCharAt( 0, '-' );
+
+    numberPattern.append( ";" );
+    numberPattern.append( negativePattern );
+
+    // Return the pattern...
+    //
+    return numberPattern.toString();
   }
 
   protected synchronized String convertIntegerToString( Long integer ) throws KettleValueException {

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,6 +24,7 @@ package org.pentaho.di.core.row.value;
 
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.util.Utils;
 
 public class ValueMetaNumber extends ValueMetaBase implements ValueMetaInterface {
 
@@ -47,5 +48,20 @@ public class ValueMetaNumber extends ValueMetaBase implements ValueMetaInterface
   @Override
   public Class<?> getNativeDataTypeClass() throws KettleValueException {
     return Double.class;
+  }
+
+  @Override
+  public String getFormatMask() {
+    String numberMask = this.conversionMask;
+
+    if ( Utils.isEmpty( numberMask ) ) {
+      if ( this.isLengthInvalidOrZero() ) {
+        numberMask = DEFAULT_NUMBER_FORMAT_MASK;
+      } else {
+        numberMask = this.buildNumberPattern();
+      }
+    }
+
+    return numberMask;
   }
 }
