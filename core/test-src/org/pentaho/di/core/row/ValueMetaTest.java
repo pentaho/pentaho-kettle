@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -29,16 +29,16 @@ import java.util.TimeZone;
 
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.plugins.PluginRegistry;
+
+import junit.framework.TestCase;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
+import org.pentaho.di.core.row.value.ValueMetaNumber;
 import org.pentaho.di.core.row.value.ValueMetaPluginType;
 import org.pentaho.di.core.row.value.ValueMetaString;
 
-import junit.framework.TestCase;
-
 /**
  * Test functionality in ValueMeta
- *
- * @author sboden
  */
 @SuppressWarnings( "deprecation" )
 public class ValueMetaTest extends TestCase {
@@ -114,7 +114,7 @@ public class ValueMetaTest extends TestCase {
   }
 
   public void testIntegerToStringToInteger() throws Exception {
-    ValueMetaInterface intValueMeta = new ValueMeta( "i", ValueMetaInterface.TYPE_INTEGER );
+    ValueMetaInterface intValueMeta = new ValueMetaInteger( "i" );
     intValueMeta.setConversionMask( null );
     intValueMeta.setLength( 7 );
 
@@ -133,7 +133,7 @@ public class ValueMetaTest extends TestCase {
   }
 
   public void testNumberToStringToNumber() throws Exception {
-    ValueMetaInterface numValueMeta = new ValueMeta( "i", ValueMetaInterface.TYPE_NUMBER );
+    ValueMetaInterface numValueMeta = new ValueMetaNumber( "i" );
     numValueMeta.setConversionMask( null );
     numValueMeta.setLength( 7, 3 );
     numValueMeta.setDecimalSymbol( "," );
@@ -379,7 +379,7 @@ public class ValueMetaTest extends TestCase {
    */
   public void testLazyConversionInteger() throws Exception {
     byte[] data = ( "1234" ).getBytes();
-    ValueMetaInterface intValueMeta = new ValueMeta( "i", ValueMetaInterface.TYPE_INTEGER );
+    ValueMetaInterface intValueMeta = new ValueMetaInteger( "i" );
     intValueMeta.setConversionMask( null );
     intValueMeta.setLength( 7 );
     intValueMeta.setStorageType( ValueMetaInterface.STORAGE_TYPE_BINARY_STRING );
@@ -408,7 +408,7 @@ public class ValueMetaTest extends TestCase {
    */
   public void testLazyConversionNumber() throws Exception {
     byte[] data = ( "1,234.56" ).getBytes();
-    ValueMetaInterface numValueMeta = new ValueMeta( "i", ValueMetaInterface.TYPE_NUMBER );
+    ValueMetaInterface numValueMeta = new ValueMetaNumber( "i" );
     numValueMeta.setConversionMask( null );
 
     // The representation formatting options.
