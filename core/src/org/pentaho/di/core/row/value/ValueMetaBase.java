@@ -78,11 +78,16 @@ import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.w3c.dom.Node;
 
-/**
- * @author jb
- */
 public class ValueMetaBase implements ValueMetaInterface {
+
+  // region ValueMetaBase Attributes
   protected static Class<?> PKG = Const.class; // for i18n purposes, needed by Translator2
+
+  static final String DEFAULT_INTEGER_FORMAT_MASK = " ###############0;-###############0";
+
+  //TODO: this value was extracted from the code. Does it make sense to have the same mask for this types?
+  static final String DEFAULT_NUMBER_FORMAT_MASK = " ##########0.0########;-#########0.0########";
+  static final String DEFAULT_BIG_NUMBER_FORMAT_MASK = " ##########0.0########;-#########0.0########";
 
   public static final String DEFAULT_DATE_FORMAT_MASK = Const.NVL( EnvUtil
       .getSystemProperty( Const.KETTLE_DEFAULT_DATE_FORMAT ), "yyyy/MM/dd HH:mm:ss.SSS" );
@@ -169,6 +174,7 @@ public class ValueMetaBase implements ValueMetaInterface {
         BaseMessages.getString( PKG, "ValueMeta.TrimType.Left" ),
         BaseMessages.getString( PKG, "ValueMeta.TrimType.Right" ),
         BaseMessages.getString( PKG, "ValueMeta.TrimType.Both" ) };
+  // endregion
 
   public ValueMetaBase() {
     this( null, ValueMetaInterface.TYPE_NONE, -1, -1 );
@@ -180,20 +186,6 @@ public class ValueMetaBase implements ValueMetaInterface {
 
   public ValueMetaBase( String name, int type ) {
     this( name, type, -1, -1 );
-  }
-
-  /**
-   * @deprecated use {@link #ValueMetaBase(String, int)} and {@link #setStorageType(int)} instead
-   *
-   * @param name
-   * @param type
-   * @param storageType
-   */
-  @Deprecated
-  public ValueMetaBase( String name, int type, int storageType ) {
-    this( name, type, -1, -1 );
-    this.storageType = storageType;
-    setDefaultConversionMask();
   }
 
   public ValueMetaBase( String name, int type, int length, int precision ) {
@@ -215,13 +207,142 @@ public class ValueMetaBase implements ValueMetaInterface {
     this.identicalFormat = true;
     this.bigNumberFormatting = true;
     this.lenientStringToNumber =
-        convertStringToBoolean( Const.NVL( System.getProperty( Const.KETTLE_LENIENT_STRING_TO_NUMBER_CONVERSION, "N" ),
-            "N" ) );
+      convertStringToBoolean( Const.NVL( System.getProperty( Const.KETTLE_LENIENT_STRING_TO_NUMBER_CONVERSION, "N" ),
+        "N" ) );
     this.ignoreTimezone =
-        convertStringToBoolean( Const.NVL( System.getProperty( Const.KETTLE_COMPATIBILITY_DB_IGNORE_TIMEZONE, "N" ),
-            "N" ) );
+      convertStringToBoolean( Const.NVL( System.getProperty( Const.KETTLE_COMPATIBILITY_DB_IGNORE_TIMEZONE, "N" ),
+        "N" ) );
 
     determineSingleByteEncoding();
+    setDefaultConversionMask();
+  }
+
+  public ValueMetaBase( Node node ) throws KettleException {
+    this();
+
+    type = getType( XMLHandler.getTagValue( node, "type" ) );
+    storageType = getStorageType( XMLHandler.getTagValue( node, "storagetype" ) );
+
+    switch ( storageType ) {
+      case STORAGE_TYPE_INDEXED:
+        Node indexNode = XMLHandler.getSubNode( node, "index" );
+        int nrIndexes = XMLHandler.countNodes( indexNode, "value" );
+        index = new Object[nrIndexes];
+
+        for ( int i = 0; i < index.length; i++ ) {
+          Node valueNode = XMLHandler.getSubNodeByNr( indexNode, "value", i );
+          String valueString = XMLHandler.getNodeValue( valueNode );
+          if ( Utils.isEmpty( valueString ) ) {
+            index[i] = null;
+          } else {
+            switch ( type ) {
+              case TYPE_STRING:
+                index[i] = valueString;
+                break;
+              case TYPE_NUMBER:
+                index[i] = Double.parseDouble( valueString );
+                break;
+              case TYPE_INTEGER:
+                index[i] = Long.parseLong( valueString );
+                break;
+              case TYPE_DATE:
+                index[i] = XMLHandler.stringToDate( valueString );
+                break;
+              case TYPE_BIGNUMBER:
+                index[i] = new BigDecimal( valueString );
+                break;
+              case TYPE_BOOLEAN:
+                index[i] = Boolean.valueOf( "Y".equalsIgnoreCase( valueString ) );
+                break;
+              case TYPE_BINARY:
+                index[i] = XMLHandler.stringToBinary( valueString );
+                break;
+              default:
+                throw new KettleException( toString()
+                  + " : Unable to de-serialize indexe storage type from XML for data type " + getType() );
+            }
+          }
+        }
+        break;
+
+      case STORAGE_TYPE_BINARY_STRING:
+        // Load the storage meta data...
+        //
+        Node storageMetaNode = XMLHandler.getSubNode( node, "storage-meta" );
+        Node storageValueMetaNode = XMLHandler.getSubNode( storageMetaNode, XML_META_TAG );
+        if ( storageValueMetaNode != null ) {
+          storageMetadata = new ValueMetaBase( storageValueMetaNode );
+        }
+        break;
+
+      default:
+        break;
+    }
+
+    name = XMLHandler.getTagValue( node, "name" );
+    length = Integer.parseInt( XMLHandler.getTagValue( node, "length" ) );
+    precision = Integer.parseInt( XMLHandler.getTagValue( node, "precision" ) );
+    origin = XMLHandler.getTagValue( node, "origin" );
+    comments = XMLHandler.getTagValue( node, "comments" );
+    conversionMask = XMLHandler.getTagValue( node, "conversion_Mask" );
+    decimalSymbol = XMLHandler.getTagValue( node, "decimal_symbol" );
+    groupingSymbol = XMLHandler.getTagValue( node, "grouping_symbol" );
+    currencySymbol = XMLHandler.getTagValue( node, "currency_symbol" );
+    trimType = getTrimTypeByCode( XMLHandler.getTagValue( node, "trim_type" ) );
+    caseInsensitive = "Y".equalsIgnoreCase( XMLHandler.getTagValue( node, "case_insensitive" ) );
+    collatorDisabled = "Y".equalsIgnoreCase( XMLHandler.getTagValue( node, "collator_disabled" ) );
+    if ( XMLHandler.getTagValue( node, "collator_strength" ) != null ) {
+      collatorStrength = Integer.parseInt( XMLHandler.getTagValue( node, "collator_strength" ) );
+    }
+    sortedDescending = "Y".equalsIgnoreCase( XMLHandler.getTagValue( node, "sort_descending" ) );
+    outputPaddingEnabled = "Y".equalsIgnoreCase( XMLHandler.getTagValue( node, "output_padding" ) );
+    dateFormatLenient = "Y".equalsIgnoreCase( XMLHandler.getTagValue( node, "date_format_lenient" ) );
+    String dateFormatLocaleString = XMLHandler.getTagValue( node, "date_format_locale" );
+    if ( !Utils.isEmpty( dateFormatLocaleString ) ) {
+      dateFormatLocale = EnvUtil.createLocale( dateFormatLocaleString );
+    }
+    String dateTimeZoneString = XMLHandler.getTagValue( node, "date_format_timezone" );
+    if ( !Utils.isEmpty( dateTimeZoneString ) ) {
+      dateFormatTimeZone = EnvUtil.createTimeZone( dateTimeZoneString );
+    } else {
+      dateFormatTimeZone = TimeZone.getDefault();
+    }
+    lenientStringToNumber = "Y".equalsIgnoreCase( XMLHandler.getTagValue( node, "lenient_string_to_number" ) );
+  }
+
+  /**
+   * Create a new Value meta object.
+   *
+   * @param inputStream
+   * @throws KettleFileException
+   * @throws KettleEOFException
+   * @deprecated in favor of a combination of {@link ValueMetaFactory}.createValueMeta() and the loadMetaData() method.
+   */
+  @Deprecated
+  public ValueMetaBase( DataInputStream inputStream ) throws KettleFileException, KettleEOFException {
+    this();
+    try {
+      type = inputStream.readInt();
+    } catch ( EOFException e ) {
+      throw new KettleEOFException( e );
+    } catch ( IOException e ) {
+      throw new KettleFileException( toString() + " : Unable to read value metadata from input stream", e );
+    }
+
+    readMetaData( inputStream );
+  }
+
+  /**
+   * @deprecated use {@link #ValueMetaBase(String, int)} and {@link #setStorageType(int)} instead
+   *
+   * @param name
+   * @param type
+   * @param storageType
+   */
+  @Deprecated
+  public ValueMetaBase( String name, int type, int storageType ) {
+    this( name, type, -1, -1 );
+    this.storageType = storageType;
     setDefaultConversionMask();
   }
 
@@ -375,6 +496,14 @@ public class ValueMetaBase implements ValueMetaInterface {
   public void setLength( int length, int precision ) {
     this.length = length;
     this.precision = precision;
+  }
+
+  /**
+   *
+   * @return
+   */
+  boolean isLengthInvalidOrZero() {
+    return this.length < 1;
   }
 
   /**
@@ -623,7 +752,7 @@ public class ValueMetaBase implements ValueMetaInterface {
     return this.collatorLocale;
   }
 
-   /**
+  /**
    * @ sets the collator Locale
    */
   @Override
@@ -635,7 +764,7 @@ public class ValueMetaBase implements ValueMetaInterface {
     }
   }
 
-    /**
+  /**
    * @get the collatorStrength
    */
   @Override
@@ -903,12 +1032,7 @@ public class ValueMetaBase implements ValueMetaInterface {
       // This may not become static as the class is not thread-safe!
       dateFormat = new SimpleDateFormat();
 
-      String mask;
-      if ( Utils.isEmpty( conversionMask ) ) {
-        mask = DEFAULT_DATE_FORMAT_MASK;
-      } else {
-        mask = conversionMask;
-      }
+      String mask = this.getFormatMask();
 
       // Do we have a locale?
       //
@@ -930,6 +1054,7 @@ public class ValueMetaBase implements ValueMetaInterface {
 
       dateFormatChanged = false;
     }
+
     return dateFormat;
   }
 
@@ -984,85 +1109,50 @@ public class ValueMetaBase implements ValueMetaInterface {
 
   @Override
   public String getFormatMask() {
-    // Apply the conversion mask if we have one...
-    if ( !Utils.isEmpty( conversionMask ) ) {
-      return conversionMask;
+    String mask = null;
+
+    if ( !Utils.isEmpty( this.conversionMask ) ) {
+      mask = this.conversionMask;
     }
 
-    switch ( type ) {
-      case TYPE_INTEGER:
-        if ( length < 1 ) {
-          return " ###############0;-###############0"; // Same
-          // as
-          // before
-          // version
-          // 3.0
-        } else {
-          StringBuilder integerPattern = new StringBuilder();
+    return mask;
+  }
 
-          // First the format for positive integers...
-          //
-          integerPattern.append( " " );
-          for ( int i = 0; i < getLength(); i++ ) {
-            integerPattern.append( '0' ); // all zeroes.
-          }
-          integerPattern.append( ";" );
+  String buildNumberPattern() {
+    StringBuilder numberPattern = new StringBuilder();
 
-          // Then the format for the negative numbers...
-          //
-          integerPattern.append( "-" );
-          for ( int i = 0; i < getLength(); i++ ) {
-            integerPattern.append( '0' ); // all zeroes.
-          }
-
-          return integerPattern.toString();
-        }
-
-      case TYPE_BIGNUMBER:
-      case TYPE_NUMBER:
-        if ( length < 1 ) {
-          return " ##########0.0########;-#########0.0########";
-        } else {
-          StringBuilder numberPattern = new StringBuilder();
-
-          // First do the format for positive numbers...
-          //
-          numberPattern.append( ' ' ); // to compensate for minus sign.
-          if ( precision < 0 ) {
-            // Default: two decimals
-            for ( int i = 0; i < length; i++ ) {
-              numberPattern.append( '0' );
-            }
-            numberPattern.append( ".00" ); // for the .00
-          } else {
-            // Floating point format 00001234,56 --> (12,2)
-            for ( int i = 0; i <= length; i++ ) {
-              numberPattern.append( '0' ); // all zeroes.
-            }
-            int pos = length - precision + 1;
-            if ( pos >= 0 && pos < numberPattern.length() ) {
-              numberPattern.setCharAt( length - precision + 1, '.' ); // one
-              // 'comma'
-            }
-          }
-
-          // Now do the format for negative numbers...
-          //
-          StringBuilder negativePattern = new StringBuilder( numberPattern );
-          negativePattern.setCharAt( 0, '-' );
-
-          numberPattern.append( ";" );
-          numberPattern.append( negativePattern );
-
-          // Return the pattern...
-          //
-          return numberPattern.toString();
-        }
-
-      default:
-        return null;
+    // First do the format for positive numbers...
+    //
+    numberPattern.append( ' ' ); // to compensate for minus sign.
+    if ( precision < 0 ) {
+      // Default: two decimals
+      for ( int i = 0; i < length; i++ ) {
+        numberPattern.append( '0' );
+      }
+      numberPattern.append( ".00" ); // for the .00
+    } else {
+      // Floating point format 00001234,56 --> (12,2)
+      for ( int i = 0; i <= length; i++ ) {
+        numberPattern.append( '0' ); // all zeroes.
+      }
+      int pos = length - precision + 1;
+      if ( pos >= 0 && pos < numberPattern.length() ) {
+        numberPattern.setCharAt( length - precision + 1, '.' ); // one
+        // 'comma'
+      }
     }
 
+    // Now do the format for negative numbers...
+    //
+    StringBuilder negativePattern = new StringBuilder( numberPattern );
+    negativePattern.setCharAt( 0, '-' );
+
+    numberPattern.append( ";" );
+    numberPattern.append( negativePattern );
+
+    // Return the pattern...
+    //
+    return numberPattern.toString();
   }
 
   protected synchronized String convertIntegerToString( Long integer ) throws KettleValueException {
@@ -2829,28 +2919,6 @@ public class ValueMetaBase implements ValueMetaInterface {
   }
 
   /**
-   * Create a new Value meta object.
-   *
-   * @param inputStream
-   * @throws KettleFileException
-   * @throws KettleEOFException
-   * @deprecated in favor of a combination of {@link ValueMetaFactory}.createValueMeta() and the loadMetaData() method.
-   */
-  @Deprecated
-  public ValueMetaBase( DataInputStream inputStream ) throws KettleFileException, KettleEOFException {
-    this();
-    try {
-      type = inputStream.readInt();
-    } catch ( EOFException e ) {
-      throw new KettleEOFException( e );
-    } catch ( IOException e ) {
-      throw new KettleFileException( toString() + " : Unable to read value metadata from input stream", e );
-    }
-
-    readMetaData( inputStream );
-  }
-
-  /**
    * Load the attributes of this particular value meta object from the input stream. Loading the type is not handled
    * here, this should be read from the stream previously!
    *
@@ -3086,99 +3154,6 @@ public class ValueMetaBase implements ValueMetaInterface {
     xml.append( XMLHandler.closeTag( XML_META_TAG ) );
 
     return xml.toString();
-  }
-
-  public ValueMetaBase( Node node ) throws KettleException {
-    this();
-
-    type = getType( XMLHandler.getTagValue( node, "type" ) );
-    storageType = getStorageType( XMLHandler.getTagValue( node, "storagetype" ) );
-
-    switch ( storageType ) {
-      case STORAGE_TYPE_INDEXED:
-        Node indexNode = XMLHandler.getSubNode( node, "index" );
-        int nrIndexes = XMLHandler.countNodes( indexNode, "value" );
-        index = new Object[nrIndexes];
-
-        for ( int i = 0; i < index.length; i++ ) {
-          Node valueNode = XMLHandler.getSubNodeByNr( indexNode, "value", i );
-          String valueString = XMLHandler.getNodeValue( valueNode );
-          if ( Utils.isEmpty( valueString ) ) {
-            index[i] = null;
-          } else {
-            switch ( type ) {
-              case TYPE_STRING:
-                index[i] = valueString;
-                break;
-              case TYPE_NUMBER:
-                index[i] = Double.parseDouble( valueString );
-                break;
-              case TYPE_INTEGER:
-                index[i] = Long.parseLong( valueString );
-                break;
-              case TYPE_DATE:
-                index[i] = XMLHandler.stringToDate( valueString );
-                break;
-              case TYPE_BIGNUMBER:
-                index[i] = new BigDecimal( valueString );
-                break;
-              case TYPE_BOOLEAN:
-                index[i] = Boolean.valueOf( "Y".equalsIgnoreCase( valueString ) );
-                break;
-              case TYPE_BINARY:
-                index[i] = XMLHandler.stringToBinary( valueString );
-                break;
-              default:
-                throw new KettleException( toString()
-                    + " : Unable to de-serialize indexe storage type from XML for data type " + getType() );
-            }
-          }
-        }
-        break;
-
-      case STORAGE_TYPE_BINARY_STRING:
-        // Load the storage meta data...
-        //
-        Node storageMetaNode = XMLHandler.getSubNode( node, "storage-meta" );
-        Node storageValueMetaNode = XMLHandler.getSubNode( storageMetaNode, XML_META_TAG );
-        if ( storageValueMetaNode != null ) {
-          storageMetadata = new ValueMetaBase( storageValueMetaNode );
-        }
-        break;
-
-      default:
-        break;
-    }
-
-    name = XMLHandler.getTagValue( node, "name" );
-    length = Integer.parseInt( XMLHandler.getTagValue( node, "length" ) );
-    precision = Integer.parseInt( XMLHandler.getTagValue( node, "precision" ) );
-    origin = XMLHandler.getTagValue( node, "origin" );
-    comments = XMLHandler.getTagValue( node, "comments" );
-    conversionMask = XMLHandler.getTagValue( node, "conversion_Mask" );
-    decimalSymbol = XMLHandler.getTagValue( node, "decimal_symbol" );
-    groupingSymbol = XMLHandler.getTagValue( node, "grouping_symbol" );
-    currencySymbol = XMLHandler.getTagValue( node, "currency_symbol" );
-    trimType = getTrimTypeByCode( XMLHandler.getTagValue( node, "trim_type" ) );
-    caseInsensitive = "Y".equalsIgnoreCase( XMLHandler.getTagValue( node, "case_insensitive" ) );
-    collatorDisabled = "Y".equalsIgnoreCase( XMLHandler.getTagValue( node, "collator_disabled" ) );
-    if ( XMLHandler.getTagValue( node, "collator_strength" ) != null ) {
-      collatorStrength = Integer.parseInt( XMLHandler.getTagValue( node, "collator_strength" ) );
-    }
-    sortedDescending = "Y".equalsIgnoreCase( XMLHandler.getTagValue( node, "sort_descending" ) );
-    outputPaddingEnabled = "Y".equalsIgnoreCase( XMLHandler.getTagValue( node, "output_padding" ) );
-    dateFormatLenient = "Y".equalsIgnoreCase( XMLHandler.getTagValue( node, "date_format_lenient" ) );
-    String dateFormatLocaleString = XMLHandler.getTagValue( node, "date_format_locale" );
-    if ( !Utils.isEmpty( dateFormatLocaleString ) ) {
-      dateFormatLocale = EnvUtil.createLocale( dateFormatLocaleString );
-    }
-    String dateTimeZoneString = XMLHandler.getTagValue( node, "date_format_timezone" );
-    if ( !Utils.isEmpty( dateTimeZoneString ) ) {
-      dateFormatTimeZone = EnvUtil.createTimeZone( dateTimeZoneString );
-    } else {
-      dateFormatTimeZone = TimeZone.getDefault();
-    }
-    lenientStringToNumber = "Y".equalsIgnoreCase( XMLHandler.getTagValue( node, "lenient_string_to_number" ) );
   }
 
   @Override
