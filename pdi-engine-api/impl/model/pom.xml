@@ -22,10 +22,5 @@
       <artifactId>guava</artifactId>
       <version>${guava.dependency.version}</version>
     </dependency>
-    <dependency>
-      <groupId>pentaho-kettle</groupId>
-      <artifactId>kettle-core</artifactId>
-      <version>7.0-SNAPSHOT</version>
-    </dependency>
   </dependencies>
 </project>

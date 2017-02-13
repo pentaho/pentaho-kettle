@@ -169,10 +169,6 @@
     <dependency org="${dependency.reporting-engine.group}" name="pentaho-reporting-engine-legacy-functions" rev="${dependency.pentaho-reporting.revision}" transitive="true" changing="true"/>
     <dependency org="${dependency.reporting-engine.group}" name="pentaho-reporting-engine-wizard-core"  rev="${dependency.pentaho-reporting.revision}" changing="true" transitive="true"/>
 
-
-    <!-- Spark Main -->
-    <dependency org="org.pentaho" name="pdi-spark-driver" rev="${project.revision}" transitive="true"/>
-
     <!--  OSS Licenses file -->
     <dependency org="pentaho" name="oss-licenses" rev="${dependency.oss-licenses.revision}" conf="oss-licenses->default">
       <artifact name="oss-licenses" type="zip" />
