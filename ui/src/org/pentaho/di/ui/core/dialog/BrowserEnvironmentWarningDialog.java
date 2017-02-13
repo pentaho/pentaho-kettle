@@ -25,6 +25,8 @@ package org.pentaho.di.ui.core.dialog;
 import java.awt.Desktop;
 import java.net.URI;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FormAttachment;
@@ -100,6 +102,7 @@ public class BrowserEnvironmentWarningDialog extends Dialog {
         BaseMessages.getString( PKG, "BrowserEnvironmentWarningDialog.Title" ),
         BaseMessages.getString( PKG, "BrowserEnvironmentWarningDialog.Message.Mac" ),
         BaseMessages.getString( PKG, "BrowserEnvironmentWarningDialog.HelpLink" ),
+        EnvironmentCase.MAC_OS_X,
         MAX_TEXT_WIDTH_MAC );
   }
 
@@ -108,6 +111,7 @@ public class BrowserEnvironmentWarningDialog extends Dialog {
         BaseMessages.getString( PKG, "BrowserEnvironmentWarningDialog.Title.Ubuntu" ),
         BaseMessages.getString( PKG, "BrowserEnvironmentWarningDialog.Message.Ubuntu" ),
         BaseMessages.getString( PKG, "BrowserEnvironmentWarningDialog.HelpLink.Ubuntu" ),
+        EnvironmentCase.UBUNTU,
         MAX_TEXT_WIDTH_UBUNTU );
   }
 
@@ -116,6 +120,7 @@ public class BrowserEnvironmentWarningDialog extends Dialog {
         BaseMessages.getString( PKG, "BrowserEnvironmentWarningDialog.Title" ),
         BaseMessages.getString( PKG, "BrowserEnvironmentWarningDialog.Message.Windows" ),
         BaseMessages.getString( PKG, "BrowserEnvironmentWarningDialog.HelpLink" ),
+        EnvironmentCase.WINDOWS,
         MAX_TEXT_WIDTH_WINDOWS );
   }
 
@@ -124,6 +129,7 @@ public class BrowserEnvironmentWarningDialog extends Dialog {
         BaseMessages.getString( PKG, "BrowserEnvironmentWarningDialog.Title" ),
         BaseMessages.getString( PKG, "BrowserEnvironmentWarningDialog.Message.Mac.Thin" ),
         BaseMessages.getString( PKG, "BrowserEnvironmentWarningDialog.HelpLink" ),
+        EnvironmentCase.MAC_OS_X_THIN,
         MAX_TEXT_WIDTH_MAC );
   }
 
@@ -132,6 +138,7 @@ public class BrowserEnvironmentWarningDialog extends Dialog {
         BaseMessages.getString( PKG, "BrowserEnvironmentWarningDialog.Title.Ubuntu" ),
         BaseMessages.getString( PKG, "BrowserEnvironmentWarningDialog.Message.Ubuntu.Thin" ),
         BaseMessages.getString( PKG, "BrowserEnvironmentWarningDialog.HelpLink.Ubuntu" ),
+        EnvironmentCase.UBUNTU_THIN,
         MAX_TEXT_WIDTH_UBUNTU );
   }
 
@@ -140,6 +147,7 @@ public class BrowserEnvironmentWarningDialog extends Dialog {
         BaseMessages.getString( PKG, "BrowserEnvironmentWarningDialog.Title" ),
         BaseMessages.getString( PKG, "BrowserEnvironmentWarningDialog.Message.Windows.Thin" ),
         BaseMessages.getString( PKG, "BrowserEnvironmentWarningDialog.HelpLink" ),
+        EnvironmentCase.WINDOWS_THIN,
         MAX_TEXT_WIDTH_WINDOWS );
   }
 
@@ -153,7 +161,8 @@ public class BrowserEnvironmentWarningDialog extends Dialog {
    * @param helpLink a string that contains a hyperlink to a help web page.
    * @param maxTextWidth the width for the text inside the dialog.
    */
-  private void showWarningDialog( String title, String message, String helpLink, int maxTextWidth )  {
+  private void showWarningDialog( String title, String message, String helpLink, EnvironmentCase environment,
+                                  int maxTextWidth )  {
     if ( this.getParent().isDisposed() ) {
       return;
     }
@@ -171,7 +180,7 @@ public class BrowserEnvironmentWarningDialog extends Dialog {
     shell.setText( title ); //setting title of the window
     setWarningIcon( display ); //adding icon
     setWarningText( message, maxTextWidth ); //adding text
-    setHelpLink( helpLink, maxTextWidth ); //adding link
+    setHelpLink( display, helpLink, maxTextWidth, environment ); //adding link
     setCloseButton(); //adding button
 
     shell.setSize( shell.computeSize( SWT.DEFAULT, SWT.DEFAULT, true ) );
@@ -211,9 +220,14 @@ public class BrowserEnvironmentWarningDialog extends Dialog {
     props.setLook( description );
   }
 
-  private void setHelpLink( String helpLink, int maxTextWidth ) {
+  private void setHelpLink( Display display, String helpLink, int maxTextWidth, EnvironmentCase environment ) {
     link = new Link( shell, SWT.SINGLE | SWT.WRAP );
     link.setText( helpLink );
+    if ( environment == EnvironmentCase.MAC_OS_X || environment == EnvironmentCase.MAC_OS_X_THIN ) {
+      FontData[] fD = link.getFont().getFontData();
+      fD[0].setHeight( 13 );
+      link.setFont( new Font( display, fD[0] ) );
+    }
     FormData fdlink = new FormData();
     fdlink.left = new FormAttachment( warningIcon, margin ); // Link should be below description right of icon
     fdlink.top = new FormAttachment( description, margin );
