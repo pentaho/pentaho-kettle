@@ -24,8 +24,16 @@
 
 package org.pentaho.di.trans.ael.adapters;
 
+import com.google.common.base.Throwables;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.engine.api.model.Operation;
 import org.pentaho.di.engine.api.model.Transformation;
+import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.step.StepMeta;
+
+import java.util.function.Consumer;
+import java.util.stream.IntStream;
 
 public class TransMetaConverter {
 
@@ -40,7 +48,31 @@ public class TransMetaConverter {
       org.pentaho.di.engine.model.Operation operation = transformation.createOperation( stepMeta.getName() );
       operation.setConfig( STEP_META_CONF_KEY, stepMeta );
     } );
+    IntStream.iterate( 0, i -> i + 1 )
+      .limit( transMeta.nrTransHops() )
+      .mapToObj( transMeta::getTransHop  )
+      .forEach( createHop( transformation ) );
     transformation.setConfig( TRANS_META_CONF_KEY, transMeta );
+
     return transformation;
+  }
+
+  private static Consumer<TransHopMeta> createHop( org.pentaho.di.engine.model.Transformation transformation ) {
+    return hop -> {
+      try {
+        transformation.createHop(
+          getOp( transformation, hop.getFromStep() ), getOp( transformation, hop.getToStep() ) );
+      } catch ( KettleException e ) {
+        Throwables.propagate( e );
+      }
+    };
+  }
+
+  private static Operation getOp( org.pentaho.di.engine.model.Transformation transformation, StepMeta step )
+    throws KettleException {
+    return transformation.getOperations().stream()
+      .filter( op -> step.getName().equals( op.getId() ) )
+      .findFirst()
+      .orElseThrow( () -> new KettleException( "Could not find operation: " + step.getName() ) );
   }
 }
