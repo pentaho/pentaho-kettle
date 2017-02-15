@@ -1,5 +1,6 @@
 package org.pentaho.di.engine.api.remote;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 
@@ -42,5 +43,5 @@ public interface Execution<T extends Serializable> {
    *
    * @return Serialized stream of events
    */
-  InputStream eventStream();
+  InputStream eventStream() throws IOException;
 }
