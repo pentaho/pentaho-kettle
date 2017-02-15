@@ -24,6 +24,7 @@
 
 package org.pentaho.di.engine.api;
 
+import java.io.Serializable;
 import java.util.Map;
 import java.util.Optional;
 
@@ -32,9 +33,9 @@ import java.util.Optional;
  * Created by hudak on 1/17/17.
  */
 public interface HasConfig {
-  Map<String, Object> getConfig();
+  <T extends Serializable> Map<String, T> getConfig();
 
-  default Optional<Object> getConfig( String key ) {
+  default Optional<? extends Serializable> getConfig( String key ) {
     return Optional.ofNullable( getConfig().get( key ) );
   }
 
