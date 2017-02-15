@@ -1,5 +1,6 @@
 package org.pentaho.di.engine.api.remote;
 
+import java.io.Serializable;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
@@ -8,7 +9,7 @@ import java.util.concurrent.CompletableFuture;
  * <p>
  * Created by hudak on 2/7/17.
  */
-public interface ExecutionManager {
+public interface ExecutionManager extends Serializable {
   /**
    * @return common name this service's backing engine, e.g. "Spark"
    */

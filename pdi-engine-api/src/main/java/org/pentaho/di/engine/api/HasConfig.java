@@ -24,6 +24,7 @@
 
 package org.pentaho.di.engine.api;
 
+import java.io.Serializable;
 import java.util.Map;
 import java.util.Optional;
 
@@ -31,7 +32,7 @@ import java.util.Optional;
  * I can haz config?
  * Created by hudak on 1/17/17.
  */
-public interface HasConfig {
+public interface HasConfig extends Serializable {
   Map<String, Object> getConfig();
 
   default Optional<Object> getConfig( String key ) {

@@ -27,9 +27,11 @@ package org.pentaho.di.engine.api;
 
 import org.pentaho.di.engine.api.model.Transformation;
 
+import java.io.Serializable;
+
 /**
  * An Engine is responsible for executing an Transformation.
  */
-public interface Engine {
+public interface Engine extends Serializable {
   ExecutionContext prepare( Transformation trans );
 }

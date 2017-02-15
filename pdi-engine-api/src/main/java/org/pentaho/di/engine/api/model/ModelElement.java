@@ -25,10 +25,12 @@
 package org.pentaho.di.engine.api.model;
 
 
+import java.io.Serializable;
+
 /**
  * Created by nbaker on 1/19/17.
  */
-public interface ModelElement {
+public interface ModelElement extends Serializable {
 
   String getId();
 

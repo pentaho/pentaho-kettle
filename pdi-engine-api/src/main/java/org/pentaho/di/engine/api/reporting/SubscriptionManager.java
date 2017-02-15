@@ -38,7 +38,7 @@ import java.util.function.Consumer;
 /**
  * Created by hudak on 1/11/17.
  */
-public interface SubscriptionManager {
+public interface SubscriptionManager extends Serializable {
   <S extends LogicalModelElement, D extends Serializable>
     Publisher<PDIEvent<S, D>> eventStream( S source, Class<D> type );
 
