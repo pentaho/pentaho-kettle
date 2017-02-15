@@ -17,7 +17,7 @@ import java.io.Serializable;
  *
  * @param <T> Serialized event type
  */
-public interface Execution<T extends Serializable> {
+public interface Execution<T extends Serializable> extends Serializable {
   /**
    * @return original request for this execution
    */

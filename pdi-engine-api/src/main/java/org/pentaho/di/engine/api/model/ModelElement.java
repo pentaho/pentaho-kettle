@@ -22,14 +22,16 @@
  * *****************************************************************************
  */
 
-package org.pentaho.di.engine.api;
+package org.pentaho.di.engine.api.model;
 
 
-import org.pentaho.di.engine.api.model.Transformation;
+import java.io.Serializable;
 
 /**
- * An Engine is responsible for executing an Transformation.
+ * Created by nbaker on 1/19/17.
  */
-public interface Engine {
-  ExecutionContext prepare( Transformation trans );
+public interface ModelElement extends Serializable {
+
+  String getId();
+
 }

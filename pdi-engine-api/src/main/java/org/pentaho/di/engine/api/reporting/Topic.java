@@ -32,7 +32,7 @@ import java.util.Objects;
 /**
  * Created by hudak on 1/25/17.
  */
-public class Topic {
+public class Topic implements Serializable {
   private final LogicalModelElement source;
   private final Class<? extends Serializable> eventType;
 
