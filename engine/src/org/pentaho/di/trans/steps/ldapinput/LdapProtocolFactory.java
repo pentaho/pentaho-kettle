@@ -89,7 +89,7 @@ public class LdapProtocolFactory {
    */
   public LdapProtocol createLdapProtocol( VariableSpace variableSpace, LdapMeta meta,
     Collection<String> binaryAttributes ) throws KettleException {
-    String connectionType = meta.getProtocol();
+    String connectionType = environmentSubstitute( meta.getProtocol() );
 
     synchronized ( protocols ) {
       for ( Class<? extends LdapProtocol> protocol : protocols ) {
