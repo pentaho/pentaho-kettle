@@ -28,6 +28,7 @@ package org.pentaho.di.trans.ael.adapters;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.pentaho.di.engine.api.model.Transformation;
+import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
@@ -49,6 +50,23 @@ public class TransMetaConverterTest {
     assertThat( trans.getId(), is( meta.getName() ) );
     assertThat( trans.getOperations().size(), is( 1 ) );
     assertThat( trans.getOperations().get( 0 ).getId(), is( "stepName" ) );
+  }
+
+  @Test
+  public void transWithHops() {
+    TransMeta meta = new TransMeta();
+    meta.setName( "transName" );
+    StepMeta from = new StepMeta( "step1", null );
+    meta.addStep( from );
+    StepMeta to = new StepMeta( "step2", null );
+    meta.addStep( to );
+    meta.addTransHop( new TransHopMeta( from, to ) );
+    Transformation trans = TransMetaConverter.convert( meta );
+    assertThat( trans.getId(), is( meta.getName() ) );
+    assertThat( trans.getOperations().size(), is( 2 ) );
+    assertThat( trans.getHops().size(), is( 1 ) );
+    assertThat( trans.getHops().get( 0 ).getFrom().getId(), is( from.getName() ) );
+    assertThat( trans.getHops().get( 0 ).getTo().getId(), is( to.getName() ) );
   }
 
 }
