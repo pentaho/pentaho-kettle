@@ -26,6 +26,7 @@ package org.pentaho.di.engine.api.model;
 
 import org.pentaho.di.engine.api.HasConfig;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -36,7 +37,7 @@ import java.util.List;
  * which is associated with the behavior specific to
  * an Engine.
  */
-public interface Operation extends LogicalModelElement, HasConfig {
+public interface Operation extends LogicalModelElement, HasConfig, Serializable {
 
   List<Operation> getFrom();
   List<Operation> getTo();

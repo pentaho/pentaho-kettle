@@ -35,6 +35,8 @@ import java.util.Optional;
 public interface HasConfig extends Serializable {
   <T extends Serializable> Map<String, T> getConfig();
 
+  void setConfig( String key, Serializable value );
+
   default Optional<? extends Serializable> getConfig( String key ) {
     return Optional.ofNullable( getConfig().get( key ) );
   }

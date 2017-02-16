@@ -28,13 +28,14 @@ import org.pentaho.di.engine.api.converter.RowConversionManager;
 import org.pentaho.di.engine.api.model.Transformation;
 import org.pentaho.di.engine.api.reporting.SubscriptionManager;
 
+import java.io.Serializable;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 /**
  * Created by nbaker on 5/31/16.
  */
-public interface ExecutionContext extends SubscriptionManager {
+public interface ExecutionContext extends SubscriptionManager, Serializable {
   Map<String, Object> getParameters();
 
   /**

@@ -26,9 +26,10 @@ package org.pentaho.di.engine.api.model;
 
 import org.pentaho.di.engine.api.HasConfig;
 
+import java.io.Serializable;
 import java.util.List;
 
-public interface Transformation extends LogicalModelElement, HasConfig {
+public interface Transformation extends LogicalModelElement, HasConfig, Serializable {
   List<Operation> getOperations();
 
   List<Hop> getHops();
