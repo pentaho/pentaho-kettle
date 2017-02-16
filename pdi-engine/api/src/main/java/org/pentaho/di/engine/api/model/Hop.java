@@ -24,10 +24,12 @@
 
 package org.pentaho.di.engine.api.model;
 
+import java.io.Serializable;
+
 /**
  * @author nhudak
  */
-public interface Hop extends LogicalModelElement {
+public interface Hop extends LogicalModelElement, Serializable {
   @Override default String getId() {
     return getFrom().getId() + " -> " + getTo().getId();
   }

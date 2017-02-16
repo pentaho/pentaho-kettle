@@ -24,22 +24,31 @@
 
 package org.pentaho.di.engine.api;
 
+import org.pentaho.di.engine.api.converter.RowConversionManager;
+import org.pentaho.di.engine.api.model.Transformation;
+import org.pentaho.di.engine.api.reporting.SubscriptionManager;
+
 import java.io.Serializable;
 import java.util.Map;
-import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 /**
- * I can haz config?
- * Created by hudak on 1/17/17.
+ * Created by nbaker on 5/31/16.
  */
-public interface HasConfig extends Serializable {
-  <T extends Serializable> Map<String, T> getConfig();
+public interface ExecutionContext extends SubscriptionManager, Serializable {
+  Map<String, Object> getParameters();
 
-  default Optional<? extends Serializable> getConfig( String key ) {
-    return Optional.ofNullable( getConfig().get( key ) );
-  }
+  /**
+   * Implementors should return new instance of the ExecutionContext using
+   * @param parameters
+   */
+  ExecutionContext withParameters( Map<String, Object> parameters );
 
-  default <T> Optional<T> getConfig( String key, Class<T> type ) {
-    return getConfig( key ).filter( type::isInstance ).map( type::cast );
-  }
+  Map<String, Object> getEnvironment();
+
+  Transformation getTransformation();
+
+  CompletableFuture<ExecutionResult> execute();
+
+  RowConversionManager getConversionManager();
 }
