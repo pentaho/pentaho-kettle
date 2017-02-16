@@ -38,4 +38,8 @@ public class FooBarOSGiEngine implements Engine {
     System.out.println( "Foo Engine" );
     return null;
   }
+
+  @Override public String getId(){
+    return "FooBarOSGiEngine";
+  }
 }
