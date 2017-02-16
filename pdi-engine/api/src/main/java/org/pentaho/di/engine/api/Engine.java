@@ -34,4 +34,5 @@ import java.io.Serializable;
  */
 public interface Engine extends Serializable {
   ExecutionContext prepare( Transformation trans );
+  String getId();
 }
