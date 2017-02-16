@@ -44,17 +44,29 @@ public class TransMetaConverter {
   public static Transformation convert( TransMeta transMeta ) {
     final org.pentaho.di.engine.model.Transformation transformation =
       new org.pentaho.di.engine.model.Transformation( transMeta.getName() );
-    transMeta.getSteps().forEach( stepMeta -> {
-      org.pentaho.di.engine.model.Operation operation = transformation.createOperation( stepMeta.getName() );
-      operation.setConfig( STEP_META_CONF_KEY, stepMeta );
-    } );
-    IntStream.iterate( 0, i -> i + 1 )
-      .limit( transMeta.nrTransHops() )
-      .mapToObj( transMeta::getTransHop  )
-      .forEach( createHop( transformation ) );
-    transformation.setConfig( TRANS_META_CONF_KEY, transMeta );
+    try {
+      transMeta.getSteps().forEach( createOperation( transformation ) );
+      IntStream.iterate( 0, i -> i + 1 )
+        .limit( transMeta.nrTransHops() )
+        .mapToObj( transMeta::getTransHop )
+        .forEach( createHop( transformation ) );
 
+      transformation.setConfig( TRANS_META_CONF_KEY, transMeta.getXML() );
+    } catch ( KettleException e ) {
+      Throwables.propagate( e );
+    }
     return transformation;
+  }
+
+  private static Consumer<StepMeta> createOperation( org.pentaho.di.engine.model.Transformation transformation ) {
+    return stepMeta -> {
+      org.pentaho.di.engine.model.Operation operation = transformation.createOperation( stepMeta.getName() );
+      try {
+        operation.setConfig( STEP_META_CONF_KEY, stepMeta.getXML() );
+      } catch ( KettleException e ) {
+        Throwables.propagate( e );
+      }
+    };
   }
 
   private static Consumer<TransHopMeta> createHop( org.pentaho.di.engine.model.Transformation transformation ) {
