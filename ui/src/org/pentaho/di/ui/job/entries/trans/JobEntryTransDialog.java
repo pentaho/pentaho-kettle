@@ -132,6 +132,10 @@ public class JobEntryTransDialog extends JobEntryBaseDialog implements JobEntryD
     wlDescription.setText( BaseMessages.getString( PKG, "JobTrans.Local.Label" ) );
     wPassParams.setText( BaseMessages.getString( PKG, "JobTrans.PassAllParameters.Label" ) );
 
+    wlPath.setText( BaseMessages.getString( PKG, "JobTrans.JobStep.Transformation.Label" ) );
+    wlDescription.setText( BaseMessages.getString( PKG, "JobTrans.Local.Label" ) );
+    wPassParams.setText( BaseMessages.getString( PKG, "JobTrans.PassAllParameters.Label" ) );
+
     wCluster = new Button( typeComposite, SWT.RADIO );
     props.setLook( wCluster );
     wCluster.setText( BaseMessages.getString( PKG, "JobTrans.Clustered.Option.Label" ) );

@@ -134,6 +134,10 @@ public class JobEntryJobDialog extends JobEntryBaseDialog implements JobEntryDia
     wlDescription.setText( BaseMessages.getString( PKG, "JobJob.Local.Label" ) );
     wPassParams.setText( BaseMessages.getString( PKG, "JobJob.PassAllParameters.Label" ) );
 
+    wlPath.setText( BaseMessages.getString( PKG, "JobJob.JobStep.Job.Label" ) );
+    wlDescription.setText( BaseMessages.getString( PKG, "JobJob.Local.Label" ) );
+    wPassParams.setText( BaseMessages.getString( PKG, "JobJob.PassAllParameters.Label" ) );
+
     // Start Server Section
     wWaitingToFinish = new Button( wServer, SWT.CHECK );
     props.setLook( wWaitingToFinish );
