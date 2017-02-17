@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -1066,10 +1066,6 @@ public class TableView extends Composite {
               final TableItem item = table.getItem( index );
               for ( int i = 0; i < table.getColumnCount(); i++ ) {
                 Rectangle rect = item.getBounds( i );
-                if ( i == 0 ) {
-                  rect.width = rect.x;
-                  rect.x = 0;
-                }
                 if ( rect.contains( pt ) ) {
                   activeTableItem = item;
                   activeTableColumn = i;
