@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -31,6 +31,7 @@ import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.lifecycle.KettleLifecycleSupport;
 import org.pentaho.di.core.logging.LogTablePluginType;
 import org.pentaho.di.core.plugins.CartePluginType;
+import org.pentaho.di.core.plugins.EnginePluginType;
 import org.pentaho.di.core.plugins.ImportRulePluginType;
 import org.pentaho.di.core.plugins.JobEntryPluginType;
 import org.pentaho.di.core.plugins.KettleLifecyclePluginType;
@@ -117,6 +118,7 @@ public class KettleEnvironment {
         PluginRegistry.addPluginType( CompressionPluginType.getInstance() );
         PluginRegistry.addPluginType( AuthenticationProviderPluginType.getInstance() );
         PluginRegistry.addPluginType( AuthenticationConsumerPluginType.getInstance() );
+        PluginRegistry.addPluginType( EnginePluginType.getInstance() );
         PluginRegistry.init();
 
         // Also read the list of variables.
