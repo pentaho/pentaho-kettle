@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -55,6 +55,7 @@ import org.pentaho.di.core.encryption.TwoWayPasswordEncoderPluginType;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.util.EnvUtil;
+import org.pentaho.di.utils.TestUtils;
 import org.pentaho.di.www.GetPropertiesServlet;
 
 /**
@@ -144,6 +145,26 @@ public class SlaveServerTest {
     slaveServer2.verifyAndModifySlaveServerName( list, null );
 
     assertTrue( !slaveServer.getName().equals( slaveServer2.getName() ) );
+  }
+
+  @Test
+  public void testEqualsHashCodeConsistency() throws Exception {
+    SlaveServer slave = new SlaveServer();
+    slave.setName( "slave" );
+    TestUtils.checkEqualsHashCodeConsistency( slave, slave );
+
+    SlaveServer slaveSame = new SlaveServer();
+    slaveSame.setName( "slave" );
+    assertTrue( slave.equals( slaveSame ) );
+    TestUtils.checkEqualsHashCodeConsistency( slave, slaveSame );
+
+    SlaveServer slaveCaps = new SlaveServer();
+    slaveCaps.setName( "SLAVE" );
+    TestUtils.checkEqualsHashCodeConsistency( slave, slaveCaps );
+
+    SlaveServer slaveOther = new SlaveServer();
+    slaveOther.setName( "something else" );
+    TestUtils.checkEqualsHashCodeConsistency( slave, slaveOther );
   }
 
   @Test

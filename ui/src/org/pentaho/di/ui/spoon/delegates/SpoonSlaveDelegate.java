@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,6 +22,8 @@
 
 package org.pentaho.di.ui.spoon.delegates;
 
+import java.util.List;
+
 import org.eclipse.swt.SWT;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
@@ -39,7 +41,7 @@ import org.pentaho.di.ui.spoon.TabMapEntry.ObjectType;
 import org.pentaho.xul.swt.tab.TabItem;
 import org.pentaho.xul.swt.tab.TabSet;
 
-public class SpoonSlaveDelegate extends SpoonDelegate {
+public class SpoonSlaveDelegate extends SpoonSharedObjectDelegate {
   private static Class<?> PKG = Spoon.class; // for i18n purposes, needed by Translator2!!
 
   public SpoonSlaveDelegate( Spoon spoon ) {
@@ -67,20 +69,22 @@ public class SpoonSlaveDelegate extends SpoonDelegate {
     tabfolder.setSelected( idx );
   }
 
-  public void delSlaveServer( HasSlaveServersInterface hasSlaveServersInterface, SlaveServer slaveServer ) throws KettleException {
+  public void delSlaveServer( HasSlaveServersInterface hasSlaveServersInterface, SlaveServer slaveServer )
+    throws KettleException {
 
     Repository rep = spoon.getRepository();
-
     if ( rep != null && slaveServer.getObjectId() != null ) {
       // remove the slave server from the repository too...
       rep.deleteSlave( slaveServer.getObjectId() );
+      if ( sharedObjectSyncUtil != null ) {
+        sharedObjectSyncUtil.deleteSlaveServer( slaveServer );
+      }
     }
-
-    int idx = hasSlaveServersInterface.getSlaveServers().indexOf( slaveServer );
-    hasSlaveServersInterface.getSlaveServers().remove( idx );
+    hasSlaveServersInterface.getSlaveServers().remove( slaveServer );
     spoon.refreshTree();
 
   }
+
 
   public void newSlaveServer( HasSlaveServersInterface hasSlaveServersInterface ) {
     SlaveServer slaveServer = new SlaveServer();
@@ -90,23 +94,52 @@ public class SpoonSlaveDelegate extends SpoonDelegate {
     if ( dialog.open() ) {
       slaveServer.verifyAndModifySlaveServerName( hasSlaveServersInterface.getSlaveServers(), null );
       hasSlaveServersInterface.getSlaveServers().add( slaveServer );
-
       if ( spoon.rep != null ) {
         try {
           if ( !spoon.rep.getSecurityProvider().isReadOnly() ) {
             spoon.rep.save( slaveServer, Const.VERSION_COMMENT_INITIAL_VERSION, null );
+            // repository objects are "global"
+            if ( sharedObjectSyncUtil != null ) {
+              sharedObjectSyncUtil.reloadJobRepositoryObjects( false );
+              sharedObjectSyncUtil.reloadTransformationRepositoryObjects( false );
+            }
           } else {
-            throw new KettleException( BaseMessages.getString(
-              PKG, "Spoon.Dialog.Exception.ReadOnlyRepositoryUser" ) );
+            showSaveErrorDialog( slaveServer,
+                new KettleException( BaseMessages.getString( PKG, "Spoon.Dialog.Exception.ReadOnlyRepositoryUser" ) ) );
           }
         } catch ( KettleException e ) {
-          new ErrorDialog(
-            spoon.getShell(), BaseMessages.getString( PKG, "Spoon.Dialog.ErrorSavingSlave.Title" ), BaseMessages
-              .getString( PKG, "Spoon.Dialog.ErrorSavingSlave.Message", slaveServer.getName() ), e );
+          showSaveErrorDialog( slaveServer, e );
         }
       }
 
       spoon.refreshTree();
     }
+  }
+
+  public boolean edit( SlaveServer slaveServer, List<SlaveServer> existingServers ) {
+    String originalName = slaveServer.getName();
+    SlaveServerDialog dialog = new SlaveServerDialog( spoon.getShell(), slaveServer, existingServers );
+    if ( dialog.open() ) {
+      if ( spoon.rep != null ) {
+        try {
+          saveSharedObjectToRepository( slaveServer, null );
+        } catch ( KettleException e ) {
+          showSaveErrorDialog( slaveServer, e );
+        }
+      }
+      if ( sharedObjectSyncUtil != null ) {
+        sharedObjectSyncUtil.synchronizeSlaveServers( slaveServer, originalName );
+      }
+      spoon.refreshTree();
+      spoon.refreshGraph();
+      return true;
+    }
+    return false;
+  }
+
+  private void showSaveErrorDialog( SlaveServer slaveServer, KettleException e ) {
+    new ErrorDialog(
+        spoon.getShell(), BaseMessages.getString( PKG, "Spoon.Dialog.ErrorSavingSlave.Title" ),
+        BaseMessages.getString( PKG, "Spoon.Dialog.ErrorSavingSlave.Message", slaveServer.getName() ), e );
   }
 }

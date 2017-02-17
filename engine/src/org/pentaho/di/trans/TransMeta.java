@@ -106,7 +106,6 @@ import org.pentaho.di.resource.ResourceExportInterface;
 import org.pentaho.di.resource.ResourceNamingInterface;
 import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.shared.SharedObjectInterface;
-import org.pentaho.di.shared.SharedObjects;
 import org.pentaho.di.trans.step.BaseStep;
 import org.pentaho.di.trans.step.RemoteStep;
 import org.pentaho.di.trans.step.StepErrorMeta;
@@ -122,7 +121,6 @@ import org.pentaho.di.trans.steps.missing.MissingTrans;
 import org.pentaho.di.trans.steps.singlethreader.SingleThreaderMeta;
 import org.pentaho.di.trans.steps.transexecutor.TransExecutorMeta;
 import org.pentaho.metastore.api.IMetaStore;
-import org.pentaho.metastore.api.exceptions.MetaStoreException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -3426,35 +3424,10 @@ public class TransMeta extends AbstractMeta
     this.isKeyPrivate = privateKey;
   }
 
-  /**
-   * Reads the shared objects (steps, connections, etc.).
-   *
-   * @return the shared objects
-   * @throws KettleException
-   *           if any errors occur while reading the shared objects
-   */
-  public SharedObjects readSharedObjects() throws KettleException {
-    // Extract the shared steps, connections, etc. using the SharedObjects class
-    //
-    String soFile = environmentSubstitute( sharedObjectsFile );
-    SharedObjects sharedObjects = new SharedObjects( soFile );
-    if ( sharedObjects.getObjectsMap().isEmpty() ) {
-      log.logDetailed( BaseMessages.getString( PKG, "TransMeta.Log.EmptySharedObjectsFile", soFile ) );
-    }
-
-    // First read the databases...
-    // We read databases & slaves first because there might be dependencies that need to be resolved.
-    //
-    for ( SharedObjectInterface object : sharedObjects.getObjectsMap().values() ) {
-      if ( object instanceof DatabaseMeta ) {
-        DatabaseMeta databaseMeta = (DatabaseMeta) object;
-        databaseMeta.shareVariablesWith( this );
-        addOrReplaceDatabase( databaseMeta );
-      } else if ( object instanceof SlaveServer ) {
-        SlaveServer slaveServer = (SlaveServer) object;
-        slaveServer.shareVariablesWith( this );
-        addOrReplaceSlaveServer( slaveServer );
-      } else if ( object instanceof StepMeta ) {
+  @Override
+  public boolean loadSharedObject( SharedObjectInterface object ) {
+    if ( !super.loadSharedObject( object ) ) {
+      if ( object instanceof StepMeta ) {
         StepMeta stepMeta = (StepMeta) object;
         addOrReplaceStep( stepMeta );
       } else if ( object instanceof PartitionSchema ) {
@@ -3464,10 +3437,11 @@ public class TransMeta extends AbstractMeta
         ClusterSchema clusterSchema = (ClusterSchema) object;
         clusterSchema.shareVariablesWith( this );
         addOrReplaceClusterSchema( clusterSchema );
+      } else {
+        return false;
       }
     }
-
-    return sharedObjects;
+    return true;
   }
 
   /**
@@ -5160,12 +5134,6 @@ public class TransMeta extends AbstractMeta
     return false;
   }
 
-  /*
-   * public List getInputFiles() { return inputFiles; }
-   *
-   * public void setInputFiles(List inputFiles) { this.inputFiles = inputFiles; }
-   */
-
   /**
    * Gets a list of all the strings used in this transformation. The parameters indicate which collections to search and
    * which to exclude.
@@ -5524,45 +5492,12 @@ public class TransMeta extends AbstractMeta
     setChanged();
   }
 
-  /**
-   * Save shared objects, including databases, steps, partition schemas, slave servers, and cluster schemas, to a file
-   *
-   * @throws KettleException
-   *           the kettle exception
-   * @see org.pentaho.di.core.EngineMetaInterface#saveSharedObjects()
-   * @see org.pentaho.di.shared.SharedObjects#saveToFile()
-   */
-  @Override
-  public void saveSharedObjects() throws KettleException {
-    try {
-      // Save the meta store shared objects...
-      //
-      saveMetaStoreObjects( repository, metaStore );
-
-      // Load all the shared objects...
-      String soFile = environmentSubstitute( sharedObjectsFile );
-      SharedObjects sharedObjects = new SharedObjects( soFile );
-
-      // Now overwrite the objects in there
-      List<SharedObjectInterface> shared = new ArrayList<>();
-      shared.addAll( databases );
-      shared.addAll( steps );
-      shared.addAll( partitionSchemas );
-      shared.addAll( slaveServers );
-      shared.addAll( clusterSchemas );
-
-      // The databases connections...
-      for ( SharedObjectInterface sharedObject : shared ) {
-        if ( sharedObject.isShared() ) {
-          sharedObjects.storeObject( sharedObject );
-        }
-      }
-
-      // Save the objects
-      sharedObjects.saveToFile();
-    } catch ( Exception e ) {
-      throw new KettleException( "Unable to save shared ojects", e );
-    }
+  protected List<SharedObjectInterface> getAllSharedObjects() {
+    List<SharedObjectInterface> shared = super.getAllSharedObjects();
+    shared.addAll( steps );
+    shared.addAll( partitionSchemas );
+    shared.addAll( clusterSchemas );
+    return shared;
   }
 
   /**
@@ -6270,20 +6205,6 @@ public class TransMeta extends AbstractMeta
   @Override
   public void setForcingSeparateLogging( boolean forcingSeparateLogging ) {
     log.setForcingSeparateLogging( forcingSeparateLogging );
-  }
-
-  /**
-   * This method needs to be called to store those objects which are used and referenced in the transformation metadata
-   * but not saved in the XML serialization. For example, the Kettle data service definition is referenced by name but
-   * not stored when getXML() is called.
-   *
-   * @param metaStore
-   *          The store to save to
-   * @throws MetaStoreException
-   *           in case there is an error.
-   */
-  public void saveMetaStoreObjects( Repository repository, IMetaStore metaStore ) throws MetaStoreException {
-
   }
 
   public void addStepChangeListener( StepMetaChangeListenerInterface listener ) {

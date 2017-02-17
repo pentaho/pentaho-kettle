@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -126,6 +126,9 @@ public class ClustersController extends LazilyInitializedController implements I
               repository.insertLogEntry( BaseMessages.getString(
                 PKG, "ClusterController.Message.UpdatingCluster", clusterSchema.getName() ) );
               repository.save( clusterSchema, Const.VERSION_COMMENT_EDIT_VERSION, null );
+              if ( mainController != null && mainController.getSharedObjectSyncUtil() != null ) {
+                mainController.getSharedObjectSyncUtil().synchronizeClusterSchemas( clusterSchema, clusterSchemaName );
+              }
             } else {
               MessageBox mb = new MessageBox( shell, SWT.ICON_ERROR | SWT.OK );
               mb.setMessage( BaseMessages.getString(
@@ -166,6 +169,9 @@ public class ClustersController extends LazilyInitializedController implements I
             repository.insertLogEntry( BaseMessages.getString(
               RepositoryExplorer.class, "ClusterController.Message.CreatingNewCluster", cluster.getName() ) );
             repository.save( cluster, Const.VERSION_COMMENT_INITIAL_VERSION, null );
+            if ( mainController != null && mainController.getSharedObjectSyncUtil() != null ) {
+              mainController.getSharedObjectSyncUtil().reloadTransformationRepositoryObjects( true );
+            }
           } else {
             MessageBox mb = new MessageBox( shell, SWT.ICON_ERROR | SWT.OK );
             mb.setMessage( BaseMessages.getString(
@@ -215,6 +221,9 @@ public class ClustersController extends LazilyInitializedController implements I
               mb.open();
             } else {
               repository.deleteClusterSchema( clusterId );
+              if ( mainController != null && mainController.getSharedObjectSyncUtil() != null ) {
+                mainController.getSharedObjectSyncUtil().deleteClusterSchema( clusterSchema );
+              }
             }
           }
         }

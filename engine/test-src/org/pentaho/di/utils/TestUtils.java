@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -21,6 +21,8 @@
  ******************************************************************************/
 
 package org.pentaho.di.utils;
+
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
@@ -82,5 +84,11 @@ public class TestUtils {
       string = string.replaceAll( "\r", "" );
     }
     return string;
+  }
+
+  public static void checkEqualsHashCodeConsistency( Object object1, Object object2 ) {
+    if ( object1.equals( object2 ) ) {
+      assertTrue( "inconsistent hashcode and equals", object1.hashCode() == object2.hashCode() );
+    }
   }
 }

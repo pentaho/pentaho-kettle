@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -36,6 +36,9 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.vfs.KettleVFS;
+
+import org.junit.Assert;
 
 /**
  * SharedObjects tests
@@ -68,6 +71,62 @@ public class SharedObjectsTest {
 
     // check if file restored in case of exception is occurred
     verify( sharedObjectsMock ).restoreFileFromBackup( anyString() );
+  }
+
+  @Test
+  public void testCopyBackupVfs() throws Exception {
+    final String dirName = "ram:/SharedObjectsTest";
+
+    FileObject baseDir = KettleVFS.getFileObject( dirName );
+    try {
+      baseDir.createFolder();
+      final String fileName = dirName + "/shared.xml";
+      SharedObjects sharedObjects = new SharedObjects( fileName );
+
+      SharedObjectInterface shared1 = new TestSharedObject( "shared1", "<shared1>shared1</shared1>" );
+      sharedObjects.storeObject( shared1 );
+      sharedObjects.saveToFile();
+      final String backupFileName = fileName + ".backup";
+      FileObject backup = KettleVFS.getFileObject( backupFileName );
+      Assert.assertFalse( backup.exists() );
+
+      String contents = KettleVFS.getTextFileContent( fileName, "utf8" );
+      Assert.assertTrue( contents.contains( shared1.getXML() ) );
+
+      SharedObjectInterface shared2 = new TestSharedObject( "shared2", "<shared2>shared2</shared2>" );
+      sharedObjects.storeObject( shared2 );
+      sharedObjects.saveToFile();
+      Assert.assertTrue( backup.exists() );
+      String contentsBackup = KettleVFS.getTextFileContent( backupFileName, "utf8" );
+      Assert.assertEquals( contents, contentsBackup );
+
+    } finally {
+      if ( baseDir.exists() ) {
+        baseDir.deleteAll();
+      }
+    }
+
+  }
+
+  private static class TestSharedObject extends SharedObjectBase implements SharedObjectInterface {
+
+    private String name, xml;
+
+    public TestSharedObject( String name, String xml ) {
+      this.name = name;
+      this.xml = xml;
+    }
+
+    @Override
+    public String getName() {
+      return name;
+    }
+
+    @Override
+    public String getXML() throws KettleException {
+      return xml;
+    }
+
   }
 
 }

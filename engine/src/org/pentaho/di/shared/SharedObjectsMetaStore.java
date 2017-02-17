@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -39,6 +39,10 @@ import org.pentaho.metastore.api.exceptions.MetaStoreNamespaceExistsException;
 import org.pentaho.metastore.stores.memory.MemoryMetaStore;
 import org.pentaho.metastore.util.PentahoDefaults;
 
+/*
+ * unused?
+ */
+@Deprecated
 public class SharedObjectsMetaStore extends MemoryMetaStore implements IMetaStore {
 
   protected IMetaStoreElementType databaseElementType;

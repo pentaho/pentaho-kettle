@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -32,6 +32,7 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.repository.dialog.RepositoryExplorerDialog;
 import org.pentaho.di.ui.repository.repositoryexplorer.RepositoryExplorerCallback;
+import org.pentaho.di.ui.spoon.SharedObjectSyncUtil;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.ui.xul.binding.BindingFactory;
 import org.pentaho.ui.xul.containers.XulDialog;
@@ -70,6 +71,8 @@ public class MainController extends AbstractXulEventHandler implements DialogCon
   BindingFactory bf;
 
   private boolean aborting = false;
+
+  private SharedObjectSyncUtil sharedObjectSyncUtil;
 
   public MainController() {
   }
@@ -176,4 +179,13 @@ public class MainController extends AbstractXulEventHandler implements DialogCon
 
     return false;
   }
+
+  public SharedObjectSyncUtil getSharedObjectSyncUtil() {
+    return sharedObjectSyncUtil;
+  }
+
+  public void setSharedObjectSyncUtil( SharedObjectSyncUtil sharedObjectSyncUtil ) {
+    this.sharedObjectSyncUtil = sharedObjectSyncUtil;
+  }
+
 }

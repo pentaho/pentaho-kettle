@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -60,18 +60,64 @@ public class SpoonPartitionsDelegate extends SpoonSharedObjectDelegate {
         try {
           if ( !spoon.rep.getSecurityProvider().isReadOnly() ) {
             spoon.rep.save( partitionSchema, Const.VERSION_COMMENT_INITIAL_VERSION, null );
+            if ( sharedObjectSyncUtil != null ) {
+              sharedObjectSyncUtil.reloadTransformationRepositoryObjects( false );
+            }
           } else {
             throw new KettleException( BaseMessages.getString(
               PKG, "Spoon.Dialog.Exception.ReadOnlyRepositoryUser" ) );
           }
         } catch ( KettleException e ) {
-          new ErrorDialog(
-            spoon.getShell(), BaseMessages.getString( PKG, "Spoon.Dialog.ErrorSavingPartition.Title" ), BaseMessages
-            .getString( PKG, "Spoon.Dialog.ErrorSavingPartition.Message", partitionSchema.getName() ), e );
+          showSaveErrorDialog( partitionSchema, e );
         }
       }
 
       spoon.refreshTree();
     }
+  }
+
+  public void editPartitionSchema( TransMeta transMeta, PartitionSchema partitionSchema ) {
+    String originalName = partitionSchema.getName();
+    PartitionSchemaDialog dialog =
+        new PartitionSchemaDialog( spoon.getShell(), partitionSchema, transMeta.getPartitionSchemas(),
+            transMeta.getDatabases(), transMeta );
+    if ( dialog.open() ) {
+      if ( spoon.rep != null && partitionSchema.getObjectId() != null ) {
+        try {
+          saveSharedObjectToRepository( partitionSchema, null );
+          if ( sharedObjectSyncUtil != null ) {
+            sharedObjectSyncUtil.synchronizePartitionSchemas( partitionSchema, originalName );
+          }
+        } catch ( KettleException e ) {
+          showSaveErrorDialog( partitionSchema, e );
+        }
+      }
+      spoon.refreshTree();
+    }
+  }
+
+  public void delPartitionSchema( TransMeta transMeta, PartitionSchema partitionSchema ) {
+    try {
+      int idx = transMeta.getPartitionSchemas().indexOf( partitionSchema );
+      transMeta.getPartitionSchemas().remove( idx );
+
+      if ( spoon.rep != null && partitionSchema.getObjectId() != null ) {
+        // remove the partition schema from the repository too...
+        spoon.rep.deletePartitionSchema( partitionSchema.getObjectId() );
+        if ( sharedObjectSyncUtil != null ) {
+          sharedObjectSyncUtil.deletePartitionSchema( partitionSchema );
+        }
+      }
+      spoon.refreshTree();
+    } catch ( KettleException e ) {
+      new ErrorDialog(
+        spoon.getShell(), BaseMessages.getString( PKG, "Spoon.Dialog.ErrorDeletingClusterSchema.Title" ), BaseMessages
+          .getString( PKG, "Spoon.Dialog.ErrorDeletingClusterSchema.Message" ), e );
+    }
+  }
+
+  private void showSaveErrorDialog( PartitionSchema partitionSchema, KettleException e ) {
+    new ErrorDialog( spoon.getShell(), BaseMessages.getString( PKG, "Spoon.Dialog.ErrorSavingPartition.Title" ),
+        BaseMessages.getString( PKG, "Spoon.Dialog.ErrorSavingPartition.Message", partitionSchema.getName() ), e );
   }
 }

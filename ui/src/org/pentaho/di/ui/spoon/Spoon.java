@@ -253,8 +253,6 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.step.StepPartitioningMeta;
 import org.pentaho.di.trans.steps.selectvalues.SelectValuesMeta;
-import org.pentaho.di.ui.cluster.dialog.ClusterSchemaDialog;
-import org.pentaho.di.ui.cluster.dialog.SlaveServerDialog;
 import org.pentaho.di.ui.core.ConstUI;
 import org.pentaho.di.ui.core.PrintSpool;
 import org.pentaho.di.ui.core.PropsUI;
@@ -284,7 +282,6 @@ import org.pentaho.di.ui.core.widget.TreeMemory;
 import org.pentaho.di.ui.imp.ImportRulesDialog;
 import org.pentaho.di.ui.job.dialog.JobDialogPluginType;
 import org.pentaho.di.ui.job.dialog.JobLoadProgressDialog;
-import org.pentaho.di.ui.partition.dialog.PartitionSchemaDialog;
 import org.pentaho.di.ui.repository.ILoginCallback;
 import org.pentaho.di.ui.repository.RepositoriesDialog;
 import org.pentaho.di.ui.repository.RepositorySecurityUI;
@@ -445,7 +442,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   // THE HANDLERS
   public SpoonDelegates delegates = new SpoonDelegates( this );
 
-  private SharedObjectSyncUtil sharedObjectSyncUtil = new SharedObjectSyncUtil( delegates );
+  private SharedObjectSyncUtil sharedObjectSyncUtil = new SharedObjectSyncUtil( this );
 
   public RowMetaAndData variables = new RowMetaAndData( new RowMeta() );
 
@@ -765,6 +762,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
     props = PropsUI.getInstance();
     sharedObjectsFileMap = new Hashtable<>();
+    // sharedObjectSyncUtil = new SharedObjectSyncUtil( delegates, sharedObjectsFileMap );
     Thread uiThread = Thread.currentThread();
 
     display = Display.findDisplay( uiThread );
@@ -2693,7 +2691,6 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
     final DatabaseMeta databaseMeta = (DatabaseMeta) selectionObject;
     delegates.db.editConnection( databaseMeta );
-    sharedObjectSyncUtil.synchronizeConnections( databaseMeta );
   }
 
   public void dupeConnection() {
@@ -2857,6 +2854,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       final SlaveServer slaveServer = (SlaveServer) selectionObject;
       shareObject( slaveServer );
     }
+    sharedObjectSyncUtil.reloadSharedObjects();
   }
 
   public void editJobEntry() {
@@ -2912,13 +2910,13 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   public void editClusterSchema() {
     final TransMeta transMeta = (TransMeta) selectionObjectParent;
     final ClusterSchema clusterSchema = (ClusterSchema) selectionObject;
-    editClusterSchema( transMeta, clusterSchema );
+    delegates.clusters.editClusterSchema( transMeta, clusterSchema );
   }
 
   public void delClusterSchema() {
     final TransMeta transMeta = (TransMeta) selectionObjectParent;
     final ClusterSchema clusterSchema = (ClusterSchema) selectionObject;
-    delClusterSchema( transMeta, clusterSchema );
+    delegates.clusters.delClusterSchema( transMeta, clusterSchema );
   }
 
   public void monitorClusterSchema() throws KettleException {
@@ -3104,12 +3102,10 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
             jobGraph.addJobEntryToChain( object.getItemText(), shift );
           }
         }
-        // newStep( getActiveTransformation() );
       }
       if ( selection instanceof DatabaseMeta ) {
         DatabaseMeta database = (DatabaseMeta) selection;
         delegates.db.editConnection( database );
-        sharedObjectSyncUtil.synchronizeConnections( database );
       }
       if ( selection instanceof StepMeta ) {
         StepMeta step = (StepMeta) selection;
@@ -3126,7 +3122,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         editPartitionSchema( (TransMeta) parent, (PartitionSchema) selection );
       }
       if ( selection instanceof ClusterSchema ) {
-        editClusterSchema( (TransMeta) parent, (ClusterSchema) selection );
+        delegates.clusters.editClusterSchema( (TransMeta) parent, (ClusterSchema) selection );
       }
       if ( selection instanceof SlaveServer ) {
         editSlaveServer( (SlaveServer) selection );
@@ -3140,17 +3136,6 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     for ( int i = 0; i < clusterSchema.getSlaveServers().size(); i++ ) {
       SlaveServer slaveServer = clusterSchema.getSlaveServers().get( i );
       addSpoonSlave( slaveServer );
-    }
-  }
-
-  protected void editSlaveServer( SlaveServer slaveServer ) {
-    // slaveServer.getVariable("MASTER_HOST")
-    List<SlaveServer> existingServers = getActiveAbstractMeta().getSlaveServers();
-    SlaveServerDialog dialog = new SlaveServerDialog( shell, slaveServer, existingServers );
-    if ( dialog.open() ) {
-      refreshTree();
-      refreshGraph();
-      sharedObjectSyncUtil.synchronizeSlaveServers( slaveServer );
     }
   }
 
@@ -3833,6 +3818,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         SharedObjects sharedObjects =
           repository != null ? repository.readJobMetaSharedObjects( jobMeta ) : jobMeta.readSharedObjects();
         sharedObjectsFileMap.put( sharedObjects.getFilename(), sharedObjects );
+
       } catch ( KettleException e ) {
         new ErrorDialog(
           shell, BaseMessages.getString( PKG, "Spoon.Dialog.ErrorReadingSharedObjects.Title" ), BaseMessages
@@ -4036,7 +4022,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
                 try {
                   try {
                     explorer =
-                      new RepositoryExplorer( shell, rep, cb, Variables.getADefaultVariableSpace() );
+                        new RepositoryExplorer( shell, rep, cb, Variables.getADefaultVariableSpace(),
+                            sharedObjectSyncUtil );
                   } catch ( final KettleRepositoryLostException krle ) {
                     shell.getDisplay().asyncExec( new Runnable() {
                       @Override
@@ -4741,6 +4728,9 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       SharedObjects sharedObjects =
         rep != null ? rep.readTransSharedObjects( transMeta ) : transMeta.readSharedObjects();
       sharedObjectsFileMap.put( sharedObjects.getFilename(), sharedObjects );
+      if ( rep == null ) {
+        transMeta.setSharedObjects( sharedObjects );
+      }
       transMeta.importFromMetaStore();
       transMeta.clearChanged();
     } catch ( Exception e ) {
@@ -4789,9 +4779,13 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       jobMeta.setMetaStore( metaStore );
 
       try {
+        // TODO: MAKE LIKE TRANS
         SharedObjects sharedObjects =
           rep != null ? rep.readJobMetaSharedObjects( jobMeta ) : jobMeta.readSharedObjects();
         sharedObjectsFileMap.put( sharedObjects.getFilename(), sharedObjects );
+        if ( rep == null ) {
+          jobMeta.setSharedObjects( sharedObjects );
+        }
         jobMeta.importFromMetaStore();
       } catch ( Exception e ) {
         new ErrorDialog(
@@ -4878,6 +4872,10 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     setParametersAsVariablesInUI( jobMeta, jobMeta );
   }
 
+  /**
+   * @deprecated is this ever used?
+   * functionality seems covered in loadSessionInformation
+   */
   public void loadRepositoryObjects( TransMeta transMeta ) {
     // Load common database info from active repository...
     if ( rep != null ) {
@@ -6481,10 +6479,6 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     }
   }
 
-  private List<SlaveServer> pickupSlaveServers( AbstractMeta transMeta ) throws KettleException {
-    return ( rep == null ) ? transMeta.getSlaveServers() : rep.getSlaveServers();
-  }
-
   @VisibleForTesting void refreshSelectionTreeExtension( TreeItem tiRootName, AbstractMeta meta, GUIResource guiResource ) {
     try {
       ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.SpoonViewTreeExtension.id,
@@ -6515,33 +6509,24 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   @VisibleForTesting void refreshSlavesSubtree( TreeItem tiRootName, AbstractMeta meta, GUIResource guiResource ) {
     TreeItem tiSlaveTitle = createTreeItem( tiRootName, STRING_SLAVES, guiResource.getImageFolder() );
 
-    List<SlaveServer> servers;
-    try {
-      servers = pickupSlaveServers( meta );
-    } catch ( KettleException e ) {
-      new ErrorDialog( shell,
-        BaseMessages.getString( PKG, "Spoon.ErrorDialog.Title" ),
-        BaseMessages.getString( PKG, "Spoon.ErrorDialog.ErrorFetchingFromRepo.SlaveServers" ),
-        e
-      );
+    List<SlaveServer> servers = meta.getSlaveServers();
 
-      return;
-    }
+    servers.sort( new Comparator<SlaveServer>() {
+      public int compare( SlaveServer s1, SlaveServer s2 ) {
+        return String.CASE_INSENSITIVE_ORDER.compare( s1.getName(), s2.getName() );
+      }
+    } );
 
-    String[] slaveNames = SlaveServer.getSlaveServerNames( servers );
-    Arrays.sort( slaveNames, String.CASE_INSENSITIVE_ORDER );
-
-    for ( String slaveName : slaveNames ) {
-      if ( !filterMatch( slaveName ) ) {
+    for ( SlaveServer slaveServer : servers ) {
+      if ( !filterMatch( slaveServer.getName() ) ) {
         continue;
       }
 
-      SlaveServer slaveServer = SlaveServer.findSlaveServer( servers, slaveName );
-
-      TreeItem tiSlave = createTreeItem( tiSlaveTitle, slaveServer.getName(), guiResource.getImageSlaveTree() );
+      TreeItem tiSlave = createTreeItem( tiSlaveTitle, slaveServer.getName(), guiResource.getImageSlaveMedium() );
       if ( slaveServer.isShared() ) {
         tiSlave.setFont( guiResource.getFontBold() );
       }
+
     }
   }
 
@@ -8326,29 +8311,13 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     editClustering( transMeta, Collections.singletonList( stepMeta ) );
   }
 
-
-  private String[] pickupClusterSchemas( TransMeta transMeta ) throws KettleException {
-    return ( rep == null ) ? transMeta.getClusterSchemaNames() : rep.getClusterNames( false );
-  }
-
   /**
    * Select a clustering schema for this step.
    *
    * @param stepMetas The steps (at least one!) to set the clustering schema for.
    */
   public void editClustering( TransMeta transMeta, List<StepMeta> stepMetas ) {
-    String[] clusterSchemaNames;
-    try {
-      clusterSchemaNames = pickupClusterSchemas( transMeta );
-    } catch ( KettleException e ) {
-      new ErrorDialog( shell,
-        BaseMessages.getString( PKG, "Spoon.ErrorDialog.Title" ),
-        BaseMessages.getString( PKG, "Spoon.ErrorDialog.ErrorFetchingFromRepo.ClusterSchemas" ),
-        e
-      );
-
-      return;
-    }
+    String[] clusterSchemaNames = transMeta.getClusterSchemaNames();
 
     StepMeta stepMeta = stepMetas.get( 0 );
     int idx = -1;
@@ -8396,30 +8365,11 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   }
 
   private void editPartitionSchema( TransMeta transMeta, PartitionSchema partitionSchema ) {
-    PartitionSchemaDialog dialog =
-        new PartitionSchemaDialog( shell, partitionSchema, transMeta.getPartitionSchemas(), transMeta.getDatabases(),
-            transMeta );
-    if ( dialog.open() ) {
-      refreshTree();
-      sharedObjectSyncUtil.synchronizePartitionSchemas( partitionSchema );
-    }
+    delegates.partitions.editPartitionSchema( transMeta, partitionSchema );
   }
 
   private void delPartitionSchema( TransMeta transMeta, PartitionSchema partitionSchema ) {
-    try {
-      if ( rep != null && partitionSchema.getObjectId() != null ) {
-        // remove the partition schema from the repository too...
-        rep.deletePartitionSchema( partitionSchema.getObjectId() );
-      }
-
-      int idx = transMeta.getPartitionSchemas().indexOf( partitionSchema );
-      transMeta.getPartitionSchemas().remove( idx );
-      refreshTree();
-    } catch ( KettleException e ) {
-      new ErrorDialog(
-        shell, BaseMessages.getString( PKG, "Spoon.Dialog.ErrorDeletingClusterSchema.Title" ), BaseMessages
-          .getString( PKG, "Spoon.Dialog.ErrorDeletingClusterSchema.Message" ), e );
-    }
+    delegates.partitions.delPartitionSchema( transMeta, partitionSchema );
   }
 
   /**
@@ -8428,32 +8378,6 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
    */
   public void newClusteringSchema( TransMeta transMeta ) {
     delegates.clusters.newClusteringSchema( transMeta );
-  }
-
-  private void editClusterSchema( TransMeta transMeta, ClusterSchema clusterSchema ) {
-    ClusterSchemaDialog dialog =
-        new ClusterSchemaDialog( shell, clusterSchema, transMeta.getClusterSchemas(), transMeta.getSlaveServers() );
-    if ( dialog.open() ) {
-      refreshTree();
-      sharedObjectSyncUtil.synchronizeClusterSchemas( clusterSchema );
-    }
-  }
-
-  private void delClusterSchema( TransMeta transMeta, ClusterSchema clusterSchema ) {
-    try {
-      if ( rep != null && clusterSchema.getObjectId() != null ) {
-        // remove the partition schema from the repository too...
-        rep.deleteClusterSchema( clusterSchema.getObjectId() );
-      }
-
-      int idx = transMeta.getClusterSchemas().indexOf( clusterSchema );
-      transMeta.getClusterSchemas().remove( idx );
-      refreshTree();
-    } catch ( KettleException e ) {
-      new ErrorDialog(
-        shell, BaseMessages.getString( PKG, "Spoon.Dialog.ErrorDeletingPartitionSchema.Title" ), BaseMessages
-          .getString( PKG, "Spoon.Dialog.ErrorDeletingPartitionSchema.Message" ), e );
-    }
   }
 
   /**
@@ -8471,6 +8395,12 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       new ErrorDialog( shell, BaseMessages.getString( PKG, "Spoon.Dialog.ErrorDeletingSlave.Title" ), BaseMessages
         .getString( PKG, "Spoon.Dialog.ErrorDeletingSlave.Message" ), e );
     }
+  }
+
+  protected void editSlaveServer( SlaveServer slaveServer ) {
+     List<SlaveServer> existingServers = getActiveAbstractMeta().getSlaveServers();
+    // List<SlaveServer> existingServers = pickupSlaveServers( getActiveAbstractMeta() );
+    delegates.slaves.edit( slaveServer, existingServers );
   }
 
   /**
@@ -8944,10 +8874,6 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     this.jobExecutionConfiguration = jobExecutionConfiguration;
   }
 
-  /*
-   * public XulToolbar getToolbar() { return toolbar; }
-   */
-
   @Override
   public void update( ChangedFlagInterface o, Object arg ) {
     try {
@@ -8964,8 +8890,6 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
   @Override
   public void consume( final LifeEventInfo info ) {
-    // if (PropsUI.getInstance().isListenerDisabled(info.getName()))
-    // return;
 
     if ( info.hasHint( LifeEventInfo.Hint.DISPLAY_BROWSER ) ) {
       display.asyncExec( new Runnable() {
@@ -9237,12 +9161,6 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   public void hideSplash() {
     if ( splash != null ) {
       splash.hide();
-    }
-  }
-
-  private void showSplash() {
-    if ( splash != null ) {
-      splash.show();
     }
   }
 

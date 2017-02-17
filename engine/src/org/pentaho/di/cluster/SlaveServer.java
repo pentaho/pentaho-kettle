@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -352,7 +352,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
   }
 
   public int hashCode() {
-    return name.hashCode();
+    return name.toLowerCase().hashCode();
   }
 
   public String getHostname() {

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -28,6 +28,7 @@ import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.trans.steps.abort.AbortMeta;
+import org.pentaho.di.utils.TestUtils;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -54,6 +55,25 @@ public class StepMetaTest {
     assertEquals( meta, clone );
   }
 
+  @Test
+  public void testEqualsHashCodeConsistency() throws Exception {
+    StepMeta step = new StepMeta();
+    step.setName( "step" );
+    TestUtils.checkEqualsHashCodeConsistency( step, step );
+
+    StepMeta stepSame = new StepMeta();
+    stepSame.setName( "step" );
+    assertTrue( step.equals( stepSame ) );
+    TestUtils.checkEqualsHashCodeConsistency( step, stepSame );
+
+    StepMeta stepCaps = new StepMeta();
+    stepCaps.setName( "STEP" );
+    TestUtils.checkEqualsHashCodeConsistency( step, stepCaps );
+
+    StepMeta stepOther = new StepMeta();
+    stepOther.setName( "something else" );
+    TestUtils.checkEqualsHashCodeConsistency( step, stepOther );
+  }
 
   private static StepMeta createTestMeta() throws Exception {
     StepMetaInterface stepMetaInterface = mock( AbortMeta.class );

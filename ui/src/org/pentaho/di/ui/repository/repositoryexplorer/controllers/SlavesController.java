@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -42,6 +42,7 @@ import org.pentaho.di.ui.repository.repositoryexplorer.ControllerInitializationE
 import org.pentaho.di.ui.repository.repositoryexplorer.IUISupportController;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UISlave;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UISlaves;
+import org.pentaho.di.ui.spoon.SharedObjectSyncUtil;
 import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.binding.Binding;
 import org.pentaho.ui.xul.binding.BindingFactory;
@@ -160,8 +161,11 @@ public class SlavesController extends LazilyInitializedController implements IUI
           if ( slaveServer.getName() != null && !slaveServer.getName().equals( "" ) ) {
             repository.insertLogEntry( BaseMessages.getString(
               PKG, "SlavesController.Message.CreatingSlave", slaveServer.getName() ) );
-
             repository.save( slaveServer, Const.VERSION_COMMENT_INITIAL_VERSION, null );
+            if ( getSharedObjectSyncUtil() != null ) {
+              getSharedObjectSyncUtil().reloadJobRepositoryObjects( true );
+              getSharedObjectSyncUtil().reloadTransformationRepositoryObjects( true );
+            }
           } else {
             MessageBox mb = new MessageBox( shell, SWT.ICON_ERROR | SWT.OK );
             mb
@@ -207,6 +211,9 @@ public class SlavesController extends LazilyInitializedController implements IUI
               repository.insertLogEntry( BaseMessages.getString(
                 PKG, "SlavesController.Message.UpdatingSlave", slaveServer.getName() ) );
               repository.save( slaveServer, Const.VERSION_COMMENT_EDIT_VERSION, null );
+              if ( getSharedObjectSyncUtil() != null ) {
+                getSharedObjectSyncUtil().synchronizeSlaveServers( slaveServer, slaveServerName );
+              }
             } else {
               MessageBox mb = new MessageBox( shell, SWT.ICON_ERROR | SWT.OK );
               mb.setMessage( BaseMessages.getString(
@@ -254,6 +261,9 @@ public class SlavesController extends LazilyInitializedController implements IUI
               mb.open();
             } else {
               repository.deleteSlave( slaveId );
+              if ( getSharedObjectSyncUtil() != null ) {
+                getSharedObjectSyncUtil().deleteSlaveServer( slaveServer );
+              }
             }
           }
         }
@@ -300,6 +310,10 @@ public class SlavesController extends LazilyInitializedController implements IUI
 
   public void tabClicked() {
     lazyInit();
+  }
+
+  private SharedObjectSyncUtil getSharedObjectSyncUtil() {
+    return mainController != null ? mainController.getSharedObjectSyncUtil() : null;
   }
 
 }
