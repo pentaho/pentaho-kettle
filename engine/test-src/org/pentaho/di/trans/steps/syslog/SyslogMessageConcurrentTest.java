@@ -42,6 +42,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -126,8 +127,8 @@ public class SyslogMessageConcurrentTest {
     when( stepMockHelper.processRowsStepMetaInterface.getPort() ).thenReturn( "9988" );
     when( stepMockHelper.processRowsStepMetaInterface.getPriority() ).thenReturn( "ERROR" );
     RowMetaInterface inputRowMeta = mock( RowMetaInterface.class );
-    when( inputRowMeta.indexOfValue( any() ) ).thenReturn( 0 );
-    when( inputRowMeta.getString( any(), eq( 0 ) ) ).thenReturn( testMessage );
+    when( inputRowMeta.indexOfValue( anyString() ) ).thenReturn( 0 );
+    when( inputRowMeta.getString( any( Object[].class ), eq( 0 ) ) ).thenReturn( testMessage );
     SyslogMessageTask syslogMessage = new SyslogMessageTask( stepMockHelper.stepMeta, data, 0, stepMockHelper.transMeta,
              stepMockHelper.trans, stepMockHelper.processRowsStepMetaInterface );
     syslogMessage.init( stepMockHelper.processRowsStepMetaInterface, data );
