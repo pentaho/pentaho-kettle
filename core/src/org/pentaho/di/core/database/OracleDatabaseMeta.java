@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -78,7 +78,7 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
    */
   @Override
   public String getSQLQueryFields( String tableName ) {
-    return "SELECT /*+FIRST_ROWS*/ * FROM " + tableName + " WHERE ROWNUM < 1";
+    return "SELECT * FROM " + tableName + " WHERE 1=0";
   }
 
   @Override
@@ -92,7 +92,7 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
   }
 
   public String getSQLQueryColumnFields( String columnname, String tableName ) {
-    return "SELECT /*+FIRST_ROWS*/ " + columnname + " FROM " + tableName + " WHERE ROWNUM < 1";
+    return "SELECT " + columnname + " FROM " + tableName + " WHERE 1=0";
   }
 
   @Override

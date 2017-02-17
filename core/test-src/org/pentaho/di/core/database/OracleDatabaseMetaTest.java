@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -144,10 +144,10 @@ public class OracleDatabaseMetaTest {
   @Test
   public void testOverriddenSQLStatements() throws Exception {
     assertEquals( " WHERE ROWNUM <= 5", nativeMeta.getLimitClause( 5 ) );
-    String reusedFieldsQuery = "SELECT /*+FIRST_ROWS*/ * FROM FOO WHERE ROWNUM < 1";
+    String reusedFieldsQuery = "SELECT * FROM FOO WHERE 1=0";;
     assertEquals( reusedFieldsQuery, nativeMeta.getSQLQueryFields( "FOO" ) );
     assertEquals( reusedFieldsQuery, nativeMeta.getSQLTableExists( "FOO" ) );
-    String reusedColumnsQuery = "SELECT /*+FIRST_ROWS*/ FOO FROM BAR WHERE ROWNUM < 1";
+    String reusedColumnsQuery = "SELECT FOO FROM BAR WHERE 1=0";
     assertEquals( reusedColumnsQuery, nativeMeta.getSQLQueryColumnFields( "FOO", "BAR" ) );
     assertEquals( reusedColumnsQuery, nativeMeta.getSQLColumnExists( "FOO", "BAR" ) );
     assertEquals( "SELECT * FROM USER_SEQUENCES WHERE SEQUENCE_NAME = 'FOO'", nativeMeta.getSQLSequenceExists( "FOO" ) );
