@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -46,7 +46,7 @@ public class CsvInputDoubleLineEndTest extends CsvInputUnitTestBase {
   private static final String ASCII = "windows-1252";
   private static final String UTF8 = "UTF-8";
   private static final String UTF16LE = "UTF-16LE";
-  private static final String UTF16BE = "UTF-16LE";
+  private static final String UTF16BE = "UTF-16BE";
   private static final String TEST_DATA = "Header1\tHeader2\r\nValue\tValue\r\nValue\tValue\r\n";
 
   private static StepMockHelper<?, ?> stepMockHelper;

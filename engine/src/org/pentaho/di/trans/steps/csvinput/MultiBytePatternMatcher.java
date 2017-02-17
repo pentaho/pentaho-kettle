@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,17 +25,13 @@ package org.pentaho.di.trans.steps.csvinput;
 public class MultiBytePatternMatcher implements PatternMatcherInterface {
 
   public boolean matchesPattern( byte[] source, int location, byte[] pattern ) {
-    if ( location >= pattern.length - 1 ) {
-      int start = location - pattern.length + 1;
-      for ( int i = 0; i < pattern.length; i++ ) {
-        if ( source[start + i] != pattern[i] ) {
-          return false;
-        }
+    int start = location;
+    for ( int i = 0; i < pattern.length; i++ ) {
+      if ( source[start + i] != pattern[i] ) {
+        return false;
       }
-      return true;
-    } else {
-      return false;
     }
+    return true;
   }
 
 }
