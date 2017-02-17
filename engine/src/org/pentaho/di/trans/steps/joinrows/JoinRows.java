@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -153,7 +153,7 @@ public class JoinRows extends BaseStep implements StepInterface {
 
       if ( log.isRowLevel() ) {
         logRowlevel( BaseMessages.getString( PKG, "JoinRows.Log.ReadRowFromStream" )
-          + ( rowData == null ? "<null>" : rowData.toString() ) );
+          + ( rowData == null ? "<null>" : data.fileRowMeta[0].getString( rowData ) ) );
       }
     } else {
       if ( data.cache[filenr] == null ) {
@@ -388,7 +388,8 @@ public class JoinRows extends BaseStep implements StepInterface {
       data.size[data.filenr]++;
 
       if ( log.isRowLevel() ) {
-        logRowlevel( rowData.toString() );
+        logRowlevel( BaseMessages.getString( PKG, "JoinRows.Log.ReadRowFromStreamN", data.filenr,
+          data.fileRowMeta[data.filenr].getString( rowData ) ) );
       }
 
       //
@@ -434,7 +435,7 @@ public class JoinRows extends BaseStep implements StepInterface {
   private RowMetaInterface createOutputRowMeta( RowMetaInterface[] fileRowMeta ) {
     RowMetaInterface outputRowMeta = new RowMeta();
     for ( int i = 0; i < data.fileRowMeta.length; i++ ) {
-      outputRowMeta.mergeRowMeta( data.fileRowMeta[i] );
+      outputRowMeta.mergeRowMeta( data.fileRowMeta[i], meta.getName() );
     }
     return outputRowMeta;
   }
