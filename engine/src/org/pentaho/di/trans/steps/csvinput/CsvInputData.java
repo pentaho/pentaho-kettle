@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -239,31 +239,16 @@ public class CsvInputData extends BaseStepData implements StepDataInterface {
     int length = endBuffer - fieldStart;
 
     if ( newLineFound && !endOfBuffer ) {
-      length -= encodingType.getLength() * 2 - 1;
+      length -= encodingType.getLength();
     }
 
     if ( enclosureFound ) {
-      if ( length > 1 ) {
-        if ( delimiterFound ) {
-          length -= delimiter.length;
-        }
-        if ( endOfBuffer || newLineFound ) {
-          length--;
-        }
-      }
-
       fieldStart += enclosure.length;
-      length -= enclosure.length;
-
-      // Lets get rid of the delimiter, if it is still in the range and spaces between it and the enclosure.
-      while ( ( byteBuffer[fieldStart + length] == 32 ) || ( byteBuffer[fieldStart + length] == delimiter[0] ) ) {
-        length -= 1;
-      }
-
-      length -= enclosure.length - 1;
-    } else {
-      if ( delimiterFound ) {
-        length -= delimiter.length - 1;
+      length = endBuffer - fieldStart - enclosure.length;
+      if ( length > 1 ) {
+        if ( newLineFound ) {
+          length -= enclosure.length;
+        }
       }
     }
 
