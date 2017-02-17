@@ -59,10 +59,18 @@ public class KettleClientEnvironment {
   private static Boolean initialized;
 
   public enum ClientType {
-    SPOON, PAN, KITCHEN, CARTE, DI_SERVER
+    SPOON, PAN, KITCHEN, CARTE, DI_SERVER, OTHER;
+    public String getID(){
+      if( this != OTHER ) {
+        return this.name();
+      }
+      return instance.clientID;
+    }
   }
 
   private ClientType client;
+  // used when type is OTHER
+  private String clientID = null;
 
   public static synchronized void init() throws KettleException {
     if ( initialized != null ) {
@@ -180,6 +188,14 @@ public class KettleClientEnvironment {
 
   public void setClient( ClientType client ) {
     this.client = client;
+  }
+
+  /**
+   * Set the Client ID which has significance when the ClientType == OTHER
+   * @param id
+   */
+  public void setClientID( String id ) {
+    this.clientID = id;
   }
 
   public ClientType getClient() {
