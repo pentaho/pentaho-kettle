@@ -552,7 +552,7 @@ public abstract class JobEntryBaseDialog extends JobEntryDialog {
     // Logging Tab End
 
     CTabItem wArgumentTab = new CTabItem( wTabFolder, SWT.NONE );
-    wArgumentTab.setText( BaseMessages.getString( PKG, "JobTrans.Fields.Argument.Label" ) );
+    wArgumentTab.setText( BaseMessages.getString( PKG, "JobTrans.Tab.Arguments.Label" ) );
 
     FormLayout fieldLayout = new FormLayout();
     fieldLayout.marginWidth = 15;
