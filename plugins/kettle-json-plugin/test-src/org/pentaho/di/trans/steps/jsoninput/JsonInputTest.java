@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -70,6 +70,7 @@ import org.pentaho.di.core.row.value.ValueMetaInteger;
 import org.pentaho.di.core.row.value.ValueMetaNumber;
 import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.LanguageChoice;
 import org.pentaho.di.trans.step.RowAdapter;
@@ -1059,8 +1060,11 @@ public class JsonInputTest {
   }
 
   protected JsonInput createJsonInput( final String inCol, JsonInputMeta meta, Object[]... inputRows ) {
-    JsonInputData data = new JsonInputData();
+    return createJsonInput( inCol, meta, null, inputRows );
+  }
 
+  protected JsonInput createJsonInput( final String inCol, JsonInputMeta meta, VariableSpace variables, Object[]... inputRows ) {
+    JsonInputData data = new JsonInputData();
     JsonInput jsonInput = new JsonInput( helper.stepMeta, helper.stepDataInterface, 0, helper.transMeta, helper.trans );
 
     RowSet input = helper.getMockInputRowSet( inputRows );
@@ -1068,8 +1072,8 @@ public class JsonInputTest {
     input.setRowMeta( rowMeta );
     jsonInput.getInputRowSets().add( input );
     jsonInput.setInputRowMeta( rowMeta );
+    jsonInput.initializeVariablesFrom( variables );
     jsonInput.init( meta, data );
-    jsonInput.initializeVariablesFrom( null );
     return jsonInput;
   }
 
@@ -1166,5 +1170,19 @@ public class JsonInputTest {
     RowMeta rowMeta = new RowMeta();
     rowMeta.setValueMetaList( Arrays.asList( valueMetas ) );
     return rowMeta;
+  }
+
+  @Test
+  public void testJsonInputMetaInputFieldsNotOverwritten() throws Exception {
+    JsonInputField inputField = new JsonInputField();
+    final String PATH = "$..book[?(@.category=='${category}')].price";
+    inputField.setPath( PATH );
+    inputField.setType( ValueMetaInterface.TYPE_STRING );
+    final JsonInputMeta inputMeta = createSimpleMeta( "json", inputField );
+    VariableSpace variables = new Variables();
+    variables.setVariable( "category", "fiction" );
+    JsonInput jsonInput = createJsonInput( "json", inputMeta, variables, new Object[] { getBasicTestJson() } );
+    processRows( jsonInput, 2 );
+    assertEquals( "Meta input fields paths should be the same after processRows", PATH, inputMeta.getInputFields()[0].getPath() );
   }
 }
