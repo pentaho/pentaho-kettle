@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -63,6 +63,7 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface;
 import org.pentaho.di.trans.steps.missing.MissingTrans;
 import org.pentaho.metastore.api.IMetaStore;
+import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
 /**
@@ -416,6 +417,18 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
       if ( look.getName().equals( clusterSchemaName ) ) {
         clusterSchema = look;
       }
+    }
+  }
+
+
+  public static StepMeta fromXml( String metaXml ) {
+    Document doc;
+    try {
+      doc = XMLHandler.loadXMLString( metaXml );
+      Node stepNode = XMLHandler.getSubNode( doc, "step" );
+      return new StepMeta( stepNode, Collections.emptyList(), (IMetaStore) null );
+    } catch ( KettleXMLException | KettlePluginLoaderException e ) {
+      throw new RuntimeException( e );
     }
   }
 

@@ -121,8 +121,7 @@ public class TransEngineAdapter extends Trans {
       .collect( Collectors.toMap( Function.identity(),
         op -> {
           StepMetaDataCombi combi = new StepMetaDataCombi();
-          combi.stepMeta = (StepMeta) op.getConfig( TransMetaConverter.STEP_META_CONF_KEY )
-            .orElseThrow( () -> new IllegalStateException( "StepMeta not found in Operation" ) );
+          combi.stepMeta = StepMeta.fromXml( (String) op.getConfig().get( TransMetaConverter.STEP_META_CONF_KEY ) );
           combi.data = new StepDataInterfaceEngineAdapter( op, executionContext );
           combi.step = new StepInterfaceEngineAdapter( op, executionContext, combi.stepMeta, transMeta,
             combi.data, this );
