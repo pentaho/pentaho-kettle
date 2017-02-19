@@ -110,6 +110,10 @@ public class StepInterfaceEngineAdapter extends BaseStep {
    **/
   private void putRow( Row row ) {
     try {
+      if ( executionContext.getConversionManager() == null ) {
+        // no way to convert this row to a RowMetaInterface.
+        return;
+      }
       synchronized ( rowListeners ) {
         for ( int i = 0; i < rowListeners.size(); i++ ) {
           RowListener rowListener = rowListeners.get( i );
@@ -119,7 +123,10 @@ public class StepInterfaceEngineAdapter extends BaseStep {
         }
       }
     } catch ( KettleStepException e ) {
-      throw new RuntimeException( e );
+      // log that we were unable to convert row.
+      // will probably want to throw when row conversion is more robust.  Right
+      // now this only means preview will not be populated for the current Engine impl.
+      logDebug( e.getMessage() );
     }
   }
 }
