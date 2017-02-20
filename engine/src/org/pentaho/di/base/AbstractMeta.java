@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -66,6 +66,7 @@ import org.pentaho.di.repository.ObjectRevision;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
+import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.shared.SharedObjects;
 import org.pentaho.di.trans.HasDatabasesInterface;
 import org.pentaho.di.trans.HasSlaveServersInterface;
@@ -79,6 +80,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -1064,6 +1066,7 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
     } else if ( replace ) {
       DatabaseMeta previous = getDatabase( index );
       previous.replaceMeta( databaseMeta );
+      previous.setShared( databaseMeta.isShared() );
     }
     changedDatabases = true;
   }
@@ -1527,6 +1530,46 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
   }
 
   /**
+   * Read shared objects.
+   *
+   * @return the shared objects
+   * @throws KettleException the kettle exception
+   */
+  public SharedObjects readSharedObjects() throws KettleException {
+    // Extract the shared steps, connections, etc. using the SharedObjects
+    // class
+    //
+    String soFile = environmentSubstitute( sharedObjectsFile );
+    SharedObjects sharedObjects = new SharedObjects( soFile );
+    Map<?, SharedObjectInterface> objectsMap = sharedObjects.getObjectsMap();
+
+    // First read the databases...
+    // We read databases & slaves first because there might be dependencies
+    // that need to be resolved.
+    //
+    for ( SharedObjectInterface object : objectsMap.values() ) {
+      loadSharedObject( object );
+    }
+
+    return sharedObjects;
+  }
+
+  protected boolean loadSharedObject( SharedObjectInterface object ) {
+    if ( object instanceof DatabaseMeta ) {
+      DatabaseMeta databaseMeta = (DatabaseMeta) object;
+      databaseMeta.shareVariablesWith( this );
+      addOrReplaceDatabase( databaseMeta );
+    } else if ( object instanceof SlaveServer ) {
+      SlaveServer slaveServer = (SlaveServer) object;
+      slaveServer.shareVariablesWith( this );
+      addOrReplaceSlaveServer( slaveServer );
+    } else {
+      return false;
+    }
+    return true;
+  }
+
+  /**
    * Sets the internal name kettle variable.
    *
    * @param var the new internal name kettle variable
@@ -1818,5 +1861,47 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
    */
   public void setPrivateDatabases( Set<String> privateDatabases ) {
     this.privateDatabases = privateDatabases;
+  }
+
+  public void saveSharedObjects() throws KettleException {
+    try {
+      // Load all the shared objects...
+      String soFile = environmentSubstitute( sharedObjectsFile );
+      SharedObjects sharedObjects = new SharedObjects( soFile );
+      // in-memory shared objects are supposed to be in sync, discard those on file to allow edit/delete
+      sharedObjects.setObjectsMap( new Hashtable<>() );
+
+      for ( SharedObjectInterface sharedObject : getAllSharedObjects() ) {
+        if ( sharedObject.isShared() ) {
+          sharedObjects.storeObject( sharedObject );
+        }
+      }
+
+      sharedObjects.saveToFile();
+    } catch ( Exception e ) {
+      throw new KettleException( "Unable to save shared ojects", e );
+    }
+  }
+
+  protected List<SharedObjectInterface> getAllSharedObjects() {
+    List<SharedObjectInterface> shared = new ArrayList<>();
+    shared.addAll( databases );
+    shared.addAll( slaveServers );
+    return shared;
+  }
+
+  /**
+   * This method needs to be called to store those objects which are used and referenced in the transformation metadata
+   * but not saved in the XML serialization. For example, the Kettle data service definition is referenced by name but
+   * not stored when getXML() is called.<br>
+   * @deprecated This method is empty since 2013.
+   *
+   * @param metaStore
+   *          The store to save to
+   * @throws MetaStoreException
+   *           in case there is an error.
+   */
+  public void saveMetaStoreObjects( Repository repository, IMetaStore metaStore ) throws MetaStoreException {
+
   }
 }

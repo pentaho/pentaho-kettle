@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -144,6 +144,10 @@ public class PartitionsController extends LazilyInitializedController implements
                 RepositoryExplorer.class, "PartitionsController.Message.UpdatingPartition", partitionSchema
                   .getName() ) );
               repository.save( partitionSchema, Const.VERSION_COMMENT_EDIT_VERSION, null );
+              if ( mainController != null && mainController.getSharedObjectSyncUtil() != null ) {
+                mainController.getSharedObjectSyncUtil().synchronizePartitionSchemas(
+                    partitionSchema, partitionSchemaName );
+              }
             } else {
               MessageBox mb = new MessageBox( shell, SWT.ICON_ERROR | SWT.OK );
               mb.setMessage( BaseMessages.getString(
@@ -184,6 +188,9 @@ public class PartitionsController extends LazilyInitializedController implements
             repository.insertLogEntry( BaseMessages.getString(
               RepositoryExplorer.class, "PartitionsController.Message.CreatingPartition", partition.getName() ) );
             repository.save( partition, Const.VERSION_COMMENT_INITIAL_VERSION, null );
+            if ( mainController != null && mainController.getSharedObjectSyncUtil() != null ) {
+              mainController.getSharedObjectSyncUtil().reloadTransformationRepositoryObjects( true );
+            }
           } else {
             MessageBox mb = new MessageBox( shell, SWT.ICON_ERROR | SWT.OK );
             mb.setMessage( BaseMessages.getString(
@@ -232,6 +239,9 @@ public class PartitionsController extends LazilyInitializedController implements
               mb.open();
             } else {
               repository.deletePartitionSchema( partitionId );
+              if ( mainController != null && mainController.getSharedObjectSyncUtil() != null ) {
+                mainController.getSharedObjectSyncUtil().deletePartitionSchema( partitionSchema );
+              }
             }
           }
         }

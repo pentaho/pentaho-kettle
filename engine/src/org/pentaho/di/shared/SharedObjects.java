@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,12 +22,10 @@
 
 package org.pentaho.di.shared;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
-import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Hashtable;
@@ -36,6 +34,7 @@ import java.util.Map;
 
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemException;
+import org.apache.poi.util.IOUtils;
 import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
@@ -355,7 +354,7 @@ public class SharedObjects {
    * @throws IOException
    */
   @VisibleForTesting
-  protected void restoreFileFromBackup( String backupFileName ) throws IOException {
+  protected void restoreFileFromBackup( String backupFileName ) throws IOException, KettleFileException {
     copyFile( backupFileName, filename );
   }
 
@@ -378,42 +377,25 @@ public class SharedObjects {
 
   private boolean getBackupFileFromFileSystem( String backupFileName ) throws KettleException {
     FileObject fileObject = getFileObjectFromKettleVFS( backupFileName );
-    boolean isFileCreated = false;
     try {
-      fileObject.exists();
-      isFileCreated = true;
+      return fileObject.exists();
     } catch ( FileSystemException e ) {
-      // NOP
+      return false;
     }
-    return isFileCreated;
   }
 
-  private boolean createFileBackup( String backupFileName ) throws IOException {
+  private boolean createFileBackup( String backupFileName ) throws IOException, KettleFileException {
     return copyFile( filename, backupFileName );
   }
 
-  /**
-   * Copy src file to dest file
-   *
-   * @param src
-   * @param dist
-   * @throws IOException
-   */
-  private boolean copyFile( String src, String dist ) throws IOException {
-    boolean isFileCopied = false;
-    FileChannel sourceChannel = null;
-    FileChannel destChannel = null;
-    try {
-      sourceChannel = new FileInputStream( src ).getChannel();
-      destChannel = new FileOutputStream( dist ).getChannel();
-      destChannel.transferFrom( sourceChannel, 0, sourceChannel.size() );
-      isFileCopied = true;
-    } finally {
-      sourceChannel.close();
-      destChannel.close();
+  private boolean copyFile( String src, String dest ) throws KettleFileException, IOException {
+    FileObject srcFile = getFileObjectFromKettleVFS( src );
+    FileObject destFile = getFileObjectFromKettleVFS( dest );
+    try ( InputStream in = KettleVFS.getInputStream( srcFile );
+        OutputStream out = KettleVFS.getOutputStream( destFile, false ) ) {
+      IOUtils.copy( in, out );
     }
-
-    return isFileCopied;
+    return true;
   }
 
   @Override

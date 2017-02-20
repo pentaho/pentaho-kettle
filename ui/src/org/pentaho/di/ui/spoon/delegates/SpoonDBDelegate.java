@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -59,6 +59,7 @@ import org.pentaho.di.ui.core.database.dialog.SQLEditor;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.dialog.SQLStatementsDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
+import org.pentaho.di.ui.spoon.SharedObjectSyncUtil;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.dialog.GetJobSQLProgressDialog;
 import org.pentaho.di.ui.spoon.dialog.GetSQLProgressDialog;
@@ -67,9 +68,14 @@ import org.pentaho.di.ui.util.DialogUtils;
 public class SpoonDBDelegate extends SpoonDelegate {
   private static Class<?> PKG = Spoon.class; // for i18n purposes, needed by Translator2!!
   private DatabaseDialog databaseDialog;
+  private SharedObjectSyncUtil sharedObjectSyncUtil;
 
   public SpoonDBDelegate( Spoon spoon ) {
     super( spoon );
+  }
+
+  public void setSharedObjectSyncUtil( SharedObjectSyncUtil sharedObjectSyncUtil ) {
+    this.sharedObjectSyncUtil = sharedObjectSyncUtil;
   }
 
   public void sqlConnection( DatabaseMeta databaseMeta ) {
@@ -98,6 +104,9 @@ public class SpoonDBDelegate extends SpoonDelegate {
       }
 
       saveConnection( databaseMeta, Const.VERSION_COMMENT_EDIT_VERSION );
+      if ( databaseMeta.isShared() ) {
+        sharedObjectSyncUtil.synchronizeConnections( databaseMeta, originalName );
+      }
 
       spoon.refreshTree();
     }
@@ -452,6 +461,7 @@ public class SpoonDBDelegate extends SpoonDelegate {
           new KettleException( BaseMessages.getString( PKG, "Spoon.Dialog.Exception.ReadOnlyRepositoryUser" ) ) );
       }
     }
+
   }
 
   public void newConnection() {

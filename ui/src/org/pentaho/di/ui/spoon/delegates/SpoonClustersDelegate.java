@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -43,7 +43,8 @@ public class SpoonClustersDelegate extends SpoonSharedObjectDelegate {
     ClusterSchema clusterSchema = new ClusterSchema();
 
     ClusterSchemaDialog dialog =
-      new ClusterSchemaDialog( spoon.getShell(), clusterSchema, transMeta.getClusterSchemas(), transMeta.getSlaveServers() );
+      new ClusterSchemaDialog(
+          spoon.getShell(), clusterSchema, transMeta.getClusterSchemas(), transMeta.getSlaveServers() );
 
     if ( dialog.open() ) {
       List<ClusterSchema> clusterSchemas = transMeta.getClusterSchemas();
@@ -61,18 +62,63 @@ public class SpoonClustersDelegate extends SpoonSharedObjectDelegate {
         try {
           if ( !spoon.rep.getSecurityProvider().isReadOnly() ) {
             spoon.rep.save( clusterSchema, Const.VERSION_COMMENT_INITIAL_VERSION, null );
+            if ( sharedObjectSyncUtil != null ) {
+              sharedObjectSyncUtil.reloadTransformationRepositoryObjects( false );
+            }
           } else {
             throw new KettleException( BaseMessages.getString(
               PKG, "Spoon.Dialog.Exception.ReadOnlyRepositoryUser" ) );
           }
         } catch ( KettleException e ) {
-          new ErrorDialog(
-            spoon.getShell(), getMessage( "Spoon.Dialog.ErrorSavingCluster.Title" ),
-            getMessage( "Spoon.Dialog.ErrorSavingCluster.Message", clusterSchema.getName() ), e );
+          showSaveError( clusterSchema, e );
         }
       }
 
       spoon.refreshTree();
+    }
+  }
+
+  private void showSaveError( ClusterSchema clusterSchema, KettleException e ) {
+    new ErrorDialog(
+      spoon.getShell(), getMessage( "Spoon.Dialog.ErrorSavingCluster.Title" ),
+      getMessage( "Spoon.Dialog.ErrorSavingCluster.Message", clusterSchema.getName() ), e );
+  }
+
+  public void editClusterSchema( TransMeta transMeta, ClusterSchema clusterSchema ) {
+    ClusterSchemaDialog dialog =
+        new ClusterSchemaDialog( spoon.getShell(), clusterSchema, transMeta.getClusterSchemas(), transMeta.getSlaveServers() );
+    if ( dialog.open() ) {
+      if ( spoon.rep != null && clusterSchema.getObjectId() != null ) {
+        try {
+          saveSharedObjectToRepository( clusterSchema, null );
+        } catch ( KettleException e ) {
+          showSaveError( clusterSchema, e );
+        }
+      }
+      sharedObjectSyncUtil.synchronizeClusterSchemas( clusterSchema );
+      spoon.refreshTree();
+    }
+  }
+
+  public void delClusterSchema( TransMeta transMeta, ClusterSchema clusterSchema ) {
+    try {
+
+      int idx = transMeta.getClusterSchemas().indexOf( clusterSchema );
+      transMeta.getClusterSchemas().remove( idx );
+
+      if ( spoon.rep != null && clusterSchema.getObjectId() != null ) {
+        // remove the partition schema from the repository too...
+        spoon.rep.deleteClusterSchema( clusterSchema.getObjectId() );
+        if ( sharedObjectSyncUtil != null ) {
+          sharedObjectSyncUtil.deleteClusterSchema( clusterSchema );
+        }
+      }
+
+      spoon.refreshTree();
+    } catch ( KettleException e ) {
+      new ErrorDialog(
+        spoon.getShell(), BaseMessages.getString( PKG, "Spoon.Dialog.ErrorDeletingPartitionSchema.Title" ), BaseMessages
+          .getString( PKG, "Spoon.Dialog.ErrorDeletingPartitionSchema.Message" ), e );
     }
   }
 }

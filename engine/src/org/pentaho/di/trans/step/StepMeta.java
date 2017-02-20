@@ -541,7 +541,7 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
 
   @Override
   public int hashCode() {
-    return stepname.hashCode();
+    return stepname.toLowerCase().hashCode();
   }
 
   @Override
