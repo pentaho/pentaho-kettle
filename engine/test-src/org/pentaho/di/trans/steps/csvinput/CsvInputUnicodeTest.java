@@ -22,9 +22,9 @@
 
 package org.pentaho.di.trans.steps.csvinput;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.when;
+import org.junit.Assert;
+import org.mockito.Matchers;
+import org.mockito.Mockito;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -62,9 +62,9 @@ public class CsvInputUnicodeTest extends CsvInputUnitTestBase {
   public static void setUp() throws KettleException {
     stepMockHelper =
       new StepMockHelper<CsvInputMeta, CsvInputData>( "CsvInputTest", CsvInputMeta.class, CsvInputData.class );
-    when( stepMockHelper.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) )
+    Mockito.when( stepMockHelper.logChannelInterfaceFactory.create( Matchers.any(), Matchers.any( LoggingObjectInterface.class ) ) )
       .thenReturn( stepMockHelper.logChannelInterface );
-    when( stepMockHelper.trans.isRunning() ).thenReturn( true );
+    Mockito.when( stepMockHelper.trans.isRunning() ).thenReturn( true );
   }
 
   @Test
@@ -144,7 +144,7 @@ public class CsvInputUnicodeTest extends CsvInputUnitTestBase {
       @Override
       public void rowWrittenEvent( RowMetaInterface rowMeta, Object[] row ) throws KettleStepException {
         for ( int i = 0; i < rowMeta.size(); i++ ) {
-          assertEquals( "Value", row[ i ] );
+          Assert.assertEquals( "Value", row[ i ] );
         }
       }
     } );
@@ -155,7 +155,7 @@ public class CsvInputUnicodeTest extends CsvInputUnitTestBase {
     } while ( !haveRowsToRead );
 
     csvInput.dispose( meta, data );
-    assertEquals( 2, csvInput.getLinesWritten() );
+    Assert.assertEquals( 2, csvInput.getLinesWritten() );
   }
 
   private CsvInputMeta createStepMeta( final String testFilePath, final String encoding, final String delimiter ) {
