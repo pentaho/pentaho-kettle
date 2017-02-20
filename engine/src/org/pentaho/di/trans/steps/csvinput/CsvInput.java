@@ -644,7 +644,7 @@ public class CsvInput extends BaseStep implements StepInterface {
             data.moveEndBufferPointer();
             i++;
           }
-          if ( data.newLineFound() ) {
+          if ( data.newLineFound() && outputIndex >= meta.getInputFields().length ) {
             data.moveEndBufferPointer();
           }
           if ( doubleLineEnd && data.encodingType.getLength() > 1 ) {
