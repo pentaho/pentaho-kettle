@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -28,12 +28,15 @@ import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.trans.steps.abort.AbortMeta;
+import org.pentaho.di.trans.steps.missing.MissingTrans;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -54,6 +57,14 @@ public class StepMetaTest {
     assertEquals( meta, clone );
   }
 
+  @Test
+  public void stepMetaXmlConsistency() throws Exception {
+    StepMeta meta = new StepMeta( "id", "name", null );
+    StepMetaInterface smi = new MissingTrans( meta.getName(), meta.getStepID() );
+    meta.setStepMetaInterface( smi  );
+    StepMeta fromXml = StepMeta.fromXml( meta.getXML() );
+    assertThat( meta.getXML(), is( fromXml.getXML() ) );
+  }
 
   private static StepMeta createTestMeta() throws Exception {
     StepMetaInterface stepMetaInterface = mock( AbortMeta.class );
