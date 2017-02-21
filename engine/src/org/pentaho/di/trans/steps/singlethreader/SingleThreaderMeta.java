@@ -74,9 +74,7 @@ import org.w3c.dom.Node;
 
 public class SingleThreaderMeta extends StepWithMappingMeta implements StepMetaInterface, HasRepositoryInterface {
 
-  static {
-    PKG = SingleThreaderMeta.class; // for i18n purposes, needed by Translator2!!
-  }
+  private static Class<?>  PKG = SingleThreaderMeta.class; // for i18n purposes, needed by Translator2!!
 
   private String batchSize;
   private String batchTime;
