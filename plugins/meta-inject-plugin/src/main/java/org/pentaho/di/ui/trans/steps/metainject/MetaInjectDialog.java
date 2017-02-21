@@ -906,7 +906,7 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
     }
 
     wTargetFile.setText( Const.NVL( metaInjectMeta.getTargetFile(), "" ) );
-    wNoExecution.setSelection( metaInjectMeta.isNoExecution() );
+    wNoExecution.setSelection( !metaInjectMeta.isNoExecution() );
 
     wStreamingSourceStep.setText( Const.NVL(
       metaInjectMeta.getStreamSourceStep() == null ? null : metaInjectMeta.getStreamSourceStep().getName(), "" ) );
@@ -1136,7 +1136,7 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
     }
 
     metaInjectMeta.setTargetFile( wTargetFile.getText() );
-    metaInjectMeta.setNoExecution( wNoExecution.getSelection() );
+    metaInjectMeta.setNoExecution( !wNoExecution.getSelection() );
 
     metaInjectMeta.setStreamSourceStep( transMeta.findStep( wStreamingSourceStep.getText() ) );
     metaInjectMeta.setStreamTargetStepname( wStreamingTargetStep.getText() );
