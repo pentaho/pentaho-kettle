@@ -87,7 +87,7 @@ public class ExpandedContentManagerTest {
     Composite parent = setupExpandedContentMocks( transGraph, browser, sashForm );
     ExpandedContentManager.hideExpandedContent( transGraph );
     verify( browser ).moveBelow( null );
-    verify( parent ).layout( true );
+    verify( parent ).layout( true, true );
     verify( parent ).redraw();
     verify( sashForm ).setWeights( new int[] { 3, 2, 1 } );
   }
