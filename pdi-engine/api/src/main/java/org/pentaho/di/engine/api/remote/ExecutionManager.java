@@ -2,6 +2,7 @@ package org.pentaho.di.engine.api.remote;
 
 import java.io.Serializable;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * A service (usually running on a remote daemon) that can accept Execution Requests
@@ -33,5 +34,5 @@ public interface ExecutionManager extends Serializable {
    * @param request {@link ExecutionRequest}
    * @return endpointId used to locate an {@link Execution}
    */
-  String submit( ExecutionRequest request );
+  CompletableFuture<String> submit( ExecutionRequest request );
 }
