@@ -1145,7 +1145,10 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
     metaInjectMeta.setTargetFile( wTargetFile.getText() );
     metaInjectMeta.setNoExecution( !wNoExecution.getSelection() );
 
-    metaInjectMeta.setStreamSourceStep( transMeta.findStep( wStreamingSourceStep.getText() ) );
+    final StepMeta streamSourceStep = transMeta.findStep( wStreamingSourceStep.getText() );
+    metaInjectMeta.setStreamSourceStep( streamSourceStep );
+    // PDI-15989 Save streamSourceStepname to find streamSourceStep when loading
+    metaInjectMeta.setStreamSourceStepname( streamSourceStep != null ? streamSourceStep.getName() : "" );
     metaInjectMeta.setStreamTargetStepname( wStreamingTargetStep.getText() );
 
     metaInjectMeta.setTargetSourceMapping( targetSourceMapping );
