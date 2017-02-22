@@ -33,6 +33,7 @@ import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.widgets.Control;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.ui.spoon.trans.TransGraph;
 
 import java.util.function.Consumer;
@@ -160,6 +161,9 @@ public final class ExpandedContentManager {
     if ( !isVisible( graph ) ) {
       maximizeExpandedContent( browser );
     }
+    if ( Const.isOSX() && graph.isExecutionResultsPaneVisible() ) {
+      graph.extraViewComposite.setVisible( false );
+    }
     browser.moveAbove( null );
     browser.getParent().layout( true );
     browser.getParent().redraw();
@@ -207,8 +211,11 @@ public final class ExpandedContentManager {
    */
   public static void hideExpandedContent( TransGraph graph ) {
     doToExpandedContent( graph, browser -> {
+      if ( Const.isOSX() && graph.isExecutionResultsPaneVisible() ) {
+        graph.extraViewComposite.setVisible( true );
+      }
       browser.moveBelow( null );
-      browser.getParent().layout( true );
+      browser.getParent().layout( true, true );
       browser.getParent().redraw();
     } );
   }
