@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -33,7 +33,7 @@ import org.pentaho.di.trans.steps.mock.StepMockHelper;
 import org.pentaho.di.trans.steps.textfileinput.TextFileInputField;
 
 import java.io.File;
-import static org.junit.Assert.assertEquals;
+import org.junit.Assert;
 
 /**
  *  We take file with content
@@ -72,8 +72,8 @@ public class CsvProcessRowInParallelTest extends CsvInputUnitTestBase {
 
     File sharedFile = createTestFile( "UTF-8", fileContent );
 
-    assertEquals( createAndRunOneStep( sharedFile, 0, totalNumberOfSteps ), 1 );
-    assertEquals( createAndRunOneStep( sharedFile, 1, totalNumberOfSteps ), 1 );
+    Assert.assertEquals( createAndRunOneStep( sharedFile, 0, totalNumberOfSteps ), 1 );
+    Assert.assertEquals( createAndRunOneStep( sharedFile, 1, totalNumberOfSteps ), 1 );
   }
 
   @Test
@@ -87,8 +87,8 @@ public class CsvProcessRowInParallelTest extends CsvInputUnitTestBase {
 
     File sharedFile = createTestFile( "UTF-8", fileContent );
 
-    assertEquals( createAndRunOneStep( sharedFile, 0, totalNumberOfSteps ), 2 );
-    assertEquals( createAndRunOneStep( sharedFile, 1, totalNumberOfSteps ), 1 );
+    Assert.assertEquals( createAndRunOneStep( sharedFile, 0, totalNumberOfSteps ), 2 );
+    Assert.assertEquals( createAndRunOneStep( sharedFile, 1, totalNumberOfSteps ), 1 );
   }
 
   @Test
@@ -96,21 +96,21 @@ public class CsvProcessRowInParallelTest extends CsvInputUnitTestBase {
     final int totalNumberOfSteps = 2;
 
     final String fileContent =
-      "ab,111\r\n"
-        + "bc,222\r\n"
-        + "cd,333\r\n"
-        + "de,444\r\n"
-        + "ef,555\r"
-        + "fg,666\r\n"
-        + "gh,777\r\n"
-        + "hi,888\r\n"
-        + "ij,999\r"
-        + "jk,000\r";
+          "ab;111\r\n"
+        + "bc;222\r\n"
+        + "cd;333\r\n"
+        + "de;444\r\n"
+        + "ef;555\r"
+        + "fg;666\r\n"
+        + "gh;777\r\n"
+        + "hi;888\r\n"
+        + "ij;999\r"
+        + "jk;000\r";
 
     File sharedFile = createTestFile( "UTF-8", fileContent );
 
-    assertEquals( createAndRunOneStep( sharedFile, 0, totalNumberOfSteps ), 5 );
-    assertEquals( createAndRunOneStep( sharedFile, 1, totalNumberOfSteps ), 5 );
+    Assert.assertEquals( createAndRunOneStep( sharedFile, 0, totalNumberOfSteps ), 5 );
+    Assert.assertEquals( createAndRunOneStep( sharedFile, 1, totalNumberOfSteps ), 5 );
   }
 
   @Test
@@ -118,21 +118,21 @@ public class CsvProcessRowInParallelTest extends CsvInputUnitTestBase {
     final int totalNumberOfSteps = 2;
 
     final String fileContent =
-      "ab,111\r\n"
-        + "bc,222\r\n"
-        + "cd,333\r\n"
-        + "de,444\r\n"
-        + "ef,555\r"
-        + "fg,666\r\n"
-        + "gh,777\r\n"
-        + "hi,888\r\n"
-        + "ij,999\r"
-        + "jk,000";
+          "ab;111\r\n"
+        + "bc;222\r\n"
+        + "cd;333\r\n"
+        + "de;444\r\n"
+        + "ef;555\r"
+        + "fg;666\r\n"
+        + "gh;777\r\n"
+        + "hi;888\r\n"
+        + "ij;999\r"
+        + "jk;000";
 
     File sharedFile = createTestFile( "UTF-8", fileContent );
 
-    assertEquals( createAndRunOneStep( sharedFile, 0, totalNumberOfSteps ), 5 );
-    assertEquals( createAndRunOneStep( sharedFile, 1, totalNumberOfSteps ), 5 );
+    Assert.assertEquals( createAndRunOneStep( sharedFile, 0, totalNumberOfSteps ), 5 );
+    Assert.assertEquals( createAndRunOneStep( sharedFile, 1, totalNumberOfSteps ), 5 );
   }
 
 
@@ -145,8 +145,8 @@ public class CsvProcessRowInParallelTest extends CsvInputUnitTestBase {
 
     File sharedFile = createTestFile( "UTF-8", fileContent );
 
-    assertEquals( createAndRunOneStep( sharedFile, 0, totalNumberOfSteps ), 1 );
-    assertEquals( createAndRunOneStep( sharedFile, 1, totalNumberOfSteps ), 1 );
+    Assert.assertEquals( createAndRunOneStep( sharedFile, 0, totalNumberOfSteps ), 1 );
+    Assert.assertEquals( createAndRunOneStep( sharedFile, 1, totalNumberOfSteps ), 1 );
   }
 
   @Test
@@ -158,8 +158,8 @@ public class CsvProcessRowInParallelTest extends CsvInputUnitTestBase {
 
     File sharedFile = createTestFile( "UTF-8", fileContent );
 
-    assertEquals( createAndRunOneStep( sharedFile, 0, totalNumberOfSteps ), 1 );
-    assertEquals( createAndRunOneStep( sharedFile, 1, totalNumberOfSteps ), 1 );
+    Assert.assertEquals( createAndRunOneStep( sharedFile, 0, totalNumberOfSteps ), 1 );
+    Assert.assertEquals( createAndRunOneStep( sharedFile, 1, totalNumberOfSteps ), 1 );
   }
 
 
@@ -181,9 +181,9 @@ public class CsvProcessRowInParallelTest extends CsvInputUnitTestBase {
 
     File sharedFile = createTestFile( "UTF-8", fileContent );
 
-    assertEquals( createAndRunOneStep( sharedFile, 0, totalNumberOfSteps ), 2 );
-    assertEquals( createAndRunOneStep( sharedFile, 1, totalNumberOfSteps ), 2 );
-    assertEquals( createAndRunOneStep( sharedFile, 2, totalNumberOfSteps ), 2 );
+    Assert.assertEquals( createAndRunOneStep( sharedFile, 0, totalNumberOfSteps ), 2 );
+    Assert.assertEquals( createAndRunOneStep( sharedFile, 1, totalNumberOfSteps ), 2 );
+    Assert.assertEquals( createAndRunOneStep( sharedFile, 2, totalNumberOfSteps ), 2 );
   }
 
   /**
@@ -204,8 +204,8 @@ public class CsvProcessRowInParallelTest extends CsvInputUnitTestBase {
 
     File sharedFile = createTestFile( "UTF-8", fileContent );
 
-    assertEquals( createAndRunOneStep( sharedFile, 0, totalNumberOfSteps ), 1 );
-    assertEquals( createAndRunOneStep( sharedFile, 1, totalNumberOfSteps ), 2 );
+    Assert.assertEquals( createAndRunOneStep( sharedFile, 0, totalNumberOfSteps ), 1 );
+    Assert.assertEquals( createAndRunOneStep( sharedFile, 1, totalNumberOfSteps ), 2 );
   }
 
   @Test
@@ -220,8 +220,8 @@ public class CsvProcessRowInParallelTest extends CsvInputUnitTestBase {
 
     File sharedFile = createTestFile( "UTF-8", fileContent );
 
-    assertEquals( createAndRunOneStep( sharedFile, 0, totalNumberOfSteps ), 1 );
-    assertEquals( createAndRunOneStep( sharedFile, 1, totalNumberOfSteps ), 2 );
+    Assert.assertEquals( createAndRunOneStep( sharedFile, 0, totalNumberOfSteps ), 1 );
+    Assert.assertEquals( createAndRunOneStep( sharedFile, 1, totalNumberOfSteps ), 2 );
   }
 
 
