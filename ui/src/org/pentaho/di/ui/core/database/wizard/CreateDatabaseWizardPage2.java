@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -176,6 +176,10 @@ public class CreateDatabaseWizardPage2 extends WizardPage {
   }
 
   public boolean canFinish() {
+    if ( !isCurrentPage() ) {
+      return false;
+    }
+
     getDatabaseInfo();
 
     String[] remarks = databaseMeta.checkParameters();
