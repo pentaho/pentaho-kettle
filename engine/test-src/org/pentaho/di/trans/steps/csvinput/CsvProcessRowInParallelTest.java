@@ -96,16 +96,16 @@ public class CsvProcessRowInParallelTest extends CsvInputUnitTestBase {
     final int totalNumberOfSteps = 2;
 
     final String fileContent =
-          "ab;111\r\n"
-        + "bc;222\r\n"
-        + "cd;333\r\n"
-        + "de;444\r\n"
-        + "ef;555\r"
-        + "fg;666\r\n"
-        + "gh;777\r\n"
-        + "hi;888\r\n"
-        + "ij;999\r"
-        + "jk;000\r";
+          "ab,111\r\n"
+        + "bc,222\r\n"
+        + "cd,333\r\n"
+        + "de,444\r\n"
+        + "ef,555\r"
+        + "fg,666\r\n"
+        + "gh,777\r\n"
+        + "hi,888\r\n"
+        + "ij,999\r"
+        + "jk,000\r";
 
     File sharedFile = createTestFile( "UTF-8", fileContent );
 
@@ -118,16 +118,16 @@ public class CsvProcessRowInParallelTest extends CsvInputUnitTestBase {
     final int totalNumberOfSteps = 2;
 
     final String fileContent =
-          "ab;111\r\n"
-        + "bc;222\r\n"
-        + "cd;333\r\n"
-        + "de;444\r\n"
-        + "ef;555\r"
-        + "fg;666\r\n"
-        + "gh;777\r\n"
-        + "hi;888\r\n"
-        + "ij;999\r"
-        + "jk;000";
+          "ab,111\r\n"
+        + "bc,222\r\n"
+        + "cd,333\r\n"
+        + "de,444\r\n"
+        + "ef,555\r"
+        + "fg,666\r\n"
+        + "gh,777\r\n"
+        + "hi,888\r\n"
+        + "ij,999\r"
+        + "jk,000";
 
     File sharedFile = createTestFile( "UTF-8", fileContent );
 
