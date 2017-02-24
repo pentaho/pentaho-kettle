@@ -41,6 +41,7 @@ import org.apache.commons.vfs2.cache.WeakRefFilesCache;
 import org.apache.commons.vfs2.impl.DefaultFileSystemManager;
 import org.apache.commons.vfs2.impl.StandardFileSystemManager;
 import org.apache.commons.vfs2.provider.local.LocalFile;
+import org.apache.commons.vfs2.provider.sftp.SftpFileObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.util.UUIDUtil;
@@ -82,7 +83,7 @@ public class KettleVFS {
         if ( fsm != null ) {
           try {
             fsm.close();
-          } catch ( Exception ignored ){
+          } catch ( Exception ignored ) {
             // Exceptions can be thrown due to a closed classloader
           }
         }
@@ -151,6 +152,11 @@ public class KettleVFS {
         fileObject = fsManager.resolveFile( filename, fsOptions );
       } else {
         fileObject = fsManager.resolveFile( filename );
+      }
+
+      if ( fileObject instanceof SftpFileObject ) {
+        fileObject = new SftpFileObjectWithWindowsSupport( (SftpFileObject) fileObject,
+                SftpFileSystemWindowsProvider.getSftpFileSystemWindows( (SftpFileObject) fileObject ) );
       }
 
       return fileObject;
