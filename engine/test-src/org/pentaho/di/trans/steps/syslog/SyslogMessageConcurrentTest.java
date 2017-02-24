@@ -59,7 +59,7 @@ public class SyslogMessageConcurrentTest {
     countDownLatch = new CountDownLatch( 1 );
   }
 
-  @Test( timeout = 2000 )
+  @Test( timeout = 10000 )
    public void concurrentSyslogMessageTest() throws Exception {
     SyslogMessageTask syslogMessage = null;
     ExecutorService service = Executors.newFixedThreadPool( numOfTasks );
