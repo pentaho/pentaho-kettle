@@ -150,6 +150,7 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
 
   // end PDI-3326 hack
 
+  @SuppressWarnings( "deprecation" )
   public void init( Repository repository ) throws ControllerInitializationException {
     try {
       this.repository = repository;
@@ -159,7 +160,7 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
       RepositoryDirectoryInterface root;
       try {
         if ( repository instanceof RepositoryExtended ) {
-          root = ( (RepositoryExtended) repository ).loadRepositoryDirectoryTree( "*.ktr|*.kjb", true, true );
+          root = ( (RepositoryExtended) repository ).loadRepositoryDirectoryTree(  "/", "*.ktr|*.kjb", -1, true, true, true );
         } else {
           root = repository.loadRepositoryDirectoryTree();
         }
