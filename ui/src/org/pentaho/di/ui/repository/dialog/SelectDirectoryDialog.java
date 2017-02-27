@@ -108,6 +108,7 @@ public class SelectDirectoryDialog extends Dialog {
     readOnly = rep.getSecurityProvider().isReadOnly();
   }
 
+  @SuppressWarnings( "deprecation" )
   public RepositoryDirectoryInterface open() {
     dircolor = GUIResource.getInstance().getColorDirectory();
 
@@ -130,7 +131,7 @@ public class SelectDirectoryDialog extends Dialog {
     try {
       if ( rep instanceof RepositoryExtended ) {
         RepositoryExtended repositoryExtended = (RepositoryExtended) this.rep;
-        repositoryTree = repositoryExtended.loadRepositoryDirectoryTree( null, true, false );
+        repositoryTree = repositoryExtended.loadRepositoryDirectoryTree(  "/", null, -1, true, true, false );
       } else {
         repositoryTree = this.rep.loadRepositoryDirectoryTree();
       }

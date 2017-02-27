@@ -55,6 +55,7 @@ import org.pentaho.di.core.extension.ExtensionPointHandler;
 import org.pentaho.di.core.extension.KettleExtensionPoint;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.partition.PartitionSchema;
@@ -558,42 +559,46 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
   }
 
   @Override
-  public RepositoryDirectoryInterface loadRepositoryDirectoryTree( String filter, boolean fullDirs, boolean includeAcls )
+  public RepositoryDirectoryInterface loadRepositoryDirectoryTree(
+      String path,
+      String filter,
+      int depth,
+      boolean showHidden,
+      boolean includeEmptyFolder,
+      boolean includeAcls )
     throws KettleException {
-    if ( filter == null ) {
-      return initRepositoryDirectoryTree( loadRepositoryFileTreeFolders( "/", -1, includeAcls ) );
-    }
-    RepositoryDirectoryInterface files =
-        initRepositoryDirectoryTree( loadRepositoryFileTree( "/", -1, filter, includeAcls ) );
-    if ( fullDirs ) {
+    RepositoryFileTree repoTree = loadRepositoryFileTree( path, filter, depth, showHidden, includeAcls, FILES_TYPE_FILTER.FILES_FOLDERS );
+    RepositoryFile folder = repoTree.getFile();
+    RepositoryDirectory dir = new RepositoryDirectory();
+    dir.setObjectId( new StringObjectId( folder.getId().toString() ) );
+    loadRepositoryDirectory( dir, folder, repoTree );
+
+    if ( includeEmptyFolder ) {
       RepositoryDirectoryInterface folders =
-          initRepositoryDirectoryTree( loadRepositoryFileTreeFolders( "/", -1, includeAcls  ) );
-      return copyFrom( folders, files );
+          initRepositoryDirectoryTree(
+              loadRepositoryFileTree( path, null, depth, showHidden, includeAcls, FILES_TYPE_FILTER.FOLDERS ) );
+      return copyFrom( folders, dir );
     } else {
-      return files;
+      return dir;
     }
   }
 
-  private RepositoryFileTree loadRepositoryFileTreeFolders( String path, int depth, boolean includeAcls ) {
+  private RepositoryFileTree loadRepositoryFileTree(
+      String path,
+      String filter,
+      int depth,
+      boolean showHidden,
+      boolean includeAcls,
+      FILES_TYPE_FILTER types ) {
     RepositoryRequest repoRequest = new RepositoryRequest();
+    repoRequest.setPath( Utils.isEmpty( path ) ? "/" : path );
+    repoRequest.setChildNodeFilter( filter == null ? "*" : filter );
     repoRequest.setDepth( depth );
+    repoRequest.setShowHidden( showHidden );
     repoRequest.setIncludeAcls( includeAcls );
-    repoRequest.setChildNodeFilter( "*" );
-    repoRequest.setTypes( FILES_TYPE_FILTER.FOLDERS );
-    repoRequest.setPath( path );
-    repoRequest.setShowHidden( true );
-    return pur.getTree( repoRequest );
-  }
+    repoRequest.setTypes( types == null ? FILES_TYPE_FILTER.FILES_FOLDERS : types );
 
-  private RepositoryFileTree loadRepositoryFileTree( String path, int depth, String filter, boolean includeAcls ) {
-    RepositoryRequest repoRequest = new RepositoryRequest();
-    repoRequest.setDepth( depth );
-    repoRequest.setChildNodeFilter( filter );
-    repoRequest.setPath( path );
-    repoRequest.setIncludeAcls( includeAcls );
-    repoRequest.setShowHidden( true );
     RepositoryFileTree fileTree = pur.getTree( repoRequest );
-
     return fileTree;
   }
 
