@@ -138,21 +138,21 @@
     <dependency org="pentaho" name="pentaho-platform-core"  rev="${dependency.pentaho-platform.revision}" transitive="false"/>
 
     <!--  Pentaho reporting dependencies -->
-    <dependency org="${dependency.reporting-engine.group}" name="pentaho-reporting-engine-classic-extensions" rev="${dependency.pentaho-reporting.revision}" changing="true">
+    <dependency org="${dependency.reporting-engine.group}" name="classic-extensions" rev="${dependency.pentaho-reporting.revision}" changing="true">
       <exclude name="pentaho-reporting-engine-classic-core-test"/>
       <exclude name="javax.mail" module="mail"/>
       <exclude org="org.apache.axis2" module="axis2-kernel" />
       <exclude org="org.scannotation" module="scannotation" />
     </dependency>
-    <dependency org="${dependency.reporting-engine.group}" name="pentaho-reporting-engine-classic-extensions-drill-down" rev="${dependency.pentaho-reporting.revision}" changing="true"/>
-    <dependency org="${dependency.reporting-engine.group}" name="pentaho-reporting-engine-classic-extensions-kettle" rev="${dependency.pentaho-reporting.revision}" changing="true">
+    <dependency org="${dependency.reporting-engine.group}" name="classic-extensions-drill-down" rev="${dependency.pentaho-reporting.revision}" changing="true"/>
+    <dependency org="${dependency.reporting-engine.group}" name="classic-extensions-kettle" rev="${dependency.pentaho-reporting.revision}" changing="true">
       <exclude org="org.apache.axis2" module="axis2-kernel" />
       <exclude org="org.apache.axis2" module="axis2-adb" />
       <exclude org="org.scannotation" module="scannotation" />
     </dependency>
-    <dependency org="${dependency.reporting-engine.group}" name="pentaho-reporting-engine-classic-extensions-mondrian" rev="${dependency.pentaho-reporting.revision}" transitive="true" changing="true"/>
-    <dependency org="${dependency.reporting-engine.group}" name="pentaho-reporting-engine-classic-extensions-olap4j" rev="${dependency.pentaho-reporting.revision}" transitive="true" changing="true"/>
-    <dependency org="${dependency.reporting-engine.group}" name="pentaho-reporting-engine-classic-extensions-pmd" rev="${dependency.pentaho-reporting.revision}" transitive="true" changing="true">
+    <dependency org="${dependency.reporting-engine.group}" name="classic-extensions-mondrian" rev="${dependency.pentaho-reporting.revision}" transitive="true" changing="true"/>
+    <dependency org="${dependency.reporting-engine.group}" name="classic-extensions-olap4j" rev="${dependency.pentaho-reporting.revision}" transitive="true" changing="true"/>
+    <dependency org="${dependency.reporting-engine.group}" name="classic-extensions-pmd" rev="${dependency.pentaho-reporting.revision}" transitive="true" changing="true">
       <exclude org="org.apache.axis2" module="axis2-kernel" />
       <exclude org="org.apache.axis2" module="axis2-adb" />
       <exclude org="org.scannotation" module="scannotation" />
@@ -160,15 +160,15 @@
     <dependency org="org.apache.axis2" name="axis2-kernel" rev="1.5" transitive="false" />
     <dependency org="org.apache.axis2" name="axis2-adb" rev="1.5" transitive="false" />
     
-    <dependency org="${dependency.reporting-engine.group}" name="pentaho-reporting-engine-classic-extensions-reportdesigner-parser" rev="${dependency.pentaho-reporting.revision}" transitive="true" changing="true"/>
-    <dependency org="${dependency.reporting-engine.group}" name="pentaho-reporting-engine-classic-extensions-sampledata" rev="${dependency.pentaho-reporting.revision}" transitive="true" changing="true"/>
-    <dependency org="${dependency.reporting-engine.group}" name="pentaho-reporting-engine-classic-extensions-scripting" rev="${dependency.pentaho-reporting.revision}" transitive="true" changing="true"/>
-    <dependency org="${dependency.reporting-engine.group}" name="pentaho-reporting-engine-classic-extensions-toc" rev="${dependency.pentaho-reporting.revision}" transitive="true" changing="true"/>
-    <dependency org="${dependency.reporting-engine.group}" name="pentaho-reporting-engine-classic-extensions-xpath" rev="${dependency.pentaho-reporting.revision}" transitive="true" changing="true"/>
-    <dependency org="${dependency.reporting-engine.group}" name="pentaho-reporting-engine-legacy-charts" rev="${dependency.pentaho-reporting.revision}" transitive="true" changing="true"/>
-    <dependency org="${dependency.reporting-engine.group}" name="pentaho-reporting-engine-legacy-functions" rev="${dependency.pentaho-reporting.revision}" transitive="true" changing="true"/>
-    <dependency org="${dependency.reporting-engine.group}" name="pentaho-reporting-engine-wizard-core"  rev="${dependency.pentaho-reporting.revision}" changing="true" transitive="true"/>
-
+    <dependency org="${dependency.reporting-engine.group}" name="classic-extensions-reportdesigner-parser" rev="${dependency.pentaho-reporting.revision}" transitive="true" changing="true"/>
+    <dependency org="${dependency.reporting-engine.group}" name="classic-extensions-sampledata" rev="${dependency.pentaho-reporting.revision}" transitive="true" changing="true"/>
+    <dependency org="${dependency.reporting-engine.group}" name="classic-extensions-scripting" rev="${dependency.pentaho-reporting.revision}" transitive="true" changing="true"/>
+    <dependency org="${dependency.reporting-engine.group}" name="classic-extensions-toc" rev="${dependency.pentaho-reporting.revision}" transitive="true" changing="true"/>
+    <dependency org="${dependency.reporting-engine.group}" name="classic-extensions-xpath" rev="${dependency.pentaho-reporting.revision}" transitive="true" changing="true"/>
+    <dependency org="${dependency.reporting-engine.group}" name="legacy-charts" rev="${dependency.pentaho-reporting.revision}" transitive="true" changing="true"/>
+    <dependency org="${dependency.reporting-engine.group}" name="legacy-functions" rev="${dependency.pentaho-reporting.revision}" transitive="true" changing="true"/>
+    <dependency org="${dependency.reporting-engine.group}" name="wizard-core"  rev="${dependency.pentaho-reporting.revision}" changing="true" transitive="true"/>
+    
     <!--  OSS Licenses file -->
     <dependency org="pentaho" name="oss-licenses" rev="${dependency.oss-licenses.revision}" conf="oss-licenses->default">
       <artifact name="oss-licenses" type="zip" />
