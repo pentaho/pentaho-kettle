@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -41,6 +41,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import com.google.common.base.Preconditions;
 import org.pentaho.di.core.BlockingRowSet;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
@@ -396,6 +397,12 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
   protected IMetaStore metaStore;
 
   protected Map<String, Object> extensionDataMap;
+
+  /**
+   * rowHandler handles getting/putting rows and putting errors.
+   * Default implementation defers to corresponding methods in this class.
+   */
+  private RowHandler rowHandler;
 
   /**
    * This is the base step that forms that basis for all steps. You can derive from this class to implement your own
@@ -1202,6 +1209,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
     return trans;
   }
 
+
   /**
    * putRow is used to copy a row, to the alternate rowset(s) This should get priority over everything else!
    * (synchronized) If distribute is true, a row is copied only once to the output rowsets, otherwise copies are sent to
@@ -1213,6 +1221,11 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
    */
   @Override
   public void putRow( RowMetaInterface rowMeta, Object[] row ) throws KettleStepException {
+    getRowHandler().putRow( rowMeta, row );
+  }
+
+
+  private void handlePutRow( RowMetaInterface rowMeta, Object[] row ) throws KettleStepException {
     // Are we pausing the step? If so, stall forever...
     //
     while ( paused.get() && !stopped.get() ) {
@@ -1628,7 +1641,13 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
    *           the kettle step exception
    */
   public void putError( RowMetaInterface rowMeta, Object[] row, long nrErrors, String errorDescriptions,
-    String fieldNames, String errorCodes ) throws KettleStepException {
+                        String fieldNames, String errorCodes ) throws KettleStepException {
+    getRowHandler().putError( rowMeta, row, nrErrors, errorDescriptions, fieldNames, errorCodes );
+  }
+
+
+  private void handlePutError( RowMetaInterface rowMeta, Object[] row, long nrErrors, String errorDescriptions,
+                               String fieldNames, String errorCodes ) throws KettleStepException {
     if ( trans.isSafeModeEnabled() ) {
       if ( rowMeta.size() > row.length ) {
         throw new KettleStepException( BaseMessages.getString(
@@ -1762,12 +1781,19 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
     }
   }
 
+
+
   /**
    * In case of getRow, we receive data from previous steps through the input rowset. In case we split the stream, we
    * have to copy the data to the alternate splits: rowsets 1 through n.
    */
   @Override
   public Object[] getRow() throws KettleException {
+    return getRowHandler().getRow();
+  }
+
+
+  private Object[] handleGetRow() throws KettleException {
 
     // Are we pausing the step? If so, stall forever...
     //
@@ -1928,6 +1954,23 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
     verifyRejectionRates();
 
     return row;
+  }
+
+  /**
+   * RowHandler controls how getRow/putRow are handled.
+   * The default RowHandler will simply call
+   * {@link #handleGetRow()} and {@link #handlePutRow(RowMetaInterface, Object[])}
+   */
+  public void setRowHandler( RowHandler rowHandler ) {
+    Preconditions.checkNotNull( rowHandler );
+    this.rowHandler = rowHandler;
+  }
+
+  public RowHandler getRowHandler() {
+    if ( rowHandler == null ) {
+      rowHandler = new DefaultRowHandler();
+    }
+    return this.rowHandler;
   }
 
   /**
@@ -4188,4 +4231,20 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
   public Map<String, Object> getExtensionDataMap() {
     return extensionDataMap;
   }
+
+  private class DefaultRowHandler implements RowHandler {
+    @Override public Object[] getRow() throws KettleException {
+      return handleGetRow();
+    }
+
+    @Override public void putRow( RowMetaInterface rowMeta, Object[] row ) throws KettleStepException {
+      handlePutRow( rowMeta, row );
+    }
+
+    @Override public void putError( RowMetaInterface rowMeta, Object[] row, long nrErrors, String errorDescriptions,
+                                    String fieldNames, String errorCodes ) throws KettleStepException {
+      handlePutError( rowMeta, row, nrErrors, errorDescriptions, fieldNames, errorCodes );
+    }
+  }
 }
+
