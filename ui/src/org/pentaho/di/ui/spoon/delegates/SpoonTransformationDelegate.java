@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -162,8 +162,7 @@ public class SpoonTransformationDelegate extends SpoonDelegate {
         // Try again, including the location of the object...
         //
         tabName = spoon.delegates.tabs.makeTabName( transMeta, showLocation );
-        TabMapEntry exactSameEntry =
-          spoon.delegates.tabs.findTabMapEntry( tabName, ObjectType.TRANSFORMATION_GRAPH );
+        TabMapEntry exactSameEntry = spoon.delegates.tabs.findTabMapEntry( tabName, ObjectType.TRANSFORMATION_GRAPH );
         if ( exactSameEntry != null ) {
           // Already loaded, simply select the tab item in question...
           //
@@ -177,13 +176,14 @@ public class SpoonTransformationDelegate extends SpoonDelegate {
         }
       }
 
+      TransGraph transGraph = null;
       if ( addTab ) {
-        TransGraph transGraph = new TransGraph( spoon.tabfolder.getSwtTabset(), spoon, transMeta );
+        transGraph = new TransGraph( spoon.tabfolder.getSwtTabset(), spoon, transMeta );
         PropsUI props = PropsUI.getInstance();
         TabItem tabItem = new TabItem( spoon.tabfolder, tabName, tabName, props.getSashWeights() );
         String toolTipText =
-          BaseMessages.getString( PKG, "Spoon.TabTrans.Tooltip", spoon.delegates.tabs.makeTabName(
-            transMeta, showLocation ) );
+            BaseMessages.getString( PKG, "Spoon.TabTrans.Tooltip", spoon.delegates.tabs.makeTabName( transMeta,
+                showLocation ) );
         if ( !Utils.isEmpty( transMeta.getFilename() ) ) {
           toolTipText += Const.CR + Const.CR + transMeta.getFilename();
         }
@@ -192,19 +192,11 @@ public class SpoonTransformationDelegate extends SpoonDelegate {
         tabItem.setControl( transGraph );
         TransLogTable logTable = transMeta.getTransLogTable();
 
-        // OK, also see if we need to open a new history window.
-        if ( logTable.getDatabaseMeta() != null
-          && !Utils.isEmpty( logTable.getTableName() ) && !transMeta.isSlaveTransformation() ) {
-          transGraph.addAllTabs();
-          transGraph.extraViewTabFolder.setSelection( transGraph.transHistoryDelegate.getTransHistoryTab() );
-        }
-
-        String versionLabel =
-          transMeta.getObjectRevision() == null ? null : transMeta.getObjectRevision().getName();
+        String versionLabel = transMeta.getObjectRevision() == null ? null : transMeta.getObjectRevision().getName();
 
         tabEntry =
-          new TabMapEntry( tabItem, transMeta.getFilename(), transMeta.getName(), transMeta
-            .getRepositoryDirectory(), versionLabel, transGraph, ObjectType.TRANSFORMATION_GRAPH );
+            new TabMapEntry( tabItem, transMeta.getFilename(), transMeta.getName(), transMeta.getRepositoryDirectory(),
+                versionLabel, transGraph, ObjectType.TRANSFORMATION_GRAPH );
         tabEntry.setShowingLocation( showLocation );
 
         spoon.delegates.tabs.addTab( tabEntry );
@@ -214,6 +206,14 @@ public class SpoonTransformationDelegate extends SpoonDelegate {
 
       // keep the focus on the graph
       spoon.tabfolder.setSelected( idx );
+
+      if ( addTab ) {
+        TransLogTable logTable = transMeta.getTransLogTable();
+        // OK, also see if we need to open a new history window.
+        if ( isLogTableDefined( logTable ) && !transMeta.isSlaveTransformation() ) {
+          addTabsToTransGraph( transGraph );
+        }
+      }
 
       spoon.setUndoMenu( transMeta );
       spoon.enableMenus();
@@ -229,6 +229,15 @@ public class SpoonTransformationDelegate extends SpoonDelegate {
         spoon.enableMenus();
       }
     }
+  }
+
+  boolean isLogTableDefined( TransLogTable logTable ) {
+    return logTable.getDatabaseMeta() != null && !Utils.isEmpty( logTable.getTableName() );
+  }
+
+  void addTabsToTransGraph( TransGraph transGraph ) {
+    transGraph.addAllTabs();
+    transGraph.extraViewTabFolder.setSelection( transGraph.transHistoryDelegate.getTransHistoryTab() );
   }
 
   public void tabSelected( TabItem item ) {
@@ -324,7 +333,7 @@ public class SpoonTransformationDelegate extends SpoonDelegate {
 
   public void undoTransformationAction( TransMeta transMeta, TransAction transAction ) {
     switch ( transAction.getType() ) {
-    // We created a new step : undo this...
+      // We created a new step : undo this...
       case TransAction.TYPE_ACTION_NEW_STEP:
         // Delete the step at correct location:
         for ( int i = transAction.getCurrent().length - 1; i >= 0; i-- ) {
@@ -718,8 +727,8 @@ public class SpoonTransformationDelegate extends SpoonDelegate {
   }
 
   public void executeTransformation( final TransMeta transMeta, final boolean local, final boolean remote,
-    final boolean cluster, final boolean preview, final boolean debug, final Date replayDate,
-    final boolean safe, LogLevel logLevel ) throws KettleException {
+      final boolean cluster, final boolean preview, final boolean debug, final Date replayDate, final boolean safe,
+      LogLevel logLevel ) throws KettleException {
 
     if ( transMeta == null ) {
       return;
@@ -844,16 +853,15 @@ public class SpoonTransformationDelegate extends SpoonDelegate {
 
     if ( debugAnswer == TransDebugDialog.DEBUG_CONFIG && replayDate == null && transMeta.isShowDialog() ) {
       TransExecutionConfigurationDialog dialog =
-        new TransExecutionConfigurationDialog( spoon.getShell(), executionConfiguration, transMeta );
+          new TransExecutionConfigurationDialog( spoon.getShell(), executionConfiguration, transMeta );
       execConfigAnswer = dialog.open();
     }
 
     if ( execConfigAnswer ) {
 
-      ExtensionPointHandler.callExtensionPoint(
-        log, KettleExtensionPoint.SpoonTransMetaExecutionStart.id, transMeta );
-      ExtensionPointHandler.callExtensionPoint(
-        log, KettleExtensionPoint.SpoonTransExecutionConfiguration.id, executionConfiguration );
+      ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.SpoonTransMetaExecutionStart.id, transMeta );
+      ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.SpoonTransExecutionConfiguration.id,
+          executionConfiguration );
 
       // Verify if there is at least one step specified to debug or preview...
       //
@@ -891,7 +899,7 @@ public class SpoonTransformationDelegate extends SpoonDelegate {
           showSaveTransformationBeforeRunningDialog( spoon.getShell() );
         } else if ( executionConfiguration.getRemoteServer() != null ) {
           String carteObjectId =
-            Trans.sendToSlaveServer( transMeta, executionConfiguration, spoon.rep, spoon.metaStore );
+              Trans.sendToSlaveServer( transMeta, executionConfiguration, spoon.rep, spoon.metaStore );
           monitorRemoteTrans( transMeta, carteObjectId, executionConfiguration.getRemoteServer() );
           spoon.delegates.slaves.addSpoonSlave( executionConfiguration.getRemoteServer() );
 
@@ -923,7 +931,7 @@ public class SpoonTransformationDelegate extends SpoonDelegate {
   }
 
   private void monitorRemoteTrans( final TransMeta transMeta, final String carteObjectId,
-    final SlaveServer remoteSlaveServer ) {
+      final SlaveServer remoteSlaveServer ) {
     // There is a transformation running in the background. When it finishes, clean it up and log the result on the
     // console.
     // Launch in a separate thread to prevent GUI blocking...
@@ -934,14 +942,14 @@ public class SpoonTransformationDelegate extends SpoonDelegate {
       }
     } );
 
-    thread.setName( "Monitor remote transformation '"
-      + transMeta.getName() + "', carte object id=" + carteObjectId + ", slave server: "
-      + remoteSlaveServer.getName() );
+    thread.setName( "Monitor remote transformation '" + transMeta.getName() + "', carte object id=" + carteObjectId
+        + ", slave server: " + remoteSlaveServer.getName() );
     thread.start();
 
   }
 
-  protected void splitTrans( final TransMeta transMeta, final TransExecutionConfiguration executionConfiguration ) throws KettleException {
+  protected void splitTrans( final TransMeta transMeta, final TransExecutionConfiguration executionConfiguration )
+    throws KettleException {
     try {
       final TransSplitter transSplitter = new TransSplitter( transMeta );
 
@@ -984,8 +992,8 @@ public class SpoonTransformationDelegate extends SpoonDelegate {
       TransMeta ot = transSplitter.getOriginalTransformation();
       for ( String param : ot.listParameters() ) {
         String value =
-          Const.NVL( ot.getParameterValue( param ), Const.NVL( ot.getParameterDefault( param ), ot
-            .getVariable( param ) ) );
+            Const.NVL( ot.getParameterValue( param ), Const.NVL( ot.getParameterDefault( param ), ot.getVariable(
+                param ) ) );
         if ( !Utils.isEmpty( value ) ) {
           executionConfiguration.getVariables().put( param, value );
         }
