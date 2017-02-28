@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -40,7 +40,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
+import org.mockito.runners.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 import org.pentaho.di.core.BlockingRowSet;
 import org.pentaho.di.core.ResultFile;
@@ -62,14 +65,19 @@ import org.pentaho.di.trans.BasePartitioner;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
 import org.pentaho.di.www.SocketRepository;
 
+@RunWith ( MockitoJUnitRunner.class )
 public class BaseStepTest {
   private StepMockHelper<StepMetaInterface, StepDataInterface> mockHelper;
+
+  @Mock RowHandler rowHandler;
 
   @Before
   public void setup() {
     mockHelper =
-        new StepMockHelper<StepMetaInterface, StepDataInterface>( "BASE STEP", StepMetaInterface.class,
-            StepDataInterface.class );
+      new StepMockHelper<>( "BASE STEP", StepMetaInterface.class,
+        StepDataInterface.class );
+    when( mockHelper.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) ).thenReturn(
+      mockHelper.logChannelInterface );
   }
 
   @After
@@ -161,8 +169,6 @@ public class BaseStepTest {
   @Test
   public void testStepListenersConcurrentModification() throws InterruptedException {
     // Create a base step
-    when( mockHelper.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) ).thenReturn(
-        mockHelper.logChannelInterface );
     final BaseStep baseStep =
         new BaseStep( mockHelper.stepMeta, mockHelper.stepDataInterface, 0, mockHelper.transMeta, mockHelper.trans );
 
@@ -211,9 +217,6 @@ public class BaseStepTest {
 
   @Test
   public void resultFilesMapIsSafeForConcurrentModification() throws Exception {
-    when( mockHelper.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) ).thenReturn(
-      mockHelper.logChannelInterface );
-
     final BaseStep step =
       new BaseStep( mockHelper.stepMeta, mockHelper.stepDataInterface, 0, mockHelper.transMeta, mockHelper.trans );
 
@@ -254,8 +257,6 @@ public class BaseStepTest {
     RowSet rs1 = new SingleRowRowSet();
     RowSet rs2 = new SingleRowRowSet();
 
-    when( mockHelper.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) ).thenReturn(
-      mockHelper.logChannelInterface );
     when( mockHelper.trans.isRunning() ).thenReturn( true );
     BaseStep baseStep =
       new BaseStep( mockHelper.stepMeta, mockHelper.stepDataInterface, 0, mockHelper.transMeta, mockHelper.trans );
@@ -287,8 +288,6 @@ public class BaseStepTest {
 
   @Test
   public void testBuildLog() throws KettleValueException {
-    when( mockHelper.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) ).thenReturn(
-        mockHelper.logChannelInterface );
     BaseStep testObject = new BaseStep( mockHelper.stepMeta, mockHelper.stepDataInterface, 0, mockHelper.transMeta,
       mockHelper.trans );
     Date startDate = new Date( (long) 123 );
@@ -326,8 +325,6 @@ public class BaseStepTest {
 
   @Test
   public void testCleanup() throws IOException {
-    when( mockHelper.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) ).thenReturn(
-        mockHelper.logChannelInterface );
     BaseStep baseStep =
         new BaseStep( mockHelper.stepMeta, mockHelper.stepDataInterface, 0, mockHelper.transMeta, mockHelper.trans );
     ServerSocket serverSocketMock = mock( ServerSocket.class );
@@ -343,8 +340,6 @@ public class BaseStepTest {
 
   @Test
   public void testCleanupWithInexistentRemoteSteps() throws IOException {
-    when( mockHelper.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) ).thenReturn(
-        mockHelper.logChannelInterface );
     BaseStep baseStep =
         spy( new BaseStep( mockHelper.stepMeta, mockHelper.stepDataInterface, 0, mockHelper.transMeta,
             mockHelper.trans ) );
@@ -363,6 +358,44 @@ public class BaseStepTest {
     verify( inputStep ).cleanup();
     verify( outputStep ).cleanup();
     verify( socketRepositoryMock ).releaseSocket( 0 );
+  }
+
+  @Test
+  public void getRowWithRowHandler() throws KettleException {
+    BaseStep baseStep =
+      new BaseStep( mockHelper.stepMeta, mockHelper.stepDataInterface,
+        0, mockHelper.transMeta, mockHelper.trans );
+    baseStep.setRowHandler( rowHandler );
+    baseStep.getRow();
+    verify( rowHandler, times( 1 ) ).getRow();
+  }
+
+  @Test
+  public void putRowWithRowHandler() throws KettleException {
+    BaseStep baseStep =
+      new BaseStep( mockHelper.stepMeta, mockHelper.stepDataInterface,
+        0, mockHelper.transMeta, mockHelper.trans );
+    baseStep.setRowHandler( rowHandler );
+
+    RowMetaInterface rowMetaInterface = mock( RowMetaInterface.class );
+    Object[] objects = new Object[] { "foo", "bar" };
+    baseStep.putRow( rowMetaInterface, objects );
+    verify( rowHandler, times( 1 ) ).putRow( rowMetaInterface, objects );
+  }
+
+  @Test
+  public void putErrorWithRowHandler() throws KettleException {
+    BaseStep baseStep =
+      new BaseStep( mockHelper.stepMeta, mockHelper.stepDataInterface,
+        0, mockHelper.transMeta, mockHelper.trans );
+    baseStep.setRowHandler( rowHandler );
+    RowMetaInterface rowMetaInterface = mock( RowMetaInterface.class );
+    Object[] objects = new Object[] { "foo", "bar" };
+    baseStep.putError( rowMetaInterface, objects, 3l, "desc",
+      "field1,field2", "errorCode" );
+    verify( rowHandler, times( 1 ) ).putError(
+      rowMetaInterface, objects, 3l, "desc",
+      "field1,field2", "errorCode" );
   }
 
 }
