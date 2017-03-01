@@ -35,6 +35,11 @@ import org.pentaho.di.core.vfs.KettleVFS;
 
 public class TestUtils {
 
+
+  /**
+   * Do not use this method because it does not delete the temp folder after java process tear down
+   */
+  @Deprecated
   public static String createTempDir() {
     String ret = null;
     try {
