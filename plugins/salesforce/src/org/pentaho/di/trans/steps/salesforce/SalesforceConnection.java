@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -871,7 +871,13 @@ public class SalesforceConnection {
 
   public SaveResult[] insert( SObject[] sfBuffer ) throws KettleException {
     try {
-      return getBinding().create( sfBuffer );
+      List<SObject> normalizedSfBuffer = new ArrayList<>();
+      for ( SObject part : sfBuffer ) {
+        if ( part != null ) {
+          normalizedSfBuffer.add( part );
+        }
+      }
+      return getBinding().create( normalizedSfBuffer.toArray( new SObject[normalizedSfBuffer.size()] ) );
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString( PKG, "SalesforceInput.ErrorInsert", e ) );
     }

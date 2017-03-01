@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -58,9 +58,6 @@ import org.w3c.dom.Node;
 public class SalesforceDeleteMeta extends SalesforceStepMeta {
   private static Class<?> PKG = SalesforceDeleteMeta.class; // for i18n purposes, needed by Translator2!!
 
-  /** The module */
-  private String module;
-
   /** Deletefield */
   private String DeleteField;
 
@@ -86,21 +83,6 @@ public class SalesforceDeleteMeta extends SalesforceStepMeta {
    */
   public void setRollbackAllChangesOnError( boolean rollbackAllChangesOnError ) {
     this.rollbackAllChangesOnError = rollbackAllChangesOnError;
-  }
-
-  /**
-   * @return Returns the module.
-   */
-  public String getModule() {
-    return module;
-  }
-
-  /**
-   * @param module
-   *          The module to set.
-   */
-  public void setModule( String module ) {
-    this.module = module;
   }
 
   /**
@@ -159,7 +141,6 @@ public class SalesforceDeleteMeta extends SalesforceStepMeta {
 
   private void readData( Node stepnode ) throws KettleXMLException {
     try {
-      setModule( XMLHandler.getTagValue( stepnode, "module" ) );
       setDeleteField( XMLHandler.getTagValue( stepnode, "DeleteField" ) );
 
       setBatchSize( XMLHandler.getTagValue( stepnode, "batchSize" ) );
@@ -187,7 +168,6 @@ public class SalesforceDeleteMeta extends SalesforceStepMeta {
   public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     super.readRep( rep, metaStore, id_step, databases );
     try {
-      setModule( rep.getStepAttributeString( id_step, "module" ) );
       setDeleteField( rep.getStepAttributeString( id_step, "DeleteField" ) );
       setBatchSize( rep.getStepAttributeString( id_step, "batchSize" ) );
       setRollbackAllChangesOnError( rep.getStepAttributeBoolean( id_step, "rollbackAllChangesOnError" ) );
@@ -201,7 +181,6 @@ public class SalesforceDeleteMeta extends SalesforceStepMeta {
     super.saveRep( rep, metaStore, id_transformation, id_step );
     try {
       rep.saveStepAttribute( id_transformation, id_step, "batchSize", getBatchSize() );
-      rep.saveStepAttribute( id_transformation, id_step, "module", getModule() );
       rep.saveStepAttribute( id_transformation, id_step, "DeleteField", getDeleteField() );
       rep.saveStepAttribute( id_transformation, id_step, "rollbackAllChangesOnError", isRollbackAllChangesOnError() );
     } catch ( Exception e ) {
