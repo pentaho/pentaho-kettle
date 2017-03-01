@@ -164,26 +164,25 @@ public class GetRepositoryNames extends BaseStep implements StepInterface {
         RepositoryExtended extendedRep = (RepositoryExtended) repository;
         for ( int i = 0; i < meta.getDirectory().length; i++ ) {
           String directoryPath = environmentSubstitute( meta.getDirectory()[i] );
-          String nameMaskFromMeta = environmentSubstitute( meta.getNameMask()[i] );
-          //if we have the name mask from user than we applied the name mask for job and transformation 
-          //otherwise we use the * to search all pdi objects
-          String actualNameMask = Utils.isEmpty( nameMaskFromMeta ) ? "*" : nameMaskFromMeta;
           String filter = null;
+          // by default we look for current level
           int depth = 0;
           if ( meta.getObjectTypeSelection().areTransformationsSelected() ) {
-            filter = actualNameMask + ".ktr";
+            filter = "*.ktr";
           }
           if ( meta.getObjectTypeSelection().areJobsSelected() ) {
-            //if we have selected the job and transformation than we have applied filter with both condition
-            filter = Utils.isEmpty( filter ) ? actualNameMask + ".kjb" : filter + "|" + actualNameMask + ".kjb";
+            // if we have selected the job and transformation than we have applied filter with both condition
+            filter = Utils.isEmpty( filter ) ? "*.kjb" : filter + "|*.kjb";
           }
+          // should include unlimited subfolder
           if ( meta.getIncludeSubFolders()[i] ) {
             depth = -1;
           }
           RepositoryDirectoryInterface directory =
               extendedRep.loadRepositoryDirectoryTree( directoryPath, filter, depth, true, false, false );
 
-          list.addAll( getRepositoryObjects( directory ) );
+          list.addAll( getRepositoryObjects( directory, environmentSubstitute( meta.getNameMask()[i] ),
+              environmentSubstitute( meta.getExcludeNameMask()[i] ) ) );
         }
       } else {
         // Get the repository directory tree.
@@ -244,14 +243,29 @@ public class GetRepositoryNames extends BaseStep implements StepInterface {
     return list;
   }
 
-  private List<RepositoryElementMetaInterface> getRepositoryObjects( RepositoryDirectoryInterface directory )
-    throws KettleException {
-    List<RepositoryElementMetaInterface> objects = new ArrayList<RepositoryElementMetaInterface>();
-    objects.addAll( directory.getRepositoryObjects() );
-    for ( RepositoryDirectoryInterface subdir : directory.getChildren() ) {
-      objects.addAll( getRepositoryObjects( subdir ) );
+  private List<RepositoryElementMetaInterface> getRepositoryObjects( RepositoryDirectoryInterface directory,
+      String nameMask, String excludeNameMask ) throws KettleException {
+    List<RepositoryElementMetaInterface> list = new ArrayList<RepositoryElementMetaInterface>();
+    if ( directory.getRepositoryObjects() != null ) {
+      for ( RepositoryElementMetaInterface object : directory.getRepositoryObjects() ) {
+        boolean add = false;
+        if ( Utils.isEmpty( nameMask ) || object.getName().matches( nameMask ) ) {
+          add = true;
+        }
+        if ( !Utils.isEmpty( excludeNameMask ) && object.getName().matches( excludeNameMask ) ) {
+          add = false;
+        }
+        if ( add ) {
+          list.add( object );
+        }
+      }
     }
-    return objects;
+    if ( directory.getChildren() != null ) {
+      for ( RepositoryDirectoryInterface subdir : directory.getChildren() ) {
+        list.addAll( getRepositoryObjects( subdir, nameMask, excludeNameMask ) );
+      }
+    }
+    return list;
   }
 
 }
