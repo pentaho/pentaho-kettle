@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -1814,6 +1814,9 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
       final String variableName = Context.toString( arguments[ 0 ] );
       final String variableValue = Context.toString( arguments[ 1 ] );
       final VariableScope variableScope = getVariableScope( Context.toString( arguments[ 2 ] ) );
+
+      // Set variable in step's scope so that it can be retrieved in the same step using getVariable
+      step.setVariable( variableName, variableValue );
 
       switch ( variableScope ) {
         case PARENT:
