@@ -429,4 +429,25 @@ public class KettleVFS {
     return new FileInputStream( fileObject.getName().getPathDecoded() );
   }
 
+  /**
+   * Check if filename starts with one of the known protocols like file: zip: ram: smb: jar: etc.
+   * If yes, return true otherwise return false
+   * @param vfsFileName
+   * @return boolean
+   */
+  public static boolean startsWithScheme( String vfsFileName ) {
+    FileSystemManager fsManager = getInstance().getFileSystemManager();
+
+    boolean found = false;
+    String[] schemes = fsManager.getSchemes();
+    for ( int i = 0; i < schemes.length; i++ ) {
+      if ( vfsFileName.startsWith( schemes[i] + ":" ) ) {
+        found = true;
+        break;
+      }
+    }
+
+    return found;
+  }
+
 }
