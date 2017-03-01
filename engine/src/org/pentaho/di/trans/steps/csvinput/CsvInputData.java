@@ -235,22 +235,18 @@ public class CsvInputData extends BaseStepData implements StepDataInterface {
 
   byte[] getField( boolean delimiterFound, boolean enclosureFound, boolean newLineFound, boolean endOfBuffer ) {
     int fieldStart = startBuffer;
-
-    int length = endBuffer - fieldStart;
+    int fieldEnd = endBuffer;
 
     if ( newLineFound && !endOfBuffer ) {
-      length -= encodingType.getLength();
+      fieldEnd -= encodingType.getLength();
     }
 
     if ( enclosureFound ) {
       fieldStart += enclosure.length;
-      length = endBuffer - fieldStart - enclosure.length;
-      if ( length > 1 ) {
-        if ( newLineFound ) {
-          length -= enclosure.length;
-        }
-      }
+      fieldEnd -= enclosure.length;
     }
+
+    int length = fieldEnd - fieldStart;
 
     if ( length <= 0 ) {
       length = 0;
