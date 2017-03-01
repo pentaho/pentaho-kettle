@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -34,6 +34,7 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.FormAttachment;
@@ -41,29 +42,23 @@ import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.gui.SpoonFactory;
-import org.pentaho.di.core.gui.SpoonInterface;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.ObjectId;
-import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
-import org.pentaho.di.repository.RepositoryElementMetaInterface;
 import org.pentaho.di.repository.RepositoryObject;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.trans.TransMeta;
@@ -71,15 +66,16 @@ import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.steps.transexecutor.TransExecutorMeta;
 import org.pentaho.di.trans.steps.transexecutor.TransExecutorParameters;
+import org.pentaho.di.ui.core.ConstUI;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
-import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
+import org.pentaho.di.ui.core.widget.ColumnsResizer;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.repository.dialog.SelectObjectDialog;
 import org.pentaho.di.ui.spoon.Spoon;
-import org.pentaho.di.ui.trans.dialog.TransDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
+import org.pentaho.di.ui.util.SwtSvgImageUtil;
 import org.pentaho.vfs.ui.VfsFileChooserDialog;
 
 import java.io.IOException;
@@ -88,32 +84,15 @@ import java.util.Arrays;
 public class TransExecutorDialog extends BaseStepDialog implements StepDialogInterface {
   private static Class<?> PKG = TransExecutorMeta.class; // for i18n purposes, needed by Translator2!!
 
+  private static int FIELD_DESCRIPTION = 1;
+  private static int FIELD_NAME = 2;
+
   private TransExecutorMeta transExecutorMeta;
 
-  private Group gTransGroup;
+  private Label wlPath;
+  private TextVar wPath;
 
-  // File
-  //
-  private Button radioFilename;
-  private Button wbbFilename;
-  private TextVar wFilename;
-
-  // Repository by name
-  //
-  private Button radioByName;
-  private TextVar wTransname, wDirectory;
-  private Button wbTrans;
-
-  // Repository by reference
-  //
-  private Button radioByReference;
-  private Button wbByReference;
-  private TextVar wByReference;
-
-  // Edit the TransExecutor transformation in Spoon
-  //
-  private Button wNewTrans;
-  private Button wEditTrans;
+  private Button wbBrowse;
 
   private CTabFolder wTabFolder;
 
@@ -122,10 +101,6 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
   protected boolean jobModified;
 
   private ModifyListener lsMod;
-
-  private int middle;
-
-  private int margin;
 
   private Button wInheritAll;
 
@@ -139,35 +114,21 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
   private TextVar wGroupTime;
 
   private Label wlExecutionResultTarget;
-  private Label wlExecutionTimeField;
-  private Label wlExecutionResultField;
-  private Label wlExecutionNrErrorsField;
-  private Label wlExecutionLinesReadField;
-  private Label wlExecutionLinesWrittenField;
-  private Label wlExecutionLinesInputField;
-  private Label wlExecutionLinesOutputField;
-  private Label wlExecutionLinesRejectedField;
-  private Label wlExecutionLinesUpdatedField;
-  private Label wlExecutionLinesDeletedField;
-  private Label wlExecutionFilesRetrievedField;
-  private Label wlExecutionExitStatusField;
-  private Label wlExecutionLogTextField;
-  private Label wlExecutionLogChannelIdField;
   private CCombo wExecutionResultTarget;
-  private TextVar wExecutionTimeField;
-  private TextVar wExecutionResultField;
-  private TextVar wExecutionNrErrorsField;
-  private TextVar wExecutionLinesReadField;
-  private TextVar wExecutionLinesWrittenField;
-  private TextVar wExecutionLinesInputField;
-  private TextVar wExecutionLinesOutputField;
-  private TextVar wExecutionLinesRejectedField;
-  private TextVar wExecutionLinesUpdatedField;
-  private TextVar wExecutionLinesDeletedField;
-  private TextVar wExecutionFilesRetrievedField;
-  private TextVar wExecutionExitStatusField;
-  private TextVar wExecutionLogTextField;
-  private TextVar wExecutionLogChannelIdField;
+  private TableItem tiExecutionTimeField;
+  private TableItem tiExecutionResultField;
+  private TableItem tiExecutionNrErrorsField;
+  private TableItem tiExecutionLinesReadField;
+  private TableItem tiExecutionLinesWrittenField;
+  private TableItem tiExecutionLinesInputField;
+  private TableItem tiExecutionLinesOutputField;
+  private TableItem tiExecutionLinesRejectedField;
+  private TableItem tiExecutionLinesUpdatedField;
+  private TableItem tiExecutionLinesDeletedField;
+  private TableItem tiExecutionFilesRetrievedField;
+  private TableItem tiExecutionExitStatusField;
+  private TableItem tiExecutionLogTextField;
+  private TableItem tiExecutionLogChannelIdField;
 
   private String executorOutputStep;
 
@@ -217,14 +178,19 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
     changed = transExecutorMeta.hasChanged();
 
     FormLayout formLayout = new FormLayout();
-    formLayout.marginWidth = Const.FORM_MARGIN;
-    formLayout.marginHeight = Const.FORM_MARGIN;
+    formLayout.marginWidth = 15;
+    formLayout.marginHeight = 15;
 
     shell.setLayout( formLayout );
     shell.setText( BaseMessages.getString( PKG, "TransExecutorDialog.Shell.Title" ) );
 
-    middle = props.getMiddlePct();
-    margin = Const.MARGIN;
+    Label wicon = new Label( shell, SWT.RIGHT );
+    wicon.setImage( getImage() );
+    FormData fdlicon = new FormData();
+    fdlicon.top = new FormAttachment( 0, 0 );
+    fdlicon.right = new FormAttachment( 100, 0 );
+    wicon.setLayoutData( fdlicon );
+    props.setLook( wicon );
 
     // Stepname line
     wlStepname = new Label( shell, SWT.RIGHT );
@@ -232,231 +198,61 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
     props.setLook( wlStepname );
     fdlStepname = new FormData();
     fdlStepname.left = new FormAttachment( 0, 0 );
-    fdlStepname.right = new FormAttachment( middle, -margin );
-    fdlStepname.top = new FormAttachment( 0, margin );
+    fdlStepname.top = new FormAttachment( 0, 0 );
     wlStepname.setLayoutData( fdlStepname );
+
     wStepname = new Text( shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     wStepname.setText( stepname );
     props.setLook( wStepname );
     wStepname.addModifyListener( lsMod );
     fdStepname = new FormData();
-    fdStepname.left = new FormAttachment( middle, 0 );
-    fdStepname.top = new FormAttachment( 0, margin );
-    fdStepname.right = new FormAttachment( 100, 0 );
+    fdStepname.width = 250;
+    fdStepname.left = new FormAttachment( 0, 0 );
+    fdStepname.top = new FormAttachment( wlStepname, 5 );
     wStepname.setLayoutData( fdStepname );
 
-    // Show a group with 2 main options: a transformation in the repository
-    // or on file
-    //
+    Label spacer = new Label( shell, SWT.HORIZONTAL | SWT.SEPARATOR );
+    FormData fdSpacer = new FormData();
+    fdSpacer.height = 1;
+    fdSpacer.left = new FormAttachment( 0, 0 );
+    fdSpacer.top = new FormAttachment( wStepname, 15 );
+    fdSpacer.right = new FormAttachment( 100, 0 );
+    spacer.setLayoutData( fdSpacer );
 
-    // //////////////////////////////////////////////////
-    // The key creation box
-    // //////////////////////////////////////////////////
-    //
-    gTransGroup = new Group( shell, SWT.SHADOW_ETCHED_IN );
-    gTransGroup.setText( BaseMessages.getString( PKG, "TransExecutorDialog.TransGroup.Label" ) );
-    gTransGroup.setBackground( shell.getBackground() ); // the default looks
-    // ugly
-    FormLayout transGroupLayout = new FormLayout();
-    transGroupLayout.marginLeft = margin * 2;
-    transGroupLayout.marginTop = margin * 2;
-    transGroupLayout.marginRight = margin * 2;
-    transGroupLayout.marginBottom = margin * 2;
-    gTransGroup.setLayout( transGroupLayout );
+    wlPath = new Label( shell, SWT.LEFT );
+    props.setLook( wlPath );
+    wlPath.setText( BaseMessages.getString( PKG, "TransExecutorDialog.Transformation.Label" ) );
+    FormData fdlTransformation = new FormData();
+    fdlTransformation.left = new FormAttachment( 0, 0 );
+    fdlTransformation.top = new FormAttachment( spacer, 20 );
+    fdlTransformation.right = new FormAttachment( 50, 0 );
+    wlPath.setLayoutData( fdlTransformation );
 
-    // Radio button: The TransExecutor is in a file
-    //
-    radioFilename = new Button( gTransGroup, SWT.RADIO );
-    props.setLook( radioFilename );
-    radioFilename.setSelection( false );
-    radioFilename.setText( BaseMessages.getString( PKG, "TransExecutorDialog.RadioFile.Label" ) );
-    radioFilename.setToolTipText( BaseMessages.getString( PKG, "TransExecutorDialog.RadioFile.Tooltip", Const.CR ) );
-    FormData fdFileRadio = new FormData();
-    fdFileRadio.left = new FormAttachment( 0, 0 );
-    fdFileRadio.right = new FormAttachment( 100, 0 );
-    fdFileRadio.top = new FormAttachment( 0, 0 );
-    radioFilename.setLayoutData( fdFileRadio );
-    radioFilename.addSelectionListener( new SelectionAdapter() {
+    wPath = new TextVar( transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+    props.setLook( wPath );
+    FormData fdTransformation = new FormData();
+    fdTransformation.left = new FormAttachment( 0, 0 );
+    fdTransformation.top = new FormAttachment( wlPath, 5 );
+    fdTransformation.width = 350;
+    wPath.setLayoutData( fdTransformation );
+
+    wbBrowse = new Button( shell, SWT.PUSH );
+    props.setLook( wbBrowse );
+    wbBrowse.setText( BaseMessages.getString( PKG, "TransExecutorDialog.Browse.Label" ) );
+    FormData fdBrowse = new FormData();
+    fdBrowse.left = new FormAttachment( wPath, 5 );
+    fdBrowse.top = new FormAttachment( wlPath, 5 );
+    wbBrowse.setLayoutData( fdBrowse );
+
+    wbBrowse.addSelectionListener( new SelectionAdapter() {
       public void widgetSelected( SelectionEvent e ) {
-        specificationMethod = ObjectLocationSpecificationMethod.FILENAME;
-        setRadioButtons();
+        if ( repository != null ) {
+          selectRepositoryTrans();
+        } else {
+          selectFileTrans();
+        }
       }
     } );
-
-    wbbFilename = new Button( gTransGroup, SWT.PUSH | SWT.CENTER ); // Browse
-    props.setLook( wbbFilename );
-    wbbFilename.setText( BaseMessages.getString( PKG, "System.Button.Browse" ) );
-    wbbFilename.setToolTipText( BaseMessages.getString( PKG, "System.Tooltip.BrowseForFileOrDirAndAdd" ) );
-    FormData fdbFilename = new FormData();
-    fdbFilename.right = new FormAttachment( 100, 0 );
-    fdbFilename.top = new FormAttachment( radioFilename, margin );
-    wbbFilename.setLayoutData( fdbFilename );
-    wbbFilename.addSelectionListener( new SelectionAdapter() {
-      public void widgetSelected( SelectionEvent e ) {
-        selectFileTrans();
-      }
-    } );
-
-    wFilename = new TextVar( transMeta, gTransGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-    props.setLook( wFilename );
-    wFilename.addModifyListener( lsMod );
-    FormData fdFilename = new FormData();
-    fdFilename.left = new FormAttachment( 0, 25 );
-    fdFilename.right = new FormAttachment( wbbFilename, -margin );
-    fdFilename.top = new FormAttachment( wbbFilename, 0, SWT.CENTER );
-    wFilename.setLayoutData( fdFilename );
-    wFilename.addModifyListener( new ModifyListener() {
-      public void modifyText( ModifyEvent e ) {
-        specificationMethod = ObjectLocationSpecificationMethod.FILENAME;
-        setRadioButtons();
-      }
-    } );
-
-    // Radio button: The TransExecutor is in the repository
-    //
-    radioByName = new Button( gTransGroup, SWT.RADIO );
-    props.setLook( radioByName );
-    radioByName.setSelection( false );
-    radioByName.setText( BaseMessages.getString( PKG, "TransExecutorDialog.RadioRep.Label" ) );
-    radioByName.setToolTipText( BaseMessages.getString( PKG, "TransExecutorDialog.RadioRep.Tooltip", Const.CR ) );
-    FormData fdRepRadio = new FormData();
-    fdRepRadio.left = new FormAttachment( 0, 0 );
-    fdRepRadio.right = new FormAttachment( 100, 0 );
-    fdRepRadio.top = new FormAttachment( wbbFilename, 2 * margin );
-    radioByName.setLayoutData( fdRepRadio );
-    radioByName.addSelectionListener( new SelectionAdapter() {
-      public void widgetSelected( SelectionEvent e ) {
-        specificationMethod = ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME;
-        setRadioButtons();
-      }
-    } );
-    wbTrans = new Button( gTransGroup, SWT.PUSH | SWT.CENTER ); // Browse
-    props.setLook( wbTrans );
-    wbTrans.setText( BaseMessages.getString( PKG, "TransExecutorDialog.Select.Button" ) );
-    wbTrans.setToolTipText( BaseMessages.getString( PKG, "System.Tooltip.BrowseForFileOrDirAndAdd" ) );
-    FormData fdbTrans = new FormData();
-    fdbTrans.right = new FormAttachment( 100, 0 );
-    fdbTrans.top = new FormAttachment( radioByName, 2 * margin );
-    wbTrans.setLayoutData( fdbTrans );
-    wbTrans.addSelectionListener( new SelectionAdapter() {
-      public void widgetSelected( SelectionEvent e ) {
-        selectRepositoryTrans();
-      }
-    } );
-
-    wDirectory = new TextVar( transMeta, gTransGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-    props.setLook( wDirectory );
-    wDirectory.addModifyListener( lsMod );
-    FormData fdTransDir = new FormData();
-    fdTransDir.left = new FormAttachment( middle + ( 100 - middle ) / 2, 0 );
-    fdTransDir.right = new FormAttachment( wbTrans, -margin );
-    fdTransDir.top = new FormAttachment( wbTrans, 0, SWT.CENTER );
-    wDirectory.setLayoutData( fdTransDir );
-    wDirectory.addModifyListener( new ModifyListener() {
-      public void modifyText( ModifyEvent e ) {
-        specificationMethod = ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME;
-        setRadioButtons();
-      }
-    } );
-
-    wTransname = new TextVar( transMeta, gTransGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-    props.setLook( wTransname );
-    wTransname.addModifyListener( lsMod );
-    FormData fdTransName = new FormData();
-    fdTransName.left = new FormAttachment( 0, 25 );
-    fdTransName.right = new FormAttachment( wDirectory, -margin );
-    fdTransName.top = new FormAttachment( wbTrans, 0, SWT.CENTER );
-    wTransname.setLayoutData( fdTransName );
-    wTransname.addModifyListener( new ModifyListener() {
-      public void modifyText( ModifyEvent e ) {
-        specificationMethod = ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME;
-        setRadioButtons();
-      }
-    } );
-
-    // Radio button: The TransExecutor is in the repository
-    //
-    radioByReference = new Button( gTransGroup, SWT.RADIO );
-    props.setLook( radioByReference );
-    radioByReference.setSelection( false );
-    radioByReference.setText( BaseMessages.getString( PKG, "TransExecutorDialog.RadioRepByReference.Label" ) );
-    radioByReference.setToolTipText( BaseMessages.getString( PKG, "TransExecutorDialog.RadioRepByReference.Tooltip",
-      Const.CR ) );
-    FormData fdRadioByReference = new FormData();
-    fdRadioByReference.left = new FormAttachment( 0, 0 );
-    fdRadioByReference.right = new FormAttachment( 100, 0 );
-    fdRadioByReference.top = new FormAttachment( wTransname, 2 * margin );
-    radioByReference.setLayoutData( fdRadioByReference );
-    radioByReference.addSelectionListener( new SelectionAdapter() {
-      public void widgetSelected( SelectionEvent e ) {
-        specificationMethod = ObjectLocationSpecificationMethod.REPOSITORY_BY_REFERENCE;
-        setRadioButtons();
-      }
-    } );
-
-    wbByReference = new Button( gTransGroup, SWT.PUSH | SWT.CENTER );
-    props.setLook( wbByReference );
-    wbByReference.setImage( GUIResource.getInstance().getImageTransGraph() );
-    wbByReference.setToolTipText( BaseMessages.getString( PKG, "TransExecutorDialog.SelectTrans.Tooltip" ) );
-    FormData fdbByReference = new FormData();
-    fdbByReference.top = new FormAttachment( radioByReference, margin );
-    fdbByReference.right = new FormAttachment( 100, 0 );
-    wbByReference.setLayoutData( fdbByReference );
-    wbByReference.addSelectionListener( new SelectionAdapter() {
-      public void widgetSelected( SelectionEvent e ) {
-        selectTransByReference();
-      }
-    } );
-
-    wByReference = new TextVar( transMeta, gTransGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER | SWT.READ_ONLY );
-    props.setLook( wByReference );
-    wByReference.addModifyListener( lsMod );
-    FormData fdByReference = new FormData();
-    fdByReference.top = new FormAttachment( radioByReference, margin );
-    fdByReference.left = new FormAttachment( 0, 25 );
-    fdByReference.right = new FormAttachment( wbByReference, -margin );
-    wByReference.setLayoutData( fdByReference );
-    wByReference.addModifyListener( new ModifyListener() {
-      public void modifyText( ModifyEvent e ) {
-        specificationMethod = ObjectLocationSpecificationMethod.REPOSITORY_BY_REFERENCE;
-        setRadioButtons();
-      }
-    } );
-
-    wNewTrans = new Button( gTransGroup, SWT.PUSH | SWT.CENTER ); // Browse
-    props.setLook( wNewTrans );
-    wNewTrans.setText( BaseMessages.getString( PKG, "TransExecutorDialog.New.Button" ) );
-    FormData fdNewTrans = new FormData();
-    fdNewTrans.left = new FormAttachment( 0, 0 );
-    fdNewTrans.top = new FormAttachment( wByReference, 3 * margin );
-    wNewTrans.setLayoutData( fdNewTrans );
-    wNewTrans.addSelectionListener( new SelectionAdapter() {
-      public void widgetSelected( SelectionEvent e ) {
-        newTransformation();
-      }
-    } );
-
-    wEditTrans = new Button( gTransGroup, SWT.PUSH | SWT.CENTER ); // Browse
-    props.setLook( wEditTrans );
-    wEditTrans.setText( BaseMessages.getString( PKG, "TransExecutorDialog.Edit.Button" ) );
-    wEditTrans.setToolTipText( BaseMessages.getString( PKG, "System.Tooltip.BrowseForFileOrDirAndAdd" ) );
-    FormData fdEditTrans = new FormData();
-    fdEditTrans.left = new FormAttachment( wNewTrans, 2 * margin );
-    fdEditTrans.top = new FormAttachment( wByReference, 3 * margin );
-    wEditTrans.setLayoutData( fdEditTrans );
-    wEditTrans.addSelectionListener( new SelectionAdapter() {
-      public void widgetSelected( SelectionEvent e ) {
-        editTrans();
-      }
-    } );
-
-    FormData fdTransGroup = new FormData();
-    fdTransGroup.left = new FormAttachment( 0, 0 );
-    fdTransGroup.top = new FormAttachment( wStepname, 2 * margin );
-    fdTransGroup.right = new FormAttachment( 100, 0 );
-    // fdTransGroup.bottom = new FormAttachment(wStepname, 350);
-    gTransGroup.setLayoutData( fdTransGroup );
-    Control lastControl = gTransGroup;
 
     //
     // Add a tab folder for the parameters and various input and output
@@ -467,26 +263,41 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
     wTabFolder.setSimple( false );
     wTabFolder.setUnselectedCloseVisible( true );
 
-    FormData fdTabFolder = new FormData();
-    fdTabFolder.left = new FormAttachment( 0, 0 );
-    fdTabFolder.right = new FormAttachment( 100, 0 );
-    fdTabFolder.top = new FormAttachment( lastControl, margin * 2 );
-    fdTabFolder.bottom = new FormAttachment( 100, -75 );
-    wTabFolder.setLayoutData( fdTabFolder );
+    wCancel = new Button( shell, SWT.PUSH );
+    wCancel.setText( BaseMessages.getString( PKG, "System.Button.Cancel" ) );
+    FormData fdCancel = new FormData();
+    fdCancel.right = new FormAttachment( 100, 0 );
+    fdCancel.bottom = new FormAttachment( 100, 0 );
+    wCancel.setLayoutData( fdCancel );
 
     // Some buttons
     wOK = new Button( shell, SWT.PUSH );
     wOK.setText( BaseMessages.getString( PKG, "System.Button.OK" ) );
-    wCancel = new Button( shell, SWT.PUSH );
-    wCancel.setText( BaseMessages.getString( PKG, "System.Button.Cancel" ) );
+    FormData fdOk = new FormData();
+    fdOk.right = new FormAttachment( wCancel, -5 );
+    fdOk.bottom = new FormAttachment( 100, 0 );
+    wOK.setLayoutData( fdOk );
 
-    setButtonPositions( new Button[] { wOK, wCancel }, margin, null );
+    Label hSpacer = new Label( shell, SWT.HORIZONTAL | SWT.SEPARATOR );
+    FormData fdhSpacer = new FormData();
+    fdhSpacer.height = 1;
+    fdhSpacer.left = new FormAttachment( 0, 0 );
+    fdhSpacer.bottom = new FormAttachment( wCancel, -15 );
+    fdhSpacer.right = new FormAttachment( 100, 0 );
+    hSpacer.setLayoutData( fdhSpacer );
+
+    FormData fdTabFolder = new FormData();
+    fdTabFolder.left = new FormAttachment( 0, 0 );
+    fdTabFolder.top = new FormAttachment( wPath, 20 );
+    fdTabFolder.right = new FormAttachment( 100, 0 );
+    fdTabFolder.bottom = new FormAttachment( hSpacer, -15 );
+    wTabFolder.setLayoutData( fdTabFolder );
 
     // Add the tabs...
     //
     addParametersTab();
-    addRowGroupTab();
     addExecutionResultTab();
+    addRowGroupTab();
     addResultRowsTab();
     addResultFilesTab();
 
@@ -512,22 +323,7 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
     };
 
     wStepname.addSelectionListener( lsDef );
-    wFilename.addSelectionListener( lsDef );
-    wTransname.addSelectionListener( lsDef );
-    wExecutionTimeField.addSelectionListener( lsDef );
-    wExecutionResultField.addSelectionListener( lsDef );
-    wExecutionNrErrorsField.addSelectionListener( lsDef );
-    wExecutionLinesReadField.addSelectionListener( lsDef );
-    wExecutionLinesWrittenField.addSelectionListener( lsDef );
-    wExecutionLinesInputField.addSelectionListener( lsDef );
-    wExecutionLinesOutputField.addSelectionListener( lsDef );
-    wExecutionLinesRejectedField.addSelectionListener( lsDef );
-    wExecutionLinesUpdatedField.addSelectionListener( lsDef );
-    wExecutionLinesDeletedField.addSelectionListener( lsDef );
-    wExecutionFilesRetrievedField.addSelectionListener( lsDef );
-    wExecutionExitStatusField.addSelectionListener( lsDef );
-    wExecutionLogTextField.addSelectionListener( lsDef );
-    wExecutionLogChannelIdField.addSelectionListener( lsDef );
+    wPath.addSelectionListener( lsDef );
     wResultFileNameField.addSelectionListener( lsDef );
 
     // Detect X or ALT-F4 or something that kills this window...
@@ -538,7 +334,7 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
     } );
 
     // Set the shell size, based upon previous time...
-    setSize();
+    setSize( shell, 620, 675 );
 
     getData();
     transExecutorMeta.setChanged( changed );
@@ -553,39 +349,37 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
     return stepname;
   }
 
-  protected void selectTransByReference() {
-    if ( repository != null ) {
-      SelectObjectDialog sod = getSelectObjectDialog( shell, repository, true, false );
-      sod.open();
-      RepositoryElementMetaInterface repositoryObject = sod.getRepositoryObject();
-      if ( repositoryObject != null ) {
-        specificationMethod = ObjectLocationSpecificationMethod.REPOSITORY_BY_REFERENCE;
-        updateByReferenceField( repositoryObject );
-        referenceObjectId = repositoryObject.getObjectId();
-        setRadioButtons();
-      }
-    }
+  protected Image getImage() {
+    return SwtSvgImageUtil
+      .getImage( shell.getDisplay(), getClass().getClassLoader(), "TRNEx.svg", ConstUI.ICON_SIZE,
+        ConstUI.ICON_SIZE );
   }
 
-  void selectRepositoryTrans() {
+  private void selectRepositoryTrans() {
     try {
-      SelectObjectDialog sod = getSelectObjectDialog( shell, repository, true, false );
+      SelectObjectDialog sod = new SelectObjectDialog( shell, repository );
       String transName = sod.open();
       RepositoryDirectoryInterface repdir = sod.getDirectory();
       if ( transName != null && repdir != null ) {
         loadRepositoryTrans( transName, repdir );
-        wTransname.setText( executorTransMeta.getName() );
-        wDirectory.setText( executorTransMeta.getRepositoryDirectory().getPath() );
-        wFilename.setText( "" );
-        radioByName.setSelection( true );
-        radioFilename.setSelection( false );
+        String path = getPath( executorTransMeta.getRepositoryDirectory().getPath() );
+        String fullPath = path + "/" + executorTransMeta.getName();
+        wPath.setText( fullPath );
         specificationMethod = ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME;
-        setRadioButtons();
       }
     } catch ( KettleException ke ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "TransExecutorDialog.ErrorSelectingObject.DialogTitle" ),
+      new ErrorDialog( shell,
+        BaseMessages.getString( PKG, "TransExecutorDialog.ErrorSelectingObject.DialogTitle" ),
         BaseMessages.getString( PKG, "TransExecutorDialog.ErrorSelectingObject.DialogMessage" ), ke );
     }
+  }
+
+  protected String getPath( String path ) {
+    String parentPath = this.transMeta.getRepositoryDirectory().getPath();
+    if ( path.startsWith( parentPath ) ) {
+      path = path.replace( parentPath, "${" + Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY + "}" );
+    }
+    return path;
   }
 
   private void loadRepositoryTrans( String transName, RepositoryDirectoryInterface repdir ) throws KettleException {
@@ -597,38 +391,42 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
   }
 
   private void selectFileTrans() {
-    String curFile = wFilename.getText();
+    String curFile = transMeta.environmentSubstitute( wPath.getText() );
+
     FileObject root = null;
+
+    String parentFolder = null;
+    try {
+      parentFolder =
+        KettleVFS.getFileObject( transMeta.environmentSubstitute( transMeta.getFilename() ) ).getParent().toString();
+    } catch ( Exception e ) {
+      // Take no action
+    }
 
     try {
       root = KettleVFS.getFileObject( curFile != null ? curFile : Const.getUserHomeDirectory() );
 
       VfsFileChooserDialog vfsFileChooser = Spoon.getInstance().getVfsFileChooserDialog( root.getParent(), root );
       FileObject file =
-        vfsFileChooser.open( shell, null, Const.STRING_TRANS_FILTER_EXT, Const.getTransformationFilterNames(),
+        vfsFileChooser.open(
+          shell, null, Const.STRING_TRANS_FILTER_EXT, Const.getTransformationFilterNames(),
           VfsFileChooserDialog.VFS_DIALOG_OPEN_FILE );
       if ( file == null ) {
         return;
       }
-      String fname = null;
-
-      fname = file.getURL().getFile();
-
-      if ( fname != null ) {
-
-        loadFileTrans( fname );
-        wFilename.setText( fname );
-        wTransname.setText( Const.NVL( executorTransMeta.getName(), "" ) );
-        wDirectory.setText( "" );
+      String fileName = file.getName().toString();
+      if ( fileName != null ) {
+        loadFileTrans( fileName );
+        if ( parentFolder != null && fileName.startsWith( parentFolder ) ) {
+          fileName = fileName.replace( parentFolder, "${" + Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY + "}" );
+        }
+        wPath.setText( fileName );
         specificationMethod = ObjectLocationSpecificationMethod.FILENAME;
-        setRadioButtons();
       }
-    } catch ( IOException e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "TransExecutorDialog.ErrorLoadingTrans.DialogTitle" ),
-        BaseMessages.getString( PKG, "TransExecutorDialog.ErrorLoadingTrans.DialogMessage" ), e );
-    } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "TransExecutorDialog.ErrorLoadingTrans.DialogTitle" ),
-        BaseMessages.getString( PKG, "TransExecutorDialog.ErrorLoadingTrans.DialogMessage" ), e );
+    } catch ( IOException | KettleException e ) {
+      new ErrorDialog( shell,
+        BaseMessages.getString( PKG, "TransExecutorDialog.ErrorLoadingTransformation.DialogTitle" ),
+        BaseMessages.getString( PKG, "TransExecutorDialog.ErrorLoadingTransformation.DialogMessage" ), e );
     }
   }
 
@@ -637,90 +435,56 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
     executorTransMeta.clearChanged();
   }
 
-  private void editTrans() {
-    // Load the transformation again to make sure it's still there and
-    // refreshed
-    // It's an extra check to make sure it's still OK...
-    //
-    try {
-      loadTrans();
-
-      // If we're still here, jobExecutorMeta is valid.
-      //
-      SpoonInterface spoon = SpoonFactory.getInstance();
-      if ( spoon != null ) {
-        spoon.addTransGraph( executorTransMeta );
-      }
-    } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "TransExecutorDialog.ErrorShowingTrans.Title" ),
-        BaseMessages.getString( PKG, "TransExecutorDialog.ErrorShowingTrans.Message" ), e );
+  // Method is defined as package-protected in order to be accessible by unit tests
+  void loadTransformation() throws KettleException {
+    String filename = wPath.getText();
+    if ( repository != null ) {
+      specificationMethod = ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME;
+    } else {
+      specificationMethod = ObjectLocationSpecificationMethod.FILENAME;
     }
-  }
-
-  private void loadTrans() throws KettleException {
     switch ( specificationMethod ) {
       case FILENAME:
-        loadFileTrans( wFilename.getText() );
+        if ( Utils.isEmpty( filename ) ) {
+          return;
+        }
+        if ( !filename.endsWith( ".ktr" ) ) {
+          filename = filename + ".ktr";
+          wPath.setText( filename );
+        }
+        loadFileTrans( filename );
         break;
       case REPOSITORY_BY_NAME:
-        String realDirectory = transMeta.environmentSubstitute( wDirectory.getText() );
-        String realTransname = transMeta.environmentSubstitute( wTransname.getText() );
+        if ( Utils.isEmpty( filename ) ) {
+          return;
+        }
+        if ( filename.endsWith( ".ktr" ) ) {
+          filename = filename.replace( ".ktr", "" );
+          wPath.setText( filename );
+        }
+        String transPath = transMeta.environmentSubstitute( filename );
+        String realTransname = transPath;
+        String realDirectory = "";
+        int index = transPath.lastIndexOf( "/" );
+        if ( index != -1 ) {
+          realTransname = transPath.substring( index + 1 );
+          realDirectory = transPath.substring( 0, index );
+        }
 
         if ( Utils.isEmpty( realDirectory ) || Utils.isEmpty( realTransname ) ) {
-          throw new KettleException( BaseMessages.getString( PKG,
-            "TransExecutorDialog.Exception.NoValidTransExecutorDetailsFound" ) );
+          throw new KettleException(
+            BaseMessages.getString( PKG, "TransExecutorDialog.Exception.NoValidMappingDetailsFound" ) );
         }
         RepositoryDirectoryInterface repdir = repository.findDirectory( realDirectory );
         if ( repdir == null ) {
-          throw new KettleException( BaseMessages.getString( PKG,
-            "TransExecutorDialog.Exception.UnableToFindRepositoryDirectory)" ) );
+          throw new KettleException( BaseMessages.getString(
+            PKG, "TransExecutorDialog.Exception.UnableToFindRepositoryDirectory" ) );
         }
         loadRepositoryTrans( realTransname, repdir );
-        break;
-      case REPOSITORY_BY_REFERENCE:
-        if ( referenceObjectId == null ) {
-          throw new KettleException( BaseMessages.getString( PKG,
-            "TransExecutorDialog.Exception.ReferencedTransformationIdIsNull" ) );
-        }
-        executorTransMeta = repository.loadTransformation( referenceObjectId, null ); // load the last version
-        executorTransMeta.clearChanged();
         break;
       default:
         break;
     }
-  }
-
-  public void setActive() {
-    boolean supportsReferences =
-      repository != null && repository.getRepositoryMeta().getRepositoryCapabilities().supportsReferences();
-
-    radioByName.setEnabled( repository != null );
-    radioByReference.setEnabled( repository != null && supportsReferences );
-    wFilename.setEnabled( radioFilename.getSelection() );
-    wbbFilename.setEnabled( radioFilename.getSelection() );
-    wTransname.setEnabled( repository != null && radioByName.getSelection() );
-
-    wDirectory.setEnabled( repository != null && radioByName.getSelection() );
-
-    wbTrans.setEnabled( repository != null && radioByName.getSelection() );
-
-    wByReference.setEnabled( repository != null && radioByReference.getSelection() && supportsReferences );
-    wbByReference.setEnabled( repository != null && radioByReference.getSelection() && supportsReferences );
-  }
-
-  protected void setRadioButtons() {
-    radioFilename.setSelection( specificationMethod == ObjectLocationSpecificationMethod.FILENAME );
-    radioByName.setSelection( specificationMethod == ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME );
-    radioByReference.setSelection( specificationMethod == ObjectLocationSpecificationMethod.REPOSITORY_BY_REFERENCE );
-    setActive();
-  }
-
-  private void updateByReferenceField( RepositoryElementMetaInterface element ) {
-    String path = getPathOf( element );
-    if ( path == null ) {
-      path = "";
-    }
-    wByReference.setText( path );
   }
 
   /**
@@ -730,23 +494,20 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
     specificationMethod = transExecutorMeta.getSpecificationMethod();
     switch ( specificationMethod ) {
       case FILENAME:
-        wFilename.setText( Const.NVL( transExecutorMeta.getFileName(), "" ) );
+        wPath.setText( Const.NVL( transExecutorMeta.getFileName(), "" ) );
         break;
       case REPOSITORY_BY_NAME:
-        wDirectory.setText( Const.NVL( transExecutorMeta.getDirectoryPath(), "" ) );
-        wTransname.setText( Const.NVL( transExecutorMeta.getTransName(), "" ) );
+        String fullPath = Const.NVL( transExecutorMeta.getDirectoryPath(), "" ) + "/" + Const
+          .NVL( transExecutorMeta.getTransName(), "" );
+        wPath.setText( fullPath );
         break;
       case REPOSITORY_BY_REFERENCE:
-        wByReference.setText( "" );
-        if ( transExecutorMeta.getTransObjectId() != null ) {
-          this.referenceObjectId = transExecutorMeta.getTransObjectId();
-          getByReferenceData( transExecutorMeta.getTransObjectId() );
-        }
+        referenceObjectId = transExecutorMeta.getTransObjectId();
+        getByReferenceData( referenceObjectId );
         break;
       default:
         break;
     }
-    setRadioButtons();
 
     // TODO: throw in a separate thread.
     //
@@ -758,7 +519,7 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
       wOutputRowsSource.setItems( prevSteps );
 
       String[] inputFields = transMeta.getPrevStepFields( stepMeta ).getFieldNames();
-      parameterColumns[1].setComboValues( inputFields );
+      parameterColumns[ 1 ].setComboValues( inputFields );
       wGroupField.setItems( inputFields );
     } catch ( Exception e ) {
       log.logError( "couldn't get previous step list", e );
@@ -770,20 +531,27 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
 
     wExecutionResultTarget.setText( transExecutorMeta.getExecutionResultTargetStepMeta() == null ? ""
       : transExecutorMeta.getExecutionResultTargetStepMeta().getName() );
-    wExecutionTimeField.setText( Const.NVL( transExecutorMeta.getExecutionTimeField(), "" ) );
-    wExecutionResultField.setText( Const.NVL( transExecutorMeta.getExecutionResultField(), "" ) );
-    wExecutionNrErrorsField.setText( Const.NVL( transExecutorMeta.getExecutionNrErrorsField(), "" ) );
-    wExecutionLinesReadField.setText( Const.NVL( transExecutorMeta.getExecutionLinesReadField(), "" ) );
-    wExecutionLinesWrittenField.setText( Const.NVL( transExecutorMeta.getExecutionLinesWrittenField(), "" ) );
-    wExecutionLinesInputField.setText( Const.NVL( transExecutorMeta.getExecutionLinesInputField(), "" ) );
-    wExecutionLinesOutputField.setText( Const.NVL( transExecutorMeta.getExecutionLinesOutputField(), "" ) );
-    wExecutionLinesRejectedField.setText( Const.NVL( transExecutorMeta.getExecutionLinesRejectedField(), "" ) );
-    wExecutionLinesUpdatedField.setText( Const.NVL( transExecutorMeta.getExecutionLinesUpdatedField(), "" ) );
-    wExecutionLinesDeletedField.setText( Const.NVL( transExecutorMeta.getExecutionLinesDeletedField(), "" ) );
-    wExecutionFilesRetrievedField.setText( Const.NVL( transExecutorMeta.getExecutionFilesRetrievedField(), "" ) );
-    wExecutionExitStatusField.setText( Const.NVL( transExecutorMeta.getExecutionExitStatusField(), "" ) );
-    wExecutionLogTextField.setText( Const.NVL( transExecutorMeta.getExecutionLogTextField(), "" ) );
-    wExecutionLogChannelIdField.setText( Const.NVL( transExecutorMeta.getExecutionLogChannelIdField(), "" ) );
+    tiExecutionTimeField.setText( FIELD_NAME, Const.NVL( transExecutorMeta.getExecutionTimeField(), "" ) );
+    tiExecutionResultField.setText( FIELD_NAME, Const.NVL( transExecutorMeta.getExecutionResultField(), "" ) );
+    tiExecutionNrErrorsField.setText( FIELD_NAME, Const.NVL( transExecutorMeta.getExecutionNrErrorsField(), "" ) );
+    tiExecutionLinesReadField.setText( FIELD_NAME, Const.NVL( transExecutorMeta.getExecutionLinesReadField(), "" ) );
+    tiExecutionLinesWrittenField
+      .setText( FIELD_NAME, Const.NVL( transExecutorMeta.getExecutionLinesWrittenField(), "" ) );
+    tiExecutionLinesInputField.setText( FIELD_NAME, Const.NVL( transExecutorMeta.getExecutionLinesInputField(), "" ) );
+    tiExecutionLinesOutputField
+      .setText( FIELD_NAME, Const.NVL( transExecutorMeta.getExecutionLinesOutputField(), "" ) );
+    tiExecutionLinesRejectedField
+      .setText( FIELD_NAME, Const.NVL( transExecutorMeta.getExecutionLinesRejectedField(), "" ) );
+    tiExecutionLinesUpdatedField
+      .setText( FIELD_NAME, Const.NVL( transExecutorMeta.getExecutionLinesUpdatedField(), "" ) );
+    tiExecutionLinesDeletedField
+      .setText( FIELD_NAME, Const.NVL( transExecutorMeta.getExecutionLinesDeletedField(), "" ) );
+    tiExecutionFilesRetrievedField
+      .setText( FIELD_NAME, Const.NVL( transExecutorMeta.getExecutionFilesRetrievedField(), "" ) );
+    tiExecutionExitStatusField.setText( FIELD_NAME, Const.NVL( transExecutorMeta.getExecutionExitStatusField(), "" ) );
+    tiExecutionLogTextField.setText( FIELD_NAME, Const.NVL( transExecutorMeta.getExecutionLogTextField(), "" ) );
+    tiExecutionLogChannelIdField
+      .setText( FIELD_NAME, Const.NVL( transExecutorMeta.getExecutionLogChannelIdField(), "" ) );
 
     executorOutputStep = transExecutorMeta.getExecutorsOutputStep();
 
@@ -799,11 +567,11 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
       .getOutputRowsSourceStepMeta().getName() );
     for ( int i = 0; i < transExecutorMeta.getOutputRowsField().length; i++ ) {
       TableItem item = new TableItem( wOutputFields.table, SWT.NONE );
-      item.setText( 1, Const.NVL( transExecutorMeta.getOutputRowsField()[i], "" ) );
-      item.setText( 2, ValueMetaFactory.getValueMetaName( transExecutorMeta.getOutputRowsType()[i] ) );
-      int length = transExecutorMeta.getOutputRowsLength()[i];
+      item.setText( 1, Const.NVL( transExecutorMeta.getOutputRowsField()[ i ], "" ) );
+      item.setText( 2, ValueMetaFactory.getValueMetaName( transExecutorMeta.getOutputRowsType()[ i ] ) );
+      int length = transExecutorMeta.getOutputRowsLength()[ i ];
       item.setText( 3, length < 0 ? "" : Integer.toString( length ) );
-      int precision = transExecutorMeta.getOutputRowsPrecision()[i];
+      int precision = transExecutorMeta.getOutputRowsPrecision()[ i ];
       item.setText( 4, precision < 0 ? "" : Integer.toString( precision ) );
     }
     wOutputFields.removeEmptyRows();
@@ -813,7 +581,7 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
     wTabFolder.setSelection( 0 );
 
     try {
-      loadTrans();
+      loadTransformation();
     } catch ( Throwable t ) {
       // Ignore errors
     }
@@ -833,8 +601,8 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
     props.setLook( wParametersComposite );
 
     FormLayout parameterTabLayout = new FormLayout();
-    parameterTabLayout.marginWidth = Const.FORM_MARGIN;
-    parameterTabLayout.marginHeight = Const.FORM_MARGIN;
+    parameterTabLayout.marginWidth = 15;
+    parameterTabLayout.marginHeight = 15;
     wParametersComposite.setLayout( parameterTabLayout );
 
     // Add a button: get parameters
@@ -853,18 +621,6 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
       }
     } );
 
-    // Add a checkbox: inherit all variables...
-    //
-    wInheritAll = new Button( wParametersComposite, SWT.CHECK );
-    wInheritAll.setText( BaseMessages.getString( PKG, "TransExecutorDialog.Parameters.InheritAll" ) );
-    props.setLook( wInheritAll );
-    FormData fdInheritAll = new FormData();
-    fdInheritAll.bottom = new FormAttachment( 100, 0 );
-    fdInheritAll.left = new FormAttachment( 0, 0 );
-    fdInheritAll.right = new FormAttachment( wGetParameters, -margin );
-    wInheritAll.setLayoutData( fdInheritAll );
-    wInheritAll.setSelection( transExecutorMeta.getParameters().isInheritingAllVariables() );
-
     // Now add a table view with the 3 columns to specify: variable name, input field & optional static input
     //
     parameterColumns =
@@ -872,31 +628,43 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
         new ColumnInfo( BaseMessages.getString( PKG, "TransExecutorDialog.Parameters.column.Variable" ),
           ColumnInfo.COLUMN_TYPE_TEXT, false, false ),
         new ColumnInfo( BaseMessages.getString( PKG, "TransExecutorDialog.Parameters.column.Field" ),
-          ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { }, false ),
+          ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] {}, false ),
         new ColumnInfo( BaseMessages.getString( PKG, "TransExecutorDialog.Parameters.column.Input" ),
           ColumnInfo.COLUMN_TYPE_TEXT, false, false ), };
-    parameterColumns[1].setUsingVariables( true );
+    parameterColumns[ 1 ].setUsingVariables( true );
 
     TransExecutorParameters parameters = transExecutorMeta.getParameters();
     wTransExecutorParameters =
       new TableView( transMeta, wParametersComposite, SWT.FULL_SELECTION | SWT.SINGLE | SWT.BORDER, parameterColumns,
-        parameters.getVariable().length, lsMod, props );
+        parameters.getVariable().length, false, lsMod, props, false );
     props.setLook( wTransExecutorParameters );
     FormData fdTransExecutors = new FormData();
     fdTransExecutors.left = new FormAttachment( 0, 0 );
     fdTransExecutors.right = new FormAttachment( 100, 0 );
     fdTransExecutors.top = new FormAttachment( 0, 0 );
-    fdTransExecutors.bottom = new FormAttachment( wInheritAll, -margin * 2 );
+    fdTransExecutors.bottom = new FormAttachment( wGetParameters, -10 );
     wTransExecutorParameters.setLayoutData( fdTransExecutors );
+    wTransExecutorParameters.getTable().addListener( SWT.Resize, new ColumnsResizer( 0, 33, 33, 33 ) );
 
     for ( int i = 0; i < parameters.getVariable().length; i++ ) {
       TableItem tableItem = wTransExecutorParameters.table.getItem( i );
-      tableItem.setText( 1, Const.NVL( parameters.getVariable()[i], "" ) );
-      tableItem.setText( 2, Const.NVL( parameters.getField()[i], "" ) );
-      tableItem.setText( 3, Const.NVL( parameters.getInput()[i], "" ) );
+      tableItem.setText( 1, Const.NVL( parameters.getVariable()[ i ], "" ) );
+      tableItem.setText( 2, Const.NVL( parameters.getField()[ i ], "" ) );
+      tableItem.setText( 3, Const.NVL( parameters.getInput()[ i ], "" ) );
     }
     wTransExecutorParameters.setRowNums();
     wTransExecutorParameters.optWidth( true );
+
+    // Add a checkbox: inherit all variables...
+    //
+    wInheritAll = new Button( wParametersComposite, SWT.CHECK );
+    wInheritAll.setText( BaseMessages.getString( PKG, "TransExecutorDialog.Parameters.InheritAll" ) );
+    props.setLook( wInheritAll );
+    FormData fdInheritAll = new FormData();
+    fdInheritAll.top = new FormAttachment( wTransExecutorParameters, 15 );
+    fdInheritAll.left = new FormAttachment( 0, 0 );
+    wInheritAll.setLayoutData( fdInheritAll );
+    wInheritAll.setSelection( transExecutorMeta.getParameters().isInheritingAllVariables() );
 
     FormData fdParametersComposite = new FormData();
     fdParametersComposite.left = new FormAttachment( 0, 0 );
@@ -914,13 +682,13 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
       // Load the job in executorTransMeta
       //
       if ( inputTransMeta == null ) {
-        loadTrans();
+        loadTransformation();
         inputTransMeta = executorTransMeta;
       }
 
       String[] parameters = inputTransMeta.listParameters();
       for ( int i = 0; i < parameters.length; i++ ) {
-        String name = parameters[i];
+        String name = parameters[ i ];
         String desc = inputTransMeta.getParameterDescription( name );
 
         TableItem item = new TableItem( wTransExecutorParameters.table, SWT.NONE );
@@ -948,8 +716,8 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
     props.setLook( wInputComposite );
 
     FormLayout tabLayout = new FormLayout();
-    tabLayout.marginWidth = Const.FORM_MARGIN;
-    tabLayout.marginHeight = Const.FORM_MARGIN;
+    tabLayout.marginWidth = 15;
+    tabLayout.marginHeight = 15;
     wInputComposite.setLayout( tabLayout );
 
     // Group size
@@ -959,18 +727,17 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
     wlGroupSize.setText( BaseMessages.getString( PKG, "TransExecutorDialog.GroupSize.Label" ) );
     FormData fdlGroupSize = new FormData();
     fdlGroupSize.top = new FormAttachment( 0, 0 );
-    fdlGroupSize.left = new FormAttachment( 0, 0 ); // First one in the left
-    fdlGroupSize.right = new FormAttachment( middle, -margin );
+    fdlGroupSize.left = new FormAttachment( 0, 0 );
     wlGroupSize.setLayoutData( fdlGroupSize );
+
     wGroupSize = new TextVar( transMeta, wInputComposite, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     props.setLook( wGroupSize );
     wGroupSize.addModifyListener( lsMod );
     FormData fdGroupSize = new FormData();
-    fdGroupSize.top = new FormAttachment( 0, 0 );
-    fdGroupSize.left = new FormAttachment( middle, 0 ); // To the right of
-    fdGroupSize.right = new FormAttachment( 100, 0 );
+    fdGroupSize.width = 250;
+    fdGroupSize.top = new FormAttachment( wlGroupSize, 5 );
+    fdGroupSize.left = new FormAttachment( 0, 0 );
     wGroupSize.setLayoutData( fdGroupSize );
-    Control lastControl = wGroupSize;
 
     // Group field
     //
@@ -978,19 +745,18 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
     props.setLook( wlGroupField );
     wlGroupField.setText( BaseMessages.getString( PKG, "TransExecutorDialog.GroupField.Label" ) );
     FormData fdlGroupField = new FormData();
-    fdlGroupField.top = new FormAttachment( lastControl, margin );
-    fdlGroupField.left = new FormAttachment( 0, 0 ); // First one in the left
-    fdlGroupField.right = new FormAttachment( middle, -margin );
+    fdlGroupField.top = new FormAttachment( wGroupSize, 10 );
+    fdlGroupField.left = new FormAttachment( 0, 0 );
     wlGroupField.setLayoutData( fdlGroupField );
+
     wGroupField = new CCombo( wInputComposite, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     props.setLook( wGroupField );
     wGroupField.addModifyListener( lsMod );
     FormData fdGroupField = new FormData();
-    fdGroupField.top = new FormAttachment( lastControl, margin );
-    fdGroupField.left = new FormAttachment( middle, 0 ); // To the right of
-    fdGroupField.right = new FormAttachment( 100, 0 );
+    fdGroupField.width = 250;
+    fdGroupField.top = new FormAttachment( wlGroupField, 5 );
+    fdGroupField.left = new FormAttachment( 0, 0 );
     wGroupField.setLayoutData( fdGroupField );
-    lastControl = wGroupField;
 
     // Group time
     //
@@ -998,19 +764,18 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
     props.setLook( wlGroupTime );
     wlGroupTime.setText( BaseMessages.getString( PKG, "TransExecutorDialog.GroupTime.Label" ) );
     FormData fdlGroupTime = new FormData();
-    fdlGroupTime.top = new FormAttachment( lastControl, margin );
+    fdlGroupTime.top = new FormAttachment( wGroupField, 10 );
     fdlGroupTime.left = new FormAttachment( 0, 0 ); // First one in the left
-    fdlGroupTime.right = new FormAttachment( middle, -margin );
     wlGroupTime.setLayoutData( fdlGroupTime );
+
     wGroupTime = new TextVar( transMeta, wInputComposite, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     props.setLook( wGroupTime );
     wGroupTime.addModifyListener( lsMod );
     FormData fdGroupTime = new FormData();
-    fdGroupTime.top = new FormAttachment( lastControl, margin );
-    fdGroupTime.left = new FormAttachment( middle, 0 ); // To the right of
-    fdGroupTime.right = new FormAttachment( 100, 0 );
+    fdGroupTime.width = 250;
+    fdGroupTime.top = new FormAttachment( wlGroupTime, 5 );
+    fdGroupTime.left = new FormAttachment( 0, 0 );
     wGroupTime.setLayoutData( fdGroupTime );
-    // lastControl = wGroupTime;
 
     wTab.setControl( wInputComposite );
     wTabFolder.setSelection( wTab );
@@ -1029,8 +794,8 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
     props.setLook( wInputComposite );
 
     FormLayout tabLayout = new FormLayout();
-    tabLayout.marginWidth = Const.FORM_MARGIN;
-    tabLayout.marginHeight = Const.FORM_MARGIN;
+    tabLayout.marginWidth = 15;
+    tabLayout.marginHeight = 15;
     wInputComposite.setLayout( tabLayout );
 
     wlExecutionResultTarget = new Label( wInputComposite, SWT.RIGHT );
@@ -1039,308 +804,85 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
     FormData fdlExecutionResultTarget = new FormData();
     fdlExecutionResultTarget.top = new FormAttachment( 0, 0 );
     fdlExecutionResultTarget.left = new FormAttachment( 0, 0 ); // First one in the left
-    fdlExecutionResultTarget.right = new FormAttachment( middle, -margin );
     wlExecutionResultTarget.setLayoutData( fdlExecutionResultTarget );
+
     wExecutionResultTarget = new CCombo( wInputComposite, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     props.setLook( wExecutionResultTarget );
     wExecutionResultTarget.addModifyListener( lsMod );
     FormData fdExecutionResultTarget = new FormData();
-    fdExecutionResultTarget.top = new FormAttachment( 0, 0 );
-    fdExecutionResultTarget.left = new FormAttachment( middle, 0 ); // To the right
-    fdExecutionResultTarget.right = new FormAttachment( 100, 0 );
+    fdExecutionResultTarget.width = 250;
+    fdExecutionResultTarget.top = new FormAttachment( wlExecutionResultTarget, 5 );
+    fdExecutionResultTarget.left = new FormAttachment( 0, 0 ); // To the right
     wExecutionResultTarget.setLayoutData( fdExecutionResultTarget );
-    Control lastControl = wExecutionResultTarget;
 
-    // ExecutionTimeField
-    //
-    wlExecutionTimeField = new Label( wInputComposite, SWT.RIGHT );
-    props.setLook( wlExecutionTimeField );
-    wlExecutionTimeField.setText( BaseMessages.getString( PKG, "TransExecutorDialog.ExecutionTimeField.Label" ) );
-    FormData fdlExecutionTimeField = new FormData();
-    fdlExecutionTimeField.top = new FormAttachment( lastControl, margin );
-    fdlExecutionTimeField.left = new FormAttachment( 0, 0 ); // First one in the left
-    fdlExecutionTimeField.right = new FormAttachment( middle, -margin );
-    wlExecutionTimeField.setLayoutData( fdlExecutionTimeField );
-    wExecutionTimeField = new TextVar( transMeta, wInputComposite, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-    props.setLook( wExecutionTimeField );
-    wExecutionTimeField.addModifyListener( lsMod );
-    FormData fdExecutionTimeField = new FormData();
-    fdExecutionTimeField.top = new FormAttachment( lastControl, margin );
-    fdExecutionTimeField.left = new FormAttachment( middle, 0 ); // To the right
-    fdExecutionTimeField.right = new FormAttachment( 100, 0 );
-    wExecutionTimeField.setLayoutData( fdExecutionTimeField );
-    lastControl = wExecutionTimeField;
+    ColumnInfo[] executionResultColumns =
+      new ColumnInfo[] {
+        new ColumnInfo( BaseMessages.getString( PKG, "TransExecutorMeta.ExecutionResults.FieldDescription.Label" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
+        new ColumnInfo( BaseMessages.getString( PKG, "TransExecutorMeta.ExecutionResults.FieldName.Label" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false, false )
+      };
+    executionResultColumns[ 1 ].setUsingVariables( true );
 
-    // ExecutionResultField
-    //
-    wlExecutionResultField = new Label( wInputComposite, SWT.RIGHT );
-    props.setLook( wlExecutionResultField );
-    wlExecutionResultField.setText( BaseMessages.getString( PKG, "TransExecutorDialog.ExecutionResultField.Label" ) );
-    FormData fdlExecutionResultField = new FormData();
-    fdlExecutionResultField.top = new FormAttachment( lastControl, margin );
-    fdlExecutionResultField.left = new FormAttachment( 0, 0 ); // First one in the left
-    fdlExecutionResultField.right = new FormAttachment( middle, -margin );
-    wlExecutionResultField.setLayoutData( fdlExecutionResultField );
-    wExecutionResultField = new TextVar( transMeta, wInputComposite, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-    props.setLook( wExecutionResultField );
-    wExecutionResultField.addModifyListener( lsMod );
-    FormData fdExecutionResultField = new FormData();
-    fdExecutionResultField.top = new FormAttachment( lastControl, margin );
-    fdExecutionResultField.left = new FormAttachment( middle, 0 ); // To the right
-    fdExecutionResultField.right = new FormAttachment( 100, 0 );
-    wExecutionResultField.setLayoutData( fdExecutionResultField );
-    lastControl = wExecutionResultField;
+    TableView wExectionResults =
+      new TableView( transMeta, wInputComposite, SWT.FULL_SELECTION | SWT.SINGLE | SWT.BORDER, executionResultColumns,
+        14, false, lsMod, props, false );
+    props.setLook( wExectionResults );
+    FormData fdExecutionResults = new FormData();
+    fdExecutionResults.left = new FormAttachment( 0 );
+    fdExecutionResults.right = new FormAttachment( 100 );
+    fdExecutionResults.top = new FormAttachment( wExecutionResultTarget, 10 );
+    fdExecutionResults.bottom = new FormAttachment( 100 );
+    wExectionResults.setLayoutData( fdExecutionResults );
+    wExectionResults.getTable().addListener( SWT.Resize, new ColumnsResizer( 0, 50, 50 ) );
 
-    // ExecutionNrErrorsField
-    //
-    wlExecutionNrErrorsField = new Label( wInputComposite, SWT.RIGHT );
-    props.setLook( wlExecutionNrErrorsField );
-    wlExecutionNrErrorsField
-      .setText( BaseMessages.getString( PKG, "TransExecutorDialog.ExecutionNrErrorsField.Label" ) );
-    FormData fdlExecutionNrErrorsField = new FormData();
-    fdlExecutionNrErrorsField.top = new FormAttachment( lastControl, margin );
-    fdlExecutionNrErrorsField.left = new FormAttachment( 0, 0 ); // First one in the left
-    fdlExecutionNrErrorsField.right = new FormAttachment( middle, -margin );
-    wlExecutionNrErrorsField.setLayoutData( fdlExecutionNrErrorsField );
-    wExecutionNrErrorsField = new TextVar( transMeta, wInputComposite, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-    props.setLook( wExecutionNrErrorsField );
-    wExecutionNrErrorsField.addModifyListener( lsMod );
-    FormData fdExecutionNrErrorsField = new FormData();
-    fdExecutionNrErrorsField.top = new FormAttachment( lastControl, margin );
-    fdExecutionNrErrorsField.left = new FormAttachment( middle, 0 ); // To the right
-    fdExecutionNrErrorsField.right = new FormAttachment( 100, 0 );
-    wExecutionNrErrorsField.setLayoutData( fdExecutionNrErrorsField );
-    lastControl = wExecutionNrErrorsField;
+    int index = 0;
+    tiExecutionTimeField = wExectionResults.table.getItem( index++ );
+    tiExecutionResultField = wExectionResults.table.getItem( index++ );
+    tiExecutionNrErrorsField = wExectionResults.table.getItem( index++ );
+    tiExecutionLinesReadField = wExectionResults.table.getItem( index++ );
+    tiExecutionLinesWrittenField = wExectionResults.table.getItem( index++ );
+    tiExecutionLinesInputField = wExectionResults.table.getItem( index++ );
+    tiExecutionLinesOutputField = wExectionResults.table.getItem( index++ );
+    tiExecutionLinesRejectedField = wExectionResults.table.getItem( index++ );
+    tiExecutionLinesUpdatedField = wExectionResults.table.getItem( index++ );
+    tiExecutionLinesDeletedField = wExectionResults.table.getItem( index++ );
+    tiExecutionFilesRetrievedField = wExectionResults.table.getItem( index++ );
+    tiExecutionExitStatusField = wExectionResults.table.getItem( index++ );
+    tiExecutionLogTextField = wExectionResults.table.getItem( index++ );
+    tiExecutionLogChannelIdField = wExectionResults.table.getItem( index++ );
 
-    // ExecutionLinesReadField
-    //
-    wlExecutionLinesReadField = new Label( wInputComposite, SWT.RIGHT );
-    props.setLook( wlExecutionLinesReadField );
-    wlExecutionLinesReadField.setText( BaseMessages
-      .getString( PKG, "TransExecutorDialog.ExecutionLinesReadField.Label" ) );
-    FormData fdlExecutionLinesReadField = new FormData();
-    fdlExecutionLinesReadField.top = new FormAttachment( lastControl, margin );
-    fdlExecutionLinesReadField.left = new FormAttachment( 0, 0 ); // First one in the left
-    fdlExecutionLinesReadField.right = new FormAttachment( middle, -margin );
-    wlExecutionLinesReadField.setLayoutData( fdlExecutionLinesReadField );
-    wExecutionLinesReadField = new TextVar( transMeta, wInputComposite, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-    props.setLook( wExecutionLinesReadField );
-    wExecutionLinesReadField.addModifyListener( lsMod );
-    FormData fdExecutionLinesReadField = new FormData();
-    fdExecutionLinesReadField.top = new FormAttachment( lastControl, margin );
-    fdExecutionLinesReadField.left = new FormAttachment( middle, 0 ); // To the right
-    fdExecutionLinesReadField.right = new FormAttachment( 100, 0 );
-    wExecutionLinesReadField.setLayoutData( fdExecutionLinesReadField );
-    lastControl = wExecutionLinesReadField;
+    tiExecutionTimeField
+      .setText( FIELD_DESCRIPTION, BaseMessages.getString( PKG, "TransExecutorDialog.ExecutionTimeField.Label" ) );
+    tiExecutionResultField
+      .setText( FIELD_DESCRIPTION, BaseMessages.getString( PKG, "TransExecutorDialog.ExecutionResultField.Label" ) );
+    tiExecutionNrErrorsField
+      .setText( FIELD_DESCRIPTION, BaseMessages.getString( PKG, "TransExecutorDialog.ExecutionNrErrorsField.Label" ) );
+    tiExecutionLinesReadField
+      .setText( FIELD_DESCRIPTION, BaseMessages.getString( PKG, "TransExecutorDialog.ExecutionLinesReadField.Label" ) );
+    tiExecutionLinesWrittenField.setText( FIELD_DESCRIPTION,
+      BaseMessages.getString( PKG, "TransExecutorDialog.ExecutionLinesWrittenField.Label" ) );
+    tiExecutionLinesInputField.setText( FIELD_DESCRIPTION,
+      BaseMessages.getString( PKG, "TransExecutorDialog.ExecutionLinesInputField.Label" ) );
+    tiExecutionLinesOutputField.setText( FIELD_DESCRIPTION,
+      BaseMessages.getString( PKG, "TransExecutorDialog.ExecutionLinesOutputField.Label" ) );
+    tiExecutionLinesRejectedField.setText( FIELD_DESCRIPTION,
+      BaseMessages.getString( PKG, "TransExecutorDialog.ExecutionLinesRejectedField.Label" ) );
+    tiExecutionLinesUpdatedField.setText( FIELD_DESCRIPTION,
+      BaseMessages.getString( PKG, "TransExecutorDialog.ExecutionLinesUpdatedField.Label" ) );
+    tiExecutionLinesDeletedField.setText( FIELD_DESCRIPTION,
+      BaseMessages.getString( PKG, "TransExecutorDialog.ExecutionLinesDeletedField.Label" ) );
+    tiExecutionFilesRetrievedField.setText( FIELD_DESCRIPTION,
+      BaseMessages.getString( PKG, "TransExecutorDialog.ExecutionFilesRetrievedField.Label" ) );
+    tiExecutionExitStatusField.setText( FIELD_DESCRIPTION,
+      BaseMessages.getString( PKG, "TransExecutorDialog.ExecutionExitStatusField.Label" ) );
+    tiExecutionLogTextField
+      .setText( FIELD_DESCRIPTION, BaseMessages.getString( PKG, "TransExecutorDialog.ExecutionLogTextField.Label" ) );
+    tiExecutionLogChannelIdField.setText( FIELD_DESCRIPTION,
+      BaseMessages.getString( PKG, "TransExecutorDialog.ExecutionLogChannelIdField.Label" ) );
 
-    // ExecutionLinesWrittenField
-    //
-    wlExecutionLinesWrittenField = new Label( wInputComposite, SWT.RIGHT );
-    props.setLook( wlExecutionLinesWrittenField );
-    wlExecutionLinesWrittenField.setText( BaseMessages.getString( PKG,
-      "TransExecutorDialog.ExecutionLinesWrittenField.Label" ) );
-    FormData fdlExecutionLinesWrittenField = new FormData();
-    fdlExecutionLinesWrittenField.top = new FormAttachment( lastControl, margin );
-    fdlExecutionLinesWrittenField.left = new FormAttachment( 0, 0 ); // First one in the left
-    fdlExecutionLinesWrittenField.right = new FormAttachment( middle, -margin );
-    wlExecutionLinesWrittenField.setLayoutData( fdlExecutionLinesWrittenField );
-    wExecutionLinesWrittenField = new TextVar( transMeta, wInputComposite, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-    props.setLook( wExecutionLinesWrittenField );
-    wExecutionLinesWrittenField.addModifyListener( lsMod );
-    FormData fdExecutionLinesWrittenField = new FormData();
-    fdExecutionLinesWrittenField.top = new FormAttachment( lastControl, margin );
-    fdExecutionLinesWrittenField.left = new FormAttachment( middle, 0 ); // To the right
-    fdExecutionLinesWrittenField.right = new FormAttachment( 100, 0 );
-    wExecutionLinesWrittenField.setLayoutData( fdExecutionLinesWrittenField );
-    lastControl = wExecutionLinesWrittenField;
-
-    // ExecutionLinesInputField
-    //
-    wlExecutionLinesInputField = new Label( wInputComposite, SWT.RIGHT );
-    props.setLook( wlExecutionLinesInputField );
-    wlExecutionLinesInputField.setText( BaseMessages.getString( PKG,
-      "TransExecutorDialog.ExecutionLinesInputField.Label" ) );
-    FormData fdlExecutionLinesInputField = new FormData();
-    fdlExecutionLinesInputField.top = new FormAttachment( lastControl, margin );
-    fdlExecutionLinesInputField.left = new FormAttachment( 0, 0 ); // First one in the left
-    fdlExecutionLinesInputField.right = new FormAttachment( middle, -margin );
-    wlExecutionLinesInputField.setLayoutData( fdlExecutionLinesInputField );
-    wExecutionLinesInputField = new TextVar( transMeta, wInputComposite, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-    props.setLook( wExecutionLinesInputField );
-    wExecutionLinesInputField.addModifyListener( lsMod );
-    FormData fdExecutionLinesInputField = new FormData();
-    fdExecutionLinesInputField.top = new FormAttachment( lastControl, margin );
-    fdExecutionLinesInputField.left = new FormAttachment( middle, 0 ); // To the right
-    fdExecutionLinesInputField.right = new FormAttachment( 100, 0 );
-    wExecutionLinesInputField.setLayoutData( fdExecutionLinesInputField );
-    lastControl = wExecutionLinesInputField;
-
-    // ExecutionLinesOutputField
-    //
-    wlExecutionLinesOutputField = new Label( wInputComposite, SWT.RIGHT );
-    props.setLook( wlExecutionLinesOutputField );
-    wlExecutionLinesOutputField.setText( BaseMessages.getString( PKG,
-      "TransExecutorDialog.ExecutionLinesOutputField.Label" ) );
-    FormData fdlExecutionLinesOutputField = new FormData();
-    fdlExecutionLinesOutputField.top = new FormAttachment( lastControl, margin );
-    fdlExecutionLinesOutputField.left = new FormAttachment( 0, 0 ); // First one in the left
-    fdlExecutionLinesOutputField.right = new FormAttachment( middle, -margin );
-    wlExecutionLinesOutputField.setLayoutData( fdlExecutionLinesOutputField );
-    wExecutionLinesOutputField = new TextVar( transMeta, wInputComposite, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-    props.setLook( wExecutionLinesOutputField );
-    wExecutionLinesOutputField.addModifyListener( lsMod );
-    FormData fdExecutionLinesOutputField = new FormData();
-    fdExecutionLinesOutputField.top = new FormAttachment( lastControl, margin );
-    fdExecutionLinesOutputField.left = new FormAttachment( middle, 0 ); // To the right
-    fdExecutionLinesOutputField.right = new FormAttachment( 100, 0 );
-    wExecutionLinesOutputField.setLayoutData( fdExecutionLinesOutputField );
-    lastControl = wExecutionLinesOutputField;
-
-    // ExecutionLinesRejectedField
-    //
-    wlExecutionLinesRejectedField = new Label( wInputComposite, SWT.RIGHT );
-    props.setLook( wlExecutionLinesRejectedField );
-    wlExecutionLinesRejectedField.setText( BaseMessages.getString( PKG,
-      "TransExecutorDialog.ExecutionLinesRejectedField.Label" ) );
-    FormData fdlExecutionLinesRejectedField = new FormData();
-    fdlExecutionLinesRejectedField.top = new FormAttachment( lastControl, margin );
-    fdlExecutionLinesRejectedField.left = new FormAttachment( 0, 0 ); // First one in the left
-    fdlExecutionLinesRejectedField.right = new FormAttachment( middle, -margin );
-    wlExecutionLinesRejectedField.setLayoutData( fdlExecutionLinesRejectedField );
-    wExecutionLinesRejectedField = new TextVar( transMeta, wInputComposite, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-    props.setLook( wExecutionLinesRejectedField );
-    wExecutionLinesRejectedField.addModifyListener( lsMod );
-    FormData fdExecutionLinesRejectedField = new FormData();
-    fdExecutionLinesRejectedField.top = new FormAttachment( lastControl, margin );
-    fdExecutionLinesRejectedField.left = new FormAttachment( middle, 0 ); // To the right
-    fdExecutionLinesRejectedField.right = new FormAttachment( 100, 0 );
-    wExecutionLinesRejectedField.setLayoutData( fdExecutionLinesRejectedField );
-    lastControl = wExecutionLinesRejectedField;
-
-    // ExecutionLinesUpdatedField
-    //
-    wlExecutionLinesUpdatedField = new Label( wInputComposite, SWT.RIGHT );
-    props.setLook( wlExecutionLinesUpdatedField );
-    wlExecutionLinesUpdatedField.setText( BaseMessages.getString( PKG,
-      "TransExecutorDialog.ExecutionLinesUpdatedField.Label" ) );
-    FormData fdlExecutionLinesUpdatedField = new FormData();
-    fdlExecutionLinesUpdatedField.top = new FormAttachment( lastControl, margin );
-    fdlExecutionLinesUpdatedField.left = new FormAttachment( 0, 0 ); // First one in the left
-    fdlExecutionLinesUpdatedField.right = new FormAttachment( middle, -margin );
-    wlExecutionLinesUpdatedField.setLayoutData( fdlExecutionLinesUpdatedField );
-    wExecutionLinesUpdatedField = new TextVar( transMeta, wInputComposite, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-    props.setLook( wExecutionLinesUpdatedField );
-    wExecutionLinesUpdatedField.addModifyListener( lsMod );
-    FormData fdExecutionLinesUpdatedField = new FormData();
-    fdExecutionLinesUpdatedField.top = new FormAttachment( lastControl, margin );
-    fdExecutionLinesUpdatedField.left = new FormAttachment( middle, 0 ); // To the right
-    fdExecutionLinesUpdatedField.right = new FormAttachment( 100, 0 );
-    wExecutionLinesUpdatedField.setLayoutData( fdExecutionLinesUpdatedField );
-    lastControl = wExecutionLinesUpdatedField;
-
-    // ExecutionLinesDeletedField
-    //
-    wlExecutionLinesDeletedField = new Label( wInputComposite, SWT.RIGHT );
-    props.setLook( wlExecutionLinesDeletedField );
-    wlExecutionLinesDeletedField.setText( BaseMessages.getString( PKG,
-      "TransExecutorDialog.ExecutionLinesDeletedField.Label" ) );
-    FormData fdlExecutionLinesDeletedField = new FormData();
-    fdlExecutionLinesDeletedField.top = new FormAttachment( lastControl, margin );
-    fdlExecutionLinesDeletedField.left = new FormAttachment( 0, 0 ); // First one in the left
-    fdlExecutionLinesDeletedField.right = new FormAttachment( middle, -margin );
-    wlExecutionLinesDeletedField.setLayoutData( fdlExecutionLinesDeletedField );
-    wExecutionLinesDeletedField = new TextVar( transMeta, wInputComposite, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-    props.setLook( wExecutionLinesDeletedField );
-    wExecutionLinesDeletedField.addModifyListener( lsMod );
-    FormData fdExecutionLinesDeletedField = new FormData();
-    fdExecutionLinesDeletedField.top = new FormAttachment( lastControl, margin );
-    fdExecutionLinesDeletedField.left = new FormAttachment( middle, 0 ); // To the right
-    fdExecutionLinesDeletedField.right = new FormAttachment( 100, 0 );
-    wExecutionLinesDeletedField.setLayoutData( fdExecutionLinesDeletedField );
-    lastControl = wExecutionLinesDeletedField;
-
-    // ExecutionFilesRetrievedField
-    //
-    wlExecutionFilesRetrievedField = new Label( wInputComposite, SWT.RIGHT );
-    props.setLook( wlExecutionFilesRetrievedField );
-    wlExecutionFilesRetrievedField.setText( BaseMessages.getString( PKG,
-      "TransExecutorDialog.ExecutionFilesRetrievedField.Label" ) );
-    FormData fdlExecutionFilesRetrievedField = new FormData();
-    fdlExecutionFilesRetrievedField.top = new FormAttachment( lastControl, margin );
-    fdlExecutionFilesRetrievedField.left = new FormAttachment( 0, 0 ); // First one in the left
-    fdlExecutionFilesRetrievedField.right = new FormAttachment( middle, -margin );
-    wlExecutionFilesRetrievedField.setLayoutData( fdlExecutionFilesRetrievedField );
-    wExecutionFilesRetrievedField = new TextVar( transMeta, wInputComposite, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-    props.setLook( wExecutionFilesRetrievedField );
-    wExecutionFilesRetrievedField.addModifyListener( lsMod );
-    FormData fdExecutionFilesRetrievedField = new FormData();
-    fdExecutionFilesRetrievedField.top = new FormAttachment( lastControl, margin );
-    fdExecutionFilesRetrievedField.left = new FormAttachment( middle, 0 ); // To the right
-    fdExecutionFilesRetrievedField.right = new FormAttachment( 100, 0 );
-    wExecutionFilesRetrievedField.setLayoutData( fdExecutionFilesRetrievedField );
-    lastControl = wExecutionFilesRetrievedField;
-
-    // ExecutionExitStatusField
-    //
-    wlExecutionExitStatusField = new Label( wInputComposite, SWT.RIGHT );
-    props.setLook( wlExecutionExitStatusField );
-    wlExecutionExitStatusField.setText( BaseMessages.getString( PKG,
-      "TransExecutorDialog.ExecutionExitStatusField.Label" ) );
-    FormData fdlExecutionExitStatusField = new FormData();
-    fdlExecutionExitStatusField.top = new FormAttachment( lastControl, margin );
-    fdlExecutionExitStatusField.left = new FormAttachment( 0, 0 ); // First one in the left
-    fdlExecutionExitStatusField.right = new FormAttachment( middle, -margin );
-    wlExecutionExitStatusField.setLayoutData( fdlExecutionExitStatusField );
-    wExecutionExitStatusField = new TextVar( transMeta, wInputComposite, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-    props.setLook( wExecutionExitStatusField );
-    wExecutionExitStatusField.addModifyListener( lsMod );
-    FormData fdExecutionExitStatusField = new FormData();
-    fdExecutionExitStatusField.top = new FormAttachment( lastControl, margin );
-    fdExecutionExitStatusField.left = new FormAttachment( middle, 0 ); // To the right
-    fdExecutionExitStatusField.right = new FormAttachment( 100, 0 );
-    wExecutionExitStatusField.setLayoutData( fdExecutionExitStatusField );
-    lastControl = wExecutionExitStatusField;
-
-    // ExecutionLogTextField
-    //
-    wlExecutionLogTextField = new Label( wInputComposite, SWT.RIGHT );
-    props.setLook( wlExecutionLogTextField );
-    wlExecutionLogTextField.setText( BaseMessages.getString( PKG, "TransExecutorDialog.ExecutionLogTextField.Label" ) );
-    FormData fdlExecutionLogTextField = new FormData();
-    fdlExecutionLogTextField.top = new FormAttachment( lastControl, margin );
-    fdlExecutionLogTextField.left = new FormAttachment( 0, 0 ); // First one in the left
-    fdlExecutionLogTextField.right = new FormAttachment( middle, -margin );
-    wlExecutionLogTextField.setLayoutData( fdlExecutionLogTextField );
-    wExecutionLogTextField = new TextVar( transMeta, wInputComposite, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-    props.setLook( wExecutionLogTextField );
-    wExecutionLogTextField.addModifyListener( lsMod );
-    FormData fdExecutionLogTextField = new FormData();
-    fdExecutionLogTextField.top = new FormAttachment( lastControl, margin );
-    fdExecutionLogTextField.left = new FormAttachment( middle, 0 ); // To the right
-    fdExecutionLogTextField.right = new FormAttachment( 100, 0 );
-    wExecutionLogTextField.setLayoutData( fdExecutionLogTextField );
-    lastControl = wExecutionLogTextField;
-
-    // ExecutionLogChannelIdField
-    //
-    wlExecutionLogChannelIdField = new Label( wInputComposite, SWT.RIGHT );
-    props.setLook( wlExecutionLogChannelIdField );
-    wlExecutionLogChannelIdField.setText( BaseMessages.getString( PKG,
-      "TransExecutorDialog.ExecutionLogChannelIdField.Label" ) );
-    FormData fdlExecutionLogChannelIdField = new FormData();
-    fdlExecutionLogChannelIdField.top = new FormAttachment( lastControl, margin );
-    fdlExecutionLogChannelIdField.left = new FormAttachment( 0, 0 ); // First one in the left
-    fdlExecutionLogChannelIdField.right = new FormAttachment( middle, -margin );
-    wlExecutionLogChannelIdField.setLayoutData( fdlExecutionLogChannelIdField );
-    wExecutionLogChannelIdField = new TextVar( transMeta, wInputComposite, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-    props.setLook( wExecutionLogChannelIdField );
-    wExecutionLogChannelIdField.addModifyListener( lsMod );
-    FormData fdExecutionLogChannelIdField = new FormData();
-    fdExecutionLogChannelIdField.top = new FormAttachment( lastControl, margin );
-    fdExecutionLogChannelIdField.left = new FormAttachment( middle, 0 ); // To the right
-    fdExecutionLogChannelIdField.right = new FormAttachment( 100, 0 );
-    wExecutionLogChannelIdField.setLayoutData( fdExecutionLogChannelIdField );
-    lastControl = wExecutionLogChannelIdField;
+    wTransExecutorParameters.setRowNums();
+    wTransExecutorParameters.optWidth( true );
 
     wInputComposite.pack();
     Rectangle bounds = wInputComposite.getBounds();
@@ -1368,8 +910,8 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
     props.setLook( wInputComposite );
 
     FormLayout tabLayout = new FormLayout();
-    tabLayout.marginWidth = Const.FORM_MARGIN;
-    tabLayout.marginHeight = Const.FORM_MARGIN;
+    tabLayout.marginWidth = 15;
+    tabLayout.marginHeight = 15;
     wInputComposite.setLayout( tabLayout );
 
     wlResultFilesTarget = new Label( wInputComposite, SWT.RIGHT );
@@ -1378,17 +920,16 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
     FormData fdlResultFilesTarget = new FormData();
     fdlResultFilesTarget.top = new FormAttachment( 0, 0 );
     fdlResultFilesTarget.left = new FormAttachment( 0, 0 ); // First one in the left
-    fdlResultFilesTarget.right = new FormAttachment( middle, -margin );
     wlResultFilesTarget.setLayoutData( fdlResultFilesTarget );
+
     wResultFilesTarget = new CCombo( wInputComposite, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     props.setLook( wResultFilesTarget );
     wResultFilesTarget.addModifyListener( lsMod );
     FormData fdResultFilesTarget = new FormData();
-    fdResultFilesTarget.top = new FormAttachment( 0, 0 );
-    fdResultFilesTarget.left = new FormAttachment( middle, 0 ); // To the right
-    fdResultFilesTarget.right = new FormAttachment( 100, 0 );
+    fdResultFilesTarget.width = 250;
+    fdResultFilesTarget.top = new FormAttachment( wlResultFilesTarget, 5 );
+    fdResultFilesTarget.left = new FormAttachment( 0, 0 ); // To the right
     wResultFilesTarget.setLayoutData( fdResultFilesTarget );
-    Control lastControl = wResultFilesTarget;
 
     // ResultFileNameField
     //
@@ -1396,19 +937,18 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
     props.setLook( wlResultFileNameField );
     wlResultFileNameField.setText( BaseMessages.getString( PKG, "TransExecutorDialog.ResultFileNameField.Label" ) );
     FormData fdlResultFileNameField = new FormData();
-    fdlResultFileNameField.top = new FormAttachment( lastControl, margin );
+    fdlResultFileNameField.top = new FormAttachment( wResultFilesTarget, 10 );
     fdlResultFileNameField.left = new FormAttachment( 0, 0 ); // First one in the left
-    fdlResultFileNameField.right = new FormAttachment( middle, -margin );
     wlResultFileNameField.setLayoutData( fdlResultFileNameField );
+
     wResultFileNameField = new TextVar( transMeta, wInputComposite, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     props.setLook( wResultFileNameField );
     wResultFileNameField.addModifyListener( lsMod );
     FormData fdResultFileNameField = new FormData();
-    fdResultFileNameField.top = new FormAttachment( lastControl, margin );
-    fdResultFileNameField.left = new FormAttachment( middle, 0 ); // To the right
-    fdResultFileNameField.right = new FormAttachment( 100, 0 );
+    fdResultFileNameField.width = 250;
+    fdResultFileNameField.top = new FormAttachment( wlResultFileNameField, 5 );
+    fdResultFileNameField.left = new FormAttachment( 0, 0 ); // To the right
     wResultFileNameField.setLayoutData( fdResultFileNameField );
-    lastControl = wResultFileNameField;
 
     wInputComposite.pack();
     Rectangle bounds = wInputComposite.getBounds();
@@ -1436,8 +976,8 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
     props.setLook( wInputComposite );
 
     FormLayout tabLayout = new FormLayout();
-    tabLayout.marginWidth = Const.FORM_MARGIN;
-    tabLayout.marginHeight = Const.FORM_MARGIN;
+    tabLayout.marginWidth = 15;
+    tabLayout.marginHeight = 15;
     wInputComposite.setLayout( tabLayout );
 
     wlResultRowsTarget = new Label( wInputComposite, SWT.RIGHT );
@@ -1446,24 +986,23 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
     FormData fdlResultRowsTarget = new FormData();
     fdlResultRowsTarget.top = new FormAttachment( 0, 0 );
     fdlResultRowsTarget.left = new FormAttachment( 0, 0 ); // First one in the left
-    fdlResultRowsTarget.right = new FormAttachment( middle, -margin );
     wlResultRowsTarget.setLayoutData( fdlResultRowsTarget );
+
     wOutputRowsSource = new CCombo( wInputComposite, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     props.setLook( wOutputRowsSource );
     wOutputRowsSource.addModifyListener( lsMod );
     FormData fdResultRowsTarget = new FormData();
-    fdResultRowsTarget.top = new FormAttachment( 0, 0 );
-    fdResultRowsTarget.left = new FormAttachment( middle, 0 ); // To the right
-    fdResultRowsTarget.right = new FormAttachment( 100, 0 );
+    fdResultRowsTarget.width = 250;
+    fdResultRowsTarget.top = new FormAttachment( wlResultRowsTarget, 5 );
+    fdResultRowsTarget.left = new FormAttachment( 0, 0 ); // To the right
     wOutputRowsSource.setLayoutData( fdResultRowsTarget );
-    Control lastControl = wOutputRowsSource;
 
     wlOutputFields = new Label( wInputComposite, SWT.NONE );
     wlOutputFields.setText( BaseMessages.getString( PKG, "TransExecutorDialog.ResultFields.Label" ) );
     props.setLook( wlOutputFields );
     FormData fdlResultFields = new FormData();
     fdlResultFields.left = new FormAttachment( 0, 0 );
-    fdlResultFields.top = new FormAttachment( lastControl, margin );
+    fdlResultFields.top = new FormAttachment( wOutputRowsSource, 10 );
     wlOutputFields.setLayoutData( fdlResultFields );
 
     int nrRows = ( transExecutorMeta.getOutputRowsField() != null ? transExecutorMeta.getOutputRowsField().length : 1 );
@@ -1481,14 +1020,15 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
 
     wOutputFields =
       new TableView( transMeta, wInputComposite, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL
-        | SWT.H_SCROLL, ciResultFields, nrRows, lsMod, props );
+        | SWT.H_SCROLL, ciResultFields, nrRows, false, lsMod, props, false );
 
     FormData fdResultFields = new FormData();
     fdResultFields.left = new FormAttachment( 0, 0 );
-    fdResultFields.top = new FormAttachment( wlOutputFields, margin );
+    fdResultFields.top = new FormAttachment( wlOutputFields, 5 );
     fdResultFields.right = new FormAttachment( 100, 0 );
     fdResultFields.bottom = new FormAttachment( 100, 0 );
     wOutputFields.setLayoutData( fdResultFields );
+    wOutputFields.getTable().addListener( SWT.Resize, new ColumnsResizer( 0, 25, 25, 25, 25 ) );
 
     wInputComposite.pack();
     Rectangle bounds = wInputComposite.getBounds();
@@ -1536,7 +1076,7 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
     stepname = wStepname.getText(); // return value
 
     try {
-      loadTrans();
+      loadTransformation();
     } catch ( KettleException e ) {
       new ErrorDialog( shell, BaseMessages.getString( PKG, "TransExecutorDialog.ErrorLoadingSpecifiedTrans.Title" ),
         BaseMessages.getString( PKG, "TransExecutorDialog.ErrorLoadingSpecifiedTrans.Message" ), e );
@@ -1545,22 +1085,24 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
     transExecutorMeta.setSpecificationMethod( specificationMethod );
     switch ( specificationMethod ) {
       case FILENAME:
-        transExecutorMeta.setFileName( wFilename.getText() );
+        transExecutorMeta.setFileName( wPath.getText() );
         transExecutorMeta.setDirectoryPath( null );
         transExecutorMeta.setTransName( null );
         transExecutorMeta.setTransObjectId( null );
         break;
       case REPOSITORY_BY_NAME:
-        transExecutorMeta.setDirectoryPath( wDirectory.getText() );
-        transExecutorMeta.setTransName( wTransname.getText() );
+        String transPath = wPath.getText();
+        String transName = transPath;
+        String directory = "";
+        int index = transPath.lastIndexOf( "/" );
+        if ( index != -1 ) {
+          transName = transPath.substring( index + 1 );
+          directory = transPath.substring( 0, index );
+        }
+        transExecutorMeta.setDirectoryPath( directory );
+        transExecutorMeta.setTransName( transName );
         transExecutorMeta.setFileName( null );
         transExecutorMeta.setTransObjectId( null );
-        break;
-      case REPOSITORY_BY_REFERENCE:
-        transExecutorMeta.setFileName( null );
-        transExecutorMeta.setDirectoryPath( null );
-        transExecutorMeta.setTransName( null );
-        transExecutorMeta.setTransObjectId( referenceObjectId );
         break;
       default:
         break;
@@ -1585,17 +1127,17 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
     TransExecutorParameters parameters = transExecutorMeta.getParameters();
 
     int nrLines = wTransExecutorParameters.nrNonEmpty();
-    String[] variables = new String[nrLines];
-    String[] fields = new String[nrLines];
-    String[] input = new String[nrLines];
+    String[] variables = new String[ nrLines ];
+    String[] fields = new String[ nrLines ];
+    String[] input = new String[ nrLines ];
     parameters.setVariable( variables );
     parameters.setField( fields );
     parameters.setInput( input );
     for ( int i = 0; i < nrLines; i++ ) {
       TableItem item = wTransExecutorParameters.getNonEmpty( i );
-      variables[i] = item.getText( 1 );
-      fields[i] = item.getText( 2 );
-      input[i] = item.getText( 3 );
+      variables[ i ] = item.getText( 1 );
+      fields[ i ] = item.getText( 2 );
+      input[ i ] = item.getText( 3 );
     }
     parameters.setInheritingAllVariables( wInheritAll.getSelection() );
 
@@ -1607,20 +1149,20 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
 
     transExecutorMeta.setExecutionResultTargetStep( wExecutionResultTarget.getText() );
     transExecutorMeta.setExecutionResultTargetStepMeta( transMeta.findStep( wExecutionResultTarget.getText() ) );
-    transExecutorMeta.setExecutionTimeField( wExecutionTimeField.getText() );
-    transExecutorMeta.setExecutionResultField( wExecutionResultField.getText() );
-    transExecutorMeta.setExecutionNrErrorsField( wExecutionNrErrorsField.getText() );
-    transExecutorMeta.setExecutionLinesReadField( wExecutionLinesReadField.getText() );
-    transExecutorMeta.setExecutionLinesWrittenField( wExecutionLinesWrittenField.getText() );
-    transExecutorMeta.setExecutionLinesInputField( wExecutionLinesInputField.getText() );
-    transExecutorMeta.setExecutionLinesOutputField( wExecutionLinesOutputField.getText() );
-    transExecutorMeta.setExecutionLinesRejectedField( wExecutionLinesRejectedField.getText() );
-    transExecutorMeta.setExecutionLinesUpdatedField( wExecutionLinesUpdatedField.getText() );
-    transExecutorMeta.setExecutionLinesDeletedField( wExecutionLinesDeletedField.getText() );
-    transExecutorMeta.setExecutionFilesRetrievedField( wExecutionFilesRetrievedField.getText() );
-    transExecutorMeta.setExecutionExitStatusField( wExecutionExitStatusField.getText() );
-    transExecutorMeta.setExecutionLogTextField( wExecutionLogTextField.getText() );
-    transExecutorMeta.setExecutionLogChannelIdField( wExecutionLogChannelIdField.getText() );
+    transExecutorMeta.setExecutionTimeField( tiExecutionTimeField.getText( FIELD_NAME ) );
+    transExecutorMeta.setExecutionResultField( tiExecutionResultField.getText( FIELD_NAME ) );
+    transExecutorMeta.setExecutionNrErrorsField( tiExecutionNrErrorsField.getText( FIELD_NAME ) );
+    transExecutorMeta.setExecutionLinesReadField( tiExecutionLinesReadField.getText( FIELD_NAME ) );
+    transExecutorMeta.setExecutionLinesWrittenField( tiExecutionLinesWrittenField.getText( FIELD_NAME ) );
+    transExecutorMeta.setExecutionLinesInputField( tiExecutionLinesInputField.getText( FIELD_NAME ) );
+    transExecutorMeta.setExecutionLinesOutputField( tiExecutionLinesOutputField.getText( FIELD_NAME ) );
+    transExecutorMeta.setExecutionLinesRejectedField( tiExecutionLinesRejectedField.getText( FIELD_NAME ) );
+    transExecutorMeta.setExecutionLinesUpdatedField( tiExecutionLinesUpdatedField.getText( FIELD_NAME ) );
+    transExecutorMeta.setExecutionLinesDeletedField( tiExecutionLinesDeletedField.getText( FIELD_NAME ) );
+    transExecutorMeta.setExecutionFilesRetrievedField( tiExecutionFilesRetrievedField.getText( FIELD_NAME ) );
+    transExecutorMeta.setExecutionExitStatusField( tiExecutionExitStatusField.getText( FIELD_NAME ) );
+    transExecutorMeta.setExecutionLogTextField( tiExecutionLogTextField.getText( FIELD_NAME ) );
+    transExecutorMeta.setExecutionLogChannelIdField( tiExecutionLogChannelIdField.getText( FIELD_NAME ) );
 
     transExecutorMeta.setResultFilesTargetStep( wResultFilesTarget.getText() );
     transExecutorMeta.setResultFilesTargetStepMeta( transMeta.findStep( wResultFilesTarget.getText() ) );
@@ -1636,101 +1178,35 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
     transExecutorMeta.setOutputRowsSourceStep( wOutputRowsSource.getText() );
     transExecutorMeta.setOutputRowsSourceStepMeta( transMeta.findStep( wOutputRowsSource.getText() ) );
     int nrFields = wOutputFields.nrNonEmpty();
-    transExecutorMeta.setOutputRowsField( new String[nrFields] );
-    transExecutorMeta.setOutputRowsType( new int[nrFields] );
-    transExecutorMeta.setOutputRowsLength( new int[nrFields] );
-    transExecutorMeta.setOutputRowsPrecision( new int[nrFields] );
+    transExecutorMeta.setOutputRowsField( new String[ nrFields ] );
+    transExecutorMeta.setOutputRowsType( new int[ nrFields ] );
+    transExecutorMeta.setOutputRowsLength( new int[ nrFields ] );
+    transExecutorMeta.setOutputRowsPrecision( new int[ nrFields ] );
 
     // CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < nrFields; i++ ) {
       TableItem item = wOutputFields.getNonEmpty( i );
-      transExecutorMeta.getOutputRowsField()[i] = item.getText( 1 );
-      transExecutorMeta.getOutputRowsType()[i] = ValueMetaFactory.getIdForValueMeta( item.getText( 2 ) );
-      transExecutorMeta.getOutputRowsLength()[i] = Const.toInt( item.getText( 3 ), -1 );
-      transExecutorMeta.getOutputRowsPrecision()[i] = Const.toInt( item.getText( 4 ), -1 );
+      transExecutorMeta.getOutputRowsField()[ i ] = item.getText( 1 );
+      transExecutorMeta.getOutputRowsType()[ i ] = ValueMetaFactory.getIdForValueMeta( item.getText( 2 ) );
+      transExecutorMeta.getOutputRowsLength()[ i ] = Const.toInt( item.getText( 3 ), -1 );
+      transExecutorMeta.getOutputRowsPrecision()[ i ] = Const.toInt( item.getText( 4 ), -1 );
     }
 
-  }
-
-  /**
-   * Ask the user to fill in the details...
-   */
-  protected void newTransformation() {
-    TransMeta newTransMeta = new TransMeta();
-
-    newTransMeta.getDatabases().addAll( transMeta.getDatabases() );
-    newTransMeta.setRepository( transMeta.getRepository() );
-    newTransMeta.setRepositoryDirectory( transMeta.getRepositoryDirectory() );
-
-    // Pass some interesting settings from the parent transformations...
-    //
-    newTransMeta.setUsingUniqueConnections( transMeta.isUsingUniqueConnections() );
-
-    TransDialog transDialog = new TransDialog( shell, SWT.NONE, newTransMeta, repository );
-    if ( transDialog.open() != null ) {
-      Spoon spoon = Spoon.getInstance();
-      spoon.addTransGraph( newTransMeta );
-      boolean saved = false;
-      try {
-        if ( repository != null ) {
-          if ( !Utils.isEmpty( newTransMeta.getName() ) ) {
-            wStepname.setText( newTransMeta.getName() );
-          }
-          saved = spoon.saveToRepository( newTransMeta, false );
-          if ( repository.getRepositoryMeta().getRepositoryCapabilities().supportsReferences() ) {
-            specificationMethod = ObjectLocationSpecificationMethod.REPOSITORY_BY_REFERENCE;
-          } else {
-            specificationMethod = ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME;
-          }
-        } else {
-          saved = spoon.saveToFile( newTransMeta );
-          specificationMethod = ObjectLocationSpecificationMethod.FILENAME;
-        }
-      } catch ( Exception e ) {
-        new ErrorDialog( shell, "Error", "Error saving new transformation", e );
-      }
-      if ( saved ) {
-        setRadioButtons();
-        switch ( specificationMethod ) {
-          case FILENAME:
-            wFilename.setText( Const.NVL( newTransMeta.getFilename(), "" ) );
-            break;
-          case REPOSITORY_BY_NAME:
-            wTransname.setText( Const.NVL( newTransMeta.getName(), "" ) );
-            wDirectory.setText( newTransMeta.getRepositoryDirectory().getPath() );
-            break;
-          case REPOSITORY_BY_REFERENCE:
-            getByReferenceData( newTransMeta.getObjectId() );
-            break;
-          default:
-            break;
-        }
-
-        // Grab parameters
-        //
-        getParametersFromTrans( newTransMeta );
-      }
-    }
   }
 
   private void getByReferenceData( ObjectId transObjectId ) {
     try {
-      if ( repository == null ) {
-        throw new KettleException( BaseMessages.getString( PKG,
-          "TransExecutorDialog.Exception.NotConnectedToRepository.Message" ) );
-      }
       RepositoryObject transInf = repository.getObjectInformation( transObjectId, RepositoryObjectType.TRANSFORMATION );
-      updateByReferenceField( transInf );
+      String path = getPath( transInf.getRepositoryDirectory().getPath() );
+      String fullPath =
+        Const.NVL( path, "" ) + "/" + Const.NVL( transInf.getName(), "" );
+      wPath.setText( fullPath );
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG,
-        "TransExecutorDialog.Exception.UnableToReferenceObjectId.Title" ), BaseMessages.getString( PKG,
-        "TransExecutorDialog.Exception.UnableToReferenceObjectId.Message" ), e );
+      new ErrorDialog( shell,
+        BaseMessages.getString( PKG, "JobEntryTransDialog.Exception.UnableToReferenceObjectId.Title" ),
+        BaseMessages.getString( PKG, "JobEntryTransDialog.Exception.UnableToReferenceObjectId.Message" ), e );
     }
   }
 
-  SelectObjectDialog getSelectObjectDialog( Shell parent, Repository rep, boolean showTransformations,
-      boolean showJobs ) {
-    return new SelectObjectDialog( parent, rep, showTransformations, showJobs );
-  }
 
 }
