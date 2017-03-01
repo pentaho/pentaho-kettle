@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -873,6 +873,33 @@ public class BaseStepDialog extends Dialog {
    */
   public static void setSize( Shell shell ) {
     setSize( shell, -1, -1, true );
+  }
+
+  public static void setSize( Shell shell, int prefWidth, int prefHeight ) {
+    PropsUI props = PropsUI.getInstance();
+
+    WindowProperty winprop = props.getScreen( shell.getText() );
+    if ( winprop != null ) {
+      winprop.setShell( shell, prefWidth, prefHeight );
+    } else {
+      shell.layout();
+
+      winprop = new WindowProperty( shell.getText(), false, new Rectangle( 0, 0, prefWidth, prefHeight ) );
+      winprop.setShell( shell );
+
+      // Now, as this is the first time it gets opened, try to put it in the middle of the screen...
+      Rectangle shellBounds = shell.getBounds();
+      Monitor monitor = shell.getDisplay().getPrimaryMonitor();
+      if ( shell.getParent() != null ) {
+        monitor = shell.getParent().getMonitor();
+      }
+      Rectangle monitorClientArea = monitor.getClientArea();
+
+      int middleX = monitorClientArea.x + ( monitorClientArea.width - shellBounds.width ) / 2;
+      int middleY = monitorClientArea.y + ( monitorClientArea.height - shellBounds.height ) / 2;
+
+      shell.setLocation( middleX, middleY );
+    }
   }
 
   /**
