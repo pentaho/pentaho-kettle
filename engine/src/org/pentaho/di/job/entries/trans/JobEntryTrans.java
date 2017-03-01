@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -1274,6 +1274,9 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
         // copy parent variables to this loaded variable space.
         //
         transMeta.copyVariablesFrom( this );
+
+        // set Internal.Entry.Current.Directory again because it was changed
+        transMeta.setInternalKettleVariables();
 
         // Pass repository and metastore references
         //
