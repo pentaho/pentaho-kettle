@@ -567,19 +567,29 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
       boolean includeEmptyFolder,
       boolean includeAcls )
     throws KettleException {
-    RepositoryFileTree repoTree = loadRepositoryFileTree( path, filter, depth, showHidden, includeAcls, FILES_TYPE_FILTER.FILES_FOLDERS );
-    RepositoryFile folder = repoTree.getFile();
+
+    //load count levels from root to destination path to load folder tree
+    int fromRootToDest = StringUtils.countMatches( path, "/" );
+    //create new root directory "/"
     RepositoryDirectory dir = new RepositoryDirectory();
-    dir.setObjectId( new StringObjectId( folder.getId().toString() ) );
-    loadRepositoryDirectory( dir, folder, repoTree );
+    //fetch folder tree from root "/" to destination path for populate folder
+    RepositoryFileTree rootDirTree = loadRepositoryFileTree( "/", "*", fromRootToDest, showHidden, includeAcls, FILES_TYPE_FILTER.FOLDERS );
+    //populate directory by folder tree
+    fillRepositoryDirectoryFromTree( dir, rootDirTree );
+
+    RepositoryDirectoryInterface destinationDir = dir.findDirectory( path );
+    //search for goal path and filter
+    RepositoryFileTree repoTree = loadRepositoryFileTree( path, filter, depth, showHidden, includeAcls, FILES_TYPE_FILTER.FILES_FOLDERS );
+    //populate the directory with founded files and subdirectories with files
+    fillRepositoryDirectoryFromTree( destinationDir, repoTree );
 
     if ( includeEmptyFolder ) {
       RepositoryDirectoryInterface folders =
           initRepositoryDirectoryTree(
               loadRepositoryFileTree( path, null, depth, showHidden, includeAcls, FILES_TYPE_FILTER.FOLDERS ) );
-      return copyFrom( folders, dir );
+      return copyFrom( folders, destinationDir );
     } else {
-      return dir;
+      return destinationDir;
     }
   }
 
@@ -651,7 +661,7 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
     RepositoryFile rootFolder = repoTree.getFile();
     RepositoryDirectory rootDir = new RepositoryDirectory();
     rootDir.setObjectId( new StringObjectId( rootFolder.getId().toString() ) );
-    loadRepositoryDirectory( rootDir, rootFolder, repoTree );
+    fillRepositoryDirectoryFromTree( rootDir, repoTree );
 
     // Example: /etc
     RepositoryDirectory etcDir = rootDir.findDirectory( ClientRepositoryPaths.getEtcFolderPath() );
@@ -672,7 +682,7 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
     return newRoot;
   }
 
-  private void loadRepositoryDirectory( final RepositoryDirectoryInterface parentDir, final RepositoryFile folder,
+  private void fillRepositoryDirectoryFromTree( final RepositoryDirectoryInterface parentDir,
                                         final RepositoryFileTree treeNode ) throws KettleException {
     try {
       List<RepositoryElementMetaInterface> fileChildren = new ArrayList<RepositoryElementMetaInterface>();
@@ -683,7 +693,7 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
             RepositoryDirectory dir = new RepositoryDirectory( parentDir, child.getFile().getName() );
             dir.setObjectId( new StringObjectId( child.getFile().getId().toString() ) );
             parentDir.addSubdirectory( dir );
-            loadRepositoryDirectory( dir, child.getFile(), child );
+            fillRepositoryDirectoryFromTree( dir, child );
           } else {
             // a real file, like a Transformation or Job
             RepositoryLock lock = unifiedRepositoryLockService.getLock( child.getFile() );
