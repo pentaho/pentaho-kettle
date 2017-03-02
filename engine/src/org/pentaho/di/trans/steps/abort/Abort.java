@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -92,7 +92,9 @@ public class Abort extends BaseStep implements StepInterface {
         } else {
           logError( message );
         }
-        setErrors( 1 );
+        if ( meta.isAbortWithError() ) {
+          setErrors( 1 );
+        }
         stopAll();
       } else {
         // seen a row but not yet reached the threshold
