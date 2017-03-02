@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -52,6 +52,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
+import org.eclipse.swt.widgets.Widget;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
@@ -335,8 +336,11 @@ public class SpoonSlave extends Composite implements TabItemInterface {
     wTree.addSelectionListener( new SelectionAdapter() {
       public void widgetSelected( SelectionEvent event ) {
         enableButtons();
-        treeItemSelected( (TreeItem) event.item );
-        ( (TreeItem) event.item ).setExpanded( true );
+        Widget item = event.item;
+        if ( item != null ) {
+          treeItemSelected( (TreeItem) item );
+          ( (TreeItem) item ).setExpanded( true );
+        }
         showLog();
       }
     } );
@@ -457,6 +461,10 @@ public class SpoonSlave extends Composite implements TabItemInterface {
   }
 
   public void treeItemSelected( TreeItem item ) {
+    if ( item == null ) {
+      // there is nothing to do
+      return;
+    }
     // load node upon expansion
     if ( item.getData( "transStatus" ) != null ) {
       SlaveServerTransStatus transStatus = (SlaveServerTransStatus) item.getData( "transStatus" );
