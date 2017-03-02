@@ -1,5 +1,5 @@
 /*!
- * Copyright 2010 - 2015 Pentaho Corporation.  All rights reserved.
+ * Copyright 2010 - 2017 Pentaho Corporation.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.pur.PurRepository;
+import org.pentaho.di.repository.pur.PurRepositoryMeta;
 import org.pentaho.di.ui.repository.pur.repositoryexplorer.ILockObject;
 import org.pentaho.di.ui.repository.pur.repositoryexplorer.IUIEEUser;
 import org.pentaho.di.ui.repository.pur.services.ILockService;
@@ -117,7 +118,7 @@ public class RepositoryLockController extends AbstractXulEventHandler implements
       deleteFileMenuItem = (XulMenuitem) getXulDomContainer().getDocumentRoot().getElementById( "file-context-delete" ); //$NON-NLS-1$
       renameFileMenuItem = (XulMenuitem) getXulDomContainer().getDocumentRoot().getElementById( "file-context-rename" ); //$NON-NLS-1$
 
-      messageBox = (XulMessageBox) document.createElement( "messagebox" );//$NON-NLS-1$
+      messageBox = (XulMessageBox) document.createElement( "messagebox" ); //$NON-NLS-1$
 
       createBindings();
     } catch ( Exception e ) {
@@ -165,8 +166,8 @@ public class RepositoryLockController extends AbstractXulEventHandler implements
         if ( ( (ILockObject) contentToLock ).isLocked() ) {
           // Content is locked, move is not allowed.
           event.setAccepted( false );
-          messageBox.setTitle( BaseMessages.getString( PKG, "Dialog.Error" ) );//$NON-NLS-1$
-          messageBox.setAcceptLabel( BaseMessages.getString( PKG, "Dialog.Ok" ) );//$NON-NLS-1$
+          messageBox.setTitle( BaseMessages.getString( PKG, "Dialog.Error" ) ); //$NON-NLS-1$
+          messageBox.setAcceptLabel( BaseMessages.getString( PKG, "Dialog.Ok" ) ); //$NON-NLS-1$
           messageBox.setMessage( BaseMessages.getString( PKG, "BrowseController.FolderMoveNotAllowed" ) ); //$NON-NLS-1$
           messageBox.open();
           return true;
@@ -187,8 +188,8 @@ public class RepositoryLockController extends AbstractXulEventHandler implements
             if ( ( (ILockObject) contentToLock ).isLocked() ) {
               // Content is locked, not allowed to move
               event.setAccepted( false );
-              messageBox.setTitle( BaseMessages.getString( PKG, "Dialog.Error" ) );//$NON-NLS-1$
-              messageBox.setAcceptLabel( BaseMessages.getString( PKG, "Dialog.Ok" ) );//$NON-NLS-1$
+              messageBox.setTitle( BaseMessages.getString( PKG, "Dialog.Error" ) ); //$NON-NLS-1$
+              messageBox.setAcceptLabel( BaseMessages.getString( PKG, "Dialog.Ok" ) ); //$NON-NLS-1$
               messageBox.setMessage( BaseMessages.getString( PKG, "BrowseController.MoveNotAllowed" ) ); //$NON-NLS-1$
               messageBox.open();
               break;
@@ -210,114 +211,116 @@ public class RepositoryLockController extends AbstractXulEventHandler implements
   }
 
   private BindingConvertor<List<UIRepositoryObject>, Boolean> checkLockPermissions =
-      new BindingConvertor<List<UIRepositoryObject>, Boolean>() {
+    new BindingConvertor<List<UIRepositoryObject>, Boolean>() {
 
-        @Override
-        public Boolean sourceToTarget( List<UIRepositoryObject> selectedRepoObjects ) {
-          boolean result = false;
+      @Override
+      public Boolean sourceToTarget( List<UIRepositoryObject> selectedRepoObjects ) {
+        boolean result = false;
 
-          try {
-            if ( selectedRepoObjects.size() == 1 && selectedRepoObjects.get( 0 ) instanceof UIRepositoryDirectory ) {
-              return true;
-            } else if ( selectedRepoObjects.size() == 1 && selectedRepoObjects.get( 0 ) instanceof ILockObject ) {
-              final UIRepositoryContent contentToLock = (UIRepositoryContent) selectedRepoObjects.get( 0 );
+        try {
+          if ( selectedRepoObjects.size() == 1 && selectedRepoObjects.get( 0 ) instanceof UIRepositoryDirectory ) {
+            return true;
+          } else if ( selectedRepoObjects.size() == 1 && selectedRepoObjects.get( 0 ) instanceof ILockObject ) {
+            final UIRepositoryContent contentToLock = (UIRepositoryContent) selectedRepoObjects.get( 0 );
 
-              if ( ( (ILockObject) contentToLock ).isLocked() ) {
-                if ( repository instanceof PurRepository ) {
-                  result = service.canUnlockFileById( contentToLock.getObjectId() );
-                } else {
-                  result =
-                      ( (ILockObject) contentToLock ).getRepositoryLock().getLogin().equalsIgnoreCase(
-                          repository.getUserInfo().getLogin() );
-                }
+            if ( ( (ILockObject) contentToLock ).isLocked() ) {
+              if ( repository instanceof PurRepository
+                      //repository can be Proxy of repository and first part condition will fail
+                      || repository.getRepositoryMeta() instanceof PurRepositoryMeta ) {
+                result = service.canUnlockFileById( contentToLock.getObjectId() );
               } else {
-                // Content is not locked, permit locking
-                result = true;
+                result =
+                    ( (ILockObject) contentToLock ).getRepositoryLock().getLogin().equalsIgnoreCase(
+                        repository.getUserInfo().getLogin() );
               }
+            } else {
+              // Content is not locked, permit locking
+              result = true;
             }
-          } catch ( Exception e ) {
-            throw new RuntimeException( e );
           }
-
-          return result;
+        } catch ( Exception e ) {
+          throw new RuntimeException( e );
         }
 
-        @Override
-        public List<UIRepositoryObject> targetToSource( Boolean arg0 ) {
-          return null;
-        }
-      };
+        return result;
+      }
+
+      @Override
+      public List<UIRepositoryObject> targetToSource( Boolean arg0 ) {
+        return null;
+      }
+    };
 
   private BindingConvertor<List<UIRepositoryObject>, Boolean> forButtons =
-      new BindingConvertor<List<UIRepositoryObject>, Boolean>() {
+    new BindingConvertor<List<UIRepositoryObject>, Boolean>() {
 
-        @Override
-        public Boolean sourceToTarget( List<UIRepositoryObject> value ) {
-          return value != null && value.size() == 1;
-        }
+      @Override
+      public Boolean sourceToTarget( List<UIRepositoryObject> value ) {
+        return value != null && value.size() == 1;
+      }
 
-        @Override
-        public List<UIRepositoryObject> targetToSource( Boolean value ) {
-          return null;
-        }
-      };
+      @Override
+      public List<UIRepositoryObject> targetToSource( Boolean value ) {
+        return null;
+      }
+    };
 
   public String getName() {
     return "repositoryLockController"; //$NON-NLS-1$
   }
 
   private BindingConvertor<List<UIRepositoryObject>, Boolean> checkLockedStateBool =
-      new BindingConvertor<List<UIRepositoryObject>, Boolean>() {
+    new BindingConvertor<List<UIRepositoryObject>, Boolean>() {
 
-        @Override
-        public Boolean sourceToTarget( List<UIRepositoryObject> value ) {
-          boolean result = false;
+      @Override
+      public Boolean sourceToTarget( List<UIRepositoryObject> value ) {
+        boolean result = false;
 
-          try {
-            if ( value != null && value.size() == 1 && value.get( 0 ) != null ) {
-              if ( value.get( 0 ) instanceof ILockObject ) {
-                result = ( (ILockObject) value.get( 0 ) ).isLocked();
-              }
+        try {
+          if ( value != null && value.size() == 1 && value.get( 0 ) != null ) {
+            if ( value.get( 0 ) instanceof ILockObject ) {
+              result = ( (ILockObject) value.get( 0 ) ).isLocked();
             }
-          } catch ( KettleException e ) {
-            throw new RuntimeException( e );
           }
-
-          return result;
+        } catch ( KettleException e ) {
+          throw new RuntimeException( e );
         }
 
-        @Override
-        public List<UIRepositoryObject> targetToSource( Boolean value ) {
-          return null;
-        }
-      };
+        return result;
+      }
+
+      @Override
+      public List<UIRepositoryObject> targetToSource( Boolean value ) {
+        return null;
+      }
+    };
 
   // This needs to exist until we have better method override support in the DefaultBinding
   private BindingConvertor<List<UIRepositoryObject>, Boolean> checkLockedState =
-      new BindingConvertor<List<UIRepositoryObject>, Boolean>() {
+    new BindingConvertor<List<UIRepositoryObject>, Boolean>() {
 
-        @Override
-        public Boolean sourceToTarget( List<UIRepositoryObject> value ) {
-          boolean result = false;
+      @Override
+      public Boolean sourceToTarget( List<UIRepositoryObject> value ) {
+        boolean result = false;
 
-          try {
-            if ( value != null && value.size() == 1 && value.get( 0 ) != null ) {
-              if ( value.get( 0 ) instanceof ILockObject ) {
-                result = ( (ILockObject) value.get( 0 ) ).isLocked();
-              }
+        try {
+          if ( value != null && value.size() == 1 && value.get( 0 ) != null ) {
+            if ( value.get( 0 ) instanceof ILockObject ) {
+              result = ( (ILockObject) value.get( 0 ) ).isLocked();
             }
-          } catch ( KettleException e ) {
-            throw new RuntimeException( e );
           }
-
-          return result;
+        } catch ( KettleException e ) {
+          throw new RuntimeException( e );
         }
 
-        @Override
-        public List<UIRepositoryObject> targetToSource( Boolean value ) {
-          return null;
-        }
-      };
+        return result;
+      }
+
+      @Override
+      public List<UIRepositoryObject> targetToSource( Boolean value ) {
+        return null;
+      }
+    };
 
   protected void createBindings() {
     // Lock bindings
@@ -400,10 +403,10 @@ public class RepositoryLockController extends AbstractXulEventHandler implements
       String defaultMessage ) throws XulException {
     XulPromptBox prompt = (XulPromptBox) document.createElement( "promptbox" ); //$NON-NLS-1$
 
-    prompt.setTitle( BaseMessages.getString( PKG, "RepositoryExplorer.LockMessage.Title" ) );//$NON-NLS-1$
+    prompt.setTitle( BaseMessages.getString( PKG, "RepositoryExplorer.LockMessage.Title" ) ); //$NON-NLS-1$
     prompt.setButtons( new DialogConstant[] { DialogConstant.OK, DialogConstant.CANCEL } );
 
-    prompt.setMessage( BaseMessages.getString( PKG, "RepositoryExplorer.LockMessage.Label" ) );//$NON-NLS-1$
+    prompt.setMessage( BaseMessages.getString( PKG, "RepositoryExplorer.LockMessage.Label" ) ); //$NON-NLS-1$
     prompt.setValue( defaultMessage == null
         ? BaseMessages.getString( PKG, "RepositoryExplorer.DefaultLockMessage" ) : defaultMessage ); //$NON-NLS-1$
     return prompt;
@@ -419,7 +422,9 @@ public class RepositoryLockController extends AbstractXulEventHandler implements
       } else if ( selectedRepoObjects.size() == 1 && selectedRepoObjects.get( 0 ) instanceof ILockObject ) {
         final UIRepositoryContent contentToLock = (UIRepositoryContent) selectedRepoObjects.get( 0 );
         if ( ( (ILockObject) contentToLock ).isLocked() ) {
-          if ( repository instanceof PurRepository ) {
+          if ( repository instanceof PurRepository
+                  //repository can be Proxy of repository and first part condition will fail
+                  || repository.getRepositoryMeta() instanceof PurRepositoryMeta ) {
             result = service.canUnlockFileById( contentToLock.getObjectId() );
 
           } else {
