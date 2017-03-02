@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -69,6 +69,8 @@ public class AbortMeta extends BaseStepMeta implements StepMetaInterface {
    */
   private boolean alwaysLogRows;
 
+  private boolean abortWithError;
+
   public void getFields( RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info, StepMeta nextStep,
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     // Default: no values are added to the row in the step
@@ -103,6 +105,7 @@ public class AbortMeta extends BaseStepMeta implements StepMetaInterface {
     rowThreshold = "0";
     message = "";
     alwaysLogRows = true;
+    abortWithError = false;
   }
 
   public String getXML() {
@@ -111,6 +114,7 @@ public class AbortMeta extends BaseStepMeta implements StepMetaInterface {
     retval.append( "      " ).append( XMLHandler.addTagValue( "row_threshold", rowThreshold ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "message", message ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "always_log_rows", alwaysLogRows ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "abort_with_error", abortWithError ) );
 
     return retval.toString();
   }
@@ -120,6 +124,11 @@ public class AbortMeta extends BaseStepMeta implements StepMetaInterface {
       rowThreshold = XMLHandler.getTagValue( stepnode, "row_threshold" );
       message = XMLHandler.getTagValue( stepnode, "message" );
       alwaysLogRows = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "always_log_rows" ) );
+      String awe = XMLHandler.getTagValue( stepnode, "abort_with_error" );
+      if ( awe == null ) {
+        awe = "Y"; // existing transformations will have to maintain backward compatibility with yes
+      }
+      abortWithError = "Y".equalsIgnoreCase( awe );
     } catch ( Exception e ) {
       throw new KettleXMLException( BaseMessages.getString(
         PKG, "AbortMeta.Exception.UnexpectedErrorInReadingStepInfoFromRepository" ), e );
@@ -131,6 +140,8 @@ public class AbortMeta extends BaseStepMeta implements StepMetaInterface {
       rowThreshold = rep.getStepAttributeString( id_step, "row_threshold" );
       message = rep.getStepAttributeString( id_step, "message" );
       alwaysLogRows = rep.getStepAttributeBoolean( id_step, "always_log_rows" );
+      // existing transformations will have to maintain backward compatibility with yes
+      abortWithError = rep.getStepAttributeBoolean( id_step, 0, "abort_with_error", true );
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString(
         PKG, "AbortMeta.Exception.UnexpectedErrorInReadingStepInfoFromRepository" ), e );
@@ -142,6 +153,7 @@ public class AbortMeta extends BaseStepMeta implements StepMetaInterface {
       rep.saveStepAttribute( id_transformation, id_step, "row_threshold", rowThreshold );
       rep.saveStepAttribute( id_transformation, id_step, "message", message );
       rep.saveStepAttribute( id_transformation, id_step, "always_log_rows", alwaysLogRows );
+      rep.saveStepAttribute( id_transformation, id_step, "abort_with_error", abortWithError );
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString(
         PKG, "AbortMeta.Exception.UnableToSaveStepInfoToRepository" )
@@ -171,5 +183,13 @@ public class AbortMeta extends BaseStepMeta implements StepMetaInterface {
 
   public void setAlwaysLogRows( boolean alwaysLogRows ) {
     this.alwaysLogRows = alwaysLogRows;
+  }
+
+  public boolean isAbortWithError() {
+    return abortWithError;
+  }
+
+  public void setAbortWithError( boolean abortWithError ) {
+    this.abortWithError = abortWithError;
   }
 }
