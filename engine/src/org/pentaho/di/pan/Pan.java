@@ -46,6 +46,7 @@ import org.pentaho.di.core.parameters.UnknownParamException;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.RepositoryPluginType;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.kitchen.Kitchen;
 import org.pentaho.di.metastore.MetaStoreConst;
@@ -383,7 +384,10 @@ public class Pan {
         if ( trans == null && !Utils.isEmpty( optionFilename ) ) {
 
           String fileName = optionFilename.toString();
-          if ( !new File( fileName ).isAbsolute() && !fileName.matches( "^zip:file:[/].*" ) ) {
+          // If the filename starts with scheme like zip:, then isAbsolute() will return false even though the
+          // the path following the zip is absolute path. Check for isAbsolute only if the fileName does not
+          // start with scheme
+          if ( !KettleVFS.startsWithScheme( fileName ) && !new File( fileName ).isAbsolute() ) {
             fileName = initialDir.toString() + fileName;
           }
 
