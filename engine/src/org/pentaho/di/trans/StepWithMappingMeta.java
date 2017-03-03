@@ -44,7 +44,7 @@ import org.pentaho.metastore.api.IMetaStore;
  */
 public abstract class StepWithMappingMeta extends BaseStepMeta {
   //default value
-  protected static Class<?> PKG = StepWithMappingMeta.class;
+  private static Class<?> PKG = StepWithMappingMeta.class;
 
   protected ObjectLocationSpecificationMethod specificationMethod;
   protected String transName;
@@ -102,7 +102,7 @@ public abstract class StepWithMappingMeta extends BaseStepMeta {
               "Transformation was loaded from XML file [" + realFilename + "]" );
           }
         } catch ( Exception e ) {
-          throw new KettleException( BaseMessages.getString( PKG, "TransExecutorMeta.Exception.UnableToLoadTrans" ),
+          throw new KettleException( BaseMessages.getString( PKG, "StepWithMappingMeta.Exception.UnableToLoadTrans" ),
             e );
         }
         break;
@@ -140,7 +140,7 @@ public abstract class StepWithMappingMeta extends BaseStepMeta {
                 new TransMeta( realDirectory + "/" + realTransname + "." + Const.STRING_TRANS_DEFAULT_EXT, metaStore,
                   rep, true, tmpSpace, null );
             } catch ( KettleException ke2 ) {
-              throw new KettleException( BaseMessages.getString( PKG, "TransExecutorMeta.Exception.UnableToLoadTrans",
+              throw new KettleException( BaseMessages.getString( PKG, "StepWithMappingMeta.Exception.UnableToLoadTrans",
                 realTransname ) + realDirectory );
             }
           }

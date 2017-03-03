@@ -81,9 +81,7 @@ import org.w3c.dom.Node;
  */
 public class TransExecutorMeta extends StepWithMappingMeta implements StepMetaInterface, HasRepositoryInterface {
 
-  static {
-    PKG = TransExecutorMeta.class; // for i18n purposes, needed by Translator2!!
-  }
+  private static Class<?>  PKG = TransExecutorMeta.class; // for i18n purposes, needed by Translator2!!
 
   static final String F_EXECUTION_RESULT_TARGET_STEP = "execution_result_target_step";
   static final String F_RESULT_FILE_TARGET_STEP = "result_files_target_step";

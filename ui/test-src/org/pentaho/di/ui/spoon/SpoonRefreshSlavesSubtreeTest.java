@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -29,6 +29,8 @@ import org.junit.Test;
 import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.ui.core.gui.GUIResource;
+import org.pentaho.di.ui.spoon.delegates.SpoonDelegates;
+import org.pentaho.di.ui.spoon.delegates.SpoonSlaveDelegate;
 
 import java.util.Collections;
 import java.util.List;
@@ -50,12 +52,15 @@ public class SpoonRefreshSlavesSubtreeTest {
   @Before
   public void setUp() throws Exception {
     spoon = mock( Spoon.class );
+    spoon.delegates = mock( SpoonDelegates.class );
+    spoon.delegates.slaves = new SpoonSlaveDelegate( spoon );
 
     TreeItem mockItem = mock( TreeItem.class );
     when( spoon.createTreeItem( any( TreeItem.class ), anyString(), any( Image.class ) ) ).thenReturn( mockItem );
 
     doCallRealMethod().when( spoon )
       .refreshSlavesSubtree( any( TreeItem.class ), any( AbstractMeta.class ), any( GUIResource.class ) );
+
   }
 
 

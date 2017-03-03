@@ -100,22 +100,8 @@ public class RepositoryDirectoryUI {
         filterString, pattern );
     }
 
-    // Then show the transformations & jobs in that directory...
-    List<RepositoryElementMetaInterface> repositoryObjects = new ArrayList<RepositoryElementMetaInterface>();
-    if ( dir.getRepositoryObjects() != null ) {
-      List<RepositoryObjectType> allowedTypes = new ArrayList<>( 2 );
-      if ( getTransformations ) {
-        allowedTypes.add( RepositoryObjectType.TRANSFORMATION );
-      }
-      if ( getJobs ) {
-        allowedTypes.add( RepositoryObjectType.JOB );
-      }
-      for ( RepositoryElementMetaInterface repoObject : dir.getRepositoryObjects() ) {
-        if ( allowedTypes.contains( repoObject.getObjectType() ) ) {
-          repositoryObjects.add( repoObject );
-        }
-      }
-    }
+    List<RepositoryElementMetaInterface> repositoryObjects =
+        loadRepositoryObjects( dir, getTransformations, getJobs, rep );
 
     // Sort the directory list appropriately...
     RepositoryObject.sortRepositoryObjects( repositoryObjects, sortPosition, ascending );
@@ -123,6 +109,33 @@ public class RepositoryDirectoryUI {
     addToTree( ti, filterString, pattern, repositoryObjects );
 
     ti.setExpanded( dir.isRoot() );
+  }
+
+  protected static List<RepositoryElementMetaInterface> loadRepositoryObjects( RepositoryDirectoryInterface dir,
+      boolean getTransformations, boolean getJobs, Repository rep ) throws KettleDatabaseException {
+    // Then show the transformations & jobs in that directory...
+    List<RepositoryElementMetaInterface> repositoryObjects = new ArrayList<RepositoryElementMetaInterface>();
+    if ( dir.getRepositoryObjects() == null ) {
+      try {
+        dir.setRepositoryObjects( rep.getJobAndTransformationObjects( dir.getObjectId(), false ) );
+      } catch ( KettleException e ) {
+        throw new KettleDatabaseException( e );
+      }
+    }
+
+    List<RepositoryObjectType> allowedTypes = new ArrayList<>( 2 );
+    if ( getTransformations ) {
+      allowedTypes.add( RepositoryObjectType.TRANSFORMATION );
+    }
+    if ( getJobs ) {
+      allowedTypes.add( RepositoryObjectType.JOB );
+    }
+    for ( RepositoryElementMetaInterface repoObject : dir.getRepositoryObjects() ) {
+      if ( allowedTypes.contains( repoObject.getObjectType() ) ) {
+        repositoryObjects.add( repoObject );
+      }
+    }
+    return repositoryObjects;
   }
 
   private static void addToTree( TreeItem ti, String filterString, Pattern pattern,

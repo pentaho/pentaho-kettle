@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -39,7 +39,7 @@ public interface PrimitiveGCInterface {
   }
 
   public enum EImage {
-    LOCK, STEP_ERROR, EDIT, CONTEXT_MENU, TRUE, FALSE, ERROR, INFO, TARGET, INPUT, OUTPUT, ARROW, COPY_ROWS,
+    LOCK, STEP_ERROR, STEP_ERROR_RED, EDIT, CONTEXT_MENU, TRUE, FALSE, ERROR, INFO, TARGET, INPUT, OUTPUT, ARROW, COPY_ROWS,
       UNCONDITIONAL, PARALLEL, BUSY, INJECT, LOAD_BALANCE, CHECKPOINT, DB,
     ARROW_DEFAULT, ARROW_OK, ARROW_ERROR, ARROW_DISABLED, ARROW_CANDIDATE
   }

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -38,6 +38,7 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.repository.repositoryexplorer.controllers.MainController;
 import org.pentaho.di.ui.repository.repositoryexplorer.uisupport.IRepositoryExplorerUISupport;
+import org.pentaho.di.ui.spoon.SharedObjectSyncUtil;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.SpoonPluginManager;
 import org.pentaho.di.ui.spoon.XulSpoonResourceBundle;
@@ -67,7 +68,6 @@ public class RepositoryExplorer {
 
   private ResourceBundle resourceBundle = new XulSpoonResourceBundle( CLZ );
 
-  // private Repository repository;
   public RepositoryExplorer( Shell shell, final Repository rep, RepositoryExplorerCallback callback,
     VariableSpace variableSpace ) throws XulException {
     KettleXulLoader xulLoader = new KettleXulLoader();
@@ -133,6 +133,12 @@ public class RepositoryExplorer {
     }
 
     initialized = true;
+  }
+
+  public RepositoryExplorer( Shell shell, final Repository rep, RepositoryExplorerCallback callback,
+    VariableSpace variableSpace, SharedObjectSyncUtil syncUtil ) throws XulException {
+    this( shell, rep, callback, variableSpace );
+    mainController.setSharedObjectSyncUtil( syncUtil );
   }
 
   public void show() {

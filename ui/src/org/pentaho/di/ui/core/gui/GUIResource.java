@@ -307,6 +307,8 @@ public class GUIResource {
 
   private SwtUniversalImage imageStepError;
 
+  private SwtUniversalImage imageRedStepError;
+
   private SwtUniversalImage imageCopyHop;
 
   private SwtUniversalImage imageErrorHop;
@@ -596,6 +598,7 @@ public class GUIResource {
       imageHideResults.dispose();
       imageCollapseAll.dispose();
       imageStepError.dispose();
+      imageRedStepError.dispose();
       imageCopyHop.dispose();
       imageErrorHop.dispose();
       imageInfoHop.dispose();
@@ -1006,6 +1009,10 @@ public class GUIResource {
     // "ui/images/show-error-lines.png;
     imageStepError =
       SwtSvgImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "StepErrorLines_image" ) );
+
+    // "ui/images/step-error.svg;
+    imageRedStepError =
+        SwtSvgImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "StepErrorLinesRed_image" ) );
 
     // "ui/images/copy-hop.png;
     imageCopyHop = SwtSvgImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "CopyHop_image" ) );
@@ -2198,6 +2205,14 @@ public class GUIResource {
 
   public SwtUniversalImage getSwtImageStepError() {
     return imageStepError;
+  }
+
+  public Image getImageRedStepError() {
+    return imageRedStepError.getAsBitmapForSize( display, ConstUI.SMALL_ICON_SIZE, ConstUI.SMALL_ICON_SIZE );
+  }
+
+  public SwtUniversalImage getSwtImageRedStepError() {
+    return imageRedStepError;
   }
 
   public Image getImageCopyHop() {

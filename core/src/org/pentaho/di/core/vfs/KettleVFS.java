@@ -41,6 +41,7 @@ import org.apache.commons.vfs2.cache.WeakRefFilesCache;
 import org.apache.commons.vfs2.impl.DefaultFileSystemManager;
 import org.apache.commons.vfs2.impl.StandardFileSystemManager;
 import org.apache.commons.vfs2.provider.local.LocalFile;
+import org.apache.commons.vfs2.provider.sftp.SftpFileObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.util.UUIDUtil;
@@ -151,6 +152,11 @@ public class KettleVFS {
         fileObject = fsManager.resolveFile( filename, fsOptions );
       } else {
         fileObject = fsManager.resolveFile( filename );
+      }
+
+      if ( fileObject instanceof SftpFileObject ) {
+        fileObject = new SftpFileObjectWithWindowsSupport( (SftpFileObject) fileObject,
+                SftpFileSystemWindowsProvider.getSftpFileSystemWindows( (SftpFileObject) fileObject ) );
       }
 
       return fileObject;
@@ -421,6 +427,27 @@ public class KettleVFS {
     }
 
     return new FileInputStream( fileObject.getName().getPathDecoded() );
+  }
+
+  /**
+   * Check if filename starts with one of the known protocols like file: zip: ram: smb: jar: etc.
+   * If yes, return true otherwise return false
+   * @param vfsFileName
+   * @return boolean
+   */
+  public static boolean startsWithScheme( String vfsFileName ) {
+    FileSystemManager fsManager = getInstance().getFileSystemManager();
+
+    boolean found = false;
+    String[] schemes = fsManager.getSchemes();
+    for ( int i = 0; i < schemes.length; i++ ) {
+      if ( vfsFileName.startsWith( schemes[i] + ":" ) ) {
+        found = true;
+        break;
+      }
+    }
+
+    return found;
   }
 
 }

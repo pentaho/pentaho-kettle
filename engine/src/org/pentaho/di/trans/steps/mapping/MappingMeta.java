@@ -84,10 +84,7 @@ import org.w3c.dom.Node;
 
 public class MappingMeta extends StepWithMappingMeta implements StepMetaInterface, HasRepositoryInterface {
 
-  static {
-    PKG = MappingMeta.class; // for i18n purposes, needed by Translator2!!
-  }
-
+  private static Class<?> PKG = MappingMeta.class;
   private List<MappingIODefinition> inputMappings;
   private List<MappingIODefinition> outputMappings;
   private MappingParameters mappingParameters;

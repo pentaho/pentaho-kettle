@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -243,6 +243,7 @@ public class ConnectionsController extends LazilyInitializedController implement
               PKG, "ConnectionsController.Message.CreatingDatabase", getDatabaseDialog()
                 .getDatabaseMeta().getName() ) );
             repository.save( getDatabaseDialog().getDatabaseMeta(), Const.VERSION_COMMENT_INITIAL_VERSION, null );
+            reloadLoadedJobsAndTransformations();
           } else {
             showAlreadyExistsMessage();
           }
@@ -265,6 +266,15 @@ public class ConnectionsController extends LazilyInitializedController implement
     } finally {
       refreshConnectionList();
     }
+  }
+
+  private boolean reloadLoadedJobsAndTransformations() {
+    if ( mainController != null && mainController.getSharedObjectSyncUtil() != null ) {
+      mainController.getSharedObjectSyncUtil().reloadJobRepositoryObjects( false );
+      mainController.getSharedObjectSyncUtil().reloadTransformationRepositoryObjects( false );
+      return true;
+    }
+    return false;
   }
 
   // package-local visibility for testing purposes
@@ -418,6 +428,7 @@ public class ConnectionsController extends LazilyInitializedController implement
               mb.open();
             } else {
               repository.deleteDatabaseMeta( databaseMeta.getName() );
+              reloadLoadedJobsAndTransformations();
             }
           }
         }

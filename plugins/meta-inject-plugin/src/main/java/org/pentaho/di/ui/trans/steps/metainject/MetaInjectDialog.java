@@ -29,6 +29,8 @@ import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.custom.ScrolledComposite;
+import org.eclipse.swt.events.FocusAdapter;
+import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -252,6 +254,11 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
     fdTransformation.top = new FormAttachment( wlPath, 5 );
     fdTransformation.width = 350;
     wPath.setLayoutData( fdTransformation );
+    wPath.addFocusListener( new FocusAdapter() {
+      @Override public void focusLost( FocusEvent focusEvent ) {
+        refreshTree();
+      }
+    } );
 
     wbBrowse = new Button( shell, SWT.PUSH );
     props.setLook( wbBrowse );
@@ -906,7 +913,7 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
     }
 
     wTargetFile.setText( Const.NVL( metaInjectMeta.getTargetFile(), "" ) );
-    wNoExecution.setSelection( metaInjectMeta.isNoExecution() );
+    wNoExecution.setSelection( !metaInjectMeta.isNoExecution() );
 
     wStreamingSourceStep.setText( Const.NVL(
       metaInjectMeta.getStreamSourceStep() == null ? null : metaInjectMeta.getStreamSourceStep().getName(), "" ) );
@@ -1136,9 +1143,12 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
     }
 
     metaInjectMeta.setTargetFile( wTargetFile.getText() );
-    metaInjectMeta.setNoExecution( wNoExecution.getSelection() );
+    metaInjectMeta.setNoExecution( !wNoExecution.getSelection() );
 
-    metaInjectMeta.setStreamSourceStep( transMeta.findStep( wStreamingSourceStep.getText() ) );
+    final StepMeta streamSourceStep = transMeta.findStep( wStreamingSourceStep.getText() );
+    metaInjectMeta.setStreamSourceStep( streamSourceStep );
+    // PDI-15989 Save streamSourceStepname to find streamSourceStep when loading
+    metaInjectMeta.setStreamSourceStepname( streamSourceStep != null ? streamSourceStep.getName() : "" );
     metaInjectMeta.setStreamTargetStepname( wStreamingTargetStep.getText() );
 
     metaInjectMeta.setTargetSourceMapping( targetSourceMapping );

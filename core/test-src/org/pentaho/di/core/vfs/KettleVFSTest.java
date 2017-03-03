@@ -20,26 +20,25 @@
  *
  ******************************************************************************/
 
-package org.pentaho.di.engine.foobar;
+package org.pentaho.di.core.vfs;
 
-import org.pentaho.di.core.annotations.EnginePlugin;
-import org.pentaho.di.engine.api.Engine;
-import org.pentaho.di.engine.api.ExecutionContext;
-import org.pentaho.di.engine.api.model.Transformation;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
+import org.junit.Test;
 
-/**
- * Temporary, test-only class for verifying Engine implementations
- * can be loaded and used.
- */
-@EnginePlugin( id = "FooBarOSGiEngine", name = "Foo Bar OSGi Engine" )
-public class FooBarOSGiEngine implements Engine {
+public class KettleVFSTest {
 
-  @Override public ExecutionContext prepare( Transformation trans ) {
-    System.out.println( "Foo Engine" );
-    return null;
-  }
+  /**
+   * Test to validate that startsWitScheme() returns true if the fileName starts with
+   * known protocol like zip: jar: then it returns true else returns false
+   * @param fileName
+   */
+  @Test
+  public void testStartsWithScheme() {
+    String fileName = "zip:file:///SavedLinkedres.zip!Calculate median and percentiles using the group by steps.ktr";
+    assertTrue( KettleVFS.startsWithScheme( fileName ) );
 
-  @Override public String getId(){
-    return "FooBarOSGiEngine";
+    fileName = "SavedLinkedres.zip!Calculate median and percentiles using the group by steps.ktr";
+    assertFalse( KettleVFS.startsWithScheme( fileName ) );
   }
 }

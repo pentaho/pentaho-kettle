@@ -43,13 +43,24 @@ public interface RepositoryExtended extends Repository {
 
   /**
    * Loads the RepositoryDirectoryTree, filtering at the server.
-   * @param filter file filter with wildcards, if null only folders are returned
-   * @param fullDirs include directories without any match
+   * @param path - relative path  to folder from which we should to download the tree. 
+   * Implementation should use "/"  as default path, because it is a root folder of repository
+   * @param filter - filter may be a full name or a partial name with one or more wildcard characters ("*"), or a disjunction (using the "|" character to represent logical OR) of these;
+   * if null then it should be "*" and return all files and folders from root folder
+   * @param depth - 0 fetches just file at path; positive integer n fetches node at path plus n levels of children; 
+   * negative integer fetches all children. If n > 0 then only the top level children will be processed
+   * @param showHidden - if true we will show hidden files
+   * @param includeEmptyFolder include directories without any match
    * @param includeAcls include ACLs 
-   * @return
    * @throws KettleException
    */
-  RepositoryDirectoryInterface loadRepositoryDirectoryTree( String filter, boolean fullDirs, boolean includeAcls )
+  RepositoryDirectoryInterface loadRepositoryDirectoryTree(
+      String path,
+      String filter,
+      int depth,
+      boolean showHidden,
+      boolean includeEmptyFolder,
+      boolean includeAcls )
     throws KettleException;
 
   /**
