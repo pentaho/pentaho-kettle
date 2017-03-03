@@ -25,11 +25,11 @@ package org.pentaho.di.core.logging;
 public enum LoggingObjectType {
   // Runtime...
   //
-    TRANS, STEP, JOB, JOBENTRY, DATABASE,
+    TRANS, STEP, JOB, JOBENTRY, DATABASE, ARTEFACT,
 
     // Metadata...
     //
-    TRANSMETA, STEPMETA, JOBMETA,
+    TRANSMETA, STEPMETA, JOBMETA, ARTEFACTMETA,
 
     // User Interface...
     //

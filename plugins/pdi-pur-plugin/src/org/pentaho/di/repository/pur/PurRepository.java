@@ -18,27 +18,8 @@
 
 package org.pentaho.di.repository.pur;
 
-import java.io.Serializable;
-import java.lang.reflect.Proxy;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.EnumMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-
-import javax.xml.namespace.QName;
-import javax.xml.ws.Service;
-
 import org.apache.commons.lang.StringUtils;
+import org.pentaho.di.artefact.ArtefactMeta;
 import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Condition;
@@ -59,32 +40,9 @@ import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.partition.PartitionSchema;
-import org.pentaho.di.repository.AbstractRepository;
-import org.pentaho.di.repository.IRepositoryExporter;
-import org.pentaho.di.repository.IRepositoryImporter;
-import org.pentaho.di.repository.IRepositoryService;
-import org.pentaho.di.repository.IUser;
-import org.pentaho.di.repository.ObjectId;
-import org.pentaho.di.repository.ObjectRevision;
-import org.pentaho.di.repository.ReconnectableRepository;
-import org.pentaho.di.repository.Repository;
-import org.pentaho.di.repository.RepositoryDirectory;
-import org.pentaho.di.repository.RepositoryDirectoryInterface;
-import org.pentaho.di.repository.RepositoryElementInterface;
-import org.pentaho.di.repository.RepositoryElementMetaInterface;
-import org.pentaho.di.repository.RepositoryExtended;
-import org.pentaho.di.repository.RepositoryMeta;
-import org.pentaho.di.repository.RepositoryObject;
-import org.pentaho.di.repository.RepositoryObjectType;
-import org.pentaho.di.repository.RepositorySecurityManager;
-import org.pentaho.di.repository.RepositorySecurityProvider;
-import org.pentaho.di.repository.StringObjectId;
+import org.pentaho.di.repository.*;
 import org.pentaho.di.repository.pur.metastore.PurRepositoryMetaStore;
-import org.pentaho.di.repository.pur.model.EEJobMeta;
-import org.pentaho.di.repository.pur.model.EERepositoryObject;
-import org.pentaho.di.repository.pur.model.EETransMeta;
-import org.pentaho.di.repository.pur.model.EEUserInfo;
-import org.pentaho.di.repository.pur.model.RepositoryLock;
+import org.pentaho.di.repository.pur.model.*;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.shared.SharedObjects;
 import org.pentaho.di.trans.TransMeta;
@@ -96,18 +54,21 @@ import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.metastore.api.exceptions.MetaStoreException;
 import org.pentaho.metastore.api.exceptions.MetaStoreNamespaceExistsException;
 import org.pentaho.metastore.util.PentahoDefaults;
-import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
-import org.pentaho.platform.api.repository2.unified.RepositoryFile;
-import org.pentaho.platform.api.repository2.unified.RepositoryFileAcl;
-import org.pentaho.platform.api.repository2.unified.RepositoryFileTree;
-import org.pentaho.platform.api.repository2.unified.RepositoryRequest;
-import org.pentaho.platform.api.repository2.unified.VersionSummary;
+import org.pentaho.platform.api.repository2.unified.*;
 import org.pentaho.platform.api.repository2.unified.RepositoryRequest.FILES_TYPE_FILTER;
 import org.pentaho.platform.api.repository2.unified.data.node.DataNode;
 import org.pentaho.platform.api.repository2.unified.data.node.NodeRepositoryFileData;
 import org.pentaho.platform.repository.RepositoryFilenameUtils;
 import org.pentaho.platform.repository2.ClientRepositoryPaths;
 import org.pentaho.platform.repository2.unified.webservices.jaxws.IUnifiedRepositoryJaxwsWebService;
+
+import javax.xml.namespace.QName;
+import javax.xml.ws.Service;
+import java.io.Serializable;
+import java.lang.reflect.Proxy;
+import java.net.URL;
+import java.util.*;
+import java.util.Map.Entry;
 
 /**
  * Implementation of {@link Repository} that delegates to the Pentaho unified repository (PUR), an instance of
@@ -170,6 +131,8 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
   private ISharedObjectsTransformer transDelegate;
 
   private ISharedObjectsTransformer jobDelegate;
+
+  private ISharedObjectsTransformer artefactDelegate;
 
   private Map<RepositoryObjectType, SharedObjectAssembler<?>> sharedObjectAssemblerMap;
 
@@ -271,6 +234,7 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
       this.user = new EEUserInfo( username, password, username, "test user", true );
       this.jobDelegate = new JobDelegate( this, pur );
       this.transDelegate = new TransDelegate( this, pur );
+      this.artefactDelegate = new ArtefactDelegate(this, pur);
       this.unifiedRepositoryLockService = new UnifiedRepositoryLockService( pur );
       return;
     }
@@ -299,6 +263,7 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
       this.connectMessage = result.getConnectMessage();
       this.purRepositoryServiceRegistry = result.repositoryServiceRegistry();
       this.transDelegate = new TransDelegate( this, pur );
+      this.artefactDelegate = new ArtefactDelegate(this, pur);
       this.jobDelegate = new JobDelegate( this, pur );
     } finally {
       if ( connected ) {
@@ -825,6 +790,14 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
               + RepositoryObjectType.JOB.getExtension();
         }
       }
+      case ARTEFACT:
+        // Check for null path
+        if ( path == null ) {
+          return null;
+        } else {
+          return path + ( path.endsWith( RepositoryFile.SEPARATOR ) ? "" : RepositoryFile.SEPARATOR ) + sanitizedName
+                  + RepositoryObjectType.ARTEFACT.getExtension();
+        }
       default: {
         throw new UnsupportedOperationException( "not implemented" );
       }
@@ -865,6 +838,17 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
       return names.toArray( new String[ 0 ] );
     } catch ( Exception e ) {
       throw new KettleException( "Unable to get all cluster schema names", e );
+    }
+  }
+
+
+  public ObjectId getArtefactID( final String name, final RepositoryDirectoryInterface repositoryDirectory ) throws KettleException {
+    try {
+      return getObjectId( name, repositoryDirectory, RepositoryObjectType.TRANSFORMATION, false );
+    } catch ( Exception e ) {
+      String path = repositoryDirectory != null ? repositoryDirectory.toString() : "null";
+      throw new IdNotFoundException( "Unable to get ID for job [" + name + "]", e, name, path,
+              RepositoryObjectType.ARTEFACT );
     }
   }
 
@@ -965,8 +949,19 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
         case JOB: {
           // file either never existed or has been deleted
           List<RepositoryFile>
-              deletedChildren =
-              pur.getDeletedFiles( dir.getObjectId().getId(), name + RepositoryObjectType.JOB.getExtension() );
+                  deletedChildren =
+                  pur.getDeletedFiles( dir.getObjectId().getId(), name + RepositoryObjectType.JOB.getExtension() );
+          if ( !deletedChildren.isEmpty() ) {
+            return new StringObjectId( deletedChildren.get( 0 ).getId().toString() );
+          } else {
+            return null;
+          }
+        }
+        case ARTEFACT: {
+          // file either never existed or has been deleted
+          List<RepositoryFile>
+                  deletedChildren =
+                  pur.getDeletedFiles( dir.getObjectId().getId(), name + RepositoryObjectType.ARTEFACT.getExtension() );
           if ( !deletedChildren.isEmpty() ) {
             return new StringObjectId( deletedChildren.get( 0 ).getId().toString() );
           } else {
@@ -1061,6 +1056,10 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
           filters.add( "*" + RepositoryObjectType.TRANS_DATA_SERVICE.getExtension() ); //$NON-NLS-1$
           break;
         }
+        case ARTEFACT:
+          parentFolderIds.add( dirId.getId() );
+          filters.add( "*" + RepositoryObjectType.ARTEFACT.getExtension() ); //$NON-NLS-1$
+          break;
         default: {
           throw new UnsupportedOperationException( "not implemented" );
         }
@@ -1120,6 +1119,10 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
           filters.add( "*" + RepositoryObjectType.JOB.getExtension() ); //$NON-NLS-1$
           break;
         }
+        case ARTEFACT:
+          parentFolderPaths.add( dirPath );
+          filters.add( "*" + RepositoryObjectType.ARTEFACT.getExtension() ); //$NON-NLS-1$
+          break;
         default: {
           throw new UnsupportedOperationException();
         }
@@ -1913,6 +1916,9 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
         case PARTITION_SCHEMA:
           savePartitionSchema( element, versionComment, versionDate );
           break;
+        case ARTEFACT:
+          saveArtefact(element, versionComment, versionDate);
+          break;
         default:
           throw new KettleException(
               "It's not possible to save Class [" + element.getClass().getName() + "] to the repository" );
@@ -1946,6 +1952,9 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
         break;
       case PARTITION_SCHEMA:
         filename += RepositoryObjectType.PARTITION_SCHEMA.getExtension();
+        break;
+      case ARTEFACT:
+        filename += RepositoryObjectType.ARTEFACT.getExtension();
         break;
       default:
         throw new KettleException( "unknown element type [" + element.getClass().getName() + "]" );
@@ -2027,6 +2036,59 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
       return true;
     } else {
       return false;
+    }
+  }
+
+  protected void saveArtefact(final RepositoryElementInterface element, final String versionComment,
+                              Calendar versionDate) throws KettleException {
+
+    this.artefactDelegate.saveSharedObjects(element, versionComment);
+
+    final boolean isUpdate = (element.getObjectId() != null);
+    RepositoryFile file;
+    if (isUpdate) {
+      ObjectId id = element.getObjectId();
+      file = pur.getFileById(id.getId());
+      if (file.isLocked() && !unifiedRepositoryLockService.canUnlockFileById(id)) {
+        throw new KettleException("File is currently locked by another user for editing");
+      }
+      if (isInTrash(file)) {
+        // absolutely awful to have UI references in this class :(
+        throw new KettleException("File is in the Trash. Use Save As.");
+      }
+      // update title and description
+      file =
+              new RepositoryFile.Builder(file).title(RepositoryFile.DEFAULT_LOCALE, element.getName()).createdDate(
+                      versionDate != null ? versionDate.getTime() : new Date()).description(RepositoryFile.DEFAULT_LOCALE,
+                      Const.NVL(element.getDescription(), "")).build();
+      file =
+              pur.updateFile(file, new NodeRepositoryFileData(this.artefactDelegate.elementToDataNode(element)),
+                      versionComment);
+      if (isRenamed(element, file)) {
+        renameKettleEntity(element, null, element.getName());
+      }
+    } else {
+      file =
+              new RepositoryFile.Builder(checkAndSanitize(element.getName()
+                      + element.getRepositoryElementType().getExtension())).versioned(true).title(
+                      RepositoryFile.DEFAULT_LOCALE, element.getName()).createdDate(
+                      versionDate != null ? versionDate.getTime() : new Date()).description(RepositoryFile.DEFAULT_LOCALE,
+                      Const.NVL(element.getDescription(), "")).build();
+      file =
+              pur.createFile(element.getRepositoryDirectory().getObjectId().getId(), file,
+                      new NodeRepositoryFileData(this.artefactDelegate.elementToDataNode(element)), versionComment);
+    }
+    // side effects
+    ObjectId objectId = new StringObjectId(file.getId().toString());
+    element.setObjectId(objectId);
+    element.setObjectRevision(getObjectRevision(objectId, null));
+
+    if (element instanceof ChangedFlagInterface) {
+      ((ChangedFlagInterface) element).clearChanged();
+    }
+
+    if (element.getRepositoryElementType() == RepositoryObjectType.ARTEFACT) {
+      ArtefactMeta artefactMeta = loadArtefact(objectId, null);
     }
   }
 
@@ -2149,9 +2211,42 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
     }
   }
 
+  @Override
+  public ArtefactMeta loadArtefact(String artefactName, RepositoryDirectoryInterface parentDir, ProgressMonitorListener progressMonitorListener, boolean setInternalVariables, String versionId) throws KettleException {
+    String absPath = null;
+    try {
+      absPath = getPath( artefactName, parentDir, RepositoryObjectType.ARTEFACT);
+      if ( absPath == null ) {
+        // Couldn't resolve path, throw an exception
+        throw new KettleFileException( BaseMessages.getString( PKG,
+                "PurRepository.ERROR_0002_ARTEFACT_NOT_FOUND", artefactName ) );
+      }
+      RepositoryFile file = pur.getFile( absPath );
+      if ( versionId != null ) {
+        // need to go back to server to get versioned info
+        file = pur.getFileAtVersion( file.getId(), versionId );
+      }
+      NodeRepositoryFileData data = null;
+      ObjectRevision revision = null;
+      // Additional obfuscation through obscurity
+      data = pur.getDataAtVersionForRead( file.getId(), versionId, NodeRepositoryFileData.class );
+      revision = getObjectRevision( new StringObjectId( file.getId().toString() ), versionId );
+      ArtefactMeta artefactMeta = buildArtefactMeta( file, parentDir, data, revision );
+
+      return artefactMeta;
+    } catch ( Exception e ) {
+      throw new KettleException( "Unable to load artefact from path [" + absPath + "]", e );
+    }
+  }
+
+  @Override
+  public SharedObjects readArtefactSharedObjects(ArtefactMeta artefactMeta) throws KettleException {
+    return null;
+  }
+
   private TransMeta buildTransMeta( final RepositoryFile file, final RepositoryDirectoryInterface parentDir,
                                     final NodeRepositoryFileData data, final ObjectRevision revision )
-    throws KettleException {
+          throws KettleException {
     TransMeta transMeta = new TransMeta();
     transMeta.setName( file.getTitle() );
     transMeta.setDescription( file.getDescription() );
@@ -2164,6 +2259,24 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
     transDelegate.dataNodeToElement( data.getNode(), transMeta );
     transMeta.clearChanged();
     return transMeta;
+  }
+
+
+  private ArtefactMeta buildArtefactMeta( final RepositoryFile file, final RepositoryDirectoryInterface parentDir,
+                                    final NodeRepositoryFileData data, final ObjectRevision revision )
+          throws KettleException {
+    ArtefactMeta artefactMeta = new ArtefactMeta();
+    artefactMeta.setName( file.getTitle() );
+    artefactMeta.setDescription( file.getDescription() );
+    artefactMeta.setObjectId( new StringObjectId( file.getId().toString() ) );
+    artefactMeta.setObjectRevision( revision );
+    artefactMeta.setRepository( this );
+    artefactMeta.setRepositoryDirectory( parentDir );
+    artefactMeta.setMetaStore( getMetaStore() );
+    readArtefactSharedObjects( artefactMeta ); // This should read from the local cache
+    artefactDelegate.dataNodeToElement( data.getNode(), artefactMeta );
+    artefactMeta.clearChanged();
+    return artefactMeta;
   }
 
   /**
@@ -2810,6 +2923,36 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
       return transMeta;
     } catch ( Exception e ) {
       throw new KettleException( "Unable to load transformation with id [" + idTransformation + "]", e );
+    }
+  }
+
+  public ArtefactMeta loadArtefact(ObjectId idArtefact, String versionLabel ) throws KettleException {
+    try {
+      RepositoryFile file = null;
+      if ( versionLabel != null ) {
+        file = pur.getFileAtVersion( idArtefact.getId(), versionLabel );
+      } else {
+        file = pur.getFileById( idArtefact.getId() );
+      }
+      EEArtefactMeta artefactMeta = new EEArtefactMeta();
+      artefactMeta.setName( file.getTitle() );
+      artefactMeta.setDescription( file.getDescription() );
+      artefactMeta.setObjectId( new StringObjectId( file.getId().toString() ) );
+      artefactMeta.setObjectRevision( getObjectRevision( new StringObjectId( file.getId().toString() ), versionLabel ) );
+      artefactMeta.setRepository( this );
+      artefactMeta.setRepositoryDirectory( findDirectory( getParentPath( file.getPath() ) ) );
+      artefactMeta.setRepositoryLock( unifiedRepositoryLockService.getLock( file ) );
+      artefactMeta.setMetaStore( getMetaStore() ); // inject metastore
+
+      readArtefactSharedObjects( artefactMeta );
+      artefactDelegate.dataNodeToElement(
+              pur.getDataAtVersionForRead( idArtefact.getId(), versionLabel, NodeRepositoryFileData.class ).getNode(),
+              artefactMeta );
+
+      artefactMeta.clearChanged();
+      return artefactMeta;
+    } catch ( Exception e ) {
+      throw new KettleException( "Unable to load transformation with id [" + idArtefact + "]", e );
     }
   }
 

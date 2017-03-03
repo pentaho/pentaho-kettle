@@ -22,15 +22,10 @@
 
 package org.pentaho.di.trans.steps.loadsave;
 
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import org.pentaho.di.artefact.ArtefactMeta;
 import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Condition;
@@ -41,25 +36,16 @@ import org.pentaho.di.core.exception.KettleSecurityException;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.partition.PartitionSchema;
-import org.pentaho.di.repository.AbstractRepository;
-import org.pentaho.di.repository.IRepositoryExporter;
-import org.pentaho.di.repository.IRepositoryImporter;
-import org.pentaho.di.repository.IRepositoryService;
-import org.pentaho.di.repository.IUser;
-import org.pentaho.di.repository.LongObjectId;
-import org.pentaho.di.repository.ObjectId;
-import org.pentaho.di.repository.RepositoryDirectoryInterface;
-import org.pentaho.di.repository.RepositoryElementInterface;
-import org.pentaho.di.repository.RepositoryElementMetaInterface;
-import org.pentaho.di.repository.RepositoryMeta;
-import org.pentaho.di.repository.RepositoryObject;
-import org.pentaho.di.repository.RepositoryObjectType;
-import org.pentaho.di.repository.RepositorySecurityManager;
-import org.pentaho.di.repository.RepositorySecurityProvider;
-import org.pentaho.di.repository.StringObjectId;
+import org.pentaho.di.repository.*;
 import org.pentaho.di.shared.SharedObjects;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.metastore.api.IMetaStore;
+
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 public class MemoryRepository extends AbstractRepository {
   private final Map<ObjectId, Map<Integer, Map<String, String>>> stepAttributeMap =
@@ -262,6 +248,21 @@ public class MemoryRepository extends AbstractRepository {
   public TransMeta loadTransformation( String transname, RepositoryDirectoryInterface repdir,
       ProgressMonitorListener monitor, boolean setInternalVariables, String revision ) throws KettleException {
     // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public ArtefactMeta loadArtefact(String artefactName, RepositoryDirectoryInterface repdir, ProgressMonitorListener monitor, boolean setInternalVariables, String revision) throws KettleException {
+    return null;
+  }
+
+  @Override
+  public ArtefactMeta loadArtefact(ObjectId idArtefact, String versionLabel) throws KettleException {
+    return null;
+  }
+
+  @Override
+  public SharedObjects readArtefactSharedObjects(ArtefactMeta artefactMeta) throws KettleException {
     return null;
   }
 

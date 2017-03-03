@@ -16,16 +16,11 @@
  */
 package org.pentaho.di.repository.pur;
 
-import java.io.Serializable;
-import java.util.Date;
-
 import org.pentaho.di.repository.ObjectRevision;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.*;
+import java.io.Serializable;
+import java.util.Date;
 
 @XmlRootElement( name = "revision" )
 @XmlAccessorType( XmlAccessType.FIELD )

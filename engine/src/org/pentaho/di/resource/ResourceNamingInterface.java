@@ -31,7 +31,7 @@ import org.pentaho.di.core.variables.VariableSpace;
 public interface ResourceNamingInterface {
 
   public static enum FileNamingType {
-    TRANSFORMATION, JOB, DATA_FILE, SHELL_SCRIPT,
+    TRANSFORMATION, JOB, DATA_FILE, SHELL_SCRIPT, ARTEFACT
   }
 
   /**

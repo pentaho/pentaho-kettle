@@ -408,6 +408,13 @@ public class Const {
   /** The descriptions of the possible extensions a transformation XML file can have. */
   private static String[] STRING_TRANS_FILTER_NAMES;
 
+  public static final String STRING_ARTEFACT_DEFAULT_EXT = "art";
+
+  public static final String[] STRING_ARTEFACT_FILTER_EXT = new String[] { "*.art;*.xml", "*.xml", "*.*" };
+
+  /** The descriptions of the possible extensions a transformation XML file can have. */
+  private static String[] STRING_ARTEFACT_FILTER_NAMES;
+
   /** The extension of a Kettle job XML file */
   public static final String STRING_JOB_DEFAULT_EXT = "kjb";
 
@@ -2914,12 +2921,23 @@ public class Const {
   public static String[] getTransformationFilterNames() {
     if ( STRING_TRANS_FILTER_NAMES == null ) {
       STRING_TRANS_FILTER_NAMES =
-        new String[] {
-          BaseMessages.getString( PKG, "Const.FileFilter.Transformations" ),
-          BaseMessages.getString( PKG, "Const.FileFilter.XML" ),
-          BaseMessages.getString( PKG, "Const.FileFilter.All" ) };
+              new String[] {
+                      BaseMessages.getString( PKG, "Const.FileFilter.Transformations" ),
+                      BaseMessages.getString( PKG, "Const.FileFilter.XML" ),
+                      BaseMessages.getString( PKG, "Const.FileFilter.All" ) };
     }
     return STRING_TRANS_FILTER_NAMES;
+  }
+
+  public static String[] getArtefactFilterNames() {
+    if ( STRING_ARTEFACT_FILTER_NAMES == null ) {
+      STRING_ARTEFACT_FILTER_NAMES =
+              new String[] {
+                      BaseMessages.getString( PKG, "Const.FileFilter.Artefacts" ),
+                      BaseMessages.getString( PKG, "Const.FileFilter.XML" ),
+                      BaseMessages.getString( PKG, "Const.FileFilter.All" ) };
+    }
+    return STRING_ARTEFACT_FILTER_NAMES;
   }
 
   public static String[] getJobFilterNames() {

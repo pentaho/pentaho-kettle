@@ -28,6 +28,10 @@ public enum RepositoryOperation {
   DELETE_TRANSFORMATION( "Delete transformation" ), EXECUTE_TRANSFORMATION( "Execute transformation" ),
   LOCK_TRANSFORMATION( "Lock transformation" ), SCHEDULE_TRANSFORMATION( "Schedule transformation" ),
 
+  READ_ARTEFACT( "Read artefact" ), MODIFY_ARTEFACT( "Modify artefact" ),
+  DELETE_ARTEFACT( "Delete artefact" ), EXECUTE_ARTEFACT( "Execute artefact" ),
+  LOCK_ARTEFACT( "Lock artefact" ), SCHEDULE_ARTEFACT( "Schedule artefact" ),
+
   READ_JOB( "Read job" ), MODIFY_JOB( "Modify job" ), DELETE_JOB( "Delete job" ), EXECUTE_JOB( "Execute job" ),
   LOCK_JOB( "Lock job" ), SCHEDULE_JOB( "Schedule job" ),
 

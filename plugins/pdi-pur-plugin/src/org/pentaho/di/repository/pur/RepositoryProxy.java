@@ -19,6 +19,7 @@ package org.pentaho.di.repository.pur;
 import java.util.Calendar;
 import java.util.List;
 
+import org.pentaho.di.artefact.ArtefactMeta;
 import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Condition;
@@ -432,6 +433,21 @@ public class RepositoryProxy extends AbstractRepository implements ILockService,
 
   public TransMeta loadTransformation( String transname, RepositoryDirectoryInterface repdir,
       ProgressMonitorListener monitor, boolean setInternalVariables, String revision ) throws KettleException {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public ArtefactMeta loadArtefact(String s, RepositoryDirectoryInterface repositoryDirectoryInterface, ProgressMonitorListener progressMonitorListener, boolean b, String s1) throws KettleException {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public ArtefactMeta loadArtefact(ObjectId objectId, String s) throws KettleException {
+    return null;
+  }
+
+  @Override
+  public SharedObjects readArtefactSharedObjects(ArtefactMeta artefactMeta) throws KettleException {
     throw new UnsupportedOperationException();
   }
 

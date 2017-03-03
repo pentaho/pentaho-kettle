@@ -34,6 +34,7 @@ import java.util.Map;
 import java.util.zip.GZIPOutputStream;
 
 import org.apache.commons.codec.binary.Base64;
+import org.pentaho.di.artefact.ArtefactMeta;
 import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Condition;
@@ -346,6 +347,21 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
     } finally {
       connectionDelegate.closeReadTransaction();
     }
+  }
+
+  @Override
+  public ArtefactMeta loadArtefact(String artefactName, RepositoryDirectoryInterface repdir, ProgressMonitorListener monitor, boolean setInternalVariables, String revision) throws KettleException {
+      return null;
+  }
+
+  @Override
+  public ArtefactMeta loadArtefact(ObjectId idArtefact, String versionLabel) throws KettleException {
+    return null;
+  }
+
+  @Override
+  public SharedObjects readArtefactSharedObjects(ArtefactMeta artefactMeta) throws KettleException {
+    return null;
   }
 
   public SharedObjects readTransSharedObjects( TransMeta transMeta ) throws KettleException {

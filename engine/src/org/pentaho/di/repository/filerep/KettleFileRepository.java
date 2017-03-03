@@ -36,6 +36,7 @@ import org.apache.commons.vfs2.FileName;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.FileType;
+import org.pentaho.di.artefact.ArtefactMeta;
 import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Condition;
@@ -1118,6 +1119,21 @@ public class KettleFileRepository extends AbstractRepository {
     transMeta.clearChanged();
 
     return transMeta;
+  }
+
+  @Override
+  public ArtefactMeta loadArtefact(String artefactName, RepositoryDirectoryInterface repdir, ProgressMonitorListener monitor, boolean setInternalVariables, String revision) throws KettleException {
+    return null;
+  }
+
+  @Override
+  public ArtefactMeta loadArtefact(ObjectId idArtefact, String versionLabel) throws KettleException {
+    return null;
+  }
+
+  @Override
+  public SharedObjects readArtefactSharedObjects(ArtefactMeta artefactMeta) throws KettleException {
+    return null;
   }
 
   /**

@@ -22,9 +22,7 @@
 
 package org.pentaho.di.repository;
 
-import java.util.Calendar;
-import java.util.List;
-
+import org.pentaho.di.artefact.ArtefactMeta;
 import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Condition;
@@ -38,6 +36,9 @@ import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.shared.SharedObjects;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.metastore.api.IMetaStore;
+
+import java.util.Calendar;
+import java.util.List;
 
 public interface Repository {
 
@@ -190,6 +191,14 @@ public interface Repository {
    */
   public TransMeta loadTransformation( String transname, RepositoryDirectoryInterface repdir,
     ProgressMonitorListener monitor, boolean setInternalVariables, String revision ) throws KettleException;
+
+  public ArtefactMeta loadArtefact(String artefactName, RepositoryDirectoryInterface repdir,
+                                         ProgressMonitorListener monitor, boolean setInternalVariables, String revision ) throws KettleException;
+
+
+  public ArtefactMeta loadArtefact(ObjectId idArtefact, String versionLabel ) throws KettleException;
+
+  public SharedObjects readArtefactSharedObjects( final ArtefactMeta artefactMeta ) throws KettleException;
 
   /**
    * Load a transformation by id
