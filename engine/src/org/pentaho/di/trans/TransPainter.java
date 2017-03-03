@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -528,7 +528,7 @@ public class TransPainter extends BasePainter<TransHopMeta, StepMeta> {
 
       for ( StepInterface step : steps ) {
         if ( step.getStatus().equals( StepExecutionStatus.STATUS_FINISHED ) ) {
-          gc.drawImage( EImage.TRUE, ( x + iconsize ) - ( MINI_ICON_SIZE / 2 ), y - ( MINI_ICON_SIZE / 2 ), magnification );
+          gc.drawImage( EImage.TRUE, ( x + iconsize ) - ( MINI_ICON_SIZE / 2 ) + 2, y - ( MINI_ICON_SIZE / 2 ) - 1, magnification );
         }
       }
 
@@ -750,17 +750,19 @@ public class TransPainter extends BasePainter<TransHopMeta, StepMeta> {
     if ( stepMeta.isPartitioned() && meta != null ) {
       partitioned = true;
     }
-    if ( stepMeta.getClusterSchema() != null ) {
-      String message = "C";
-      if ( stepMeta.getClusterSchema().isDynamic() ) {
-        message += "xN";
-      } else {
-        message += "x" + stepMeta.getClusterSchema().findNrSlaves();
-      }
 
+    String clusterMessage = "";
+    if ( stepMeta.getClusterSchema() != null ) {
+      clusterMessage = "C";
+      if ( stepMeta.getClusterSchema().isDynamic() ) {
+        clusterMessage += "xN";
+      } else {
+        clusterMessage += "x" + stepMeta.getClusterSchema().findNrSlaves();
+      }
+      Point textExtent = gc.textExtent( clusterMessage );
       gc.setBackground( EColor.BACKGROUND );
       gc.setForeground( EColor.BLACK );
-      gc.drawText( message, x + 3 + iconsize, y - 8 );
+      gc.drawText( clusterMessage, x - textExtent.x + 1, y - textExtent.y + 1 );
     }
 
     if ( stepMeta.getCopies() != 1 && !partitioned ) {
@@ -768,12 +770,16 @@ public class TransPainter extends BasePainter<TransHopMeta, StepMeta> {
       gc.setForeground( EColor.BLACK );
       String copies = "x" + stepMeta.getCopiesString();
       Point textExtent = gc.textExtent( copies );
-      // gc.fillRectangle(x - 11, y - 11, textExtent.x+2, textExtent.y+2);
-      // gc.drawRectangle(x - 11, y - 11, textExtent.x+2, textExtent.y+2);
-      gc.drawText( copies, x - textExtent.x / 2, y - textExtent.y, false );
-      areaOwners.add( new AreaOwner(
-        AreaType.STEP_COPIES_TEXT, x - textExtent.x / 2, y - textExtent.y, textExtent.x, textExtent.y, offset,
-        transMeta, stepMeta ) );
+      if ( stepMeta.getClusterSchema() != null ) {
+        Point clusterTextExtent = gc.textExtent( clusterMessage );
+        gc.drawText( copies, x - textExtent.x + 1, y - textExtent.y - clusterTextExtent.y + 1, false );
+        areaOwners.add( new AreaOwner( AreaType.STEP_COPIES_TEXT, x - textExtent.x + 1, y - textExtent.y
+            - clusterTextExtent.y + 1, textExtent.x, textExtent.y, offset, transMeta, stepMeta ) );
+      } else {
+        gc.drawText( copies, x - textExtent.x + 1, y - textExtent.y + 1, false );
+        areaOwners.add( new AreaOwner( AreaType.STEP_COPIES_TEXT, x - textExtent.x + 1, y - textExtent.y + 1, textExtent.x,
+            textExtent.y, offset, transMeta, stepMeta ) );
+      }
     }
 
     // If there was an error during the run, the map "stepLogMap" is not empty and not null.
@@ -781,15 +787,15 @@ public class TransPainter extends BasePainter<TransHopMeta, StepMeta> {
     if ( stepError ) {
       String log = stepLogMap.get( stepMeta );
 
-      // Show an error lines icon in the lower right corner of the step...
+      // Show an error lines icon in the upper right corner of the step...
       //
-      int xError = ( x + iconsize ) - ( MINI_ICON_SIZE / 2 );
-      int yError = ( y + iconsize ) - ( MINI_ICON_SIZE / 2 );
-      Point ib = gc.getImageBounds( EImage.STEP_ERROR );
-      gc.drawImage( EImage.STEP_ERROR, xError, yError, magnification );
+      int xError = ( x + iconsize ) - ( MINI_ICON_SIZE / 2 ) + 2;
+      int yError = y - ( MINI_ICON_SIZE / 2 ) - 1;
+      Point ib = gc.getImageBounds( EImage.STEP_ERROR_RED );
+      gc.drawImage( EImage.STEP_ERROR_RED, xError, yError, magnification );
       if ( !shadow ) {
         areaOwners.add( new AreaOwner(
-          AreaType.STEP_ERROR_ICON, pt.x + iconsize - 5, pt.y + iconsize - 5, ib.x, ib.y, offset, log,
+          AreaType.STEP_ERROR_RED_ICON, pt.x + iconsize - 3, pt.y - 6, ib.x, ib.y, offset, log,
           STRING_STEP_ERROR_LOG ) );
       }
     }
