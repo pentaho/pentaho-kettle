@@ -2864,6 +2864,11 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
           tip.append( log );
           tipImage = GUIResource.getInstance().getImageStepError();
           break;
+        case STEP_ERROR_RED_ICON:
+          String redLog = (String) areaOwner.getParent();
+          tip.append( redLog );
+          tipImage = GUIResource.getInstance().getImageRedStepError();
+          break;
         case HOP_COPY_ICON:
           step = (StepMeta) areaOwner.getParent();
           tip.append( BaseMessages.getString( PKG, "TransGraph.Hop.Tooltip.HopTypeCopy", step.getName(), Const.CR ) );

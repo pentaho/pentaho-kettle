@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -188,6 +188,8 @@ public class SWTGC implements GCInterface {
         return GUIResource.getInstance().getSwtImageLocked();
       case STEP_ERROR:
         return GUIResource.getInstance().getSwtImageStepError();
+      case STEP_ERROR_RED:
+        return GUIResource.getInstance().getSwtImageRedStepError();
       case EDIT:
         return GUIResource.getInstance().getSwtImageEdit();
       case CONTEXT_MENU:
