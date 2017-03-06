@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,6 +25,7 @@ package org.pentaho.di.trans.steps.denormaliser;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -195,6 +196,39 @@ public class DenormaliserAggregationsTest {
     Object[] outputRowData = step.buildResult( testSumPreconditions( "-" ), rowData );
 
     Assert.assertNull( "Output row: nulls are nulls", outputRowData[3] );
+  }
+
+  /**
+   * PDI-16017. Method newGroup should not initialize result by default for MIN
+   * (in addition PDI-16015 without converting)
+   *
+   * @throws Exception
+   */
+  @Test
+  public void testNewGroup() throws Exception {
+    DenormaliserTargetField field1 = new DenormaliserTargetField();
+    field1.setTargetAggregationType( "MIN" );
+
+    DenormaliserTargetField field2 = new DenormaliserTargetField();
+    field2.setTargetAggregationType( "MIN" );
+
+    DenormaliserTargetField field3 = new DenormaliserTargetField();
+    field3.setTargetAggregationType( "MIN" );
+
+    DenormaliserTargetField[] pivotField = new DenormaliserTargetField[] { field1, field2, field3 };
+    meta.setDenormaliserTargetField( pivotField );
+    data.counters = new long[3];
+    data.sum = new Object[3];
+
+    Method newGroupMethod = step.getClass().getDeclaredMethod( "newGroup" );
+    newGroupMethod.setAccessible( true );
+    newGroupMethod.invoke( step );
+
+    Assert.assertEquals( 3, data.targetResult.length );
+
+    for ( Object result : data.targetResult ) {
+      Assert.assertNull( result );
+    }
   }
 
 }
