@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -92,7 +92,7 @@ public class Denormaliser extends BaseStep implements StepInterface {
         return false;
       }
 
-      newGroup( r ); // Create a new result row (init)
+      newGroup(); // Create a new result row (init)
       deNormalise( data.inputRowMeta, r );
       data.previous = r; // copy the row to previous
 
@@ -107,7 +107,7 @@ public class Denormaliser extends BaseStep implements StepInterface {
 
       Object[] outputRowData = buildResult( data.inputRowMeta, data.previous );
       putRow( data.outputRowMeta, outputRowData ); // copy row to possible alternate rowset(s).
-      newGroup( r ); // Create a new group aggregate (init)
+      newGroup(); // Create a new group aggregate (init)
       deNormalise( data.inputRowMeta, r );
     } else {
       deNormalise( data.inputRowMeta, r );
@@ -299,27 +299,15 @@ public class Denormaliser extends BaseStep implements StepInterface {
    *
    * @throws KettleException
    */
-  private void newGroup( Object[] r ) throws KettleException {
+  private void newGroup( ) throws KettleException {
     // There is no need anymore to take care of the meta-data.
     // That is done once in DenormaliserMeta.getFields()
     //
     data.targetResult = new Object[meta.getDenormaliserTargetFields().length];
 
     DenormaliserTargetField[] fields = meta.getDenormaliserTargetField();
-    for ( int i = 0; i < fields.length; i++ ) {
-      if ( fields[i].getTargetAggregationType() == DenormaliserTargetField.TYPE_AGGR_MIN ) {
-        // we assign for minimal value first value came. See PDI-9662
-        String fName = fields[i].getFieldName();
-        int index = data.inputRowMeta.indexOfValue( fName );
-        if ( index < 0 ) {
-          // this will never happens!
-          throw new KettleException( "Can't initialize default value for min aggregation" );
-        }
-        data.targetResult[i] = r[index];
-      } else {
-        data.targetResult[i] = null;
-      }
 
+    for ( int i = 0; i < fields.length; i++ ) {
       data.counters[i] = 0L; // set to 0
       data.sum[i] = null;
     }
@@ -394,7 +382,8 @@ public class Denormaliser extends BaseStep implements StepInterface {
             // PDI-9662 do not compare null
             break;
           }
-          if ( sourceMeta.compare( sourceData, targetMeta, prevTargetData ) < 0 ) {
+          if ( ( prevTargetData == null && !minNullIsValued )
+                  || sourceMeta.compare( sourceData, targetMeta, prevTargetData ) < 0 ) {
             prevTargetData = targetMeta.convertData( sourceMeta, sourceData );
           }
           break;
