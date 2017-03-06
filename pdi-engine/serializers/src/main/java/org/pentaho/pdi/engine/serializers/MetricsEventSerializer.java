@@ -32,37 +32,44 @@ import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.deser.std.StdNodeBasedDeserializer;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import org.pentaho.di.engine.api.events.StatusEvent;
+import org.pentaho.di.engine.api.events.MetricsEvent;
 import org.pentaho.di.engine.api.remote.RemoteSource;
-import org.pentaho.di.engine.api.reporting.Status;
+import org.pentaho.di.engine.api.reporting.Metrics;
 
 import java.io.IOException;
 
 /**
- * Created by nbaker on 2/15/17.
+ * Created by nbaker on 3/4/17.
  */
-public class StatusEventSerializer extends BaseSerializer<StatusEvent> {
+public class MetricsEventSerializer extends BaseSerializer<MetricsEvent> {
 
-  public StatusEventSerializer() {
-    super( StatusEvent.class );
+  public MetricsEventSerializer() {
+    super( MetricsEvent.class );
 
     SimpleModule module = new SimpleModule();
-    module.addSerializer( StatusEvent.class, new JsonSerializer<StatusEvent>() {
+    module.addSerializer( MetricsEvent.class, new JsonSerializer<MetricsEvent>() {
       @Override
-      public void serialize( StatusEvent statusEvent, JsonGenerator jsonGenerator,
+      public void serialize( MetricsEvent metricsEvent, JsonGenerator jsonGenerator,
                              SerializerProvider serializerProvider )
         throws IOException, JsonProcessingException {
         jsonGenerator.writeStartObject();
-        jsonGenerator.writeStringField( "model-id", statusEvent.getSource().getId() );
-        jsonGenerator.writeStringField( "status-type", statusEvent.getData().toString() );
+        Metrics data = (Metrics) metricsEvent.getData();
+        jsonGenerator.writeStringField( "model-id", metricsEvent.getSource().getId() );
+        jsonGenerator.writeNumberField( "dropped", data.getDropped() );
+        jsonGenerator.writeNumberField( "in", data.getIn() );
+        jsonGenerator.writeNumberField( "in-flight", data.getInFlight() );
+        jsonGenerator.writeNumberField( "out", data.getOut() );
         jsonGenerator.writeEndObject();
       }
     } );
-    module.addDeserializer( StatusEvent.class, new StdNodeBasedDeserializer<StatusEvent>( StatusEvent.class ) {
-      @Override public StatusEvent convert( JsonNode jsonNode, DeserializationContext deserializationContext )
+    module.addDeserializer( MetricsEvent.class, new StdNodeBasedDeserializer<MetricsEvent>( MetricsEvent.class ) {
+      @Override public MetricsEvent convert( JsonNode jsonNode, DeserializationContext deserializationContext )
         throws IOException {
-        return new StatusEvent<>( new RemoteSource( jsonNode.get( "model-id" ).asText() ),
-          Status.valueOf( jsonNode.get( "status-type" ).asText() ) );
+        Metrics metrics =
+          new Metrics( jsonNode.get( "in" ).asInt(), jsonNode.get( "out" ).asInt(), jsonNode.get( "dropped" ).asInt(),
+            jsonNode.get( "in-flight" ).asInt() );
+
+        return new MetricsEvent( new RemoteSource( jsonNode.get( "model-id" ).asText() ), metrics );
 
       }
     } );

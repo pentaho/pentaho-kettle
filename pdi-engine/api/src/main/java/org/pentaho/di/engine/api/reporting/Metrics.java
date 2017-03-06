@@ -93,4 +93,34 @@ public class Metrics implements Serializable {
       getInFlight() + right.getInFlight()
     );
   }
+
+  @Override public boolean equals( Object o ) {
+    if ( this == o ) {
+      return true;
+    }
+    if ( !( o instanceof Metrics ) ) {
+      return false;
+    }
+
+    Metrics metrics = (Metrics) o;
+
+    if ( in != metrics.in ) {
+      return false;
+    }
+    if ( out != metrics.out ) {
+      return false;
+    }
+    if ( dropped != metrics.dropped ) {
+      return false;
+    }
+    return inFlight == metrics.inFlight;
+  }
+
+  @Override public int hashCode() {
+    int result = (int) ( in ^ ( in >>> 32 ) );
+    result = 31 * result + (int) ( out ^ ( out >>> 32 ) );
+    result = 31 * result + (int) ( dropped ^ ( dropped >>> 32 ) );
+    result = 31 * result + (int) ( inFlight ^ ( inFlight >>> 32 ) );
+    return result;
+  }
 }

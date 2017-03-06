@@ -45,6 +45,28 @@ public abstract class BaseEvent<S extends LogicalModelElement, D extends Seriali
   @Override public D getData() {
     return data;
   }
+
+  @Override public boolean equals( Object o ) {
+    if ( this == o ) {
+      return true;
+    }
+    if ( !( o instanceof BaseEvent ) ) {
+      return false;
+    }
+
+    BaseEvent<?, ?> baseEvent = (BaseEvent<?, ?>) o;
+
+    if ( !source.getId().equals( baseEvent.source.getId() ) ) {
+      return false;
+    }
+    return data.equals( baseEvent.data );
+  }
+
+  @Override public int hashCode() {
+    int result = source.getId().hashCode();
+    result = 31 * result + data.hashCode();
+    return result;
+  }
 }
 
 
