@@ -387,7 +387,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
     } );
 
     // Set the shell size, based upon previous time...
-    setSize();
+    setSize( shell, 820, 690 );
 
     getData();
     mappingMeta.setChanged( changed );
@@ -600,6 +600,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 
   private void addInputMappingDefinitionTab() {
     addMappingDefinitionTab( inputMappings, BaseMessages.getString( PKG, "MappingDialog.InputTab.Title" ),
+      BaseMessages.getString( PKG, "MappingDialog.label.AvailableInputs" ),
       BaseMessages.getString( PKG, "MappingDialog.InputTab.label.InputSourceStepName" ), BaseMessages.getString(
         PKG, "MappingDialog.InputTab.label.OutputTargetStepName" ), BaseMessages.getString(
         PKG, "MappingDialog.InputTab.label.Description" ), BaseMessages.getString(
@@ -611,6 +612,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 
   private void addOutputMappingDefinitionTab() {
     addMappingDefinitionTab( outputMappings, BaseMessages.getString( PKG, "MappingDialog.OutputTab.Title" ),
+      BaseMessages.getString( PKG, "MappingDialog.label.AvailableOutputs" ),
       BaseMessages.getString( PKG, "MappingDialog.OutputTab.label.InputSourceStepName" ), BaseMessages.getString(
         PKG, "MappingDialog.OutputTab.label.OutputTargetStepName" ), BaseMessages.getString(
         PKG, "MappingDialog.OutputTab.label.Description" ), BaseMessages.getString(
@@ -786,7 +788,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
     }
   }
 
-  private void addMappingDefinitionTab( List<MappingIODefinition> definitions, final String tabTitle,
+  private void addMappingDefinitionTab( List<MappingIODefinition> definitions, final String tabTitle, String listLabel,
                                         String inputStepLabel, String outputStepLabel, String descriptionLabel,
                                         String sourceColumnLabel, String targetColumnLabel, String noItemsLabel,
                                         final boolean input ) {
@@ -804,7 +806,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 
     Label wAvailableInputs = new Label( wInputComposite, SWT.LEFT );
     props.setLook( wAvailableInputs );
-    wAvailableInputs.setText( BaseMessages.getString( PKG, "MappingDialog.label.AvailableInputs" ) );
+    wAvailableInputs.setText( listLabel );
     FormData fdwAvailableInputs = new FormData();
     fdwAvailableInputs.left = new FormAttachment( 0 );
     fdwAvailableInputs.top = new FormAttachment( 0 );
