@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -36,10 +36,12 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
+import org.pentaho.di.core.util.CurrentDirectoryResolver;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -57,10 +59,10 @@ import org.pentaho.di.resource.ResourceEntry;
 import org.pentaho.di.resource.ResourceEntry.ResourceType;
 import org.pentaho.di.resource.ResourceNamingInterface;
 import org.pentaho.di.resource.ResourceReference;
-import org.pentaho.di.trans.StepWithMappingMeta;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.TransMeta.TransformationType;
+import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepIOMeta;
 import org.pentaho.di.trans.step.StepIOMetaInterface;
@@ -80,13 +82,22 @@ import org.w3c.dom.Node;
  * @author Matt
  * @since 18-mar-2013
  */
-public class TransExecutorMeta extends StepWithMappingMeta implements StepMetaInterface, HasRepositoryInterface {
-
-  private static Class<?>  PKG = TransExecutorMeta.class; // for i18n purposes, needed by Translator2!!
+public class TransExecutorMeta extends BaseStepMeta implements StepMetaInterface, HasRepositoryInterface {
+  private static final Class<?> PKG = TransExecutorMeta.class; // for i18n purposes, needed by Translator2!!
 
   static final String F_EXECUTION_RESULT_TARGET_STEP = "execution_result_target_step";
   static final String F_RESULT_FILE_TARGET_STEP = "result_files_target_step";
   static final String F_EXECUTOR_OUTPUT_STEP = "executors_output_step";
+
+  private String transName;
+
+  private String fileName;
+
+  private String directoryPath;
+
+  private ObjectId transObjectId;
+
+  private ObjectLocationSpecificationMethod specificationMethod;
 
   /**
    * The number of input rows that are sent as result rows to the job in one go, defaults to "1"
@@ -597,7 +608,120 @@ public class TransExecutorMeta extends StepWithMappingMeta implements StepMetaIn
   @Deprecated
   public static synchronized TransMeta loadTransMeta( TransExecutorMeta executorMeta, Repository rep,
       VariableSpace space ) throws KettleException {
-    return loadMappingMeta( executorMeta, rep, null, space );
+    return loadTransMeta( executorMeta, rep, null, space );
+  }
+
+  public static synchronized TransMeta loadTransMeta( TransExecutorMeta executorMeta, Repository rep,
+      IMetaStore metaStore, VariableSpace space ) throws KettleException {
+    TransMeta mappingTransMeta = null;
+
+    CurrentDirectoryResolver r = new CurrentDirectoryResolver();
+    VariableSpace tmpSpace =
+        r.resolveCurrentDirectory( executorMeta.getSpecificationMethod(), space, rep, executorMeta.getParentStepMeta(),
+            executorMeta.getFileName() );
+
+    switch ( executorMeta.getSpecificationMethod() ) {
+      case FILENAME:
+        String realFilename = tmpSpace.environmentSubstitute( executorMeta.getFileName() );
+        try {
+          // OK, load the meta-data from file...
+          //
+          // Don't set internal variables: they belong to the parent thread!
+          //
+          if ( rep != null ) {
+            // need to try to load from the repository
+            realFilename = r.normalizeSlashes( realFilename );
+            try {
+              String dirStr = realFilename.substring( 0, realFilename.lastIndexOf( "/" ) );
+              String tmpFilename = realFilename.substring( realFilename.lastIndexOf( "/" ) + 1 );
+              RepositoryDirectoryInterface dir = rep.findDirectory( dirStr );
+              mappingTransMeta = rep.loadTransformation( tmpFilename, dir, null, true, null );
+            } catch ( KettleException ke ) {
+              // try without extension
+              if ( realFilename.endsWith( Const.STRING_TRANS_DEFAULT_EXT ) ) {
+                try {
+                  String tmpFilename =
+                      realFilename.substring( realFilename.lastIndexOf( "/" ) + 1, realFilename.indexOf( "."
+                          + Const.STRING_TRANS_DEFAULT_EXT ) );
+                  String dirStr = realFilename.substring( 0, realFilename.lastIndexOf( "/" ) );
+                  RepositoryDirectoryInterface dir = rep.findDirectory( dirStr );
+                  mappingTransMeta = rep.loadTransformation( tmpFilename, dir, null, true, null );
+                } catch ( KettleException ke2 ) {
+                  // fall back to try loading from file system (transMeta is going to be null)
+                }
+              }
+            }
+          }
+          if ( mappingTransMeta == null ) {
+            mappingTransMeta = new TransMeta( realFilename, metaStore, rep, true, tmpSpace, null );
+            LogChannel.GENERAL.logDetailed( "Loading transformation from repository",
+                "Transformation was loaded from XML file [" + realFilename + "]" );
+          }
+        } catch ( Exception e ) {
+          throw new KettleException( BaseMessages.getString( PKG, "TransExecutorMeta.Exception.UnableToLoadTrans" ),
+              e );
+        }
+        break;
+
+      case REPOSITORY_BY_NAME:
+        String realTransname = tmpSpace.environmentSubstitute( executorMeta.getTransName() );
+        String realDirectory = tmpSpace.environmentSubstitute( executorMeta.getDirectoryPath() );
+
+        if ( rep != null ) {
+          if ( !Utils.isEmpty( realTransname ) && !Utils.isEmpty( realDirectory ) ) {
+            realDirectory = r.normalizeSlashes( realDirectory );
+            RepositoryDirectoryInterface repdir = rep.findDirectory( realDirectory );
+            if ( repdir != null ) {
+              try {
+                // reads the last revision in the repository...
+                //
+                mappingTransMeta = rep.loadTransformation( realTransname, repdir, null, true, null ); // TODO: FIXME:
+                                                                                                      // pass
+                // in metaStore to
+                // repository?
+
+                LogChannel.GENERAL.logDetailed( "Loading transformation from repository", "Executor transformation ["
+                    + realTransname + "] was loaded from the repository" );
+              } catch ( Exception e ) {
+                throw new KettleException( "Unable to load transformation [" + realTransname + "]", e );
+              }
+            }
+          }
+        } else {
+          // rep is null, let's try loading by filename
+          try {
+            mappingTransMeta =
+                new TransMeta( realDirectory + "/" + realTransname, metaStore, rep, true, tmpSpace, null );
+          } catch ( KettleException ke ) {
+            try {
+              // add .ktr extension and try again
+              mappingTransMeta =
+                  new TransMeta( realDirectory + "/" + realTransname + "." + Const.STRING_TRANS_DEFAULT_EXT, metaStore,
+                      rep, true, tmpSpace, null );
+            } catch ( KettleException ke2 ) {
+              throw new KettleException( BaseMessages.getString( PKG, "TransExecutorMeta.Exception.UnableToLoadTrans",
+                  realTransname ) + realDirectory );
+            }
+          }
+        }
+        break;
+
+      case REPOSITORY_BY_REFERENCE:
+        // Read the last revision by reference...
+        mappingTransMeta = rep.loadTransformation( executorMeta.getTransObjectId(), null );
+        break;
+      default:
+        break;
+    }
+
+    // Pass some important information to the mapping transformation metadata:
+    //
+    mappingTransMeta.copyVariablesFrom( space );
+    mappingTransMeta.setRepository( rep );
+    mappingTransMeta.setMetaStore( metaStore );
+    mappingTransMeta.setFilename( mappingTransMeta.getFilename() );
+
+    return mappingTransMeta;
   }
 
   public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepinfo, RowMetaInterface prev,
@@ -791,6 +915,36 @@ public class TransExecutorMeta extends StepWithMappingMeta implements StepMetaIn
   }
 
   /**
+   * @return the directoryPath
+   */
+  public String getDirectoryPath() {
+    return directoryPath;
+  }
+
+  /**
+   * @param directoryPath
+   *          the directoryPath to set
+   */
+  public void setDirectoryPath( String directoryPath ) {
+    this.directoryPath = directoryPath;
+  }
+
+  /**
+   * @return the fileName
+   */
+  public String getFileName() {
+    return fileName;
+  }
+
+  /**
+   * @param fileName
+   *          the fileName to set
+   */
+  public void setFileName( String fileName ) {
+    this.fileName = fileName;
+  }
+
+  /**
    * @return the mappingParameters
    */
   public TransExecutorParameters getMappingParameters() {
@@ -818,6 +972,51 @@ public class TransExecutorMeta extends StepWithMappingMeta implements StepMetaIn
    */
   public void setRepository( Repository repository ) {
     this.repository = repository;
+  }
+
+  /**
+   * @return the specificationMethod
+   */
+  public ObjectLocationSpecificationMethod getSpecificationMethod() {
+    return specificationMethod;
+  }
+
+  /**
+   * @param specificationMethod
+   *          the specificationMethod to set
+   */
+  public void setSpecificationMethod( ObjectLocationSpecificationMethod specificationMethod ) {
+    this.specificationMethod = specificationMethod;
+  }
+
+  /**
+   * @return the transName
+   */
+  public String getTransName() {
+    return transName;
+  }
+
+  /**
+   * @param transName
+   *          the transName to set
+   */
+  public void setTransName( String transName ) {
+    this.transName = transName;
+  }
+
+  /**
+   * @return the transObjectId
+   */
+  public ObjectId getTransObjectId() {
+    return transObjectId;
+  }
+
+  /**
+   * @param transObjectId
+   *          the transObjectId to set
+   */
+  public void setTransObjectId( ObjectId transObjectId ) {
+    this.transObjectId = transObjectId;
   }
 
   /**
@@ -1170,7 +1369,7 @@ public class TransExecutorMeta extends StepWithMappingMeta implements StepMetaIn
    */
   public Object loadReferencedObject( int index, Repository rep, IMetaStore metaStore, VariableSpace space )
     throws KettleException {
-    return loadMappingMeta( this, rep, metaStore, space );
+    return loadTransMeta( this, rep, metaStore, space );
   }
 
   public IMetaStore getMetaStore() {

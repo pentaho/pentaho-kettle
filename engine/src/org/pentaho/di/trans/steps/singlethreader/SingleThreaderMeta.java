@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -53,10 +53,10 @@ import org.pentaho.di.resource.ResourceEntry;
 import org.pentaho.di.resource.ResourceEntry.ResourceType;
 import org.pentaho.di.resource.ResourceNamingInterface;
 import org.pentaho.di.resource.ResourceReference;
-import org.pentaho.di.trans.StepWithMappingMeta;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.TransMeta.TransformationType;
+import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
@@ -72,9 +72,14 @@ import org.w3c.dom.Node;
  *
  */
 
-public class SingleThreaderMeta extends StepWithMappingMeta implements StepMetaInterface, HasRepositoryInterface {
+public class SingleThreaderMeta extends BaseStepMeta implements StepMetaInterface, HasRepositoryInterface {
+  private static Class<?> PKG = SingleThreaderMeta.class; // for i18n purposes, needed by Translator2!!
 
-  private static Class<?>  PKG = SingleThreaderMeta.class; // for i18n purposes, needed by Translator2!!
+  private String transName;
+  private String fileName;
+  private String directoryPath;
+  private ObjectId transObjectId;
+  private ObjectLocationSpecificationMethod specificationMethod;
 
   private String batchSize;
   private String batchTime;
@@ -293,7 +298,72 @@ public class SingleThreaderMeta extends StepWithMappingMeta implements StepMetaI
 
   public static final synchronized TransMeta loadSingleThreadedTransMeta( SingleThreaderMeta mappingMeta,
     Repository rep, VariableSpace space ) throws KettleException {
-    return loadMappingMeta( mappingMeta, rep, null, space );
+    return loadSingleThreadedTransMeta( mappingMeta, rep, null, space );
+  }
+
+  public static final synchronized TransMeta loadSingleThreadedTransMeta( SingleThreaderMeta mappingMeta,
+    Repository rep, IMetaStore metaStore, VariableSpace space ) throws KettleException {
+    TransMeta mappingTransMeta = null;
+
+    switch ( mappingMeta.getSpecificationMethod() ) {
+      case FILENAME:
+        String realFilename = space.environmentSubstitute( mappingMeta.getFileName() );
+        try {
+          // OK, load the meta-data from file...
+          //
+          // Don't set internal variables: they belong to the parent thread!
+          //
+          mappingTransMeta = new TransMeta( realFilename, false );
+          mappingTransMeta.getLogChannel().logDetailed(
+            "Loading Mapping from repository",
+            "Mapping transformation was loaded from XML file [" + realFilename + "]" );
+        } catch ( Exception e ) {
+          throw new KettleException( BaseMessages.getString(
+            PKG, "SingleThreaderMeta.Exception.UnableToLoadMapping" ), e );
+        }
+        break;
+
+      case REPOSITORY_BY_NAME:
+        String realTransname = space.environmentSubstitute( mappingMeta.getTransName() );
+        String realDirectory = space.environmentSubstitute( mappingMeta.getDirectoryPath() );
+
+        if ( !Utils.isEmpty( realTransname ) && !Utils.isEmpty( realDirectory ) && rep != null ) {
+          RepositoryDirectoryInterface repdir = rep.findDirectory( realDirectory );
+          if ( repdir != null ) {
+            try {
+              // reads the last revision in the repository...
+              //
+              mappingTransMeta = rep.loadTransformation( realTransname, repdir, null, true, null );
+              mappingTransMeta.getLogChannel().logDetailed(
+                "Loading Mapping from repository",
+                "Mapping transformation [" + realTransname + "] was loaded from the repository" );
+            } catch ( Exception e ) {
+              throw new KettleException( "Unable to load transformation [" + realTransname + "]", e );
+            }
+          } else {
+            throw new KettleException( BaseMessages.getString(
+              PKG, "SingleThreaderMeta.Exception.UnableToLoadTransformation", realTransname )
+              + realDirectory );
+          }
+        }
+        break;
+
+      case REPOSITORY_BY_REFERENCE:
+        // Read the last revision by reference...
+        mappingTransMeta = rep.loadTransformation( mappingMeta.getTransObjectId(), null );
+        break;
+      default:
+        break;
+    }
+
+    // Pass some important information to the mapping transformation metadata:
+    //
+    mappingTransMeta.copyVariablesFrom( space );
+    mappingTransMeta.setRepository( rep );
+    mappingTransMeta.setMetaStore( metaStore );
+    mappingTransMeta.setFilename( mappingTransMeta.getFilename() );
+
+    return mappingTransMeta;
   }
 
   public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
@@ -334,6 +404,51 @@ public class SingleThreaderMeta extends StepWithMappingMeta implements StepMetaI
 
   public StepDataInterface getStepData() {
     return new SingleThreaderData();
+  }
+
+  /**
+   * @return the directoryPath
+   */
+  public String getDirectoryPath() {
+    return directoryPath;
+  }
+
+  /**
+   * @param directoryPath
+   *          the directoryPath to set
+   */
+  public void setDirectoryPath( String directoryPath ) {
+    this.directoryPath = directoryPath;
+  }
+
+  /**
+   * @return the fileName
+   */
+  public String getFileName() {
+    return fileName;
+  }
+
+  /**
+   * @param fileName
+   *          the fileName to set
+   */
+  public void setFileName( String fileName ) {
+    this.fileName = fileName;
+  }
+
+  /**
+   * @return the transName
+   */
+  public String getTransName() {
+    return transName;
+  }
+
+  /**
+   * @param transName
+   *          the transName to set
+   */
+  public void setTransName( String transName ) {
+    this.transName = transName;
   }
 
   @Override
@@ -419,6 +534,36 @@ public class SingleThreaderMeta extends StepWithMappingMeta implements StepMetaI
    */
   public void setRepository( Repository repository ) {
     this.repository = repository;
+  }
+
+  /**
+   * @return the transObjectId
+   */
+  public ObjectId getTransObjectId() {
+    return transObjectId;
+  }
+
+  /**
+   * @param transObjectId
+   *          the transObjectId to set
+   */
+  public void setTransObjectId( ObjectId transObjectId ) {
+    this.transObjectId = transObjectId;
+  }
+
+  /**
+   * @return the specificationMethod
+   */
+  public ObjectLocationSpecificationMethod getSpecificationMethod() {
+    return specificationMethod;
+  }
+
+  /**
+   * @param specificationMethod
+   *          the specificationMethod to set
+   */
+  public void setSpecificationMethod( ObjectLocationSpecificationMethod specificationMethod ) {
+    this.specificationMethod = specificationMethod;
   }
 
   public TransformationType[] getSupportedTransformationTypes() {
@@ -563,6 +708,8 @@ public class SingleThreaderMeta extends StepWithMappingMeta implements StepMetaI
   /**
    * Load the referenced object
    *
+   * @param meta
+   *          The metadata that references
    * @param index
    *          the object index to load
    * @param rep
@@ -578,7 +725,7 @@ public class SingleThreaderMeta extends StepWithMappingMeta implements StepMetaI
   }
 
   public Object loadReferencedObject( int index, Repository rep, IMetaStore metaStore, VariableSpace space ) throws KettleException {
-    return loadMappingMeta( this, rep, metaStore, space );
+    return loadSingleThreadedTransMeta( this, rep, metaStore, space );
   }
 
   @Override
