@@ -387,7 +387,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
     } );
 
     // Set the shell size, based upon previous time...
-    setSize( shell, 820, 690 );
+    setSize( shell, 800, 800 );
 
     getData();
     mappingMeta.setChanged( changed );
@@ -601,6 +601,8 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
   private void addInputMappingDefinitionTab() {
     addMappingDefinitionTab( inputMappings, BaseMessages.getString( PKG, "MappingDialog.InputTab.Title" ),
       BaseMessages.getString( PKG, "MappingDialog.label.AvailableInputs" ),
+      BaseMessages.getString( PKG, "MappingDialog.label.AddInput" ),
+      BaseMessages.getString( PKG, "MappingDialog.label.RemoveInput" ),
       BaseMessages.getString( PKG, "MappingDialog.InputTab.label.InputSourceStepName" ), BaseMessages.getString(
         PKG, "MappingDialog.InputTab.label.OutputTargetStepName" ), BaseMessages.getString(
         PKG, "MappingDialog.InputTab.label.Description" ), BaseMessages.getString(
@@ -613,6 +615,8 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
   private void addOutputMappingDefinitionTab() {
     addMappingDefinitionTab( outputMappings, BaseMessages.getString( PKG, "MappingDialog.OutputTab.Title" ),
       BaseMessages.getString( PKG, "MappingDialog.label.AvailableOutputs" ),
+      BaseMessages.getString( PKG, "MappingDialog.label.AddOutput" ),
+      BaseMessages.getString( PKG, "MappingDialog.label.RemoveOutput" ),
       BaseMessages.getString( PKG, "MappingDialog.OutputTab.label.InputSourceStepName" ), BaseMessages.getString(
         PKG, "MappingDialog.OutputTab.label.OutputTargetStepName" ), BaseMessages.getString(
         PKG, "MappingDialog.OutputTab.label.Description" ), BaseMessages.getString(
@@ -789,9 +793,9 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
   }
 
   private void addMappingDefinitionTab( List<MappingIODefinition> definitions, final String tabTitle, String listLabel,
-                                        String inputStepLabel, String outputStepLabel, String descriptionLabel,
-                                        String sourceColumnLabel, String targetColumnLabel, String noItemsLabel,
-                                        final boolean input ) {
+                                        String addToolTip, String removeToolTip, String inputStepLabel,
+                                        String outputStepLabel, String descriptionLabel, String sourceColumnLabel,
+                                        String targetColumnLabel, String noItemsLabel, final boolean input ) {
 
     final CTabItem wTab = new CTabItem( wTabFolder, SWT.NONE );
     wTab.setText( tabTitle );
@@ -813,6 +817,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 
     Label wRemoveButton = new Label( wInputComposite, SWT.NONE );
     wRemoveButton.setImage( GUIResource.getInstance().getImage( "ui/images/generic-delete.svg" ) );
+    wRemoveButton.setToolTipText( removeToolTip );
     props.setLook( wRemoveButton );
     FormData fdwAddInputButton = new FormData();
     fdwAddInputButton.top = new FormAttachment( 0 );
@@ -821,6 +826,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 
     Label wAddButton = new Label( wInputComposite, SWT.NONE );
     wAddButton.setImage( GUIResource.getInstance().getImage( "ui/images/Add.svg" ) );
+    wAddButton.setToolTipText( addToolTip );
     props.setLook( wAddButton );
     FormData fdwAddButton = new FormData();
     fdwAddButton.top = new FormAttachment( 0 );
@@ -1002,6 +1008,8 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
     fdMappings.left = new FormAttachment( 0 );
     fdMappings.right = new FormAttachment( 100 );
     wFieldMappings.setLayoutData( fdMappings );
+    wFieldMappings.getTable().addListener( SWT.Resize, new ColumnsResizer( 0, 50, 50 ) );
+
     wbEnterMapping.addSelectionListener( new SelectionAdapter() {
 
       @Override
