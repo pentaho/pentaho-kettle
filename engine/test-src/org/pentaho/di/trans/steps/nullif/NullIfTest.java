@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,11 +22,14 @@
 
 package org.pentaho.di.trans.steps.nullif;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.doCallRealMethod;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.when;
+import org.mockito.Matchers;
+import org.mockito.Mockito;
+
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import junit.framework.Assert;
 
 import org.junit.Before;
@@ -39,6 +42,7 @@ import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaDate;
 import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.repository.Repository;
@@ -58,9 +62,9 @@ public class NullIfTest {
   @Before
   public void setUp() {
     smh = new StepMockHelper<NullIfMeta, NullIfData>( "Field NullIf processor", NullIfMeta.class, NullIfData.class );
-    when( smh.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) ).thenReturn(
+    Mockito.when( smh.logChannelInterfaceFactory.create( Matchers.any(), Matchers.any( LoggingObjectInterface.class ) ) ).thenReturn(
         smh.logChannelInterface );
-    when( smh.trans.isRunning() ).thenReturn( true );
+    Mockito.when( smh.trans.isRunning() ).thenReturn( true );
   }
 
   private RowSet mockInputRowSet() {
@@ -69,11 +73,11 @@ public class NullIfTest {
 
   private NullIfMeta mockProcessRowMeta() throws KettleStepException {
     NullIfMeta processRowMeta = smh.processRowsStepMetaInterface;
-    doReturn( new String[] { "nullable-field" } ).when( processRowMeta ).getFieldName();
-    doReturn( new String[] { "nullable-value" } ).when( processRowMeta ).getFieldValue();
-    doCallRealMethod().when( processRowMeta ).getFields( any( RowMetaInterface.class ), anyString(),
-        any( RowMetaInterface[].class ), any( StepMeta.class ), any( VariableSpace.class ), any( Repository.class ),
-        any( IMetaStore.class ) );
+    Mockito.doReturn( new String[] { "nullable-field" } ).when( processRowMeta ).getFieldName();
+    Mockito.doReturn( new String[] { "nullable-value" } ).when( processRowMeta ).getFieldValue();
+    Mockito.doCallRealMethod().when( processRowMeta ).getFields( Matchers.any( RowMetaInterface.class ), Matchers.anyString(),
+      Matchers.any( RowMetaInterface[].class ), Matchers.any( StepMeta.class ), Matchers.any( VariableSpace.class ), Matchers.any( Repository.class ),
+      Matchers.any( IMetaStore.class ) );
 
     return processRowMeta;
   }
@@ -105,6 +109,89 @@ public class NullIfTest {
     RowSet outputRowSet = step.getOutputRowSets().get( 0 );
     Object[] actualRow = outputRowSet.getRow();
     Object[] expectedRow = new Object[] { "value1", null, "value3" };
+
+    Assert.assertEquals( "Output row is of an unexpected length", expectedRow.length, outputRowSet.getRowMeta().size() );
+
+    for ( int i = 0; i < expectedRow.length; i++ ) {
+      Assert.assertEquals( "Unexpected output value at index " + i, expectedRow[i], actualRow[i] );
+    }
+  }
+
+  /*private static Field[] createArrayWithOneField( String fieldName, String fieldValue ) {
+    Field field = new Field();
+    field.setFieldName( fieldName );
+    field.setFieldValue( fieldValue );
+    return new Field[] { field };
+  }*/
+
+  private RowMeta getInputRowMeta2() {
+    RowMeta inputRowMeta = new RowMeta();
+    ValueMetaDate vmd1 = new ValueMetaDate( "value1" );
+    vmd1.setConversionMask( "yyyyMMdd" );
+    inputRowMeta.addValueMeta( vmd1 );
+    ValueMetaDate vmd2 = new ValueMetaDate( "value2" );
+    vmd2.setConversionMask( "yyyy/MM/dd HH:mm:ss.SSS" );
+    inputRowMeta.addValueMeta( vmd2 );
+    ValueMetaDate vmd3 = new ValueMetaDate( "value3" );
+    vmd3.setConversionMask( "yyyyMMdd" );
+    inputRowMeta.addValueMeta( vmd3 );
+    ValueMetaDate vmd4 = new ValueMetaDate( "value4" );
+    vmd4.setConversionMask( "yyyy/MM/dd HH:mm:ss.SSS" );
+    inputRowMeta.addValueMeta( vmd4 );
+
+    return inputRowMeta;
+  }
+
+  private NullIfMeta mockProcessRowMeta2() throws KettleStepException {
+    NullIfMeta processRowMeta = smh.processRowsStepMetaInterface;
+    //processRowMeta.setFieldName( new String[] { "value1", "value2", "value3", "value4" } );
+    //processRowMeta.setFieldValue( new String[] { "20150606", "2015/06/06 00:00:00.000", "20150606", "2015/06/06 00:00:00.000" } );
+    Mockito.doReturn( new String[] { "value1", "value2", "value3", "value4" } ).when( processRowMeta ).getFieldName();
+    Mockito.doReturn( new String[] { "20150606", "2015/06/06 00:00:00.000", "20150606", "2015/06/06 00:00:00.000" } ).when( processRowMeta ).getFieldValue();
+    /*Field[] fields = new Field[4];
+    fields[0] = createArrayWithOneField( "value1", "20150606" )[0];
+    fields[1] = createArrayWithOneField( "value2", "2015/06/06 00:00:00.000" )[0];
+    fields[2] = createArrayWithOneField( "value3", "20150606" )[0];
+    fields[3] = createArrayWithOneField( "value4", "2015/06/06 00:00:00.000" )[0];
+    Mockito.doReturn( fields ).when( processRowMeta ).getFields();*/
+    Mockito.doCallRealMethod().when( processRowMeta ).getFields( Matchers.any( RowMetaInterface.class ), Matchers.anyString(),
+      Matchers.any( RowMetaInterface[].class ), Matchers.any( StepMeta.class ), Matchers.any( VariableSpace.class ), Matchers.any( Repository.class ),
+      Matchers.any( IMetaStore.class ) );
+
+    return processRowMeta;
+  }
+
+  @Test
+  public void testDateWithFormat() throws KettleException {
+    KettleEnvironment.init();
+
+    NullIf step = new NullIf( smh.stepMeta, smh.stepDataInterface, 0, smh.transMeta, smh.trans );
+    step.init( smh.initStepMetaInterface, smh.stepDataInterface );
+    step.setInputRowMeta( getInputRowMeta2() );
+    Date d1 = null;
+    Date d2 = null;
+    Date d3 = null;
+    Date d4 = null;
+    try {
+      DateFormat formatter = new SimpleDateFormat( "yyyyMMdd" );
+      d1 = formatter.parse( "20150606" );
+      d3 = formatter.parse( "20150607" );
+      formatter = new SimpleDateFormat( "yyyy/MM/dd HH:mm:ss.SSS" );
+      d2 = formatter.parse( "2015/06/06 00:00:00.000" );
+      d4 = formatter.parse( "2015/07/06 00:00:00.000" );
+    } catch ( ParseException e ) {
+      e.printStackTrace();
+    }
+    step.getInputRowSets().add( smh.getMockInputRowSet( new Object[][] { { d1, d2, d3, d4 } } ) );
+    step.getOutputRowSets().add( new QueueRowSet() );
+    boolean hasMoreRows;
+    do {
+      hasMoreRows = step.processRow( mockProcessRowMeta2(), smh.processRowsStepDataInterface );
+    } while ( hasMoreRows );
+
+    RowSet outputRowSet = step.getOutputRowSets().get( 0 );
+    Object[] actualRow = outputRowSet.getRow();
+    Object[] expectedRow = new Object[] { null, null, d3, d4 };
 
     Assert.assertEquals( "Output row is of an unexpected length", expectedRow.length, outputRowSet.getRowMeta().size() );
 

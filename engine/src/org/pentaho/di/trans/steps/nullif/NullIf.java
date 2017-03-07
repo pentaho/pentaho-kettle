@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,7 +23,7 @@
 package org.pentaho.di.trans.steps.nullif;
 
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
@@ -80,9 +80,9 @@ public class NullIf extends BaseStep implements StepInterface {
         }
         data.nullValueMeta[i] = data.outputRowMeta.getValueMeta( data.keynr[i] );
         // convert from input string entered by the user
-        data.nullValue[i] =
-          data.nullValueMeta[i].convertData( new ValueMeta( null, ValueMetaInterface.TYPE_STRING ), meta
-            .getFieldValue()[i] );
+        ValueMetaString vms = new ValueMetaString();
+        vms.setConversionMask( data.nullValueMeta[i].getConversionMask() );
+        data.nullValue[i] = data.nullValueMeta[i].convertData( vms, meta.getFieldValue()[i] );
       }
     }
 
