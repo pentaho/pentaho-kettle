@@ -528,7 +528,7 @@ public class TransPainter extends BasePainter<TransHopMeta, StepMeta> {
 
       for ( StepInterface step : steps ) {
         if ( step.getStatus().equals( StepExecutionStatus.STATUS_FINISHED ) ) {
-          gc.drawImage( EImage.TRUE, ( x + iconsize ) - ( MINI_ICON_SIZE / 2 ) + 2, y - ( MINI_ICON_SIZE / 2 ) - 1, magnification );
+          gc.drawImage( EImage.TRUE, ( x + iconsize ) - ( MINI_ICON_SIZE / 2 ) + 4, y - ( MINI_ICON_SIZE / 2 ) - 1, magnification );
         }
       }
 
@@ -789,13 +789,13 @@ public class TransPainter extends BasePainter<TransHopMeta, StepMeta> {
 
       // Show an error lines icon in the upper right corner of the step...
       //
-      int xError = ( x + iconsize ) - ( MINI_ICON_SIZE / 2 ) + 2;
+      int xError = ( x + iconsize ) - ( MINI_ICON_SIZE / 2 ) + 4;
       int yError = y - ( MINI_ICON_SIZE / 2 ) - 1;
       Point ib = gc.getImageBounds( EImage.STEP_ERROR_RED );
       gc.drawImage( EImage.STEP_ERROR_RED, xError, yError, magnification );
       if ( !shadow ) {
         areaOwners.add( new AreaOwner(
-          AreaType.STEP_ERROR_RED_ICON, pt.x + iconsize - 3, pt.y - 6, ib.x, ib.y, offset, log,
+          AreaType.STEP_ERROR_RED_ICON, pt.x + iconsize - 3, pt.y - 8, ib.x, ib.y, offset, log,
           STRING_STEP_ERROR_LOG ) );
       }
     }
