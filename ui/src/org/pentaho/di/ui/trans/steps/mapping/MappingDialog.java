@@ -387,7 +387,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
     } );
 
     // Set the shell size, based upon previous time...
-    setSize( shell, 800, 800 );
+    setSize( shell, 670, 690 );
 
     getData();
     mappingMeta.setChanged( changed );
