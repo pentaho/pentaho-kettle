@@ -50,8 +50,6 @@ public interface Row extends Serializable {
   List<String> getColumnNames();
 
   List<Class> getColumnTypes();
-
-
   Optional<String> getString( int index ) throws RowException;
 
   Optional<Long> getLong( int index ) throws RowException;
@@ -85,4 +83,9 @@ public interface Row extends Serializable {
   Optional<Object> getObject( String name ) throws RowException;
 
   Optional<Object[]> getObjects();
+
+  Optional<Integer> getInteger( int index ) throws RowException;
+  
+  Optional<Integer> getInteger( String name) throws RowException;
+
 }

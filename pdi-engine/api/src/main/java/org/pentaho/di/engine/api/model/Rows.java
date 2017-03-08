@@ -107,14 +107,6 @@ public class Rows implements List<Row>, Serializable {
     rows.clear();
   }
 
-  @Override public boolean equals( Object o ) {
-    return rows.equals( o );
-  }
-
-  @Override public int hashCode() {
-    return rows.hashCode();
-  }
-
   @Override public Row get( int index ) {
     return rows.get( index );
   }
@@ -159,5 +151,29 @@ public class Rows implements List<Row>, Serializable {
     return state;
   }
 
+  @Override public boolean equals( Object o ) {
+    if ( this == o ) {
+      return true;
+    }
+    if ( !( o instanceof Rows ) ) {
+      return false;
+    }
 
+    Rows rows1 = (Rows) o;
+
+    if ( !rows.equals( rows1.rows ) ) {
+      return false;
+    }
+    if ( state != rows1.state ) {
+      return false;
+    }
+    return type == rows1.type;
+  }
+
+  @Override public int hashCode() {
+    int result = rows.hashCode();
+    result = 31 * result + state.hashCode();
+    result = 31 * result + type.hashCode();
+    return result;
+  }
 }

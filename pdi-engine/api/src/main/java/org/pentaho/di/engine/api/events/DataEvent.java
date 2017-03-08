@@ -39,8 +39,4 @@ public class DataEvent<S extends LogicalModelElement> extends BaseEvent<S, Rows>
     super( source, rows );
   }
 
-
-
-
-
 }
