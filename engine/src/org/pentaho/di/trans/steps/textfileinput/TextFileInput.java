@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -813,16 +813,17 @@ public class TextFileInput extends BaseStep implements StepInterface {
           r[index] = rooturi;
           index++;
         }
+
+        if ( passThruFields != null ) {
+          // Simply add all fields from source files step
+          for ( int i = 0; i < nrPassThruFields; i++ ) {
+            r[i] = passThruFields[i];
+          }
+        }
+
       } // End if r != null
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString( PKG, "TextFileInput.Log.Error.ErrorConvertingLineText" ), e );
-    }
-
-    if ( passThruFields != null ) {
-      // Simply add all fields from source files step
-      for ( int i = 0; i < nrPassThruFields; i++ ) {
-        r[i] = passThruFields[i];
-      }
     }
 
     return r;
