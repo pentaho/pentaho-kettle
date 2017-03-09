@@ -1113,7 +1113,9 @@ public class ValueMetaBase implements ValueMetaInterface {
 
     if ( !Utils.isEmpty( this.conversionMask ) ) {
       mask = this.conversionMask;
-    }
+    } else {
+	  mask = DEFAULT_DATE_FORMAT_MASK;
+	}
 
     return mask;
   }
