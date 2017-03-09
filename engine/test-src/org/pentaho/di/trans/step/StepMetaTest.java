@@ -76,7 +76,7 @@ public class StepMetaTest {
     StepMeta stepOther = new StepMeta();
     stepOther.setName( "something else" );
     TestUtils.checkEqualsHashCodeConsistency( step, stepOther );
- }
+  }
 
   @Test
   public void stepMetaXmlConsistency() throws Exception {
