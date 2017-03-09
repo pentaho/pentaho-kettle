@@ -3292,21 +3292,18 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
   @Override
   public boolean tabClose( TabItem item ) {
-    try {
-      return delegates.tabs.tabClose( item );
-    } catch ( Exception e ) {
-      new ErrorDialog( shell, "Error", "Unexpected error closing tab!", e );
-      return false;
-    }
+    return tabClose( item, false );
   }
 
   public boolean tabClose( TabItem item, boolean force ) {
     try {
       return delegates.tabs.tabClose( item, force );
+    } catch ( KettleRepositoryLostException e ) {
+      handleRepositoryLost( e );
     } catch ( Exception e ) {
       new ErrorDialog( shell, "Error", "Unexpected error closing tab!", e );
-      return false;
     }
+    return false;
   }
 
   public TabSet getTabSet() {
@@ -6352,12 +6349,15 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     try {
       collector.collectDatabases();
     } catch ( KettleException e ) {
-      new ErrorDialog( shell,
-        BaseMessages.getString( PKG, "Spoon.ErrorDialog.Title" ),
-        BaseMessages.getString( PKG, "Spoon.ErrorDialog.ErrorFetchingFromRepo.DbConnections" ),
-        e
-      );
-
+      if ( e.getCause() instanceof KettleRepositoryLostException ) {
+        handleRepositoryLost( (KettleRepositoryLostException) e.getCause() );
+      } else {
+        new ErrorDialog( shell,
+          BaseMessages.getString( PKG, "Spoon.ErrorDialog.Title" ),
+          BaseMessages.getString( PKG, "Spoon.ErrorDialog.ErrorFetchingFromRepo.DbConnections" ),
+          e
+        );
+      }
       return;
     }
 
@@ -6372,6 +6372,23 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         tiDb.setFont( guiResource.getFontBold() );
       }
     }
+  }
+
+  private void handleRepositoryLost( KettleRepositoryLostException e ) {
+    if ( closeRepositoryLost( e ) ) {
+      setRepository( null );
+      SpoonPluginManager.getInstance().notifyLifecycleListeners( SpoonLifeCycleEvent.REPOSITORY_DISCONNECTED );
+      setShellText();
+      enableMenus();
+    }
+  }
+
+  private boolean closeRepositoryLost( KettleRepositoryLostException e ) {
+    MessageBox box = new MessageBox( shell, SWT.OK | SWT.CANCEL );
+    box.setText( BaseMessages.getString( PKG, "System.Warning" ) );
+    box.setMessage( e.getPrefaceMessage() );
+    int result = box.open();
+    return result == SWT.OK;
   }
 
   private void refreshStepsSubtree( TreeItem tiRootName, TransMeta meta, GUIResource guiResource ) {

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -55,10 +55,21 @@ public class RepositorySpoonPlugin implements SpoonPluginInterface {
     }
   }
 
-
   @Override
   public SpoonLifecycleListener getLifecycleListener() {
-    return null;
+
+    return new SpoonLifecycleListener() {
+      @Override
+      public void onEvent( SpoonLifeCycleEvent evt ) {
+        switch ( evt ) {
+          case REPOSITORY_DISCONNECTED:
+            repositoryConnectController.fireListeners();
+            break;
+          default:
+        }
+      }
+
+    };
   }
 
   @Override
