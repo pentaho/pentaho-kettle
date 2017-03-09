@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -42,6 +42,7 @@ import java.util.Set;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.exception.KettlePluginClassMapException;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.logging.KettleLogStore;
@@ -440,7 +441,7 @@ public class PluginRegistry {
     } else {
       String className = plugin.getClassMap().get( pluginClass );
       if ( className == null ) {
-        throw new KettlePluginException( BaseMessages.getString(
+        throw new KettlePluginClassMapException( BaseMessages.getString(
             PKG, "PluginRegistry.RuntimeError.NoValidClassRequested.PLUGINREGISTRY002", pluginClass.getName() ) );
       }
 
