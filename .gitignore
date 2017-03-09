@@ -28,3 +28,4 @@ build-res/module-scripts/
 /.idea/
 /*.launch
 package-pom.xml
+.DS_Store
