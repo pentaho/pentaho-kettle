@@ -80,7 +80,7 @@ public class AbortDialog extends BaseStepDialog implements StepDialogInterface {
     Shell parent = getParent();
     Display display = parent.getDisplay();
 
-    shell = new Shell( parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MIN | SWT.MAX );
+    shell = new Shell( parent, SWT.DIALOG_TRIM | SWT.MIN | SWT.MAX );
     props.setLook( shell );
     setShellImage( shell, input );
 
@@ -98,14 +98,6 @@ public class AbortDialog extends BaseStepDialog implements StepDialogInterface {
     shell.setLayout( formLayout );
     shell.setText( BaseMessages.getString( PKG, "AbortDialog.Shell.Title" ) );
 
-    Label wicon = new Label( shell, SWT.RIGHT );
-    wicon.setImage( getImage() );
-    FormData fdlicon = new FormData();
-    fdlicon.top = new FormAttachment( 0, 0 );
-    fdlicon.right = new FormAttachment( 100, 0 );
-    wicon.setLayoutData( fdlicon );
-    props.setLook( wicon );
-
     // Stepname line
     wlStepname = new Label( shell, SWT.RIGHT );
     wlStepname.setText( BaseMessages.getString( PKG, "AbortDialog.Stepname.Label" ) );
@@ -120,10 +112,19 @@ public class AbortDialog extends BaseStepDialog implements StepDialogInterface {
     props.setLook( wStepname );
     wStepname.addModifyListener( lsMod );
     fdStepname = new FormData();
-    fdStepname.width = 250;
+    fdStepname.width = 150;
     fdStepname.left = new FormAttachment( 0, 0 );
     fdStepname.top = new FormAttachment( wlStepname, 5 );
     wStepname.setLayoutData( fdStepname );
+
+    Label wicon = new Label( shell, SWT.RIGHT );
+    wicon.setImage( getImage() );
+    FormData fdlicon = new FormData();
+    fdlicon.top = new FormAttachment( 0, 0 );
+    fdlicon.left = new FormAttachment( wStepname, 10 );
+    fdlicon.right = new FormAttachment( 100, 0 );
+    wicon.setLayoutData( fdlicon );
+    props.setLook( wicon );
 
     Label spacer = new Label( shell, SWT.HORIZONTAL | SWT.SEPARATOR );
     FormData fdSpacer = new FormData();
@@ -150,7 +151,7 @@ public class AbortDialog extends BaseStepDialog implements StepDialogInterface {
     fdRowThreshold = new FormData();
     fdRowThreshold.left = new FormAttachment( 0, 0 );
     fdRowThreshold.top = new FormAttachment( wlRowThreshold, 5 );
-    fdRowThreshold.width = 250;
+    fdRowThreshold.width = 174;
     wRowThreshold.setLayoutData( fdRowThreshold );
 
     // Message line
@@ -220,6 +221,7 @@ public class AbortDialog extends BaseStepDialog implements StepDialogInterface {
     FormData fdhSpacer = new FormData();
     fdhSpacer.height = 1;
     fdhSpacer.left = new FormAttachment( 0, 0 );
+    fdhSpacer.top = new FormAttachment( wAbortWithError, 5 );
     fdhSpacer.bottom = new FormAttachment( wCancel, -15 );
     fdhSpacer.right = new FormAttachment( 100, 0 );
     hSpacer.setLayoutData( fdhSpacer );
