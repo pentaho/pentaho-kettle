@@ -38,6 +38,7 @@ import org.pentaho.di.core.plugins.KettleLifecyclePluginType;
 import org.pentaho.di.core.plugins.LifecyclePluginType;
 import org.pentaho.di.core.plugins.PartitionerPluginType;
 import org.pentaho.di.core.plugins.PluginRegistry;
+import org.pentaho.di.core.plugins.PluginTypeInterface;
 import org.pentaho.di.core.plugins.RepositoryPluginType;
 import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.i18n.BaseMessages;
@@ -45,6 +46,8 @@ import org.pentaho.di.repository.IUser;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.step.RowDistributionPluginType;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -61,7 +64,8 @@ public class KettleEnvironment {
   /**
    * Indicates whether the Kettle environment has been initialized.
    */
-  private static AtomicReference<SettableFuture<Boolean>> initialized = new AtomicReference<SettableFuture<Boolean>>( null );
+  private static AtomicReference<SettableFuture<Boolean>> initialized =
+    new AtomicReference<SettableFuture<Boolean>>( null );
   private static KettleLifecycleSupport kettleLifecycleSupport;
 
   /**
@@ -73,6 +77,10 @@ public class KettleEnvironment {
    */
   public static void init() throws KettleException {
     init( true );
+  }
+
+  public static void init( Class<? extends PluginTypeInterface> pluginClasses ) {
+
   }
 
   /**
@@ -87,6 +95,25 @@ public class KettleEnvironment {
    * @throws KettleException Any errors that occur during initialization will throw a KettleException.
    */
   public static void init( boolean simpleJndi ) throws KettleException {
+    init( Arrays.asList(
+      RowDistributionPluginType.getInstance(),
+      StepPluginType.getInstance(),
+      PartitionerPluginType.getInstance(),
+      JobEntryPluginType.getInstance(),
+      LogTablePluginType.getInstance(),
+      RepositoryPluginType.getInstance(),
+      LifecyclePluginType.getInstance(),
+      KettleLifecyclePluginType.getInstance(),
+      ImportRulePluginType.getInstance(),
+      CartePluginType.getInstance(),
+      CompressionPluginType.getInstance(),
+      AuthenticationProviderPluginType.getInstance(),
+      AuthenticationConsumerPluginType.getInstance(),
+      EnginePluginType.getInstance()
+    ), simpleJndi );
+  }
+
+  public static void init( List<PluginTypeInterface> pluginClasses, boolean simpleJndi ) throws KettleException {
     SettableFuture<Boolean> ready;
     if ( initialized.compareAndSet( null, ready = SettableFuture.create() ) ) {
 
@@ -105,20 +132,7 @@ public class KettleEnvironment {
 
         // Register the native types and the plugins for the various plugin types...
         //
-        PluginRegistry.addPluginType( RowDistributionPluginType.getInstance() );
-        PluginRegistry.addPluginType( StepPluginType.getInstance() );
-        PluginRegistry.addPluginType( PartitionerPluginType.getInstance() );
-        PluginRegistry.addPluginType( JobEntryPluginType.getInstance() );
-        PluginRegistry.addPluginType( LogTablePluginType.getInstance() );
-        PluginRegistry.addPluginType( RepositoryPluginType.getInstance() );
-        PluginRegistry.addPluginType( LifecyclePluginType.getInstance() );
-        PluginRegistry.addPluginType( KettleLifecyclePluginType.getInstance() );
-        PluginRegistry.addPluginType( ImportRulePluginType.getInstance() );
-        PluginRegistry.addPluginType( CartePluginType.getInstance() );
-        PluginRegistry.addPluginType( CompressionPluginType.getInstance() );
-        PluginRegistry.addPluginType( AuthenticationProviderPluginType.getInstance() );
-        PluginRegistry.addPluginType( AuthenticationConsumerPluginType.getInstance() );
-        PluginRegistry.addPluginType( EnginePluginType.getInstance() );
+        pluginClasses.forEach( PluginRegistry::addPluginType );
         PluginRegistry.init();
 
         // Also read the list of variables.
