@@ -95,7 +95,6 @@ public class TransEngineAdapter extends Trans {
                 case STOPPED:
                   break;
                 case FAILED:
-                  break;
                 case FINISHED:
                   l.transFinished( TransEngineAdapter.this );
                   setFinished( true );
@@ -108,10 +107,28 @@ public class TransEngineAdapter extends Trans {
         }
 
         @Override public void onError( Throwable t ) {
+
+          setFinished( true );
           t.printStackTrace();
+          getTransListeners().forEach( l -> {
+            try {
+              l.transFinished( TransEngineAdapter.this );
+            } catch ( KettleException e ) {
+              e.printStackTrace();
+            }
+          });
         }
 
         @Override public void onComplete() {
+
+          setFinished( true );
+          getTransListeners().forEach( l -> {
+            try {
+              l.transFinished( TransEngineAdapter.this );
+            } catch ( KettleException e ) {
+              e.printStackTrace();
+            }
+          });
         }
       } );
   }
