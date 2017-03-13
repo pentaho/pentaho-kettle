@@ -27,6 +27,7 @@ package org.pentaho.di.trans.ael.adapters;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.engine.api.ExecutionContext;
+import org.pentaho.di.engine.api.converter.RowConversionManager;
 import org.pentaho.di.engine.api.model.Operation;
 import org.pentaho.di.engine.api.model.Row;
 import org.pentaho.di.engine.api.model.Rows;
@@ -50,12 +51,15 @@ public class StepInterfaceEngineAdapter extends BaseStep {
 
   private final Operation operation;
   private final ExecutionContext executionContext;
+  private final RowConversionManager conversionManager;
 
-  public StepInterfaceEngineAdapter( Operation op, ExecutionContext executionContext, StepMeta stepMeta,
+  public StepInterfaceEngineAdapter( Operation op, ExecutionContext executionContext,
+                                     RowConversionManager conversionManager, StepMeta stepMeta,
                                      TransMeta transMeta, StepDataInterface dataInterface, Trans trans ) {
     super( stepMeta, dataInterface, 0, transMeta, trans );
     operation = op;
     this.executionContext = executionContext;
+    this.conversionManager = conversionManager;
     init();
   }
 
@@ -110,7 +114,7 @@ public class StepInterfaceEngineAdapter extends BaseStep {
    **/
   private void putRow( Row row ) {
     try {
-      if ( executionContext.getConversionManager() == null ) {
+      if ( conversionManager == null ) {
         // no way to convert this row to a RowMetaInterface.
         return;
       }
@@ -118,7 +122,7 @@ public class StepInterfaceEngineAdapter extends BaseStep {
         for ( int i = 0; i < rowListeners.size(); i++ ) {
           RowListener rowListener = rowListeners.get( i );
           rowListener.rowWrittenEvent(
-            executionContext.getConversionManager().convert( row, RowMetaInterface.class ),
+            conversionManager.convert( row, RowMetaInterface.class ),
             row.getObjects().orElseGet( () -> new Object[ 0 ] ) );
         }
       }

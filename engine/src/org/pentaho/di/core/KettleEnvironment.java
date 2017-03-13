@@ -40,6 +40,7 @@ import org.pentaho.di.core.plugins.PartitionerPluginType;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.PluginTypeInterface;
 import org.pentaho.di.core.plugins.RepositoryPluginType;
+import org.pentaho.di.core.plugins.RowConversionManagerPluginType;
 import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.IUser;
@@ -109,7 +110,8 @@ public class KettleEnvironment {
       CompressionPluginType.getInstance(),
       AuthenticationProviderPluginType.getInstance(),
       AuthenticationConsumerPluginType.getInstance(),
-      EnginePluginType.getInstance()
+      EnginePluginType.getInstance(),
+      RowConversionManagerPluginType.getInstance()
     ), simpleJndi );
   }
 

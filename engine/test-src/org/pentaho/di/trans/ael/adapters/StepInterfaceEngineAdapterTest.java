@@ -30,6 +30,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.pentaho.di.engine.api.ExecutionContext;
+import org.pentaho.di.engine.api.converter.RowConversionManager;
 import org.pentaho.di.engine.api.model.Operation;
 import org.pentaho.di.engine.api.model.Rows;
 import org.pentaho.di.engine.api.reporting.Metrics;
@@ -57,13 +58,14 @@ public class StepInterfaceEngineAdapterTest {
   @Mock TransMeta transMeta;
   @Mock StepDataInterface dataInterface;
   @Mock Trans tran;
+  @Mock RowConversionManager conversionManager;
   StepInterfaceEngineAdapter stepInterfaceEngineAdapter;
 
   @Before
   public void before() {
     when( stepMeta.getName() ).thenReturn( "foo" );
     stepInterfaceEngineAdapter =
-      new StepInterfaceEngineAdapter( op, executionContext, stepMeta, transMeta, dataInterface, tran );
+      new StepInterfaceEngineAdapter( op, executionContext, conversionManager, stepMeta, transMeta, dataInterface, tran );
   }
 
   @Test
