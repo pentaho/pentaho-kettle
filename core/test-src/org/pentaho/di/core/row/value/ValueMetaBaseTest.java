@@ -566,6 +566,16 @@ public class ValueMetaBaseTest {
   }
 
   @Test
+  public void testDateToStringParse() throws Exception {
+    ValueMetaBase dateMeta = new ValueMetaString( "date" );
+    dateMeta.setDateFormatLenient( false );
+
+    // try to convert date by 'start-of-date' make - old behavior
+    dateMeta.setConversionMask( "yyyy-MM-dd" );
+    assertEquals( local( 1918, 3, 25, 0, 0, 0, 0 ), dateMeta.convertStringToDate( "1918-03-25T07:40:03.012+03:00" ) );
+  }
+
+  @Test
   public void testSetPreparedStatementStringValueDontLogTruncated() throws KettleDatabaseException {
     ValueMetaBase valueMetaString = new ValueMetaBase( "LOG_FIELD", ValueMetaInterface.TYPE_STRING,  LOG_FIELD.length(), 0 );
 
