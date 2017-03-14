@@ -47,7 +47,8 @@ public class ColumnsResizer implements Listener {
     for ( int w : weights ) {
       f += w;
     }
-    for ( int i = 0; i < weights.length; i++ ) {
+    int len = Math.min( weights.length, columns.length );
+    for ( int i = 0; i < len; i++ ) {
       int cw = weights[ i ] == 0 ? 0 : Math.round( width / f * weights[ i ] );
       width -= cw + 1;
       columns[ i ].setWidth( cw );

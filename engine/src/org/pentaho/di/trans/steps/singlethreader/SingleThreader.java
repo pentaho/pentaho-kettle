@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -339,7 +339,9 @@ public class SingleThreader extends BaseStep implements StepInterface {
     // dispose of the single threading execution engine
     //
     try {
-      getData().executor.dispose();
+      if ( getData().executor != null ) {
+        getData().executor.dispose();
+      }
     } catch ( KettleException e ) {
       log.logError( "Error disposing of sub-transformation: ", e );
     }

@@ -103,10 +103,6 @@ public class JobExecutorDialog extends BaseStepDialog implements StepDialogInter
 
   private ModifyListener lsMod;
 
-  private int middle;
-
-  private int margin;
-
   private Button wInheritAll;
 
   private TableView wJobExecutorParameters;
