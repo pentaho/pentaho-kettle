@@ -63,11 +63,6 @@ public class ValueMetaDate extends ValueMetaBase implements ValueMetaInterface {
 
   @Override
   public String getFormatMask() {
-    String mask = this.conversionMask;
-    if ( Utils.isEmpty( mask ) ) {
-      mask = DEFAULT_DATE_FORMAT_MASK;
-    }
-
-    return mask;
+    return getDateFormatMask();
   }
 }

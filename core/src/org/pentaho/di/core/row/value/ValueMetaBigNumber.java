@@ -54,16 +54,7 @@ public class ValueMetaBigNumber extends ValueMetaBase implements ValueMetaInterf
 
   @Override
   public String getFormatMask() {
-    String bigNumberMask = this.conversionMask;
-
-    if ( Utils.isEmpty( bigNumberMask ) ) {
-      if ( this.isLengthInvalidOrZero() ) {
-        bigNumberMask = DEFAULT_BIG_NUMBER_FORMAT_MASK;
-      } else {
-        bigNumberMask = this.buildNumberPattern();
-      }
-    }
-
-    return bigNumberMask;
+    return getBigNumberFormatMask();
   }
+
 }

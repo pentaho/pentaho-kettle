@@ -23,6 +23,7 @@
 package org.pentaho.di.compatibility;
 
 import java.math.BigDecimal;
+import java.text.DecimalFormatSymbols;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -251,7 +252,8 @@ public class ValueTest extends TestCase {
    */
   public void testToStringNumber() {
     Value vs1 = new Value( "Name", Value.VALUE_TYPE_NUMBER );
-    assertEquals( " 0" + Const.DEFAULT_DECIMAL_SEPARATOR + "0", vs1.toString( true ) );
+    DecimalFormatSymbols symbols = DecimalFormatSymbols.getInstance();
+    assertEquals( " 0" + symbols.getDecimalSeparator() + "0", vs1.toString( true ) );
 
     Value vs2 = new Value( "Name", Value.VALUE_TYPE_NUMBER );
     vs2.setNull();
@@ -266,25 +268,25 @@ public class ValueTest extends TestCase {
     Value vs4 = new Value( "Name", Value.VALUE_TYPE_NUMBER );
     vs4.setValue( 100.0D );
     vs4.setLength( 6 );
-    assertEquals( " 000100" + Const.DEFAULT_DECIMAL_SEPARATOR + "00", vs4.toString( true ) );
+    assertEquals( " 000100" + symbols.getDecimalSeparator() + "00", vs4.toString( true ) );
 
     Value vs5 = new Value( "Name", Value.VALUE_TYPE_NUMBER );
     vs5.setValue( 100.5D );
     vs5.setLength( -1 );
     vs5.setPrecision( -1 );
 
-    assertEquals( " 100" + Const.DEFAULT_DECIMAL_SEPARATOR + "5", vs5.toString( true ) );
+    assertEquals( " 100" + symbols.getDecimalSeparator() + "5", vs5.toString( true ) );
     Value vs6 = new Value( "Name", Value.VALUE_TYPE_NUMBER );
     vs6.setValue( 100.5D );
     vs6.setLength( 8 );
     vs6.setPrecision( -1 );
-    assertEquals( " 00000100" + Const.DEFAULT_DECIMAL_SEPARATOR + "50", vs6.toString( true ) );
+    assertEquals( " 00000100" + symbols.getDecimalSeparator() + "50", vs6.toString( true ) );
 
     Value vs7 = new Value( "Name", Value.VALUE_TYPE_NUMBER );
     vs7.setValue( 100.5D );
     vs7.setLength( 0 );
     vs7.setPrecision( 3 );
-    assertEquals( " 100" + Const.DEFAULT_DECIMAL_SEPARATOR + "5", vs7.toString( true ) );
+    assertEquals( " 100" + symbols.getDecimalSeparator()+ "5", vs7.toString( true ) );
 
     Value vs8 = new Value( "Name", Value.VALUE_TYPE_NUMBER );
     vs8.setValue( 100.5D );
@@ -325,7 +327,7 @@ public class ValueTest extends TestCase {
     vs14.setValue( 100.5D );
     vs14.setLength( 5 );
     vs14.setPrecision( 3 );
-    assertEquals( " 100" + Const.DEFAULT_DECIMAL_SEPARATOR + "500", vs14.toString( true ) );
+    assertEquals( " 100" + symbols.getDecimalSeparator() + "500", vs14.toString( true ) );
   }
 
   /**

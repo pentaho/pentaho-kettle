@@ -52,16 +52,6 @@ public class ValueMetaNumber extends ValueMetaBase implements ValueMetaInterface
 
   @Override
   public String getFormatMask() {
-    String numberMask = this.conversionMask;
-
-    if ( Utils.isEmpty( numberMask ) ) {
-      if ( this.isLengthInvalidOrZero() ) {
-        numberMask = DEFAULT_NUMBER_FORMAT_MASK;
-      } else {
-        numberMask = this.buildNumberPattern();
-      }
-    }
-
-    return numberMask;
+    return getNumberFormatMask();
   }
 }
