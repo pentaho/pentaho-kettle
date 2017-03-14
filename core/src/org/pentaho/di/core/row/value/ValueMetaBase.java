@@ -905,7 +905,7 @@ public class ValueMetaBase implements ValueMetaInterface {
 
     try {
       ParsePosition pp = new ParsePosition( 0 );
-      Date result = getDateFormat().parse( string, pp );
+      Date result = getDateFormat( TYPE_DATE ).parse( string, pp );
       if ( pp.getErrorIndex() >= 0 ) {
         // error happen
         throw new ParseException( string, pp.getErrorIndex() );
@@ -993,12 +993,13 @@ public class ValueMetaBase implements ValueMetaInterface {
     }
 
     try {
+      DecimalFormat format = getDecimalFormat( false, TYPE_NUMBER );
       Number number;
       if ( lenientStringToNumber ) {
-        number = getDecimalFormat( false ).parse( string );
+        number = format.parse( string );
       } else {
         ParsePosition parsePosition = new ParsePosition( 0 );
-        number = getDecimalFormat( false ).parse( string, parsePosition );
+        number = format.parse( string, parsePosition );
 
         if ( parsePosition.getIndex() < string.length() ) {
           throw new KettleValueException( toString()
@@ -1016,6 +1017,10 @@ public class ValueMetaBase implements ValueMetaInterface {
 
   @Override
   public synchronized SimpleDateFormat getDateFormat() {
+    return getDateFormat( getType() );
+  }
+
+  private synchronized SimpleDateFormat getDateFormat( int valueMetaType ) {
     // If we have a Date that is represented as a String
     // In that case we can set the format of the original Date on the String
     // value metadata in the form of a conversion metadata object.
@@ -1032,7 +1037,7 @@ public class ValueMetaBase implements ValueMetaInterface {
       // This may not become static as the class is not thread-safe!
       dateFormat = new SimpleDateFormat();
 
-      String mask = this.getFormatMask();
+      String mask = this.getFormatMask( valueMetaType );
 
       // Do we have a locale?
       //
@@ -1065,6 +1070,10 @@ public class ValueMetaBase implements ValueMetaInterface {
 
   @Override
   public synchronized DecimalFormat getDecimalFormat( boolean useBigDecimal ) {
+    return getDecimalFormat( useBigDecimal, getType() );
+  }
+
+  private synchronized DecimalFormat getDecimalFormat( boolean useBigDecimal, int valueMetaType ) {
     // If we have an Integer that is represented as a String
     // In that case we can set the format of the original Integer on the String
     // value metadata in the form of a conversion metadata object.
@@ -1096,7 +1105,7 @@ public class ValueMetaBase implements ValueMetaInterface {
       }
       decimalFormat.setDecimalFormatSymbols( decimalFormatSymbols );
 
-      String decimalPattern = getFormatMask();
+      String decimalPattern = getFormatMask( valueMetaType );
       if ( !Utils.isEmpty( decimalPattern ) ) {
         decimalFormat.applyPattern( decimalPattern );
       }
@@ -1109,16 +1118,121 @@ public class ValueMetaBase implements ValueMetaInterface {
 
   @Override
   public String getFormatMask() {
+    return getFormatMask( getType() );
+  }
+
+  String getFormatMask( int type ) {
     String mask = null;
 
     if ( !Utils.isEmpty( this.conversionMask ) ) {
       mask = this.conversionMask;
+    } else {
+      switch ( type ) {
+        case TYPE_INTEGER:
+          mask = getIntegerFormatMask();
+          break;
+        case TYPE_NUMBER:
+          mask = getNumberFormatMask();
+          break;
+        case TYPE_BIGNUMBER:
+          mask = getBigNumberFormatMask();
+          break;
+
+        case TYPE_DATE:
+          mask = getDateFormatMask();
+          break;
+        case TYPE_TIMESTAMP:
+          mask = getTimestampFormatMask();
+          break;
+      }
     }
 
     return mask;
   }
 
-  String buildNumberPattern() {
+  String getNumberFormatMask() {
+    String numberMask = this.conversionMask;
+
+    if ( Utils.isEmpty( numberMask ) ) {
+      if ( this.isLengthInvalidOrZero() ) {
+        numberMask = DEFAULT_NUMBER_FORMAT_MASK;
+      } else {
+        numberMask = this.buildNumberPattern();
+      }
+    }
+
+    return numberMask;
+  }
+
+  String getIntegerFormatMask() {
+    String integerMask = this.conversionMask;
+
+    if ( Utils.isEmpty( integerMask ) ) {
+      if ( this.isLengthInvalidOrZero() ) {
+        integerMask = DEFAULT_INTEGER_FORMAT_MASK;
+        // as
+        // before
+        // version
+        // 3.0
+      } else {
+        StringBuilder integerPattern = new StringBuilder();
+
+        // First the format for positive integers...
+        //
+        integerPattern.append( " " );
+        for ( int i = 0; i < getLength(); i++ ) {
+          integerPattern.append( '0' ); // all zeroes.
+        }
+        integerPattern.append( ";" );
+
+        // Then the format for the negative numbers...
+        //
+        integerPattern.append( "-" );
+        for ( int i = 0; i < getLength(); i++ ) {
+          integerPattern.append( '0' ); // all zeroes.
+        }
+
+        integerMask = integerPattern.toString();
+
+      }
+    }
+
+    return integerMask;
+  }
+
+  String getBigNumberFormatMask() {
+    String bigNumberMask = this.conversionMask;
+
+    if ( Utils.isEmpty( bigNumberMask ) ) {
+      if ( this.isLengthInvalidOrZero() ) {
+        bigNumberMask = DEFAULT_BIG_NUMBER_FORMAT_MASK;
+      } else {
+        bigNumberMask = this.buildNumberPattern();
+      }
+    }
+
+    return bigNumberMask;
+  }
+
+  String getDateFormatMask() {
+    String mask = this.conversionMask;
+    if ( Utils.isEmpty( mask ) ) {
+      mask = DEFAULT_DATE_FORMAT_MASK;
+    }
+
+    return mask;
+  }
+
+  String getTimestampFormatMask() {
+    String mask = conversionMask;
+    if ( Utils.isEmpty( mask ) ) {
+      mask = DEFAULT_TIMESTAMP_FORMAT_MASK;
+    }
+
+    return mask;
+  }
+
+  private String buildNumberPattern() {
     StringBuilder numberPattern = new StringBuilder();
 
     // First do the format for positive numbers...
@@ -1199,7 +1313,7 @@ public class ValueMetaBase implements ValueMetaInterface {
     try {
       Number number;
       if ( lenientStringToNumber ) {
-        number = new Long( getDecimalFormat( false ).parse( string ).longValue() );
+        number = new Long( getDecimalFormat( false, TYPE_INTEGER ).parse( string ).longValue() );
       } else {
         ParsePosition parsePosition = new ParsePosition( 0 );
         number = getDecimalFormat( false ).parse( string, parsePosition );
@@ -1239,12 +1353,13 @@ public class ValueMetaBase implements ValueMetaInterface {
     }
 
     try {
+      DecimalFormat format = getDecimalFormat( bigNumberFormatting, TYPE_BIGNUMBER );
       Number number;
       if ( lenientStringToNumber ) {
-        number = getDecimalFormat( bigNumberFormatting ).parse( string );
+        number = format.parse( string );
       } else {
         ParsePosition parsePosition = new ParsePosition( 0 );
-        number = getDecimalFormat( bigNumberFormatting ).parse( string, parsePosition );
+        number = format.parse( string, parsePosition );
 
         if ( parsePosition.getIndex() < string.length() ) {
           throw new KettleValueException( toString()
