@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -39,6 +39,7 @@ import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Condition;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.core.NotePadMeta;
 import org.pentaho.di.core.ProgressMonitorListener;
 import org.pentaho.di.core.RowMetaAndData;
@@ -265,7 +266,8 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
             disconnect();
             connect( "admin", pwd, true );
           } catch ( KettleException e ) {
-            log.logError( "Invalid user credentials" );
+            log.logError( BaseMessages.getString( KettleDatabaseRepository.class,
+                "KettleDatabaseRepository.ERROR_CONNECT_TO_REPOSITORY" ), e );
           }
         }
 
