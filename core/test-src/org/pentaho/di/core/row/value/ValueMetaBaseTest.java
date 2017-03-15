@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -70,11 +70,6 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.TimeZone;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
 public class ValueMetaBaseTest {
 
   private static final String TEST_NAME = "TEST_NAME";
@@ -112,36 +107,36 @@ public class ValueMetaBaseTest {
   @Test
   public void testDefaultCtor() {
     ValueMetaBase base = new ValueMetaBase();
-    assertNotNull( base );
-    assertNull( base.getName() );
-    assertEquals( base.getType(), ValueMetaInterface.TYPE_NONE );
+    Assert.assertNotNull( base );
+    Assert.assertNull( base.getName() );
+    Assert.assertEquals( base.getType(), ValueMetaInterface.TYPE_NONE );
   }
 
   @Test
   public void testCtorName() {
     ValueMetaBase base = new ValueMetaBase( "myValueMeta" );
-    assertEquals( base.getName(), "myValueMeta" );
-    assertEquals( base.getType(), ValueMetaInterface.TYPE_NONE );
-    assertNotNull( base.getTypeDesc() );
+    Assert.assertEquals( base.getName(), "myValueMeta" );
+    Assert.assertEquals( base.getType(), ValueMetaInterface.TYPE_NONE );
+    Assert.assertNotNull( base.getTypeDesc() );
   }
 
   @Test
   public void testCtorNameAndType() {
     ValueMetaBase base = new ValueMetaBase( "myStringType", ValueMetaInterface.TYPE_STRING );
-    assertEquals( base.getName(), "myStringType" );
-    assertEquals( base.getType(), ValueMetaInterface.TYPE_STRING );
-    assertEquals( base.getTypeDesc(), "String" );
+    Assert.assertEquals( base.getName(), "myStringType" );
+    Assert.assertEquals( base.getType(), ValueMetaInterface.TYPE_STRING );
+    Assert.assertEquals( base.getTypeDesc(), "String" );
   }
 
   @Test
   public void test4ArgCtor() {
     ValueMetaBase base =
       new ValueMetaBase( "Hello, is it me you're looking for?", ValueMetaInterface.TYPE_BOOLEAN, 4, 9 );
-    assertEquals( base.getName(), "Hello, is it me you're looking for?" );
-    assertEquals( base.getType(), ValueMetaInterface.TYPE_BOOLEAN );
-    assertEquals( base.getLength(), 4 );
-    assertEquals( base.getPrecision(), -1 );
-    assertEquals( base.getStorageType(), ValueMetaInterface.STORAGE_TYPE_NORMAL );
+    Assert.assertEquals( base.getName(), "Hello, is it me you're looking for?" );
+    Assert.assertEquals( base.getType(), ValueMetaInterface.TYPE_BOOLEAN );
+    Assert.assertEquals( base.getLength(), 4 );
+    Assert.assertEquals( base.getPrecision(), -1 );
+    Assert.assertEquals( base.getStorageType(), ValueMetaInterface.STORAGE_TYPE_NORMAL );
   }
 
   /**
@@ -178,14 +173,14 @@ public class ValueMetaBaseTest {
     BigDecimal bigDecimal = BigDecimal.ONE;
     ValueMetaBase valueDoubleMetaBase =
       new ValueMetaBase( String.valueOf( bigDecimal ), ValueMetaInterface.TYPE_BIGNUMBER, ValueMetaInterface.STORAGE_TYPE_NORMAL );
-    assertEquals(
+    Assert.assertEquals(
       "<value-data>" + encoder.encodeForXML( String.valueOf( bigDecimal ) ) + "</value-data>" + SystemUtils.LINE_SEPARATOR,
       valueDoubleMetaBase.getDataXML( bigDecimal ) );
 
     boolean valueBoolean = Boolean.TRUE;
     ValueMetaBase valueBooleanMetaBase =
       new ValueMetaBase( String.valueOf( valueBoolean ), ValueMetaInterface.TYPE_BOOLEAN, ValueMetaInterface.STORAGE_TYPE_NORMAL );
-    assertEquals(
+    Assert.assertEquals(
       "<value-data>" + encoder.encodeForXML( String.valueOf( valueBoolean ) ) + "</value-data>" + SystemUtils.LINE_SEPARATOR,
       valueBooleanMetaBase.getDataXML( valueBoolean ) );
 
@@ -193,40 +188,40 @@ public class ValueMetaBaseTest {
     ValueMetaBase dateMetaBase =
       new ValueMetaBase( date.toString(), ValueMetaInterface.TYPE_DATE, ValueMetaInterface.STORAGE_TYPE_NORMAL );
     SimpleDateFormat formaterData = new SimpleDateFormat( ValueMetaBase.DEFAULT_DATE_FORMAT_MASK );
-    assertEquals(
+    Assert.assertEquals(
       "<value-data>" + encoder.encodeForXML( formaterData.format( date ) ) + "</value-data>" + SystemUtils.LINE_SEPARATOR,
       dateMetaBase.getDataXML( date ) );
 
     InetAddress inetAddress = InetAddress.getByName( "127.0.0.1" );
     ValueMetaBase inetAddressMetaBase =
       new ValueMetaBase( inetAddress.toString(), ValueMetaInterface.TYPE_INET, ValueMetaInterface.STORAGE_TYPE_NORMAL );
-    assertEquals( "<value-data>" + encoder.encodeForXML( inetAddress.toString() ) + "</value-data>" + SystemUtils.LINE_SEPARATOR,
+    Assert.assertEquals( "<value-data>" + encoder.encodeForXML( inetAddress.toString() ) + "</value-data>" + SystemUtils.LINE_SEPARATOR,
       inetAddressMetaBase.getDataXML( inetAddress ) );
 
     long value = Long.MAX_VALUE;
     ValueMetaBase integerMetaBase = new ValueMetaBase( String.valueOf( value ), ValueMetaInterface.TYPE_INTEGER,
       ValueMetaInterface.STORAGE_TYPE_NORMAL );
-    assertEquals( "<value-data>" + encoder.encodeForXML( String.valueOf( value ) ) + "</value-data>" + SystemUtils.LINE_SEPARATOR,
+    Assert.assertEquals( "<value-data>" + encoder.encodeForXML( String.valueOf( value ) ) + "</value-data>" + SystemUtils.LINE_SEPARATOR,
       integerMetaBase.getDataXML( value ) );
 
     String stringValue = "TEST_STRING";
     ValueMetaBase valueMetaBase =
       new ValueMetaBase( stringValue, ValueMetaInterface.TYPE_STRING, ValueMetaInterface.STORAGE_TYPE_NORMAL );
-    assertEquals( "<value-data>" + encoder.encodeForXML( stringValue ) + "</value-data>" + SystemUtils.LINE_SEPARATOR,
+    Assert.assertEquals( "<value-data>" + encoder.encodeForXML( stringValue ) + "</value-data>" + SystemUtils.LINE_SEPARATOR,
       valueMetaBase.getDataXML( stringValue ) );
 
     Timestamp timestamp = new Timestamp( 0 );
     ValueMetaBase valueMetaBaseTimeStamp = new ValueMetaBase( timestamp.toString(), ValueMetaInterface.TYPE_TIMESTAMP,
       ValueMetaInterface.STORAGE_TYPE_NORMAL );
     SimpleDateFormat formater = new SimpleDateFormat( ValueMetaBase.DEFAULT_TIMESTAMP_FORMAT_MASK );
-    assertEquals(
+    Assert.assertEquals(
       "<value-data>" + encoder.encodeForXML( formater.format( timestamp ) ) + "</value-data>" + SystemUtils.LINE_SEPARATOR,
       valueMetaBaseTimeStamp.getDataXML( timestamp ) );
 
     byte[] byteTestValues = { 0, 1, 2, 3 };
     ValueMetaBase valueMetaBaseByteArray = new ValueMetaBase( byteTestValues.toString(), ValueMetaInterface.TYPE_STRING );
     valueMetaBaseByteArray.setStorageType( ValueMetaInterface.STORAGE_TYPE_BINARY_STRING );
-    assertEquals(
+    Assert.assertEquals(
       "<value-data><binary-string>" + encoder.encodeForXML( XMLHandler.encodeBinaryData( byteTestValues ) )
         + "</binary-string>" + Const.CR + "</value-data>",
       valueMetaBaseByteArray.getDataXML( byteTestValues ) );
@@ -259,19 +254,19 @@ public class ValueMetaBaseTest {
     // get value meta for binary type
     ValueMetaInterface binaryValueMeta =
       obj.getValueFromSQLType( dbMeta, TEST_NAME, metaData, binaryColumnIndex, false, false );
-    assertNotNull( binaryValueMeta );
-    assertTrue( TEST_NAME.equals( binaryValueMeta.getName() ) );
-    assertTrue( ValueMetaInterface.TYPE_BINARY == binaryValueMeta.getType() );
-    assertTrue( expectedBinarylength == binaryValueMeta.getLength() );
+    Assert.assertNotNull( binaryValueMeta );
+    Assert.assertTrue( TEST_NAME.equals( binaryValueMeta.getName() ) );
+    Assert.assertTrue( ValueMetaInterface.TYPE_BINARY == binaryValueMeta.getType() );
+    Assert.assertTrue( expectedBinarylength == binaryValueMeta.getLength() );
     Assert.assertFalse( binaryValueMeta.isLargeTextField() );
 
     // get value meta for varbinary type
     ValueMetaInterface varbinaryValueMeta =
       obj.getValueFromSQLType( dbMeta, TEST_NAME, metaData, varbinaryColumnIndex, false, false );
-    assertNotNull( varbinaryValueMeta );
-    assertTrue( TEST_NAME.equals( varbinaryValueMeta.getName() ) );
-    assertTrue( ValueMetaInterface.TYPE_BINARY == varbinaryValueMeta.getType() );
-    assertTrue( expectedVarBinarylength == varbinaryValueMeta.getLength() );
+    Assert.assertNotNull( varbinaryValueMeta );
+    Assert.assertTrue( TEST_NAME.equals( varbinaryValueMeta.getName() ) );
+    Assert.assertTrue( ValueMetaInterface.TYPE_BINARY == varbinaryValueMeta.getType() );
+    Assert.assertTrue( expectedVarBinarylength == varbinaryValueMeta.getLength() );
     Assert.assertFalse( varbinaryValueMeta.isLargeTextField() );
 
   }
@@ -308,23 +303,23 @@ public class ValueMetaBaseTest {
 
     DatabaseInterface databaseInterface = new Vertica5DatabaseMeta();
     Object ret = databaseInterface.getValueFromResultSet( resultSet, valueMetaInterface, 0 );
-    assertEquals( new Time( 0 ), ret );
+    Assert.assertEquals( new Time( 0 ), ret );
   }
 
   @Test
   public void testConvertStringToBoolean() {
-    assertNull( ValueMetaBase.convertStringToBoolean( null ) );
-    assertNull( ValueMetaBase.convertStringToBoolean( "" ) );
-    assertTrue( ValueMetaBase.convertStringToBoolean( "Y" ) );
-    assertTrue( ValueMetaBase.convertStringToBoolean( "y" ) );
-    assertTrue( ValueMetaBase.convertStringToBoolean( "Yes" ) );
-    assertTrue( ValueMetaBase.convertStringToBoolean( "YES" ) );
-    assertTrue( ValueMetaBase.convertStringToBoolean( "yES" ) );
-    assertTrue( ValueMetaBase.convertStringToBoolean( "TRUE" ) );
-    assertTrue( ValueMetaBase.convertStringToBoolean( "True" ) );
-    assertTrue( ValueMetaBase.convertStringToBoolean( "true" ) );
-    assertTrue( ValueMetaBase.convertStringToBoolean( "tRuE" ) );
-    assertTrue( ValueMetaBase.convertStringToBoolean( "Y" ) );
+    Assert.assertNull( ValueMetaBase.convertStringToBoolean( null ) );
+    Assert.assertNull( ValueMetaBase.convertStringToBoolean( "" ) );
+    Assert.assertTrue( ValueMetaBase.convertStringToBoolean( "Y" ) );
+    Assert.assertTrue( ValueMetaBase.convertStringToBoolean( "y" ) );
+    Assert.assertTrue( ValueMetaBase.convertStringToBoolean( "Yes" ) );
+    Assert.assertTrue( ValueMetaBase.convertStringToBoolean( "YES" ) );
+    Assert.assertTrue( ValueMetaBase.convertStringToBoolean( "yES" ) );
+    Assert.assertTrue( ValueMetaBase.convertStringToBoolean( "TRUE" ) );
+    Assert.assertTrue( ValueMetaBase.convertStringToBoolean( "True" ) );
+    Assert.assertTrue( ValueMetaBase.convertStringToBoolean( "true" ) );
+    Assert.assertTrue( ValueMetaBase.convertStringToBoolean( "tRuE" ) );
+    Assert.assertTrue( ValueMetaBase.convertStringToBoolean( "Y" ) );
     Assert.assertFalse( ValueMetaBase.convertStringToBoolean( "N" ) );
     Assert.assertFalse( ValueMetaBase.convertStringToBoolean( "No" ) );
     Assert.assertFalse( ValueMetaBase.convertStringToBoolean( "no" ) );
@@ -346,11 +341,11 @@ public class ValueMetaBaseTest {
 
     result =
       outValueMetaString.convertDataFromString( inputValueEmptyString, inValueMetaString, nullIf, ifNull, trim_type );
-    assertEquals( "Conversion from empty string to string must return empty string", result, StringUtils.EMPTY );
+    Assert.assertEquals( "Conversion from empty string to string must return empty string", result, StringUtils.EMPTY );
 
     result =
       outValueMetaString.convertDataFromString( inputValueNullString, inValueMetaString, nullIf, ifNull, trim_type );
-    assertEquals( "Conversion from null string must return null", result, null );
+    Assert.assertEquals( "Conversion from null string must return null", result, null );
   }
 
   @Test
@@ -365,7 +360,7 @@ public class ValueMetaBaseTest {
 
     result =
       outValueMetaDate.convertDataFromString( inputValueEmptyString, inValueMetaString, nullIf, ifNull, trim_type );
-    assertEquals( "Conversion from empty string to date must return null", result, null );
+    Assert.assertEquals( "Conversion from empty string to date must return null", result, null );
   }
 
   @Test( expected = KettleValueException.class )
@@ -384,7 +379,7 @@ public class ValueMetaBaseTest {
   public void testIsNumeric() {
     int[] numTypes = { ValueMetaInterface.TYPE_INTEGER, ValueMetaInterface.TYPE_NUMBER, ValueMetaInterface.TYPE_BIGNUMBER };
     for ( int type : numTypes ) {
-      assertTrue( Integer.toString( type ), ValueMetaBase.isNumeric( type ) );
+      Assert.assertTrue( Integer.toString( type ), ValueMetaBase.isNumeric( type ) );
     }
 
     int[] notNumTypes = { ValueMetaInterface.TYPE_INET, ValueMetaInterface.TYPE_BOOLEAN, ValueMetaInterface.TYPE_BINARY, ValueMetaInterface.TYPE_DATE, ValueMetaInterface.TYPE_STRING };
@@ -400,72 +395,72 @@ public class ValueMetaBaseTest {
 
   @Test
   public void testGetTrimTypeByCode() {
-    assertEquals( ValueMetaBase.getTrimTypeByCode( "none" ), ValueMetaInterface.TRIM_TYPE_NONE );
-    assertEquals( ValueMetaBase.getTrimTypeByCode( "left" ), ValueMetaInterface.TRIM_TYPE_LEFT );
-    assertEquals( ValueMetaBase.getTrimTypeByCode( "right" ), ValueMetaInterface.TRIM_TYPE_RIGHT );
-    assertEquals( ValueMetaBase.getTrimTypeByCode( "both" ), ValueMetaInterface.TRIM_TYPE_BOTH );
-    assertEquals( ValueMetaBase.getTrimTypeByCode( null ), ValueMetaInterface.TRIM_TYPE_NONE );
-    assertEquals( ValueMetaBase.getTrimTypeByCode( "" ), ValueMetaInterface.TRIM_TYPE_NONE );
-    assertEquals( ValueMetaBase.getTrimTypeByCode( "fake" ), ValueMetaInterface.TRIM_TYPE_NONE );
+    Assert.assertEquals( ValueMetaBase.getTrimTypeByCode( "none" ), ValueMetaInterface.TRIM_TYPE_NONE );
+    Assert.assertEquals( ValueMetaBase.getTrimTypeByCode( "left" ), ValueMetaInterface.TRIM_TYPE_LEFT );
+    Assert.assertEquals( ValueMetaBase.getTrimTypeByCode( "right" ), ValueMetaInterface.TRIM_TYPE_RIGHT );
+    Assert.assertEquals( ValueMetaBase.getTrimTypeByCode( "both" ), ValueMetaInterface.TRIM_TYPE_BOTH );
+    Assert.assertEquals( ValueMetaBase.getTrimTypeByCode( null ), ValueMetaInterface.TRIM_TYPE_NONE );
+    Assert.assertEquals( ValueMetaBase.getTrimTypeByCode( "" ), ValueMetaInterface.TRIM_TYPE_NONE );
+    Assert.assertEquals( ValueMetaBase.getTrimTypeByCode( "fake" ), ValueMetaInterface.TRIM_TYPE_NONE );
   }
 
   @Test
   public void testGetTrimTypeCode() {
-    assertEquals( ValueMetaBase.getTrimTypeCode( ValueMetaInterface.TRIM_TYPE_NONE ), "none" );
-    assertEquals( ValueMetaBase.getTrimTypeCode( ValueMetaInterface.TRIM_TYPE_LEFT ), "left" );
-    assertEquals( ValueMetaBase.getTrimTypeCode( ValueMetaInterface.TRIM_TYPE_RIGHT ), "right" );
-    assertEquals( ValueMetaBase.getTrimTypeCode( ValueMetaInterface.TRIM_TYPE_BOTH ), "both" );
+    Assert.assertEquals( ValueMetaBase.getTrimTypeCode( ValueMetaInterface.TRIM_TYPE_NONE ), "none" );
+    Assert.assertEquals( ValueMetaBase.getTrimTypeCode( ValueMetaInterface.TRIM_TYPE_LEFT ), "left" );
+    Assert.assertEquals( ValueMetaBase.getTrimTypeCode( ValueMetaInterface.TRIM_TYPE_RIGHT ), "right" );
+    Assert.assertEquals( ValueMetaBase.getTrimTypeCode( ValueMetaInterface.TRIM_TYPE_BOTH ), "both" );
   }
 
   @Test
   public void testGetTrimTypeByDesc() {
-    assertEquals( ValueMetaBase.getTrimTypeByDesc( BaseMessages.getString( PKG, "ValueMeta.TrimType.None" ) ),
+    Assert.assertEquals( ValueMetaBase.getTrimTypeByDesc( BaseMessages.getString( PKG, "ValueMeta.TrimType.None" ) ),
       ValueMetaInterface.TRIM_TYPE_NONE );
-    assertEquals( ValueMetaBase.getTrimTypeByDesc( BaseMessages.getString( PKG, "ValueMeta.TrimType.Left" ) ),
+    Assert.assertEquals( ValueMetaBase.getTrimTypeByDesc( BaseMessages.getString( PKG, "ValueMeta.TrimType.Left" ) ),
       ValueMetaInterface.TRIM_TYPE_LEFT );
-    assertEquals( ValueMetaBase.getTrimTypeByDesc( BaseMessages.getString( PKG, "ValueMeta.TrimType.Right" ) ),
+    Assert.assertEquals( ValueMetaBase.getTrimTypeByDesc( BaseMessages.getString( PKG, "ValueMeta.TrimType.Right" ) ),
       ValueMetaInterface.TRIM_TYPE_RIGHT );
-    assertEquals( ValueMetaBase.getTrimTypeByDesc( BaseMessages.getString( PKG, "ValueMeta.TrimType.Both" ) ),
+    Assert.assertEquals( ValueMetaBase.getTrimTypeByDesc( BaseMessages.getString( PKG, "ValueMeta.TrimType.Both" ) ),
       ValueMetaInterface.TRIM_TYPE_BOTH );
-    assertEquals( ValueMetaBase.getTrimTypeByDesc( null ), ValueMetaInterface.TRIM_TYPE_NONE );
-    assertEquals( ValueMetaBase.getTrimTypeByDesc( "" ), ValueMetaInterface.TRIM_TYPE_NONE );
-    assertEquals( ValueMetaBase.getTrimTypeByDesc( "fake" ), ValueMetaInterface.TRIM_TYPE_NONE );
+    Assert.assertEquals( ValueMetaBase.getTrimTypeByDesc( null ), ValueMetaInterface.TRIM_TYPE_NONE );
+    Assert.assertEquals( ValueMetaBase.getTrimTypeByDesc( "" ), ValueMetaInterface.TRIM_TYPE_NONE );
+    Assert.assertEquals( ValueMetaBase.getTrimTypeByDesc( "fake" ), ValueMetaInterface.TRIM_TYPE_NONE );
   }
 
   @Test
   public void testGetTrimTypeDesc() {
-    assertEquals( ValueMetaBase.getTrimTypeDesc( ValueMetaInterface.TRIM_TYPE_NONE ), BaseMessages.getString( PKG,
+    Assert.assertEquals( ValueMetaBase.getTrimTypeDesc( ValueMetaInterface.TRIM_TYPE_NONE ), BaseMessages.getString( PKG,
       "ValueMeta.TrimType.None" ) );
-    assertEquals( ValueMetaBase.getTrimTypeDesc( ValueMetaInterface.TRIM_TYPE_LEFT ), BaseMessages.getString( PKG,
+    Assert.assertEquals( ValueMetaBase.getTrimTypeDesc( ValueMetaInterface.TRIM_TYPE_LEFT ), BaseMessages.getString( PKG,
       "ValueMeta.TrimType.Left" ) );
-    assertEquals( ValueMetaBase.getTrimTypeDesc( ValueMetaInterface.TRIM_TYPE_RIGHT ), BaseMessages.getString( PKG,
+    Assert.assertEquals( ValueMetaBase.getTrimTypeDesc( ValueMetaInterface.TRIM_TYPE_RIGHT ), BaseMessages.getString( PKG,
       "ValueMeta.TrimType.Right" ) );
-    assertEquals( ValueMetaBase.getTrimTypeDesc( ValueMetaInterface.TRIM_TYPE_BOTH ), BaseMessages.getString( PKG,
+    Assert.assertEquals( ValueMetaBase.getTrimTypeDesc( ValueMetaInterface.TRIM_TYPE_BOTH ), BaseMessages.getString( PKG,
       "ValueMeta.TrimType.Both" ) );
-    assertEquals( ValueMetaBase.getTrimTypeDesc( -1 ), BaseMessages.getString( PKG, "ValueMeta.TrimType.None" ) );
-    assertEquals( ValueMetaBase.getTrimTypeDesc( 10000 ), BaseMessages.getString( PKG, "ValueMeta.TrimType.None" ) );
+    Assert.assertEquals( ValueMetaBase.getTrimTypeDesc( -1 ), BaseMessages.getString( PKG, "ValueMeta.TrimType.None" ) );
+    Assert.assertEquals( ValueMetaBase.getTrimTypeDesc( 10000 ), BaseMessages.getString( PKG, "ValueMeta.TrimType.None" ) );
   }
 
   @Test
   public void testOrigin() {
     ValueMetaBase base = new ValueMetaBase();
     base.setOrigin( "myOrigin" );
-    assertEquals( base.getOrigin(), "myOrigin" );
+    Assert.assertEquals( base.getOrigin(), "myOrigin" );
     base.setOrigin( null );
-    assertNull( base.getOrigin() );
+    Assert.assertNull( base.getOrigin() );
     base.setOrigin( "" );
-    assertEquals( base.getOrigin(), "" );
+    Assert.assertEquals( base.getOrigin(), "" );
   }
 
   @Test
   public void testName() {
     ValueMetaBase base = new ValueMetaBase();
     base.setName( "myName" );
-    assertEquals( base.getName(), "myName" );
+    Assert.assertEquals( base.getName(), "myName" );
     base.setName( null );
-    assertNull( base.getName() );
+    Assert.assertNull( base.getName() );
     base.setName( "" );
-    assertEquals( base.getName(), "" );
+    Assert.assertEquals( base.getName(), "" );
 
   }
 
@@ -473,18 +468,18 @@ public class ValueMetaBaseTest {
   public void testLength() {
     ValueMetaBase base = new ValueMetaBase();
     base.setLength( 6 );
-    assertEquals( base.getLength(), 6 );
+    Assert.assertEquals( base.getLength(), 6 );
     base.setLength( -1 );
-    assertEquals( base.getLength(), -1 );
+    Assert.assertEquals( base.getLength(), -1 );
   }
 
   @Test
   public void testPrecision() {
     ValueMetaBase base = new ValueMetaBase();
     base.setPrecision( 6 );
-    assertEquals( base.getPrecision(), 6 );
+    Assert.assertEquals( base.getPrecision(), 6 );
     base.setPrecision( -1 );
-    assertEquals( base.getPrecision(), -1 );
+    Assert.assertEquals( base.getPrecision(), -1 );
   }
 
   @Test
@@ -492,29 +487,29 @@ public class ValueMetaBaseTest {
     ValueMetaBase intMeta = new ValueMetaBase( "int", ValueMetaInterface.TYPE_INTEGER );
     Long int1 = new Long( 6223372036854775804L );
     Long int2 = new Long( -6223372036854775804L );
-    assertEquals( 1, intMeta.compare( int1, int2 ) );
-    assertEquals( -1, intMeta.compare( int2, int1 ) );
-    assertEquals( 0, intMeta.compare( int1, int1 ) );
-    assertEquals( 0, intMeta.compare( int2, int2 ) );
+    Assert.assertEquals( 1, intMeta.compare( int1, int2 ) );
+    Assert.assertEquals( -1, intMeta.compare( int2, int1 ) );
+    Assert.assertEquals( 0, intMeta.compare( int1, int1 ) );
+    Assert.assertEquals( 0, intMeta.compare( int2, int2 ) );
 
     int1 = new Long( 9223372036854775804L );
     int2 = new Long( -9223372036854775804L );
-    assertEquals( 1, intMeta.compare( int1, int2 ) );
-    assertEquals( -1, intMeta.compare( int2, int1 ) );
-    assertEquals( 0, intMeta.compare( int1, int1 ) );
-    assertEquals( 0, intMeta.compare( int2, int2 ) );
+    Assert.assertEquals( 1, intMeta.compare( int1, int2 ) );
+    Assert.assertEquals( -1, intMeta.compare( int2, int1 ) );
+    Assert.assertEquals( 0, intMeta.compare( int1, int1 ) );
+    Assert.assertEquals( 0, intMeta.compare( int2, int2 ) );
 
     int1 = new Long( 6223372036854775804L );
     int2 = new Long( -9223372036854775804L );
-    assertEquals( 1, intMeta.compare( int1, int2 ) );
-    assertEquals( -1, intMeta.compare( int2, int1 ) );
-    assertEquals( 0, intMeta.compare( int1, int1 ) );
+    Assert.assertEquals( 1, intMeta.compare( int1, int2 ) );
+    Assert.assertEquals( -1, intMeta.compare( int2, int1 ) );
+    Assert.assertEquals( 0, intMeta.compare( int1, int1 ) );
 
     int1 = new Long( 9223372036854775804L );
     int2 = new Long( -6223372036854775804L );
-    assertEquals( 1, intMeta.compare( int1, int2 ) );
-    assertEquals( -1, intMeta.compare( int2, int1 ) );
-    assertEquals( 0, intMeta.compare( int1, int1 ) );
+    Assert.assertEquals( 1, intMeta.compare( int1, int2 ) );
+    Assert.assertEquals( -1, intMeta.compare( int2, int1 ) );
+    Assert.assertEquals( 0, intMeta.compare( int1, int1 ) );
 
   }
 
@@ -523,9 +518,9 @@ public class ValueMetaBaseTest {
     ValueMetaBase dateMeta = new ValueMetaBase( "int", ValueMetaInterface.TYPE_DATE );
     Date date1 = new Date( 6223372036854775804L );
     Date date2 = new Date( -6223372036854775804L );
-    assertEquals( 1, dateMeta.compare( date1, date2 ) );
-    assertEquals( -1, dateMeta.compare( date2, date1 ) );
-    assertEquals( 0, dateMeta.compare( date1, date1 ) );
+    Assert.assertEquals( 1, dateMeta.compare( date1, date2 ) );
+    Assert.assertEquals( -1, dateMeta.compare( date2, date1 ) );
+    Assert.assertEquals( 0, dateMeta.compare( date1, date1 ) );
   }
 
   @Test
@@ -535,18 +530,18 @@ public class ValueMetaBaseTest {
 
     // try to convert date by 'start-of-date' make - old behavior
     dateMeta.setConversionMask( "yyyy-MM-dd" );
-    assertEquals( local( 1918, 3, 25, 0, 0, 0, 0 ), dateMeta.convertStringToDate( "1918-03-25T07:40:03.012+03:00" ) );
+    Assert.assertEquals( local( 1918, 3, 25, 0, 0, 0, 0 ), dateMeta.convertStringToDate( "1918-03-25T07:40:03.012+03:00" ) );
 
     // convert ISO-8601 date - supported since Java 7
     dateMeta.setConversionMask( "yyyy-MM-dd'T'HH:mm:ss.SSSXXX" );
-    assertEquals( utc( 1918, 3, 25, 5, 10, 3, 12 ), dateMeta.convertStringToDate( "1918-03-25T07:40:03.012+02:30" ) );
-    assertEquals( utc( 1918, 3, 25, 7, 40, 3, 12 ), dateMeta.convertStringToDate( "1918-03-25T07:40:03.012Z" ) );
+    Assert.assertEquals( utc( 1918, 3, 25, 5, 10, 3, 12 ), dateMeta.convertStringToDate( "1918-03-25T07:40:03.012+02:30" ) );
+    Assert.assertEquals( utc( 1918, 3, 25, 7, 40, 3, 12 ), dateMeta.convertStringToDate( "1918-03-25T07:40:03.012Z" ) );
 
     // convert date
     dateMeta.setConversionMask( "yyyy-MM-dd" );
-    assertEquals( local( 1918, 3, 25, 0, 0, 0, 0 ), dateMeta.convertStringToDate( "1918-03-25" ) );
+    Assert.assertEquals( local( 1918, 3, 25, 0, 0, 0, 0 ), dateMeta.convertStringToDate( "1918-03-25" ) );
     // convert date with spaces at the end
-    assertEquals( local( 1918, 3, 25, 0, 0, 0, 0 ), dateMeta.convertStringToDate( "1918-03-25  \n" ) );
+    Assert.assertEquals( local( 1918, 3, 25, 0, 0, 0, 0 ), dateMeta.convertStringToDate( "1918-03-25  \n" ) );
   }
 
   @Test
@@ -557,12 +552,12 @@ public class ValueMetaBaseTest {
     PreparedStatement preparedStatement = Mockito.mock( PreparedStatement.class );
     Mockito.when( databaseMeta.getMaxTextFieldLength() ).thenReturn( LOG_FIELD.length() );
     List<KettleLoggingEvent> events = listener.getEvents();
-    assertEquals( 0, events.size() );
+    Assert.assertEquals( 0, events.size() );
 
     valueMetaString.setPreparedStatementValue( databaseMeta, preparedStatement, 0, LOG_FIELD );
 
     //no logging occurred as max string length equals to logging text length
-    assertEquals( 0, events.size() );
+    Assert.assertEquals( 0, events.size() );
   }
 
   @Test
@@ -573,22 +568,22 @@ public class ValueMetaBaseTest {
     PreparedStatement preparedStatement = Mockito.mock( PreparedStatement.class );
     Mockito.when( databaseMeta.getMaxTextFieldLength() ).thenReturn( MAX_TEXT_FIELD_LEN );
     List<KettleLoggingEvent> events = listener.getEvents();
-    assertEquals( 0, events.size() );
+    Assert.assertEquals( 0, events.size() );
 
     valueMetaString.setPreparedStatementValue( databaseMeta, preparedStatement, 0, LOG_FIELD );
 
     //check that truncated string was logged
-    assertEquals( 1, events.size() );
+    Assert.assertEquals( 1, events.size() );
   }
 
   @Test
   public void testValueMetaBaseOnlyHasOneLogger() throws NoSuchFieldException, IllegalAccessException {
     Field log = ValueMetaBase.class.getDeclaredField( "log" );
-    assertTrue( Modifier.isStatic( log.getModifiers() ) );
-    assertTrue( Modifier.isFinal( log.getModifiers() ) );
+    Assert.assertTrue( Modifier.isStatic( log.getModifiers() ) );
+    Assert.assertTrue( Modifier.isFinal( log.getModifiers() ) );
     log.setAccessible( true );
     try {
-      assertEquals( LoggingRegistry.getInstance().findExistingLoggingSource( new LoggingObject( "ValueMetaBase" ) )
+      Assert.assertEquals( LoggingRegistry.getInstance().findExistingLoggingSource( new LoggingObject( "ValueMetaBase" ) )
           .getLogChannelId(),
         ( (LogChannelInterface) log.get( null ) ).getLogChannelId() );
     } finally {
@@ -621,5 +616,19 @@ public class ValueMetaBaseTest {
     public List<KettleLoggingEvent> getEvents() {
       return events;
     }
+  }
+
+  @Test
+  public void testConvertBigNumberToBoolean() {
+    ValueMetaBase vmb = new ValueMetaBase();
+    System.out.println( vmb.convertBigNumberToBoolean( new BigDecimal( "-234" ) ) );
+    System.out.println( vmb.convertBigNumberToBoolean( new BigDecimal( "234" ) ) );
+    System.out.println( vmb.convertBigNumberToBoolean( new BigDecimal( "0" ) ) );
+    System.out.println( vmb.convertBigNumberToBoolean( new BigDecimal( "1.7976E308" ) ) );
+
+    Assert.assertTrue( vmb.convertBigNumberToBoolean( new BigDecimal( "-234" ) ) );
+    Assert.assertTrue( vmb.convertBigNumberToBoolean( new BigDecimal( "234" ) ) );
+    Assert.assertFalse( vmb.convertBigNumberToBoolean( new BigDecimal( "0" ) ) );
+    Assert.assertTrue( vmb.convertBigNumberToBoolean( new BigDecimal( "1.7976E308" ) ) );
   }
 }

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -148,7 +148,7 @@ public class ValueBoolean implements ValueInterface, Cloneable {
 
   @Override
   public void setBigNumber( BigDecimal number ) {
-    bool = number.intValue() != 0;
+    bool = number.signum() != 0;
   }
 
   @Override
