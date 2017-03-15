@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -2017,10 +2017,17 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
           dirId = row.getInteger( KettleDatabaseRepository.FIELD_JOB_ID_DIRECTORY, 0 );
           break;
         }
+        //PDI-15871 Return available information for DATABASE
+        case DATABASE: {
+          RowMetaAndData row = databaseDelegate.getDatabase( objectId );
+          name = row.getString( KettleDatabaseRepository.FIELD_DATABASE_NAME, null );
+          return new RepositoryObject(
+              objectId, name, null, null, null, objectType, null, false );
+        }
         default:
           throw new KettleException( "Object type "
             + objectType.getTypeDescription()
-            + " was specified.  Only information from transformations and jobs can be retrieved at this time." );
+            + " was specified.  Only information from transformations, jobs and databases can be retrieved at this time." );
           // Nothing matches, return null
       }
 
