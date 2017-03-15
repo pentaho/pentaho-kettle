@@ -22,9 +22,13 @@
 
 package org.pentaho.di.core.row.value;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Locale;
 
 import org.junit.After;
@@ -781,6 +785,47 @@ public class ValueMetaStringTest {
     assertSignum( 0, meta.compare( "e", "E" ) );
     assertSignum( 0, meta.compare( "\u0001", "\u0002" ) );
     assertSignum( 0, meta.compare( "e", "e" ) );
+  }
+
+  @Test
+  public void testGetIntegerWithoutConversionMask() throws KettleValueException, ParseException {
+    String value = "100.56";
+    ValueMetaInterface stringValueMeta = new ValueMetaString( "test" );
+
+    Long expected = 100L;
+    Long result = stringValueMeta.getInteger( value );
+    assertEquals( expected, result );
+  }
+
+  @Test
+  public void testGetNumberWithoutConversionMask() throws KettleValueException, ParseException {
+    String value = "100.56";
+    ValueMetaInterface stringValueMeta = new ValueMetaString( "test" );
+
+    Double expected = 100.56D;
+    Double result = stringValueMeta.getNumber( value );
+    assertEquals( expected, result );
+  }
+
+  @Test
+  public void testGetBigNumberWithoutConversionMask() throws KettleValueException, ParseException {
+    String value = "100.5";
+    ValueMetaInterface stringValueMeta = new ValueMetaString( "test" );
+
+    BigDecimal expected = new BigDecimal( 100.5 );
+    BigDecimal result = stringValueMeta.getBigNumber( value );
+    assertEquals( expected, result );
+  }
+
+  @Test
+  public void testGetDateWithoutConversionMask() throws KettleValueException, ParseException {
+    Calendar date = new GregorianCalendar( 2017, 9, 20 ); // month 9 = Oct
+    String value = "2017/10/20 00:00:00.000";
+    ValueMetaInterface stringValueMeta = new ValueMetaString( "test" );
+
+    Date expected = Date.from( date.toInstant() );
+    Date result = stringValueMeta.getDate( value );
+    assertEquals( expected, result );
   }
 
   private static void assertSignum( int expected, int actual ) {
