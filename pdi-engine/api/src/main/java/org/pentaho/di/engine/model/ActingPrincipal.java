@@ -21,20 +21,41 @@
  *
  * *****************************************************************************
  */
+package org.pentaho.di.engine.model;
 
-package org.pentaho.di.engine.api;
-
-
-import org.pentaho.di.engine.api.model.Transformation;
 
 import java.io.Serializable;
 import java.security.Principal;
 
 /**
- * An Engine is responsible for executing an Transformation.
+ * Created by jchilton on 3/15/2017.
  */
-public interface Engine extends Serializable {
-  ExecutionContext prepare( Transformation trans );
-  ExecutionContext prepare( Transformation trans, Principal actingPrincipal );
-  String getId();
+public class ActingPrincipal implements Principal, Serializable {
+  private String name;
+
+  public ActingPrincipal( String name ) {
+    this.name = name;
+  }
+
+  @Override
+  public String getName( ) {
+    return name;
+  }
+
+  public boolean equals( Object object ) {
+    if ( object instanceof ActingPrincipal ) {
+      return this.name.equals( object.toString() );
+    } else {
+      return false;
+    }
+  }
+
+  public String toString( ) {
+    return this.name;
+  }
+
+  public int hashCode( ) {
+    return this.name.hashCode();
+  }
+
 }

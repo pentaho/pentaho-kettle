@@ -29,6 +29,7 @@ import org.pentaho.di.engine.api.model.Transformation;
 import org.pentaho.di.engine.api.reporting.SubscriptionManager;
 
 import java.io.Serializable;
+import java.security.Principal;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
@@ -51,4 +52,6 @@ public interface ExecutionContext extends SubscriptionManager, Serializable {
   CompletableFuture<ExecutionResult> execute();
 
   RowConversionManager getConversionManager();
+
+  Principal getActingPrincipal();
 }

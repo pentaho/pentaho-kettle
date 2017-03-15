@@ -27,6 +27,7 @@ package org.pentaho.di.engine.api.remote;
 import org.pentaho.di.engine.api.model.Transformation;
 
 import java.io.Serializable;
+import java.security.Principal;
 import java.util.Map;
 import java.util.Set;
 
@@ -40,11 +41,15 @@ public final class ExecutionRequest implements Serializable {
   private final Transformation transformation;
   private final Map<String, Set<Class<? extends Serializable>>> reportingTopics;
 
+
+  private final Principal actingPrincipal;
+
   public ExecutionRequest( Map<String, Object> parameters, Transformation transformation,
-                           Map<String, Set<Class<? extends Serializable>>> reportingTopics ) {
+                           Map<String, Set<Class<? extends Serializable>>> reportingTopics, Principal actingPrincipal ) {
     this.parameters = parameters;
     this.transformation = transformation;
     this.reportingTopics = reportingTopics;
+    this.actingPrincipal = actingPrincipal;
   }
 
   public Map<String, Object> getParameters() {
@@ -58,4 +63,9 @@ public final class ExecutionRequest implements Serializable {
   public Map<String, Set<Class<? extends Serializable>>> getReportingTopics() {
     return reportingTopics;
   }
+
+  public Principal getActingPrincipal() {
+    return actingPrincipal;
+  }
+
 }

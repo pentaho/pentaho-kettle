@@ -31,6 +31,7 @@ import org.pentaho.di.engine.api.ExecutionResult;
 import org.pentaho.di.engine.api.events.PDIEvent;
 import org.pentaho.di.engine.api.model.Operation;
 import org.pentaho.di.engine.api.model.Transformation;
+import org.pentaho.di.engine.model.ActingPrincipal;
 import org.pentaho.di.engine.api.reporting.Status;
 import org.pentaho.di.trans.RowProducer;
 import org.pentaho.di.trans.Trans;
@@ -40,6 +41,7 @@ import org.pentaho.di.trans.step.StepMetaDataCombi;
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
@@ -60,7 +62,7 @@ public class TransEngineAdapter extends Trans {
 
   public TransEngineAdapter( Engine engine, TransMeta transMeta ) {
     transformation = TransMetaConverter.convert( transMeta );
-    executionContext = engine.prepare( transformation );
+    executionContext = engine.prepare( transformation,  getActingPrincipal( transMeta ) );
     this.transMeta = transMeta;
   }
 
@@ -116,7 +118,7 @@ public class TransEngineAdapter extends Trans {
             } catch ( KettleException e ) {
               e.printStackTrace();
             }
-          });
+          } );
         }
 
         @Override public void onComplete() {
@@ -128,7 +130,7 @@ public class TransEngineAdapter extends Trans {
             } catch ( KettleException e ) {
               e.printStackTrace();
             }
-          });
+          } );
         }
       } );
   }
@@ -171,4 +173,10 @@ public class TransEngineAdapter extends Trans {
     throw new UnsupportedOperationException( "Not yet implemented" );
   }
 
+  private Principal getActingPrincipal( TransMeta transMeta ) {
+    if ( transMeta.getRepository() == null || transMeta.getRepository().getUserInfo() == null ) {
+      return null;
+    }
+    return new ActingPrincipal( transMeta.getRepository().getUserInfo().getName() );
+  }
 }
