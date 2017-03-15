@@ -140,7 +140,7 @@ public class AbortDialog extends BaseStepDialog implements StepDialogInterface {
     props.setLook( wlRowThreshold );
     fdlRowThreshold = new FormData();
     fdlRowThreshold.left = new FormAttachment( 0, 0 );
-    fdlRowThreshold.top = new FormAttachment( spacer, 20 );
+    fdlRowThreshold.top = new FormAttachment( spacer, 15 );
     wlRowThreshold.setLayoutData( fdlRowThreshold );
     wRowThreshold = new TextVar( transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     wRowThreshold.setText( "" );
@@ -160,7 +160,7 @@ public class AbortDialog extends BaseStepDialog implements StepDialogInterface {
     props.setLook( wlMessage );
     fdlMessage = new FormData();
     fdlMessage.left = new FormAttachment( 0, 0 );
-    fdlMessage.top = new FormAttachment( wRowThreshold, 5 );
+    fdlMessage.top = new FormAttachment( wRowThreshold, 10 );
     wlMessage.setLayoutData( fdlMessage );
     wMessage = new TextVar( transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     wMessage.setText( "" );
@@ -172,6 +172,7 @@ public class AbortDialog extends BaseStepDialog implements StepDialogInterface {
     fdMessage.left = new FormAttachment( 0, 0 );
     fdMessage.top = new FormAttachment( wlMessage, 5 );
     fdMessage.right = new FormAttachment( 100, 0 );
+    fdMessage.width = 274;
     wMessage.setLayoutData( fdMessage );
 
     wAlwaysLogRows = new Button( shell, SWT.CHECK );
@@ -180,7 +181,7 @@ public class AbortDialog extends BaseStepDialog implements StepDialogInterface {
     wAlwaysLogRows.setToolTipText( BaseMessages.getString( PKG, "AbortDialog.AlwaysLogRows.Tooltip" ) );
     fdAlwaysLogRows = new FormData();
     fdAlwaysLogRows.left = new FormAttachment( 0, 0 );
-    fdAlwaysLogRows.top = new FormAttachment( wMessage, 5 );
+    fdAlwaysLogRows.top = new FormAttachment( wMessage, 10 );
     wAlwaysLogRows.setLayoutData( fdAlwaysLogRows );
     wAlwaysLogRows.addSelectionListener( new SelectionAdapter() {
       public void widgetSelected( SelectionEvent e ) {
@@ -194,7 +195,7 @@ public class AbortDialog extends BaseStepDialog implements StepDialogInterface {
     wAbortWithError.setToolTipText( BaseMessages.getString( PKG, "AbortDialog.AbortWithError.Tooltip" ) );
     fdAbortWithError = new FormData();
     fdAbortWithError.left = new FormAttachment( 0, 0 );
-    fdAbortWithError.top = new FormAttachment( wAlwaysLogRows, 5 );
+    fdAbortWithError.top = new FormAttachment( wAlwaysLogRows, 10 );
     wAbortWithError.setLayoutData( fdAbortWithError );
     wAbortWithError.addSelectionListener( new SelectionAdapter() {
       public void widgetSelected( SelectionEvent e ) {
@@ -221,7 +222,7 @@ public class AbortDialog extends BaseStepDialog implements StepDialogInterface {
     FormData fdhSpacer = new FormData();
     fdhSpacer.height = 1;
     fdhSpacer.left = new FormAttachment( 0, 0 );
-    fdhSpacer.top = new FormAttachment( wAbortWithError, 5 );
+    fdhSpacer.top = new FormAttachment( wAbortWithError, 10 );
     fdhSpacer.bottom = new FormAttachment( wCancel, -15 );
     fdhSpacer.right = new FormAttachment( 100, 0 );
     hSpacer.setLayoutData( fdhSpacer );
