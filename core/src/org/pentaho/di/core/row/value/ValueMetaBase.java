@@ -80,27 +80,45 @@ import org.w3c.dom.Node;
 
 public class ValueMetaBase implements ValueMetaInterface {
 
+  // region Default Numeric Types Parse Format
+  private static final String DEFAULT_INTEGER_PARSE_MASK = "####0";
+  private static final String DEFAULT_NUMBER_PARSE_MASK = "####0.0#########";
+  private static final String DEFAULT_BIGNUMBER_PARSE_MASK = "######0.0###################";
+
+  private static final String DEFAULT_DATE_PARSE_MASK = "yyyy/MM/dd HH:mm:ss.SSS";
+  private static final String DEFAULT_TIMESTAMP_PARSE_MASK = "yyyy/MM/dd HH:mm:ss.SSSSSSSSS";
+  // endregion
+
+  // region Default Types Format
+  static final String DEFAULT_INTEGER_FORMAT_MASK = Const.NVL(
+          EnvUtil.getSystemProperty( Const.KETTLE_DEFAULT_INTEGER_FORMAT ),
+          "####0;-####0" );
+
+  static final String DEFAULT_NUMBER_FORMAT_MASK = Const.NVL(
+          EnvUtil.getSystemProperty( Const.KETTLE_DEFAULT_NUMBER_FORMAT ),
+          "####0.0#########;-####0.0#########" );
+
+  static final String DEFAULT_BIG_NUMBER_FORMAT_MASK = Const.NVL(
+          EnvUtil.getSystemProperty( Const.KETTLE_DEFAULT_BIGNUMBER_FORMAT ),
+          "######0.0###################;-######0.0###################" );
+
+  static final String DEFAULT_DATE_FORMAT_MASK = Const.NVL( EnvUtil
+          .getSystemProperty( Const.KETTLE_DEFAULT_DATE_FORMAT ), "yyyy/MM/dd HH:mm:ss.SSS" );
+
+  static final String DEFAULT_TIMESTAMP_FORMAT_MASK = Const.NVL( EnvUtil
+          .getSystemProperty( Const.KETTLE_DEFAULT_TIMESTAMP_FORMAT ), "yyyy/MM/dd HH:mm:ss.SSSSSSSSS" );
+  // endregion
+
   // region ValueMetaBase Attributes
   protected static Class<?> PKG = Const.class; // for i18n purposes, needed by Translator2
 
-  static final String DEFAULT_INTEGER_FORMAT_MASK = " ###############0;-###############0";
-
-  //TODO: this value was extracted from the code. Does it make sense to have the same mask for this types?
-  static final String DEFAULT_NUMBER_FORMAT_MASK = " ##########0.0########;-#########0.0########";
-  static final String DEFAULT_BIG_NUMBER_FORMAT_MASK = " ##########0.0########;-#########0.0########";
-
-  public static final String DEFAULT_DATE_FORMAT_MASK = Const.NVL( EnvUtil
-      .getSystemProperty( Const.KETTLE_DEFAULT_DATE_FORMAT ), "yyyy/MM/dd HH:mm:ss.SSS" );
-
-  public static final String DEFAULT_TIMESTAMP_FORMAT_MASK = Const.NVL( EnvUtil
-      .getSystemProperty( Const.KETTLE_DEFAULT_TIMESTAMP_FORMAT ), "yyyy/MM/dd HH:mm:ss.SSSSSSSSS" );
-
   public static final String XML_META_TAG = "value-meta";
   public static final String XML_DATA_TAG = "value-data";
+
   public static final String COMPATIBLE_DATE_FORMAT_PATTERN = "yyyy/MM/dd HH:mm:ss.SSS";
 
-  public static final boolean EMPTY_STRING_AND_NULL_ARE_DIFFERENT = convertStringToBoolean( Const.NVL( System
-      .getProperty( Const.KETTLE_EMPTY_STRING_DIFFERS_FROM_NULL, "N" ), "N" ) );
+  public static final boolean EMPTY_STRING_AND_NULL_ARE_DIFFERENT = convertStringToBoolean(
+          Const.NVL( System.getProperty( Const.KETTLE_EMPTY_STRING_DIFFERS_FROM_NULL, "N" ), "N" ) );
 
   protected String name;
   protected int length;
@@ -358,36 +376,21 @@ public class ValueMetaBase implements ValueMetaInterface {
   protected void setDefaultConversionMask() {
     // Set some sensible default mask on the numbers
     //
-    switch ( type ) {
+    switch ( getType() ) {
       case TYPE_INTEGER:
-        String alternativeIntegerMask = EnvUtil.getSystemProperty( Const.KETTLE_DEFAULT_INTEGER_FORMAT );
-        if ( Utils.isEmpty( alternativeIntegerMask ) ) {
-          setConversionMask( "#;-#" );
-        } else {
-          setConversionMask( alternativeIntegerMask );
-        }
+        setConversionMask( DEFAULT_INTEGER_FORMAT_MASK );
         break;
       case TYPE_NUMBER:
-        String alternativeNumberMask = EnvUtil.getSystemProperty( Const.KETTLE_DEFAULT_NUMBER_FORMAT );
-        if ( Utils.isEmpty( alternativeNumberMask ) ) {
-          setConversionMask( "#.#;-#.#" );
-        } else {
-          setConversionMask( alternativeNumberMask );
-        }
+        setConversionMask( DEFAULT_NUMBER_FORMAT_MASK );
         break;
       case TYPE_BIGNUMBER:
-        String alternativeBigNumberMask = EnvUtil.getSystemProperty( Const.KETTLE_DEFAULT_BIGNUMBER_FORMAT );
-        if ( Utils.isEmpty( alternativeBigNumberMask ) ) {
-          setConversionMask( "#.###############################################;"
-              + "-#.###############################################" );
-        } else {
-          setConversionMask( alternativeBigNumberMask );
-        }
+        setConversionMask( DEFAULT_BIG_NUMBER_FORMAT_MASK );
+
         setGroupingSymbol( null );
         setDecimalSymbol( "." ); // For backward compatibility reasons!
         break;
       default:
-        break;
+        // does nothing
     }
   }
 
@@ -1037,7 +1040,7 @@ public class ValueMetaBase implements ValueMetaInterface {
       // This may not become static as the class is not thread-safe!
       dateFormat = new SimpleDateFormat();
 
-      String mask = this.getFormatMask( valueMetaType );
+      String mask = this.getMask( valueMetaType );
 
       // Do we have a locale?
       //
@@ -1105,7 +1108,7 @@ public class ValueMetaBase implements ValueMetaInterface {
       }
       decimalFormat.setDecimalFormatSymbols( decimalFormatSymbols );
 
-      String decimalPattern = getFormatMask( valueMetaType );
+      String decimalPattern = getMask( valueMetaType );
       if ( !Utils.isEmpty( decimalPattern ) ) {
         decimalFormat.applyPattern( decimalPattern );
       }
@@ -1118,36 +1121,30 @@ public class ValueMetaBase implements ValueMetaInterface {
 
   @Override
   public String getFormatMask() {
-    return getFormatMask( getType() );
+    return getMask( getType() );
   }
 
-  String getFormatMask( int type ) {
-    String mask = null;
-
+  String getMask( int type ) {
     if ( !Utils.isEmpty( this.conversionMask ) ) {
-      mask = this.conversionMask;
-    } else {
-      switch ( type ) {
-        case TYPE_INTEGER:
-          mask = getIntegerFormatMask();
-          break;
-        case TYPE_NUMBER:
-          mask = getNumberFormatMask();
-          break;
-        case TYPE_BIGNUMBER:
-          mask = getBigNumberFormatMask();
-          break;
-
-        case TYPE_DATE:
-          mask = getDateFormatMask();
-          break;
-        case TYPE_TIMESTAMP:
-          mask = getTimestampFormatMask();
-          break;
-      }
+      return this.conversionMask;
     }
 
-    return mask;
+    boolean fromString = isString();
+    switch ( type ) {
+      case TYPE_INTEGER:
+        return fromString ? DEFAULT_INTEGER_PARSE_MASK : getIntegerFormatMask();
+      case TYPE_NUMBER:
+        return fromString ? DEFAULT_NUMBER_PARSE_MASK : getNumberFormatMask();
+      case TYPE_BIGNUMBER:
+        return fromString ? DEFAULT_BIGNUMBER_PARSE_MASK : getBigNumberFormatMask();
+
+      case TYPE_DATE:
+        return fromString ? DEFAULT_DATE_PARSE_MASK : getDateFormatMask();
+      case TYPE_TIMESTAMP:
+        return fromString ? DEFAULT_TIMESTAMP_PARSE_MASK : getTimestampFormatMask();
+    }
+
+    return null;
   }
 
   String getNumberFormatMask() {

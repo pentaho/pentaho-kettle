@@ -22,9 +22,13 @@
 
 package org.pentaho.di.core.row.value;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Locale;
 
 import org.junit.After;
@@ -34,6 +38,8 @@ import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.ValueMetaInterface;
 
 import junit.framework.Assert;
+
+import static org.junit.Assert.assertEquals;
 
 public class ValueMetaStringTest {
   private static final String BASE_VALUE = "Some text";
@@ -55,208 +61,208 @@ public class ValueMetaStringTest {
   public void testGetNativeData_emptyIsNotNull() throws Exception {
     meta.setNullsAndEmptyAreDifferent( true );
 
-    Assert.assertEquals( BASE_VALUE, meta.getNativeDataType( BASE_VALUE ) );
-    Assert.assertEquals( TEST_VALUE, meta.getNativeDataType( TEST_VALUE ) );
-    Assert.assertEquals( null, meta.getNativeDataType( null ) );
-    Assert.assertEquals( "1", meta.getNativeDataType( 1 ) );
-    Assert.assertEquals( "1.0", meta.getNativeDataType( 1.0 ) );
+    assertEquals( BASE_VALUE, meta.getNativeDataType( BASE_VALUE ) );
+    assertEquals( TEST_VALUE, meta.getNativeDataType( TEST_VALUE ) );
+    assertEquals( null, meta.getNativeDataType( null ) );
+    assertEquals( "1", meta.getNativeDataType( 1 ) );
+    assertEquals( "1.0", meta.getNativeDataType( 1.0 ) );
 
     Date d = ( new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss.SSS" ) ).parse( "2012-11-10 09:08:07.654" );
-    Assert.assertEquals( d.toString(), meta.getNativeDataType( d ) );
+    assertEquals( d.toString(), meta.getNativeDataType( d ) );
 
     Timestamp ts = Timestamp.valueOf( "2012-11-10 09:08:07.654321" );
-    Assert.assertEquals( "2012-11-10 09:08:07.654321", meta.getNativeDataType( ts ) );
+    assertEquals( "2012-11-10 09:08:07.654321", meta.getNativeDataType( ts ) );
 
     meta.setTrimType( ValueMetaInterface.TRIM_TYPE_NONE );
-    Assert.assertEquals( "", meta.getNativeDataType( "" ) );
-    Assert.assertEquals( "1", meta.getNativeDataType( "1" ) );
-    Assert.assertEquals( "    ", meta.getNativeDataType( "    " ) );
-    Assert.assertEquals( "  1  ", meta.getNativeDataType( "  1  " ) );
+    assertEquals( "", meta.getNativeDataType( "" ) );
+    assertEquals( "1", meta.getNativeDataType( "1" ) );
+    assertEquals( "    ", meta.getNativeDataType( "    " ) );
+    assertEquals( "  1  ", meta.getNativeDataType( "  1  " ) );
 
     meta.setTrimType( ValueMetaInterface.TRIM_TYPE_LEFT );
-    Assert.assertEquals( "", meta.getNativeDataType( "" ) );
-    Assert.assertEquals( "1", meta.getNativeDataType( "1" ) );
-    Assert.assertEquals( "", meta.getNativeDataType( "    " ) );
-    Assert.assertEquals( "1  ", meta.getNativeDataType( "  1  " ) );
+    assertEquals( "", meta.getNativeDataType( "" ) );
+    assertEquals( "1", meta.getNativeDataType( "1" ) );
+    assertEquals( "", meta.getNativeDataType( "    " ) );
+    assertEquals( "1  ", meta.getNativeDataType( "  1  " ) );
 
     meta.setTrimType( ValueMetaInterface.TRIM_TYPE_RIGHT );
-    Assert.assertEquals( "", meta.getNativeDataType( "" ) );
-    Assert.assertEquals( "1", meta.getNativeDataType( "1" ) );
-    Assert.assertEquals( "", meta.getNativeDataType( "    " ) );
-    Assert.assertEquals( "  1", meta.getNativeDataType( "  1  " ) );
+    assertEquals( "", meta.getNativeDataType( "" ) );
+    assertEquals( "1", meta.getNativeDataType( "1" ) );
+    assertEquals( "", meta.getNativeDataType( "    " ) );
+    assertEquals( "  1", meta.getNativeDataType( "  1  " ) );
 
     meta.setTrimType( ValueMetaInterface.TRIM_TYPE_BOTH );
-    Assert.assertEquals( "", meta.getNativeDataType( "" ) );
-    Assert.assertEquals( "1", meta.getNativeDataType( "1" ) );
-    Assert.assertEquals( "", meta.getNativeDataType( "    " ) );
-    Assert.assertEquals( "1", meta.getNativeDataType( "  1  " ) );
+    assertEquals( "", meta.getNativeDataType( "" ) );
+    assertEquals( "1", meta.getNativeDataType( "1" ) );
+    assertEquals( "", meta.getNativeDataType( "    " ) );
+    assertEquals( "1", meta.getNativeDataType( "  1  " ) );
   }
 
   @Test
   public void testGetNativeData_emptyIsNull() throws Exception {
     meta.setNullsAndEmptyAreDifferent( false );
 
-    Assert.assertEquals( BASE_VALUE, meta.getNativeDataType( BASE_VALUE ) );
-    Assert.assertEquals( TEST_VALUE, meta.getNativeDataType( TEST_VALUE ) );
-    Assert.assertEquals( null, meta.getNativeDataType( null ) );
-    Assert.assertEquals( "1", meta.getNativeDataType( 1 ) );
-    Assert.assertEquals( "1.0", meta.getNativeDataType( 1.0 ) );
+    assertEquals( BASE_VALUE, meta.getNativeDataType( BASE_VALUE ) );
+    assertEquals( TEST_VALUE, meta.getNativeDataType( TEST_VALUE ) );
+    assertEquals( null, meta.getNativeDataType( null ) );
+    assertEquals( "1", meta.getNativeDataType( 1 ) );
+    assertEquals( "1.0", meta.getNativeDataType( 1.0 ) );
 
     Date d = ( new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss.SSS" ) ).parse( "2012-11-10 09:08:07.654" );
-    Assert.assertEquals( d.toString(), meta.getNativeDataType( d ) );
+    assertEquals( d.toString(), meta.getNativeDataType( d ) );
 
     Timestamp ts = Timestamp.valueOf( "2012-11-10 09:08:07.654321" );
-    Assert.assertEquals( "2012-11-10 09:08:07.654321", meta.getNativeDataType( ts ) );
+    assertEquals( "2012-11-10 09:08:07.654321", meta.getNativeDataType( ts ) );
 
     meta.setTrimType( ValueMetaInterface.TRIM_TYPE_NONE );
-    // Assert.assertEquals( null, meta.getNativeDataType( "" ) ); //TODO: is it correct?
-    Assert.assertEquals( "", meta.getNativeDataType( "" ) ); // TODO: is it correct?
-    Assert.assertEquals( "1", meta.getNativeDataType( "1" ) );
-    Assert.assertEquals( "    ", meta.getNativeDataType( "    " ) );
-    Assert.assertEquals( "  1  ", meta.getNativeDataType( "  1  " ) );
+    // assertEquals( null, meta.getNativeDataType( "" ) ); //TODO: is it correct?
+    assertEquals( "", meta.getNativeDataType( "" ) ); // TODO: is it correct?
+    assertEquals( "1", meta.getNativeDataType( "1" ) );
+    assertEquals( "    ", meta.getNativeDataType( "    " ) );
+    assertEquals( "  1  ", meta.getNativeDataType( "  1  " ) );
 
     meta.setTrimType( ValueMetaInterface.TRIM_TYPE_LEFT );
-    // Assert.assertEquals( null, meta.getNativeDataType( "" ) ); //TODO: is it correct?
-    Assert.assertEquals( "", meta.getNativeDataType( "" ) ); // TODO: is it correct?
-    Assert.assertEquals( "1", meta.getNativeDataType( "1" ) );
-    // Assert.assertEquals( null, meta.getNativeDataType( "    " ) ); //TODO: is it correct?
-    Assert.assertEquals( "", meta.getNativeDataType( "    " ) ); // TODO: is it correct?
-    Assert.assertEquals( "1  ", meta.getNativeDataType( "  1  " ) );
+    // assertEquals( null, meta.getNativeDataType( "" ) ); //TODO: is it correct?
+    assertEquals( "", meta.getNativeDataType( "" ) ); // TODO: is it correct?
+    assertEquals( "1", meta.getNativeDataType( "1" ) );
+    // assertEquals( null, meta.getNativeDataType( "    " ) ); //TODO: is it correct?
+    assertEquals( "", meta.getNativeDataType( "    " ) ); // TODO: is it correct?
+    assertEquals( "1  ", meta.getNativeDataType( "  1  " ) );
 
     meta.setTrimType( ValueMetaInterface.TRIM_TYPE_RIGHT );
-    // Assert.assertEquals( null, meta.getNativeDataType( "" ) ); //TODO: is it correct?
-    Assert.assertEquals( "", meta.getNativeDataType( "" ) ); // TODO: is it correct?
-    Assert.assertEquals( "1", meta.getNativeDataType( "1" ) );
-    // Assert.assertEquals( null, meta.getNativeDataType( "    " ) ); //TODO: is it correct?
-    Assert.assertEquals( "", meta.getNativeDataType( "    " ) ); // TODO: is it correct?
-    Assert.assertEquals( "  1", meta.getNativeDataType( "  1  " ) );
+    // assertEquals( null, meta.getNativeDataType( "" ) ); //TODO: is it correct?
+    assertEquals( "", meta.getNativeDataType( "" ) ); // TODO: is it correct?
+    assertEquals( "1", meta.getNativeDataType( "1" ) );
+    // assertEquals( null, meta.getNativeDataType( "    " ) ); //TODO: is it correct?
+    assertEquals( "", meta.getNativeDataType( "    " ) ); // TODO: is it correct?
+    assertEquals( "  1", meta.getNativeDataType( "  1  " ) );
 
     meta.setTrimType( ValueMetaInterface.TRIM_TYPE_BOTH );
-    // Assert.assertEquals( null, meta.getNativeDataType( "" ) ); //TODO: is it correct?
-    Assert.assertEquals( "", meta.getNativeDataType( "" ) ); // TODO: is it correct?
-    Assert.assertEquals( "1", meta.getNativeDataType( "1" ) );
-    // Assert.assertEquals( null, meta.getNativeDataType( "    " ) ); //TODO: is it correct?
-    Assert.assertEquals( "", meta.getNativeDataType( "    " ) ); // TODO: is it correct?
-    Assert.assertEquals( "1", meta.getNativeDataType( "  1  " ) );
+    // assertEquals( null, meta.getNativeDataType( "" ) ); //TODO: is it correct?
+    assertEquals( "", meta.getNativeDataType( "" ) ); // TODO: is it correct?
+    assertEquals( "1", meta.getNativeDataType( "1" ) );
+    // assertEquals( null, meta.getNativeDataType( "    " ) ); //TODO: is it correct?
+    assertEquals( "", meta.getNativeDataType( "    " ) ); // TODO: is it correct?
+    assertEquals( "1", meta.getNativeDataType( "  1  " ) );
   }
 
   @Test
   public void testIsNull_emptyIsNotNull() throws KettleValueException {
     meta.setNullsAndEmptyAreDifferent( true );
 
-    Assert.assertEquals( true, meta.isNull( null ) );
-    Assert.assertEquals( false, meta.isNull( "" ) );
+    assertEquals( true, meta.isNull( null ) );
+    assertEquals( false, meta.isNull( "" ) );
 
-    Assert.assertEquals( false, meta.isNull( "1" ) );
+    assertEquals( false, meta.isNull( "1" ) );
 
     meta.setTrimType( ValueMetaInterface.TRIM_TYPE_NONE );
-    Assert.assertEquals( false, meta.isNull( "    " ) );
-    Assert.assertEquals( false, meta.isNull( "  1  " ) );
+    assertEquals( false, meta.isNull( "    " ) );
+    assertEquals( false, meta.isNull( "  1  " ) );
 
     meta.setTrimType( ValueMetaInterface.TRIM_TYPE_LEFT );
-    Assert.assertEquals( false, meta.isNull( "    " ) );
-    Assert.assertEquals( false, meta.isNull( "  1  " ) );
+    assertEquals( false, meta.isNull( "    " ) );
+    assertEquals( false, meta.isNull( "  1  " ) );
 
     meta.setTrimType( ValueMetaInterface.TRIM_TYPE_RIGHT );
-    Assert.assertEquals( false, meta.isNull( "    " ) );
-    Assert.assertEquals( false, meta.isNull( "  1  " ) );
+    assertEquals( false, meta.isNull( "    " ) );
+    assertEquals( false, meta.isNull( "  1  " ) );
 
     meta.setTrimType( ValueMetaInterface.TRIM_TYPE_BOTH );
-    Assert.assertEquals( false, meta.isNull( "    " ) );
-    Assert.assertEquals( false, meta.isNull( "  1  " ) );
+    assertEquals( false, meta.isNull( "    " ) );
+    assertEquals( false, meta.isNull( "  1  " ) );
   }
 
   @Test
   public void testIsNull_emptyIsNull() throws KettleValueException {
     meta.setNullsAndEmptyAreDifferent( false );
 
-    Assert.assertEquals( true, meta.isNull( null ) );
-    Assert.assertEquals( true, meta.isNull( "" ) );
+    assertEquals( true, meta.isNull( null ) );
+    assertEquals( true, meta.isNull( "" ) );
 
-    Assert.assertEquals( false, meta.isNull( "1" ) );
+    assertEquals( false, meta.isNull( "1" ) );
 
     meta.setTrimType( ValueMetaInterface.TRIM_TYPE_NONE );
-    Assert.assertEquals( false, meta.isNull( "    " ) );
-    Assert.assertEquals( false, meta.isNull( meta.getString( "    " ) ) );
+    assertEquals( false, meta.isNull( "    " ) );
+    assertEquals( false, meta.isNull( meta.getString( "    " ) ) );
 
-    Assert.assertEquals( false, meta.isNull( "  1  " ) );
-    Assert.assertEquals( false, meta.isNull( meta.getString( "  1  " ) ) );
+    assertEquals( false, meta.isNull( "  1  " ) );
+    assertEquals( false, meta.isNull( meta.getString( "  1  " ) ) );
 
     meta.setTrimType( ValueMetaInterface.TRIM_TYPE_LEFT );
-    // Assert.assertEquals( true, meta.isNull( "    " ) ); //TODO: is it correct?
-    Assert.assertEquals( false, meta.isNull( "    " ) ); // TODO: is it correct?
-    Assert.assertEquals( true, meta.isNull( meta.getString( "    " ) ) );
+    // assertEquals( true, meta.isNull( "    " ) ); //TODO: is it correct?
+    assertEquals( false, meta.isNull( "    " ) ); // TODO: is it correct?
+    assertEquals( true, meta.isNull( meta.getString( "    " ) ) );
 
-    Assert.assertEquals( false, meta.isNull( "  1  " ) );
-    Assert.assertEquals( false, meta.isNull( meta.getString( "  1  " ) ) );
+    assertEquals( false, meta.isNull( "  1  " ) );
+    assertEquals( false, meta.isNull( meta.getString( "  1  " ) ) );
 
     meta.setTrimType( ValueMetaInterface.TRIM_TYPE_RIGHT );
-    // Assert.assertEquals( true, meta.isNull( "    " ) ); //TODO: is it correct?
-    Assert.assertEquals( false, meta.isNull( "    " ) ); // TODO: is it correct?
-    Assert.assertEquals( true, meta.isNull( meta.getString( "    " ) ) );
+    // assertEquals( true, meta.isNull( "    " ) ); //TODO: is it correct?
+    assertEquals( false, meta.isNull( "    " ) ); // TODO: is it correct?
+    assertEquals( true, meta.isNull( meta.getString( "    " ) ) );
 
-    Assert.assertEquals( false, meta.isNull( "  1  " ) );
-    Assert.assertEquals( false, meta.isNull( meta.getString( "  1  " ) ) );
+    assertEquals( false, meta.isNull( "  1  " ) );
+    assertEquals( false, meta.isNull( meta.getString( "  1  " ) ) );
 
     meta.setTrimType( ValueMetaInterface.TRIM_TYPE_BOTH );
-    // Assert.assertEquals( true, meta.isNull( "    " ) ); //TODO: is it correct?
-    Assert.assertEquals( false, meta.isNull( "    " ) ); // TODO: is it correct?
-    Assert.assertEquals( true, meta.isNull( meta.getString( "    " ) ) );
+    // assertEquals( true, meta.isNull( "    " ) ); //TODO: is it correct?
+    assertEquals( false, meta.isNull( "    " ) ); // TODO: is it correct?
+    assertEquals( true, meta.isNull( meta.getString( "    " ) ) );
 
-    Assert.assertEquals( false, meta.isNull( "  1  " ) );
-    Assert.assertEquals( false, meta.isNull( meta.getString( "  1  " ) ) );
+    assertEquals( false, meta.isNull( "  1  " ) );
+    assertEquals( false, meta.isNull( meta.getString( "  1  " ) ) );
   }
 
   @Test
   public void testGetString_emptyIsNotNull() throws KettleValueException {
     meta.setNullsAndEmptyAreDifferent( true );
 
-    Assert.assertEquals( null, meta.getString( null ) );
-    Assert.assertEquals( "", meta.getString( "" ) );
+    assertEquals( null, meta.getString( null ) );
+    assertEquals( "", meta.getString( "" ) );
 
     meta.setTrimType( ValueMetaInterface.TRIM_TYPE_NONE );
-    Assert.assertEquals( "    ", meta.getString( "    " ) );
-    Assert.assertEquals( "  1  ", meta.getString( "  1  " ) );
+    assertEquals( "    ", meta.getString( "    " ) );
+    assertEquals( "  1  ", meta.getString( "  1  " ) );
 
     meta.setTrimType( ValueMetaInterface.TRIM_TYPE_LEFT );
-    Assert.assertEquals( "", meta.getString( "    " ) );
-    Assert.assertEquals( "1  ", meta.getString( "  1  " ) );
+    assertEquals( "", meta.getString( "    " ) );
+    assertEquals( "1  ", meta.getString( "  1  " ) );
 
     meta.setTrimType( ValueMetaInterface.TRIM_TYPE_RIGHT );
-    Assert.assertEquals( "", meta.getString( "    " ) );
-    Assert.assertEquals( "  1", meta.getString( "  1  " ) );
+    assertEquals( "", meta.getString( "    " ) );
+    assertEquals( "  1", meta.getString( "  1  " ) );
 
     meta.setTrimType( ValueMetaInterface.TRIM_TYPE_BOTH );
-    Assert.assertEquals( "", meta.getString( "    " ) );
-    Assert.assertEquals( "1", meta.getString( "  1  " ) );
+    assertEquals( "", meta.getString( "    " ) );
+    assertEquals( "1", meta.getString( "  1  " ) );
   }
 
   @Test
   public void testGetString_emptyIsNull() throws KettleValueException {
     meta.setNullsAndEmptyAreDifferent( false );
 
-    Assert.assertEquals( null, meta.getString( null ) );
-    //Assert.assertEquals( null, meta.getString( "" ) ); // TODO: is it correct?
-    Assert.assertEquals( "", meta.getString( "" ) ); // TODO: is it correct?
+    assertEquals( null, meta.getString( null ) );
+    //assertEquals( null, meta.getString( "" ) ); // TODO: is it correct?
+    assertEquals( "", meta.getString( "" ) ); // TODO: is it correct?
 
     meta.setTrimType( ValueMetaInterface.TRIM_TYPE_NONE );
-    Assert.assertEquals( "    ", meta.getString( "    " ) );
-    Assert.assertEquals( "  1  ", meta.getString( "  1  " ) );
+    assertEquals( "    ", meta.getString( "    " ) );
+    assertEquals( "  1  ", meta.getString( "  1  " ) );
 
     meta.setTrimType( ValueMetaInterface.TRIM_TYPE_LEFT );
-    // Assert.assertEquals( null, meta.getString( "    " ) ); // TODO: is it correct?
-    Assert.assertEquals( "", meta.getString( "    " ) ); // TODO: is it correct?
-    Assert.assertEquals( "1  ", meta.getString( "  1  " ) );
+    // assertEquals( null, meta.getString( "    " ) ); // TODO: is it correct?
+    assertEquals( "", meta.getString( "    " ) ); // TODO: is it correct?
+    assertEquals( "1  ", meta.getString( "  1  " ) );
 
     meta.setTrimType( ValueMetaInterface.TRIM_TYPE_RIGHT );
-    // Assert.assertEquals( null, meta.getString( "    " ) ); // TODO: is it correct?
-    Assert.assertEquals( "", meta.getString( "    " ) ); // TODO: is it correct?
-    Assert.assertEquals( "  1", meta.getString( "  1  " ) );
+    // assertEquals( null, meta.getString( "    " ) ); // TODO: is it correct?
+    assertEquals( "", meta.getString( "    " ) ); // TODO: is it correct?
+    assertEquals( "  1", meta.getString( "  1  " ) );
 
     meta.setTrimType( ValueMetaInterface.TRIM_TYPE_BOTH );
-    // Assert.assertEquals( null, meta.getString( "    " ) ); // TODO: is it correct?
-    Assert.assertEquals( "", meta.getString( "    " ) ); // TODO: is it correct?
-    Assert.assertEquals( "1", meta.getString( "  1  " ) );
+    // assertEquals( null, meta.getString( "    " ) ); // TODO: is it correct?
+    assertEquals( "", meta.getString( "    " ) ); // TODO: is it correct?
+    assertEquals( "1", meta.getString( "  1  " ) );
   }
 
   @Test
@@ -781,6 +787,47 @@ public class ValueMetaStringTest {
     assertSignum( 0, meta.compare( "e", "e" ) );
   }
 
+  @Test
+  public void testGetIntegerWithoutConversionMask() throws KettleValueException, ParseException {
+    String value = "100.56";
+    ValueMetaInterface stringValueMeta = new ValueMetaString( "test" );
+
+    Long expected = 100L;
+    Long result = stringValueMeta.getInteger( value );
+    assertEquals( expected, result );
+  }
+
+  @Test
+  public void testGetNumberWithoutConversionMask() throws KettleValueException, ParseException {
+    String value = "100.56";
+    ValueMetaInterface stringValueMeta = new ValueMetaString( "test" );
+
+    Double expected = 100.56D;
+    Double result = stringValueMeta.getNumber( value );
+    assertEquals( expected, result );
+  }
+
+  @Test
+  public void testGetBigNumberWithoutConversionMask() throws KettleValueException, ParseException {
+    String value = "100.5";
+    ValueMetaInterface stringValueMeta = new ValueMetaString( "test" );
+
+    BigDecimal expected = new BigDecimal( 100.5 );
+    BigDecimal result = stringValueMeta.getBigNumber( value );
+    assertEquals( expected, result );
+  }
+
+  @Test
+  public void testGetDateWithoutConversionMask() throws KettleValueException, ParseException {
+    Calendar date = new GregorianCalendar( 2017, 9, 20 ); // month 9 = Oct
+    String value = "2017/10/20 00:00:00.000";
+    ValueMetaInterface stringValueMeta = new ValueMetaString( "test" );
+
+    Date expected = Date.from( date.toInstant() );
+    Date result = stringValueMeta.getDate( value );
+    assertEquals( expected, result );
+  }
+
   private static void assertSignum( int expected, int actual ) {
     assertSignum( "", expected, actual );
   }
@@ -795,7 +842,7 @@ public class ValueMetaStringTest {
         Assert.failNotEquals( msg, "(>0)", actual );
       }
     } else {
-      Assert.assertEquals( msg, expected, actual );
+      assertEquals( msg, expected, actual );
     }
   }
 
