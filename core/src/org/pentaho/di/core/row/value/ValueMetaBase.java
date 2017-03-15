@@ -1446,7 +1446,7 @@ public class ValueMetaBase implements ValueMetaInterface {
     if ( number == null ) {
       return null;
     }
-    return Boolean.valueOf( number.intValue() != 0 );
+    return Boolean.valueOf( number.signum() != 0 );
   }
 
   /**

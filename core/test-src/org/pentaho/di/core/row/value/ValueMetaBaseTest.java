@@ -751,4 +751,18 @@ public class ValueMetaBaseTest {
       return events;
     }
   }
+
+  @Test
+  public void testConvertBigNumberToBoolean() {
+    ValueMetaBase vmb = new ValueMetaBase();
+    System.out.println( vmb.convertBigNumberToBoolean( new BigDecimal( "-234" ) ) );
+    System.out.println( vmb.convertBigNumberToBoolean( new BigDecimal( "234" ) ) );
+    System.out.println( vmb.convertBigNumberToBoolean( new BigDecimal( "0" ) ) );
+    System.out.println( vmb.convertBigNumberToBoolean( new BigDecimal( "1.7976E308" ) ) );
+
+    Assert.assertTrue( vmb.convertBigNumberToBoolean( new BigDecimal( "-234" ) ) );
+    Assert.assertTrue( vmb.convertBigNumberToBoolean( new BigDecimal( "234" ) ) );
+    Assert.assertFalse( vmb.convertBigNumberToBoolean( new BigDecimal( "0" ) ) );
+    Assert.assertTrue( vmb.convertBigNumberToBoolean( new BigDecimal( "1.7976E308" ) ) );
+  }
 }
