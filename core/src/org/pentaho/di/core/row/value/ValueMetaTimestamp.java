@@ -623,7 +623,7 @@ public class ValueMetaTimestamp extends ValueMetaDate {
     return getDateFormat( getType() );
   }
 
-  synchronized SimpleDateFormat getDateFormat( int valueMetaType ) {
+  private synchronized SimpleDateFormat getDateFormat( int valueMetaType ) {
     if ( conversionMetadata != null ) {
       return new SimpleTimestampFormat( conversionMetadata.getDateFormat().toPattern() );
     }
@@ -632,7 +632,7 @@ public class ValueMetaTimestamp extends ValueMetaDate {
       // This may not become static as the class is not thread-safe!
       dateFormat = new SimpleTimestampFormat( new SimpleDateFormat().toPattern() );
 
-      String mask = getFormatMask( valueMetaType );
+      String mask = getMask( valueMetaType );
 
       // Do we have a locale?
       //
