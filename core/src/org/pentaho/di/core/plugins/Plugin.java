@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -134,7 +134,7 @@ public class Plugin implements PluginInterface {
     this.libraries = libraries;
     this.errorHelpFile = errorHelpFile;
     this.pluginFolder = pluginFolder;
-    this.documentationUrl = documentationUrl;
+    this.documentationUrl = Const.getDocUrl( documentationUrl );
     this.casesUrl = casesUrl;
     this.forumUrl = forumUrl;
   }
