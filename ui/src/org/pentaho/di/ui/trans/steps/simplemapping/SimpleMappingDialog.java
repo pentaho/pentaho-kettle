@@ -626,7 +626,7 @@ public class SimpleMappingDialog extends BaseStepDialog implements StepDialogInt
     fdMappings.top = new FormAttachment( 0, 0 );
     fdMappings.bottom = new FormAttachment( wInheritAll, -10 );
     wMappingParameters.setLayoutData( fdMappings );
-    wMappingParameters.getTable().addListener( SWT.Resize, new ColumnsResizer( 0, 30, 70 ) );
+    wMappingParameters.getTable().addListener( SWT.Resize, new ColumnsResizer( 0, 50, 50 ) );
 
     for ( int i = 0; i < parameters.getVariable().length; i++ ) {
       TableItem tableItem = wMappingParameters.table.getItem( i );
