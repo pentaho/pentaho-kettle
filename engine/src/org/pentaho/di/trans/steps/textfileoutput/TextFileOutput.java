@@ -265,7 +265,7 @@ public class TextFileOutput extends BaseStep implements StepInterface {
     }
   }
 
-  protected void writeRowToFile( RowMetaInterface rowMeta, Object[] r ) throws KettleStepException {
+  public void writeRowToFile( RowMetaInterface rowMeta, Object[] r ) throws KettleStepException {
     try {
       if ( meta.getOutputFields() == null || meta.getOutputFields().length == 0 ) {
         /*
