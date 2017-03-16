@@ -81,31 +81,31 @@ import org.w3c.dom.Node;
 public class ValueMetaBase implements ValueMetaInterface {
 
   // region Default Numeric Types Parse Format
-  private static final String DEFAULT_INTEGER_PARSE_MASK = "####0";
-  private static final String DEFAULT_NUMBER_PARSE_MASK = "####0.0#########";
-  private static final String DEFAULT_BIGNUMBER_PARSE_MASK = "######0.0###################";
+  public static final String DEFAULT_INTEGER_PARSE_MASK = "####0";
+  public static final String DEFAULT_NUMBER_PARSE_MASK = "####0.0#########";
+  public static final String DEFAULT_BIGNUMBER_PARSE_MASK = "######0.0###################";
 
-  private static final String DEFAULT_DATE_PARSE_MASK = "yyyy/MM/dd HH:mm:ss.SSS";
-  private static final String DEFAULT_TIMESTAMP_PARSE_MASK = "yyyy/MM/dd HH:mm:ss.SSSSSSSSS";
+  public static final String DEFAULT_DATE_PARSE_MASK = "yyyy/MM/dd HH:mm:ss.SSS";
+  public static final String DEFAULT_TIMESTAMP_PARSE_MASK = "yyyy/MM/dd HH:mm:ss.SSSSSSSSS";
   // endregion
 
   // region Default Types Format
-  static final String DEFAULT_INTEGER_FORMAT_MASK = Const.NVL(
+  public static final String DEFAULT_INTEGER_FORMAT_MASK = Const.NVL(
           EnvUtil.getSystemProperty( Const.KETTLE_DEFAULT_INTEGER_FORMAT ),
           "####0;-####0" );
 
-  static final String DEFAULT_NUMBER_FORMAT_MASK = Const.NVL(
+  public static final String DEFAULT_NUMBER_FORMAT_MASK = Const.NVL(
           EnvUtil.getSystemProperty( Const.KETTLE_DEFAULT_NUMBER_FORMAT ),
           "####0.0#########;-####0.0#########" );
 
-  static final String DEFAULT_BIG_NUMBER_FORMAT_MASK = Const.NVL(
+  public static final String DEFAULT_BIG_NUMBER_FORMAT_MASK = Const.NVL(
           EnvUtil.getSystemProperty( Const.KETTLE_DEFAULT_BIGNUMBER_FORMAT ),
           "######0.0###################;-######0.0###################" );
 
-  static final String DEFAULT_DATE_FORMAT_MASK = Const.NVL( EnvUtil
+  public static final String DEFAULT_DATE_FORMAT_MASK = Const.NVL( EnvUtil
           .getSystemProperty( Const.KETTLE_DEFAULT_DATE_FORMAT ), "yyyy/MM/dd HH:mm:ss.SSS" );
 
-  static final String DEFAULT_TIMESTAMP_FORMAT_MASK = Const.NVL( EnvUtil
+  public static final String DEFAULT_TIMESTAMP_FORMAT_MASK = Const.NVL( EnvUtil
           .getSystemProperty( Const.KETTLE_DEFAULT_TIMESTAMP_FORMAT ), "yyyy/MM/dd HH:mm:ss.SSSSSSSSS" );
   // endregion
 
