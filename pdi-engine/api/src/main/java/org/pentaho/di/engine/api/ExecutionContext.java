@@ -54,4 +54,6 @@ public interface ExecutionContext extends SubscriptionManager, Serializable {
   RowConversionManager getConversionManager();
 
   Principal getActingPrincipal();
+
+  void setActingPrincipal( Principal actingPrincipal );
 }

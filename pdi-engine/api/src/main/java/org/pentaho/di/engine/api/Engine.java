@@ -28,13 +28,10 @@ package org.pentaho.di.engine.api;
 import org.pentaho.di.engine.api.model.Transformation;
 
 import java.io.Serializable;
-import java.security.Principal;
-
 /**
  * An Engine is responsible for executing an Transformation.
  */
 public interface Engine extends Serializable {
   ExecutionContext prepare( Transformation trans );
-  ExecutionContext prepare( Transformation trans, Principal actingPrincipal );
   String getId();
 }

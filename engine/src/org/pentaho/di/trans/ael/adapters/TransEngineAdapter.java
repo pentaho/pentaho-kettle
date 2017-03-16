@@ -55,6 +55,7 @@ import java.util.stream.Collectors;
  */
 public class TransEngineAdapter extends Trans {
 
+  public static final String ANONYMOUS_PRINCIPAL = "anonymous";
   private final Transformation transformation;
   private final ExecutionContext executionContext;
   private CompletableFuture<ExecutionResult>
@@ -62,7 +63,8 @@ public class TransEngineAdapter extends Trans {
 
   public TransEngineAdapter( Engine engine, TransMeta transMeta ) {
     transformation = TransMetaConverter.convert( transMeta );
-    executionContext = engine.prepare( transformation,  getActingPrincipal( transMeta ) );
+    executionContext = engine.prepare( transformation );
+    executionContext.setActingPrincipal( getActingPrincipal( transMeta ) );
     this.transMeta = transMeta;
   }
 
@@ -175,7 +177,7 @@ public class TransEngineAdapter extends Trans {
 
   private Principal getActingPrincipal( TransMeta transMeta ) {
     if ( transMeta.getRepository() == null || transMeta.getRepository().getUserInfo() == null ) {
-      return null;
+      return new ActingPrincipal( ANONYMOUS_PRINCIPAL );
     }
     return new ActingPrincipal( transMeta.getRepository().getUserInfo().getName() );
   }
